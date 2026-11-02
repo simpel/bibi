@@ -5,7 +5,7 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 ## The ticket
 - A `Ticket` is created from a customer's request, or by staff from a predefined ticket. It lives until it is completed, lost or cancelled and never turns into another record.
 - It has a customer, optional contact, sequential reference number per organization, the organization's own type (base `TICKET`) with own fields, optional desired period, `estimatedHeadcount` and `guaranteedHeadcount` (lines inherit them), optional budget and `holdsUntil`. The ticket type's fields control which of these an organization uses.
-- Lines (`Line`: rooms, food, activities, equipment), requirements, quotes, sheets, payments, invoices, assignments and inbound email attach to the ticket. Nothing on the ticket is required for a lead. The ticket's period is what the customer asked for; each line has its own time.
+- Lines (`Line`: rooms, food, activities, equipment), requirements, quotes, work orders, payments, invoices, assignments and inbound email attach to the ticket. Nothing on the ticket is required for a lead. The ticket's period is what the customer asked for; each line has its own time.
 - Inbound address: `ticket-<id>@<MAIL_INBOUND_DOMAIN>` (ADR 0012).
 
 ## Statuses are organization data
@@ -49,7 +49,7 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 | Flag | The system does |
 |---|---|
 | `hold` | `NONE`, `SOFT` or `HARD`. Only for types with the `BOOKABLE` capability. `SOFT` reserves without blocking others; `HARD` blocks. |
-| `inSheets` | Lines in this state are included in generated sheets. |
+| `inWorkOrders` | Lines in this state are included in generated work orders. |
 | `released` | Final state. The hold is dropped; nothing leaves it. |
 | `expires` | Lines in this state fall to the type's `expiryStateId` when the ticket's `holdsUntil` passes. |
 

@@ -129,9 +129,9 @@ export const OPERATION_KEYS = [
   "responsibility_create",
   "responsibility_update",
   "responsibility_archive",
-  "sheetDefinition_create",
-  "sheetDefinition_update",
-  "sheetDefinition_archive",
+  "workOrderDefinition_create",
+  "workOrderDefinition_update",
+  "workOrderDefinition_archive",
   "configuration_importTemplate",
   ...SELF_OPERATION_KEYS,
 ] as const;

@@ -7,7 +7,7 @@ Current behaviour, checked against the code. Why: ADR 0021, 0026. Direction (par
 - **Fields** (`FieldDefinition`) per type. Kinds (`FIELD_KINDS`): `TEXT`, `NUMBER`, `BOOLEAN`, `DATE`, `CHOICE`, `MULTI_CHOICE`, `LINK`.
 - **Vocabularies** (`Vocabulary` + `VocabularyValue`): the organization's own lists ("Allergens", "Diet", "Accessibility"). Choice fields and requirements point to one.
 - **Requirements** (`Requirement`): a count on a ticket against a vocabulary value (Gluten × 3). It applies to the whole ticket or to one line, and a row on a line replaces the ticket's count there. Requirement is also a type with its own fields. Requirements never link to a person: there is no personal data about guests.
-- **Sheets**: the organization defines the sheet (`SheetDefinition`: which item types and fields, which vocabularies' requirements, which responsibility it goes to) and each ticket gets versioned sheets (`Sheet`, changes marked ★).
+- **Work orders**: the organization defines the work order (`WorkOrderDefinition`: which item types and fields, which vocabularies' requirements, which responsibility it goes to) and each ticket gets versioned work orders (`WorkOrder`, changes marked ★).
 - **Setups** (`Setup`): the organization's own room layouts with changeover time (Cinema, U-table, Mingle).
 - Ticket statuses, line states and the grid are configured the same way (`docs/specs/tickets-statuses-and-states.md`). Access is fixed presets (`docs/specs/permissions.md`).
 - New organizations start empty. Templates (`templates/vocabularies/eu-14-allergens`, `templates/configuration/conference-venue`) are ordinary data created through ordinary operations; they can be changed freely and imports are idempotent. The assistant can suggest a configuration and the user approves.
@@ -34,14 +34,14 @@ Current behaviour, checked against the code. Why: ADR 0021, 0026. Direction (par
 - Adding an item to a ticket expands it into lines, occupancy and order lines that copy name, price, VAT and tags (snapshot). `line.expandBundle` adds a bundle as one bundle line that carries the price plus part lines linked by `Line.parentLineId`, which show their own prices but do not count in the totals (ADR 0059); customisation options are not expanded yet.
 
 ## Matching and tags
-- A requirement is compared with the items on the ticket tagged with the same vocabulary value. A hit on a mandatory part without an alternative is flagged and blocks the sheet.
+- A requirement is compared with the items on the ticket tagged with the same vocabulary value. A hit on a mandatory part without an alternative is flagged and blocks the work order.
 - A bundle inherits its parts' vocabulary values: mandatory parts give "contains", optional parts "may contain" per alternative. `item.resolve` is the only place this is computed.
 
 ## "Data exists → CONFLICT"
 Anything that would make existing values invalid is refused: turning off a capability an active item has data for; changing a field's kind or vocabulary; removing an option in use; making a field required when items lack a value; changing a `LINK` target while records have a value; archiving a record a `LINK` points to, a field with values, a vocabulary value an item carries, a vocabulary a field uses, a setup with capacity, or a type with active items. It is computed in memory per type (catalogs have hundreds of rows). To change a field's kind: create a new field, move the values, archive the old one.
 
 ## Surfaces
-- Operations are generic (`item.*`, `entityType.*`, `fieldDefinition.*`, `vocabulary.*`, `requirement.*`, `sheet.*`, `setup.*`). GraphQL and REST expose fields as `fields: JSON` plus the definitions.
+- Operations are generic (`item.*`, `entityType.*`, `fieldDefinition.*`, `vocabulary.*`, `requirement.*`, `workOrder.*`, `setup.*`). GraphQL and REST expose fields as `fields: JSON` plus the definitions.
 - The MCP tools `item_list|get|create|update` describe the organization's types, fields and allowed values per call (read through `entityType.list` as the caller; static description without `configuration:read`).
 - Each field kind and capability has its own Zod schema and its own component in `@bibi/ui`. Reports build on capabilities and status flags, never on type names.
 - Permissions: `item:*` for items, `configuration:*` for types, fields, vocabularies and setups.

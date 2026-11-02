@@ -26,10 +26,10 @@ export const dashboardSummary = defineOperation({
   kind: "query",
   description:
     "The Workload tab of the dashboard for a range: open tickets and their estimated and confirmed value per ticket status now, " +
-    "with the count's trend over the range; what needs attention now (holds expiring within 7 days, unsent sheets for tickets " +
+    "with the count's trend over the range; what needs attention now (holds expiring within 7 days, unsent work orders for tickets " +
     "in the next 28 days, overdue invoices); tickets with lines in the range; utilisation (booked over open hours) per bookable " +
-    "item type over the range; and accepted quotes not invoiced yet per event month in the range. Unsent sheets are null " +
-    "without sheet:read, overdue without finance:read and payment:read, utilisation without item:read, booked ahead without " +
+    "item type over the range; and accepted quotes not invoiced yet per event month in the range. Unsent work orders are null " +
+    "without workOrder:read, overdue without finance:read and payment:read, utilisation without item:read, booked ahead without " +
     "quote:read. Money for the range (invoiced, received, won and lost) is finance.overview.",
   input: DashboardSummaryInputSchema,
   output: DashboardSummarySchema,

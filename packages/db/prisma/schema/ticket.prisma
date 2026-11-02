@@ -59,7 +59,7 @@ model Ticket {
   statusChanges       TicketStatusChange[]
   estimates           TicketEstimate[]
   requirements        Requirement[]
-  sheets              Sheet[]
+  workOrders              WorkOrder[]
   /// The supertable row this record extends (ADR 0056).
   record              Record               @relation(fields: [id, organizationId], references: [id, organizationId])
 

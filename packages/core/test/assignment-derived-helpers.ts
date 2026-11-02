@@ -1,12 +1,12 @@
 import { type ExecuteContext, execute, listAssignments, updateResponsibility } from "../src/index";
 import { ticketSubject } from "./assignment-helpers";
 import { testContext, unwrap } from "./helpers";
-import { sheetSetup } from "./sheet-helpers";
 import { memberUser } from "./ticket-helpers";
+import { workOrderSetup } from "./work-order-helpers";
 
 /** A ticket with a room line, and its responsibility covering the room's type (ADR 0055). */
 export async function derivedSetup() {
-  const base = await sheetSetup();
+  const base = await workOrderSetup();
   const { context, roomType, definition, ticket } = base;
   const erik = await memberUser({ context, name: "Erik Lund" });
   const johan = await memberUser({ context, name: "Johan Ek" });

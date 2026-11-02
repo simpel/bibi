@@ -23,8 +23,6 @@ import type { QuoteWire } from "./quote-entries";
 import type { DepositWire, InvoiceWire } from "./receivable-entries";
 import type { RequirementWire } from "./requirement-entries";
 import type { ResponsibilityWire } from "./responsibility-entries";
-import type { SheetDefinitionWire } from "./sheet-definition-entries";
-import type { SheetWire } from "./sheet-entries";
 import type { StatusGridCellWire } from "./status-grid-entries";
 import type { TicketToolUiProps } from "./ticket-entries";
 import type { TicketStatusWire } from "./ticket-status-entries";
@@ -46,6 +44,8 @@ import type {
   VenueWire,
   VocabularyWire,
 } from "./wire-schemas";
+import type { WorkOrderDefinitionWire } from "./work-order-definition-entries";
+import type { WorkOrderWire } from "./work-order-entries";
 
 /**
  * Generative-UI contract: component key → props. The web maps each key to an `@bibi/ui`
@@ -113,10 +113,10 @@ export type ToolUiProps = BoardUiProps &
     "responsibility-card": { responsibility: ResponsibilityWire };
     "assignment-table": { items: AssignmentWire[]; nextCursor: string | null };
     "assignment-card": { assignment: AssignmentWire };
-    "sheet-definition-table": { items: SheetDefinitionWire[]; nextCursor: string | null };
-    "sheet-definition-card": { sheet: SheetDefinitionWire };
-    "sheet-table": { items: SheetWire[]; nextCursor: string | null };
-    "sheet-card": { sheet: SheetWire };
+    "work-order-definition-table": { items: WorkOrderDefinitionWire[]; nextCursor: string | null };
+    "work-order-definition-card": { workOrder: WorkOrderDefinitionWire };
+    "work-order-table": { items: WorkOrderWire[]; nextCursor: string | null };
+    "work-order-card": { workOrder: WorkOrderWire };
     "member-table": { items: MemberWire[]; nextCursor: string | null };
     "member-card": { member: MemberWire };
     "member-profile-card": { profile: MemberProfileWire };

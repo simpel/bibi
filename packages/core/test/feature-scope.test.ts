@@ -46,11 +46,11 @@ const PREFIX_FEATURE: Readonly<Record<string, string>> = {
   program: "program",
   programitem: "program",
   ticket: "ticket",
-  sheet: "sheet",
+  workOrder: "workOrder",
 };
 
 const FOREIGN_KEY =
-  /^(customer|contact|item|venue|quote|payment|priceList|programItem|program|ticket|sheet)(Name|Email|Phone|Address|Total|Price|Amount)/i;
+  /^(customer|contact|item|venue|quote|payment|priceList|programItem|program|ticket|workOrder)(Name|Email|Phone|Address|Total|Price|Amount)/i;
 
 /**
  * `<operation entity>:<key>` pairs that look like another feature's data but are not, or are
@@ -61,8 +61,9 @@ const OUTPUT_EXCEPTIONS: Readonly<Record<string, string>> = {
   "venue:contactPhone": "the venue's own contact details, not a customer contact",
   "organizationProfile:contactEmail": "the organization's own contact details (ADR 0061)",
   "organizationProfile:contactPhone": "the organization's own contact details (ADR 0061)",
-  "sheet:itemName": "sheet rows are a snapshot copied with item:read at generate time",
-  "sheet:programItemName": "sheet rows are a snapshot copied with program:read at generate time",
+  "workOrder:itemName": "work order rows are a snapshot copied with item:read at generate time",
+  "workOrder:programItemName":
+    "work order rows are a snapshot copied with program:read at generate time",
   "dashboard:customerName": "a view read model (ADR 0071, 0080), null without customer:read",
 };
 

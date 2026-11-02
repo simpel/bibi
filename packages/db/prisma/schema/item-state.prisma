@@ -23,8 +23,8 @@ model ItemState {
   /// New lines of the type start here.
   initial         Boolean               @default(false)
   hold            HoldKind              @default(NONE)
-  /// Lines in this state are included in generated sheets.
-  inSheets        Boolean               @default(false)
+  /// Lines in this state are included in generated work orders.
+  inWorkOrders        Boolean               @default(false)
   /// Final state: the hold is dropped and nothing leaves it.
   released        Boolean               @default(false)
   /// Lines in this state fall to the type's `expiryStateId` when the ticket's `holdsUntil` passes.

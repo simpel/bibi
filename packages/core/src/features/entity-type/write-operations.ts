@@ -4,7 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { usageConflict } from "../../records/blocking-issues";
 import { conflict, notFound } from "../../shared/errors";
 import { recordsOfType } from "../field-definition/field-usage";
-import { checkNotOnSheets } from "../sheet-definition/usage";
+import { checkNotOnWorkOrders } from "../work-order-definition/usage";
 import { checkCapabilities, checkCapabilitiesRemovable } from "./capabilities";
 import type { EntityBase } from "./capability-kinds";
 import { checkExpiryState } from "./expiry-state";
@@ -91,7 +91,7 @@ export const archiveEntityType = defineOperation({
   description:
     "Archive a type. Refused while active records (items, customers, contacts, tickets, " +
     "lines, requirements) still have the " +
-    "type, a LINK field points to it, or a sheet definition includes it.",
+    "type, a LINK field points to it, or a work order definition includes it.",
   input: EntityTypeIdInputSchema,
   output: EntityTypeSchema,
   permission: "configuration:delete",
@@ -105,8 +105,12 @@ export const archiveEntityType = defineOperation({
     if (linking > 0)
       return conflict({ message: `${linking} LINK fields point to the type ${before.name}` });
     const what = `The type ${before.name}`;
-    const onSheets = await checkNotOnSheets({ context, reference: { entityTypeId: id }, what });
-    if (!onSheets.ok) return onSheets;
+    const onWorkOrders = await checkNotOnWorkOrders({
+      context,
+      reference: { entityTypeId: id },
+      what,
+    });
+    if (!onWorkOrders.ok) return onWorkOrders;
     const row = await context.db.entityType.update({ where: { id }, data: { status: "ARCHIVED" } });
     const type = await toEntityTypeDto({ context, row });
     context.recordChange({ entityId: id, before, after: type });

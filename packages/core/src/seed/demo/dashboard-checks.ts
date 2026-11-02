@@ -14,8 +14,8 @@ const PERIOD_DAYS = 182;
  * ADR 0080, 0086: the Workload tab has something to show from the start of this month to four
  * weeks ahead: every open status has tickets, a value and a trend against the month's start,
  * holds expire soon, an organization with invoices has overdue ones, tickets are scheduled, some
- * type is utilised and accepted quotes wait to be invoiced. The seed generates no sheets yet, so
- * unsent sheets are only required to be readable (not null).
+ * type is utilised and accepted quotes wait to be invoiced. The seed generates no work orders yet, so
+ * unsent work orders are only required to be readable (not null).
  */
 async function checkAhead({ context, org }: CheckDemoDashboardInput): Promise<string[]> {
   const today = toZonedParts({ instant: new Date(), timeZone: org.timeZone }).date;
@@ -38,7 +38,7 @@ async function checkAhead({ context, org }: CheckDemoDashboardInput): Promise<st
   const empty = ({ what }: { what: string }) =>
     failures.push(`${org.slug}: dashboard shows no ${what}`);
   if (attention.expiringHolds.length === 0) empty({ what: "expiring holds" });
-  if (attention.unsentSheets === null) empty({ what: "unsent sheets list" });
+  if (attention.unsentWorkOrders === null) empty({ what: "unsent work orders list" });
   if (org.finance && !attention.overdue?.invoices) empty({ what: "overdue invoices" });
   if (scheduled.length === 0) empty({ what: "tickets scheduled" });
   if (!(utilisation ?? []).some((row) => (row.rate ?? 0) > 0))

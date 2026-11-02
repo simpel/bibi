@@ -2,13 +2,13 @@
  * Org-scoped models that are neither soft-deleted nor append-only, so hard deletion is permitted:
  * replacement sets owned by a parent and audited on it (ItemSetup, ItemPart, ItemCustomisationGroup,
  * ItemCustomisationOption, ItemDemandTag, BoardPhaseStatus, HoursDay, HoursException, MemberProfileItem, TicketStatusTransition, TicketStatusGate, ItemStateTransition, TicketTemplateLine,
- * TicketTemplateLineOption, PriceListItem, RevenueAccount (ADR 0077), OrderLine, InvoiceDeposit (ADR 0090), the id lists of responsibilities and sheet
+ * TicketTemplateLineOption, PriceListItem, RevenueAccount (ADR 0077), OrderLine, InvoiceDeposit (ADR 0090), the id lists of responsibilities and work order
  * definitions and
  * RecordLink, ADR 0056), status grid cells (StatusStateRule, audited on itself), the derived
  * search index (Embedding), Better Auth membership rows (Member; Invitation has its own
  * `status`; core audits both), rows with their
  * own `status` lifecycle that are never removed (PaymentAccount, IntegrationConnection, Payment, Deposit, Invoice, ADR
- * 0057; InboundMessage, ADR 0085: `dismissedAt`), sheet versions (`sentAt` is their lifecycle), followers (AssignmentFollower, removed on
+ * 0057; InboundMessage, ADR 0085: `dismissedAt`), work order versions (`sentAt` is their lifecycle), followers (AssignmentFollower, removed on
  * unfollow) and credentials (Apikey: `enabled`; OauthGrantRevocation: one row per user and client).
  */
 export const HARD_DELETE_MODELS = new Set<string>([
@@ -36,7 +36,7 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "Payment",
   "Deposit",
   "Invoice",
-  "Sheet",
+  "WorkOrder",
   "AssignmentFollower",
   "Apikey",
   "OauthGrantRevocation",
@@ -44,9 +44,9 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "InboundMessage",
   "ResponsibilityEntityType",
   "ResponsibilityDefaultFollower",
-  "SheetDefinitionEntityType",
-  "SheetDefinitionField",
-  "SheetDefinitionVocabulary",
+  "WorkOrderDefinitionEntityType",
+  "WorkOrderDefinitionField",
+  "WorkOrderDefinitionVocabulary",
   "RecordLink",
   "HoursDay",
   "HoursException",

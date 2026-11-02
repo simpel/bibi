@@ -24,8 +24,6 @@ import { RECEIVABLE_UI_ENTRIES } from "./receivable-entries";
 import { REQUIREMENT_UI_ENTRIES } from "./requirement-entries";
 import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
 import { SELF_GENERIC_UI_TOOLS } from "./self-generic-tools";
-import { SHEET_DEFINITION_UI_ENTRIES } from "./sheet-definition-entries";
-import { SHEET_UI_ENTRIES } from "./sheet-entries";
 import { STATUS_GRID_UI_ENTRIES } from "./status-grid-entries";
 import { TICKET_UI_ENTRIES } from "./ticket-entries";
 import { TICKET_STATUS_UI_ENTRIES } from "./ticket-status-entries";
@@ -40,6 +38,8 @@ import {
   VenueListWireSchema,
   VenueWireSchema,
 } from "./wire-schemas";
+import { WORK_ORDER_DEFINITION_UI_ENTRIES } from "./work-order-definition-entries";
+import { WORK_ORDER_UI_ENTRIES } from "./work-order-entries";
 
 const venueTable = uiEntry({
   component: "venue-table",
@@ -90,8 +90,8 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...PAYMENT_UI_ENTRIES,
   ...RECEIVABLE_UI_ENTRIES,
   ...RESPONSIBILITY_UI_ENTRIES,
-  ...SHEET_DEFINITION_UI_ENTRIES,
-  ...SHEET_UI_ENTRIES,
+  ...WORK_ORDER_DEFINITION_UI_ENTRIES,
+  ...WORK_ORDER_UI_ENTRIES,
   ...ACCESS_UI_ENTRIES,
   ...MEMBER_PROFILE_UI_ENTRIES,
   ...PERMISSION_UI_ENTRIES,

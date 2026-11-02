@@ -23,7 +23,7 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   // Payments settle quotes, deposits and invoices (ADR 0057): before all three.
   db.payment.deleteMany({ where }),
   db.deposit.deleteMany({ where }),
-  db.sheet.deleteMany({ where }),
+  db.workOrder.deleteMany({ where }),
   db.requirement.deleteMany({ where }),
   // Order lines point at the lines they froze and at their quote or invoice (ADR 0052).
   db.orderLine.deleteMany({ where }),
@@ -57,14 +57,14 @@ const itemStates = ({ db, where }: ScopeInput) => [
 ];
 
 /**
- * Sheet definitions and the id lists of definitions and responsibilities (ADR 0056); after the
- * sheet versions, before the responsibilities, types, fields and lists they point at.
+ * Work order definitions and the id lists of definitions and responsibilities (ADR 0056); after the
+ * work order versions, before the responsibilities, types, fields and lists they point at.
  */
 const configLinks = ({ db, where }: ScopeInput) => [
-  db.sheetDefinitionEntityType.deleteMany({ where }),
-  db.sheetDefinitionField.deleteMany({ where }),
-  db.sheetDefinitionVocabulary.deleteMany({ where }),
-  db.sheetDefinition.deleteMany({ where }),
+  db.workOrderDefinitionEntityType.deleteMany({ where }),
+  db.workOrderDefinitionField.deleteMany({ where }),
+  db.workOrderDefinitionVocabulary.deleteMany({ where }),
+  db.workOrderDefinition.deleteMany({ where }),
   db.responsibilityEntityType.deleteMany({ where }),
   db.responsibilityDefaultFollower.deleteMany({ where }),
 ];

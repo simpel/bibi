@@ -18,7 +18,7 @@ export const createItemState = defineOperation({
   kind: "command",
   description:
     "Create a state for lines of one item type (ADR 0044): a name, a hex color and its flags " +
-    "(initial, hold NONE/SOFT/HARD, inSheets, released, expires; off and NONE by default). It " +
+    "(initial, hold NONE/SOFT/HARD, inWorkOrders, released, expires; off and NONE by default). It " +
     "is placed last. The first state of a type is its initial state; a new initial state takes " +
     "the flag from the current one. By default every earlier state may move to it and it may " +
     "move to every released state; change that with itemState.setTransitions.",

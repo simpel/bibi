@@ -30,7 +30,7 @@ export type ResolveEffectiveInput = {
 /**
  * The effective count per list value for each line (ADR 0021): the ticket's count,
  * replaced value by value by the line's own row. A line row of 0 says "none
- * here" and still replaces the ticket's count. Pure, so sheets and tests can reuse it.
+ * here" and still replaces the ticket's count. Pure, so work orders and tests can reuse it.
  */
 export function resolveEffective({
   lineIds,

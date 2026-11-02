@@ -68,7 +68,7 @@ model EntityType {
   records          Record[]
   templateLines    TicketTemplateLine[]
   responsibilities ResponsibilityEntityType[]
-  sheetDefinitions SheetDefinitionEntityType[]
+  workOrderDefinitions WorkOrderDefinitionEntityType[]
   /// Demands whose pool is this item type (ADR 0059).
   demands          ItemDemand[]
   boards           Board[]
@@ -101,7 +101,7 @@ model FieldDefinition {
   linkType       EntityType?  @relation("FieldLinkType", fields: [linkTypeId, organizationId], references: [id, organizationId])
   vocabulary     Vocabulary?  @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
 
-  sheetDefinitions SheetDefinitionField[]
+  workOrderDefinitions WorkOrderDefinitionField[]
   /// Values of this field when it is a `LINK` (ADR 0056).
   links            RecordLink[]
 
@@ -121,7 +121,7 @@ model Vocabulary {
   createdBy        String?
   values           VocabularyValue[]
   fields           FieldDefinition[]
-  sheetDefinitions SheetDefinitionVocabulary[]
+  workOrderDefinitions WorkOrderDefinitionVocabulary[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

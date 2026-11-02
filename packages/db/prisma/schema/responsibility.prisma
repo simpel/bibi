@@ -18,10 +18,10 @@ model Responsibility {
   /// Members (user ids) who follow it by default.
   defaultFollowers  ResponsibilityDefaultFollower[]
   assignments       Assignment[]
-  /// Sheet definitions that go to this responsibility.
-  sheetDefinitions  SheetDefinition[]
-  /// Sheet versions generated for this responsibility.
-  sheets            Sheet[]
+  /// Work order definitions that go to this responsibility.
+  workOrderDefinitions  WorkOrderDefinition[]
+  /// Work order versions generated for this responsibility.
+  workOrders            WorkOrder[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

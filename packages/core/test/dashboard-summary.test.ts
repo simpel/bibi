@@ -61,7 +61,7 @@ describe("dashboard.summary (ADR 0079, 0080)", () => {
     const value = unwrap({ result: await summaryAt({ context: reader }) });
     expect(value.utilisation).toBeNull();
     expect(value.bookedAhead).toBeNull();
-    expect(value.attention.unsentSheets).toBeNull();
+    expect(value.attention.unsentWorkOrders).toBeNull();
     expect(value.attention.overdue).toBeNull();
     expect(value.scheduled[0]?.customerName).toBeNull();
     const nobody = testContext({ organizationId: context.organizationId, permissions: {} });

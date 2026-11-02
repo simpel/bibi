@@ -9,7 +9,7 @@ export type ResolveItemTagsInput = { context: Pick<OperationContext, "db">; id: 
 
 /**
  * The expanded item and its inherited tags, or null for an unknown item. The one function behind
- * `item.resolve`, also used by sheets to match requirements against items and by order lines,
+ * `item.resolve`, also used by work orders to match requirements against items and by order lines,
  * which copy the item's `contains` tags (ADR 0021).
  */
 export async function resolveItemTags({

@@ -40,8 +40,6 @@ import { quoteMcpTools } from "../features/quote/mcp";
 import { requirementMcpTools } from "../features/requirement/mcp";
 import { responsibilityMcpTools } from "../features/responsibility/mcp";
 import { setupMcpTools } from "../features/setup/mcp";
-import { sheetMcpTools } from "../features/sheet/mcp";
-import { sheetDefinitionMcpTools } from "../features/sheet-definition/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { statusGridMcpTools } from "../features/status-grid/mcp";
 import { ticketMcpTools } from "../features/ticket/mcp";
@@ -52,6 +50,8 @@ import { userPreferenceMcpTools } from "../features/user-preference/mcp";
 import { userSettingsMcpTools } from "../features/user-settings/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
 import { vocabularyMcpTools } from "../features/vocabulary/mcp";
+import { workOrderMcpTools } from "../features/work-order/mcp";
+import { workOrderDefinitionMcpTools } from "../features/work-order-definition/mcp";
 import { searchMcpTools } from "../search-mcp";
 import type { McpToolMeta } from "./meta";
 
@@ -106,7 +106,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...vocabularyMcpTools,
     ...setupMcpTools,
     ...responsibilityMcpTools,
-    ...sheetDefinitionMcpTools,
+    ...workOrderDefinitionMcpTools,
     ...configurationMcpTools,
     ...itemMcpTools,
     ...itemDemandMcpTools,
@@ -122,7 +122,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...assignmentMcpTools,
     ...lineAndGroupMcpTools,
     ...requirementMcpTools,
-    ...sheetMcpTools,
+    ...workOrderMcpTools,
     ...boardMcpTools,
     ...quoteMcpTools,
     ...inboundMessageMcpTools,

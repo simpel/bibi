@@ -52,10 +52,6 @@ import { ResponsibilityTableView } from "./responsibility-table-view";
 import { SearchResultsView } from "./search-results-view";
 import { SetupCardView } from "./setup-card-view";
 import { SetupTableView } from "./setup-table-view";
-import { SheetCardView } from "./sheet-card-view";
-import { SheetDefinitionCardView } from "./sheet-definition-card-view";
-import { SheetDefinitionTableView } from "./sheet-definition-table-view";
-import { SheetTableView } from "./sheet-table-view";
 import { SkillCardView } from "./skill-card-view";
 import { SkillTableView } from "./skill-table-view";
 import { StatusGridTableView } from "./status-grid-table-view";
@@ -68,6 +64,10 @@ import { VenueCardView } from "./venue-card-view";
 import { VenueTableView } from "./venue-table-view";
 import { VocabularyCardView } from "./vocabulary-card-view";
 import { VocabularyTableView } from "./vocabulary-table-view";
+import { WorkOrderCardView } from "./work-order-card-view";
+import { WorkOrderDefinitionCardView } from "./work-order-definition-card-view";
+import { WorkOrderDefinitionTableView } from "./work-order-definition-table-view";
+import { WorkOrderTableView } from "./work-order-table-view";
 
 /**
  * One React component per generative-UI key of `@bibi/ai/ui` (`UI_COMPONENTS`). The mapped type
@@ -124,10 +124,10 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "responsibility-card": ResponsibilityCardView,
   "assignment-table": AssignmentTableView,
   "assignment-card": AssignmentCardView,
-  "sheet-definition-table": SheetDefinitionTableView,
-  "sheet-definition-card": SheetDefinitionCardView,
-  "sheet-table": SheetTableView,
-  "sheet-card": SheetCardView,
+  "work-order-definition-table": WorkOrderDefinitionTableView,
+  "work-order-definition-card": WorkOrderDefinitionCardView,
+  "work-order-table": WorkOrderTableView,
+  "work-order-card": WorkOrderCardView,
   "member-table": MemberTableView,
   "member-card": MemberCardView,
   "member-profile-card": MemberProfileCardView,

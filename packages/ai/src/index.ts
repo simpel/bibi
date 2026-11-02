@@ -90,8 +90,6 @@ export type { DepositWire, InvoiceWire } from "./ui-contract/receivable-entries"
 export type { RequirementWire } from "./ui-contract/requirement-entries";
 export { type ResolveToolUiInput, resolveToolUi } from "./ui-contract/resolve-tool-ui";
 export type { ResponsibilityWire } from "./ui-contract/responsibility-entries";
-export type { SheetDefinitionWire } from "./ui-contract/sheet-definition-entries";
-export type { SheetWire } from "./ui-contract/sheet-entries";
 export type { StatusGridCellWire } from "./ui-contract/status-grid-entries";
 export type { TicketWire } from "./ui-contract/ticket-entries";
 export type { TicketStatusWire } from "./ui-contract/ticket-status-entries";
@@ -120,3 +118,5 @@ export type {
   VenueWire,
   VocabularyWire,
 } from "./ui-contract/wire-schemas";
+export type { WorkOrderDefinitionWire } from "./ui-contract/work-order-definition-entries";
+export type { WorkOrderWire } from "./ui-contract/work-order-entries";

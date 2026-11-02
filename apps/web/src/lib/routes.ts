@@ -15,7 +15,7 @@ export const ROUTES = {
   typeNew: "/new/type",
   venueNew: "/new/venue",
   customerNew: "/new/customer",
-  sheetNew: "/new/sheet",
+  workOrderNew: "/new/work-order",
   responsibilityNew: "/new/responsibility",
   priceListNew: "/new/price-list",
   ticketStatusNew: "/new/ticket-status",
@@ -35,7 +35,7 @@ export const ROUTES = {
   settingsLists: "/settings/lists",
   settingsSetups: "/settings/setups",
   settingsResponsibilities: "/settings/responsibilities",
-  settingsSheets: "/settings/sheets",
+  settingsWorkOrders: "/settings/work-orders",
   settingsPriceLists: "/settings/price-lists",
   settingsPipeline: "/settings/pipeline",
   /** The welcome flow (ADR 0061); under an organization it is `/:org/welcome`. */
@@ -65,7 +65,7 @@ export function itemRoute({ id }: ItemRouteInput): string {
 
 export type ListItemRouteInput = { list: string; id: string };
 
-/** Detail path of a record under a list page, e.g. `/settings/sheets/<id>`. */
+/** Detail path of a record under a list page, e.g. `/settings/work-orders/<id>`. */
 export function listItemRoute({ list, id }: ListItemRouteInput): string {
   return `${list}/${encodeURIComponent(id)}`;
 }

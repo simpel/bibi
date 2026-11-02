@@ -15,7 +15,7 @@ export const PipelineStateDraftSchema = z.object({
   color: ColorSchema,
   initial: z.boolean().optional().describe("New lines start here; exactly one per type"),
   hold: HoldKindSchema.optional().describe("NONE, SOFT or HARD; SOFT and HARD only if bookable"),
-  inSheets: z.boolean().optional().describe("Lines in this state are included in sheets"),
+  inWorkOrders: z.boolean().optional().describe("Lines in this state are included in work orders"),
   released: z.boolean().optional().describe("Final state: the hold is dropped"),
   expires: z.boolean().optional().describe("Falls to the expiry state when holdsUntil passes"),
 });

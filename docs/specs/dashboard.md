@@ -21,7 +21,7 @@ Polarity: invoiced and received up is good; outstanding and overdue down is good
 | Part | Source | Needs | Covers |
 | --- | --- | --- | --- |
 | Stat card per open status: open tickets now, their value, the count's line | `statuses` | `ticket:read` | now, line over the range |
-| Needs attention: holds expiring within 7 days, unsent sheets for tickets in the next 28 days, overdue invoices | `attention` | `ticket:read`, `sheet:read`, `finance:read` and `payment:read` | now |
+| Needs attention: holds expiring within 7 days, unsent work orders for tickets in the next 28 days, overdue invoices | `attention` | `ticket:read`, `workOrder:read`, `finance:read` and `payment:read` | now |
 | Scheduled: tickets with lines starting in the range | `scheduled` | `ticket:read` | range |
 | Utilisation per bookable item type | `utilisation` | `item:read` | range |
 | Booked, not yet invoiced: accepted quotes per event month | `bookedAhead` | `quote:read` | months in the range |
@@ -30,7 +30,7 @@ A status's open tickets at an instant are replayed from `TicketStatusChange` (AD
 
 ## Definitions
 - **Open status**: `closes = false`, in position order, grouped by id (ADR 0021). **Value**: estimated and confirmed excl. VAT as on the board (ADR 0074).
-- **Expiring hold**, **unsent sheet**, **overdue**, **utilisation** and **booked ahead**: as in ADR 0080 and 0079.
+- **Expiring hold**, **unsent work order**, **overdue**, **utilisation** and **booked ahead**: as in ADR 0080 and 0079.
 
 ## Layout
 - Stat cards first, then rows of cards of one kind: charts with charts, tables full width. A table in a card runs edge to edge under the padded heading.

@@ -87,7 +87,6 @@ export {
   type Requirement,
   ResourceKind,
   type Setup,
-  type Sheet,
   type Skill,
   SkillScope,
   SkillStatus,
@@ -105,6 +104,7 @@ export {
   type Venue,
   type Vocabulary,
   type VocabularyValue,
+  type WorkOrder,
 } from "./generated/prisma/client";
 export { getDb } from "./get-db";
 export type { OauthGrantRow } from "./oauth-grants/types";

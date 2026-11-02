@@ -60,7 +60,7 @@ export const SKILLS: readonly FixtureSkill[] = [
   {
     key: "kitchen-order",
     name: "Kitchen order",
-    description: "Compile allergens and dietary needs into an order sheet for the kitchen",
+    description: "Compile allergens and dietary needs into a work order for the kitchen",
   },
   {
     key: "quote",
@@ -87,7 +87,7 @@ export const QUERIES: readonly RelevanceQuery[] = [
   { query: "wedding ceremony outdoors", expect: "garden" },
   { query: "manor house overnight rooms", expect: "manor" },
   { query: "museum rooftop restaurant", expect: "museum" },
-  { query: "allergens order sheet kitchen", expect: "kitchen-order" },
+  { query: "allergens work order kitchen", expect: "kitchen-order" },
   { query: "price conference day catering", expect: "quote" },
   { query: "mote med videolank", expect: "boardroom", semantic: true },
   { query: "bröllop i tradgarden", expect: "garden", semantic: true },

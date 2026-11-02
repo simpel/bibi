@@ -33,8 +33,6 @@ import { quoteOperations } from "./features/quote/operations";
 import { requirementOperations } from "./features/requirement/operations";
 import { responsibilityOperations } from "./features/responsibility/operations";
 import { setupOperations } from "./features/setup/operations";
-import { sheetOperations } from "./features/sheet/operations";
-import { sheetDefinitionOperations } from "./features/sheet-definition/operations";
 import { skillOperations } from "./features/skill/operations";
 import { statusGridOperations } from "./features/status-grid/operations";
 import { ticketOperations } from "./features/ticket/operations";
@@ -44,6 +42,8 @@ import { userPreferenceOperations } from "./features/user-preference/operations"
 import { userSettingsOperations } from "./features/user-settings/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
+import { workOrderOperations } from "./features/work-order/operations";
+import { workOrderDefinitionOperations } from "./features/work-order-definition/operations";
 import { hoursOperations } from "./hours/operations";
 import { moneyOperations } from "./money-operations";
 import type { AnyOperation } from "./operations/types";
@@ -94,7 +94,7 @@ function staticOperations(): AnyOperation[] {
     ...setupOperations,
     ...permissionOperations,
     ...responsibilityOperations,
-    ...sheetDefinitionOperations,
+    ...workOrderDefinitionOperations,
     ...configurationOperations,
     ...itemGroupOperations,
     ...customerOperations,
@@ -109,7 +109,7 @@ function staticOperations(): AnyOperation[] {
     ...lineGroupOperations,
     ...assignmentOperations,
     ...requirementOperations,
-    ...sheetOperations,
+    ...workOrderOperations,
     ...pipelineGroupOperations,
     ...quoteOperations,
     ...inboundMessageOperations,

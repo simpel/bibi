@@ -47,8 +47,8 @@ describe("cross-organization isolation: ticket statuses", () => {
   });
 });
 
-describe("cross-organization isolation: sheets, setups and fields", () => {
-  it("hides sheet definitions, setups and field definitions from another organization", async () => {
+describe("cross-organization isolation: work orders, setups and fields", () => {
+  it("hides work order definitions, setups and field definitions from another organization", async () => {
     const context = testContext();
     const a = await connect({ context });
     const b = await connect({ context: testContext() });
@@ -64,14 +64,14 @@ describe("cross-organization isolation: sheets, setups and fields", () => {
       args: { entityTypeId: type.data.id, name: "Style", kind: "TEXT" },
     });
     const setup = await call({ client: a, name: "setup_create", args: { name: "Secret theatre" } });
-    const sheet = await call({
+    const workOrder = await call({
       client: a,
-      name: "sheetDefinition_create",
-      args: { name: "Secret sheet", entityTypeIds: [type.data.id], responsibilityId },
+      name: "workOrderDefinition_create",
+      args: { name: "Secret work order", entityTypeIds: [type.data.id], responsibilityId },
     });
-    expect(sheet.isError, JSON.stringify(sheet.data)).toBe(false);
+    expect(workOrder.isError, JSON.stringify(workOrder.data)).toBe(false);
     const cases = [
-      ["sheetDefinition", sheet.data.id, { name: "Hacked" }],
+      ["workOrderDefinition", workOrder.data.id, { name: "Hacked" }],
       ["setup", setup.data.id, { name: "Hacked" }],
       ["fieldDefinition", field.data.id, { name: "Hacked" }],
     ] as const;
@@ -89,13 +89,17 @@ describe("cross-organization isolation: sheets, setups and fields", () => {
     const graph = await call({
       client: b,
       name: "graphql_query",
-      args: { query: "query { sheetDefinitions { items { id } } setups { items { id } } }" },
+      args: { query: "query { workOrderDefinitions { items { id } } setups { items { id } } }" },
     });
     expect(graph.data.data).toEqual({
-      sheetDefinitions: { items: [] },
+      workOrderDefinitions: { items: [] },
       setups: { items: [] },
     });
-    const own = await call({ client: a, name: "sheetDefinition_get", args: { id: sheet.data.id } });
+    const own = await call({
+      client: a,
+      name: "workOrderDefinition_get",
+      args: { id: workOrder.data.id },
+    });
     expect(own.data.status).toBe("ACTIVE");
   });
 });

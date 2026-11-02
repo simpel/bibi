@@ -59,7 +59,7 @@ function stateProblems({ draft, bookable }: TypeProblemsInput): PipelineProblem[
   const { states } = draft;
   return states.flatMap((row) => {
     const found: PipelineProblem[] = [];
-    const flags = { initial: false, inSheets: false, released: false, expires: false, ...row };
+    const flags = { initial: false, inWorkOrders: false, released: false, expires: false, ...row };
     const checked = checkStateFlags({ flags: { ...flags, hold: row.hold ?? "NONE" }, bookable });
     if (!checked.ok) {
       const { message } = checked.error;

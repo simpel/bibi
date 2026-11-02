@@ -55,7 +55,7 @@ The parity core: every capability is defined **once** as an operation and then e
 ## Assignments and responsibilities (ADR 0034, 0055, 0056)
 - Assignment rows store only explicit choices. Applicable responsibilities, default assignees and default followers are derived on read (`deriveAssignment`). Never create or archive rows when lines change.
 - Rows reference the subject's `Record` (`recordId`, composite FK) while the API keeps `subjectType`/`subjectId`.
-- Id lists on responsibilities and sheet definitions are join rows: read and write them through the `*-rows.ts` helpers, never as JSON.
+- Id lists on responsibilities and work order definitions are join rows: read and write them through the `*-rows.ts` helpers, never as JSON.
 
 ## Integrations (ADR 0087)
 - A Fortnox access token comes only from `getFortnoxAccessToken` (`features/integration/fortnox/access-token.ts`), called in `external`, never in a handler: a refresh rotates the refresh token and a rollback would lose it. Tokens are sealed with `sealSecret` (`crypto/secret-box.ts`) and never appear in an output, log or audit row.

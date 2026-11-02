@@ -4,7 +4,7 @@ import { BucketSizeSchema, TrendSchema } from "../../trend/trend-schema";
 import { MAX_FINANCE_MONTHS } from "../finance/schema";
 import { AttentionSchema, ScheduledSchema } from "./attention-schema";
 
-/** How far ahead "Needs attention" looks for unsent sheets, in days from today (ADR 0080). */
+/** How far ahead "Needs attention" looks for unsent work orders, in days from today (ADR 0080). */
 export const DASHBOARD_HORIZON_DAYS = 28;
 /** Holds expiring within this many days are listed as needing attention. */
 export const EXPIRY_WARNING_DAYS = 7;

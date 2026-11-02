@@ -26,7 +26,7 @@ export type SettingsKey =
   | "lists"
   | "setups"
   | "responsibilities"
-  | "sheets"
+  | "workOrders"
   | "priceLists"
   | "ticketStatuses"
   | "itemStates"
@@ -68,8 +68,8 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
     permission: "responsibility:read",
   },
   {
-    href: ROUTES.settingsSheets,
-    key: "sheets",
+    href: ROUTES.settingsWorkOrders,
+    key: "workOrders",
     icon: ClipboardListIcon,
     permission: "template:read",
   },

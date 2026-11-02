@@ -111,8 +111,8 @@ Each item type gets one set from its capability. Food is a part of a booking (lu
 
 | Set | Types | States (initial first) |
 |---|---|---|
-| Hold | `BOOKABLE` types: rooms, halls, lodges, guides, equipment | Prebooked (soft hold, expires) → Booked (hard hold, in sheets) → Released |
-| Order | Every other type: food, drink, menus, tours, workshops, activities | Estimated → Ordered → Locked (in sheets) → Released |
+| Hold | `BOOKABLE` types: rooms, halls, lodges, guides, equipment | Prebooked (soft hold, expires) → Booked (hard hold, in work orders) → Released |
+| Order | Every other type: food, drink, menus, tours, workshops, activities | Estimated → Ordered → Locked (in work orders) → Released |
 
 - Released is the expiry state of both sets.
 - A type added later in Settings gets the set of its capability.

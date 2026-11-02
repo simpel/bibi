@@ -30,7 +30,7 @@ export function checkStateFlags({ flags, bookable }: CheckStateFlagsInput): Resu
 export const DEFAULT_FLAGS: ItemStateFlags = {
   initial: false,
   hold: "NONE",
-  inSheets: false,
+  inWorkOrders: false,
   released: false,
   expires: false,
 };

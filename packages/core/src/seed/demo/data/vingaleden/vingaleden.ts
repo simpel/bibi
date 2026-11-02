@@ -44,7 +44,7 @@ export const vingaleden: DemoOrg = {
     },
     venueHours: saltholmenHours,
     items,
-    // Check 2: no allergen list at all. Its sheets (slice 6) will not include food either.
+    // Check 2: no allergen list at all. Its work orders (slice 6) will not include food either.
     checks: { absentLists: ["Allergens"] },
   },
   responsibilities: vingaledenResponsibilities,

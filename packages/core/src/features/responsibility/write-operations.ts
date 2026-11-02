@@ -2,7 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
-import { checkNotOnSheets } from "../sheet-definition/usage";
+import { checkNotOnWorkOrders } from "../work-order-definition/usage";
 import { checkResponsibilityContents } from "./check-contents";
 import { insertResponsibility } from "./insert-responsibility";
 import { findResponsibility, replaceResponsibilityLinks } from "./responsibility-rows";
@@ -82,7 +82,7 @@ export const archiveResponsibility = defineOperation({
   kind: "command",
   description:
     "Archive a responsibility. Its name can then be reused. Refused (CONFLICT) while an active " +
-    "sheet definition goes to it.",
+    "work order definition goes to it.",
   input: ResponsibilityIdInputSchema,
   output: ResponsibilitySchema,
   permission: "responsibility:delete",
@@ -90,7 +90,7 @@ export const archiveResponsibility = defineOperation({
     const before = await findResponsibility({ context, id });
     if (!before) return notFound({ entity: "Responsibility" });
     const reference = { responsibilityId: id };
-    const unused = await checkNotOnSheets({ context, reference, what: before.name });
+    const unused = await checkNotOnWorkOrders({ context, reference, what: before.name });
     if (!unused.ok) return unused;
     const row = await context.db.responsibility.update({
       where: { id },

@@ -14,7 +14,7 @@ export const APPEND_ONLY_MODELS = new Set<string>([
   "AuditLog",
   "Message",
   "InboundEmail",
-  "SheetRecipient",
+  "WorkOrderRecipient",
   "KnownMember",
   "PaymentRefund",
   "AccountingExportEntry",

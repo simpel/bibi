@@ -12,7 +12,7 @@ export type AttentionPanelProps = {
   numbers: NumberFormat;
 };
 
-/** What staff should act on (ADR 0080): overdue invoices, expiring holds and unsent sheets. */
+/** What staff should act on (ADR 0080): overdue invoices, expiring holds and unsent work orders. */
 export function AttentionPanel({ summary, dates, numbers }: AttentionPanelProps) {
   const t = useTranslations("dashboard");
   const { attention, currency, timeZone } = summary;

@@ -1,4 +1,4 @@
-/** Anything that may sit under a parent: a line, an order line's source, a sheet row. */
+/** Anything that may sit under a parent: a line, an order line's source, a work order row. */
 export type NestableRow = { id: string; parentId: string | null };
 
 export type NestUnderParentsInput<T> = {

@@ -13,7 +13,7 @@ export type CreateKey =
   | "list"
   | "setup"
   | "responsibility"
-  | "sheet"
+  | "workOrder"
   | "priceList"
   | "ticketStatus"
   | "member";

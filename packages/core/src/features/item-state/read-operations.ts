@@ -16,7 +16,7 @@ export const listItemStates = defineOperation({
   kind: "query",
   description:
     "List the organization's item states (ADR 0044), per item type in the type's order, each " +
-    "with its flags (initial, hold NONE/SOFT/HARD, inSheets, released, expires) and the states " +
+    "with its flags (initial, hold NONE/SOFT/HARD, inWorkOrders, released, expires) and the states " +
     "a line may move to from it (`transitionsTo`). Filter by item type.",
   input: ItemStateListInputSchema,
   output: ItemStateListOutputSchema,

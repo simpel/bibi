@@ -1,0 +1,83 @@
+/// Work order definition (ADR 0021) – an organization's own work order, e.g. Kitchen order or Brewing order.
+/// It names the item types and fields a work order includes, the lists whose requirements it includes
+/// and the responsibility it goes to. The referenced ids are join rows with foreign keys (ADR 0056),
+/// validated by core (`workOrderDefinition.*`), and archiving a referenced type, field or list is
+/// refused while an active definition uses it.
+model WorkOrderDefinition {
+  id               String                      @id @default(cuid(2))
+  organizationId   String
+  name             String
+  /// The responsibility (ADR 0034) that receives the work order.
+  responsibilityId String
+  status           RecordStatus                @default(ACTIVE)
+  createdAt        DateTime                    @default(now())
+  updatedAt        DateTime                    @updatedAt
+  createdBy        String?
+  responsibility   Responsibility              @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
+  /// Item types (`EntityType` of base ITEM) whose items appear on the work order.
+  entityTypes      WorkOrderDefinitionEntityType[]
+  /// Fields (`FieldDefinition` of those types) shown per item.
+  fields           WorkOrderDefinitionField[]
+  /// Lists (`Vocabulary`) whose requirements are counted on the work order.
+  vocabularies     WorkOrderDefinitionVocabulary[]
+  /// The versions generated from this definition.
+  workOrders           WorkOrder[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, responsibilityId])
+}
+
+/// An item type a work order definition includes (ADR 0056). A replacement set, audited on the
+/// definition. `position` keeps the given order.
+model WorkOrderDefinitionEntityType {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  workOrderDefinitionId String
+  entityTypeId      String
+  position          Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?
+  workOrderDefinition   WorkOrderDefinition @relation(fields: [workOrderDefinitionId, organizationId], references: [id, organizationId])
+  entityType        EntityType      @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+
+  @@unique([workOrderDefinitionId, entityTypeId])
+  @@index([organizationId, entityTypeId])
+}
+
+/// A field a work order definition shows per item (ADR 0056). A replacement set, audited on the
+/// definition. `position` keeps the given order.
+model WorkOrderDefinitionField {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  workOrderDefinitionId String
+  fieldId           String
+  position          Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?
+  workOrderDefinition   WorkOrderDefinition @relation(fields: [workOrderDefinitionId, organizationId], references: [id, organizationId])
+  field             FieldDefinition @relation(fields: [fieldId, organizationId], references: [id, organizationId])
+
+  @@unique([workOrderDefinitionId, fieldId])
+  @@index([organizationId, fieldId])
+}
+
+/// A list whose requirements a work order definition counts (ADR 0056). A replacement set, audited on
+/// the definition. `position` keeps the given order.
+model WorkOrderDefinitionVocabulary {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  workOrderDefinitionId String
+  vocabularyId      String
+  position          Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?
+  workOrderDefinition   WorkOrderDefinition @relation(fields: [workOrderDefinitionId, organizationId], references: [id, organizationId])
+  vocabulary        Vocabulary      @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
+
+  @@unique([workOrderDefinitionId, vocabularyId])
+  @@index([organizationId, vocabularyId])
+}

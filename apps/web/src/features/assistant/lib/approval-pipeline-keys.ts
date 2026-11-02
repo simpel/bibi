@@ -15,7 +15,7 @@ export const PIPELINE_FIELD_KEYS = [
   "ids",
   "initial",
   "hold",
-  "inSheets",
+  "inWorkOrders",
   "released",
   "expires",
   "targetStateId",

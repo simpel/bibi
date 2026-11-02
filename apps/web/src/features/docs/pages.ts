@@ -7,7 +7,7 @@ export const DOC_SECTIONS = {
     "tickets",
     "inbox",
     "items-and-venues",
-    "needs-and-sheets",
+    "needs-and-work-orders",
     "payments",
     "configuration",
     "members-and-roles",

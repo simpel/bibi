@@ -31,7 +31,7 @@ export const PIPELINE_TEMPLATE_KEYS = ["conference-estate", "default"] as const;
 export type PipelineTemplateKey = (typeof PIPELINE_TEMPLATE_KEYS)[number];
 
 const SINGLE: readonly ItemStateTemplateState[] = [
-  { name: "Active", color: "#64748b", holdIfBookable: "HARD", flags: { inSheets: true } },
+  { name: "Active", color: "#64748b", holdIfBookable: "HARD", flags: { inWorkOrders: true } },
 ];
 
 export type StatesFromTemplateInput = { template: StateTemplateChoice; bookable: boolean };
@@ -46,7 +46,7 @@ export function statesFromTemplate({ template, bookable }: StatesFromTemplateInp
       color: state.color,
       initial: index === 0,
       hold: bookable ? (state.holdIfBookable ?? "NONE") : "NONE",
-      inSheets: state.flags?.inSheets ?? false,
+      inWorkOrders: state.flags?.inWorkOrders ?? false,
       released: state.flags?.released ?? false,
       expires: state.flags?.expires ?? false,
     }),

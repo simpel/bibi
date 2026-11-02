@@ -27,9 +27,9 @@ export function responsibilitiesRoute(): string {
   return ROUTES.settingsResponsibilities;
 }
 
-/** `/settings/sheets`: the organization's sheet definitions (no detail page). */
-export function sheetDefinitionsRoute(): string {
-  return ROUTES.settingsSheets;
+/** `/settings/work-orders`: the organization's work order definitions (no detail page). */
+export function workOrderDefinitionsRoute(): string {
+  return ROUTES.settingsWorkOrders;
 }
 
 /** `/settings/price-lists`: the organization's price lists (no detail page). */

@@ -2,7 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { usageConflict } from "../../records/blocking-issues";
 import { conflict, notFound } from "../../shared/errors";
-import { checkNotOnSheets } from "../sheet-definition/usage";
+import { checkNotOnWorkOrders } from "../work-order-definition/usage";
 import { checkChoiceSource, checkFieldChange } from "./field-rules";
 import { recordsWithValue } from "./field-value-usage";
 import { insertField } from "./insert-field";
@@ -62,7 +62,7 @@ export const archiveFieldDefinition = defineOperation({
   name: "fieldDefinition.archive",
   kind: "command",
   description:
-    "Archive a field. Refused while a record has a value for it (clear those first) or a sheet " +
+    "Archive a field. Refused while a record has a value for it (clear those first) or a work order " +
     "definition includes it.",
   input: FieldDefinitionIdInputSchema,
   output: FieldDefinitionSchema,
@@ -74,8 +74,8 @@ export const archiveFieldDefinition = defineOperation({
     const message = `${usage.total} records have a value for ${before.name}`;
     if (usage.total > 0) return usageConflict({ context, usage, message });
     const what = `The field ${before.name}`;
-    const onSheets = await checkNotOnSheets({ context, reference: { fieldId: id }, what });
-    if (!onSheets.ok) return onSheets;
+    const onWorkOrders = await checkNotOnWorkOrders({ context, reference: { fieldId: id }, what });
+    if (!onWorkOrders.ok) return onWorkOrders;
     const field = await context.db.fieldDefinition.update({
       where: { id },
       data: { status: "ARCHIVED" },

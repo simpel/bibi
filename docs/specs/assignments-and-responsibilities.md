@@ -5,11 +5,11 @@ Current behaviour. Why: ADR 0034 (responsibilities are not roles), 0055 (derived
 ## Responsibility
 - Organization data managed by an admin (`responsibility.list|get|create|update|archive`): a name (e.g. "Head of kitchen"), the item entity types it covers, a default assignee (a member) and default followers (both user ids). It is not a permission; permissions are presets (`docs/specs/permissions.md`).
 - `checkResponsibilityContents` refuses non-item types and non-members (`VALIDATION`). The covered types and default followers are join rows, not id lists.
-- Sheet definitions go to a responsibility. A generated sheet is addressed to that responsibility's assignee and followers on the ticket, snapshotted in `SheetRecipient` at send time; later changes do not rewrite who received it.
+- Work order definitions go to a responsibility. A generated work order is addressed to that responsibility's assignee and followers on the ticket, snapshotted in `WorkOrderRecipient` at send time; later changes do not rewrite who received it.
 
 ## Assignment
 - Every assignable subject (ticket, item) has exactly one main assignee (no responsibility) and any number of followers. A ticket also has one assignment per responsibility that applies to it. Quote has none of its own; it uses the ticket's.
-- Followers are need-to-know: they see the subject in "Following" and are included where the assignee is (sheets, later notifications). Rules never require them.
+- Followers are need-to-know: they see the subject in "Following" and are included where the assignee is (work orders, later notifications). Rules never require them.
 - A new ticket gets the creating member as main assignee (a ticket created from a template: the creating member too).
 
 ## What is stored and what is derived

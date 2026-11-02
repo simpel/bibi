@@ -40,8 +40,6 @@ import { quoteRoutes } from "./features/quote/rest";
 import { requirementRoutes } from "./features/requirement/rest";
 import { responsibilityRoutes } from "./features/responsibility/rest";
 import { setupRoutes } from "./features/setup/rest";
-import { sheetRoutes } from "./features/sheet/rest";
-import { sheetDefinitionRoutes } from "./features/sheet-definition/rest";
 import { skillRoutes } from "./features/skill/rest";
 import { statusGridRoutes } from "./features/status-grid/rest";
 import { ticketRoutes } from "./features/ticket/rest";
@@ -52,6 +50,8 @@ import { userPreferenceRoutes } from "./features/user-preference/rest";
 import { userSettingsRoutes } from "./features/user-settings/rest";
 import { venueRoutes } from "./features/venue/rest";
 import { vocabularyRoutes } from "./features/vocabulary/rest";
+import { workOrderRoutes } from "./features/work-order/rest";
+import { workOrderDefinitionRoutes } from "./features/work-order-definition/rest";
 import type { RestRoute } from "./rest-route";
 import { searchRoutes } from "./search-rest";
 
@@ -99,7 +99,7 @@ export function listRestRoutes(): RestRoute[] {
     ...setupRoutes,
     ...responsibilityRoutes,
     ...assignmentRoutes,
-    ...sheetDefinitionRoutes,
+    ...workOrderDefinitionRoutes,
     ...configurationRoutes,
     ...itemRoutes,
     ...itemDemandRoutes,
@@ -114,7 +114,7 @@ export function listRestRoutes(): RestRoute[] {
     ...ticketRoutes,
     ...lineAndGroupRoutes,
     ...requirementRoutes,
-    ...sheetRoutes,
+    ...workOrderRoutes,
     ...boardRoutes,
     ...quoteRoutes,
     ...inboundMessageRoutes,

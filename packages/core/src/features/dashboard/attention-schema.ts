@@ -16,12 +16,12 @@ export const ExpiringHoldSchema = z.object({
   lines: z.number().int().describe("Active lines still in an expiring state"),
 });
 
-export const UnsentSheetSchema = z.object({
-  sheetId: z.string().describe("sheet.get"),
+export const UnsentWorkOrderSchema = z.object({
+  workOrderId: z.string().describe("workOrder.get"),
   ticketId: z.string().describe("ticket.get"),
   reference: z.number().int(),
   title: ticketTitle,
-  name: z.string().describe("The sheet definition's name"),
+  name: z.string().describe("The work order definition's name"),
   version: z.number().int(),
   startsAt: z.date().describe("The ticket's first line start inside the horizon"),
 });
@@ -36,11 +36,11 @@ export const AttentionSchema = z.object({
   expiringHolds: z
     .array(ExpiringHoldSchema)
     .describe("Tickets whose holdsUntil falls within the next 7 days, soonest first"),
-  unsentSheets: z
-    .array(UnsentSheetSchema)
+  unsentWorkOrders: z
+    .array(UnsentWorkOrderSchema)
     .nullable()
     .describe(
-      "Newest sheet versions not sent, for tickets starting within the horizon; needs sheet:read",
+      "Newest work order versions not sent, for tickets starting within the horizon; needs workOrder:read",
     ),
   overdue: OverdueSchema.nullable().describe("Needs finance:read and payment:read"),
 });
@@ -57,5 +57,5 @@ export const ScheduledSchema = z.object({
 
 export type Attention = z.infer<typeof AttentionSchema>;
 export type ExpiringHold = z.infer<typeof ExpiringHoldSchema>;
-export type UnsentSheet = z.infer<typeof UnsentSheetSchema>;
+export type UnsentWorkOrder = z.infer<typeof UnsentWorkOrderSchema>;
 export type Scheduled = z.infer<typeof ScheduledSchema>;

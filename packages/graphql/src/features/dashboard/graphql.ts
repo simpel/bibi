@@ -10,8 +10,8 @@ import {
   type Scheduled,
   ScheduledSchema,
   type StatusTileSchema,
-  type UnsentSheet,
-  UnsentSheetSchema,
+  type UnsentWorkOrder,
+  UnsentWorkOrderSchema,
   UtilisationSchema,
 } from "@bibi/core";
 import type { z } from "zod";
@@ -41,10 +41,10 @@ const ExpiringHoldRef = objectFromSchema<ExpiringHold>({
   schema: ExpiringHoldSchema,
   description: "A ticket whose expiring holds run out within 7 days.",
 });
-const UnsentSheetRef = objectFromSchema<UnsentSheet>({
-  name: "DashboardUnsentSheet",
-  schema: UnsentSheetSchema,
-  description: "The newest version of a sheet that is not sent, for an upcoming ticket.",
+const UnsentWorkOrderRef = objectFromSchema<UnsentWorkOrder>({
+  name: "DashboardUnsentWorkOrder",
+  schema: UnsentWorkOrderSchema,
+  description: "The newest version of a work order that is not sent, for an upcoming ticket.",
 });
 const OverdueRef = objectFromSchema<Overdue>({
   name: "DashboardOverdue",
@@ -71,10 +71,10 @@ const AttentionRef = builder.objectRef<Attention>("DashboardAttention").implemen
   description: "What needs attention (ADR 0080). Parts the caller may not read are null.",
   fields: (t) => ({
     expiringHolds: t.field({ type: [ExpiringHoldRef], resolve: (a) => a.expiringHolds }),
-    unsentSheets: t.field({
-      type: [UnsentSheetRef],
+    unsentWorkOrders: t.field({
+      type: [UnsentWorkOrderRef],
       nullable: true,
-      resolve: (a) => a.unsentSheets,
+      resolve: (a) => a.unsentWorkOrders,
     }),
     overdue: t.field({ type: OverdueRef, nullable: true, resolve: (a) => a.overdue }),
   }),

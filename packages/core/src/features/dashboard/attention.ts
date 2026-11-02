@@ -5,7 +5,7 @@ import { daysOverdue } from "../finance/aging";
 import { loadOpenInvoices } from "../finance/load-facts";
 import type { Attention, ExpiringHold } from "./attention-schema";
 import type { DashboardHorizon } from "./horizon";
-import { unsentSheets } from "./unsent-sheets";
+import { unsentWorkOrders } from "./unsent-work-orders";
 
 type Context = Pick<OperationContext, "db" | "permissions">;
 type Input = { context: Context; horizon: DashboardHorizon };
@@ -59,16 +59,16 @@ async function overdue({ context, horizon }: Input): Promise<Attention["overdue"
 }
 
 /**
- * What needs attention (ADR 0080): expiring holds (`ticket:read`), unsent sheets (`sheet:read`)
+ * What needs attention (ADR 0080): expiring holds (`ticket:read`), unsent work orders (`workOrder:read`)
  * and overdue invoices (`finance:read` and `payment:read`, the gate of Financials' own figure).
  */
 export async function attention({ context, horizon }: Input): Promise<Attention> {
   const money =
     canView({ context, feature: "finance" }) && canView({ context, feature: "payment" });
-  const [holds, sheets, late] = await Promise.all([
+  const [holds, workOrders, late] = await Promise.all([
     expiringHolds({ context, horizon }),
-    canView({ context, feature: "sheet" }) ? unsentSheets({ context, horizon }) : null,
+    canView({ context, feature: "workOrder" }) ? unsentWorkOrders({ context, horizon }) : null,
     money ? overdue({ context, horizon }) : null,
   ]);
-  return { expiringHolds: holds, unsentSheets: sheets, overdue: late };
+  return { expiringHolds: holds, unsentWorkOrders: workOrders, overdue: late };
 }

@@ -3,7 +3,7 @@ import {
   DashboardSummarySchema,
   ExpiringHoldSchema,
   ScheduledSchema,
-  UnsentSheetSchema,
+  UnsentWorkOrderSchema,
 } from "@bibi/core/schemas";
 import { z } from "zod";
 import type { ToolUiEntry } from "./tool-ui-types";
@@ -13,7 +13,7 @@ import { uiEntry } from "./ui-entry";
 export const DashboardSummaryWireSchema = DashboardSummarySchema.extend({
   attention: AttentionSchema.extend({
     expiringHolds: z.array(ExpiringHoldSchema.extend({ holdsUntil: z.string() })),
-    unsentSheets: z.array(UnsentSheetSchema.extend({ startsAt: z.string() })).nullable(),
+    unsentWorkOrders: z.array(UnsentWorkOrderSchema.extend({ startsAt: z.string() })).nullable(),
   }),
   scheduled: z.array(ScheduledSchema.extend({ startsAt: z.string() })),
 });

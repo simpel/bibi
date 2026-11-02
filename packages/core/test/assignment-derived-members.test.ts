@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
 import {
   execute,
-  generateSheet,
+  generateWorkOrder,
   listMyAssignments,
   listTickets,
-  sendSheet,
+  sendWorkOrder,
   unfollowAssignment,
 } from "../src/index";
 import { asUser, derivedSetup } from "./assignment-derived-helpers";
 import { assignTo } from "./assignment-helpers";
 import { unwrap } from "./helpers";
 
-describe("derived assignments for members and sheets (ADR 0055)", () => {
+describe("derived assignments for members and work orders (ADR 0055)", () => {
   it("lists derived slots in listMine and the ticket filters, minus explicit choices", async () => {
     const { context, ticket, slot, erik, johan, maria } = await derivedSetup();
     const mine = async ({ userId, kind }: { userId: string; kind: "ASSIGNED" | "FOLLOWING" }) =>
@@ -48,22 +48,24 @@ describe("derived assignments for members and sheets (ADR 0055)", () => {
     expect(await filter({ followerId: johan })).toEqual([]);
   });
 
-  it("snapshots the recipients when a sheet is sent", async () => {
+  it("snapshots the recipients when a work order is sent", async () => {
     const setup2 = await derivedSetup();
     const { context, ticket, definition, erik, johan, maria, update } = setup2;
-    const input = { ticketId: ticket.id, sheetDefinitionId: definition.id };
-    const sheet = unwrap({ result: await execute({ operation: generateSheet, input, context }) });
-    expect(sheet.recipients).toEqual([]);
+    const input = { ticketId: ticket.id, workOrderDefinitionId: definition.id };
+    const workOrder = unwrap({
+      result: await execute({ operation: generateWorkOrder, input, context }),
+    });
+    expect(workOrder.recipients).toEqual([]);
     const sent = unwrap({
-      result: await execute({ operation: sendSheet, input: { id: sheet.id }, context }),
+      result: await execute({ operation: sendWorkOrder, input: { id: workOrder.id }, context }),
     });
     expect(sent.recipients).toEqual([
       { userId: erik, role: "ASSIGNEE" },
       { userId: johan, role: "FOLLOWER" },
     ]);
     unwrap({ result: await update({ defaultAssigneeId: maria }) });
-    const stored = await context.db.sheet.findFirstOrThrow({
-      where: { id: sheet.id },
+    const stored = await context.db.workOrder.findFirstOrThrow({
+      where: { id: workOrder.id },
       include: {
         recipients: { select: { userId: true, role: true }, orderBy: { position: "asc" } },
       },

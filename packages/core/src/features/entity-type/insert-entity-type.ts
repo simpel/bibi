@@ -24,7 +24,7 @@ type DefaultStateInput = { context: OperationContext; type: EntityTypeDto };
 
 /**
  * Every item type has at least one state (ADR 0044): a new one starts with the initial state
- * "Active", which holds a bookable item hard (as a booking) and is included in sheets. The
+ * "Active", which holds a bookable item hard (as a booking) and is included in work orders. The
  * organization renames it or adds its own states with `itemState.*`.
  */
 const insertDefaultState = ({ context, type }: DefaultStateInput) =>
@@ -35,7 +35,7 @@ const insertDefaultState = ({ context, type }: DefaultStateInput) =>
     color: "#64748b",
     initial: true,
     hold: type.capabilities.includes("BOOKABLE") ? "HARD" : "NONE",
-    inSheets: true,
+    inWorkOrders: true,
   });
 
 /** Shared by `entityType.create` and `configuration.importTemplate`: check, insert, record. */

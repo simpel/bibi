@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { deriveTicketLines } from "../src/features/quote/derive-lines";
-import { itemRows } from "../src/features/sheet/item-rows";
-import { nestUnderParents, SheetRowSchema } from "../src/index";
+import { itemRows } from "../src/features/work-order/item-rows";
+import { nestUnderParents, WorkOrderRowSchema } from "../src/index";
 import { unwrap } from "./helpers";
 import { addLine, addOnSetup, START } from "./line-add-on-helpers";
 
@@ -40,7 +40,7 @@ describe("add-ons on documents (ADR 0088, slice 4)", () => {
     ]);
   });
 
-  it("nests an add-on's sheet row under its parent's, or names the parent off the sheet", async () => {
+  it("nests an add-on's work order row under its parent's, or names the parent off the work order", async () => {
     const { context, ticket, parent, coffee, lunch } = await addOnSetup();
     const base = { context, ticketId: ticket.id, parentLineId: parent.id, itemId: coffee.id };
     const addOn = unwrap({ result: await addLine({ ...base, name: "Coffee" }) });
@@ -51,7 +51,7 @@ describe("add-ons on documents (ADR 0088, slice 4)", () => {
     expect(under).toMatchObject({ parentKey: parent.id, addOnTo: "Lunch", label: "Coffee" });
     const parentRow = rows.find((row) => row.key === parent.id);
     expect(parentRow?.addOnTo).toBeUndefined();
-    for (const row of rows) expect(SheetRowSchema.parse(row)).toEqual(row);
+    for (const row of rows) expect(WorkOrderRowSchema.parse(row)).toEqual(row);
     if (coffee.entityTypeId === lunch.entityTypeId) return;
     const alone = { entityTypeIds: [coffee.entityTypeId], fieldIds: [] };
     const [row] = await itemRows({ context, ticketId: ticket.id, definition: alone });

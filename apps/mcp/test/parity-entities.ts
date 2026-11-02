@@ -9,10 +9,10 @@ import { integrationEntities } from "./parity-entities-integration";
 import { itemStateEntities } from "./parity-entities-item-state";
 import { moneyEntities } from "./parity-entities-payment";
 import { alternativeGroupEntity, quoteEntity } from "./parity-entities-quote";
-import { sheet } from "./parity-entities-sheet";
 import { ticketEntities } from "./parity-entities-ticket";
 import { selfEntities } from "./parity-entities-user-settings";
 import { welcomeEntities } from "./parity-entities-welcome";
+import { workOrder } from "./parity-entities-work-order";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
@@ -113,7 +113,7 @@ export const ENTITIES: ParityEntity[] = [
   ...itemStateEntities(),
   alternativeGroupEntity(),
   quoteEntity(),
-  sheet(),
+  workOrder(),
   byId({
     name: "conversation",
     field: "conversation",

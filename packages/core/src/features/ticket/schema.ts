@@ -90,7 +90,7 @@ const TicketDetailsShape = {
     .trim()
     .max(4000)
     .nullish()
-    .describe("Notes for the whole booking, shown on the ticket and its sheets; null clears"),
+    .describe("Notes for the whole booking, shown on the ticket and its work orders; null clears"),
 };
 
 export const TicketCreateInputSchema = z.object({

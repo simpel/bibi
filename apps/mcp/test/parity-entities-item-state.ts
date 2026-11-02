@@ -19,7 +19,7 @@ const itemState = (): ParityEntity => ({
         entityTypeId: made.item.entityTypeId,
         name: "Parity state",
         color: "#22c55e",
-        inSheets: true,
+        inWorkOrders: true,
       },
     }),
 });

@@ -12,7 +12,7 @@ export const DEMO_SEED_PARTS = [
   { part: 3, name: "Items and composition" },
   { part: 4, name: "Customers, price lists and sales pipeline" },
   { part: 5, name: "Tickets, custom statuses, program and requirements" },
-  { part: 6, name: "Sheets with matching and blocking" },
+  { part: 6, name: "Work orders with matching and blocking" },
   { part: 7, name: "Export" },
 ] as const;
 

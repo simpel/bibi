@@ -35,7 +35,7 @@ export const FEATURE_SPECS = {
   customer: { group: "selling", actions: all },
   quote: { group: "selling", actions: all },
   payment: { group: "selling", actions: noDelete },
-  sheet: { group: "selling", actions: noDelete },
+  workOrder: { group: "selling", actions: noDelete },
   finance: { group: "selling", actions: noDelete },
   item: { group: "catalog", actions: all },
   venue: { group: "catalog", actions: all },

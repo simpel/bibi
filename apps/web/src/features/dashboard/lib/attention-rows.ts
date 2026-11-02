@@ -15,10 +15,10 @@ export type AttentionTexts = {
   money: (minor: number) => string;
   overdue: (values: { count: number }) => string;
   expiring: (values: { count: number; date: string }) => string;
-  unsent: (values: { sheet: string; version: number; date: string }) => string;
+  unsent: (values: { workOrder: string; version: number; date: string }) => string;
 };
 
-/** Overdue money first, then expiring holds, then unsent sheets; each linked to where it is handled. */
+/** Overdue money first, then expiring holds, then unsent work orders; each linked to where it is handled. */
 export function attentionRows({
   attention,
   texts,
@@ -43,11 +43,15 @@ export function attentionRows({
     title: texts.ticket(row),
     detail: texts.expiring({ count: row.lines, date: texts.date(row.holdsUntil) }),
   }));
-  const sheets = (attention.unsentSheets ?? []).map((row) => ({
-    key: `sheet-${row.sheetId}`,
+  const workOrders = (attention.unsentWorkOrders ?? []).map((row) => ({
+    key: `work-order-${row.workOrderId}`,
     href: ticketRoute({ id: row.ticketId }),
     title: texts.ticket(row),
-    detail: texts.unsent({ sheet: row.name, version: row.version, date: texts.date(row.startsAt) }),
+    detail: texts.unsent({
+      workOrder: row.name,
+      version: row.version,
+      date: texts.date(row.startsAt),
+    }),
   }));
-  return [...late, ...holds, ...sheets];
+  return [...late, ...holds, ...workOrders];
 }

@@ -2,7 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { conflict, notFound } from "../../shared/errors";
 import { getVocabularyTemplate } from "../../templates/vocabularies/vocabulary-templates";
-import { checkNotOnSheets } from "../sheet-definition/usage";
+import { checkNotOnWorkOrders } from "../work-order-definition/usage";
 import { insertVocabulary } from "./insert-vocabulary";
 import { findVocabularyByName, toVocabularyDto } from "./load-vocabulary";
 import {
@@ -48,7 +48,7 @@ export const archiveVocabulary = defineOperation({
   kind: "command",
   description:
     "Archive a list. Refused while a field still picks values from it, a requirement counts " +
-    "one of its values or a sheet definition counts its requirements.",
+    "one of its values or a work order definition counts its requirements.",
   input: VocabularyIdInputSchema,
   output: VocabularySchema,
   permission: "configuration:delete",
@@ -65,8 +65,12 @@ export const archiveVocabulary = defineOperation({
     });
     if (counted > 0) return conflict({ message: `${counted} requirements count its values` });
     const what = `The list ${before.name}`;
-    const onSheets = await checkNotOnSheets({ context, reference: { vocabularyId: id }, what });
-    if (!onSheets.ok) return onSheets;
+    const onWorkOrders = await checkNotOnWorkOrders({
+      context,
+      reference: { vocabularyId: id },
+      what,
+    });
+    if (!onWorkOrders.ok) return onWorkOrders;
     const row = await context.db.vocabulary.update({ where: { id }, data: { status: "ARCHIVED" } });
     const vocabulary = await toVocabularyDto({ context, row });
     context.recordChange({ entityId: id, before, after: vocabulary });

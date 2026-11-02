@@ -51,7 +51,7 @@ export function TicketTitleField({ form }: { form: ReviewForm }) {
   );
 }
 
-/** Notes on the booking: `Ticket.note`, shown on the ticket and its sheets. */
+/** Notes on the booking: `Ticket.note`, shown on the ticket and its work orders. */
 export function BookingNoteField({ form }: { form: ReviewForm }) {
   const t = useTranslations("ticketIntake.review");
   return <TextField form={form} name="note" label={t("note")} multiline rows={3} />;

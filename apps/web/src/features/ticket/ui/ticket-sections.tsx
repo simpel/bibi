@@ -6,7 +6,7 @@ import { ProgramSection } from "@/features/line/ui/program-section";
 import { TicketPayments } from "@/features/payment/ui/ticket-payments";
 import { TicketQuotes } from "@/features/quote/ui/ticket-quotes";
 import { RequirementSection } from "@/features/requirement/ui/requirement-section";
-import { SheetSection } from "@/features/sheet/ui/sheet-section";
+import { WorkOrderSection } from "@/features/work-order/ui/work-order-section";
 import { type CallerAbilities, can } from "@/server/caller-abilities";
 import { TicketEstimateHistory } from "./ticket-estimate-history";
 import { TicketDetails } from "./ticket-facts";
@@ -50,8 +50,8 @@ export function TicketSections({ locale, ticket, data, abilities }: TicketSectio
         subject={{ subjectType: "TICKET", subjectId: ticket.id }}
         members={data.members}
       />
-      {allowed({ permission: "sheet:read" }) ? (
-        <SheetSection locale={locale} ticket={ticket} />
+      {allowed({ permission: "workOrder:read" }) ? (
+        <WorkOrderSection locale={locale} ticket={ticket} />
       ) : null}
       <TicketMessages locale={locale} ticketId={ticket.id} address={ticket.inboundAddress} />
       {allowed({ permission: "quote:read" }) ? (

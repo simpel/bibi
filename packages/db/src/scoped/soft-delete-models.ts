@@ -6,7 +6,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["Vocabulary", "ACTIVE"],
   ["VocabularyValue", "ACTIVE"],
   ["Setup", "ACTIVE"],
-  ["SheetDefinition", "ACTIVE"],
+  ["WorkOrderDefinition", "ACTIVE"],
   ["Responsibility", "ACTIVE"],
   ["PermissionOverride", "ACTIVE"],
   ["Assignment", "ACTIVE"],

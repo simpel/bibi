@@ -90,9 +90,9 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
     permission: "responsibility:write",
   },
   {
-    key: "sheet",
+    key: "workOrder",
     group: "settings",
-    href: ROUTES.sheetNew,
+    href: ROUTES.workOrderNew,
     icon: ClipboardListIcon,
     permission: "template:write",
   },

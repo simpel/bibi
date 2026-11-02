@@ -22,7 +22,7 @@ describe("cross-organization isolation: dashboard", () => {
     expect(openTickets(theirs)).toBe(0);
     expect(theirs.data.scheduled).toEqual([]);
     expect(theirs.data.attention.expiringHolds).toEqual([]);
-    expect(theirs.data.attention.unsentSheets).toEqual([]);
+    expect(theirs.data.attention.unsentWorkOrders).toEqual([]);
     expect(theirs.data.attention.overdue).toEqual({ invoices: 0, totalMinor: 0 });
     for (const row of theirs.data.utilisation ?? []) expect(row.bookedMinutes).toBe(0);
   });

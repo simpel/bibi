@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { type ExecuteContext, execute, generateSheet, sendSheet } from "../src/index";
+import { type ExecuteContext, execute, generateWorkOrder, sendWorkOrder } from "../src/index";
 import { calendarSetup } from "./calendar-range-helpers";
 import { AT_SETUP_DAY, summary, summaryAt } from "./dashboard-helpers";
 import { unwrap } from "./helpers";
 import { halfPaidLateInvoice } from "./late-invoice-helpers";
-import { sheetSetup } from "./sheet-helpers";
+import { workOrderSetup } from "./work-order-helpers";
 
 const DAY_MS = 86_400_000;
 
@@ -29,17 +29,21 @@ describe("dashboard.summary attention (ADR 0080)", () => {
     expect(later).toEqual([]);
   });
 
-  it("lists the newest sheet version until it is sent", async () => {
-    const setup = await sheetSetup();
+  it("lists the newest work order version until it is sent", async () => {
+    const setup = await workOrderSetup();
     const { context, ticket, definition } = setup;
-    const input = { ticketId: ticket.id, sheetDefinitionId: definition.id };
-    const sheet = unwrap({ result: await execute({ operation: generateSheet, input, context }) });
-    const before = unwrap({ result: await summaryAt({ context }) }).attention.unsentSheets;
+    const input = { ticketId: ticket.id, workOrderDefinitionId: definition.id };
+    const workOrder = unwrap({
+      result: await execute({ operation: generateWorkOrder, input, context }),
+    });
+    const before = unwrap({ result: await summaryAt({ context }) }).attention.unsentWorkOrders;
     expect(before).toEqual([
-      expect.objectContaining({ sheetId: sheet.id, name: "Kitchen order", version: 1 }),
+      expect.objectContaining({ workOrderId: workOrder.id, name: "Kitchen order", version: 1 }),
     ]);
-    unwrap({ result: await execute({ operation: sendSheet, input: { id: sheet.id }, context }) });
-    const after = unwrap({ result: await summaryAt({ context }) }).attention.unsentSheets;
+    unwrap({
+      result: await execute({ operation: sendWorkOrder, input: { id: workOrder.id }, context }),
+    });
+    const after = unwrap({ result: await summaryAt({ context }) }).attention.unsentWorkOrders;
     expect(after).toEqual([]);
   });
 
