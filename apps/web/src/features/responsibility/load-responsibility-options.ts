@@ -17,7 +17,7 @@ export async function loadResponsibilityOptions(): Promise<Result<Responsibility
     ok: true,
     value: {
       types: types.value.items.map(({ id, name }) => ({ id, name })),
-      people: members.value.items.map(({ userId, name }) => ({ id: userId, name })),
+      people: members.value.items.map(({ userId, name, email }) => ({ id: userId, name, email })),
     },
   };
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { ContactName } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Link } from "@/lib/navigation";
@@ -15,12 +16,21 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-/** One row: who answers for the ticket, the client (to its page) and the contact there. */
+/**
+ * One row: who answers for the ticket, the client (to its page) and the contact there; each person
+ * opens their contact card.
+ */
 export function TicketSheetFactsRow({ assignee, customer, contact }: TicketSheetFacts) {
   const t = useTranslations("ticketSheet");
   return (
     <dl className="flex flex-wrap gap-x-8 gap-y-3">
-      <Fact label={t("assignee")}>{assignee ?? t("none")}</Fact>
+      <Fact label={t("assignee")}>
+        {assignee ? (
+          <ContactName contact={{ ...assignee, description: t("assignee") }} />
+        ) : (
+          t("none")
+        )}
+      </Fact>
       <Fact label={t("customer")}>
         {customer ? (
           <Link
@@ -33,7 +43,15 @@ export function TicketSheetFactsRow({ assignee, customer, contact }: TicketSheet
           t("none")
         )}
       </Fact>
-      <Fact label={t("contact")}>{contact ?? t("none")}</Fact>
+      <Fact label={t("contact")}>
+        {contact ? (
+          <ContactName
+            contact={{ ...contact, avatar: false, description: customer?.name ?? undefined }}
+          />
+        ) : (
+          t("none")
+        )}
+      </Fact>
     </dl>
   );
 }

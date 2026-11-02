@@ -7,7 +7,7 @@ import {
   type QuoteDto,
   type Result,
 } from "@bibi/core";
-import type { NamedOption } from "@/components/form/named-option";
+import type { PersonOption } from "@/components/people/person-name";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { runOperation } from "@/server/run-operation";
 import { quoteAbilities } from "./ui/quote-abilities";
@@ -19,7 +19,8 @@ export type QuotePageData = {
   versions: QuoteDto[];
   /** The ticket's salesperson: a quote has no owner of its own (ADR 0034). */
   ownerId: string | null;
-  members: NamedOption[];
+  /** With their email, for the sales owner's contact card. */
+  members: PersonOption[];
   can: QuoteAbilities;
 };
 
@@ -49,7 +50,7 @@ export async function loadQuotePage({ id }: { id: string }): Promise<Result<Quot
       quote,
       versions: siblings,
       ownerId: main?.assigneeId ?? null,
-      members: people.map(({ userId, name }) => ({ id: userId, name })),
+      members: people.map(({ userId, name, email }) => ({ id: userId, name, email })),
       can: quoteAbilities({
         quote,
         latestVersion,

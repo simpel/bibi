@@ -1,10 +1,11 @@
 import type { TicketDto } from "@bibi/core";
 import type { DateTimeFormat, TicketStatusDto } from "@bibi/core/schemas";
-import { Avatar, type ColumnDef } from "@bibi/ui";
+import { Avatar, type ColumnDef, ContactName } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { namedOptionColumn } from "@/components/data-table/named-option-column";
 import type { NamedOption } from "@/components/form/named-option";
+import type { PersonOption } from "@/components/people/person-name";
 import { ticketName } from "@/lib/ticket-label";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { desiredPeriod } from "./desired-period";
@@ -22,7 +23,7 @@ export type TicketLookups = {
   types: NamedOption[];
   statuses: TicketStatusDto[];
   /** Members who can be assigned (`id` = user id). */
-  members: NamedOption[];
+  members: PersonOption[];
 };
 
 const titleColumn = ({ t }: { t: Translate }): Column => ({
@@ -48,21 +49,24 @@ const statusColumn = ({ t, statuses }: { t: Translate; statuses: TicketStatusDto
   cell: ({ row }) => <TicketStatusDot statuses={statuses} id={row.original.statusId} />,
 });
 
-type AssigneeInput = { t: Translate; members: NamedOption[] };
+type AssigneeInput = { t: Translate; members: PersonOption[] };
 
-/** The main assignee with their initials; not sortable, since the server cannot order by it. */
+/**
+ * The main assignee with their initials, opening their contact card; not sortable, since the server
+ * cannot order by it.
+ */
 const assigneeColumn = ({ t, members }: AssigneeInput): Column => ({
   id: "assignee",
   header: t("columns.assignee"),
   enableSorting: false,
   accessorFn: (ticket) => members.find(({ id }) => id === ticket.assigneeId)?.name ?? "",
-  cell: ({ getValue }) => {
-    const name = getValue() as string;
-    if (!name) return "–";
+  cell: ({ row }) => {
+    const member = members.find(({ id }) => id === row.original.assigneeId);
+    if (!member) return "–";
     return (
       <span className="flex items-center gap-2">
-        <Avatar size="sm" name={name} photoUrl={null} />
-        {name}
+        <Avatar size="sm" name={member.name} photoUrl={null} />
+        <ContactName contact={member} />
       </span>
     );
   },

@@ -2,6 +2,8 @@ import { type AssignmentDto, listAssignments, listResponsibilities } from "@bibi
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { type NamedOption, nameOf } from "@/components/form/named-option";
+import { PersonName, type PersonOption } from "@/components/people/person-name";
+import { PersonNames } from "@/components/people/person-names";
 import { ErrorState } from "@/components/states/error-state";
 import { FactList } from "@/components/typed-fields/fact-list";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
@@ -13,8 +15,8 @@ import { AssignmentActions } from "./assignment-actions";
 export type AssignmentSectionProps = {
   locale: Locale;
   subject: AssignSubject;
-  /** Members by user id (member.list); empty without `member:read`. */
-  members: readonly NamedOption[];
+  /** Members by user id (member.list) with their email; empty without `member:read`. */
+  members: readonly PersonOption[];
 };
 
 const LIMIT = 100;
@@ -28,8 +30,8 @@ async function responsibilityNames({ enabled }: { enabled: boolean }): Promise<N
 
 type FactsInput = {
   items: readonly AssignmentDto[];
-  members: readonly NamedOption[];
-  followers: string;
+  members: readonly PersonOption[];
+  followers: { ids: readonly string[]; text: string };
   t: Awaited<ReturnType<typeof getTranslations<"assignment">>>;
 };
 
@@ -38,14 +40,31 @@ async function assignmentFacts({ items, members, followers, t }: FactsInput) {
   const main = items.find((assignment) => assignment.responsibilityId === null);
   const parts = items.filter((assignment) => assignment.responsibilityId !== null);
   const names = await responsibilityNames({ enabled: parts.length > 0 });
+  const assignee = main?.assigneeId ?? null;
   return [
-    { label: t("assignee"), value: nameOf({ options: members, id: main?.assigneeId ?? null }) },
-    { label: t("followers"), value: followers || "–" },
+    {
+      label: t("assignee"),
+      value: nameOf({ options: members, id: assignee }),
+      node: <PersonName options={members} id={assignee} description={t("assignee")} />,
+    },
+    {
+      label: t("followers"),
+      value: followers.text || "–",
+      ...(followers.ids.length > 0
+        ? { node: <PersonNames ids={followers.ids} options={members} /> }
+        : {}),
+    },
     ...parts.map((part) => {
       const name = nameOf({ options: names, id: part.responsibilityId });
       const who = nameOf({ options: members, id: part.assigneeId });
       const origin = part.assigneeSource === "DEFAULT" ? ` (${t("defaultFrom", { name })})` : "";
-      return { label: name, value: `${who}${origin}` };
+      const node = (
+        <>
+          <PersonName options={members} id={part.assigneeId} description={name} />
+          {origin}
+        </>
+      );
+      return { label: name, value: `${who}${origin}`, node };
     }),
   ];
 }
@@ -62,7 +81,10 @@ export async function AssignmentSection({ locale, subject, members }: Assignment
   const assigneeId = main?.assigneeId ?? null;
   const followerIds = main?.followers.map((follower) => follower.userId) ?? [];
   const followers = followerIds.map((id) => nameOf({ options: members, id })).join(", ");
-  const facts = await assignmentFacts({ items: result.value.items, members, followers, t });
+  const facts = await assignmentFacts({
+    ...{ items: result.value.items, members, t },
+    followers: { ids: followerIds, text: followers },
+  });
   return (
     <section className="grid gap-3">
       <div className="flex flex-wrap items-center justify-between gap-4">

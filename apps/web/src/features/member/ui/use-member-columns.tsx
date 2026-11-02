@@ -1,15 +1,14 @@
 import type { MemberDto } from "@bibi/core";
-import { actionsColumn, type ColumnDef } from "@bibi/ui";
+import { actionsColumn, type ColumnDef, ContactName } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { Link } from "@/lib/navigation";
 import { memberRoute } from "@/lib/routes";
 import { RoleBadge } from "./role-badge";
 
 export type MemberRow = Pick<MemberDto, "id" | "name" | "email" | "role">;
 
 export type UseMemberColumnsInput<TRow extends MemberRow> = {
-  /** Link each name to the member's detail page. */
+  /** Link each name to the member's detail page; the name opens the card either way. */
   linkNames?: boolean;
   /** The role cell, e.g. an auto-saving select; `null` falls back to the badge. */
   renderRole?: (row: TRow) => ReactNode;
@@ -33,14 +32,13 @@ export function useMemberColumns<TRow extends MemberRow>({
       id: "name",
       header: t("name"),
       accessorFn: (m) => m.name,
-      cell: ({ row }) =>
-        linkNames ? (
-          <Link href={memberRoute({ id: row.original.id })} className="font-medium hover:underline">
-            {row.original.name}
-          </Link>
-        ) : (
-          <span className="font-medium">{row.original.name}</span>
-        ),
+      cell: ({ row: { original } }) => (
+        <ContactName
+          contact={original}
+          href={linkNames ? memberRoute({ id: original.id }) : undefined}
+          className="font-medium"
+        />
+      ),
     },
     { id: "email", header: t("email"), accessorFn: (m) => m.email },
     {

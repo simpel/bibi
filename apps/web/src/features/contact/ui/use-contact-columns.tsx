@@ -1,8 +1,7 @@
 import type { ContactDto, EntityTypeDto } from "@bibi/core";
-import { actionsColumn, type ColumnDef } from "@bibi/ui";
+import { actionsColumn, type ColumnDef, ContactName } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { Link } from "@/lib/navigation";
 import { customerRoute } from "@/lib/routes";
 
 export type ContactRow = Pick<
@@ -13,7 +12,7 @@ export type ContactRow = Pick<
 export type UseContactColumnsInput<TRow extends ContactRow> = {
   /** Omit to leave out the type column (assistant card). */
   types?: EntityTypeDto[];
-  /** Link each name to the customer's page (assistant card). */
+  /** Link each name to the customer's page (assistant card); the name opens the card either way. */
   linkNames?: boolean;
   /** Row actions menu; omit for no actions column. */
   renderActions?: (row: TRow) => ReactNode;
@@ -39,17 +38,13 @@ export function useContactColumns<TRow extends ContactRow>({
       id: "name",
       header: t("name"),
       accessorFn: (c) => c.name,
-      cell: ({ row }) =>
-        linkNames ? (
-          <Link
-            href={customerRoute({ id: row.original.customerId })}
-            className="font-medium hover:underline"
-          >
-            {row.original.name}
-          </Link>
-        ) : (
-          <span className="font-medium">{row.original.name}</span>
-        ),
+      cell: ({ row: { original } }) => (
+        <ContactName
+          contact={{ ...original, avatar: false }}
+          href={linkNames ? customerRoute({ id: original.customerId }) : undefined}
+          className="font-medium"
+        />
+      ),
     },
     ...typeColumn,
     { id: "email", header: t("email"), accessorFn: (c) => c.email ?? "–" },

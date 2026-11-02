@@ -1,9 +1,10 @@
 import type { TicketStatusDto } from "@bibi/core";
 import type { NamedOption } from "@/components/form/named-option";
+import type { PersonOption } from "@/components/people/person-name";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
 
 /** A contact person, with the customer it works for (the form lists the customer's contacts). */
-export type ContactOption = NamedOption & { customerId: string };
+export type ContactOption = PersonOption & { customerId: string };
 
 /**
  * What the ticket pages read besides the ticket: ticket types and lists (own fields), the
@@ -15,6 +16,7 @@ export type TicketFormData = TypedFormData & {
   contacts: ContactOption[];
   /** The caller may not view customers: show them as hidden and disable the pickers. */
   customersHidden: boolean;
-  members: NamedOption[];
+  /** With their email, for their contact card. */
+  members: PersonOption[];
   statuses: TicketStatusDto[];
 };

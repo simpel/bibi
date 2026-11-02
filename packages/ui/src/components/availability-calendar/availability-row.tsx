@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "../../lib/cn";
+import { AppLink } from "../app-link/app-link";
+import { ContactName } from "../person-contact/contact-name";
 import { addDays, weekdayOf } from "./calendar-dates";
 import { PersonAvatar } from "./calendar-people";
 import type { AssetBooking, CalendarAsset } from "./calendar-types";
@@ -24,14 +26,32 @@ export type AvailabilityRowProps = Pick<DayTrackProps, "selectedId" | "onAdd" | 
   frame: TimelineFrame;
 };
 
+const NAME = "line-clamp-2 text-sm leading-tight break-words @2xl:truncate";
+
+/** A person's name opens their contact card on hover; any asset's name links to its page. */
+function AssetName({ asset }: { asset: CalendarAsset }) {
+  const { person, href, name } = asset;
+  if (person) {
+    const contact = { ...person, description: person.role };
+    return <ContactName contact={contact} href={href} className={NAME} />;
+  }
+  if (!href) return <span className={NAME}>{name}</span>;
+  return (
+    <AppLink href={href} className={cn(NAME, "underline-offset-2 hover:underline")}>
+      {name}
+    </AppLink>
+  );
+}
+
 /**
  * Pinned while the days scroll: avatar for people, the name, and one fact to pick by. A narrow
  * calendar wraps the name to two lines and drops the avatar and the fact; the full name is a tooltip.
+ * The name links to the asset's page when it has one.
  */
 export function AssetLabel({ asset }: { asset: CalendarAsset }) {
   return (
     <div
-      title={asset.name}
+      title={asset.person ? undefined : asset.name}
       className="sticky left-0 z-30 flex min-w-0 items-center gap-2 border-r bg-card py-1.5 pr-2 pl-[var(--gutter,0px)] @2xl:pr-3"
     >
       {asset.person ? (
@@ -40,9 +60,7 @@ export function AssetLabel({ asset }: { asset: CalendarAsset }) {
         </span>
       ) : null}
       <div className="grid min-w-0">
-        <span className="line-clamp-2 text-sm leading-tight break-words @2xl:truncate">
-          {asset.name}
-        </span>
+        <AssetName asset={asset} />
         {asset.detail ? (
           <span className="hidden truncate text-xs text-muted-foreground @2xl:block">
             {asset.detail}

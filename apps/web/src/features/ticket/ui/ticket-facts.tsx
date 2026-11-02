@@ -1,12 +1,15 @@
 import type { TicketDto } from "@bibi/core";
-import { cn } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";
+import { PersonName } from "@/components/people/person-name";
 import { type Fact, FactList } from "@/components/typed-fields/fact-list";
 import { ownFieldFacts } from "@/components/typed-fields/own-field-facts";
+import { Link } from "@/lib/navigation";
+import { customerRoute } from "@/lib/routes";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { getNumberFormat } from "@/server/number-format";
 import { desiredPeriod } from "./desired-period";
+import { KeyFactRow } from "./key-fact-row";
 import type { TicketFormData } from "./ticket-form-data";
 
 export type TicketFactsProps = { ticket: TicketDto; data: TicketFormData };
@@ -30,30 +33,6 @@ function TicketNote({ note, label }: { note: string | null; label: string }) {
   );
 }
 
-type KeyFact = Fact & { truncate?: boolean };
-
-/**
- * The primary facts in one row, in the stat cards' type without their frame: each as wide as its
- * value, which may wrap; a truncating fact (the customer) gives way first.
- */
-function KeyFactRow({ facts }: { facts: readonly KeyFact[] }) {
-  return (
-    <dl className="flex gap-x-10">
-      {facts.map(({ label, value, truncate }) => (
-        <div key={label} className={cn("grid gap-1", truncate && "min-w-0 shrink-[999]")}>
-          <dt className="text-xs text-muted-foreground">{label}</dt>
-          <dd
-            title={truncate ? value : undefined}
-            className={cn("font-serif text-2xl font-light tracking-tight", truncate && "truncate")}
-          >
-            {value}
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
 /** The primary facts under the title: customer, contact, dates and headcounts. */
 export async function TicketKeyFacts({ ticket, data }: TicketFactsProps) {
   const t = await getTranslations("ticket.fields");
@@ -61,15 +40,27 @@ export async function TicketKeyFacts({ ticket, data }: TicketFactsProps) {
   const format = await getDateTimeFormat();
   const hidden = data.customersHidden ? common("hidden") : undefined;
   const guaranteed = ticket.guaranteedHeadcount;
+  const { customerId, contactId } = ticket;
+  const customer = nameOf({ options: data.customers, id: customerId, hidden });
   const facts = [
     {
       label: t("customer"),
-      value: nameOf({ options: data.customers, id: ticket.customerId, hidden }),
+      value: customer,
       truncate: true,
+      ...(customerId && !hidden
+        ? { node: <Link href={customerRoute({ id: customerId })}>{customer}</Link> }
+        : {}),
     },
     {
       label: t("contact"),
-      value: nameOf({ options: data.contacts, id: ticket.contactId, hidden }),
+      value: nameOf({ options: data.contacts, id: contactId, hidden }),
+      node: (
+        <PersonName
+          {...{ options: data.contacts, id: contactId, hidden }}
+          description={customerId && !hidden ? customer : undefined}
+          avatar={false}
+        />
+      ),
     },
     { label: t("when"), value: desiredPeriod({ ticket, format }) },
     { label: t("estimatedHeadcount"), value: count({ value: ticket.estimatedHeadcount }) },

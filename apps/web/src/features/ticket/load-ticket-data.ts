@@ -37,8 +37,10 @@ export async function loadTicketData(): Promise<Result<TicketFormData>> {
       ...typed.value,
       customers: customerRows.map(({ id, name }) => ({ id, name })),
       customersHidden: !customers.ok,
-      contacts: contactRows.map(({ id, name, customerId }) => ({ id, name, customerId })),
-      members: people.map(({ userId, name }) => ({ id: userId, name })),
+      contacts: contactRows.map(({ id, name, customerId, email, phone }) => ({
+        ...{ id, name, customerId, email, phone },
+      })),
+      members: people.map(({ userId, name, email }) => ({ id: userId, name, email })),
       statuses: statuses.value.items,
     },
   };

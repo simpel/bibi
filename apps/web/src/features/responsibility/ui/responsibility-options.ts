@@ -4,6 +4,6 @@ export type ResponsibilityOption = { id: string; name: string };
 /** Choices for a responsibility, loaded on the server (`loadResponsibilityOptions`). */
 export type ResponsibilityOptions = {
   types: ResponsibilityOption[];
-  /** Members; `id` is the user id, which is what assignments refer to. */
-  people: ResponsibilityOption[];
+  /** Members with their email (for their card); `id` is the user id, which assignments refer to. */
+  people: (ResponsibilityOption & { email: string })[];
 };

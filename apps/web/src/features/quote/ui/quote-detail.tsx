@@ -2,6 +2,7 @@ import type { Locale } from "@bibi/i18n";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";
+import { PersonName } from "@/components/people/person-name";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { FactList } from "@/components/typed-fields/fact-list";
@@ -10,7 +11,7 @@ import { ticketRoute } from "@/lib/routes";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { getNumberFormat } from "@/server/number-format";
-import { loadQuotePage } from "../load-quote-page";
+import { loadQuotePage, type QuotePageData } from "../load-quote-page";
 import { QuoteActions } from "./quote-actions";
 import { QuoteDraftHint } from "./quote-draft-hint";
 import { QuoteDrift } from "./quote-drift";
@@ -26,21 +27,35 @@ export type QuoteDetailProps = { locale: Locale; id: string };
  * markers (a DRAFT's are the ticket's lines, edited there), totals, how the ticket differs from an
  * accepted quote, and the versions.
  */
+type QuoteFactsInput = Pick<QuotePageData, "quote" | "ownerId" | "members"> & {
+  t: Awaited<ReturnType<typeof getTranslations<"quote">>>;
+  format: Awaited<ReturnType<typeof getDateTimeFormat>>;
+};
+
+/** Valid until, the sales owner (opening their contact card) and the terms. */
+function quoteFacts({ quote, ownerId, members, t, format }: QuoteFactsInput) {
+  const validUntil = quote.validUntil;
+  return [
+    {
+      label: t("fields.validUntil"),
+      value: validUntil ? format.date({ instant: validUntil }) : "–",
+    },
+    {
+      label: t("fields.salesOwner"),
+      value: nameOf({ options: members, id: ownerId }),
+      node: <PersonName options={members} id={ownerId} description={t("fields.salesOwner")} />,
+    },
+    { label: t("fields.terms"), value: quote.terms ?? "–" },
+  ];
+}
+
 export async function QuoteDetail({ locale, id }: QuoteDetailProps) {
   const t = await getTranslations("quote");
   const [format, numbers] = await Promise.all([getDateTimeFormat(), getNumberFormat()]);
   const page = await loadQuotePage({ id });
   if (!page.ok) return <ErrorState errorKey={handleLoadError({ error: page.error, locale })} />;
   const { quote, versions, ownerId, members, can } = page.value;
-  const validUntil = quote.validUntil;
-  const facts = [
-    {
-      label: t("fields.validUntil"),
-      value: validUntil ? format.date({ instant: validUntil }) : "–",
-    },
-    { label: t("fields.salesOwner"), value: nameOf({ options: members, id: ownerId }) },
-    { label: t("fields.terms"), value: quote.terms ?? "–" },
-  ];
+  const facts = quoteFacts({ quote, ownerId, members, t, format });
   return (
     <div className="grid gap-6">
       <Link

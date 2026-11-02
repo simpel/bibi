@@ -2,6 +2,7 @@ import type { ResponsibilityDto } from "@bibi/core";
 import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { PersonNames } from "@/components/people/person-names";
 import { namesOf } from "@/features/sheet-definition/ui/sheet-options";
 import type { RowAccess } from "@/lib/can";
 import type { ResponsibilityOption, ResponsibilityOptions } from "./responsibility-options";
@@ -18,7 +19,25 @@ const names = ({ ids, options }: NamesInput) => {
   return found.length > 0 ? found.join(", ") : "–";
 };
 
-/** Name · types · default assignee · default followers, plus the row actions when writable. */
+type PeopleColumnInput = {
+  id: string;
+  header: string;
+  people: ResponsibilityOptions["people"];
+  ids: (row: ResponsibilityDto) => readonly string[];
+};
+
+/** Members by name (sortable, searchable), each opening their contact card. */
+const peopleColumn = ({ id, header, people, ids }: PeopleColumnInput): Column => ({
+  id,
+  header,
+  accessorFn: (r) => names({ ids: ids(r), options: people }),
+  cell: ({ row }) => <PersonNames ids={ids(row.original)} options={people} />,
+});
+
+/**
+ * Name · types · default assignee · default followers (each opening their contact card), plus the
+ * row actions when writable.
+ */
 export function useResponsibilityColumns({
   options,
   access,
@@ -33,16 +52,14 @@ export function useResponsibilityColumns({
         header: t("columns.types"),
         accessorFn: (r) => names({ ids: r.entityTypeIds, options: options.types }),
       },
-      {
-        id: "assignee",
-        header: t("columns.assignee"),
-        accessorFn: (r) => names({ ids: [r.defaultAssigneeId], options: options.people }),
-      },
-      {
-        id: "followers",
-        header: t("columns.followers"),
-        accessorFn: (r) => names({ ids: r.defaultFollowerIds, options: options.people }),
-      },
+      peopleColumn({
+        ...{ id: "assignee", header: t("columns.assignee"), people: options.people },
+        ids: (r) => [r.defaultAssigneeId],
+      }),
+      peopleColumn({
+        ...{ id: "followers", header: t("columns.followers"), people: options.people },
+        ids: (r) => r.defaultFollowerIds,
+      }),
     ];
     if (!access.canEdit && !access.canRemove) return data;
     return [

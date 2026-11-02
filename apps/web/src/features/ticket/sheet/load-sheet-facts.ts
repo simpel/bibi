@@ -4,14 +4,17 @@ import { runOperation } from "@/server/run-operation";
 
 const LIMIT = 100;
 
-/** The ticket's people, by name: none where the caller may not read them (ADR 0050). */
+/** The ticket's people: none where the caller may not read them (ADR 0050). */
 export type TicketSheetFacts = {
-  assignee: string | null;
+  assignee: SheetPerson | null;
   customer: { id: string; name: string } | null;
-  contact: string | null;
+  contact: SheetPerson | null;
 };
 
-/** The main assignee's name (`assignment.list`, then the member's name). */
+/** A person with the ways to reach them, for their contact card. */
+export type SheetPerson = { name: string; email: string | null; phone?: string | null };
+
+/** The main assignee (`assignment.list`, then the member's name and email). */
 async function loadAssignee({ ticketId }: { ticketId: string }) {
   const input = { subjectType: "TICKET" as const, subjectId: ticketId };
   const assignments = await runOperation({ operation: listAssignments, input });
@@ -20,7 +23,8 @@ async function loadAssignee({ ticketId }: { ticketId: string }) {
   if (!main?.assigneeId) return null;
   const members = await runOperation({ operation: listMembers, input: { limit: LIMIT } });
   if (!members.ok) return null;
-  return members.value.items.find(({ userId }) => userId === main.assigneeId)?.name ?? null;
+  const member = members.value.items.find(({ userId }) => userId === main.assigneeId);
+  return member ? { name: member.name, email: member.email } : null;
 }
 
 /** Who answers for the ticket, who it is for and who to talk to there. */
@@ -34,6 +38,8 @@ export async function loadSheetFacts({ ticket }: { ticket: TicketDto }): Promise
   return {
     assignee,
     customer: customer.ok ? { id: customer.value.id, name: customer.value.name } : null,
-    contact: contact?.ok ? contact.value.name : null,
+    contact: contact?.ok
+      ? { name: contact.value.name, email: contact.value.email, phone: contact.value.phone }
+      : null,
   };
 }
