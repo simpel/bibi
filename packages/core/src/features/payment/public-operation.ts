@@ -2,13 +2,15 @@ import { getDb } from "@bibi/db";
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
+import { publicDocument } from "./public-document";
 import { PublicPaymentInputSchema, PublicPaymentSchema } from "./schema";
 
 /**
  * What the public payment page `/pay/<token>` shows (ADR 0028). Called by the web page as SYSTEM
  * after `getPublicPayment` pinned the organization from the token. Deliberately not part of
  * `createCoreOperations` (the customer has no session and no user, AI or API surface may read
- * payments by token), so it has no adapters. Returns no personal data.
+ * payments by token), so it has no adapters. Returns no personal data; the lines and totals are
+ * those of the quote or invoice the payment settles, as the customer received it.
  */
 export const getPublicPaymentOperation = defineOperation({
   name: "payment.getPublic",
@@ -30,6 +32,7 @@ export const getPublicPaymentOperation = defineOperation({
       select: { name: true },
     });
     if (!ticket || !organization) return notFound({ entity: "Payment" });
+    const document = await publicDocument({ context, payment });
     const expired =
       payment.status === "PENDING" && payment.expiresAt && payment.expiresAt <= new Date();
     return ok({
@@ -43,6 +46,7 @@ export const getPublicPaymentOperation = defineOperation({
         paymentUrl: payment.status === "PENDING" && !expired ? payment.paymentUrl : null,
         expiresAt: payment.expiresAt,
         paidAt: payment.paidAt,
+        ...document,
       },
     });
   },

@@ -3193,7 +3193,18 @@
       "unavailableTitle": "Betalningen kan inte längre göras",
       "unavailableDescription": "Kontakta {organization} om du tror att det är fel.",
       "invoiceDescription": "En faktura har skickats till dig. Använd länken i den för att betala.",
-      "secured": "Betalningen hanteras av Stripe."
+      "secured": "Betalningen hanteras av Stripe.",
+      "lines": "Det här betalar du för",
+      "addOn": "Tillägg",
+      "option": "Tillval",
+      "quantity": "{quantity} st",
+      "quantityPrice": "{quantity} × {price}",
+      "discount": "−{percent} %",
+      "notInTotal": "Ingår inte",
+      "totalExclVat": "Summa exkl. moms",
+      "vat": "Moms",
+      "totalInclVat": "Summa inkl. moms",
+      "from": "från {amount}"
     },
     "fields": {
       "method": "Betalsätt",

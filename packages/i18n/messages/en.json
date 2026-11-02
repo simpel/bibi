@@ -3193,7 +3193,18 @@
       "unavailableTitle": "This payment can no longer be made",
       "unavailableDescription": "Contact {organization} if you think this is wrong.",
       "invoiceDescription": "An invoice has been sent to you. Use the link in it to pay.",
-      "secured": "Payment is handled by Stripe."
+      "secured": "Payment is handled by Stripe.",
+      "lines": "What you are paying for",
+      "addOn": "Add-on",
+      "option": "Option",
+      "quantity": "{quantity} pcs",
+      "quantityPrice": "{quantity} × {price}",
+      "discount": "−{percent} %",
+      "notInTotal": "Not included",
+      "totalExclVat": "Total excl. VAT",
+      "vat": "VAT",
+      "totalInclVat": "Total incl. VAT",
+      "from": "from {amount}"
     },
     "fields": {
       "method": "Method",

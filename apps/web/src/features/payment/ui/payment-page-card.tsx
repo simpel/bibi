@@ -3,6 +3,7 @@ import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } fro
 import { useTranslations } from "next-intl";
 import { AutoRefresh } from "./auto-refresh";
 import { type PaymentOutcome, paymentOutcome } from "./payment-outcome";
+import { PaymentPageLines } from "./payment-page-lines";
 
 export type PaymentPageCardProps = {
   payment: PublicPaymentDto;
@@ -50,6 +51,7 @@ export function PaymentPageCard({ payment, returning = false, numbers }: Payment
             <span className="text-2xl font-semibold">{amount}</span>
           </div>
         ) : null}
+        {showAmount ? <PaymentPageLines payment={payment} numbers={numbers} /> : null}
         {outcome === "processing" ? <AutoRefresh /> : null}
         {outcome === "pay" && payment.paymentUrl ? (
           <>

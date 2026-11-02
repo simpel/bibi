@@ -57,12 +57,14 @@ describe("public payment page lookup", () => {
       "amountMinor",
       "currency",
       "expiresAt",
+      "lines",
       "method",
       "organizationName",
       "paidAt",
       "paymentUrl",
       "status",
       "ticketReference",
+      "totals",
     ]);
   });
 

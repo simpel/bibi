@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
+import { PublicPaymentLineSchema, PublicPaymentTotalsSchema } from "./public-document-schema";
 import { PublicTokenSchema } from "./public-token";
 
 export const PaymentMethodSchema = z.enum(["CARD", "INVOICE"]);
@@ -110,6 +111,10 @@ export const PublicPaymentSchema = z.object({
   paymentUrl: z.string().nullable(),
   expiresAt: z.date().nullable(),
   paidAt: z.date().nullable(),
+  lines: z
+    .array(PublicPaymentLineSchema)
+    .describe("The paid quote's or invoice's frozen lines, sub-lines after their parent; [] else"),
+  totals: PublicPaymentTotalsSchema.nullable().describe("That document's totals; null without one"),
 });
 
 export type PublicPaymentDto = z.infer<typeof PublicPaymentSchema>;

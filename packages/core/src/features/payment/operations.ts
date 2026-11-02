@@ -85,7 +85,8 @@ export type GetPublicPaymentInput = { token: string; db?: Db };
 /**
  * The one cross-organization lookup of the public payment page (ADR 0004): which organization
  * owns the payment behind a token. It only reads that id, which then pins the SYSTEM context the
- * read runs in. A malformed, unknown or foreign token is the same `NOT_FOUND`.
+ * read runs in. A malformed, unknown or foreign token is the same `NOT_FOUND`. The context may
+ * read quotes only so the page can list the lines of the quote this payment settles.
  */
 export async function getPublicPayment({
   token,
@@ -100,7 +101,7 @@ export async function getPublicPayment({
   const context = createExecuteContext({
     organizationId: row.organizationId,
     roles: [],
-    permissions: { payment: ["read"] },
+    permissions: { payment: ["read"], quote: ["read"] },
     actor: { type: "system", userId: null },
     db,
   });

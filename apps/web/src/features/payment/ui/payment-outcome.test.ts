@@ -12,6 +12,8 @@ const base: PublicPaymentDto = {
   paymentUrl: "https://pay.test/x",
   expiresAt: null,
   paidAt: null,
+  lines: [],
+  totals: null,
 };
 
 describe("paymentOutcome", () => {
