@@ -46,10 +46,7 @@ export function useQuerySuggestions({
     // A picked value completes a filter: search at once. A key waits for its value.
     setOpen(Boolean(suggestion.open));
     setCaret(next.caret);
-    requestAnimationFrame(() => {
-      ref.current?.setSelectionRange(next.caret, next.caret);
-      if (!suggestion.open) ref.current?.form?.requestSubmit();
-    });
+    requestAnimationFrame(() => afterPick({ input: ref.current, suggestion, caret: next.caret }));
   };
   const track = ({ currentTarget }: Position) => {
     setCaret(currentTarget.selectionStart ?? currentTarget.value.length);
@@ -59,6 +56,21 @@ export function useQuerySuggestions({
   const combobox = { listId, ref, value, shown, active, keys };
   const inputProps = comboboxProps({ ...combobox, onChange, onBlur, track, setOpen });
   return { listId, items, active, shown, pick, inputProps };
+}
+
+type AfterPickInput = {
+  input: HTMLInputElement | null;
+  suggestion: QuerySuggestion;
+  caret: number;
+};
+
+/**
+ * After a pick: a key puts the caret after it; a value submits the search. Moving the caret then
+ * would fire `select` and open the list again over the new results.
+ */
+function afterPick({ input, suggestion, caret }: AfterPickInput) {
+  if (suggestion.open) input?.setSelectionRange(caret, caret);
+  else input?.form?.requestSubmit();
 }
 
 type ComboboxPropsInput = {
