@@ -1,9 +1,11 @@
 import { cva, type VariantProps } from "class-variance-authority";
+import { Slot } from "radix-ui";
 import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
 
 export const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center gap-1 whitespace-nowrap rounded-sm border px-2 py-0.5 text-xs font-medium transition-colors",
+  // shadcn's badge: icons are size-3, links and buttons get its focus ring.
+  "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-md border px-2 py-0.5 text-xs font-medium transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [&>svg]:pointer-events-none [&>svg]:size-3",
   {
     variants: {
       variant: {
@@ -28,10 +30,12 @@ export const badgeVariants = cva(
   },
 );
 
-export type BadgeProps = ComponentProps<"span"> & VariantProps<typeof badgeVariants>;
+export type BadgeProps = ComponentProps<"span"> &
+  VariantProps<typeof badgeVariants> & { asChild?: boolean };
 
-export function Badge({ className, variant, hue, ...props }: BadgeProps) {
+export function Badge({ className, variant, hue, asChild = false, ...props }: BadgeProps) {
+  const Comp = asChild ? Slot.Root : "span";
   return (
-    <span data-slot="badge" className={cn(badgeVariants({ variant, hue }), className)} {...props} />
+    <Comp data-slot="badge" className={cn(badgeVariants({ variant, hue }), className)} {...props} />
   );
 }
