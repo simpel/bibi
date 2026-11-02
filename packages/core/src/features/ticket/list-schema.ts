@@ -33,6 +33,15 @@ export const TICKET_QUALIFIERS = [...TICKET_NAME_QUALIFIERS, ...TICKET_MEASURES]
 export type TicketQualifier = (typeof TICKET_QUALIFIERS)[number];
 export type TicketMeasure = (typeof TICKET_MEASURES)[number];
 
+/**
+ * One search word: an optional `-`, an optional `key:` (any letters, so a UI can map its own
+ * language's words, ADR 0009), then quoted and bare pieces (`"Volvo Cars",Lead`).
+ */
+export const TICKET_QUERY_TOKEN = /(-)?(?:(\p{L}+):)?((?:"[^"]*"?|[^\s"]+)+)/giu;
+
+/** One comma-separated piece of a value: quoted (group 1) or bare (group 2). */
+export const TICKET_QUERY_PIECE = /"([^"]*)"?|([^,"]+)/gu;
+
 /** Fixed values: `is:`, `holds:` (besides dates) and `no:`. */
 export const TICKET_IS_VALUES = ["open", "closed"] as const;
 export const TICKET_HOLDS_VALUES = ["expired", "soon"] as const;

@@ -1,20 +1,21 @@
-import { TICKET_QUALIFIERS, type TicketQualifier } from "./list-schema";
+import {
+  TICKET_QUALIFIERS,
+  TICKET_QUERY_PIECE,
+  TICKET_QUERY_TOKEN,
+  type TicketQualifier,
+} from "./list-schema";
 
 /** One `key:value` term: the values are alternatives (`status:Lead,Offer`); `-` negates it. */
 export type TicketFilter = { key: TicketQualifier; values: string[]; negated: boolean };
 
 export type TicketQuery = { text: string; filters: TicketFilter[] };
 
-// An optional `-`, an optional `key:`, then quoted and bare pieces (`"Volvo Cars",Lead`).
-const TOKEN = /(-)?(?:([a-z]+):)?((?:"[^"]*"?|[^\s"]+)+)/gi;
-const PIECE = /"([^"]*)"?|([^,"]+)/g;
-
 const qualifierOf = ({ key }: { key: string | undefined }) =>
   TICKET_QUALIFIERS.find((qualifier) => qualifier === key?.toLowerCase());
 
 /** A value split on commas outside quotes, quotes removed, empty pieces dropped. */
 const valuesOf = ({ raw }: { raw: string }) =>
-  [...raw.matchAll(PIECE)]
+  [...raw.matchAll(TICKET_QUERY_PIECE)]
     .map(([, quoted, bare]) => (quoted ?? bare ?? "").trim())
     .filter((value) => value.length > 0);
 
@@ -25,7 +26,7 @@ const valuesOf = ({ raw }: { raw: string }) =>
 export function parseTicketQuery({ q }: { q: string | undefined }): TicketQuery {
   const words: string[] = [];
   const filters: TicketFilter[] = [];
-  for (const [whole, minus, key, value = ""] of (q ?? "").matchAll(TOKEN)) {
+  for (const [whole, minus, key, value = ""] of (q ?? "").matchAll(TICKET_QUERY_TOKEN)) {
     const qualifier = qualifierOf({ key });
     const values = valuesOf({ raw: value });
     if (qualifier && values.length > 0) {

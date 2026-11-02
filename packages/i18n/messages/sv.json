@@ -862,24 +862,56 @@
         "QUOTE_ACCEPTED_IN_EARLIER_STATUS": "Offerten är accepterad, men ärendet är kvar i en tidigare ärendestatus. Flytta ärendet eller kontrollera offerten."
       }
     },
-    "search": "Sök eller filtrera, t.ex. assignee:me status:Lead",
+    "search": "Sök eller filtrera, t.ex. ansvarig:jag status:Lead",
     "searchSubmit": "Sök",
     "noMatches": "Inga ärenden matchar.",
     "listTotal": "{count, plural, one {# ärende} other {# ärenden}}",
     "qualifiers": {
-      "assignee": "vem som ansvarar: me eller ett namn",
-      "follower": "vem som följer: me eller ett namn",
+      "assignee": "vem som ansvarar: jag eller ett namn",
+      "follower": "vem som följer: jag eller ett namn",
       "status": "statusens namn",
       "type": "ärendetypen",
       "customer": "kundnamnet innehåller",
       "contact": "kontaktens namn innehåller",
-      "is": "open eller closed",
+      "is": "öppen eller stängd",
       "when": "önskad start: 2026-12, >=2026-12-01, a..b",
       "created": "skapat: 2026-10, >2026-10-01",
       "guests": "antal gäster: >50, 10..40",
       "budget": "budget i hela kronor: >=10000",
-      "holds": "expired, soon eller ett datum",
-      "no": "ett tomt fält: assignee, contact…"
+      "holds": "optionen: utgången, snart eller ett datum",
+      "no": "ett tomt fält: ansvarig, kontakt, datum…"
+    },
+    "query": {
+      "keys": {
+        "assignee": "ansvarig",
+        "follower": "följare",
+        "status": "status",
+        "type": "typ",
+        "customer": "kund",
+        "contact": "kontakt",
+        "is": "är",
+        "when": "när",
+        "created": "skapad",
+        "guests": "gäster",
+        "budget": "budget",
+        "holds": "option",
+        "no": "saknar"
+      },
+      "values": {
+        "me": "jag",
+        "open": "öppen",
+        "closed": "stängd",
+        "expired": "utgången",
+        "soon": "snart"
+      },
+      "empty": {
+        "assignee": "ansvarig",
+        "contact": "kontakt",
+        "date": "datum",
+        "guests": "gäster",
+        "budget": "budget",
+        "holds": "option"
+      }
     }
   },
   "ticketIntake": {

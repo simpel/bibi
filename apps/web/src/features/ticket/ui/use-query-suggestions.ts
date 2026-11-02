@@ -5,12 +5,14 @@ import {
   type QuerySuggestion,
   suggest,
 } from "../lib/query-suggestions";
+import type { QueryVocabulary } from "../lib/query-vocabulary";
 
 export type UseQuerySuggestionsInput = {
   value: string;
   onChange: (value: string) => void;
   onBlur: () => void;
   catalog: QueryCatalog;
+  vocabulary: QueryVocabulary;
 };
 
 type Position = { currentTarget: HTMLInputElement };
@@ -24,6 +26,7 @@ export function useQuerySuggestions({
   onChange,
   onBlur,
   catalog,
+  vocabulary,
 }: UseQuerySuggestionsInput) {
   const listId = useId();
   const ref = useRef<HTMLInputElement>(null);
@@ -31,8 +34,8 @@ export function useQuerySuggestions({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const { token, items } = useMemo(
-    () => suggest({ text: value, caret, catalog }),
-    [value, caret, catalog],
+    () => suggest({ text: value, caret, catalog, vocabulary }),
+    [value, caret, catalog, vocabulary],
   );
   const shown = open && items.length > 0;
   const pick = ({ suggestion }: { suggestion: QuerySuggestion }) => {

@@ -3,16 +3,20 @@ import { useTranslations } from "next-intl";
 import type { ComponentProps } from "react";
 import type { SearchField } from "@/components/search-form";
 import type { QueryCatalog, QuerySuggestion } from "../lib/query-suggestions";
+import type { QueryVocabulary } from "../lib/query-vocabulary";
 import { useQuerySuggestions } from "./use-query-suggestions";
 
 export type TicketQueryInputProps = SearchField &
-  Omit<ComponentProps<"input">, keyof SearchField> & { catalog: QueryCatalog };
+  Omit<ComponentProps<"input">, keyof SearchField> & {
+    catalog: QueryCatalog;
+    vocabulary: QueryVocabulary;
+  };
 
 type RowProps = { suggestion: QuerySuggestion; id: string; active: boolean; onPick: () => void };
 
 function SuggestionRow({ suggestion, id, active, onPick }: RowProps) {
   const t = useTranslations("ticket.qualifiers");
-  const { key, value } = suggestion;
+  const { key, value, label } = suggestion;
   return (
     <div
       id={id}
@@ -30,7 +34,7 @@ function SuggestionRow({ suggestion, id, active, onPick }: RowProps) {
         if (event.key === "Enter") onPick();
       }}
     >
-      <span className="truncate font-mono">{value ?? `${key}:`}</span>
+      <span className="truncate font-mono">{label}</span>
       {value === undefined ? (
         <span className="truncate text-xs text-muted-foreground">{t(key)}</span>
       ) : null}
@@ -69,13 +73,20 @@ function SuggestionList({ listId, items, active, pick }: ListProps) {
  */
 export function TicketQueryInput({
   catalog,
+  vocabulary,
   value,
   onChange,
   onBlur,
   ref: _ref,
   ...rest
 }: TicketQueryInputProps) {
-  const { inputProps, shown, ...list } = useQuerySuggestions({ value, onChange, onBlur, catalog });
+  const { inputProps, shown, ...list } = useQuerySuggestions({
+    value,
+    onChange,
+    onBlur,
+    catalog,
+    vocabulary,
+  });
   return (
     <div className="relative">
       <Input {...rest} {...inputProps} type="search" />

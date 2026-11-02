@@ -12,7 +12,10 @@ import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-a
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import type { TicketListParams } from "../lib/list-params";
+import { toCanonicalQuery } from "../lib/query-canonical";
 import { buildQueryCatalog } from "../lib/query-catalog";
+import type { QueryVocabulary } from "../lib/query-vocabulary";
+import { loadQueryVocabulary } from "../load-query-vocabulary";
 import { loadTicketData } from "../load-ticket-data";
 import { CreateTicketButton } from "./create-ticket-button";
 import { ExpireHoldsButton } from "./expire-holds-button";
@@ -49,25 +52,27 @@ function headerParts({ abilities, noTypes }: HeaderPartsInput) {
   return { create, actions: canCreate ? <HeaderActions create={create} /> : undefined };
 }
 
-/** `ticket.list` by page number, so the server returns the total for the page count. */
-const listInput = ({ params }: { params: TicketListParams }) => ({
+type ListInputArgs = { params: TicketListParams; vocabulary: QueryVocabulary };
+
+/**
+ * `ticket.list` by page number, so the server returns the total for the page count; the search's
+ * words of the UI language become core's canonical ones.
+ */
+const listInput = ({ params, vocabulary }: ListInputArgs) => ({
   page: params.page,
   limit: params.pageSize,
   sort: params.sort,
   direction: params.direction,
-  ...(params.q ? { q: params.q } : {}),
+  ...(params.q ? { q: toCanonicalQuery({ q: params.q, vocabulary }) } : {}),
 });
 
 /** Tickets page body: header with create, filters and search, then the paged table. */
 export async function TicketList({ locale, params }: TicketListProps) {
   const t = await getTranslations("ticket");
-  const abilities = await getCallerAbilities();
+  const [abilities, vocabulary] = await Promise.all([getCallerAbilities(), loadQueryVocabulary()]);
   const [data, result] = await Promise.all([
     loadTicketData(),
-    runOperation({
-      operation: listTickets,
-      input: listInput({ params }),
-    }),
+    runOperation({ operation: listTickets, input: listInput({ params, vocabulary }) }),
   ]);
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
@@ -87,8 +92,12 @@ export async function TicketList({ locale, params }: TicketListProps) {
       ) : (
         <>
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <TicketQuickFilters q={params.q} />
-            <TicketSearch value={params.q} catalog={buildQueryCatalog(data.value)} />
+            <TicketQuickFilters q={params.q} vocabulary={vocabulary} />
+            <TicketSearch
+              value={params.q}
+              vocabulary={vocabulary}
+              catalog={buildQueryCatalog({ ...data.value, vocabulary })}
+            />
           </div>
           <TicketListTable tickets={items} total={total ?? 0} view={params} data={data.value} />
         </>

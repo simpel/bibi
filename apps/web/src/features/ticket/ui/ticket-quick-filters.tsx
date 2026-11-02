@@ -2,31 +2,38 @@ import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
+import { toCanonicalQuery } from "../lib/query-canonical";
+import type { QueryVocabulary } from "../lib/query-vocabulary";
+
+export type TicketQuickFiltersProps = { q: string | undefined; vocabulary: QueryVocabulary };
 
 /** Shortcuts that fill the search with a qualifier (ADR 0034: assigned or followed). */
 const SHORTCUTS = [
-  { key: "all", q: undefined },
-  { key: "assigned", q: "assignee:me" },
-  { key: "following", q: "follower:me" },
+  { key: "all", qualifier: undefined },
+  { key: "assigned", qualifier: "assignee" },
+  { key: "following", qualifier: "follower" },
 ] as const;
 
-/** All, Assigned to me and Following, as links that set the search; the active one is lit. */
-export async function TicketQuickFilters({ q }: { q: string | undefined }) {
+/**
+ * All, Assigned to me and Following, as links that set the search in the UI language
+ * (`ansvarig:jag`); the active one is lit, whichever language the search was typed in.
+ */
+export async function TicketQuickFilters({ q, vocabulary }: TicketQuickFiltersProps) {
   const t = await getTranslations("assignment.filter");
+  const current = q ? toCanonicalQuery({ q, vocabulary }) : undefined;
   return (
     <nav className="flex flex-wrap gap-2" aria-label={t("label")}>
-      {SHORTCUTS.map(({ key, q: shortcut }) => (
-        <Button
-          key={key}
-          asChild
-          size="sm"
-          variant={shortcut === q || (!shortcut && !q) ? "secondary" : "ghost"}
-        >
-          <Link href={{ pathname: ROUTES.tickets, query: shortcut ? { q: shortcut } : {} }}>
-            {t(key)}
-          </Link>
-        </Button>
-      ))}
+      {SHORTCUTS.map(({ key, qualifier }) => {
+        const local = qualifier && `${vocabulary.words[qualifier]}:${vocabulary.values.me}`;
+        const lit = qualifier ? current === `${qualifier}:me` : !current;
+        return (
+          <Button key={key} asChild size="sm" variant={lit ? "secondary" : "ghost"}>
+            <Link href={{ pathname: ROUTES.tickets, query: local ? { q: local } : {} }}>
+              {t(key)}
+            </Link>
+          </Button>
+        );
+      })}
     </nav>
   );
 }
