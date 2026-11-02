@@ -24,7 +24,7 @@ export function PaymentAccountCardView({ account }: PaymentAccountCardViewProps)
             {t("onboardingLink")}
           </a>
         ) : null}
-        <Link href={ROUTES.settingsPayments} className="text-primary hover:underline">
+        <Link href={ROUTES.settingsIntegrations} className="text-primary hover:underline">
           {t("open")}
         </Link>
       </CardContent>

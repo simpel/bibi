@@ -99,6 +99,7 @@ export * from "./components/person-contact/contact-labels";
 export * from "./components/person-contact/contact-name";
 export * from "./components/person-contact/person-contact";
 export * from "./components/popover/popover";
+export * from "./components/provider-logo/provider-logo";
 export * from "./components/questionnaire/questionnaire";
 export * from "./components/questionnaire/questionnaire-actions";
 export * from "./components/questionnaire/questionnaire-choices";

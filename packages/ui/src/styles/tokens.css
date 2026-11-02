@@ -42,6 +42,16 @@
   --success-foreground: oklch(0.985 0.008 85);
   --warning: oklch(0.74 0.13 75);
   --warning-foreground: oklch(0.26 0.05 65);
+
+  /* Provider brand colours (ADR 0090), from the official Stripe and Fortnox assets. */
+  --brand-stripe: #533afd;
+  --brand-stripe-foreground: #ffffff;
+  --brand-stripe-mark: #533afd;
+  --brand-fortnox: #007533;
+  --brand-fortnox-foreground: #ffffff;
+  --brand-fortnox-bright: #00db33;
+  --brand-fortnox-yellow: #ffc200;
+  --brand-fortnox-mark: #007533;
   /* Text on a fill of the organization's own colour (states): picked by the fill's brightness. */
   --ink-on-light: oklch(0.2 0.018 60);
   --ink-on-dark: oklch(0.985 0.008 85);
@@ -91,6 +101,10 @@
   --success-foreground: oklch(0.16 0.025 150);
   --warning: oklch(0.78 0.13 78);
   --warning-foreground: oklch(0.2 0.035 70);
+
+  /* Stripe allows only blurple, slate or white for its wordmark; white on dark. */
+  --brand-stripe-mark: #ffffff;
+  --brand-fortnox-mark: #ffffff;
   --border: oklch(0.32 0.012 65);
   --input: oklch(0.36 0.014 65);
   --ring: oklch(0.7 0.11 155);
@@ -136,6 +150,14 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-brand-stripe: var(--brand-stripe);
+  --color-brand-stripe-foreground: var(--brand-stripe-foreground);
+  --color-brand-stripe-mark: var(--brand-stripe-mark);
+  --color-brand-fortnox: var(--brand-fortnox);
+  --color-brand-fortnox-foreground: var(--brand-fortnox-foreground);
+  --color-brand-fortnox-bright: var(--brand-fortnox-bright);
+  --color-brand-fortnox-yellow: var(--brand-fortnox-yellow);
+  --color-brand-fortnox-mark: var(--brand-fortnox-mark);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

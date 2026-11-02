@@ -8,7 +8,16 @@ const meta = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["default", "destructive", "outline", "secondary", "ghost", "link"],
+      options: [
+        "default",
+        "destructive",
+        "outline",
+        "secondary",
+        "ghost",
+        "link",
+        "stripe",
+        "fortnox",
+      ],
     },
     size: { control: "select", options: ["default", "sm", "lg", "icon"] },
   },
@@ -23,5 +32,7 @@ export const Outline: Story = { args: { variant: "outline" } };
 export const Secondary: Story = { args: { variant: "secondary" } };
 export const Ghost: Story = { args: { variant: "ghost" } };
 export const Link: Story = { args: { variant: "link" } };
+export const Stripe: Story = { args: { variant: "stripe", children: "Connect Stripe" } };
+export const Fortnox: Story = { args: { variant: "fortnox", children: "Connect Fortnox" } };
 export const Small: Story = { args: { size: "sm" } };
 export const Disabled: Story = { args: { disabled: true } };

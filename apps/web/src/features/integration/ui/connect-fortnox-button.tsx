@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@bibi/ui";
+import { Button, FortnoxLogo } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useToastAction } from "@/lib/use-toast-action";
 import { connectFortnoxAction } from "../actions";
@@ -23,10 +23,11 @@ export function ConnectFortnoxButton({ reconnect, disabled }: ConnectFortnoxButt
     });
   return (
     <Button
-      variant={reconnect ? "outline" : "default"}
+      variant={reconnect ? "outline" : "fortnox"}
       disabled={disabled || pending}
       onClick={start}
     >
+      {reconnect ? null : <FortnoxLogo className="text-brand-fortnox-foreground" aria-hidden />}
       {reconnect ? t("reconnect") : t("connect")}
     </Button>
   );

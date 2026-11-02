@@ -1,16 +1,11 @@
 import { resolveLocale } from "@bibi/i18n";
-import { SimplePage } from "@bibi/ui";
-import { setRequestLocale } from "next-intl/server";
-import { PaymentAccountPanel } from "@/features/payment-account/ui/payment-account-panel";
+import { redirect } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
 
-type PaymentsPageProps = { params: Promise<{ locale: string }> };
+type PaymentsPageProps = { params: Promise<{ locale: string; org: string }> };
 
+/** The Stripe connection lives on Settings → Integrations (ADR 0090). */
 export default async function PaymentsPage({ params }: PaymentsPageProps) {
-  const locale = resolveLocale({ value: (await params).locale });
-  setRequestLocale(locale);
-  return (
-    <SimplePage>
-      <PaymentAccountPanel locale={locale} />
-    </SimplePage>
-  );
+  const { locale, org } = await params;
+  redirect({ href: ROUTES.settingsIntegrations, locale: resolveLocale({ value: locale }), org });
 }

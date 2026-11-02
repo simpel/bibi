@@ -20,7 +20,7 @@ export function StartOnboardingButton({ connected }: StartOnboardingButtonProps)
       },
     });
   return (
-    <Button disabled={pending} onClick={start}>
+    <Button variant={connected ? "outline" : "stripe"} disabled={pending} onClick={start}>
       {connected ? t("continueOnboarding") : t("connect")}
     </Button>
   );

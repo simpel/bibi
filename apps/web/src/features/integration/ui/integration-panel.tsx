@@ -3,6 +3,7 @@ import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { StripeCard } from "@/features/payment-account/ui/stripe-card";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
@@ -13,7 +14,7 @@ import { IntegrationNotice, type IntegrationOutcome } from "./integration-notice
 
 export type IntegrationPanelProps = { locale: Locale; outcome: IntegrationOutcome | null };
 
-/** Settings → Integrations (ADR 0087): the Fortnox connection and the way to API keys. */
+/** Settings → Integrations (ADR 0087, 0090): Stripe, Fortnox and the way to API keys. */
 export async function IntegrationPanel({ locale, outcome }: IntegrationPanelProps) {
   const t = await getTranslations("integration");
   const abilities = await getCallerAbilities();
@@ -35,6 +36,9 @@ export async function IntegrationPanel({ locale, outcome }: IntegrationPanelProp
     <div className="grid gap-6">
       {header}
       {outcome ? <IntegrationNotice outcome={outcome} /> : null}
+      {can({ abilities, permission: "paymentAccount:read" }) ? (
+        <StripeCard canEdit={can({ abilities, permission: "paymentAccount:write" })} />
+      ) : null}
       {fortnox ? (
         <FortnoxCard
           connection={fortnox}
