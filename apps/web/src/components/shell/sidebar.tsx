@@ -8,6 +8,7 @@ import {
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { AssistantNav } from "./assistant-nav";
+import { NewTicketButton } from "./new-ticket-button";
 import { PlatformAdminCard } from "./platform-admin-card";
 import type { ShellAccess, ShellUser } from "./shell-types";
 import { SidebarNav } from "./sidebar-nav";
@@ -30,10 +31,11 @@ export function AppSidebar({ organizationId, user, access }: AppSidebarProps) {
   const shell = useTranslations("shell");
   return (
     <Sidebar mobileTitle={nav("openMenu")} mobileDescription={nav("openMenu")}>
-      <SidebarHeader className="flex items-center">
+      <SidebarHeader className="flex flex-col items-stretch gap-2">
         <Wordmark className="px-2 py-1.5" size="lg" name={common("appName")}>
           {common("appName")}
         </Wordmark>
+        <NewTicketButton access={access} />
       </SidebarHeader>
       <SidebarContent>
         <AssistantNav />
