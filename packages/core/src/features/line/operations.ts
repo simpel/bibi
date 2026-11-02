@@ -4,6 +4,7 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { checkReadable } from "../ticket/ticket-rules";
+import { lineAmounts } from "./amounts-operation";
 import { changeLineState } from "./change-state-operation";
 import { chooseOptions } from "./choose-options";
 import {
@@ -12,6 +13,7 @@ import {
 } from "./choose-options-schema";
 import { expandLineBundle } from "./expand-operation";
 import { followLineStatus } from "./follow-status-operation";
+import { lineIssues } from "./issues-operation";
 import { LineListInputSchema, LineListOutputSchema } from "./list-schema";
 import { LineIdInputSchema, LineSchema } from "./schema";
 import { byHeldSince } from "./state-history";
@@ -95,9 +97,14 @@ export const chooseLineOptions = defineOperation({
   },
 });
 
+/** The ticket-scoped reads, defined in their own files. */
+export { lineAmounts, lineIssues };
+
 export const lineOperations = [
   listLines,
   getLine,
+  lineAmounts,
+  lineIssues,
   createLine,
   expandLineBundle,
   chooseLineOptions,

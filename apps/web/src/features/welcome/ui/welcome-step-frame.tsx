@@ -29,7 +29,7 @@ export function WelcomeStepFrame({
             {t("stepOf", { step: progress.step, total: progress.total })}
           </p>
         ) : null}
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+        <h1 className="text-2xl tracking-tight sm:text-3xl">{title}</h1>
         {description ? <p className="text-muted-foreground">{description}</p> : null}
       </div>
       {children}

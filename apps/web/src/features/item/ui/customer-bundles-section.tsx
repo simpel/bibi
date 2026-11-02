@@ -40,7 +40,7 @@ async function BundlesBody({
   return (
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-semibold">{t("bundles")}</h2>
+        <h2 className="text-xl">{t("bundles")}</h2>
         {can({ abilities, permission: "item:write" }) && types.length > 0 ? (
           <SaveBundleButton customerId={customerId} data={{ ...data.value, types }} />
         ) : null}

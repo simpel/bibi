@@ -17,7 +17,7 @@ export async function ItemResolutionSection({ locale, itemId }: ItemResolutionSe
   }
   return (
     <section className="grid gap-4">
-      <h2 className="text-lg font-semibold">{t("title")}</h2>
+      <h2 className="text-xl">{t("title")}</h2>
       <ItemResolutionView resolution={resolution.value} />
     </section>
   );

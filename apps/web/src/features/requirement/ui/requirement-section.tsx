@@ -37,9 +37,9 @@ export async function RequirementSection({ locale, ticket }: RequirementSectionP
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const rows = requirements.value.items;
   return (
-    <section className="grid gap-4">
+    <section className="grid grid-cols-1 gap-4">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-semibold">{t("plural")}</h2>
+        <h2 className="text-xl">{t("plural")}</h2>
         {can({ abilities, permission: "program:write" }) ? (
           <CreateRequirementButton data={data.value} ticketId={ticket.id} />
         ) : null}

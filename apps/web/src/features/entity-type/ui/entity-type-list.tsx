@@ -66,7 +66,7 @@ export async function EntityTypeList({ locale, cursor }: EntityTypeListProps) {
       ) : (
         groupByBase({ types: items }).map(([base, types]) => (
           <section key={base} className="grid gap-2">
-            <h2 className="text-lg font-semibold">{t(`bases.${base}`)}</h2>
+            <h2 className="text-xl">{t(`bases.${base}`)}</h2>
             <EntityTypeTable types={types} />
           </section>
         ))

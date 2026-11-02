@@ -18,7 +18,7 @@ export async function DemandList({ itemId, kind, rows, pools, canEdit }: DemandL
   return (
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-semibold">{t(`lists.${list}`)}</h2>
+        <h2 className="text-xl">{t(`lists.${list}`)}</h2>
         {canEdit && pools.length > 0 ? <CreateDemandButton itemId={itemId} pools={pools} /> : null}
       </div>
       {rows.length === 0 ? (

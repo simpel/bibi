@@ -15,7 +15,7 @@ export async function ItemStateSection({ type, states, canCreate, access }: Item
   return (
     <section className="grid gap-3" aria-label={type.name}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-medium">{type.name}</h2>
+        <h2 className="text-xl font-medium">{type.name}</h2>
         {canCreate ? (
           <Button asChild variant="outline" size="sm">
             <Link href={`${ROUTES.itemStateNew}?type=${encodeURIComponent(type.id)}`}>

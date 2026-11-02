@@ -26,7 +26,7 @@ export async function InvitationList({ locale }: InvitationListProps) {
   );
   return (
     <section className="grid gap-3">
-      <h2 className="text-lg font-semibold">{t("invitations")}</h2>
+      <h2 className="text-xl">{t("invitations")}</h2>
       {body}
     </section>
   );

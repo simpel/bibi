@@ -1,18 +1,17 @@
 "use client";
 
-import { Card } from "@bibi/ui";
 import { BalanceSummary } from "@/features/payment/ui/balance-summary";
 import { useNumberFormat } from "@/lib/number/use-number-format";
 import type { GenerativeProps } from "./generative-props";
 
 export type TicketBalanceCardViewProps = GenerativeProps<"ticket-balance-card">;
 
-/** What a ticket owes, derived from its receivables and payments (ADR 0057). */
+/** What a ticket owes, derived from its receivables and payments (ADR 0057): the stat cards. */
 export function TicketBalanceCardView({ balance }: TicketBalanceCardViewProps) {
   const numbers = useNumberFormat();
   return (
-    <Card data-slot="ticket-balance-card" className="p-4 shadow-none">
+    <div data-slot="ticket-balance-card">
       <BalanceSummary numbers={numbers} balance={balance} />
-    </Card>
+    </div>
   );
 }

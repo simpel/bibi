@@ -14,6 +14,10 @@ export const READ_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
     "the inbox and API addresses; the inbox page shows them (ADR 0085); JSON in chat",
   inboundMessage_submit:
     "never offered to the assistant (aiAllowed: false): outside callers hand messages in",
+  line_amounts:
+    "line amounts and the ticket total; the ticket page's lines table shows them; JSON in chat",
+  line_issues:
+    "a saved ticket's line issues; the ticket page shows one alert per issue; JSON in chat",
   ticket_previewLines:
     "planned lines and their issues; the /new/ticket intake shows them (ADR 0081); JSON in chat",
   ticketDraft_fromMessage:

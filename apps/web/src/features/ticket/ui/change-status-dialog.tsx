@@ -19,18 +19,20 @@ export type ChangeStatusDialogProps = {
   ticket: TicketDto;
   /** The statuses the organization allows from the ticket's current status. */
   targets: readonly NamedOption[];
+  /** The status picked in the status menu; the form starts on it. */
+  statusId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-type ChangeStatusFormProps = Pick<ChangeStatusDialogProps, "ticket" | "targets"> & {
+type ChangeStatusFormProps = Pick<ChangeStatusDialogProps, "ticket" | "targets" | "statusId"> & {
   onDone: () => void;
 };
 
-function ChangeStatusForm({ ticket, targets, onDone }: ChangeStatusFormProps) {
+function ChangeStatusForm({ ticket, targets, statusId, onDone }: ChangeStatusFormProps) {
   const common = useTranslations("common");
   const t = useTranslations("ticket");
-  const { form, submit, pending } = useChangeStatusForm({ ticket, onDone });
+  const { form, submit, pending } = useChangeStatusForm({ ticket, statusId, onDone });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
@@ -58,6 +60,7 @@ function ChangeStatusForm({ ticket, targets, onDone }: ChangeStatusFormProps) {
 export function ChangeStatusDialog({
   ticket,
   targets,
+  statusId,
   open,
   onOpenChange,
 }: ChangeStatusDialogProps) {
@@ -69,7 +72,13 @@ export function ChangeStatusDialog({
           <DialogTitle>{t("changeStatus")}</DialogTitle>
           <DialogDescription>{t("changeStatusDescription")}</DialogDescription>
         </DialogHeader>
-        <ChangeStatusForm ticket={ticket} targets={targets} onDone={() => onOpenChange(false)} />
+        <ChangeStatusForm
+          key={statusId}
+          ticket={ticket}
+          targets={targets}
+          statusId={statusId}
+          onDone={() => onOpenChange(false)}
+        />
       </DialogContent>
     </Dialog>
   );

@@ -4,13 +4,11 @@ import {
   changeTicketStatus,
   createTicket,
   expireTicketHolds,
-  exportTicket,
   type LineDto,
   previewTicketLines,
   type TicketChangeStatusInput,
   type TicketCreateInput,
   type TicketDto,
-  type TicketExport,
   type TicketPreviewLines,
   type TicketPreviewLinesInput,
   type TicketUpdateInput,
@@ -40,15 +38,6 @@ export async function changeTicketStatusAction({
   input,
 }: ChangeTicketStatusActionInput): Promise<ActionResult<TicketDto>> {
   return toActionResult({ result: await runOperation({ operation: changeTicketStatus, input }) });
-}
-
-export type ExportTicketActionInput = { id: string };
-
-/** The ticket as a versioned json document and its file name (for the browser download). */
-export async function exportTicketAction({
-  id,
-}: ExportTicketActionInput): Promise<ActionResult<TicketExport>> {
-  return toActionResult({ result: await runOperation({ operation: exportTicket, input: { id } }) });
 }
 
 /** Runs `ticket.expireHolds` by hand; the scheduler otherwise does it every 15 minutes. */

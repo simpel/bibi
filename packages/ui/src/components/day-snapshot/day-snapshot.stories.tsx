@@ -37,3 +37,21 @@ export const PastMidnight: Story = { ...Default, args: { endMinute: 26 * 60 } };
 
 /** Narrow: the label column stays, the hours shrink, and nothing scrolls sideways. */
 export const Narrow: Story = { render: (args) => <DaySnapshot {...args} className="w-[22rem]" /> };
+
+/** A saved ticket's day (the ticket page): its lines solid, the day's other bookings dimmed. */
+export const Saved: Story = {
+  ...Default,
+  args: {
+    rows: [
+      {
+        id: "room",
+        label: "Meeting room Vinga",
+        blocks: [
+          { id: "a", start: 8 * 60, end: 10 * 60, label: "#41 Saab", tone: "hard" },
+          { id: "b", start: 10 * 60, end: 12 * 60, label: "Morning session", tone: "own" },
+          { id: "c", start: 14 * 60, end: 16 * 60, label: "#44 Ericsson", tone: "soft" },
+        ],
+      },
+    ],
+  },
+};

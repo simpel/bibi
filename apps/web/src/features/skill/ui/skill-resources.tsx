@@ -10,7 +10,7 @@ export async function SkillResources({ resources }: SkillResourcesProps) {
   if (resources.length === 0) return null;
   return (
     <section className="grid gap-2">
-      <h2 className="text-lg font-semibold">{t("sections.resources")}</h2>
+      <h2 className="text-xl">{t("sections.resources")}</h2>
       {resources.map((resource) => (
         <Card key={resource.name} className="overflow-hidden shadow-none">
           <p className="border-b bg-muted/50 px-4 py-2 font-mono text-xs">{resource.name}</p>

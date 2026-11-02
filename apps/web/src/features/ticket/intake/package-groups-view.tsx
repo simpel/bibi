@@ -54,7 +54,7 @@ export function PackageGroupsView(props: PackageGroupsViewProps) {
       {(["AVAILABLE", "CLASHES", "OUTSIDE_RANGE"] as const).map((group) =>
         groups[group].length === 0 ? null : (
           <section key={group} className="grid gap-2">
-            <h3 className="text-sm font-semibold">{headings[group]}</h3>
+            <h3 className="text-sm">{headings[group]}</h3>
             <div className={GRID}>{cards({ group })}</div>
           </section>
         ),

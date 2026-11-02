@@ -22,6 +22,8 @@ import "../features/ticket-template/graphql";
 import "../features/ticket/graphql";
 import "../features/ticket/preview-graphql";
 import "../features/line/graphql";
+import "../features/line/amounts-graphql";
+import "../features/line/issues-graphql";
 import "../features/line-allocation/graphql";
 import "../features/alternative-group/graphql";
 import "../features/item-state/graphql";

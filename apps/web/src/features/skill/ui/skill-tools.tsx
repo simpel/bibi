@@ -8,7 +8,7 @@ export async function SkillTools({ tools }: SkillToolsProps) {
   const t = await getTranslations("skills");
   return (
     <section className="grid gap-2">
-      <h2 className="text-lg font-semibold">{t("sections.allowedTools")}</h2>
+      <h2 className="text-xl">{t("sections.allowedTools")}</h2>
       {tools.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("noToolLimits")}</p>
       ) : (

@@ -20,7 +20,7 @@ export async function StatusGridEditor({ locale }: StatusGridEditorProps) {
   return (
     <section className="grid gap-3" aria-labelledby="status-grid-title">
       <div className="grid gap-1">
-        <h2 id="status-grid-title" className="text-lg font-medium">
+        <h2 id="status-grid-title" className="text-xl font-medium">
           {t("title")}
         </h2>
         <p className="text-sm text-muted-foreground">{t("description")}</p>

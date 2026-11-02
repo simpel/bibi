@@ -29,8 +29,8 @@ export async function TicketMessages({ locale, ticketId, address }: TicketMessag
   if (!result.ok && ["FORBIDDEN", "VALIDATION"].includes(result.error.code)) return null;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
-    <section data-slot="ticket-messages" className="grid gap-3">
-      <h2 className="text-lg font-semibold">{t("ticketTitle")}</h2>
+    <section data-slot="ticket-messages" className="grid grid-cols-1 gap-3">
+      <h2 className="text-xl">{t("ticketTitle")}</h2>
       <p className="text-sm text-muted-foreground">
         {address
           ? t.rich("replyAddress", {

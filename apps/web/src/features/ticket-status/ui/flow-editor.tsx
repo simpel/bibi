@@ -14,7 +14,7 @@ export async function FlowEditor({ statuses }: FlowEditorProps) {
   return (
     <section className="grid gap-3" aria-labelledby="flow-editor-title">
       <div className="grid gap-1">
-        <h2 id="flow-editor-title" className="text-lg font-medium">
+        <h2 id="flow-editor-title" className="text-xl font-medium">
           {t("title")}
         </h2>
         <p className="text-sm text-muted-foreground">{t("description")}</p>

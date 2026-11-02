@@ -19,9 +19,7 @@ export async function SitePage({ locale, appUrl }: SitePageProps) {
       </header>
       <main>
         <PageContainer className="flex flex-col items-start gap-6 py-20">
-          <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
-            {t("heading")}
-          </h1>
+          <h1 className="max-w-3xl text-4xl tracking-tight sm:text-5xl">{t("heading")}</h1>
           <p className="max-w-2xl text-lg text-muted-foreground">{t("lead")}</p>
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg">

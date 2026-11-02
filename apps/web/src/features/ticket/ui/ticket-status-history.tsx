@@ -28,8 +28,8 @@ export async function TicketStatusHistory({
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const statusNames = new Map(statuses.map((ticketStatus) => [ticketStatus.id, ticketStatus.name]));
   return (
-    <section data-slot="ticket-status-history" className="grid gap-3">
-      <h2 className="text-lg font-semibold">{t("title")}</h2>
+    <section data-slot="ticket-status-history" className="grid grid-cols-1 gap-3">
+      <h2 className="text-xl">{t("title")}</h2>
       <StatusWarnings warnings={result.value.warnings} />
       <StatusHistoryList items={result.value.items} statusNames={statusNames} dates={dates} />
     </section>

@@ -50,7 +50,7 @@ export function ReferenceExplorer({ entries }: ReferenceExplorerProps) {
         {groups.length === 0 && <p className="text-sm text-muted-foreground">{t("noResults")}</p>}
         {groups.map(({ group, entries: list }) => (
           <section key={group} id={`group-${group}`} className="grid min-w-0 scroll-mt-20 gap-2">
-            <h2 className="font-mono text-base font-semibold">{group}</h2>
+            <h2 className="font-mono text-base">{group}</h2>
             {list.map((entry) => (
               <ReferenceEntryCard key={entry.id} entry={entry} />
             ))}

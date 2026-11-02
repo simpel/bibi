@@ -67,7 +67,7 @@ function StepHeader(props: StepHeaderProps) {
         {done ? <CheckIcon className="size-4" aria-hidden="true" /> : number}
       </span>
       <div className="grid min-w-0 flex-1 gap-0.5">
-        <h2 className="text-base font-semibold leading-snug">{title}</h2>
+        <h2 className="text-base leading-snug">{title}</h2>
         {done && summary ? (
           <p data-slot="step-section-summary" className="truncate text-sm text-muted-foreground">
             {summary}

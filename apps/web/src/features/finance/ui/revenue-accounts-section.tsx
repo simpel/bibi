@@ -22,7 +22,7 @@ export async function RevenueAccountsSection({
     <section className="grid gap-3">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="grid gap-1">
-          <h2 className="text-base font-semibold">{t("groups.revenueByType")}</h2>
+          <h2 className="text-base">{t("groups.revenueByType")}</h2>
           <p className="text-sm text-muted-foreground">{t("revenueByTypeHint")}</p>
         </div>
         {canEdit ? <AddAccountButton settings={settings} types={types} /> : null}

@@ -23,7 +23,7 @@ export async function FieldSection({ entityType }: FieldSectionProps) {
   return (
     <section className="grid gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">{t("plural")}</h2>
+        <h2 className="text-xl">{t("plural")}</h2>
         {can({ abilities, permission: "configuration:write" }) ? (
           <AddFieldButton
             entityTypeId={entityType.id}

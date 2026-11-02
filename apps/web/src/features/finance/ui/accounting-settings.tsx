@@ -34,7 +34,7 @@ export async function AccountingSettings({ locale }: AccountingSettingsProps) {
       <PageHeader title={t("title")} description={t("description")} />
       <FiscalYearSetting settings={settings} canEdit={canEdit} />
       <section className="grid gap-3">
-        <h2 className="text-base font-semibold">{t("groups.accounts")}</h2>
+        <h2 className="text-base">{t("groups.accounts")}</h2>
         <AccountsTable
           tableId="finance.accounts"
           rows={accountRows({ settings })}

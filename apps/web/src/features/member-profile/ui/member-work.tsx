@@ -30,7 +30,7 @@ export async function MemberWork({ locale, memberId }: MemberWorkProps) {
   ];
   return (
     <section className="grid gap-4">
-      <h2 className="text-lg font-semibold">{t("title")}</h2>
+      <h2 className="text-xl">{t("title")}</h2>
       <FactList facts={facts} />
       {canWrite ? (
         <MemberWorkForm

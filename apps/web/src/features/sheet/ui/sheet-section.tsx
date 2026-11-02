@@ -27,8 +27,8 @@ export async function SheetSection({ locale, ticket }: SheetSectionProps) {
   }
   if (!definitions.ok || !sheets.ok) return null;
   return (
-    <section className="grid gap-4">
-      <h2 className="text-lg font-semibold">{t("plural")}</h2>
+    <section className="grid grid-cols-1 gap-4">
+      <h2 className="text-xl">{t("plural")}</h2>
       {definitions.value.items.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("empty")}</p>
       ) : (

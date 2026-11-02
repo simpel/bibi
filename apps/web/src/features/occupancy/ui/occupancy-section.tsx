@@ -33,7 +33,7 @@ export async function OccupancySection({ locale, itemId, timeZone }: OccupancySe
   return (
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-semibold">{t("plural")}</h2>
+        <h2 className="text-xl">{t("plural")}</h2>
         {can({ abilities, permission: "ticket:write" }) ? (
           <CreateOccupancyButton itemId={itemId} timeZone={timeZone} />
         ) : null}

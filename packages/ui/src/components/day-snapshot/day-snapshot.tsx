@@ -18,6 +18,8 @@ export const daySnapshotBlockVariants = cva(
         draft: "border border-dashed border-primary bg-primary/10 text-foreground",
         /** This booking's draft line where it clashes. */
         clash: "border border-dashed border-destructive bg-destructive/10 text-destructive",
+        /** This ticket's saved line (the ticket page): solid, so the day's others stay dimmed. */
+        own: "border border-primary bg-primary/15 text-foreground",
       },
     },
     defaultVariants: { tone: "draft" },

@@ -18,7 +18,7 @@ export async function ItemHoursSection({ locale, itemId }: ItemHoursSectionProps
   return (
     <section className="grid gap-3">
       <div className="grid gap-1">
-        <h2 className="text-xl font-semibold">{t("title")}</h2>
+        <h2 className="text-xl">{t("title")}</h2>
         <p className="text-sm text-muted-foreground">{t("description")}</p>
       </div>
       <ItemHoursEditor

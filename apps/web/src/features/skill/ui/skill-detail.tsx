@@ -47,7 +47,7 @@ export async function SkillDetail({ locale, id }: SkillDetailProps) {
       />
       <SkillMeta skill={skill} />
       <section className="grid gap-2">
-        <h2 className="text-lg font-semibold">{t("sections.instructions")}</h2>
+        <h2 className="text-xl">{t("sections.instructions")}</h2>
         <MarkdownView markdown={skill.instructions} />
       </section>
       <SkillTools tools={skill.allowedTools} />

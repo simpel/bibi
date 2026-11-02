@@ -4,6 +4,11 @@ export type UiExempt = { operation: string; reason: string };
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
   {
+    operation: "ticket.export",
+    reason:
+      "The ticket page leaves out an export button to keep its header to the daily work; the export serves the API and the assistant.",
+  },
+  {
     operation: "ticket.createFromTemplate",
     reason:
       "The intake on /new/ticket reviews a package's lines and creates them with ticket.create and templateId (ADR 0081); createFromTemplate serves the API and the assistant.",

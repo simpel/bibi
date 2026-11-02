@@ -36,9 +36,9 @@ export async function TicketQuotes({ locale, ticket, statuses }: TicketQuotesPro
   const canCreate = can({ abilities, permission: "quote:write" }) && open && items.length === 0;
   const accepted = items.find((quote) => quote.quoteStatus === "ACCEPTED");
   return (
-    <section className="grid gap-4">
+    <section className="grid grid-cols-1 gap-4">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-semibold">{t("plural")}</h2>
+        <h2 className="text-xl">{t("plural")}</h2>
         {canCreate ? <CreateQuoteButton ticketId={ticket.id} /> : null}
       </div>
       {items.length === 0 ? (

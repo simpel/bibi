@@ -1,4 +1,4 @@
-import { type LineDto, listLines, nestUnderParents, type TicketDto } from "@bibi/core";
+import { type LineDto, lineAmounts, listLines, nestUnderParents, type TicketDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
@@ -11,6 +11,7 @@ import { CreateLineButton } from "./create-line-button";
 import { ExpandBundleButton } from "./expand-bundle-button";
 import type { ProgramAccess } from "./program-row-actions";
 import { ProgramTable } from "./program-table";
+import { TicketDay } from "./ticket-day";
 
 export type ProgramSectionProps = { locale: Locale; ticket: TicketDto };
 
@@ -26,13 +27,38 @@ function programAccess({ abilities }: { abilities: CallerAbilities }): ProgramAc
 const nestedLines = ({ lines }: { lines: LineDto[] }) =>
   nestUnderParents({ rows: lines, keys: (line) => ({ id: line.id, parentId: line.parentLineId }) });
 
-/** The ticket's run schedule (ADR 0022): lines in time order, edited inline, then its alternatives. */
+type ProgramHeaderProps = {
+  title: string;
+  canEdit: boolean;
+  start: Parameters<typeof CreateLineButton>[0];
+};
+
+/** The section's title with the add buttons for a caller who may edit the program. */
+function ProgramHeader({ title, canEdit, start }: ProgramHeaderProps) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <h2 className="text-xl">{title}</h2>
+      {canEdit ? (
+        <div className="flex flex-wrap gap-2">
+          <ExpandBundleButton {...start} />
+          <CreateLineButton {...start} />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * The ticket's run schedule (ADR 0022): its days in the calendar, the lines in time order with
+ * their amounts and the total, edited inline, then its alternatives.
+ */
 export async function ProgramSection({ locale, ticket }: ProgramSectionProps) {
   const t = await getTranslations("line");
   const access = programAccess({ abilities: await getCallerAbilities() });
-  const [lines, data] = await Promise.all([
+  const [lines, data, amounts] = await Promise.all([
     runOperation({ operation: listLines, input: { ticketId: ticket.id, limit: 100 } }),
     loadProgramData(),
+    runOperation({ operation: lineAmounts, input: { ticketId: ticket.id } }),
   ]);
   if (!lines.ok && lines.error.code === "FORBIDDEN") return null;
   if (!lines.ok) {
@@ -47,20 +73,18 @@ export async function ProgramSection({ locale, ticket }: ProgramSectionProps) {
   };
   return (
     <>
-      <section className="grid gap-4">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-lg font-semibold">{t("plural")}</h2>
-          {access.canEdit ? (
-            <div className="flex flex-wrap gap-2">
-              <ExpandBundleButton {...start} />
-              <CreateLineButton {...start} />
-            </div>
-          ) : null}
-        </div>
+      <section className="grid grid-cols-1 gap-4">
+        <ProgramHeader title={t("plural")} canEdit={access.canEdit} start={start} />
+        <TicketDay ticketId={ticket.id} lines={items} data={data.value} />
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("empty")}</p>
         ) : (
-          <ProgramTable lines={items} data={data.value} access={access} />
+          <ProgramTable
+            lines={items}
+            data={data.value}
+            access={access}
+            amounts={amounts.ok ? amounts.value : null}
+          />
         )}
       </section>
       <AlternativeGroupSection locale={locale} ticket={ticket} />

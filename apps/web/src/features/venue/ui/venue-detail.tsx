@@ -33,7 +33,7 @@ export async function VenueDetail({ locale, id, itemCursor }: VenueDetailProps) 
           <VenueHoursSection locale={locale} venueId={venue.id} />
           {can({ abilities, permission: "item:read" }) ? (
             <section className="grid gap-4">
-              <h2 className="text-xl font-semibold">{items("plural")}</h2>
+              <h2 className="text-xl">{items("plural")}</h2>
               <VenueItemsSection locale={locale} venueId={venue.id} cursor={itemCursor} />
             </section>
           ) : null}

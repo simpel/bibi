@@ -1,4 +1,4 @@
-import type { LineDto } from "@bibi/core";
+import type { LineAmounts, LineDto } from "@bibi/core";
 import type { NumberFormat } from "@bibi/core/schemas";
 import type { ColumnDef } from "@bibi/ui";
 import type { useTranslations } from "next-intl";
@@ -36,4 +36,38 @@ export function amountColumns({ t, money }: AmountColumnsInput): ColumnDef<LineD
             })}`,
     },
   ];
+}
+
+export type AmountColumnInput = AmountColumnsInput & { amounts: LineAmounts | null };
+
+/**
+ * What each priced line costs (`line.amounts`, the draft quote's rules), muted when it does not
+ * count in the total (a part, an included option, an unchosen alternative), and the ticket's
+ * total excl. VAT in the footer ("From" while an alternative is unchosen).
+ */
+export function amountColumn({ t, money, amounts }: AmountColumnInput): ColumnDef<LineDto> {
+  const byLine = new Map((amounts?.lines ?? []).map((amount) => [amount.lineId, amount]));
+  const total = amounts ? money({ minor: amounts.totalExclVatMinor }) : "–";
+  return {
+    id: "amount",
+    header: t("columns.amount"),
+    accessorFn: (item) => byLine.get(item.id)?.totalExclVatMinor ?? undefined,
+    cell: ({ row: { original } }) => {
+      const amount = byLine.get(original.id);
+      if (!amount) return "–";
+      return (
+        <span
+          className={amount.inTotal ? "tabular-nums" : "tabular-nums text-muted-foreground"}
+          title={amount.inTotal ? undefined : t("notInTotal")}
+        >
+          {money({ minor: amount.totalExclVatMinor })}
+        </span>
+      );
+    },
+    footer: () => (
+      <span className="whitespace-nowrap tabular-nums font-medium">
+        {amounts?.totalIsFrom ? t("totalFrom", { amount: total }) : total}
+      </span>
+    ),
+  };
 }

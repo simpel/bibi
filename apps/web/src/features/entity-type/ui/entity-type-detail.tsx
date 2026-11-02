@@ -44,7 +44,7 @@ export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
       </div>
       {can({ abilities, permission: "configuration:write" }) ? (
         <section className="grid max-w-xl gap-4">
-          <h2 className="text-xl font-semibold">{t("edit")}</h2>
+          <h2 className="text-xl">{t("edit")}</h2>
           <EntityTypeForm entityType={entityType} />
         </section>
       ) : null}

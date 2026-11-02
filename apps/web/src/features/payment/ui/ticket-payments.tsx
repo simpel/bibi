@@ -50,9 +50,9 @@ export async function TicketPayments({ locale, ticketId, canRequest }: TicketPay
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const { balance, deposits, invoices, payments } = result.value;
   return (
-    <section data-slot="ticket-payments" className="grid gap-4">
+    <section data-slot="ticket-payments" className="grid grid-cols-1 gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold">{t("balance.title")}</h2>
+        <h2 className="text-xl">{t("balance.title")}</h2>
         {canRequest ? (
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" asChild>

@@ -5,6 +5,7 @@ export * from "./components/ai-elements/message";
 export * from "./components/ai-elements/prompt-input";
 export * from "./components/ai-elements/shimmer";
 export * from "./components/ai-elements/suggestion";
+export * from "./components/alert/alert";
 export * from "./components/availability-calendar/availability-calendar";
 export * from "./components/availability-calendar/booking-sheet";
 export * from "./components/availability-calendar/calendar-labels";

@@ -53,7 +53,7 @@ export function NewCustomerForm(props: NewCustomerFormProps) {
   return (
     <Form {...form}>
       <form className="grid gap-4 rounded-md border p-4" onSubmit={submit} noValidate>
-        <h3 className="text-sm font-semibold">{t("newCustomerTitle")}</h3>
+        <h3 className="text-sm">{t("newCustomerTitle")}</h3>
         <NewCustomerFields {...props} form={form} />
         {similar ? (
           <SimilarCustomers

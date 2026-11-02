@@ -17,7 +17,7 @@ export async function ErrorState({ errorKey }: ErrorStateProps) {
         <CloudOff aria-hidden className="size-5" />
       </div>
       <div className="grid max-w-sm gap-1.5">
-        <h3 className="text-base font-semibold text-foreground">{t("loadFailed")}</h3>
+        <h3 className="text-base text-foreground">{t("loadFailed")}</h3>
         <p className="text-sm text-muted-foreground">{t(errorKey)}</p>
       </div>
       <RetryButton />

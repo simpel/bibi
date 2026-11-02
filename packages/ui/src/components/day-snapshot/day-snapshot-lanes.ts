@@ -4,7 +4,7 @@ export type DaySnapshotBlock = {
   start: number;
   end: number;
   label: string;
-  tone: "hard" | "soft" | "draft" | "clash";
+  tone: "hard" | "soft" | "draft" | "clash" | "own";
 };
 
 export type LanedBlock = DaySnapshotBlock & { lane: number };

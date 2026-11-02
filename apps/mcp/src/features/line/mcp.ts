@@ -10,6 +10,8 @@ const optionText = ({ option }: { option: unknown }) => {
 export const lineMcpTools = [
   mcpTool({ operation: "line.list" }),
   mcpTool({ operation: "line.get" }),
+  mcpTool({ operation: "line.amounts" }),
+  mcpTool({ operation: "line.issues" }),
   mcpTool({
     operation: "line.create",
     summary: ({ input }) =>

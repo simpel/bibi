@@ -12,7 +12,7 @@ import {
   changeStatusFormSchema,
 } from "./change-status-form-schema";
 
-export type UseChangeStatusFormInput = { ticket: TicketDto; onDone: () => void };
+export type UseChangeStatusFormInput = { ticket: TicketDto; statusId: string; onDone: () => void };
 
 const FIELD_OF = {
   reason: "reason",
@@ -31,13 +31,13 @@ const MESSAGE_OF = {
  * Change-status form state; each blocker of a refused move is shown on its field, blocked lines
  * on the status.
  */
-export function useChangeStatusForm({ ticket, onDone }: UseChangeStatusFormInput) {
+export function useChangeStatusForm({ ticket, statusId, onDone }: UseChangeStatusFormInput) {
   const t = useTranslations("ticket");
   const common = useTranslations("common");
   const router = useRouter();
   const form = useForm<ChangeStatusFormValues, unknown, ChangeStatusFormOutput>({
     resolver: zodResolver(changeStatusFormSchema({ ticketId: ticket.id }), useZodMessages()),
-    defaultValues: { statusId: "", reason: "" },
+    defaultValues: { statusId, reason: "" },
   });
   const { submit, pending } = useFormAction({
     form,

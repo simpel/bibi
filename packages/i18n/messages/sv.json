@@ -793,6 +793,7 @@
     "editDescription": "Ändra kund, kontaktperson, önskade datum, antal, budget och typens fält. Ärendestatus och ansvarig ändras separat.",
     "created": "Ärendet har skapats.",
     "updated": "Ärendet har uppdaterats.",
+    "details": "Detaljer",
     "changeStatus": "Byt ärendestatus",
     "changeStatusDescription": "Flytta ärendet till en av de ärendestatusar som organisationen tillåter från nuvarande ärendestatus. Vissa ärendestatusar kräver en anledning eller en ansvarig, och en avslutande ärendestatus frigör ärendets lokaler och resurser.",
     "statusChanged": "Ärendestatusen har ändrats.",
@@ -1445,7 +1446,8 @@
       "where": "Var",
       "state": "Läge",
       "quantity": "Antal",
-      "unitPrice": "Styckpris"
+      "unitPrice": "Styckpris",
+      "amount": "Belopp"
     },
     "untimed": "Ingen tid",
     "inherited": "(ärvt)",
@@ -1479,7 +1481,49 @@
     "addOn": "Tillägg",
     "addAddOn": "Lägg till tillägg",
     "addAddOnDescription": "Lägg till något som säljs med {name}: valfri artikel eller fritext till eget pris. Det får radens typ och tid från början; ändra dem om det ska till ett annat underlag eller bara gäller en del av tiden. Tomt antal följer raden.",
-    "extrasHint": "Val utöver en grupps gräns läggs till som tillägg under raden, vart och ett till sitt eget pris."
+    "extrasHint": "Val utöver en grupps gräns läggs till som tillägg under raden, vart och ett till sitt eget pris.",
+    "issueAlerts": {
+      "hardClash": {
+        "title": "Dubbelbokad",
+        "description": "{line}: ärende #{reference} håller den {period}"
+      },
+      "blocked": {
+        "title": "Blockerad",
+        "description": "{line}: resursen är blockerad {period}"
+      },
+      "softOverlap": {
+        "title": "Preliminärbokad av ett annat ärende",
+        "description": "{line}: ärende #{reference} har den preliminärbokad {period}"
+      },
+      "selfOverlap": {
+        "title": "Överlappande rader",
+        "description": "{line} överlappar {other} i detta ärende"
+      },
+      "setupCapacity": {
+        "title": "Över uppställningens kapacitet",
+        "description": "{line}: fler än uppställningens {capacity}"
+      },
+      "poolShort": {
+        "title": "För få enheter",
+        "description": "{line}: {needed} behövs, {free} lediga"
+      },
+      "outsideHours": {
+        "title": "Utanför öppettiderna",
+        "description": "{line} ligger utanför öppettiderna som gäller"
+      }
+    },
+    "total": "Totalt",
+    "totalFrom": "Från {amount}",
+    "notInTotal": "Ingår inte i totalen",
+    "day": {
+      "title": "Dagen i kalendern, {date}",
+      "booking": "#{reference} {customer}",
+      "bookingNoCustomer": "#{reference}",
+      "blocked": "Blockerad",
+      "nextDay": "{hour} +1",
+      "otherLines": "Övriga rader",
+      "untimed": "Ingen tid: {lines}"
+    }
   },
   "priceEffect": {
     "INCLUDED": "Ingår",

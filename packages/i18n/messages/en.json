@@ -793,6 +793,7 @@
     "editDescription": "Change customer, contact, desired dates, counts, budget and the type's fields. The status and the assignee are changed separately.",
     "created": "The ticket has been created.",
     "updated": "The ticket has been updated.",
+    "details": "Details",
     "changeStatus": "Change status",
     "changeStatusDescription": "Move the ticket to one of the statuses your organization allows from its current status. Some statuses need a reason or an assignee, and a closing status releases the ticket's rooms and resources.",
     "statusChanged": "The status has been changed.",
@@ -1445,7 +1446,8 @@
       "where": "Where",
       "state": "State",
       "quantity": "Quantity",
-      "unitPrice": "Unit price"
+      "unitPrice": "Unit price",
+      "amount": "Amount"
     },
     "untimed": "No time",
     "inherited": "(inherited)",
@@ -1479,7 +1481,49 @@
     "addOn": "Add-on",
     "addAddOn": "Add add-on",
     "addAddOnDescription": "Add something sold with {name}: any item or free text at its own price. It starts with the line's type and time; change them if it goes to another sheet or only part of the time. Empty quantity follows the line.",
-    "extrasHint": "Picks beyond a group's limit are added as add-ons under the line, each at its own price."
+    "extrasHint": "Picks beyond a group's limit are added as add-ons under the line, each at its own price.",
+    "issueAlerts": {
+      "hardClash": {
+        "title": "Double booked",
+        "description": "{line}: ticket #{reference} holds it {period}"
+      },
+      "blocked": {
+        "title": "Blocked",
+        "description": "{line}: the item is blocked {period}"
+      },
+      "softOverlap": {
+        "title": "Prebooked by another ticket",
+        "description": "{line}: ticket #{reference} has it prebooked {period}"
+      },
+      "selfOverlap": {
+        "title": "Overlapping lines",
+        "description": "{line} overlaps {other} on this ticket"
+      },
+      "setupCapacity": {
+        "title": "Over the setup's capacity",
+        "description": "{line}: more than the setup's {capacity}"
+      },
+      "poolShort": {
+        "title": "Not enough units",
+        "description": "{line}: {needed} needed, {free} free"
+      },
+      "outsideHours": {
+        "title": "Outside opening hours",
+        "description": "{line} is outside the hours that apply"
+      }
+    },
+    "total": "Total",
+    "totalFrom": "From {amount}",
+    "notInTotal": "Not in the total",
+    "day": {
+      "title": "The day in the calendar, {date}",
+      "booking": "#{reference} {customer}",
+      "bookingNoCustomer": "#{reference}",
+      "blocked": "Blocked",
+      "nextDay": "{hour} +1",
+      "otherLines": "Other lines",
+      "untimed": "No time: {lines}"
+    }
   },
   "priceEffect": {
     "INCLUDED": "Included",

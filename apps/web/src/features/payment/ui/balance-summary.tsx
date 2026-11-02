@@ -1,4 +1,5 @@
 import type { NumberFormat, TicketBalanceDto } from "@bibi/core/schemas";
+import { StatCard, type StatCardProps, StatCards } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type BalanceSummaryProps = {
@@ -7,28 +8,34 @@ export type BalanceSummaryProps = {
   numbers: NumberFormat;
 };
 
-/** What the ticket owes, derived (ADR 0057): billed, paid and what is left. */
+type Figure = { key: "billed" | "paid" | "balance"; minor: number; tone: StatCardProps["tone"] };
+
+/**
+ * What the ticket owes, derived (ADR 0057): billed, paid and what is left, as the dashboards'
+ * stat cards (ADR 0086). Nothing left to pay shows as neutral.
+ */
 export function BalanceSummary({ balance, numbers }: BalanceSummaryProps) {
   const t = useTranslations("payment.balance");
-  const { money } = numbers;
-  const figures = [
-    { key: "billed", minor: balance.billedMinor },
-    { key: "paid", minor: balance.paidMinor },
-    { key: "balance", minor: balance.balanceMinor },
-  ] as const;
+  const figures: readonly Figure[] = [
+    { key: "billed", minor: balance.billedMinor, tone: "neutral" },
+    { key: "paid", minor: balance.paidMinor, tone: "positive" },
+    {
+      key: "balance",
+      minor: balance.balanceMinor,
+      tone: balance.balanceMinor ? "pending" : "neutral",
+    },
+  ];
   return (
-    <div data-slot="balance-summary" className="grid gap-2">
-      <dl className="grid grid-cols-3 gap-4 text-sm">
-        {figures.map(({ key, minor }) => (
-          <div key={key} className="grid gap-0.5">
-            <dt className="text-muted-foreground">{t(key)}</dt>
-            <dd className="text-base font-semibold">
-              {money({ minor, currency: balance.currency })}
-            </dd>
-          </div>
-        ))}
-      </dl>
-      <p className="text-xs text-muted-foreground">{t(`billedFrom.${balance.billedFrom}`)}</p>
-    </div>
+    <StatCards data-slot="balance-summary">
+      {figures.map(({ key, minor, tone }) => (
+        <StatCard
+          key={key}
+          label={t(key)}
+          tone={tone}
+          value={numbers.money({ minor, currency: balance.currency })}
+          {...(key === "billed" ? { hint: t(`billedFrom.${balance.billedFrom}`) } : {})}
+        />
+      ))}
+    </StatCards>
   );
 }

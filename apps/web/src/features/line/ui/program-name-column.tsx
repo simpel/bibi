@@ -17,6 +17,7 @@ export function nameColumn({ t, effects }: NameColumnInput): ColumnDef<LineDto> 
     id: "name",
     header: t("columns.name"),
     accessorFn: (item) => item.name,
+    footer: () => t("total"),
     cell: ({ row: { original } }) => (
       <span
         className={

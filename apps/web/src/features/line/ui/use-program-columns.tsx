@@ -1,4 +1,4 @@
-import type { LineDto } from "@bibi/core";
+import type { LineAmounts, LineDto } from "@bibi/core";
 import type { DateTimeFormat, NumberFormat } from "@bibi/core/schemas";
 import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
@@ -10,7 +10,7 @@ import { extraAddOnsOf } from "./choose-options-extras";
 import { chosenOptions } from "./choose-options-schema";
 import { LineStateCell, stateOf } from "./line-state-cell";
 import { placeOf } from "./place-of";
-import { amountColumns } from "./program-amount-columns";
+import { amountColumn, amountColumns } from "./program-amount-columns";
 import type { ProgramFormData } from "./program-form-data";
 import { nameColumn } from "./program-name-column";
 import { type ProgramAccess, ProgramRowActions } from "./program-row-actions";
@@ -23,6 +23,7 @@ export type UseProgramColumnsInput = {
   lines: LineDto[];
   data: ProgramFormData;
   access: ProgramAccess;
+  amounts: LineAmounts | null;
 };
 
 type DataInput = {
@@ -32,10 +33,11 @@ type DataInput = {
   format: DateTimeFormat;
   money: NumberFormat["money"];
   hidden: string | undefined;
+  amounts: LineAmounts | null;
 };
 
 /** The data columns (without the row actions). */
-function dataColumns({ data, t, effects, format, money, hidden }: DataInput): Column[] {
+function dataColumns({ data, t, effects, format, money, hidden, amounts }: DataInput): Column[] {
   return [
     nameColumn({ t, effects }),
     {
@@ -71,11 +73,17 @@ function dataColumns({ data, t, effects, format, money, hidden }: DataInput): Co
       ),
     },
     ...amountColumns({ t, money }),
+    amountColumn({ t, money, amounts }),
   ];
 }
 
-/** Name · type · where · state · time · quantity · unit price, plus the row actions when writable. */
-export function useProgramColumns({ lines, data, access }: UseProgramColumnsInput): Column[] {
+/** Name · type · where · state · time · quantity · unit price · amount, plus the row actions when writable. */
+export function useProgramColumns({
+  lines,
+  data,
+  access,
+  amounts,
+}: UseProgramColumnsInput): Column[] {
   const t = useTranslations("line");
   const effects = useTranslations("priceEffect");
   const common = useTranslations("common");
@@ -83,7 +91,7 @@ export function useProgramColumns({ lines, data, access }: UseProgramColumnsInpu
   const { money } = useNumberFormat();
   return useMemo<Column[]>(() => {
     const hidden = data.itemsHidden ? common("hidden") : undefined;
-    const columns = dataColumns({ data, t, effects, format, money, hidden });
+    const columns = dataColumns({ data, t, effects, format, money, hidden, amounts });
     if (!access.canEdit && !access.canRemove && !access.canChangeState && !access.canAllocate) {
       return columns;
     }
@@ -102,5 +110,5 @@ export function useProgramColumns({ lines, data, access }: UseProgramColumnsInpu
         ),
       }),
     ];
-  }, [t, effects, common, format, money, lines, data, access]);
+  }, [t, effects, common, format, money, lines, data, access, amounts]);
 }

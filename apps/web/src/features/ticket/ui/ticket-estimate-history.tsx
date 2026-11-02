@@ -23,8 +23,8 @@ export async function TicketEstimateHistory({ locale, ticketId }: TicketEstimate
   const result = await runOperation({ operation: ticketEstimateHistory, input: { ticketId } });
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
-    <section data-slot="ticket-estimate-history" className="grid gap-3">
-      <h2 className="text-lg font-semibold">{t("title")}</h2>
+    <section data-slot="ticket-estimate-history" className="grid grid-cols-1 gap-3">
+      <h2 className="text-xl">{t("title")}</h2>
       <EstimateHistoryList items={result.value.items} numbers={numbers} dates={dates} />
     </section>
   );

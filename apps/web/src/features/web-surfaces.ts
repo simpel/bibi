@@ -59,9 +59,10 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "ticket.get", route: "/tickets/[id]" },
   { operation: "ticket.update", route: "/tickets/[id]/update" },
   { operation: "ticket.changeStatus", route: "/tickets/[id]" },
-  { operation: "ticket.export", route: "/tickets/[id]" },
   // The run schedule (lines) is listed and edited on the ticket page.
   { operation: "line.list", route: "/tickets/[id]" },
+  { operation: "line.amounts", route: "/tickets/[id]" },
+  { operation: "line.issues", route: "/tickets/[id]" },
   { operation: "line.create", route: "/tickets/[id]" },
   { operation: "line.update", route: "/tickets/[id]" },
   { operation: "line.archive", route: "/tickets/[id]" },

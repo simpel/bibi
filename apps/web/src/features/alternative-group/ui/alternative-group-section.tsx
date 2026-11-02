@@ -30,10 +30,10 @@ export async function AlternativeGroupSection({ locale, ticket }: AlternativeGro
   }));
   const free = options.filter((line) => line.alternativeGroupId === null);
   return (
-    <section className="grid gap-4">
+    <section className="grid grid-cols-1 gap-4">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold">{t("plural")}</h2>
+          <h2 className="text-xl">{t("plural")}</h2>
           <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
         {lineWrite && free.length >= 2 ? (
