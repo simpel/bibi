@@ -42,7 +42,7 @@ export function TicketStatusMenu({ ticket, statuses }: TicketStatusMenuProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" aria-label={t("changeStatus")}>
+          <Button variant="outline" aria-label={t("changeStatus")}>
             {label}
             <ChevronDownIcon />
           </Button>
