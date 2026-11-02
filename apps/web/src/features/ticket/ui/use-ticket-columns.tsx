@@ -8,7 +8,7 @@ import type { NamedOption } from "@/components/form/named-option";
 import { ticketName } from "@/lib/ticket-label";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { desiredPeriod } from "./desired-period";
-import { TicketStatusLabel } from "./ticket-status-label";
+import { TicketStatusDot } from "./ticket-status-dot";
 import { TicketTitleCell } from "./ticket-title-cell";
 
 type Column = ColumnDef<TicketDto>;
@@ -45,7 +45,7 @@ const statusColumn = ({ t, statuses }: { t: Translate; statuses: TicketStatusDto
   id: "status",
   header: t("columns.status"),
   accessorFn: (ticket) => statuses.find(({ id }) => id === ticket.statusId)?.name ?? "",
-  cell: ({ row }) => <TicketStatusLabel statuses={statuses} id={row.original.statusId} />,
+  cell: ({ row }) => <TicketStatusDot statuses={statuses} id={row.original.statusId} />,
 });
 
 type AssigneeInput = { t: Translate; members: NamedOption[] };
@@ -103,7 +103,10 @@ const namedColumns = ({ t, customers, types, hidden }: NamedInput): Column[] => 
   }),
 ];
 
-/** Title (link), customer, type, assignee, status, desired period and quantity of a ticket. */
+/**
+ * Status (its color, the name on hover) first, then title (link), customer, type, assignee,
+ * desired period and quantity of a ticket.
+ */
 export function useTicketColumns({
   statuses,
   customers,
@@ -117,10 +120,10 @@ export function useTicketColumns({
   const format = useDateTimeFormat();
   return useMemo<Column[]>(
     () => [
+      statusColumn({ t, statuses }),
       titleColumn({ t }),
       ...namedColumns({ t, customers, types, hidden: shown }),
       assigneeColumn({ t, members }),
-      statusColumn({ t, statuses }),
       whenColumn({ t, format }),
       quantityColumn({ t }),
     ],
