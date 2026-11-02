@@ -2,6 +2,7 @@ import { type KeyboardEvent, type RefObject, useId, useMemo, useRef, useState } 
 import type { QueryCatalog, QuerySuggestion } from "../lib/query-suggestion-types";
 import { applySuggestion, suggest } from "../lib/query-suggestions";
 import type { QueryVocabulary } from "../lib/query-vocabulary";
+import { removeQueryValue } from "./remove-query-value";
 import { useQueryRemote } from "./use-query-remote";
 import { useQueryTexts } from "./use-query-texts";
 
@@ -18,7 +19,7 @@ type Position = { currentTarget: HTMLInputElement };
 /**
  * The suggestions' state and the combobox props of the input. Arrows move, Tab or Enter on a
  * highlighted row picks it (a value also submits the search), Escape closes; Enter with nothing
- * highlighted submits the search.
+ * highlighted submits the search. Backspace after a highlighted value removes all of it.
  */
 export function useQuerySuggestions({
   value,
@@ -53,7 +54,7 @@ export function useQuerySuggestions({
     setOpen(true);
   };
   const keys = { shown, items, active, setActive, setOpen, pick };
-  const combobox = { listId, ref, value, shown, active, keys };
+  const combobox = { listId, ref, value, shown, active, keys, vocabulary };
   const inputProps = comboboxProps({ ...combobox, onChange, onBlur, track, setOpen });
   return { listId, items, active, shown, pick, inputProps };
 }
@@ -80,6 +81,7 @@ type ComboboxPropsInput = {
   shown: boolean;
   active: number;
   keys: Omit<HandleKeyInput, "event">;
+  vocabulary: QueryVocabulary;
   onChange: (value: string) => void;
   onBlur: () => void;
   track: (input: Position) => void;
@@ -107,7 +109,10 @@ function comboboxProps({ listId, shown, active, keys, track, ...input }: Combobo
       input.setOpen(false);
       input.onBlur();
     },
-    onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => handleKey({ event, ...keys }),
+    onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => {
+      const { vocabulary, onChange } = input;
+      if (!removeQueryValue({ event, vocabulary, onChange })) handleKey({ event, ...keys });
+    },
   };
 }
 

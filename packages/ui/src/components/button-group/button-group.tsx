@@ -3,7 +3,7 @@ import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
 
 export const buttonGroupVariants = cva(
-  "flex w-fit items-stretch [&>*]:focus-visible:relative [&>*]:focus-visible:z-10 [&>*]:focus-within:z-10 [&>input]:flex-1",
+  "flex w-fit items-stretch [&>*]:focus-visible:relative [&>*]:focus-visible:z-10 [&>*]:focus-within:z-10 [&>input]:flex-1 [&_[data-slot=input]]:focus-visible:ring-offset-0",
   {
     variants: {
       orientation: {
