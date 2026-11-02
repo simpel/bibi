@@ -14,13 +14,16 @@ type DateTimeControlsProps = {
   required: boolean | undefined;
 };
 
-/** The date button and the time input side by side; a time without a date is dropped. */
+/**
+ * The date button and the time input side by side; a time without a date is dropped. The date
+ * gives way (its label truncates) so the pair always fits its column, e.g. two to a dialog row.
+ */
 function DateTimeControls({ value, onChange, label, required }: DateTimeControlsProps) {
   const [day = "", time = ""] = value.split("T");
   const set = ({ day: nextDay, time: nextTime }: Parts) =>
     onChange(nextDay ? `${nextDay}T${nextTime || "00:00"}` : "");
   return (
-    <div className="grid grid-cols-[1fr_auto] gap-2">
+    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-2 *:min-w-0">
       <FormControl>
         <PlainDateButton
           value={day}
