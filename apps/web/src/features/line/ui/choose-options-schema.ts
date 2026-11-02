@@ -15,7 +15,7 @@ export type ChooseOptionsFormValues = { groups: ChooseOptionsGroupValue[] };
 type GroupInput = { group: CustomisableItem["groups"][number]; value: ChooseOptionsGroupValue };
 
 /** A split group's options with a quantity above 0; a normal group's picks without one. */
-function groupOptions({ group, value }: GroupInput) {
+export function groupOptions({ group, value }: GroupInput) {
   if (!group.split) return value.picked.map((itemId) => ({ itemId }));
   return group.options.flatMap(({ itemId }) => {
     const raw = value.quantities[itemId]?.trim() ?? "";

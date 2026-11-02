@@ -7,25 +7,31 @@ import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { applyAnswers } from "./apply-answers";
+import type { Completion } from "./complete-step";
 import { FollowUpDialog, type FollowUpRequest } from "./follow-up-dialog";
 import { followUpQuestions } from "./follow-up-questions";
 import { periodOf } from "./intake-period";
 import type { FollowUpAnswers, IntakePick, IntakeWhen, IntakeWho } from "./intake-state";
 import type { PackageCardData, PackageOption } from "./package-groups";
 import { PackageGroupsView } from "./package-groups-view";
-import { usePackagePreview } from "./use-package-preview";
+import type { IntakeReview } from "./review-state";
+import { SwitchDialog } from "./switch-dialog";
+import { usePackageNext } from "./use-package-next";
+import { type PackagePreview, usePackagePreview } from "./use-package-preview";
 
 export type PackageStepProps = {
   who: IntakeWho;
   when: IntakeWhen;
   pick: IntakePick | null;
+  /** Step 4 when it exists: its lines decide whether switching asks first. */
+  review: IntakeReview | null;
   packages: PackageOption[];
   timeZone: string;
   /** A summary of the pick and its answers. */
   pickSummary: string;
   onPick: (input: { pick: IntakePick; when?: IntakeWhen }) => void;
   onUnpick: () => void;
-  onNext: () => void;
+  onNext: (input: Completion) => void;
 };
 
 function NoPackages({ onOneOff }: { onOneOff: () => void }) {
@@ -68,19 +74,18 @@ function usePackagePicking({ when, timeZone, onPick, onUnpick }: PickingInput) {
   return { request, cancel: () => setRequest(null), pickPackage, answered };
 }
 
-type BodyProps = Pick<PackageStepProps, "who" | "when" | "pick" | "packages" | "timeZone"> & {
+type BodyProps = Pick<PackageStepProps, "when" | "pick" | "packages" | "timeZone"> & {
+  preview: PackagePreview;
   onPackage: (input: { card: PackageCardData }) => void;
   onOneOff: () => void;
 };
 
 /** The preview's groups once loaded; a failed preview still offers the One-off. */
-function PreviewBody({ who, when, pick, packages, timeZone, onPackage, onOneOff }: BodyProps) {
+function PreviewBody({ when, pick, packages, timeZone, preview, onPackage, onOneOff }: BodyProps) {
   const t = useTranslations("ticketIntake.package");
   const dates = useDateTimeFormat();
   const period = periodOf({ when, timeZone });
-  const packageIds = packages.map(({ id }) => id);
   const headcount = when.guests;
-  const preview = usePackagePreview({ customerId: who.customerId, period, headcount, packageIds });
   const span = period ? dates.dateTimeRange({ start: period.startsAt, end: period.endsAt }) : "";
   if (preview.status === "loading") return <Skeleton className="h-32 w-full" />;
   if (preview.status === "error") {
@@ -103,22 +108,40 @@ function PreviewBody({ who, when, pick, packages, timeZone, onPackage, onOneOff 
 /** Step 3: every active package grouped by one preview, the One-off card and the follow-up. */
 export function PackageStep(props: PackageStepProps) {
   const t = useTranslations("ticketIntake.package");
-  const { when, pick, packages, timeZone } = props;
+  const { who, when, pick, packages, timeZone } = props;
   const { request, cancel, pickPackage, answered } = usePackagePicking(props);
   const oneOff = () => props.onPick({ pick: { kind: "ONE_OFF" } });
+  const preview = usePackagePreview({
+    ...{ customerId: who.customerId, period: periodOf({ when, timeZone }), headcount: when.guests },
+    packageIds: packages.map(({ id }) => id),
+  });
+  const next = usePackageNext({ ...props, preview, onNext: props.onNext });
   return (
     <div className="grid gap-4">
       {packages.length === 0 ? (
         <NoPackages onOneOff={oneOff} />
       ) : (
-        <PreviewBody {...props} onPackage={pickPackage} onOneOff={oneOff} />
+        <PreviewBody {...props} preview={preview} onPackage={pickPackage} onOneOff={oneOff} />
       )}
       {pick ? <p className="text-sm">{t("picked", { summary: props.pickSummary })}</p> : null}
-      <Button type="button" className="justify-self-start" disabled={!pick} onClick={props.onNext}>
-        {t("next")}
+      <Button
+        type="button"
+        className="justify-self-start"
+        disabled={!next.ready}
+        onClick={next.next}
+      >
+        {props.review ? t("backToReview") : t("next")}
       </Button>
       {request ? (
         <FollowUpDialog {...{ request, when, timeZone }} onCancel={cancel} onDone={answered} />
+      ) : null}
+      {next.question ? (
+        <SwitchDialog
+          question={next.question}
+          count={props.review?.lines.length ?? 0}
+          onChoice={next.choose}
+          onCancel={next.cancel}
+        />
       ) : null}
     </div>
   );

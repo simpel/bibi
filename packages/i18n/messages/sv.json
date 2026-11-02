@@ -827,11 +827,6 @@
     "expireHolds": "Släpp förfallna reservationer",
     "expireHoldsConfirm": "Flytta alla rader i ett läge som förfaller, på ärenden vars håll-datum har passerat, till sitt utgångsläge? Det sker också automatiskt var 15:e minut.",
     "holdsExpired": "Förfallna reservationer släppta",
-    "createFromTemplate": "Skapa ärende",
-    "createFromTemplateDescription": "Välj ett paket, kunden, starttid och antal gäster. Raderna skapas åt dig.",
-    "buildStepByStep": "Bygg det steg för steg",
-    "useTemplate": "Använd ett paket i stället",
-    "templateBlocked": "{count, plural, one {# rad är blockerad: en reservation krockar.} other {# rader är blockerade: reservationer krockar.}}",
     "noAssignee": "Ingen ännu",
     "estimateHistory": {
       "title": "Värdehistorik",
@@ -921,7 +916,8 @@
       "noneDescription": "Gör en engångsbokning, eller skapa ett paket att återanvända.",
       "createPackage": "Skapa ett paket",
       "picked": "Valt: {summary}",
-      "next": "Nästa: granska"
+      "next": "Nästa: granska",
+      "backToReview": "Tillbaka till granskningen"
     },
     "questions": {
       "progress": "Fråga {number} av {total}",
@@ -942,6 +938,30 @@
         "titleNoFreeTime": "Några rader krockar med andra bokningar, och ingen senare tid samma dag är ledig.",
         "move": "Flytta bokningen till {period} (första lediga tid)",
         "prebook": "Behåll tiden och förboka (blockerad tills det är löst)"
+      },
+      "title": "Öppna frågor",
+      "delta": "{sign}{hours, plural, =0 {} other {# h }}{minutes, plural, =0 {} other {# min}}",
+      "startChanged": "Starten ändrades från {from} till {to}. Vad ska hända med raderna?",
+      "noLines": "Det finns inga rader. Skapa ärendet som ett lead utan rader?",
+      "zeroQuantity": "{line} har antal 0.",
+      "overQuantity": "{line}: {count} {what, select, choices {val} other {behov}} men bara {quantity} beställda.",
+      "poolShort": "{line}: {needed} behövs, bara {free} kvar den dagen.",
+      "guessed": "Mejlet säger inte {field}. Assistenten gissade {value}.",
+      "typeField": "{type}-ärenden behöver {field}.",
+      "packageName": "Det nya paketet behöver ett namn.",
+      "answers": {
+        "moveLines": "Flytta alla rader med tid {delta}",
+        "keepTimes": "Behåll radernas tider",
+        "lead": "Ja, ett lead utan rader",
+        "addLine": "+ Lägg till en rad",
+        "removeLine": "Ta bort raden",
+        "editLine": "Ändra raden",
+        "lowerToFit": "Sänk så att det stämmer",
+        "prebookAll": "Förboka alla {needed} (skaffa {more} till)",
+        "lowerToFree": "Sänk till {free}",
+        "fill": "Fyll i",
+        "otherType": "Använd en annan ärendetyp",
+        "dontSave": "Spara inte som paket"
       }
     },
     "summary": {
@@ -962,11 +982,123 @@
       "discard": "Släng"
     },
     "review": {
-      "title": "Granska",
-      "who": "Vem",
-      "when": "När",
-      "pick": "Paket",
-      "comingNext": "Att bygga bokningen och Skapa kommer härnäst. Inget är sparat än."
+      "title": "Granska bokningen",
+      "titleOneOff": "Bygg bokningen",
+      "header": "{customer} · {period} · {guests, plural, one {# gäst} other {# gäster}}",
+      "nothingSaved": "Inget sparas förrän du skapar ärendet.",
+      "ticketType": "Ärendetyp",
+      "addLine": "+ Lägg till rad",
+      "note": "Anteckningar om bokningen",
+      "saveAsPackage": "Spara även raderna som ett paket",
+      "packageName": "Paketets namn"
+    },
+    "lines": {
+      "line": "Rad",
+      "time": "Tid",
+      "quantity": "Antal",
+      "availability": "Tillgänglighet",
+      "untimed": "Utan tid",
+      "guests": "{count} (gäster)",
+      "price": "Pris {price}",
+      "discount": "{percent} % rabatt",
+      "empty": "Inga rader.",
+      "nothingYet": "Inget tillagt än",
+      "quickAdd": "Lägg till från katalogen:"
+    },
+    "line": {
+      "addTitle": "Lägg till rad",
+      "editTitle": "Ändra rad",
+      "description": "Inget sparas förrän du skapar ärendet.",
+      "searchPlaceholder": "Sök bland artiklar av alla typer",
+      "itemsHidden": "Du får inte se artiklar. Lägg till en fritextrad i stället.",
+      "noItems": "Ingen artikel matchar.",
+      "freeText": "+ Fritextrad",
+      "freeTextLine": "Fritextrad",
+      "changeItem": "Byt artikel",
+      "lineType": "Radtyp",
+      "name": "Namn",
+      "date": "Datum",
+      "from": "Från",
+      "to": "Till",
+      "quantity": "Antal",
+      "perGuest": "En per gäst: ändras om antalet gäster ändras.",
+      "fixedAt": "Fast {quantity}.",
+      "useGuests": "Använd antalet gäster ({guests})",
+      "setup": "Möblering",
+      "noSetup": "Ingen möblering",
+      "setupOption": "{name} (upp till {capacity})",
+      "unitPrice": "Styckpris",
+      "discount": "Rabatt %",
+      "needs": "Behov",
+      "needValue": "Värde",
+      "needCount": "Antal",
+      "addNeed": "+ Lägg till behov",
+      "removeNeed": "Ta bort",
+      "note": "Anteckning (visas på listor)",
+      "checking": "Kontrollerar tillgänglighet…",
+      "availability": {
+        "ok": "✓ Ledig",
+        "warn": "⚠ Ledig med varningar",
+        "clash": "✕ Krockar med en annan bokning"
+      },
+      "tone": {
+        "ok": "✓",
+        "warn": "⚠",
+        "clash": "✕",
+        "unknown": "…"
+      },
+      "clashCanSave": "Du kan ändå spara; raden förbokas och visas som blockerad.",
+      "remove": "Ta bort raden",
+      "add": "Lägg till rad"
+    },
+    "issues": {
+      "hardClash": "#{reference} har den {period}",
+      "blocked": "Blockerad {period}",
+      "softOverlap": "#{reference} har den förbokad {period}",
+      "selfOverlap": "Överlappar rad {line} i den här bokningen",
+      "setupCapacity": "Fler än möbleringens {capacity}",
+      "poolShort": "{needed} behövs, {free} lediga den dagen",
+      "outsideHours": "Utanför öppettiderna"
+    },
+    "snapshot": {
+      "title": "Dagen i kalendern",
+      "program": "Den här bokningen",
+      "booking": "#{reference} {customer}",
+      "bookingNoCustomer": "#{reference}",
+      "blocked": "Blockerad",
+      "nextDay": "{hour} +1",
+      "shortage": "{name}: {needed} behövs, bara {free} lediga den dagen",
+      "openCalendar": "Öppna kalendern"
+    },
+    "switch": {
+      "toPackage": "Det finns redan rader",
+      "toOneOff": "Det finns redan rader",
+      "description": "Bokningen har {count, plural, one {# rad} other {# rader}}. Vad ska hända med dem?",
+      "replace": "Ersätt raderna",
+      "add": "Lägg till paketets rader",
+      "keep": "Behåll dem och ändra",
+      "empty": "Börja tomt"
+    },
+    "more": {
+      "title": "Mer",
+      "assignee": "Ansvarig",
+      "me": "Jag ({name})",
+      "meUnnamed": "Jag",
+      "holdsUntil": "Håll till",
+      "estimatedValue": "Uppskattat värde"
+    },
+    "create": {
+      "create": "Skapa ärende",
+      "createAndPrebook": "Skapa och förboka",
+      "creating": "Skapar…",
+      "created": "Ärendet har skapats.",
+      "answerFirst": "Svara på {count, plural, one {# fråga} other {# frågor}} först",
+      "blocked": "{count, plural, one {# rad krockar} other {# rader krockar}} med andra bokningar. De förbokas (mjuk hållning) och är blockerade tills du flyttar tiden eller den andra bokningen frigörs.",
+      "conflict": "Inte skapat än. Sedan du började har en annan bokning tagit en resurs.",
+      "conflictNamed": "Inte skapat än. Sedan du började har #{reference} bokat {resource} {period}.",
+      "conflictHint": "Raderna och kalendern är uppdaterade. Kontrollera dem och skapa igen.",
+      "savingPackage": "Sparar paketet…",
+      "packageSaved": "Paketet har sparats."
     }
   },
   "calendar": {

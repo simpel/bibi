@@ -9,7 +9,7 @@ import { loadIntakeData } from "../load-intake-data";
 
 export type TicketIntakeProps = { locale: Locale };
 
-/** `/new/ticket/intake`: the one-page ticket intake (ADR 0081), next to the old wizard for now. */
+/** `/new/ticket`: the one-page ticket intake (ADR 0081). */
 export async function TicketIntake({ locale }: TicketIntakeProps) {
   const t = await getTranslations("ticketIntake");
   const data = await loadIntakeData();

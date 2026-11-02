@@ -1,3 +1,6 @@
+import type { DraftLine } from "./draft-line";
+import type { IntakeReview } from "./review-state";
+
 /** The steps of the intake page in order; `review` is reached when every step has a value. */
 export const INTAKE_STEPS = ["who", "when", "package"] as const;
 export type InputStep = (typeof INTAKE_STEPS)[number];
@@ -35,9 +38,18 @@ export type IntakeState = {
   who: IntakeWho | null;
   when: IntakeWhen | null;
   pick: IntakePick | null;
+  /** Step 4, once step 3 was completed; kept when an earlier step changes. */
+  review: IntakeReview | null;
+  /** Generated once per intake and kept in the draft: Create is idempotent (ADR 0081). */
+  intakeKey: string;
 };
 
-export const INITIAL_INTAKE: IntakeState = { open: "who", who: null, when: null, pick: null };
+export const initialIntake = ({ intakeKey }: { intakeKey: string }): IntakeState => ({
+  ...{ open: "who", who: null, when: null, pick: null, review: null, intakeKey },
+});
+
+/** A change to step 4; `lines` replaces the list, the rest patches the review. */
+export type ReviewPatch = Partial<IntakeReview>;
 
 export type IntakeAction =
   | { type: "setWho"; who: IntakeWho }
@@ -45,12 +57,19 @@ export type IntakeAction =
   /** A package picked with its answers applied to `when`, or a one-off; step 3 stays open. */
   | { type: "pick"; pick: IntakePick; when?: IntakeWhen }
   | { type: "unpick" }
-  | { type: "completePackage" }
+  /** Step 3 done: the lines step 4 starts with (or keeps), planned for `plannedStart`. */
+  | { type: "completePackage"; lines: DraftLine[]; plannedStart: string | null }
+  | { type: "patchReview"; patch: ReviewPatch }
   | { type: "change"; step: InputStep }
   | { type: "restore"; state: IntakeState }
-  | { type: "reset" };
+  /** After Create, or a discarded draft: a fresh intake with a new key. */
+  | { type: "reset"; intakeKey: string };
 
 type StepInput = { state: IntakeState; step: InputStep };
+
+/** Whether lines exist: step 2 goes back to review and step 3 asks before switching. */
+export const hasLines = ({ state }: { state: IntakeState }): boolean =>
+  (state.review?.lines.length ?? 0) > 0;
 
 /** Whether the step has its answer. */
 export function hasValue({ state, step }: StepInput): boolean {

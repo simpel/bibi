@@ -6,6 +6,9 @@ export type PackageOption = {
   name: string;
   minGuests: number | null;
   maxGuests: number | null;
+  /** The ticket type its tickets get, with its default own field values. */
+  entityTypeId: string;
+  fields: Record<string, unknown>;
   /** Its lines' names in order, for the card's summary. */
   lineNames: string[];
 };

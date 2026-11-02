@@ -17,6 +17,12 @@ export const PreviewDraftLineSchema = LineCreateInputSchema.pick({
   quantity: true,
   unitPriceMinor: true,
   discountPercent: true,
+}).extend({
+  fields: LineCreateInputSchema.shape.fields.describe(
+    "Values of the line type's own fields, by field key, validated as line.create validates " +
+      "them when ticket.create writes the line (errors at lines.<index>.fields.<key>); " +
+      "ticket.previewLines does not check them",
+  ),
 });
 
 /** A draft line as `ticket.create` writes it: the planned fields plus note, choices and needs. */

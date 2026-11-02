@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { reduceIntake } from "./intake-reducer";
 import {
-  INITIAL_INTAKE,
   type IntakeAction,
   type IntakeState,
   type IntakeWhen,
+  initialIntake,
   stepView,
 } from "./intake-state";
 
@@ -12,16 +12,14 @@ const who = { customerId: "c1", customerName: "Volvo", contactId: "p1", contactN
 const when: IntakeWhen = { date: "2026-11-20", from: "09:00", to: "12:00", guests: 12 };
 const pkg = { kind: "PACKAGE", templateId: "t1", name: "Half day", answers: {} } as const;
 
+const INITIAL_INTAKE = initialIntake({ intakeKey: "k1" });
+const done: IntakeAction = { type: "completePackage", lines: [], plannedStart: null };
+
 const run = ({ actions, from = INITIAL_INTAKE }: { actions: IntakeAction[]; from?: IntakeState }) =>
   actions.reduce((state, action) => reduceIntake({ state, action }), from);
 
 const complete = run({
-  actions: [
-    { type: "setWho", who },
-    { type: "setWhen", when },
-    { type: "pick", pick: pkg },
-    { type: "completePackage" },
-  ],
+  actions: [{ type: "setWho", who }, { type: "setWhen", when }, { type: "pick", pick: pkg }, done],
 });
 
 describe("reduceIntake", () => {
@@ -53,7 +51,7 @@ describe("reduceIntake", () => {
 
   it("does not complete step 3 without a pick", () => {
     const state = run({
-      actions: [{ type: "setWho", who }, { type: "setWhen", when }, { type: "completePackage" }],
+      actions: [{ type: "setWho", who }, { type: "setWhen", when }, done],
     });
     expect(state.open).toBe("package");
   });
@@ -81,10 +79,11 @@ describe("reduceIntake", () => {
 
   it("drops a package's answers when the period changes, but keeps a one-off", () => {
     const later = { ...when, from: "10:00" };
-    const dropped = run({ actions: [{ type: "setWhen", when: later }], from: complete });
+    const unreviewed = { ...complete, review: null };
+    const dropped = run({ actions: [{ type: "setWhen", when: later }], from: unreviewed });
     expect(dropped.pick).toBeNull();
     expect(dropped.open).toBe("package");
-    const oneOff = { ...complete, pick: { kind: "ONE_OFF" } as const };
+    const oneOff = { ...unreviewed, pick: { kind: "ONE_OFF" } as const };
     expect(run({ actions: [{ type: "setWhen", when: later }], from: oneOff }).pick).toEqual({
       kind: "ONE_OFF",
     });
@@ -93,6 +92,28 @@ describe("reduceIntake", () => {
   it("unpicks, restores and resets", () => {
     expect(run({ actions: [{ type: "unpick" }], from: complete }).pick).toBeNull();
     expect(run({ actions: [{ type: "restore", state: complete }] })).toEqual(complete);
-    expect(run({ actions: [{ type: "reset" }], from: complete })).toEqual(INITIAL_INTAKE);
+    expect(run({ actions: [{ type: "reset", intakeKey: "k2" }], from: complete })).toEqual(
+      initialIntake({ intakeKey: "k2" }),
+    );
+  });
+
+  it("starts the review on completing step 3 and keeps it when the period changes", () => {
+    expect(complete.review?.pickKey).toBe("t1");
+    const later = { ...when, from: "10:00" };
+    const state = run({ actions: [{ type: "setWhen", when: later }], from: complete });
+    expect(state.pick).toEqual(pkg);
+    expect(state.open).toBe("review");
+  });
+
+  it("patches the review and keeps its notes when step 3 completes again", () => {
+    const noted = run({
+      actions: [{ type: "patchReview", patch: { note: "Late" } }],
+      from: complete,
+    });
+    const again = run({
+      actions: [{ type: "pick", pick: { kind: "ONE_OFF" } }, done],
+      from: noted,
+    });
+    expect(again.review).toMatchObject({ note: "Late", pickKey: "ONE_OFF" });
   });
 });

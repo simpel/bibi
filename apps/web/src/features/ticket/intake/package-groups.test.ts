@@ -8,6 +8,8 @@ const option = ({ id }: { id: string }): PackageOption => ({
   minGuests: null,
   maxGuests: null,
   lineNames: [],
+  entityTypeId: "tt",
+  fields: {},
 });
 
 describe("groupPackages", () => {

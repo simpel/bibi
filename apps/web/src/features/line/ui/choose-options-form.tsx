@@ -1,53 +1,10 @@
-import type { LineChooseOptionsInput } from "@bibi/core/schemas";
-import {
-  Button,
-  DialogFooter,
-  Form,
-  FormControl,
-  FormController,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  MultiChoiceControl,
-} from "@bibi/ui";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import type { UseFormReturn } from "react-hook-form";
-import type { ChooseOptionsFormValues, ChosenOption } from "./choose-options-schema";
+import type { ChosenOption } from "./choose-options-schema";
+import { OptionGroupField } from "./option-group-field";
 import type { CustomisableItem } from "./program-form-data";
 import { SplitGroupField } from "./split-group-field";
 import { useChooseOptionsForm } from "./use-choose-options-form";
-
-type GroupFieldProps = {
-  form: UseFormReturn<ChooseOptionsFormValues, unknown, LineChooseOptionsInput>;
-  index: number;
-  group: CustomisableItem["groups"][number];
-};
-
-/** The options of a normal group as checkboxes, each labelled with its price effect. */
-function GroupField({ form, index, group }: GroupFieldProps) {
-  const t = useTranslations("line");
-  const effects = useTranslations("priceEffect");
-  const choices = group.options.map(({ itemId, name, priceEffect }) => ({
-    value: itemId,
-    label: t("optionChoice", { name, effect: effects(priceEffect) }),
-  }));
-  const { name, minPick: min, maxPick: max } = group;
-  return (
-    <FormController
-      control={form.control}
-      name={`groups.${index}.picked`}
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>{t("optionGroup", { name, min, max, same: String(min === max) })}</FormLabel>
-          <FormControl>
-            <MultiChoiceControl value={field.value} onChange={field.onChange} choices={choices} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
 
 export type ChooseOptionsFormProps = {
   lineId: string;
@@ -73,7 +30,7 @@ export function ChooseOptionsForm(props: ChooseOptionsFormProps) {
           group.split ? (
             <SplitGroupField key={group.name} {...{ form, index, group, quantity }} />
           ) : (
-            <GroupField key={group.name} form={form} index={index} group={group} />
+            <OptionGroupField key={group.name} form={form} index={index} group={group} />
           ),
         )}
         <DialogFooter>

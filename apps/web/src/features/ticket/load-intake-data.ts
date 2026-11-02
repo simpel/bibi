@@ -12,8 +12,10 @@ import { getCallerAbilities } from "@/server/caller-abilities";
 import { runOperation } from "@/server/run-operation";
 import { getSessionState } from "@/server/session";
 import type { CustomerOption } from "../customer/actions";
+import type { IntakeCatalog } from "./intake/catalog";
 import { draftKey } from "./intake/intake-draft";
 import type { PackageOption } from "./intake/package-groups";
+import { loadIntakeCatalog } from "./load-intake-catalog";
 
 /** What the intake page needs before its first step (ADR 0081). */
 export type IntakeData = {
@@ -25,6 +27,8 @@ export type IntakeData = {
   packages: PackageOption[];
   /** Where this member's draft for this organization is kept in the browser. */
   draftKey: string;
+  /** Items, types, need values and members for step 4 and the line dialog. */
+  catalog: IntakeCatalog;
 };
 
 const typesOf = ({ base }: { base: "CUSTOMER" | "CONTACT" }) =>
@@ -38,6 +42,8 @@ const toPackage = ({ template }: { template: TicketTemplateDto }): PackageOption
   name: template.name,
   minGuests: template.minGuests,
   maxGuests: template.maxGuests,
+  entityTypeId: template.entityTypeId,
+  fields: template.fields,
   lineNames: template.lines.map(({ name }) => name),
 });
 
@@ -54,6 +60,8 @@ export async function loadIntakeData(): Promise<Result<IntakeData>> {
     getSessionState(),
     getCallerAbilities(),
   ]);
+  const catalog = await loadIntakeCatalog({ userId: abilities.userId });
+  if (!catalog.ok) return catalog;
   if (!customerTypes.ok) return customerTypes;
   if (!contactTypes.ok) return contactTypes;
   const organizationId = session.status === "ready" ? session.organizationId : "";
@@ -67,6 +75,7 @@ export async function loadIntakeData(): Promise<Result<IntakeData>> {
         .filter(({ status }) => status === "ACTIVE")
         .map((template) => toPackage({ template })),
       draftKey: draftKey({ organizationId, userId: abilities.userId ?? "" }),
+      catalog: catalog.value,
     },
   };
 }

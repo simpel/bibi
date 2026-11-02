@@ -19,6 +19,8 @@ export type TextFieldProps<V extends FieldValues, O> = {
   required?: boolean;
   step?: string;
   rows?: number;
+  /** Shown while empty, e.g. the inherited value. */
+  placeholder?: string;
 };
 
 /**
@@ -27,6 +29,7 @@ export type TextFieldProps<V extends FieldValues, O> = {
  */
 export function TextField<V extends FieldValues, O>(props: TextFieldProps<V, O>) {
   const { form, name, label, type = "text", multiline = false, required, step, rows = 3 } = props;
+  const { placeholder } = props;
   return (
     <FormController
       control={form.control}
@@ -39,11 +42,17 @@ export function TextField<V extends FieldValues, O>(props: TextFieldProps<V, O>)
           </FormLabel>
           <FormControl>
             {multiline ? (
-              <Textarea rows={rows} {...field} value={field.value ?? ""} />
+              <Textarea
+                rows={rows}
+                placeholder={placeholder}
+                {...field}
+                value={field.value ?? ""}
+              />
             ) : (
               <Input
                 type={type}
                 step={step}
+                placeholder={placeholder}
                 autoComplete={props.autoComplete}
                 inputMode={type === "number" ? "decimal" : undefined}
                 {...field}

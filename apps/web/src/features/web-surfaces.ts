@@ -56,7 +56,6 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "contact.archive", route: "/customers/[id]" },
   { operation: "ticket.list", route: "/tickets" },
   { operation: "ticket.create", route: "/new/ticket" },
-  { operation: "ticket.createFromTemplate", route: "/new/ticket" },
   { operation: "ticket.get", route: "/tickets/[id]" },
   { operation: "ticket.update", route: "/tickets/[id]/update" },
   { operation: "ticket.changeStatus", route: "/tickets/[id]" },

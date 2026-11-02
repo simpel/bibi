@@ -8,14 +8,15 @@ import type { IntakeData } from "../load-intake-data";
 import { DraftOffer } from "./draft-offer";
 import { reduceIntake } from "./intake-reducer";
 import {
-  INITIAL_INTAKE,
+  hasLines,
   type InputStep,
   type IntakeAction,
   type IntakeState,
+  initialIntake,
   stepView,
 } from "./intake-state";
 import { PackageStep } from "./package-step";
-import { ReviewPlaceholder } from "./review-placeholder";
+import { ReviewStep } from "./review-step";
 import { useIntakeDraft } from "./use-intake-draft";
 import { type IntakeSummaries, useIntakeSummaries } from "./use-intake-summaries";
 import { WhenStep } from "./when-step";
@@ -84,7 +85,7 @@ function LaterSections(props: StepsProps) {
       >
         <WhenStep
           when={when}
-          backToReview={pick !== null}
+          backToReview={hasLines({ state })}
           onDone={({ when: next }) => dispatch({ type: "setWhen", when: next })}
         />
       </StepSection>
@@ -97,24 +98,26 @@ function LaterSections(props: StepsProps) {
         {who && when ? (
           <PackageStep
             {...{ who, when, pick, packages: data.packages, timeZone, pickSummary: summaries.pick }}
+            review={state.review}
             onPick={(input) => dispatch({ type: "pick", ...input })}
             onUnpick={() => dispatch({ type: "unpick" })}
-            onNext={() => dispatch({ type: "completePackage" })}
+            onNext={(lines) => dispatch({ type: "completePackage", ...lines })}
           />
         ) : null}
       </StepSection>
-      {state.open === "review" ? <ReviewPlaceholder summaries={summaries} /> : null}
+      <ReviewStep data={data} state={state} dispatch={dispatch} />
     </>
   );
 }
 
 export type IntakePageProps = { data: IntakeData };
 
-/** `/new/ticket/intake`: steps 1–3 of the ticket intake on one page (ADR 0081, plan slice 6). */
+/** `/new/ticket`: the ticket intake on one page, from who asks to Create (ADR 0081). */
 export function IntakePage({ data }: IntakePageProps) {
   const [state, dispatch] = useReducer(
     (current: IntakeState, action: IntakeAction) => reduceIntake({ state: current, action }),
-    INITIAL_INTAKE,
+    undefined,
+    () => initialIntake({ intakeKey: crypto.randomUUID() }),
   );
   const summaries = useIntakeSummaries({ state });
   return (

@@ -3,13 +3,11 @@
 import {
   changeTicketStatus,
   createTicket,
-  createTicketFromTemplate,
   expireTicketHolds,
   exportTicket,
   type LineDto,
   previewTicketLines,
   type TicketChangeStatusInput,
-  type TicketCreateFromTemplateInput,
   type TicketCreateInput,
   type TicketDto,
   type TicketExport,
@@ -23,7 +21,6 @@ import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
 
 export type CreateTicketActionInput = { input: TicketCreateInput };
-export type CreateTicketFromTemplateActionInput = { input: TicketCreateFromTemplateInput };
 export type UpdateTicketActionInput = { input: TicketUpdateInput };
 export type ChangeTicketStatusActionInput = { input: TicketChangeStatusInput };
 
@@ -31,14 +28,6 @@ export async function createTicketAction({
   input,
 }: CreateTicketActionInput): Promise<ActionResult<TicketDto>> {
   return toActionResult({ result: await runOperation({ operation: createTicket, input }) });
-}
-
-export async function createTicketFromTemplateAction({
-  input,
-}: CreateTicketFromTemplateActionInput): Promise<ActionResult<TicketDto>> {
-  return toActionResult({
-    result: await runOperation({ operation: createTicketFromTemplate, input }),
-  });
 }
 
 export async function updateTicketAction({

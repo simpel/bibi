@@ -44,6 +44,7 @@ export * from "./components/data-table/data-table-order";
 export * from "./components/data-table/data-table-pagination";
 export type * from "./components/data-table/data-table-types";
 export * from "./components/date-picker/date-button";
+export * from "./components/day-snapshot/day-snapshot";
 export * from "./components/dialog/dialog";
 export {
   DropdownMenu,

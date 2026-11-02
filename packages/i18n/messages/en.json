@@ -827,11 +827,6 @@
     "expireHolds": "Expire overdue holds",
     "expireHoldsConfirm": "Move every line in an expiring state, on tickets whose hold date has passed, to its expiry state? This also runs automatically every 15 minutes.",
     "holdsExpired": "Overdue holds expired",
-    "createFromTemplate": "Create ticket",
-    "createFromTemplateDescription": "Choose a package, the customer, the start and the headcount. The lines are created for you.",
-    "buildStepByStep": "Build it step by step",
-    "useTemplate": "Use a package instead",
-    "templateBlocked": "{count, plural, one {# line is blocked: a hold collides.} other {# lines are blocked: a hold collides.}}",
     "noAssignee": "No one yet",
     "estimateHistory": {
       "title": "Estimate history",
@@ -921,7 +916,8 @@
       "noneDescription": "Make this a one-off, or create a package to reuse.",
       "createPackage": "Create a package",
       "picked": "Picked: {summary}",
-      "next": "Next: review"
+      "next": "Next: review",
+      "backToReview": "Back to review"
     },
     "questions": {
       "progress": "Question {number} of {total}",
@@ -942,6 +938,30 @@
         "titleNoFreeTime": "Some lines clash with other bookings, and no time later that day is free.",
         "move": "Move the booking to {period} (first free time)",
         "prebook": "Keep the time and prebook (blocked until resolved)"
+      },
+      "title": "Open questions",
+      "delta": "{sign}{hours, plural, =0 {} other {# h }}{minutes, plural, =0 {} other {# min}}",
+      "startChanged": "The start changed from {from} to {to}. What should happen to the lines?",
+      "noLines": "There are no lines. Create the ticket as a lead without lines?",
+      "zeroQuantity": "{line} has quantity 0.",
+      "overQuantity": "{line}: {count} {what, select, choices {choices} other {needs}} but only {quantity} ordered.",
+      "poolShort": "{line}: {needed} needed, only {free} left that day.",
+      "guessed": "The email doesn't say {field}. The assistant guessed {value}.",
+      "typeField": "{type} tickets need {field}.",
+      "packageName": "The new package needs a name.",
+      "answers": {
+        "moveLines": "Move every timed line {delta}",
+        "keepTimes": "Keep the line times",
+        "lead": "Yes, a lead without lines",
+        "addLine": "+ Add a line",
+        "removeLine": "Remove the line",
+        "editLine": "Edit line",
+        "lowerToFit": "Lower to fit",
+        "prebookAll": "Prebook all {needed} (source {more} more)",
+        "lowerToFree": "Lower to {free}",
+        "fill": "Fill it in",
+        "otherType": "Use another ticket type",
+        "dontSave": "Don't save as a package"
       }
     },
     "summary": {
@@ -962,11 +982,123 @@
       "discard": "Discard"
     },
     "review": {
-      "title": "Review",
-      "who": "Who",
-      "when": "When",
-      "pick": "Package",
-      "comingNext": "Building the booking and Create come next. Nothing is saved yet."
+      "title": "Review the booking",
+      "titleOneOff": "Build the booking",
+      "header": "{customer} · {period} · {guests, plural, one {# guest} other {# guests}}",
+      "nothingSaved": "Nothing is saved until Create.",
+      "ticketType": "Ticket type",
+      "addLine": "+ Add line",
+      "note": "Notes on the booking",
+      "saveAsPackage": "Also save these lines as a package",
+      "packageName": "Package name"
+    },
+    "lines": {
+      "line": "Line",
+      "time": "Time",
+      "quantity": "Quantity",
+      "availability": "Availability",
+      "untimed": "Untimed",
+      "guests": "{count} (guests)",
+      "price": "Price {price}",
+      "discount": "{percent} % off",
+      "empty": "No lines.",
+      "nothingYet": "Nothing added yet",
+      "quickAdd": "Add from the catalog:"
+    },
+    "line": {
+      "addTitle": "Add line",
+      "editTitle": "Edit line",
+      "description": "Nothing is saved until Create.",
+      "searchPlaceholder": "Search items of every type",
+      "itemsHidden": "You may not view items. Add a free-text line instead.",
+      "noItems": "No item matches.",
+      "freeText": "+ Free-text line",
+      "freeTextLine": "Free-text line",
+      "changeItem": "Change item",
+      "lineType": "Line type",
+      "name": "Name",
+      "date": "Date",
+      "from": "From",
+      "to": "To",
+      "quantity": "Quantity",
+      "perGuest": "One per guest: changes if the guest count changes.",
+      "fixedAt": "Fixed at {quantity}.",
+      "useGuests": "Use the guest count ({guests})",
+      "setup": "Setup",
+      "noSetup": "No setup",
+      "setupOption": "{name} (up to {capacity})",
+      "unitPrice": "Unit price",
+      "discount": "Discount %",
+      "needs": "Needs",
+      "needValue": "Value",
+      "needCount": "Count",
+      "addNeed": "+ Add need",
+      "removeNeed": "Remove",
+      "note": "Note (shown on sheets)",
+      "checking": "Checking availability…",
+      "availability": {
+        "ok": "✓ Available",
+        "warn": "⚠ Available with warnings",
+        "clash": "✕ Clashes with another booking"
+      },
+      "tone": {
+        "ok": "✓",
+        "warn": "⚠",
+        "clash": "✕",
+        "unknown": "…"
+      },
+      "clashCanSave": "You can still save; the line is prebooked and shown as blocked.",
+      "remove": "Remove line",
+      "add": "Add line"
+    },
+    "issues": {
+      "hardClash": "#{reference} holds it {period}",
+      "blocked": "Blocked {period}",
+      "softOverlap": "#{reference} has it prebooked {period}",
+      "selfOverlap": "Overlaps line {line} of this booking",
+      "setupCapacity": "More than the setup's {capacity}",
+      "poolShort": "{needed} needed, {free} free that day",
+      "outsideHours": "Outside opening hours"
+    },
+    "snapshot": {
+      "title": "The day in the calendar",
+      "program": "This booking",
+      "booking": "#{reference} {customer}",
+      "bookingNoCustomer": "#{reference}",
+      "blocked": "Blocked",
+      "nextDay": "{hour} +1",
+      "shortage": "{name}: {needed} needed, only {free} free that day",
+      "openCalendar": "Open calendar"
+    },
+    "switch": {
+      "toPackage": "Lines already exist",
+      "toOneOff": "Lines already exist",
+      "description": "The booking has {count, plural, one {# line} other {# lines}}. What should happen to them?",
+      "replace": "Replace the lines",
+      "add": "Add its lines to them",
+      "keep": "Keep them and edit",
+      "empty": "Start empty"
+    },
+    "more": {
+      "title": "More",
+      "assignee": "Assignee",
+      "me": "Me ({name})",
+      "meUnnamed": "Me",
+      "holdsUntil": "Holds until",
+      "estimatedValue": "Estimated value"
+    },
+    "create": {
+      "create": "Create ticket",
+      "createAndPrebook": "Create and prebook",
+      "creating": "Creating…",
+      "created": "The ticket has been created.",
+      "answerFirst": "Answer {count, plural, one {# question} other {# questions}} first",
+      "blocked": "{count, plural, one {# line clashes} other {# lines clash}} with other bookings. They are prebooked (soft hold) and stay blocked until you move the time or the other booking is freed.",
+      "conflict": "Not created yet. Since you started, another booking took a resource.",
+      "conflictNamed": "Not created yet. Since you started, #{reference} booked {resource} {period}.",
+      "conflictHint": "The lines and calendar are updated. Check them and create again.",
+      "savingPackage": "Saving the package…",
+      "packageSaved": "The package has been saved."
     }
   },
   "calendar": {

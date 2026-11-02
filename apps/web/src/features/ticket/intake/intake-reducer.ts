@@ -1,12 +1,13 @@
 import {
   hasValue,
-  INITIAL_INTAKE,
   INTAKE_STEPS,
   type IntakeAction,
   type IntakeState,
   type IntakeStep,
   type IntakeWhen,
+  initialIntake,
 } from "./intake-state";
+import { newReview } from "./review-state";
 
 /** The first step without an answer, or review when all have one. */
 function nextOpen({ state }: { state: IntakeState }): IntakeStep {
@@ -16,10 +17,31 @@ function nextOpen({ state }: { state: IntakeState }): IntakeStep {
 const sameWhen = ({ a, b }: { a: IntakeWhen | null; b: IntakeWhen }) =>
   a !== null && a.date === b.date && a.from === b.from && a.to === b.to && a.guests === b.guests;
 
-/** A changed period or headcount voids a package's answers; a one-off is kept. */
+/**
+ * A changed period or headcount voids a package's answers before the review exists; once lines
+ * were built they stay, and the review asks what happens to them (`open-questions.ts`).
+ */
 function withWhen({ state, when }: { state: IntakeState; when: IntakeWhen }): IntakeState {
-  const keepPick = sameWhen({ a: state.when, b: when }) || state.pick?.kind !== "PACKAGE";
+  const keepPick =
+    sameWhen({ a: state.when, b: when }) || state.pick?.kind !== "PACKAGE" || state.review !== null;
   const next = { ...state, when, pick: keepPick ? state.pick : null };
+  return { ...next, open: nextOpen({ state: next }) };
+}
+
+type CompleteInput = {
+  state: IntakeState;
+  action: Extract<IntakeAction, { type: "completePackage" }>;
+};
+
+/** Step 3 done: the review starts, or keeps its notes and answers with the new lines. */
+function complete({ state, action }: CompleteInput): IntakeState {
+  if (!state.pick) return state;
+  const pickKey = state.pick.kind === "ONE_OFF" ? "ONE_OFF" : state.pick.templateId;
+  const { lines, plannedStart } = action;
+  const review = state.review
+    ? { ...state.review, lines, plannedStart, pickKey }
+    : newReview({ lines, plannedStart, pickKey });
+  const next = { ...state, review };
   return { ...next, open: nextOpen({ state: next }) };
 }
 
@@ -42,12 +64,14 @@ export function reduceIntake({ state, action }: ReduceIntakeInput): IntakeState 
     case "unpick":
       return { ...state, pick: null };
     case "completePackage":
-      return state.pick ? { ...state, open: nextOpen({ state }) } : state;
+      return complete({ state, action });
+    case "patchReview":
+      return state.review ? { ...state, review: { ...state.review, ...action.patch } } : state;
     case "change":
       return { ...state, open: action.step };
     case "restore":
       return action.state;
     case "reset":
-      return INITIAL_INTAKE;
+      return initialIntake({ intakeKey: action.intakeKey });
   }
 }
