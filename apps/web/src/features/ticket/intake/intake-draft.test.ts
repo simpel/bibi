@@ -16,6 +16,7 @@ const line = {
   ...{ key: "l1", entityTypeId: "lt", name: "Room", itemId: "i1", setupId: null },
   ...{ startsAt: "2026-11-20T08:00:00.000Z", endsAt: "2026-11-20T10:00:00.000Z", quantity: null },
   ...{ unitPriceMinor: 1200, discountPercent: null, note: null, options: [], needs: [] },
+  addOns: [],
   fields: { sign: "Volvo" },
 };
 
@@ -42,6 +43,14 @@ describe("intake draft", () => {
       ...state,
       open: "who",
     });
+  });
+
+  it("reads a version 3 draft's lines with no add-ons (ADR 0088)", () => {
+    const { addOns: _none, ...before } = line;
+    const review = newReview({ lines: [line], plannedStart: line.startsAt, pickKey: "t1" });
+    const old = { ...state, open: "review", review: { ...review, lines: [before] } };
+    const parsed = parseDraft({ text: JSON.stringify({ version: 3, state: old }) });
+    expect(parsed?.review?.lines).toEqual([line]);
   });
 
   it("keeps a read message before a customer is chosen", () => {

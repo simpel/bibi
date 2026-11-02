@@ -1,6 +1,7 @@
 import type { CalendarBlockDto, PreviewLine } from "@bibi/core";
 import type { DaySnapshotBlock, DaySnapshotRow } from "@bibi/ui";
 import type { ItemLine } from "../../line/actions";
+import { flattenDraft } from "./draft-add-ons";
 import type { DraftLine } from "./draft-line";
 
 const MINUTE = 60_000;
@@ -10,7 +11,7 @@ const DAY_END = 20 * 60;
 export type SnapshotInput = {
   lines: DraftLine[];
   /** The draft's preview lines in the same order; null while none is ready. */
-  planned: readonly PreviewLine[] | null;
+  planned: readonly (PreviewLine | null)[] | null;
   /** Other bookings of the items the lines use (`calendar.range` with `itemIds`). */
   blocks: readonly CalendarBlockDto[];
   /** The requested day's midnight in the organization's zone. */
@@ -92,9 +93,10 @@ function itemRow({ input, placed, itemId, name }: ItemRowInput): DaySnapshotRow 
  * The calendar snapshot of step 4 (spec "Calendar snapshot"): one row per item the timed lines
  * use, with that day's other bookings of it in gray (occupancy for bookable items, other lines
  * for the rest) under this ticket's lines; one "Other lines" row for free-text lines when there
- * are any; and the pools short that day.
+ * are any; and the pools short that day. Add-ons show like any line (ADR 0088).
  */
-export function snapshotOf({ ...input }: SnapshotInput): Snapshot {
+export function snapshotOf({ ...given }: SnapshotInput): Snapshot {
+  const input = { ...given, ...flattenDraft({ lines: given.lines, planned: given.planned }) };
   const placed = placeLines(input);
   const itemIds = [...new Set(placed.flatMap(({ line }) => (line.itemId ? [line.itemId] : [])))];
   const rows = itemIds.flatMap((itemId) => {

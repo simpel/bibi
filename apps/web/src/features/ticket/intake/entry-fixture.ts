@@ -15,6 +15,7 @@ function line({ kinds }: { kinds: PlanLineIssue["kind"][] }): PreviewLine {
     ...{ quantitySource: null, effectiveUnitPriceMinor: null, unitPriceSource: null },
     ...{ effectiveDiscountPercent: 0, discountSource: null, stateId: null },
     issues,
+    addOns: [],
   };
 }
 

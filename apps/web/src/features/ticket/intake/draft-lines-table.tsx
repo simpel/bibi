@@ -2,8 +2,7 @@ import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { DraftLine } from "./draft-line";
-import type { DraftLineRow } from "./draft-line-cells";
-import { lineDetails } from "./line-details";
+import { reviewRows } from "./review-rows";
 import { useDraftLineColumns } from "./use-draft-line-columns";
 import type { ReviewModel } from "./use-review-model";
 
@@ -13,34 +12,31 @@ export type DraftLinesTableProps = {
   onRemove: (input: { key: string }) => void;
 };
 
-/** The booking's draft lines with their availability from the preview (spec "Lines table"). */
+/**
+ * The booking's draft lines with their availability from the preview, each line's add-ons nested
+ * under it (spec "Lines table", ADR 0088).
+ */
 export function DraftLinesTable({ model, onEdit, onRemove }: DraftLinesTableProps) {
   const t = useTranslations("ticketIntake.lines");
   const dates = useDateTimeFormat();
   const { catalog } = model.data;
   const hidden = model.preview.status === "ready" && model.preview.availabilityHidden;
   const columns = useDraftLineColumns({
-    headcount: model.when.guests,
     planned: model.review.lines.map((_, index) => model.planned?.[index] ?? null),
     availabilityHidden: hidden,
     onEdit,
     onRemove,
   });
-  const rows: DraftLineRow[] = model.review.lines.map((line, index) => ({
-    line,
-    planned: model.planned?.[index] ?? null,
-    details: lineDetails({ line, items: catalog.items, needValues: catalog.needValues }),
-    time:
-      line.startsAt && line.endsAt
-        ? dates.timeRange({ start: new Date(line.startsAt), end: new Date(line.endsAt) })
-        : "",
-  }));
+  const rows = reviewRows({
+    ...{ lines: model.review.lines, planned: model.planned, headcount: model.when.guests },
+    ...{ items: catalog.items, needValues: catalog.needValues, timeRange: dates.timeRange },
+  });
   return (
     <PersistedDataTable
       tableId="ticket.intake.lines"
       columns={columns}
       data={rows}
-      getRowId={(row) => row.line.key}
+      getRowId={(row) => row.key}
       emptyText={t("empty")}
     />
   );

@@ -35,4 +35,10 @@ describe("line cost", () => {
     expect(linesTotalMinor({ planned: [priced({ price: null })] })).toBeNull();
     expect(linesTotalMinor({ planned: null })).toBeNull();
   });
+
+  it("counts each add-on at its own price (ADR 0088)", () => {
+    const addOns = [priced({ quantity: 10, price: 6_500 }), priced({ price: null })];
+    const planned = [{ ...priced({ quantity: 1, price: 70_000 }), addOns }];
+    expect(linesTotalMinor({ planned })).toBe(135_000);
+  });
 });

@@ -39,6 +39,8 @@ export const previewTicketLines = defineOperation({
     "whether Create would refuse it), SOFT_OVERLAP, SELF_OVERLAP, SETUP_CAPACITY, POOL_SHORT and " +
     "OUTSIDE_HOURS. Each entry has its group (AVAILABLE, CLASHES, OUTSIDE_RANGE), the issues " +
     "GUESTS_OUTSIDE_RANGE and PAST_REQUESTED_END, and the first clash-free start that day. " +
+    "A draft line's add-ons (ADR 0088) come back under it, priced as their own lines (the " +
+    "line's discount does not apply) with their own issues. " +
     "Availability needs item:read; without it `availabilityHidden` is true.",
   input: TicketPreviewLinesInputSchema,
   output: TicketPreviewLinesOutputSchema,

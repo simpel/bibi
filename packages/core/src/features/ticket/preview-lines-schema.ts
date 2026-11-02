@@ -27,15 +27,20 @@ export const TicketPreviewLinesInputSchema = z.object({
     .min(1)
     .max(100)
     .optional()
-    .describe("Draft lines to plan as one entry; or give `templateIds`"),
+    .describe(
+      "Draft lines (with their `addOns`, ADR 0088) to plan as one entry; or give `templateIds`",
+    ),
 });
 
 const { effectiveQuantity, quantitySource, effectiveUnitPriceMinor, unitPriceSource } =
   LineEffectiveShape;
 const { effectiveDiscountPercent, discountSource } = LineEffectiveShape;
 
-export const PreviewLineSchema = z.object({
-  index: z.number().int().describe("The line's position in its entry, from 0"),
+const PreviewRowShape = {
+  index: z
+    .number()
+    .int()
+    .describe("The line's position in its entry (an add-on's under its line), from 0"),
   entityTypeId: z.string().describe("The line type"),
   name: z.string(),
   itemId: z.string().nullable(),
@@ -52,7 +57,26 @@ export const PreviewLineSchema = z.object({
       "The item state the line would start in: the entry status's grid cell for its item " +
         "type, else the type's initial state (ADR 0081 decision 8); null without an item",
     ),
-  issues: z.array(PlanLineIssueSchema).describe("What stands in the way or warns"),
+  issues: z
+    .array(PlanLineIssueSchema)
+    .describe(
+      "What stands in the way or warns; SELF_OVERLAP's otherLineIndex names the line (or the " +
+        "line whose add-on) it overlaps",
+    ),
+};
+
+/** An add-on of a draft line, priced as its own line (ADR 0088: no parent discount). */
+export const PreviewAddOnSchema = z.object(PreviewRowShape);
+
+export const PreviewLineSchema = z.object({
+  ...PreviewRowShape,
+  addOns: z
+    .array(PreviewAddOnSchema)
+    .describe(
+      "The line's add-ons in the order given (ADR 0088): effective period (the line's unless " +
+        "given), quantity (the line's unless given, source PARENT_LINE), unit price and discount " +
+        "of their own, start state and issues; empty for a package's lines",
+    ),
 });
 
 export const PreviewEntrySchema = z.object({
@@ -90,3 +114,4 @@ export type TicketPreviewLinesInput = z.infer<typeof TicketPreviewLinesInputSche
 export type TicketPreviewLines = z.infer<typeof TicketPreviewLinesOutputSchema>;
 export type PreviewEntry = z.infer<typeof PreviewEntrySchema>;
 export type PreviewLine = z.infer<typeof PreviewLineSchema>;
+export type PreviewAddOn = z.infer<typeof PreviewAddOnSchema>;

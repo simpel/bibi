@@ -5,6 +5,24 @@ export type DraftOption = { itemId: string; quantity: number | null };
 export type DraftNeed = { entityTypeId: string; vocabularyValueId: string; quantity: number };
 
 /**
+ * An add-on under a draft line (ADR 0088): any item sold with the line at its own price. Its
+ * quantity and time follow the line unless set.
+ */
+export type DraftAddOn = {
+  /** Stable within the line; never sent to core. */
+  key: string;
+  itemId: string | null;
+  name: string;
+  /** Null: the line's quantity. */
+  quantity: number | null;
+  /** Override; null inherits the price list or item (never the line's discount). */
+  unitPriceMinor: number | null;
+  /** Both null: the line's period. */
+  startsAt: string | null;
+  endsAt: string | null;
+};
+
+/**
  * One line of the booking being built, kept in the browser until Create (ADR 0081). Times are
  * ISO instants so the draft survives storage; both null is an untimed line (ADR 0052).
  */
@@ -25,6 +43,8 @@ export type DraftLine = {
   note: string | null;
   options: DraftOption[];
   needs: DraftNeed[];
+  /** Add-ons under the line, as extra picks or any item (ADR 0088). */
+  addOns: DraftAddOn[];
   /** The line type's own field values, typed, by key. */
   fields: Record<string, unknown>;
 };

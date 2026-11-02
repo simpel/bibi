@@ -1,7 +1,9 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { canView } from "../../shared/can-view";
 import { invalid, notFound } from "../../shared/errors";
 import { toTicketTemplateDto, WITH_LINES } from "../ticket-template/load-ticket-template";
+import { type DraftSlot, draftRows, loadAddOnItemNames } from "./draft-rows";
 import { type GuestRange, lastEnd } from "./plan/plan-groups";
 import { planTemplateLines } from "./plan/plan-template-lines";
 import type { PlannedLine } from "./plan/planned-line";
@@ -11,13 +13,18 @@ import { checkReadable } from "./ticket-rules";
 
 type Ctx = { context: OperationContext };
 
-/** One entry to preview: a package's planned lines, or the draft's. */
+/** One entry to preview: a package's planned lines, or the draft's lines and add-ons. */
 export type PreviewPlan = {
   templateId: string | null;
   range: GuestRange | null;
   lines: PlannedLine[];
+  /** Where each of `lines` sits: a line, or an add-on under one (ADR 0088). */
+  slots: DraftSlot[];
   endsAt: Date | null;
 };
+
+const topSlots = ({ lines }: { lines: readonly PlannedLine[] }): DraftSlot[] =>
+  lines.map((_, lineIndex) => ({ lineIndex, addOnIndex: null }));
 
 type TemplatesInput = Ctx & { templateIds: readonly string[]; startsAt: Date };
 
@@ -40,7 +47,8 @@ async function templatePlans({
     if (!template) return notFound({ entity: "Ticket template" });
     const plan = planTemplateLines({ template, startsAt });
     const range = { minGuests: template.minGuests, maxGuests: template.maxGuests };
-    plans.push({ templateId: id, range, lines: plan.lines, endsAt: lastEnd(plan) });
+    const slots = topSlots({ lines: plan.lines });
+    plans.push({ templateId: id, range, lines: plan.lines, slots, endsAt: lastEnd(plan) });
   }
   return ok({ value: plans });
 }
@@ -61,6 +69,19 @@ export async function previewPlans({
   const draft = lines ?? [];
   const checked = await checkDraftLines({ context, lines: draft, customerId });
   if (!checked.ok) return checked;
-  const plan = { templateId: null, range: null, lines: draft, endsAt: lastEnd({ lines: draft }) };
+  // An add-on without a name shows its item's name only to a caller who may read items.
+  const itemNames = canView({ context, feature: "item" })
+    ? await loadAddOnItemNames({ context, lines: draft })
+    : new Map<string, string>();
+  const rows = draftRows({ lines: draft, itemNames });
+  const planned = rows.map((row) => row.line);
+  const slots = rows.map((row) => row.slot);
+  const plan = {
+    templateId: null,
+    range: null,
+    lines: planned,
+    slots,
+    endsAt: lastEnd({ lines: planned }),
+  };
   return ok({ value: [plan] });
 }

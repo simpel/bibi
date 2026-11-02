@@ -8,10 +8,10 @@ import { formSchema } from "@/lib/form-schema";
 import { chosenOptionsOf } from "../../line/ui/choose-options-schema";
 import type { PickRuleText } from "../../line/ui/group-pick-rule";
 import { withGroupRules } from "../../line/ui/group-rules-schema";
-import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 import type { CatalogItem } from "./catalog";
 import type { DraftLine } from "./draft-line";
-import { periodOf } from "./intake-period";
+import { addOnInputs, splitPicks } from "./line-add-ons-form";
+import { formTimes } from "./line-form-times";
 import type { LineFormValues } from "./line-form-values";
 
 export type LineSchemaInput = {
@@ -28,33 +28,42 @@ export type LineSchemaInput = {
   ruleText: PickRuleText;
 };
 
-type TimesInput = Pick<LineSchemaInput, "date" | "timeZone"> & { values: LineFormValues };
-
-/** Both empty: untimed. One of them: kept, so the schema's period rule names the gap. */
-function times({ values, date, timeZone }: TimesInput) {
-  const { from, to } = values;
-  if (!from && !to) return { startsAt: null, endsAt: null };
-  if (!from || !to) {
-    const lone = fromLocalInputValue({ value: `${date}T${from || to}`, timeZone }) ?? null;
-    return from ? { startsAt: lone, endsAt: null } : { startsAt: null, endsAt: lone };
-  }
-  const period = periodOf({ when: { date, from, to, guests: 0 }, timeZone });
-  return { startsAt: period?.startsAt ?? null, endsAt: period?.endsAt ?? null };
-}
-
-const options = ({ item, values }: { item: CatalogItem | null; values: LineFormValues }) =>
-  chosenOptionsOf({ groups: item?.groups ?? [], values });
+const picks = ({ item, values }: { item: CatalogItem | null; values: LineFormValues }) =>
+  splitPicks({ groups: item?.groups ?? [], picked: values.groups });
 
 /**
  * Core's draft line schema (as `ticket.create` takes it) over the dialog's raw values, after the
- * item's group pick rules as `ticket.create` checks them (only once something is chosen).
+ * item's group pick rules as `ticket.create` checks them (only once something is chosen). Picks
+ * beyond the max of a group that allows extras are add-ons (ADR 0088), not a broken rule.
  */
 export function lineFormSchema({ item, ruleText, ...input }: LineSchemaInput) {
   const raw = rawLineSchema({ ...input, item });
   return withGroupRules<LineFormValues, typeof raw>({
-    ...{ schema: raw, groups: item?.groups ?? [], ruleText, skipWhenNone: true },
-    chosen: ({ values }) => options({ item, values }),
+    ...{ schema: raw, groups: item?.groups ?? [], ruleText, skipWhenNone: true, extras: true },
+    chosen: ({ values }) => chosenOptionsOf({ groups: item?.groups ?? [], values }),
   });
+}
+
+type DetailsInput = Pick<LineSchemaInput, "item" | "date" | "timeZone"> & {
+  values: LineFormValues;
+};
+
+/** The line's own values, its options and its add-ons (extra picks after the added items). */
+function lineDetailsInput({ values, item, date, timeZone }: DetailsInput) {
+  const { options, extras } = picks({ item, values });
+  return {
+    entityTypeId: values.entityTypeId,
+    name: values.name,
+    itemId: item?.id ?? null,
+    setupId: item && values.setupId !== NONE ? values.setupId : null,
+    ...formTimes({ date, timeZone, values }),
+    quantity: numberOrNull({ value: values.quantity }),
+    unitPriceMinor: minorOrNull({ value: values.unitPrice }),
+    discountPercent: numberOrNull({ value: values.discountPercent }),
+    note: blankToNull({ value: values.note }),
+    options,
+    addOns: addOnInputs({ rows: values.addOns, extras, date, timeZone }),
+  };
 }
 
 function rawLineSchema({
@@ -68,20 +77,18 @@ function rawLineSchema({
   const specs = specsOf({ type, vocabularies });
   const schema = CreateDraftLineSchema.extend({ fields: buildFieldsSchema({ specs }) });
   return formSchema({
-    schema: schema.refine(({ startsAt, endsAt }) => (startsAt === null) === (endsAt === null), {
-      path: ["to"],
-    }),
+    schema: schema
+      .refine(({ startsAt, endsAt }) => (startsAt === null) === (endsAt === null), {
+        path: ["to"],
+      })
+      .superRefine(({ addOns }, context) => {
+        for (const [index, addOn] of (addOns ?? []).entries()) {
+          if ((addOn.startsAt == null) === (addOn.endsAt == null)) continue;
+          context.addIssue({ code: "custom", path: ["addOns", index, "to"] });
+        }
+      }),
     toInput: ({ values }: { values: LineFormValues }) => ({
-      entityTypeId: values.entityTypeId,
-      name: values.name,
-      itemId: item?.id ?? null,
-      setupId: item && values.setupId !== NONE ? values.setupId : null,
-      ...times({ date, timeZone, values }),
-      quantity: numberOrNull({ value: values.quantity }),
-      unitPriceMinor: minorOrNull({ value: values.unitPrice }),
-      discountPercent: numberOrNull({ value: values.discountPercent }),
-      note: blankToNull({ value: values.note }),
-      options: options({ item, values }),
+      ...lineDetailsInput({ values, item, date, timeZone }),
       requirements: needTypeId
         ? values.needs
             .filter(({ valueId }) => valueId !== "" && valueId !== NONE)
@@ -113,6 +120,11 @@ export function toDraftLine({ line, key }: { line: CreateDraftLine; key: string 
     })),
     needs: (line.requirements ?? []).map(({ entityTypeId, vocabularyValueId, quantity }) => ({
       ...{ entityTypeId, vocabularyValueId, quantity },
+    })),
+    addOns: (line.addOns ?? []).map((addOn, index) => ({
+      ...{ key: `${key}.${index}`, itemId: addOn.itemId ?? null, name: addOn.name ?? "" },
+      ...{ quantity: addOn.quantity ?? null, unitPriceMinor: addOn.unitPriceMinor ?? null },
+      ...{ startsAt: iso({ at: addOn.startsAt }), endsAt: iso({ at: addOn.endsAt }) },
     })),
     fields: line.fields ?? {},
   };

@@ -30,6 +30,6 @@ export function quickLine({ item, lineTypeId, period, key }: QuickLineInput): Dr
     startsAt: bookable && period ? period.startsAt.toISOString() : null,
     endsAt: endsAt?.toISOString() ?? null,
     ...{ quantity: null, unitPriceMinor: null, discountPercent: null, note: null },
-    ...{ options: [], needs: [], fields: {} },
+    ...{ options: [], needs: [], addOns: [], fields: {} },
   };
 }

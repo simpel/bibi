@@ -14,7 +14,7 @@ export function draftFixture({ from, to, ...rest }: DraftFixtureInput = {}): Dra
     startsAt: timed ? at({ hour: from }).toISOString() : null,
     endsAt: timed ? at({ hour: to }).toISOString() : null,
     ...{ quantity: null, unitPriceMinor: null, discountPercent: null, note: null },
-    ...{ options: [], needs: [], fields: {} },
+    ...{ options: [], needs: [], addOns: [], fields: {} },
     ...rest,
   };
 }
@@ -41,6 +41,7 @@ export function previewLineFixture({ from, to, ...rest }: PreviewLineFixtureInpu
     ...{ quantity: null, effectiveQuantity: 10, quantitySource: null },
     ...{ effectiveUnitPriceMinor: null, unitPriceSource: null },
     ...{ effectiveDiscountPercent: 0, discountSource: null, stateId: null, issues: [] },
+    addOns: [],
     ...rest,
   };
 }

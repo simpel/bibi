@@ -16,10 +16,21 @@ export function lineCostMinor({ planned }: { planned: Priced | null }): number |
   return Math.round((quantity * planned.effectiveUnitPriceMinor * (100 - discount)) / 100);
 }
 
-/** The booking's total of the priced lines; null when no line has a price (or no preview yet). */
-export function linesTotalMinor({ planned }: { planned: readonly Priced[] | null }): number | null {
+/** A planned line with its add-ons (ADR 0088); a package's lines have none. */
+type PricedLine = Priced & { addOns?: readonly Priced[] };
+
+/**
+ * The booking's total of the priced lines and their add-ons (each at its own price); null when
+ * none has a price (or no preview yet).
+ */
+export function linesTotalMinor({
+  planned,
+}: {
+  planned: readonly PricedLine[] | null;
+}): number | null {
   if (!planned) return null;
   const costs = planned
+    .flatMap((line) => [line, ...(line.addOns ?? [])])
     .map((line) => lineCostMinor({ planned: line }))
     .filter((cost): cost is number => cost !== null);
   return costs.length === 0 ? null : costs.reduce((sum, cost) => sum + cost, 0);

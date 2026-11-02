@@ -5,6 +5,7 @@ import type {
   TicketCreateInput,
   TicketTemplateCreateInput,
 } from "@bibi/core";
+import { toAddOnInput } from "./draft-add-ons";
 import type { DraftLine } from "./draft-line";
 import type { IntakePeriod } from "./intake-period";
 import type { IntakePick, IntakeWhen, IntakeWho } from "./intake-state";
@@ -13,7 +14,7 @@ import type { IntakeReview } from "./review-state";
 
 const date = ({ at }: { at: string | null }) => (at === null ? null : new Date(at));
 
-/** A draft line as `ticket.previewLines` plans it. */
+/** A draft line as `ticket.previewLines` plans it, with its add-ons (ADR 0088). */
 export function toPreviewLine({ line }: { line: DraftLine }): PreviewDraftLine {
   return {
     ...{ entityTypeId: line.entityTypeId, name: line.name },
@@ -21,6 +22,7 @@ export function toPreviewLine({ line }: { line: DraftLine }): PreviewDraftLine {
     ...{ startsAt: date({ at: line.startsAt }), endsAt: date({ at: line.endsAt }) },
     ...{ unitPriceMinor: line.unitPriceMinor, discountPercent: line.discountPercent },
     fields: line.fields,
+    addOns: line.addOns.map((addOn) => toAddOnInput({ addOn })),
   };
 }
 

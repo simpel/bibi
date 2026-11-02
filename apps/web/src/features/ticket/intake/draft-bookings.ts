@@ -1,12 +1,13 @@
 import type { PreviewLine } from "@bibi/core";
 import type { AssetBooking, CalendarState } from "@bibi/ui";
 import { daySegments } from "../../calendar/day-segments";
+import { flattenDraft } from "./draft-add-ons";
 import type { DraftLine } from "./draft-line";
 
 export type DraftBookingsInput = {
   lines: readonly DraftLine[];
   /** The draft's preview lines in the same order; null while none is ready. */
-  planned: readonly PreviewLine[] | null;
+  planned: readonly (PreviewLine | null)[] | null;
   /** The items the calendar has rows for. */
   assetIds: ReadonlySet<string>;
   timeZone: string;
@@ -19,15 +20,12 @@ export type DraftBookingsInput = {
 
 /**
  * This intake's timed lines on calendar rows (the calendar dialog): one booking per day they
- * touch, on their item, in the draft's look (the clash look where the preview finds one).
+ * touch, on their item, in the draft's look (the clash look where the preview finds one). A
+ * bookable add-on is on its item's row like any line (ADR 0088).
  */
-export function draftBookings({
-  lines,
-  planned,
-  assetIds,
-  timeZone,
-  ...look
-}: DraftBookingsInput): AssetBooking[] {
+export function draftBookings({ assetIds, timeZone, ...rest }: DraftBookingsInput): AssetBooking[] {
+  const { lines, planned } = flattenDraft({ lines: rest.lines, planned: rest.planned });
+  const look = rest;
   return lines.flatMap((line, index) => {
     const { itemId, startsAt, endsAt } = line;
     if (!itemId || !startsAt || !endsAt || !assetIds.has(itemId)) return [];

@@ -1012,7 +1012,8 @@
       "discount": "{percent} % off",
       "empty": "No lines.",
       "nothingYet": "Nothing added yet",
-      "quickAdd": "Add from the catalog:"
+      "quickAdd": "Add from the catalog:",
+      "addOn": "Add-on"
     },
     "line": {
       "addTitle": "Add line",
@@ -1060,7 +1061,13 @@
       "remove": "Remove line",
       "removeTitle": "Remove {name}?",
       "removeDescription": "The line leaves this booking. Nothing is saved until Create.",
-      "add": "Add line"
+      "add": "Add line",
+      "addOns": "Add-ons",
+      "addOn": "Add-on",
+      "extraPick": "{name} · extra · {price}",
+      "removeAddOn": "Remove",
+      "ownTime": "Own time (else the line's)",
+      "addItem": "+ Add an item"
     },
     "issues": {
       "hardClash": "#{reference} holds it {period}",

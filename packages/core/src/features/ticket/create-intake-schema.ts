@@ -18,8 +18,9 @@ export const TicketIntakeShape = {
     .optional()
     .describe(
       "The ticket's lines, created with it in the entry status's states (ADR 0081): line.create " +
-        "details plus `note`, `options` and `requirements`. Needs program:write, and item:read " +
-        "for items and options. A line whose hard start state would clash is refused (CONFLICT " +
+        "details plus `note`, `options`, `requirements` and `addOns` (ADR 0088, errors at " +
+        "lines.<index>.addOns.<j>). Needs program:write, and item:read for items, options and " +
+        "add-on items. A line whose hard start state would clash is refused (CONFLICT " +
         "at lines.<index>); a soft overlap is prebooked",
     ),
   inboundMessageId: z

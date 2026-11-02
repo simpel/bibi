@@ -19,21 +19,20 @@ const lineColumns = ({ t }: { t: Translate }): Column[] => [
   {
     id: "line",
     header: t("line"),
-    accessorFn: (row) => row.line.name,
+    accessorFn: (row) => row.name,
     cell: ({ row }) => <LineNameCell row={row.original} />,
     footer: () => t("total"),
   },
   {
     id: "time",
     header: t("time"),
-    accessorFn: (row) => row.line.startsAt ?? "",
+    accessorFn: (row) => row.startsAt ?? "",
     cell: ({ row }) => row.original.time || t("untimed"),
   },
 ];
 
 export type UseDraftLineColumnsInput = {
-  headcount: number;
-  /** The preview's lines in the table's order: the costs and their total. */
+  /** The preview's lines in the draft's order (add-ons under each): the total. */
   planned: readonly DraftLineRow["planned"][];
   availabilityHidden: boolean;
   onEdit: (input: { line: DraftLine }) => void;
@@ -69,18 +68,21 @@ const costColumn = ({ t, money, total }: CostColumnInput): Column => ({
   ),
 });
 
-type StateColumnsInput = { t: Translate; headcount: number; availabilityHidden: boolean };
+type StateColumnsInput = { t: Translate; availabilityHidden: boolean };
 
-/** The quantity ("12 (guests)" while it follows the headcount) and the availability. */
-const stateColumns = ({ t, headcount, availabilityHidden }: StateColumnsInput): Column[] => [
+/**
+ * The quantity ("12 (guests)" while a line follows the headcount; an add-on shows the line's it
+ * follows) and the availability.
+ */
+const stateColumns = ({ t, availabilityHidden }: StateColumnsInput): Column[] => [
   {
     id: "quantity",
     header: t("quantity"),
-    accessorFn: (row) => row.line.quantity ?? headcount,
-    cell: ({ row }) =>
-      row.original.line.quantity === null
-        ? t("guests", { count: headcount })
-        : row.original.line.quantity,
+    accessorFn: (row) => row.quantity ?? row.follows,
+    cell: ({ row: { original } }) => {
+      if (original.quantity !== null) return original.quantity;
+      return original.addOn ? original.follows : t("guests", { count: original.follows });
+    },
   },
   {
     id: "availability",
@@ -92,7 +94,6 @@ const stateColumns = ({ t, headcount, availabilityHidden }: StateColumnsInput): 
 
 /** Line · time · quantity · availability · unit price · cost, then Edit (spec "Lines table"). */
 export function useDraftLineColumns({
-  headcount,
   planned,
   availabilityHidden,
   onEdit,
@@ -108,7 +109,7 @@ export function useDraftLineColumns({
   return useMemo<Column[]>(
     () => [
       ...lineColumns({ t }),
-      ...stateColumns({ t, headcount, availabilityHidden }),
+      ...stateColumns({ t, availabilityHidden }),
       unitPriceColumn({ t, money }),
       costColumn({ t, money, total }),
       actionsColumn<DraftLineRow>({
@@ -116,6 +117,6 @@ export function useDraftLineColumns({
         cell: (row) => <LineActions row={row} onEdit={onEdit} onRemove={onRemove} />,
       }),
     ],
-    [t, common, money, total, headcount, availabilityHidden, onEdit, onRemove],
+    [t, common, money, total, availabilityHidden, onEdit, onRemove],
   );
 }

@@ -89,6 +89,18 @@ describe("openQuestions", () => {
     expect(kinds({ items })).toEqual([]);
   });
 
+  it("does not ask about extra picks, which are the line's add-ons (ADR 0088)", () => {
+    const snack = {
+      ...{ name: "Snack", minPick: 1, maxPick: 1, split: false, allowExtras: true },
+      options: [{ itemId: "cake" }, { itemId: "fruit" }, { itemId: "oat" }],
+    };
+    const items = [{ id: "i1", groups: [snack] }];
+    const extra = { itemId: "oat", quantity: null, unitPriceMinor: null };
+    const addOns = [{ ...extra, key: "a1", name: "Oat ball", startsAt: null, endsAt: null }];
+    const line = draftFixture({ options: [{ itemId: "cake", quantity: null }], addOns });
+    expect(kinds({ review: review({ patch: { lines: [line] } }), items })).toEqual([]);
+  });
+
   it("asks about a short pool until it is prebooked or lowered", () => {
     const short = issueFixture({ kind: "POOL_SHORT", needed: 12, free: 9 });
     const planned = [previewLineFixture({ from: 9, to: 11, issues: [short] })];

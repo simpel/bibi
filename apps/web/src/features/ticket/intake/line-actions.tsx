@@ -14,7 +14,8 @@ export type LineActionsProps = {
 
 /**
  * A draft line's row menu: Edit opens the line dialog; Remove line asks first, then drops the
- * line from the draft (nothing is saved until Create).
+ * line from the draft (nothing is saved until Create). On an add-on (ADR 0088) Edit opens its
+ * line's dialog and Remove drops only the add-on.
  */
 export function LineActions({ row, onEdit, onRemove }: LineActionsProps) {
   const common = useTranslations("common");
@@ -29,19 +30,19 @@ export function LineActions({ row, onEdit, onRemove }: LineActionsProps) {
         </DropdownMenuItem>
         <DropdownMenuItem destructive onSelect={() => setConfirming(true)}>
           <Trash2Icon aria-hidden="true" />
-          {t("remove")}
+          {row.addOn ? t("removeAddOn") : t("remove")}
         </DropdownMenuItem>
       </DataTableRowActions>
       <ConfirmDialog
         open={confirming}
         onOpenChange={setConfirming}
-        title={t("removeTitle", { name: row.line.name })}
+        title={t("removeTitle", { name: row.name })}
         description={t("removeDescription")}
-        confirmLabel={t("remove")}
+        confirmLabel={row.addOn ? t("removeAddOn") : t("remove")}
         pending={false}
         onConfirm={() => {
           setConfirming(false);
-          onRemove({ key: row.line.key });
+          onRemove({ key: row.key });
         }}
       />
     </>

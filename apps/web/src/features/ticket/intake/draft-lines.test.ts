@@ -63,6 +63,24 @@ describe("draft lines", () => {
     expect(upsertLine({ lines, line: draftFixture({ key: "c" }) })).toHaveLength(3);
     expect(removeLine({ lines, key: "a" }).map(({ key }) => key)).toEqual(["b"]);
   });
+
+  it("removes one add-on by its row key and moves add-ons with their own time (ADR 0088)", () => {
+    const addOn = { itemId: "p", name: "Projector", quantity: null, unitPriceMinor: null };
+    const own = {
+      ...addOn,
+      key: "x",
+      startsAt: at({ hour: 9 }).toISOString(),
+      endsAt: at({ hour: 10 }).toISOString(),
+    };
+    const follows = { ...addOn, key: "y", startsAt: null, endsAt: null };
+    const lines = [draftFixture({ key: "a", from: 9, to: 12, addOns: [own, follows] })];
+    expect(removeLine({ lines, key: "a:x" })[0]?.addOns.map(({ key }) => key)).toEqual(["y"]);
+    const [moved] = shiftLines({ lines, deltaMs: 3_600_000 });
+    expect(moved?.addOns.map(({ startsAt }) => startsAt)).toEqual([
+      at({ hour: 10 }).toISOString(),
+      null,
+    ]);
+  });
 });
 
 describe("completing step 3", () => {

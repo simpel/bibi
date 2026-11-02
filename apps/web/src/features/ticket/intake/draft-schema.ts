@@ -28,6 +28,20 @@ const DraftLineSchema = z.object({
   note: z.string().nullable(),
   options: z.array(z.object({ itemId: Id, quantity: Count.nullable() })),
   needs: z.array(z.object({ entityTypeId: Id, vocabularyValueId: Id, quantity: Count })),
+  // Version 3 had no add-ons (ADR 0088): its lines load with none.
+  addOns: z
+    .array(
+      z.object({
+        key: Id,
+        itemId: Id.nullable(),
+        name: z.string(),
+        quantity: Count.nullable(),
+        unitPriceMinor: Count.nullable(),
+        startsAt: Instant.nullable(),
+        endsAt: Instant.nullable(),
+      }),
+    )
+    .default([]),
   fields: Fields,
 });
 
@@ -77,15 +91,15 @@ const MessageDraftSchema = z.object({
   when: z.object({ date: z.string(), from: z.string(), to: z.string(), guests: z.string() }),
 });
 
-/** The version `serializeDraft` writes; 2 is still read (see `open`). */
-export const DRAFT_VERSION = 3;
+/** The version `serializeDraft` writes; 2 and 3 are still read (see `open` and `addOns`). */
+export const DRAFT_VERSION = 4;
 
 /**
  * What a stored draft must look like; anything else (an older shape, edited storage) is dropped.
  * Version 2 could be open on step 0 (`message`), which is now a dialog: it opens step 1.
  */
 export const DraftSchema = z.object({
-  version: z.union([z.literal(2), z.literal(DRAFT_VERSION)]),
+  version: z.union([z.literal(2), z.literal(3), z.literal(DRAFT_VERSION)]),
   state: z.object({
     open: z
       .enum(["message", "who", "when", "package", "review"])

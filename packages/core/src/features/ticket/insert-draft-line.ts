@@ -8,6 +8,7 @@ import type { LineRecord } from "../line/schema";
 import { insertRequirement } from "../requirement/insert-requirement";
 import { atPath } from "./at-path";
 import type { CreateDraftLine } from "./draft-line-schema";
+import { insertAddOns } from "./insert-add-ons";
 
 type Context = OperationContext;
 
@@ -42,6 +43,8 @@ export type InsertDraftLineInput = {
   ticketId: string;
   line: CreateDraftLine;
   index: number;
+  /** Item id → name, for an add-on without a name of its own (ADR 0088). */
+  itemNames: ReadonlyMap<string, string>;
 };
 
 /** The draft's chosen options (ADR 0082) and needs on the new line, errors at their paths. */
@@ -73,15 +76,17 @@ async function addChoicesAndNeeds({
 
 /**
  * One draft line of `ticket.create` (ADR 0081 decision 9) on the new ticket: the line in its
- * start state, then its options and its needs. Every error is at `lines.<index>`.
+ * start state, then its options, its needs and its add-ons (ADR 0088). Every error is at
+ * `lines.<index>`.
  */
 export async function insertDraftLine({
   context,
   ticketId,
   line,
   index,
+  itemNames,
 }: InsertDraftLineInput): Promise<Result<LineRecord>> {
-  const { options: _options, requirements: _requirements, ...details } = line;
+  const { options: _options, requirements: _requirements, addOns: _addOns, ...details } = line;
   const path = `lines.${index}`;
   const made = await guarded({
     name: line.name,
@@ -92,6 +97,10 @@ export async function insertDraftLine({
       }),
   });
   if (!made.ok) return atPath({ result: made, path });
-  const extras = await addChoicesAndNeeds({ context, ticketId, line, index, made: made.value });
-  return extras.ok ? made : extras;
+  const input = { context, ticketId, line, index, itemNames, made: made.value };
+  const extras = await addChoicesAndNeeds(input);
+  if (!extras.ok) return extras;
+  const lineContext = auditedAs({ context, entityType: "line" });
+  const addOns = await insertAddOns({ ...input, context: lineContext, guard: guarded });
+  return addOns.ok ? made : addOns;
 }

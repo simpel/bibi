@@ -13,6 +13,11 @@ export type PlannedLine = {
   quantity?: number | null;
   unitPriceMinor?: number | null;
   discountPercent?: number | null;
+  /**
+   * An add-on's parent line (ADR 0088): without its own quantity the add-on counts the parent's
+   * (source PARENT_LINE). Left out for any other line.
+   */
+  parent?: { quantity: number | null } | null;
 };
 
 export type TimedPlannedLine = PlannedLine & { startsAt: Date; endsAt: Date };

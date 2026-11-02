@@ -12,7 +12,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
   - A done step collapses to a one-line summary with **Change**, which reopens it and keeps later answers.
   - Values that came from a message say "from email" while they are still what the message said.
 - Nothing is written until **Create**, except a customer or contact created in step 1.
-- **Local draft**: the page keeps the unfinished intake in the browser, per organization and member, written on every change once a customer is chosen or a message was read. On the next visit to plain `/new/ticket` the first step offers "Continue the draft for <customer> (<date>, <guests> guests)?" with Continue and Discard. A created ticket clears it. Drafts stored before the paste dialog (version 2, possibly open on the old step 0) still load, opening step 1.
+- **Local draft**: the page keeps the unfinished intake in the browser, per organization and member, written on every change once a customer is chosen or a message was read. On the next visit to plain `/new/ticket` the first step offers "Continue the draft for <customer> (<date>, <guests> guests)?" with Continue and Discard. A created ticket clears it. Drafts stored before the paste dialog (version 2, possibly open on the old step 0) still load, opening step 1; drafts from before add-ons (version 3) load with none (ADR 0088).
 
 ## Reading a message (the paste dialog)
 - The sidebar's New ticket menu has **From a message**, which opens `/new/ticket/message`: step 1 with a dialog over it. An inbox message's New ticket opens the same path with `?fromMessage=<id>`, the text area prefilled with the message. Without a model for `ticket.intakeDraft` the menu entry is hidden and the path just opens step 1.
@@ -75,11 +75,11 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
   - An empty state ("Nothing added yet") with quick-add buttons for the most used items.
 - **Calendar snapshot**:
   - The requested day, from 08:00–20:00 or wider to cover every line (past midnight marked "+1").
-  - One row per item the timed lines use, showing that day's other bookings of it in subtle gray (soft holds lighter and dashed; for a bookable resource its holds, labelled with ticket and customer, for any other item, such as a buffet, the other tickets' lines) and this ticket's draft lines (dashed, red when they clash); bars that overlap go on lanes of their own, and a label too long for its bar ends in "…" (full text on hover). Free-text lines share one "Other lines" row, shown only when there are any.
+  - One row per item the timed lines use, showing that day's other bookings of it in subtle gray (soft holds lighter and dashed; for a bookable resource its holds, labelled with ticket and customer, for any other item, such as a buffet, the other tickets' lines) and this ticket's draft lines and add-ons (dashed, red when they clash; an add-on on its own item's row); bars that overlap go on lanes of their own, and a label too long for its bar ends in "…" (full text on hover). Free-text lines share one "Other lines" row, shown only when there are any.
   - It fits the card: a fixed label column, the hours take the rest of the width, no sideways scrolling.
   - Pool and stock shortages are listed under it.
   - The view updates as lines change. **Open calendar** opens the full calendar in a dialog (90% of the viewport) on that day, read-only (no adding, moving or leaving), with this draft's lines over it (dashed look, the clash look where they clash). Clicking a booking opens a sheet over it with its ticket, customer, line state, line, resource, period, quantity and hold; fields the member may not read are left out.
-- **Lines table**: time, line (name, then a second row with setup, choices, needs, price override and note), quantity ("12 (guests)" or a fixed number), availability (✓, ⚠ or ✕ with the issue text), unit price (in effect: line, price list or item), cost (quantity × unit price less the discount, from the preview; "–" without a price), and a menu with **Edit** and **Remove line** (each with an icon; Remove asks for confirmation first). A footer row shows the total of the priced lines.
+- **Lines table**: time, line (name, then a second row with setup, choices, needs, price override and note), quantity ("12 (guests)" or a fixed number), availability (✓, ⚠ or ✕ with the issue text), unit price (in effect: line, price list or item), cost (quantity × unit price less the discount, from the preview; "–" without a price), and a menu with **Edit** and **Remove line** (each with an icon; Remove asks for confirmation first). A line's add-ons (ADR 0088) follow it as indented rows with an "Add-on" badge, each with its own time (the line's unless set), quantity (the line's it follows, or its own), availability, unit price (its own: line override, price list or item; the line's discount does not apply) and cost. On an add-on, **Edit** opens its line's dialog and **Remove** (confirmed) drops only the add-on; removing a line removes its add-ons. A footer row shows the total of the priced lines and add-ons, which is also the ticket's estimated value.
 - **+ Add line** opens the line dialog empty. **Edit** opens it with the line.
 - **Notes on the booking**: a text area, becomes `Ticket.note`.
 - **One-off only**: **Also save these lines as a package**, with a name.
@@ -91,7 +91,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 | The start changed from <a> to <b>. What should happen to the lines? | Move every timed line <±delta> · Keep the line times |
 | There are no lines. Create the ticket as a lead without lines? | Yes, a lead without lines · + Add a line |
 | <line> has quantity 0. | Remove the line · Edit line |
-| <line>: <group> has <n> chosen. Choose <rule>. (the item's group pick rule as `ticket.create` checks it: only once the line chose an option) | Edit line |
+| <line>: <group> has <n> chosen. Choose <rule>. (the item's group pick rule as `ticket.create` checks it: only once the line chose an option; extra picks are add-ons, not options, so they never raise it) | Edit line |
 | <line>: <n> choices (or needs) but only <q> ordered. | Lower to fit · Edit line |
 | <line>: <q> needed, only <free> left that day. | Prebook all <q> (source <q−free> more) · Lower to <free> |
 | The email doesn't say <field>. The assistant guessed <value>. | Keep <value> · Change it |
@@ -120,9 +120,10 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 |---|---|
 | `BOOKABLE` | Time, availability for that time |
 | `SETUPS` | Setup (capacity shown) |
-| `CUSTOMISATIONS` | Choices per group: a pick in a normal group, a quantity per option in a split group (ADR 0082). Once anything is chosen, each group must get between its min and max picks (core's rule, a split group counting options above 0); a broken group says "Choose 1", "Choose 1–2", "Choose at least 1" or "Choose at most 2" under it, and Save waits. An edited line shows it at once. |
+| `CUSTOMISATIONS` | Choices per group: a pick in a normal group, a quantity per option in a split group (ADR 0082). Once anything is chosen, each group must get between its min and max picks (core's rule, a split group counting options above 0); a broken group says "Choose 1", "Choose 1–2", "Choose at least 1" or "Choose at most 2" under it, and Save waits. An edited line shows it at once. In a normal group that allows extras (ADR 0088), picks beyond the max are allowed: the first max picks, in the order picked, stay options and the rest show at once as add-on rows ("Oat ball · extra · 65,00 kr", the item's catalog price; the preview prices it exactly once the line is in the draft). Removing the row unpicks it. Without extras, and in split groups, the max stays a hard limit. |
 | `PRICED` | Unit price (list price shown as the placeholder), discount |
 
+- **Add-ons** (ADR 0088), under the item's fields: the extra picks, then items added with **+ Add an item** (the same item search, or free text with a name). Each added row shows the item and its catalog price, a quantity (empty follows the line's), **Own time (else the line's)** with from and to, and **Remove**. An add-on has the line's type. Saved with the line as `addOns`, created as add-on lines under it.
 - **Needs**: counts per value from the organization's lists (Vegan 2, Nut allergy 1), stored as line Requirements.
 - **Note** (shown on sheets).
 - **Availability box**: the preview's issues for this line, live. A hard clash says "You can still save; the line is prebooked and shown as blocked."
@@ -135,6 +136,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 - Next actions: Add line, Send quote, Payment link, Hold until.
 
 ## Core
+- `ticket.previewLines` and `ticket.create` draft lines take `addOns[]` (`{ itemId?, name?, entityTypeId?, quantity?, unitPriceMinor?, discountPercent?, startsAt?, endsAt?, note? }`); the preview returns them priced with their issues under each line, create writes them as `role = ADD_ON` lines with errors at `lines.<i>.addOns.<j>`: ADR 0088.
 - `ticket.previewLines`, `ticket.create` (with `lines`, `note`, `templateId`, `inboundMessageId`, `intakeKey`; contact required; starts in the entry status), `ticket.createFromTemplate` (same path, template start status, contact required): ADR 0081.
 - `customer.findSimilar`, `customer.create` with `contact`, `customer.list` with `recent`, `calendar.range` with `itemIds`: ADR 0081.
 - `line.chooseOptions` with `options[{ itemId, quantity? }]`, split groups, `OPTION_SPLIT_MISMATCH`: ADR 0082.

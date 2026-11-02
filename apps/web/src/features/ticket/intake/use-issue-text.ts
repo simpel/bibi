@@ -6,7 +6,11 @@ import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 export type LineTone = "ok" | "warn" | "clash" | "unknown";
 
 /** The tone of a planned line; null (no preview yet) is unknown. */
-export function lineTone({ planned }: { planned: PreviewLine | null | undefined }): LineTone {
+export function lineTone({
+  planned,
+}: {
+  planned: Pick<PreviewLine, "issues"> | null | undefined;
+}): LineTone {
   if (!planned) return "unknown";
   if (planned.issues.some(({ kind }) => kind === "HARD_CLASH")) return "clash";
   return planned.issues.length > 0 ? "warn" : "ok";

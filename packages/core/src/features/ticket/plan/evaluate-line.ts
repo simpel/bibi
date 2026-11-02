@@ -93,7 +93,10 @@ export function evaluateLine({
   const item = line.itemId ? sources.items.get(line.itemId) : undefined;
   const state = item ? sources.stateOf({ entityTypeId: item.entityTypeId }) : null;
   const ticket = { estimatedHeadcount: headcount, guaranteedHeadcount: null };
-  const quantity = effectiveQuantity({ quantity: line.quantity ?? null, ticket });
+  const quantity = effectiveQuantity({
+    ...{ quantity: line.quantity ?? null, ticket },
+    parent: line.parent ?? null,
+  });
   const own = selfOverlaps({ lines: plan, periods, index });
   const issues = availability
     ? availabilityIssues({

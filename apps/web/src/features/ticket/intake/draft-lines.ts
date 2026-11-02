@@ -14,7 +14,7 @@ function fromPreview({ line, newKey }: FromPreviewInput): DraftLine {
     ...{ startsAt: iso({ date: line.startsAt }), endsAt: iso({ date: line.endsAt }) },
     quantity: line.quantity,
     ...{ unitPriceMinor: null, discountPercent: null, note: null },
-    ...{ options: [], needs: [], fields: {} },
+    ...{ options: [], needs: [], addOns: [], fields: {} },
   };
 }
 
@@ -40,14 +40,22 @@ export function linesFromEntry({ entry, newKey, shortenTo }: LinesFromEntryInput
 
 export type ShiftLinesInput = { lines: DraftLine[]; deltaMs: number };
 
-/** Every timed line moved by the same amount; untimed lines stay untimed. */
+/** Every timed line (and add-on with its own time) moved by the same amount; untimed stay. */
 export function shiftLines({ lines, deltaMs }: ShiftLinesInput): DraftLine[] {
   const move = ({ at }: { at: string | null }) =>
     at === null ? null : new Date(new Date(at).getTime() + deltaMs).toISOString();
+  const moved = <T extends { startsAt: string | null; endsAt: string | null }>({
+    row,
+  }: {
+    row: T;
+  }): T => ({
+    ...row,
+    startsAt: move({ at: row.startsAt }),
+    endsAt: move({ at: row.endsAt }),
+  });
   return lines.map((line) => ({
-    ...line,
-    startsAt: move({ at: line.startsAt }),
-    endsAt: move({ at: line.endsAt }),
+    ...moved({ row: line }),
+    addOns: line.addOns.map((addOn) => moved({ row: addOn })),
   }));
 }
 
@@ -72,5 +80,14 @@ export function upsertLine({ lines, line }: UpsertLineInput): DraftLine[] {
   return found ? lines.map((each) => (each.key === line.key ? line : each)) : [...lines, line];
 }
 
+/**
+ * Without the line of `key` (its add-ons go with it, ADR 0088 decision 10), or without the add-on
+ * whose row key (`<line key>:<add-on key>`) it is.
+ */
 export const removeLine = ({ lines, key }: { lines: DraftLine[]; key: string }) =>
-  lines.filter((line) => line.key !== key);
+  lines
+    .filter((line) => line.key !== key)
+    .map((line) => {
+      const addOns = line.addOns.filter((addOn) => `${line.key}:${addOn.key}` !== key);
+      return addOns.length === line.addOns.length ? line : { ...line, addOns };
+    });

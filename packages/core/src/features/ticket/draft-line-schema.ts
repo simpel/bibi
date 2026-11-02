@@ -2,6 +2,7 @@ import { z } from "zod";
 import { ChosenOptionSchema } from "../line/choose-options-schema";
 import { LineCreateInputSchema } from "../line/schema";
 import { LineRequirementInputSchema } from "../requirement/schema";
+import { DraftAddOnsSchema } from "./draft-add-on-schema";
 
 /**
  * A draft line: what `line.create` would get, without its ticket (ADR 0081 decision 6). The one
@@ -23,6 +24,7 @@ export const PreviewDraftLineSchema = LineCreateInputSchema.pick({
       "them when ticket.create writes the line (errors at lines.<index>.fields.<key>); " +
       "ticket.previewLines does not check them",
   ),
+  addOns: DraftAddOnsSchema,
 });
 
 /** A draft line as `ticket.create` writes it: the planned fields plus note, choices and needs. */

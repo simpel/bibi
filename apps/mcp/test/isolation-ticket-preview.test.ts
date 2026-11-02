@@ -5,7 +5,7 @@ import { seedTemplate } from "./seed-template";
 const PERIOD = { startsAt: "2026-12-01T08:00:00.000Z", endsAt: "2026-12-01T12:00:00.000Z" };
 
 describe("cross-organization isolation: ticket intake preview (ADR 0081)", () => {
-  it("refuses another organization's template, customer, item and line type ids", async () => {
+  it("refuses another organization's template, customer, item, add-on item and line type ids", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
     const secret = await seedTemplate({ client: a });
@@ -30,6 +30,18 @@ describe("cross-organization isolation: ticket intake preview (ADR 0081)", () =>
         {
           ...{ ...base, customerId: own.customerId },
           lines: [line({ entityTypeId: secret.programTypeId, itemId: own.itemId })],
+        },
+      ],
+      [
+        "VALIDATION",
+        {
+          ...{ ...base, customerId: own.customerId },
+          lines: [
+            {
+              ...line({ entityTypeId: own.programTypeId, itemId: own.itemId }),
+              addOns: [{ itemId: secret.itemId }],
+            },
+          ],
         },
       ],
     ] as const;

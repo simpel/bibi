@@ -1012,7 +1012,8 @@
       "discount": "{percent} % rabatt",
       "empty": "Inga rader.",
       "nothingYet": "Inget tillagt än",
-      "quickAdd": "Lägg till från katalogen:"
+      "quickAdd": "Lägg till från katalogen:",
+      "addOn": "Tillägg"
     },
     "line": {
       "addTitle": "Lägg till rad",
@@ -1060,7 +1061,13 @@
       "remove": "Ta bort raden",
       "removeTitle": "Ta bort {name}?",
       "removeDescription": "Raden tas bort från bokningen. Inget sparas förrän du skapar ärendet.",
-      "add": "Lägg till rad"
+      "add": "Lägg till rad",
+      "addOns": "Tillägg",
+      "addOn": "Tillägg",
+      "extraPick": "{name} · extra · {price}",
+      "removeAddOn": "Ta bort",
+      "ownTime": "Egen tid (annars radens)",
+      "addItem": "+ Lägg till en artikel"
     },
     "issues": {
       "hardClash": "#{reference} har den {period}",

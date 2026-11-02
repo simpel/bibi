@@ -36,6 +36,26 @@ describe("toCreateInput", () => {
     expect(input.lines?.[1]).toMatchObject({ startsAt: null, fields: { text: "Welcome" } });
   });
 
+  it("sends add-ons under their line, times only when their own (ADR 0088)", () => {
+    const addOn = { itemId: "oat", name: "Oat ball", quantity: null, unitPriceMinor: null };
+    const own = {
+      ...addOn,
+      key: "b",
+      startsAt: at({ hour: 10 }).toISOString(),
+      endsAt: at({ hour: 11 }).toISOString(),
+    };
+    const line = draftFixture({
+      from: 9,
+      to: 12,
+      addOns: [{ ...addOn, key: "a", startsAt: null, endsAt: null }, own],
+    });
+    const input = toCreateInput({ ...base, review: { ...review, lines: [line] }, userId: "u1" });
+    expect(input.lines?.[0]?.addOns).toEqual([
+      { ...addOn },
+      { ...addOn, startsAt: at({ hour: 10 }), endsAt: at({ hour: 11 }) },
+    ]);
+  });
+
   it("leaves the package out of a one-off and keeps a chosen assignee", () => {
     const chosen = { ...review, more: { ...review.more, assigneeId: "u2" } };
     const input = toCreateInput({
