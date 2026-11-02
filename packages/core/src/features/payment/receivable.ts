@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
+import { invoiceDueMinor } from "../invoice/to-invoice-dto";
 import { checkReadable } from "../ticket/ticket-rules";
 import type { PaymentCreateInput } from "./schema";
 import type { ReceivableRef } from "./settlement";
@@ -55,11 +56,15 @@ async function findDeposit({ context, id }: FindInput): Promise<Result<Receivabl
 }
 
 async function findInvoice({ context, id }: FindInput): Promise<Result<Receivable>> {
-  const invoice = await context.db.invoice.findFirst({ where: { id } });
+  const invoice = await context.db.invoice.findFirst({
+    where: { id },
+    include: { deductions: { select: { amountMinor: true } } },
+  });
   if (!invoice) return notFound({ entity: "Invoice" });
   if (invoice.status !== "SENT")
     return conflict({ message: `A ${invoice.status} invoice cannot be paid` });
-  const { ticketId, totalInclVatMinor: amountMinor, currency, number } = invoice;
+  const { ticketId, currency, number } = invoice;
+  const amountMinor = invoiceDueMinor({ invoice, deductions: invoice.deductions });
   const description = `Invoice #${number}`;
   return ok({
     value: { ref: { ...NONE, invoiceId: id }, ticketId, amountMinor, currency, description },

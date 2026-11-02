@@ -15,8 +15,12 @@ const LINE_ORDER = [{ position: "asc" as const }, { id: "asc" as const }];
 
 type Stored = { totalExclVatMinor: number; totalInclVatMinor: number };
 
+type Deduction = PublicPaymentTotals["deductions"][number];
+
+type ToDocumentInput = { rows: OrderLine[]; stored: Stored; deductions?: Deduction[] };
+
 /** The frozen lines nested under their parents, stripped to what the document showed. */
-function toDocument({ rows, stored }: { rows: OrderLine[]; stored: Stored }): PublicDocument {
+function toDocument({ rows, stored, deductions = [] }: ToDocumentInput): PublicDocument {
   const present = new Set(rows.map((row) => row.lineId));
   const nested = nestUnderParents({
     rows,
@@ -31,7 +35,9 @@ function toDocument({ rows, stored }: { rows: OrderLine[]; stored: Stored }): Pu
   const { totalExclVatMinor, totalInclVatMinor } = stored;
   const vatMinor = totalInclVatMinor - totalExclVatMinor;
   const from = totalIsFrom({ lines: rows });
-  return { lines, totals: { totalExclVatMinor, vatMinor, totalInclVatMinor, totalIsFrom: from } };
+  const amountDueMinor = deductions.reduce((due, d) => due - d.amountMinor, totalInclVatMinor);
+  const totals = { totalExclVatMinor, vatMinor, totalInclVatMinor, totalIsFrom: from };
+  return { lines, totals: { ...totals, deductions, amountDueMinor } };
 }
 
 export type PublicDocumentInput = {
@@ -52,9 +58,16 @@ export async function publicDocument({
   if (payment.invoiceId) {
     const invoice = await context.db.invoice.findFirst({
       where: { id: payment.invoiceId },
-      include: { lines: { orderBy: LINE_ORDER } },
+      include: {
+        lines: { orderBy: LINE_ORDER },
+        deductions: { include: { deposit: { select: { description: true } } } },
+      },
     });
-    return invoice ? toDocument({ rows: invoice.lines, stored: invoice }) : NONE;
+    if (!invoice) return NONE;
+    const deductions = invoice.deductions.map(({ amountMinor, deposit }) => ({
+      ...{ amountMinor, description: deposit.description },
+    }));
+    return toDocument({ rows: invoice.lines, stored: invoice, deductions });
   }
   if (!payment.quoteId || !canView({ context, feature: "quote" })) return NONE;
   const quote = await context.db.quote.findFirst({

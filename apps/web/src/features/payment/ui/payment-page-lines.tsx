@@ -57,6 +57,28 @@ function LineItem({ line, money }: LineProps) {
 
 type TotalsProps = { totals: NonNullable<PublicPaymentDto["totals"]>; money: Money };
 
+/** An invoice's paid deposits and what is left to pay (ADR 0090); nothing for a quote. */
+function Deductions({ totals, money }: TotalsProps) {
+  const t = useTranslations("payment.public");
+  if (totals.deductions.length === 0) return null;
+  return (
+    <dl className="grid gap-1 text-sm">
+      {totals.deductions.map((deduction) => (
+        <div key={deduction.description} className="flex justify-between gap-3">
+          <dt className="text-muted-foreground">
+            {t("deduction", { description: deduction.description })}
+          </dt>
+          <dd className="tabular-nums">−{money({ minor: deduction.amountMinor })}</dd>
+        </div>
+      ))}
+      <div className="flex justify-between gap-3 font-medium">
+        <dt>{t("amountDue")}</dt>
+        <dd className="tabular-nums">{money({ minor: totals.amountDueMinor })}</dd>
+      </div>
+    </dl>
+  );
+}
+
 /** Excl. VAT, VAT and the total incl. VAT ("from" while an alternative is unchosen). */
 function Totals({ totals, money }: TotalsProps) {
   const t = useTranslations("payment.public");
@@ -100,6 +122,7 @@ export function PaymentPageLines({ payment, numbers }: PaymentPageLinesProps) {
         ))}
       </ul>
       {payment.totals ? <Totals totals={payment.totals} money={money} /> : null}
+      {payment.totals ? <Deductions totals={payment.totals} money={money} /> : null}
     </section>
   );
 }

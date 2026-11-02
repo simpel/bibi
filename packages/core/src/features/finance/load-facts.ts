@@ -1,4 +1,5 @@
 import type { OperationContext } from "../../operations/types";
+import { invoiceDueMinor } from "../invoice/to-invoice-dto";
 import { paidForInvoices } from "../payment/settlement";
 import type { FinancePeriod } from "./period";
 
@@ -66,12 +67,16 @@ export async function loadOpenInvoices({ context, customerId }: Db) {
       ticketId: true,
       dueDate: true,
       totalInclVatMinor: true,
+      deductions: { select: { amountMinor: true } },
       ticket: { select: { reference: true, title: true } },
     },
   });
   const paid = await paidForInvoices({ context, invoiceIds: invoices.map((row) => row.id) });
   return invoices
-    .map((row) => ({ ...row, openMinor: row.totalInclVatMinor - (paid.get(row.id) ?? 0) }))
+    .map(({ deductions, ...row }) => {
+      const due = invoiceDueMinor({ invoice: row, deductions });
+      return { ...row, openMinor: due - (paid.get(row.id) ?? 0) };
+    })
     .filter((row) => row.openMinor > 0);
 }
 

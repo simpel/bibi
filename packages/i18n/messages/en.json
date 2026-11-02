@@ -3371,7 +3371,9 @@
       "totalExclVat": "Total excl. VAT",
       "vat": "VAT",
       "totalInclVat": "Total incl. VAT",
-      "from": "from {amount}"
+      "from": "from {amount}",
+      "deduction": "Paid deposit: {description}",
+      "amountDue": "Left to pay"
     },
     "fields": {
       "method": "Method",
@@ -3474,7 +3476,8 @@
     "sent": "The invoice is marked as sent.",
     "void": "Void",
     "voidConfirm": "Void invoice #{number}? It is no longer owed and the ticket can be invoiced again.",
-    "voided": "The invoice has been voided."
+    "voided": "The invoice has been voided.",
+    "deducted": "{amount} in paid deposits deducted"
   },
   "paymentSettings": {
     "title": "Payments",

@@ -47,6 +47,7 @@ export {
   type IntegrationConnection,
   type Invitation,
   type Invoice,
+  type InvoiceDeposit,
   type Item,
   ItemCapability,
   type ItemCustomisationGroup,

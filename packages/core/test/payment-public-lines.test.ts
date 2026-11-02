@@ -71,6 +71,8 @@ describe("the public payment page lists what is paid for", () => {
       vatMinor: quote.totalInclVatMinor - quote.totalExclVatMinor,
       totalInclVatMinor: quote.totalInclVatMinor,
       totalIsFrom: false,
+      deductions: [],
+      amountDueMinor: quote.totalInclVatMinor,
     });
   });
 

@@ -2,7 +2,6 @@ import type { AccountingEvent, Settles } from "../../accounting/sie4/events";
 import type { OperationContext } from "../../operations/types";
 import { toIsoDate } from "../../time/plain-date";
 import { toZonedParts } from "../../time/zoned-time";
-import { paidByReceivable } from "../payment/settlement";
 import { type RevenueAccountOf, revenueParts } from "./account-map";
 import type { ExportSources, SourceInvoice, SourcePayment } from "./export-sources";
 
@@ -19,36 +18,12 @@ type Build = { timeZone: string; accountOf: RevenueAccountOf };
 const dateOf = ({ instant, timeZone }: { instant: Date; timeZone: string }) =>
   toIsoDate({ date: toZonedParts({ instant, timeZone }).date });
 
-/** Paid deposits per ticket: moved from customer advances to receivables when invoiced. */
-async function depositsPaid({
-  context,
-  ticketIds,
-}: {
-  context: Pick<OperationContext, "db">;
-  ticketIds: string[];
-}): Promise<Map<string, number>> {
-  const [deposits, paid] = await Promise.all([
-    context.db.deposit.findMany({
-      where: { ticketId: { in: ticketIds }, status: { not: "VOID" } },
-      select: { id: true, ticketId: true },
-    }),
-    paidByReceivable({ context, ticketIds }),
-  ]);
-  const byTicket = new Map<string, number>();
-  for (const deposit of deposits) {
-    const amount = paid.get(deposit.id) ?? 0;
-    byTicket.set(deposit.ticketId, (byTicket.get(deposit.ticketId) ?? 0) + amount);
-  }
-  return byTicket;
-}
-
 type InvoiceInput = Build & {
   invoice: SourceInvoice;
   kind: "INVOICE_SENT" | "INVOICE_VOID";
-  offsets: Map<string, number>;
 };
 
-function invoiceEvent({ invoice, kind, offsets, ...build }: InvoiceInput): PendingEvent {
+function invoiceEvent({ invoice, kind, ...build }: InvoiceInput): PendingEvent {
   const instant = (kind === "INVOICE_SENT" ? invoice.sentAt : invoice.voidedAt) ?? new Date();
   return {
     entry: { kind, invoiceId: invoice.id },
@@ -59,7 +34,8 @@ function invoiceEvent({ invoice, kind, offsets, ...build }: InvoiceInput): Pendi
       invoiceNumber: invoice.number,
       totalInclVatMinor: invoice.totalInclVatMinor,
       parts: revenueParts({ lines: invoice.lines, accountOf: build.accountOf }),
-      depositOffsetMinor: offsets.get(invoice.ticketId) ?? 0,
+      // Exactly the deposits the invoice deducts move from customer advances (ADR 0090).
+      depositOffsetMinor: invoice.deductions.reduce((sum, d) => sum + d.amountMinor, 0),
     },
   };
 }
@@ -121,19 +97,10 @@ export type PendingEventsInput = Build & {
 };
 
 /** Every pending event with the entry that records it (ADR 0077). */
-export async function pendingEvents({ context, sources, ...build }: PendingEventsInput) {
-  const invoices = [...sources.sent, ...sources.voided];
-  const offsets = await depositsPaid({
-    context,
-    ticketIds: [...new Set(invoices.map((i) => i.ticketId))],
-  });
+export async function pendingEvents({ sources, ...build }: PendingEventsInput) {
   return [
-    ...sources.sent.map((invoice) =>
-      invoiceEvent({ ...build, invoice, kind: "INVOICE_SENT", offsets }),
-    ),
-    ...sources.voided.map((invoice) =>
-      invoiceEvent({ ...build, invoice, kind: "INVOICE_VOID", offsets }),
-    ),
+    ...sources.sent.map((invoice) => invoiceEvent({ ...build, invoice, kind: "INVOICE_SENT" })),
+    ...sources.voided.map((invoice) => invoiceEvent({ ...build, invoice, kind: "INVOICE_VOID" })),
     ...paymentEvents({ ...build, sources }),
   ];
 }

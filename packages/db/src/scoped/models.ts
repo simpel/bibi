@@ -72,6 +72,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "AccountingExportEntry",
   "Deposit",
   "Invoice",
+  "InvoiceDeposit",
   "AuditLog",
   "Embedding",
   "Conversation",

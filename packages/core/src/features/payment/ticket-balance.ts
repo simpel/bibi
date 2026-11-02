@@ -1,5 +1,6 @@
 import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import type { OperationContext } from "../../operations/types";
+import { invoiceDueMinor } from "../invoice/to-invoice-dto";
 import type { ReceivableKind, ReceivableSettlement, TicketBalanceDto } from "./balance-schema";
 import { paidByReceivable, settlementOf } from "./settlement";
 
@@ -26,7 +27,11 @@ async function receivablesOf({ context, ticketId, withQuotes }: TicketBalanceInp
         })
       : [],
     context.db.deposit.findMany({ where: { ticketId }, orderBy: { createdAt: "asc" } }),
-    context.db.invoice.findMany({ where: { ticketId }, orderBy: { number: "asc" } }),
+    context.db.invoice.findMany({
+      where: { ticketId },
+      orderBy: { number: "asc" },
+      include: { deductions: { select: { amountMinor: true } } },
+    }),
   ]);
   return { quotes, deposits, invoices };
 }
@@ -45,7 +50,14 @@ function dueOf({ quotes, deposits, invoices }: Receivables): Due[] {
     ...invoices.flatMap((i) =>
       i.status === "VOID"
         ? []
-        : [{ kind: "INVOICE" as const, id: i.id, amountMinor: i.totalInclVatMinor }],
+        : [
+            {
+              kind: "INVOICE" as const,
+              id: i.id,
+              // What the invoice asks for; the deducted deposits are paid on themselves (ADR 0090).
+              amountMinor: invoiceDueMinor({ invoice: i, deductions: i.deductions }),
+            },
+          ],
     ),
   ];
 }

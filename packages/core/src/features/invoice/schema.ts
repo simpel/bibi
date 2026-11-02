@@ -3,6 +3,13 @@ import { PageInputShape } from "../../shared/page-input";
 import { ReceivableStatusSchema, SettlementShape } from "../payment/settlement-schema";
 import { OrderLineSchema } from "../quote/order-line-schema";
 
+/** A paid deposit the invoice deducts (ADR 0090), as paid when the invoice was created. */
+export const InvoiceDeductionSchema = z.object({
+  depositId: z.string(),
+  description: z.string().describe("The deposit's own description"),
+  amountMinor: z.number().int().describe("Paid on the deposit at invoice create, minor units"),
+});
+
 /**
  * An invoice (ADR 0052, 0057): a frozen receivable whose lines are a snapshot of the ticket's
  * priced lines when it was created. `status` holds only its lifecycle; what is paid is derived.
@@ -22,6 +29,13 @@ export const InvoiceSchema = z.object({
     .int()
     .describe("Sum of the frozen lines incl. VAT, minor units: the amount owed"),
   lines: z.array(OrderLineSchema).describe("The ticket's priced lines, frozen at create"),
+  deductions: z
+    .array(InvoiceDeductionSchema)
+    .describe("Paid deposits deducted from the total, frozen at create (ADR 0090)"),
+  amountDueMinor: z
+    .number()
+    .int()
+    .describe("Total incl. VAT minus the deductions, minor units: what payments settle"),
   ...SettlementShape,
   createdAt: z.date(),
   updatedAt: z.date(),

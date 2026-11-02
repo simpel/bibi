@@ -997,7 +997,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - invoice number, due date (given, else after the customer's payment terms, default 30 days)
 - status: `DRAFT → SENT → VOID` (VOID is final)
 - totals of the frozen lines
-- offset deposit – *later*
+- deducted deposits (`InvoiceDeposit`, snapshot at create) and the amount due: total incl. VAT minus them, which payments settle ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md))
 - export status (Fortnox / Visma) – *later*
 - e-invoice – *later*
 
@@ -1005,9 +1005,21 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` Ticket is invoiced via this
 - `1:N` is settled with → Payment
 - `1:N` invoices → OrderLine
-- `1:N` offsets → Deposit – *later*
+- `1:N` deducts → InvoiceDeposit → Deposit
 
 > Operations (`payment:read` to read, `payment:write` to change): `invoice.list` (per ticket, newest first), `invoice.get`, `invoice.create({ ticketId, dueDate? })` (needs `program:read`, since it copies the lines; an `invoiceable` status; at least one priced line with quantity and VAT; and no other invoice of the ticket that is not VOID, held by a partial unique index so a concurrent second create is `CONFLICT`), `invoice.send` and `invoice.void` (as for a deposit; voiding lets the ticket be invoiced again). On every surface; web on the ticket page.
+
+### InvoiceDeposit (`InvoiceDeposit`)
+
+*MVP* · A paid deposit a final invoice deducts ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)). Written by `invoice.create` for every deposit of the ticket that is not VOID and has something paid, at what is paid on it then; a deposit paid later is not deducted (void and recreate the invoice). Revenue and VAT stay the invoice lines'; the SIE export moves exactly these amounts from customer advances to receivables (ADR 0077).
+
+> **Ownership:** snapshot every column, never changed afterwards.
+
+**Attributes**
+- amount paid on the deposit at invoice create, minor units
+
+**Relations**
+- `N:1` Invoice deducts this; `N:1` Deposit is deducted by this (at most once per invoice)
 
 ### PaymentRefund (`PaymentRefund`)
 

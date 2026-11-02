@@ -3371,7 +3371,9 @@
       "totalExclVat": "Summa exkl. moms",
       "vat": "Moms",
       "totalInclVat": "Summa inkl. moms",
-      "from": "från {amount}"
+      "from": "från {amount}",
+      "deduction": "Betalt förskott: {description}",
+      "amountDue": "Kvar att betala"
     },
     "fields": {
       "method": "Betalsätt",
@@ -3474,7 +3476,8 @@
     "sent": "Fakturan är markerad som skickad.",
     "void": "Makulera",
     "voidConfirm": "Makulera faktura nr {number}? Den är då inte längre skyldig och ärendet kan faktureras igen.",
-    "voided": "Fakturan har makulerats."
+    "voided": "Fakturan har makulerats.",
+    "deducted": "{amount} i betalda förskott avdraget"
   },
   "paymentSettings": {
     "title": "Betalningar",

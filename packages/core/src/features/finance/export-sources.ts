@@ -29,6 +29,7 @@ const INVOICE_SELECT = {
   totalInclVatMinor: true,
   ticket: TICKET,
   lines: LINES,
+  deductions: { select: { amountMinor: true } },
 } as const;
 
 type Range = { start: Date; end: Date };

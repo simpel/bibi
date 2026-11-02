@@ -29,9 +29,18 @@ export function InvoiceEntry({ invoice, actions, dates: format, numbers }: Invoi
       <PaidOf
         numbers={numbers}
         paidMinor={invoice.paidMinor}
-        amountMinor={invoice.totalInclVatMinor}
+        amountMinor={invoice.amountDueMinor}
         currency={invoice.currency}
       />
+      {invoice.deductions.length > 0 ? (
+        <span className="text-xs text-muted-foreground">
+          {t("deducted", {
+            amount: numbers.money({
+              minor: invoice.totalInclVatMinor - invoice.amountDueMinor,
+            }),
+          })}
+        </span>
+      ) : null}
       <ReceivableBadges status={invoice.status} progress={invoice.progress} />
       {due ? (
         <time className="text-xs text-muted-foreground" dateTime={due.toISOString()}>

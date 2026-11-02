@@ -35,6 +35,7 @@ model Deposit {
   createdBy       String?
   ticket          Ticket           @relation(fields: [ticketId, organizationId], references: [id, organizationId])
   payments        Payment[]
+  deductions      InvoiceDeposit[]
 
   @@unique([id, organizationId])
   @@index([organizationId, ticketId])
@@ -70,8 +71,32 @@ model Invoice {
   lines             OrderLine[]
   payments          Payment[]
   exportEntries     AccountingExportEntry[]
+  /// Paid deposits this invoice deducts (snapshot at create, ADR 0090).
+  deductions        InvoiceDeposit[]
 
   @@unique([id, organizationId])
   @@unique([organizationId, number])
   @@index([organizationId, ticketId])
+}
+
+/// InvoiceDeposit – a paid deposit a final invoice deducts (ADR 0090). Snapshot at
+/// `invoice.create`: what was paid on the deposit then, never changed afterwards. The invoice's
+/// amount due is its total incl. VAT minus these rows; revenue and VAT stay the lines' (the
+/// deposit was a customer advance, ADR 0077). A deposit is deducted at most once per invoice.
+model InvoiceDeposit {
+  id             String   @id @default(cuid(2))
+  organizationId String
+  invoiceId      String
+  depositId      String
+  /// Paid on the deposit when the invoice was created, minor units (snapshot).
+  amountMinor    Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      String?
+  invoice        Invoice  @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
+  deposit        Deposit  @relation(fields: [depositId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([invoiceId, depositId])
+  @@index([organizationId, depositId])
 }

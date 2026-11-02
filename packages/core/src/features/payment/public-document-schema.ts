@@ -25,6 +25,10 @@ export const PublicPaymentTotalsSchema = z.object({
   vatMinor: z.number().int(),
   totalInclVatMinor: z.number().int(),
   totalIsFrom: z.boolean(),
+  deductions: z
+    .array(z.object({ description: z.string(), amountMinor: z.number().int() }))
+    .describe("Paid deposits an invoice deducts (ADR 0090); empty for a quote"),
+  amountDueMinor: z.number().int().describe("Total incl. VAT less the deductions"),
 });
 
 export type PublicPaymentLine = z.infer<typeof PublicPaymentLineSchema>;

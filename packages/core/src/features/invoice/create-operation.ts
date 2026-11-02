@@ -8,6 +8,7 @@ import { checkPricedLines } from "../quote/check-priced-lines";
 import { deriveTicketLines } from "../quote/derive-lines";
 import { writeOrderLines } from "../quote/freeze-lines";
 import { quoteTotals } from "../quote/line-totals";
+import { deductPaidDeposits } from "./deduct-deposits";
 import { type InvoiceCreateInput, InvoiceCreateInputSchema, InvoiceSchema } from "./schema";
 import { loadInvoice } from "./to-invoice-dto";
 
@@ -48,7 +49,8 @@ export const createInvoice = defineOperation({
     "Invoice a ticket (ADR 0052, 0057): freezes its priced lines as the invoice's snapshot " +
     "with totals and the organization's next invoice number, as a DRAFT. The ticket's status " +
     "must be invoiceable and the ticket must have no other invoice that is not VOID. Each " +
-    "line needs a quantity and VAT. Send it (invoice.send) before requesting payment " +
+    "line needs a quantity and VAT. Paid deposits on the ticket are deducted (deductions, " +
+    "amountDueMinor), as paid now (ADR 0090). Send it (invoice.send) before requesting payment " +
     "(payment.create with invoiceId).",
   input: InvoiceCreateInputSchema,
   output: InvoiceSchema,
@@ -76,6 +78,7 @@ export const createInvoice = defineOperation({
       },
     });
     await writeOrderLines({ context, owner: { invoiceId: row.id }, lines });
+    await deductPaidDeposits({ context, invoiceId: row.id, ticketId: input.ticketId });
     const invoice = await loadInvoice({ context, id: row.id });
     if (!invoice) return notFound({ entity: "Invoice" });
     context.recordChange({ entityId: row.id, after: invoice });
