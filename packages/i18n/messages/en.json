@@ -914,6 +914,28 @@
         "guests": "guests",
         "budget": "budget",
         "holds": "holds"
+      },
+      "labels": {
+        "assignee": "Assignee",
+        "follower": "Follower",
+        "status": "Status",
+        "type": "Type",
+        "customer": "Customer",
+        "contact": "Contact",
+        "is": "Open or closed",
+        "when": "Desired date",
+        "created": "Created",
+        "guests": "Guests",
+        "budget": "Budget",
+        "holds": "Hold",
+        "no": "Missing"
+      },
+      "rows": {
+        "noAssignee": "No assignee",
+        "hasAssignee": "Has assignee",
+        "me": "Me",
+        "excludeAssignee": "Exclude assignee",
+        "excludeFollower": "Exclude follower"
       }
     }
   },

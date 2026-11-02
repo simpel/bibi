@@ -28,6 +28,10 @@ describe("member operations (ADR 0034)", () => {
       result: await execute({ operation: listMembers, input: { role: "manager" }, context }),
     });
     expect(members.items.map((member) => member.name)).toEqual(["Ali"]);
+    const found = unwrap({
+      result: await execute({ operation: listMembers, input: { query: "AL" }, context }),
+    });
+    expect(found.items.map((member) => member.name)).toEqual(["Ali"]);
   });
 
   it("reads one member and hides another organization's member", async () => {

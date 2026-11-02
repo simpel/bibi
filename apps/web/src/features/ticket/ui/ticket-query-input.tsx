@@ -1,9 +1,9 @@
-import { cn, Input } from "@bibi/ui";
-import { useTranslations } from "next-intl";
+import { Input } from "@bibi/ui";
 import type { ComponentProps } from "react";
 import type { SearchField } from "@/components/search-form";
-import type { QueryCatalog, QuerySuggestion } from "../lib/query-suggestions";
+import type { QueryCatalog } from "../lib/query-suggestion-types";
 import type { QueryVocabulary } from "../lib/query-vocabulary";
+import { QuerySuggestionRow } from "./query-suggestion-row";
 import { useQuerySuggestions } from "./use-query-suggestions";
 
 export type TicketQueryInputProps = SearchField &
@@ -11,36 +11,6 @@ export type TicketQueryInputProps = SearchField &
     catalog: QueryCatalog;
     vocabulary: QueryVocabulary;
   };
-
-type RowProps = { suggestion: QuerySuggestion; id: string; active: boolean; onPick: () => void };
-
-function SuggestionRow({ suggestion, id, active, onPick }: RowProps) {
-  const t = useTranslations("ticket.qualifiers");
-  const { key, value, label } = suggestion;
-  return (
-    <div
-      id={id}
-      role="option"
-      tabIndex={-1}
-      aria-selected={active}
-      className={cn(
-        "flex cursor-pointer items-baseline justify-between gap-3 rounded-sm px-2 py-1.5 text-sm",
-        active && "bg-accent text-accent-foreground",
-      )}
-      // Keep focus in the input, so typing goes on after the pick.
-      onMouseDown={(event) => event.preventDefault()}
-      onClick={onPick}
-      onKeyDown={(event) => {
-        if (event.key === "Enter") onPick();
-      }}
-    >
-      <span className="truncate font-mono">{label}</span>
-      {value === undefined ? (
-        <span className="truncate text-xs text-muted-foreground">{t(key)}</span>
-      ) : null}
-    </div>
-  );
-}
 
 type ListProps = Pick<
   ReturnType<typeof useQuerySuggestions>,
@@ -52,11 +22,11 @@ function SuggestionList({ listId, items, active, pick }: ListProps) {
     <div
       id={listId}
       role="listbox"
-      className="absolute z-50 mt-1 w-full rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+      className="absolute z-50 mt-1 max-h-80 w-full min-w-72 overflow-y-auto rounded-xl border bg-popover p-1 text-popover-foreground shadow-lg"
     >
       {items.map((suggestion, index) => (
-        <SuggestionRow
-          key={`${suggestion.key}:${suggestion.value ?? ""}`}
+        <QuerySuggestionRow
+          key={suggestion.id}
           suggestion={suggestion}
           id={`${listId}-${index}`}
           active={index === active}
@@ -69,7 +39,7 @@ function SuggestionList({ listId, items, active, pick }: ListProps) {
 
 /**
  * The tickets search with GitHub-style suggestions: qualifiers while typing a word, then the
- * qualifier's values (the organization's own names), all filtered in the browser.
+ * qualifier's values; members and customers are searched on the server as you type.
  */
 export function TicketQueryInput({
   catalog,

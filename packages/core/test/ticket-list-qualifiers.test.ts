@@ -40,6 +40,7 @@ describe("ticket.list qualifiers (GitHub style)", () => {
     expect(await search({ q: "follower:me", as: asJohan })).toEqual([2]);
     expect(await search({ q: "assignee:johan" })).toEqual([1]);
     expect(await search({ q: "-assignee:johan" })).toEqual([2, 3]);
+    expect(await search({ q: 'assignee:"johan ek"' })).toEqual([1]);
   });
 
   it("filters by status, type, customer and open or closed", async () => {

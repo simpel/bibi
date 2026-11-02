@@ -3,6 +3,7 @@ import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { paginate } from "../../shared/paginate";
 import { cancelInvitation, inviteMember, listInvitations } from "./invitation-operations";
+import { memberListWhere } from "./list-where";
 import { parseMemberRole } from "./member-roles";
 import { checkAdminKept, checkRemovable } from "./removal-guard";
 import { checkCanGrantRole, checkCanManageMember } from "./role-access";
@@ -24,13 +25,13 @@ export const listMembers = defineOperation({
   kind: "query",
   description:
     "List the organization's staff members with their access role (member, manager or admin). " +
-    "Filter by role.",
+    "Filter by role, or search name and email with `query`.",
   input: MemberListInputSchema,
   output: MemberListOutputSchema,
   permission: "member:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.member.findMany({
-      where: input.role ? { role: input.role } : {},
+      where: memberListWhere({ input }),
       select: MEMBER_SELECT,
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
       take: input.limit + 1,

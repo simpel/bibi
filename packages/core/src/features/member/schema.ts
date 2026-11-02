@@ -19,6 +19,12 @@ export const MemberListInputSchema = z.object({
   limit: z.number().int().min(1).max(100).default(50),
   cursor: z.string().optional().describe("id of the last item from the previous page"),
   role: FixedRoleSchema.optional().describe("Only members with this role"),
+  query: z
+    .string()
+    .trim()
+    .max(200)
+    .optional()
+    .describe("Only members whose name or email contains this"),
 });
 
 export const MemberListOutputSchema = z.object({

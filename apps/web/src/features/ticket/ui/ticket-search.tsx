@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { SearchForm } from "@/components/search-form";
 import { useQueryNavigation } from "@/lib/use-query-navigation";
-import type { QueryCatalog } from "../lib/query-suggestions";
+import type { QueryCatalog } from "../lib/query-suggestion-types";
 import type { QueryVocabulary } from "../lib/query-vocabulary";
 import { TicketQueryInput } from "./ticket-query-input";
 

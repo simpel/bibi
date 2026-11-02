@@ -1,11 +1,9 @@
 import { type KeyboardEvent, type RefObject, useId, useMemo, useRef, useState } from "react";
-import {
-  applySuggestion,
-  type QueryCatalog,
-  type QuerySuggestion,
-  suggest,
-} from "../lib/query-suggestions";
+import type { QueryCatalog, QuerySuggestion } from "../lib/query-suggestion-types";
+import { applySuggestion, suggest } from "../lib/query-suggestions";
 import type { QueryVocabulary } from "../lib/query-vocabulary";
+import { useQueryRemote } from "./use-query-remote";
+import { useQueryTexts } from "./use-query-texts";
 
 export type UseQuerySuggestionsInput = {
   value: string;
@@ -33,15 +31,18 @@ export function useQuerySuggestions({
   const [caret, setCaret] = useState(value.length);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  const texts = useQueryTexts();
+  const remote = useQueryRemote({ text: value, caret, vocabulary, open });
   const { token, items } = useMemo(
-    () => suggest({ text: value, caret, catalog, vocabulary }),
-    [value, caret, catalog, vocabulary],
+    () => suggest({ text: value, caret, catalog, vocabulary, texts, remote }),
+    [value, caret, catalog, vocabulary, texts, remote],
   );
   const shown = open && items.length > 0;
   const pick = ({ suggestion }: { suggestion: QuerySuggestion }) => {
     const next = applySuggestion({ text: value, token, suggestion });
     onChange(next.text);
     setActive(-1);
+    setOpen(true);
     setCaret(next.caret);
     requestAnimationFrame(() => ref.current?.setSelectionRange(next.caret, next.caret));
   };

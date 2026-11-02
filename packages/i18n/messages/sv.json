@@ -914,6 +914,28 @@
         "guests": "gäster",
         "budget": "budget",
         "holds": "option"
+      },
+      "labels": {
+        "assignee": "Ansvarig",
+        "follower": "Följare",
+        "status": "Status",
+        "type": "Typ",
+        "customer": "Kund",
+        "contact": "Kontakt",
+        "is": "Öppen eller stängd",
+        "when": "Önskat datum",
+        "created": "Skapad",
+        "guests": "Gäster",
+        "budget": "Budget",
+        "holds": "Option",
+        "no": "Saknar"
+      },
+      "rows": {
+        "noAssignee": "Ingen ansvarig",
+        "hasAssignee": "Har ansvarig",
+        "me": "Jag",
+        "excludeAssignee": "Uteslut ansvarig",
+        "excludeFollower": "Uteslut följare"
       }
     }
   },
