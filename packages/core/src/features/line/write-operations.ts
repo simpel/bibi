@@ -1,10 +1,11 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
+import { createInsertInput } from "./add-on";
 import { insertLine } from "./insert-line";
 import { archiveLineRow, archiveParts } from "./line-parts";
 import {
-  LineCreateInputSchema,
+  LineCreateOperationInputSchema,
   LineIdInputSchema,
   LineSchema,
   LineUpdateInputSchema,
@@ -25,11 +26,18 @@ export const createLine = defineOperation({
   kind: "command",
   description:
     "Add a line (a row in the ticket's run schedule) of one of the organization's " +
-    `line types. ${OCCUPY_NOTE}`,
-  input: LineCreateInputSchema,
+    "line types. With parentLineId it is an add-on under that top-level line (ADR 0088): " +
+    "something sold with it at its own price (a projector on a room, an extra snack on a break), " +
+    `of any item or free text. ${OCCUPY_NOTE}`,
+  input: LineCreateOperationInputSchema,
   output: LineSchema,
   permission: "program:write",
-  handler: effectiveHandler({ handler: ({ input, context }) => insertLine({ context, input }) }),
+  handler: effectiveHandler({
+    handler: async ({ input, context }) => {
+      const prepared = await createInsertInput({ context, input });
+      return prepared.ok ? insertLine({ context, input: prepared.value }) : prepared;
+    },
+  }),
 });
 
 export const updateLine = defineOperation({
@@ -39,8 +47,9 @@ export const updateLine = defineOperation({
     "Change a line: name, time, item, setup, quantity, price, discount, VAT or note. Omitted " +
     "properties are unchanged and null clears an override (the line inherits again); `fields` " +
     "is merged by key (null clears a value). Clearing both times makes the line untimed, which " +
-    "releases its hold. Moving it moves its occupancy, and moving a bundle line moves its part " +
-    "lines by the same delta (a bundle line with parts keeps its item, ADR 0059). " +
+    "releases its hold. Moving it moves its occupancy, and moving a line moves its timed part, " +
+    "option and add-on lines by the same delta (a line with part or option lines keeps its " +
+    "item, ADR 0059, 0088). An add-on's parent cannot be changed. " +
     OCCUPY_NOTE,
   input: LineUpdateInputSchema,
   output: LineSchema,
@@ -53,7 +62,7 @@ export const archiveLine = defineOperation({
   kind: "command",
   description:
     "Remove (archive) a line from the run schedule and release the item it occupied; removing " +
-    "a bundle line removes its part lines too (ADR 0059).",
+    "a line removes its part, option and add-on lines too (ADR 0059, 0088).",
   input: LineIdInputSchema,
   output: LineSchema,
   permission: "program:delete",

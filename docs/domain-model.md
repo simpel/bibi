@@ -547,7 +547,9 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > **Done ([ADR 0082](decisions/0082-option-quantities.md)):** an option line's `quantity` is null in a normal group, so its effective quantity is its parent line's (source `PARENT_LINE`); in a split group it is the option's own (1 or more). `line.chooseOptions` takes `options: [{ itemId, quantity? }]`: a quantity is required for an option of a split group and refused for any other (`VALIDATION`); a kept option takes the new quantity. `line.update` refuses a new quantity on an option line whose group is not split. A split group whose option quantities do not add up to the parent's effective quantity gives the parent the derived warning `OPTION_SPLIT_MISMATCH` (`id` = the group, `sum`, `expected`), never stored or refused. Quotes: `EXTRA` counts the option line's effective quantity; `REPLACES` counts the option line, and its parent counts only the quantity no `REPLACES` option covers (at least 0; covered in full it does not count, as before), and that remainder is what the quote and invoice snapshot. Sheets list option lines with their own quantities.
 
-> **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`, `alternativeGroupId`, `parentLineId`; snapshot `priceEffect` (set by `line.chooseOptions`, never changed); derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
+> **Done ([ADR 0088](decisions/0088-add-on-sublines.md), core):** every sub-line says what it is in `role` (`PART`, `OPTION`, `ADD_ON`; null exactly when `parentLineId` is null, a check constraint; `priceEffect` only on `OPTION`; the "option once per line" index filters on `OPTION`). An **add-on** is a line made by `line.create` with `parentLineId`: any item or free text, under a top-level line of the same ticket (one level: never under a part, option or add-on line; another organization's line is `NOT_FOUND`, other cases `VALIDATION`). Its type defaults to the parent's; without a time it copies the parent's period (an untimed parent gives an untimed add-on). It holds, gets its state and is priced like any line: price line → price list → item, quantity its own else the parent's (`PARENT_LINE`), its own VAT, and never the parent's discount. It always counts in the totals unless its parent is an unchosen alternative; it is not in a bundle's VAT split and not covered by `REPLACES`. It moves (timed) and is archived with its parent; a line with only add-ons may change its item; an add-on is never an alternative option itself and never changes parent. `line.chooseOptions` still refuses more than `maxPick`, pointing to add-ons when the group's `allowExtras` is on. Not built yet: intake `addOns`, the line dialog, and rendering on the ticket page, documents and sheets (slices 3–4).
+
+> **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`, `alternativeGroupId`, `parentLineId`, `role` (set once at insert); snapshot `priceEffect` (set by `line.chooseOptions`, never changed); derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
 
 > **Done:** holds are written by triggers (ADR 0053); `stateId` is a projection of `LineStateChange` (ADR 0054; check `line states`) and "held since" is read from the newest change. Alternative groups: `alternativeGroupId` (ADR 0052).
 
@@ -562,8 +564,9 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - state (`stateId`, an `ItemState` of the item's type; null for a line without an item), `stateOverridden` (set by hand, skipped by status moves)
 - held since (`heldAt`, derived: when the line entered its current state, its newest `LineStateChange`; shown oldest first where soft holds overlap, no queue or rank); the line has no expiry of its own, see Ticket `holdsUntil`
 - alternative group (`alternativeGroupId`, optional): the line is one option of an `AlternativeGroup`
-- parent line (`parentLineId`, optional): the line is a part line of that bundle line (`line.expandBundle`) or an option line of that line (`line.chooseOptions`; ADR 0059)
-- price effect (`priceEffect`, snapshot): `INCLUDED | EXTRA | REPLACES` on an option line, else null; the database allows it only with `parentLineId`
+- parent line (`parentLineId`, optional): the line is a part line of that bundle line (`line.expandBundle`), an option line of that line (`line.chooseOptions`; ADR 0059) or an add-on under it (`line.create`; ADR 0088)
+- role (`role`, owned, ADR 0088): `PART | OPTION | ADD_ON` on a sub-line, null on a top-level line
+- price effect (`priceEffect`, snapshot): `INCLUDED | EXTRA | REPLACES` on an option line, else null; the database allows it only with `role = OPTION`
 - internal note
 
 **Relations**
@@ -776,13 +779,14 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - minPick
 - maxPick
 - split (`split`, owned, default false): each chosen option gets its own quantity (ADR 0082); `minPick` and `maxPick` count distinct options in both kinds
+- allow extras (`allowExtras`, owned, default true, ADR 0088): picks beyond `maxPick` may be added as add-ons under the line, each at its item's own price; false = the max is a hard limit ("Allow extras" in the item form)
 - position (order on the item)
 
 **Relations**
 - `N:1` Item has this
 - `1:N` offers → ItemCustomisationOption
 
-> Replaced as a set, with their options, by `item.create`/`item.update` (`customisationGroups`: `{ name, minPick, maxPick, split?, options: [{ itemId, priceEffect }] }`), only for types with `CUSTOMISATIONS` (otherwise `VALIDATION`). Core enforces (`VALIDATION`): group names unique per item (case-insensitive), `0 ≤ minPick ≤ maxPick ≤ number of options`, each group has 1 to 100 options (at most 50 groups), an item is an option at most once on the same item (across its groups), an option is never the item itself, and every option is a catalog item or a bundle of the item's own customer. Changing only `parts` leaves the groups untouched. `CUSTOMISATIONS` cannot be turned off while an active item of the type has groups (`CONFLICT`).
+> Replaced as a set, with their options, by `item.create`/`item.update` (`customisationGroups`: `{ name, minPick, maxPick, split?, allowExtras?, options: [{ itemId, priceEffect }] }`), only for types with `CUSTOMISATIONS` (otherwise `VALIDATION`). Core enforces (`VALIDATION`): group names unique per item (case-insensitive), `0 ≤ minPick ≤ maxPick ≤ number of options`, each group has 1 to 100 options (at most 50 groups), an item is an option at most once on the same item (across its groups), an option is never the item itself, and every option is a catalog item or a bundle of the item's own customer. Changing only `parts` leaves the groups untouched. `CUSTOMISATIONS` cannot be turned off while an active item of the type has groups (`CONFLICT`).
 
 ### ItemCustomisationOption (`ItemCustomisationOption`)
 
@@ -919,7 +923,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - tags (the list values the item contains per `item.resolve`, copied)
 - total excl. VAT and VAT (`totalExclVatMinor`, `vatMinor`)
 - VAT per rate (`vatRows`, snapshot, ADR 0059): `[{ vatRatePercent, totalExclVatMinor, vatMinor }]`, one row for an ordinary line; for a bundle line one row per rate of its part lines, the bundle price allocated across them in proportion to effective price × quantity with largest-remainder rounding so the rows sum exactly, and `vatMinor` is their sum
-- bundle line (`parentLineId`, snapshot): set on a part line, which never counts in the totals (`inTotal` false)
+- parent line (`parentLineId`, snapshot): set on a part line (never counts, `inTotal` false), an option line or an add-on
+- role (`role`, snapshot, ADR 0088): the line's `PART | OPTION | ADD_ON`, null on a top-level line, so documents can indent sub-lines without reading the live line
 - alternative group (`alternativeGroupId`, `alternativeGroupName`, `alternativeGroupChosen`; null on an ordinary line) and whether the line counts in the totals (`inTotal`), all snapshots (ADR 0052)
 - status (quoted / confirmed / delivered) – *later*
 - invoiced (yes/no) – *later*

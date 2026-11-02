@@ -37,7 +37,7 @@ async function checkFrozen({ context, line }: LineInput): Promise<string[]> {
 /** One part line per part of the bundle item (options are chosen lines, not parts). */
 async function checkParts({ context, line }: LineInput): Promise<string[]> {
   const [parts, expected] = await Promise.all([
-    context.db.line.count({ where: { parentLineId: line.id, priceEffect: null } }),
+    context.db.line.count({ where: { parentLineId: line.id, role: "PART" } }),
     context.db.itemPart.count({ where: { parentId: line.itemId ?? "" } }),
   ]);
   return parts === expected ? [] : [`${line.name}: ${parts} part lines, expected ${expected}`];
@@ -51,7 +51,7 @@ export async function checkDemoBundles({ context, org }: CheckDemoBundlesInput) 
   const expected = org.tickets.flatMap((ticket) => ticket.bundles ?? []).length;
   const lines = await context.db.line.findMany({
     // Option lines (a price effect, ADR 0059) hang under their line too; they are not parts.
-    where: { partLines: { some: { status: "ACTIVE", priceEffect: null } } },
+    where: { partLines: { some: { status: "ACTIVE", role: "PART" } } },
     select: { id: true, name: true, itemId: true },
   });
   const failures: string[] = [];

@@ -25,6 +25,7 @@ export const toOrderLineDto = ({ row }: { row: OrderLine }): OrderLineDto => ({
   vatMinor: row.vatMinor,
   vatRows: asVatRows({ value: row.vatRows }),
   parentLineId: row.parentLineId,
+  role: row.role,
   alternativeGroupId: row.alternativeGroupId,
   alternativeGroupName: row.alternativeGroupName,
   alternativeGroupChosen: row.alternativeGroupChosen,

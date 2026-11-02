@@ -2,7 +2,7 @@ import { byId, type ParityEntity, tool } from "./parity-entities";
 
 const LINE =
   "id lineId itemId position name quantity unitPriceMinor priceUnit discountPercent vatRatePercent " +
-  "tags totalExclVatMinor vatMinor vatRows parentLineId alternativeGroupId alternativeGroupName " +
+  "tags totalExclVatMinor vatMinor vatRows parentLineId role alternativeGroupId alternativeGroupName " +
   "alternativeGroupChosen inTotal";
 
 /** An alternative group (ADR 0052): the parity line and a second, untimed one as options. */

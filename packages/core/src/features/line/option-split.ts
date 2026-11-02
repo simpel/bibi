@@ -1,4 +1,5 @@
 import type { OperationContext } from "../../operations/types";
+import { inheritsParentQuantity } from "./line-role";
 import type { LineRecord } from "./schema";
 import type { LineWarning } from "./warning-schema";
 
@@ -7,12 +8,14 @@ type Db = Pick<OperationContext, "db">;
 export type OptionSplitInput = { context: Db; lines: readonly LineRecord[] };
 
 /**
- * The parent line of each option line among the lines (ADR 0082), by option line id: an option
- * line without its own quantity has its parent's. Parents outside the lines are read in one query.
+ * The parent line of each option or add-on line among the lines (ADR 0082, 0088), by its id: such
+ * a line without its own quantity has its parent's. Parents outside the lines are read in one query.
  */
 export async function loadOptionParents({ context, lines }: OptionSplitInput) {
   const byId = new Map(lines.map((line) => [line.id, line]));
-  const options = lines.filter((line) => line.priceEffect !== null && line.parentLineId !== null);
+  const options = lines.filter(
+    (line) => line.parentLineId !== null && inheritsParentQuantity(line),
+  );
   const missing = [
     ...new Set(options.map((line) => line.parentLineId as string).filter((id) => !byId.has(id))),
   ];
@@ -53,7 +56,7 @@ export async function loadSplitSums({ context, lines }: OptionSplitInput) {
   });
   if (groups.length === 0) return out;
   const options = await context.db.line.findMany({
-    where: { parentLineId: { in: lines.map((line) => line.id) }, priceEffect: { not: null } },
+    where: { parentLineId: { in: lines.map((line) => line.id) }, role: "OPTION" },
     select: { parentLineId: true, itemId: true, quantity: true },
   });
   for (const line of lines) {

@@ -1,6 +1,7 @@
 import type { OperationContext } from "../../operations/types";
 import { recordFields, WITH_RECORD_LINKS } from "../../records/record-links";
 import { effectiveQuantity } from "../line/effective-values";
+import { inheritsParentQuantity } from "../line/line-role";
 import type { SheetDefinitionDto } from "../sheet-definition/schema";
 import type { SheetRow } from "./schema";
 import { sheetLinesWhere } from "./sheet-lines";
@@ -43,8 +44,8 @@ export async function itemRows({
   ]);
   const headcount = ticket ?? { estimatedHeadcount: null, guaranteedHeadcount: null };
   return lines.map(({ item, parentLine, ...row }) => {
-    // An option line without its own quantity counts its parent's (ADR 0082).
-    const parent = row.priceEffect === null ? null : parentLine;
+    // An option or add-on line without its own quantity counts its parent's (ADR 0082, 0088).
+    const parent = inheritsParentQuantity(row) ? parentLine : null;
     const own = item ? recordFields({ row: item }) : {};
     const keys = fields.filter((field) => field.entityTypeId === item?.entityTypeId);
     return {

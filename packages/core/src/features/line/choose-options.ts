@@ -23,7 +23,7 @@ async function lockLine({ context, id }: { context: Context; id: string }) {
 /** The line's active option lines, in creation order. */
 async function optionLinesOf({ context, lineId }: { context: Context; lineId: string }) {
   const rows = await context.db.line.findMany({
-    where: { parentLineId: lineId, priceEffect: { not: null } },
+    where: { parentLineId: lineId, role: "OPTION" },
     orderBy: [{ createdAt: "asc" }, { id: "asc" }],
     include: LINE_INCLUDE,
   });
@@ -43,7 +43,7 @@ const addOptionLine = ({ context, line, option }: AddInput) =>
       ...{ ticketId: line.ticketId, entityTypeId: line.entityTypeId, fields: line.fields },
       ...{ name: option.name, itemId: option.itemId, priceEffect: option.priceEffect },
       ...{ startsAt: line.startsAt, endsAt: line.endsAt, quantity: option.quantity },
-      parentLineId: line.id,
+      ...{ parentLineId: line.id, role: "OPTION" },
     },
   });
 

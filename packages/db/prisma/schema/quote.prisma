@@ -83,8 +83,10 @@ model OrderLine {
   /// VAT per rate (ADR 0059): `[{ vatRatePercent, totalExclVatMinor, vatMinor }]`, one row for an
   /// ordinary line and one per rate of its parts for a bundle line (`allocateBundleVat`).
   vatRows                Json              @default("[]")
-  /// Snapshot of the line's bundle line (ADR 0059); set on a part line, which never counts.
+  /// Snapshot of the line's parent line (ADR 0059, 0088); set on a part, option or add-on line.
   parentLineId           String?
+  /// Snapshot of the line's `role` (ADR 0088): PART, OPTION or ADD_ON; null on a top-level line.
+  role                   LineRole?
   /// Snapshot of the line's alternative group (ADR 0052): its id and name; null on an ordinary line.
   alternativeGroupId     String?
   alternativeGroupName   String?

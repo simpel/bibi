@@ -6,6 +6,7 @@ import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
 import type { PriceEffect } from "../item/customisation-group-schema";
 import { syncAllocations } from "../line-allocation/sync-allocations";
+import type { LineRole } from "./line-role";
 import { checkLinePeriod, checkPlace, checkTicket } from "./line-rules";
 import { initialStateOf } from "./line-state";
 import type { LineCreateInput, LineRecord } from "./schema";
@@ -14,8 +15,11 @@ import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
 
 export type InsertLineInput = {
   context: OperationContext;
-  /** Set only by `line.expandBundle` (a part line) and `line.chooseOptions` (ADR 0059). */
-  input: LineCreateInput & { parentLineId?: string; priceEffect?: PriceEffect };
+  /**
+   * A sub-line sets `parentLineId` with its `role` (ADR 0088): a part (`line.expandBundle`), an
+   * option with its `priceEffect` (`line.chooseOptions`) or an add-on (`line.create`).
+   */
+  input: LineCreateInput & { parentLineId?: string; role?: LineRole; priceEffect?: PriceEffect };
 };
 
 type AfterInsertInput = {

@@ -39,6 +39,12 @@ export const ItemCustomisationGroupSchema = z.object({
         "the line's quantity get it (10 fish, 4 vegetarian). false = a chosen option applies to " +
         "the whole line. minPick and maxPick count distinct options in both kinds.",
     ),
+  allowExtras: z
+    .boolean()
+    .describe(
+      "Whether picks beyond maxPick may be added as add-ons under the line (ADR 0088), each at " +
+        "its own item's price. false = maxPick is a hard limit (one main course per guest).",
+    ),
   options: z
     .array(ItemCustomisationOptionSchema)
     .min(1)
@@ -56,6 +62,8 @@ export const ItemCustomisationGroupDtoSchema = ItemCustomisationGroupSchema.exte
 
 const CustomisationGroupInputSchema = ItemCustomisationGroupSchema.extend({
   split: ItemCustomisationGroupSchema.shape.split.default(false),
+  // Left out = true, the column's default (replacing the groups writes new rows).
+  allowExtras: ItemCustomisationGroupSchema.shape.allowExtras.optional(),
 });
 
 export const CustomisationGroupsInputSchema = z
@@ -67,6 +75,9 @@ export const CustomisationGroupsInputSchema = z
   );
 
 export type PriceEffect = z.infer<typeof PriceEffectSchema>;
-/** A group as `item.create`/`item.update` take it: `split` may be left out (false). */
+/**
+ * A group as `item.create`/`item.update` take it: `split` (false) and `allowExtras` (true) may be
+ * left out.
+ */
 export type ItemCustomisationGroupInput = z.input<typeof CustomisationGroupInputSchema>;
 export type ItemCustomisationGroupDto = z.infer<typeof ItemCustomisationGroupDtoSchema>;

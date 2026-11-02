@@ -663,7 +663,8 @@
       "removeOption": "Remove option",
       "option": "Item",
       "priceEffect": "Price effect",
-      "split": "Split between guests"
+      "split": "Split between guests",
+      "allowExtras": "Allow extras"
     },
     "customisationGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
     "resolution": {
@@ -2166,6 +2167,7 @@
         "estimatedValueMinor": "Estimated value (minor units)",
         "ticketId": "Ticket (id)",
         "inboundMessageId": "Inbox message",
+        "parentLineId": "Add-on to",
         "statusId": "Status (id)",
         "reason": "Reason",
         "color": "Color",

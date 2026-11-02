@@ -38,13 +38,16 @@ model Line {
   vatRatePercent     Int?
   /// The alternative group this line is an option of; null for an ordinary line (ADR 0052).
   alternativeGroupId String?
-  /// The line this part or option line belongs to (ADR 0059, owned): set when a bundle is
-  /// expanded (`line.expandBundle`) or an option is chosen (`line.chooseOptions`), never
-  /// changed. A part line does not count in the totals; an option line as its price effect says.
+  /// The line this sub-line belongs to (ADR 0059, 0088, owned): set when a bundle is expanded
+  /// (`line.expandBundle`), an option is chosen (`line.chooseOptions`) or an add-on is created
+  /// (`line.create` with `parentLineId`), never changed. Always a top-level line (one level).
   parentLineId       String?
+  /// What the sub-line is (ADR 0088, owned, set once at insert): PART, OPTION or ADD_ON. Null
+  /// exactly when `parentLineId` is null (check constraint `Line_role_check`).
+  role               LineRole?
   /// Set on an option line (ADR 0059, snapshot): the price effect of the customisation option
   /// when it was chosen on the parent line (`line.chooseOptions`), never changed. Null on any
-  /// other line, part lines included.
+  /// other line (check constraint: only when `role = OPTION`).
   priceEffect        PriceEffect?
   /// Internal note.
   note               String?
@@ -86,4 +89,15 @@ model Line {
   @@index([organizationId, stateId])
   @@index([organizationId, alternativeGroupId])
   @@index([organizationId, parentLineId])
+}
+
+/// What a sub-line is (ADR 0088): a part of its bundle line, a chosen option of its line's
+/// customisation groups, or an add-on sold with its line at its own price.
+enum LineRole {
+  /// Made by `line.expandBundle`; never counts in the totals.
+  PART
+  /// Made by `line.chooseOptions`; counts as its `priceEffect` says.
+  OPTION
+  /// Made by `line.create` with `parentLineId`; counts at its own effective price.
+  ADD_ON
 }

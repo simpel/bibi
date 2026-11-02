@@ -47,6 +47,7 @@ function customisationGroupsToInput({ customisationGroups }: CustomisationGroups
     minPick: numberOrNull({ value: group.minPick }) ?? 0,
     maxPick: numberOrNull({ value: group.maxPick }) ?? 1,
     split: group.split,
+    allowExtras: group.allowExtras,
     options: group.options.filter((option) => option.itemId !== ""),
   }));
 }

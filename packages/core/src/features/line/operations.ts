@@ -25,7 +25,7 @@ export const listLines = defineOperation({
   description:
     "List lines (the run schedule: sessions, breaks, meals, activities), earliest " +
     "first (lines on one item and start: the oldest held-since date first). Filter by ticket, " +
-    "item, item state, bundle line (its part lines) and a time window (from/to).",
+    "item, item state, parent line (its part, option and add-on lines) and a time window (from/to).",
   input: LineListInputSchema,
   output: LineListOutputSchema,
   permission: "program:read",
@@ -77,7 +77,8 @@ export const chooseLineOptions = defineOperation({
     "0059, 0082). Replaces the line's choices: each chosen option becomes an option line under " +
     "the line (same time and type) and a dropped one is removed. Each group needs between its " +
     "minPick and maxPick distinct options; a group with minPick 0 can be skipped, and opting out " +
-    "is choosing the other option. An option of a split group carries its own quantity (how " +
+    "is choosing the other option. More than maxPick is refused: add the extra picks as add-ons " +
+    "(line.create with parentLineId, ADR 0088) when the group allows extras. An option of a split group carries its own quantity (how " +
     "many of the line get it); any other option applies to the whole line. The option's price " +
     "effect decides the totals: INCLUDED does not count, EXTRA counts at its own price and " +
     "quantity, REPLACES counts instead of the line for its quantity. A chosen option's own needs " +

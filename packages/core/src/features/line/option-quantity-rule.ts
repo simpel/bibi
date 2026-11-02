@@ -36,7 +36,7 @@ export async function checkOptionQuantity({
   quantity,
 }: CheckOptionQuantityInput): Promise<Result<true>> {
   const unchanged = quantity === undefined || quantity === null || quantity === before.quantity;
-  if (before.priceEffect === null || unchanged) return ok({ value: true });
+  if (before.role !== "OPTION" || unchanged) return ok({ value: true });
   if (await isSplitOption({ context, before })) return ok({ value: true });
   const message =
     "The option applies to the whole line: only an option of a split group has a quantity";

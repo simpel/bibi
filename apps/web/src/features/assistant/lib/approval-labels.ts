@@ -76,6 +76,7 @@ export const FIELD_KEYS = [
   "budgetMinor",
   "ticketId",
   "inboundMessageId",
+  "parentLineId",
   "statusId",
   "reason",
   ...PEOPLE_FIELD_KEYS,

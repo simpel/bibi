@@ -28,6 +28,8 @@ const FINDERS: Readonly<Record<string, FindNamed>> = {
   fieldDefinition: ({ db, ids }) =>
     db.fieldDefinition.findMany({ where: { id: { in: ids } }, select }),
   customer: ({ db, ids }) => db.customer.findMany({ where: { id: { in: ids } }, select }),
+  // An add-on's parent line (ADR 0088), so `line.create`'s approval names it.
+  line: ({ db, ids }) => db.line.findMany({ where: { id: { in: ids } }, select }),
 };
 
 type VisibleInput = { entityType: string; permissions: PermissionSet };

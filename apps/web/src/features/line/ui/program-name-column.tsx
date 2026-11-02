@@ -23,9 +23,11 @@ export function nameColumn({ t, effects }: NameColumnInput): ColumnDef<LineDto> 
         }
       >
         {original.name}
-        {original.parentLineId ? (
+        {original.role === "PART" || original.role === "OPTION" ? (
           <Badge variant="outline">
-            {original.priceEffect ? effects(original.priceEffect) : t("part")}
+            {original.role === "OPTION" && original.priceEffect
+              ? effects(original.priceEffect)
+              : t("part")}
           </Badge>
         ) : null}
         {original.warnings.map((warning) => (

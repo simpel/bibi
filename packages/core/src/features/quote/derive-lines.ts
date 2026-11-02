@@ -59,7 +59,7 @@ function toDerived({ line, unitPriceMinor, position, facts }: ToDerivedInput): D
     ...{ quantity, unitPriceMinor, priceUnit: facts?.priceUnit ?? null, discountPercent },
     ...{ vatRatePercent, tags: facts?.tags ?? [], ...amounts },
     vatRows: [{ vatRatePercent, ...amounts }],
-    parentLineId: line.parentLineId,
+    ...{ parentLineId: line.parentLineId, role: line.role },
     ...{ alternativeGroupId: line.alternativeGroupId, alternativeGroupName: null },
     ...{ alternativeGroupChosen: null, inTotal: true },
   };

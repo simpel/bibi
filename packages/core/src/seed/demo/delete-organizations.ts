@@ -38,8 +38,8 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.lineAllocation.updateMany({ where, data: { parentAllocationId: null } }),
   db.lineAllocation.deleteMany({ where }),
   // A part or option line points at its line (ADR 0059): cut that link before deleting either
-  // (an option line's price effect needs its parent, so it goes too).
-  db.line.updateMany({ where, data: { parentLineId: null, priceEffect: null } }),
+  // (its role and an option line's price effect need the parent, so they go too, ADR 0088).
+  db.line.updateMany({ where, data: { parentLineId: null, role: null, priceEffect: null } }),
   db.line.deleteMany({ where }),
   db.alternativeGroup.deleteMany({ where }),
   db.ticketTemplateLine.deleteMany({ where }),

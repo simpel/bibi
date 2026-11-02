@@ -34,9 +34,10 @@ function countRemainder({ entry, covered }: { entry: DerivedLine; covered: numbe
 /**
  * ADR 0059, 0082: an option line counts as its price effect says. INCLUDED never counts (it is in
  * the parent's price); EXTRA counts at its own price and quantity; REPLACES counts and its parent
- * line counts only the quantity no REPLACES option covers. An option of a line left out as an
- * unchosen alternative (ADR 0052) is left out with it. Changes the lines in place; run before the
- * bundles' VAT split, which reads the parent's total.
+ * line counts only the quantity no REPLACES option covers. An add-on always counts at its own
+ * price and covers nothing (ADR 0088). An option or add-on of a line left out as an unchosen
+ * alternative (ADR 0052) is left out with it. Changes the lines in place; run before the bundles'
+ * VAT split, which reads the parent's total.
  */
 export function applyPriceEffects({ derived, lines }: ApplyPriceEffectsInput) {
   const byId = new Map(lines.map((line) => [line.id, line]));
@@ -46,12 +47,14 @@ export function applyPriceEffects({ derived, lines }: ApplyPriceEffectsInput) {
     if (!line) return false;
     const entry = entryOf.get(line.id);
     if (entry?.line.alternativeGroupId && !entry.line.inTotal) return true;
-    return line.priceEffect !== null && leftOut({ id: line.parentLineId });
+    const follows = line.role === "OPTION" || line.role === "ADD_ON";
+    return follows && leftOut({ id: line.parentLineId });
   };
   const covered = new Map<string, number>();
   for (const entry of derived) {
     const line = byId.get(entry.line.lineId);
-    if (!line?.priceEffect) continue;
+    if (line?.role === "ADD_ON") entry.line.inTotal = !leftOut({ id: line.id });
+    if (line?.role !== "OPTION" || !line.priceEffect) continue;
     const counts = line.priceEffect !== "INCLUDED" && !leftOut({ id: line.id });
     entry.line.inTotal = counts;
     if (counts && line.priceEffect === "REPLACES" && line.parentLineId) {

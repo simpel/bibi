@@ -22,8 +22,8 @@ export function applyBundles({ derived, lines }: ApplyBundlesInput) {
   const partsOf = new Map<string, LineDto[]>();
   const partIds = new Set<string>();
   for (const line of lines) {
-    // Option lines (a price effect) are not parts: `applyPriceEffects` prices them.
-    if (!line.parentLineId || line.priceEffect) continue;
+    // Options and add-ons are not parts: `applyPriceEffects` prices them (ADR 0088).
+    if (!line.parentLineId || line.role !== "PART") continue;
     partIds.add(line.id);
     partsOf.set(line.parentLineId, [...(partsOf.get(line.parentLineId) ?? []), line]);
   }

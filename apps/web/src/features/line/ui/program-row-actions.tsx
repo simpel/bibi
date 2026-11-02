@@ -31,7 +31,7 @@ type Dialogs = "edit" | "options" | "units" | "archive" | null;
 
 /** The line's item, when it has customisation groups and the line is not an option itself. */
 const customisableOf = ({ line, data }: Pick<ProgramRowActionsProps, "line" | "data">) =>
-  line.priceEffect === null
+  line.role !== "OPTION"
     ? data.customisable.find(({ itemId }) => itemId === line.itemId)
     : undefined;
 

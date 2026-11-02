@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PriceUnitSchema } from "../item/schema";
+import { LineRoleSchema } from "../line/line-role";
 
 /** A list value an order line's item contained when the line was made (snapshot). */
 export const OrderLineTagSchema = z.object({
@@ -44,7 +45,12 @@ export const OrderLineSchema = z.object({
   parentLineId: z
     .string()
     .nullable()
-    .describe("The bundle line (line.get) of a part line, which never counts in the totals"),
+    .describe("The parent line (line.get) of a part, option or add-on line; see role"),
+  role: LineRoleSchema.nullable().describe(
+    "Snapshot of the line's role (ADR 0088): PART (never counts), OPTION (counts as its price " +
+      "effect says) or ADD_ON (counts at its own price, shown under its parent); null on a " +
+      "top-level line",
+  ),
   alternativeGroupId: z
     .string()
     .nullable()

@@ -1,12 +1,6 @@
 import { z } from "zod";
-import {
-  BufferMinutesShape,
-  bufferMinutesInputShape,
-  EffectiveBuffersShape,
-} from "../../shared/buffers";
-import { RecordStatusSchema } from "../../shared/record-status";
+import { bufferMinutesInputShape, EffectiveBuffersShape } from "../../shared/buffers";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
-import { PriceEffectSchema } from "../item/customisation-group-schema";
 import { LineEffectiveShape } from "./effective-schema";
 import { LineRecordSchema } from "./record-schema";
 import { LineWarningsShape } from "./warning-schema";
@@ -90,6 +84,32 @@ export const LineCreateInputSchema = z.object({
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
 });
 
+/**
+ * `line.create`'s input (ADR 0088 decision 11): with `parentLineId` the line is an add-on under
+ * that line, and the type and time default to the parent's.
+ */
+export const LineCreateOperationInputSchema = LineCreateInputSchema.extend({
+  entityTypeId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe(
+      "Id of the line type (entityType.list base LINE); required unless parentLineId is given " +
+        "(an add-on defaults to its parent's type)",
+    ),
+  parentLineId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe(
+      "Id of a top-level line of the same ticket (line.list): the new line is an add-on under it " +
+        "(ADR 0088), any item or free text, sold at its own effective price (the parent's discount " +
+        "does not apply), quantity its own else the parent's. Without startsAt/endsAt it takes " +
+        "the parent's period (an untimed parent gives an untimed add-on). It moves and is removed " +
+        "with its parent; it is never moved to another parent",
+    ),
+});
+
 export const LineUpdateInputSchema = z
   .object(LineDetailsShape)
   .partial()
@@ -117,4 +137,5 @@ export const LineIdInputSchema = z.object({ id: z.string().min(1) });
 export type LineRecord = z.infer<typeof LineRecordSchema>;
 export type LineDto = z.infer<typeof LineSchema>;
 export type LineCreateInput = z.infer<typeof LineCreateInputSchema>;
+export type LineCreateOperationInput = z.infer<typeof LineCreateOperationInputSchema>;
 export type LineUpdateInput = z.infer<typeof LineUpdateInputSchema>;

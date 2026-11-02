@@ -24,6 +24,8 @@ export type CustomisationGroupFormValue = {
   maxPick: string;
   /** Split between guests (ADR 0082): each chosen option gets its own quantity. */
   split: boolean;
+  /** Picks beyond the max may be added as add-ons (ADR 0088). */
+  allowExtras: boolean;
   options: CustomisationOptionFormValue[];
 };
 
@@ -78,6 +80,7 @@ export function itemFormDefaults({ type, item }: ItemDefaultsInput): ItemFormVal
       minPick: String(group.minPick),
       maxPick: String(group.maxPick),
       split: group.split,
+      allowExtras: group.allowExtras,
       options: group.options.map(({ itemId, priceEffect }) => ({ itemId, priceEffect })),
     })),
   };

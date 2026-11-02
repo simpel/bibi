@@ -13,12 +13,19 @@ export type CheckOptionsInput = Db & {
   groupId?: string;
 };
 
-type OptionRow = { id: string; ticketId: string; alternativeGroupId: string | null };
+type OptionRow = {
+  id: string;
+  ticketId: string;
+  alternativeGroupId: string | null;
+  role: string | null;
+};
 
 function optionIssue({ row, at, ticketId, groupId }: { row?: OptionRow; at: number } & CheckIds) {
   const path = `lineIds.${at}`;
   if (!row) return { path, message: "Unknown line" };
   if (row.ticketId !== ticketId) return { path, message: "The line belongs to another ticket" };
+  // ADR 0088 decision 4: an add-on follows its parent's group and is never an option itself.
+  if (row.role === "ADD_ON") return { path, message: "An add-on follows its parent line" };
   if (row.alternativeGroupId && row.alternativeGroupId !== groupId) {
     return { path, message: "The line is already an option of another alternative group" };
   }
@@ -40,7 +47,7 @@ export async function checkOptions({
 }: CheckOptionsInput): Promise<Result<true>> {
   const rows = await context.db.line.findMany({
     where: { id: { in: [...lineIds] } },
-    select: { id: true, ticketId: true, alternativeGroupId: true, stateId: true },
+    select: { id: true, ticketId: true, alternativeGroupId: true, role: true, stateId: true },
   });
   const byId = new Map(rows.map((row) => [row.id, row]));
   const issues: AppErrorIssue[] = [];

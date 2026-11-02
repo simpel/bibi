@@ -4,6 +4,7 @@ import { archiveRecords } from "../../records/update-record";
 import { invalid } from "../../shared/errors";
 import { syncAllocations } from "../line-allocation/sync-allocations";
 import { archiveRequirements } from "../requirement/archive-requirements";
+import { ITEM_SUB_LINE_ROLES } from "./line-role";
 import type { LinePeriod } from "./line-rules";
 import type { LineRecord } from "./schema";
 import { LINE_INCLUDE, toLineRecord } from "./to-line-record";
@@ -12,7 +13,7 @@ type Context = OperationContext;
 
 export type PartsOfInput = { context: Pick<OperationContext, "db">; lineId: string };
 
-/** The active part and option lines of a line (ADR 0059), in creation order. */
+/** The active part, option and add-on lines of a line (ADR 0059, 0088), in creation order. */
 export async function partsOf({ context, lineId }: PartsOfInput) {
   const rows = await context.db.line.findMany({
     where: { parentLineId: lineId },
@@ -24,14 +25,19 @@ export async function partsOf({ context, lineId }: PartsOfInput) {
 
 export type CheckBundleItemInput = PartsOfInput & { before: LineRecord; itemId: string | null };
 
-/** A line with part or option lines keeps its item: they were expanded or chosen from it. */
+/**
+ * A line with part or option lines keeps its item: they were expanded or chosen from it. Add-ons
+ * do not come from the item, so a line with only add-ons may change it (ADR 0088).
+ */
 export async function checkBundleItem({
   context,
   before,
   itemId,
 }: CheckBundleItemInput): Promise<Result<true>> {
   if (itemId === before.itemId) return ok({ value: true });
-  const parts = await context.db.line.count({ where: { parentLineId: before.id } });
+  const parts = await context.db.line.count({
+    where: { parentLineId: before.id, role: { in: ITEM_SUB_LINE_ROLES } },
+  });
   if (parts === 0) return ok({ value: true });
   const message =
     "A line with part or option lines keeps its item; remove it and add the item again";
@@ -41,7 +47,7 @@ export async function checkBundleItem({
 export type MovePartsInput = { context: Context; before: LineRecord; after: LinePeriod };
 
 /**
- * ADR 0059: moving a timed line moves its timed part and option lines by the same delta, in the
+ * ADR 0059, 0088: moving a timed line moves its timed sub-lines by the same delta, in the
  * same transaction; their holds follow by trigger (an overlap is CONFLICT).
  */
 export async function moveParts({ context, before, after }: MovePartsInput) {
@@ -81,7 +87,7 @@ export async function archiveLineRow({ context, before }: ArchiveLineRowInput) {
   return line;
 }
 
-/** ADR 0059: removing a line removes its part and option lines, and theirs. */
+/** ADR 0059, 0088: removing a line removes its part, option and add-on lines, and theirs. */
 export async function archiveParts({ context, before }: ArchiveLineRowInput) {
   for (const part of await partsOf({ context, lineId: before.id })) {
     await archiveParts({ context, before: part });

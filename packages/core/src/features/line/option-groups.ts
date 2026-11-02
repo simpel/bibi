@@ -15,6 +15,8 @@ export type OptionGroup = {
   minPick: number;
   maxPick: number;
   split: boolean;
+  /** Picks beyond maxPick may be added as add-ons (ADR 0088). */
+  allowExtras: boolean;
   options: ChoosableOption[];
 };
 
@@ -40,8 +42,8 @@ export async function loadOptionGroups({
       },
     },
   });
-  return groups.map(({ id, name, minPick, maxPick, split, options }) => ({
-    ...{ id, name, minPick, maxPick, split },
+  return groups.map(({ id, name, minPick, maxPick, split, allowExtras, options }) => ({
+    ...{ id, name, minPick, maxPick, split, allowExtras },
     options: options.map(({ itemId: optionId, priceEffect, item }) => ({
       ...{ itemId: optionId, name: item.name, priceEffect },
     })),
@@ -67,8 +69,9 @@ export type CheckChoiceInput = { groups: readonly OptionGroup[]; options: readon
 
 /**
  * Every chosen id is an option of one of the groups, each group gets between its minPick and
- * maxPick distinct options (a group with minPick 0 can be skipped), and quantities are given
- * exactly in split groups (ADR 0082). Returns the chosen options in group order.
+ * maxPick distinct options (a group with minPick 0 can be skipped; more than maxPick points to
+ * add-ons when the group allows extras, ADR 0088), and quantities are given exactly in split
+ * groups (ADR 0082). Returns the chosen options in group order.
  */
 export function checkChoice({ groups, options }: CheckChoiceInput): Result<ChosenLineOption[]> {
   const offered = groups.flatMap((group) => group.options.map((option) => option.itemId));
@@ -84,7 +87,9 @@ export function checkChoice({ groups, options }: CheckChoiceInput): Result<Chose
     });
     if (picked.length < minPick || picked.length > maxPick) {
       const range = minPick === maxPick ? `${minPick}` : `${minPick} to ${maxPick}`;
-      return problem({ message: `${name}: choose ${range} of its options` });
+      // ADR 0088: more than the max are add-ons, when the group allows extras.
+      const extras = picked.length > maxPick && group.allowExtras ? "; add more as add-ons" : "";
+      return problem({ message: `${name}: choose ${range} of its options${extras}` });
     }
     for (const { option, match } of picked) {
       const quantity = quantityOf({ group, chosen: match });

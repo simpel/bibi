@@ -59,7 +59,7 @@ async function expand({ context, input }: ExpandInput): Promise<Result<LineRecor
   for (const plan of plans) {
     const part = await insertLine({
       context,
-      input: { ...common, ...plan, parentLineId: bundle.value.id },
+      input: { ...common, ...plan, parentLineId: bundle.value.id, role: "PART" },
     });
     if (!part.ok) return part;
     lines.push(part.value);

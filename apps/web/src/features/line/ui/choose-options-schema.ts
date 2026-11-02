@@ -69,7 +69,7 @@ export type ChosenOptionsInput = { line: LineDto; lines: readonly LineDto[] };
 /** The line's current option lines as chosen options. */
 export function chosenOptions({ line, lines }: ChosenOptionsInput): ChosenOption[] {
   return lines
-    .filter((other) => other.parentLineId === line.id && other.priceEffect !== null)
+    .filter((other) => other.parentLineId === line.id && other.role === "OPTION")
     .flatMap((other) => (other.itemId ? [{ itemId: other.itemId, quantity: other.quantity }] : []));
 }
 
