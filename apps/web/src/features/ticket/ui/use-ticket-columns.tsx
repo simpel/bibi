@@ -1,6 +1,6 @@
 import type { TicketDto } from "@bibi/core";
 import type { DateTimeFormat, TicketStatusDto } from "@bibi/core/schemas";
-import type { ColumnDef } from "@bibi/ui";
+import { Avatar, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { namedOptionColumn } from "@/components/data-table/named-option-column";
@@ -21,6 +21,8 @@ export type TicketLookups = {
   customersHidden?: boolean;
   types: NamedOption[];
   statuses: TicketStatusDto[];
+  /** Members who can be assigned (`id` = user id). */
+  members: NamedOption[];
 };
 
 const titleColumn = ({ t }: { t: Translate }): Column => ({
@@ -44,6 +46,26 @@ const statusColumn = ({ t, statuses }: { t: Translate; statuses: TicketStatusDto
   header: t("columns.status"),
   accessorFn: (ticket) => statuses.find(({ id }) => id === ticket.statusId)?.name ?? "",
   cell: ({ row }) => <TicketStatusLabel statuses={statuses} id={row.original.statusId} />,
+});
+
+type AssigneeInput = { t: Translate; members: NamedOption[] };
+
+/** The main assignee with their initials; not sortable, since the server cannot order by it. */
+const assigneeColumn = ({ t, members }: AssigneeInput): Column => ({
+  id: "assignee",
+  header: t("columns.assignee"),
+  enableSorting: false,
+  accessorFn: (ticket) => members.find(({ id }) => id === ticket.assigneeId)?.name ?? "",
+  cell: ({ getValue }) => {
+    const name = getValue() as string;
+    if (!name) return "–";
+    return (
+      <span className="flex items-center gap-2">
+        <Avatar size="sm" name={name} photoUrl={null} />
+        {name}
+      </span>
+    );
+  },
 });
 
 const whenColumn = ({ t, format }: { t: Translate; format: Format }): Column => ({
@@ -81,12 +103,13 @@ const namedColumns = ({ t, customers, types, hidden }: NamedInput): Column[] => 
   }),
 ];
 
-/** Title (link), customer, type, status, desired period and quantity of a ticket. */
+/** Title (link), customer, type, assignee, status, desired period and quantity of a ticket. */
 export function useTicketColumns({
   statuses,
   customers,
   customersHidden,
   types,
+  members,
 }: TicketLookups): Column[] {
   const t = useTranslations("ticket");
   const common = useTranslations("common");
@@ -96,10 +119,11 @@ export function useTicketColumns({
     () => [
       titleColumn({ t }),
       ...namedColumns({ t, customers, types, hidden: shown }),
+      assigneeColumn({ t, members }),
       statusColumn({ t, statuses }),
       whenColumn({ t, format }),
       quantityColumn({ t }),
     ],
-    [t, format, customers, types, statuses, shown],
+    [t, format, customers, types, members, statuses, shown],
   );
 }

@@ -18,6 +18,7 @@ export * from "./components/avatar/avatar";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge/badge";
 export * from "./components/bar-charts/bar-charts";
 export { Button, type ButtonProps, buttonVariants } from "./components/button/button";
+export * from "./components/button-group/button-group";
 export * from "./components/calendar/calendar";
 export * from "./components/capability-display/bookable-display";
 export * from "./components/capability-display/bundle-display";

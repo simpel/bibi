@@ -60,14 +60,18 @@ export function TicketQueryInput({
     vocabulary,
   });
   return (
-    <div className="relative rounded-md bg-background">
+    // The group rounds this wrapper; the highlight and the input follow its corners.
+    <div className="relative flex-1 rounded-md bg-background">
       <QueryHighlight value={value} vocabulary={vocabulary} input={inputProps.ref} />
       <Input
         {...rest}
         {...inputProps}
         type="search"
         // The text is drawn by the highlight underneath; the caret and selection stay the input's.
-        className={cn("relative bg-transparent text-transparent caret-foreground", rest.className)}
+        className={cn(
+          "relative rounded-[inherit] bg-transparent text-transparent caret-foreground",
+          rest.className,
+        )}
       />
       {shown ? <SuggestionList {...list} /> : null}
     </div>

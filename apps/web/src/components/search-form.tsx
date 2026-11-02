@@ -1,6 +1,15 @@
 "use client";
 
-import { Button, Form, FormControl, FormController, FormItem, FormLabel, Input } from "@bibi/ui";
+import {
+  Button,
+  ButtonGroup,
+  Form,
+  FormControl,
+  FormController,
+  FormItem,
+  FormLabel,
+  Input,
+} from "@bibi/ui";
 import { SearchIcon } from "lucide-react";
 import { type ReactNode, useEffect } from "react";
 import { type ControllerRenderProps, useForm } from "react-hook-form";
@@ -22,8 +31,8 @@ type SearchValues = { q: string };
 export type SearchField = ControllerRenderProps<SearchValues, "q"> & { placeholder: string };
 
 /**
- * Free-text search of a list, applied on submit (Enter), not per keystroke, so a large list is
- * queried once. A navigation form (CLAUDE.md "Forms"): no server action and no toast.
+ * Free-text search of a list, the field and its button joined (shadcn Button Group), applied on
+ * submit (Enter), not per keystroke, so a large list is queried once. A navigation form (CLAUDE.md "Forms"): no server action and no toast.
  */
 export function SearchForm({ value, label, submitLabel, onSearch, renderInput }: SearchFormProps) {
   const form = useForm<SearchValues>({ defaultValues: { q: value ?? "" } });
@@ -32,7 +41,7 @@ export function SearchForm({ value, label, submitLabel, onSearch, renderInput }:
     <search className="flex w-full sm:w-96">
       <Form {...form}>
         <form
-          className="flex flex-1 gap-2"
+          className="flex flex-1"
           onSubmit={form.handleSubmit(({ q }) => onSearch(q.trim() || null))}
         >
           <FormController
@@ -41,19 +50,21 @@ export function SearchForm({ value, label, submitLabel, onSearch, renderInput }:
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormLabel className="sr-only">{label}</FormLabel>
-                <FormControl>
-                  {renderInput ? (
-                    renderInput({ ...field, placeholder: label })
-                  ) : (
-                    <Input type="search" placeholder={label} {...field} />
-                  )}
-                </FormControl>
+                <ButtonGroup className="w-full">
+                  <FormControl>
+                    {renderInput ? (
+                      renderInput({ ...field, placeholder: label })
+                    ) : (
+                      <Input type="search" placeholder={label} {...field} />
+                    )}
+                  </FormControl>
+                  <Button type="submit" variant="outline" size="icon" aria-label={submitLabel}>
+                    <SearchIcon />
+                  </Button>
+                </ButtonGroup>
               </FormItem>
             )}
           />
-          <Button type="submit" variant="secondary" size="icon" aria-label={submitLabel}>
-            <SearchIcon />
-          </Button>
         </form>
       </Form>
     </search>

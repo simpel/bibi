@@ -836,6 +836,7 @@
       "title": "Titel",
       "customer": "Kund",
       "type": "Typ",
+      "assignee": "Ansvarig",
       "status": "Ärendestatus",
       "when": "Önskade datum",
       "quantity": "Antal"

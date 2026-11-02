@@ -18,6 +18,8 @@ export const TicketSchema = z.object({
   contactId: z.string().nullable(),
   /** The organization's own status (ADR 0043); the newest entry of its status history (ADR 0054). */
   statusId: z.string(),
+  /** The main assignee's user id (assignment.list, responsibility null); null: nobody (ADR 0055). */
+  assigneeId: z.string().nullable(),
   desiredStartsAt: z.date().nullable(),
   desiredEndsAt: z.date().nullable(),
   estimatedHeadcount: z.number().int().nullable(),

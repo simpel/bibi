@@ -20,6 +20,7 @@ export function TicketListTable({ tickets, total, view, data }: TicketListTableP
       customersHidden={data.customersHidden}
       types={data.types.map(({ id, name }) => ({ id, name }))}
       statuses={data.statuses}
+      members={data.members}
     />
   );
 }

@@ -43,7 +43,7 @@ export function QueryHighlight({ value, vocabulary, input }: QueryHighlightProps
     <div
       ref={mirror}
       aria-hidden
-      className="pointer-events-none absolute inset-0 flex items-center overflow-hidden whitespace-pre rounded-md border border-transparent px-3 py-1 text-sm"
+      className="pointer-events-none absolute inset-0 flex items-center overflow-hidden whitespace-pre rounded-[inherit] border border-transparent px-3 py-1 text-sm"
     >
       {parts.map((part, index) => (
         <span

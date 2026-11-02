@@ -836,6 +836,7 @@
       "title": "Title",
       "customer": "Customer",
       "type": "Type",
+      "assignee": "Assignee",
       "status": "Status",
       "when": "Desired dates",
       "quantity": "Quantity"

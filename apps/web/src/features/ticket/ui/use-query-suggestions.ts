@@ -17,7 +17,8 @@ type Position = { currentTarget: HTMLInputElement };
 
 /**
  * The suggestions' state and the combobox props of the input. Arrows move, Tab or Enter on a
- * highlighted row picks it, Escape closes; Enter with nothing highlighted submits the search.
+ * highlighted row picks it (a value also submits the search), Escape closes; Enter with nothing
+ * highlighted submits the search.
  */
 export function useQuerySuggestions({
   value,
@@ -42,9 +43,13 @@ export function useQuerySuggestions({
     const next = applySuggestion({ text: value, token, suggestion });
     onChange(next.text);
     setActive(-1);
-    setOpen(true);
+    // A picked value completes a filter: search at once. A key waits for its value.
+    setOpen(Boolean(suggestion.open));
     setCaret(next.caret);
-    requestAnimationFrame(() => ref.current?.setSelectionRange(next.caret, next.caret));
+    requestAnimationFrame(() => {
+      ref.current?.setSelectionRange(next.caret, next.caret);
+      if (!suggestion.open) ref.current?.form?.requestSubmit();
+    });
   };
   const track = ({ currentTarget }: Position) => {
     setCaret(currentTarget.selectionStart ?? currentTarget.value.length);
