@@ -5,7 +5,13 @@ import { lineFormDefaults } from "./line-form-values";
 
 const item: CatalogItem = {
   ...{ id: "i1", name: "Lunch", typeName: "Food", capabilities: ["CUSTOMISATIONS", "PRICED"] },
-  ...{ timeZone: "UTC", priceMinor: 25_000, defaultDurationMinutes: null, setups: [] },
+  ...{
+    timeZone: "UTC",
+    priceMinor: 25_000,
+    priceUnit: "PER_PERSON",
+    defaultDurationMinutes: null,
+    setups: [],
+  },
   groups: [
     {
       ...{ name: "Main", minPick: 1, maxPick: 2, split: true, allowExtras: true },

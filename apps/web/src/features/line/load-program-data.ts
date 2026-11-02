@@ -47,8 +47,9 @@ export async function loadProgramData(): Promise<Result<ProgramFormData>> {
     value: {
       ...typed.value,
       items: items.ok
-        ? items.value.items.map(({ id, name, setups: own, timeZone: zone }) => ({
+        ? items.value.items.map(({ id, name, setups: own, timeZone: zone, ...price }) => ({
             ...{ id, name, timeZone: zone },
+            ...{ priceMinor: price.priceMinor, priceUnit: price.priceUnit },
             setupIds: own.map(({ setupId }) => setupId),
           }))
         : [],

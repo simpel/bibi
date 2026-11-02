@@ -1,6 +1,8 @@
-import { Badge, Button, cn, Input } from "@bibi/ui";
+import { Badge, Button, Input } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
+import { useNumberFormat } from "@/lib/number/use-number-format";
+import { priceText } from "../../item/ui/price-text";
 import type { CatalogItem } from "./catalog";
 import { type TypeHue, typeHues } from "./type-hue";
 import { type LineTone, TONE_CLASS } from "./use-issue-text";
@@ -32,6 +34,9 @@ type ItemRowProps = Pick<ItemSearchProps, "onItem"> & {
 
 function ItemRow({ item, hue, tone, onItem }: ItemRowProps) {
   const t = useTranslations("ticketIntake.line");
+  const items = useTranslations("item");
+  const { money } = useNumberFormat();
+  const price = item.priceMinor === null ? null : priceText({ item, money, t: items });
   return (
     <li>
       <button
@@ -43,9 +48,10 @@ function ItemRow({ item, hue, tone, onItem }: ItemRowProps) {
           <span className="truncate">{item.name}</span>
           {item.typeName ? <Badge hue={hue ?? 1}>{item.typeName}</Badge> : null}
         </span>
-        {tone ? (
-          <span className={cn("shrink-0", TONE_CLASS[tone])}>{t(`tone.${tone}`)}</span>
-        ) : null}
+        <span className="flex shrink-0 items-center gap-3">
+          {price ? <span className="text-muted-foreground tabular-nums">{price}</span> : null}
+          {tone ? <span className={TONE_CLASS[tone]}>{t(`tone.${tone}`)}</span> : null}
+        </span>
       </button>
     </li>
   );
@@ -53,7 +59,8 @@ function ItemRow({ item, hue, tone, onItem }: ItemRowProps) {
 
 /**
  * What the line is: a search across every active item of every type, each with its type and its
- * availability at the ticket's start, or a free-text line (spec "The line dialog").
+ * list price and its availability at the ticket's start, or a free-text line (spec "The line
+ * dialog").
  */
 export function ItemSearch({ model, onItem, onFreeText }: ItemSearchProps) {
   const t = useTranslations("ticketIntake.line");

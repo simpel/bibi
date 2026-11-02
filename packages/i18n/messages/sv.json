@@ -1509,6 +1509,8 @@
     "empty": "Ärendet har inga programpunkter än.",
     "occupied": "Lokalen är redan belagd under perioden eller ställtiden.",
     "noItem": "Ingen lokal",
+    "itemSearch": "Sök lokaler och bokningsbara artiklar",
+    "noItemMatch": "Ingen artikel matchar.",
     "noSetup": "Ingen uppställning",
     "fields": {
       "type": "Typ",

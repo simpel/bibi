@@ -1,4 +1,4 @@
-import type { EntityTypeDto, ItemCapability, VocabularyDto } from "@bibi/core";
+import type { EntityTypeDto, ItemCapability, ItemDto, VocabularyDto } from "@bibi/core";
 import type { NamedOption } from "@/components/form/named-option";
 import type { LinkTargets } from "@/components/typed-fields/typed-form-data";
 import type { CustomisableItem } from "../../line/ui/program-form-data";
@@ -14,6 +14,7 @@ export type CatalogItem = {
   timeZone: string;
   /** The list price, the placeholder of the unit price. */
   priceMinor: number | null;
+  priceUnit: ItemDto["priceUnit"];
   defaultDurationMinutes: number | null;
   setups: { id: string; name: string; capacity: number }[];
   groups: CustomisableItem["groups"];

@@ -2,6 +2,8 @@ export type ComboboxOption = {
   value: string;
   label: string;
   description?: string;
+  /** Right-aligned beside the label, e.g. a price. */
+  trailing?: string;
   group?: string;
 };
 

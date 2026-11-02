@@ -1509,6 +1509,8 @@
     "empty": "The ticket has no lines yet.",
     "occupied": "The room is already occupied during this period or its changeover time.",
     "noItem": "No room",
+    "itemSearch": "Search rooms and bookable items",
+    "noItemMatch": "No item matches.",
     "noSetup": "No setup",
     "fields": {
       "type": "Type",

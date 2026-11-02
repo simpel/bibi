@@ -1,10 +1,15 @@
-import type { PriceEffect } from "@bibi/core/schemas";
+import type { ItemDto, PriceEffect } from "@bibi/core/schemas";
 import type { NamedOption } from "@/components/form/named-option";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
 import type { LineStateOption } from "./line-state-option";
 
-/** A bookable item a line can be held in, with the ids of its setups and its venue's zone. */
-export type BookableOption = NamedOption & { setupIds: string[]; timeZone: string };
+/** A bookable item with its setups, its venue's zone and its list price (shown in the picker). */
+export type BookableOption = NamedOption & {
+  setupIds: string[];
+  timeZone: string;
+  priceMinor: number | null;
+  priceUnit: ItemDto["priceUnit"];
+};
 
 /** A `BUNDLE` item with its venue's zone (ADR 0064). */
 export type BundleOption = NamedOption & { timeZone: string };

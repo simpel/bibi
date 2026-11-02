@@ -5,7 +5,7 @@ import { quickLine } from "./quick-line";
 
 const item = ({ ...input }: Partial<CatalogItem>): CatalogItem => ({
   ...{ id: "i1", name: "Vinga", typeName: "Room", capabilities: [], timeZone: "UTC" },
-  ...{ priceMinor: null, defaultDurationMinutes: null, setups: [], groups: [] },
+  ...{ priceMinor: null, priceUnit: null, defaultDurationMinutes: null, setups: [], groups: [] },
   ...input,
 });
 const period = { startsAt: at({ hour: 9 }), endsAt: at({ hour: 12 }) };

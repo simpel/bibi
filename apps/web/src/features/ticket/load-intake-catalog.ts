@@ -28,7 +28,8 @@ type ToCatalogInput = {
 function toCatalogItem({ item, types, setupNames, groups }: ToCatalogInput): CatalogItem {
   const type = types.get(item.entityTypeId);
   return {
-    ...{ id: item.id, name: item.name, timeZone: item.timeZone, priceMinor: item.priceMinor },
+    ...{ id: item.id, name: item.name, timeZone: item.timeZone },
+    ...{ priceMinor: item.priceMinor, priceUnit: item.priceUnit },
     typeName: type?.name ?? "",
     capabilities: type?.capabilities ?? [],
     defaultDurationMinutes: item.defaultDurationMinutes,

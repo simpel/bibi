@@ -23,6 +23,9 @@ export function ComboboxItem(props: ComboboxItemProps) {
           <span className="truncate text-xs text-muted-foreground">{option.description}</span>
         )}
       </div>
+      {option.trailing ? (
+        <span className="shrink-0 text-muted-foreground tabular-nums">{option.trailing}</span>
+      ) : null}
       <CheckIcon className={cn("ml-auto", selected ? "opacity-100" : "opacity-0")} />
     </CommandItem>
   );
