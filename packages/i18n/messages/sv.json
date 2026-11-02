@@ -26,7 +26,13 @@
       "selectAll": "Markera alla rader på sidan",
       "selectRow": "Markera raden",
       "selected": "{count} markerade",
-      "orderSaved": "Kolumnordningen sparades"
+      "orderSaved": "Kolumnordningen sparades",
+      "rowsPerPage": "Rader per sida",
+      "pageOf": "Sida {page} av {pageCount}",
+      "firstPage": "Första sidan",
+      "previousPage": "Föregående sida",
+      "nextPage": "Nästa sida",
+      "lastPage": "Sista sidan"
     },
     "yes": "Ja",
     "no": "Nej",
@@ -854,7 +860,11 @@
       "warnings": {
         "QUOTE_ACCEPTED_IN_EARLIER_STATUS": "Offerten är accepterad, men ärendet är kvar i en tidigare ärendestatus. Flytta ärendet eller kontrollera offerten."
       }
-    }
+    },
+    "search": "Sök referens, kund, kontakt eller anteckning",
+    "searchSubmit": "Sök",
+    "noMatches": "Inga ärenden matchar.",
+    "listTotal": "{count, plural, one {# ärende} other {# ärenden}}"
   },
   "ticketIntake": {
     "title": "Nytt ärende",

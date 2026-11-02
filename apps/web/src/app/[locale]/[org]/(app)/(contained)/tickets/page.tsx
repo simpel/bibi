@@ -1,26 +1,20 @@
 import { resolveLocale } from "@bibi/i18n";
 import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
-import { readMine } from "@/features/assignment/ui/mine-filter";
+import { readTicketListParams, type TicketSearchParams } from "@/features/ticket/lib/list-params";
 import { TicketList } from "@/features/ticket/ui/ticket-list";
-import { readCursor } from "@/lib/page-cursor";
 
 type TicketsPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ cursor?: string | string[]; mine?: string | string[] }>;
+  searchParams: Promise<TicketSearchParams>;
 };
 
 export default async function TicketsPage({ params, searchParams }: TicketsPageProps) {
   const locale = resolveLocale({ value: (await params).locale });
-  const { cursor, mine } = await searchParams;
   setRequestLocale(locale);
   return (
     <SimplePage>
-      <TicketList
-        locale={locale}
-        cursor={readCursor({ value: cursor })}
-        mine={readMine({ value: mine })}
-      />
+      <TicketList locale={locale} params={readTicketListParams({ params: await searchParams })} />
     </SimplePage>
   );
 }

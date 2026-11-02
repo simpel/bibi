@@ -66,4 +66,7 @@ model Ticket {
   @@index([organizationId, customerId])
   @@index([organizationId, statusId])
   @@index([organizationId, holdsUntil])
+  @@index([organizationId, desiredStartsAt])
+  @@index([organizationId, entityTypeId])
+  @@index([organizationId, estimatedHeadcount])
 }

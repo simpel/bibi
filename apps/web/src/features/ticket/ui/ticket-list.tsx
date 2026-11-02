@@ -1,35 +1,29 @@
-import { listTickets, type TicketDto } from "@bibi/core";
+import { listTickets } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
-import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
-import {
-  type MineFilter,
-  MineFilterLinks,
-  minePageInput,
-} from "@/features/assignment/ui/mine-filter";
+import { MineFilterLinks, mineListInput } from "@/features/assignment/ui/mine-filter";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import type { TicketListParams } from "../lib/list-params";
 import { loadTicketData } from "../load-ticket-data";
 import { CreateTicketButton } from "./create-ticket-button";
 import { ExpireHoldsButton } from "./expire-holds-button";
 import { TicketListTable } from "./ticket-list-table";
+import { TicketSearch } from "./ticket-search";
 
 export type TicketListProps = {
   locale: Locale;
-  cursor?: string | undefined;
-  /** Only tickets the signed-in member is assigned to or follows (ADR 0034). */
-  mine?: MineFilter | undefined;
+  /** Page, size, search, sort and the mine filter (ADR 0034), read from the URL. */
+  params: TicketListParams;
 };
-
-const PAGE_SIZE = 20;
 
 const GoToTypes = ({ label }: { label: string }) => (
   <Button asChild variant="outline">
@@ -54,27 +48,39 @@ function headerParts({ abilities, noTypes }: HeaderPartsInput) {
   return { create, actions: canCreate ? <HeaderActions create={create} /> : undefined };
 }
 
-/** Tickets page body: header with create, the table (or an empty state) and pagination. */
-export async function TicketList({ locale, cursor, mine }: TicketListProps) {
+type ListInputArgs = { params: TicketListParams; userId: string | null };
+
+/** `ticket.list` by page number, so the server returns the total for the page count. */
+const listInput = ({ params, userId }: ListInputArgs) => ({
+  page: params.page,
+  limit: params.pageSize,
+  sort: params.sort,
+  direction: params.direction,
+  ...(params.q ? { q: params.q } : {}),
+  ...mineListInput({ mine: params.mine, userId }),
+});
+
+/** Tickets page body: header with create, filters and search, then the paged table. */
+export async function TicketList({ locale, params }: TicketListProps) {
   const t = await getTranslations("ticket");
   const abilities = await getCallerAbilities();
   const [data, result] = await Promise.all([
     loadTicketData(),
     runOperation({
       operation: listTickets,
-      input: minePageInput({ limit: PAGE_SIZE, cursor, mine, userId: abilities.userId }),
+      input: listInput({ params, userId: abilities.userId }),
     }),
   ]);
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const noTypes = data.value.types.length === 0;
   const { create, actions } = headerParts({ abilities, noTypes });
-  const page: { items: TicketDto[]; nextCursor: string | null } = result.value;
+  const { items, total } = result.value;
+  const empty = total === 0 && !params.q && !params.mine;
   return (
     <div className="grid gap-6">
       <PageHeader title={t("plural")} description={t("listDescription")} actions={actions} />
-      <MineFilterLinks pathname={ROUTES.tickets} mine={mine} />
-      {page.items.length === 0 && !cursor && !mine ? (
+      {empty ? (
         <EmptyState
           title={t("empty")}
           description={noTypes ? t("noTypes") : t("emptyDescription")}
@@ -82,13 +88,11 @@ export async function TicketList({ locale, cursor, mine }: TicketListProps) {
         />
       ) : (
         <>
-          <TicketListTable tickets={page.items} data={data.value} />
-          <CursorPagination
-            pathname={ROUTES.tickets}
-            cursor={cursor}
-            nextCursor={page.nextCursor}
-            query={mine ? { mine } : {}}
-          />
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <MineFilterLinks pathname={ROUTES.tickets} mine={params.mine} />
+            <TicketSearch value={params.q} />
+          </div>
+          <TicketListTable tickets={items} total={total ?? 0} view={params} data={data.value} />
         </>
       )}
     </div>

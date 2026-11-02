@@ -36,7 +36,7 @@ export const TicketRef = objectFromSchema<TicketDto>({
     "and fields, customer and contact, desired period, headcount, budget, the " +
     "organization's own status and who answers for it (assignments).",
 });
-const TicketPageRef = pageType({ name: "TicketPage", item: TicketRef });
+const TicketPageRef = pageType({ name: "TicketPage", item: TicketRef, withTotal: true });
 const TicketExportRef = objectFromSchema<TicketExport>({
   name: "TicketExport",
   schema: TicketExportOutputSchema,

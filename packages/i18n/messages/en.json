@@ -26,7 +26,13 @@
       "selectAll": "Select all rows on the page",
       "selectRow": "Select row",
       "selected": "{count} selected",
-      "orderSaved": "Column order saved"
+      "orderSaved": "Column order saved",
+      "rowsPerPage": "Rows per page",
+      "pageOf": "Page {page} of {pageCount}",
+      "firstPage": "First page",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "lastPage": "Last page"
     },
     "yes": "Yes",
     "no": "No",
@@ -854,7 +860,11 @@
       "warnings": {
         "QUOTE_ACCEPTED_IN_EARLIER_STATUS": "The quote is accepted, but the ticket is still in an earlier status. Move the ticket or check the quote."
       }
-    }
+    },
+    "search": "Search reference, customer, contact or note",
+    "searchSubmit": "Search",
+    "noMatches": "No tickets match.",
+    "listTotal": "{count, plural, one {# ticket} other {# tickets}}"
   },
   "ticketIntake": {
     "title": "New ticket",

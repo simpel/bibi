@@ -1,9 +1,6 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
-import { pageArgs } from "../../shared/page-input";
-import { paginate } from "../../shared/paginate";
-import { subjectIdFilter } from "../assignment/subject-filter";
 import {
   draftTicketFromMessage,
   type ExtractFn,
@@ -15,12 +12,12 @@ import { createTicketFromTemplate } from "./create-from-template-operation";
 import { ticketEstimateHistory } from "./estimate-history-operation";
 import { expireTicketHolds } from "./expire-holds-operation";
 import { exportTicket } from "./export-operation";
+import { loadTicketPage } from "./list-page";
 import { TicketListInputSchema, TicketListOutputSchema } from "./list-schema";
-import { ticketListWhere } from "./list-where";
 import { previewTicketLines } from "./preview-lines-operation";
 import { TicketIdInputSchema, TicketSchema } from "./schema";
 import { ticketStatusHistory } from "./status-history-operation";
-import { loadTicket, TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
+import { loadTicket } from "./to-ticket-dto";
 import { createTicket, updateTicket } from "./write-operations";
 
 export const listTickets = defineOperation({
@@ -28,23 +25,13 @@ export const listTickets = defineOperation({
   kind: "query",
   description:
     "List the organization's tickets, newest first. Filter by customer, type, status, assignee, " +
-    "follower (assignment.list) or a window over the desired period (`from`/`to`).",
+    "follower (assignment.list) or a window over the desired period (`from`/`to`); search with " +
+    "`q` (reference, customer, contact or note) and order with `sort`/`direction`. Page with " +
+    "`cursor`, or with `page` to get numbered pages and the `total` count.",
   input: TicketListInputSchema,
   output: TicketListOutputSchema,
   permission: "ticket:read",
-  handler: async ({ input, context }) => {
-    const { assigneeId, followerId } = input;
-    const ids = await subjectIdFilter({ context, subjectType: "TICKET", assigneeId, followerId });
-    const rows = await context.db.ticket.findMany({
-      where: { ...ticketListWhere({ input }), ...ids },
-      orderBy: [{ reference: "desc" }, { id: "desc" }],
-      ...pageArgs(input),
-      include: TICKET_INCLUDE,
-    });
-    const page = paginate({ rows, limit: input.limit });
-    const items = page.items.map((row) => toTicketDto({ row }));
-    return ok({ value: { items, nextCursor: page.nextCursor } });
-  },
+  handler: async ({ input, context }) => ok({ value: await loadTicketPage({ input, context }) }),
 });
 
 export const getTicket = defineOperation({
