@@ -1,7 +1,8 @@
-import { Button, cn, Input } from "@bibi/ui";
+import { Badge, Button, cn, Input } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { CatalogItem } from "./catalog";
+import { type TypeHue, typeHues } from "./type-hue";
 import { type LineTone, TONE_CLASS } from "./use-issue-text";
 import type { ReviewModel } from "./use-review-model";
 import { useSearchAvailability } from "./use-search-availability";
@@ -23,9 +24,13 @@ export function matchItems({ items, query }: { items: CatalogItem[]; query: stri
   );
 }
 
-type ItemRowProps = Pick<ItemSearchProps, "onItem"> & { item: CatalogItem; tone?: LineTone };
+type ItemRowProps = Pick<ItemSearchProps, "onItem"> & {
+  item: CatalogItem;
+  hue: TypeHue | undefined;
+  tone?: LineTone;
+};
 
-function ItemRow({ item, tone, onItem }: ItemRowProps) {
+function ItemRow({ item, hue, tone, onItem }: ItemRowProps) {
   const t = useTranslations("ticketIntake.line");
   return (
     <li>
@@ -34,8 +39,9 @@ function ItemRow({ item, tone, onItem }: ItemRowProps) {
         className="flex w-full items-center justify-between gap-3 rounded-md px-2 py-1.5 text-left text-sm hover:bg-accent"
         onClick={() => onItem({ item })}
       >
-        <span className="min-w-0 truncate">
-          {item.name} <span className="text-muted-foreground">· {item.typeName}</span>
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="truncate">{item.name}</span>
+          {item.typeName ? <Badge hue={hue ?? 1}>{item.typeName}</Badge> : null}
         </span>
         {tone ? (
           <span className={cn("shrink-0", TONE_CLASS[tone])}>{t(`tone.${tone}`)}</span>
@@ -55,6 +61,10 @@ export function ItemSearch({ model, onItem, onFreeText }: ItemSearchProps) {
   const { items, itemsHidden } = model.data.catalog;
   const shown = matchItems({ items, query }).slice(0, SHOWN);
   const tones = useSearchAvailability({ model, items: shown });
+  const hues = useMemo(
+    () => typeHues({ typeNames: items.map(({ typeName }) => typeName) }),
+    [items],
+  );
   return (
     <div className="grid gap-3">
       <Input
@@ -67,7 +77,12 @@ export function ItemSearch({ model, onItem, onFreeText }: ItemSearchProps) {
       {itemsHidden ? <p className="text-sm text-muted-foreground">{t("itemsHidden")}</p> : null}
       <ul className="grid max-h-80 gap-1 overflow-y-auto">
         {shown.map((item) => (
-          <ItemRow key={item.id} item={item} tone={tones.get(item.id)} onItem={onItem} />
+          <ItemRow
+            key={item.id}
+            {...{ item, onItem }}
+            hue={hues.get(item.typeName)}
+            tone={tones.get(item.id)}
+          />
         ))}
       </ul>
       {shown.length === 0 && !itemsHidden ? (

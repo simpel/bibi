@@ -10,6 +10,7 @@ const meta = {
       control: "select",
       options: ["default", "secondary", "outline", "destructive", "success", "warning"],
     },
+    hue: { control: "select", options: ["none", 1, 2, 3, 4, 5] },
   },
 } satisfies Meta<typeof Badge>;
 
@@ -21,3 +22,16 @@ export const Success: Story = { args: { variant: "success", children: "Confirmed
 export const Warning: Story = { args: { variant: "warning", children: "Expires soon" } };
 export const Destructive: Story = { args: { variant: "destructive", children: "Avbokad" } };
 export const Outline: Story = { args: { variant: "outline" } };
+
+/** Category colors, e.g. one per item type. */
+export const Hues: Story = {
+  render: () => (
+    <div className="flex flex-wrap gap-2">
+      {(["Meal", "Drink", "Conference room", "Dish", "Activity"] as const).map((name, index) => (
+        <Badge key={name} hue={((index % 5) + 1) as 1 | 2 | 3 | 4 | 5}>
+          {name}
+        </Badge>
+      ))}
+    </div>
+  ),
+};
