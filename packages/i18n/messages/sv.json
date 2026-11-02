@@ -1002,6 +1002,8 @@
       "time": "Tid",
       "quantity": "Antal",
       "availability": "Tillgänglighet",
+      "cost": "Kostnad",
+      "total": "Totalt",
       "untimed": "Utan tid",
       "guests": "{count} (gäster)",
       "price": "Pris {price}",
@@ -1090,12 +1092,10 @@
       "empty": "Börja tomt"
     },
     "more": {
-      "title": "Mer",
       "assignee": "Ansvarig",
       "me": "Jag ({name})",
       "meUnnamed": "Jag",
-      "holdsUntil": "Håll till",
-      "estimatedValue": "Uppskattat värde"
+      "holdsUntil": "Håll till"
     },
     "create": {
       "create": "Skapa ärende",

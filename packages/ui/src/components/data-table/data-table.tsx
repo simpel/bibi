@@ -4,6 +4,7 @@ import { cn } from "../../lib/cn";
 import { Table } from "../table/table";
 import { DataTableBody } from "./data-table-body";
 import { DataTableDnd } from "./data-table-dnd";
+import { DataTableFooter } from "./data-table-footer";
 import { DataTableHeader } from "./data-table-header";
 import { DataTablePagination } from "./data-table-pagination";
 import type { DataTableProps } from "./data-table-props";
@@ -40,6 +41,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
               onRowClick={props.onRowClick}
               selectedRowId={props.selectedRowId}
             />
+            <DataTableFooter groups={table.getFooterGroups()} />
           </Table>
         </DataTableDnd>
       </div>

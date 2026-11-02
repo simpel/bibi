@@ -1,8 +1,10 @@
 import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import type { DraftLine } from "./draft-line";
 import { AvailabilityCell, type DraftLineRow, LineActions, LineNameCell } from "./draft-line-cells";
+import { lineCostMinor, linesTotalMinor } from "./line-cost";
 import { lineTone } from "./use-issue-text";
 
 type Column = ColumnDef<DraftLineRow>;
@@ -18,6 +20,7 @@ const lineColumns = ({ t }: { t: Translate }): Column[] => [
     header: t("line"),
     accessorFn: (row) => row.line.name,
     cell: ({ row }) => <LineNameCell row={row.original} />,
+    footer: () => t("total"),
   },
   {
     id: "time",
@@ -29,18 +32,44 @@ const lineColumns = ({ t }: { t: Translate }): Column[] => [
 
 export type UseDraftLineColumnsInput = {
   headcount: number;
+  /** The preview's lines in the table's order: the costs and their total. */
+  planned: readonly DraftLineRow["planned"][];
   availabilityHidden: boolean;
   onEdit: (input: { line: DraftLine }) => void;
 };
 
-/** Line · time · quantity · availability, then Edit (spec "Lines table"). */
+type Money = ReturnType<typeof useNumberFormat>["money"];
+
+type CostColumnInput = { t: Translate; money: Money; total: number | null };
+
+/** Each line's cost (discounts included) and the booking's total in the footer. */
+const costColumn = ({ t, money, total }: CostColumnInput): Column => ({
+  id: "cost",
+  header: t("cost"),
+  accessorFn: (row) => lineCostMinor({ planned: row.planned }) ?? -1,
+  cell: ({ row }) => {
+    const cost = lineCostMinor({ planned: row.original.planned });
+    return <span className="tabular-nums">{cost === null ? "–" : money({ minor: cost })}</span>;
+  },
+  footer: () => (
+    <span className="tabular-nums">{total === null ? "–" : money({ minor: total })}</span>
+  ),
+});
+
+/** Line · time · quantity · availability · cost, then Edit (spec "Lines table"). */
 export function useDraftLineColumns({
   headcount,
+  planned,
   availabilityHidden,
   onEdit,
 }: UseDraftLineColumnsInput): Column[] {
   const t = useTranslations("ticketIntake.lines");
   const common = useTranslations("common");
+  const { money } = useNumberFormat();
+  const known = planned.every((line) => line !== null)
+    ? planned.filter((line) => line !== null)
+    : null;
+  const total = linesTotalMinor({ planned: known });
   return useMemo<Column[]>(
     () => [
       ...lineColumns({ t }),
@@ -59,11 +88,12 @@ export function useDraftLineColumns({
         accessorFn: (row) => TONE_ORDER[lineTone({ planned: row.planned })],
         cell: ({ row }) => <AvailabilityCell row={row.original} hidden={availabilityHidden} />,
       },
+      costColumn({ t, money, total }),
       actionsColumn<DraftLineRow>({
         label: common("actions"),
         cell: (row) => <LineActions row={row} onEdit={onEdit} />,
       }),
     ],
-    [t, common, headcount, availabilityHidden, onEdit],
+    [t, common, money, total, headcount, availabilityHidden, onEdit],
   );
 }

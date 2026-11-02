@@ -6,7 +6,6 @@ export type IntakeMore = {
   assigneeId: string | null;
   /** ISO instant; null: nothing expires. */
   holdsUntil: string | null;
-  estimatedValueMinor: number | null;
 };
 
 /**
@@ -44,7 +43,7 @@ export function newReview({ lines, plannedStart, pickKey }: NewReviewInput): Int
     ticketFields: {},
     saveAsPackage: false,
     packageName: "",
-    more: { assigneeId: null, holdsUntil: null, estimatedValueMinor: null },
+    more: { assigneeId: null, holdsUntil: null },
     accepted: [],
   };
 }

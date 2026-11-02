@@ -1002,6 +1002,8 @@
       "time": "Time",
       "quantity": "Quantity",
       "availability": "Availability",
+      "cost": "Cost",
+      "total": "Total",
       "untimed": "Untimed",
       "guests": "{count} (guests)",
       "price": "Price {price}",
@@ -1090,12 +1092,10 @@
       "empty": "Start empty"
     },
     "more": {
-      "title": "More",
       "assignee": "Assignee",
       "me": "Me ({name})",
       "meUnnamed": "Me",
-      "holdsUntil": "Holds until",
-      "estimatedValue": "Estimated value"
+      "holdsUntil": "Holds until"
     },
     "create": {
       "create": "Create ticket",

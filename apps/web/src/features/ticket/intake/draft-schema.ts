@@ -43,7 +43,6 @@ const ReviewSchema = z.object({
   more: z.object({
     assigneeId: Id.nullable(),
     holdsUntil: Instant.nullable(),
-    estimatedValueMinor: Count.nullable(),
   }),
   accepted: z.array(z.string()),
 });

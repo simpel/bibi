@@ -20,6 +20,7 @@ export function DraftLinesTable({ model, onEdit }: DraftLinesTableProps) {
   const hidden = model.preview.status === "ready" && model.preview.availabilityHidden;
   const columns = useDraftLineColumns({
     headcount: model.when.guests,
+    planned: model.review.lines.map((_, index) => model.planned?.[index] ?? null),
     availabilityHidden: hidden,
     onEdit,
   });

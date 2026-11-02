@@ -1,12 +1,14 @@
 import type {
   CreateDraftLine,
   PreviewDraftLine,
+  PreviewLine,
   TicketCreateInput,
   TicketTemplateCreateInput,
 } from "@bibi/core";
 import type { DraftLine } from "./draft-line";
 import type { IntakePeriod } from "./intake-period";
 import type { IntakePick, IntakeWhen, IntakeWho } from "./intake-state";
+import { linesTotalMinor } from "./line-cost";
 import type { IntakeReview } from "./review-state";
 
 const date = ({ at }: { at: string | null }) => (at === null ? null : new Date(at));
@@ -49,8 +51,10 @@ export type ToCreateInputInput = {
   inboundMessageId?: string | null | undefined;
   /** Values were read from a message (ADR 0084): the ticket's audit says so. */
   draftedFromMessage?: boolean;
-  /** The assignee when More leaves it empty: the creating member. */
+  /** The assignee when none is chosen: the creating member. */
   userId: string | null;
+  /** The preview's lines: their total is the ticket's estimated value. */
+  planned?: readonly PreviewLine[] | null;
 };
 
 /** The one `ticket.create` call Create makes (ADR 0081): the ticket with every line. */
@@ -65,6 +69,7 @@ export function toCreateInput({
   inboundMessageId,
   draftedFromMessage = false,
   userId,
+  planned = null,
 }: ToCreateInputInput): TicketCreateInput {
   const { more } = review;
   return {
@@ -74,7 +79,7 @@ export function toCreateInput({
     estimatedHeadcount: when.guests,
     assigneeId: more.assigneeId ?? userId,
     holdsUntil: date({ at: more.holdsUntil }),
-    estimatedValueMinor: more.estimatedValueMinor,
+    estimatedValueMinor: linesTotalMinor({ planned }),
     fields: review.ticketFields,
     note: review.note.trim() === "" ? null : review.note.trim(),
     ...(pick.kind === "PACKAGE" ? { templateId: pick.templateId } : {}),

@@ -2,7 +2,6 @@ import type { EntityTypeDto } from "@bibi/core";
 import type { FieldSpec } from "@bibi/core/schemas";
 import { NONE } from "@/components/form/option-select-field";
 import { fieldsToInput, rawFields, type WithRawFields } from "@/components/typed-fields/raw-fields";
-import { minorOrNull } from "@/lib/blank";
 import { fromLocalInputValue, toLocalInputValue } from "../../occupancy/ui/local-date-time";
 import type { ReviewPatch } from "./intake-state";
 import type { IntakeReview } from "./review-state";
@@ -15,8 +14,6 @@ export type ReviewFormValues = WithRawFields & {
   assigneeId: string;
   /** `YYYY-MM-DDTHH:mm` in the organization's zone, or empty. */
   holdsUntil: string;
-  /** Whole currency units as typed. */
-  estimatedValue: string;
   saveAsPackage: boolean;
   packageName: string;
 };
@@ -28,8 +25,6 @@ export type ReviewDefaultsInput = {
   packageFields: Record<string, unknown>;
   timeZone: string;
 };
-
-const text = ({ minor }: { minor: number | null }) => (minor === null ? "" : String(minor / 100));
 
 /** The form as the review left it (a restored draft included). */
 export function reviewFormDefaults({
@@ -45,7 +40,6 @@ export function reviewFormDefaults({
     note: review.note,
     assigneeId: more.assigneeId ?? NONE,
     holdsUntil: holdsUntil ? toLocalInputValue({ date: holdsUntil, timeZone }) : "",
-    estimatedValue: text({ minor: more.estimatedValueMinor }),
     saveAsPackage: review.saveAsPackage,
     packageName: review.packageName,
     fields: rawFields({ type, stored: { ...packageFields, ...review.ticketFields } }),
@@ -61,7 +55,6 @@ export type ReviewPatchOfInput = {
 /** The review as the form now says, for the draft and the open questions. */
 export function reviewPatchOf({ values, specs, timeZone }: ReviewPatchOfInput): ReviewPatch {
   const holdsUntil = fromLocalInputValue({ value: values.holdsUntil, timeZone });
-  const estimate = minorOrNull({ value: values.estimatedValue });
   return {
     note: values.note,
     ticketTypeId: values.entityTypeId || null,
@@ -71,7 +64,6 @@ export function reviewPatchOf({ values, specs, timeZone }: ReviewPatchOfInput): 
     more: {
       assigneeId: values.assigneeId === NONE ? null : values.assigneeId,
       holdsUntil: holdsUntil?.toISOString() ?? null,
-      estimatedValueMinor: estimate !== null && Number.isFinite(estimate) ? estimate : null,
     },
   };
 }

@@ -27,6 +27,16 @@ export function TableBody({ className, ...props }: ComponentProps<"tbody">) {
   );
 }
 
+export function TableFooter({ className, ...props }: ComponentProps<"tfoot">) {
+  return (
+    <tfoot
+      data-slot="table-footer"
+      className={cn("border-t bg-muted/50 font-medium [&>tr]:last:border-b-0", className)}
+      {...props}
+    />
+  );
+}
+
 export function TableRow({ className, ...props }: ComponentProps<"tr">) {
   return (
     <tr

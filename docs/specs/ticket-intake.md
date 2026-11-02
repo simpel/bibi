@@ -79,7 +79,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
   - It fits the card: a fixed label column, the hours take the rest of the width, no sideways scrolling.
   - Pool and stock shortages are listed under it.
   - The view updates as lines change. **Open calendar** opens the full calendar in a dialog (90% of the viewport) on that day, read-only (no adding, moving or leaving), with this draft's lines over it (dashed look, the clash look where they clash). Clicking a booking opens a sheet over it with its ticket, customer, line state, line, resource, period, quantity and hold; fields the member may not read are left out.
-- **Lines table**: time, line (name, then a second row with setup, choices, needs, price override and note), quantity ("12 (guests)" or a fixed number), availability (✓, ⚠ or ✕ with the issue text), **Edit**.
+- **Lines table**: time, line (name, then a second row with setup, choices, needs, price override and note), quantity ("12 (guests)" or a fixed number), availability (✓, ⚠ or ✕ with the issue text), cost (quantity × unit price less the discount, from the preview; "–" without a price), **Edit**. A footer row shows the total of the priced lines.
 - **+ Add line** opens the line dialog empty. **Edit** opens it with the line.
 - **Notes on the booking**: a text area, becomes `Ticket.note`.
 - **One-off only**: **Also save these lines as a package**, with a name.
@@ -97,7 +97,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 | <type> tickets need <field>. | (fill the field) · Use another ticket type |
 | The new package needs a name. | (fill it) · Don't save as a package |
 
-- **More** (collapsed): assignee (default: the creating member), holds until, estimated value.
+- **Assignee** (default: the creating member) and **holds until**, always shown. The ticket's estimated value is the lines' total, not typed.
 - **Create**:
   - The label is **Create ticket**, or **Create and prebook** when lines clash. While saving it shows "Creating…" and is disabled.
   - It runs `ticket.create` with the lines, the note, `templateId` and `inboundMessageId`, and an `intakeKey`.
