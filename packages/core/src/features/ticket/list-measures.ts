@@ -1,13 +1,9 @@
 import type { Prisma } from "@bibi/db";
 import { fromZonedParts } from "../../time/zoned-time";
 import { type DateRange, dateRange, type NumberRange, numberRange } from "./list-ranges";
+import type { TICKET_EMPTY_FIELDS, TicketMeasure } from "./list-schema";
 
 type Where = Prisma.TicketWhereInput;
-
-/** Qualifiers on the ticket's own dates and numbers. */
-export const TICKET_MEASURES = ["when", "created", "guests", "budget", "holds", "no"] as const;
-
-export type TicketMeasure = (typeof TICKET_MEASURES)[number];
 
 /** The organization's zone (dates are its days, ADR 0064) and the request's instant. */
 export type MeasureEnv = { zone: string; now: Date };
@@ -69,7 +65,7 @@ const budget = ({ value }: MeasureInput): Where => {
   return range ? { budgetMinor: ints({ range, scale: 100 }) } : NOTHING;
 };
 
-const EMPTY: Record<string, Where> = {
+const EMPTY: Record<(typeof TICKET_EMPTY_FIELDS)[number], Where> = {
   assignee: {
     record: {
       assignments: {
@@ -90,7 +86,7 @@ const MEASURES: Record<TicketMeasure, (input: MeasureInput) => Where> = {
   guests,
   budget,
   holds,
-  no: ({ value }) => EMPTY[value.toLowerCase()] ?? NOTHING,
+  no: ({ value }) => EMPTY[value.toLowerCase() as keyof typeof EMPTY] ?? NOTHING,
 };
 
 export type MeasureWhereInput = MeasureInput & { key: TicketMeasure };

@@ -2,8 +2,8 @@
 
 import { Button, Form, FormControl, FormController, FormItem, FormLabel, Input } from "@bibi/ui";
 import { SearchIcon } from "lucide-react";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { type ReactNode, useEffect } from "react";
+import { type ControllerRenderProps, useForm } from "react-hook-form";
 
 export type SearchFormProps = {
   value: string | undefined;
@@ -12,19 +12,24 @@ export type SearchFormProps = {
   /** Accessible name of the submit button. */
   submitLabel: string;
   onSearch: (q: string | null) => void;
+  /** Replaces the plain text input, e.g. with one that suggests filters while typing. */
+  renderInput?: (field: SearchField) => ReactNode;
 };
 
 type SearchValues = { q: string };
+
+/** The field's react-hook-form props plus its placeholder. */
+export type SearchField = ControllerRenderProps<SearchValues, "q"> & { placeholder: string };
 
 /**
  * Free-text search of a list, applied on submit (Enter), not per keystroke, so a large list is
  * queried once. A navigation form (CLAUDE.md "Forms"): no server action and no toast.
  */
-export function SearchForm({ value, label, submitLabel, onSearch }: SearchFormProps) {
+export function SearchForm({ value, label, submitLabel, onSearch, renderInput }: SearchFormProps) {
   const form = useForm<SearchValues>({ defaultValues: { q: value ?? "" } });
   useEffect(() => form.reset({ q: value ?? "" }), [form, value]);
   return (
-    <search className="flex w-full sm:w-80">
+    <search className="flex w-full sm:w-96">
       <Form {...form}>
         <form
           className="flex flex-1 gap-2"
@@ -37,7 +42,11 @@ export function SearchForm({ value, label, submitLabel, onSearch }: SearchFormPr
               <FormItem className="flex-1">
                 <FormLabel className="sr-only">{label}</FormLabel>
                 <FormControl>
-                  <Input type="search" placeholder={label} {...field} />
+                  {renderInput ? (
+                    renderInput({ ...field, placeholder: label })
+                  ) : (
+                    <Input type="search" placeholder={label} {...field} />
+                  )}
                 </FormControl>
               </FormItem>
             )}

@@ -13,6 +13,38 @@ export const TICKET_LIST_SORTS = [
 
 export type TicketListSort = (typeof TICKET_LIST_SORTS)[number];
 
+/** Search qualifiers on names and people (`assignee:me`, `status:Lead`). */
+export const TICKET_NAME_QUALIFIERS = [
+  "assignee",
+  "follower",
+  "status",
+  "type",
+  "customer",
+  "contact",
+  "is",
+] as const;
+
+/** Search qualifiers on the ticket's own dates and numbers (`when:2026-12`, `guests:>50`). */
+export const TICKET_MEASURES = ["when", "created", "guests", "budget", "holds", "no"] as const;
+
+/** Every qualifier `ticket.list`'s `q` understands, GitHub style. */
+export const TICKET_QUALIFIERS = [...TICKET_NAME_QUALIFIERS, ...TICKET_MEASURES] as const;
+
+export type TicketQualifier = (typeof TICKET_QUALIFIERS)[number];
+export type TicketMeasure = (typeof TICKET_MEASURES)[number];
+
+/** Fixed values: `is:`, `holds:` (besides dates) and `no:`. */
+export const TICKET_IS_VALUES = ["open", "closed"] as const;
+export const TICKET_HOLDS_VALUES = ["expired", "soon"] as const;
+export const TICKET_EMPTY_FIELDS = [
+  "assignee",
+  "contact",
+  "date",
+  "guests",
+  "budget",
+  "holds",
+] as const;
+
 export const TicketListInputSchema = z.object({
   customerId: z.string().optional().describe("Only tickets of this customer"),
   entityTypeId: z.string().optional().describe("Only tickets of this type"),

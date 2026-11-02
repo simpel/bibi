@@ -865,7 +865,22 @@
     "search": "Search or filter, e.g. assignee:me status:Lead",
     "searchSubmit": "Search",
     "noMatches": "No tickets match.",
-    "listTotal": "{count, plural, one {# ticket} other {# tickets}}"
+    "listTotal": "{count, plural, one {# ticket} other {# tickets}}",
+    "qualifiers": {
+      "assignee": "who answers for it: me or a name",
+      "follower": "who follows it: me or a name",
+      "status": "the status name",
+      "type": "the ticket type",
+      "customer": "customer name contains",
+      "contact": "contact name contains",
+      "is": "open or closed",
+      "when": "desired start: 2026-12, >=2026-12-01, a..b",
+      "created": "created: 2026-10, >2026-10-01",
+      "guests": "headcount: >50, 10..40",
+      "budget": "budget in whole units: >=10000",
+      "holds": "expired, soon or a date",
+      "no": "an empty field: assignee, contact…"
+    }
   },
   "ticketIntake": {
     "title": "New ticket",

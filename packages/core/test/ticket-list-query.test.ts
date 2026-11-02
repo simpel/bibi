@@ -20,6 +20,11 @@ describe("parseTicketQuery", () => {
     ]);
   });
 
+  it("reads quoted alternatives after a comma", () => {
+    const { filters } = parseTicketQuery({ q: 'customer:"Kvarnby Design AB","Volvo Cars"' });
+    expect(filters[0]?.values).toEqual(["Kvarnby Design AB", "Volvo Cars"]);
+  });
+
   it("keeps unknown qualifiers, empty values and quoted phrases as text", () => {
     expect(parseTicketQuery({ q: 'room:12 status: "Volvo Cars" 10:30' })).toEqual({
       text: "room:12 status: Volvo Cars 10:30",

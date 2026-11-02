@@ -1,35 +1,21 @@
-import { TICKET_MEASURES } from "./list-measures";
-
-/** Qualifiers on names and people. */
-export const TICKET_NAME_QUALIFIERS = [
-  "assignee",
-  "follower",
-  "status",
-  "type",
-  "customer",
-  "contact",
-  "is",
-] as const;
-
-/** Qualifiers `ticket.list`'s `q` understands, GitHub style (`assignee:me -status:Lost`). */
-export const TICKET_QUALIFIERS = [...TICKET_NAME_QUALIFIERS, ...TICKET_MEASURES] as const;
-
-export type TicketQualifier = (typeof TICKET_QUALIFIERS)[number];
+import { TICKET_QUALIFIERS, type TicketQualifier } from "./list-schema";
 
 /** One `key:value` term: the values are alternatives (`status:Lead,Offer`); `-` negates it. */
 export type TicketFilter = { key: TicketQualifier; values: string[]; negated: boolean };
 
 export type TicketQuery = { text: string; filters: TicketFilter[] };
 
-const TOKEN = /(-)?(?:([a-z]+):)?(?:"([^"]*)"?|(\S+))/gi;
+// An optional `-`, an optional `key:`, then quoted and bare pieces (`"Volvo Cars",Lead`).
+const TOKEN = /(-)?(?:([a-z]+):)?((?:"[^"]*"?|[^\s"]+)+)/gi;
+const PIECE = /"([^"]*)"?|([^,"]+)/g;
 
 const qualifierOf = ({ key }: { key: string | undefined }) =>
   TICKET_QUALIFIERS.find((qualifier) => qualifier === key?.toLowerCase());
 
+/** A value split on commas outside quotes, quotes removed, empty pieces dropped. */
 const valuesOf = ({ raw }: { raw: string }) =>
-  raw
-    .split(",")
-    .map((value) => value.trim())
+  [...raw.matchAll(PIECE)]
+    .map(([, quoted, bare]) => (quoted ?? bare ?? "").trim())
     .filter((value) => value.length > 0);
 
 /**
@@ -39,15 +25,14 @@ const valuesOf = ({ raw }: { raw: string }) =>
 export function parseTicketQuery({ q }: { q: string | undefined }): TicketQuery {
   const words: string[] = [];
   const filters: TicketFilter[] = [];
-  for (const match of (q ?? "").matchAll(TOKEN)) {
-    const [whole, minus, key, quoted, bare] = match;
+  for (const [whole, minus, key, value = ""] of (q ?? "").matchAll(TOKEN)) {
     const qualifier = qualifierOf({ key });
-    const values = valuesOf({ raw: quoted ?? bare ?? "" });
+    const values = valuesOf({ raw: value });
     if (qualifier && values.length > 0) {
       filters.push({ key: qualifier, values, negated: minus === "-" });
-    } else if (quoted !== undefined && !key) {
-      words.push(`${minus ?? ""}${quoted}`);
-    } else if (whole.trim()) {
+    } else if (!key) {
+      words.push(`${minus ?? ""}${value.replaceAll('"', "")}`);
+    } else {
       words.push(whole.trim());
     }
   }

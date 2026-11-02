@@ -12,6 +12,7 @@ import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-a
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import type { TicketListParams } from "../lib/list-params";
+import { buildQueryCatalog } from "../lib/query-catalog";
 import { loadTicketData } from "../load-ticket-data";
 import { CreateTicketButton } from "./create-ticket-button";
 import { ExpireHoldsButton } from "./expire-holds-button";
@@ -87,7 +88,7 @@ export async function TicketList({ locale, params }: TicketListProps) {
         <>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <TicketQuickFilters q={params.q} />
-            <TicketSearch value={params.q} />
+            <TicketSearch value={params.q} catalog={buildQueryCatalog(data.value)} />
           </div>
           <TicketListTable tickets={items} total={total ?? 0} view={params} data={data.value} />
         </>

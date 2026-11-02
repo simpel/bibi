@@ -865,7 +865,22 @@
     "search": "Sök eller filtrera, t.ex. assignee:me status:Lead",
     "searchSubmit": "Sök",
     "noMatches": "Inga ärenden matchar.",
-    "listTotal": "{count, plural, one {# ärende} other {# ärenden}}"
+    "listTotal": "{count, plural, one {# ärende} other {# ärenden}}",
+    "qualifiers": {
+      "assignee": "vem som ansvarar: me eller ett namn",
+      "follower": "vem som följer: me eller ett namn",
+      "status": "statusens namn",
+      "type": "ärendetypen",
+      "customer": "kundnamnet innehåller",
+      "contact": "kontaktens namn innehåller",
+      "is": "open eller closed",
+      "when": "önskad start: 2026-12, >=2026-12-01, a..b",
+      "created": "skapat: 2026-10, >2026-10-01",
+      "guests": "antal gäster: >50, 10..40",
+      "budget": "budget i hela kronor: >=10000",
+      "holds": "expired, soon eller ett datum",
+      "no": "ett tomt fält: assignee, contact…"
+    }
   },
   "ticketIntake": {
     "title": "Nytt ärende",
