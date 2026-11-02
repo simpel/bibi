@@ -24,7 +24,7 @@ export function SearchForm({ value, label, submitLabel, onSearch }: SearchFormPr
   const form = useForm<SearchValues>({ defaultValues: { q: value ?? "" } });
   useEffect(() => form.reset({ q: value ?? "" }), [form, value]);
   return (
-    <search className="flex min-w-64 flex-1">
+    <search className="flex w-full sm:w-80">
       <Form {...form}>
         <form
           className="flex flex-1 gap-2"
