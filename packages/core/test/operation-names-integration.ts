@@ -72,6 +72,9 @@ const INBOX_NAMES = [
   "inboundMessage.submit",
 ];
 
+/** Connections to outside accounting systems (ADR 0087); callback and refresh are unregistered. */
+const CONNECTION_NAMES = ["integration.connect", "integration.disconnect", "integration.list"];
+
 /** The audit trail and the change layer that applies approved change sets (ADR 0049). */
 const CHANGE_NAMES = ["auditLog.get", "auditLog.list", "changeSet.apply"];
 
@@ -87,4 +90,5 @@ export const EXTRA_NAMES = [
   ...ORGANIZATION_NAMES,
   ...CHANGE_NAMES,
   ...INBOX_NAMES,
+  ...CONNECTION_NAMES,
 ];
