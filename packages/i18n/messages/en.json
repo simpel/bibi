@@ -57,6 +57,7 @@
     "noMatches": "No matches.",
     "datePicker": {
       "placeholder": "Pick a date",
+      "chooseDate": "Choose a date",
       "rangePlaceholder": "Pick a span",
       "clear": "Clear date",
       "presets": {
@@ -859,6 +860,8 @@
     "description": "Who asks, when and how many, then a package or a one-off. Nothing is saved until Create.",
     "fromMessage": "From {sender}'s message",
     "change": "Change",
+    "back": "Back",
+    "next": "Next",
     "who": {
       "title": "Who",
       "searchPlaceholder": "Search customers by name",
@@ -881,7 +884,7 @@
       "contact": "Contact",
       "contactIs": "Contact: {contact}",
       "otherCustomer": "Other customer",
-      "next": "Next: when"
+      "newCustomerAction": "New customer"
     },
     "when": {
       "title": "When and how many",
@@ -889,9 +892,7 @@
       "from": "From",
       "to": "To",
       "guests": "Estimated guests",
-      "zoneHint": "Times are in the organization’s time zone. A “to” before “from” ends the next day.",
-      "next": "Next: packages",
-      "backToReview": "Back to review"
+      "zoneHint": "Times are in the organization’s time zone. A “to” before “from” ends the next day."
     },
     "package": {
       "title": "Package or one-off",
@@ -912,16 +913,14 @@
       "groups": {
         "available": "Available {period} for {guests}",
         "clashes": "Not available then · clashes with other bookings",
-        "outside": "Outside your time or guest range"
+        "outside": "Outside your time or guest range",
+        "noneAvailable": "Nothing available {period} for {guests}."
       },
       "oneOff": "One-off",
-      "oneOffDescription": "Build the booking line by line.",
       "none": "No packages yet",
       "noneDescription": "Make this a one-off, or create a package to reuse.",
-      "createPackage": "Create a package",
-      "picked": "Picked: {summary}",
-      "next": "Next: review",
-      "backToReview": "Back to review"
+      "createPackage": "Create package",
+      "picked": "Picked: {summary}"
     },
     "questions": {
       "progress": "Question {number} of {total}",
@@ -1068,13 +1067,18 @@
     },
     "snapshot": {
       "title": "The day in the calendar",
-      "program": "This booking",
       "booking": "#{reference} {customer}",
       "bookingNoCustomer": "#{reference}",
       "blocked": "Blocked",
       "nextDay": "{hour} +1",
       "shortage": "{name}: {needed} needed, only {free} free that day",
-      "openCalendar": "Open calendar"
+      "openCalendar": "Open calendar",
+      "otherLines": "Other lines",
+      "calendarTitle": "The calendar that day",
+      "calendarDescription": "Read-only, with this booking's lines dashed over it. Click a booking to see it.",
+      "draftTicket": "New booking",
+      "draftState": "This booking (not created)",
+      "clashState": "This booking, clashes"
     },
     "switch": {
       "toPackage": "Lines already exist",
@@ -1107,26 +1111,19 @@
       "packageSaved": "The package has been saved."
     },
     "message": {
-      "title": "Start from a message",
-      "start": "Start from a message",
+      "title": "From a message",
+      "description": "Paste the request. The assistant reads it and fills in what it can; you check each step before Create.",
       "text": "The request",
       "read": "Read the request",
       "reading": "Reading the request…",
       "readDone": "Request read",
-      "byHand": "Fill in by hand instead",
+      "byHand": "Fill in by hand",
       "unavailable": "The assistant can't read the request right now. Fill in the steps by hand.",
-      "summaryRead": "Read by the assistant",
-      "summarySkipped": "Filled in by hand",
       "fromEmail": "from email",
       "needs": "Needs",
       "suggested": "★ Suggested from the email",
       "panel": {
         "title": "What the assistant read",
-        "hide": "Hide",
-        "show": "Show what the assistant read",
-        "field": "Field",
-        "value": "Value",
-        "quote": "From the message",
         "guessed": "Guessed",
         "notInMessage": "Not in the message"
       },
@@ -1241,7 +1238,21 @@
     "guestsHereCount": "{count, plural, one {# guest} other {# guests}} here",
     "guestsAt": "Guests: {place}",
     "lineCount": "{count, plural, one {# line} other {# lines}}",
-    "unscheduled": "Not scheduled"
+    "unscheduled": "Not scheduled",
+    "slot": {
+      "title": "Booking",
+      "description": "What is booked in this slot.",
+      "ticket": "Ticket",
+      "customer": "Customer",
+      "state": "State",
+      "line": "Line",
+      "resource": "Resource",
+      "period": "When",
+      "quantity": "Quantity",
+      "hold": "Hold",
+      "hard": "Hard (blocks)",
+      "soft": "Soft (prebooked)"
+    }
   },
   "quote": {
     "singular": "Quote",

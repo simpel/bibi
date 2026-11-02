@@ -45,19 +45,6 @@ function complete({ state, action }: CompleteInput): IntakeState {
   return { ...next, open: nextOpen({ state: next }) };
 }
 
-type DraftInput = { state: IntakeState; action: Extract<IntakeAction, { type: "applyDraft" }> };
-
-/** What was read fills steps 1–2 when complete; the first step still open takes input. */
-function withDraft({ state, action }: DraftInput): IntakeState {
-  const next = {
-    ...state,
-    who: action.who ?? state.who,
-    when: action.when ?? state.when,
-    draft: action.draft,
-  };
-  return { ...next, open: nextOpen({ state: next }) };
-}
-
 export type ReduceIntakeInput = { state: IntakeState; action: IntakeAction };
 
 /**
@@ -86,11 +73,11 @@ export function reduceIntake({ state, action }: ReduceIntakeInput): IntakeState 
       return action.state;
     case "reset":
       return initialIntake({ intakeKey: action.intakeKey });
-    case "openMessage":
-      return { ...state, open: "message" };
-    case "skipMessage":
-      return { ...state, open: nextOpen({ state }) };
     case "applyDraft":
-      return withDraft({ state, action });
+      // Prefilled, not completed: the steps start over from the read and open at step 1.
+      return {
+        ...{ ...state, who: null, when: null, pick: null, review: null },
+        ...{ draft: action.draft, open: "who" },
+      };
   }
 }

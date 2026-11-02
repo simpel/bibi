@@ -4,42 +4,43 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 
 ## The page
 - `/new/ticket`, permission `ticket:write`, opened from the create hub, the ticket list and an inbox message (`?fromMessage=<id>`).
-- **The open step is in the path**: `/new/ticket` (step 1, the start), `/new/ticket/message`, `/new/ticket/when`, `/new/ticket/package`, `/new/ticket/review`. An unknown step is not found; the older `?start=message` redirects to `/new/ticket/message`.
-  - Every step change (Next, Change, a step completed by itself, Back to review) adds a history entry without reloading the page, so the browser's Back and Forward move between steps. A step the intake cannot open yet opens the first step still missing input, and the URL follows.
+- **The open step is in the path**: `/new/ticket` (step 1, the start), `/new/ticket/when`, `/new/ticket/package`, `/new/ticket/review`. `/new/ticket/message` is step 1 with the paste dialog open (see "Reading a message"), not a step; once the dialog closes the path becomes the open step's (`?fromMessage=` kept, the dialog's path replaced, not pushed). An unknown step is not found; the older `?start=message` redirects to `/new/ticket/message`.
+  - Every step change (Next, Back, Change, a step completed by itself) adds a history entry without reloading the page, so the browser's Back and Forward move between steps. A step the intake cannot open yet opens the first step still missing input, and the URL follows.
   - A reload restores the state: past the start (or on an inbox message's intake, whose draft is its own) the local draft is restored without asking and opens the URL's step, or the first step still missing input (e.g. `/when` without a customer opens step 1).
-- One page with steps in order: 0 start from a message (optional), 1 who, 2 when and how many, 3 package or one-off, 4 review / build the booking.
-  - Only the open step takes input.
+- One page with steps in order: 1 who, 2 when and how many, 3 package or one-off, 4 review / build the booking.
+  - Only the open step takes input. Its own commands sit right on its title row (shown only while open); its **Next** (Create in step 4) sits bottom right and a ghost **Back** bottom left; the labels never change (no "Next: packages", no "Back to review"). Next goes on to the next step, or straight back to review once later steps are done. Back opens the previous step like its Change (answers kept, the URL follows); step 1 has no Back.
   - A done step collapses to a one-line summary with **Change**, which reopens it and keeps later answers.
-  - Values that came from a message say "from email".
+  - Values that came from a message say "from email" while they are still what the message said.
 - Nothing is written until **Create**, except a customer or contact created in step 1.
-- **Local draft**: the page keeps the unfinished intake in the browser, per organization and member, written on every change. On the next visit to plain `/new/ticket` the first step offers "Continue the draft for <customer> (<date>, <guests> guests)?" with Continue and Discard. A created ticket clears it.
+- **Local draft**: the page keeps the unfinished intake in the browser, per organization and member, written on every change once a customer is chosen or a message was read. On the next visit to plain `/new/ticket` the first step offers "Continue the draft for <customer> (<date>, <guests> guests)?" with Continue and Discard. A created ticket clears it. Drafts stored before the paste dialog (version 2, possibly open on the old step 0) still load, opening step 1.
 
-## 0 · Start from a message
-- Shown when opened from an inbox message, or when the person chooses "Start from a message". It is hidden when the organization has no model for `ticket.intakeDraft`.
-- A text area (prefilled from the inbox message) plus **Read the request** and **Fill in by hand instead**.
-- Reading calls `ticketDraft.fromMessage`.
-  - The result fills steps 1–2, suggests a package, and sets needs and notes, then opens step 3.
-    - Step 1 is filled only when both the customer and the contact were matched; otherwise the search starts with the company or sender. Step 2 is filled when the date, both times and the guests were read; otherwise its fields are prefilled.
-    - The wish, the notes and the needs ("Needs: Vegan × 2") start the booking note; needs per line are set in the line dialog.
-    - An inbox message left as it came is read by id, so its sender and form fields are taken as given; edited text is read as pasted. Until endpoints map their own form fields, the field names `name`, `company`, `email`, `phone`, `date`, `start`/`from`, `end`/`to` and `guests`/`headcount` are used.
-  - A panel, **What the assistant read**, lists each field with its value and its quote from the message. Guessed values are marked.
-  - The panel can be hidden.
+## Reading a message (the paste dialog)
+- The sidebar's New ticket menu has **From a message**, which opens `/new/ticket/message`: step 1 with a dialog over it. An inbox message's New ticket opens the same path with `?fromMessage=<id>`, the text area prefilled with the message. Without a model for `ticket.intakeDraft` the menu entry is hidden and the path just opens step 1.
+- The dialog: a text area for the request, **Read the request** ("Reading the request…" while it runs) and Cancel.
+- Reading calls `ticketDraft.fromMessage`. On success the dialog closes and the steps start over **prefilled, none completed**; the person walks through them with Next and can change anything:
+  - Step 1 shows the matched customer with its matched contact preselected and **Next** (no jump to step 2); without a match the search starts with the company or sender.
+  - Step 2's fields hold the date, times and guests that were read.
+  - Step 3 marks the suggested package "★ Suggested from the email" and preselects it, picked as a click would (its follow-up questions are asked).
+  - The wish, the notes and the needs ("Needs: Vegan × 2") start the booking note; needs per line are set in the line dialog.
+  - An inbox message left as it came is read by id, so its sender and form fields are taken as given; edited text is read as pasted. Until endpoints map their own form fields, the field names `name`, `company`, `email`, `phone`, `date`, `start`/`from`, `end`/`to` and `guests`/`headcount` are used.
+- **What the assistant read**: a small button by the message banner opens each field with its value and its quote from the message. Guessed values are marked.
 - Every guessed value becomes an open question in step 4.
-- If extraction fails (`UNAVAILABLE`), the page says so and continues by hand.
+- If extraction fails (`UNAVAILABLE`), the dialog says reading isn't available and offers **Fill in by hand**, which closes it.
 
 ## 1 · Who
 - **Customer, required.** A search (name) that shows only the 5 most recent customers while empty (`customer.list` with `recent`), and matches plus **+ New customer** while typing.
-- **Picking a customer** (a match, a recent one, a "looks like" suggestion or a just-created one) opens step 2 at once with its default contact. Only a customer without a contact keeps step 1 open to add one.
-- **+ New customer "<text>"**:
-  - First calls `customer.findSimilar`. A match shows "“<text>” looks like <customer>" with **Use <customer>** and **No, it is a new customer**.
-  - The new-customer form asks for name, customer type, contact name and contact email, all required. It runs `customer.create` with the nested contact and selects the result.
+- **Picking a customer** (a match, a recent one, a "looks like" suggestion or a just-created one) opens step 2 at once with its default contact. Only a customer without a contact keeps step 1 open to add one. A customer the step starts with (reopened by Change, or preselected from a message) shows its contact with **Next**.
+- **New customer** on the title row opens the new-customer form empty; **+ New customer "<text>"** in the search opens it with the name.
+  - The search's option first calls `customer.findSimilar`. A match shows "“<text>” looks like <customer>" with **Use <customer>** and **No, it is a new customer**.
+  - The new-customer form asks for name, customer type, contact name and contact email, all required. A name not checked yet (typed in the form) is checked with `customer.findSimilar` on create, showing the same "looks like" choice in the form. It runs `customer.create` with the nested contact and selects the result.
 - **Contact, required.** Defaults to the customer's only or first contact; with several, **Change** on step 1 shows a picker.
   - A customer without a contact shows "<customer> has no contact person. Add one to continue." with name and email. It runs `contact.create`.
 - **Changing the customer after step 4 exists**: lines are kept, prices are re-derived for the new customer's price list, and the review shows "Prices updated for <customer> (<price list>). Lines with a manual price keep theirs. Total changed by <diff>", which can be dismissed.
 
 ## 2 · When and how many
 - Date, from, to (times in the organization's zone, ADR 0064) and estimated guests. They become `desiredStartsAt`, `desiredEndsAt` and `estimatedHeadcount`.
-- **Next: packages**, or **Back to review** when lines exist.
+- **Next** opens step 3, or the review again when lines exist.
+- The date, times and guests sit on one line, aligned at the top whatever messages show under them. An empty date says "Choose a date".
 
 ## 3 · Package or one-off
 - `ticket.previewLines` with every active package (`templateIds`) gives each card its group and notes.
@@ -48,11 +49,12 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 
 | Group | When |
 |---|---|
-| Available <date> <from>–<to> for <guests> | No hard clash, inside guest range and requested period. Warnings allowed. Holds the **One-off** card too. |
+| Available <date> <from>–<to> for <guests> | No hard clash, inside guest range and requested period. Warnings allowed. Empty, it is one line: "Nothing available <date> <from>–<to> for <guests>." |
 | Not available then · clashes with other bookings | At least one hard clash, inside the ranges. |
 | Outside your time or guest range | Outside the guest range or past the requested end, whatever else applies. |
 
-- **A suggested package** (from a message) is marked "★ Suggested from the email".
+- **Title-row actions**: **Create package** (its create page; with `template:write`) and **One-off**, a toggle shown pressed while the one-off is picked.
+- **A suggested package** (from a message) is marked "★ Suggested from the email" and preselected.
 - **Picking a package** that needs a follow-up opens a dialog, one question at a time ("question 1 of 3"):
   1. **Guests outside the range**: "Lower/Raise the booking to <n> guests", or "Keep <n> guests (lines over capacity are flagged)".
   2. **Runs past the requested end**: "Extend the ticket to <end>", or "Keep <to> and shorten the lines in review".
@@ -63,7 +65,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 - **Switching** when lines already exist:
   - to another package asks **Replace the lines** or **Add its lines to them**;
   - to a one-off asks **Keep them and edit** or **Start empty**.
-- **No packages at all**: the step says "No packages yet" and offers One-off and Create a package.
+- **No packages at all**: the step says "No packages yet"; One-off and Create package are its title-row actions.
 
 ## 4 · Review the booking (package) / Build the booking (one-off)
 - **Header**: customer, date, guests, "nothing is saved until Create".
@@ -73,9 +75,10 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
   - An empty state ("Nothing added yet") with quick-add buttons for the most used items.
 - **Calendar snapshot**:
   - The requested day, from 08:00–20:00 or wider to cover every line (past midnight marked "+1").
-  - One row for this ticket's program, then one row per bookable resource the lines use. Each resource row shows other bookings (hard dark, soft light, labelled with ticket and customer) and this ticket's draft lines (dashed, red when they clash).
+  - One row per bookable resource the lines use, showing other bookings (hard dark, soft light, labelled with ticket and customer) and this ticket's draft lines (dashed, red when they clash); bars that overlap go on lanes of their own, and a label too long for its bar ends in "…" (full text on hover). Timed lines without a bookable resource (a buffet) share one "Other lines" row, shown only when there are any.
+  - It fits the card: a fixed label column, the hours take the rest of the width, no sideways scrolling.
   - Pool and stock shortages are listed under it.
-  - The view updates as lines change. **Open calendar** links to the full calendar on that day.
+  - The view updates as lines change. **Open calendar** opens the full calendar in a dialog (90% of the viewport) on that day, read-only (no adding, moving or leaving), with this draft's lines over it (dashed look, the clash look where they clash). Clicking a booking opens a sheet over it with its ticket, customer, line state, line, resource, period, quantity and hold; fields the member may not read are left out.
 - **Lines table**: time, line (name, then a second row with setup, choices, needs, price override and note), quantity ("12 (guests)" or a fixed number), availability (✓, ⚠ or ✕ with the issue text), **Edit**.
 - **+ Add line** opens the line dialog empty. **Edit** opens it with the line.
 - **Notes on the booking**: a text area, becomes `Ticket.note`.

@@ -7,7 +7,7 @@ import { CustomerSearch } from "./customer-search";
 import type { IntakeWho } from "./intake-state";
 import { NewCustomerForm } from "./new-customer-form";
 import { SimilarCustomers } from "./similar-customers";
-import { useWhoFlow } from "./use-who-flow";
+import type { WhoFlow } from "./use-who-flow";
 
 export type WhoStepProps = {
   who: IntakeWho | null;
@@ -16,6 +16,8 @@ export type WhoStepProps = {
   contactTypes: NamedOption[];
   /** What the customer search starts with (from an inbox message's sender), or null. */
   search?: string | null;
+  /** The customer half's state, held by the section (its New customer action drives it). */
+  flow: WhoFlow;
   onDone: (input: { who: IntakeWho }) => void;
 };
 
@@ -59,12 +61,11 @@ function ChosenCustomer(props: ChosenProps) {
 
 /**
  * Step 1: the customer (search, recent, or a new one after the duplicate check) and contact. A
- * picked customer goes straight on to step 2 with its default contact.
+ * picked customer goes straight on to step 2 with its default contact; a preselected one waits.
  */
 export function WhoStep(props: WhoStepProps) {
-  const { who, recent, customerTypes, contactTypes } = props;
-  const initial = who ? { id: who.customerId, name: who.customerName } : null;
-  const { customer, picked, mode, setMode, checking, startNew, choose } = useWhoFlow({ initial });
+  const { recent, customerTypes, contactTypes, flow } = props;
+  const { customer, picked, mode, setMode, checking, startNew, choose } = flow;
   const search = () => setMode({ kind: "search" });
   if (customer) {
     return (
@@ -78,14 +79,14 @@ export function WhoStep(props: WhoStepProps) {
   }
   if (mode.kind === "similar") {
     const { name, matches } = mode;
-    const onNew = () => setMode({ kind: "new", name });
+    const onNew = () => setMode({ kind: "new", name, checked: name });
     return <SimilarCustomers name={name} matches={matches} onUse={choose} onNew={onNew} />;
   }
   if (mode.kind === "new") {
     return (
       <NewCustomerForm
-        {...{ name: mode.name, customerTypes, contactTypes, onCancel: search }}
-        onCreated={choose}
+        {...{ name: mode.name, checkedName: mode.checked, customerTypes, contactTypes }}
+        {...{ onCancel: search, onUse: choose, onCreated: choose }}
       />
     );
   }

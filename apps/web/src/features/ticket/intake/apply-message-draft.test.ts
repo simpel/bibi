@@ -36,35 +36,45 @@ const display = {
   time: ({ instant }: { instant: Date }) => instant.toISOString().slice(11, 16),
 };
 
-describe("applyMessageDraft (ADR 0084)", () => {
-  it("fills step 2, prefills the search, suggests the package and asks about guesses", () => {
-    const result = { draft, customer: null, contact: null };
-    const applied = applyMessageDraft({ result, display, needsLabel: "Needs" });
-    expect(applied.who).toBeNull();
-    expect(applied.when).toEqual({ date: "2026-11-21", from: "15:00", to: "17:00", guests: 14 });
-    expect(applied.draft.search).toBe("Hisingen Energi");
-    expect(applied.draft.templateId).toBe("tpl1");
-    expect(applied.draft.fromMessage).toEqual(["when", "package"]);
-    expect(applied.draft.note).toBe("A wine tasting\nNeeds: Vegan × 2");
-    expect(applied.draft.guesses).toEqual([
-      { key: "end.0", field: "end", value: "16:00", step: "when" },
-    ]);
+const read = ({ matched }: { matched: boolean }) =>
+  applyMessageDraft({
+    result: matched
+      ? { draft, customer: { id: "c1", name: "HE" }, contact: { id: "p1", name: "Anna" } }
+      : { draft, customer: null, contact: null },
+    ...{ display, needsLabel: "Needs" },
   });
 
-  it("opens step 1 when no customer matched, and step 3 when it did", () => {
-    const state = initialIntake({ intakeKey: "k", fromMessage: true });
-    expect(state.open).toBe("message");
-    const without = applyMessageDraft({
-      result: { draft, customer: null, contact: null },
-      ...{ display, needsLabel: "Needs" },
+describe("applyMessageDraft (ADR 0084)", () => {
+  it("prefills step 2, the search, the package, the note, and asks about guesses", () => {
+    const applied = read({ matched: false });
+    expect(applied.who).toBeNull();
+    expect(applied.when).toEqual({ date: "2026-11-21", from: "15:00", to: "17:00", guests: "14" });
+    expect(applied.search).toBe("Hisingen Energi");
+    expect(applied.templateId).toBe("tpl1");
+    expect(applied.note).toBe("A wine tasting\nNeeds: Vegan × 2");
+    expect(applied.guesses).toEqual([{ key: "end.0", field: "end", value: "16:00", step: "when" }]);
+  });
+
+  it("preselects a matched customer and contact instead of searching", () => {
+    const applied = read({ matched: true });
+    expect(applied.who).toEqual({
+      ...{ customerId: "c1", customerName: "HE", contactId: "p1", contactName: "Anna" },
     });
-    expect(reduceIntake({ state, action: { type: "applyDraft", ...without } }).open).toBe("who");
-    const matched = applyMessageDraft({
-      result: { draft, customer: { id: "c1", name: "HE" }, contact: { id: "p1", name: "Anna" } },
-      ...{ display, needsLabel: "Needs" },
+    expect(applied.search).toBeNull();
+  });
+
+  it("prefills without completing: the steps start over at step 1", () => {
+    const who = { customerId: "c9", customerName: "Old", contactId: "p9", contactName: "Bo" };
+    const state = { ...initialIntake({ intakeKey: "k" }), who, open: "when" as const };
+    const next = reduceIntake({
+      state,
+      action: { type: "applyDraft", draft: read({ matched: true }) },
     });
-    const next = reduceIntake({ state, action: { type: "applyDraft", ...matched } });
-    expect(next.open).toBe("package");
-    expect(next.who?.contactId).toBe("p1");
+    expect(next.open).toBe("who");
+    expect(next.who).toBeNull();
+    expect(next.when).toBeNull();
+    expect(next.pick).toBeNull();
+    expect(next.draft?.who?.contactId).toBe("p1");
+    expect(next.intakeKey).toBe("k");
   });
 });

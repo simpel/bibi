@@ -3,11 +3,19 @@ import { ROUTES } from "@/lib/routes";
 import type { IntakeStep } from "./intake-state";
 
 /** The steps with a path segment of their own; step 1 (`who`) is the bare `/new/ticket`. */
-export const INTAKE_STEP_SEGMENTS = ["message", "when", "package", "review"] as const;
+export const INTAKE_STEP_SEGMENTS = ["when", "package", "review"] as const;
+
+/** `/new/ticket/message`: step 1 with the paste dialog open (ADR 0084), not a step. */
+export const PASTE_SEGMENT = "message";
 
 const StepSegmentSchema = z.enum(INTAKE_STEP_SEGMENTS);
 
 export type StepSegmentsInput = { segments: readonly string[] | undefined };
+
+/** The path opens the paste dialog: `/new/ticket/message`. */
+export function isPasteSegments({ segments }: StepSegmentsInput): boolean {
+  return segments?.length === 1 && segments[0] === PASTE_SEGMENT;
+}
 
 /**
  * The step a `/new/ticket/[[...step]]` path names: none is `who`, one known segment is that
@@ -27,7 +35,16 @@ export function intakeStepPath({ step }: { step: IntakeStep }): string {
 
 const INTAKE_PATH = /\/new\/ticket(?:\/([^/]*))?\/?$/;
 
-/** The step at the end of a pathname (with or without locale and organization), or null. */
+/** Whether a pathname is the paste dialog's `/new/ticket/message`. */
+export function isPastePath({ pathname }: { pathname: string }): boolean {
+  const match = INTAKE_PATH.exec(pathname);
+  return match?.[1] === PASTE_SEGMENT;
+}
+
+/**
+ * The step at the end of a pathname (with or without locale and organization), or null; the
+ * paste dialog's path names no step.
+ */
 export function stepFromPathname({ pathname }: { pathname: string }): IntakeStep | null {
   const match = INTAKE_PATH.exec(pathname);
   if (!match) return null;

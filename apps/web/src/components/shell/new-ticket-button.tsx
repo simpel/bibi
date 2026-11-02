@@ -7,8 +7,8 @@ import {
 } from "@bibi/ui";
 import { ChevronDownIcon, MailIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { intakeStepPath } from "@/features/ticket/intake/intake-path";
 import { canPermission } from "@/lib/can";
+import { TICKET_FROM_MESSAGE_ROUTE } from "@/lib/inbox-routes";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import type { ShellAccess } from "./shell-types";
@@ -16,8 +16,9 @@ import type { ShellAccess } from "./shell-types";
 export type NewTicketButtonProps = { access: ShellAccess };
 
 /**
- * The sidebar's primary action: the ticket intake (ADR 0081), with "From a message" (step 0,
- * ADR 0084) in its menu when drafting has a model. Hidden without `ticket:write`.
+ * The sidebar's primary action: the ticket intake (ADR 0081), with "From a message" (the intake
+ * with its paste dialog open, ADR 0084) in its menu when drafting has a model. Hidden without
+ * `ticket:write`.
  */
 export function NewTicketButton({ access }: NewTicketButtonProps) {
   const t = useTranslations("nav");
@@ -42,7 +43,7 @@ export function NewTicketButton({ access }: NewTicketButtonProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <Link href={intakeStepPath({ step: "message" })}>
+            <Link href={TICKET_FROM_MESSAGE_ROUTE}>
               <MailIcon />
               {t("newTicketFromMessage")}
             </Link>

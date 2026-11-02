@@ -53,7 +53,7 @@ export function AddContactForm(props: AddContactFormProps) {
     <Form {...form}>
       <form className="grid gap-4 rounded-md border p-4" onSubmit={submit} noValidate>
         <p className="text-sm">{t("noContact", { customer: props.customer.name })}</p>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid items-start gap-4 sm:grid-cols-2">
           <TextField form={form} name="name" label={t("contactName")} required />
           <TextField form={form} name="email" label={t("contactEmail")} type="email" required />
           {props.contactTypes.length > 1 ? (

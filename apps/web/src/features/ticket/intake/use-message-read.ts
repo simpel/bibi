@@ -13,9 +13,9 @@ import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 import { draftFromMessageAction } from "../draft-actions";
-import { type AppliedDraft, applyMessageDraft } from "./apply-message-draft";
+import { applyMessageDraft } from "./apply-message-draft";
 import type { IntakeMessage } from "./intake-message";
-import type { DraftDisplay } from "./message-draft";
+import type { DraftDisplay, MessageDraft } from "./message-draft";
 
 export type MessageFormValues = { text: string };
 
@@ -40,16 +40,15 @@ function useDraftDisplay(): DraftDisplay {
 
 export type UseMessageReadInput = {
   message: IntakeMessage | null;
-  onRead: (input: AppliedDraft) => void;
-  onUnavailable: () => void;
+  onRead: (input: { draft: MessageDraft }) => void;
 };
 
 /**
- * Step 0's form: "Read the request" runs `ticketDraft.fromMessage` (ADR 0084). An inbox message
- * left as it came is read by id, so its sender and form fields count as given; edited text is
- * read as pasted. UNAVAILABLE says so and continues by hand.
+ * The paste dialog's form: "Read the request" runs `ticketDraft.fromMessage` (ADR 0084). An inbox
+ * message left as it came is read by id, so its sender and form fields count as given; edited
+ * text is read as pasted. UNAVAILABLE says so, and the dialog offers to fill in by hand.
  */
-export function useMessageRead({ message, onRead, onUnavailable }: UseMessageReadInput) {
+export function useMessageRead({ message, onRead }: UseMessageReadInput) {
   const t = useTranslations("ticketIntake.message");
   const display = useDraftDisplay();
   const [unavailable, setUnavailable] = useState(false);
@@ -64,12 +63,8 @@ export function useMessageRead({ message, onRead, onUnavailable }: UseMessageRea
     action: ({ values }) => draftFromMessageAction({ input: asInput({ text: values.text ?? "" }) }),
     messages: { pending: t("reading"), success: t("readDone") },
     onSuccess: ({ value }) =>
-      onRead(applyMessageDraft({ result: value, display, needsLabel: t("needs") })),
-    onError: ({ error }) => {
-      if (error.code !== "UNAVAILABLE") return;
-      setUnavailable(true);
-      onUnavailable();
-    },
+      onRead({ draft: applyMessageDraft({ result: value, display, needsLabel: t("needs") }) }),
+    onError: ({ error }) => setUnavailable(error.code === "UNAVAILABLE"),
   });
   return { form, submit, pending, unavailable };
 }

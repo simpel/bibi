@@ -50,6 +50,13 @@ const ReviewSchema = z.object({
 
 const Step = z.enum(["who", "when", "package"]);
 
+const WhoSchema = z.object({
+  customerId: Id,
+  customerName: z.string(),
+  contactId: Id,
+  contactName: z.string(),
+});
+
 /** What a read message left on the intake (ADR 0084, `message-draft.ts`). */
 const MessageDraftSchema = z.object({
   read: z.array(
@@ -63,21 +70,28 @@ const MessageDraftSchema = z.object({
   guesses: z.array(
     z.object({ key: z.string(), field: z.string(), value: z.string(), step: Step.nullable() }),
   ),
-  fromMessage: z.array(Step),
+  // Version 2 had no preselection (it filled `who` instead) and a `fromMessage` list, dropped.
+  who: WhoSchema.nullable().default(null),
   templateId: Id.nullable(),
   search: z.string().nullable(),
   note: z.string(),
   when: z.object({ date: z.string(), from: z.string(), to: z.string(), guests: z.string() }),
 });
 
-/** What a stored draft must look like; anything else (an older shape, edited storage) is dropped. */
+/** The version `serializeDraft` writes; 2 is still read (see `open`). */
+export const DRAFT_VERSION = 3;
+
+/**
+ * What a stored draft must look like; anything else (an older shape, edited storage) is dropped.
+ * Version 2 could be open on step 0 (`message`), which is now a dialog: it opens step 1.
+ */
 export const DraftSchema = z.object({
-  version: z.literal(2),
+  version: z.union([z.literal(2), z.literal(DRAFT_VERSION)]),
   state: z.object({
-    open: z.enum(["message", "who", "when", "package", "review"]),
-    who: z
-      .object({ customerId: Id, customerName: z.string(), contactId: Id, contactName: z.string() })
-      .nullable(),
+    open: z
+      .enum(["message", "who", "when", "package", "review"])
+      .transform((open) => (open === "message" ? "who" : open)),
+    who: WhoSchema.nullable(),
     when: z.object({ date: PlainDateStringSchema, from: Time, to: Time, guests: Count }).nullable(),
     pick: z
       .discriminatedUnion("kind", [

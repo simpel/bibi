@@ -7,13 +7,16 @@ import {
   fillWhen,
   INTAKE_PATH,
   pickCustomer,
+  pickOneOff,
   pickPackage,
+  readRequest,
+  startNewCustomer,
 } from "./intake-steps";
 import { signUpWithOrganization } from "./steps";
 
 // The ticket intake (ADR 0081, 0084, 0085) end to end. Data comes from REST calls in a fresh
 // organization (`intake-fixtures.ts`), as in the other specs; the demo seed shows the same flows
-// by hand. Step 0 reads with the scripted draft model (`E2E_MOCK_MODEL`, ADR 0084).
+// by hand. The paste dialog reads with the scripted draft model (`E2E_MOCK_MODEL`, ADR 0084).
 
 test("flow A: a package for a seeded customer, review and Create", async ({ page }) => {
   await signUpWithOrganization({ page, name: "Intake A AB" });
@@ -50,19 +53,19 @@ test("flow B: a one-off for a new customer that looks like an existing one", asy
   await setUpIntake({ page });
   await gotoApp({ page, path: INTAKE_PATH, locale: "en" });
 
-  await page.getByPlaceholder("Search customers by name").fill("KVARNBY DESIGN");
-  await page.getByRole("option", { name: /New customer/ }).click();
-  await expect(page.getByText(/looks like Kvarnby Design AB/)).toBeVisible();
-  await page.getByRole("button", { name: "No, it is a new customer" }).click();
+  // New customer from the title row: the name is checked for duplicates when it creates.
+  await startNewCustomer({ page });
+  await page.getByLabel(/^Customer name/).fill("KVARNBY DESIGN");
   await page.getByLabel(/^Contact name/).fill("Per Lind");
   await page.getByLabel(/^Contact email/).fill("per.lind@kvarnby-design.test");
   await page.getByRole("button", { name: "Create customer" }).click();
+  await expect(page.getByText(/looks like Kvarnby Design AB/)).toBeVisible();
+  await page.getByRole("button", { name: "No, it is a new customer" }).click();
   // Created with its contact: step 2 opens at once.
   await expectStep({ page, step: "when" });
 
   await fillWhen({ page, from: "09:00", to: "12:00", guests: 6 });
-  await page.getByRole("button", { name: /^One-off/ }).click();
-  await page.getByRole("button", { name: "Next: review" }).click();
+  await pickOneOff({ page });
 
   // No lines yet: Create waits for the answer, and adding a line answers it.
   await expect(page.getByText("There are no lines.")).toBeVisible();
@@ -90,14 +93,25 @@ test("flow C: from an inbox message, read by the assistant, checked and created"
   await page.getByRole("link", { name: subject }).click();
   await page.getByRole("link", { name: "New ticket from this message" }).click();
   await expect(page).toHaveURL(/\/new\/ticket\/message\?fromMessage=/);
+  await readRequest({ page });
+  await expect(page).toHaveURL(/\/new\/ticket\?fromMessage=/);
 
-  await page.getByRole("button", { name: "Read the request" }).click();
-  await expect(page.getByText("What the assistant read")).toBeVisible();
+  // What was read is one click away; nothing was completed by reading.
+  await page.getByRole("button", { name: "What the assistant read" }).click();
   await expect(page.getByText("14 people").first()).toBeVisible();
+  await page.keyboard.press("Escape");
 
-  // The customer, the contact and the time were read; the end time was guessed.
-  await page.getByRole("button", { name: new RegExp(PACKAGE) }).click();
-  await page.getByRole("button", { name: "Next: review" }).click();
+  // Step 1 shows the matched customer and contact and waits for Next.
+  await expect(page.getByText(CUSTOMER).first()).toBeVisible();
+  await expect(page.getByText(/Linnea Kvist/).first()).toBeVisible();
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+  await expectStep({ page, step: "when" });
+  // Step 2 is prefilled from the message; the suggested package is preselected in step 3.
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+  await expectStep({ page, step: "package" });
+  await expect(page.getByText("★ Suggested from the email")).toBeVisible();
+  await expect(page.getByText(/^Picked:/)).toBeVisible();
+  await page.getByRole("button", { name: "Next", exact: true }).click();
   await expect(page.getByText(/The email doesn't say the end time/)).toBeVisible();
   await expect(page.getByRole("button", { name: /^Answer 1 question first$/ })).toBeDisabled();
   await page.getByRole("button", { name: /^Keep / }).click();

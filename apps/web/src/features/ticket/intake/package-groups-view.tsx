@@ -1,5 +1,4 @@
 import type { PlanGroup, TicketPreviewLines } from "@bibi/core";
-import { ChoiceCard } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { IntakePick } from "./intake-state";
 import { PackageCard } from "./package-card";
@@ -8,22 +7,24 @@ import { groupPackages, type PackageCardData, type PackageOption } from "./packa
 export type PackageGroupsViewProps = {
   options: PackageOption[];
   preview: TicketPreviewLines;
-  /** The first group's heading, e.g. "Available 20 Nov 09:00–12:00 for 12". */
-  availableHeading: string;
+  /** The requested period and guests, e.g. "20 Nov 09:00–12:00" and 12, for the first group. */
+  period: string;
   headcount: number;
   pick: IntakePick | null;
   onPackage: (input: { card: PackageCardData }) => void;
-  onOneOff: () => void;
   /** The package a read message suggests (ADR 0084). */
   suggestedId?: string | null;
 };
 
 const GRID = "grid gap-3 sm:grid-cols-2 lg:grid-cols-3";
 
-/** Step 3's groups (spec table): the first always shows and holds the One-off card. */
+/**
+ * Step 3's groups (spec table), each hidden when empty; an empty first group says "Nothing
+ * available then" instead of its heading. One-off is a title-row action, not a card.
+ */
 export function PackageGroupsView(props: PackageGroupsViewProps) {
   const t = useTranslations("ticketIntake.package");
-  const { options, preview, headcount, pick, onPackage, onOneOff } = props;
+  const { options, preview, period, headcount, pick, onPackage } = props;
   const groups = groupPackages({ options, entries: preview.entries });
   const picked = pick?.kind === "PACKAGE" ? pick.templateId : null;
   const cards = ({ group }: { group: PlanGroup }) =>
@@ -38,19 +39,19 @@ export function PackageGroupsView(props: PackageGroupsViewProps) {
         onPick={() => onPackage({ card })}
       />
     ));
-  const headings = { CLASHES: t("groups.clashes"), OUTSIDE_RANGE: t("groups.outside") };
+  const headings = {
+    AVAILABLE: t("groups.available", { period, guests: headcount }),
+    CLASHES: t("groups.clashes"),
+    OUTSIDE_RANGE: t("groups.outside"),
+  };
   return (
     <div className="grid gap-5">
-      <section className="grid gap-2">
-        <h3 className="text-sm font-semibold">{props.availableHeading}</h3>
-        <div className={GRID}>
-          {cards({ group: "AVAILABLE" })}
-          <ChoiceCard title={t("oneOff")} selected={pick?.kind === "ONE_OFF"} onClick={onOneOff}>
-            <span className="text-muted-foreground">{t("oneOffDescription")}</span>
-          </ChoiceCard>
-        </div>
-      </section>
-      {(["CLASHES", "OUTSIDE_RANGE"] as const).map((group) =>
+      {groups.AVAILABLE.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          {t("groups.noneAvailable", { period, guests: headcount })}
+        </p>
+      ) : null}
+      {(["AVAILABLE", "CLASHES", "OUTSIDE_RANGE"] as const).map((group) =>
         groups[group].length === 0 ? null : (
           <section key={group} className="grid gap-2">
             <h3 className="text-sm font-semibold">{headings[group]}</h3>

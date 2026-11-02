@@ -26,7 +26,7 @@ export function TicketTypeFields({ form, catalog, type, oneOff }: TicketTypeFiel
   const choose = oneOff && catalog.ticketTypes.length > 1;
   if (!choose && !required?.fields.length) return null;
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid items-start gap-4 sm:grid-cols-2">
       {choose ? (
         <TypeSelectField
           control={form.control}

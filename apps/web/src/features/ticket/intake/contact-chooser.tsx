@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
   Skeleton,
+  StepSectionFooter,
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
@@ -76,10 +77,11 @@ function useContactChoice({ customer, initialContactId, onDone, autoAdvance }: C
 
 /**
  * Step 1's contact: the only or first one by default, a picker with several, a form with none.
- * A just-picked customer goes on with the default at once; Change shows the picker.
+ * A just-picked customer goes on with the default at once; one reopened by Change or preselected
+ * from a message shows the picker with Next (bottom right).
  */
 export function ContactChooser({ autoAdvance = false, ...props }: ContactChooserProps) {
-  const t = useTranslations("ticketIntake.who");
+  const intake = useTranslations("ticketIntake");
   const { state, added, contact, setPicked, advancing } = useContactChoice({
     ...props,
     autoAdvance,
@@ -93,14 +95,17 @@ export function ContactChooser({ autoAdvance = false, ...props }: ContactChooser
   return (
     <div className="grid gap-4">
       <ContactPicker contacts={state.contacts} value={contact?.id ?? ""} onChange={setPicked} />
-      <Button
-        type="button"
-        className="justify-self-start"
-        disabled={!contact}
-        onClick={() => contact && props.onDone({ contact })}
-      >
-        {t("next")}
-      </Button>
+      <StepSectionFooter
+        end={
+          <Button
+            type="button"
+            disabled={!contact}
+            onClick={() => contact && props.onDone({ contact })}
+          >
+            {intake("next")}
+          </Button>
+        }
+      />
     </div>
   );
 }

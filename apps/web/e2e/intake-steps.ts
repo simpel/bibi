@@ -15,6 +15,30 @@ export async function pickCustomer({
   await expect(page.getByText(/Linnea Kvist/).first()).toBeVisible();
 }
 
+/** Step 1's title-row New customer: the form, checked for duplicates when it creates. */
+export async function startNewCustomer({ page }: PageInput) {
+  await page.getByRole("button", { name: "New customer", exact: true }).click();
+}
+
+/** Step 3's title-row One-off (a pressed toggle once picked), then on to review. */
+export async function pickOneOff({ page }: PageInput) {
+  await page.getByRole("button", { name: "One-off", exact: true }).click();
+  await expect(page.getByRole("button", { name: "One-off", exact: true })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+}
+
+/** The paste dialog (`/new/ticket/message`): Read the request; it closes on step 1. */
+export async function readRequest({ page }: PageInput) {
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("heading", { name: "From a message" })).toBeVisible();
+  await dialog.getByRole("button", { name: "Read the request" }).click();
+  await expect(dialog).toHaveCount(0, { timeout: 20_000 });
+  await expect(page).toHaveURL(/\/new\/ticket(\?.*)?$/);
+}
+
 /** The open step is in the path: `/new/ticket/<step>` (step 1 is the bare `/new/ticket`). */
 export async function expectStep({ page, step }: PageInput & { step: string }) {
   await expect(page).toHaveURL(new RegExp(`/new/ticket/${step}(\\?.*)?$`));
@@ -37,14 +61,14 @@ export async function fillWhen({
   await page.getByLabel(/^From\s?\*?$/).fill(from);
   await page.getByLabel(/^To\s?\*?$/).fill(to);
   await page.getByLabel(/^Estimated guests/).fill(String(guests));
-  await page.getByRole("button", { name: "Next: packages" }).click();
+  await page.getByRole("button", { name: "Next", exact: true }).click();
 }
 
 /** Step 3: a package card by name, then on to review. */
 export async function pickPackage({ page, name }: PageInput & { name: string }) {
   await page.getByRole("button", { name: new RegExp(name) }).click();
   await expect(page.getByText(/^Picked:/)).toBeVisible();
-  await page.getByRole("button", { name: "Next: review" }).click();
+  await page.getByRole("button", { name: "Next", exact: true }).click();
 }
 
 /** Create, then the ticket page opens (a ticket id in the path). */

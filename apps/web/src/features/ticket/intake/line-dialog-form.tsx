@@ -33,7 +33,7 @@ function TimeFields({ form, date, timeZone }: TimesProps) {
   const dates = useDateTimeFormat();
   const day = dates.date({ instant: new Date(`${date}T12:00:00Z`), timeZone: "UTC" });
   return (
-    <div className="grid gap-4 sm:grid-cols-3">
+    <div className="grid items-start gap-4 sm:grid-cols-3">
       <div className="grid gap-2 text-sm">
         <span className="font-medium">{t("date")}</span>
         <span className="text-muted-foreground" title={timeZone}>

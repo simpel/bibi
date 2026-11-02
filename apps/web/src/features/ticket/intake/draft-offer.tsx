@@ -16,7 +16,9 @@ export function DraftOffer({ draft, onContinue, onDiscard }: DraftOfferProps) {
   const t = useTranslations("ticketIntake.draft");
   const dates = useDateTimeFormat();
   const timeZone = useOrganizationTimeZone();
-  const customer = draft.who?.customerName ?? "";
+  // A read message not yet walked through names the customer it matched or searches for.
+  const customer =
+    draft.who?.customerName ?? draft.draft?.who?.customerName ?? draft.draft?.search ?? "";
   const question = draft.when
     ? t("offerWithDate", {
         customer,

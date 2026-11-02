@@ -36,6 +36,23 @@ describe("intake draft", () => {
     expect(parseDraft({ text: serializeDraft({ state: reviewed }) })).toEqual(reviewed);
   });
 
+  it("reads a version 2 draft, opening step 1 for the old step 0", () => {
+    const old = { ...state, open: "message" };
+    expect(parseDraft({ text: JSON.stringify({ version: 2, state: old }) })).toEqual({
+      ...state,
+      open: "who",
+    });
+  });
+
+  it("keeps a read message before a customer is chosen", () => {
+    const draft = {
+      ...{ read: [], guesses: [], who: null, templateId: null, search: "Volvo", note: "" },
+      when: { date: "", from: "", to: "", guests: "" },
+    };
+    const read = { ...initialIntake({ intakeKey: "k" }), draft };
+    expect(parseDraft({ text: serializeDraft({ state: read }) })).toEqual(read);
+  });
+
   it("drops empty, broken and foreign drafts", () => {
     expect(parseDraft({ text: null })).toBeNull();
     expect(parseDraft({ text: "{not json" })).toBeNull();

@@ -1,0 +1,44 @@
+import type { PreviewLine } from "@bibi/core";
+import type { AssetBooking, CalendarState } from "@bibi/ui";
+import { daySegments } from "../../calendar/day-segments";
+import type { DraftLine } from "./draft-line";
+
+export type DraftBookingsInput = {
+  lines: readonly DraftLine[];
+  /** The draft's preview lines in the same order; null while none is ready. */
+  planned: readonly PreviewLine[] | null;
+  /** The items the calendar has rows for. */
+  assetIds: ReadonlySet<string>;
+  timeZone: string;
+  /** How this ticket's lines look, and how they look where they clash. */
+  draft: CalendarState;
+  clash: CalendarState;
+  /** "New booking": what the card calls the ticket that is not created yet. */
+  ticket: string;
+};
+
+/**
+ * This intake's timed lines on calendar rows (the calendar dialog): one booking per day they
+ * touch, on their item, in the draft's look (the clash look where the preview finds one).
+ */
+export function draftBookings({
+  lines,
+  planned,
+  assetIds,
+  timeZone,
+  ...look
+}: DraftBookingsInput): AssetBooking[] {
+  return lines.flatMap((line, index) => {
+    const { itemId, startsAt, endsAt } = line;
+    if (!itemId || !startsAt || !endsAt || !assetIds.has(itemId)) return [];
+    const clashes = planned?.[index]?.issues.some(({ kind }) => kind === "HARD_CLASH") ?? false;
+    const range = { startsAt: new Date(startsAt), endsAt: new Date(endsAt), timeZone };
+    return daySegments(range).map((segment) => ({
+      ...{ id: `draft-${line.key}:${segment.date}`, assetId: itemId, date: segment.date },
+      ...{ name: line.name, type: "", place: null, start: segment.start, end: segment.end },
+      ...{ setupMinutes: 0, teardownMinutes: 0, quantity: line.quantity ?? 1 },
+      ...{ ticket: look.ticket, customer: null },
+      state: clashes ? look.clash : look.draft,
+    }));
+  });
+}

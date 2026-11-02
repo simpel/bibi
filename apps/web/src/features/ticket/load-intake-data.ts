@@ -8,7 +8,7 @@ import {
   type TicketTemplateDto,
 } from "@bibi/core";
 import type { NamedOption } from "@/components/form/named-option";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { runOperation } from "@/server/run-operation";
 import { getSessionState } from "@/server/session";
 import type { CustomerOption } from "../customer/actions";
@@ -25,6 +25,8 @@ export type IntakeData = {
   contactTypes: NamedOption[];
   /** Every active package, for step 3; empty without `template:read`. */
   packages: PackageOption[];
+  /** `template:write`: step 3 offers Create package. */
+  canCreatePackage: boolean;
   /** Where this member's draft for this organization is kept in the browser. */
   draftKey: string;
   /** Items, types, need values and members for step 4 and the line dialog. */
@@ -74,6 +76,7 @@ export async function loadIntakeData(): Promise<Result<IntakeData>> {
       packages: itemsOr({ result: templates })
         .filter(({ status }) => status === "ACTIVE")
         .map((template) => toPackage({ template })),
+      canCreatePackage: can({ abilities, permission: "template:write" }),
       draftKey: draftKey({ organizationId, userId: abilities.userId ?? "" }),
       catalog: catalog.value,
     },

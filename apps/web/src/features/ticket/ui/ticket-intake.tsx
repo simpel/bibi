@@ -14,7 +14,7 @@ export type TicketIntakeProps = {
   locale: Locale;
   /** `?fromMessage=<id>`: the inbox message the ticket is made from (ADR 0085). */
   fromMessage?: string | undefined;
-  /** The step in the path (`/new/ticket/<step>`); `who` for the bare `/new/ticket`. */
+  /** The step in the path (`/new/ticket/<step>`); `who` for `/new/ticket` and `/message`. */
   step: IntakeStep;
 };
 
@@ -24,7 +24,7 @@ export async function TicketIntake({ locale, fromMessage, step }: TicketIntakePr
   const [data, message, draftEnabled] = await Promise.all([
     loadIntakeData(),
     loadIntakeMessage({ id: fromMessage }),
-    // Step 0 is hidden while drafting has no model (ADR 0084).
+    // The paste dialog opens only while drafting has a model (ADR 0084).
     hasDraftModel(),
   ]);
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;

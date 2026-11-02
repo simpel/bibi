@@ -15,9 +15,41 @@ type Story = StoryObj<typeof meta>;
 
 export const Open: Story = {
   render: (args) => (
-    <StepSection {...args} className="w-[32rem]">
+    <StepSection
+      {...args}
+      className="w-[32rem]"
+      footerEnd={<Button type="button">Next: when</Button>}
+    >
       <Input placeholder="Search customers" />
-      <Button className="justify-self-start">Next</Button>
+    </StepSection>
+  ),
+};
+
+/** Title-row actions (right, open only) and the footer: a ghost Back left, Next right. */
+export const WithActionsAndFooter: Story = {
+  args: { number: 3, title: "Package or one-off" },
+  render: (args) => (
+    <StepSection
+      {...args}
+      className="w-[40rem]"
+      actions={
+        <>
+          <Button type="button" variant="outline" size="sm">
+            Create package
+          </Button>
+          <Button type="button" variant="secondary" size="sm" aria-pressed>
+            One-off
+          </Button>
+        </>
+      }
+      footerStart={
+        <Button type="button" variant="ghost">
+          Back
+        </Button>
+      }
+      footerEnd={<Button type="button">Next: review</Button>}
+    >
+      <Input placeholder="Packages" />
     </StepSection>
   ),
 };

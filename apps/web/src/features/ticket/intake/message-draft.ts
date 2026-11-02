@@ -1,5 +1,5 @@
 import type { DraftText, TicketDraft } from "@bibi/core";
-import type { InputStep } from "./intake-state";
+import type { InputStep, IntakeWho } from "./intake-state";
 import type { GuessedValue } from "./open-questions";
 import type { WhenFormValues } from "./when-form-schema";
 
@@ -18,8 +18,8 @@ export type MessageDraft = {
   read: ReadField[];
   /** Guessed values: each is an open question until kept or changed. */
   guesses: GuessedValue[];
-  /** Steps whose values came from the message ("from email"). */
-  fromMessage: InputStep[];
+  /** The matched customer and contact, preselected in step 1 (not chosen until Next). */
+  who: IntakeWho | null;
   /** The suggested package (★ on its card). */
   templateId: string | null;
   /** Step 1's search when no customer was matched. */

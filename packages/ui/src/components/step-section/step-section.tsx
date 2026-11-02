@@ -3,6 +3,7 @@ import { CheckIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "../../lib/cn";
 import { Button } from "../button/button";
+import { StepSectionFooter } from "./step-section-footer";
 
 export const stepSectionVariants = cva(
   "grid gap-4 rounded-lg border bg-card p-4 transition-colors",
@@ -44,14 +45,21 @@ export type StepSectionProps = Omit<ComponentProps<"section">, "title"> &
     /** Label of the button that reopens a done step (localised by the caller). */
     changeLabel?: string;
     onChangeStep?: () => void;
+    /** The step's own commands, right on the title row; shown only while the step is open. */
+    actions?: ReactNode;
+    /** Bottom left while open, e.g. a ghost Back. */
+    footerStart?: ReactNode;
+    /** Bottom right while open, e.g. Next. */
+    footerEnd?: ReactNode;
   };
 
 type StepHeaderProps = Pick<
   StepSectionProps,
-  "number" | "title" | "summary" | "changeLabel" | "onChangeStep"
+  "number" | "title" | "summary" | "changeLabel" | "onChangeStep" | "actions"
 > & { state: StepSectionState };
 
-function StepHeader({ number, title, summary, changeLabel, onChangeStep, state }: StepHeaderProps) {
+function StepHeader(props: StepHeaderProps) {
+  const { number, title, summary, changeLabel, onChangeStep, actions, state } = props;
   const done = state === "done";
   return (
     <div className="flex min-w-0 items-center gap-3">
@@ -66,6 +74,11 @@ function StepHeader({ number, title, summary, changeLabel, onChangeStep, state }
           </p>
         ) : null}
       </div>
+      {state === "open" && actions ? (
+        <div data-slot="step-section-actions" className="flex shrink-0 flex-wrap gap-2">
+          {actions}
+        </div>
+      ) : null}
       {done && changeLabel && onChangeStep ? (
         <Button type="button" variant="ghost" size="sm" onClick={onChangeStep}>
           {changeLabel}
@@ -77,7 +90,8 @@ function StepHeader({ number, title, summary, changeLabel, onChangeStep, state }
 
 /**
  * One step of a single-page flow: open (takes input), done (a one-line summary with Change) or
- * locked (not reached yet). Only an open step renders its children.
+ * locked (not reached yet). Only an open step renders its children, its title-row `actions` and
+ * its footer (Back left, Next right).
  */
 export function StepSection({
   className,
@@ -87,10 +101,14 @@ export function StepSection({
   summary,
   changeLabel,
   onChangeStep,
+  actions,
+  footerStart,
+  footerEnd,
   children,
   ...props
 }: StepSectionProps) {
   const current: StepSectionState = state ?? "open";
+  const open = current === "open";
   return (
     <section
       data-slot="step-section"
@@ -99,8 +117,12 @@ export function StepSection({
       className={cn(stepSectionVariants({ state: current }), className)}
       {...props}
     >
-      <StepHeader {...{ number, title, summary, changeLabel, onChangeStep }} state={current} />
-      {current === "open" ? <div className="grid gap-4">{children}</div> : null}
+      <StepHeader
+        {...{ number, title, summary, changeLabel, onChangeStep, actions }}
+        state={current}
+      />
+      {open ? <div className="grid gap-4">{children}</div> : null}
+      {open ? <StepSectionFooter start={footerStart} end={footerEnd} /> : null}
     </section>
   );
 }

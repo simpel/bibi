@@ -16,9 +16,15 @@ export function FormDescription({ className, ...props }: ComponentProps<"p">) {
   );
 }
 
-export function FormMessage({ className, ...props }: ComponentProps<"p">) {
+export type FormMessageProps = ComponentProps<"p"> & {
+  /** Shown instead of the error's own text while there is an error (e.g. for an empty field). */
+  errorText?: string | undefined;
+};
+
+/** The field's error under it, else its children (a hint). */
+export function FormMessage({ className, errorText, ...props }: FormMessageProps) {
   const { error, formMessageId } = useFormField();
-  const body = error ? String(error.message ?? "") : props.children;
+  const body = error ? (errorText ?? String(error.message ?? "")) : props.children;
   if (!body) return null;
   return (
     <p

@@ -40,7 +40,7 @@ function PriceFields({ form, item }: Omit<LineItemFieldsProps, "quantity">) {
   if (item && !hasCapability({ item, capability: "PRICED" })) return null;
   const list = item?.priceMinor ?? null;
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid items-start gap-4 sm:grid-cols-2">
       <TextField
         form={form}
         name="unitPrice"

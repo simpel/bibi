@@ -32,7 +32,8 @@ export function useIntakeDraft({ key, state, autoRestore, onRestore }: UseIntake
     else setOffer(stored);
     setLoaded(true);
   }, [key, autoRestore, onRestore]);
-  const pending = state.who === null ? offer : null;
+  // Offered until step 1 has a customer or a message was read here.
+  const pending = state.who === null && !state.draft ? offer : null;
   useEffect(() => {
     if (loaded && pending === null) writeDraft({ key, state });
   }, [key, state, loaded, pending]);

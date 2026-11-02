@@ -1,96 +1,56 @@
 "use client";
 
-import { StepSection } from "@bibi/ui";
-import { useTranslations } from "next-intl";
-import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
 import type { IntakeData } from "../load-intake-data";
 import type { IntakeMessage } from "./intake-message";
-import { hasLines, type InputStep, type IntakeStep, stepView } from "./intake-state";
+import type { IntakeStep } from "./intake-state";
 import { MessageBanner } from "./message-banner";
-import { MessageSection } from "./message-section";
-import { PackageStep } from "./package-step";
+import type { MessageDraft } from "./message-draft";
+import { PackageSection } from "./package-section";
+import { PasteDialog } from "./paste-dialog";
 import { ReviewStep } from "./review-step";
 import { useIntakeFlow } from "./use-intake-flow";
 import { useIntakeSummaries } from "./use-intake-summaries";
-import { WhenStep } from "./when-step";
-import { type StepsProps, WhoSection } from "./who-section";
-
-type SectionInput = StepsProps & {
-  step: InputStep;
-  t: ReturnType<typeof useTranslations<"ticketIntake">>;
-};
-
-const sectionProps = ({ state, dispatch, t, step }: SectionInput) => ({
-  state: stepView({ state, step }),
-  changeLabel: t("change"),
-  onChangeStep: () => dispatch({ type: "change", step }),
-});
-
-function LaterSections(props: StepsProps) {
-  const { data, state, dispatch, summaries } = props;
-  const t = useTranslations("ticketIntake");
-  const timeZone = useOrganizationTimeZone();
-  const { who, when, pick } = state;
-  return (
-    <>
-      <StepSection
-        number={2}
-        title={t("when.title")}
-        summary={summaries.when}
-        {...sectionProps({ ...props, t, step: "when" })}
-      >
-        <WhenStep
-          {...{ key: state.draft ? "read" : "typed", when, prefill: state.draft?.when ?? null }}
-          backToReview={hasLines({ state })}
-          onDone={({ when: next }) => dispatch({ type: "setWhen", when: next })}
-        />
-      </StepSection>
-      <StepSection
-        number={3}
-        title={t("package.title")}
-        summary={summaries.pick}
-        {...sectionProps({ ...props, t, step: "package" })}
-      >
-        {who && when ? (
-          <PackageStep
-            {...{ who, when, pick, packages: data.packages, timeZone, pickSummary: summaries.pick }}
-            {...{ review: state.review, suggestedId: state.draft?.templateId ?? null }}
-            onPick={(input) => dispatch({ type: "pick", ...input })}
-            onUnpick={() => dispatch({ type: "unpick" })}
-            onNext={(lines) => dispatch({ type: "completePackage", ...lines })}
-          />
-        ) : null}
-      </StepSection>
-      <ReviewStep data={data} state={state} dispatch={dispatch} />
-    </>
-  );
-}
+import { usePasteDialog } from "./use-paste-dialog";
+import { WhenSection } from "./when-section";
+import { WhoSection } from "./who-section";
 
 export type IntakePageProps = {
   data: IntakeData;
   message: IntakeMessage | null;
-  /** Drafting from a message has a model (ADR 0084): step 0 is offered. */
+  /** Drafting from a message has a model (ADR 0084): `/new/ticket/message` opens the dialog. */
   draftEnabled: boolean;
-  /** The step the URL names (`/new/ticket/<step>`); `who` for the bare path. */
+  /** The step the URL names (`/new/ticket/<step>`); `who` for the bare path and `/message`. */
   step: IntakeStep;
 };
 
 /**
- * `/new/ticket`: the ticket intake on one page, from who asks to Create (ADR 0081); opened from
- * an inbox message it starts the customer search from the sender and attaches it (ADR 0085).
+ * `/new/ticket`: the ticket intake on one page, from who asks to Create (ADR 0081). On
+ * `/new/ticket/message` the paste dialog opens over step 1; what it reads prefills the steps
+ * (ADR 0084). Opened from an inbox message, the ticket is attached to it (ADR 0085).
  */
 export function IntakePage({ data, message, draftEnabled, step }: IntakePageProps) {
-  const { state, dispatch, draft } = useIntakeFlow({ data, message, draftEnabled, urlStep: step });
+  const paste = usePasteDialog({ enabled: draftEnabled });
+  const flow = useIntakeFlow({ data, message, urlStep: step, pasting: paste.open });
+  const { state, dispatch, draft } = flow;
   const summaries = useIntakeSummaries({ state });
+  const onRead = ({ draft: read }: { draft: MessageDraft }) => {
+    draft.discardDraft();
+    dispatch({ type: "applyDraft", draft: read });
+    paste.close();
+  };
+  const steps = { data, state, dispatch, summaries };
   return (
     <div className="grid gap-3">
-      {message ? <MessageBanner message={message} /> : null}
-      <MessageSection {...{ state, dispatch, message }} enabled={draftEnabled} />
+      <MessageBanner message={message} read={state.draft?.read ?? null} />
       <WhoSection
-        {...{ data, state, dispatch, summaries, draft }}
+        {...steps}
+        draft={draft}
         search={state.draft?.search ?? message?.search ?? null}
       />
-      <LaterSections {...{ data, state, dispatch, summaries }} />
+      <WhenSection {...steps} />
+      <PackageSection {...steps} />
+      <ReviewStep data={data} state={state} dispatch={dispatch} />
+      {paste.open ? <PasteDialog message={message} onRead={onRead} onClose={paste.close} /> : null}
     </div>
   );
 }

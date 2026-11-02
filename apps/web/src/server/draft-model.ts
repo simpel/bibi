@@ -4,7 +4,7 @@ import { isAiFeatureConfigured } from "@bibi/core";
 import { shouldUseMockModel } from "./mock-model-policy";
 
 /**
- * Drafting a ticket from a message has a model (ADR 0084): the intake's step 0 and the sidebar's
+ * Drafting a ticket from a message has a model (ADR 0084): the intake's paste dialog and the sidebar's
  * "From a message" show only then. The scripted E2E model needs no row.
  */
 export async function hasDraftModel(): Promise<boolean> {

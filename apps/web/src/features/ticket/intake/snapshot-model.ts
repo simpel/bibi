@@ -18,7 +18,8 @@ export type SnapshotInput = {
   itemNames: ReadonlyMap<string, string>;
   /** "#41 Saab" for another booking. */
   blockLabel: (input: { block: CalendarBlockDto }) => string;
-  programLabel: string;
+  /** "Other lines": the row for timed lines without a bookable resource (a buffet). */
+  otherLabel: string;
 };
 
 export type Snapshot = {
@@ -77,8 +78,9 @@ function itemRow({ input, placed, itemId, name }: ItemRowInput): DaySnapshotRow 
 }
 
 /**
- * The calendar snapshot of step 4 (spec "Calendar snapshot"): a row for this ticket's program,
- * then one per item the timed lines use, and the pools short that day.
+ * The calendar snapshot of step 4 (spec "Calendar snapshot"): one row per bookable item the timed
+ * lines use (other bookings and this ticket's lines), one "Other lines" row for timed lines
+ * without one when there are any, and the pools short that day.
  */
 export function snapshotOf({ ...input }: SnapshotInput): Snapshot {
   const placed = placeLines(input);
@@ -87,11 +89,12 @@ export function snapshotOf({ ...input }: SnapshotInput): Snapshot {
     const name = input.itemNames.get(itemId);
     return name ? [itemRow({ input, placed, itemId, name })] : [];
   });
-  const program = { id: "program", label: input.programLabel, blocks: placed.map(draftBar) };
+  const loose = placed.filter(({ line }) => !line.itemId || !input.itemNames.has(line.itemId));
+  const other = { id: "other", label: input.otherLabel, blocks: loose.map(draftBar) };
   const shortages = input.lines.flatMap((line, index) =>
     (input.planned?.[index]?.issues ?? [])
       .filter(({ kind }) => kind === "POOL_SHORT")
       .map(({ needed, free }) => ({ name: line.name, needed: needed ?? 0, free: free ?? 0 })),
   );
-  return { ...spanOf({ placed }), rows: [program, ...rows], shortages };
+  return { ...spanOf({ placed }), rows: loose.length > 0 ? [...rows, other] : rows, shortages };
 }

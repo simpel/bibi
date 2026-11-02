@@ -1,4 +1,4 @@
-import { DraftSchema } from "./draft-schema";
+import { DRAFT_VERSION, DraftSchema } from "./draft-schema";
 import type { IntakeState } from "./intake-state";
 
 export type DraftKeyInput = { organizationId: string; userId: string };
@@ -8,13 +8,13 @@ export function draftKey({ organizationId, userId }: DraftKeyInput): string {
   return `bibi.ticketIntake.${organizationId}.${userId}`;
 }
 
-/** A draft worth offering: at least the customer is chosen. */
+/** A draft worth offering: the customer is chosen, or a message was read (reading costs). */
 export function isWorthKeeping({ state }: { state: IntakeState }): boolean {
-  return state.who !== null;
+  return state.who !== null || Boolean(state.draft);
 }
 
 export function serializeDraft({ state }: { state: IntakeState }): string {
-  return JSON.stringify({ version: 2, state });
+  return JSON.stringify({ version: DRAFT_VERSION, state });
 }
 
 /** The stored draft, or null when there is none or it does not parse. */

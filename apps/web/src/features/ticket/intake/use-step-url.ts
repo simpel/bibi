@@ -22,33 +22,36 @@ export type UseStepUrlInput = {
   dispatch: Dispatch<IntakeAction>;
   /** The draft was read: before that the open step is not settled and the URL is left alone. */
   ready: boolean;
-  messageEnabled: boolean;
+  /** The paste dialog is open: `/new/ticket/message` stays until it closes. */
+  hold: boolean;
 };
 
 /**
  * Keeps the open step in the path both ways (spec "The page"): a new open step pushes
  * `/new/ticket/<step>` (the first sync replaces, so the load's URL is corrected in place), and
- * Back or Forward opens the URL's step, or the first step still missing input.
+ * Back or Forward opens the URL's step, or the first step still missing input. The paste
+ * dialog's path is replaced (not pushed) once the dialog closes, so Back does not reopen it.
  */
-export function useStepUrl({ state, dispatch, ready, messageEnabled }: UseStepUrlInput) {
+export function useStepUrl({ state, dispatch, ready, hold }: UseStepUrlInput) {
   const pathname = usePathname();
   const synced = useRef(false);
   const seen = useRef(pathname);
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || hold) return;
     const current = stepFromPathname({ pathname: window.location.pathname });
     if (current !== state.open) {
-      writeStep({ step: state.open, write: synced.current ? "push" : "replace" });
+      const push = synced.current && current !== null;
+      writeStep({ step: state.open, write: push ? "push" : "replace" });
     }
     synced.current = true;
-  }, [ready, state.open]);
+  }, [ready, hold, state.open]);
   useEffect(() => {
     if (!ready || pathname === seen.current) return;
     seen.current = pathname;
     const step = stepFromPathname({ pathname });
     if (!step || step === state.open) return;
-    const target = openableStep({ state, step, messageEnabled });
+    const target = openableStep({ state, step });
     if (target !== step) writeStep({ step: target, write: "replace" });
     dispatch({ type: "change", step: target });
-  }, [ready, pathname, state, dispatch, messageEnabled]);
+  }, [ready, pathname, state, dispatch]);
 }

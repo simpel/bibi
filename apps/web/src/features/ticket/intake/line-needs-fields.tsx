@@ -20,7 +20,7 @@ export function LineNeedsFields({ form, values }: LineNeedsFieldsProps) {
     <fieldset className="grid gap-2">
       <legend className="text-sm font-medium">{t("needs")}</legend>
       {fields.map((row, index) => (
-        <div key={row.id} className="grid grid-cols-[1fr_6rem_auto] items-end gap-2">
+        <div key={row.id} className="grid grid-cols-[1fr_6rem_auto] items-start gap-2">
           <OptionSelectField
             control={form.control}
             name={`needs.${index}.valueId`}
@@ -34,7 +34,7 @@ export function LineNeedsFields({ form, values }: LineNeedsFieldsProps) {
             type="number"
             step="1"
           />
-          <Button type="button" variant="ghost" onClick={() => remove(index)}>
+          <Button type="button" variant="ghost" className="mt-7" onClick={() => remove(index)}>
             {t("removeNeed")}
           </Button>
         </div>

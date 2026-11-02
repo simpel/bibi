@@ -22,7 +22,7 @@ export function MoreSection({ form, catalog }: MoreSectionProps) {
           <ChevronDownIcon aria-hidden="true" />
         </Button>
       </CollapsibleTrigger>
-      <CollapsibleContent className="grid gap-4 sm:grid-cols-3">
+      <CollapsibleContent className="grid items-start gap-4 sm:grid-cols-3">
         <OptionSelectField
           control={form.control}
           name="assigneeId"

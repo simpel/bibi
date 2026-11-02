@@ -1,6 +1,7 @@
 "use client";
 
 import { FormControl, FormController, FormItem, FormLabel, FormMessage } from "@bibi/ui";
+import { useTranslations } from "next-intl";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { PlainDateButton } from "./plain-date-button";
 
@@ -13,7 +14,10 @@ export type DateFieldProps<V extends FieldValues, O> = {
   clearable?: boolean;
 };
 
-/** A form field for one plain date (`YYYY-MM-DD`): a button that opens the calendar. */
+/**
+ * A form field for one plain date (`YYYY-MM-DD`): a button that opens the calendar. An empty
+ * field's error says "Choose a date"; a malformed value keeps the schema's own message.
+ */
 export function DateField<V extends FieldValues, O>({
   form,
   name,
@@ -21,6 +25,7 @@ export function DateField<V extends FieldValues, O>({
   required,
   clearable,
 }: DateFieldProps<V, O>) {
+  const t = useTranslations("common.datePicker");
   return (
     <FormController
       control={form.control}
@@ -38,7 +43,7 @@ export function DateField<V extends FieldValues, O>({
               clearable={clearable}
             />
           </FormControl>
-          <FormMessage />
+          <FormMessage errorText={field.value ? undefined : t("chooseDate")} />
         </FormItem>
       )}
     />

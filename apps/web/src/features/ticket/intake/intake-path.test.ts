@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { intakeStepPath, stepFromPathname, stepFromSegments, withStepPath } from "./intake-path";
+import {
+  intakeStepPath,
+  isPastePath,
+  isPasteSegments,
+  stepFromPathname,
+  stepFromSegments,
+  withStepPath,
+} from "./intake-path";
 
 describe("intake step path", () => {
   it("reads the step from the optional segment", () => {
@@ -7,6 +14,7 @@ describe("intake step path", () => {
     expect(stepFromSegments({ segments: [] })).toBe("who");
     expect(stepFromSegments({ segments: ["review"] })).toBe("review");
     expect(stepFromSegments({ segments: ["who"] })).toBeNull();
+    expect(stepFromSegments({ segments: ["message"] })).toBeNull();
     expect(stepFromSegments({ segments: ["nope"] })).toBeNull();
     expect(stepFromSegments({ segments: ["when", "x"] })).toBeNull();
   });
@@ -17,7 +25,7 @@ describe("intake step path", () => {
   });
 
   it("round-trips every step", () => {
-    for (const step of ["message", "who", "when", "package", "review"] as const) {
+    for (const step of ["who", "when", "package", "review"] as const) {
       expect(stepFromPathname({ pathname: intakeStepPath({ step }) })).toBe(step);
     }
   });
@@ -27,6 +35,18 @@ describe("intake step path", () => {
     expect(stepFromPathname({ pathname: "/en/acme/new/ticket/" })).toBe("who");
     expect(stepFromPathname({ pathname: "/en/acme/new/ticket-template" })).toBeNull();
     expect(stepFromPathname({ pathname: "/en/acme/tickets/t1" })).toBeNull();
+  });
+
+  it("knows the paste dialog's path, which names no step", () => {
+    expect(isPasteSegments({ segments: ["message"] })).toBe(true);
+    expect(isPasteSegments({ segments: ["when"] })).toBe(false);
+    expect(isPasteSegments({ segments: undefined })).toBe(false);
+    expect(isPastePath({ pathname: "/en/acme/new/ticket/message" })).toBe(true);
+    expect(isPastePath({ pathname: "/en/acme/new/ticket" })).toBe(false);
+    expect(stepFromPathname({ pathname: "/en/acme/new/ticket/message" })).toBeNull();
+    expect(withStepPath({ pathname: "/en/acme/new/ticket/message", step: "who" })).toBe(
+      "/en/acme/new/ticket",
+    );
   });
 
   it("replaces the step and keeps locale and organization", () => {

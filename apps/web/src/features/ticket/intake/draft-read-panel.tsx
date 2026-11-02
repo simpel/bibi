@@ -1,12 +1,12 @@
-import { Badge, Button } from "@bibi/ui";
+import { Badge, Button, Popover, PopoverContent, PopoverTrigger } from "@bibi/ui";
+import { SparklesIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { ReadField } from "./message-draft";
 
 function ReadRow({ row }: { row: ReadField }) {
   const t = useTranslations("ticketIntake.message");
   return (
-    <li className="grid gap-0.5 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-3">
+    <li className="grid gap-0.5 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-3">
       <span className="text-muted-foreground">{t(`labels.${row.field}`)}</span>
       <span className="grid gap-0.5">
         <span className="flex flex-wrap items-center gap-2">
@@ -22,42 +22,30 @@ function ReadRow({ row }: { row: ReadField }) {
 }
 
 /**
- * "What the assistant read" (ADR 0084): each value with its quote from the message, guessed
- * values marked. The person can hide it.
+ * "What the assistant read" (ADR 0084): a small button that opens each value with its quote from
+ * the message, guessed values marked.
  */
 export function DraftReadPanel({ rows }: { rows: readonly ReadField[] }) {
   const t = useTranslations("ticketIntake.message.panel");
-  const [shown, setShown] = useState(true);
   if (rows.length === 0) return null;
-  if (!shown) {
-    return (
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        className="justify-self-start"
-        onClick={() => setShown(true)}
-      >
-        {t("show")}
-      </Button>
-    );
-  }
   return (
-    <section
-      aria-label={t("title")}
-      className="grid gap-3 rounded-lg border bg-muted/40 p-4 text-sm"
-    >
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="font-medium">{t("title")}</h3>
-        <Button type="button" variant="ghost" size="sm" onClick={() => setShown(false)}>
-          {t("hide")}
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button type="button" variant="ghost" size="sm">
+          <SparklesIcon aria-hidden />
+          {t("title")}
         </Button>
-      </div>
-      <ul className="grid gap-2">
-        {rows.map((row) => (
-          <ReadRow key={`${row.field}-${row.value}-${row.quote}`} row={row} />
-        ))}
-      </ul>
-    </section>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-[min(36rem,calc(100vw-2rem))] text-sm">
+        <section aria-label={t("title")} className="grid gap-3">
+          <h3 className="font-medium">{t("title")}</h3>
+          <ul className="grid max-h-[60vh] gap-2 overflow-y-auto">
+            {rows.map((row) => (
+              <ReadRow key={`${row.field}-${row.value}-${row.quote}`} row={row} />
+            ))}
+          </ul>
+        </section>
+      </PopoverContent>
+    </Popover>
   );
 }

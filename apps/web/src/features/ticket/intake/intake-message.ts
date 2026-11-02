@@ -5,6 +5,6 @@ export type IntakeMessage = {
   sender: string;
   /** What the customer search starts with, or null. */
   search: string | null;
-  /** Its text, which step 0 starts with (ADR 0084). */
+  /** Its text, which the paste dialog starts with (ADR 0084). */
   text: string;
 };

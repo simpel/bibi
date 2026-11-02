@@ -5,8 +5,8 @@ import type { IntakeReview } from "./review-state";
 /** The steps of the intake page in order; `review` is reached when every step has a value. */
 export const INTAKE_STEPS = ["who", "when", "package"] as const;
 export type InputStep = (typeof INTAKE_STEPS)[number];
-/** `message` is step 0, reading a request (ADR 0084), shown only when asked for. */
-export type IntakeStep = InputStep | "review" | "message";
+/** The steps that open; reading a message is a dialog that prefills them, not a step (ADR 0084). */
+export type IntakeStep = InputStep | "review";
 
 /** Step 1: the customer and the contact person who asks. */
 export type IntakeWho = {
@@ -46,23 +46,17 @@ export type IntakeState = {
   intakeKey: string;
   /** The inbox message it is made from (ADR 0085), attached on Create; kept in the draft. */
   inboundMessageId?: string | null | undefined;
-  /** What the assistant read from a message (step 0), or null. */
+  /** What the assistant read from a message (the paste dialog), or null: it prefills steps 1–3. */
   draft?: MessageDraft | null | undefined;
 };
 
-export type InitialIntakeInput = {
-  intakeKey: string;
-  inboundMessageId?: string | null;
-  /** Start in step 0 (opened from a message while drafting is available). */
-  fromMessage?: boolean;
-};
+export type InitialIntakeInput = { intakeKey: string; inboundMessageId?: string | null };
 
 export const initialIntake = ({
   intakeKey,
   inboundMessageId = null,
-  fromMessage = false,
 }: InitialIntakeInput): IntakeState => ({
-  ...{ open: fromMessage ? "message" : "who", who: null, when: null, pick: null, review: null },
+  ...{ open: "who", who: null, when: null, pick: null, review: null },
   ...{ intakeKey, inboundMessageId, draft: null },
 });
 
@@ -81,10 +75,8 @@ export type IntakeAction =
   /** Open a step: Change on a done step, or the URL's step (Back, reload). */
   | { type: "change"; step: IntakeStep }
   | { type: "restore"; state: IntakeState }
-  /** Step 0: open it, leave it to fill in by hand, or apply what was read. */
-  | { type: "openMessage" }
-  | { type: "skipMessage" }
-  | { type: "applyDraft"; who: IntakeWho | null; when: IntakeWhen | null; draft: MessageDraft }
+  /** A read message: steps 1–3 start over prefilled from it, none completed (ADR 0084). */
+  | { type: "applyDraft"; draft: MessageDraft }
   /** After Create, or a discarded draft: a fresh intake with a new key. */
   | { type: "reset"; intakeKey: string };
 

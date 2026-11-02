@@ -73,7 +73,11 @@ export { Form, FormController, useFormField } from "./components/form/form-conte
 export { FormControl } from "./components/form/form-control";
 export { FormItem } from "./components/form/form-item";
 export { FormLabel } from "./components/form/form-label";
-export { FormDescription, FormMessage } from "./components/form/form-message";
+export {
+  FormDescription,
+  FormMessage,
+  type FormMessageProps,
+} from "./components/form/form-message";
 export { FormField, type FormFieldProps } from "./components/form-field/form-field";
 export * from "./components/header-actions/header-action";
 export * from "./components/header-actions/header-actions";
@@ -130,6 +134,7 @@ export * from "./components/sidebar/sidebar-menu-sub";
 export { Skeleton, type SkeletonProps } from "./components/skeleton/skeleton";
 export * from "./components/stat-card/stat-card";
 export * from "./components/step-section/step-section";
+export * from "./components/step-section/step-section-footer";
 export { Switch, type SwitchProps } from "./components/switch/switch";
 export * from "./components/table/table";
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/tabs/tabs";

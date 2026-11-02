@@ -1,5 +1,6 @@
-import { Button } from "@bibi/ui";
+import { Button, StepSectionFooter } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { ReviewModel } from "./use-review-model";
 
@@ -43,13 +44,15 @@ export type CreateBarProps = {
   pending: boolean;
   /** Create was refused for a new clash. */
   conflict: boolean;
+  /** Back to step 3, bottom left; Create is bottom right. */
+  back: ReactNode;
 };
 
 /**
  * The blocked-lines summary and Create: "Create ticket", "Create and prebook" when lines clash,
  * "Answer <n> questions first" while questions are open, "Creating…" while it runs.
  */
-export function CreateBar({ model, questions, pending, conflict }: CreateBarProps) {
+export function CreateBar({ model, questions, pending, conflict, back }: CreateBarProps) {
   const t = useTranslations("ticketIntake.create");
   const blocked = clashes({ model }).length;
   const label = (() => {
@@ -63,9 +66,14 @@ export function CreateBar({ model, questions, pending, conflict }: CreateBarProp
       {blocked > 0 ? (
         <p className="text-sm text-destructive">{t("blocked", { count: blocked })}</p>
       ) : null}
-      <Button type="submit" className="justify-self-start" disabled={pending || questions > 0}>
-        {label}
-      </Button>
+      <StepSectionFooter
+        start={back}
+        end={
+          <Button type="submit" disabled={pending || questions > 0}>
+            {label}
+          </Button>
+        }
+      />
     </div>
   );
 }

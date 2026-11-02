@@ -14,8 +14,8 @@ import type { SwitchChoice } from "./draft-lines";
 export type SwitchDialogProps = {
   question: SwitchQuestion;
   count: number;
-  onChoice: (input: { choice: SwitchChoice }) => void;
-  onCancel: () => void;
+  choose: (input: { choice: SwitchChoice }) => void;
+  cancel: () => void;
 };
 
 /** The answers per question: another package replaces or adds; a one-off keeps or empties. */
@@ -37,12 +37,12 @@ const CHOICES = {
  * Lines exist and another pick is taken (spec "Switching"): another package replaces them or adds
  * its lines; a one-off keeps them for editing or starts empty.
  */
-export function SwitchDialog({ question, count, onChoice, onCancel }: SwitchDialogProps) {
+export function SwitchDialog({ question, count, choose, cancel }: SwitchDialogProps) {
   const t = useTranslations("ticketIntake.switch");
   const common = useTranslations("common");
   const toPackage = question === "TO_PACKAGE";
   return (
-    <Dialog open onOpenChange={(open) => !open && onCancel()}>
+    <Dialog open onOpenChange={(open) => !open && cancel()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{toPackage ? t("toPackage") : t("toOneOff")}</DialogTitle>
@@ -50,18 +50,13 @@ export function SwitchDialog({ question, count, onChoice, onCancel }: SwitchDial
         </DialogHeader>
         <div className="grid gap-2">
           {CHOICES[question].map(({ choice, key }) => (
-            <Button
-              key={choice}
-              type="button"
-              variant="outline"
-              onClick={() => onChoice({ choice })}
-            >
+            <Button key={choice} type="button" variant="outline" onClick={() => choose({ choice })}>
               {t(key)}
             </Button>
           ))}
         </div>
         <DialogFooter>
-          <Button type="button" variant="ghost" onClick={onCancel}>
+          <Button type="button" variant="ghost" onClick={cancel}>
             {common("cancel")}
           </Button>
         </DialogFooter>

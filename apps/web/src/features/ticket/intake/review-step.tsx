@@ -1,6 +1,6 @@
 import { Button, Form, StepSection } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { type Dispatch, useState } from "react";
+import { type Dispatch, type ReactNode, useState } from "react";
 import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
 import type { IntakeData } from "../load-intake-data";
 import { CalendarSnapshot } from "./calendar-snapshot";
@@ -14,6 +14,7 @@ import { type GuessedValue, openQuestions } from "./open-questions";
 import { OpenQuestionsPanel } from "./open-questions-panel";
 import { BookingNoteField, SavePackageFields, TicketTypeFields } from "./review-form-fields";
 import { ReviewHeader } from "./review-header";
+import { StepBack } from "./step-back";
 import { useReviewActions } from "./use-review-actions";
 import { useReviewForm } from "./use-review-form";
 import { type ReviewModel, useReviewModel } from "./use-review-model";
@@ -66,10 +67,10 @@ function LineDialogSlot({ model, actions }: LinesSectionProps) {
   );
 }
 
-type BodyProps = { model: ReviewModel; nonce: number; onConflict: () => void };
+type BodyProps = { model: ReviewModel; nonce: number; back: ReactNode; onConflict: () => void };
 
 /** Step 4's content: a form whose submit is Create. */
-function ReviewBody({ model, nonce, onConflict }: BodyProps) {
+function ReviewBody({ model, nonce, back, onConflict }: BodyProps) {
   const [conflict, setConflict] = useState(false);
   const { form, submit, pending } = useReviewForm({
     model,
@@ -101,7 +102,7 @@ function ReviewBody({ model, nonce, onConflict }: BodyProps) {
           onAction={actions.act}
         />
         <MoreSection form={form} catalog={catalog} />
-        <CreateBar {...{ model, pending, conflict }} questions={questions.length} />
+        <CreateBar {...{ model, pending, conflict, back }} questions={questions.length} />
       </form>
       <LineDialogSlot model={model} actions={actions} />
     </Form>
@@ -127,6 +128,7 @@ export function ReviewStep({ data, state, dispatch }: ReviewStepProps) {
       <ReviewBody
         key={`${state.intakeKey}-${model.review.pickKey}`}
         {...{ model, nonce }}
+        back={<StepBack step="review" dispatch={dispatch} />}
         onConflict={() => setNonce((value) => value + 1)}
       />
     </StepSection>

@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
+import { fromEmailSteps } from "./from-email";
 import { periodOf } from "./intake-period";
 import type { InputStep, IntakePick, IntakeState, IntakeWhen } from "./intake-state";
 
@@ -36,8 +37,9 @@ export function useIntakeSummaries({ state }: { state: IntakeState }): IntakeSum
   const span = period ? dates.dateTimeRange({ start: period.startsAt, end: period.endsAt }) : "";
   const times = period ? dates.timeRange({ start: period.startsAt, end: period.endsAt }) : "";
   // Values that came from a read message say so (spec "The page").
+  const fromEmail = fromEmailSteps({ state });
   const mark = ({ step, text }: { step: InputStep; text: string }) =>
-    text && state.draft?.fromMessage.includes(step) ? `${text} · ${message("fromEmail")}` : text;
+    text && fromEmail.includes(step) ? `${text} · ${message("fromEmail")}` : text;
   return {
     who: mark({
       step: "who",
@@ -47,9 +49,6 @@ export function useIntakeSummaries({ state }: { state: IntakeState }): IntakeSum
       step: "when",
       text: when ? t("when", { period: span, guests: when.guests }) : "",
     }),
-    pick:
-      pick?.kind === "PACKAGE" && pick.templateId === state.draft?.templateId
-        ? mark({ step: "package", text: pickSummary({ t, pick, when, times }) })
-        : pickSummary({ t, pick, when, times }),
+    pick: mark({ step: "package", text: pickSummary({ t, pick, when, times }) }),
   };
 }
