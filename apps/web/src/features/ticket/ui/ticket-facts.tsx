@@ -1,4 +1,5 @@
 import type { TicketDto } from "@bibi/core";
+import { cn } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";
 import { type Fact, FactList } from "@/components/typed-fields/fact-list";
@@ -15,7 +16,7 @@ const EMPTY = "–";
 const count = ({ value }: { value: number | null }) => (value === null ? EMPTY : String(value));
 
 /** Facts without a value are left out, not shown as "–". */
-const filled = ({ facts }: { facts: readonly Fact[] }) =>
+const filled = <T extends Fact>({ facts }: { facts: readonly T[] }) =>
   facts.filter(({ value }) => value !== "" && value !== EMPTY);
 
 /** The booking note as plain text; line breaks are kept. Renders nothing when unset. */
@@ -29,7 +30,31 @@ function TicketNote({ note, label }: { note: string | null; label: string }) {
   );
 }
 
-/** The primary facts under the title, in one row: customer, contact, dates and headcounts. */
+type KeyFact = Fact & { truncate?: boolean };
+
+/**
+ * The primary facts in one row, in the stat cards' type without their frame: each as wide as its
+ * value, which may wrap; a truncating fact (the customer) gives way first.
+ */
+function KeyFactRow({ facts }: { facts: readonly KeyFact[] }) {
+  return (
+    <dl className="flex gap-x-10">
+      {facts.map(({ label, value, truncate }) => (
+        <div key={label} className={cn("grid gap-1", truncate && "min-w-0 shrink-[999]")}>
+          <dt className="text-xs text-muted-foreground">{label}</dt>
+          <dd
+            title={truncate ? value : undefined}
+            className={cn("font-serif text-2xl font-light tracking-tight", truncate && "truncate")}
+          >
+            {value}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/** The primary facts under the title: customer, contact, dates and headcounts. */
 export async function TicketKeyFacts({ ticket, data }: TicketFactsProps) {
   const t = await getTranslations("ticket.fields");
   const common = await getTranslations("common");
@@ -40,6 +65,7 @@ export async function TicketKeyFacts({ ticket, data }: TicketFactsProps) {
     {
       label: t("customer"),
       value: nameOf({ options: data.customers, id: ticket.customerId, hidden }),
+      truncate: true,
     },
     {
       label: t("contact"),
@@ -49,7 +75,7 @@ export async function TicketKeyFacts({ ticket, data }: TicketFactsProps) {
     { label: t("estimatedHeadcount"), value: count({ value: ticket.estimatedHeadcount }) },
     { label: t("guaranteedHeadcount"), value: count({ value: guaranteed }) },
   ];
-  return <FactList facts={filled({ facts })} inline />;
+  return <KeyFactRow facts={filled({ facts })} />;
 }
 
 /**

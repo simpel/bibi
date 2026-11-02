@@ -15,21 +15,30 @@ import { TicketSections } from "./ticket-sections";
 import { TicketStatusLabel } from "./ticket-status-label";
 import { TicketStatusMenu } from "./ticket-status-menu";
 
-type Heading = { ticket: TicketDto; label: (values: { reference: number }) => string };
+type Heading = {
+  ticket: TicketDto;
+  label: (values: { reference: number }) => string;
+  short: (values: { reference: number }) => string;
+};
 
-/** The title leads and the reference backs it up (it is the heading of an untitled ticket). */
-function heading({ ticket, label }: Heading) {
+/** The title leads with the number after it; an untitled ticket is headed by its reference. */
+function heading({ ticket, label, short }: Heading) {
   const fallback = label({ reference: ticket.reference });
   return ticket.title === null
     ? { title: fallback }
-    : { title: ticketName({ title: ticket.title, fallback }), description: fallback };
+    : {
+        title: ticketName({ title: ticket.title, fallback }),
+        suffix: short({ reference: ticket.reference }),
+      };
 }
 
 export type TicketDetailProps = { locale: Locale; id: string };
 
 export async function TicketDetail({ locale, id }: TicketDetailProps) {
   const t = await getTranslations("ticket");
+  const sheet = await getTranslations("ticketSheet");
   const label = ({ reference }: { reference: number }) => t("reference", { reference });
+  const short = ({ reference }: { reference: number }) => sheet("reference", { reference });
   const abilities = await getCallerAbilities();
   const [ticket, data] = await Promise.all([
     runOperation({ operation: getTicket, input: { id } }),
@@ -45,16 +54,16 @@ export async function TicketDetail({ locale, id }: TicketDetailProps) {
     // One shrinkable column: a wide table scrolls inside the page instead of widening it.
     <div className="grid grid-cols-1 gap-12">
       <div className="grid grid-cols-1 gap-4">
-        <PageHeader {...heading({ ticket: ticket.value, label })} actions={actions} />
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+        <PageHeader {...heading({ ticket: ticket.value, label, short })} actions={actions} />
+        {can({ abilities, permission: "program:read" }) ? <TicketIssues ticketId={id} /> : null}
+        <div>
           {can({ abilities, permission: "ticket:write" }) ? (
             <TicketStatusMenu ticket={ticket.value} statuses={statuses} />
           ) : (
             <TicketStatusLabel statuses={statuses} id={ticket.value.statusId} />
           )}
-          <TicketKeyFacts ticket={ticket.value} data={data.value} />
         </div>
-        {can({ abilities, permission: "program:read" }) ? <TicketIssues ticketId={id} /> : null}
+        <TicketKeyFacts ticket={ticket.value} data={data.value} />
       </div>
       <TicketSections
         locale={locale}
