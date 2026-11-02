@@ -8,6 +8,7 @@ import { checkDemoBoard } from "./board-checks";
 import { checkDemoBoardLayout } from "./board-layout-checks";
 import { checkDemoBuffers } from "./buffer-checks";
 import { checkDemoBundles } from "./bundle-checks";
+import { checkDemoChoiceDefaults } from "./choice-default-checks";
 import { checkDemoDashboard } from "./dashboard-checks";
 import { checkDemoDensity } from "./density-checks";
 import { checkDemoEstimates } from "./estimate-checks";
@@ -51,6 +52,7 @@ export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoPrices,
   checkDemoBundles,
   checkDemoOptionQuantities,
+  checkDemoChoiceDefaults,
   checkDemoAddOns,
   checkDemoBuffers,
   checkDemoAllocations,

@@ -20,16 +20,23 @@ type LineInput = {
   refs: DemoRefs;
 };
 
-/** One template line as `ticketTemplate.create` takes it: item and setup by name → ids. */
+/** One template line as `ticketTemplate.create` takes it: item, setup and defaults by name → ids. */
 async function toLineInput({ context, line, typeId, refs }: LineInput) {
   const item = await context.db.item.findFirst({ where: { name: line.item } });
   if (!item) return missing({ what: `item ${line.item}` });
+  const options: { itemId: string }[] = [];
+  for (const name of line.options ?? []) {
+    const option = await context.db.item.findFirst({ where: { name } });
+    if (!option) return missing({ what: `option ${name}` });
+    options.push({ itemId: option.id });
+  }
   const setupId = line.setup ? refs.setups.get(line.setup) : undefined;
   if (line.setup && !setupId) return missing({ what: `setup ${line.setup}` });
   const input: TicketTemplateLineInput = {
     ...{ entityTypeId: typeId, name: line.name, itemId: item.id, setupId: setupId ?? null },
     ...{ offsetMinutes: line.offsetMinutes, durationMinutes: line.durationMinutes },
     quantity: line.quantity ?? null,
+    options,
   };
   return ok({ value: input });
 }

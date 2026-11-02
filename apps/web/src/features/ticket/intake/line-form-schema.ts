@@ -40,7 +40,7 @@ const picks = ({ item, values }: { item: CatalogItem | null; values: LineFormVal
 export function lineFormSchema({ item, ruleText, ...input }: LineSchemaInput) {
   const raw = rawLineSchema({ ...input, item });
   return withGroupRules<LineFormValues, typeof raw>({
-    ...{ schema: raw, groups: item?.groups ?? [], ruleText, skipWhenNone: true, extras: true },
+    ...{ schema: raw, groups: item?.groups ?? [], ruleText, extras: true },
     chosen: ({ values }) => chosenOptionsOf({ groups: item?.groups ?? [], values }),
   });
 }

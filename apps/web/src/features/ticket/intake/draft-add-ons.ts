@@ -46,7 +46,10 @@ export function flattenDraft({ lines, planned }: FlattenDraftInput) {
       { line, planned: own },
       ...line.addOns.map((addOn, at) => {
         const row = own?.addOns[at];
-        return { line: addOnLine({ line, addOn }), planned: row ? { ...row, addOns: [] } : null };
+        return {
+          line: addOnLine({ line, addOn }),
+          planned: row ? { ...row, options: [], addOns: [] } : null,
+        };
       }),
     ];
   });

@@ -1,6 +1,7 @@
 import { StepSection } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
+import { choiceKeysOf } from "./choice-lines";
 import { PackageStep } from "./package-step";
 import { type StepsProps, sectionProps } from "./section-props";
 import { StepBack } from "./step-back";
@@ -22,12 +23,17 @@ export function PackageSection({ data, state, dispatch, summaries }: StepsProps)
     <PackageStep
       {...{ section, who, when, pick, timeZone, review: state.review }}
       {...{ packages: data.packages, canCreatePackage: data.canCreatePackage }}
-      back={<StepBack step="package" dispatch={dispatch} />}
+      back={<StepBack step="package" state={state} dispatch={dispatch} />}
       suggestedId={state.draft?.templateId ?? null}
       pickSummary={summaries.pick}
       onPick={(input) => dispatch({ type: "pick", ...input })}
       onUnpick={() => dispatch({ type: "unpick" })}
-      onNext={(lines) => dispatch({ type: "completePackage", ...lines })}
+      onNext={(done) => {
+        // A one-off builds its lines in review: no choices step (ADR 0089).
+        const items = pick?.kind === "PACKAGE" ? data.catalog.items : [];
+        const choiceKeys = choiceKeysOf({ lines: done.lines, items });
+        dispatch({ type: "completePackage", ...done, choiceKeys });
+      }}
     />
   );
 }

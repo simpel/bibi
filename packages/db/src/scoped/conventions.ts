@@ -85,6 +85,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Ticket",
   "TicketTemplate",
   "TicketTemplateLine",
+  "TicketTemplateLineOption",
   "Line",
   "LineAllocation",
   "AlternativeGroup",

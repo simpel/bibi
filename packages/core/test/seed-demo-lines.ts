@@ -2,7 +2,8 @@
  * F6 expired, L11 confirmed, L12 blocked; L7, L10 from templates; quoted tickets get lunch;
  * L13's alternatives both soft, L14's pick booked and the other option released (ADR 0052);
  * L15's bundle with its part lines in Quote sent (ADR 0059); L9's dinner with its options (ADR 0082);
- * L11's break buffet with its pick and two add-ons, and its board meeting's projector add-on (ADR 0088).
+ * L11's break buffet with its pick and two add-ons, and its board meeting's projector add-on (ADR 0088);
+ * L10's package default snack and L4's morning coffee with its snack still open (ADR 0089).
  */
 export const LINDHOLMEN_LINE_STATES = [
   ["Afternoon break buffet", "Ordered", false],
@@ -12,6 +13,8 @@ export const LINDHOLMEN_LINE_STATES = [
   ["Board lunch", "Locked", true],
   ["Board meeting", "Booked", false],
   ["Break buffet", "Ordered", false],
+  ["Carrot cake", "Ordered", false],
+  // ADR 0089: L10 picks it from the Afternoon break package's default.
   ["Carrot cake", "Ordered", false],
   ["Celeriac steak, mustard vinaigrette", "Ordered", false],
   ["Cloudberry parfait", "Ordered", false],
@@ -27,6 +30,7 @@ export const LINDHOLMEN_LINE_STATES = [
   ["Kickoff", "Prebooked", false],
   ["Lunch", "Released", false],
   ["Morning break", "Estimated", false],
+  ["Morning coffee", "Ordered", false],
   ["Oat ball", "Ordered", false],
   ["Planning in Hönö", "Booked", false],
   ["Planning in Styrsö", "Released", true],

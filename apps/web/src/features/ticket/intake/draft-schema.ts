@@ -49,6 +49,8 @@ const ReviewSchema = z.object({
   lines: z.array(DraftLineSchema),
   plannedStart: Instant.nullable(),
   pickKey: z.string(),
+  // Drafts stored before the choices step (ADR 0089) load without it.
+  choiceKeys: z.array(z.string()).default([]),
   // Drafts stored before tickets had titles load without one.
   title: z.string().default(""),
   note: z.string(),
@@ -104,7 +106,7 @@ export const DraftSchema = z.object({
   version: z.union([z.literal(2), z.literal(3), z.literal(DRAFT_VERSION)]),
   state: z.object({
     open: z
-      .enum(["message", "who", "when", "package", "review"])
+      .enum(["message", "who", "when", "package", "choices", "review"])
       .transform((open) => (open === "message" ? "who" : open)),
     who: WhoSchema.nullable(),
     when: z.object({ date: PlainDateStringSchema, from: Time, to: Time, guests: Count }).nullable(),

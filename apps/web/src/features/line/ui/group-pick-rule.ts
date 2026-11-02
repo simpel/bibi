@@ -29,11 +29,6 @@ export type GroupPickIssuesInput = {
   /** The chosen options of the line (a split group's only with a quantity above 0). */
   chosen: readonly { itemId: string }[];
   /**
-   * Nothing chosen at all passes: `ticket.create` checks a draft line's options only when it
-   * has some, `line.chooseOptions` always checks.
-   */
-  skipWhenNone: boolean;
-  /**
    * Picks beyond the max become add-ons (the intake's line dialog, ADR 0088): a group that
    * allows extras (not split) has no upper bound. `line.chooseOptions` keeps the max.
    */
@@ -42,21 +37,21 @@ export type GroupPickIssuesInput = {
 
 /**
  * Core's `checkChoice` rule (`packages/core/src/features/line/option-groups.ts`) on the client:
- * each group gets between its minPick and maxPick distinct options, split groups counted by the
- * options with a quantity. Unlike core it names every broken group, not only the first. With
+ * each group with a pick gets between its minPick and maxPick distinct options, split groups
+ * counted by the options with a quantity. A group with no pick is open, even a required one
+ * (ADR 0089). Unlike core it names every broken group, not only the first. With
  * `extras`, a non-split group that allows extras has no max: the rest are add-ons.
  */
 export function groupPickIssues({
   groups,
   chosen,
-  skipWhenNone,
   extras = false,
 }: GroupPickIssuesInput): GroupPickIssue[] {
-  if (skipWhenNone && chosen.length === 0) return [];
   const ids = new Set(chosen.map(({ itemId }) => itemId));
   return groups.flatMap((group, index) => {
     const count = group.options.filter(({ itemId }) => ids.has(itemId)).length;
     const unbounded = extras && group.allowExtras === true && !group.split;
+    if (count === 0) return [];
     if (count >= group.minPick && (unbounded || count <= group.maxPick)) return [];
     const rule = { min: group.minPick, max: group.maxPick, options: group.options.length };
     const field = group.split ? "quantities" : "picked";

@@ -14,7 +14,6 @@ describe("groupPickIssues", () => {
     const issues = groupPickIssues({
       groups: [group()],
       chosen: chosen({ ids: ["cake", "fruit", "oat"] }),
-      skipWhenNone: true,
     });
     expect(issues).toEqual([
       { index: 0, group: "Snack", field: "picked", count: 3, rule: { min: 1, max: 1, options: 3 } },
@@ -31,55 +30,51 @@ describe("groupPickIssues", () => {
       groupPickIssues({
         groups: [groups[0] as PickGroup],
         chosen: three,
-        skipWhenNone: true,
         extras: true,
       }),
     ).toEqual([]);
     const strict = groupPickIssues({
       groups: [group({ allowExtras: false })],
       chosen: three,
-      skipWhenNone: true,
       extras: true,
     });
     expect(strict).toHaveLength(1);
     const chooseOptions = groupPickIssues({
       groups: [groups[0] as PickGroup],
       chosen: three,
-      skipWhenNone: true,
     });
     expect(chooseOptions).toHaveLength(1);
     const split = groupPickIssues({
       groups: [groups[1] as PickGroup],
       chosen: three,
-      skipWhenNone: true,
       extras: true,
     });
     expect(split).toHaveLength(1);
   });
 
   it("accepts a count inside the range and names every broken group", () => {
-    const groups = [group(), group({ name: "Drink", minPick: 2, maxPick: 3, split: true })];
-    const ok = groupPickIssues({ groups, chosen: [], skipWhenNone: true });
+    const drink = { name: "Drink", minPick: 2, maxPick: 3, split: true };
+    const groups = [group(), group({ ...drink, options: [{ itemId: "tea" }, { itemId: "milk" }] })];
+    const ok = groupPickIssues({ groups, chosen: chosen({ ids: ["cake", "tea", "milk"] }) });
     expect(ok).toEqual([]);
-    const issues = groupPickIssues({ groups, chosen: chosen({ ids: ["x"] }), skipWhenNone: false });
+    const picked = chosen({ ids: ["cake", "fruit", "tea"] });
+    const issues = groupPickIssues({ groups, chosen: picked });
     expect(issues.map(({ index, field }) => [index, field])).toEqual([
       [0, "picked"],
       [1, "quantities"],
     ]);
   });
 
-  it("checks nothing chosen only when asked to (line.chooseOptions)", () => {
-    expect(groupPickIssues({ groups: [group()], chosen: [], skipWhenNone: true })).toEqual([]);
-    expect(groupPickIssues({ groups: [group()], chosen: [], skipWhenNone: false })).toHaveLength(1);
+  it("leaves a group with no pick open, even a required one (ADR 0089)", () => {
+    expect(groupPickIssues({ groups: [group()], chosen: [] })).toEqual([]);
     const optional = group({ minPick: 0 });
-    expect(groupPickIssues({ groups: [optional], chosen: [], skipWhenNone: false })).toEqual([]);
+    expect(groupPickIssues({ groups: [optional], chosen: [] })).toEqual([]);
   });
 
   it("counts only the group's own options", () => {
     const issues = groupPickIssues({
       groups: [group(), group({ name: "Other", options: [{ itemId: "tea" }] })],
       chosen: chosen({ ids: ["cake", "tea"] }),
-      skipWhenNone: true,
     });
     expect(issues).toEqual([]);
   });

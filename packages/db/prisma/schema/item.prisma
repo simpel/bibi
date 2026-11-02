@@ -11,7 +11,7 @@ enum PriceUnit {
 /// Trigger (ADR 0053, 0059): changing `setupMinutes` or `teardownMinutes` re-derives the holds of
 /// the item's lines that have not ended (`sync_line_occupancy.sql`).
 model Item {
-  id                     String                    @id
+  id                     String                     @id
   organizationId         String
   entityTypeId           String
   venueId                String?
@@ -20,7 +20,7 @@ model Item {
   name                   String
   description            String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
-  fields                 Json                      @default("{}")
+  fields                 Json                       @default("{}")
   /// PRICED: price in minor units (1/100 kr), unit and VAT (null = the venue's default).
   priceMinor             Int?
   priceUnit              PriceUnit?
@@ -30,35 +30,36 @@ model Item {
   /// Buffers before and after a booking, in minutes (ADR 0059, owned); null = the type's.
   setupMinutes           Int?
   teardownMinutes        Int?
-  status                 RecordStatus              @default(ACTIVE)
-  createdAt              DateTime                  @default(now())
-  updatedAt              DateTime                  @updatedAt
+  status                 RecordStatus               @default(ACTIVE)
+  createdAt              DateTime                   @default(now())
+  updatedAt              DateTime                   @updatedAt
   createdBy              String?
-  entityType             EntityType                @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  venue                  Venue?                    @relation(fields: [venueId, organizationId], references: [id, organizationId])
-  customer               Customer?                 @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  entityType             EntityType                 @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  venue                  Venue?                     @relation(fields: [venueId, organizationId], references: [id, organizationId])
+  customer               Customer?                  @relation(fields: [customerId, organizationId], references: [id, organizationId])
   setups                 ItemSetup[]
   /// BUNDLE: the parts this item contains.
-  parts                  ItemPart[]                @relation("ItemPartParent")
+  parts                  ItemPart[]                 @relation("ItemPartParent")
   /// The bundles this item is a part of.
-  partOf                 ItemPart[]                @relation("ItemPartOf")
+  partOf                 ItemPart[]                 @relation("ItemPartOf")
   /// CUSTOMISATIONS: the item's customisation groups (ADR 0059: on any item, not only bundles).
   customisationGroups    ItemCustomisationGroup[]
   /// The customisation groups this item is an option in.
   optionIn               ItemCustomisationOption[]
   /// What the item asks of pools (ADR 0059).
-  demands                ItemDemand[]              @relation("ItemDemandOf")
+  demands                ItemDemand[]               @relation("ItemDemandOf")
   memberProfileItem      MemberProfileItem?
   /// The demands that target this item specifically.
-  demandedBy             ItemDemand[]              @relation("ItemDemandTarget")
+  demandedBy             ItemDemand[]               @relation("ItemDemandTarget")
   /// The line slots this item fills as a unit (ADR 0059).
-  allocations            LineAllocation[]          @relation("LineAllocationUnit")
+  allocations            LineAllocation[]           @relation("LineAllocationUnit")
   /// BOOKABLE: the periods the item is held (ADR 0022).
   occupancies            Occupancy[]
   /// BOOKABLE: the lines held in this item.
   lines                  Line[]
   /// Lines of predefined tickets that use this item.
   templateLines          TicketTemplateLine[]
+  templateLineOptions    TicketTemplateLineOption[]
   /// Agreed prices on price lists (ADR 0023).
   priceListItems         PriceListItem[]
   revenueAccounts        RevenueAccount[]
@@ -67,7 +68,7 @@ model Item {
   hoursDays              HoursDay[]
   hoursExceptions        HoursException[]
   /// The supertable row this record extends (ADR 0056).
-  record                 Record                    @relation(fields: [id, organizationId], references: [id, organizationId])
+  record                 Record                     @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

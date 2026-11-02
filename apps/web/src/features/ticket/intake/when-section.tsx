@@ -20,7 +20,7 @@ export function WhenSection({ state, dispatch, summaries }: Omit<StepsProps, "da
       title={t("when.title")}
       summary={summaries.when}
       {...sectionProps({ state, dispatch, step: "when", changeLabel: t("change") })}
-      footerStart={<StepBack step="when" dispatch={dispatch} />}
+      footerStart={<StepBack step="when" state={state} dispatch={dispatch} />}
       footerEnd={
         <Button type="submit" form={WHEN_FORM_ID} disabled={!valid}>
           {t("next")}

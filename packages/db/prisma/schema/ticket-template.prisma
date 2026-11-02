@@ -32,10 +32,10 @@ model TicketTemplate {
 /// Ticket template line – a line the ticket gets, timed from the ticket's start.
 /// Replaced as a set by `ticketTemplate.update`.
 model TicketTemplateLine {
-  id              String         @id @default(cuid(2))
+  id              String                     @id @default(cuid(2))
   organizationId  String
   templateId      String
-  position        Int            @default(0)
+  position        Int                        @default(0)
   /// The line type (base `LINE`) of the created line.
   entityTypeId    String
   name            String
@@ -46,15 +46,38 @@ model TicketTemplateLine {
   durationMinutes Int
   /// The line's quantity; null = the ticket's headcount (ADR 0052).
   quantity        Int?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
   createdBy       String?
-  template        TicketTemplate @relation(fields: [templateId, organizationId], references: [id, organizationId])
-  entityType      EntityType     @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  item            Item?          @relation(fields: [itemId, organizationId], references: [id, organizationId])
-  setup           Setup?         @relation(fields: [setupId, organizationId], references: [id, organizationId])
+  template        TicketTemplate             @relation(fields: [templateId, organizationId], references: [id, organizationId])
+  entityType      EntityType                 @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  item            Item?                      @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  setup           Setup?                     @relation(fields: [setupId, organizationId], references: [id, organizationId])
+  options         TicketTemplateLineOption[]
 
   @@unique([id, organizationId])
   @@index([organizationId, templateId, position])
+  @@index([organizationId, itemId])
+}
+
+/// Ticket template line option – a choice the package preselects for its line (ADR 0089, owned):
+/// the option's item, never `ItemCustomisationOption.id` (groups get new ids when an item's groups
+/// are replaced, ADR 0082). Replaced with the template's lines; removed with its line. A default
+/// that is no longer an option of the line's item is ignored on use and flagged on the package.
+model TicketTemplateLineOption {
+  id             String             @id @default(cuid(2))
+  organizationId String
+  templateLineId String
+  itemId         String
+  /// Order of the defaults on the line, from 0.
+  position       Int
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  createdBy      String?
+  templateLine   TicketTemplateLine @relation(fields: [templateLineId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  item           Item               @relation(fields: [itemId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([templateLineId, itemId])
   @@index([organizationId, itemId])
 }

@@ -48,6 +48,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "Ticket",
   "TicketTemplate",
   "TicketTemplateLine",
+  "TicketTemplateLineOption",
   "Line",
   "LineAllocation",
   "AlternativeGroup",

@@ -1,9 +1,14 @@
 import type { PreviewLine } from "@bibi/core";
 import { type DraftLine, isTimed, quantityOf } from "./draft-line";
 import type { InputStep } from "./intake-state";
-import { type ItemGroups, type OptionsQuestion, optionQuestions } from "./option-questions";
+import {
+  type ItemGroups,
+  type OpenChoiceQuestion,
+  type OptionsQuestion,
+  openChoiceQuestions,
+  optionQuestions,
+} from "./option-questions";
 import type { IntakeReview } from "./review-state";
-
 /**
  * A value the assistant guessed from a message (ADR 0084): an open question until kept
  * (`GUESS:<key>` in `accepted`) or changed. `step` is where Change goes; null opens the note.
@@ -19,21 +24,17 @@ export type GuessedValue = {
 /** A ticket type's own field the review must have before Create. */
 export type RequiredField = { key: string; name: string };
 
+type OverQuantity = { what: "CHOICES" | "NEEDS"; count: number; quantity: number };
+
 /** One question that blocks Create (ADR 0081 decision 8), in the spec's order. */
 export type OpenQuestion =
   | { kind: "START_CHANGED"; from: Date; to: Date; deltaMs: number }
   | { kind: "NO_LINES" }
   | { kind: "ZERO_QUANTITY"; lineKey: string; name: string }
-  | {
-      kind: "OVER_QUANTITY";
-      lineKey: string;
-      name: string;
-      what: "CHOICES" | "NEEDS";
-      count: number;
-      quantity: number;
-    }
+  | ({ kind: "OVER_QUANTITY"; lineKey: string; name: string } & OverQuantity)
   | { kind: "POOL_SHORT"; lineKey: string; name: string; needed: number; free: number }
   | OptionsQuestion
+  | OpenChoiceQuestion // ADR 0089
   | ({ kind: "GUESSED" } & GuessedValue)
   | { kind: "TYPE_FIELD"; key: string; fieldName: string; typeName: string }
   | { kind: "PACKAGE_NAME" };
@@ -90,8 +91,9 @@ function lineQuestions({ line, planned, headcount, accepted, items }: LineQuesti
   if (line.quantity === 0) {
     return [{ kind: "ZERO_QUANTITY", lineKey: line.key, name: line.name } as const];
   }
-  const questions = [
+  const questions: OpenQuestion[] = [
     ...optionQuestions({ line, items }),
+    ...openChoiceQuestions({ line, items, accepted }),
     ...overQuantity({ line, planned, headcount }),
   ];
   const short = planned?.issues.find((issue) => issue.kind === "POOL_SHORT");
@@ -122,9 +124,10 @@ function reviewQuestions({ review, ticketType }: OpenQuestionsInput): OpenQuesti
 
 /**
  * What must be answered before Create (spec "Open questions"): the start moved after lines
- * exist, no lines at all (unless a lead was accepted), a line with quantity 0, choices breaking
- * a group's pick rule, choices or needs above the quantity, a pool short that day (unless
- * prebooking it was accepted), a guessed value, a ticket type's required field and the name of a package to save. Clashes are not questions.
+ * exist, no lines at all (unless a lead was accepted), a line with quantity 0, choices breaking a
+ * group's pick rule, a required choice not made (unless left for later, ADR 0089), choices or
+ * needs above the quantity, a pool short that day (unless prebooking it was accepted), a guessed
+ * value, a ticket type's required field and a package name to save. Clashes are not questions.
  */
 export function openQuestions({ ...input }: OpenQuestionsInput): OpenQuestion[] {
   const { review, planned, headcount, guesses = [], items = [] } = input;

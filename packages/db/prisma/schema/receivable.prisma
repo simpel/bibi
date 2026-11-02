@@ -46,16 +46,16 @@ model Deposit {
 /// At most one invoice per ticket is not VOID (partial unique index in the migration). Never
 /// deleted: `status` is its lifecycle.
 model Invoice {
-  id                String           @id @default(cuid(2))
+  id                String                  @id @default(cuid(2))
   organizationId    String
   ticketId          String
   /// Per organization, highest + 1; the unique index refuses a concurrent duplicate.
   number            Int
   /// ISO 4217, upper case.
-  currency          String           @default("SEK")
+  currency          String                  @default("SEK")
   dueDate           DateTime?
-  status            ReceivableStatus @default(DRAFT)
-  statusChangedAt   DateTime         @default(now())
+  status            ReceivableStatus        @default(DRAFT)
+  statusChangedAt   DateTime                @default(now())
   /// When it was sent to the customer (owned, ADR 0077): the accounting date of its voucher.
   sentAt            DateTime?
   /// When it was voided (owned, ADR 0077): the date of a reversal voucher.
@@ -63,10 +63,10 @@ model Invoice {
   /// Sums of the frozen lines in minor units (snapshot).
   totalExclVatMinor Int
   totalInclVatMinor Int
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
   createdBy         String?
-  ticket            Ticket           @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  ticket            Ticket                  @relation(fields: [ticketId, organizationId], references: [id, organizationId])
   lines             OrderLine[]
   payments          Payment[]
   exportEntries     AccountingExportEntry[]

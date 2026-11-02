@@ -66,6 +66,7 @@ function previewLines({ ...input }: LinesInput): PreviewLine[] {
     .filter(({ slot }) => slot?.addOnIndex === null)
     .map(({ slot, row }) => ({
       ...previewRow({ ...input, row }),
+      options: input.plan.defaults[slot?.lineIndex ?? row] ?? [],
       addOns: rows
         .filter(
           (other) => other.slot?.addOnIndex !== null && other.slot?.lineIndex === slot?.lineIndex,

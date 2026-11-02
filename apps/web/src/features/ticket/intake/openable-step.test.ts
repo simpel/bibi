@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { type IntakeState, initialIntake } from "./intake-state";
+import { draftFixture } from "./line-fixture";
 import { openableStep, previousStep, restoredStep, restoresDraft } from "./openable-step";
 import { newReview } from "./review-state";
 
@@ -30,10 +31,22 @@ describe("openable step", () => {
   });
 
   it("goes back one step, and not before step 1", () => {
-    expect(previousStep({ step: "who" })).toBeNull();
-    expect(previousStep({ step: "when" })).toBe("who");
-    expect(previousStep({ step: "package" })).toBe("when");
-    expect(previousStep({ step: "review" })).toBe("package");
+    const state = reviewed;
+    expect(previousStep({ state, step: "who" })).toBeNull();
+    expect(previousStep({ state, step: "when" })).toBe("who");
+    expect(previousStep({ state, step: "package" })).toBe("when");
+    expect(previousStep({ state, step: "review" })).toBe("package");
+  });
+
+  it("has the choices step only while its lines exist (ADR 0089)", () => {
+    const line = draftFixture({ key: "l1" });
+    const review = { ...newReview({ lines: [line], plannedStart: null, pickKey: "t1" }) };
+    const asked: IntakeState = { ...reviewed, review: { ...review, choiceKeys: ["l1"] } };
+    expect(openableStep({ state: asked, step: "choices" })).toBe("choices");
+    expect(previousStep({ state: asked, step: "review" })).toBe("choices");
+    const gone: IntakeState = { ...asked, review: { ...review, choiceKeys: ["other"] } };
+    expect(openableStep({ state: gone, step: "choices" })).toBe("review");
+    expect(openableStep({ state: picked, step: "choices" })).toBe("package");
   });
 });
 

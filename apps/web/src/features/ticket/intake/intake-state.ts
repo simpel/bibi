@@ -5,8 +5,11 @@ import type { IntakeReview } from "./review-state";
 /** The steps of the intake page in order; `review` is reached when every step has a value. */
 export const INTAKE_STEPS = ["who", "when", "package"] as const;
 export type InputStep = (typeof INTAKE_STEPS)[number];
-/** The steps that open; reading a message is a dialog that prefills them, not a step (ADR 0084). */
-export type IntakeStep = InputStep | "review";
+/**
+ * The steps that open; reading a message is a dialog that prefills them, not a step (ADR 0084).
+ * `choices` sits between package and review only while the review has lines to ask (ADR 0089).
+ */
+export type IntakeStep = InputStep | "choices" | "review";
 
 /** Step 1: the customer and the contact person who asks. */
 export type IntakeWho = {
@@ -69,8 +72,16 @@ export type IntakeAction =
   /** A package picked with its answers applied to `when`, or a one-off; step 3 stays open. */
   | { type: "pick"; pick: IntakePick; when?: IntakeWhen }
   | { type: "unpick" }
-  /** Step 3 done: the lines step 4 starts with (or keeps), planned for `plannedStart`. */
-  | { type: "completePackage"; lines: DraftLine[]; plannedStart: string | null }
+  /**
+   * Step 3 done: the lines step 4 starts with (or keeps), planned for `plannedStart`, and the
+   * keys of those the choices step asks (ADR 0089).
+   */
+  | {
+      type: "completePackage";
+      lines: DraftLine[];
+      plannedStart: string | null;
+      choiceKeys: string[];
+    }
   | { type: "patchReview"; patch: ReviewPatch }
   /** Open a step: Change on a done step, or the URL's step (Back, reload). */
   | { type: "change"; step: IntakeStep }
@@ -81,6 +92,12 @@ export type IntakeAction =
   | { type: "reset"; intakeKey: string };
 
 type StepInput = { state: IntakeState; step: InputStep };
+
+/** Whether the choices step is part of the intake: its lines exist (ADR 0089). */
+export const hasChoices = ({ state }: { state: IntakeState }): boolean =>
+  (state.review?.choiceKeys ?? []).some((key) =>
+    state.review?.lines.some((line) => line.key === key),
+  );
 
 /** Whether lines exist: step 2 goes back to review and step 3 asks before switching. */
 export const hasLines = ({ state }: { state: IntakeState }): boolean =>

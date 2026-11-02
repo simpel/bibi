@@ -77,9 +77,10 @@ export const chooseLineOptions = defineOperation({
   description:
     "Choose the customisation options of a line whose item has customisation groups (ADR " +
     "0059, 0082). Replaces the line's choices: each chosen option becomes an option line under " +
-    "the line (same time and type) and a dropped one is removed. Each group needs between its " +
-    "minPick and maxPick distinct options; a group with minPick 0 can be skipped, and opting out " +
-    "is choosing the other option. More than maxPick is refused: add the extra picks as add-ons " +
+    "the line (same time and type) and a dropped one is removed. Each group with a pick needs " +
+    "between its minPick and maxPick distinct options; a group can be left open (a required one " +
+    "gives the line warning UNCHOSEN_REQUIRED_GROUP, ADR 0089), and opting out is choosing the " +
+    "other option. More than maxPick is refused: add the extra picks as add-ons " +
     "(line.create with parentLineId, ADR 0088) when the group allows extras. An option of a split group carries its own quantity (how " +
     "many of the line get it); any other option applies to the whole line. The option's price " +
     "effect decides the totals: INCLUDED does not count, EXTRA counts at its own price and " +

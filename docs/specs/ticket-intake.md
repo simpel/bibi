@@ -1,14 +1,14 @@
 # Ticket intake
 
-Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet. Tickets, statuses and line states: `docs/specs/tickets-statuses-and-states.md`. Entities: `docs/domain-model.md`. The click prototype shows every state below: https://claude.ai/artifact/Hmdk44ucTDo135fGNbeqqH
+Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, not built yet. Tickets, statuses and line states: `docs/specs/tickets-statuses-and-states.md`. Entities: `docs/domain-model.md`. The click prototype shows every state below: https://claude.ai/artifact/Hmdk44ucTDo135fGNbeqqH
 
 ## The page
 - `/new/ticket`, permission `ticket:write`, opened from the create hub, the ticket list and an inbox message (`?fromMessage=<id>`).
-- **The open step is in the path**: `/new/ticket` (step 1, the start), `/new/ticket/when`, `/new/ticket/package`, `/new/ticket/review`. `/new/ticket/message` is step 1 with the paste dialog open (see "Reading a message"), not a step; once the dialog closes the path becomes the open step's (`?fromMessage=` kept, the dialog's path replaced, not pushed). An unknown step is not found; the older `?start=message` redirects to `/new/ticket/message`.
+- **The open step is in the path**: `/new/ticket` (step 1, the start), `/new/ticket/when`, `/new/ticket/package`, `/new/ticket/choices` (only while the intake has the choices step), `/new/ticket/review`. `/new/ticket/message` is step 1 with the paste dialog open (see "Reading a message"), not a step; once the dialog closes the path becomes the open step's (`?fromMessage=` kept, the dialog's path replaced, not pushed). An unknown step is not found; the older `?start=message` redirects to `/new/ticket/message`.
   - Every step change (Next, Back, Change, a step completed by itself) adds a history entry without reloading the page, so the browser's Back and Forward move between steps. A step the intake cannot open yet opens the first step still missing input, and the URL follows.
   - A reload restores the state: past the start (or on an inbox message's intake, whose draft is its own) the local draft is restored without asking and opens the URL's step, or the first step still missing input (e.g. `/when` without a customer opens step 1).
-- One page with steps in order: 1 who, 2 when and how many, 3 package or one-off, 4 review / build the booking.
-  - Only the open step takes input. Its own commands sit right on its title row (shown only while open); its **Next** (Create in step 4) sits bottom right and a ghost **Back** bottom left; the labels never change (no "Next: packages", no "Back to review"). Next goes on to the next step, or straight back to review once later steps are done. Back opens the previous step like its Change (answers kept, the URL follows); step 1 has no Back.
+- One page with steps in order: 1 who, 2 when and how many, 3 package or one-off, 4 choices (only when the package has a line with a required choice, ADR 0089), then review / build the booking (4, or 5 after choices).
+  - Only the open step takes input. Its own commands sit right on its title row (shown only while open); its **Next** (Create in review) sits bottom right and a ghost **Back** bottom left; the labels never change (no "Next: packages", no "Back to review"). Next goes on to the next step, or straight back to review once later steps are done. Back opens the previous step like its Change (answers kept, the URL follows); step 1 has no Back.
   - A done step collapses to a one-line summary with **Change**, which reopens it and keeps later answers.
   - Values that came from a message say "from email" while they are still what the message said.
 - Nothing is written until **Create**, except a customer or contact created in step 1.
@@ -67,7 +67,23 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
   - to a one-off asks **Keep them and edit** or **Start empty**.
 - **No packages at all**: the step says "No packages yet"; One-off and Create package are its title-row actions.
 
-## 4 · Review the booking (package) / Build the booking (one-off)
+## 4 · Choices (ADR 0089)
+- Shown only when the package picked in step 3 has lines whose item has a **required group** (`minPick` 1 or more), e.g. Afternoon break buffet with "Snack (choose 1)". Otherwise step 3's Next opens review, and the step is not listed. A one-off never has it: its lines are built in review.
+- It opens after step 3's Next when the lines are new (a first package, or another package); the same package again keeps the lines and goes back to review.
+- One card per such line, titled with the line's name:
+  - its required groups, with the line dialog's controls (a pick per normal group, a quantity per option in a split group, ADR 0082). Optional groups stay in the line dialog.
+  - its needs (counts per list value, e.g. Vegan 2, Nut allergy 1), as in the line dialog.
+- The package's default choices (see "Package defaults") are already picked; staff confirm or change them with the customer. A change here changes only this ticket's draft, never the package.
+- Every change goes straight into the draft line. **Next** is always enabled and opens review; **Back** opens step 3.
+- The done summary: "<n> lines · all chosen" or "<n> lines · <m> choices open".
+
+## Package defaults (ADR 0089)
+- A package line can preselect choices for its item's normal groups, at most each group's maximum (the package editor shows one control per normal group; a pick beyond the maximum replaces the oldest). Split groups get no defaults: "<group> is split between guests and is always asked when the ticket is created."
+- Picking the package starts its lines with those choices; `ticket.createFromTemplate` applies them too.
+- A default that no longer fits the item (no longer one of its options, now in a split group, or over the group's maximum) is ignored when the package is used. The package editor names it ("<option> is no longer an option of this item. It is removed when you save.") and saving drops it.
+
+## 5 · Review the booking (package) / Build the booking (one-off)
+- Numbered 4 when the intake has no choices step.
 - **Header**: customer, date, guests, "nothing is saved until Create".
 - **One-off only**:
   - Ticket type, asked only when the organization has more than one active ticket type.
@@ -92,7 +108,8 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 | The start changed from <a> to <b>. What should happen to the lines? | Move every timed line <±delta> · Keep the line times |
 | There are no lines. Create the ticket as a lead without lines? | Yes, a lead without lines · + Add a line |
 | <line> has quantity 0. | Remove the line · Edit line |
-| <line>: <group> has <n> chosen. Choose <rule>. (the item's group pick rule as `ticket.create` checks it: only once the line chose an option; extra picks are add-ons, not options, so they never raise it) | Edit line |
+| <line>: <group> is not chosen yet. <rule>. (a required group with no pick, ADR 0089) | Decide later · Edit line |
+| <line>: <group> has <n> chosen. Choose <rule>. (the item's group pick rule as `ticket.create` checks it: only for a group with a pick (ADR 0089); extra picks are add-ons, not options, so they never raise it) | Edit line |
 | <line>: <n> choices (or needs) but only <q> ordered. | Lower to fit · Edit line |
 | <line>: <q> needed, only <free> left that day. | Prebook all <q> (source <q−free> more) · Lower to <free> |
 | The email doesn't say <field>. The assistant guessed <value>. | Keep <value> · Change it |
@@ -121,7 +138,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 |---|---|
 | `BOOKABLE` | Time, availability for that time |
 | `SETUPS` | Setup (capacity shown) |
-| `CUSTOMISATIONS` | Choices per group: a pick in a normal group, a quantity per option in a split group (ADR 0082). Once anything is chosen, each group must get between its min and max picks (core's rule, a split group counting options above 0); a broken group says "Choose 1", "Choose 1–2", "Choose at least 1" or "Choose at most 2" under it, and Save waits. An edited line shows it at once. In a normal group that allows extras (ADR 0088), picks beyond the max are allowed: the first max picks, in the order picked, stay options and the rest show at once as add-on rows ("Oat ball · extra · 65,00 kr", the item's catalog price; the preview prices it exactly once the line is in the draft). Removing the row unpicks it. Without extras, and in split groups, the max stays a hard limit. |
+| `CUSTOMISATIONS` | Choices per group: a pick in a normal group, a quantity per option in a split group (ADR 0082). Each group with a pick must get between its min and max picks (core's rule, a split group counting options above 0); a group with no pick is open, even a required one (ADR 0089: review asks it, the ticket's line warns); a broken group says "Choose 1", "Choose 1–2", "Choose at least 1" or "Choose at most 2" under it, and Save waits. An edited line shows it at once. In a normal group that allows extras (ADR 0088), picks beyond the max are allowed: the first max picks, in the order picked, stay options and the rest show at once as add-on rows ("Oat ball · extra · 65,00 kr", the item's catalog price; the preview prices it exactly once the line is in the draft). Removing the row unpicks it. Without extras, and in split groups, the max stays a hard limit. |
 | `PRICED` | Unit price (list price shown as the placeholder), discount |
 
 - **Add-ons** (ADR 0088), under the item's fields: the extra picks, then items added with **+ Add an item** (the same item search, or free text with a name). Each added row shows the item and its catalog price, a quantity (empty follows the line's), **Own time (else the line's)** with from and to, and **Remove**. An add-on has the line's type. Saved with the line as `addOns`, created as add-on lines under it.
@@ -135,12 +152,14 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 - The booking notes. "Ticket created with <n> lines", or "as a lead without lines", plus "<n> lines blocked: resolve before confirming" when lines clash.
 - With a message: "<sender>'s email is attached to the ticket's inbox. Drafted by the assistant from the email, checked and created by you."
 - Next actions: Add line, Send quote, Payment link, Hold until.
+- A required choice left for later shows as a warning at the top ("Choice not made yet: <line>: a required choice is still open") and as a badge on its line, until it is chosen (`UNCHOSEN_REQUIRED_GROUP`, ADR 0089).
 
 ## Core
 - `ticket.previewLines` and `ticket.create` draft lines take `addOns[]` (`{ itemId?, name?, entityTypeId?, quantity?, unitPriceMinor?, discountPercent?, startsAt?, endsAt?, note? }`); the preview returns them priced with their issues under each line, create writes them as `role = ADD_ON` lines with errors at `lines.<i>.addOns.<j>`: ADR 0088.
 - `ticket.previewLines`, `ticket.create` (with `lines`, `note`, `templateId`, `inboundMessageId`, `intakeKey`; contact required; starts in the entry status), `ticket.createFromTemplate` (same path, template start status, contact required): ADR 0081.
 - `customer.findSimilar`, `customer.create` with `contact`, `customer.list` with `recent`, `calendar.range` with `itemIds`: ADR 0081.
 - `line.chooseOptions` with `options[{ itemId, quantity? }]`, split groups, `OPTION_SPLIT_MISMATCH`: ADR 0082.
+- A group with no pick is open in `line.chooseOptions` and `ticket.create`, even a required one, and gives the line warning `UNCHOSEN_REQUIRED_GROUP`; `ticketTemplate.create|update` take `lines[].options` (default choices, reads add `stale`), `ticket.previewLines` returns each package line's `options`, `ticket.createFromTemplate` applies them: ADR 0089.
 - `InboundMessage` and `InboundEndpoint`; `inboundMessage.list|get|attachToTicket|dismiss|restore|submit`, feature `inbox` (read, write, submit); EMAIL channel built, WEB_FORM and SMS designed: ADR 0085.
 - `ticketDraft.fromMessage`, AI feature `ticket.intakeDraft`: ADR 0084.
 - All on web, GraphQL, REST and MCP (ADR 0003).

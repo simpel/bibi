@@ -32,6 +32,8 @@ export const lindholmenTemplates: readonly DemoTicketTemplate[] = [
       {
         ...{ item: "Afternoon break", name: "Afternoon break buffet" },
         ...{ offsetMinutes: 60, durationMinutes: 30 },
+        // ADR 0089: the package preselects the usual snack.
+        options: ["Carrot cake"],
       },
     ],
   },

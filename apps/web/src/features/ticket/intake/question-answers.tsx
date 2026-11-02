@@ -40,6 +40,18 @@ const focus = ({ label, field }: { label: string; field: string }): Choice => ({
   action: { kind: "FOCUS", field },
 });
 
+type GroupChoicesInput = {
+  question: Extract<OpenQuestion, { kind: "OPTIONS" | "OPEN_CHOICE" }>;
+  t: Translate;
+};
+
+/** A broken pick rule is fixed in the line; an open required choice can wait (ADR 0089). */
+function groupChoices({ question, t }: GroupChoicesInput): Choice[] {
+  const edit = editLine({ t, lineKey: question.lineKey });
+  if (question.kind === "OPTIONS") return [edit];
+  return [answer({ label: t("decideLater"), value: "DECIDE_LATER" }), edit];
+}
+
 /** Questions about a line or the lines: change them, or open the line dialog. */
 function lineChoices({ question, t, delta }: ChoicesInput): Choice[] {
   switch (question.kind) {
@@ -61,7 +73,8 @@ function lineChoices({ question, t, delta }: ChoicesInput): Choice[] {
         editLine({ t, lineKey: question.lineKey }),
       ];
     case "OPTIONS":
-      return [editLine({ t, lineKey: question.lineKey })];
+    case "OPEN_CHOICE":
+      return groupChoices({ question, t });
     case "OVER_QUANTITY":
       return [
         answer({ label: t("lowerToFit"), value: "LOWER_TO_FIT" }),

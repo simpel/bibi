@@ -1,6 +1,7 @@
 "use client";
 
 import type { IntakeData } from "../load-intake-data";
+import { ChoicesSection } from "./choices-section";
 import type { IntakeMessage } from "./intake-message";
 import type { IntakeStep } from "./intake-state";
 import { MessageBanner } from "./message-banner";
@@ -49,6 +50,7 @@ export function IntakePage({ data, message, draftEnabled, step }: IntakePageProp
       />
       <WhenSection {...steps} />
       <PackageSection {...steps} />
+      <ChoicesSection data={data} state={state} dispatch={dispatch} />
       <ReviewStep data={data} state={state} dispatch={dispatch} />
       {paste.open ? <PasteDialog message={message} onRead={onRead} onClose={paste.close} /> : null}
     </div>

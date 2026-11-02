@@ -5,7 +5,10 @@ const iso = ({ date }: { date: Date | null }) => (date ? date.toISOString() : nu
 
 type FromPreviewInput = { line: PreviewLine; newKey: NewKey };
 
-/** A planned package line as an editable draft line: no overrides, choices or needs yet. */
+/**
+ * A planned package line as an editable draft line: the package's default choices (ADR 0089),
+ * no overrides or needs yet.
+ */
 function fromPreview({ line, newKey }: FromPreviewInput): DraftLine {
   return {
     key: newKey(),
@@ -14,7 +17,8 @@ function fromPreview({ line, newKey }: FromPreviewInput): DraftLine {
     ...{ startsAt: iso({ date: line.startsAt }), endsAt: iso({ date: line.endsAt }) },
     quantity: line.quantity,
     ...{ unitPriceMinor: null, discountPercent: null, note: null },
-    ...{ options: [], needs: [], addOns: [], fields: {} },
+    options: line.options.map(({ itemId }) => ({ itemId, quantity: null })),
+    ...{ needs: [], addOns: [], fields: {} },
   };
 }
 

@@ -25,8 +25,9 @@ export const LineChooseOptionsInputSchema = z.object({
       "An option is chosen once",
     )
     .describe(
-      "Every chosen option. Replaces the line's choices: each group needs between its minPick " +
-        "and maxPick distinct options; a group with minPick 0 can be left out. Opting out is " +
+      "Every chosen option. Replaces the line's choices: each group with a pick needs between " +
+        "its minPick and maxPick distinct options; a group can be left out, a required one then " +
+        "gives the line warning UNCHOSEN_REQUIRED_GROUP (ADR 0089). Opting out is " +
         "choosing the other option. In a split group the quantities should add up to the line's " +
         "quantity; a mismatch is the line warning OPTION_SPLIT_MISMATCH, never refused.",
     ),

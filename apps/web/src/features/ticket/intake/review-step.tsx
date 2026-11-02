@@ -9,7 +9,7 @@ import { CreateIssuesPanel } from "./create-issues-panel";
 import { DraftLineDialog } from "./draft-line-dialog";
 import { DraftLinesTable } from "./draft-lines-table";
 import { EmptyLines } from "./empty-lines";
-import type { IntakeAction, IntakeState } from "./intake-state";
+import { hasChoices, type IntakeAction, type IntakeState } from "./intake-state";
 import { MoreSection } from "./more-section";
 import { OpenQuestionsPanel } from "./open-questions-panel";
 import {
@@ -137,11 +137,11 @@ export function ReviewStep({ data, state, dispatch }: ReviewStepProps) {
   if (!model || state.open !== "review") return null;
   const title = model.pick.kind === "ONE_OFF" ? t("titleOneOff") : t("title");
   return (
-    <StepSection number={4} title={title} state="open">
+    <StepSection number={hasChoices({ state }) ? 5 : 4} title={title} state="open">
       <ReviewBody
         key={`${state.intakeKey}-${model.review.pickKey}`}
         {...{ model, nonce }}
-        back={<StepBack step="review" dispatch={dispatch} />}
+        back={<StepBack step="review" state={state} dispatch={dispatch} />}
         onConflict={() => setNonce((value) => value + 1)}
       />
     </StepSection>

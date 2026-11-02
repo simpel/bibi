@@ -14,6 +14,19 @@ export const TicketTemplateLineSchema = z.object({
   durationMinutes: z.number().int(),
   /** Null = the line counts the ticket's headcount (ADR 0052). */
   quantity: z.number().int().nullable(),
+  options: z
+    .array(
+      z.object({
+        itemId: z.string().describe("The preselected option's item"),
+        stale: z
+          .boolean()
+          .describe(
+            "Derived: the default no longer fits the line's item (not one of its options, in a " +
+              "split group, or over its group's maxPick) and is ignored when the package is used",
+          ),
+      }),
+    )
+    .describe("Choices the package preselects for the line (ADR 0089), in order"),
 });
 
 export const TicketTemplateSchema = z.object({
@@ -59,6 +72,14 @@ export const TicketTemplateLineInputSchema = z.object({
     .max(100_000)
     .nullish()
     .describe("The line's quantity; null = the ticket's headcount"),
+  options: z
+    .array(z.object({ itemId: z.string().min(1).describe("An option item (item.get groups)") }))
+    .max(50)
+    .optional()
+    .describe(
+      "Choices to preselect for the line (ADR 0089): options of the item's customisation " +
+        "groups, at most a group's maxPick, none in a split group. Replaces the line's defaults",
+    ),
 });
 
 const DetailsShape = {

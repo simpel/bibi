@@ -13,7 +13,12 @@ const when: IntakeWhen = { date: "2026-11-20", from: "09:00", to: "12:00", guest
 const pkg = { kind: "PACKAGE", templateId: "t1", name: "Half day", answers: {} } as const;
 
 const INITIAL_INTAKE = initialIntake({ intakeKey: "k1" });
-const done: IntakeAction = { type: "completePackage", lines: [], plannedStart: null };
+const done: IntakeAction = {
+  type: "completePackage",
+  lines: [],
+  plannedStart: null,
+  choiceKeys: [],
+};
 
 const run = ({ actions, from = INITIAL_INTAKE }: { actions: IntakeAction[]; from?: IntakeState }) =>
   actions.reduce((state, action) => reduceIntake({ state, action }), from);

@@ -6,7 +6,7 @@
 /// written only by `payment.applySignal`; what a receivable or ticket has paid is derived from them.
 /// Never deleted: `status` is its lifecycle.
 model Payment {
-  id                  String        @id @default(cuid(2))
+  id                  String                  @id @default(cuid(2))
   organizationId      String
   ticketId            String
   /// The receivable this payment settles: exactly one of these three is set.
@@ -14,11 +14,11 @@ model Payment {
   depositId           String?
   invoiceId           String?
   method              PaymentMethod
-  status              PaymentStatus @default(PENDING)
+  status              PaymentStatus           @default(PENDING)
   /// Amount in minor units (öre for SEK).
   amountMinor         Int
   /// ISO 4217, upper case.
-  currency            String        @default("SEK")
+  currency            String                  @default("SEK")
   /// Bibi's application fee on the charge in minor units; null = no fee.
   applicationFeeMinor Int?
   /// Connected account the charge was made on (`acct_...`).
@@ -29,20 +29,20 @@ model Payment {
   /// Where the customer pays: the hosted checkout page or the hosted invoice page.
   paymentUrl          String?
   /// Unguessable token in the public payment page URL `/pay/<token>` (ADR 0028). Never in the DTO.
-  publicToken         String        @unique
+  publicToken         String                  @unique
   /// When the hosted checkout stops accepting payment; null for invoices.
   expiresAt           DateTime?
   /// Set when the provider reports the payment as completed.
   paidAt              DateTime?
   /// Refunded so far, in minor units.
-  refundedMinor       Int           @default(0)
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  refundedMinor       Int                     @default(0)
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
   createdBy           String?
-  ticket              Ticket        @relation(fields: [ticketId, organizationId], references: [id, organizationId])
-  quote               Quote?        @relation(fields: [quoteId, organizationId], references: [id, organizationId])
-  deposit             Deposit?      @relation(fields: [depositId, organizationId], references: [id, organizationId])
-  invoice             Invoice?      @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
+  ticket              Ticket                  @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  quote               Quote?                  @relation(fields: [quoteId, organizationId], references: [id, organizationId])
+  deposit             Deposit?                @relation(fields: [depositId, organizationId], references: [id, organizationId])
+  invoice             Invoice?                @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
   refunds             PaymentRefund[]
   exportEntries       AccountingExportEntry[]
 
@@ -80,7 +80,7 @@ enum PaymentStatus {
 /// `Payment.refundedMinor` is the Stripe mirror and equals the newest total (reconciliation check
 /// `payment refunds`).
 model PaymentRefund {
-  id                 String   @id @default(cuid(2))
+  id                 String                  @id @default(cuid(2))
   organizationId     String
   paymentId          String
   /// This refund in minor units.
@@ -89,8 +89,8 @@ model PaymentRefund {
   refundedTotalMinor Int
   /// When Stripe reported the refund: the date of its reversal voucher.
   refundedAt         DateTime
-  createdAt          DateTime @default(now())
-  payment            Payment  @relation(fields: [paymentId, organizationId], references: [id, organizationId])
+  createdAt          DateTime                @default(now())
+  payment            Payment                 @relation(fields: [paymentId, organizationId], references: [id, organizationId])
   exportEntries      AccountingExportEntry[]
 
   @@unique([id, organizationId])

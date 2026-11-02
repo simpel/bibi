@@ -29,8 +29,7 @@ export function chooseOptionsSchema({ lineId, item, ruleText }: ChooseOptionsSch
   return withGroupRules<ChooseOptionsFormValues, typeof schema>({
     ...{ schema, groups: item.groups, ruleText },
     chosen: ({ values }) => chosenOptionsOf({ groups: item.groups, values }),
-    // `line.chooseOptions` checks every group, also when nothing is chosen.
-    ...{ skipWhenNone: false, extras: true },
+    extras: true,
   });
 }
 

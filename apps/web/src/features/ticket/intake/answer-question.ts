@@ -1,6 +1,7 @@
 import type { DraftLine } from "./draft-line";
 import { removeLine, shiftLines } from "./draft-lines";
 import type { OpenQuestion } from "./open-questions";
+import { decidedLaterKey } from "./option-questions";
 import type { IntakeReview } from "./review-state";
 
 /** An answer that changes the review itself; Edit, Add a line and fill-in answers open the UI. */
@@ -14,7 +15,9 @@ export type QuestionAnswer =
   | "LOWER_TO_FREE"
   | "DONT_SAVE"
   /** Keep the value the assistant guessed (ADR 0084). */
-  | "KEEP_GUESS";
+  | "KEEP_GUESS"
+  /** Create with a required choice still open (ADR 0089). */
+  | "DECIDE_LATER";
 
 /** Counts lowered from the last one until they add up to at most `limit`. */
 export function lowerToFit({ counts, limit }: { counts: number[]; limit: number }): number[] {
@@ -94,5 +97,8 @@ export function answerQuestion({ review, question, answer }: AnswerQuestionInput
   }
   if (question.kind === "PACKAGE_NAME" && answer === "DONT_SAVE") return { saveAsPackage: false };
   if (question.kind === "GUESSED") return accepted({ key: `GUESS:${question.key}` });
+  if (question.kind === "OPEN_CHOICE" && answer === "DECIDE_LATER") {
+    return accepted({ key: decidedLaterKey({ lineKey: question.lineKey, group: question.group }) });
+  }
   return lineAnswer({ review, question, answer });
 }

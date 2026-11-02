@@ -1,4 +1,10 @@
-import { hasValue, INTAKE_STEPS, type IntakeState, type IntakeStep } from "./intake-state";
+import {
+  hasChoices,
+  hasValue,
+  INTAKE_STEPS,
+  type IntakeState,
+  type IntakeStep,
+} from "./intake-state";
 
 export type OpenableStepInput = {
   state: IntakeState;
@@ -21,6 +27,11 @@ function firstMissing({ state }: { state: IntakeState }): IntakeStep {
 export function openableStep({ state, step }: OpenableStepInput): IntakeStep {
   if (step === "who") return "who";
   if (step === "review") return state.review ? "review" : firstMissing({ state });
+  // ADR 0089: only while the review has lines to ask.
+  if (step === "choices") {
+    if (hasChoices({ state })) return "choices";
+    return state.review ? "review" : firstMissing({ state });
+  }
   const index = INTAKE_STEPS.indexOf(step);
   const before = INTAKE_STEPS.slice(0, index);
   return before.every((earlier) => hasValue({ state, step: earlier }))
@@ -55,10 +66,17 @@ const PREVIOUS: Record<IntakeStep, IntakeStep | null> = {
   who: null,
   when: "who",
   package: "when",
+  choices: "package",
   review: "package",
 };
 
-/** What a step's Back opens (step 1 has none); like Change there, later answers are kept. */
-export function previousStep({ step }: { step: IntakeStep }): IntakeStep | null {
+export type PreviousStepInput = { state: IntakeState; step: IntakeStep };
+
+/**
+ * What a step's Back opens (step 1 has none); like Change there, later answers are kept. Review
+ * goes back to the choices step when the intake has one (ADR 0089).
+ */
+export function previousStep({ state, step }: PreviousStepInput): IntakeStep | null {
+  if (step === "review" && hasChoices({ state })) return "choices";
   return PREVIOUS[step];
 }

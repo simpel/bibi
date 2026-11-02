@@ -29,12 +29,14 @@ export const l11Choices: readonly DemoChoice[] = [
 ];
 
 /**
- * L4's lines: the room, and a sound system that brings a technician from the pool of two for its
- * setup and teardown (ADR 0059, check 15). Kept here so `tickets.ts` fits its file.
+ * L4's lines: the room, a sound system that brings a technician from the pool of two for its
+ * setup and teardown (ADR 0059, check 15), and a morning coffee whose snack the customer has not
+ * chosen yet (ADR 0089: the line warns UNCHOSEN_REQUIRED_GROUP). Kept here so `tickets.ts` fits.
  */
 export const l4Lines: readonly DemoLine[] = [
   { item: "Styrsö", name: "Half-day conference", from: "09:00", to: "13:00" },
   { item: "Mobile sound system", name: "Sound for the conference", from: "09:00", to: "13:00" },
+  { item: "Morning break", name: "Morning coffee", from: "10:30", to: "10:50" },
 ];
 
 /**

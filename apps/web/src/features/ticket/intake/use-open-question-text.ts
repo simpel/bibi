@@ -16,13 +16,17 @@ export function useDelta() {
   };
 }
 
-/** "Afternoon break: Snack has 3 chosen. Choose 1." */
+type GroupQuestion = Extract<OpenQuestion, { kind: "OPTIONS" | "OPEN_CHOICE" }>;
+
+/** "Afternoon break: Snack has 3 chosen. Choose 1." or "Afternoon break: Snack, choose 1." */
 function useOptionsText() {
   const t = useTranslations("ticketIntake.questions");
   const ruleText = usePickRuleText();
-  return ({ question }: { question: Extract<OpenQuestion, { kind: "OPTIONS" }> }) => {
-    const { name: line, group, count, rule } = question;
-    return t("options", { line, group, count, rule: ruleText({ rule }) });
+  return ({ question }: { question: GroupQuestion }) => {
+    const { name: line, group, rule } = question;
+    const text = ruleText({ rule });
+    if (question.kind === "OPEN_CHOICE") return t("openChoice", { line, group, rule: text });
+    return t("options", { line, group, count: question.count, rule: text });
   };
 }
 
@@ -50,6 +54,7 @@ export function useOpenQuestionText() {
         return t("overQuantity", { line, count, quantity, what });
       }
       case "OPTIONS":
+      case "OPEN_CHOICE":
         return optionsText({ question });
       case "POOL_SHORT":
         return t("poolShort", {

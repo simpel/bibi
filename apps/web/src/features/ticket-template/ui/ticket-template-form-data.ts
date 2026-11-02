@@ -1,4 +1,5 @@
 import type { NamedOption } from "@/components/form/named-option";
+import type { CustomisableItem } from "@/features/line/ui/program-form-data";
 
 /** What the predefined ticket form picks from (everything by name). */
 export type TicketTemplateFormData = {
@@ -11,4 +12,6 @@ export type TicketTemplateFormData = {
   items: NamedOption[];
   /** The caller may not view items: the picker is disabled and reads "Hidden". */
   itemsHidden: boolean;
+  /** Items with customisation groups, so a line can preselect choices (ADR 0089). */
+  customisable: CustomisableItem[];
 };

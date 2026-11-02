@@ -86,7 +86,8 @@ describe("openQuestions", () => {
     ]);
     const one = review({ patch: { lines: [draftFixture({ options: options.slice(0, 1) })] } });
     expect(kinds({ review: one, items })).toEqual([]);
-    expect(kinds({ items })).toEqual([]);
+    // Nothing chosen breaks no rule; the required group is open instead (ADR 0089).
+    expect(kinds({ items })).toEqual(["OPEN_CHOICE"]);
   });
 
   it("does not ask about extra picks, which are the line's add-ons (ADR 0088)", () => {

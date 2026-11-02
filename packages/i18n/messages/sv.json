@@ -978,6 +978,11 @@
       "guests": "Uppskattat antal gäster",
       "zoneHint": "Tiderna gäller i organisationens tidszon. Ett ”till” före ”från” slutar dagen efter."
     },
+    "choices": {
+      "title": "Val",
+      "description": "Några rader i paketet behöver ett val, till exempel vilket fika som ska serveras. Välj nu eller vänta: det som lämnas öppet frågas igen i granskningen och visas på ärendet.",
+      "summary": "{lines, plural, one {# rad} other {# rader}} · {open, plural, =0 {allt valt} one {# val öppet} other {# val öppna}}"
+    },
     "package": {
       "title": "Paket eller engångsbokning",
       "range": {
@@ -1042,6 +1047,7 @@
         "lead": "Ja, ett lead utan rader",
         "addLine": "+ Lägg till en rad",
         "removeLine": "Ta bort raden",
+        "decideLater": "Bestäm senare",
         "editLine": "Ändra raden",
         "lowerToFit": "Sänk så att det stämmer",
         "prebookAll": "Förboka alla {needed} (skaffa {more} till)",
@@ -1052,6 +1058,7 @@
         "keepGuess": "Behåll {value}",
         "changeGuess": "Ändra"
       },
+      "openChoice": "{line}: {group} är inte valt än. {rule}.",
       "options": "{line}: {group} har {count, number} valda. {rule}."
     },
     "summary": {
@@ -1528,7 +1535,8 @@
       "UNFILLED_OPTIONAL_DEMAND": "Ett valfritt behov saknar enhet",
       "OUTSIDE_ITEM_HOURS": "Raden ligger utanför resursens arbetstider",
       "OUTSIDE_VENUE_HOURS": "Raden ligger utanför lokalens öppettider",
-      "OPTION_SPLIT_MISMATCH": "De fördelade tillvalen blir {sum, number}, inte {expected, number}"
+      "OPTION_SPLIT_MISMATCH": "De fördelade tillvalen blir {sum, number}, inte {expected, number}",
+      "UNCHOSEN_REQUIRED_GROUP": "Inte valt än: ett obligatoriskt val saknas"
     },
     "expandBundle": "Lägg till paket",
     "expandBundleDescription": "Lägg till ett paket som en rad som bär priset, plus en rad per del med delens tid räknat från paketets start. Delarna visar sina egna priser men räknas inte i summan; offerten visar moms per sats. Lämna tiderna tomma för rader utan tid.",
@@ -1555,6 +1563,10 @@
     "addAddOnDescription": "Lägg till något som säljs med {name}: valfri artikel eller fritext till eget pris. Det får radens typ och tid från början; ändra dem om det ska till ett annat underlag eller bara gäller en del av tiden. Tomt antal följer raden.",
     "extrasHint": "Val utöver en grupps gräns läggs till som tillägg under raden, vart och ett till sitt eget pris.",
     "issueAlerts": {
+      "openChoice": {
+        "title": "Val saknas",
+        "description": "{line}: {count, plural, one {ett obligatoriskt val} other {# obligatoriska val}} saknas fortfarande. Redigera raden för att välja."
+      },
       "hardClash": {
         "title": "Dubbelbokad",
         "description": "{line}: {ticket} håller den {period}"
@@ -3964,6 +3976,9 @@
     "lineNumber": "Rad {number}",
     "addLine": "Lägg till rad",
     "removeLine": "Ta bort rad",
+    "defaultGroup": "{name}: förval (högst {max, number})",
+    "splitAskedAtIntake": "{name} fördelas mellan gästerna och frågas alltid när ärendet skapas.",
+    "staleDefault": "{name} är inte längre ett val för den här artikeln. Det tas bort när du sparar.",
     "noItem": "Ingen artikel",
     "fields": {
       "name": "Namn",

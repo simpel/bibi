@@ -14,6 +14,10 @@ export type TemplateLineValues = {
   durationMinutes: string;
   /** Empty: the line counts the ticket's headcount (ADR 0052). */
   quantity: string;
+  /** The choices the package preselects, option item ids (ADR 0089). */
+  options: string[];
+  /** Defaults that no longer fit the item: shown, never sent, so saving drops them. */
+  staleOptions: string[];
 };
 
 /** Raw values of the predefined ticket form. */
@@ -37,7 +41,7 @@ export const ticketTemplateFormSchema = formSchema({
     name: values.name.trim(),
     minGuests: numberOrNull({ value: values.minGuests }),
     maxGuests: numberOrNull({ value: values.maxGuests }),
-    lines: values.lines.map((line) => ({
+    lines: values.lines.map(({ staleOptions: _stale, ...line }) => ({
       ...line,
       name: line.name.trim(),
       itemId: none({ value: line.itemId }),
@@ -45,6 +49,8 @@ export const ticketTemplateFormSchema = formSchema({
       offsetMinutes: numberOrNull({ value: line.offsetMinutes }),
       durationMinutes: numberOrNull({ value: line.durationMinutes }),
       quantity: numberOrNull({ value: line.quantity }),
+      // Defaults belong to the item: none without one.
+      options: line.itemId === NONE ? [] : line.options.map((itemId) => ({ itemId })),
     })),
   }),
 });
@@ -57,6 +63,8 @@ export const emptyLine = ({ entityTypeId }: { entityTypeId: string }): TemplateL
   offsetMinutes: "0",
   durationMinutes: "60",
   quantity: "",
+  options: [],
+  staleOptions: [],
 });
 
 export type FormDefaultsInput = {
@@ -82,6 +90,8 @@ export function ticketTemplateFormDefaults({
       offsetMinutes: String(line.offsetMinutes),
       durationMinutes: String(line.durationMinutes),
       quantity: line.quantity === null ? "" : String(line.quantity),
+      options: line.options.filter(({ stale }) => !stale).map(({ itemId }) => itemId),
+      staleOptions: line.options.filter(({ stale }) => stale).map(({ itemId }) => itemId),
     })),
   };
 }

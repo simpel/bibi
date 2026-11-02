@@ -1,5 +1,6 @@
 import "server-only";
 import { listEntityTypes, listItems, listTicketStatuses, type Result } from "@bibi/core";
+import { loadCustomisableItems } from "@/features/line/customisable-items";
 import { runOperation } from "@/server/run-operation";
 import type { TicketTemplateFormData } from "./ui/ticket-template-form-data";
 
@@ -7,15 +8,16 @@ const LIMIT = 100;
 
 /**
  * What the template form picks from: ticket types, line types, the statuses a ticket can
- * start in (not closing) and the catalog's items. Items are optional: without read access
- * the lines have no item to pick.
+ * start in (not closing) and the catalog's items with their customisation groups (ADR 0089).
+ * Items are optional: without read access the lines have no item to pick.
  */
 export async function loadTicketTemplateData(): Promise<Result<TicketTemplateFormData>> {
-  const [ticketTypes, lineTypes, statuses, items] = await Promise.all([
+  const [ticketTypes, lineTypes, statuses, items, customisable] = await Promise.all([
     runOperation({ operation: listEntityTypes, input: { base: "TICKET", limit: LIMIT } }),
     runOperation({ operation: listEntityTypes, input: { base: "LINE", limit: LIMIT } }),
     runOperation({ operation: listTicketStatuses, input: { limit: LIMIT } }),
     runOperation({ operation: listItems, input: { limit: LIMIT } }),
+    loadCustomisableItems(),
   ]);
   if (!ticketTypes.ok) return ticketTypes;
   if (!lineTypes.ok) return lineTypes;
@@ -29,6 +31,7 @@ export async function loadTicketTemplateData(): Promise<Result<TicketTemplateFor
       statuses: statuses.value.items.filter(({ closes }) => !closes).map(named),
       items: items.ok ? items.value.items.map(named) : [],
       itemsHidden: !items.ok,
+      customisable,
     },
   };
 }

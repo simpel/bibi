@@ -978,6 +978,11 @@
       "guests": "Estimated guests",
       "zoneHint": "Times are in the organization’s time zone. A “to” before “from” ends the next day."
     },
+    "choices": {
+      "title": "Choices",
+      "description": "Some lines in the package need a choice, such as which snack to serve. Choose now, or leave it for later: anything left open is asked again in review and shown on the ticket.",
+      "summary": "{lines, plural, one {# line} other {# lines}} · {open, plural, =0 {all chosen} one {# choice open} other {# choices open}}"
+    },
     "package": {
       "title": "Package or one-off",
       "range": {
@@ -1042,6 +1047,7 @@
         "lead": "Yes, a lead without lines",
         "addLine": "+ Add a line",
         "removeLine": "Remove the line",
+        "decideLater": "Decide later",
         "editLine": "Edit line",
         "lowerToFit": "Lower to fit",
         "prebookAll": "Prebook all {needed} (source {more} more)",
@@ -1052,6 +1058,7 @@
         "keepGuess": "Keep {value}",
         "changeGuess": "Change it"
       },
+      "openChoice": "{line}: {group} is not chosen yet. {rule}.",
       "options": "{line}: {group} has {count, number} chosen. {rule}."
     },
     "summary": {
@@ -1528,7 +1535,8 @@
       "UNFILLED_OPTIONAL_DEMAND": "An optional need has no unit",
       "OUTSIDE_ITEM_HOURS": "The line is outside the item's working hours",
       "OUTSIDE_VENUE_HOURS": "The line is outside the venue's opening hours",
-      "OPTION_SPLIT_MISMATCH": "The split options add up to {sum, number}, not {expected, number}"
+      "OPTION_SPLIT_MISMATCH": "The split options add up to {sum, number}, not {expected, number}",
+      "UNCHOSEN_REQUIRED_GROUP": "Not chosen yet: a required choice is open"
     },
     "expandBundle": "Add bundle",
     "expandBundleDescription": "Add a bundle as one line that carries its price, plus one line per part with the part's time from the bundle's start. The parts show their own prices but do not count in the total; the quote shows VAT per rate. Leave the times empty for lines without time.",
@@ -1555,6 +1563,10 @@
     "addAddOnDescription": "Add something sold with {name}: any item or free text at its own price. It starts with the line's type and time; change them if it goes to another sheet or only part of the time. Empty quantity follows the line.",
     "extrasHint": "Picks beyond a group's limit are added as add-ons under the line, each at its own price.",
     "issueAlerts": {
+      "openChoice": {
+        "title": "Choice not made yet",
+        "description": "{line}: {count, plural, one {a required choice is} other {# required choices are}} still open. Edit the line to choose."
+      },
       "hardClash": {
         "title": "Double booked",
         "description": "{line}: {ticket} holds it {period}"
@@ -3964,6 +3976,9 @@
     "lineNumber": "Line {number}",
     "addLine": "Add line",
     "removeLine": "Remove line",
+    "defaultGroup": "{name}: preselect (at most {max, number})",
+    "splitAskedAtIntake": "{name} is split between guests and is always asked when the ticket is created.",
+    "staleDefault": "{name} is no longer an option of this item. It is removed when you save.",
     "noItem": "No item",
     "fields": {
       "name": "Name",

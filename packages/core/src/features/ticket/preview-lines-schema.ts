@@ -70,6 +70,12 @@ export const PreviewAddOnSchema = z.object(PreviewRowShape);
 
 export const PreviewLineSchema = z.object({
   ...PreviewRowShape,
+  options: z
+    .array(z.object({ itemId: z.string() }))
+    .describe(
+      "A package line's default choices that still fit its item (ADR 0089), in order, as " +
+        "ticket.create's line options; empty for draft lines",
+    ),
   addOns: z
     .array(PreviewAddOnSchema)
     .describe(

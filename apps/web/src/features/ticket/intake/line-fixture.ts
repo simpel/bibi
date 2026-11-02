@@ -47,6 +47,7 @@ export function previewLineFixture({ from, to, ...rest }: PreviewLineFixtureInpu
     ...{ quantity: null, effectiveQuantity: 10, quantitySource: null },
     ...{ effectiveUnitPriceMinor: null, unitPriceSource: null },
     ...{ effectiveDiscountPercent: 0, discountSource: null, stateId: null, issues: [] },
+    options: [],
     addOns: [],
     ...rest,
   };

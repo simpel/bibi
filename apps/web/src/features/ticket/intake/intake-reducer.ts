@@ -1,4 +1,5 @@
 import {
+  hasChoices,
   hasValue,
   INTAKE_STEPS,
   type IntakeAction,
@@ -33,16 +34,26 @@ type CompleteInput = {
   action: Extract<IntakeAction, { type: "completePackage" }>;
 };
 
-/** Step 3 done: the review starts, or keeps its notes and answers with the new lines. */
+/**
+ * Step 3 done: the review starts, or keeps its notes and answers with the new lines. New lines
+ * with a required choice open the choices step first (ADR 0089); the same lines again go back
+ * to review.
+ */
 function complete({ state, action }: CompleteInput): IntakeState {
   if (!state.pick) return state;
   const pickKey = state.pick.kind === "ONE_OFF" ? "ONE_OFF" : state.pick.templateId;
-  const { lines, plannedStart } = action;
+  const { lines, plannedStart, choiceKeys } = action;
+  const fresh = state.review?.pickKey !== pickKey;
+  const keys = fresh ? choiceKeys : (state.review?.choiceKeys ?? []);
   const review = state.review
-    ? { ...state.review, lines, plannedStart, pickKey }
-    : { ...newReview({ lines, plannedStart, pickKey }), note: state.draft?.note ?? "" };
+    ? { ...state.review, lines, plannedStart, pickKey, choiceKeys: keys }
+    : {
+        ...newReview({ lines, plannedStart, pickKey, choiceKeys: keys }),
+        note: state.draft?.note ?? "",
+      };
   const next = { ...state, review };
-  return { ...next, open: nextOpen({ state: next }) };
+  const open = fresh && hasChoices({ state: next }) ? "choices" : nextOpen({ state: next });
+  return { ...next, open };
 }
 
 export type ReduceIntakeInput = { state: IntakeState; action: IntakeAction };

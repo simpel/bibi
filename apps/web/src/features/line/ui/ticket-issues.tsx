@@ -5,6 +5,7 @@ import { CircleAlertIcon, TriangleAlertIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { runOperation } from "@/server/run-operation";
+import { OpenChoiceAlerts } from "./open-choice-alerts";
 
 type Shown = { key: string; issue: LineIssue; line: string; other: string };
 
@@ -73,15 +74,20 @@ export type TicketIssuesProps = { ticketId: string };
 
 /**
  * What stands in the way of the ticket's lines now (`line.issues`), one alert per issue at the
- * top of the ticket page: a hard clash or block is destructive, the rest warn. Nothing when none.
+ * top of the ticket page, after any required choice still open (ADR 0089): a hard clash or block
+ * is destructive, the rest warn. The block collapses when there is nothing to show.
  */
 export async function TicketIssues({ ticketId }: TicketIssuesProps) {
-  const result = await runOperation({ operation: lineIssues, input: { ticketId } });
-  if (!result.ok || result.value.lines.length === 0) return null;
-  const [t, format] = await Promise.all([getTranslations("line.issueAlerts"), getDateTimeFormat()]);
+  const [result, t, format] = await Promise.all([
+    runOperation({ operation: lineIssues, input: { ticketId } }),
+    getTranslations("line.issueAlerts"),
+    getDateTimeFormat(),
+  ]);
+  const lines = result.ok ? result.value.lines : [];
   return (
-    <div data-slot="ticket-issues" className="grid gap-2">
-      {shownIssues({ lines: result.value.lines }).map((shown) => {
+    <div data-slot="ticket-issues" className="grid gap-2 empty:hidden">
+      <OpenChoiceAlerts ticketId={ticketId} />
+      {shownIssues({ lines }).map((shown) => {
         const { key, values } = messageOf({ shown, format });
         const hard = shown.issue.kind === "HARD_CLASH";
         const Icon = hard ? CircleAlertIcon : TriangleAlertIcon;

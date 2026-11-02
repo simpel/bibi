@@ -18,6 +18,8 @@ export type IntakeReview = {
   plannedStart: string | null;
   /** The pick the lines were built from (`ONE_OFF` or a package id): Next again keeps them. */
   pickKey: string;
+  /** The lines the choices step asks (ADR 0089): a package's lines with a required group. */
+  choiceKeys: string[];
   /** The ticket's title; empty: one is generated after the ticket is created. */
   title: string;
   note: string;
@@ -35,11 +37,21 @@ export type IntakeReview = {
   accepted: string[];
 };
 
-export type NewReviewInput = { lines: DraftLine[]; plannedStart: string | null; pickKey: string };
+export type NewReviewInput = {
+  lines: DraftLine[];
+  plannedStart: string | null;
+  pickKey: string;
+  choiceKeys?: string[];
+};
 
-export function newReview({ lines, plannedStart, pickKey }: NewReviewInput): IntakeReview {
+export function newReview({
+  lines,
+  plannedStart,
+  pickKey,
+  choiceKeys = [],
+}: NewReviewInput): IntakeReview {
   return {
-    ...{ lines, plannedStart, pickKey },
+    ...{ lines, plannedStart, pickKey, choiceKeys },
     title: "",
     note: "",
     ticketTypeId: null,

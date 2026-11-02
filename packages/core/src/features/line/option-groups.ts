@@ -68,10 +68,11 @@ function quantityOf({ group, chosen }: { group: OptionGroup; chosen: ChosenOptio
 export type CheckChoiceInput = { groups: readonly OptionGroup[]; options: readonly ChosenOption[] };
 
 /**
- * Every chosen id is an option of one of the groups, each group gets between its minPick and
- * maxPick distinct options (a group with minPick 0 can be skipped; more than maxPick points to
- * add-ons when the group allows extras, ADR 0088), and quantities are given exactly in split
- * groups (ADR 0082). Returns the chosen options in group order.
+ * Every chosen id is an option of one of the groups, each group with a pick gets between its
+ * minPick and maxPick distinct options (a group with no pick is open, even a required one: the
+ * line warning UNCHOSEN_REQUIRED_GROUP, ADR 0089; more than maxPick points to add-ons when the
+ * group allows extras, ADR 0088), and quantities are given exactly in split groups (ADR 0082).
+ * Returns the chosen options in group order.
  */
 export function checkChoice({ groups, options }: CheckChoiceInput): Result<ChosenLineOption[]> {
   const offered = groups.flatMap((group) => group.options.map((option) => option.itemId));
@@ -85,6 +86,8 @@ export function checkChoice({ groups, options }: CheckChoiceInput): Result<Chose
       const match = options.find(({ itemId }) => itemId === option.itemId);
       return match ? [{ option, match }] : [];
     });
+    // ADR 0089: a group without a pick stays open.
+    if (picked.length === 0) continue;
     if (picked.length < minPick || picked.length > maxPick) {
       const range = minPick === maxPick ? `${minPick}` : `${minPick} to ${maxPick}`;
       // ADR 0088: more than the max are add-ons, when the group allows extras.

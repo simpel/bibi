@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
+import { TemplateLineChoices } from "./template-line-choices";
 import type { TicketTemplateFormData } from "./ticket-template-form-data";
 import type { TicketTemplateFormValues } from "./ticket-template-form-schema";
 
@@ -42,7 +43,10 @@ function LineWhatFields({ form, data, index }: LineFieldsProps) {
           options={data.items}
           hidden={data.itemsHidden}
           noneLabel={t("noItem")}
-          onChange={() => form.setValue(lineName({ index, key: "setupId" }), "" as never)}
+          onChange={() => {
+            form.setValue(lineName({ index, key: "setupId" }), "" as never);
+            form.setValue(lineName({ index, key: "options" }), [] as never);
+          }}
         />
       </div>
     </>
@@ -76,6 +80,7 @@ export function TemplateLineFields({ form, data, index, onRemove }: TemplateLine
       <legend className="px-1 text-sm font-medium">{t("lineNumber", { number: index + 1 })}</legend>
       <LineWhatFields form={form} data={data} index={index} />
       <LineWhenFields form={form} index={index} />
+      <TemplateLineChoices form={form} data={data} index={index} />
       <Button
         type="button"
         variant="outline"

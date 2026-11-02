@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
+import { freshDefaults } from "../ticket-template/line-defaults";
 import { loadTicketTemplate } from "../ticket-template/load-ticket-template";
 import type { TicketTemplateDto } from "../ticket-template/schema";
 import type { TicketCreateFromTemplateInput } from "./create-from-template-schema";
@@ -39,7 +40,11 @@ async function create({ context, template, input }: CreateInput): Promise<Result
     statusId: template.statusId,
     trigger: "TEMPLATE",
     subject: `a ticket from "${template.name}"`,
-    lines: plan.lines,
+    // The package's default choices that still fit (ADR 0089).
+    lines: plan.lines.map((line, index) => ({
+      ...line,
+      options: freshDefaults({ options: template.lines[index]?.options ?? [] }),
+    })),
     input: {
       ...{ entityTypeId: template.entityTypeId, customerId, contactId, assigneeId, title },
       fields: template.fields,
@@ -57,7 +62,9 @@ export const createTicketFromTemplate = defineOperation({
     "the template's ticket type, default fields and start status, for a customer and one of its " +
     "contacts (required, ADR 0081), starting at " +
     "`startsAt` with `headcount` as the estimated headcount. Its lines are created timed from " +
-    "the start (a line without a quantity counts the headcount), " +
+    "the start (a line without a quantity counts the headcount) with the package's default " +
+    "choices that still fit its item (ADR 0089; an open required group is the line warning " +
+    "UNCHOSEN_REQUIRED_GROUP), " +
     "in the states the status grid gives for the start status. If any line's hard hold would " +
     "collide, nothing is created and CONFLICT lists every blocking line in `issues`. Without a " +
     "`title` one is generated from the ticket after it is created (null when none could be).",

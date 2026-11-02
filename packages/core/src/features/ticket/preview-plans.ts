@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { canView } from "../../shared/can-view";
 import { invalid, notFound } from "../../shared/errors";
+import { freshDefaults } from "../ticket-template/line-defaults";
 import { toTicketTemplateDto, WITH_LINES } from "../ticket-template/load-ticket-template";
 import { type DraftSlot, draftRows, loadAddOnItemNames } from "./draft-rows";
 import { type GuestRange, lastEnd } from "./plan/plan-groups";
@@ -21,6 +22,8 @@ export type PreviewPlan = {
   /** Where each of `lines` sits: a line, or an add-on under one (ADR 0088). */
   slots: DraftSlot[];
   endsAt: Date | null;
+  /** A package's default choices per line that still fit (ADR 0089), by line index. */
+  defaults: { itemId: string }[][];
 };
 
 const topSlots = ({ lines }: { lines: readonly PlannedLine[] }): DraftSlot[] =>
@@ -48,7 +51,15 @@ async function templatePlans({
     const plan = planTemplateLines({ template, startsAt });
     const range = { minGuests: template.minGuests, maxGuests: template.maxGuests };
     const slots = topSlots({ lines: plan.lines });
-    plans.push({ templateId: id, range, lines: plan.lines, slots, endsAt: lastEnd(plan) });
+    const defaults = template.lines.map((line) => freshDefaults({ options: line.options }));
+    plans.push({
+      templateId: id,
+      range,
+      lines: plan.lines,
+      slots,
+      endsAt: lastEnd(plan),
+      defaults,
+    });
   }
   return ok({ value: plans });
 }
@@ -82,6 +93,7 @@ export async function previewPlans({
     lines: planned,
     slots,
     endsAt: lastEnd({ lines: planned }),
+    defaults: [],
   };
   return ok({ value: [plan] });
 }

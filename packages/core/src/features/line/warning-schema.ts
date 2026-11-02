@@ -6,6 +6,7 @@ export const LINE_WARNING_KINDS = [
   "OUTSIDE_ITEM_HOURS",
   "OUTSIDE_VENUE_HOURS",
   "OPTION_SPLIT_MISMATCH",
+  "UNCHOSEN_REQUIRED_GROUP",
 ] as const;
 
 /**
@@ -19,7 +20,8 @@ export const LineWarningSchema = z.object({
     .describe(
       "The thing the warning is about: for UNFILLED_OPTIONAL_DEMAND the open allocation, for " +
         "OUTSIDE_ITEM_HOURS the item, for OUTSIDE_VENUE_HOURS the venue, for " +
-        "OPTION_SPLIT_MISMATCH the customisation group (item.get customisationGroups)",
+        "OPTION_SPLIT_MISMATCH and UNCHOSEN_REQUIRED_GROUP the customisation group (item.get " +
+        "customisationGroups)",
     ),
   kind: z
     .enum(LINE_WARNING_KINDS)
@@ -30,7 +32,9 @@ export const LineWarningSchema = z.object({
         "item has no hours of its own and the time falls outside its venue's opening hours " +
         "(venueHours.get; only with venue:read). Both advisory, the line stays valid. " +
         "OPTION_SPLIT_MISMATCH (ADR 0082): the quantities of the options chosen in a split " +
-        "group (sum) do not add up to the line's quantity (expected); never refused",
+        "group (sum) do not add up to the line's quantity (expected); never refused. " +
+        "UNCHOSEN_REQUIRED_GROUP (ADR 0089): a group of the line's item needs a pick (minPick 1 " +
+        "or more) and none is chosen yet; line.chooseOptions clears it",
     ),
   sum: z
     .number()

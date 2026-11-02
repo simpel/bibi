@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { execute, listLines } from "../src/index";
+import { execute, getLine, listLines } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { choose, optionsSetup, picks } from "./line-options-helpers";
 import { createTestQuote } from "./quote-helpers";
@@ -70,12 +70,19 @@ describe("line.chooseOptions (ADR 0059)", () => {
     expect(listed.items.filter((line) => line.parentLineId === lineId)).toHaveLength(2);
   });
 
-  it("skips a group with minimum 0 but not a required one", async () => {
+  it("leaves a required group open with a warning until it is chosen (ADR 0089)", async () => {
     const { context, lineId, selfInstall, lounge } = await optionsSetup();
-    const skipped = await choose({ context, lineId, options: picks({ ids: [selfInstall.id] }) });
-    expect(errorCode({ result: skipped })).toBeNull();
-    const missing = await choose({ context, lineId, options: picks({ ids: [lounge.id] }) });
-    expect(errorCode({ result: missing })).toBe("VALIDATION");
+    const read = async () =>
+      unwrap({ result: await execute({ operation: getLine, input: { id: lineId }, context }) });
+    const kinds = async () => (await read()).warnings.map((warning) => warning.kind);
+    expect(await kinds()).toEqual(["UNCHOSEN_REQUIRED_GROUP"]);
+    const open = await choose({ context, lineId, options: picks({ ids: [lounge.id] }) });
+    expect(errorCode({ result: open })).toBeNull();
+    expect(await kinds()).toEqual(["UNCHOSEN_REQUIRED_GROUP"]);
+    unwrap({
+      result: await choose({ context, lineId, options: picks({ ids: [selfInstall.id] }) }),
+    });
+    expect(await kinds()).toEqual([]);
   });
 
   it("rejects an item that is not an option and two options of a pick-one group", async () => {
