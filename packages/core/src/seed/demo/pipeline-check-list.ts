@@ -22,6 +22,7 @@ import { checkDemoPipeline } from "./pipeline-checks";
 import { checkDemoPreview } from "./preview-checks";
 import { checkDemoPrices } from "./price-checks";
 import { checkDemoQuoteEvents } from "./quote-event-checks";
+import { checkDemoShowcase } from "./showcase-checks";
 import { checkDemoTemplates } from "./template-checks";
 import { checkDemoTickets } from "./ticket-checks";
 import type { DemoOrg } from "./types";
@@ -44,6 +45,7 @@ export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoFactGuards,
   checkDemoGrid,
   checkDemoPreview,
+  checkDemoShowcase,
   checkDemoIntakeCreate,
   checkDemoPrices,
   checkDemoBundles,

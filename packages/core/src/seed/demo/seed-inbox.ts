@@ -41,9 +41,10 @@ type Endpoints = { emailId: string | null; ticketId: string | null; slug: string
 const mails = ({ emailId, ticketId, slug }: Endpoints) => [
   {
     ...mail({
-      ...{ slug, key: "tasting", hoursAgo: 5, from: "Anna Berg <anna.berg@nordkust.example>" },
-      subject: "Wine tasting for 14 on the 21st?",
-      text: "Hi! Could we book a wine tasting for 14 people on the 21st, around 18:00? Dinner afterwards would be lovely. Best, Anna",
+      ...{ slug, key: "tasting", hoursAgo: 5, from: "Linnea Kvist <linnea.kvist@kvarnby.test>" },
+      subject: "Wine tasting for 14 on 21 November",
+      // The text the E2E draft model (`packages/ai/src/extract/e2e-draft-model.ts`) is written for.
+      text: "Hi! A wine tasting for 14 people on Friday 21 November, around 3 pm. Two of us are vegan. Best, Linnea",
     }),
     endpointId: emailId,
     ticketId: null,

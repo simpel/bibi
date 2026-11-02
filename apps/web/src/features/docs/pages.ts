@@ -5,6 +5,7 @@ export const DOC_SECTIONS = {
     "getting-started",
     "assistant",
     "tickets",
+    "inbox",
     "items-and-venues",
     "needs-and-sheets",
     "payments",

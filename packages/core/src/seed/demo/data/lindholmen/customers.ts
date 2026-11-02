@@ -52,7 +52,9 @@ export const lindholmenCustomers: readonly DemoCustomer[] = [
     name: "Kvarnby Design AB",
     type: "Company",
     fields: { "Org no.": "559012-7788" },
-    contacts: [person({ name: "Linnea Kvist", role: "Orderer" })],
+    contacts: [
+      person({ name: "Linnea Kvist", role: "Orderer", email: "linnea.kvist@kvarnby.test" }),
+    ],
   },
   {
     name: "Göta Advokatbyrå KB",
