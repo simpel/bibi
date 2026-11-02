@@ -1,14 +1,7 @@
-import {
-  type AssetBooking,
-  type CalendarAsset,
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@bibi/ui";
+import { type AssetBooking, Button, type CalendarAsset } from "@bibi/ui";
+import { XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect } from "react";
 import { plainDayText } from "@/lib/time/plain-day";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
@@ -50,22 +43,60 @@ function SlotFacts({ slot, assets }: { slot: AssetBooking; assets: SlotSheetProp
   );
 }
 
+/** Escape closes the panel before the dialog around it (window capture runs before Radix). */
+function useEscapeFirst({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.stopPropagation();
+      onClose();
+    };
+    window.addEventListener("keydown", onKey, { capture: true });
+    return () => window.removeEventListener("keydown", onKey, { capture: true });
+  }, [open, onClose]);
+}
+
 /**
- * One booking of the read-only calendar, over it: its ticket, customer, state, line, resource,
- * period, quantity and hold. Fields the caller may not read are not in the booking, so they are
- * left out. Nothing here navigates.
+ * One booking of the read-only calendar in a side panel INSIDE the surrounding dialog (not a
+ * page-wide sheet): its ticket, customer, state, line, resource, period, quantity and hold. The
+ * dim overlay covers only the dialog; a click on it (or Escape) closes the panel, a click outside
+ * the dialog closes the dialog. Fields the caller may not read are left out; nothing navigates.
  */
 export function SlotSheet({ slot, assets, onClose }: SlotSheetProps) {
   const t = useTranslations("calendar.slot");
+  const common = useTranslations("common");
+  useEscapeFirst({ open: slot !== null, onClose });
+  if (!slot) return null;
   return (
-    <Sheet open={slot !== null} onOpenChange={(open) => (open ? null : onClose())}>
-      <SheetContent className="w-full overflow-y-auto sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle>{slot?.ticket ?? slot?.name ?? t("title")}</SheetTitle>
-          <SheetDescription>{t("description")}</SheetDescription>
-        </SheetHeader>
-        {slot ? <SlotFacts slot={slot} assets={assets} /> : null}
-      </SheetContent>
-    </Sheet>
+    <>
+      <button
+        type="button"
+        aria-label={common("close")}
+        className="absolute inset-0 z-20 cursor-default bg-foreground/20"
+        onClick={onClose}
+      />
+      <aside
+        aria-label={slot.ticket ?? slot.name ?? t("title")}
+        className="absolute inset-y-0 right-0 z-30 flex w-full flex-col overflow-y-auto border-l bg-background shadow-lg sm:max-w-md"
+      >
+        <div className="flex items-start justify-between gap-2 p-4">
+          <div className="grid gap-1">
+            <h3 className="font-serif text-lg">{slot.ticket ?? slot.name ?? t("title")}</h3>
+            <p className="text-sm text-muted-foreground">{t("description")}</p>
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label={common("close")}
+            onClick={onClose}
+          >
+            <XIcon aria-hidden="true" />
+          </Button>
+        </div>
+        <SlotFacts slot={slot} assets={assets} />
+      </aside>
+    </>
   );
 }
