@@ -7,7 +7,7 @@ import type { CalendarBlockWire } from "./calendar-range-model";
 
 export type CalendarRangeBlockProps = { block: CalendarBlockWire; timeZone: string };
 
-/** One block: time range, title (or its type), ticket reference and state colour. */
+/** One block: time range, title (or its type), its ticket (title, else reference) and state colour. */
 export function CalendarRangeBlock({ block, timeZone }: CalendarRangeBlockProps) {
   const t = useTranslations("assistant.ui.calendar");
   const types = useTranslations("occupancy.types");
@@ -20,7 +20,7 @@ export function CalendarRangeBlock({ block, timeZone }: CalendarRangeBlockProps)
       {block.stateColor ? <ColorSwatch color={block.stateColor} /> : null}
       <span className="font-medium">{block.title ?? types(block.type)}</span>
       {block.reference === null ? null : (
-        <span className="text-muted-foreground">#{block.reference}</span>
+        <span className="text-muted-foreground">{block.ticketTitle ?? `#${block.reference}`}</span>
       )}
       {block.stateName ? <span className="text-muted-foreground">{block.stateName}</span> : null}
       {block.soft ? <Badge variant="outline">{t("softHold")}</Badge> : null}

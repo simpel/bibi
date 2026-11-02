@@ -28,7 +28,8 @@ export async function buildSheetContent({
     kind: "TICKET",
     key: ticket.id,
     parentKey: null,
-    label: String(ticket.reference),
+    // The title leads; the reference stays so the receiver can quote it back.
+    label: ticket.title ? `${ticket.title} · #${ticket.reference}` : String(ticket.reference),
     itemName: null,
     quantity: ticket.guaranteedHeadcount ?? ticket.estimatedHeadcount,
     startsAt: ticket.desiredStartsAt?.toISOString() ?? null,

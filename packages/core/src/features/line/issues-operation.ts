@@ -39,12 +39,12 @@ export const lineIssues = defineOperation({
     const found = await savedLineIssues({
       ...{ context, statusId: ticket.statusId, lines, withAvailability },
     });
-    // Another ticket's reference is the ticket feature's (ADR 0050): only with ticket:read.
+    // Another ticket's reference and title are the ticket feature's (ADR 0050): only with ticket:read.
     const references = canView({ context, feature: "ticket" });
     const issues = found.map((line) => ({
       ...line,
       issues: line.issues.map((issue) =>
-        references ? issue : { ...issue, ticketReference: null },
+        references ? issue : { ...issue, ticketReference: null, ticketTitle: null },
       ),
     }));
     return ok({ value: { availabilityHidden: !withAvailability, lines: issues } });

@@ -12,28 +12,34 @@ const people = { assignee: "Per Vinga", followers: ["Stina Holm"] };
  */
 export const vingaledenTickets: readonly DemoTicket[] = [
   {
+    title: "Hisingen Energi archipelago charter",
     ...{ ref: "V1", customer: hisingen, type: "Charter", day: -7, from: "18:00", to: "20:30" },
     ...{ status: "Completed", headcount: 40, ...people },
   },
   {
+    title: "Kvarnby team charter",
     ...{ ref: "V2", customer: "Kvarnby Design AB", type: "Charter", day: -2, from: "18:00" },
     ...{ to: "20:30", status: "Called off – weather", reason: "Weather", headcount: 20, ...people },
   },
   {
+    title: "Rask family round trip",
     ...{ ref: "V3", customer: "Familjen Rask", type: "Round trip", day: 2, from: "10:00" },
     ...{ to: "11:30", status: "Weather OK", headcount: 9, estimatesKr: [6_500], ...people },
   },
   {
+    title: "Hisingen Energi client charter",
     ...{ ref: "V4", customer: hisingen, type: "Charter", day: 10, from: "17:00", to: "19:30" },
     ...{ status: "Weather hold", headcount: 60, assignee: "Stina Holm", estimatesKr: [38_000] },
   },
   {
+    title: "Rask family Vinga trip",
     ...{ ref: "V5", customer: "Familjen Rask", type: "Round trip", day: 16, from: "10:00" },
     ...{ to: "11:30", headcount: 12, estimatesKr: [9_000], holdsUntilDay: 4, ...people },
     // A soft hold that runs out within the week: the dashboard's attention list (ADR 0080).
     lines: [{ item: "RIB Snabben", name: "Round trip", from: "10:00", to: "11:30" }],
   },
   {
+    title: "Kvarnby autumn charter",
     ...{ ref: "V6", customer: "Kvarnby Design AB", type: "Charter", day: 21, from: "17:00" },
     ...{ to: "19:30", status: "Confirmed", headcount: 30, estimatesKr: [26_000], ...people },
   },

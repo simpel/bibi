@@ -16,6 +16,7 @@ const kvarnby = "Kvarnby Design AB";
  */
 export const lindholmenYearTickets: readonly DemoTicket[] = [
   past({
+    title: "Nordkust annual conference",
     ref: "L16",
     customer: nordkust,
     type: "Conference",
@@ -25,6 +26,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     paidDay: -300,
   }),
   past({
+    title: "Region workshop",
     ref: "L17",
     customer: region,
     type: "Conference",
@@ -34,6 +36,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     paidDay: -280,
   }),
   past({
+    title: "Älvstrand summer party",
     ref: "L18",
     customer: alvstrand,
     type: "Event",
@@ -43,6 +46,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     paidDay: -251,
   }),
   past({
+    title: "Seglarsällskapet season opening",
     ref: "L19",
     customer: sailing,
     type: "Event",
@@ -53,6 +57,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     refund: { kr: 2000, day: -200 },
   }),
   past({
+    title: "Göta client seminar",
     ref: "L20",
     customer: gota,
     type: "Conference",
@@ -62,6 +67,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     paidDay: -190,
   }),
   past({
+    title: "Hisingen Energi quarterly meeting",
     ref: "L21",
     customer: hisingen,
     type: "Conference",
@@ -71,6 +77,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     paidDay: -152,
   }),
   past({
+    title: "Kvarnby studio day",
     ref: "L22",
     customer: kvarnby,
     type: "Event",
@@ -80,6 +87,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     paidDay: -126,
   }),
   past({
+    title: "Nordkust planning conference",
     ref: "L23",
     customer: nordkust,
     type: "Conference",
@@ -88,6 +96,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     lines: [room({ item: "Öckerö" }), lunch],
   }),
   past({
+    title: "Region leadership forum",
     ref: "L24",
     customer: region,
     type: "Conference",
@@ -97,6 +106,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     paidDay: -70,
   }),
   past({
+    title: "Älvstrand Christmas dinner",
     ref: "L25",
     customer: alvstrand,
     type: "Event",
@@ -105,6 +115,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     lines: [buffet],
   }),
   past({
+    title: "Seglarsällskapet annual meeting",
     ref: "L26",
     customer: gota,
     type: "Conference",
@@ -114,6 +125,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     paidDay: -41,
   }),
   past({
+    title: "Göta partner dinner",
     ref: "L27",
     customer: sailing,
     type: "Event",
@@ -123,6 +135,7 @@ export const lindholmenYearTickets: readonly DemoTicket[] = [
     paidDay: -20,
   }),
   past({
+    title: "Hisingen Energi board day",
     ref: "L28",
     customer: hisingen,
     type: "Conference",

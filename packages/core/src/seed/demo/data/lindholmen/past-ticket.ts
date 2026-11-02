@@ -32,7 +32,10 @@ export const room = ({ item }: { item: string }): DemoLine => ({
   to: "17:00",
 });
 
-type PastInput = Pick<DemoTicket, "ref" | "customer" | "type" | "day" | "headcount" | "lines"> &
+type PastInput = Pick<
+  DemoTicket,
+  "ref" | "title" | "customer" | "type" | "day" | "headcount" | "lines"
+> &
   Pick<DemoInvoice, "paidDay" | "refund"> & { dueAfter?: number };
 
 /**

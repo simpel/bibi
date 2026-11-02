@@ -40,7 +40,10 @@ type TitleProps = { row: RowFacts; nested: boolean };
 /** The row's name; an add-on whose parent is not on the sheet names it (ADR 0088). */
 function Title({ row, nested }: TitleProps) {
   const t = useTranslations("sheet");
-  if (row.kind === "TICKET") return <>{t("ticket", { reference: row.label })}</>;
+  // Versions before titles hold the bare reference.
+  if (row.kind === "TICKET") {
+    return <>{/^\d+$/.test(row.label) ? t("ticket", { reference: row.label }) : row.label}</>;
+  }
   if (row.addOnTo !== undefined && !nested) {
     return <>{t("addOnTo", { name: row.label, parent: row.addOnTo })}</>;
   }

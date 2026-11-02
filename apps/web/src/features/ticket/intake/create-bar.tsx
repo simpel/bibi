@@ -8,7 +8,7 @@ import type { ReviewModel } from "./use-review-model";
 const clashes = ({ model }: { model: ReviewModel }) =>
   (model.planned ?? []).filter((line) => line.issues.some(({ kind }) => kind === "HARD_CLASH"));
 
-/** "Since you started, #41 booked Vinga 09:00–11:00" from the new preview, when it names one. */
+/** "Since you started, Saab kickoff (or #41) booked Vinga 09:00–11:00", when the preview names one. */
 function useConflictText({ model }: { model: ReviewModel }) {
   const t = useTranslations("ticketIntake.create");
   const dates = useDateTimeFormat();
@@ -20,7 +20,8 @@ function useConflictText({ model }: { model: ReviewModel }) {
     const resource =
       model.data.catalog.items.find(({ id }) => id === line.itemId)?.name ?? line.name;
     const period = dates.timeRange({ start: issue.startsAt, end: issue.endsAt });
-    return t("conflictNamed", { reference: issue.ticketReference, resource, period });
+    const ticket = issue.ticketTitle ?? `#${issue.ticketReference}`;
+    return t("conflictNamed", { ticket, resource, period });
   }
   return t("conflict");
 }

@@ -14,6 +14,7 @@ export type OccupancyRow = Period & {
   type: string;
   lineId: string | null;
   ticketReference: number | null;
+  ticketTitle: string | null;
 };
 
 /** The row blocks a hard hold: a hard hold or buffer, or a manual block (as `holdCollisions`). */
@@ -58,12 +59,13 @@ export async function loadOccupancy({
     select: {
       ...{ id: true, itemId: true, holdKind: true, type: true, lineId: true },
       ...{ startsAt: true, endsAt: true },
-      line: { select: { ticket: { select: { reference: true } } } },
+      line: { select: { ticket: { select: { reference: true, title: true } } } },
     },
     orderBy: [{ startsAt: "asc" }, { id: "asc" }],
   });
   return rows.map(({ line, ...row }) => ({
     ...row,
     ticketReference: line?.ticket.reference ?? null,
+    ticketTitle: line?.ticket.title ?? null,
   }));
 }

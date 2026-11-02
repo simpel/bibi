@@ -1,5 +1,6 @@
 import { addDays, weekdayOf } from "../../time/plain-date";
 import { toZonedParts } from "../../time/zoned-time";
+import { titleFor } from "./demo-title";
 import type { DemoDensity, DensitySlot } from "./density-types";
 import type { DemoLine, DemoTicket } from "./ticket-types";
 import { assetDay } from "./used-asset-days";
@@ -53,7 +54,7 @@ function ticketOf({ density, day, index, blocks }: TicketInput): DemoTicket {
   const { label, ...ticket } = shape;
   return {
     ...ticket,
-    title: label,
+    title: titleFor({ customer: ticket.customer, what: label }),
     ...{ ref, day, from: froms[0] ?? "09:00", to: tos.at(-1) ?? "17:00", lines },
     ...density.statusOf({ day, index }),
   };

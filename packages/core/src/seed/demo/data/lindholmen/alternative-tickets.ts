@@ -9,6 +9,7 @@ const quoted = { quote: "Conference lunch" };
  */
 export const lindholmenAlternativeTickets: readonly DemoTicket[] = [
   {
+    title: "Kvarnby design workshop",
     ...quoted,
     ...{ ref: "L13", customer: "Kvarnby Design AB", type: "Conference", day: 20, from: "09:00" },
     ...{ to: "12:00", status: "Quote sent", headcount: 14, assignee: "Maria Holm" },
@@ -21,6 +22,7 @@ export const lindholmenAlternativeTickets: readonly DemoTicket[] = [
     alternatives: [{ name: "Workshop room", lines: ["Workshop in Hönö", "Workshop in Styrsö"] }],
   },
   {
+    title: "Älvstrand planning day",
     ...quoted,
     ...{ ref: "L14", customer: "Älvstrand Tech AB", type: "Conference", day: 25, from: "09:00" },
     ...{ to: "12:00", status: "Confirmed", headcount: 16, assignee: "Johan Ek" },

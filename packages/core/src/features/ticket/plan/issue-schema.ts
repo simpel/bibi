@@ -35,6 +35,13 @@ export const PlanLineIssueSchema = z.object({
     .describe(
       `${only({ kinds: "HARD_CLASH and SOFT_OVERLAP" })}: the holding ticket; null for a block`,
     ),
+  ticketTitle: z
+    .string()
+    .nullable()
+    .describe(
+      `${only({ kinds: "HARD_CLASH and SOFT_OVERLAP" })}: the holding ticket's title; null for a ` +
+        "block or an untitled ticket",
+    ),
   startsAt: z
     .date()
     .nullable()
@@ -87,7 +94,8 @@ export const PlanLineIssueSchema = z.object({
 export type PlanLineIssue = z.infer<typeof PlanLineIssueSchema>;
 
 const EMPTY = {
-  ...{ ticketReference: null, startsAt: null, endsAt: null, refusesCreate: null },
+  ...{ ticketReference: null, ticketTitle: null, startsAt: null, endsAt: null },
+  refusesCreate: null,
   ...{ otherLineIndex: null, capacity: null, demandId: null, needed: null, free: null },
   ...{ hoursKind: null, hoursOwnerId: null },
 } as const;

@@ -32,14 +32,15 @@ export function useIssueText() {
       issue.startsAt && issue.endsAt
         ? dates.timeRange({ start: issue.startsAt, end: issue.endsAt })
         : "";
-    const reference = issue.ticketReference ?? 0;
+    // The holding ticket by its title, else its reference.
+    const ticket = issue.ticketTitle ?? `#${issue.ticketReference ?? 0}`;
     switch (issue.kind) {
       case "HARD_CLASH":
         return issue.ticketReference === null
           ? t("blocked", { period })
-          : t("hardClash", { reference, period });
+          : t("hardClash", { ticket, period });
       case "SOFT_OVERLAP":
-        return t("softOverlap", { reference, period });
+        return t("softOverlap", { ticket, period });
       case "SELF_OVERLAP":
         return t("selfOverlap", { line: (issue.otherLineIndex ?? 0) + 1 });
       case "SETUP_CAPACITY":

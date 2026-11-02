@@ -27,14 +27,15 @@ function messageOf({ shown: { issue, line, other }, format }: MessageInput): Mes
     issue.startsAt && issue.endsAt
       ? format.dateTimeRange({ start: issue.startsAt, end: issue.endsAt })
       : "";
-  const reference = issue.ticketReference ?? 0;
+  // The holding ticket by its title, else its reference.
+  const ticket = issue.ticketTitle ?? `#${issue.ticketReference ?? 0}`;
   switch (issue.kind) {
     case "HARD_CLASH":
       return issue.ticketReference === null
         ? { key: "blocked", values: { line, period } }
-        : { key: "hardClash", values: { line, reference, period } };
+        : { key: "hardClash", values: { line, ticket, period } };
     case "SOFT_OVERLAP":
-      return { key: "softOverlap", values: { line, reference, period } };
+      return { key: "softOverlap", values: { line, ticket, period } };
     case "SELF_OVERLAP":
       return { key: "selfOverlap", values: { line, other } };
     case "SETUP_CAPACITY":

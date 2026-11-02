@@ -3,7 +3,11 @@ import { blocks, type OccupancyRow } from "./occupancy-rows";
 import { overlaps, type Period } from "./planned-line";
 
 /** The rows of one blocker (a line's hold and its buffers, or one block) as a single period. */
-type Blocker = Period & { ticketReference: number | null; hard: boolean };
+type Blocker = Period & {
+  ticketReference: number | null;
+  ticketTitle: string | null;
+  hard: boolean;
+};
 
 /** One blocker per holding line (its hold and buffers merged) or per manual block. */
 function mergeBlockers({ rows }: { rows: readonly OccupancyRow[] }): Blocker[] {
@@ -16,6 +20,7 @@ function mergeBlockers({ rows }: { rows: readonly OccupancyRow[] }): Blocker[] {
       startsAt: seen && seen.startsAt < row.startsAt ? seen.startsAt : row.startsAt,
       endsAt: seen && seen.endsAt > row.endsAt ? seen.endsAt : row.endsAt,
       ticketReference: row.ticketReference,
+      ticketTitle: row.ticketTitle,
       hard,
     });
   }
@@ -53,6 +58,7 @@ export function clashIssues({ name, itemId, period, rows, hard }: ClashIssuesInp
           ? `"${name}" clashes with ${by({ blocker })} (${when({ blocker })})`
           : `"${name}" overlaps a soft hold of ${by({ blocker })} (${when({ blocker })})`,
         ticketReference: blocker.ticketReference,
+        ticketTitle: blocker.ticketTitle,
         startsAt: blocker.startsAt,
         endsAt: blocker.endsAt,
         ...(blocker.hard ? { refusesCreate: hard } : {}),

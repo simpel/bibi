@@ -5,7 +5,13 @@ function line({ kinds }: { kinds: PlanLineIssue["kind"][] }): PreviewLine {
   const issues = kinds.map((kind) => ({
     kind,
     message: kind,
-    ...{ ticketReference: null, startsAt: null, endsAt: null, refusesCreate: null },
+    ...{
+      ticketReference: null,
+      ticketTitle: null,
+      startsAt: null,
+      endsAt: null,
+      refusesCreate: null,
+    },
     ...{ otherLineIndex: null, capacity: null, demandId: null, needed: null, free: null },
     ...{ hoursKind: null, hoursOwnerId: null },
   }));

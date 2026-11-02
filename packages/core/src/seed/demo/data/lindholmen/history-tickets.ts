@@ -10,6 +10,7 @@ const kvarnby = "Kvarnby Design AB";
  */
 export const lindholmenHistoryTickets: readonly DemoTicket[] = [
   {
+    title: "Hisingen Energi kickoff",
     ...{ ref: "L1", customer: hisingen, type: "Conference", day: -21, from: "08:30", to: "17:00" },
     ...{ status: "Completed", headcount: 40, assignee: "Johan Ek", followers: ["Erik Lund"] },
     fields: { Purpose: "Kickoff", Host: "Mats Olsson" },
@@ -18,6 +19,7 @@ export const lindholmenHistoryTickets: readonly DemoTicket[] = [
     money: { invoice: { paid: true, dueDay: 30 } },
   },
   {
+    title: "Kvarnby anniversary dinner",
     ...{ ref: "L2", customer: kvarnby, type: "Event", day: -10, from: "17:00", to: "23:00" },
     ...{ status: "Completed", headcount: 80, assignee: "Maria Holm", followers: ["Sara Nilsson"] },
     fields: { Dresscode: "Blazer" },

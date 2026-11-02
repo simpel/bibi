@@ -16,6 +16,7 @@ const room = ({ item, name }: { item: string; name: string }) => ({
  */
 export const lindholmenClosedTickets: readonly DemoTicket[] = [
   {
+    title: "Nordkust management team days",
     ...{ ...lunch, won: true, ref: "W1", customer: "Nordkust Logistik AB", type: "Conference" },
     ...{ day: -40, from: "09:00", to: "16:00", status: "Completed", headcount: 30 },
     ...{ assignee: "Johan Ek", followers: ["Erik Lund"] },
@@ -23,6 +24,7 @@ export const lindholmenClosedTickets: readonly DemoTicket[] = [
     lines: [room({ item: "Hönö", name: "Management days" })],
   },
   {
+    title: "Region training day",
     ...{ ...lunch, won: true, ref: "W2", customer: "Västra Sjukvårdsregionen", type: "Conference" },
     ...{ day: -75, from: "09:00", to: "16:00", status: "Completed", headcount: 45 },
     ...{ assignee: "Maria Holm", followers: ["Sara Nilsson"] },
@@ -30,6 +32,7 @@ export const lindholmenClosedTickets: readonly DemoTicket[] = [
     lines: [room({ item: "Vinga (auditorium)", name: "Training day" })],
   },
   {
+    title: "Älvstrand spring hackathon",
     ...{ ...lunch, won: true, ref: "W3", customer: "Älvstrand Tech AB", type: "Conference" },
     ...{ day: -110, from: "09:00", to: "16:00", status: "Completed", headcount: 20 },
     ...{ assignee: "Erik Lund", estimatesKr: [40_000] },
@@ -37,18 +40,21 @@ export const lindholmenClosedTickets: readonly DemoTicket[] = [
     lines: [room({ item: "Styrsö", name: "Hackathon" })],
   },
   {
+    title: "Göta partner meeting",
     ...{ ref: "X1", customer: "Göta Advokatbyrå KB", type: "Conference", day: -55 },
     ...{ from: "09:00", to: "16:00", status: "Lost", reason: "Went to a competitor" },
     ...{ headcount: 35, assignee: "Sara Nilsson", estimatesKr: [72_000, 64_000] },
     fields: { Purpose: "Partner meeting" },
   },
   {
+    title: "Seglarsällskapet board meeting",
     ...{ ref: "X2", customer: "Göteborgs Seglarsällskap", type: "Conference", day: -95 },
     ...{ from: "09:00", to: "16:00", status: "Cancelled", reason: "Budget" },
     ...{ headcount: 15, assignee: "Johan Ek", estimatesKr: [28_000] },
     fields: { Purpose: "Board meeting" },
   },
   {
+    title: "Kvarnby design sprint",
     // ADR 0079: the count is locked, which needs an accepted quote (it is made and accepted first).
     ...{
       ...lunch,

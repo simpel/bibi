@@ -1153,9 +1153,9 @@
       "addItem": "+ Lägg till en artikel"
     },
     "issues": {
-      "hardClash": "#{reference} har den {period}",
+      "hardClash": "{ticket} har den {period}",
       "blocked": "Blockerad {period}",
-      "softOverlap": "#{reference} har den förbokad {period}",
+      "softOverlap": "{ticket} har den förbokad {period}",
       "selfOverlap": "Överlappar rad {line} i den här bokningen",
       "setupCapacity": "Fler än möbleringens {capacity}",
       "poolShort": "{needed} behövs, {free} lediga den dagen",
@@ -1199,7 +1199,7 @@
       "answerFirst": "Svara på {count, plural, one {# fråga} other {# frågor}} först",
       "blocked": "{count, plural, one {# rad krockar} other {# rader krockar}} med andra bokningar. De förbokas (mjuk hållning) och är blockerade tills du flyttar tiden eller den andra bokningen frigörs.",
       "conflict": "Inte skapat än. Sedan du började har en annan bokning tagit en resurs.",
-      "conflictNamed": "Inte skapat än. Sedan du började har #{reference} bokat {resource} {period}.",
+      "conflictNamed": "Inte skapat än. Sedan du började har {ticket} bokat {resource} {period}.",
       "conflictHint": "Raderna och kalendern är uppdaterade. Kontrollera dem och skapa igen.",
       "savingPackage": "Sparar paketet…",
       "packageSaved": "Paketet har sparats.",
@@ -1557,7 +1557,7 @@
     "issueAlerts": {
       "hardClash": {
         "title": "Dubbelbokad",
-        "description": "{line}: ärende #{reference} håller den {period}"
+        "description": "{line}: {ticket} håller den {period}"
       },
       "blocked": {
         "title": "Blockerad",
@@ -1565,7 +1565,7 @@
       },
       "softOverlap": {
         "title": "Preliminärbokad av ett annat ärende",
-        "description": "{line}: ärende #{reference} har den preliminärbokad {period}"
+        "description": "{line}: {ticket} har den preliminärbokad {period}"
       },
       "selfOverlap": {
         "title": "Överlappande rader",
@@ -3485,6 +3485,7 @@
     "attach": "Koppla",
     "attached": "Meddelandet kopplat",
     "attachedTo": "Meddelandet är kopplat till ett ärende. Öppna ärendet",
+    "attachedToTicket": "Meddelandet är kopplat till <ticket></ticket>.",
     "dismiss": "Avfärda",
     "restore": "Återställ",
     "dismissed": "Meddelandet avfärdat",

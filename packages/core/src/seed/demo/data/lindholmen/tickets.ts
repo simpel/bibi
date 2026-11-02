@@ -24,6 +24,7 @@ const vinga = { item: "Vinga (auditorium)", from: "09:00", to: "17:00" };
 export const lindholmenTickets: readonly DemoTicket[] = [
   ...lindholmenHistoryTickets,
   {
+    title: "Region strategy days",
     ...{ ...quoted, estimatesKr: [60_000, 85_000], note: "North entrance, invoice ref VSR-2291." },
     ...{ ref: "L3", customer: "Västra Sjukvårdsregionen", type: "Conference", day: 3 },
     money: { deposit: { description: "Advance at confirmation", amountKr: 5_000 } },
@@ -38,6 +39,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     fields: { Purpose: "Strategy days", Host: "Eva Sund" },
   },
   {
+    title: "Göta half-day conference",
     ...quoted,
     ...{ ref: "L4", customer: gota, type: "Conference", day: 5, from: "09:00", to: "13:00" },
     ...{ status: "Confirmed", headcount: 12, assignee: "Maria Holm", followers: ["Sara Nilsson"] },
@@ -46,6 +48,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     changeAfterQuote: { line: "Conference lunch", quantity: 14 },
   },
   {
+    title: "Älvstrand customer event",
     ...quoted,
     ...{ ref: "L5", customer: "Älvstrand Tech AB", type: "Event", day: 14, from: "18:00" },
     // ADR 0057: 10 000 kr of the accepted quote is paid; the rest is the balance.
@@ -60,14 +63,17 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     fields: { Dresscode: "Dark suit" },
   },
   {
+    title: "Hisingen Energi team day",
     ...{ ref: "L6", customer: hisingen, type: "Conference", day: 30, from: "08:30", to: "17:00" },
     ...{ status: "Lost", reason: "Budget", headcount: 25, assignee: "Erik Lund" },
   },
   {
+    title: "Göta small meeting",
     ...{ ref: "L7", customer: gota, type: "Conference", day: 1, from: "10:00", to: "12:00" },
     ...{ template: "Small meeting", status: "Confirmed", headcount: 4, assignee: "Sara Nilsson" },
   },
   {
+    title: "Seglarsällskapet harbour tour",
     ...quoted,
     ...{ ref: "L8", customer: "Göteborgs Seglarsällskap", type: "Tour", day: 2, from: "14:00" },
     ...{
@@ -80,6 +86,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     fields: { "School class": false },
   },
   {
+    title: "Kvarnby team day with dinner",
     ...quoted,
     ...{ ref: "L9", customer: kvarnby, type: "Conference", day: 8, from: "09:00", to: "20:00" },
     estimatesKr: [48_000],
@@ -87,11 +94,13 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     ...{ status: "Confirmed", headcount: 18, assignee: "Maria Holm", followers: ["Sara Nilsson"] },
   },
   {
+    title: "Hisingen Energi afternoon break",
     ...{ ref: "L10", customer: hisingen, type: "Conference", day: 4, from: "13:00", to: "16:00" },
     ...{ template: "Afternoon break", status: "Confirmed", headcount: 6, assignee: "Johan Ek" },
     followers: ["Erik Lund"],
   },
   {
+    title: "Göta board meeting",
     ...quoted,
     ...{ ref: "L11", customer: gota, type: "Conference", day: 6, from: "09:00", to: "13:00" },
     ...{
@@ -106,6 +115,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     lines: l11Lines,
   },
   {
+    title: "Hisingen Energi strategy meeting",
     ...{ ref: "L12", customer: hisingen, type: "Conference", day: 5, from: "10:00", to: "12:00" },
     estimatesKr: [22_000],
     ...quoted,
@@ -114,18 +124,21 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     lines: [{ item: "Styrsö", name: "Strategy meeting", from: "10:00", to: "12:00" }],
   },
   {
+    title: "Hisingen Energi autumn kickoff",
     ...{ ref: "F2", customer: hisingen, type: "Conference", day: 45, from: "09:00", to: "17:00" },
     ...{ headcount: 100, assignee: "Erik Lund", holdsUntilDay: 5, estimatesKr: [150_000, 120_000] },
     fields: { Purpose: "Kickoff" },
     lines: [{ ...vinga, name: "Kickoff" }],
   },
   {
+    title: "Kvarnby product launch",
     ...{ ref: "F3", customer: kvarnby, type: "Conference", day: 45, from: "09:00", to: "17:00" },
     ...{ headcount: 80, assignee: "Sara Nilsson", holdsUntilDay: 5, estimatesKr: [95_000] },
     fields: { Purpose: "Product launch" },
     lines: [{ ...vinga, name: "Product launch" }],
   },
   {
+    title: "Älvstrand team day",
     ...{ ref: "F6", customer: "Älvstrand Tech AB", type: "Conference", day: 12, from: "09:00" },
     ...{ to: "16:00", headcount: 20, holdsUntilDay: -1 },
     fields: { Purpose: "Team day" },

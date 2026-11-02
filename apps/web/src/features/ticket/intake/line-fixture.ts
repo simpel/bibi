@@ -23,7 +23,13 @@ export function draftFixture({ from, to, ...rest }: DraftFixtureInput = {}): Dra
 export function issueFixture({ ...input }: Partial<PlanLineIssue> & Pick<PlanLineIssue, "kind">) {
   return {
     message: input.kind,
-    ...{ ticketReference: null, startsAt: null, endsAt: null, refusesCreate: null },
+    ...{
+      ticketReference: null,
+      ticketTitle: null,
+      startsAt: null,
+      endsAt: null,
+      refusesCreate: null,
+    },
     ...{ otherLineIndex: null, capacity: null, demandId: null, needed: null, free: null },
     ...{ hoursKind: null, hoursOwnerId: null },
     ...input,

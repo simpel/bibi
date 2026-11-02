@@ -7,11 +7,11 @@ import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { INBOX_ROUTE, inboxMessageRoute } from "@/lib/inbox-routes";
 import { Link } from "@/lib/navigation";
-import { ticketRoute } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { AttachedTicket } from "./attached-ticket";
 import { loadTicketOptions } from "./load-ticket-options";
 import { MessageActions } from "./message-actions";
 import { MessageEntry } from "./message-entry";
@@ -49,11 +49,7 @@ export async function MessageDetail({ locale, id }: MessageDetailProps) {
       <BackLink label={common("back")} />
       <PageHeader title={title} />
       {message.ticketId ? (
-        <p className="text-sm">
-          <Link href={ticketRoute({ id: message.ticketId })} className="underline">
-            {t("attachedTo")}
-          </Link>
-        </p>
+        <AttachedTicket ticketId={message.ticketId} />
       ) : (
         <MessageActions
           id={message.id}
