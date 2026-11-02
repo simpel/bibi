@@ -491,6 +491,8 @@
     "detail": "Details",
     "newChat": "New chat",
     "newTicket": "New ticket",
+    "newTicketOptions": "More ways to create a ticket",
+    "newTicketFromMessage": "From a message",
     "recent": "Recent",
     "chats": "Chats",
     "showMore": "Show more",

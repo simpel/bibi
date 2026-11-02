@@ -491,6 +491,8 @@
     "detail": "Detaljer",
     "newChat": "Ny chatt",
     "newTicket": "Nytt ärende",
+    "newTicketOptions": "Fler sätt att skapa ett ärende",
+    "newTicketFromMessage": "Från ett meddelande",
     "recent": "Senaste",
     "chats": "Chattar",
     "showMore": "Visa fler",

@@ -79,20 +79,22 @@ export type IntakePageProps = {
   message: IntakeMessage | null;
   /** Drafting from a message has a model (ADR 0084): step 0 is offered. */
   draftEnabled: boolean;
+  /** Open on step 0 without a message, to paste a request. */
+  startWithMessage?: boolean;
 };
 
 /**
  * `/new/ticket`: the ticket intake on one page, from who asks to Create (ADR 0081); opened from
  * an inbox message it starts the customer search from the sender and attaches it (ADR 0085).
  */
-export function IntakePage({ data, message, draftEnabled }: IntakePageProps) {
+export function IntakePage({ data, message, draftEnabled, startWithMessage }: IntakePageProps) {
   const [state, dispatch] = useReducer(
     (current: IntakeState, action: IntakeAction) => reduceIntake({ state: current, action }),
     undefined,
     () =>
       initialIntake({
         ...{ intakeKey: crypto.randomUUID(), inboundMessageId: message?.id ?? null },
-        fromMessage: message !== null && draftEnabled,
+        fromMessage: (message !== null || startWithMessage === true) && draftEnabled,
       }),
   );
   const summaries = useIntakeSummaries({ state });

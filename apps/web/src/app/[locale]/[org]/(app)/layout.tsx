@@ -12,6 +12,7 @@ import { mustWelcomeFirst } from "@/features/welcome/load-welcome-gate";
 import { redirect } from "@/lib/navigation";
 import { TABLE_COLUMNS_PREFIX } from "@/lib/table-preferences";
 import { getCallerAbilities } from "@/server/caller-abilities";
+import { hasDraftModel } from "@/server/draft-model";
 import { requireReadySession } from "@/server/guard";
 
 type AppLayoutProps = { children: ReactNode; params: Promise<{ locale: string }> };
@@ -28,10 +29,11 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
   if (await mustWelcomeFirst()) redirect({ href: welcomePath(), locale, org: organizationSlug });
   const { id, name, email } = session.user;
   // Only decide which sidebar links show (ADR 0036); `/settings/*` and `/admin` check again.
-  const [platformAdmin, abilities, preferences] = await Promise.all([
+  const [platformAdmin, abilities, preferences, canDraftFromMessage] = await Promise.all([
     isPlatformAdmin({ userId: id }),
     getCallerAbilities(),
     loadUserPreferences({ prefix: TABLE_COLUMNS_PREFIX }),
+    hasDraftModel(),
   ]);
   return (
     <TablePreferencesProvider preferences={preferences}>
@@ -40,6 +42,7 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
         user={{ name, email }}
         access={{
           canConfigure: canOpenSettings({ permissions: abilities.permissions }),
+          canDraftFromMessage,
           platformAdmin,
           permissions: abilities.permissions,
         }}

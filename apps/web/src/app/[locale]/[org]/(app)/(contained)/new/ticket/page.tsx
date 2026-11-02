@@ -6,13 +6,16 @@ import { TicketIntake } from "@/features/ticket/ui/ticket-intake";
 
 type NewTicketPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ fromMessage?: string | string[] }>;
+  searchParams: Promise<{ fromMessage?: string | string[]; start?: string | string[] }>;
 };
 
-/** `/new/ticket`: the one-page ticket intake (ADR 0081), `?fromMessage=<id>` from the inbox. */
+/**
+ * `/new/ticket`: the one-page ticket intake (ADR 0081), `?fromMessage=<id>` from the inbox and
+ * `?start=message` to start by pasting a request.
+ */
 export default async function NewTicketPage({ params, searchParams }: NewTicketPageProps) {
   const locale = resolveLocale({ value: (await params).locale });
-  const { fromMessage } = await searchParams;
+  const { fromMessage, start } = await searchParams;
   setRequestLocale(locale);
   return (
     <SimplePage>
@@ -20,6 +23,7 @@ export default async function NewTicketPage({ params, searchParams }: NewTicketP
         <TicketIntake
           locale={locale}
           fromMessage={typeof fromMessage === "string" ? fromMessage : undefined}
+          startWithMessage={start === "message"}
         />
       </PermissionGate>
     </SimplePage>
