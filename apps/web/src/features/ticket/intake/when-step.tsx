@@ -11,17 +11,19 @@ import { type WhenFormValues, whenFormDefaults, whenFormSchema } from "./when-fo
 
 export type WhenStepProps = {
   when: IntakeWhen | null;
+  /** What a read message gave, also when incomplete (ADR 0084); `when` wins once answered. */
+  prefill?: WhenFormValues | null;
   /** Lines exist (step 4): the button goes back to review instead of on to packages. */
   backToReview: boolean;
   onDone: (input: { when: IntakeWhen }) => void;
 };
 
 /** Step 2: the day, from and to in the organization's zone, and the estimated guests. */
-export function WhenStep({ when, backToReview, onDone }: WhenStepProps) {
+export function WhenStep({ when, prefill, backToReview, onDone }: WhenStepProps) {
   const t = useTranslations("ticketIntake.when");
   const form = useForm<WhenFormValues, unknown, IntakeWhen>({
     resolver: zodResolver(whenFormSchema, useZodMessages()),
-    defaultValues: whenFormDefaults({ when }),
+    defaultValues: when || !prefill ? whenFormDefaults({ when }) : prefill,
   });
   return (
     <Form {...form}>

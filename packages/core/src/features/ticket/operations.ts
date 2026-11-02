@@ -4,6 +4,12 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { subjectIdFilter } from "../assignment/subject-filter";
+import {
+  draftTicketFromMessage,
+  type ExtractFn,
+  type ExtractInput,
+  setExtract,
+} from "../ticket-draft/operations";
 import { changeTicketStatus } from "./change-status-operation";
 import { createTicketFromTemplate } from "./create-from-template-operation";
 import { ticketEstimateHistory } from "./estimate-history-operation";
@@ -69,6 +75,9 @@ export const ticketOperations = [
   expireTicketHolds,
   ticketStatusHistory,
   ticketEstimateHistory,
+  draftTicketFromMessage,
 ];
 
-export { previewTicketLines, ticketEstimateHistory };
+export type { ExtractFn, ExtractInput };
+// The draft read from a message starts a ticket (ADR 0084): public here with the port it reads through.
+export { draftTicketFromMessage, previewTicketLines, setExtract, ticketEstimateHistory };

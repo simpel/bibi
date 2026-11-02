@@ -31,6 +31,13 @@ export const TicketIntakeShape = {
         "attached to the new ticket in the same step. Needs inbox:read; a message that already " +
         "has a ticket is refused with CONFLICT",
     ),
+  draftedFromMessage: z
+    .boolean()
+    .optional()
+    .describe(
+      "True when the values were read from a message by ticketDraft.fromMessage (ADR 0084): " +
+        "the ticket's audit records that it was drafted from a message, with inboundMessageId",
+    ),
   intakeKey: z
     .string()
     .trim()

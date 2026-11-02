@@ -86,6 +86,8 @@ export * from "./features/ticket/plan/issue-schema";
 export * from "./features/ticket/preview-lines-schema";
 export * from "./features/ticket/schema";
 export * from "./features/ticket/status-history-schema";
+export * from "./features/ticket-draft/model-draft-schema";
+export * from "./features/ticket-draft/schema";
 export * from "./features/ticket-status/gate-schema";
 export * from "./features/ticket-status/move-schema";
 export * from "./features/ticket-status/schema";

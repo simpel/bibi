@@ -47,6 +47,8 @@ export type ToCreateInputInput = {
   intakeKey: string;
   /** The inbox message the ticket is made from (ADR 0085). */
   inboundMessageId?: string | null | undefined;
+  /** Values were read from a message (ADR 0084): the ticket's audit says so. */
+  draftedFromMessage?: boolean;
   /** The assignee when More leaves it empty: the creating member. */
   userId: string | null;
 };
@@ -61,6 +63,7 @@ export function toCreateInput({
   ticketTypeId,
   intakeKey,
   inboundMessageId,
+  draftedFromMessage = false,
   userId,
 }: ToCreateInputInput): TicketCreateInput {
   const { more } = review;
@@ -78,6 +81,7 @@ export function toCreateInput({
     lines: review.lines.map((line) => toCreateLine({ line })),
     intakeKey,
     ...(inboundMessageId ? { inboundMessageId } : {}),
+    ...(draftedFromMessage ? { draftedFromMessage } : {}),
   };
 }
 

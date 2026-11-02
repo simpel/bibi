@@ -1,5 +1,7 @@
+import { createAppExtract } from "@bibi/ai/extract";
 import { resolveExecuteContext } from "@bibi/auth";
 import { getEnv } from "@bibi/config";
+import { setExtract } from "@bibi/core";
 import { createSystemLogSink } from "@bibi/db";
 import { getLogger, initLogger, installProcessHandlers } from "@bibi/logger";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -13,6 +15,8 @@ initLogger({
   sinks: [createSystemLogSink({ retentionDays: getEnv().SYSTEM_LOG_RETENTION_DAYS })],
 });
 installProcessHandlers({ exitOnUncaught: true });
+// `ticketDraft.fromMessage` reads text through this port (ADR 0084).
+setExtract({ extract: createAppExtract() });
 
 async function main(): Promise<void> {
   const apiKey = getEnv().BIBI_API_KEY;

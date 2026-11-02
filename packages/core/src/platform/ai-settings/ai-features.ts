@@ -22,6 +22,13 @@ export const AI_FEATURES = [
     // The pgvector column is vector(1536).
     requires: { tags: [], dimensions: 1536 },
   },
+  {
+    id: "ticket.intakeDraft",
+    modelType: "language",
+    requiresReindex: false,
+    // Reads a request into a draft with structured output (ADR 0084).
+    requires: { tags: [], dimensions: null },
+  },
 ] as const;
 
 export type AiFeature = (typeof AI_FEATURES)[number];

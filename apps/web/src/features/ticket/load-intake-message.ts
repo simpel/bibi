@@ -1,5 +1,5 @@
 import "server-only";
-import { getInboundMessage } from "@bibi/core";
+import { DRAFT_TEXT_MAX, getInboundMessage } from "@bibi/core";
 import { runOperation } from "@/server/run-operation";
 import { senderOf } from "../inbound-message/ui/message-value";
 import type { IntakeMessage } from "./intake/intake-message";
@@ -19,5 +19,6 @@ export async function loadIntakeMessage({
   if (!result.ok || result.value.ticketId) return null;
   const message = result.value;
   const sender = senderOf({ message }) ?? message.subject ?? message.id;
-  return { id: message.id, sender, search: customerHint({ fromEmail: message.fromEmail }) };
+  const search = customerHint({ fromEmail: message.fromEmail });
+  return { id: message.id, sender, search, text: message.text.trim().slice(0, DRAFT_TEXT_MAX) };
 }

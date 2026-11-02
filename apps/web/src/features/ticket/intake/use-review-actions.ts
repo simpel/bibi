@@ -3,6 +3,7 @@ import { answerQuestion } from "./answer-question";
 import type { CatalogItem } from "./catalog";
 import type { DraftLine } from "./draft-line";
 import { removeLine, upsertLine } from "./draft-lines";
+import type { InputStep } from "./intake-state";
 import type { OpenQuestion } from "./open-questions";
 import type { AnswerAction } from "./question-answers";
 import { quickLine } from "./quick-line";
@@ -13,6 +14,21 @@ import type { ReviewModel } from "./use-review-model";
 export type DialogState = { line: DraftLine | null; newKey: string } | null;
 
 const newKey = () => crypto.randomUUID();
+
+type ChangeGuessInput = {
+  model: ReviewModel;
+  form: ReviewForm;
+  question: OpenQuestion;
+  step: InputStep | null;
+};
+
+/** Change a guess (ADR 0084): it is answered, and its step (or the note) opens for the new value. */
+function changeGuess({ model, form, question, step }: ChangeGuessInput) {
+  const patch = answerQuestion({ review: model.review, question, answer: "KEEP_GUESS" });
+  model.dispatch({ type: "patchReview", patch });
+  if (step) model.dispatch({ type: "change", step });
+  else form.setFocus("note");
+}
 
 /** What step 4's buttons do to the draft: lines, quick-add, the dialog and question answers. */
 export function useReviewActions({ model, form }: { model: ReviewModel; form: ReviewForm }) {
@@ -43,6 +59,9 @@ export function useReviewActions({ model, form }: { model: ReviewModel; form: Re
     }
     if (action.kind === "FOCUS")
       return form.setFocus(action.field as Parameters<ReviewForm["setFocus"]>[0]);
+    if (action.kind === "CHANGE_GUESS") {
+      return changeGuess({ model, form, question, step: action.step });
+    }
     if (action.answer === "DONT_SAVE")
       return form.setValue("saveAsPackage", false, { shouldDirty: true });
     dispatch({

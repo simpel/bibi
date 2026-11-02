@@ -88,8 +88,11 @@ describe("openQuestions", () => {
     expect(kinds({ ticketType, review: { ...filled, saveAsPackage: true } })).toEqual([]);
   });
 
-  it("turns a guessed value into a question (slice 9 hook)", () => {
-    expect(kinds({ guesses: [{ field: "guests", value: "12" }] })).toEqual(["GUESSED"]);
+  it("turns a guessed value into a question until it is kept (ADR 0084)", () => {
+    const guesses = [{ key: "guests.0", field: "guests", value: "12", step: "when" as const }];
+    expect(kinds({ guesses })).toEqual(["GUESSED"]);
+    const kept = review({ patch: { accepted: ["GUESS:guests.0"] } });
+    expect(kinds({ guesses, review: kept })).toEqual([]);
   });
 });
 

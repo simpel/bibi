@@ -1,6 +1,7 @@
+import { createAppExtract } from "@bibi/ai/extract";
 import { AUTH_BASE_PATH, resolveExecuteContext } from "@bibi/auth";
 import { getEnv } from "@bibi/config";
-import { setFileStore } from "@bibi/core";
+import { setExtract, setFileStore } from "@bibi/core";
 import { createSystemLogSink } from "@bibi/db";
 import { getLogger, initLogger, installProcessHandlers } from "@bibi/logger";
 import { getStorage } from "@bibi/storage";
@@ -16,6 +17,8 @@ initLogger({
 installProcessHandlers({ exitOnUncaught: true });
 // Core reaches file storage through this port (ADR 0063): `file.upload`, `file.get`.
 setFileStore({ store: getStorage() });
+// `ticketDraft.fromMessage` reads text through this port (ADR 0084).
+setExtract({ extract: createAppExtract() });
 
 const server = createHttpServer({
   resolveContext: resolveExecuteContext,

@@ -40,8 +40,21 @@ function complete({ state, action }: CompleteInput): IntakeState {
   const { lines, plannedStart } = action;
   const review = state.review
     ? { ...state.review, lines, plannedStart, pickKey }
-    : newReview({ lines, plannedStart, pickKey });
+    : { ...newReview({ lines, plannedStart, pickKey }), note: state.draft?.note ?? "" };
   const next = { ...state, review };
+  return { ...next, open: nextOpen({ state: next }) };
+}
+
+type DraftInput = { state: IntakeState; action: Extract<IntakeAction, { type: "applyDraft" }> };
+
+/** What was read fills steps 1–2 when complete; the first step still open takes input. */
+function withDraft({ state, action }: DraftInput): IntakeState {
+  const next = {
+    ...state,
+    who: action.who ?? state.who,
+    when: action.when ?? state.when,
+    draft: action.draft,
+  };
   return { ...next, open: nextOpen({ state: next }) };
 }
 
@@ -73,5 +86,11 @@ export function reduceIntake({ state, action }: ReduceIntakeInput): IntakeState 
       return action.state;
     case "reset":
       return initialIntake({ intakeKey: action.intakeKey });
+    case "openMessage":
+      return { ...state, open: "message" };
+    case "skipMessage":
+      return { ...state, open: nextOpen({ state }) };
+    case "applyDraft":
+      return withDraft({ state, action });
   }
 }

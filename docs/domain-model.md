@@ -1458,7 +1458,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 *MVP* · Platform data. Which model each AI function uses, chosen by a superadmin. No default models: without a choice the function does not work.
 
 **Attributes**
-- AI function (`assistant.chat`, `search.embedding`; target: `ticket.intakeDraft`, [ADR 0084](decisions/0084-ticket-draft-from-a-message.md))
+- AI function (`assistant.chat`, `search.embedding`, `ticket.intakeDraft` ([ADR 0084](decisions/0084-ticket-draft-from-a-message.md)))
 - model (from Vercel AI Gateway, must be possible for the function)
 - changed by, changed
 

@@ -1,6 +1,7 @@
 import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { QuestionAnswer } from "./answer-question";
+import type { InputStep } from "./intake-state";
 import type { OpenQuestion } from "./open-questions";
 import { useDelta } from "./use-open-question-text";
 
@@ -9,7 +10,9 @@ export type AnswerAction =
   | { kind: "ANSWER"; answer: QuestionAnswer }
   | { kind: "ADD_LINE" }
   | { kind: "EDIT_LINE"; lineKey: string }
-  | { kind: "FOCUS"; field: string };
+  | { kind: "FOCUS"; field: string }
+  /** A guessed value to change: its step reopens, or the note when it has none (ADR 0084). */
+  | { kind: "CHANGE_GUESS"; step: InputStep | null };
 
 type Choice = { label: string; action: AnswerAction };
 
@@ -86,7 +89,13 @@ function choicesFor({ ...input }: ChoicesInput): Choice[] {
     const dontSave = answer({ label: t("dontSave"), value: "DONT_SAVE" });
     return [focus({ label: t("fill"), field: "packageName" }), dontSave];
   }
-  // GUESSED: slice 9 (ADR 0084) answers it with Keep and Change; nothing is guessed before it.
+  if (question.kind === "GUESSED") {
+    const keep = answer({ label: t("keepGuess", { value: question.value }), value: "KEEP_GUESS" });
+    return [
+      keep,
+      { label: t("changeGuess"), action: { kind: "CHANGE_GUESS", step: question.step } },
+    ];
+  }
   return lineChoices(input);
 }
 

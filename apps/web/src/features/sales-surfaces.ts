@@ -7,6 +7,7 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   // The one-page intake (ADR 0081): package groups and the duplicate check before a new customer.
   { operation: "ticket.previewLines", route: "/new/ticket" },
   { operation: "customer.findSimilar", route: "/new/ticket" },
+  { operation: "ticketDraft.fromMessage", route: "/new/ticket" },
   { operation: "ticket.get", route: "/tickets/[id]" },
   { operation: "ticket.update", route: "/tickets/[id]" },
   // Inbound messages of every channel (ADR 0085): the inbox, one message, and a ticket's messages.

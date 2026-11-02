@@ -36,3 +36,19 @@ export async function resolveAiModel({
 export function clearAiModelCache(): void {
   cache.clear();
 }
+
+export type IsAiFeatureConfiguredInput = { feature: AiFeatureId; db?: Db };
+
+/**
+ * Whether a superadmin chose a model for the feature, without logging: a page asks this to hide
+ * what would fail (e.g. intake step 0, ADR 0084). Running the feature still uses `resolveAiModel`.
+ */
+export async function isAiFeatureConfigured({
+  feature,
+  db,
+}: IsAiFeatureConfiguredInput): Promise<boolean> {
+  const cached = cache.get(feature);
+  if (cached && cached.expires > Date.now()) return true;
+  const row = await (db ?? getDb()).aiSetting.findUnique({ where: { feature } });
+  return row !== null;
+}

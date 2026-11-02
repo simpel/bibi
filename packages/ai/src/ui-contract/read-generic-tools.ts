@@ -16,4 +16,7 @@ export const READ_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
     "never offered to the assistant (aiAllowed: false): outside callers hand messages in",
   ticket_previewLines:
     "planned lines and their issues; the /new/ticket intake shows them (ADR 0081); JSON in chat",
+  ticketDraft_fromMessage:
+    "a draft the intake-from-message skill turns into questions and a ticket.create card; " +
+    "the /new/ticket step 0 shows it (ADR 0084); JSON in chat",
 };

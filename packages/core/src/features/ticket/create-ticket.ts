@@ -21,6 +21,14 @@ async function earlier({ context, input }: CreateTicketInput): Promise<Result<Ti
   return ticket ? ok({ value: ticket }) : notFound({ entity: "Ticket" });
 }
 
+type DraftedInput = CreateTicketInput & { ticketId: string };
+
+/** The audit says the ticket was drafted from a message, and which one (ADR 0084 decision 8). */
+function recordDrafted({ context, input, ticketId }: DraftedInput) {
+  const after = { draftedFromMessage: true, inboundMessageId: input.inboundMessageId ?? null };
+  context.recordChange({ entityType: "ticket", entityId: ticketId, after });
+}
+
 /**
  * `ticket.create` (ADR 0081 decisions 9 and 11): the permissions of the parts given, then the
  * ticket an earlier call with the same `intakeKey` made (returned as is, nothing recorded), the
@@ -46,6 +54,8 @@ export async function runTicketCreate({
   }
   const trigger = input.templateId ? "TEMPLATE" : "MANUAL";
   const made = await createWithLines({ context, input, lines, trigger, subject: "the ticket" });
+  if (made.ok && input.draftedFromMessage)
+    recordDrafted({ context, input, ticketId: made.value.id });
   if (!made.ok || !input.inboundMessageId) return made;
   const ticketId = made.value.id;
   const id = input.inboundMessageId;

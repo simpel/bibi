@@ -12,7 +12,9 @@ export type QuestionAnswer =
   | "LOWER_TO_FIT"
   | "PREBOOK"
   | "LOWER_TO_FREE"
-  | "DONT_SAVE";
+  | "DONT_SAVE"
+  /** Keep the value the assistant guessed (ADR 0084). */
+  | "KEEP_GUESS";
 
 /** Counts lowered from the last one until they add up to at most `limit`. */
 export function lowerToFit({ counts, limit }: { counts: number[]; limit: number }): number[] {
@@ -91,5 +93,6 @@ export function answerQuestion({ review, question, answer }: AnswerQuestionInput
     return accepted({ key: `POOL:${question.lineKey}` });
   }
   if (question.kind === "PACKAGE_NAME" && answer === "DONT_SAVE") return { saveAsPackage: false };
+  if (question.kind === "GUESSED") return accepted({ key: `GUESS:${question.key}` });
   return lineAnswer({ review, question, answer });
 }

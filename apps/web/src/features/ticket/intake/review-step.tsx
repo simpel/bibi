@@ -18,7 +18,7 @@ import { useReviewActions } from "./use-review-actions";
 import { useReviewForm } from "./use-review-form";
 import { type ReviewModel, useReviewModel } from "./use-review-model";
 
-/** No message is read before slice 9 of the intake plan (ADR 0084): nothing was guessed. */
+/** Nothing was guessed when no message was read. */
 const NO_GUESSES: readonly GuessedValue[] = [];
 
 function useQuestions({ model }: { model: ReviewModel }) {
@@ -27,7 +27,7 @@ function useQuestions({ model }: { model: ReviewModel }) {
   return openQuestions({
     ...{ review, start: period?.startsAt ?? null, headcount: when.guests, planned },
     ticketType: ticketType ? { name: ticketType.name, required } : null,
-    guesses: NO_GUESSES,
+    guesses: model.state.draft?.guesses ?? NO_GUESSES,
   });
 }
 

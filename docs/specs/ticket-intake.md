@@ -16,6 +16,9 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 - A text area (prefilled from the inbox message) plus **Read the request** and **Fill in by hand instead**.
 - Reading calls `ticketDraft.fromMessage`.
   - The result fills steps 1–2, suggests a package, and sets needs and notes, then opens step 3.
+    - Step 1 is filled only when both the customer and the contact were matched; otherwise the search starts with the company or sender. Step 2 is filled when the date, both times and the guests were read; otherwise its fields are prefilled.
+    - The wish, the notes and the needs ("Needs: Vegan × 2") start the booking note; needs per line are set in the line dialog.
+    - An inbox message left as it came is read by id, so its sender and form fields are taken as given; edited text is read as pasted. Until endpoints map their own form fields, the field names `name`, `company`, `email`, `phone`, `date`, `start`/`from`, `end`/`to` and `guests`/`headcount` are used.
   - A panel, **What the assistant read**, lists each field with its value and its quote from the message. Guessed values are marked.
   - The panel can be hidden.
 - Every guessed value becomes an open question in step 4.

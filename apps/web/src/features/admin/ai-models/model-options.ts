@@ -4,6 +4,7 @@ import type { AiFeatureId, AiFeatureSetting, AiModel } from "@bibi/core/schemas"
 export const FEATURE_KEY = {
   "assistant.chat": "assistantChat",
   "search.embedding": "searchEmbedding",
+  "ticket.intakeDraft": "ticketIntakeDraft",
 } as const satisfies Record<AiFeatureId, string>;
 
 /** One table row: a feature and the models that are possible for it (`null` = catalog failed). */

@@ -6,6 +6,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./embed": "./src/embeddings/create-embed.ts",
+    "./extract": "./src/extract/create-extract.ts",
+    "./extract-e2e": "./src/extract/e2e-draft-model.ts",
     "./ui": "./src/ui-contract/resolve-tool-ui.ts",
     "./approvals": "./src/approval/extract-pending-approvals.ts"
   },

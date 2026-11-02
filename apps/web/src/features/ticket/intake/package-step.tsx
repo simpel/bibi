@@ -1,10 +1,7 @@
 import { Button, ChoiceCard, Skeleton } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { EmptyState } from "@/components/states/empty-state";
 import { InlineLoadError } from "@/components/states/inline-load-error";
-import { Link } from "@/lib/navigation";
-import { ROUTES } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { applyAnswers } from "./apply-answers";
 import type { Completion } from "./complete-step";
@@ -12,6 +9,7 @@ import { FollowUpDialog, type FollowUpRequest } from "./follow-up-dialog";
 import { followUpQuestions } from "./follow-up-questions";
 import { periodOf } from "./intake-period";
 import type { FollowUpAnswers, IntakePick, IntakeWhen, IntakeWho } from "./intake-state";
+import { NoPackages } from "./no-packages";
 import type { PackageCardData, PackageOption } from "./package-groups";
 import { PackageGroupsView } from "./package-groups-view";
 import type { IntakeReview } from "./review-state";
@@ -27,27 +25,14 @@ export type PackageStepProps = {
   review: IntakeReview | null;
   packages: PackageOption[];
   timeZone: string;
+  /** The package a read message suggests (★, ADR 0084), or null. */
+  suggestedId?: string | null;
   /** A summary of the pick and its answers. */
   pickSummary: string;
   onPick: (input: { pick: IntakePick; when?: IntakeWhen }) => void;
   onUnpick: () => void;
   onNext: (input: Completion) => void;
 };
-
-function NoPackages({ onOneOff }: { onOneOff: () => void }) {
-  const t = useTranslations("ticketIntake.package");
-  const action = (
-    <div className="flex flex-wrap justify-center gap-2">
-      <Button type="button" onClick={onOneOff}>
-        {t("oneOff")}
-      </Button>
-      <Button asChild variant="outline">
-        <Link href={ROUTES.ticketTemplateNew}>{t("createPackage")}</Link>
-      </Button>
-    </div>
-  );
-  return <EmptyState title={t("none")} description={t("noneDescription")} action={action} />;
-}
 
 type PickingInput = Pick<PackageStepProps, "when" | "timeZone" | "onPick" | "onUnpick">;
 
@@ -74,14 +59,18 @@ function usePackagePicking({ when, timeZone, onPick, onUnpick }: PickingInput) {
   return { request, cancel: () => setRequest(null), pickPackage, answered };
 }
 
-type BodyProps = Pick<PackageStepProps, "when" | "pick" | "packages" | "timeZone"> & {
+type BodyProps = Pick<
+  PackageStepProps,
+  "when" | "pick" | "packages" | "timeZone" | "suggestedId"
+> & {
   preview: PackagePreview;
   onPackage: (input: { card: PackageCardData }) => void;
   onOneOff: () => void;
 };
 
 /** The preview's groups once loaded; a failed preview still offers the One-off. */
-function PreviewBody({ when, pick, packages, timeZone, preview, onPackage, onOneOff }: BodyProps) {
+function PreviewBody(props: BodyProps) {
+  const { when, pick, packages, timeZone, preview, onPackage, onOneOff } = props;
   const t = useTranslations("ticketIntake.package");
   const dates = useDateTimeFormat();
   const period = periodOf({ when, timeZone });
@@ -100,6 +89,7 @@ function PreviewBody({ when, pick, packages, timeZone, preview, onPackage, onOne
   return (
     <PackageGroupsView
       {...{ options: packages, preview: preview.preview, headcount, pick, onPackage, onOneOff }}
+      suggestedId={props.suggestedId ?? null}
       availableHeading={t("groups.available", { period: span, guests: headcount })}
     />
   );

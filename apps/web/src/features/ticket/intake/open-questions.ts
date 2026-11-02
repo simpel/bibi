@@ -1,12 +1,19 @@
 import type { PreviewLine } from "@bibi/core";
 import { type DraftLine, isTimed, quantityOf } from "./draft-line";
+import type { InputStep } from "./intake-state";
 import type { IntakeReview } from "./review-state";
 
 /**
- * A value the assistant guessed from a message (ADR 0084). Slice 9 of the intake plan fills
- * these; until then the page passes none and the question never shows.
+ * A value the assistant guessed from a message (ADR 0084): an open question until kept
+ * (`GUESS:<key>` in `accepted`) or changed. `step` is where Change goes; null opens the note.
  */
-export type GuessedValue = { field: string; value: string };
+export type GuessedValue = {
+  key: string;
+  /** A `DraftField`, named through `ticketIntake.draft.fields`. */
+  field: string;
+  value: string;
+  step: InputStep | null;
+};
 
 /** A ticket type's own field the review must have before Create. */
 export type RequiredField = { key: string; name: string };
@@ -25,7 +32,7 @@ export type OpenQuestion =
       quantity: number;
     }
   | { kind: "POOL_SHORT"; lineKey: string; name: string; needed: number; free: number }
-  | { kind: "GUESSED"; field: string; value: string }
+  | ({ kind: "GUESSED" } & GuessedValue)
   | { kind: "TYPE_FIELD"; key: string; fieldName: string; typeName: string }
   | { kind: "PACKAGE_NAME" };
 
@@ -118,6 +125,8 @@ export function openQuestions({ ...input }: OpenQuestionsInput): OpenQuestion[] 
   const lines = review.lines.flatMap((line, index) =>
     lineQuestions({ line, planned: planned?.[index], headcount, accepted: review.accepted }),
   );
-  const guessed = guesses.map(({ field, value }) => ({ kind: "GUESSED", field, value }) as const);
+  const guessed = guesses
+    .filter(({ key }) => !review.accepted.includes(`GUESS:${key}`))
+    .map((guess) => ({ kind: "GUESSED", ...guess }) as const);
   return [...startQuestion(input), ...noLines, ...lines, ...guessed, ...reviewQuestions(input)];
 }

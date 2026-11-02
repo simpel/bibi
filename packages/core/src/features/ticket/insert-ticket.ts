@@ -53,7 +53,7 @@ async function recordFirstHistory({ context, ticketId, statusId, ...rest }: Firs
 function ownColumns({ input }: { input: TicketCreateInput }) {
   const { entityTypeId: _type, fields: _fields, assigneeId: _assignee, ...rest } = input;
   const { estimatedValueMinor: _estimate, templateId: _template, lines: _lines, ...own } = rest;
-  const { inboundMessageId: _message, ...data } = own;
+  const { inboundMessageId: _message, draftedFromMessage: _drafted, ...data } = own;
   return data;
 }
 

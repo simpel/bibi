@@ -963,7 +963,9 @@
         "lowerToFree": "Lower to {free}",
         "fill": "Fill it in",
         "otherType": "Use another ticket type",
-        "dontSave": "Don't save as a package"
+        "dontSave": "Don't save as a package",
+        "keepGuess": "Keep {value}",
+        "changeGuess": "Change it"
       }
     },
     "summary": {
@@ -1101,6 +1103,59 @@
       "conflictHint": "The lines and calendar are updated. Check them and create again.",
       "savingPackage": "Saving the package…",
       "packageSaved": "The package has been saved."
+    },
+    "message": {
+      "title": "Start from a message",
+      "start": "Start from a message",
+      "text": "The request",
+      "read": "Read the request",
+      "reading": "Reading the request…",
+      "readDone": "Request read",
+      "byHand": "Fill in by hand instead",
+      "unavailable": "The assistant can't read the request right now. Fill in the steps by hand.",
+      "summaryRead": "Read by the assistant",
+      "summarySkipped": "Filled in by hand",
+      "fromEmail": "from email",
+      "needs": "Needs",
+      "suggested": "★ Suggested from the email",
+      "panel": {
+        "title": "What the assistant read",
+        "hide": "Hide",
+        "show": "Show what the assistant read",
+        "field": "Field",
+        "value": "Value",
+        "quote": "From the message",
+        "guessed": "Guessed",
+        "notInMessage": "Not in the message"
+      },
+      "fields": {
+        "sender": "the sender",
+        "company": "the company",
+        "email": "the email address",
+        "phone": "the phone number",
+        "date": "the date",
+        "start": "the start time",
+        "end": "the end time",
+        "guests": "the number of guests",
+        "wish": "the request",
+        "package": "the package",
+        "need": "a need",
+        "notes": "the notes"
+      },
+      "labels": {
+        "sender": "Sender",
+        "company": "Company",
+        "email": "Email",
+        "phone": "Phone",
+        "date": "Date",
+        "start": "From",
+        "end": "To",
+        "guests": "Guests",
+        "wish": "Request",
+        "package": "Package",
+        "need": "Need",
+        "notes": "Notes"
+      }
     }
   },
   "calendar": {
@@ -3011,6 +3066,10 @@
         "searchEmbedding": {
           "name": "Semantic search",
           "description": "The embedding model that indexes and searches venues, items, conversations and skills."
+        },
+        "ticketIntakeDraft": {
+          "name": "Draft from a message",
+          "description": "The language model that reads a request into a ticket draft with quotes and guesses."
         }
       },
       "notInCatalog": "The chosen model is no longer possible for this feature. Choose a new one.",

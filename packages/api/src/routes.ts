@@ -45,6 +45,7 @@ import { sheetDefinitionRoutes } from "./features/sheet-definition/rest";
 import { skillRoutes } from "./features/skill/rest";
 import { statusGridRoutes } from "./features/status-grid/rest";
 import { ticketRoutes } from "./features/ticket/rest";
+import { ticketDraftRoutes } from "./features/ticket-draft/rest";
 import { ticketStatusRoutes } from "./features/ticket-status/rest";
 import { ticketTemplateRoutes } from "./features/ticket-template/rest";
 import { userPreferenceRoutes } from "./features/user-preference/rest";
@@ -85,6 +86,9 @@ const moneyRoutes = [
 /** The organization's profile and its members' profiles (ADR 0061, 0068). */
 const organizationAndMemberProfileRoutes = [...organizationProfileRoutes, ...memberProfileRoutes];
 
+/** Customers and the ticket draft read from a message (ADR 0081, 0084). */
+const intakeRoutes = [...customerRoutes, ...ticketDraftRoutes];
+
 /** Every declared REST route; add a feature's routes here when it gets a `rest.ts`. */
 export function listRestRoutes(): RestRoute[] {
   return [
@@ -99,7 +103,7 @@ export function listRestRoutes(): RestRoute[] {
     ...configurationRoutes,
     ...itemRoutes,
     ...itemDemandRoutes,
-    ...customerRoutes,
+    ...intakeRoutes,
     ...priceListRoutes,
     ...contactRoutes,
     ...occupancyRoutes,

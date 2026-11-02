@@ -32,6 +32,7 @@ function createInputOf({
     ticketTypeId: values.entityTypeId,
     intakeKey: current.state.intakeKey,
     inboundMessageId: current.state.inboundMessageId,
+    draftedFromMessage: Boolean(current.state.draft),
     userId: current.data.catalog.userId,
   });
 }

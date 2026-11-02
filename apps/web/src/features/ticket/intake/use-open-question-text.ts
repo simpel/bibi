@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { OpenQuestion } from "./open-questions";
+import { useDraftFieldName } from "./use-draft-field-name";
 
 const MINUTE = 60_000;
 
@@ -19,6 +20,7 @@ export function useOpenQuestionText() {
   const t = useTranslations("ticketIntake.questions");
   const dates = useDateTimeFormat();
   const delta = useDelta();
+  const fieldName = useDraftFieldName();
   return ({ question }: { question: OpenQuestion }): string => {
     switch (question.kind) {
       case "START_CHANGED": {
@@ -42,7 +44,7 @@ export function useOpenQuestionText() {
           free: question.free,
         });
       case "GUESSED":
-        return t("guessed", { field: question.field, value: question.value });
+        return t("guessed", { field: fieldName({ field: question.field }), value: question.value });
       case "TYPE_FIELD":
         return t("typeField", { type: question.typeName, field: question.fieldName });
       case "PACKAGE_NAME":

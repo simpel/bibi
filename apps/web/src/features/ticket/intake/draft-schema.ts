@@ -1,5 +1,6 @@
 import { PlainDateStringSchema } from "@bibi/core/schemas";
 import { z } from "zod";
+import { DRAFT_FIELDS } from "./message-draft";
 
 const Id = z.string().min(1);
 const Time = z.string().regex(/^\d{2}:\d{2}$/);
@@ -47,11 +48,33 @@ const ReviewSchema = z.object({
   accepted: z.array(z.string()),
 });
 
+const Step = z.enum(["who", "when", "package"]);
+
+/** What a read message left on the intake (ADR 0084, `message-draft.ts`). */
+const MessageDraftSchema = z.object({
+  read: z.array(
+    z.object({
+      field: z.enum(DRAFT_FIELDS),
+      value: z.string(),
+      quote: z.string(),
+      guessed: z.boolean(),
+    }),
+  ),
+  guesses: z.array(
+    z.object({ key: z.string(), field: z.string(), value: z.string(), step: Step.nullable() }),
+  ),
+  fromMessage: z.array(Step),
+  templateId: Id.nullable(),
+  search: z.string().nullable(),
+  note: z.string(),
+  when: z.object({ date: z.string(), from: z.string(), to: z.string(), guests: z.string() }),
+});
+
 /** What a stored draft must look like; anything else (an older shape, edited storage) is dropped. */
 export const DraftSchema = z.object({
   version: z.literal(2),
   state: z.object({
-    open: z.enum(["who", "when", "package", "review"]),
+    open: z.enum(["message", "who", "when", "package", "review"]),
     who: z
       .object({ customerId: Id, customerName: z.string(), contactId: Id, contactName: z.string() })
       .nullable(),
@@ -70,5 +93,6 @@ export const DraftSchema = z.object({
     review: ReviewSchema.nullable(),
     intakeKey: Id,
     inboundMessageId: Id.nullable().optional(),
+    draft: MessageDraftSchema.nullable().optional(),
   }),
 });

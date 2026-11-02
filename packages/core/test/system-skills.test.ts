@@ -25,6 +25,7 @@ describe("SYSTEM skills", () => {
       expect.arrayContaining([
         "create-venue-with-items",
         "find-available-space",
+        "intake-from-message",
         "propose-configuration",
         "summarize-ticket-risks",
       ]),

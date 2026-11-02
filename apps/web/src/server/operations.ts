@@ -1,9 +1,11 @@
 import "server-only";
+import { createAppExtract } from "@bibi/ai/extract";
 import {
   type AnyOperation,
   AppError,
   createCoreOperations,
   registerOperations,
+  setExtract,
   setFileStore,
 } from "@bibi/core";
 import { getStorage } from "@bibi/storage";
@@ -20,6 +22,8 @@ export function ensureOperations(): readonly AnyOperation[] {
   if (!holder.__bibiWebOperations) {
     // Core reaches file storage through this port (ADR 0063): `file.upload`, `file.get`.
     setFileStore({ store: getStorage() });
+    // `ticketDraft.fromMessage` reads text through this port (ADR 0084).
+    setExtract({ extract: createAppExtract() });
     holder.__bibiWebOperations = createCoreOperations({ embed });
   }
   registerOperations({ operations: holder.__bibiWebOperations });

@@ -45,6 +45,7 @@ import { sheetDefinitionMcpTools } from "../features/sheet-definition/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { statusGridMcpTools } from "../features/status-grid/mcp";
 import { ticketMcpTools } from "../features/ticket/mcp";
+import { ticketDraftMcpTools } from "../features/ticket-draft/mcp";
 import { ticketStatusMcpTools } from "../features/ticket-status/mcp";
 import { ticketTemplateMcpTools } from "../features/ticket-template/mcp";
 import { userPreferenceMcpTools } from "../features/user-preference/mcp";
@@ -83,8 +84,8 @@ const selfMcpTools = [
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
 const moneyMcpTools = [
-  ...paymentAccountMcpTools,
   ...integrationMcpTools,
+  ...paymentAccountMcpTools,
   ...paymentMcpTools,
   ...depositMcpTools,
   ...invoiceMcpTools,
@@ -92,6 +93,9 @@ const moneyMcpTools = [
 
 /** The organization's profile and its members' profiles (ADR 0061, 0068). */
 const profilesMcpTools = [...organizationProfileMcpTools, ...memberProfileMcpTools];
+
+/** Customers and the ticket draft read from a message (ADR 0081, 0084). */
+const intakeMcpTools = [...customerMcpTools, ...ticketDraftMcpTools];
 
 /** Every declared operation tool; add a feature's tools here when it gets an `mcp.ts`. */
 export function listMcpToolMetas(): McpToolMeta[] {
@@ -106,7 +110,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...configurationMcpTools,
     ...itemMcpTools,
     ...itemDemandMcpTools,
-    ...customerMcpTools,
+    ...intakeMcpTools,
     ...priceListMcpTools,
     ...contactMcpTools,
     ...occupancyMcpTools,

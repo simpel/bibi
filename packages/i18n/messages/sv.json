@@ -963,7 +963,9 @@
         "lowerToFree": "Sänk till {free}",
         "fill": "Fyll i",
         "otherType": "Använd en annan ärendetyp",
-        "dontSave": "Spara inte som paket"
+        "dontSave": "Spara inte som paket",
+        "keepGuess": "Behåll {value}",
+        "changeGuess": "Ändra"
       }
     },
     "summary": {
@@ -1101,6 +1103,59 @@
       "conflictHint": "Raderna och kalendern är uppdaterade. Kontrollera dem och skapa igen.",
       "savingPackage": "Sparar paketet…",
       "packageSaved": "Paketet har sparats."
+    },
+    "message": {
+      "title": "Börja från ett meddelande",
+      "start": "Börja från ett meddelande",
+      "text": "Förfrågan",
+      "read": "Läs förfrågan",
+      "reading": "Läser förfrågan…",
+      "readDone": "Förfrågan läst",
+      "byHand": "Fyll i för hand i stället",
+      "unavailable": "Assistenten kan inte läsa förfrågan just nu. Fyll i stegen för hand.",
+      "summaryRead": "Läst av assistenten",
+      "summarySkipped": "Ifyllt för hand",
+      "fromEmail": "från mejlet",
+      "needs": "Behov",
+      "suggested": "★ Föreslaget från mejlet",
+      "panel": {
+        "title": "Det här läste assistenten",
+        "hide": "Dölj",
+        "show": "Visa vad assistenten läste",
+        "field": "Fält",
+        "value": "Värde",
+        "quote": "Ur meddelandet",
+        "guessed": "Gissat",
+        "notInMessage": "Står inte i meddelandet"
+      },
+      "fields": {
+        "sender": "avsändaren",
+        "company": "företaget",
+        "email": "e-postadressen",
+        "phone": "telefonnumret",
+        "date": "datumet",
+        "start": "starttiden",
+        "end": "sluttiden",
+        "guests": "antalet gäster",
+        "wish": "önskemålet",
+        "package": "paketet",
+        "need": "ett behov",
+        "notes": "anteckningarna"
+      },
+      "labels": {
+        "sender": "Avsändare",
+        "company": "Företag",
+        "email": "E-post",
+        "phone": "Telefon",
+        "date": "Datum",
+        "start": "Från",
+        "end": "Till",
+        "guests": "Gäster",
+        "wish": "Önskemål",
+        "package": "Paket",
+        "need": "Behov",
+        "notes": "Anteckningar"
+      }
     }
   },
   "calendar": {
@@ -3011,6 +3066,10 @@
         "searchEmbedding": {
           "name": "Semantisk sökning",
           "description": "Embedding-modellen som indexerar och söker bland anläggningar, artiklar, konversationer och färdigheter."
+        },
+        "ticketIntakeDraft": {
+          "name": "Utkast från meddelande",
+          "description": "Språkmodellen som läser en förfrågan till ett ärendeutkast med citat och gissningar."
         }
       },
       "notInCatalog": "Den valda modellen är inte längre möjlig för funktionen. Välj en ny.",

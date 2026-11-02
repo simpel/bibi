@@ -64,7 +64,7 @@ Staff create a ticket in one page: customer, when and how many, then a package o
 | 6 | Web A: one-page shell (new step-section and time field in `@bibi/ui`), who (async search, recent, inline new + duplicate check), when, package groups + follow-up dialog, local draft | 3, 5 | 1.5 d |
 | 7 | Web B: review: draft table, line dialog (search across types, capability fields, option quantities, needs), calendar snapshot with draft overlay, open questions (pure function, unit-tested), notes, one-off + type + own fields, save as package, Create + re-check; remove the wizard and short form | 4, 6 | 2.5 d |
 | 8 | Inbound messages (0085, accepted; replaces 0083): `InboundMessage` + `InboundEndpoint`, backfill of `InboundEmail`, EMAIL adapter (org address + ticket replies), `inboundMessage.submit` (API channel), inbox page, "New ticket from this message" (**built**) | 1 | 1.5 d |
-| 9 | Extraction (0084, amended by 0085): AI feature, port, structured output, mock model, form fields taken as given, step 0 UI with quotes and guesses, system skill for chat | 4, 5, 8 | 1.5 d |
+| 9 | Extraction (0084, amended by 0085): AI feature, port, structured output, mock model, form fields taken as given, step 0 UI with quotes and guesses, system skill for chat (**built**) | 4, 5, 8 | 1.5 d |
 | 10 | Showcase seed (packages with ranges, non-room items, a stock pool, clashing bookings, contact domains, a near-duplicate customer, inbox mail) + Playwright for flows A, B, C + user guide | 7, 9 | 1 d |
 
 About **13 working days**. Core slices (1–5, 8) are Opus work and run alone; 2 and 5 can run in parallel after 1; 8 can run any time after 1. Web slices start when their core contracts are on main. The main session owns integration and the parity test.

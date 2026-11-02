@@ -14,6 +14,8 @@ export type PackageGroupsViewProps = {
   pick: IntakePick | null;
   onPackage: (input: { card: PackageCardData }) => void;
   onOneOff: () => void;
+  /** The package a read message suggests (ADR 0084). */
+  suggestedId?: string | null;
 };
 
 const GRID = "grid gap-3 sm:grid-cols-2 lg:grid-cols-3";
@@ -32,6 +34,7 @@ export function PackageGroupsView(props: PackageGroupsViewProps) {
         headcount={headcount}
         availabilityHidden={preview.availabilityHidden}
         selected={picked === card.option.id}
+        suggested={props.suggestedId === card.option.id}
         onPick={() => onPackage({ card })}
       />
     ));

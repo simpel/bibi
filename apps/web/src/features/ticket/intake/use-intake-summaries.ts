@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
 import { periodOf } from "./intake-period";
-import type { IntakePick, IntakeState, IntakeWhen } from "./intake-state";
+import type { InputStep, IntakePick, IntakeState, IntakeWhen } from "./intake-state";
 
 export type IntakeSummaries = { who: string; when: string; pick: string };
 
@@ -28,15 +28,28 @@ function pickSummary({ t, pick, when, times }: PickInput): string {
 /** The one-line summaries done steps show, in the user's formats and the organization's zone. */
 export function useIntakeSummaries({ state }: { state: IntakeState }): IntakeSummaries {
   const t = useTranslations("ticketIntake.summary");
+  const message = useTranslations("ticketIntake.message");
   const dates = useDateTimeFormat();
   const timeZone = useOrganizationTimeZone();
   const { who, when, pick } = state;
   const period = when ? periodOf({ when, timeZone }) : null;
   const span = period ? dates.dateTimeRange({ start: period.startsAt, end: period.endsAt }) : "";
   const times = period ? dates.timeRange({ start: period.startsAt, end: period.endsAt }) : "";
+  // Values that came from a read message say so (spec "The page").
+  const mark = ({ step, text }: { step: InputStep; text: string }) =>
+    text && state.draft?.fromMessage.includes(step) ? `${text} · ${message("fromEmail")}` : text;
   return {
-    who: who ? t("who", { customer: who.customerName, contact: who.contactName }) : "",
-    when: when ? t("when", { period: span, guests: when.guests }) : "",
-    pick: pickSummary({ t, pick, when, times }),
+    who: mark({
+      step: "who",
+      text: who ? t("who", { customer: who.customerName, contact: who.contactName }) : "",
+    }),
+    when: mark({
+      step: "when",
+      text: when ? t("when", { period: span, guests: when.guests }) : "",
+    }),
+    pick:
+      pick?.kind === "PACKAGE" && pick.templateId === state.draft?.templateId
+        ? mark({ step: "package", text: pickSummary({ t, pick, when, times }) })
+        : pickSummary({ t, pick, when, times }),
   };
 }

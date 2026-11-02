@@ -14,7 +14,7 @@ import { type CustomerRow, toCustomerDto } from "./to-customer-dto";
 /** The most suggestions returned; staff pick one or confirm the new customer. */
 const MAX_SUGGESTIONS = 5;
 
-type Match = { row: CustomerRow; reasons: SimilarReason[] };
+export type Match = { row: CustomerRow; reasons: SimilarReason[] };
 
 type MergeInput = { byName: readonly CustomerRow[]; byDomain: readonly CustomerRow[] };
 
@@ -43,7 +43,8 @@ function strongestFirst({ matches }: { matches: Match[] }): Match[] {
 
 type Ctx = { context: OperationContext };
 
-async function findMatches({
+/** Active customers matching a name or a non-public email domain, strongest first (at most 5). */
+export async function findMatches({
   context,
   name,
   email,

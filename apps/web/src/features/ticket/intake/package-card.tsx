@@ -37,6 +37,8 @@ export type PackageCardProps = {
   headcount: number;
   availabilityHidden: boolean;
   selected: boolean;
+  /** Suggested by a read message: "★ Suggested from the email" (ADR 0084). */
+  suggested?: boolean;
   onPick: () => void;
 };
 
@@ -46,12 +48,15 @@ export function PackageCard({
   headcount,
   availabilityHidden,
   selected,
+  suggested = false,
   onPick,
 }: PackageCardProps) {
+  const t = useTranslations("ticketIntake.message");
   const range = useGuestRange()({ min: card.option.minGuests, max: card.option.maxGuests });
   const notes = cardNotes({ entry: card.entry, headcount, availabilityHidden });
   return (
     <ChoiceCard title={card.option.name} selected={selected} onClick={onPick}>
+      {suggested ? <span className="font-medium text-primary">{t("suggested")}</span> : null}
       <span className="line-clamp-2 text-muted-foreground">
         {card.option.lineNames.join(" · ")}
       </span>
