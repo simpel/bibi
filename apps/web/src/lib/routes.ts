@@ -45,7 +45,7 @@ export const ROUTES = {
   settingsMembers: "/admin/members",
   settingsPayments: "/settings/payments",
   settingsAccounting: "/settings/accounting",
-  settingsIntegrations: "/admin/api-keys",
+  settingsIntegrations: "/settings/integrations",
   settingsApiKeys: "/admin/api-keys",
   admin: "/admin",
   adminMembers: "/admin/members",

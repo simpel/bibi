@@ -30,7 +30,7 @@ The parity core: every capability is defined **once** as an operation and then e
 
 ## Permissions (ADR 0034, 0050)
 - A permission is `<feature>:<action>`. Features and actions: `FEATURE_SPECS` (`permissions/features.ts`); actions are `read|write|delete`, `write` and `delete` imply `read`; `submit` (feature `inbox` only) does not, and denying `read` keeps an allowed `submit`. The owner feature of every entity type is `ENTITY_FEATURE` (`permissions/entity-features.ts`).
-- Roles are fixed presets (`member < manager < admin`, `permissions/fixed-roles.ts`, `PRESET_PERMISSIONS` in `permissions/presets.ts`). Admins add per-member and per-API-key allow/deny overrides (`PermissionOverride`, `applyOverrides`, `permission.get|update`). Denying `read` hides the feature. Locked features (`member`, `apiKey`, `paymentAccount`, every action but `read`) come only from the `admin` preset.
+- Roles are fixed presets (`member < manager < admin`, `permissions/fixed-roles.ts`, `PRESET_PERMISSIONS` in `permissions/presets.ts`). Admins add per-member and per-API-key allow/deny overrides (`PermissionOverride`, `applyOverrides`, `permission.get|update`). Denying `read` hides the feature. Locked features (`member`, `apiKey`, `paymentAccount`, `integration`, every action but `read`) come only from the `admin` preset.
 - `self` (own conversations, skills, preferences, settings, connected apps) is always on and is not a feature: `self:read|write`. The system actor gets `FORBIDDEN` on user-scoped data.
 - Anti-escalation (`features/member/role-access.ts`, by rank): nobody gives a role above their own or changes a member above them. The organization always keeps one admin (`checkAdminKept`, also for system). `parseMemberRole` turns an unknown stored role into `null`, which grants nothing.
 - Adding a permission: see "Adding a permission" in `packages/auth/CLAUDE.md`.
@@ -56,6 +56,10 @@ The parity core: every capability is defined **once** as an operation and then e
 - Assignment rows store only explicit choices. Applicable responsibilities, default assignees and default followers are derived on read (`deriveAssignment`). Never create or archive rows when lines change.
 - Rows reference the subject's `Record` (`recordId`, composite FK) while the API keeps `subjectType`/`subjectId`.
 - Id lists on responsibilities and sheet definitions are join rows: read and write them through the `*-rows.ts` helpers, never as JSON.
+
+## Integrations (ADR 0087)
+- A Fortnox access token comes only from `getFortnoxAccessToken` (`features/integration/fortnox/access-token.ts`), called in `external`, never in a handler: a refresh rotates the refresh token and a rollback would lose it. Tokens are sealed with `sealSecret` (`crypto/secret-box.ts`) and never appear in an output, log or audit row.
+- `integration.completeConnect` (web callback) and `integration.refreshExpiring` (worker) are run directly, never registered. Tests swap Fortnox with `setFortnoxGateway`.
 
 ## Platform operations (ADR 0015)
 - `src/platform/`: `definePlatformOperation` and `executePlatform` with a `PlatformContext` built only by `resolvePlatformContext` in auth. Same chain as `execute`; handlers see only `PlatformDb`. They are **not** registered in the org registry and not in GraphQL, REST or MCP.

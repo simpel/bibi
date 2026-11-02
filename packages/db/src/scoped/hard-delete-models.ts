@@ -7,7 +7,7 @@
  * RecordLink, ADR 0056), status grid cells (StatusStateRule, audited on itself), the derived
  * search index (Embedding), Better Auth membership rows (Member; Invitation has its own
  * `status`; core audits both), rows with their
- * own `status` lifecycle that are never removed (PaymentAccount, Payment, Deposit, Invoice, ADR
+ * own `status` lifecycle that are never removed (PaymentAccount, IntegrationConnection, Payment, Deposit, Invoice, ADR
  * 0057; InboundMessage, ADR 0085: `dismissedAt`), sheet versions (`sentAt` is their lifecycle), followers (AssignmentFollower, removed on
  * unfollow) and credentials (Apikey: `enabled`; OauthGrantRevocation: one row per user and client).
  */
@@ -30,6 +30,7 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "Member",
   "Invitation",
   "PaymentAccount",
+  "IntegrationConnection",
   "Payment",
   "Deposit",
   "Invoice",

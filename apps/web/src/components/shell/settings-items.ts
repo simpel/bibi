@@ -114,7 +114,7 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
     href: ROUTES.settingsIntegrations,
     key: "integrations",
     icon: PlugIcon,
-    permission: "apiKey:read",
+    permission: "integration:read",
   },
   { href: ROUTES.skills, key: "skills", icon: BookOpenIcon, permission: null },
 ];

@@ -1388,6 +1388,21 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > Operations: `paymentAccount.get` (permission `paymentAccount:read`), `paymentAccount.startOnboarding` (`paymentAccount:write`) and `paymentAccount.sync` (`paymentAccount:write`, refreshes the status from Stripe), on every surface. The webhook also refreshes the status on `account.updated` through the SYSTEM-only `paymentAccount.applySignal`, which reads the status back from Stripe instead of trusting the payload. The web app offers them under Settings, Payments. The platform account id and secret key come from `@bibi/config` (`STRIPE_PLATFORM_ACCOUNT_ID`, `STRIPE_SECRET_KEY`).
 
+### IntegrationConnection (`IntegrationConnection`)
+
+*MVP* · The organization's connection to an outside system ([ADR 0087](decisions/0087-fortnox-connection.md)), one per provider; Fortnox is the only provider so far. No row means "not connected". An admin starts it with `integration.connect`, approves at Fortnox (a Fortnox system administrator, service account) and the browser callback finishes it. Only the connection exists so far: nothing is sent to Fortnox yet.
+
+**Attributes**
+- provider (Fortnox)
+- status: pending, connected, expired (Fortnox refused the stored grant; reconnect) or disconnected
+- access and refresh tokens, sealed with AES-256-GCM (`INTEGRATION_SECRET_KEY`), with their expiries; never returned by any operation
+- pending authorization: hash of the OAuth state, sealed PKCE verifier, start time (cleared when the callback runs)
+- refresh lease: when a caller claimed the rotating refresh token (30 seconds)
+- Fortnox company name, organization number and database number (snapshots at connect)
+- connected at, connected by
+
+> Operations: `integration.list` (permission `integration:read`), `integration.connect` and `integration.disconnect` (`integration:write`, admin only), on every surface. `integration.completeConnect` is run only by the web callback (`/api/integrations/fortnox/callback`) as the signed-in user, and `integration.refreshExpiring` only by the worker's daily job as SYSTEM. Access tokens come only from `getFortnoxAccessToken`, called outside a transaction. The web app offers them under Settings, Integrations. Credentials come from `@bibi/config` (`FORTNOX_CLIENT_ID`, `FORTNOX_CLIENT_SECRET`, `INTEGRATION_SECRET_KEY`).
+
 ### Communication & log
 
 *Status 2* · Email, notes and change history. Status and line-state history come from `TicketStatusChange` and `LineStateChange` (ADR 0054), never from `AuditLog`.

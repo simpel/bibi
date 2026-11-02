@@ -97,6 +97,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "InboundEndpoint",
   "InboundMessage",
   "PaymentAccount",
+  "IntegrationConnection",
   "Payment",
   "Deposit",
   "OrganizationProfile",

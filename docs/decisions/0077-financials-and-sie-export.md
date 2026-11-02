@@ -67,3 +67,6 @@ Supersedes decision 6 and the rejected "Regenerate by period" alternative, at th
 ## Addendum 2026-11-01 – the dashboard looks ahead (ADR 0080)
 - "Money on the dashboard" is rejected again, as first decided: the money panel of ADR 0079 is gone. The dashboard shows only the overdue count and total, linking here.
 - Forward-booked value moved to `dashboard.summary` as "booked ahead". Won and lost tickets per month moved here from the dashboard as a part of `finance.overview` (`quote:read`).
+
+## Addendum 2026-11-02 – Fortnox connection (ADR 0087)
+- The first step of a direct integration exists: an organization can connect Fortnox ([ADR 0087](0087-fortnox-connection.md)). Nothing is posted yet; the SIE export stays the way vouchers reach accounting.

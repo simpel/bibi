@@ -27,7 +27,7 @@ export const PermissionUpdateInputSchema = PermissionSubjectInputSchema.extend({
     .max(200)
     .describe(
       "The complete set of overrides; anything left out goes back to the preset. Locked " +
-        "admin-only permissions (member, apiKey, paymentAccount except view) are refused.",
+        "admin-only permissions (member, apiKey, paymentAccount, integration except view) are refused.",
     ),
 });
 

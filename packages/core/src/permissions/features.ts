@@ -48,6 +48,7 @@ export const FEATURE_SPECS = {
   member: { group: "organization", actions: all },
   apiKey: { group: "organization", actions: all },
   paymentAccount: { group: "organization", actions: noDelete },
+  integration: { group: "organization", actions: noDelete },
   audit: { group: "organization", actions: ["read"] },
   assistant: { group: "organization", actions: noDelete },
 } as const satisfies Record<string, FeatureSpec>;
@@ -59,7 +60,12 @@ export const FEATURES = Object.keys(FEATURE_SPECS) as Feature[];
  * Admin-only lock: every action but `read` on these comes only from the `admin` preset; overrides
  * on them are refused and stale ones ignored. Otherwise one toggle would make someone an admin.
  */
-export const LOCKED_FEATURES: readonly Feature[] = ["member", "apiKey", "paymentAccount"];
+export const LOCKED_FEATURES: readonly Feature[] = [
+  "member",
+  "apiKey",
+  "paymentAccount",
+  "integration",
+];
 
 /**
  * Shared vocabulary (ADR 0050, feature scope): every screen shows these as labels (a ticket's

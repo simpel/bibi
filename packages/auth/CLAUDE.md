@@ -53,7 +53,7 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email 
 ## Roles and permissions (ADR 0034, 0050)
 - Fixed roles `member < manager < admin` (not configurable), no `organizationRole` table and no `dynamicAccessControl`. They are presets of `<feature>:<action>` permissions (actions `read|write|delete`) defined in core (`PRESET_PERMISSIONS`, `permissions/presets.ts`); `ROLE_PERMISSIONS` and `RESOURCES`/`RESOURCE_LEVELS` are gone. This package only resolves the caller: `membership.ts` (role) + `load-overrides.ts` (overrides) → `applyOverrides`.
   - What each preset grants is in core `PRESET_PERMISSIONS`; this package only resolves the caller. Core `member.*` checks anti-escalation and keeps one admin.
-  - Overrides (allow/deny per member or API key) come from `permission.get|update`; `member`, `apiKey` and `paymentAccount` (all but `read`) stay admin-only.
+  - Overrides (allow/deny per member or API key) come from `permission.get|update`; `member`, `apiKey`, `paymentAccount` and `integration` (all but `read`) stay admin-only.
 - Better Auth roles (`orgRoles` in `permissions.ts`): only `admin` keeps Better Auth statements (updating or deleting the organization); `manager` and `member` have none. `beforeAddMember` refuses anything but a fixed role.
 - Better Auth's own role paths are closed: `admin` has no `ac`, and `updateMemberRole` is blocked with `organizationHooks.beforeUpdateMemberRole` (the creator would otherwise bypass the check). Roles are assigned via `member.assignRole`.
 

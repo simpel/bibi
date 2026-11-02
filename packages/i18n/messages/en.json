@@ -2397,6 +2397,12 @@
         "onboardingLink": "Continue on Stripe",
         "open": "Open payment settings"
       },
+      "integration": {
+        "singular": "Integrations",
+        "unavailable": "Not available on this server",
+        "company": "{company} ({number})",
+        "open": "Open integrations"
+      },
       "calendar": {
         "title": "Calendar, {period}",
         "empty": "No blocks in this period.",
@@ -2877,7 +2883,7 @@
       "payments": "Stripe account for card payments and invoices.",
       "accounting": "Accounts, VAT and fiscal year for the accounting export.",
       "skills": "Reusable instructions for the assistant.",
-      "integrations": "API keys for other systems that use the REST API.",
+      "integrations": "Connect Fortnox and manage API keys for other systems.",
       "itemStates": "The states a line can be in, per item type.",
       "ticketTemplates": "Ready-made tickets that staff create a ticket from in one step."
     }
@@ -3480,7 +3486,49 @@
   },
   "integration": {
     "title": "Integrations",
-    "description": "Keys that let other systems use the REST API on behalf of the organization.",
+    "description": "Connect Bibi to the systems your organization already uses.",
+    "status": {
+      "NOT_CONNECTED": "Not connected",
+      "PENDING": "Waiting for approval",
+      "CONNECTED": "Connected",
+      "EXPIRED": "Needs reconnecting",
+      "DISCONNECTED": "Disconnected"
+    },
+    "fortnox": {
+      "name": "Fortnox",
+      "description": "Connect your organization's Fortnox company. Bibi shows which company is connected; nothing is sent to Fortnox yet.",
+      "hint": {
+        "NOT_CONNECTED": "Connect Fortnox to link your accounting system. You are sent to Fortnox to approve the connection.",
+        "PENDING": "The connection was started but not approved. Connect again to finish it.",
+        "CONNECTED": "Fortnox is connected.",
+        "EXPIRED": "Fortnox no longer accepts the connection. Reconnect to restore it.",
+        "DISCONNECTED": "Fortnox was disconnected. Connect again to restore it."
+      },
+      "notConfigured": "Fortnox is not available yet: Bibi has no Fortnox app credentials on this server.",
+      "adminNote": "A Fortnox system administrator must approve the connection. If you are not one, ask them to approve when Fortnox asks.",
+      "company": "Company",
+      "organizationNumber": "Organization number",
+      "connectedAt": "Connected",
+      "connect": "Connect Fortnox",
+      "reconnect": "Reconnect",
+      "connecting": "Preparing the Fortnox connection…",
+      "redirecting": "Opening Fortnox…",
+      "disconnect": "Disconnect",
+      "disconnectConfirm": "Disconnect Fortnox? Bibi forgets the connection and revokes its access at Fortnox. You can connect again later.",
+      "disconnecting": "Disconnecting Fortnox…",
+      "disconnected": "Fortnox has been disconnected."
+    },
+    "notice": {
+      "connected": "Fortnox is connected.",
+      "denied": "The connection was not approved at Fortnox, so nothing was connected.",
+      "expired": "The approval took too long or came from somewhere else. Start the connection again.",
+      "failed": "Fortnox could not be connected. Try again in a moment."
+    },
+    "apiKeysCard": {
+      "title": "API keys",
+      "description": "Keys that let other systems use Bibi's REST API on behalf of the organization.",
+      "open": "Manage API keys"
+    },
     "apiKeys": {
       "title": "API keys",
       "description": "Keys for the REST API. A key belongs to the organization and acts with its own preset and permissions, so it keeps working when the person who created it leaves. Only admins manage keys.",
@@ -3990,6 +4038,7 @@
       "member": "Members",
       "apiKey": "API keys",
       "paymentAccount": "Payment account",
+      "integration": "Integrations",
       "audit": "Audit log",
       "assistant": "Assistant and organization skills"
     },
@@ -4013,6 +4062,7 @@
       "member": "Staff in the organization, their presets and permissions.",
       "apiKey": "Keys that let other systems use Bibi's API.",
       "paymentAccount": "The organization's account for receiving payments.",
+      "integration": "Connections to outside systems such as Fortnox.",
       "audit": "The log of who changed what, and when.",
       "assistant": "Everyone's assistant conversations and the organization's shared skills."
     },

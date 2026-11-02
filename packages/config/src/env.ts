@@ -47,6 +47,14 @@ const envSchema = z
      * Unset or 0: no fee (ADR 0028; the pricing model is not decided yet).
      */
     STRIPE_APPLICATION_FEE_BPS: z.coerce.number().int().min(0).max(10_000).optional(),
+    /** Fortnox app credentials (ADR 0087); both set or neither. Unset: Fortnox is not configured. */
+    FORTNOX_CLIENT_ID: z.string().min(1).optional(),
+    FORTNOX_CLIENT_SECRET: z.string().min(1).optional(),
+    /** Base64 32-byte key sealing integration tokens at rest (ADR 0087). Unset: no integration can connect. */
+    INTEGRATION_SECRET_KEY: z
+      .string()
+      .refine((value) => Buffer.from(value, "base64").length === 32, "must be 32 bytes, base64")
+      .optional(),
     AI_GATEWAY_API_KEY: z.string().optional(),
     WEB_URL: z.string().url().default("http://localhost:3330"),
     /**
@@ -88,6 +96,10 @@ const envSchema = z
   .refine((env) => Boolean(env.BETTER_STACK_HOST) === Boolean(env.BETTER_STACK_SOURCE_TOKEN), {
     message: "BETTER_STACK_HOST and BETTER_STACK_SOURCE_TOKEN must be set together",
     path: ["BETTER_STACK_SOURCE_TOKEN"],
+  })
+  .refine((env) => Boolean(env.FORTNOX_CLIENT_ID) === Boolean(env.FORTNOX_CLIENT_SECRET), {
+    message: "FORTNOX_CLIENT_ID and FORTNOX_CLIENT_SECRET must be set together",
+    path: ["FORTNOX_CLIENT_SECRET"],
   })
   .refine((env) => env.MAIL_PROVIDER !== "resend" || env.RESEND_API_KEY, {
     message: "RESEND_API_KEY is required when MAIL_PROVIDER=resend",

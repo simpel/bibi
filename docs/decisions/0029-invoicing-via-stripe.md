@@ -26,3 +26,6 @@
 - The SIE 4I file ([ADR 0077](0077-financials-and-sie-export.md)) is how invoices and payments reach an accounting program. One file covers Fortnox, Visma and other Swedish systems, so the deferred accounting integration is covered by it until a direct one is needed.
 - Fortnox and Visma stay deferred. A direct adapter can later post the same vouchers, behind the same export.
 - Invoicing stays on Stripe. The dates the export needs (`sentAt`, `voidedAt`) and refunds are Bibi's own rows, not Stripe's.
+
+## Addendum 2026-11-02 – Fortnox connection (ADR 0087)
+- An organization can now connect its Fortnox company ([ADR 0087](0087-fortnox-connection.md)). Only the OAuth connection is built; invoices still go through Stripe and accounting through the SIE file until a Fortnox adapter is decided.

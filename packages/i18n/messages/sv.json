@@ -2397,6 +2397,12 @@
         "onboardingLink": "Fortsätt hos Stripe",
         "open": "Öppna betalningsinställningar"
       },
+      "integration": {
+        "singular": "Integrationer",
+        "unavailable": "Inte tillgängligt på den här servern",
+        "company": "{company} ({number})",
+        "open": "Öppna integrationer"
+      },
       "calendar": {
         "title": "Kalender, {period}",
         "empty": "Inga block under perioden.",
@@ -2877,7 +2883,7 @@
       "payments": "Stripe-konto för kortbetalningar och fakturor.",
       "accounting": "Konton, moms och räkenskapsår för bokföringsexporten.",
       "skills": "Återanvändbara instruktioner för assistenten.",
-      "integrations": "API-nycklar för andra system som använder REST-API:t.",
+      "integrations": "Anslut Fortnox och hantera API-nycklar för andra system.",
       "itemStates": "De statusar en rad kan ha, per artikeltyp.",
       "ticketTemplates": "Färdiga ärenden som personalen skapar ett ärende från i ett steg."
     }
@@ -3480,7 +3486,49 @@
   },
   "integration": {
     "title": "Integrationer",
-    "description": "Nycklar som låter andra system använda REST-API:t för organisationens räkning.",
+    "description": "Koppla Bibi till de system som organisationen redan använder.",
+    "status": {
+      "NOT_CONNECTED": "Inte ansluten",
+      "PENDING": "Väntar på godkännande",
+      "CONNECTED": "Ansluten",
+      "EXPIRED": "Behöver anslutas igen",
+      "DISCONNECTED": "Frånkopplad"
+    },
+    "fortnox": {
+      "name": "Fortnox",
+      "description": "Anslut organisationens Fortnox-företag. Bibi visar vilket företag som är anslutet. Ännu skickas inget till Fortnox.",
+      "hint": {
+        "NOT_CONNECTED": "Anslut Fortnox för att koppla ihop ditt bokföringssystem. Du skickas till Fortnox för att godkänna anslutningen.",
+        "PENDING": "Anslutningen är påbörjad men inte godkänd. Anslut igen för att slutföra den.",
+        "CONNECTED": "Fortnox är anslutet.",
+        "EXPIRED": "Fortnox godtar inte längre anslutningen. Anslut igen för att återställa den.",
+        "DISCONNECTED": "Fortnox har kopplats från. Anslut igen för att återställa anslutningen."
+      },
+      "notConfigured": "Fortnox är inte tillgängligt än: Bibi saknar inloggningsuppgifter till Fortnox-appen på den här servern.",
+      "adminNote": "En systemadministratör i Fortnox måste godkänna anslutningen. Är du inte det ber du en sådan person godkänna när Fortnox frågar.",
+      "company": "Företag",
+      "organizationNumber": "Organisationsnummer",
+      "connectedAt": "Ansluten",
+      "connect": "Anslut Fortnox",
+      "reconnect": "Anslut igen",
+      "connecting": "Förbereder anslutningen till Fortnox…",
+      "redirecting": "Öppnar Fortnox…",
+      "disconnect": "Koppla från",
+      "disconnectConfirm": "Koppla från Fortnox? Bibi glömmer anslutningen och återkallar åtkomsten hos Fortnox. Du kan ansluta igen senare.",
+      "disconnecting": "Kopplar från Fortnox…",
+      "disconnected": "Fortnox har kopplats från."
+    },
+    "notice": {
+      "connected": "Fortnox är anslutet.",
+      "denied": "Anslutningen godkändes inte hos Fortnox, så ingenting anslöts.",
+      "expired": "Godkännandet tog för lång tid eller kom från ett annat håll. Starta anslutningen igen.",
+      "failed": "Det gick inte att ansluta Fortnox. Försök igen om en stund."
+    },
+    "apiKeysCard": {
+      "title": "API-nycklar",
+      "description": "Nycklar som låter andra system använda Bibis REST-API för organisationens räkning.",
+      "open": "Hantera API-nycklar"
+    },
     "apiKeys": {
       "title": "API-nycklar",
       "description": "Nycklar för REST-API:t. En nyckel tillhör organisationen och agerar med sitt eget förval och sina egna behörigheter, så den fortsätter fungera när personen som skapade den slutar. Bara administratörer hanterar nycklar.",
@@ -3990,6 +4038,7 @@
       "member": "Medlemmar",
       "apiKey": "API-nycklar",
       "paymentAccount": "Betalkonto",
+      "integration": "Integrationer",
       "audit": "Granskningslogg",
       "assistant": "Assistent och organisationens färdigheter"
     },
@@ -4013,6 +4062,7 @@
       "member": "Personalen i organisationen, deras förval och behörigheter.",
       "apiKey": "Nycklar som låter andra system använda Bibis API.",
       "paymentAccount": "Organisationens konto för att ta emot betalningar.",
+      "integration": "Kopplingar till externa system som Fortnox.",
       "audit": "Loggen över vem som ändrade vad, och när.",
       "assistant": "Allas samtal med assistenten och organisationens gemensamma färdigheter."
     },

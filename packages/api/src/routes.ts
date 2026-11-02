@@ -16,6 +16,7 @@ import { fieldDefinitionRoutes } from "./features/field-definition/rest";
 import { fileRoutes } from "./features/file/rest";
 import { financeRoutes } from "./features/finance/rest";
 import { inboundMessageRoutes } from "./features/inbound-message/rest";
+import { integrationRoutes } from "./features/integration/rest";
 import { invoiceRoutes } from "./features/invoice/rest";
 import { itemRoutes } from "./features/item/rest";
 import { itemDemandRoutes } from "./features/item-demand/rest";
@@ -73,7 +74,13 @@ const selfRoutes = [
 ];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
-const moneyRoutes = [...paymentAccountRoutes, ...paymentRoutes, ...depositRoutes, ...invoiceRoutes];
+const moneyRoutes = [
+  ...integrationRoutes,
+  ...paymentAccountRoutes,
+  ...paymentRoutes,
+  ...depositRoutes,
+  ...invoiceRoutes,
+];
 
 /** The organization's profile and its members' profiles (ADR 0061, 0068). */
 const organizationAndMemberProfileRoutes = [...organizationProfileRoutes, ...memberProfileRoutes];

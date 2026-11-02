@@ -44,6 +44,7 @@ export {
   type InboundEmail,
   type InboundEndpoint,
   type InboundMessage,
+  type IntegrationConnection,
   type Invitation,
   type Invoice,
   type Item,

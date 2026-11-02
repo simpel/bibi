@@ -43,6 +43,7 @@ import "../features/deposit/graphql";
 import "../features/invoice/graphql";
 import "../features/payment-account/graphql";
 import "../features/conversation/graphql";
+import "../features/integration/graphql";
 import "../features/message/graphql";
 import "../features/skill/graphql";
 import "../features/member/graphql";

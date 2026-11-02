@@ -16,6 +16,7 @@ import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
 import { fileMcpTools } from "../features/file/mcp";
 import { financeMcpTools } from "../features/finance/mcp";
 import { inboundMessageMcpTools } from "../features/inbound-message/mcp";
+import { integrationMcpTools } from "../features/integration/mcp";
 import { invoiceMcpTools } from "../features/invoice/mcp";
 import { itemMcpTools } from "../features/item/mcp";
 import { itemDemandMcpTools } from "../features/item-demand/mcp";
@@ -83,6 +84,7 @@ const selfMcpTools = [
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
 const moneyMcpTools = [
   ...paymentAccountMcpTools,
+  ...integrationMcpTools,
   ...paymentMcpTools,
   ...depositMcpTools,
   ...invoiceMcpTools,

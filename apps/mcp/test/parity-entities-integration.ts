@@ -1,3 +1,5 @@
+import { randomBytes } from "node:crypto";
+import { getEnv } from "@bibi/config";
 import { createApiKey, execute } from "@bibi/core";
 import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
@@ -95,7 +97,40 @@ const apiKey: ParityEntity = {
   },
 };
 
-/** API keys and OAuth grants (ADR 0005). */
+/** Fortnox credentials and a sealing key, so `integration.connect` can start (it never calls Fortnox). */
+function configureFortnox() {
+  Object.assign(getEnv(), {
+    FORTNOX_CLIENT_ID: "client-id",
+    FORTNOX_CLIENT_SECRET: "client-secret",
+    INTEGRATION_SECRET_KEY: randomBytes(32).toString("base64"),
+  });
+}
+
+/** Starting the Fortnox connection creates the row; every surface lists it back by id. */
+const integrationConnection: ParityEntity = {
+  ...listed({
+    name: "integrationConnection",
+    path: "/integrations",
+    field: "integrations",
+    create: async ({ mcp }) => {
+      configureFortnox();
+      const started = await tool({
+        mcp,
+        name: "integration_connect",
+        args: { provider: "FORTNOX" },
+      });
+      const { items } = await tool({ mcp, name: "integration_list", args: {} });
+      return items.find((item: Json) => item.id === started.id);
+    },
+  }),
+  viaMcp: async ({ mcp, created }) =>
+    byIdIn({
+      items: (await tool({ mcp, name: "integration_list", args: {} })).items,
+      id: created.id,
+    }),
+};
+
+/** API keys, OAuth grants (ADR 0005) and the Fortnox connection (ADR 0087). */
 export function integrationEntities(): ParityEntity[] {
   return [
     apiKey,
@@ -105,5 +140,6 @@ export function integrationEntities(): ParityEntity[] {
       field: "oauthGrants",
       create: connectClient,
     }),
+    integrationConnection,
   ];
 }

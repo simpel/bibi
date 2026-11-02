@@ -61,6 +61,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "InboundEndpoint",
   "InboundMessage",
   "PaymentAccount",
+  "IntegrationConnection",
   "Payment",
   "PaymentRefund",
   "AccountingSettings",
