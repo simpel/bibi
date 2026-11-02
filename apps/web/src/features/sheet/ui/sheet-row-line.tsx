@@ -3,14 +3,14 @@ import { useTranslations } from "next-intl";
 
 type RowFacts = Pick<
   SheetRow,
-  "kind" | "label" | "itemName" | "quantity" | "startsAt" | "endsAt" | "values"
+  "kind" | "label" | "itemName" | "quantity" | "startsAt" | "endsAt" | "values" | "addOnTo"
 >;
 
 export type SheetRowLineProps = {
   row: RowFacts;
   /** The marker when the row differs from the last sent version. */
   change?: SheetChange["change"];
-  /** REQUIREMENT: the line it applies to; null = the whole ticket. */
+  /** REQUIREMENT: the line it applies to; null = the whole ticket. ITEM: an add-on's parent row. */
   parentKey?: string | null;
   /** The viewer's date and time format: `getDateTimeFormat()` on the server, the hook in a client card. */
   dates: DateTimeFormat;
@@ -35,9 +35,15 @@ function Period({ row, dates: format }: { row: RowFacts; dates: DateTimeFormat }
   );
 }
 
-function Title({ row }: { row: RowFacts }) {
+type TitleProps = { row: RowFacts; nested: boolean };
+
+/** The row's name; an add-on whose parent is not on the sheet names it (ADR 0088). */
+function Title({ row, nested }: TitleProps) {
   const t = useTranslations("sheet");
   if (row.kind === "TICKET") return <>{t("ticket", { reference: row.label })}</>;
+  if (row.addOnTo !== undefined && !nested) {
+    return <>{t("addOnTo", { name: row.label, parent: row.addOnTo })}</>;
+  }
   const count = row.kind === "REQUIREMENT" && row.quantity !== null ? ` × ${row.quantity}` : "";
   return <>{`${row.label}${count}`}</>;
 }
@@ -47,16 +53,18 @@ export function SheetRowLine({ row, change, parentKey, dates }: SheetRowLineProp
   const t = useTranslations("sheet");
   const details = Object.values(row.values).filter((value) => value !== null && value !== "");
   const muted = "text-muted-foreground";
+  const nested = row.kind === "ITEM" && Boolean(parentKey);
   return (
     <li
       data-slot="sheet-row"
       data-change={change}
-      className="flex flex-wrap items-baseline gap-x-2 py-2 text-sm"
+      className={`flex flex-wrap items-baseline gap-x-2 py-2 text-sm${nested ? " pl-6" : ""}`}
     >
       <Marker change={change} />
       <span className={change === "REMOVED" ? "font-medium line-through" : "font-medium"}>
-        <Title row={row} />
+        <Title row={row} nested={nested} />
       </span>
+      {nested && row.addOnTo !== undefined ? <span className={muted}>{t("addOn")}</span> : null}
       {row.itemName ? <span className={muted}>{row.itemName}</span> : null}
       {row.kind === "ITEM" && row.quantity !== null ? <span>× {row.quantity}</span> : null}
       {row.kind === "TICKET" && row.quantity !== null ? (

@@ -105,7 +105,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
   - The whole `ticket.create` input is checked on every change. Issues that name no field of step 4, from that check or from the server (`lines.1.options`), show in a red panel above Create: a line's issue as "<line>: <message>" with **Edit line**, any other as its message. Server issues stay until the lines or the form change. The error toast then says "Could not create the ticket. See what to fix above Create." instead of pointing at highlighted fields.
   - It runs `ticket.create` with the lines, the note, `templateId` and `inboundMessageId`, and an `intakeKey`.
   - On `CONFLICT` for a new clash, nothing is created. The page previews again and shows "Not created yet. Since you started, #<ref> booked <resource> <period>. The lines and calendar are updated. Check them and create again."
-  - After create, with "save as package" ticked, it runs `ticketTemplate.create`. A failure there shows a toast; the ticket stays.
+  - After create, with "save as package" ticked, it runs `ticketTemplate.create`. A failure there shows a toast; the ticket stays. The package keeps the lines but not their add-ons: template lines have no add-ons (ADR 0088), so they are dropped from what is saved.
 
 ## The line dialog
 - **What**: a search across every active item of every type. Each result shows its type and its availability at the ticket's start. **+ Free-text line** adds a line with no item. In edit, **Change item** returns to the search.

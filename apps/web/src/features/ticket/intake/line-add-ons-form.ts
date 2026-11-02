@@ -1,6 +1,7 @@
 import type { DraftAddOn as AddOnInput } from "@bibi/core";
 import { numberOrNull } from "@/lib/blank";
-import { type ChooseOptionsGroupValue, groupOptions } from "../../line/ui/choose-options-schema";
+import type { ChooseOptionsGroupValue } from "../../line/ui/choose-options-schema";
+import { allowsExtras, type ExtraPick } from "../../line/ui/split-picks";
 import type { CatalogItem } from "./catalog";
 import type { DraftAddOn } from "./draft-line";
 import { formTimes } from "./line-form-times";
@@ -20,43 +21,6 @@ export type AddOnFormValue = {
 };
 
 type Group = CatalogItem["groups"][number];
-
-/** A pick beyond a group's max that becomes an add-on (ADR 0088 decision 5). */
-export type ExtraPick = { itemId: string; name: string; groupIndex: number };
-
-const allowsExtras = ({ group }: { group: Group }) => group.allowExtras && !group.split;
-
-export type SplitPicksInput = {
-  groups: readonly Group[];
-  picked: readonly ChooseOptionsGroupValue[];
-};
-
-/**
- * The line's options and extra picks: in a group that allows extras (not split), the first
- * `maxPick` picks in the order they were picked stay options and the rest are extras.
- */
-export function splitPicks({ groups, picked }: SplitPicksInput) {
-  const groupValue = ({ index }: { index: number }) =>
-    picked[index] ?? { picked: [], quantities: {} };
-  const options = groups.flatMap((group, index) =>
-    allowsExtras({ group })
-      ? groupValue({ index })
-          .picked.slice(0, group.maxPick)
-          .map((itemId) => ({ itemId }))
-      : groupOptions({ group, value: groupValue({ index }) }),
-  );
-  const extras = groups.flatMap((group, groupIndex): ExtraPick[] =>
-    allowsExtras({ group })
-      ? groupValue({ index: groupIndex })
-          .picked.slice(group.maxPick)
-          .map((itemId) => ({
-            ...{ itemId, groupIndex },
-            name: group.options.find((option) => option.itemId === itemId)?.name ?? "–",
-          }))
-      : [],
-  );
-  return { options, extras };
-}
 
 type ExtraGroupInput = { groups: readonly Group[]; addOn: DraftAddOn };
 

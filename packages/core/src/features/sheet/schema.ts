@@ -14,7 +14,17 @@ export const SheetRowSchema = z.object({
   parentKey: z
     .string()
     .nullable()
-    .describe("REQUIREMENT: the line's key it applies to; null = the whole ticket"),
+    .describe(
+      "REQUIREMENT: the line's key it applies to; null = the whole ticket. ITEM: an add-on's " +
+        "parent line's row when that line is on the sheet (ADR 0088); the row follows it",
+    ),
+  addOnTo: z
+    .string()
+    .optional()
+    .describe(
+      "ITEM add-on (ADR 0088): the name of the line it is sold with; without parentKey the " +
+        "parent is not on this sheet and the row stands alone",
+    ),
   label: z.string().describe("Ticket reference, line name or counted list value"),
   itemName: z.string().nullable().describe("ITEM: the name of the item the line uses"),
   quantity: z.number().int().nullable().describe("Headcount, item quantity or counted guests"),

@@ -8,8 +8,9 @@ type EffectTranslator = ReturnType<typeof useTranslations<"priceEffect">>;
 export type NameColumnInput = { t: Translator; effects: EffectTranslator };
 
 /**
- * The line's name. A part or option line (ADR 0059) is indented and marked: a part with "Part"
- * (its bundle line carries the price), an option with its price effect.
+ * The line's name. A part, option or add-on line (ADR 0059, 0088) is indented and marked: a part
+ * with "Part" (its bundle line carries the price), an option with its price effect, an add-on with
+ * "Add-on" (its own time, quantity and price).
  */
 export function nameColumn({ t, effects }: NameColumnInput): ColumnDef<LineDto> {
   return {
@@ -30,6 +31,7 @@ export function nameColumn({ t, effects }: NameColumnInput): ColumnDef<LineDto> 
               : t("part")}
           </Badge>
         ) : null}
+        {original.role === "ADD_ON" ? <Badge variant="outline">{t("addOn")}</Badge> : null}
         {original.warnings.map((warning) => (
           <Badge key={warning.id} variant="warning">
             {t(`warnings.${warning.kind}`, {

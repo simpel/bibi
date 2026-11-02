@@ -13,6 +13,8 @@ export type LineFormProps = {
   ticketId: string;
   startsAt: Date;
   line?: LineDto | undefined;
+  /** Create mode: the line the new one is an add-on of (ADR 0088). */
+  parent?: LineDto | undefined;
   onDone: () => void;
 };
 

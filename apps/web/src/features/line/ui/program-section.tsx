@@ -1,4 +1,4 @@
-import { listLines, type TicketDto } from "@bibi/core";
+import { type LineDto, listLines, nestUnderParents, type TicketDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
@@ -22,6 +22,10 @@ function programAccess({ abilities }: { abilities: CallerAbilities }): ProgramAc
   return { canEdit: canWrite, canRemove, canChangeState: canWrite, canAllocate };
 }
 
+/** Sub-lines (parts, options, add-ons) right under their line (ADR 0059, 0088). */
+const nestedLines = ({ lines }: { lines: LineDto[] }) =>
+  nestUnderParents({ rows: lines, keys: (line) => ({ id: line.id, parentId: line.parentLineId }) });
+
 /** The ticket's run schedule (ADR 0022): lines in time order, edited inline, then its alternatives. */
 export async function ProgramSection({ locale, ticket }: ProgramSectionProps) {
   const t = await getTranslations("line");
@@ -35,7 +39,7 @@ export async function ProgramSection({ locale, ticket }: ProgramSectionProps) {
     return <ErrorState errorKey={handleLoadError({ error: lines.error, locale })} />;
   }
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
-  const items = lines.value.items;
+  const items = nestedLines({ lines: lines.value.items });
   const start = {
     data: data.value,
     ticketId: ticket.id,

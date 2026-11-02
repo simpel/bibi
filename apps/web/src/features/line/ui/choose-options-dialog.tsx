@@ -1,11 +1,15 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import type { ExtraAddOn } from "./choose-options-extras";
 import { ChooseOptionsForm } from "./choose-options-form";
 import type { ChosenOption } from "./choose-options-schema";
 import type { CustomisableItem } from "./program-form-data";
 
 export type ChooseOptionsDialogProps = {
   lineId: string;
+  ticketId: string;
+  /** The line's add-ons that are extra picks of its groups (ADR 0088). */
+  extras: readonly ExtraAddOn[];
   item: CustomisableItem;
   chosen: readonly ChosenOption[];
   /** The line's effective quantity, which a split group's quantities should add up to. */

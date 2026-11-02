@@ -1,5 +1,5 @@
 import type { LineChange, OrderLineDto } from "@bibi/core/schemas";
-import { Badge, type BadgeProps, type ColumnDef } from "@bibi/ui";
+import { Badge, type BadgeProps, type ColumnDef, cn } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { useNumberFormat } from "@/lib/number/use-number-format";
@@ -11,7 +11,10 @@ const CHANGE_VARIANT: Record<LineChange, BadgeProps["variant"]> = {
   UNCHANGED: "outline",
 };
 
-/** A line of the quote, or a line this version removed (shown struck through). */
+/**
+ * A line of the quote, or a line this version removed (shown struck through). A sub-line comes
+ * right after its parent (core orders them) and is indented; an add-on is marked (ADR 0088).
+ */
 export type QuoteLineRow = {
   line: OrderLineDto & { change?: LineChange | null };
   removed: boolean;
@@ -44,8 +47,13 @@ const itemColumn = ({ t }: { t: Translate }): Column => ({
   header: t("lines.item"),
   accessorFn: ({ line }) => line.name,
   cell: ({ row: { original } }) => (
-    <span className={original.removed ? STRUCK : undefined}>
+    <span className={cn("block", original.line.parentLineId && "pl-4", original.removed && STRUCK)}>
       <span className="font-medium">{original.line.name}</span>
+      {original.line.role === "ADD_ON" ? (
+        <Badge variant="outline" className="ml-2">
+          {t("lines.addOn")}
+        </Badge>
+      ) : null}
       {original.line.alternativeGroupName ? (
         <span className="block text-xs text-muted-foreground">
           {t("lines.option", { name: original.line.alternativeGroupName })}

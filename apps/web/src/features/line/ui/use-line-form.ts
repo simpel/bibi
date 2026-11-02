@@ -17,23 +17,26 @@ export type UseLineFormInput = {
   startsAt: Date;
   /** Present = edit mode, absent = create mode. */
   line?: LineDto | undefined;
+  /** Create mode: the top-level line the new line is an add-on of (ADR 0088). */
+  parent?: LineDto | undefined;
   onDone: () => void;
 };
 
 type SaveInput = {
   line: LineDto | undefined;
+  parent: LineDto | undefined;
   values: LineFormOutput;
   type: EntityTypeDto | undefined;
 };
 
-/** Creates the line, or updates the one being edited. */
-const save = ({ line, values, type }: SaveInput) =>
+/** Creates the line (an add-on under `parent` when given), or updates the one being edited. */
+const save = ({ line, parent, values, type }: SaveInput) =>
   line
     ? updateLineAction({ input: toLineUpdate({ line, values, type }) })
-    : createLineAction({ input: values });
+    : createLineAction({ input: { ...values, ...(parent ? { parentLineId: parent.id } : {}) } });
 
 /** Line form state; the ticket page reloads with the changed run schedule. */
-export function useLineForm({ data, ticketId, startsAt, line, onDone }: UseLineFormInput) {
+export function useLineForm({ data, ticketId, startsAt, line, parent, onDone }: UseLineFormInput) {
   const t = useTranslations("line");
   const common = useTranslations("common");
   const router = useRouter();
@@ -43,15 +46,19 @@ export function useLineForm({ data, ticketId, startsAt, line, onDone }: UseLineF
     schemaFor: ({ type }) =>
       lineFormSchema({ ticketId, type, vocabularies: data.vocabularies, zones: data, line }),
   });
-  const initial = typeOf({ id: line?.entityTypeId ?? data.types[0]?.id ?? "" });
-  const timeZone = lineTimeZone({ data, itemId: line?.itemId, line });
+  // An add-on starts as its parent's type and period (ADR 0088 decision 11); both can change.
+  const initial = typeOf({
+    id: line?.entityTypeId ?? parent?.entityTypeId ?? data.types[0]?.id ?? "",
+  });
+  const timeZone = lineTimeZone({ data, itemId: line?.itemId, line: line ?? parent });
   const form = useForm<LineFormValues, unknown, LineFormOutput>({
     resolver,
-    defaultValues: lineFormDefaults({ type: initial, line, startsAt, timeZone }),
+    defaultValues: lineFormDefaults({ type: initial, line, parent, startsAt, timeZone }),
   });
   const { submit, pending } = useFormAction({
     form,
-    action: ({ values }) => save({ line, values, type: typeOf({ id: values.entityTypeId }) }),
+    action: ({ values }) =>
+      save({ line, parent, values, type: typeOf({ id: values.entityTypeId }) }),
     messages: { pending: common("saving"), success: t(line ? "updated" : "created") },
     onSuccess: () => {
       onDone();

@@ -64,7 +64,9 @@ describe("derived assignments for members and sheets (ADR 0055)", () => {
     unwrap({ result: await update({ defaultAssigneeId: maria }) });
     const stored = await context.db.sheet.findFirstOrThrow({
       where: { id: sheet.id },
-      include: { recipients: { select: { userId: true, role: true } } },
+      include: {
+        recipients: { select: { userId: true, role: true }, orderBy: { position: "asc" } },
+      },
     });
     expect(stored.recipients.map((r) => r.userId)).toEqual([erik, johan]);
   });

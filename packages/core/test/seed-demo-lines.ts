@@ -1,7 +1,8 @@
 /**
  * F6 expired, L11 confirmed, L12 blocked; L7, L10 from templates; quoted tickets get lunch;
  * L13's alternatives both soft, L14's pick booked and the other option released (ADR 0052);
- * L15's bundle with its part lines in Quote sent (ADR 0059); L9's dinner with its options (ADR 0082).
+ * L15's bundle with its part lines in Quote sent (ADR 0059); L9's dinner with its options (ADR 0082);
+ * L11's break buffet with its pick and two add-ons, and its board meeting's projector add-on (ADR 0088).
  */
 export const LINDHOLMEN_LINE_STATES = [
   ["Afternoon break buffet", "Ordered", false],
@@ -10,6 +11,8 @@ export const LINDHOLMEN_LINE_STATES = [
   ["Beetroot carpaccio with chèvre", "Ordered", false],
   ["Board lunch", "Locked", true],
   ["Board meeting", "Booked", false],
+  ["Break buffet", "Ordered", false],
+  ["Carrot cake", "Ordered", false],
   ["Celeriac steak, mustard vinaigrette", "Ordered", false],
   ["Cloudberry parfait", "Ordered", false],
   ["Coffee and tea", "Estimated", false],
@@ -19,13 +22,16 @@ export const LINDHOLMEN_LINE_STATES = [
   ...Array.from({ length: 6 }, () => ["Conference lunch", "Ordered", false]),
   // L2 and L1, Completed and invoiced (ADR 0077): a closing status released their lines.
   ["Dinner", "Released", false],
+  ["Fresh fruit", "Ordered", false],
   ["Half-day conference", "Booked", false],
   ["Kickoff", "Prebooked", false],
   ["Lunch", "Released", false],
   ["Morning break", "Estimated", false],
+  ["Oat ball", "Ordered", false],
   ["Planning in Hönö", "Booked", false],
   ["Planning in Styrsö", "Released", true],
   ["Product launch", "Prebooked", false],
+  ["Projector for the morning", "Booked", false],
   ["Projector hire", "Booked", false],
   ["Small meeting room", "Booked", false],
   // L4's sound system, with a technician allocated for its setup and teardown (ADR 0059).

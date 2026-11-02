@@ -106,11 +106,23 @@ export type DemoInvoice = {
  */
 export type DemoLineOption = { name: string; quantity?: number; unitPriceKr?: number };
 
+/** An add-on under a line (ADR 0088): item by name, own times, quantity and price if given. */
+export type DemoAddOn = {
+  item: string;
+  name: string;
+  from?: string;
+  to?: string;
+  quantity?: number;
+  unitPriceKr?: number;
+};
+
 export type DemoLine = {
   item: string;
   name: string;
   /** The line's chosen options (`line.chooseOptions`, ADR 0059, 0082), every group's. */
   options?: readonly DemoLineOption[];
+  /** Add-ons under the line (ADR 0088), made after its options. */
+  addOns?: readonly DemoAddOn[];
   from?: string;
   to?: string;
   state?: string;

@@ -1,6 +1,6 @@
 import type { DemoTicket } from "../../ticket-types";
 import { lindholmenHistoryTickets } from "./history-tickets";
-import { l4Lines, l9Lines, l11Choices } from "./ticket-choices";
+import { l4Lines, l9Lines, l11Choices, l11Lines } from "./ticket-choices";
 
 const hisingen = "Hisingen Energi AB";
 const kvarnby = "Kvarnby Design AB";
@@ -103,18 +103,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     },
     choices: l11Choices,
     fields: { Purpose: "Board meeting" },
-    lines: [
-      // ADR 0052: an agreed room price (950 kr in the item) and a flat fee without a time.
-      { item: "Styrsö", name: "Board meeting", from: "09:00", to: "12:00", unitPriceKr: 800 },
-      { item: "Projector", name: "Projector hire", quantity: 1 },
-      {
-        item: "Conference lunch",
-        name: "Board lunch",
-        from: "12:00",
-        to: "13:00",
-        state: "Locked",
-      },
-    ],
+    lines: l11Lines,
   },
   {
     ...{ ref: "L12", customer: hisingen, type: "Conference", day: 5, from: "10:00", to: "12:00" },

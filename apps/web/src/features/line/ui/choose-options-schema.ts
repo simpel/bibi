@@ -1,8 +1,4 @@
 import type { LineDto } from "@bibi/core";
-import { LineChooseOptionsInputSchema } from "@bibi/core/schemas";
-import { formSchema } from "@/lib/form-schema";
-import type { PickRuleText } from "./group-pick-rule";
-import { withGroupRules } from "./group-rules-schema";
 import type { CustomisableItem } from "./program-form-data";
 
 /**
@@ -37,29 +33,6 @@ export const chosenOptionsOf = ({
   groups.flatMap((group, index) =>
     groupOptions({ group, value: values.groups[index] ?? { picked: [], quantities: {} } }),
   );
-
-export type ChooseOptionsSchemaInput = {
-  lineId: string;
-  item: CustomisableItem;
-  ruleText: PickRuleText;
-};
-
-/** Core's `line.chooseOptions` schema over the raw form values, each group's pick rule first. */
-export function chooseOptionsSchema({ lineId, item, ruleText }: ChooseOptionsSchemaInput) {
-  const schema = formSchema({
-    schema: LineChooseOptionsInputSchema,
-    toInput: ({ values }: { values: ChooseOptionsFormValues }) => ({
-      lineId,
-      options: chosenOptionsOf({ groups: item.groups, values }),
-    }),
-  });
-  return withGroupRules<ChooseOptionsFormValues, typeof schema>({
-    ...{ schema, groups: item.groups, ruleText },
-    chosen: ({ values }) => chosenOptionsOf({ groups: item.groups, values }),
-    // `line.chooseOptions` checks every group, also when nothing is chosen.
-    skipWhenNone: false,
-  });
-}
 
 /** A chosen option of a line: its item and own quantity (null = the line's). */
 export type ChosenOption = { itemId: string; quantity: number | null };

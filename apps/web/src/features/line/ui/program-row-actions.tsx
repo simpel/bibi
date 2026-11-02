@@ -8,6 +8,7 @@ import type { RowAccess } from "@/lib/can";
 import { LineAllocationsDialog } from "../../line-allocation/ui/line-allocations-dialog";
 import { ArchiveLineDialog } from "./archive-line-dialog";
 import { ChooseOptionsDialog } from "./choose-options-dialog";
+import type { ExtraAddOn } from "./choose-options-extras";
 import type { ChosenOption } from "./choose-options-schema";
 import { LineDialog } from "./line-dialog";
 import { LineStateMenu } from "./line-state-menu";
@@ -25,9 +26,11 @@ export type ProgramRowActionsProps = {
   access: ProgramAccess;
   /** The line's current option lines as chosen options. */
   chosen: readonly ChosenOption[];
+  /** The line's add-ons that are extra picks of its groups (ADR 0088). */
+  extras: readonly ExtraAddOn[];
 };
 
-type Dialogs = "edit" | "options" | "units" | "archive" | null;
+type Dialogs = "edit" | "addOn" | "options" | "units" | "archive" | null;
 
 /** The line's item, when it has customisation groups and the line is not an option itself. */
 const customisableOf = ({ line, data }: Pick<ProgramRowActionsProps, "line" | "data">) =>
@@ -35,7 +38,11 @@ const customisableOf = ({ line, data }: Pick<ProgramRowActionsProps, "line" | "d
     ? data.customisable.find(({ itemId }) => itemId === line.itemId)
     : undefined;
 
-type RowMenuProps = Omit<ProgramRowActionsProps, "chosen"> & {
+/** Only a top-level line takes add-ons (ADR 0088 decision 4). */
+const canAddOn = ({ line, access }: Pick<ProgramRowActionsProps, "line" | "access">) =>
+  access.canEdit && line.role === null;
+
+type RowMenuProps = Omit<ProgramRowActionsProps, "chosen" | "extras"> & {
   canChoose: boolean;
   canAllocate: boolean;
   onOpen: (dialog: Dialogs) => void;
@@ -48,6 +55,9 @@ function RowMenu({ line, data, access, canChoose, canAllocate, onOpen }: RowMenu
     <DataTableRowActions label={common("actions")}>
       {access.canEdit ? (
         <DropdownMenuItem onSelect={() => onOpen("edit")}>{t("edit")}</DropdownMenuItem>
+      ) : null}
+      {canAddOn({ line, access }) ? (
+        <DropdownMenuItem onSelect={() => onOpen("addOn")}>{t("addAddOn")}</DropdownMenuItem>
       ) : null}
       {canChoose ? (
         <DropdownMenuItem onSelect={() => onOpen("options")}>{t("chooseOptions")}</DropdownMenuItem>
@@ -75,8 +85,27 @@ const bind = ({ dialog, setDialog, name }: DialogState & { name: Dialogs }) => (
   },
 });
 
-/** Edit, choose the options and the units of, change the state of and remove one run schedule row. */
-export function ProgramRowActions({ line, data, access, chosen }: ProgramRowActionsProps) {
+type LineDialogsProps = Pick<ProgramRowActionsProps, "line" | "data"> &
+  DialogState & { canAddOn: boolean };
+
+/** Edit the line, or add an add-on under it (ADR 0088): the line dialog in its two modes. */
+function LineDialogs({ line, data, canAddOn, ...state }: LineDialogsProps) {
+  const base = { data, ticketId: line.ticketId, startsAt: line.startsAt ?? new Date() };
+  return (
+    <>
+      <LineDialog {...base} line={line} {...bind({ ...state, name: "edit" })} />
+      {canAddOn ? (
+        <LineDialog {...base} parent={line} {...bind({ ...state, name: "addOn" })} />
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * Edit, add an add-on to (top-level lines, ADR 0088), choose the options and the units of, change
+ * the state of and remove one run schedule row.
+ */
+export function ProgramRowActions({ line, data, access, chosen, extras }: ProgramRowActionsProps) {
   const [dialog, setDialog] = useState<Dialogs>(null);
   const state = { dialog, setDialog };
   const customisable = access.canEdit ? customisableOf({ line, data }) : undefined;
@@ -88,18 +117,11 @@ export function ProgramRowActions({ line, data, access, chosen }: ProgramRowActi
         canChoose={customisable !== undefined}
         onOpen={setDialog}
       />
-      <LineDialog
-        data={data}
-        ticketId={line.ticketId}
-        startsAt={line.startsAt ?? new Date()}
-        line={line}
-        {...bind({ ...state, name: "edit" })}
-      />
+      <LineDialogs {...{ line, data, ...state }} canAddOn={canAddOn({ line, access })} />
       {customisable ? (
         <ChooseOptionsDialog
-          lineId={line.id}
+          {...{ lineId: line.id, ticketId: line.ticketId, chosen, extras }}
           item={customisable}
-          chosen={chosen}
           quantity={line.effectiveQuantity}
           {...bind({ ...state, name: "options" })}
         />

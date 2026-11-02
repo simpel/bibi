@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { CheckField } from "@/components/form/check-field";
 import { TextField } from "@/components/form/text-field";
 import { TimeField } from "@/components/form/time-field";
-import type { ExtraPick } from "./line-add-ons-form";
+import type { ExtraPick } from "../../line/ui/split-picks";
 import type { LineDialogFormApi } from "./use-line-dialog-form";
 
 export type ExtraPickRowProps = {

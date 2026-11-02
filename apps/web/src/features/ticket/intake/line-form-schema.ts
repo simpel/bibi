@@ -8,9 +8,10 @@ import { formSchema } from "@/lib/form-schema";
 import { chosenOptionsOf } from "../../line/ui/choose-options-schema";
 import type { PickRuleText } from "../../line/ui/group-pick-rule";
 import { withGroupRules } from "../../line/ui/group-rules-schema";
+import { splitPicks } from "../../line/ui/split-picks";
 import type { CatalogItem } from "./catalog";
 import type { DraftLine } from "./draft-line";
-import { addOnInputs, splitPicks } from "./line-add-ons-form";
+import { addOnInputs } from "./line-add-ons-form";
 import { formTimes } from "./line-form-times";
 import type { LineFormValues } from "./line-form-values";
 

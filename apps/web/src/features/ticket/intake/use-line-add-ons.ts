@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useFieldArray } from "react-hook-form";
 import { useNumberFormat } from "@/lib/number/use-number-format";
+import { type ExtraPick, splitPicks } from "../../line/ui/split-picks";
 import { type CatalogItem, hasCapability } from "./catalog";
-import { type ExtraPick, splitPicks } from "./line-add-ons-form";
 import type { LineDialogFormApi } from "./use-line-dialog-form";
 import type { ReviewModel } from "./use-review-model";
 

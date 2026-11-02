@@ -1339,7 +1339,8 @@
       "total": "Total excl. VAT",
       "change": "Change",
       "option": "Option of {name}",
-      "notInTotal": "Not in the total"
+      "notInTotal": "Not in the total",
+      "addOn": "Add-on"
     },
     "draftLines": "A draft shows the ticket's priced lines as they are now; sending freezes them.",
     "editLinesOnTicket": "Edit the lines on the ticket",
@@ -1464,7 +1465,11 @@
       "range": "Choose {min, number}–{max, number}",
       "atLeast": "Choose at least {min, number}",
       "atMost": "Choose at most {max, number}"
-    }
+    },
+    "addOn": "Add-on",
+    "addAddOn": "Add add-on",
+    "addAddOnDescription": "Add something sold with {name}: any item or free text at its own price. It starts with the line's type and time; change them if it goes to another sheet or only part of the time. Empty quantity follows the line.",
+    "extrasHint": "Picks beyond a group's limit are added as add-ons under the line, each at its own price."
   },
   "priceEffect": {
     "INCLUDED": "Included",
@@ -1554,7 +1559,9 @@
       "CONTAINS": "Contains",
       "MAY_CONTAIN": "May contain",
       "line": "{count, plural, one {# guest} other {# guests}}: {name} in {item} ({carriers})"
-    }
+    },
+    "addOn": "Add-on",
+    "addOnTo": "{name} (add-on to {parent})"
   },
   "entityType": {
     "singular": "Type",

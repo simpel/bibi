@@ -1,5 +1,6 @@
 import type { OperationContext } from "../../operations/types";
 import { resolveItemTags } from "../item/resolve-item";
+import { nestUnderParents } from "../line/nest-lines";
 import type { LineDto } from "../line/schema";
 import { LINE_INCLUDE, toLineRecord } from "../line/to-line-record";
 import { withEffective } from "../line/with-effective";
@@ -73,7 +74,7 @@ export type DeriveTicketLinesInput = Db & { ticketIds: readonly string[] };
  * price, at its effective quantity, discount and VAT, with the item's price unit and tags. What a
  * DRAFT quote shows and what `quote.send` freezes, with their alternative groups, a bundle
  * line's VAT per rate of its parts and the options' price effects and quantities (ADR 0059,
- * 0082). Keyed by ticket.
+ * 0082). Sub-lines (parts, options, add-ons) follow their parent line (ADR 0088). Keyed by ticket.
  */
 export async function deriveTicketLines({
   context,
@@ -87,7 +88,11 @@ export async function deriveTicketLines({
     include: LINE_INCLUDE,
   });
   const lines = await withEffective({ context, lines: rows.map((row) => toLineRecord({ row })) });
-  const priced = lines.filter((line) => line.effectiveUnitPriceMinor !== null);
+  // A sub-line follows its parent, so documents show it indented under it (ADR 0088).
+  const priced = nestUnderParents({
+    rows: lines.filter((line) => line.effectiveUnitPriceMinor !== null),
+    keys: (line) => ({ id: line.id, parentId: line.parentLineId }),
+  });
   const itemIds = [...new Set(priced.flatMap((line) => (line.itemId ? [line.itemId] : [])))];
   const facts = await itemFacts({ context, itemIds });
   for (const line of priced) {

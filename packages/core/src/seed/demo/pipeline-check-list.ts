@@ -1,4 +1,5 @@
 import type { ExecuteContext } from "../../operations/context";
+import { checkDemoAddOns } from "./add-on-checks";
 import { checkDemoAllocations } from "./allocation-checks";
 import { checkDemoAlternatives } from "./alternative-checks";
 import { checkDemoArchive } from "./archive-checks";
@@ -50,6 +51,7 @@ export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoPrices,
   checkDemoBundles,
   checkDemoOptionQuantities,
+  checkDemoAddOns,
   checkDemoBuffers,
   checkDemoAllocations,
   checkDemoPayments,

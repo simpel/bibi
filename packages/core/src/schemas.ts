@@ -50,6 +50,7 @@ export * from "./features/line/choose-options-schema";
 export * from "./features/line/expand-schema";
 export * from "./features/line/line-role";
 export * from "./features/line/list-schema";
+export * from "./features/line/nest-lines";
 export * from "./features/line/schema";
 export * from "./features/line-allocation/schema";
 export * from "./features/member/schema";

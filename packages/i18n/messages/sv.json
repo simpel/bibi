@@ -1339,7 +1339,8 @@
       "total": "Summa exkl. moms",
       "change": "Ändring",
       "option": "Alternativ i {name}",
-      "notInTotal": "Ingår inte i summan"
+      "notInTotal": "Ingår inte i summan",
+      "addOn": "Tillägg"
     },
     "draftLines": "Ett utkast visar ärendets prissatta rader som de är nu; när offerten skickas fryses de.",
     "editLinesOnTicket": "Redigera raderna på ärendet",
@@ -1464,7 +1465,11 @@
       "range": "Välj {min, number}–{max, number}",
       "atLeast": "Välj minst {min, number}",
       "atMost": "Välj högst {max, number}"
-    }
+    },
+    "addOn": "Tillägg",
+    "addAddOn": "Lägg till tillägg",
+    "addAddOnDescription": "Lägg till något som säljs med {name}: valfri artikel eller fritext till eget pris. Det får radens typ och tid från början; ändra dem om det ska till ett annat underlag eller bara gäller en del av tiden. Tomt antal följer raden.",
+    "extrasHint": "Val utöver en grupps gräns läggs till som tillägg under raden, vart och ett till sitt eget pris."
   },
   "priceEffect": {
     "INCLUDED": "Ingår",
@@ -1554,7 +1559,9 @@
       "CONTAINS": "Innehåller",
       "MAY_CONTAIN": "Kan innehålla",
       "line": "{count, plural, one {# gäst} other {# gäster}}: {name} i {item} ({carriers})"
-    }
+    },
+    "addOn": "Tillägg",
+    "addOnTo": "{name} (tillägg till {parent})"
   },
   "entityType": {
     "singular": "Typ",

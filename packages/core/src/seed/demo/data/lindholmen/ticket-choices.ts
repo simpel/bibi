@@ -36,3 +36,31 @@ export const l4Lines: readonly DemoLine[] = [
   { item: "Styrsö", name: "Half-day conference", from: "09:00", to: "13:00" },
   { item: "Mobile sound system", name: "Sound for the conference", from: "09:00", to: "13:00" },
 ];
+
+/**
+ * L11's lines. ADR 0052: an agreed room price (950 kr in the item) and a flat fee without a time.
+ * ADR 0088: the board meeting has a projector add-on for the morning only, and the break buffet
+ * picks Carrot cake in its Snack group (choose 1) with Oat ball and Fresh fruit as add-ons at
+ * their own line price (dishes have none); the quote lists them under their lines.
+ */
+export const l11Lines: readonly DemoLine[] = [
+  {
+    ...{ item: "Styrsö", name: "Board meeting", from: "09:00", to: "12:00", unitPriceKr: 800 },
+    addOns: [
+      {
+        ...{ item: "Projector", name: "Projector for the morning", quantity: 1 },
+        ...{ from: "09:00", to: "10:30" },
+      },
+    ],
+  },
+  { item: "Projector", name: "Projector hire", quantity: 1 },
+  {
+    ...{ item: "Afternoon break", name: "Break buffet", from: "10:30", to: "10:50" },
+    options: [{ name: "Carrot cake" }],
+    addOns: [
+      { item: "Oat ball", name: "Oat ball", unitPriceKr: 25 },
+      { item: "Fresh fruit", name: "Fresh fruit", unitPriceKr: 20 },
+    ],
+  },
+  { item: "Conference lunch", name: "Board lunch", from: "12:00", to: "13:00", state: "Locked" },
+];

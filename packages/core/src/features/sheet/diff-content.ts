@@ -1,7 +1,15 @@
 import { isDeepStrictEqual } from "node:util";
 import type { SheetChange, SheetContent, SheetRow } from "./schema";
 
-const ATTRIBUTES = ["parentKey", "label", "itemName", "quantity", "startsAt", "endsAt"] as const;
+const ATTRIBUTES = [
+  "parentKey",
+  "addOnTo",
+  "label",
+  "itemName",
+  "quantity",
+  "startsAt",
+  "endsAt",
+] as const;
 
 type ChangedInput = { before: SheetRow; after: SheetRow };
 
