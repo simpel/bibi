@@ -4,6 +4,9 @@ import {
   createDeposit,
   type DepositCreateInput,
   type DepositDto,
+  type DepositRequestInput,
+  type PaymentDto,
+  requestDeposit,
   sendDeposit,
   voidDeposit,
 } from "@bibi/core";
@@ -30,4 +33,13 @@ export async function voidDepositAction({
   id,
 }: DepositIdActionInput): Promise<ActionResult<DepositDto>> {
   return toActionResult({ result: await runOperation({ operation: voidDeposit, input: { id } }) });
+}
+
+export type RequestDepositActionInput = { input: DepositRequestInput };
+
+/** A deposit and its card payment in one step; the payment carries the `/pay` link. */
+export async function requestDepositAction({
+  input,
+}: RequestDepositActionInput): Promise<ActionResult<PaymentDto>> {
+  return toActionResult({ result: await runOperation({ operation: requestDeposit, input }) });
 }

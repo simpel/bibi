@@ -28,6 +28,13 @@ Current behaviour. Why: ADR 0028 (provider and Connect), 0029 (invoicing), 0057 
 - A refund signal (`charge.refunded`) appends one `PaymentRefund` row through `payment.applySignal`: the step, the refunded total after it and `refundedAt`, the time the signal was applied. A repeated signal with the same total adds no row. `Payment.refundedMinor` stays the Stripe mirror; the `payment refunds` reconciliation checks that the rows sum to it.
 - `Invoice` and `Deposit` keep `sentAt` (set by send) and `voidedAt` (set by void). A void keeps `sentAt`. These dates are the accounting dates of the SIE vouchers.
 
+## Deposit rule and invoice provider (ADR 0090)
+- The venue's money stays with the venue: card payments and invoices go to its own Stripe or Fortnox. Bibi sends the links and mirrors the results.
+- `PaymentSettings` (one row per organization) holds the deposit rule (`depositPercent`, 1–100, and `depositMinimumMinor`) and the `invoiceProvider` (`STRIPE` or `FORTNOX`, null = whichever is connected). `paymentSettings.get|update` use `paymentAccount:read|write`.
+- `deposit.suggest` applies the rule to the ticket's live priced lines incl. VAT and returns the basis (`PERCENT`, `FULL` for a ticket under the minimum, or `NONE`) and the amount. `deposit.request` creates the deposit, sends it and creates a `CARD` payment against it in one step, and returns the payment with its `/pay` link. Its amount defaults to the rule.
+- Settings → Payments holds the rule and the invoice provider. The Stripe connection is on Settings → Integrations, next to Fortnox.
+- Without an active Stripe account there are no payment links: `deposit.request` and `payment.create` refuse with `CONFLICT`, and `deposit.suggest` returns `paymentLinksAvailable: false`. The ticket's payment-link buttons then show dimmed, and a click explains that an administrator connects Stripe under Settings → Integrations.
+
 ## Not built
 - Swish for customers (needs per-venue bank onboarding). Update the differentiators in `CLAUDE.md` when it is added.
 - Open: the application fee amount, Stripe's EU data handling, the exact Accounts v2 responsibilities for fees and losses.

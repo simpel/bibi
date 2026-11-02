@@ -1,0 +1,61 @@
+import { ok, type Result } from "../../errors/result";
+import type { OperationContext } from "../../operations/types";
+import { notFound } from "../../shared/errors";
+import type { PaymentSettingsDto } from "../payment-account/settings-schema";
+import { loadPaymentSettings } from "../payment-account/settings-store";
+import { checkLinesReadable } from "../quote/check-lines-readable";
+import { deriveTicketLines } from "../quote/derive-lines";
+import { quoteTotals } from "../quote/line-totals";
+import type { DepositSuggestion } from "./schema";
+
+export type DepositFromRuleInput = {
+  totalMinor: number;
+  settings: Pick<PaymentSettingsDto, "depositPercent" | "depositMinimumMinor">;
+};
+
+/**
+ * The deposit rule (ADR 0090): below the minimum the whole total is paid up front, otherwise the
+ * rule's percentage of it, rounded to whole minor units. No percentage = no rule.
+ */
+export function depositFromRule({
+  totalMinor,
+  settings,
+}: DepositFromRuleInput): Pick<DepositSuggestion, "basis" | "amountMinor"> {
+  const { depositPercent, depositMinimumMinor } = settings;
+  if (depositMinimumMinor !== null && totalMinor < depositMinimumMinor) {
+    return { basis: "FULL", amountMinor: totalMinor };
+  }
+  if (depositPercent === null) return { basis: "NONE", amountMinor: null };
+  return { basis: "PERCENT", amountMinor: Math.round((totalMinor * depositPercent) / 100) };
+}
+
+export type SuggestDepositInput = {
+  context: Pick<OperationContext, "db" | "permissions">;
+  ticketId: string;
+};
+
+/**
+ * The rule applied to the ticket's live priced lines incl. VAT (what an invoice would freeze).
+ * The rule itself is `paymentAccount` data (ADR 0071): only the amount it gives leaves here.
+ */
+export async function suggestDeposit({
+  context,
+  ticketId,
+}: SuggestDepositInput): Promise<Result<DepositSuggestion>> {
+  const readable = checkLinesReadable({ context, path: "ticketId" });
+  if (!readable.ok) return readable;
+  const ticket = await context.db.ticket.findFirst({
+    where: { id: ticketId },
+    select: { id: true },
+  });
+  if (!ticket) return notFound({ entity: "Ticket" });
+  const derived = (await deriveTicketLines({ context, ticketIds: [ticketId] })).get(ticketId) ?? [];
+  const { totalInclVatMinor } = quoteTotals({ lines: derived.map((d) => d.line) });
+  const [settings, account] = await Promise.all([
+    loadPaymentSettings({ context }),
+    context.db.paymentAccount.findFirst({ select: { status: true, stripeAccountId: true } }),
+  ]);
+  const paymentLinksAvailable = account?.status === "ACTIVE" && account.stripeAccountId !== null;
+  const rule = depositFromRule({ totalMinor: totalInclVatMinor, settings });
+  return ok({ value: { totalInclVatMinor, ...rule, paymentLinksAvailable } });
+}

@@ -107,4 +107,10 @@ export const lindholmen: DemoOrg = {
       { type: "Drink", account: "3052" },
     ],
   },
+  // ADR 0090: a 30 % deposit, tickets under 10 000 kr paid in full; Stripe raises the invoices.
+  paymentSettings: {
+    depositPercent: 30,
+    depositMinimumMinor: 1_000_000,
+    invoiceProvider: "STRIPE",
+  },
 };

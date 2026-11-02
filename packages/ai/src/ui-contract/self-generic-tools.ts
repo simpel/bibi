@@ -16,6 +16,9 @@ export const SELF_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   accountingSettings_get: "accounting settings are edited on /settings/accounting (ADR 0077); JSON",
   accountingSettings_update:
     "accounting settings are edited on /settings/accounting (ADR 0077); JSON",
+  paymentSettings_get: "payment settings are edited on Settings → Integrations (ADR 0090); JSON",
+  paymentSettings_update: "payment settings are edited on Settings → Integrations (ADR 0090); JSON",
+  deposit_suggest: "a suggested amount the assistant reads out; no card of its own (ADR 0090)",
   workingHours_get: "working hours are edited in the welcome flow (#418); shown as JSON",
   workingHours_set: "working hours are edited in the welcome flow (#418); shown as JSON",
   file_upload: "returns only a storage key; the avatar is shown by the profile UI",

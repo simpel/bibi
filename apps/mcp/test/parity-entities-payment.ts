@@ -25,6 +25,23 @@ export const paymentAccountEntity: ParityEntity = {
   },
 };
 
+/** How ticket money is taken (ADR 0090): the deposit rule and the invoice provider. */
+export const paymentSettingsEntity: ParityEntity = {
+  name: "paymentSettings",
+  create: ({ mcp }) =>
+    tool({
+      mcp,
+      name: "paymentSettings_update",
+      args: { depositPercent: 30, depositMinimumMinor: 500_000, invoiceProvider: "STRIPE" },
+    }),
+  viaMcp: ({ mcp }) => tool({ mcp, name: "paymentSettings_get", args: {} }),
+  viaRest: ({ context }) => createRestClient({ context }).get({ path: "/payment-settings" }),
+  viaGraph: async ({ context, keys }) => {
+    const query = `query { paymentSettings { ${keys.join(" ")} } }`;
+    return (await gqlQuery({ context, query, variables: {} })).paymentSettings;
+  },
+};
+
 /** A SENT deposit request (ADR 0057) on the ticket made earlier. */
 export const depositEntity = (): ParityEntity => ({
   ...byId({ name: "deposit", field: "deposit", list: "deposits", createTool: "", args: {} }),
@@ -123,6 +140,7 @@ export const accountingExportEntity = (): ParityEntity => ({
 /** Money entities in creation order: account, receivables, then a payment against one. */
 export const moneyEntities = (): ParityEntity[] => [
   paymentAccountEntity,
+  paymentSettingsEntity,
   depositEntity(),
   invoiceEntity(),
   paymentEntity(),

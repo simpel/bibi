@@ -7,6 +7,13 @@ const kronor = ({ value }: { value: unknown }): string =>
 export const depositMcpTools = [
   mcpTool({ operation: "deposit.list" }),
   mcpTool({ operation: "deposit.get" }),
+  mcpTool({ operation: "deposit.suggest" }),
+  mcpTool({
+    operation: "deposit.request",
+    summary: ({ input }) =>
+      `Ask the customer of ticket ${text({ value: input.ticketId })} for a deposit ` +
+      `("${text({ value: input.description })}") with a card payment link`,
+  }),
   mcpTool({
     operation: "deposit.create",
     summary: ({ input }) =>

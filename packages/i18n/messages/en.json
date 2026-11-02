@@ -2400,6 +2400,9 @@
         "vat12Account": "Output VAT 12 % account",
         "vat6Account": "Output VAT 6 % account",
         "fiscalYearStartMonth": "First month of the fiscal year",
+        "depositPercent": "Deposit (percent)",
+        "depositMinimumMinor": "Minimum for a deposit (minor units)",
+        "invoiceProvider": "Invoice provider",
         "revenueAccounts": "Revenue accounts per item type or item"
       },
       "operations": {
@@ -2510,6 +2513,8 @@
         "boardPhase_reorder": "Reorder board columns",
         "boardPhase_moveStatus": "Move status between board columns",
         "accountingSettings_update": "Change accounting settings",
+        "paymentSettings_update": "Change payment settings",
+        "deposit_request": "Request deposit with payment link",
         "accountingExport_create": "Create SIE export",
         "inboundMessage_dismiss": "Dismiss message",
         "inboundMessage_restore": "Restore message"
@@ -3132,7 +3137,7 @@
       "priceLists": "Prices per customer group or season.",
       "ticketStatuses": "The statuses a ticket moves through.",
       "members": "Who has access and with which role.",
-      "payments": "Stripe account for card payments and invoices.",
+      "payments": "Deposit rule and invoice provider for payments.",
       "accounting": "Accounts, VAT and fiscal year for the accounting export.",
       "skills": "Reusable instructions for the assistant.",
       "integrations": "Connect Stripe and Fortnox and manage API keys for other systems.",
@@ -3332,6 +3337,11 @@
     "empty": "No payments requested yet.",
     "request": "Request payment",
     "requestDescription": "Charged directly on your Stripe account. A card payment gives a link to send to the customer; an invoice is emailed to the customer's email address.",
+    "stripeRequired": {
+      "title": "Connect Stripe first",
+      "description": "Payment links and payments go straight to your organization's own Stripe account. An administrator connects Stripe under Settings → Integrations; until then these actions are not available.",
+      "connect": "Go to Integrations"
+    },
     "created": "The payment has been requested.",
     "openLink": "Open payment link",
     "public": {
@@ -3423,6 +3433,26 @@
     "void": "Void",
     "voidConfirm": "Void the deposit request \"{description}\"? It is no longer owed.",
     "voided": "The deposit request has been voided.",
+    "request": {
+      "action": "Deposit with payment link",
+      "title": "Request deposit",
+      "description": "Creates a deposit and a payment link to send to the customer.",
+      "amount": "Amount (SEK)",
+      "text": "Text for the customer",
+      "defaultDescription": "Deposit",
+      "submit": "Request deposit",
+      "created": "The deposit has been requested.",
+      "linkReady": "Send the link to the customer. The customer pays without an account.",
+      "link": "Payment link",
+      "copy": "Copy the link",
+      "copied": "The link has been copied.",
+      "copyFailed": "Could not copy the link.",
+      "hint": {
+        "PERCENT": "Suggested by your deposit rule. Ticket total incl. VAT: {total}.",
+        "FULL": "The ticket total incl. VAT ({total}) is below the minimum, so it is paid in full up front.",
+        "NONE": "No deposit rule is set. Enter an amount. Ticket total incl. VAT: {total}."
+      }
+    },
     "fields": {
       "description": "What the customer pays for",
       "amount": "Amount (SEK)",
@@ -3443,6 +3473,38 @@
     "void": "Void",
     "voidConfirm": "Void invoice #{number}? It is no longer owed and the ticket can be invoiced again.",
     "voided": "The invoice has been voided."
+  },
+  "paymentSettings": {
+    "title": "Payments",
+    "description": "The deposit rule and which system sends invoices. Stripe is connected under Integrations.",
+    "saved": "Payment settings saved.",
+    "readOnly": "You can view these settings but not change them.",
+    "save": "Save",
+    "deposit": {
+      "title": "Deposits",
+      "description": "The deposit suggested when you request one for a ticket."
+    },
+    "invoice": {
+      "title": "Invoice provider",
+      "description": "Which system sends invoices when both Stripe and Fortnox are connected."
+    },
+    "fields": {
+      "depositPercent": "Deposit (% of the ticket total incl. VAT)",
+      "depositMinimum": "Minimum for a deposit (SEK)",
+      "invoiceProvider": "Send invoices via"
+    },
+    "placeholders": {
+      "none": "No rule"
+    },
+    "hints": {
+      "depositMinimum": "Tickets below this amount are paid in full up front.",
+      "invoiceProvider": "Follow what is connected uses whichever system is connected."
+    },
+    "provider": {
+      "AUTO": "Follow what is connected",
+      "STRIPE": "Stripe",
+      "FORTNOX": "Fortnox"
+    }
   },
   "paymentAccount": {
     "title": "Payments",

@@ -37,6 +37,7 @@ export const PAYMENT_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   }),
   payment_get: paymentCard,
   payment_create: paymentCard,
+  deposit_request: paymentCard,
   payment_balance: uiEntry({
     component: "ticket-balance-card",
     schema: TicketBalanceSchema,

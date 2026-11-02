@@ -1,11 +1,15 @@
 import {
   getPaymentAccount,
+  getPaymentSettings,
   type PaymentAccountDto,
   type PaymentAccountOnboardingDto,
   PaymentAccountOnboardingSchema,
   PaymentAccountSchema,
+  type PaymentSettingsDto,
+  PaymentSettingsSchema,
   startPaymentOnboarding,
   syncPaymentAccount,
+  updatePaymentSettings,
 } from "@bibi/core";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
@@ -30,3 +34,15 @@ fieldFromOperation({
 });
 mutationFromOperation({ operation: startPaymentOnboarding, type: PaymentAccountOnboardingRef });
 mutationFromOperation({ operation: syncPaymentAccount, type: PaymentAccountRef });
+
+const PaymentSettingsRef = objectFromSchema<PaymentSettingsDto>({
+  name: "PaymentSettings",
+  schema: PaymentSettingsSchema,
+  description: "How the organization takes ticket money (ADR 0090); empty until first saved.",
+});
+fieldFromOperation({
+  operation: getPaymentSettings,
+  type: PaymentSettingsRef,
+  name: "paymentSettings",
+});
+mutationFromOperation({ operation: updatePaymentSettings, type: PaymentSettingsRef });

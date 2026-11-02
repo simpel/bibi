@@ -20,6 +20,7 @@ import { checkDemoInbox } from "./inbox-checks";
 import { checkDemoIntakeCreate } from "./intake-create-checks";
 import { checkDemoOptionQuantities } from "./option-quantity-checks";
 import { checkDemoPayments } from "./payment-checks";
+import { checkDemoPaymentSettings } from "./payment-settings-checks";
 import { checkDemoPipeline } from "./pipeline-checks";
 import { checkDemoPreview } from "./preview-checks";
 import { checkDemoPrices } from "./price-checks";
@@ -57,6 +58,7 @@ export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoBuffers,
   checkDemoAllocations,
   checkDemoPayments,
+  checkDemoPaymentSettings,
   checkDemoFinance,
   checkDemoDensity,
   checkDemoDashboard,

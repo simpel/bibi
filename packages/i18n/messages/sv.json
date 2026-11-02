@@ -2400,6 +2400,9 @@
         "vat12Account": "Konto för utgående moms 12 %",
         "vat6Account": "Konto för utgående moms 6 %",
         "fiscalYearStartMonth": "Räkenskapsårets första månad",
+        "depositPercent": "Förskott (procent)",
+        "depositMinimumMinor": "Lägsta belopp för förskott (ören)",
+        "invoiceProvider": "Fakturaleverantör",
         "revenueAccounts": "Intäktskonton per artikeltyp eller artikel"
       },
       "operations": {
@@ -2510,6 +2513,8 @@
         "boardPhase_reorder": "Ändra ordning på kolumner",
         "boardPhase_moveStatus": "Flytta ärendestatus mellan kolumner",
         "accountingSettings_update": "Ändra bokföringsinställningar",
+        "paymentSettings_update": "Ändra betalningsinställningar",
+        "deposit_request": "Begär förskott med betallänk",
         "accountingExport_create": "Skapa SIE-export",
         "inboundMessage_dismiss": "Avfärda meddelande",
         "inboundMessage_restore": "Återställ meddelande"
@@ -3132,7 +3137,7 @@
       "priceLists": "Priser per kundgrupp eller säsong.",
       "ticketStatuses": "De ärendestatusar ett ärende går igenom.",
       "members": "Vem som har åtkomst och med vilken roll.",
-      "payments": "Stripe-konto för kortbetalningar och fakturor.",
+      "payments": "Förskottsregel och fakturaleverantör för betalningar.",
       "accounting": "Konton, moms och räkenskapsår för bokföringsexporten.",
       "skills": "Återanvändbara instruktioner för assistenten.",
       "integrations": "Anslut Stripe och Fortnox och hantera API-nycklar för andra system.",
@@ -3332,6 +3337,11 @@
     "empty": "Inga betalningar begärda ännu.",
     "request": "Begär betalning",
     "requestDescription": "Debiteras direkt på ert Stripe-konto. Kortbetalning ger en länk att skicka till kunden; en faktura mejlas till kundens e-postadress.",
+    "stripeRequired": {
+      "title": "Koppla Stripe först",
+      "description": "Betallänkar och betalningar går direkt till organisationens eget Stripe-konto. En administratör kopplar Stripe under Inställningar → Integrationer; tills dess går de här åtgärderna inte att använda.",
+      "connect": "Gå till Integrationer"
+    },
     "created": "Betalningen har begärts.",
     "openLink": "Öppna betalningslänken",
     "public": {
@@ -3423,6 +3433,26 @@
     "void": "Makulera",
     "voidConfirm": "Makulera förskottet \"{description}\"? Det är då inte längre skyldigt.",
     "voided": "Förskottet har makulerats.",
+    "request": {
+      "action": "Förskott med betallänk",
+      "title": "Begär förskott",
+      "description": "Skapar ett förskott och en betallänk att skicka till kunden.",
+      "amount": "Belopp (kr)",
+      "text": "Text till kunden",
+      "defaultDescription": "Förskott",
+      "submit": "Begär förskott",
+      "created": "Förskottet har begärts.",
+      "linkReady": "Skicka länken till kunden. Kunden betalar utan konto.",
+      "link": "Betalningslänk",
+      "copy": "Kopiera länken",
+      "copied": "Länken har kopierats.",
+      "copyFailed": "Kunde inte kopiera länken.",
+      "hint": {
+        "PERCENT": "Föreslaget enligt er förskottsregel. Ärendets summa inkl. moms: {total}.",
+        "FULL": "Ärendets summa inkl. moms ({total}) understiger minimibeloppet, så hela beloppet betalas i förväg.",
+        "NONE": "Ingen förskottsregel är inställd. Ange ett belopp. Ärendets summa inkl. moms: {total}."
+      }
+    },
     "fields": {
       "description": "Vad kunden betalar för",
       "amount": "Belopp (kr)",
@@ -3443,6 +3473,38 @@
     "void": "Makulera",
     "voidConfirm": "Makulera faktura nr {number}? Den är då inte längre skyldig och ärendet kan faktureras igen.",
     "voided": "Fakturan har makulerats."
+  },
+  "paymentSettings": {
+    "title": "Betalningar",
+    "description": "Förskottsregel och vilket system som skickar fakturor. Stripe kopplas under Integrationer.",
+    "saved": "Betalningsinställningarna har sparats.",
+    "readOnly": "Du kan se inställningarna men inte ändra dem.",
+    "save": "Spara",
+    "deposit": {
+      "title": "Förskott",
+      "description": "Förskottet som föreslås när du begär ett för ett ärende."
+    },
+    "invoice": {
+      "title": "Fakturaleverantör",
+      "description": "Vilket system som skickar fakturorna när både Stripe och Fortnox är kopplade."
+    },
+    "fields": {
+      "depositPercent": "Förskott (% av ärendets summa inkl. moms)",
+      "depositMinimum": "Lägsta belopp för förskott (kr)",
+      "invoiceProvider": "Skicka fakturor via"
+    },
+    "placeholders": {
+      "none": "Ingen regel"
+    },
+    "hints": {
+      "depositMinimum": "Ärenden under det här beloppet betalas helt i förväg.",
+      "invoiceProvider": "Följ vad som är kopplat använder det system som är anslutet."
+    },
+    "provider": {
+      "AUTO": "Följ vad som är kopplat",
+      "STRIPE": "Stripe",
+      "FORTNOX": "Fortnox"
+    }
   },
   "paymentAccount": {
     "title": "Betalningar",

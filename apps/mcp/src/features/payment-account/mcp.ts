@@ -1,6 +1,12 @@
 import { mcpTool } from "../../tools/meta";
 
 export const paymentAccountMcpTools = [
+  mcpTool({ operation: "paymentSettings.get" }),
+  mcpTool({
+    operation: "paymentSettings.update",
+    idempotent: true,
+    summary: () => "Change the deposit rule or the invoice provider",
+  }),
   mcpTool({ operation: "paymentAccount.get" }),
   mcpTool({
     operation: "paymentAccount.startOnboarding",

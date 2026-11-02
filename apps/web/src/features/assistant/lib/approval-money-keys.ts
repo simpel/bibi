@@ -22,11 +22,15 @@ export const MONEY_FIELD_KEYS = [
   "fiscalYearStartMonth",
   "revenueAccounts",
   "estimatedValueMinor",
+  "depositPercent",
+  "depositMinimumMinor",
+  "invoiceProvider",
 ] as const;
 
 /** Money operations with a localized label in `assistant.approval.operations`. */
 export const MONEY_OPERATION_KEYS = [
   "deposit_create",
+  "deposit_request",
   "deposit_send",
   "deposit_void",
   "invoice_create",
@@ -34,5 +38,6 @@ export const MONEY_OPERATION_KEYS = [
   "invoice_void",
   "payment_create",
   "accountingSettings_update",
+  "paymentSettings_update",
   "accountingExport_create",
 ] as const;

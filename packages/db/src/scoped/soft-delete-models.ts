@@ -32,6 +32,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["Conversation", "ACTIVE"],
   ["OrganizationProfile", "ACTIVE"],
   ["AccountingSettings", "ACTIVE"],
+  ["PaymentSettings", "ACTIVE"],
   ["AccountingExport", "ACTIVE"],
   ["InboundEndpoint", "ACTIVE"],
   ["Skill", { not: "ARCHIVED" }],

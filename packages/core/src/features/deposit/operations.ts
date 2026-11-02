@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { requestDeposit, suggestDepositAmount } from "./request-operations";
 import {
   DepositIdInputSchema,
   DepositListInputSchema,
@@ -46,7 +47,7 @@ export const getDeposit = defineOperation({
   },
 });
 
-export { createDeposit, sendDeposit, voidDeposit };
+export { createDeposit, requestDeposit, sendDeposit, suggestDepositAmount, voidDeposit };
 
 /** Deposit requests: frozen receivables a payment settles (ADR 0057). */
 export const depositOperations = [
@@ -55,4 +56,6 @@ export const depositOperations = [
   createDeposit,
   sendDeposit,
   voidDeposit,
+  suggestDepositAmount,
+  requestDeposit,
 ];

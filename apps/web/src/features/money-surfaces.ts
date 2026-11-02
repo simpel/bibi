@@ -11,6 +11,8 @@ export const MONEY_SURFACES: readonly WebSurface[] = [
   { operation: "payment.balance", route: "/tickets/[id]" },
   { operation: "deposit.list", route: "/tickets/[id]" },
   { operation: "deposit.create", route: "/new/deposit" },
+  { operation: "deposit.suggest", route: "/tickets/[id]" },
+  { operation: "deposit.request", route: "/tickets/[id]" },
   { operation: "deposit.send", route: "/tickets/[id]" },
   { operation: "deposit.void", route: "/tickets/[id]" },
   { operation: "invoice.list", route: "/tickets/[id]" },

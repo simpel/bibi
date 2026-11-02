@@ -47,3 +47,7 @@
 - **Poll Fortnox for payments on a timer.** Uses the rate limit per organization for invoices that mostly have not changed; the Topics stream says exactly which invoice changed.
 - **One WebSocket per organization.** Fortnox asks for one connection for all customers.
 - **Take payments on Bibi's account and pay venues out.** Bibi would hold venue funds and carry the loss risk; this is what the user ruled out.
+
+## Addendum 2026-11-02 – no Stripe, no payment links
+- Replaces the fallback in decision 4 (user's decision): without an active Stripe account there is no invoice fallback for deposits. Payment links (`deposit.request`, `payment.create`) are unavailable and refuse with `CONFLICT`.
+- The web app keeps the actions visible but dimmed; a click explains that an administrator connects Stripe under Settings → Integrations. `deposit.suggest` carries `paymentLinksAvailable`, so members without `paymentAccount:read` see the same state.

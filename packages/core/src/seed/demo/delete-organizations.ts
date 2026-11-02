@@ -18,6 +18,7 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.accountingExport.deleteMany({ where }),
   db.revenueAccount.deleteMany({ where }),
   db.accountingSettings.deleteMany({ where }),
+  db.paymentSettings.deleteMany({ where }),
   db.paymentRefund.deleteMany({ where }),
   // Payments settle quotes, deposits and invoices (ADR 0057): before all three.
   db.payment.deleteMany({ where }),

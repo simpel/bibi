@@ -1,3 +1,4 @@
+import type { InvoiceProvider } from "../../features/payment-account/settings-schema";
 import type { FixedRole } from "../../permissions/fixed-roles";
 import type { PermissionOverride } from "../../permissions/overrides";
 import type { TicketStatusTemplate } from "../../templates/ticket-statuses/ticket-status-template";
@@ -93,6 +94,15 @@ export type DemoOrg = {
   density?: DemoDensity;
   /** ADR 0077: the org number, revenue accounts per item type (by name) and one SIE export. */
   finance?: DemoFinance;
+  /** ADR 0090: the deposit rule and invoice provider; none for an organization without one. */
+  paymentSettings?: DemoPaymentSettings;
+};
+
+/** ADR 0090: the deposit rule and the invoice provider (`PaymentSettings`); none when left out. */
+export type DemoPaymentSettings = {
+  depositPercent: number;
+  depositMinimumMinor: number;
+  invoiceProvider: InvoiceProvider;
 };
 
 export type DemoFinance = {

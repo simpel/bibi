@@ -66,6 +66,7 @@ export * from "./features/payment/public-document-schema";
 export * from "./features/payment/schema";
 export * from "./features/payment/settlement-schema";
 export * from "./features/payment-account/schema";
+export * from "./features/payment-account/settings-schema";
 export * from "./features/permission/schema";
 export * from "./features/pipeline/schema";
 export * from "./features/pipeline-setup/preset-schema";

@@ -1396,6 +1396,26 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > Operations: `paymentAccount.get` (permission `paymentAccount:read`), `paymentAccount.startOnboarding` (`paymentAccount:write`) and `paymentAccount.sync` (`paymentAccount:write`, refreshes the status from Stripe), on every surface. The webhook also refreshes the status on `account.updated` through the SYSTEM-only `paymentAccount.applySignal`, which reads the status back from Stripe instead of trusting the payload. The web app offers them under Settings, Payments. The platform account id and secret key come from `@bibi/config` (`STRIPE_PLATFORM_ACCOUNT_ID`, `STRIPE_SECRET_KEY`).
 
+### PaymentSettings (`PaymentSettings`)
+
+*MVP* · How the organization takes ticket money ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)): the deposit rule and the invoice provider. One row per organization, created by the first save; until then there is no deposit rule and the connected provider is used.
+
+> **Ownership:** owned every column; nothing derived.
+
+**Attributes**
+- deposit percent: 1 to 100 of the ticket's total incl. VAT (empty = no deposits)
+- deposit minimum in minor units: a ticket whose total incl. VAT is below it is paid in full up front (empty = no minimum)
+- invoice provider (`InvoiceProvider`; empty = whichever is connected)
+
+**Relations**
+- `1:1` Organization has one (`organizationId`, unique)
+
+> Operations: `paymentSettings.get` (permission `paymentAccount:read`) and `paymentSettings.update` (`paymentAccount:write`), on every surface. `deposit.suggest` applies the rule to a ticket's priced lines, and `deposit.request` uses it when no amount is given. The web app holds them under Settings, Payments.
+
+### InvoiceProvider (`InvoiceProvider`)
+
+*MVP* · An enum: the system an organization raises its invoices in ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)). Values: `STRIPE` (Stripe Invoicing on the organization's account) and `FORTNOX` (its Fortnox company, connected under Settings, Integrations, [ADR 0087](decisions/0087-fortnox-connection.md)). Set on `PaymentSettings`; when both providers are connected, the admin picks.
+
 ### IntegrationConnection (`IntegrationConnection`)
 
 *MVP* · The organization's connection to an outside system ([ADR 0087](decisions/0087-fortnox-connection.md)), one per provider; Fortnox is the only provider so far. No row means "not connected". An admin starts it with `integration.connect`, approves at Fortnox (a Fortnox system administrator, service account) and the browser callback finishes it. Only the connection exists so far: nothing is sent to Fortnox yet.

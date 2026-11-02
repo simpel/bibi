@@ -1,0 +1,24 @@
+import type { DepositSuggestion } from "@bibi/core";
+import { getNumberFormat } from "@/server/number-format";
+import { RequestDepositButton } from "./request-deposit-button";
+
+export type RequestDepositProps = { ticketId: string; suggestion: DepositSuggestion };
+
+/**
+ * "Request deposit" on the ticket's payments: the deposit rule's suggestion (`deposit.suggest`,
+ * read by the ticket's payments) is formatted here and the dialog gets it as props (ADR 0090).
+ */
+export async function RequestDeposit({ ticketId, suggestion }: RequestDepositProps) {
+  const { basis, amountMinor, totalInclVatMinor } = suggestion;
+  const { money } = await getNumberFormat();
+  return (
+    <RequestDepositButton
+      ticketId={ticketId}
+      suggestion={{
+        basis,
+        defaultAmount: amountMinor === null ? "" : String(amountMinor / 100),
+        total: money({ minor: totalInclVatMinor }),
+      }}
+    />
+  );
+}

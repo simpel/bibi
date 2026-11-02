@@ -66,6 +66,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "Payment",
   "PaymentRefund",
   "AccountingSettings",
+  "PaymentSettings",
   "RevenueAccount",
   "AccountingExport",
   "AccountingExportEntry",

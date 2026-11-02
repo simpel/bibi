@@ -52,7 +52,37 @@ export const DepositCreateInputSchema = z.object({
   dueDate: z.coerce.date().nullish().describe("When the deposit is due, ISO 8601"),
 });
 
+export const DepositSuggestInputSchema = z.object({
+  ticketId: z.string().min(1).describe("Id of the ticket to suggest a deposit for"),
+});
+
+/** What the organization's deposit rule asks of a ticket (ADR 0090). */
+export const DepositSuggestionSchema = z.object({
+  totalInclVatMinor: z.number().int().describe("The ticket's priced lines incl. VAT"),
+  basis: z
+    .enum(["PERCENT", "FULL", "NONE"])
+    .describe(
+      "PERCENT: depositPercent of the total. FULL: the total is below depositMinimumMinor, so " +
+        "it is paid in full up front. NONE: no deposit rule, give an amount",
+    ),
+  amountMinor: z.number().int().nullable().describe("The suggested amount; null when NONE"),
+  paymentLinksAvailable: z
+    .boolean()
+    .describe(
+      "True when the organization's own Stripe account is active, so /pay links can be sent. " +
+        "Without it deposit.request and card payments are unavailable (ADR 0090)",
+    ),
+});
+
+export const DepositRequestInputSchema = DepositCreateInputSchema.extend({
+  amountMinor: DepositCreateInputSchema.shape.amountMinor
+    .optional()
+    .describe("Minor units, at least 100; defaults to the organization's deposit rule"),
+});
+
 export type DepositDto = z.infer<typeof DepositSchema>;
+export type DepositSuggestion = z.infer<typeof DepositSuggestionSchema>;
+export type DepositRequestInput = z.infer<typeof DepositRequestInputSchema>;
 export type DepositPage = z.infer<typeof DepositListOutputSchema>;
 export type DepositCreateInput = z.infer<typeof DepositCreateInputSchema>;
 export type DepositIdInput = z.infer<typeof DepositIdInputSchema>;

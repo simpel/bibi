@@ -44,7 +44,37 @@ describe("cross-organization isolation: payments", () => {
       },
     });
     expect(graph.data.data.payments.items).toEqual([]);
+    const suggest = await call({ client: b, name: "deposit_suggest", args: { ticketId } });
+    expect(suggest.data.code).toBe("NOT_FOUND");
+    const request = await call({
+      client: b,
+      name: "deposit_request",
+      args: { ticketId, description: "Advance", amountMinor: 100_000 },
+    });
+    expect(request.data.code).toBe("NOT_FOUND");
     const own = await call({ client: a, name: "payment_list", args: { ticketId } });
     expect(own.data.items).toHaveLength(1);
+  });
+});
+
+describe("cross-organization isolation: payment settings", () => {
+  it("keeps one organization's deposit rule out of another's settings", async () => {
+    const a = await connect({ context: testContext() });
+    const b = await connect({ context: testContext() });
+    const saved = await call({
+      client: a,
+      name: "paymentSettings_update",
+      args: { depositPercent: 40, invoiceProvider: "FORTNOX" },
+    });
+    expect(saved.isError, JSON.stringify(saved.data)).toBe(false);
+    const read = await call({ client: b, name: "paymentSettings_get", args: {} });
+    expect(read.data).toMatchObject({
+      id: null,
+      depositPercent: null,
+      depositMinimumMinor: null,
+      invoiceProvider: null,
+    });
+    const own = await call({ client: a, name: "paymentSettings_get", args: {} });
+    expect(own.data).toMatchObject({ depositPercent: 40, invoiceProvider: "FORTNOX" });
   });
 });
