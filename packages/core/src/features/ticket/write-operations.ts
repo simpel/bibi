@@ -5,6 +5,7 @@ import { updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
+import { regenerateForTicket } from "../work-order/regenerate";
 import { runTicketCreate } from "./create-ticket";
 import { recordEstimate } from "./estimate-history";
 import { TicketCreateInputSchema, TicketSchema, TicketUpdateInputSchema } from "./schema";
@@ -31,6 +32,7 @@ export const createTicket = defineOperation({
   input: TicketCreateInputSchema,
   output: TicketSchema,
   permission: "ticket:write",
+  followUp: regenerateForTicket,
   handler: async ({ input, context }) => runTicketCreate({ context, input }),
   external: titleAfterCreate,
   externalOptional: true,
@@ -50,6 +52,7 @@ export const updateTicket = defineOperation({
   input: TicketUpdateInputSchema,
   output: TicketSchema,
   permission: "ticket:write",
+  followUp: regenerateForTicket,
   handler: async ({ input: { id, fields: patch, estimatedValueMinor, ...data }, context }) => {
     const before = await loadTicket({ context, id });
     if (!before) return notFound({ entity: "Ticket" });

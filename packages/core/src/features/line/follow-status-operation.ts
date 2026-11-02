@@ -4,6 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import { loadItemState } from "../item-state/load-item-state";
 import { cellsOfStatus } from "../status-grid/load-grid";
+import { regenerateForLine } from "../work-order/regenerate";
 import { lineMoveBlockers } from "./line-move-check";
 import { applyLineState, itemTypeOf } from "./line-state";
 import { LineFollowStatusInputSchema, type LineRecord, LineSchema } from "./schema";
@@ -58,6 +59,7 @@ export const followLineStatus = defineOperation({
   input: LineFollowStatusInputSchema,
   output: LineSchema,
   permission: "program:write",
+  followUp: regenerateForLine,
   entityType: "line",
   handler: effectiveHandler({
     handler: async ({ input: { lineId }, context }) => {

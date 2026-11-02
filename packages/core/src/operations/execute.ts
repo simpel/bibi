@@ -9,6 +9,7 @@ import { parseWith } from "./parse-with";
 import { runAfterCommit } from "./run-after-commit";
 import { runCommand } from "./run-command";
 import { runExternal } from "./run-external";
+import { runFollowUp } from "./run-follow-up";
 import { runQuery } from "./run-query";
 import type { Operation } from "./types";
 
@@ -50,6 +51,7 @@ async function attempt({
       context,
     });
     if (result.ok) {
+      await runFollowUp({ operation, input: parsed.value, output: result.value, context });
       await runAfterCommit({ hooks: afterCommit, operation, output: result.value, context });
     }
     return result;

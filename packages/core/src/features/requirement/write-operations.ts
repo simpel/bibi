@@ -5,6 +5,7 @@ import { archiveRecords, updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
+import { regenerateForLine } from "../work-order/regenerate";
 import { insertRequirement } from "./insert-requirement";
 import {
   RequirementCreateInputSchema,
@@ -25,6 +26,7 @@ export const createRequirement = defineOperation({
   input: RequirementCreateInputSchema,
   output: RequirementSchema,
   permission: "program:write",
+  followUp: regenerateForLine,
   handler: ({ input, context }) => insertRequirement({ context, input }),
 });
 
@@ -37,6 +39,7 @@ export const updateRequirement = defineOperation({
   input: RequirementUpdateInputSchema,
   output: RequirementSchema,
   permission: "program:write",
+  followUp: regenerateForLine,
   handler: async ({ input: { id, quantity, fields: patch }, context }) => {
     const before = await loadRequirement({ context, id });
     if (!before) return notFound({ entity: "Requirement" });
@@ -70,6 +73,7 @@ export const archiveRequirement = defineOperation({
   input: RequirementIdInputSchema,
   output: RequirementSchema,
   permission: "program:delete",
+  followUp: regenerateForLine,
   handler: async ({ input: { id }, context }) => {
     const before = await loadRequirement({ context, id });
     if (!before) return notFound({ entity: "Requirement" });

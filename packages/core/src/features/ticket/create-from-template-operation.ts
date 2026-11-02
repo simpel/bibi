@@ -5,6 +5,7 @@ import { conflict, notFound } from "../../shared/errors";
 import { freshDefaults } from "../ticket-template/line-defaults";
 import { loadTicketTemplate } from "../ticket-template/load-ticket-template";
 import type { TicketTemplateDto } from "../ticket-template/schema";
+import { regenerateForTicket } from "../work-order/regenerate";
 import type { TicketCreateFromTemplateInput } from "./create-from-template-schema";
 import { TicketCreateFromTemplateInputSchema } from "./create-from-template-schema";
 import { createWithLines } from "./create-with-lines";
@@ -71,6 +72,7 @@ export const createTicketFromTemplate = defineOperation({
   input: TicketCreateFromTemplateInputSchema,
   output: TicketSchema,
   permission: "ticket:write",
+  followUp: regenerateForTicket,
   handler: async ({ input, context }) => {
     const readable = checkReadable({
       context,

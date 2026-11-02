@@ -1,6 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
+import { regenerateForLine } from "../work-order/regenerate";
 import { createInsertInput } from "./add-on";
 import { insertLine } from "./insert-line";
 import { archiveLineRow, archiveParts } from "./line-parts";
@@ -32,6 +33,7 @@ export const createLine = defineOperation({
   input: LineCreateOperationInputSchema,
   output: LineSchema,
   permission: "program:write",
+  followUp: regenerateForLine,
   handler: effectiveHandler({
     handler: async ({ input, context }) => {
       const prepared = await createInsertInput({ context, input });
@@ -54,6 +56,7 @@ export const updateLine = defineOperation({
   input: LineUpdateInputSchema,
   output: LineSchema,
   permission: "program:write",
+  followUp: regenerateForLine,
   handler: effectiveHandler({ handler: ({ input, context }) => updateLineRow({ context, input }) }),
 });
 
@@ -66,6 +69,7 @@ export const archiveLine = defineOperation({
   input: LineIdInputSchema,
   output: LineSchema,
   permission: "program:delete",
+  followUp: regenerateForLine,
   handler: effectiveHandler({
     handler: async ({ input: { id }, context }) => {
       const before = await loadLine({ context, id });

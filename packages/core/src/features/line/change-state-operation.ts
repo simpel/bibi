@@ -4,6 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
 import { loadItemState } from "../item-state/load-item-state";
 import type { ItemStateDto } from "../item-state/schema";
+import { regenerateForLine } from "../work-order/regenerate";
 import { lineMoveBlockers } from "./line-move-check";
 import { applyLineState, itemTypeOf } from "./line-state";
 import { LineChangeStateInputSchema, type LineRecord, LineSchema } from "./schema";
@@ -37,6 +38,7 @@ export const changeLineState = defineOperation({
   input: LineChangeStateInputSchema,
   output: LineSchema,
   permission: "program:write",
+  followUp: regenerateForLine,
   entityType: "line",
   handler: effectiveHandler({
     handler: async ({ input: { lineId, stateId }, context }) => {

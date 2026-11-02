@@ -1711,7 +1711,24 @@
       "line": "{count, plural, one {# gäst} other {# gäster}}: {name} i {item} ({carriers})"
     },
     "addOn": "Tillägg",
-    "addOnTo": "{name} (tillägg till {parent})"
+    "addOnTo": "{name} (tillägg till {parent})",
+    "document": {
+      "open": "Öppna",
+      "back": "← Tillbaka till ärendet",
+      "tasks": "Att leverera",
+      "needs": "Behov",
+      "noTasks": "Inget att leverera på den här ordern än.",
+      "noNeeds": "Inga behov räknade.",
+      "columns": {
+        "when": "När",
+        "name": "Vad",
+        "item": "Artikel",
+        "quantity": "Antal",
+        "need": "Behov",
+        "count": "Antal",
+        "appliesTo": "Gäller"
+      }
+    }
   },
   "entityType": {
     "singular": "Typ",

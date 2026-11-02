@@ -65,6 +65,9 @@ export type HandlerInput<I> = { input: I; context: OperationContext };
 /** What `external` gets: the input, the committed output and a db outside any transaction. */
 export type ExternalInput<I, O> = { input: I; output: O; context: OperationContext };
 
+/** What `followUp` gets: the input, the committed output and the caller's organization. */
+export type FollowUpInput<I, O> = { input: I; output: O; context: OperationContext };
+
 export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
   /** Dot-separated, `<entity>.<verb>`, e.g. `venue.create`. Stable across all surfaces. */
   name: string;
@@ -89,6 +92,12 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
    * depends on it: a nested run skips it instead of refusing the operation.
    */
   externalOptional?: boolean;
+  /**
+   * Internal work that follows a committed command, e.g. regenerating a ticket's work orders
+   * (ADR 0092). `execute` runs it after `external`; a failure is logged and never undoes the
+   * command. Previews, dry runs and nested runs never reach it.
+   */
+  followUp?(args: FollowUpInput<z.infer<I>, z.output<O>>): Promise<void>;
   /** Require human approval when an AI actor runs it. Defaults to true for commands. */
   approval?: boolean;
   /**

@@ -14,6 +14,8 @@ const appDirs = [
   ),
   // The full-screen welcome flow (ADR 0061) sits beside the app shell.
   join(srcDir, "app", "[locale]", "[org]"),
+  // Documents without the app shell, e.g. a work order (ADR 0092).
+  join(srcDir, "app", "[locale]", "[org]", "(document)"),
 ];
 
 /** A route's page, or an optional catch-all below it that also serves the bare route. */

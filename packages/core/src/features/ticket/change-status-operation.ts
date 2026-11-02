@@ -1,5 +1,6 @@
 import { defineOperation } from "../../operations/define-operation";
 import { invalid, notFound } from "../../shared/errors";
+import { regenerateForTicket } from "../work-order/regenerate";
 import { moveTicket } from "./move-ticket";
 import { TicketChangeStatusInputSchema, TicketSchema } from "./schema";
 import { loadTicket } from "./to-ticket-dto";
@@ -17,6 +18,7 @@ export const changeTicketStatus = defineOperation({
   input: TicketChangeStatusInputSchema,
   output: TicketSchema,
   permission: "ticket:write",
+  followUp: regenerateForTicket,
   handler: async ({ input: { ticketId, statusId, reason }, context }) => {
     const before = await loadTicket({ context, id: ticketId });
     if (!before) return notFound({ entity: "Ticket" });

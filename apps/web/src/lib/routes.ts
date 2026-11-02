@@ -25,6 +25,7 @@ export const ROUTES = {
   depositNew: "/new/deposit",
   customers: "/customers",
   tickets: "/tickets",
+  workOrders: "/work-orders",
   calendar: "/calendar",
   financials: "/data/financials", // one of the dashboards (ADR 0086)
   workload: "/data/workload",
@@ -69,7 +70,6 @@ export type ListItemRouteInput = { list: string; id: string };
 export function listItemRoute({ list, id }: ListItemRouteInput): string {
   return `${list}/${encodeURIComponent(id)}`;
 }
-
 export type UpdateRouteInput = { detail: string };
 
 /** Update pages live under the detail page: `/<things>/<id>/update`. */

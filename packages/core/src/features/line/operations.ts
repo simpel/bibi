@@ -4,6 +4,7 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { checkReadable } from "../ticket/ticket-rules";
+import { regenerateForLine } from "../work-order/regenerate";
 import { lineAmounts } from "./amounts-operation";
 import { changeLineState } from "./change-state-operation";
 import { chooseOptions } from "./choose-options";
@@ -89,6 +90,7 @@ export const chooseLineOptions = defineOperation({
   input: LineChooseOptionsInputSchema,
   output: LineChooseOptionsOutputSchema,
   permission: "program:write",
+  followUp: regenerateForLine,
   handler: async ({ input, context }) => {
     const readable = checkReadable({ context, permission: "item:read", path: "options" });
     if (!readable.ok) return readable;

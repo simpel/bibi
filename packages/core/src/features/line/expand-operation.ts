@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 import { checkReadable } from "../ticket/ticket-rules";
+import { regenerateForLine } from "../work-order/regenerate";
 import { loadBundle, planParts } from "./bundle-parts";
 import { effectiveQuantity } from "./effective-values";
 import {
@@ -83,6 +84,7 @@ export const expandLineBundle = defineOperation({
   input: LineExpandBundleInputSchema,
   output: LineExpandBundleOutputSchema,
   permission: "program:write",
+  followUp: regenerateForLine,
   handler: async ({ input, context }) => {
     const lines = await expand({ context, input });
     if (!lines.ok) return lines;

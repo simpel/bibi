@@ -1711,7 +1711,24 @@
       "line": "{count, plural, one {# guest} other {# guests}}: {name} in {item} ({carriers})"
     },
     "addOn": "Add-on",
-    "addOnTo": "{name} (add-on to {parent})"
+    "addOnTo": "{name} (add-on to {parent})",
+    "document": {
+      "open": "Open",
+      "back": "← Back to the ticket",
+      "tasks": "What to deliver",
+      "needs": "Needs",
+      "noTasks": "Nothing to deliver on this work order yet.",
+      "noNeeds": "No needs counted.",
+      "columns": {
+        "when": "When",
+        "name": "What",
+        "item": "Item",
+        "quantity": "Quantity",
+        "need": "Need",
+        "count": "Count",
+        "appliesTo": "Applies to"
+      }
+    }
   },
   "entityType": {
     "singular": "Type",

@@ -54,11 +54,6 @@ export const UI_EXEMPT: readonly UiExempt[] = [
       "A requirement has no page of its own: the ticket page lists its counts with requirement.list and edits them inline.",
   },
   {
-    operation: "workOrder.get",
-    reason:
-      "A work order version has no page of its own: the ticket page lists the newest version per work order with workOrder.list.",
-  },
-  {
     operation: "contact.get",
     reason:
       "Contact persons have no page of their own: the customer page lists them with contact.list and edits them inline.",

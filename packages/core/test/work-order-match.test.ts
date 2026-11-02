@@ -96,7 +96,9 @@ describe("work order matches (ADR 0021)", () => {
       result: await execute({ operation: updateRequirement, input, context: setup.context }),
     });
     const cleared = unwrap({ result: await generate(setup) });
-    expect(cleared).toMatchObject({ version: 2, blocked: false, matches: [] });
+    // The count change already generated the newer version (ADR 0092).
+    expect(cleared.version).toBeGreaterThan(blocked.version);
+    expect(cleared).toMatchObject({ blocked: false, matches: [] });
     expect(errorCode({ result: await send({ setup, workOrder: cleared }) })).toBeNull();
   });
 

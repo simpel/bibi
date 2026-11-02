@@ -2,6 +2,7 @@ import type { WorkOrderDto } from "@bibi/core";
 import { getTranslations } from "next-intl/server";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { GenerateWorkOrderButton } from "./generate-work-order-button";
+import { OpenWorkOrderLink } from "./open-work-order-link";
 import { SendWorkOrderButton } from "./send-work-order-button";
 import { WorkOrderMatches } from "./work-order-matches";
 import { WorkOrderRowsView } from "./work-order-rows-view";
@@ -30,6 +31,7 @@ export async function WorkOrderPanel({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="font-medium">{definition.name}</h3>
         <div className="flex gap-2">
+          {workOrder ? <OpenWorkOrderLink id={workOrder.id} /> : null}
           {canGenerate ? (
             <GenerateWorkOrderButton ticketId={ticketId} workOrderDefinitionId={definition.id} />
           ) : null}
