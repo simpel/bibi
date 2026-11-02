@@ -17,7 +17,7 @@ export async function TicketActions({ ticket, abilities }: TicketActionsProps) {
   return (
     <>
       {can({ abilities, permission: "ticket:write" }) ? (
-        <Button asChild variant="outline">
+        <Button asChild>
           <Link href={updateRoute({ detail: ticketRoute({ id: ticket.id }) })}>
             <PencilIcon />
             {t("edit")}
