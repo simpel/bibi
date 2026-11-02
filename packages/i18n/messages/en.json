@@ -1526,7 +1526,7 @@
       "state": "State",
       "quantity": "Quantity",
       "unitPrice": "Unit price",
-      "amount": "Amount"
+      "amount": "Amount excl. VAT"
     },
     "untimed": "No time",
     "inherited": "(inherited)",
@@ -1596,8 +1596,9 @@
         "description": "{line} is outside the hours that apply"
       }
     },
-    "total": "Total",
+    "total": "Total incl. VAT",
     "totalFrom": "From {amount}",
+    "totalExclVat": "{amount} excl. VAT",
     "notInTotal": "Not in the total",
     "day": {
       "title": "The day in the calendar, {date}",

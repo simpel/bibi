@@ -1526,7 +1526,7 @@
       "state": "Läge",
       "quantity": "Antal",
       "unitPrice": "Styckpris",
-      "amount": "Belopp"
+      "amount": "Belopp exkl. moms"
     },
     "untimed": "Ingen tid",
     "inherited": "(ärvt)",
@@ -1596,8 +1596,9 @@
         "description": "{line} ligger utanför öppettiderna som gäller"
       }
     },
-    "total": "Totalt",
+    "total": "Totalt inkl. moms",
     "totalFrom": "Från {amount}",
+    "totalExclVat": "{amount} exkl. moms",
     "notInTotal": "Ingår inte i totalen",
     "day": {
       "title": "Dagen i kalendern, {date}",

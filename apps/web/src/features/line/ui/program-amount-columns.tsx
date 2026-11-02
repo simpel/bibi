@@ -43,11 +43,12 @@ export type AmountColumnInput = AmountColumnsInput & { amounts: LineAmounts | nu
 /**
  * What each priced line costs (`line.amounts`, the draft quote's rules), muted when it does not
  * count in the total (a part, an included option, an unchosen alternative), and the ticket's
- * total excl. VAT in the footer ("From" while an alternative is unchosen).
+ * total in the footer ("From" while an alternative is unchosen): incl. VAT, the same basis as
+ * Billed in the balance, with the excl. VAT sum beneath it.
  */
 export function amountColumn({ t, money, amounts }: AmountColumnInput): ColumnDef<LineDto> {
   const byLine = new Map((amounts?.lines ?? []).map((amount) => [amount.lineId, amount]));
-  const total = amounts ? money({ minor: amounts.totalExclVatMinor }) : "–";
+  const total = amounts ? money({ minor: amounts.totalInclVatMinor }) : "–";
   return {
     id: "amount",
     header: t("columns.amount"),
@@ -65,8 +66,15 @@ export function amountColumn({ t, money, amounts }: AmountColumnInput): ColumnDe
       );
     },
     footer: () => (
-      <span className="whitespace-nowrap tabular-nums font-medium">
-        {amounts?.totalIsFrom ? t("totalFrom", { amount: total }) : total}
+      <span className="flex flex-col whitespace-nowrap tabular-nums">
+        <span className="font-medium">
+          {amounts?.totalIsFrom ? t("totalFrom", { amount: total }) : total}
+        </span>
+        {amounts ? (
+          <span className="text-xs text-muted-foreground">
+            {t("totalExclVat", { amount: money({ minor: amounts.totalExclVatMinor }) })}
+          </span>
+        ) : null}
       </span>
     ),
   };
