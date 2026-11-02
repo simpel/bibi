@@ -1,5 +1,7 @@
-/** Qualifiers `ticket.list`'s `q` understands, GitHub style (`assignee:me -status:Lost`). */
-export const TICKET_QUALIFIERS = [
+import { TICKET_MEASURES } from "./list-measures";
+
+/** Qualifiers on names and people. */
+export const TICKET_NAME_QUALIFIERS = [
   "assignee",
   "follower",
   "status",
@@ -8,6 +10,9 @@ export const TICKET_QUALIFIERS = [
   "contact",
   "is",
 ] as const;
+
+/** Qualifiers `ticket.list`'s `q` understands, GitHub style (`assignee:me -status:Lost`). */
+export const TICKET_QUALIFIERS = [...TICKET_NAME_QUALIFIERS, ...TICKET_MEASURES] as const;
 
 export type TicketQualifier = (typeof TICKET_QUALIFIERS)[number];
 

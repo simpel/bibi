@@ -30,7 +30,11 @@ export const TicketListInputSchema = z.object({
       "Search, GitHub style: free text matches the reference (`42`, `#42`), customer or " +
         "contact name, or note; qualifiers filter: `assignee:me`, `assignee:<member name>`, " +
         "`follower:me`, `status:<name>`, `type:<name>`, `customer:<name>`, `contact:<name>`, " +
-        '`is:open|closed`. Prefix `-` to exclude, quote spaces (`customer:"Volvo Cars"`), ' +
+        "`is:open|closed`, `no:assignee|contact|date|guests|budget|holds`; dates in the " +
+        "organization's zone: `when:` (desired start) and `created:` take `2026-12`, " +
+        "`>=2026-12-01` or `2026-11-01..2026-11-30`; `holds:expired|soon` or a date; numbers: " +
+        "`guests:>50`, `budget:10000..50000` (whole currency units). " +
+        'Prefix `-` to exclude, quote spaces (`customer:"Volvo Cars"`), ' +
         "commas for alternatives (`status:Lead,Offer`).",
     ),
   sort: z.enum(TICKET_LIST_SORTS).default("reference").describe("Order by this column"),
