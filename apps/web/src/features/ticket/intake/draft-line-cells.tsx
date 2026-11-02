@@ -1,7 +1,6 @@
 import type { PreviewLine } from "@bibi/core";
 import { cn, DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useNumberFormat } from "@/lib/number/use-number-format";
 import type { DraftLine } from "./draft-line";
 import type { LineDetails } from "./line-details";
 import { lineTone, TONE_CLASS, useIssueText } from "./use-issue-text";
@@ -18,7 +17,6 @@ export type DraftLineRow = {
 /** The name, then setup, choices, needs, price override and note on a second row. */
 export function LineNameCell({ row }: { row: DraftLineRow }) {
   const t = useTranslations("ticketIntake.lines");
-  const { money } = useNumberFormat();
   const { details } = row;
   const parts = [
     details.setup,
@@ -26,9 +24,6 @@ export function LineNameCell({ row }: { row: DraftLineRow }) {
       quantity === null ? name : `${name} ${quantity}`,
     ),
     ...details.needs.map(({ name, quantity }) => `${name} ${quantity}`),
-    details.unitPriceMinor === null
-      ? null
-      : t("price", { price: money({ minor: details.unitPriceMinor }) }),
     details.discountPercent === null ? null : t("discount", { percent: details.discountPercent }),
     details.note,
   ].filter((part): part is string => Boolean(part));
@@ -57,14 +52,23 @@ export function AvailabilityCell({ row, hidden }: { row: DraftLineRow; hidden: b
   );
 }
 
-export type LineActionsProps = { row: DraftLineRow; onEdit: (input: { line: DraftLine }) => void };
+export type LineActionsProps = {
+  row: DraftLineRow;
+  onEdit: (input: { line: DraftLine }) => void;
+  onRemove: (input: { key: string }) => void;
+};
 
-export function LineActions({ row, onEdit }: LineActionsProps) {
+/** Edit opens the line dialog; Remove drops the draft line (nothing is saved until Create). */
+export function LineActions({ row, onEdit, onRemove }: LineActionsProps) {
   const common = useTranslations("common");
+  const t = useTranslations("ticketIntake.line");
   return (
     <DataTableRowActions label={common("actions")}>
       <DropdownMenuItem onSelect={() => onEdit({ line: row.line })}>
         {common("edit")}
+      </DropdownMenuItem>
+      <DropdownMenuItem destructive onSelect={() => onRemove({ key: row.line.key })}>
+        {t("remove")}
       </DropdownMenuItem>
     </DataTableRowActions>
   );

@@ -36,11 +36,23 @@ export type UseDraftLineColumnsInput = {
   planned: readonly DraftLineRow["planned"][];
   availabilityHidden: boolean;
   onEdit: (input: { line: DraftLine }) => void;
+  onRemove: (input: { key: string }) => void;
 };
 
 type Money = ReturnType<typeof useNumberFormat>["money"];
 
 type CostColumnInput = { t: Translate; money: Money; total: number | null };
+
+/** The unit price in effect (line, else the customer's price list, else the item). */
+const unitPriceColumn = ({ t, money }: Omit<CostColumnInput, "total">): Column => ({
+  id: "unitPrice",
+  header: t("unitPrice"),
+  accessorFn: (row) => row.planned?.effectiveUnitPriceMinor ?? -1,
+  cell: ({ row }) => {
+    const price = row.original.planned?.effectiveUnitPriceMinor ?? null;
+    return <span className="tabular-nums">{price === null ? "–" : money({ minor: price })}</span>;
+  },
+});
 
 /** Each line's cost (discounts included) and the booking's total in the footer. */
 const costColumn = ({ t, money, total }: CostColumnInput): Column => ({
@@ -56,12 +68,34 @@ const costColumn = ({ t, money, total }: CostColumnInput): Column => ({
   ),
 });
 
-/** Line · time · quantity · availability · cost, then Edit (spec "Lines table"). */
+type StateColumnsInput = { t: Translate; headcount: number; availabilityHidden: boolean };
+
+/** The quantity ("12 (guests)" while it follows the headcount) and the availability. */
+const stateColumns = ({ t, headcount, availabilityHidden }: StateColumnsInput): Column[] => [
+  {
+    id: "quantity",
+    header: t("quantity"),
+    accessorFn: (row) => row.line.quantity ?? headcount,
+    cell: ({ row }) =>
+      row.original.line.quantity === null
+        ? t("guests", { count: headcount })
+        : row.original.line.quantity,
+  },
+  {
+    id: "availability",
+    header: t("availability"),
+    accessorFn: (row) => TONE_ORDER[lineTone({ planned: row.planned })],
+    cell: ({ row }) => <AvailabilityCell row={row.original} hidden={availabilityHidden} />,
+  },
+];
+
+/** Line · time · quantity · availability · unit price · cost, then Edit (spec "Lines table"). */
 export function useDraftLineColumns({
   headcount,
   planned,
   availabilityHidden,
   onEdit,
+  onRemove,
 }: UseDraftLineColumnsInput): Column[] {
   const t = useTranslations("ticketIntake.lines");
   const common = useTranslations("common");
@@ -73,27 +107,14 @@ export function useDraftLineColumns({
   return useMemo<Column[]>(
     () => [
       ...lineColumns({ t }),
-      {
-        id: "quantity",
-        header: t("quantity"),
-        accessorFn: (row) => row.line.quantity ?? headcount,
-        cell: ({ row }) =>
-          row.original.line.quantity === null
-            ? t("guests", { count: headcount })
-            : row.original.line.quantity,
-      },
-      {
-        id: "availability",
-        header: t("availability"),
-        accessorFn: (row) => TONE_ORDER[lineTone({ planned: row.planned })],
-        cell: ({ row }) => <AvailabilityCell row={row.original} hidden={availabilityHidden} />,
-      },
+      ...stateColumns({ t, headcount, availabilityHidden }),
+      unitPriceColumn({ t, money }),
       costColumn({ t, money, total }),
       actionsColumn<DraftLineRow>({
         label: common("actions"),
-        cell: (row) => <LineActions row={row} onEdit={onEdit} />,
+        cell: (row) => <LineActions row={row} onEdit={onEdit} onRemove={onRemove} />,
       }),
     ],
-    [t, common, money, total, headcount, availabilityHidden, onEdit],
+    [t, common, money, total, headcount, availabilityHidden, onEdit, onRemove],
   );
 }

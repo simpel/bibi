@@ -12,6 +12,7 @@ import {
   type LineDto,
   type LineExpandBundleInput,
   type LineUpdateInput,
+  listLines,
   updateLine,
 } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
@@ -81,4 +82,30 @@ export async function chooseLineOptionsAction({
   input,
 }: ChooseLineOptionsActionInput): Promise<ActionResult<{ items: LineDto[] }>> {
   return toActionResult({ result: await runOperation({ operation: chooseLineOptions, input }) });
+}
+
+/** Another booking's timed line of an item, as the intake's day snapshot draws it. */
+export type ItemLine = { id: string; itemId: string; name: string; startsAt: Date; endsAt: Date };
+
+export type LoadItemLinesActionInput = { itemIds: string[]; from: string; to: string };
+
+/**
+ * The timed lines of some items between two instants (`line.list` by item), for items without
+ * occupancy such as a buffet (ADR 0081, the intake's calendar snapshot). At most 100 per item.
+ */
+export async function loadItemLinesAction({
+  itemIds,
+  from,
+  to,
+}: LoadItemLinesActionInput): Promise<ActionResult<ItemLine[]>> {
+  const lines: ItemLine[] = [];
+  for (const itemId of itemIds.slice(0, 20)) {
+    const input = { itemId, from: new Date(from), to: new Date(to), limit: 100 };
+    const result = await runOperation({ operation: listLines, input });
+    if (!result.ok) return toActionResult({ result });
+    for (const { id, name, startsAt, endsAt } of result.value.items) {
+      if (startsAt && endsAt) lines.push({ id, itemId, name, startsAt, endsAt });
+    }
+  }
+  return toActionResult({ result: { ok: true, value: lines } });
 }

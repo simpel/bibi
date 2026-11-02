@@ -10,10 +10,10 @@ export const daySnapshotBlockVariants = cva(
   {
     variants: {
       tone: {
-        /** Another booking's hard hold. */
-        hard: "bg-foreground/80 text-background",
-        /** Another booking's soft hold. */
-        soft: "bg-muted-foreground/25 text-foreground",
+        /** Another booking's hard hold: subtle gray, so this booking's lines stand out. */
+        hard: "bg-muted-foreground/20 text-muted-foreground",
+        /** Another booking's soft hold: lighter still, with a dashed edge. */
+        soft: "border border-dashed border-muted-foreground/40 bg-muted/60 text-muted-foreground",
         /** This booking's draft line. */
         draft: "border border-dashed border-primary bg-primary/10 text-foreground",
         /** This booking's draft line where it clashes. */

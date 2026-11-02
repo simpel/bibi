@@ -46,6 +46,33 @@ describe("snapshotOf", () => {
     expect(snapshot.rows[0]?.blocks[0]?.tone).toBe("clash");
   });
 
+  it("gives an item without occupancy its own row with that day's other lines in gray", () => {
+    const lines = [draftFixture({ key: "l4", name: "Buffet", itemId: "meal", from: 12, to: 13 })];
+    const itemLines = [
+      {
+        id: "x1",
+        itemId: "meal",
+        name: "Lunch buffet",
+        startsAt: at({ hour: 11 }),
+        endsAt: at({ hour: 12 }),
+      },
+      {
+        id: "x2",
+        itemId: "elsewhere",
+        name: "Other",
+        startsAt: at({ hour: 9 }),
+        endsAt: at({ hour: 10 }),
+      },
+    ];
+    const itemNames = new Map([["meal", "Afternoon break"]]);
+    const snapshot = snapshotOf({ ...base, lines, blocks: [], itemLines, itemNames });
+    expect(snapshot.rows.map(({ label }) => label)).toEqual(["Afternoon break"]);
+    expect(snapshot.rows[0]?.blocks.map(({ id, tone }) => [id, tone])).toEqual([
+      ["line-x1", "hard"],
+      ["draft-l4", "draft"],
+    ]);
+  });
+
   it("lists short pools", () => {
     const short = issueFixture({ kind: "POOL_SHORT", needed: 12, free: 9 });
     const planned = [previewLineFixture({ issues: [short] }), previewLineFixture({})];

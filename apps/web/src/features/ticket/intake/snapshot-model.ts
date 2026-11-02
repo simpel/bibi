@@ -1,5 +1,6 @@
 import type { CalendarBlockDto, PreviewLine } from "@bibi/core";
 import type { DaySnapshotBlock, DaySnapshotRow } from "@bibi/ui";
+import type { ItemLine } from "../../line/actions";
 import type { DraftLine } from "./draft-line";
 
 const MINUTE = 60_000;
@@ -14,6 +15,8 @@ export type SnapshotInput = {
   blocks: readonly CalendarBlockDto[];
   /** The requested day's midnight in the organization's zone. */
   midnight: Date;
+  /** Other bookings' timed lines of the lines' items without occupancy (`line.list`). */
+  itemLines?: readonly ItemLine[];
   /** Names of the items that get a row; an item not named here gets none. */
   itemNames: ReadonlyMap<string, string>;
   /** "#41 Saab" for another booking. */
@@ -64,23 +67,32 @@ type ItemRowInput = { input: SnapshotInput; placed: Placed[]; itemId: string; na
 
 /** One resource: other bookings (hard dark, soft light) under this ticket's lines (dashed). */
 function itemRow({ input, placed, itemId, name }: ItemRowInput): DaySnapshotRow {
-  const others = input.blocks
+  const { midnight } = input;
+  const others: DaySnapshotBlock[] = input.blocks
     .filter((block) => block.itemId === itemId && !block.allocated)
     .map((block) => ({
       id: block.id,
-      start: minutesOf({ at: block.startsAt, midnight: input.midnight }),
-      end: minutesOf({ at: block.endsAt, midnight: input.midnight }),
+      start: minutesOf({ at: block.startsAt, midnight }),
+      end: minutesOf({ at: block.endsAt, midnight }),
       label: input.blockLabel({ block }),
       tone: block.soft ? ("soft" as const) : ("hard" as const),
     }));
+  const lines: DaySnapshotBlock[] = (input.itemLines ?? [])
+    .filter((line) => line.itemId === itemId)
+    .map((line) => ({
+      ...{ id: `line-${line.id}`, label: line.name, tone: "hard" as const },
+      start: minutesOf({ at: new Date(line.startsAt), midnight }),
+      end: minutesOf({ at: new Date(line.endsAt), midnight }),
+    }));
   const own = placed.filter(({ line }) => line.itemId === itemId).map(draftBar);
-  return { id: itemId, label: name, blocks: [...others, ...own] };
+  return { id: itemId, label: name, blocks: [...others, ...lines, ...own] };
 }
 
 /**
- * The calendar snapshot of step 4 (spec "Calendar snapshot"): one row per bookable item the timed
- * lines use (other bookings and this ticket's lines), one "Other lines" row for timed lines
- * without one when there are any, and the pools short that day.
+ * The calendar snapshot of step 4 (spec "Calendar snapshot"): one row per item the timed lines
+ * use, with that day's other bookings of it in gray (occupancy for bookable items, other lines
+ * for the rest) under this ticket's lines; one "Other lines" row for free-text lines when there
+ * are any; and the pools short that day.
  */
 export function snapshotOf({ ...input }: SnapshotInput): Snapshot {
   const placed = placeLines(input);

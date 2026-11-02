@@ -40,7 +40,7 @@ function LinesSection({ model, actions }: LinesSectionProps) {
   return (
     <div className="grid gap-3">
       {model.review.lines.length > 0 ? (
-        <DraftLinesTable model={model} onEdit={actions.open} />
+        <DraftLinesTable model={model} onEdit={actions.open} onRemove={actions.remove} />
       ) : (
         <EmptyLines items={model.data.catalog.items} onQuickAdd={actions.quickAdd} />
       )}

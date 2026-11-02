@@ -6,6 +6,7 @@ import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 import { CalendarDialog } from "./calendar-dialog";
 import { snapshotOf } from "./snapshot-model";
 import { useItemBlocks } from "./use-item-blocks";
+import { useItemLines } from "./use-item-lines";
 import type { ReviewModel } from "./use-review-model";
 
 const pad = ({ value }: { value: number }) => String(value).padStart(2, "0");
@@ -27,24 +28,35 @@ function useLabels() {
   return { t, hourLabel, blockLabel };
 }
 
+/** The day's other bookings of the lines' items: occupancy for bookable ones, lines for the rest. */
+function useOtherBookings({ model, nonce }: CalendarSnapshotProps) {
+  const { review, when, timeZone, data } = model;
+  const itemIds = review.lines.flatMap((line) =>
+    line.itemId && line.startsAt ? [line.itemId] : [],
+  );
+  const bookable = new Set(
+    data.catalog.items.filter((item) => item.capabilities.includes("BOOKABLE")).map(({ id }) => id),
+  );
+  const midnight = fromLocalInputValue({ value: `${when.date}T00:00`, timeZone }) ?? null;
+  const blocks = useItemBlocks({ date: when.date, itemIds, nonce });
+  const unbooked = itemIds.filter((id) => !bookable.has(id));
+  const itemLines = useItemLines({ midnight, itemIds: unbooked, nonce });
+  return { midnight, blocks, itemLines };
+}
+
 /**
- * The requested day for the resources the lines use (spec "Calendar snapshot"): other bookings
- * and this ticket's draft lines, pool shortages under it, and the full calendar in a dialog.
+ * The requested day for the items the lines use (spec "Calendar snapshot"): other bookings in
+ * gray under this ticket's draft lines, pool shortages under it, and the full calendar in a dialog.
  */
 export function CalendarSnapshot({ model, nonce }: CalendarSnapshotProps) {
   const { t, hourLabel, blockLabel } = useLabels();
   const [calendar, setCalendar] = useState(false);
-  const { review, when, timeZone, planned, data } = model;
-  const itemIds = review.lines.flatMap((line) =>
-    line.itemId && line.startsAt ? [line.itemId] : [],
-  );
-  const blocks = useItemBlocks({ date: when.date, itemIds, nonce });
-  const midnight = fromLocalInputValue({ value: `${when.date}T00:00`, timeZone });
+  const { review, planned, data } = model;
+  const { midnight, blocks, itemLines } = useOtherBookings({ model, nonce });
   if (!midnight || data.catalog.itemsHidden) return null;
-  const bookable = data.catalog.items.filter((item) => item.capabilities.includes("BOOKABLE"));
-  const itemNames = new Map(bookable.map(({ id, name }) => [id, name]));
+  const itemNames = new Map(data.catalog.items.map(({ id, name }) => [id, name]));
   const snapshot = snapshotOf({
-    ...{ lines: review.lines, planned, blocks, midnight, itemNames, blockLabel },
+    ...{ lines: review.lines, planned, blocks, itemLines, midnight, itemNames, blockLabel },
     otherLabel: t("otherLines"),
   });
   return (

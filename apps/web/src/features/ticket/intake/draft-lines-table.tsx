@@ -10,10 +10,11 @@ import type { ReviewModel } from "./use-review-model";
 export type DraftLinesTableProps = {
   model: ReviewModel;
   onEdit: (input: { line: DraftLine }) => void;
+  onRemove: (input: { key: string }) => void;
 };
 
 /** The booking's draft lines with their availability from the preview (spec "Lines table"). */
-export function DraftLinesTable({ model, onEdit }: DraftLinesTableProps) {
+export function DraftLinesTable({ model, onEdit, onRemove }: DraftLinesTableProps) {
   const t = useTranslations("ticketIntake.lines");
   const dates = useDateTimeFormat();
   const { catalog } = model.data;
@@ -23,6 +24,7 @@ export function DraftLinesTable({ model, onEdit }: DraftLinesTableProps) {
     planned: model.review.lines.map((_, index) => model.planned?.[index] ?? null),
     availabilityHidden: hidden,
     onEdit,
+    onRemove,
   });
   const rows: DraftLineRow[] = model.review.lines.map((line, index) => ({
     line,
