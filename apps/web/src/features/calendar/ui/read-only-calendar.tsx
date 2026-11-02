@@ -58,7 +58,7 @@ export function ReadOnlyCalendar({ days, range, overlay = [] }: ReadOnlyCalendar
           {...{ assets: days.assets, bookings, values: loaded.values, today: days.today }}
           {...{ locale, labels, onRangeChange: loaded.onRangeChange, ...hours }}
           layout="page"
-          className="min-h-0 flex-1"
+          className="isolate min-h-0 flex-1"
           formatDate={format.date}
           initialRange={range}
           initialLevel="day"
