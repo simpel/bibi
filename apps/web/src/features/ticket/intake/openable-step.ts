@@ -4,6 +4,7 @@ import {
   INTAKE_STEPS,
   type IntakeState,
   type IntakeStep,
+  isCustom,
 } from "./intake-state";
 
 export type OpenableStepInput = {
@@ -32,6 +33,7 @@ export function openableStep({ state, step }: OpenableStepInput): IntakeStep {
     if (hasChoices({ state })) return "choices";
     return state.review ? "review" : firstMissing({ state });
   }
+  if (step === "custom") return isCustom({ state }) ? "custom" : firstMissing({ state });
   const index = INTAKE_STEPS.indexOf(step);
   const before = INTAKE_STEPS.slice(0, index);
   return before.every((earlier) => hasValue({ state, step: earlier }))
@@ -66,6 +68,7 @@ const PREVIOUS: Record<IntakeStep, IntakeStep | null> = {
   who: null,
   when: "who",
   package: "when",
+  custom: "package",
   choices: "package",
   review: "package",
 };
@@ -74,9 +77,11 @@ export type PreviousStepInput = { state: IntakeState; step: IntakeStep };
 
 /**
  * What a step's Back opens (step 1 has none); like Change there, later answers are kept. Review
- * goes back to the choices step when the intake has one (ADR 0089).
+ * goes back to the choices step when the intake has one (ADR 0089), then a custom booking's
+ * build step.
  */
 export function previousStep({ state, step }: PreviousStepInput): IntakeStep | null {
   if (step === "review" && hasChoices({ state })) return "choices";
+  if ((step === "review" || step === "choices") && isCustom({ state })) return "custom";
   return PREVIOUS[step];
 }

@@ -35,7 +35,19 @@ describe("openable step", () => {
     expect(previousStep({ state, step: "who" })).toBeNull();
     expect(previousStep({ state, step: "when" })).toBe("who");
     expect(previousStep({ state, step: "package" })).toBe("when");
-    expect(previousStep({ state, step: "review" })).toBe("package");
+    expect(previousStep({ state, step: "review" })).toBe("custom");
+    expect(previousStep({ state, step: "custom" })).toBe("package");
+  });
+
+  it("has the build step only for a custom booking's lines", () => {
+    expect(openableStep({ state: reviewed, step: "custom" })).toBe("custom");
+    expect(openableStep({ state: picked, step: "custom" })).toBe("package");
+    const line = draftFixture({ key: "l1" });
+    const pkgReview = newReview({ lines: [line], plannedStart: null, pickKey: "t1" });
+    const pkg = { kind: "PACKAGE" as const, templateId: "t1", name: "Half day", answers: {} };
+    const fromPackage: IntakeState = { ...reviewed, pick: pkg, review: pkgReview };
+    expect(openableStep({ state: fromPackage, step: "custom" })).toBe("review");
+    expect(previousStep({ state: fromPackage, step: "review" })).toBe("package");
   });
 
   it("has the choices step only while its lines exist (ADR 0089)", () => {
@@ -44,6 +56,7 @@ describe("openable step", () => {
     const asked: IntakeState = { ...reviewed, review: { ...review, choiceKeys: ["l1"] } };
     expect(openableStep({ state: asked, step: "choices" })).toBe("choices");
     expect(previousStep({ state: asked, step: "review" })).toBe("choices");
+    expect(previousStep({ state: asked, step: "choices" })).toBe("custom");
     const gone: IntakeState = { ...asked, review: { ...review, choiceKeys: ["other"] } };
     expect(openableStep({ state: gone, step: "choices" })).toBe("review");
     expect(openableStep({ state: picked, step: "choices" })).toBe("package");

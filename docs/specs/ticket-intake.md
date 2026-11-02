@@ -4,15 +4,15 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
 
 ## The page
 - `/new/ticket`, permission `ticket:write`, opened from the create hub, the ticket list and an inbox message (`?fromMessage=<id>`).
-- **The open step is in the path**: `/new/ticket` (step 1, the start), `/new/ticket/when`, `/new/ticket/package`, `/new/ticket/choices` (only while the intake has the choices step), `/new/ticket/review`. `/new/ticket/message` is step 1 with the paste dialog open (see "Reading a message"), not a step; once the dialog closes the path becomes the open step's (`?fromMessage=` kept, the dialog's path replaced, not pushed). An unknown step is not found; the older `?start=message` redirects to `/new/ticket/message`.
+- **The open step is in the path**: `/new/ticket` (step 1, the start), `/new/ticket/when`, `/new/ticket/package`, `/new/ticket/custom` (only for a custom booking), `/new/ticket/choices` (only while the intake has the choices step), `/new/ticket/review`. `/new/ticket/message` is step 1 with the paste dialog open (see "Reading a message"), not a step; once the dialog closes the path becomes the open step's (`?fromMessage=` kept, the dialog's path replaced, not pushed). An unknown step is not found; the older `?start=message` redirects to `/new/ticket/message`.
   - Every step change (Next, Back, Change, a step completed by itself) adds a history entry without reloading the page, so the browser's Back and Forward move between steps. A step the intake cannot open yet opens the first step still missing input, and the URL follows.
   - A reload restores the state: past the start (or on an inbox message's intake, whose draft is its own) the local draft is restored without asking and opens the URL's step, or the first step still missing input (e.g. `/when` without a customer opens step 1).
-- One page with steps in order: 1 who, 2 when and how many, 3 package or one-off, 4 choices (only when the package has a line with a required choice, ADR 0089), then review / build the booking (4, or 5 after choices).
+- One page with steps in order: 1 who, 2 when and how many, 3 package, then for a custom booking the build step, then choices (only when a line has a required choice, ADR 0089), then review. Steps are numbered in the order they show: review is 4, 5 or 6.
   - Only the open step takes input. Its own commands sit right on its title row (shown only while open); its **Next** (Create in review) sits bottom right and a ghost **Back** bottom left; the labels never change (no "Next: packages", no "Back to review"). Next goes on to the next step, or straight back to review once later steps are done. Back opens the previous step like its Change (answers kept, the URL follows); step 1 has no Back.
   - A done step collapses to a one-line summary with **Change**, which reopens it and keeps later answers.
   - Values that came from a message say "from email" while they are still what the message said.
 - Nothing is written until **Create**, except a customer or contact created in step 1.
-- **Local draft**: the page keeps the unfinished intake in the browser, per organization and member, written on every change once a customer is chosen or a message was read. On the next visit to plain `/new/ticket` the first step offers "Continue the draft for <customer> (<date>, <guests> guests)?" with Continue and Discard. A created ticket clears it. Drafts stored before the paste dialog (version 2, possibly open on the old step 0) still load, opening step 1; drafts from before add-ons (version 3) load with none (ADR 0088).
+- **Local draft**: the page keeps the unfinished intake in the browser, per organization and member, written on every change once a customer is chosen or a message was read. On the next visit to plain `/new/ticket` a banner above the first step offers "Continue the draft for <customer> (<date>, <guests> guests)?" with Continue and Discard. A created ticket clears it. Drafts stored before the paste dialog (version 2, possibly open on the old step 0) still load, opening step 1; drafts from before add-ons (version 3) load with none (ADR 0088).
 
 ## Reading a message (the paste dialog)
 - The sidebar's New ticket menu has **From a message**, which opens `/new/ticket/message`: step 1 with a dialog over it. An inbox message's New ticket opens the same path with `?fromMessage=<id>`, the text area prefilled with the message. Without a model for `ticket.intakeDraft` the menu entry is hidden and the path just opens step 1.
@@ -28,7 +28,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
 - If extraction fails (`UNAVAILABLE`), the dialog says reading isn't available and offers **Fill in by hand**, which closes it.
 
 ## 1 · Who
-- **Customer, required.** A search (name) that shows only the 5 most recent customers while empty (`customer.list` with `recent`), and matches plus **+ New customer** while typing.
+- **Customer, required.** A search (name) whose list stays closed until the field is focused, then shows only the 5 most recent customers while empty (`customer.list` with `recent`), and matches plus **+ New customer** while typing.
 - **Picking a customer** (a match, a recent one, a "looks like" suggestion or a just-created one) opens step 2 at once with its default contact. Only a customer without a contact keeps step 1 open to add one. A customer the step starts with (reopened by Change, or preselected from a message) shows its contact with **Next**, which is disabled until a contact is chosen.
 - **New customer** on the title row opens the new-customer form empty; **+ New customer "<text>"** in the search opens it with the name.
   - The search's option first calls `customer.findSimilar`. A match shows "“<text>” looks like <customer>" with **Use <customer>** and **No, it is a new customer**.
@@ -42,39 +42,46 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
 - **Next** opens step 3, or the review again when lines exist. It is disabled while the date, times or guests break the step's rules (checked on every change); a field's message shows once it was touched. **Back** stays enabled.
 - The date, times and guests sit on one line, aligned at the top whatever messages show under them. An empty date says "Choose a date".
 
-## 3 · Package or one-off
-- `ticket.previewLines` with every active package (`templateIds`) gives each card its group and notes.
+## 3 · Package
+- `ticket.previewLines` with every active package (`templateIds`) gives each card its tab and notes.
 - Each card shows: name, summary, guest range, and notes (✓ available, ⚠ a warning, ✕ clash text or count, the guest range against the requested headcount, "Runs to <time>, past <requested end>").
-- **Groups**, each hidden when empty except the first:
+- **Two tabs**, each with its count; the first is open unless it is empty and the second is not:
 
-| Group | When |
+| Tab | Packages |
 |---|---|
-| Available <date> <from>–<to> for <guests> | No hard clash, inside guest range and requested period. Warnings allowed. Empty, it is one line: "Nothing available <date> <from>–<to> for <guests>." |
-| Not available then · clashes with other bookings | At least one hard clash, inside the ranges. |
-| Outside your time or guest range | Outside the guest range or past the requested end, whatever else applies. |
+| Fits your request (<n>) | No hard clash, inside the guest range and the requested period. Warnings allowed. Empty, it says "Nothing fits <date> <from>–<to> for <guests>." |
+| Needs adjusting (<n>) | At least one hard clash, outside the guest range, or past the requested end. Each card's notes say which. |
 
-- **Title-row actions**: **Create package** (its create page; with `template:write`) and **One-off**, a toggle shown pressed while the one-off is picked.
-- **A suggested package** (from a message) is marked "★ Suggested from the email" and preselected.
+- **Custom booking** (sv "Egen bokning"), an outline button under the tabs with "Put the booking together line by line". It opens the build step.
+- **Title-row action**: **Create package** (its create page; with `template:write`).
+- **A suggested package** (from a message) is marked "★ Suggested from the email", preselected, and its tab is the open one.
 - **Picking a package** that needs a follow-up opens a dialog, one question at a time ("question 1 of 3"):
   1. **Guests outside the range**: "Lower/Raise the booking to <n> guests", or "Keep <n> guests (lines over capacity are flagged)".
   2. **Runs past the requested end**: "Extend the ticket to <end>", or "Keep <to> and shorten the lines in review".
   3. **Clashes**: "Move the booking to <start>–<end> (first free time)" (shifts from and to by the same amount; offered when `firstFreeStart` exists), or "Keep the time and prebook (blocked until resolved)".
 
   **Cancel, pick another package** leaves nothing picked. When done, a summary line shows the package and the answers.
-- **One-off** needs no dialog. **Next** is disabled until a package is picked with every question answered, or One-off is picked.
-- **Switching** when lines already exist:
-  - to another package asks **Replace the lines** or **Add its lines to them**;
-  - to a one-off asks **Keep them and edit** or **Start empty**.
-- **No packages at all**: the step says "No packages yet"; One-off and Create package are its title-row actions.
+- **Next** is disabled until a package is picked with every question answered.
+- **Replacing lines**: lines are never merged. When lines from another pick exist (another package, or a custom booking), Next on a package and Custom booking on a package's lines first ask "Replace the <n> lines?" (Replace, Cancel). The same pick again keeps its lines.
+- **No packages at all**: the step says "No packages yet" above Custom booking; Create package stays on the title row.
+- The done summary: the package with its answers, or "Custom booking".
 
-## 4 · Choices (ADR 0089)
-- Shown only when the package picked in step 3 has lines whose item has a **required group** (`minPick` 1 or more), e.g. Afternoon break buffet with "Snack (choose 1)". Otherwise step 3's Next opens review, and the step is not listed. A one-off never has it: its lines are built in review.
-- It opens after step 3's Next when the lines are new (a first package, or another package); the same package again keeps the lines and goes back to review.
+## 4 · Build the booking (custom booking only)
+- Opened by Custom booking in step 3; starts empty, or with the custom lines built before.
+- **Ticket type**, asked only when the organization has more than one active ticket type, and the type's required own fields.
+- **Calendar snapshot** and **lines table** with **+ Add line** and the line dialog, as in review. Empty, the table is "Nothing added yet" with quick-add buttons for the most used items.
+- **Also save these lines as a package**, with a name.
+- **Next** is disabled until there is a line ("Add a line to continue"); it checks the type's fields first and stays while one is missing. It opens choices when a line has a required choice, else review. **Back** opens step 3.
+- The done summary: "<n> lines".
+
+## Choices (ADR 0089)
+- Shown only when the lines (a package's, or a custom booking's) have an item with a **required group** (`minPick` 1 or more), e.g. Afternoon break buffet with "Snack (choose 1)". Otherwise the previous step's Next opens review, and the step is not listed. The description says "Some lines need a choice, such as which snack to serve."
+- It opens after step 3's (or the build step's) Next when the lines it asks are new; the same lines again go back to review.
 - One card per such line, titled with the line's name:
   - its required groups, with the line dialog's controls (a pick per normal group, a quantity per option in a split group, ADR 0082). Optional groups stay in the line dialog.
   - its needs (counts per list value, e.g. Vegan 2, Nut allergy 1), as in the line dialog.
 - The package's default choices (see "Package defaults") are already picked; staff confirm or change them with the customer. A change here changes only this ticket's draft, never the package.
-- Every change goes straight into the draft line. **Next** is always enabled and opens review; **Back** opens step 3.
+- Every change goes straight into the draft line. **Next** is always enabled and opens review; **Back** opens step 3, or the build step for a custom booking.
 - The done summary: "<n> lines · all chosen" or "<n> lines · <m> choices open".
 
 ## Package defaults (ADR 0089)
@@ -82,13 +89,10 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
 - Picking the package starts its lines with those choices; `ticket.createFromTemplate` applies them too.
 - A default that no longer fits the item (no longer one of its options, now in a split group, or over the group's maximum) is ignored when the package is used. The package editor names it ("<option> is no longer an option of this item. It is removed when you save.") and saving drops it.
 
-## 5 · Review the booking (package) / Build the booking (one-off)
-- Numbered 4 when the intake has no choices step.
+## Review the booking
+- The same for a package and a custom booking.
 - **Header**: customer, date, guests, "nothing is saved until Create".
-- **One-off only**:
-  - Ticket type, asked only when the organization has more than one active ticket type.
-  - The type's required own fields.
-  - An empty state ("Nothing added yet") with quick-add buttons for the most used items.
+- A package's ticket type fields show here; a custom booking's were asked in the build step.
 - **Calendar snapshot**:
   - The requested day, from 08:00–20:00 or wider to cover every line (past midnight marked "+1").
   - One row per item the timed lines use, showing that day's other bookings of it in subtle gray (soft holds lighter and dashed; for a bookable resource its holds, labelled with ticket and customer, for any other item, such as a buffet, the other tickets' lines) and this ticket's draft lines and add-ons (dashed, red when they clash; an add-on on its own item's row); bars that overlap go on lanes of their own, and a label too long for its bar ends in "…" (full text on hover). Free-text lines share one "Other lines" row, shown only when there are any.
@@ -99,7 +103,6 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
 - **+ Add line** opens the line dialog empty. **Edit** opens it with the line.
 - **Title**: optional, at the top of the step, becomes `Ticket.title`; left empty, one is generated after the create (AI feature `ticket.title`).
 - **Notes on the booking**: a text area, becomes `Ticket.note`.
-- **One-off only**: **Also save these lines as a package**, with a name.
 - **Blocked lines summary**: "<n> lines clash with other bookings. They are prebooked (soft hold) and stay blocked until you move the time or the other booking is freed."
 - **Open questions** (yellow panel, each with its answers). Create shows "Answer <n> questions first" until all are answered.
 
@@ -148,7 +151,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
 - **Footer**: **Remove line** (edit only), Cancel, Add line or Save.
 
 ## The ticket page after Create
-- Header, status (the entry status), assignee, period, guests, contact and "from package <name>" or "One-off".
+- Header, status (the entry status), assignee, period, guests, contact and "from package <name>" or "Custom booking".
 - The booking notes. "Ticket created with <n> lines", or "as a lead without lines", plus "<n> lines blocked: resolve before confirming" when lines clash.
 - With a message: "<sender>'s email is attached to the ticket's inbox. Drafted by the assistant from the email, checked and created by you."
 - Next actions: Add line, Send quote, Payment link, Hold until.

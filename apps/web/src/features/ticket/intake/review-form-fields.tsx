@@ -12,18 +12,18 @@ export type TicketTypeFieldsProps = {
   form: ReviewForm;
   catalog: IntakeCatalog;
   type: EntityTypeDto | undefined;
-  /** A one-off chooses its type; a package's is fixed. */
-  oneOff: boolean;
+  /** A custom booking chooses its type; a package's is fixed. */
+  custom: boolean;
 };
 
 /**
- * The ticket type, asked only for a one-off when the organization has several, and the type's
- * required own fields (spec "One-off only").
+ * The ticket type, asked only for a custom booking when the organization has several, and the
+ * type's required own fields (spec "Build the booking").
  */
-export function TicketTypeFields({ form, catalog, type, oneOff }: TicketTypeFieldsProps) {
+export function TicketTypeFields({ form, catalog, type, custom }: TicketTypeFieldsProps) {
   const t = useTranslations("ticketIntake.review");
   const required = type ? { ...type, fields: type.fields.filter((field) => field.required) } : null;
-  const choose = oneOff && catalog.ticketTypes.length > 1;
+  const choose = custom && catalog.ticketTypes.length > 1;
   if (!choose && !required?.fields.length) return null;
   return (
     <div className="grid items-start gap-4 sm:grid-cols-2">

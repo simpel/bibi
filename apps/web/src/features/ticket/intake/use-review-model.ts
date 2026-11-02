@@ -18,9 +18,9 @@ export type ReviewModel = {
   review: IntakeReview;
   period: IntakePeriod | null;
   timeZone: string;
-  /** The picked package; null for a one-off. */
+  /** The picked package; null for a custom booking. */
   pkg: PackageOption | null;
-  /** The ticket type the ticket gets: the package's, else the one-off's choice. */
+  /** The ticket type the ticket gets: the package's, else the custom booking's choice. */
   ticketType: EntityTypeDto | undefined;
   preview: DraftPreview;
   /** The draft's preview lines in the lines' order, when the preview matches them. */

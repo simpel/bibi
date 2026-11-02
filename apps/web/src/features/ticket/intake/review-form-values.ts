@@ -22,7 +22,7 @@ export type ReviewFormValues = WithRawFields & {
 export type ReviewDefaultsInput = {
   review: IntakeReview;
   type: EntityTypeDto | undefined;
-  /** The package's default own field values; a one-off has none. */
+  /** The package's default own field values; a custom booking has none. */
   packageFields: Record<string, unknown>;
   timeZone: string;
 };

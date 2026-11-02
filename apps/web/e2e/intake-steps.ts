@@ -20,14 +20,10 @@ export async function startNewCustomer({ page }: PageInput) {
   await page.getByRole("button", { name: "New customer", exact: true }).click();
 }
 
-/** Step 3's title-row One-off (a pressed toggle once picked), then on to review. */
-export async function pickOneOff({ page }: PageInput) {
-  await page.getByRole("button", { name: "One-off", exact: true }).click();
-  await expect(page.getByRole("button", { name: "One-off", exact: true })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await page.getByRole("button", { name: "Next", exact: true }).click();
+/** Step 3's Custom booking, under the package tabs: it opens the build step. */
+export async function startCustomBooking({ page }: PageInput) {
+  await page.getByRole("button", { name: "Custom booking", exact: true }).click();
+  await expect(page).toHaveURL(/\/new\/ticket\/custom/);
 }
 
 /** The paste dialog (`/new/ticket/message`): Read the request; it closes on step 1. */

@@ -3,7 +3,7 @@ import { ROUTES } from "@/lib/routes";
 import type { IntakeStep } from "./intake-state";
 
 /** The steps with a path segment of their own; step 1 (`who`) is the bare `/new/ticket`. */
-export const INTAKE_STEP_SEGMENTS = ["when", "package", "choices", "review"] as const;
+export const INTAKE_STEP_SEGMENTS = ["when", "package", "custom", "choices", "review"] as const;
 
 /** `/new/ticket/message`: step 1 with the paste dialog open (ADR 0084), not a step. */
 export const PASTE_SEGMENT = "message";

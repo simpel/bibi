@@ -7,9 +7,9 @@ import {
   fillWhen,
   INTAKE_PATH,
   pickCustomer,
-  pickOneOff,
   pickPackage,
   readRequest,
+  startCustomBooking,
   startNewCustomer,
 } from "./intake-steps";
 import { signUpWithOrganization } from "./steps";
@@ -48,7 +48,9 @@ test("flow A: a package for a seeded customer, review and Create", async ({ page
   await expect(page.getByText("Coffee and tea").first()).toBeVisible();
 });
 
-test("flow B: a one-off for a new customer that looks like an existing one", async ({ page }) => {
+test("flow B: a custom booking for a new customer that looks like an existing one", async ({
+  page,
+}) => {
   await signUpWithOrganization({ page, name: "Intake B AB" });
   await setUpIntake({ page });
   await gotoApp({ page, path: INTAKE_PATH, locale: "en" });
@@ -65,18 +67,19 @@ test("flow B: a one-off for a new customer that looks like an existing one", asy
   await expectStep({ page, step: "when" });
 
   await fillWhen({ page, from: "09:00", to: "12:00", guests: 6 });
-  await pickOneOff({ page });
+  await startCustomBooking({ page });
 
-  // No lines yet: Create waits for the answer, and adding a line answers it.
-  await expect(page.getByText("There are no lines.")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Answer 1 question first" })).toBeDisabled();
-  await page.getByRole("button", { name: "+ Add a line", exact: true }).click();
+  // No lines yet: the build step's Next waits for one.
+  await expect(page.getByText("Add a line to continue")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Next", exact: true })).toBeDisabled();
+  await page.getByRole("button", { name: "+ Add line", exact: true }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByPlaceholder("Search items of every type").fill(ITEM);
   await dialog.getByRole("button", { name: new RegExp(ITEM) }).click();
   await dialog.getByRole("button", { name: "Add line", exact: true }).click();
   await expect(page.getByRole("cell", { name: new RegExp(ITEM) })).toBeVisible();
-  await expect(page.getByText("There are no lines.")).toHaveCount(0);
+  await page.getByRole("button", { name: "Next", exact: true }).click();
+  await expect(page).toHaveURL(/\/new\/ticket\/review/);
   await createTicket({ page });
 
   await expect(page.getByText("KVARNBY DESIGN").first()).toBeVisible();

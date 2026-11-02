@@ -116,7 +116,7 @@ function choicesFor({ ...input }: ChoicesInput): Choice[] {
 
 export type QuestionAnswersProps = {
   question: OpenQuestion;
-  /** The one-off may switch to another ticket type. */
+  /** A custom booking may switch to another ticket type. */
   otherTypes: boolean;
   onAction: (input: { question: OpenQuestion; action: AnswerAction }) => void;
 };

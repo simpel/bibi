@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { completion, switchQuestion } from "./complete-step";
-import { linesFromEntry, nextLines, removeLine, shiftLines, upsertLine } from "./draft-lines";
+import { completion, replacesLines } from "./complete-step";
+import { linesFromEntry, removeLine, shiftLines, upsertLine } from "./draft-lines";
 import { at, draftFixture, entryWith, previewLineFixture } from "./line-fixture";
 import { newReview } from "./review-state";
 
@@ -43,19 +43,6 @@ describe("draft lines", () => {
     expect(moved[1]?.startsAt).toBeNull();
   });
 
-  it("replaces, adds, keeps or empties on a switch", () => {
-    const current = [draftFixture({ key: "a" })];
-    const incoming = [draftFixture({ key: "b" })];
-    const keys = ({ choice }: { choice: "REPLACE" | "ADD" | "KEEP" | "EMPTY" }) =>
-      nextLines({ current, incoming, choice }).map(({ key }) => key);
-    expect([
-      keys({ choice: "REPLACE" }),
-      keys({ choice: "ADD" }),
-      keys({ choice: "KEEP" }),
-      keys({ choice: "EMPTY" }),
-    ]).toEqual([["b"], ["a", "b"], ["a"], []]);
-  });
-
   it("edits a line in place, adds a new one at the end and removes by key", () => {
     const lines = [draftFixture({ key: "a" }), draftFixture({ key: "b" })];
     const edited = upsertLine({ lines, line: draftFixture({ key: "a", name: "Hall" }) });
@@ -90,14 +77,14 @@ describe("completing step 3", () => {
     pickKey: "t1",
   });
 
-  it("asks before switching only when lines exist and the pick changed", () => {
-    expect(switchQuestion({ review: null, pick: pkg })).toBeNull();
-    expect(switchQuestion({ review, pick: pkg })).toBeNull();
-    expect(switchQuestion({ review, pick: { ...pkg, templateId: "t2" } })).toBe("TO_PACKAGE");
-    expect(switchQuestion({ review, pick: { kind: "ONE_OFF" } })).toBe("TO_ONE_OFF");
+  it("asks before replacing only when lines exist and the pick changed", () => {
+    expect(replacesLines({ review: null, pick: pkg })).toBe(0);
+    expect(replacesLines({ review, pick: pkg })).toBe(0);
+    expect(replacesLines({ review, pick: { ...pkg, templateId: "t2" } })).toBe(1);
+    expect(replacesLines({ review, pick: { kind: "ONE_OFF" } })).toBe(1);
   });
 
-  it("starts with the package's lines, none for a one-off", () => {
+  it("starts with the package's lines, none for a custom booking", () => {
     const first = completion({ review: null, pick: pkg, period, entry, newKey: counter() });
     expect(first.lines).toHaveLength(2);
     expect(first.plannedStart).toBe(period.startsAt.toISOString());
@@ -105,18 +92,11 @@ describe("completing step 3", () => {
     expect(completion({ ...oneOff, newKey: counter() }).lines).toEqual([]);
   });
 
-  it("keeps the lines for the same pick and merges on a switch", () => {
+  it("keeps the lines for the same pick and replaces them for another", () => {
     const same = completion({ review, pick: pkg, period, entry, newKey: counter() });
     expect(same.lines).toBe(review.lines);
     const other = { ...pkg, templateId: "t2" };
-    const added = completion({
-      review,
-      pick: other,
-      period,
-      entry,
-      newKey: counter(),
-      choice: "ADD",
-    });
-    expect(added.lines.map(({ key }) => key)).toEqual(["a", "k1", "k2"]);
+    const replaced = completion({ review, pick: other, period, entry, newKey: counter() });
+    expect(replaced.lines.map(({ key }) => key)).toEqual(["k1", "k2"]);
   });
 });

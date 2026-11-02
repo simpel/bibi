@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { type Completion, completion, type SwitchQuestion, switchQuestion } from "./complete-step";
-import type { SwitchChoice } from "./draft-lines";
+import { type Completion, completion, replacesLines } from "./complete-step";
 import { periodOf } from "./intake-period";
 import type { IntakePick, IntakeWhen } from "./intake-state";
 import type { IntakeReview } from "./review-state";
@@ -12,18 +11,22 @@ export type UsePackageNextInput = {
   review: IntakeReview | null;
   timeZone: string;
   preview: PackagePreview;
+  onPick: (input: { pick: IntakePick }) => void;
   onNext: (input: Completion) => void;
 };
 
-/** The picked package's entry in the preview; null for a one-off or while it loads. */
+/** The picked package's entry in the preview; null for a custom booking or while it loads. */
 function entryOf({ pick, preview }: Pick<UsePackageNextInput, "pick" | "preview">) {
   if (pick?.kind !== "PACKAGE" || preview.status !== "ready") return null;
   return preview.preview.entries.find(({ templateId }) => templateId === pick.templateId) ?? null;
 }
 
+const CUSTOM: IntakePick = { kind: "ONE_OFF" };
+
 /**
- * Step 3's Next: the lines step 4 starts with (ADR 0081), after asking what happens to lines that
- * exist when the pick changed. A package waits for its preview.
+ * Step 3's ways on (ADR 0081): Next with the picked package, or Custom booking. Either asks
+ * first when it replaces lines from another pick (spec "Replacing lines"). A package waits for
+ * its preview.
  */
 export function usePackageNext({
   when,
@@ -31,23 +34,29 @@ export function usePackageNext({
   review,
   timeZone,
   preview,
+  onPick,
   onNext,
 }: UsePackageNextInput) {
-  const [question, setQuestion] = useState<SwitchQuestion | null>(null);
+  const [pending, setPending] = useState<IntakePick | null>(null);
   const entry = entryOf({ pick, preview });
-  const ready = pick !== null && (pick.kind === "ONE_OFF" || entry !== null);
-  const finish = ({ choice }: { choice?: SwitchChoice }) => {
+  const ready = pick?.kind === "PACKAGE" && entry !== null;
+  const finish = ({ next }: { next: IntakePick }) => {
+    setPending(null);
     const period = periodOf({ when, timeZone });
-    if (!pick || !period || !ready) return;
+    const found = next.kind === "PACKAGE" ? entry : null;
+    if (!period || (next.kind === "PACKAGE" && !found)) return;
+    if (next.kind === "ONE_OFF") onPick({ pick: next });
     const newKey = () => crypto.randomUUID();
-    onNext(completion({ review, pick, period, entry, newKey, ...(choice ? { choice } : {}) }));
-    setQuestion(null);
+    onNext(completion({ review, pick: next, period, entry: found, newKey }));
   };
-  const next = () => {
-    if (!pick) return;
-    const asked = switchQuestion({ review, pick });
-    if (asked) setQuestion(asked);
-    else finish({});
+  const ask = ({ next }: { next: IntakePick }) =>
+    replacesLines({ review, pick: next }) > 0 ? setPending(next) : finish({ next });
+  return {
+    ready,
+    next: () => (pick && ready ? ask({ next: pick }) : undefined),
+    custom: () => ask({ next: CUSTOM }),
+    replacing: pending ? replacesLines({ review, pick: pending }) : 0,
+    confirm: () => (pending ? finish({ next: pending }) : undefined),
+    cancel: () => setPending(null),
   };
-  return { ready, next, question, choose: finish, cancel: () => setQuestion(null) };
 }

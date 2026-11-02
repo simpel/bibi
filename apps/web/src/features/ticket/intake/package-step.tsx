@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { InlineLoadError } from "@/components/states/inline-load-error";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { Completion } from "./complete-step";
+import { CustomBookingButton } from "./custom-booking-button";
 import { FollowUpDialog } from "./follow-up-dialog";
 import { periodOf } from "./intake-period";
 import type { IntakePick, IntakeWhen, IntakeWho } from "./intake-state";
@@ -11,8 +12,8 @@ import { NoPackages } from "./no-packages";
 import { PackageActions } from "./package-actions";
 import type { PackageCardData, PackageOption } from "./package-groups";
 import { PackageGroupsView } from "./package-groups-view";
+import { ReplaceDialog } from "./replace-dialog";
 import type { IntakeReview } from "./review-state";
-import { SwitchDialog } from "./switch-dialog";
 import { usePackageNext } from "./use-package-next";
 import { usePackagePicking, useSuggestedPick } from "./use-package-picking";
 import { type PackagePreview, usePackagePreview } from "./use-package-preview";
@@ -25,7 +26,7 @@ export type PackageStepProps = {
   who: IntakeWho;
   when: IntakeWhen;
   pick: IntakePick | null;
-  /** Step 4 when it exists: its lines decide whether switching asks first. */
+  /** The lines when they exist: replacing them asks first. */
   review: IntakeReview | null;
   packages: PackageOption[];
   canCreatePackage: boolean;
@@ -45,7 +46,7 @@ type BodyProps = Pick<PackageStepProps, "when" | "pick" | "packages" | "timeZone
   onPackage: (input: { card: PackageCardData }) => void;
 };
 
-/** The preview's groups once loaded; a failed preview still leaves the One-off action. */
+/** The preview's tabs once loaded; a failed preview still leaves Custom booking. */
 function PreviewBody({ when, timeZone, preview, ...props }: BodyProps) {
   const dates = useDateTimeFormat();
   const period = periodOf({ when, timeZone });
@@ -63,7 +64,7 @@ function PreviewBody({ when, timeZone, preview, ...props }: BodyProps) {
   );
 }
 
-/** Step 3: every active package grouped by one preview, One-off and Create package on top. */
+/** Step 3: every active package in two tabs by one preview, Custom booking under them. */
 export function PackageStep(props: PackageStepProps) {
   const t = useTranslations("ticketIntake.package");
   const intake = useTranslations("ticketIntake");
@@ -74,12 +75,11 @@ export function PackageStep(props: PackageStepProps) {
     packageIds: packages.map(({ id }) => id),
   });
   useSuggestedPick({ suggestedId, pick, preview, packages, pickPackage });
-  const next = usePackageNext({ ...props, preview, onNext: props.onNext });
-  const oneOff = () => props.onPick({ pick: { kind: "ONE_OFF" } });
+  const next = usePackageNext({ ...props, preview });
   return (
     <StepSection
       {...props.section}
-      actions={<PackageActions {...props} oneOff={pick?.kind === "ONE_OFF"} onOneOff={oneOff} />}
+      actions={<PackageActions canCreatePackage={props.canCreatePackage} />}
       footerStart={props.back}
       footerEnd={
         <Button type="button" disabled={!next.ready} onClick={next.next}>
@@ -88,12 +88,15 @@ export function PackageStep(props: PackageStepProps) {
       }
     >
       <PreviewBody {...props} preview={preview} onPackage={pickPackage} />
-      {pick ? <p className="text-sm">{t("picked", { summary: props.pickSummary })}</p> : null}
+      {pick?.kind === "PACKAGE" ? (
+        <p className="text-sm">{t("picked", { summary: props.pickSummary })}</p>
+      ) : null}
+      <CustomBookingButton picked={pick?.kind === "ONE_OFF"} onClick={next.custom} />
       {request ? (
         <FollowUpDialog {...{ request, when, timeZone }} onCancel={cancel} onDone={answered} />
       ) : null}
-      {next.question ? (
-        <SwitchDialog {...next} question={next.question} count={props.review?.lines.length ?? 0} />
+      {next.replacing > 0 ? (
+        <ReplaceDialog count={next.replacing} onReplace={next.confirm} onCancel={next.cancel} />
       ) : null}
     </StepSection>
   );

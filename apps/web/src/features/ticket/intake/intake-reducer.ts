@@ -7,6 +7,7 @@ import {
   type IntakeStep,
   type IntakeWhen,
   initialIntake,
+  isCustom,
 } from "./intake-state";
 import { newReview } from "./review-state";
 
@@ -52,8 +53,20 @@ function complete({ state, action }: CompleteInput): IntakeState {
         note: state.draft?.note ?? "",
       };
   const next = { ...state, review };
+  if (isCustom({ state: next })) return { ...next, open: "custom" };
   const open = fresh && hasChoices({ state: next }) ? "choices" : nextOpen({ state: next });
   return { ...next, open };
+}
+
+type BuildInput = { state: IntakeState; choiceKeys: string[] };
+
+/** The build step done: choices when it asks other lines than before, else review (ADR 0089). */
+function completeBuild({ state, choiceKeys }: BuildInput): IntakeState {
+  if (!state.review) return state;
+  const before = state.review.choiceKeys;
+  const fresh = choiceKeys.some((key) => !before.includes(key));
+  const next = { ...state, review: { ...state.review, choiceKeys } };
+  return { ...next, open: fresh && hasChoices({ state: next }) ? "choices" : "review" };
 }
 
 export type ReduceIntakeInput = { state: IntakeState; action: IntakeAction };
@@ -76,6 +89,8 @@ export function reduceIntake({ state, action }: ReduceIntakeInput): IntakeState 
       return { ...state, pick: null };
     case "completePackage":
       return complete({ state, action });
+    case "completeBuild":
+      return completeBuild({ state, choiceKeys: action.choiceKeys });
     case "patchReview":
       return state.review ? { ...state, review: { ...state.review, ...action.patch } } : state;
     case "change":

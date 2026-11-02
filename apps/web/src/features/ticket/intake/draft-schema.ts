@@ -106,7 +106,7 @@ export const DraftSchema = z.object({
   version: z.union([z.literal(2), z.literal(3), z.literal(DRAFT_VERSION)]),
   state: z.object({
     open: z
-      .enum(["message", "who", "when", "package", "choices", "review"])
+      .enum(["message", "who", "when", "package", "custom", "choices", "review"])
       .transform((open) => (open === "message" ? "who" : open)),
     who: WhoSchema.nullable(),
     when: z.object({ date: PlainDateStringSchema, from: Time, to: Time, guests: Count }).nullable(),

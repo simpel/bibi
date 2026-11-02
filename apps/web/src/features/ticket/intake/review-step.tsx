@@ -1,4 +1,4 @@
-import { Button, Form, StepSection } from "@bibi/ui";
+import { Form, StepSection } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { type Dispatch, type ReactNode, useState } from "react";
 import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
@@ -6,18 +6,11 @@ import type { IntakeData } from "../load-intake-data";
 import { CalendarSnapshot } from "./calendar-snapshot";
 import { CreateBar } from "./create-bar";
 import { CreateIssuesPanel } from "./create-issues-panel";
-import { DraftLineDialog } from "./draft-line-dialog";
-import { DraftLinesTable } from "./draft-lines-table";
-import { EmptyLines } from "./empty-lines";
-import { hasChoices, type IntakeAction, type IntakeState } from "./intake-state";
+import { hasChoices, type IntakeAction, type IntakeState, isCustom } from "./intake-state";
+import { LineDialogSlot, LinesSection } from "./lines-section";
 import { MoreSection } from "./more-section";
 import { OpenQuestionsPanel } from "./open-questions-panel";
-import {
-  BookingNoteField,
-  SavePackageFields,
-  TicketTitleField,
-  TicketTypeFields,
-} from "./review-form-fields";
+import { BookingNoteField, TicketTitleField, TicketTypeFields } from "./review-form-fields";
 import { ReviewHeader } from "./review-header";
 import { StepBack } from "./step-back";
 import { useCreateReadiness } from "./use-create-readiness";
@@ -26,41 +19,6 @@ import { useReviewActions } from "./use-review-actions";
 import { useReviewForm } from "./use-review-form";
 import { type ReviewModel, useReviewModel } from "./use-review-model";
 import { useServerIssues } from "./use-server-issues";
-
-type LinesSectionProps = { model: ReviewModel; actions: ReturnType<typeof useReviewActions> };
-
-/** The lines table, or the empty state with quick-add, and + Add line. */
-function LinesSection({ model, actions }: LinesSectionProps) {
-  const t = useTranslations("ticketIntake.review");
-  return (
-    <div className="grid gap-3">
-      {model.review.lines.length > 0 ? (
-        <DraftLinesTable model={model} onEdit={actions.open} onRemove={actions.remove} />
-      ) : (
-        <EmptyLines items={model.data.catalog.items} onQuickAdd={actions.quickAdd} />
-      )}
-      <Button
-        type="button"
-        variant="outline"
-        className="justify-self-start"
-        onClick={() => actions.open({ line: null })}
-      >
-        {t("addLine")}
-      </Button>
-    </div>
-  );
-}
-
-/** The line dialog while it is open (outside the form: its own form submits only itself). */
-function LineDialogSlot({ model, actions }: LinesSectionProps) {
-  if (!actions.dialog) return null;
-  return (
-    <DraftLineDialog
-      {...{ model, line: actions.dialog.line, newKey: actions.dialog.newKey }}
-      {...{ onSave: actions.save, onRemove: actions.remove, onClose: actions.close }}
-    />
-  );
-}
 
 type BodyProps = { model: ReviewModel; nonce: number; back: ReactNode; onConflict: () => void };
 
@@ -88,7 +46,8 @@ function useReviewBody({ model, onConflict }: Pick<BodyProps, "model" | "onConfl
 function ReviewBody({ model, nonce, back, onConflict }: BodyProps) {
   const body = useReviewBody({ model, onConflict });
   const { form, actions, questions, block } = body;
-  const oneOff = model.pick.kind === "ONE_OFF";
+  // A custom booking's type and its fields were asked in the build step.
+  const custom = model.pick.kind === "ONE_OFF";
   const { catalog } = model.data;
   return (
     <Form {...form}>
@@ -99,14 +58,15 @@ function ReviewBody({ model, nonce, back, onConflict }: BodyProps) {
       >
         <ReviewHeader model={model} />
         <TicketTitleField form={form} />
-        <TicketTypeFields form={form} catalog={catalog} type={model.ticketType} oneOff={oneOff} />
+        {custom ? null : (
+          <TicketTypeFields form={form} catalog={catalog} type={model.ticketType} custom={false} />
+        )}
         <CalendarSnapshot model={model} nonce={nonce} />
         <LinesSection model={model} actions={actions} />
         <BookingNoteField form={form} />
-        {oneOff ? <SavePackageFields form={form} /> : null}
         <OpenQuestionsPanel
           questions={questions}
-          otherTypes={oneOff && catalog.ticketTypes.length > 1}
+          otherTypes={custom && catalog.ticketTypes.length > 1}
           onAction={actions.act}
         />
         <MoreSection form={form} catalog={catalog} />
@@ -128,16 +88,16 @@ export type ReviewStepProps = {
   dispatch: Dispatch<IntakeAction>;
 };
 
-/** Step 4: review the package's lines, or build a one-off, then Create (ADR 0081). */
+/** The last step: review the lines of a package or a custom booking, then Create (ADR 0081). */
 export function ReviewStep({ data, state, dispatch }: ReviewStepProps) {
   const t = useTranslations("ticketIntake.review");
   const timeZone = useOrganizationTimeZone();
   const [nonce, setNonce] = useState(0);
   const model = useReviewModel({ data, state, dispatch, timeZone, nonce });
   if (!model || state.open !== "review") return null;
-  const title = model.pick.kind === "ONE_OFF" ? t("titleOneOff") : t("title");
+  const number = 4 + Number(isCustom({ state })) + Number(hasChoices({ state }));
   return (
-    <StepSection number={hasChoices({ state }) ? 5 : 4} title={title} state="open">
+    <StepSection number={number} title={t("title")} state="open">
       <ReviewBody
         key={`${state.intakeKey}-${model.review.pickKey}`}
         {...{ model, nonce }}

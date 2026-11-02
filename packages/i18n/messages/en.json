@@ -980,11 +980,11 @@
     },
     "choices": {
       "title": "Choices",
-      "description": "Some lines in the package need a choice, such as which snack to serve. Choose now, or leave it for later: anything left open is asked again in review and shown on the ticket.",
+      "description": "Some lines need a choice, such as which snack to serve. Choose now, or leave it for later: anything left open is asked again in review and shown on the ticket.",
       "summary": "{lines, plural, one {# line} other {# lines}} · {open, plural, =0 {all chosen} one {# choice open} other {# choices open}}"
     },
     "package": {
-      "title": "Package or one-off",
+      "title": "Package",
       "range": {
         "both": "{min}–{max} guests",
         "min": "From {min} guests",
@@ -999,17 +999,20 @@
         "guests": "⚠ Made for {range}, you asked for {headcount}",
         "pastEnd": "⚠ Runs to {time}, past the requested end"
       },
-      "groups": {
-        "available": "Available {period} for {guests}",
-        "clashes": "Not available then · clashes with other bookings",
-        "outside": "Outside your time or guest range",
-        "noneAvailable": "Nothing available {period} for {guests}."
-      },
-      "oneOff": "One-off",
       "none": "No packages yet",
-      "noneDescription": "Make this a one-off, or create a package to reuse.",
+      "noneDescription": "Make a custom booking, or create a package to reuse.",
       "createPackage": "Create package",
-      "picked": "Picked: {summary}"
+      "picked": "Picked: {summary}",
+      "tabs": {
+        "fits": "Fits your request ({count})",
+        "adjust": "Needs adjusting ({count})",
+        "nothingFits": "Nothing fits {period} for {guests}.",
+        "nothingToAdjust": "Every package fits your request."
+      },
+      "custom": {
+        "button": "Custom booking",
+        "hint": "Put the booking together line by line."
+      }
     },
     "questions": {
       "progress": "Question {number} of {total}",
@@ -1064,13 +1067,13 @@
     "summary": {
       "who": "{customer} · {contact}",
       "when": "{period} · {guests, plural, one {# guest} other {# guests}}",
-      "oneOff": "One-off",
       "guestsChanged": "{guests} guests",
       "guestsKept": "keeps {guests} guests",
       "extended": "extended to {times}",
       "shortened": "lines shortened in review",
       "moved": "moved to {times}",
-      "prebooked": "prebooked"
+      "prebooked": "prebooked",
+      "custom": "Custom booking"
     },
     "draft": {
       "offer": "Continue the draft for {customer}?",
@@ -1080,7 +1083,6 @@
     },
     "review": {
       "title": "Review the booking",
-      "titleOneOff": "Build the booking",
       "header": "{customer} · {period} · {guests, plural, one {# guest} other {# guests}}",
       "nothingSaved": "Nothing is saved until Create.",
       "ticketType": "Ticket type",
@@ -1183,15 +1185,6 @@
       "draftState": "This booking (not created)",
       "clashState": "This booking, clashes"
     },
-    "switch": {
-      "toPackage": "Lines already exist",
-      "toOneOff": "Lines already exist",
-      "description": "The booking has {count, plural, one {# line} other {# lines}}. What should happen to them?",
-      "replace": "Replace the lines",
-      "add": "Add its lines to them",
-      "keep": "Keep them and edit",
-      "empty": "Start empty"
-    },
     "more": {
       "assignee": "Assignee",
       "me": "Me ({name})",
@@ -1263,6 +1256,16 @@
         "need": "Need",
         "notes": "Notes"
       }
+    },
+    "replace": {
+      "title": "Replace the {count, plural, one {# line} other {# lines}}?",
+      "description": "Lines are not merged: the booking starts again from your new pick.",
+      "replace": "Replace"
+    },
+    "build": {
+      "title": "Build the booking",
+      "summary": "{lines, plural, one {# line} other {# lines}}",
+      "addLineFirst": "Add a line to continue"
     }
   },
   "calendar": {

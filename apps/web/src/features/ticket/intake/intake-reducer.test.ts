@@ -82,7 +82,7 @@ describe("reduceIntake", () => {
     expect(state.open).toBe("review");
   });
 
-  it("drops a package's answers when the period changes, but keeps a one-off", () => {
+  it("drops a package's answers when the period changes, but keeps a custom booking", () => {
     const later = { ...when, from: "10:00" };
     const unreviewed = { ...complete, review: null };
     const dropped = run({ actions: [{ type: "setWhen", when: later }], from: unreviewed });
@@ -120,5 +120,17 @@ describe("reduceIntake", () => {
       from: noted,
     });
     expect(again.review).toMatchObject({ note: "Late", pickKey: "ONE_OFF" });
+  });
+
+  it("opens the build step for a custom booking, then choices only for new asked lines", () => {
+    const custom = run({
+      actions: [{ type: "pick", pick: { kind: "ONE_OFF" } }, done],
+      from: complete,
+    });
+    expect(custom.open).toBe("custom");
+    const asked = run({ actions: [{ type: "completeBuild", choiceKeys: ["l1"] }], from: custom });
+    expect(asked.review?.choiceKeys).toEqual(["l1"]);
+    const same = run({ actions: [{ type: "completeBuild", choiceKeys: [] }], from: custom });
+    expect(same.open).toBe("review");
   });
 });

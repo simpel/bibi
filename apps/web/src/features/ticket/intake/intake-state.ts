@@ -7,9 +7,10 @@ export const INTAKE_STEPS = ["who", "when", "package"] as const;
 export type InputStep = (typeof INTAKE_STEPS)[number];
 /**
  * The steps that open; reading a message is a dialog that prefills them, not a step (ADR 0084).
- * `choices` sits between package and review only while the review has lines to ask (ADR 0089).
+ * `custom` builds a custom booking's lines after the package step; `choices` sits before review
+ * only while the review has lines to ask (ADR 0089).
  */
-export type IntakeStep = InputStep | "choices" | "review";
+export type IntakeStep = InputStep | "custom" | "choices" | "review";
 
 /** Step 1: the customer and the contact person who asks. */
 export type IntakeWho = {
@@ -32,7 +33,7 @@ export type FollowUpAnswers = {
   clash?: "MOVE" | "PREBOOK";
 };
 
-/** Step 3: a package with its answers, or a one-off. */
+/** Step 3: a package with its answers, or a custom booking (`ONE_OFF`, built line by line). */
 export type IntakePick =
   | { kind: "ONE_OFF" }
   | { kind: "PACKAGE"; templateId: string; name: string; answers: FollowUpAnswers };
@@ -82,6 +83,8 @@ export type IntakeAction =
       plannedStart: string | null;
       choiceKeys: string[];
     }
+  /** The build step done: the keys of the custom lines the choices step asks (ADR 0089). */
+  | { type: "completeBuild"; choiceKeys: string[] }
   | { type: "patchReview"; patch: ReviewPatch }
   /** Open a step: Change on a done step, or the URL's step (Back, reload). */
   | { type: "change"; step: IntakeStep }
@@ -99,7 +102,11 @@ export const hasChoices = ({ state }: { state: IntakeState }): boolean =>
     state.review?.lines.some((line) => line.key === key),
   );
 
-/** Whether lines exist: step 2 goes back to review and step 3 asks before switching. */
+/** Whether the lines are a custom booking's: the intake has the build step. */
+export const isCustom = ({ state }: { state: IntakeState }): boolean =>
+  state.pick?.kind === "ONE_OFF" && state.review !== null;
+
+/** Whether lines exist: step 2 goes back to review and step 3 asks before replacing them. */
 export const hasLines = ({ state }: { state: IntakeState }): boolean =>
   (state.review?.lines.length ?? 0) > 0;
 

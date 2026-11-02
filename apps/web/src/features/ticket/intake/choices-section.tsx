@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { ChoiceLineCard } from "./choice-line-card";
 import { openChoiceCount } from "./choice-lines";
 import type { DraftLine } from "./draft-line";
-import { hasChoices } from "./intake-state";
+import { hasChoices, isCustom } from "./intake-state";
 import type { StepsProps } from "./section-props";
 import { StepBack } from "./step-back";
 
@@ -41,7 +41,7 @@ function ChoiceCards({ data, state, dispatch }: ChoicesProps) {
 }
 
 /**
- * Step 4 when the package has lines with a required choice (ADR 0089): those lines' required
+ * The step before review when the lines have a required choice (ADR 0089): those lines' required
  * groups and needs, before review. Next is always enabled; what is left open is asked in review.
  */
 export function ChoicesSection({ data, state, dispatch }: ChoicesProps) {
@@ -53,7 +53,7 @@ export function ChoicesSection({ data, state, dispatch }: ChoicesProps) {
   const view = state.open === "choices" ? "open" : state.open === "review" ? "done" : "locked";
   return (
     <StepSection
-      number={4}
+      number={isCustom({ state }) ? 5 : 4}
       title={t("choices.title")}
       summary={t("choices.summary", { lines: asked.length, open })}
       state={view}

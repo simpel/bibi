@@ -980,11 +980,11 @@
     },
     "choices": {
       "title": "Val",
-      "description": "Några rader i paketet behöver ett val, till exempel vilket fika som ska serveras. Välj nu eller vänta: det som lämnas öppet frågas igen i granskningen och visas på ärendet.",
+      "description": "Några rader behöver ett val, till exempel vilket fika som ska serveras. Välj nu eller vänta: det som lämnas öppet frågas igen i granskningen och visas på ärendet.",
       "summary": "{lines, plural, one {# rad} other {# rader}} · {open, plural, =0 {allt valt} one {# val öppet} other {# val öppna}}"
     },
     "package": {
-      "title": "Paket eller engångsbokning",
+      "title": "Paket",
       "range": {
         "both": "{min}–{max} gäster",
         "min": "Från {min} gäster",
@@ -999,17 +999,20 @@
         "guests": "⚠ Gjort för {range}, du frågade om {headcount}",
         "pastEnd": "⚠ Pågår till {time}, efter önskat slut"
       },
-      "groups": {
-        "available": "Ledigt {period} för {guests}",
-        "clashes": "Inte ledigt då · krockar med andra bokningar",
-        "outside": "Utanför önskad tid eller antal gäster",
-        "noneAvailable": "Inget ledigt {period} för {guests}."
-      },
-      "oneOff": "Engångsbokning",
       "none": "Inga paket ännu",
-      "noneDescription": "Gör en engångsbokning, eller skapa ett paket att återanvända.",
+      "noneDescription": "Gör en egen bokning, eller skapa ett paket att återanvända.",
       "createPackage": "Skapa paket",
-      "picked": "Valt: {summary}"
+      "picked": "Valt: {summary}",
+      "tabs": {
+        "fits": "Passar förfrågan ({count})",
+        "adjust": "Kräver justering ({count})",
+        "nothingFits": "Inget passar {period} för {guests}.",
+        "nothingToAdjust": "Alla paket passar förfrågan."
+      },
+      "custom": {
+        "button": "Egen bokning",
+        "hint": "Sätt ihop bokningen rad för rad."
+      }
     },
     "questions": {
       "progress": "Fråga {number} av {total}",
@@ -1064,13 +1067,13 @@
     "summary": {
       "who": "{customer} · {contact}",
       "when": "{period} · {guests, plural, one {# gäst} other {# gäster}}",
-      "oneOff": "Engångsbokning",
       "guestsChanged": "{guests} gäster",
       "guestsKept": "behåller {guests} gäster",
       "extended": "förlängt till {times}",
       "shortened": "rader kortas i granskningen",
       "moved": "flyttat till {times}",
-      "prebooked": "förbokat"
+      "prebooked": "förbokat",
+      "custom": "Egen bokning"
     },
     "draft": {
       "offer": "Fortsätta utkastet för {customer}?",
@@ -1080,7 +1083,6 @@
     },
     "review": {
       "title": "Granska bokningen",
-      "titleOneOff": "Bygg bokningen",
       "header": "{customer} · {period} · {guests, plural, one {# gäst} other {# gäster}}",
       "nothingSaved": "Inget sparas förrän du skapar ärendet.",
       "ticketType": "Ärendetyp",
@@ -1183,15 +1185,6 @@
       "draftState": "Den här bokningen (inte skapad)",
       "clashState": "Den här bokningen, krockar"
     },
-    "switch": {
-      "toPackage": "Det finns redan rader",
-      "toOneOff": "Det finns redan rader",
-      "description": "Bokningen har {count, plural, one {# rad} other {# rader}}. Vad ska hända med dem?",
-      "replace": "Ersätt raderna",
-      "add": "Lägg till paketets rader",
-      "keep": "Behåll dem och ändra",
-      "empty": "Börja tomt"
-    },
     "more": {
       "assignee": "Ansvarig",
       "me": "Jag ({name})",
@@ -1263,6 +1256,16 @@
         "need": "Behov",
         "notes": "Anteckningar"
       }
+    },
+    "replace": {
+      "title": "Ersätta {count, plural, one {# rad} other {# rader}}?",
+      "description": "Rader slås inte ihop: bokningen börjar om från det du valde nu.",
+      "replace": "Ersätt"
+    },
+    "build": {
+      "title": "Bygg bokningen",
+      "summary": "{lines, plural, one {# rad} other {# rader}}",
+      "addLineFirst": "Lägg till en rad för att fortsätta"
     }
   },
   "calendar": {

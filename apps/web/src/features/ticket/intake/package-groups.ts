@@ -30,6 +30,18 @@ export function groupPackages({ options, entries }: GroupPackagesInput): Package
   return groups;
 }
 
+/** Step 3's tabs: packages that fit the request as asked, and those that need adjusting. */
+export type PackageTab = "FITS" | "ADJUST";
+
+/** The tabs' cards: clashes, then packages outside the guest range or the requested period. */
+export function tabsOf({
+  groups,
+}: {
+  groups: PackageGroups;
+}): Record<PackageTab, PackageCardData[]> {
+  return { FITS: groups.AVAILABLE, ADJUST: [...groups.CLASHES, ...groups.OUTSIDE_RANGE] };
+}
+
 /** One note on a package card: ✓ available, ⚠ a warning, ✕ clashes (spec step 3). */
 export type CardNote =
   | { kind: "AVAILABLE"; tone: "ok" }

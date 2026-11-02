@@ -11,10 +11,10 @@ type Translate = ReturnType<typeof useTranslations<"ticketIntake.summary">>;
 
 type PickInput = { t: Translate; pick: IntakePick | null; when: IntakeWhen | null; times: string };
 
-/** "Half day · 30 guests · Extended to 17:00 · Moved to 13:00–17:00", or "One-off". */
+/** "Half day · 30 guests · Extended to 17:00 · Moved to 13:00–17:00", or "Custom booking". */
 function pickSummary({ t, pick, when, times }: PickInput): string {
   if (!pick) return "";
-  if (pick.kind === "ONE_OFF") return t("oneOff");
+  if (pick.kind === "ONE_OFF") return t("custom");
   const { answers } = pick;
   const parts = [pick.name];
   if (answers.guests === "CHANGE") parts.push(t("guestsChanged", { guests: when?.guests ?? 0 }));

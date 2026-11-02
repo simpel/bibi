@@ -63,19 +63,6 @@ export function shiftLines({ lines, deltaMs }: ShiftLinesInput): DraftLine[] {
   }));
 }
 
-/** How step 3's switching question was answered (spec "Switching"). */
-export type SwitchChoice = "REPLACE" | "ADD" | "KEEP" | "EMPTY";
-
-export type NextLinesInput = { current: DraftLine[]; incoming: DraftLine[]; choice: SwitchChoice };
-
-/** The lines after a switch: replaced, added to, kept for editing, or none. */
-export function nextLines({ current, incoming, choice }: NextLinesInput): DraftLine[] {
-  if (choice === "REPLACE") return incoming;
-  if (choice === "ADD") return [...current, ...incoming];
-  if (choice === "KEEP") return current;
-  return [];
-}
-
 export type UpsertLineInput = { lines: DraftLine[]; line: DraftLine };
 
 /** The edited line in its place, or a new one at the end. */
