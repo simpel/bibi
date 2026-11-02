@@ -9,6 +9,7 @@ import {
   FormItem,
   FormLabel,
   Input,
+  Spinner,
 } from "@bibi/ui";
 import { SearchIcon } from "lucide-react";
 import { type ReactNode, useEffect } from "react";
@@ -21,6 +22,10 @@ export type SearchFormProps = {
   /** Accessible name of the submit button. */
   submitLabel: string;
   onSearch: (q: string | null) => void;
+  /** A search is on its way: the button is disabled, with a spinner for its icon. */
+  pending?: boolean;
+  /** The spinner's accessible name, e.g. "Searching…". */
+  pendingLabel?: string;
   /** Replaces the plain text input, e.g. with one that suggests filters while typing. */
   renderInput?: (field: SearchField) => ReactNode;
 };
@@ -30,11 +35,23 @@ type SearchValues = { q: string };
 /** The field's react-hook-form props plus its placeholder. */
 export type SearchField = ControllerRenderProps<SearchValues, "q"> & { placeholder: string };
 
+type SearchButtonProps = Pick<SearchFormProps, "submitLabel" | "pending" | "pendingLabel">;
+
+/** The submit button: disabled while a search is on its way, a spinner for its icon. */
+function SearchButton({ submitLabel, pending = false, pendingLabel }: SearchButtonProps) {
+  return (
+    <Button type="submit" variant="outline" size="icon" aria-label={submitLabel} disabled={pending}>
+      {pending ? <Spinner label={pendingLabel ?? submitLabel} /> : <SearchIcon />}
+    </Button>
+  );
+}
+
 /**
  * Free-text search of a list, the field and its button joined (shadcn Button Group), applied on
- * submit (Enter), not per keystroke, so a large list is queried once. A navigation form (CLAUDE.md "Forms"): no server action and no toast.
+ * submit (Enter), not per keystroke, so a large list is queried once. A navigation form
+ * (CLAUDE.md "Forms"): no server action.
  */
-export function SearchForm({ value, label, submitLabel, onSearch, renderInput }: SearchFormProps) {
+export function SearchForm({ value, label, onSearch, renderInput, ...button }: SearchFormProps) {
   const form = useForm<SearchValues>({ defaultValues: { q: value ?? "" } });
   useEffect(() => form.reset({ q: value ?? "" }), [form, value]);
   return (
@@ -58,9 +75,7 @@ export function SearchForm({ value, label, submitLabel, onSearch, renderInput }:
                       <Input type="search" placeholder={label} {...field} />
                     )}
                   </FormControl>
-                  <Button type="submit" variant="outline" size="icon" aria-label={submitLabel}>
-                    <SearchIcon />
-                  </Button>
+                  <SearchButton {...button} />
                 </ButtonGroup>
               </FormItem>
             )}

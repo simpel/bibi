@@ -29,6 +29,8 @@ export function TicketSearch({ value, catalog, vocabulary }: TicketSearchProps) 
       label={t("search")}
       submitLabel={t("searchSubmit")}
       onSearch={(q) => navigate({ patch: { q } })}
+      pending={pending}
+      pendingLabel={common("searching")}
       renderInput={(field) => (
         <TicketQueryInput {...field} catalog={catalog} vocabulary={vocabulary} />
       )}
