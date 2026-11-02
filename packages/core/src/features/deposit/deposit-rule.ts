@@ -53,9 +53,12 @@ export async function suggestDeposit({
   const { totalInclVatMinor } = quoteTotals({ lines: derived.map((d) => d.line) });
   const [settings, account] = await Promise.all([
     loadPaymentSettings({ context }),
-    context.db.paymentAccount.findFirst({ select: { status: true, stripeAccountId: true } }),
+    context.db.paymentAccount.findFirst({
+      select: { status: true, stripeAccountId: true, disconnectedAt: true },
+    }),
   ]);
-  const paymentLinksAvailable = account?.status === "ACTIVE" && account.stripeAccountId !== null;
+  const paymentLinksAvailable =
+    account?.status === "ACTIVE" && account.stripeAccountId !== null && !account.disconnectedAt;
   const rule = depositFromRule({ totalMinor: totalInclVatMinor, settings });
   return ok({ value: { totalInclVatMinor, ...rule, paymentLinksAvailable } });
 }

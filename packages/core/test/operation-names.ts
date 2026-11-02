@@ -71,6 +71,7 @@ const NAMES = [
   "paymentAccount.get",
   "paymentAccount.startOnboarding",
   "paymentAccount.sync",
+  "paymentAccount.disconnect",
   "paymentSettings.get",
   "paymentSettings.update",
   "pipeline.board",

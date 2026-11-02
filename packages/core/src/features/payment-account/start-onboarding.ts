@@ -13,6 +13,21 @@ export async function ensurePaymentAccountRow({
   context,
 }: EnsureRowInput): Promise<PaymentAccount> {
   const existing = await context.db.paymentAccount.findFirst({});
+  if (existing?.disconnectedAt) {
+    // Connecting again resumes the same Stripe account (ADR 0090).
+    const row = await context.db.paymentAccount.update({
+      where: { id: existing.id },
+      data: { disconnectedAt: null },
+    });
+    const { organizationId } = context;
+    const before = toPaymentAccountDto({ row: existing, organizationId });
+    context.recordChange({
+      entityId: row.id,
+      before,
+      after: toPaymentAccountDto({ row, organizationId }),
+    });
+    return row;
+  }
   if (existing) return existing;
   const row = await context.db.paymentAccount.create({
     data: { organizationId: context.organizationId, createdBy: context.actor.userId },

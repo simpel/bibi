@@ -10,7 +10,9 @@ export type CreateConnectedAccountInput = {
 export type ConnectedAccountRef = { stripeAccountId: string };
 
 export type AccountStatusInput = { stripeAccountId: string };
-export type ConnectedAccountStatus = { status: Exclude<PaymentAccountStatus, "NOT_CONNECTED"> };
+export type ConnectedAccountStatus = {
+  status: Exclude<PaymentAccountStatus, "NOT_CONNECTED" | "DISCONNECTED">;
+};
 
 export type OnboardingLinkInput = {
   stripeAccountId: string;

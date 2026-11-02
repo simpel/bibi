@@ -3519,13 +3519,15 @@
       "NOT_CONNECTED": "Inte kopplat",
       "ONBOARDING": "Registrering pågår",
       "ACTIVE": "Aktivt",
-      "RESTRICTED": "Begränsat"
+      "RESTRICTED": "Begränsat",
+      "DISCONNECTED": "Frånkopplad"
     },
     "hint": {
       "NOT_CONNECTED": "Koppla till Stripe för att ta emot betalningar. Du skickas till Stripe för att verifiera ert företag.",
       "ONBOARDING": "Registreringen hos Stripe är inte klar. Fortsätt där du slutade och uppdatera sedan statusen.",
       "ACTIVE": "Ert konto kan ta emot kortbetalningar.",
-      "RESTRICTED": "Stripe har begränsat kortbetalningar på kontot. Fortsätt registreringen och lämna de uppgifter Stripe ber om."
+      "RESTRICTED": "Stripe har begränsat kortbetalningar på kontot. Fortsätt registreringen och lämna de uppgifter Stripe ber om.",
+      "DISCONNECTED": "Stripe är frånkopplat. Betallänkar och kortbetalningar är avstängda. Koppla igen för att använda samma Stripe-konto."
     },
     "connect": "Koppla till Stripe",
     "continueOnboarding": "Fortsätt registreringen",
@@ -3533,7 +3535,11 @@
     "starting": "Förbereder registrering hos Stripe…",
     "redirecting": "Öppnar Stripe…",
     "refreshing": "Uppdaterar status…",
-    "refreshed": "Betalningsstatusen har uppdaterats."
+    "refreshed": "Betalningsstatusen har uppdaterats.",
+    "disconnect": "Koppla från",
+    "disconnectConfirm": "Koppla från Stripe? Bibi slutar skicka betallänkar. Länkar som redan skickats fungerar tills de går ut. Stripe-kontot förblir ert.",
+    "disconnecting": "Kopplar från Stripe…",
+    "disconnected": "Stripe har kopplats från."
   },
   "inboundEmail": {
     "title": "Mottagen e-post",

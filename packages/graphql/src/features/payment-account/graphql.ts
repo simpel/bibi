@@ -9,6 +9,7 @@ import {
   PaymentSettingsSchema,
   startPaymentOnboarding,
   syncPaymentAccount,
+  disconnectPaymentAccount,
   updatePaymentSettings,
 } from "@bibi/core";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
@@ -34,6 +35,7 @@ fieldFromOperation({
 });
 mutationFromOperation({ operation: startPaymentOnboarding, type: PaymentAccountOnboardingRef });
 mutationFromOperation({ operation: syncPaymentAccount, type: PaymentAccountRef });
+mutationFromOperation({ operation: disconnectPaymentAccount, type: PaymentAccountRef });
 
 const PaymentSettingsRef = objectFromSchema<PaymentSettingsDto>({
   name: "PaymentSettings",

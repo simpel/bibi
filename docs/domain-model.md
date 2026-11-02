@@ -1405,8 +1405,9 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Attributes**
 - Stripe account id (unique; empty from the committed row until the Stripe call after the commit stored it, ADR 0058)
 - status: onboarding, active or restricted (mirrors the card payments capability; shown as not connected when there is no row)
+- disconnected at (owned, [ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)): an admin disconnected Stripe; reads as disconnected and nothing is charged until it is connected again (the same Stripe account)
 
-> Operations: `paymentAccount.get` (permission `paymentAccount:read`), `paymentAccount.startOnboarding` (`paymentAccount:write`) and `paymentAccount.sync` (`paymentAccount:write`, refreshes the status from Stripe), on every surface. The webhook also refreshes the status on `account.updated` through the SYSTEM-only `paymentAccount.applySignal`, which reads the status back from Stripe instead of trusting the payload. The web app offers them under Settings, Payments. The platform account id and secret key come from `@bibi/config` (`STRIPE_PLATFORM_ACCOUNT_ID`, `STRIPE_SECRET_KEY`).
+> Operations: `paymentAccount.get` (permission `paymentAccount:read`), `paymentAccount.startOnboarding` (`paymentAccount:write`) and `paymentAccount.sync` (`paymentAccount:write`, refreshes the status from Stripe) and `paymentAccount.disconnect` (`paymentAccount:write`), on every surface. The webhook also refreshes the status on `account.updated` through the SYSTEM-only `paymentAccount.applySignal`, which reads the status back from Stripe instead of trusting the payload. The web app offers them under Settings, Integrations. The platform account id and secret key come from `@bibi/config` (`STRIPE_PLATFORM_ACCOUNT_ID`, `STRIPE_SECRET_KEY`).
 
 ### PaymentSettings (`PaymentSettings`)
 

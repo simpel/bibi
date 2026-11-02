@@ -9,6 +9,9 @@ model PaymentAccount {
   organizationId  String
   stripeAccountId String?
   status          PaymentAccountStatus @default(ONBOARDING)
+  /// Owned (ADR 0090): an admin disconnected Stripe. Nothing can be charged; `status` keeps
+  /// mirroring Stripe, and connecting again clears it and resumes the same Stripe account.
+  disconnectedAt  DateTime?
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt
   createdBy       String?

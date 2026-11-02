@@ -3519,13 +3519,15 @@
       "NOT_CONNECTED": "Not connected",
       "ONBOARDING": "Onboarding",
       "ACTIVE": "Active",
-      "RESTRICTED": "Restricted"
+      "RESTRICTED": "Restricted",
+      "DISCONNECTED": "Disconnected"
     },
     "hint": {
       "NOT_CONNECTED": "Connect to Stripe to start taking payments. You will be sent to Stripe to verify your business.",
       "ONBOARDING": "Onboarding with Stripe is not finished yet. Continue where you left off, then refresh the status.",
       "ACTIVE": "Your account can take card payments.",
-      "RESTRICTED": "Stripe has restricted card payments on this account. Continue onboarding to provide what Stripe asks for."
+      "RESTRICTED": "Stripe has restricted card payments on this account. Continue onboarding to provide what Stripe asks for.",
+      "DISCONNECTED": "Stripe is disconnected. Payment links and card payments are off. Connect again to use the same Stripe account."
     },
     "connect": "Connect to Stripe",
     "continueOnboarding": "Continue onboarding",
@@ -3533,7 +3535,11 @@
     "starting": "Preparing Stripe onboarding…",
     "redirecting": "Opening Stripe…",
     "refreshing": "Refreshing status…",
-    "refreshed": "The payment status has been refreshed."
+    "refreshed": "The payment status has been refreshed.",
+    "disconnect": "Disconnect",
+    "disconnectConfirm": "Disconnect Stripe? Bibi stops sending payment links. Links already sent keep working until they expire. Your Stripe account stays yours.",
+    "disconnecting": "Disconnecting Stripe…",
+    "disconnected": "Stripe has been disconnected."
   },
   "inboundEmail": {
     "title": "Received email",

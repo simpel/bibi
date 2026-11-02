@@ -19,6 +19,7 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "paymentAccount.get", route: "/settings/integrations" },
   { operation: "paymentAccount.startOnboarding", route: "/settings/integrations" },
   { operation: "paymentAccount.sync", route: "/settings/integrations" },
+  { operation: "paymentAccount.disconnect", route: "/settings/integrations" },
   { operation: "paymentSettings.get", route: "/settings/payments" },
   { operation: "paymentSettings.update", route: "/settings/payments" },
   { operation: "integration.list", route: "/settings/integrations" },

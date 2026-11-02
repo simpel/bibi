@@ -1,7 +1,8 @@
 import { getPaymentAccount } from "@bibi/core";
-import { Card, CardContent, CardHeader, CardTitle, StripeLogo } from "@bibi/ui";
+import { Card, CardAction, CardContent, CardHeader, CardTitle, StripeLogo } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { runOperation } from "@/server/run-operation";
+import { DisconnectStripeButton } from "./disconnect-stripe-button";
 import { PaymentStatusBadge } from "./payment-status-badge";
 import { StartOnboardingButton } from "./start-onboarding-button";
 import { SyncStatusButton } from "./sync-status-button";
@@ -17,23 +18,27 @@ export async function StripeCard({ canEdit }: StripeCardProps) {
   const account = await runOperation({ operation: getPaymentAccount, input: {} });
   if (!account.ok) return null;
   const { status } = account.value;
-  const connected = status !== "NOT_CONNECTED";
+  // Disconnected resumes the same account, so it connects like a first time.
+  const connecting = status === "NOT_CONNECTED" || status === "DISCONNECTED";
   return (
-    <Card className="shadow-none">
-      <CardHeader className="flex-row items-center justify-between gap-2">
+    <Card className="flex h-full flex-col shadow-none">
+      <CardHeader>
         <CardTitle className="text-base">
           <StripeLogo className="h-6" />
           <span className="sr-only">{t("stripe")}</span>
         </CardTitle>
-        <PaymentStatusBadge status={status} />
+        <CardAction>
+          <PaymentStatusBadge status={status} />
+        </CardAction>
       </CardHeader>
-      <CardContent className="grid gap-4 text-sm text-muted-foreground">
+      <CardContent className="flex flex-1 flex-col gap-4 text-sm text-muted-foreground">
         <p>{t("description")}</p>
         <p>{t(`hint.${status}`)}</p>
-        {canEdit && status !== "ACTIVE" ? (
-          <div className="flex flex-wrap gap-2">
-            <StartOnboardingButton connected={connected} />
-            {connected ? <SyncStatusButton /> : null}
+        {canEdit ? (
+          <div className="mt-auto flex flex-wrap gap-2">
+            {status !== "ACTIVE" ? <StartOnboardingButton connected={!connecting} /> : null}
+            {status === "ONBOARDING" || status === "RESTRICTED" ? <SyncStatusButton /> : null}
+            {connecting ? null : <DisconnectStripeButton />}
           </div>
         ) : null}
       </CardContent>

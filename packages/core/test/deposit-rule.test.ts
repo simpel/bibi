@@ -1,11 +1,13 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { depositFromRule } from "../src/features/deposit/deposit-rule";
 import {
+  disconnectPaymentAccount,
   execute,
   getPaymentSettings,
   requestDeposit,
   setPaymentProvider,
   setStripeConnectGateway,
+  startPaymentOnboarding,
   suggestDepositAmount,
   updatePaymentSettings,
 } from "../src/index";
@@ -99,5 +101,27 @@ describe("the deposit rule (ADR 0090)", () => {
       context: other,
     });
     expect(errorCode({ result })).toBe("NOT_FOUND");
+  });
+});
+
+describe("disconnecting Stripe (ADR 0090)", () => {
+  it("stops payment links until the same account is connected again", async () => {
+    const { context, ticket } = await moneySetup();
+    const ticketId = ticket.id;
+    const account = unwrap({
+      result: await execute({ operation: disconnectPaymentAccount, input: {}, context }),
+    });
+    expect(account.status).toBe("DISCONNECTED");
+    const suggestion = unwrap({
+      result: await execute({ operation: suggestDepositAmount, input: { ticketId }, context }),
+    });
+    expect(suggestion.paymentLinksAvailable).toBe(false);
+    const input = { ticketId, description: "Advance", amountMinor: 10_000 };
+    const refused = await execute({ operation: requestDeposit, input, context });
+    expect(errorCode({ result: refused })).toBe("CONFLICT");
+    const again = unwrap({
+      result: await execute({ operation: startPaymentOnboarding, input: {}, context }),
+    });
+    expect(again).toMatchObject({ status: "ACTIVE", stripeAccountId: account.stripeAccountId });
   });
 });

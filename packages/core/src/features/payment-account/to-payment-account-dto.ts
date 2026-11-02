@@ -15,6 +15,8 @@ export function toPaymentAccountDto({ row, organizationId }: ToDtoInput): Paymen
       updatedAt: null,
     };
   }
-  const { id, status, stripeAccountId, createdAt, updatedAt } = row;
+  const { id, stripeAccountId, createdAt, updatedAt } = row;
+  // Disconnected wins over Stripe's own state: nothing is charged until an admin reconnects.
+  const status = row.disconnectedAt ? ("DISCONNECTED" as const) : row.status;
   return { id, organizationId, status, stripeAccountId, createdAt, updatedAt };
 }

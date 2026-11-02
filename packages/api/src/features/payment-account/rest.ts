@@ -17,4 +17,10 @@ export const paymentAccountRoutes = [
     path: "/payment-account/sync",
     successStatus: 200,
   }),
+  restRoute({
+    operation: "paymentAccount.disconnect",
+    method: "POST",
+    path: "/payment-account/disconnect",
+    successStatus: 200,
+  }),
 ];

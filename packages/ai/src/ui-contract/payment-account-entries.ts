@@ -26,5 +26,6 @@ export const PAYMENT_ACCOUNT_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> =
   paymentAccount_get: paymentAccountCard,
   paymentAccount_startOnboarding: paymentAccountCard,
   paymentAccount_sync: paymentAccountCard,
+  paymentAccount_disconnect: paymentAccountCard,
   ...INTEGRATION_UI_ENTRIES,
 };

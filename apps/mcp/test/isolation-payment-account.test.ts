@@ -27,5 +27,11 @@ describe("cross-organization isolation: payment account", () => {
     expect(other.data.status).toBe("NOT_CONNECTED");
     expect(other.data.id).toBeNull();
     expect(other.data.stripeAccountId).toBeNull();
+
+    // B has no account to disconnect; A's stays connected.
+    const refused = await call({ client: b, name: "paymentAccount_disconnect" });
+    expect(refused.data.code).toBe("NOT_FOUND");
+    const still = await call({ client: a, name: "paymentAccount_get" });
+    expect(still.data.status).toBe("ACTIVE");
   });
 });

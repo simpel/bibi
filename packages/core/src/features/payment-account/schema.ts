@@ -5,6 +5,7 @@ export const PaymentAccountStatusSchema = z.enum([
   "ONBOARDING",
   "ACTIVE",
   "RESTRICTED",
+  "DISCONNECTED",
 ]);
 
 /** The organization's payout account. `NOT_CONNECTED` has no row yet, so `id` is null. */
@@ -30,6 +31,8 @@ export const PaymentAccountStartOnboardingInputSchema = z.object({
 });
 
 export const PaymentAccountSyncInputSchema = z.object({});
+
+export const PaymentAccountDisconnectInputSchema = z.object({});
 
 export const PaymentAccountOnboardingSchema = PaymentAccountSchema.extend({
   onboardingUrl: z

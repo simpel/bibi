@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  disconnectPaymentAccount,
   type PaymentAccountDto,
   type PaymentAccountOnboardingDto,
   type PaymentSettingsDto,
@@ -35,5 +36,11 @@ export async function updatePaymentSettingsAction({
 }: UpdatePaymentSettingsActionInput): Promise<ActionResult<PaymentSettingsDto>> {
   return toActionResult({
     result: await runOperation({ operation: updatePaymentSettings, input }),
+  });
+}
+
+export async function disconnectPaymentAccountAction(): Promise<ActionResult<PaymentAccountDto>> {
+  return toActionResult({
+    result: await runOperation({ operation: disconnectPaymentAccount, input: {} }),
   });
 }

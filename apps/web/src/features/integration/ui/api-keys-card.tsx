@@ -7,13 +7,13 @@ import { ROUTES } from "@/lib/routes";
 export async function ApiKeysCard() {
   const t = await getTranslations("integration.apiKeysCard");
   return (
-    <Card className="shadow-none">
+    <Card className="flex h-full flex-col shadow-none">
       <CardHeader>
         <CardTitle className="text-base">{t("title")}</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-2 text-sm text-muted-foreground">
+      <CardContent className="flex flex-1 flex-col gap-2 text-sm text-muted-foreground">
         <p>{t("description")}</p>
-        <Link href={ROUTES.adminApiKeys} className="text-primary hover:underline">
+        <Link href={ROUTES.adminApiKeys} className="mt-auto text-primary hover:underline">
           {t("open")}
         </Link>
       </CardContent>

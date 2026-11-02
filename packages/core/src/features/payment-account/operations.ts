@@ -1,8 +1,10 @@
+import { disconnectPaymentAccount } from "./disconnect-operation";
 import { getPaymentAccount } from "./read-operations";
 import { getPaymentSettings, updatePaymentSettings } from "./settings-operations";
 import { startPaymentOnboarding, syncPaymentAccount } from "./write-operations";
 
 export {
+  disconnectPaymentAccount,
   getPaymentAccount,
   getPaymentSettings,
   startPaymentOnboarding,
@@ -15,6 +17,7 @@ export const paymentAccountOperations = [
   getPaymentAccount,
   startPaymentOnboarding,
   syncPaymentAccount,
+  disconnectPaymentAccount,
   getPaymentSettings,
   updatePaymentSettings,
 ];

@@ -18,4 +18,9 @@ export const paymentAccountMcpTools = [
     idempotent: true,
     summary: () => "Refresh the payout account status from Stripe",
   }),
+  mcpTool({
+    operation: "paymentAccount.disconnect",
+    idempotent: true,
+    summary: () => "Disconnect the organization's Stripe account",
+  }),
 ];

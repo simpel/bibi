@@ -1,5 +1,5 @@
 import type { IntegrationConnectionDto } from "@bibi/core/schemas";
-import { Card, CardContent, CardHeader, CardTitle, FortnoxLogo } from "@bibi/ui";
+import { Card, CardAction, CardContent, CardHeader, CardTitle, FortnoxLogo } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { ConnectFortnoxButton } from "./connect-fortnox-button";
 import { DisconnectFortnoxButton } from "./disconnect-fortnox-button";
@@ -39,20 +39,22 @@ export async function FortnoxCard({ connection, canEdit, connectedOn }: FortnoxC
     { label: t("connectedAt"), value: connectedOn },
   ].filter((fact) => status === "CONNECTED" && fact.value);
   return (
-    <Card className="shadow-none">
-      <CardHeader className="flex-row items-center justify-between gap-2">
+    <Card className="flex h-full flex-col shadow-none">
+      <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <FortnoxLogo className="size-6" aria-hidden />
           {t("name")}
         </CardTitle>
-        <IntegrationStatusBadge status={status} />
+        <CardAction>
+          <IntegrationStatusBadge status={status} />
+        </CardAction>
       </CardHeader>
-      <CardContent className="grid gap-4 text-sm text-muted-foreground">
+      <CardContent className="flex flex-1 flex-col gap-4 text-sm text-muted-foreground">
         <p>{t(`hint.${status}`)}</p>
         <CompanyFacts facts={facts} />
         {configured ? <p>{t("adminNote")}</p> : <p>{t("notConfigured")}</p>}
         {canEdit ? (
-          <div className="flex flex-wrap gap-2">
+          <div className="mt-auto flex flex-wrap gap-2">
             <ConnectFortnoxButton reconnect={hasGrant} disabled={!configured} />
             {hasGrant ? <DisconnectFortnoxButton /> : null}
           </div>

@@ -36,17 +36,20 @@ export async function IntegrationPanel({ locale, outcome }: IntegrationPanelProp
     <div className="grid gap-6">
       {header}
       {outcome ? <IntegrationNotice outcome={outcome} /> : null}
-      {can({ abilities, permission: "paymentAccount:read" }) ? (
-        <StripeCard canEdit={can({ abilities, permission: "paymentAccount:write" })} />
-      ) : null}
-      {fortnox ? (
-        <FortnoxCard
-          connection={fortnox}
-          canEdit={can({ abilities, permission: "integration:write" })}
-          connectedOn={connectedOn}
-        />
-      ) : null}
-      {can({ abilities, permission: "apiKey:read" }) ? <ApiKeysCard /> : null}
+      {/* One card per provider (ADR 0090). */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {can({ abilities, permission: "paymentAccount:read" }) ? (
+          <StripeCard canEdit={can({ abilities, permission: "paymentAccount:write" })} />
+        ) : null}
+        {fortnox ? (
+          <FortnoxCard
+            connection={fortnox}
+            canEdit={can({ abilities, permission: "integration:write" })}
+            connectedOn={connectedOn}
+          />
+        ) : null}
+        {can({ abilities, permission: "apiKey:read" }) ? <ApiKeysCard /> : null}
+      </div>
     </div>
   );
 }
