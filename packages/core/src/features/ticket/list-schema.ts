@@ -26,7 +26,13 @@ export const TicketListInputSchema = z.object({
     .trim()
     .max(200)
     .optional()
-    .describe("Search: the reference number (`42` or `#42`), customer or contact name, or note"),
+    .describe(
+      "Search, GitHub style: free text matches the reference (`42`, `#42`), customer or " +
+        "contact name, or note; qualifiers filter: `assignee:me`, `assignee:<member name>`, " +
+        "`follower:me`, `status:<name>`, `type:<name>`, `customer:<name>`, `contact:<name>`, " +
+        '`is:open|closed`. Prefix `-` to exclude, quote spaces (`customer:"Volvo Cars"`), ' +
+        "commas for alternatives (`status:Lead,Offer`).",
+    ),
   sort: z.enum(TICKET_LIST_SORTS).default("reference").describe("Order by this column"),
   direction: z.enum(["asc", "desc"]).default("desc").describe("Sort direction"),
   page: z

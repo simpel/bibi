@@ -6,7 +6,6 @@ import type { ReactNode } from "react";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
-import { MineFilterLinks, mineListInput } from "@/features/assignment/ui/mine-filter";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
@@ -17,11 +16,12 @@ import { loadTicketData } from "../load-ticket-data";
 import { CreateTicketButton } from "./create-ticket-button";
 import { ExpireHoldsButton } from "./expire-holds-button";
 import { TicketListTable } from "./ticket-list-table";
+import { TicketQuickFilters } from "./ticket-quick-filters";
 import { TicketSearch } from "./ticket-search";
 
 export type TicketListProps = {
   locale: Locale;
-  /** Page, size, search, sort and the mine filter (ADR 0034), read from the URL. */
+  /** Page, size, search (with qualifiers), and sort, read from the URL. */
   params: TicketListParams;
 };
 
@@ -48,16 +48,13 @@ function headerParts({ abilities, noTypes }: HeaderPartsInput) {
   return { create, actions: canCreate ? <HeaderActions create={create} /> : undefined };
 }
 
-type ListInputArgs = { params: TicketListParams; userId: string | null };
-
 /** `ticket.list` by page number, so the server returns the total for the page count. */
-const listInput = ({ params, userId }: ListInputArgs) => ({
+const listInput = ({ params }: { params: TicketListParams }) => ({
   page: params.page,
   limit: params.pageSize,
   sort: params.sort,
   direction: params.direction,
   ...(params.q ? { q: params.q } : {}),
-  ...mineListInput({ mine: params.mine, userId }),
 });
 
 /** Tickets page body: header with create, filters and search, then the paged table. */
@@ -68,7 +65,7 @@ export async function TicketList({ locale, params }: TicketListProps) {
     loadTicketData(),
     runOperation({
       operation: listTickets,
-      input: listInput({ params, userId: abilities.userId }),
+      input: listInput({ params }),
     }),
   ]);
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
@@ -76,7 +73,7 @@ export async function TicketList({ locale, params }: TicketListProps) {
   const noTypes = data.value.types.length === 0;
   const { create, actions } = headerParts({ abilities, noTypes });
   const { items, total } = result.value;
-  const empty = total === 0 && !params.q && !params.mine;
+  const empty = total === 0 && !params.q;
   return (
     <div className="grid gap-6">
       <PageHeader title={t("plural")} description={t("listDescription")} actions={actions} />
@@ -89,7 +86,7 @@ export async function TicketList({ locale, params }: TicketListProps) {
       ) : (
         <>
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <MineFilterLinks pathname={ROUTES.tickets} mine={params.mine} />
+            <TicketQuickFilters q={params.q} />
             <TicketSearch value={params.q} />
           </div>
           <TicketListTable tickets={items} total={total ?? 0} view={params} data={data.value} />

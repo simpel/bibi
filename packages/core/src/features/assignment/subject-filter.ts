@@ -11,13 +11,13 @@ export type SubjectFilterInput = {
   followerId?: string | undefined;
 };
 
-type OneInput = Pick<SubjectFilterInput, "context" | "subjectType"> & {
+export type SubjectIdsOfInput = Pick<SubjectFilterInput, "context" | "subjectType"> & {
   userId: string;
   kind: AssignmentKind;
 };
 
 /** The subjects the member has a stored choice on, or gets from a responsibility's defaults. */
-async function subjectIdsOf({ context, subjectType, userId, kind }: OneInput) {
+export async function subjectIdsOf({ context, subjectType, userId, kind }: SubjectIdsOfInput) {
   const mine =
     kind === "ASSIGNED"
       ? { assigneeId: userId }

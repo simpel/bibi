@@ -862,7 +862,7 @@
         "QUOTE_ACCEPTED_IN_EARLIER_STATUS": "Offerten är accepterad, men ärendet är kvar i en tidigare ärendestatus. Flytta ärendet eller kontrollera offerten."
       }
     },
-    "search": "Sök referens, kund, kontakt eller anteckning",
+    "search": "Sök eller filtrera, t.ex. assignee:me status:Lead",
     "searchSubmit": "Sök",
     "noMatches": "Inga ärenden matchar.",
     "listTotal": "{count, plural, one {# ärende} other {# ärenden}}"

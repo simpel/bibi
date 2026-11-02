@@ -862,7 +862,7 @@
         "QUOTE_ACCEPTED_IN_EARLIER_STATUS": "The quote is accepted, but the ticket is still in an earlier status. Move the ticket or check the quote."
       }
     },
-    "search": "Search reference, customer, contact or note",
+    "search": "Search or filter, e.g. assignee:me status:Lead",
     "searchSubmit": "Search",
     "noMatches": "No tickets match.",
     "listTotal": "{count, plural, one {# ticket} other {# tickets}}"

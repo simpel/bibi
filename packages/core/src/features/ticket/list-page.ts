@@ -3,6 +3,8 @@ import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { subjectIdFilter } from "../assignment/subject-filter";
 import { ticketListOrder } from "./list-order";
+import { qualifierWheres } from "./list-qualifiers";
+import { parseTicketQuery } from "./list-query";
 import type { TicketListInput } from "./list-schema";
 import { ticketListWhere } from "./list-where";
 import { TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
@@ -22,7 +24,10 @@ function pagingArgs({ input }: { input: TicketListInput }) {
 export async function loadTicketPage({ input, context }: LoadTicketPageInput) {
   const { assigneeId, followerId } = input;
   const ids = await subjectIdFilter({ context, subjectType: "TICKET", assigneeId, followerId });
-  const where = { ...ticketListWhere({ input, context }), ...ids };
+  const query = parseTicketQuery({ q: input.q });
+  const own = ticketListWhere({ input: { ...input, q: query.text || undefined }, context });
+  const qualifiers = await qualifierWheres({ filters: query.filters, context });
+  const where = { AND: [own, ids, ...qualifiers] };
   const [rows, total] = await Promise.all([
     context.db.ticket.findMany({
       where,

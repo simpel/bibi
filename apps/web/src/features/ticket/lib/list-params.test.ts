@@ -9,7 +9,6 @@ describe("readTicketListParams", () => {
       q: undefined,
       sort: "reference",
       direction: "desc",
-      mine: undefined,
     });
   });
 
@@ -22,6 +21,10 @@ describe("readTicketListParams", () => {
       sort: "when",
       direction: "asc",
     });
+  });
+
+  it("turns an old mine link into its qualifier", () => {
+    expect(readTicketListParams({ params: { mine: "assigned" } }).q).toBe("assignee:me");
   });
 
   it("falls back to defaults for invalid values", () => {
