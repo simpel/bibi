@@ -2,7 +2,7 @@ import { expect, type Page } from "@playwright/test";
 
 type PageInput = { page: Page };
 
-/** Step 1 by search: type part of the name, pick the customer by its full name, go on. */
+/** Step 1 by search: type part of the name, pick the customer; step 2 opens with its contact. */
 export async function pickCustomer({
   page,
   search,
@@ -11,8 +11,13 @@ export async function pickCustomer({
   await page.getByPlaceholder("Search customers by name").fill(search);
   // Wait for the result itself: "+ New customer" also contains the typed text.
   await page.getByRole("option", { name, exact: true }).click();
-  await expect(page.getByText("Contact: Linnea Kvist")).toBeVisible();
-  await page.getByRole("button", { name: "Next: when" }).click();
+  await expectStep({ page, step: "when" });
+  await expect(page.getByText(/Linnea Kvist/).first()).toBeVisible();
+}
+
+/** The open step is in the path: `/new/ticket/<step>` (step 1 is the bare `/new/ticket`). */
+export async function expectStep({ page, step }: PageInput & { step: string }) {
+  await expect(page).toHaveURL(new RegExp(`/new/ticket/${step}(\\?.*)?$`));
 }
 
 /** Step 2: a day two months ahead (the calendar is the only way to a date), times and guests. */

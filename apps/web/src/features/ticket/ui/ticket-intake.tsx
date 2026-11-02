@@ -6,6 +6,7 @@ import { ROUTES } from "@/lib/routes";
 import { hasDraftModel } from "@/server/draft-model";
 import { handleLoadError } from "@/server/load-error";
 import { IntakePage } from "../intake/intake-page";
+import type { IntakeStep } from "../intake/intake-state";
 import { loadIntakeData } from "../load-intake-data";
 import { loadIntakeMessage } from "../load-intake-message";
 
@@ -13,12 +14,12 @@ export type TicketIntakeProps = {
   locale: Locale;
   /** `?fromMessage=<id>`: the inbox message the ticket is made from (ADR 0085). */
   fromMessage?: string | undefined;
-  /** `?start=message`: open on step 0 to paste a request (the sidebar's "From a message"). */
-  startWithMessage?: boolean;
+  /** The step in the path (`/new/ticket/<step>`); `who` for the bare `/new/ticket`. */
+  step: IntakeStep;
 };
 
 /** `/new/ticket`: the one-page ticket intake (ADR 0081), optionally from an inbox message. */
-export async function TicketIntake({ locale, fromMessage, startWithMessage }: TicketIntakeProps) {
+export async function TicketIntake({ locale, fromMessage, step }: TicketIntakeProps) {
   const t = await getTranslations("ticketIntake");
   const [data, message, draftEnabled] = await Promise.all([
     loadIntakeData(),
@@ -35,7 +36,7 @@ export async function TicketIntake({ locale, fromMessage, startWithMessage }: Ti
         data={{ ...data.value, draftKey }}
         message={message}
         draftEnabled={draftEnabled}
-        startWithMessage={startWithMessage === true}
+        step={step}
       />
     </FormPageShell>
   );

@@ -865,7 +865,6 @@
       "recent": "Recent customers",
       "matches": "Customers",
       "noMatches": "No customer matches.",
-      "typeToSearch": "Type a name to search.",
       "newCustomer": "New customer “{name}”",
       "looksLike": "“{name}” looks like {customer}.",
       "useCustomer": "Use {customer}",

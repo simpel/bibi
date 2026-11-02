@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { createCoreOperations } from "@bibi/core";
 import { describe, expect, it } from "vitest";
@@ -15,6 +15,16 @@ const appDirs = [
   // The full-screen welcome flow (ADR 0061) sits beside the app shell.
   join(srcDir, "app", "[locale]", "[org]"),
 ];
+
+/** A route's page, or an optional catch-all below it that also serves the bare route. */
+function servesRoute({ dir, route }: { dir: string; route: string }): boolean {
+  const base = join(dir, route);
+  if (existsSync(join(base, "page.tsx"))) return true;
+  if (!existsSync(base)) return false;
+  return readdirSync(base).some(
+    (entry) => /^\[\[\.\.\..+\]\]$/.test(entry) && existsSync(join(base, entry, "page.tsx")),
+  );
+}
 
 describe("web surfaces", () => {
   it("covers every core operation or lists it as uiExempt with a reason", () => {
@@ -41,7 +51,7 @@ describe("web surfaces", () => {
     const missing = WEB_SURFACES.filter(({ route, component }) =>
       route === "*"
         ? !component || !existsSync(join(srcDir, component))
-        : !appDirs.some((dir) => existsSync(join(dir, route, "page.tsx"))),
+        : !appDirs.some((dir) => servesRoute({ dir, route })),
     );
     expect(missing).toEqual([]);
   });

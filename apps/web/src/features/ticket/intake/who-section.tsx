@@ -4,7 +4,7 @@ import type { Dispatch } from "react";
 import type { IntakeData } from "../load-intake-data";
 import { DraftOffer } from "./draft-offer";
 import { type IntakeAction, type IntakeState, stepView } from "./intake-state";
-import { useIntakeDraft } from "./use-intake-draft";
+import type { IntakeDraft } from "./use-intake-draft";
 import type { IntakeSummaries } from "./use-intake-summaries";
 import { WhoStep } from "./who-step";
 
@@ -15,20 +15,16 @@ export type StepsProps = {
   summaries: IntakeSummaries;
 };
 
-/** Step 1 with the offer to continue a local draft. */
+/** Step 1 with the offer to continue a local draft (`useIntakeDraft`, held by the page). */
 export function WhoSection({
   data,
   state,
   dispatch,
   summaries,
   search,
-}: StepsProps & { search: string | null }) {
+  draft,
+}: StepsProps & { search: string | null; draft: IntakeDraft }) {
   const t = useTranslations("ticketIntake");
-  const draft = useIntakeDraft({
-    key: data.draftKey,
-    state,
-    onRestore: ({ state: restored }) => dispatch({ type: "restore", state: restored }),
-  });
   const change = () => dispatch({ type: "change", step: "who" });
   return (
     <StepSection

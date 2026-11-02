@@ -78,7 +78,8 @@ export type IntakeAction =
   /** Step 3 done: the lines step 4 starts with (or keeps), planned for `plannedStart`. */
   | { type: "completePackage"; lines: DraftLine[]; plannedStart: string | null }
   | { type: "patchReview"; patch: ReviewPatch }
-  | { type: "change"; step: InputStep }
+  /** Open a step: Change on a done step, or the URL's step (Back, reload). */
+  | { type: "change"; step: IntakeStep }
   | { type: "restore"; state: IntakeState }
   /** Step 0: open it, leave it to fill in by hand, or apply what was read. */
   | { type: "openMessage" }

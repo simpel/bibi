@@ -865,7 +865,6 @@
       "recent": "Senaste kunder",
       "matches": "Kunder",
       "noMatches": "Ingen kund matchar.",
-      "typeToSearch": "Skriv ett namn för att söka.",
       "newCustomer": "Ny kund ”{name}”",
       "looksLike": "”{name}” liknar {customer}.",
       "useCustomer": "Använd {customer}",

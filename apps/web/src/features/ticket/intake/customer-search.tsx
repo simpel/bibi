@@ -34,13 +34,16 @@ function Results({ heading, options, onPick }: ResultsProps) {
   );
 }
 
-/** Step 1's customer search: the latest customers while empty, server matches while typing. */
+/**
+ * Step 1's customer search: only the 5 recent customers while empty, server matches and
+ * "+ New customer" while typing.
+ */
 export function CustomerSearch({ recent, checking, onPick, onNew, ...rest }: CustomerSearchProps) {
   const t = useTranslations("ticketIntake.who");
   const [query, setQuery] = useState(rest.initialQuery ?? "");
   const { results, pending, errorKey } = useCustomerSearch({ query });
   const text = query.trim();
-  const nothing = text ? !pending && results.length === 0 : recent.length === 0;
+  const nothing = text !== "" && !pending && results.length === 0;
   return (
     <div className="grid gap-2">
       <Command shouldFilter={false} className="rounded-md border">
@@ -52,9 +55,7 @@ export function CustomerSearch({ recent, checking, onPick, onNew, ...rest }: Cus
             onPick={onPick}
           />
           {nothing ? (
-            <p className="px-3 py-2 text-sm text-muted-foreground">
-              {text ? t("noMatches") : t("typeToSearch")}
-            </p>
+            <p className="px-3 py-2 text-sm text-muted-foreground">{t("noMatches")}</p>
           ) : null}
           {text ? (
             <CommandGroup>

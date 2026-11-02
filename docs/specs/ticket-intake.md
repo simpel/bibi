@@ -4,12 +4,15 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 
 ## The page
 - `/new/ticket`, permission `ticket:write`, opened from the create hub, the ticket list and an inbox message (`?fromMessage=<id>`).
+- **The open step is in the path**: `/new/ticket` (step 1, the start), `/new/ticket/message`, `/new/ticket/when`, `/new/ticket/package`, `/new/ticket/review`. An unknown step is not found; the older `?start=message` redirects to `/new/ticket/message`.
+  - Every step change (Next, Change, a step completed by itself, Back to review) adds a history entry without reloading the page, so the browser's Back and Forward move between steps. A step the intake cannot open yet opens the first step still missing input, and the URL follows.
+  - A reload restores the state: past the start (or on an inbox message's intake, whose draft is its own) the local draft is restored without asking and opens the URL's step, or the first step still missing input (e.g. `/when` without a customer opens step 1).
 - One page with steps in order: 0 start from a message (optional), 1 who, 2 when and how many, 3 package or one-off, 4 review / build the booking.
   - Only the open step takes input.
   - A done step collapses to a one-line summary with **Change**, which reopens it and keeps later answers.
   - Values that came from a message say "from email".
 - Nothing is written until **Create**, except a customer or contact created in step 1.
-- **Local draft**: the page keeps the unfinished intake in the browser, per organization and member. On the next visit the first step offers "Continue the draft for <customer> (<date>, <guests> guests)?" with Continue and Discard. A created ticket clears it.
+- **Local draft**: the page keeps the unfinished intake in the browser, per organization and member, written on every change. On the next visit to plain `/new/ticket` the first step offers "Continue the draft for <customer> (<date>, <guests> guests)?" with Continue and Discard. A created ticket clears it.
 
 ## 0 · Start from a message
 - Shown when opened from an inbox message, or when the person chooses "Start from a message". It is hidden when the organization has no model for `ticket.intakeDraft`.
@@ -25,11 +28,12 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 - If extraction fails (`UNAVAILABLE`), the page says so and continues by hand.
 
 ## 1 · Who
-- **Customer, required.** A search (name) with the 5 most recent customers when empty (`customer.list` with `recent`).
+- **Customer, required.** A search (name) that shows only the 5 most recent customers while empty (`customer.list` with `recent`), and matches plus **+ New customer** while typing.
+- **Picking a customer** (a match, a recent one, a "looks like" suggestion or a just-created one) opens step 2 at once with its default contact. Only a customer without a contact keeps step 1 open to add one.
 - **+ New customer "<text>"**:
   - First calls `customer.findSimilar`. A match shows "“<text>” looks like <customer>" with **Use <customer>** and **No, it is a new customer**.
   - The new-customer form asks for name, customer type, contact name and contact email, all required. It runs `customer.create` with the nested contact and selects the result.
-- **Contact, required.** Defaults to the customer's only or first contact; with several, a picker.
+- **Contact, required.** Defaults to the customer's only or first contact; with several, **Change** on step 1 shows a picker.
   - A customer without a contact shows "<customer> has no contact person. Add one to continue." with name and email. It runs `contact.create`.
 - **Changing the customer after step 4 exists**: lines are kept, prices are re-derived for the new customer's price list, and the review shows "Prices updated for <customer> (<price list>). Lines with a manual price keep theirs. Total changed by <diff>", which can be dismissed.
 

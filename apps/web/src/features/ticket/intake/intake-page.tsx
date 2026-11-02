@@ -2,23 +2,15 @@
 
 import { StepSection } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useReducer } from "react";
 import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
 import type { IntakeData } from "../load-intake-data";
 import type { IntakeMessage } from "./intake-message";
-import { reduceIntake } from "./intake-reducer";
-import {
-  hasLines,
-  type InputStep,
-  type IntakeAction,
-  type IntakeState,
-  initialIntake,
-  stepView,
-} from "./intake-state";
+import { hasLines, type InputStep, type IntakeStep, stepView } from "./intake-state";
 import { MessageBanner } from "./message-banner";
 import { MessageSection } from "./message-section";
 import { PackageStep } from "./package-step";
 import { ReviewStep } from "./review-step";
+import { useIntakeFlow } from "./use-intake-flow";
 import { useIntakeSummaries } from "./use-intake-summaries";
 import { WhenStep } from "./when-step";
 import { type StepsProps, WhoSection } from "./who-section";
@@ -79,31 +71,23 @@ export type IntakePageProps = {
   message: IntakeMessage | null;
   /** Drafting from a message has a model (ADR 0084): step 0 is offered. */
   draftEnabled: boolean;
-  /** Open on step 0 without a message, to paste a request. */
-  startWithMessage?: boolean;
+  /** The step the URL names (`/new/ticket/<step>`); `who` for the bare path. */
+  step: IntakeStep;
 };
 
 /**
  * `/new/ticket`: the ticket intake on one page, from who asks to Create (ADR 0081); opened from
  * an inbox message it starts the customer search from the sender and attaches it (ADR 0085).
  */
-export function IntakePage({ data, message, draftEnabled, startWithMessage }: IntakePageProps) {
-  const [state, dispatch] = useReducer(
-    (current: IntakeState, action: IntakeAction) => reduceIntake({ state: current, action }),
-    undefined,
-    () =>
-      initialIntake({
-        ...{ intakeKey: crypto.randomUUID(), inboundMessageId: message?.id ?? null },
-        fromMessage: (message !== null || startWithMessage === true) && draftEnabled,
-      }),
-  );
+export function IntakePage({ data, message, draftEnabled, step }: IntakePageProps) {
+  const { state, dispatch, draft } = useIntakeFlow({ data, message, draftEnabled, urlStep: step });
   const summaries = useIntakeSummaries({ state });
   return (
     <div className="grid gap-3">
       {message ? <MessageBanner message={message} /> : null}
       <MessageSection {...{ state, dispatch, message }} enabled={draftEnabled} />
       <WhoSection
-        {...{ data, state, dispatch, summaries }}
+        {...{ data, state, dispatch, summaries, draft }}
         search={state.draft?.search ?? message?.search ?? null}
       />
       <LaterSections {...{ data, state, dispatch, summaries }} />

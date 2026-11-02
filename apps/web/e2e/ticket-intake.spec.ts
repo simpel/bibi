@@ -1,7 +1,14 @@
 import { expect, test } from "@playwright/test";
 import { gotoApp } from "./goto-app";
 import { CUSTOMER, ITEM, PACKAGE, setUpIntake, submitRequest } from "./intake-fixtures";
-import { createTicket, fillWhen, INTAKE_PATH, pickCustomer, pickPackage } from "./intake-steps";
+import {
+  createTicket,
+  expectStep,
+  fillWhen,
+  INTAKE_PATH,
+  pickCustomer,
+  pickPackage,
+} from "./intake-steps";
 import { signUpWithOrganization } from "./steps";
 
 // The ticket intake (ADR 0081, 0084, 0085) end to end. Data comes from REST calls in a fresh
@@ -23,6 +30,14 @@ test("flow A: a package for a seeded customer, review and Create", async ({ page
   await expect(page.getByText("Nothing is saved until Create.").first()).toBeVisible();
   await expect(page.getByRole("cell", { name: /Tasting room/ })).toBeVisible();
   await expect(page.getByRole("cell", { name: /Coffee and tea/ })).toBeVisible();
+
+  // The step is in the path and the local draft brings the same review back on reload.
+  await expectStep({ page, step: "review" });
+  await page.reload();
+  await expectStep({ page, step: "review" });
+  await expect(page.getByRole("heading", { name: "Review the booking" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: /Tasting room/ })).toBeVisible();
+  await expect(page.getByRole("cell", { name: /Coffee and tea/ })).toBeVisible();
   await createTicket({ page });
 
   await expect(page.getByText(CUSTOMER).first()).toBeVisible();
@@ -42,7 +57,8 @@ test("flow B: a one-off for a new customer that looks like an existing one", asy
   await page.getByLabel(/^Contact name/).fill("Per Lind");
   await page.getByLabel(/^Contact email/).fill("per.lind@kvarnby-design.test");
   await page.getByRole("button", { name: "Create customer" }).click();
-  await page.getByRole("button", { name: "Next: when" }).click();
+  // Created with its contact: step 2 opens at once.
+  await expectStep({ page, step: "when" });
 
   await fillWhen({ page, from: "09:00", to: "12:00", guests: 6 });
   await page.getByRole("button", { name: /^One-off/ }).click();
@@ -73,7 +89,7 @@ test("flow C: from an inbox message, read by the assistant, checked and created"
   await gotoApp({ page, path: "/inbox", locale: "en" });
   await page.getByRole("link", { name: subject }).click();
   await page.getByRole("link", { name: "New ticket from this message" }).click();
-  await expect(page).toHaveURL(/\/new\/ticket\?fromMessage=/);
+  await expect(page).toHaveURL(/\/new\/ticket\/message\?fromMessage=/);
 
   await page.getByRole("button", { name: "Read the request" }).click();
   await expect(page.getByText("What the assistant read")).toBeVisible();

@@ -21,10 +21,13 @@ export type WhoStepProps = {
 
 type ChosenProps = Pick<WhoStepProps, "who" | "contactTypes" | "onDone"> & {
   customer: CustomerOption;
+  /** Just picked: go on with the default contact (spec "1 · Who"). */
+  autoAdvance: boolean;
   onChangeCustomer: () => void;
 };
 
-function ChosenCustomer({ customer, who, contactTypes, onDone, onChangeCustomer }: ChosenProps) {
+function ChosenCustomer(props: ChosenProps) {
+  const { customer, who, contactTypes, autoAdvance, onDone, onChangeCustomer } = props;
   const t = useTranslations("ticketIntake.who");
   return (
     <div className="grid gap-4">
@@ -37,6 +40,7 @@ function ChosenCustomer({ customer, who, contactTypes, onDone, onChangeCustomer 
       <ContactChooser
         customer={customer}
         contactTypes={contactTypes}
+        autoAdvance={autoAdvance}
         initialContactId={who?.customerId === customer.id ? who.contactId : null}
         onDone={({ contact }) =>
           onDone({
@@ -53,17 +57,21 @@ function ChosenCustomer({ customer, who, contactTypes, onDone, onChangeCustomer 
   );
 }
 
-/** Step 1: the customer (search, recent, or a new one after the duplicate check) and contact. */
+/**
+ * Step 1: the customer (search, recent, or a new one after the duplicate check) and contact. A
+ * picked customer goes straight on to step 2 with its default contact.
+ */
 export function WhoStep(props: WhoStepProps) {
   const { who, recent, customerTypes, contactTypes } = props;
   const initial = who ? { id: who.customerId, name: who.customerName } : null;
-  const { customer, mode, setMode, checking, startNew, choose } = useWhoFlow({ initial });
+  const { customer, picked, mode, setMode, checking, startNew, choose } = useWhoFlow({ initial });
   const search = () => setMode({ kind: "search" });
   if (customer) {
     return (
       <ChosenCustomer
         {...props}
         customer={customer}
+        autoAdvance={picked}
         onChangeCustomer={() => choose({ customer: null })}
       />
     );

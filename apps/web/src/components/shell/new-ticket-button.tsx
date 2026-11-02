@@ -7,6 +7,7 @@ import {
 } from "@bibi/ui";
 import { ChevronDownIcon, MailIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { intakeStepPath } from "@/features/ticket/intake/intake-path";
 import { canPermission } from "@/lib/can";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
@@ -41,7 +42,7 @@ export function NewTicketButton({ access }: NewTicketButtonProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <Link href={`${ROUTES.ticketNew}?start=message`}>
+            <Link href={intakeStepPath({ step: "message" })}>
               <MailIcon />
               {t("newTicketFromMessage")}
             </Link>
