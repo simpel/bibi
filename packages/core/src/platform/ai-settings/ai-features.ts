@@ -29,6 +29,13 @@ export const AI_FEATURES = [
     // Reads a request into a draft with structured output (ADR 0084).
     requires: { tags: [], dimensions: null },
   },
+  {
+    id: "ticket.title",
+    modelType: "language",
+    requiresReindex: false,
+    // Names a new ticket in a few words with structured output: the smallest model will do.
+    requires: { tags: [], dimensions: null },
+  },
 ] as const;
 
 export type AiFeature = (typeof AI_FEATURES)[number];

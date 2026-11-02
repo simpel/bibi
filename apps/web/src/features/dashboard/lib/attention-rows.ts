@@ -4,8 +4,12 @@ import type { DashboardWireish } from "../ui/dashboard-wireish";
 export type AttentionRow = { key: string; href: string; title: string; detail: string };
 
 export type AttentionTexts = {
-  /** "#12 · Customer" for a ticket row. */
-  ticket: (row: { reference: number; customerName?: string | null }) => string;
+  /** "Title · Customer" (or "#12 · Customer" without a title) for a ticket row. */
+  ticket: (row: {
+    reference: number;
+    title: string | null;
+    customerName?: string | null;
+  }) => string;
   /** An instant as a date in the organization's zone. */
   date: (value: Date | string) => string;
   money: (minor: number) => string;

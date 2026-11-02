@@ -9,6 +9,7 @@ type Direction = Prisma.SortOrder;
 
 const ORDERS: Record<TicketListSort, (sort: Direction) => Order> = {
   reference: (sort) => ({ reference: sort }),
+  title: (sort) => ({ title: { sort, nulls: "last" } }),
   customer: (sort) => ({ customer: { name: sort } }),
   type: (sort) => ({ entityType: { name: sort } }),
   status: (sort) => ({ ticketStatus: { name: sort } }),

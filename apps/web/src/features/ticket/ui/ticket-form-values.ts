@@ -4,6 +4,8 @@ import { toLocalInputValue } from "../../occupancy/ui/local-date-time";
 
 /** Raw values of the ticket form: inputs are strings, times `datetime-local` values. */
 export type TicketFormValues = {
+  /** Empty: none (on create one is generated). */
+  title: string;
   entityTypeId: string;
   customerId: string;
   /** A contact id; required (empty until picked). */
@@ -43,6 +45,7 @@ export function ticketFormDefaults({
   const local = ({ date }: { date: Date | null | undefined }) =>
     date ? toLocalInputValue({ date, timeZone }) : "";
   return {
+    title: ticket?.title ?? "",
     entityTypeId: type?.id ?? "",
     customerId: ticket?.customerId ?? "",
     contactId: ticket?.contactId ?? "",

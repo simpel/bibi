@@ -2,17 +2,18 @@ import type { TicketDto } from "@bibi/core";
 import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
 
-export type TicketReferenceCellProps = {
+export type TicketTitleCellProps = {
   ticket: TicketDto;
-  reference: string;
+  /** The title, or the fallback label for a ticket without one. */
+  title: string;
 };
 
-/** The reference as a link to the ticket. */
-export function TicketReferenceCell({ ticket, reference }: TicketReferenceCellProps) {
+/** The title as a link to the ticket. */
+export function TicketTitleCell({ ticket, title }: TicketTitleCellProps) {
   return (
     <div className="flex items-center gap-2">
       <Link href={ticketRoute({ id: ticket.id })} className="font-medium hover:underline">
-        {reference}
+        {title}
       </Link>
     </div>
   );

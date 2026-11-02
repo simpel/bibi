@@ -22,14 +22,14 @@ const BLOCK_SELECT = {
       stateId: true,
       createdAt: true,
       ...LATEST_STATE_CHANGE,
-      ticket: { select: { reference: true, statusId: true, holdsUntil: true } },
+      ticket: { select: { reference: true, title: true, statusId: true, holdsUntil: true } },
       state: { select: { name: true, color: true, expires: true } },
     },
   },
 } satisfies Prisma.OccupancySelect;
 
 type BlockRow = Prisma.OccupancyGetPayload<{ select: typeof BLOCK_SELECT }>;
-type Visible = { program: boolean; pipeline: boolean };
+type Visible = { program: boolean; pipeline: boolean; ticket: boolean };
 type Filters = Omit<CalendarRangeInput, "from" | "to">;
 type BareBlock = Omit<CalendarBlockDto, "details">;
 
@@ -62,6 +62,7 @@ function toBlock({ row, visible }: { row: BlockRow; visible: Visible }): BareBlo
     lineId: line?.id ?? null,
     ticketId: line?.ticketId ?? null,
     reference: line?.ticket.reference ?? null,
+    ticketTitle: visible.ticket ? (line?.ticket.title ?? null) : null,
     title: line ? (visible.program ? line.name : null) : row.note,
     soft,
     allocated: row.allocationId !== null,
@@ -106,6 +107,7 @@ export async function loadBlocks({
   const visible = {
     program: canView({ context, feature: "program" }),
     pipeline: canView({ context, feature: "pipeline" }),
+    ticket: canView({ context, feature: "ticket" }),
   };
   const blocks = rows.map((row) => toBlock({ row, visible }));
   const detailsOf = await loadDetails({ context, blocks });

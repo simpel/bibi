@@ -100,6 +100,7 @@ export async function loadTicketCards({
     id: row.id,
     statusId: row.statusId,
     reference: row.reference,
+    title: row.title,
     typeName: row.entityType.name,
     customerId: row.customerId,
     startsAt: row.desiredStartsAt,

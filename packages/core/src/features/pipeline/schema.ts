@@ -21,6 +21,7 @@ export const PipelineCardSchema = z.object({
   columnId: z.string().describe("The board phase (column) the ticket shows in"),
   statusId: z.string().describe("The ticket's status id"),
   reference: z.number().int().describe("Ticket reference number"),
+  title: z.string().nullable().describe("The ticket's title; null until it has one"),
   typeName: z.string(),
   customerId: z
     .string()

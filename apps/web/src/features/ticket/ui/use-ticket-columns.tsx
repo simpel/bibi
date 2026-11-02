@@ -5,10 +5,11 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { namedOptionColumn } from "@/components/data-table/named-option-column";
 import type { NamedOption } from "@/components/form/named-option";
+import { ticketName } from "@/lib/ticket-label";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { desiredPeriod } from "./desired-period";
-import { TicketReferenceCell } from "./ticket-reference-cell";
 import { TicketStatusLabel } from "./ticket-status-label";
+import { TicketTitleCell } from "./ticket-title-cell";
 
 type Column = ColumnDef<TicketDto>;
 type Translate = ReturnType<typeof useTranslations<"ticket">>;
@@ -22,14 +23,18 @@ export type TicketLookups = {
   statuses: TicketStatusDto[];
 };
 
-const referenceColumn = ({ t }: { t: Translate }): Column => ({
-  id: "reference",
-  header: t("columns.reference"),
-  accessorFn: (ticket) => ticket.reference,
+const titleColumn = ({ t }: { t: Translate }): Column => ({
+  id: "title",
+  header: t("columns.title"),
+  // Untitled tickets sort by their reference label.
+  accessorFn: (ticket) => ticket.title ?? `#${ticket.reference}`,
   cell: ({ row: { original: ticket } }) => (
-    <TicketReferenceCell
+    <TicketTitleCell
       ticket={ticket}
-      reference={t("reference", { reference: ticket.reference })}
+      title={ticketName({
+        title: ticket.title,
+        fallback: t("reference", { reference: ticket.reference }),
+      })}
     />
   ),
 });
@@ -76,7 +81,7 @@ const namedColumns = ({ t, customers, types, hidden }: NamedInput): Column[] => 
   }),
 ];
 
-/** Reference (link), customer, type, status, desired period and quantity of a ticket. */
+/** Title (link), customer, type, status, desired period and quantity of a ticket. */
 export function useTicketColumns({
   statuses,
   customers,
@@ -89,7 +94,7 @@ export function useTicketColumns({
   const format = useDateTimeFormat();
   return useMemo<Column[]>(
     () => [
-      referenceColumn({ t }),
+      titleColumn({ t }),
       ...namedColumns({ t, customers, types, hidden: shown }),
       statusColumn({ t, statuses }),
       whenColumn({ t, format }),

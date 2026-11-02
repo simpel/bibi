@@ -5,13 +5,14 @@ import { useTranslations } from "next-intl";
 import { desiredPeriod } from "@/features/ticket/ui/desired-period";
 import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
+import { ticketName } from "@/lib/ticket-label";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { GenerativeProps } from "./generative-props";
 import { fieldLines } from "./item-facts";
 
 export type TicketCardViewProps = GenerativeProps<"ticket-card">;
 
-/** One ticket: reference (link), desired period, headcount and own fields. */
+/** One ticket: title (link), desired period, headcount and own fields. */
 export function TicketCardView({ ticket }: TicketCardViewProps) {
   const t = useTranslations("assistant.ui.ticket");
   const format = useDateTimeFormat();
@@ -22,7 +23,10 @@ export function TicketCardView({ ticket }: TicketCardViewProps) {
       <CardHeader className="flex-row items-start justify-between gap-2 p-4 pb-2">
         <CardTitle className="text-base">
           <Link href={href} className="hover:underline">
-            {t("reference", { reference: ticket.reference })}
+            {ticketName({
+              title: ticket.title,
+              fallback: t("reference", { reference: ticket.reference }),
+            })}
           </Link>
         </CardTitle>
         <Badge variant="secondary">{t("singular")}</Badge>

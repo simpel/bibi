@@ -13,8 +13,8 @@ const REFERENCE = /^#?(\d{1,9})$/;
 type SearchInput = { q: string | undefined; customers: boolean };
 
 /**
- * The search `q`: an exact reference number, or a substring of the note and, for callers who may
- * view customers, of the customer's or contact's name (ADR 0071).
+ * The search `q`: an exact reference number, or a substring of the title or note and, for
+ * callers who may view customers, of the customer's or contact's name (ADR 0071).
  */
 function searchWhere({ q, customers }: SearchInput): Prisma.TicketWhereInput {
   if (!q) return {};
@@ -24,7 +24,12 @@ function searchWhere({ q, customers }: SearchInput): Prisma.TicketWhereInput {
     ? [{ customer: { name: contains } }, { contact: { name: contains } }]
     : [];
   return {
-    OR: [...(reference ? [{ reference: Number(reference) }] : []), ...names, { note: contains }],
+    OR: [
+      ...(reference ? [{ reference: Number(reference) }] : []),
+      ...names,
+      { title: contains },
+      { note: contains },
+    ],
   };
 }
 

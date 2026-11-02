@@ -9,6 +9,8 @@ export type AgingInput = {
   now: Date;
   /** The ticket reference, or null for a caller without `ticket:read`. */
   referenceOf: (input: { reference: number }) => number | null;
+  /** The ticket title, gated like the reference. */
+  titleOf: (input: { title: string | null }) => string | null;
 };
 
 /** Whole days past the due date; 0 or less when not due (no due date counts as not due). */
@@ -16,7 +18,7 @@ export const daysOverdue = ({ dueDate, now }: { dueDate: Date | null; now: Date 
   dueDate ? Math.floor((now.getTime() - dueDate.getTime()) / DAY_MS) : 0;
 
 /** What is open today, bucketed by how late it is, with the most overdue invoices listed. */
-export function aging({ open, now, referenceOf }: AgingInput): FinanceAging {
+export function aging({ open, now, referenceOf, titleOf }: AgingInput): FinanceAging {
   const result: FinanceAging = {
     notDueMinor: 0,
     overdue1to30Minor: 0,
@@ -40,6 +42,7 @@ export function aging({ open, now, referenceOf }: AgingInput): FinanceAging {
       number: row.number,
       ticketId: row.ticketId,
       ticketReference: referenceOf({ reference: row.ticket.reference }),
+      ticketTitle: titleOf({ title: row.ticket.title }),
       dueDate: row.dueDate as Date,
       daysOverdue: days,
       openMinor: row.openMinor,

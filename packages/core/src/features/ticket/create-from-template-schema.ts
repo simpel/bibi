@@ -1,6 +1,8 @@
 import { z } from "zod";
+import { TicketTitleInputSchema } from "./title/title-schema";
 
 export const TicketCreateFromTemplateInputSchema = z.object({
+  title: TicketTitleInputSchema,
   templateId: z.string().min(1).describe("Id of the predefined ticket (ticketTemplate.list)"),
   customerId: z.string().min(1).describe("Id of the customer who asks (customer.list)"),
   contactId: z

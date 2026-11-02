@@ -68,7 +68,9 @@ export function toAssetBookings({
     if (block.type === "SETUP" || block.type === "TEARDOWN") return [];
     const buffer = buffers.get(bufferKey(block));
     const state = stateOf({ block, ...states });
-    const ticket = block.reference === null ? null : `#${block.reference}`;
+    const reference = block.reference === null ? null : `#${block.reference}`;
+    // The ticket goes by its title; an untitled one by its reference.
+    const ticket = block.ticketTitle ?? reference;
     const href = block.ticketId ? ticketHref({ ticketId: block.ticketId }) : undefined;
     const details = block.details ? bookingDetailsOf({ details: block.details, via }) : {};
     return daySegments({ ...block, timeZone }).map((segment) => ({

@@ -24,7 +24,7 @@ export async function runNested<I extends z.ZodType, O extends z.ZodType>({
   context,
 }: RunNestedInput<I, O>): Promise<Result<z.infer<O>>> {
   const op: Operation = operation;
-  if (op.external) {
+  if (op.external && !op.externalOptional) {
     // Its outside call would run before the batch commits, or never (ADR 0058).
     const message = `${op.name} calls an external service and cannot run nested`;
     return err({ error: new AppError({ code: "INTERNAL", message }) });

@@ -21,9 +21,10 @@ export function AttentionPanel({ summary, dates, numbers }: AttentionPanelProps)
     texts: {
       ticket: (row) =>
         ticketLabel({
-          ...{ reference: row.reference, customerName: row.customerName ?? null },
+          ...{ reference: row.reference, title: row.title, customerName: row.customerName ?? null },
           label: (values) => t("ticket", values),
           withCustomer: (values) => t("ticketCustomer", values),
+          titleWithCustomer: (values) => t("ticketTitleCustomer", values),
         }),
       date: (value) => dates.date({ instant: new Date(value), timeZone }),
       money: (minor) => numbers.money({ minor, currency }),

@@ -1,4 +1,4 @@
-import { type LineDto, lineAmounts, listLines, nestUnderParents, type TicketDto } from "@bibi/core";
+import { lineAmounts, listLines, type TicketDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
@@ -7,6 +7,7 @@ import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-a
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadProgramData } from "../load-program-data";
+import { nestedLines } from "../nested-lines";
 import { CreateLineButton } from "./create-line-button";
 import { ExpandBundleButton } from "./expand-bundle-button";
 import type { ProgramAccess } from "./program-row-actions";
@@ -22,10 +23,6 @@ function programAccess({ abilities }: { abilities: CallerAbilities }): ProgramAc
   const canAllocate = canWrite && can({ abilities, permission: "item:read" });
   return { canEdit: canWrite, canRemove, canChangeState: canWrite, canAllocate };
 }
-
-/** Sub-lines (parts, options, add-ons) right under their line (ADR 0059, 0088). */
-const nestedLines = ({ lines }: { lines: LineDto[] }) =>
-  nestUnderParents({ rows: lines, keys: (line) => ({ id: line.id, parentId: line.parentLineId }) });
 
 type ProgramHeaderProps = {
   title: string;

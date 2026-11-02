@@ -11,6 +11,10 @@ model Ticket {
   organizationId      String
   /// Reference number, sequential per organization (1, 2, 3, …).
   reference           Int
+  /// A short name staff know the ticket by, shown wherever the ticket is listed (owned, at most
+  /// 120 characters). Given on create or update; when a create gives none, a language model
+  /// writes one after the commit (feature `ticket.title`); null until then or when none came.
+  title               String?
   entityTypeId        String
   customerId          String
   /// A contact person at the customer. Required for new tickets and never cleared (core, ADR 0081);
@@ -69,5 +73,6 @@ model Ticket {
   @@index([organizationId, desiredStartsAt])
   @@index([organizationId, entityTypeId])
   @@index([organizationId, estimatedHeadcount])
+  @@index([organizationId, title])
   @@index([organizationId, createdAt])
 }

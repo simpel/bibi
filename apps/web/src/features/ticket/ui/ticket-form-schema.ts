@@ -26,6 +26,7 @@ export function ticketFormSchema({ type, vocabularies, timeZone }: TicketSchemaI
   return formSchema({
     schema: TicketCreateInputSchema.extend({ fields: buildFieldsSchema({ specs }) }),
     toInput: ({ values }: { values: TicketFormValues }) => ({
+      title: values.title.trim() === "" ? null : values.title,
       entityTypeId: values.entityTypeId,
       customerId: values.customerId,
       contactId: values.contactId,

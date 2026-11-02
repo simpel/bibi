@@ -26,6 +26,7 @@ async function expiringHolds({ context, horizon }: Input): Promise<ExpiringHold[
     select: {
       id: true,
       reference: true,
+      title: true,
       holdsUntil: true,
       customer: { select: { name: true } },
       lines: { where: EXPIRING_LINE, select: { id: true } },
@@ -37,6 +38,7 @@ async function expiringHolds({ context, horizon }: Input): Promise<ExpiringHold[
           {
             ticketId: ticket.id,
             reference: ticket.reference,
+            title: ticket.title,
             customerName: visibleTo({ context, feature: "customer", value: ticket.customer.name }),
             holdsUntil: ticket.holdsUntil,
             lines: ticket.lines.length,

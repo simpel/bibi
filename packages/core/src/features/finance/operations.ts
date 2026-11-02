@@ -69,7 +69,9 @@ export const financeOverview = defineOperation({
     const months = monthly({ ...period, invoiced, cash });
     const referenceOf = ({ reference }: { reference: number }) =>
       visibleTo({ context, feature: "ticket", value: reference });
-    const late = aging({ open, now, referenceOf });
+    const titleOf = ({ title }: { title: string | null }) =>
+      visibleTo({ context, feature: "ticket", value: title });
+    const late = aging({ open, now, referenceOf, titleOf });
     const overdueMinor = late.overdue1to30Minor + late.overdue31to60Minor + late.overdue61PlusMinor;
     const gate = <T>({ value }: { value: T }) => visibleTo({ context, feature: "payment", value });
     return ok({

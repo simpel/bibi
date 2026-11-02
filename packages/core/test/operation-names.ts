@@ -1,17 +1,9 @@
 import { ASSIGNMENT_NAMES, BOARD_NAMES } from "./operation-names-assignment";
 import { EXTRA_NAMES } from "./operation-names-integration";
+import { TICKET_NAMES } from "./operation-names-ticket";
 
 const NAMES = [
-  "ticket.changeStatus",
-  "ticket.create",
-  "ticket.createFromTemplate",
-  "ticket.estimateHistory",
-  "ticket.export",
-  "ticket.get",
-  "ticket.list",
-  "ticket.previewLines",
-  "ticket.statusHistory",
-  "ticket.update",
+  ...TICKET_NAMES,
   "ticketStatus.archive",
   "ticketStatus.archivePreview",
   "ticketStatus.create",

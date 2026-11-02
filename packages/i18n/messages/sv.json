@@ -269,6 +269,7 @@
     },
     "ticket": "#{reference}",
     "ticketCustomer": "#{reference} · {customer}",
+    "ticketTitleCustomer": "{title} · {customer}",
     "pipeline": {
       "title": "Öppna ärenden per ärendestatus",
       "tickets": "{count, plural, one {# ärende} other {# ärenden}}",
@@ -809,6 +810,8 @@
     "noTypes": "Det finns inga ärendetyper ännu. Skapa en typ först.",
     "goToTypes": "Gå till typer",
     "fields": {
+      "title": "Titel",
+      "titlePlaceholder": "Lämnas det tomt föreslås en titel när ärendet har skapats",
       "type": "Typ",
       "customer": "Kund",
       "contact": "Kontaktperson",
@@ -830,7 +833,7 @@
       "assignee": "Ansvarig"
     },
     "columns": {
-      "reference": "Nummer",
+      "title": "Titel",
       "customer": "Kund",
       "type": "Typ",
       "status": "Ärendestatus",
@@ -2588,7 +2591,7 @@
         "reference": "Ärende {reference}",
         "headcount": "{count, plural, one {# gäst} other {# gäster}}",
         "columns": {
-          "reference": "Nummer",
+          "title": "Titel",
           "when": "Önskade datum",
           "headcount": "Antal"
         }
@@ -3217,6 +3220,10 @@
         "ticketIntakeDraft": {
           "name": "Utkast från meddelande",
           "description": "Språkmodellen som läser en förfrågan till ett ärendeutkast med citat och gissningar."
+        },
+        "ticketTitle": {
+          "name": "Ärendetitel",
+          "description": "Den lilla språkmodellen som ger ett nytt ärende en titel med några ord."
         }
       },
       "notInCatalog": "Den valda modellen är inte längre möjlig för funktionen. Välj en ny.",
@@ -4438,5 +4445,18 @@
         "body": "Ni bestämmer själva typer, fält, listor, statusar och ansvar. Åtkomst styrs av roller som ni finjusterar per person."
       }
     }
+  },
+  "ticketSheet": {
+    "loading": "Läser in ärendet…",
+    "failed": "Ärendet kunde inte läsas in",
+    "description": "Ärendet i korthet",
+    "untitled": "Ärende {reference}",
+    "reference": "#{reference}",
+    "details": "Detaljer",
+    "assignee": "Ansvarig",
+    "customer": "Kund",
+    "contact": "Kontakt",
+    "none": "–",
+    "lines": "Rader"
   }
 }

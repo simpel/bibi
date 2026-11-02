@@ -9,6 +9,7 @@ import {
   type Result,
 } from "@bibi/core";
 import type { LinkTarget, LinkTargets } from "@/components/typed-fields/typed-form-data";
+import { ticketName } from "@/lib/ticket-label";
 import { runOperation } from "./run-operation";
 
 const LIMIT = 100;
@@ -32,7 +33,10 @@ async function targetsOf({ base, entityTypeId }: TargetsInput): Promise<LinkTarg
   if (base !== "TICKET") return [];
   const result = await runOperation({ operation: listTickets, input });
   const rows = result.ok ? result.value.items : [];
-  return rows.map(({ id, reference }) => ({ value: id, label: `#${reference}` }));
+  return rows.map(({ id, title, reference }) => ({
+    value: id,
+    label: ticketName({ title, fallback: `#${reference}` }),
+  }));
 }
 
 export type LoadLinkTargetsInput = { types: readonly EntityTypeDto[] };

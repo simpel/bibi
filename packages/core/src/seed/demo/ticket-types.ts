@@ -65,6 +65,8 @@ export type DemoTicket = {
   /** Explicit choices that differ from the responsibilities' defaults (ADR 0055). */
   choices?: readonly DemoChoice[];
   fields?: DemoFieldValues;
+  /** The ticket's title; left out: its `Purpose` field (else its type) and customer. */
+  title?: string;
   /** `holdsUntil` (ADR 0044) as an offset in days from the day of the run, at the end of that day. */
   holdsUntilDay?: number;
   /** The ticket's lines, on the ticket's day. */

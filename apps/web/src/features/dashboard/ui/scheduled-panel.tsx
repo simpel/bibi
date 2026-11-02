@@ -23,9 +23,10 @@ export function ScheduledPanel({ summary, dates }: ScheduledPanelProps) {
             key={row.ticketId}
             href={ticketRoute({ id: row.ticketId })}
             title={ticketLabel({
-              ...{ reference: row.reference, customerName: row.customerName },
+              ...{ reference: row.reference, title: row.title, customerName: row.customerName },
               label: (values) => t("ticket", values),
               withCustomer: (values) => t("ticketCustomer", values),
+              titleWithCustomer: (values) => t("ticketTitleCustomer", values),
             })}
             detail={t("scheduled.detail", {
               date: dates.dateTime({ instant: new Date(row.startsAt), timeZone }),

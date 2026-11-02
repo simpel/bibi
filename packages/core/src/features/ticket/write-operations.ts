@@ -8,6 +8,7 @@ import { mergeFields, validateFields } from "../field-definition/field-values";
 import { runTicketCreate } from "./create-ticket";
 import { recordEstimate } from "./estimate-history";
 import { TicketCreateInputSchema, TicketSchema, TicketUpdateInputSchema } from "./schema";
+import { titleAfterCreate } from "./title/generate-title";
 import { loadTicket, TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
 import { checkTicketDetails } from "./update-rules";
 
@@ -25,18 +26,21 @@ export const createTicket = defineOperation({
     "clash is refused with CONFLICT at lines.<index> naming the blocking ticket, while a soft " +
     "overlap is prebooked. `templateId` records the package the lines came from, and " +
     "`inboundMessageId` attaches the inbox message the ticket is made from. Repeating a " +
-    "call with the same `intakeKey` returns the first ticket and creates nothing.",
+    "call with the same `intakeKey` returns the first ticket and creates nothing. Without a " +
+    "`title` one is generated from the ticket after it is created (null when none could be).",
   input: TicketCreateInputSchema,
   output: TicketSchema,
   permission: "ticket:write",
   handler: async ({ input, context }) => runTicketCreate({ context, input }),
+  external: titleAfterCreate,
+  externalOptional: true,
 });
 
 export const updateTicket = defineOperation({
   name: "ticket.update",
   kind: "command",
   description:
-    "Update a ticket's customer, contact, desired period, headcount, budget, estimated value " +
+    "Update a ticket's title, customer, contact, desired period, headcount, budget, estimated value " +
     "(each change is kept: ticket.estimateHistory), " +
     "holdsUntil (when its soft holds expire), the booking note or own " +
     "fields. The contact can be changed but never cleared. Omitted properties are unchanged; " +

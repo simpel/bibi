@@ -20,6 +20,14 @@ export type TicketCoreFieldsProps = {
   };
 };
 
+/** Optional: left empty, a title is generated after a ticket is created. */
+function TitleField({ form }: { form: Form }) {
+  const t = useTranslations("ticket.fields");
+  return (
+    <TextField form={form} name="title" label={t("title")} placeholder={t("titlePlaceholder")} />
+  );
+}
+
 /** Customer and a contact person who works there (the list follows the customer). */
 function CustomerFields({ form, data }: TicketCoreFieldsProps) {
   const { customers, contacts, customersHidden: hidden } = data;
@@ -94,6 +102,7 @@ function DetailFields({ form }: { form: Form }) {
 export function TicketCoreFields(props: TicketCoreFieldsProps) {
   return (
     <>
+      <TitleField form={props.form} />
       <CustomerFields {...props} />
       <DetailFields form={props.form} />
     </>

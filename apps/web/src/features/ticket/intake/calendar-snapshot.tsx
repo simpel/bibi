@@ -2,6 +2,7 @@ import type { CalendarBlockDto } from "@bibi/core";
 import { Button, DaySnapshot } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { ticketName } from "@/lib/ticket-label";
 import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 import { CalendarDialog } from "./calendar-dialog";
 import { snapshotOf } from "./snapshot-model";
@@ -21,9 +22,10 @@ function useLabels() {
   const blockLabel = ({ block }: { block: CalendarBlockDto }) => {
     const customer = block.details?.customer ?? null;
     if (block.reference === null) return block.title ?? t("blocked");
-    return customer
+    const fallback = customer
       ? t("booking", { reference: block.reference, customer })
       : t("bookingNoCustomer", { reference: block.reference });
+    return ticketName({ title: block.ticketTitle, fallback });
   };
   return { t, hourLabel, blockLabel };
 }

@@ -31,6 +31,7 @@ export const OverdueInvoiceSchema = z.object({
   number: z.number().int(),
   ticketId: z.string().describe("ticket.get"),
   ticketReference: z.number().int().nullable().describe("null without ticket:read"),
+  ticketTitle: z.string().nullable().describe("null without ticket:read or a title"),
   dueDate: z.date(),
   daysOverdue: z.number().int(),
   openMinor: minor({ what: "Still owed" }),

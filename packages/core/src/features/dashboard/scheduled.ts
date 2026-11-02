@@ -22,6 +22,7 @@ const loadStarting = ({ context, period }: Input) =>
       ticket: {
         select: {
           reference: true,
+          title: true,
           customer: { select: { name: true } },
           ticketStatus: { select: { name: true } },
         },
@@ -43,6 +44,7 @@ export async function scheduled({ context, period }: Input): Promise<Scheduled[]
     byTicket.set(ticketId, {
       ticketId,
       reference: ticket.reference,
+      title: ticket.title,
       customerName: visibleTo({ context, feature: "customer", value: ticket.customer.name }),
       statusName: ticket.ticketStatus.name,
       startsAt,

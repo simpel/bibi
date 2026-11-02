@@ -9,7 +9,7 @@ import { useTicketViewColumns } from "./use-ticket-view-columns";
 
 export type TicketTableViewProps = GenerativeProps<"ticket-table">;
 
-/** A page of tickets; each reference links to the ticket page. */
+/** A page of tickets; each title links to the ticket page. */
 export function TicketTableView({ items, nextCursor }: TicketTableViewProps) {
   const t = useTranslations("assistant.ui.ticket");
   const columns = useTicketViewColumns();

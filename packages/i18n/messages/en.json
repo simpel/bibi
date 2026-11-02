@@ -269,6 +269,7 @@
     },
     "ticket": "#{reference}",
     "ticketCustomer": "#{reference} · {customer}",
+    "ticketTitleCustomer": "{title} · {customer}",
     "pipeline": {
       "title": "Open tickets by status",
       "tickets": "{count, plural, one {# ticket} other {# tickets}}",
@@ -809,6 +810,8 @@
     "noTypes": "There are no ticket types yet. Create a type first.",
     "goToTypes": "Go to types",
     "fields": {
+      "title": "Title",
+      "titlePlaceholder": "Left empty, one is suggested after it is created",
       "type": "Type",
       "customer": "Customer",
       "contact": "Contact person",
@@ -830,7 +833,7 @@
       "assignee": "Assigned to"
     },
     "columns": {
-      "reference": "Reference",
+      "title": "Title",
       "customer": "Customer",
       "type": "Type",
       "status": "Status",
@@ -2588,7 +2591,7 @@
         "reference": "Ticket {reference}",
         "headcount": "{count, plural, one {# guest} other {# guests}}",
         "columns": {
-          "reference": "Reference",
+          "title": "Title",
           "when": "Desired dates",
           "headcount": "Headcount"
         }
@@ -3217,6 +3220,10 @@
         "ticketIntakeDraft": {
           "name": "Draft from a message",
           "description": "The language model that reads a request into a ticket draft with quotes and guesses."
+        },
+        "ticketTitle": {
+          "name": "Ticket title",
+          "description": "The small language model that names a new ticket in a few words."
         }
       },
       "notInCatalog": "The chosen model is no longer possible for this feature. Choose a new one.",
@@ -4438,5 +4445,18 @@
         "body": "You decide the types, fields, lists, statuses and responsibilities. Access follows roles that you fine-tune per person."
       }
     }
+  },
+  "ticketSheet": {
+    "loading": "Loading ticket…",
+    "failed": "The ticket could not be loaded",
+    "description": "The ticket at a glance",
+    "untitled": "Ticket {reference}",
+    "reference": "#{reference}",
+    "details": "Details",
+    "assignee": "Assignee",
+    "customer": "Client",
+    "contact": "Contact",
+    "none": "–",
+    "lines": "Lines"
   }
 }

@@ -13,8 +13,8 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import { useAssistant } from "@/features/assistant/state/assistant-context";
+import { TicketSheet } from "@/features/ticket/sheet/ui/ticket-sheet";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
-import { CalendarBookingSheet } from "./calendar-booking-sheet";
 import { useCalendarText } from "./use-calendar-text";
 import { useLoadedBookings } from "./use-loaded-bookings";
 
@@ -88,10 +88,7 @@ export function CalendarView(props: CalendarViewProps) {
             prefill({ text: t("bookPrompt", { space: asset.name, date, time: start }) })
           }
         />
-        <CalendarBookingSheet
-          {...{ open, bookings, assets, locale }}
-          onClose={() => setOpen(null)}
-        />
+        <TicketSheet ticketId={open?.ticketId ?? null} onClose={() => setOpen(null)} />
         <CalendarFooter bookings={bookings} failed={failed} />
       </div>
     </CalendarLabelsProvider>

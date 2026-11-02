@@ -4,12 +4,15 @@ import { FieldValuesSchema } from "../field-definition/field-values-schema";
 import { LineSchema } from "../line/schema";
 import { TicketIntakeShape } from "./create-intake-schema";
 import { EstimatedValueSchema } from "./estimate-history-schema";
+import { TicketTitleInputSchema } from "./title/title-schema";
 
 export const TicketSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   /** Reference number, sequential per organization. */
   reference: z.number().int(),
+  /** A short name staff know the ticket by; null until one is given or generated. */
+  title: z.string().nullable(),
   entityTypeId: z.string(),
   customerId: z.string(),
   contactId: z.string().nullable(),
@@ -50,6 +53,7 @@ export const TicketSchema = z.object({
 const CountSchema = z.number().int().min(0).max(100_000);
 
 const TicketDetailsShape = {
+  title: TicketTitleInputSchema,
   customerId: z.string().min(1).describe("Id of the customer who asks (customer.list)"),
   contactId: z
     .string()

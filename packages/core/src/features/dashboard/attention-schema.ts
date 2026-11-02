@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const minor = ({ what }: { what: string }) => z.number().int().describe(`${what}, minor units`);
+const ticketTitle = z.string().nullable().describe("The ticket's title; null until it has one");
 const customerName = z
   .string()
   .nullable()
@@ -9,6 +10,7 @@ const customerName = z
 export const ExpiringHoldSchema = z.object({
   ticketId: z.string().describe("ticket.get"),
   reference: z.number().int(),
+  title: ticketTitle,
   customerName,
   holdsUntil: z.date().describe("When the expiring lines fall to their expiry state"),
   lines: z.number().int().describe("Active lines still in an expiring state"),
@@ -18,6 +20,7 @@ export const UnsentSheetSchema = z.object({
   sheetId: z.string().describe("sheet.get"),
   ticketId: z.string().describe("ticket.get"),
   reference: z.number().int(),
+  title: ticketTitle,
   name: z.string().describe("The sheet definition's name"),
   version: z.number().int(),
   startsAt: z.date().describe("The ticket's first line start inside the horizon"),
@@ -45,6 +48,7 @@ export const AttentionSchema = z.object({
 export const ScheduledSchema = z.object({
   ticketId: z.string().describe("ticket.get"),
   reference: z.number().int(),
+  title: ticketTitle,
   customerName,
   statusName: z.string().describe("The ticket's status"),
   startsAt: z.date().describe("The first line start inside the range"),

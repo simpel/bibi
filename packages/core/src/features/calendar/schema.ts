@@ -94,6 +94,12 @@ export const CalendarBlockSchema = z.object({
     .describe("The line the hold or buffer belongs to; null for a manual block"),
   ticketId: z.string().nullable().describe("The line's ticket; null for a manual block"),
   reference: z.number().int().nullable().describe("The ticket's reference number"),
+  ticketTitle: z
+    .string()
+    .nullable()
+    .describe(
+      "The ticket's title; null for a manual block, an untitled ticket or without ticket:read",
+    ),
   title: z
     .string()
     .nullable()

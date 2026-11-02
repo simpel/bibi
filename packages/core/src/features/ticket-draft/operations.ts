@@ -24,6 +24,8 @@ export type ExtractInput = {
   prompt: string;
   /** The shape the model must return; core parses the result with it again (ADR 0084). */
   schema: z.ZodType;
+  /** Tighter bounds for a short answer; the extractor's own defaults when left out. */
+  limits?: { maxOutputTokens: number; totalTimeoutMs: number };
 };
 
 /**

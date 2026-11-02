@@ -50,9 +50,10 @@ function ticketOf({ density, day, index, blocks }: TicketInput): DemoTicket {
   ]);
   const froms = blocks.map((block) => block.slot.from).sort();
   const tos = blocks.map((block) => block.slot.to).sort();
-  const { label: _label, ...ticket } = shape;
+  const { label, ...ticket } = shape;
   return {
     ...ticket,
+    title: label,
     ...{ ref, day, from: froms[0] ?? "09:00", to: tos.at(-1) ?? "17:00", lines },
     ...density.statusOf({ day, index }),
   };

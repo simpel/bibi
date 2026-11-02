@@ -16,7 +16,7 @@ export type OverdueRow = {
 
 export type OverdueLabels = {
   invoice: (values: { number: number }) => string;
-  ticket: (values: { reference: number | null }) => string;
+  ticket: (values: { reference: number | null; title: string | null }) => string;
 };
 
 export type OverdueRowsInput = {
@@ -43,7 +43,7 @@ export function overdueRows({
       invoiceId: row.invoiceId,
       invoiceLabel: labels.invoice({ number: row.number }),
       ticketId: row.ticketId,
-      ticketLabel: labels.ticket({ reference: row.ticketReference }),
+      ticketLabel: labels.ticket({ reference: row.ticketReference, title: row.ticketTitle }),
       dueDateText: plainDayText({ day: dueDate, timeZone, dates }),
       dueDate,
       daysOverdue: row.daysOverdue,

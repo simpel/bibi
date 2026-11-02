@@ -4,6 +4,7 @@ import { TicketSchema } from "./schema";
 
 export const TICKET_LIST_SORTS = [
   "reference",
+  "title",
   "customer",
   "type",
   "status",

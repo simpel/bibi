@@ -1,17 +1,14 @@
 import { ok, type Result } from "../../errors/result";
 import { followAssignment } from "../../features/assignment/write-operations";
-import { createTicket } from "../../features/ticket/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { addDays } from "../../time/plain-date";
-import { fromZonedParts, toZonedParts } from "../../time/zoned-time";
 import type { DemoRefs } from "./demo-refs";
 import type { DemoTimeZones } from "./demo-time-zones";
 import { missing, resolveDemoFields } from "./seed-fields";
 import { seedDemoLines } from "./seed-lines";
 import { seedTicketMoney } from "./seed-money";
 import { seedTicketChoices } from "./seed-ticket-choices";
-import { createDemoTicketFromTemplate } from "./seed-ticket-from-template";
+import { at, createOne } from "./seed-ticket-create";
 import { loadParty } from "./seed-ticket-party";
 import { moveStatus } from "./seed-ticket-status";
 import type { DemoTicket } from "./ticket-types";
@@ -27,31 +24,6 @@ export type SeedTicketsInput = {
   /** The day of the run (D in `docs/demo-seed.md`); defaults to now. */
   now?: Date;
 };
-
-type AtInput = { now: Date; day: number; time: string; timeZone: string };
-
-/** D + `day` at the local time `HH:MM` in `timeZone`. */
-function at({ now, day, time, timeZone }: AtInput): Date {
-  const [hour = 0, minute = 0] = time.split(":").map(Number);
-  const today = toZonedParts({ instant: now, timeZone }).date;
-  const date = addDays({ date: today, days: day });
-  return fromZonedParts({ date, time: { hour, minute, second: 0 }, timeZone });
-}
-
-type PeriodInput = { ticket: DemoTicket; now: Date; timeZone: string };
-
-/** The desired period on the ticket's day and, for leads with soft holds, `holdsUntil`. */
-function periodOf({ ticket, now, timeZone }: PeriodInput) {
-  const holdsUntil =
-    ticket.holdsUntilDay === undefined
-      ? {}
-      : { holdsUntil: at({ now, day: ticket.holdsUntilDay, time: "23:59", timeZone }) };
-  return {
-    desiredStartsAt: at({ now, day: ticket.day, time: ticket.from, timeZone }),
-    desiredEndsAt: at({ now, day: ticket.day, time: ticket.to, timeZone }),
-    ...holdsUntil,
-  };
-}
 
 type PeopleInput = { userIds: DemoUserIds; ticket: DemoTicket };
 
@@ -88,7 +60,6 @@ async function seedTicket({ context, refs, userIds, zones, ticket, now }: Ticket
   if (!type) return missing({ what: `ticket type ${ticket.type}` });
   const found = await loadParty({ context, customer: ticket.customer });
   if (!found.ok) return found;
-  const party = found.value;
   const people = resolvePeople({ userIds, ticket });
   if (!people.ok) return people;
   const fields = await resolveDemoFields({ context, fields: ticket.fields, type });
@@ -96,22 +67,9 @@ async function seedTicket({ context, refs, userIds, zones, ticket, now }: Ticket
   // Lines (and a template's line times) are local to the venue (ADR 0064).
   const lineAt = ({ time }: { time: string }) =>
     at({ now, day: ticket.day, time, timeZone: zones.lines });
-  const created = ticket.template
-    ? await createDemoTicketFromTemplate({
-        ...{ context, template: ticket.template, ...party },
-        ...{ startsAt: lineAt({ time: ticket.from }) },
-        ...{ headcount: ticket.headcount, assigneeId: people.value.assigneeId },
-      })
-    : await execute({
-        operation: createTicket,
-        input: {
-          ...{ entityTypeId: type.id, ...party, note: ticket.note },
-          ...periodOf({ ticket, now, timeZone: zones.ticket }),
-          ...{ estimatedHeadcount: ticket.headcount, assigneeId: people.value.assigneeId },
-          fields: fields.value,
-        },
-        context,
-      });
+  const party = { ...found.value, assigneeId: people.value.assigneeId };
+  const made = { context, ticket, typeId: type.id, party, fields: fields.value, now, zones };
+  const created = await createOne({ ...made, lineAt });
   if (!created.ok) return created;
   const ticketId = created.value.id;
   const followed = await follow({ context, ticketId, userIds: people.value.followerIds });

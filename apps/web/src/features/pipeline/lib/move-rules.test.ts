@@ -7,6 +7,7 @@ const card = ({ overrides = {} }: { overrides?: Partial<PipelineCard> } = {}): P
   columnId: "open",
   statusId: "lead",
   reference: 1,
+  title: null,
   typeName: "Conference",
   customerId: "c1",
   startsAt: null,

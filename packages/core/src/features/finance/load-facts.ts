@@ -66,7 +66,7 @@ export async function loadOpenInvoices({ context, customerId }: Db) {
       ticketId: true,
       dueDate: true,
       totalInclVatMinor: true,
-      ticket: { select: { reference: true } },
+      ticket: { select: { reference: true, title: true } },
     },
   });
   const paid = await paidForInvoices({ context, invoiceIds: invoices.map((row) => row.id) });

@@ -24,6 +24,7 @@ function loadSheets({ context, horizon }: Input) {
       ticket: {
         select: {
           reference: true,
+          title: true,
           lines: {
             where: inside,
             orderBy: { startsAt: "asc" },
@@ -52,10 +53,9 @@ export async function unsentSheets({ context, horizon }: Input): Promise<UnsentS
       const startsAt = sheet.ticket.lines[0]?.startsAt;
       if (sheet.sentAt || !startsAt) return [];
       const { id: sheetId, ticketId, version } = sheet;
-      const { reference } = sheet.ticket;
-      return [
-        { sheetId, ticketId, reference, name: sheet.sheetDefinition.name, version, startsAt },
-      ];
+      const { reference, title } = sheet.ticket;
+      const { name } = sheet.sheetDefinition;
+      return [{ sheetId, ticketId, reference, title, name, version, startsAt }];
     })
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 }

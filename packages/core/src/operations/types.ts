@@ -84,6 +84,11 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
    * transaction: a failure never undoes the commit, so it leaves its record in a failure state.
    */
   external?(args: ExternalInput<z.infer<I>, z.output<O>>): Promise<Result<z.input<O>>>;
+  /**
+   * `external` only enriches the committed record (e.g. a generated ticket title) and nothing
+   * depends on it: a nested run skips it instead of refusing the operation.
+   */
+  externalOptional?: boolean;
   /** Require human approval when an AI actor runs it. Defaults to true for commands. */
   approval?: boolean;
   /**

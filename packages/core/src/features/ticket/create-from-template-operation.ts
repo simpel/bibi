@@ -10,6 +10,7 @@ import { createWithLines } from "./create-with-lines";
 import { planTemplateLines } from "./plan/plan-template-lines";
 import { type TicketDto, TicketSchema } from "./schema";
 import { checkReadable } from "./ticket-rules";
+import { titleAfterCreate } from "./title/generate-title";
 
 type CreateInput = {
   context: OperationContext;
@@ -29,7 +30,7 @@ async function checkStartStatus({ context, template }: Omit<CreateInput, "input"
 
 /** The template's lines planned from the start, through the one path `ticket.create` uses. */
 async function create({ context, template, input }: CreateInput): Promise<Result<TicketDto>> {
-  const { startsAt, headcount, customerId, contactId, assigneeId } = input;
+  const { startsAt, headcount, customerId, contactId, assigneeId, title } = input;
   const plan = planTemplateLines({ template, startsAt });
   const statusd = await checkStartStatus({ context, template });
   if (!statusd.ok) return statusd;
@@ -40,7 +41,7 @@ async function create({ context, template, input }: CreateInput): Promise<Result
     subject: `a ticket from "${template.name}"`,
     lines: plan.lines,
     input: {
-      ...{ entityTypeId: template.entityTypeId, customerId, contactId, assigneeId },
+      ...{ entityTypeId: template.entityTypeId, customerId, contactId, assigneeId, title },
       fields: template.fields,
       estimatedHeadcount: headcount,
       ...{ desiredStartsAt: startsAt, desiredEndsAt: plan.endsAt },
@@ -58,7 +59,8 @@ export const createTicketFromTemplate = defineOperation({
     "`startsAt` with `headcount` as the estimated headcount. Its lines are created timed from " +
     "the start (a line without a quantity counts the headcount), " +
     "in the states the status grid gives for the start status. If any line's hard hold would " +
-    "collide, nothing is created and CONFLICT lists every blocking line in `issues`.",
+    "collide, nothing is created and CONFLICT lists every blocking line in `issues`. Without a " +
+    "`title` one is generated from the ticket after it is created (null when none could be).",
   input: TicketCreateFromTemplateInputSchema,
   output: TicketSchema,
   permission: "ticket:write",
@@ -73,4 +75,6 @@ export const createTicketFromTemplate = defineOperation({
     if (!template) return notFound({ entity: "Ticket template" });
     return create({ context, template, input });
   },
+  external: titleAfterCreate,
+  externalOptional: true,
 });

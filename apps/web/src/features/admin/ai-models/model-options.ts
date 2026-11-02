@@ -5,6 +5,7 @@ export const FEATURE_KEY = {
   "assistant.chat": "assistantChat",
   "search.embedding": "searchEmbedding",
   "ticket.intakeDraft": "ticketIntakeDraft",
+  "ticket.title": "ticketTitle",
 } as const satisfies Record<AiFeatureId, string>;
 
 /** One table row: a feature and the models that are possible for it (`null` = catalog failed). */

@@ -1,32 +1,49 @@
 import { Badge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import type { KeyboardEvent } from "react";
 import { RelativeTime } from "@/components/relative-time";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { BoardCard } from "../lib/kanban-model";
 
 export type PipelineCardContentProps = {
   /** `customerName` is null when the caller may not view customers: then none is shown. */
-  card: Omit<BoardCard, "title">;
+  card: BoardCard;
+  /** Opens the ticket's sheet beside the board; without it (customize mode) the title is plain. */
+  onOpen?: (input: { ticketId: string }) => void;
 };
 
-/** What a board card shows: ticket number and type, status in a grouped column, customer, start. */
-export function PipelineCardContent({ card }: PipelineCardContentProps) {
+/** Enter and space open the ticket; they must not reach the card, where they lift it. */
+const keepKeys = ({ event }: { event: KeyboardEvent }) => {
+  if (event.key === "Enter" || event.key === " ") event.stopPropagation();
+};
+
+/** What a board card shows: its title (opens the ticket), status in a grouped column, type and customer, start. */
+export function PipelineCardContent({ card, onOpen }: PipelineCardContentProps) {
   const t = useTranslations("pipeline");
   const format = useDateTimeFormat();
-  const heading = `#${card.reference} · ${card.typeName}`;
+  const about = [card.typeName, card.customerName].filter(Boolean).join(" · ");
   return (
     <div className="grid gap-0.5 text-sm">
-      <span className="flex items-center gap-1 font-medium">
-        {heading}
+      <span className="flex items-start gap-1">
+        {onOpen ? (
+          <button
+            type="button"
+            className="text-left font-medium underline-offset-4 hover:underline focus-visible:underline"
+            onClick={() => onOpen({ ticketId: card.id })}
+            onKeyDown={(event) => keepKeys({ event })}
+          >
+            {card.title}
+          </button>
+        ) : (
+          <span className="font-medium">{card.title}</span>
+        )}
         {card.statusTitle ? (
           <Badge variant="outline" className="ml-auto font-normal">
             {card.statusTitle}
           </Badge>
         ) : null}
       </span>
-      {card.customerName ? (
-        <span className="text-muted-foreground">{card.customerName}</span>
-      ) : null}
+      <span className="text-muted-foreground">{about}</span>
       <span className="text-xs text-muted-foreground">
         {card.startsAt ? format.date({ instant: card.startsAt }) : t("noDate")}
         {card.quantity === null ? "" : ` · ${t("quantity", { count: card.quantity })}`}

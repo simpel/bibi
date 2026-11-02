@@ -13,15 +13,16 @@ const unavailable = ({ message }: { message: string }) =>
 type RunInput = ExtractInput & { model: LanguageModel };
 
 /** One `generateText` with structured output; any failure is UNAVAILABLE (the error name only is logged). */
-async function run({ model, instructions, prompt, schema, feature }: RunInput) {
+async function run({ model, instructions, prompt, schema, feature, limits }: RunInput) {
+  const bounds = limits ?? EXTRACT_LIMITS;
   try {
     const result = await generateText({
       model,
       instructions,
       prompt,
       output: Output.object({ schema }),
-      maxOutputTokens: EXTRACT_LIMITS.maxOutputTokens,
-      timeout: { totalMs: EXTRACT_LIMITS.totalTimeoutMs },
+      maxOutputTokens: bounds.maxOutputTokens,
+      timeout: { totalMs: bounds.totalTimeoutMs },
     });
     return ok({ value: result.output as unknown });
   } catch (error) {

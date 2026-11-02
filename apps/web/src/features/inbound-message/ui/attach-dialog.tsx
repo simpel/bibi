@@ -27,7 +27,7 @@ import {
 
 export type AttachDialogProps = {
   messageId: string;
-  /** Recent active tickets, labelled by reference and customer. */
+  /** Recent active tickets, labelled by title (or reference) and customer. */
   tickets: readonly NamedOption[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
