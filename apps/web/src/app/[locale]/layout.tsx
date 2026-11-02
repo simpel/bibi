@@ -1,5 +1,7 @@
+import { getEnv } from "@bibi/config";
 import { resolveLocale } from "@bibi/i18n";
 import { routing } from "@bibi/i18n/routing";
+import type { Metadata } from "next";
 import { Cherry_Bomb_One, Fraunces, Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -38,13 +40,21 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({ params }: Pick<LocaleLayoutProps, "params">) {
+export async function generateMetadata({
+  params,
+}: Pick<LocaleLayoutProps, "params">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({
     locale: resolveLocale({ value: locale }),
     namespace: "common",
   });
-  return { title: t("appName") };
+  const appName = t("appName");
+  return {
+    title: appName,
+    metadataBase: new URL(getEnv().BETTER_AUTH_URL),
+    openGraph: { siteName: appName, title: appName, type: "website", locale },
+    twitter: { card: "summary_large_image", title: appName },
+  };
 }
 
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {

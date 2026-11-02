@@ -12,9 +12,14 @@ export async function generateMetadata({ params }: SiteRouteProps): Promise<Meta
   const { PUBLIC_URL } = getEnv();
   const locale = resolveLocale({ value: (await params).locale });
   const t = await getTranslations({ locale, namespace: "site" });
+  const common = await getTranslations({ locale, namespace: "common" });
+  const title = t("metaTitle");
+  const description = t("metaDescription");
   return {
-    title: t("metaTitle"),
-    description: t("metaDescription"),
+    title,
+    description,
+    openGraph: { siteName: common("appName"), title, description, type: "website", locale },
+    twitter: { card: "summary_large_image", title, description },
     ...(PUBLIC_URL
       ? { metadataBase: new URL(PUBLIC_URL), alternates: { canonical: `/${locale}` } }
       : {}),

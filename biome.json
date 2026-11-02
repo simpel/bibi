@@ -57,6 +57,7 @@
         "**/route.ts",
         "**/robots.ts",
         "**/sitemap.ts",
+        "**/manifest.ts",
         "**/*.config.ts",
         "**/*.config.mjs",
         "**/.storybook/**",

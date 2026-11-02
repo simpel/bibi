@@ -4,7 +4,7 @@ export const MAX_FILE_LINES = 150;
 
 // Default export is only allowed for Next files, config and stories.
 const DEFAULT_EXPORT_ALLOWED =
-  /(^|\/)(page|layout|route|loading|error|not-found|robots|sitemap)\.tsx?$|\.config\.tsx?$|\.stories\.tsx$|(^|\/)\.storybook\//;
+  /(^|\/)(page|layout|route|loading|error|not-found|robots|sitemap|manifest)\.tsx?$|\.config\.tsx?$|\.stories\.tsx$|(^|\/)\.storybook\//;
 // The package index, plus core's client-safe schema barrel (`@bibi/core/schemas`).
 const PACKAGE_INDEX = /^packages\/[^/]+\/src\/(index|schemas)\.tsx?$/;
 const DEFAULT_EXPORT = /^\s*export\s+default\b/m;
@@ -25,7 +25,7 @@ export function checkFile({ relPath, content }) {
   }
   if (DEFAULT_EXPORT.test(content) && !DEFAULT_EXPORT_ALLOWED.test(relPath)) {
     problems.push(
-      "default export (only allowed in page/layout/route/robots/sitemap/config/stories)",
+      "default export (only allowed in page/layout/route/robots/sitemap/manifest/config/stories)",
     );
   }
   if (isBarrel({ content }) && !PACKAGE_INDEX.test(relPath)) {
