@@ -81,7 +81,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - Granting: `pnpm --filter @bibi/auth grant-superadmin <email>`.
 
 ## Webhooks
-- `POST /api/webhooks/resend`: inbound mail, stored as `InboundEmail` on the ticket for `ticket-<id>@<domain>` (ADR 0012, `packages/mail`).
+- `POST /api/webhooks/resend`: inbound mail, stored as an EMAIL `InboundMessage` via `inboundMessage.receive`: on the ticket for `ticket-<id>@<domain>`, in the organization's inbox for its address (ADR 0012, 0085, `packages/mail`).
 - `POST /api/webhooks/stripe`: signed with `STRIPE_WEBHOOK_SECRET`; runs the SYSTEM-only `payment.applySignal` and `paymentAccount.applySignal` (ADR 0028).
 
 ## Commands and environment

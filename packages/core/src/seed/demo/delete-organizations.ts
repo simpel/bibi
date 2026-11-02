@@ -10,6 +10,9 @@ type ScopeInput = { db: Db; where: { organizationId: { in: string[] } } };
  */
 const ticketChildren = ({ db, where }: ScopeInput) => [
   db.inboundEmail.deleteMany({ where }),
+  // Messages point at their endpoint and ticket; endpoints at a type and a package (ADR 0085).
+  db.inboundMessage.deleteMany({ where }),
+  db.inboundEndpoint.deleteMany({ where }),
   // SIE exports point at invoices, payments and refunds (ADR 0077); refunds at their payment.
   db.accountingExportEntry.deleteMany({ where }),
   db.accountingExport.deleteMany({ where }),

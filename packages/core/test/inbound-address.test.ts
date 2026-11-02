@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { ticketIdFromAddress, ticketInboundAddress, ticketReplyAddress } from "../src/index";
+import {
+  ticketIdFromAddress,
+  ticketInboundAddress,
+  ticketReplyAddress,
+} from "../src/features/inbound-email/address";
 
 const domain = "in.bibi.test";
 

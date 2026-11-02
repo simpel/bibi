@@ -12,7 +12,7 @@ import { dashboardOperations } from "./features/dashboard/operations";
 import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
 import { fileOperations } from "./features/file/operations";
-import { inboundEmailOperations } from "./features/inbound-email/operations";
+import { inboundMessageOperations } from "./features/inbound-message/operations";
 import { itemOperations } from "./features/item/operations";
 import { itemDemandOperations } from "./features/item-demand/operations";
 import { itemStateOperations } from "./features/item-state/operations";
@@ -112,7 +112,7 @@ function staticOperations(): AnyOperation[] {
     ...sheetOperations,
     ...pipelineGroupOperations,
     ...quoteOperations,
-    ...inboundEmailOperations,
+    ...inboundMessageOperations,
     ...moneyOperations,
     ...conversationOperations,
     ...messageOperations,

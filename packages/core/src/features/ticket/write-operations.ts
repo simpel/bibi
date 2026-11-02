@@ -23,7 +23,8 @@ export const createTicket = defineOperation({
     "`assigneeId` (a member) becomes the main assignee. `fields` must match the type's own " +
     "fields. `lines` carry their chosen options and needs; a line whose hard start state would " +
     "clash is refused with CONFLICT at lines.<index> naming the blocking ticket, while a soft " +
-    "overlap is prebooked. `templateId` records the package the lines came from. Repeating a " +
+    "overlap is prebooked. `templateId` records the package the lines came from, and " +
+    "`inboundMessageId` attaches the inbox message the ticket is made from. Repeating a " +
     "call with the same `intakeKey` returns the first ticket and creates nothing.",
   input: TicketCreateInputSchema,
   output: TicketSchema,

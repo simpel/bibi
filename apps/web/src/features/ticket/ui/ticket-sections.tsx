@@ -1,6 +1,6 @@
 import type { Permission, TicketDto, TicketStatusDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { TicketInbox } from "@/features/inbound-email/ui/ticket-inbox";
+import { TicketMessages } from "@/features/inbound-message/ui/ticket-messages";
 import { ProgramSection } from "@/features/line/ui/program-section";
 import { TicketPayments } from "@/features/payment/ui/ticket-payments";
 import { TicketQuotes } from "@/features/quote/ui/ticket-quotes";
@@ -46,7 +46,7 @@ export function TicketSections({ locale, ticket, statuses, abilities }: TicketSe
       {allowed({ permission: "sheet:read" }) ? (
         <SheetSection locale={locale} ticket={ticket} />
       ) : null}
-      <TicketInbox locale={locale} ticketId={ticket.id} address={ticket.inboundAddress} />
+      <TicketMessages locale={locale} ticketId={ticket.id} address={ticket.inboundAddress} />
     </>
   );
 }

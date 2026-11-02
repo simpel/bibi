@@ -1,8 +1,8 @@
-import { deliverInboundEmail, ticketInboundAddress } from "@bibi/core";
 import type { Json } from "./helpers";
 import { byId, type ParityEntity, tool } from "./parity-entities";
 import { allocationEntities } from "./parity-entities-allocation";
 import { assignment } from "./parity-entities-assignment";
+import { inboundEntities } from "./parity-entities-inbound";
 import { requirement } from "./parity-entities-requirement";
 
 /**
@@ -102,44 +102,8 @@ const ticketTemplate = (): ParityEntity => ({
   },
 });
 
-const domain = "in.parity.test";
-
-/**
- * A received mail (ADR 0012). There is no user command that creates one: the inbound webhook
- * stores it as SYSTEM, so the parity test delivers it the same way to the ticket made above.
- */
-const inboundEmail = (): ParityEntity => ({
-  ...byId({
-    name: "inboundEmail",
-    field: "inboundEmail",
-    list: "inbound-emails",
-    createTool: "",
-    args: {},
-  }),
-  create: async ({ made }) => {
-    const address = ticketInboundAddress({ ticketId: made.ticket.id, domain });
-    const delivered = await deliverInboundEmail({
-      domain,
-      mail: {
-        providerEmailId: `email_${made.ticket.id}`,
-        messageId: null,
-        fromAddress: "Guest <guest@example.test>",
-        toAddresses: [address],
-        subject: "Re: parity",
-        text: "Hej",
-        html: null,
-        attachments: [{ id: "att_1", filename: "a.pdf", contentType: null, size: 1 }],
-        receivedAt: new Date("2026-11-01T08:00:00.000Z"),
-        recipients: [address],
-      },
-    });
-    if (!delivered.ok || delivered.value.status === "unmatched") throw new Error("Not stored");
-    return JSON.parse(JSON.stringify(delivered.value.inboundEmail)) as Json;
-  },
-});
-
 /** Tickets and what hangs off them; a function so the parity-entities import cycle resolves. */
 export function ticketEntities(): ParityEntity[] {
-  const sales = [inboundEmail(), assignment()];
+  const sales = [...inboundEntities(), assignment()];
   return [ticket(), ticketTemplate(), line(), ...allocationEntities(), requirement(), ...sales];
 }

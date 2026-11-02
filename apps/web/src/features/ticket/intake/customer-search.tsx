@@ -10,6 +10,8 @@ export type CustomerSearchProps = {
   recent: CustomerOption[];
   /** True while the duplicate check for a new customer runs. */
   checking: boolean;
+  /** The search text it starts with. */
+  initialQuery?: string;
   onPick: (input: { customer: CustomerOption }) => void;
   onNew: (input: { name: string }) => void;
 };
@@ -33,9 +35,9 @@ function Results({ heading, options, onPick }: ResultsProps) {
 }
 
 /** Step 1's customer search: the latest customers while empty, server matches while typing. */
-export function CustomerSearch({ recent, checking, onPick, onNew }: CustomerSearchProps) {
+export function CustomerSearch({ recent, checking, onPick, onNew, ...rest }: CustomerSearchProps) {
   const t = useTranslations("ticketIntake.who");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(rest.initialQuery ?? "");
   const { results, pending, errorKey } = useCustomerSearch({ query });
   const text = query.trim();
   const nothing = text ? !pending && results.length === 0 : recent.length === 0;

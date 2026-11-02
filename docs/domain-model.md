@@ -64,7 +64,9 @@ erDiagram
   User ||--o{ Assignment : "answers for"
   User ||--o{ AssignmentFollower : "follows"
   Customer ||--o{ Item : "owns bundles"
-  Ticket ||--o{ InboundEmail : "receives replies as"
+  Ticket ||--o{ InboundEmail : "receives replies as (legacy)"
+  Ticket |o--o{ InboundMessage : "is created from or receives"
+  InboundEndpoint ||--o{ InboundMessage : "receives"
   Ticket ||--o{ Payment : "is paid with"
   EntityType ||--o{ FieldDefinition : "has"
   EntityType ||--o{ Item : "classifies"
@@ -449,7 +451,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` has → TicketStatusChange (its status history)
 - `1:N` has → TicketEstimate (its value estimates)
 - `1:N` has → Quote, Line, Requirement, Sheet, Payment, Deposit, Invoice
-- `1:N` InboundEmail is a reply on this
+- `1:N` InboundEmail is a reply on this (legacy)
+- `1:N` InboundMessage is attached to this (set once)
 - `1:N` is answered for by → Assignment
 - `N:1` follows → CancellationTerms
 - `0..1:N` Communication & log concerns this
@@ -1329,24 +1332,51 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` User is responsible for this
 - `N:1` Line requires this
 
-### InboundEmail (`InboundEmail`)
+### InboundMessage (`InboundMessage`)
 
-*MVP* · A mail received on a ticket's own inbound address, `ticket-<ticketId>@<MAIL_INBOUND_DOMAIN>` (a customer reply, [ADR 0012](decisions/0012-email-provider.md)). Append-only. Stored only by the inbound webhook, as SYSTEM, in the ticket's organization.
-
-> **Target ([ADR 0085](decisions/0085-inbound-messages-from-any-channel.md), replaces ADR 0083):** `InboundEmail` becomes the `EMAIL` channel of **`InboundMessage`** (owned, append-only: `channel` EMAIL / WEB_FORM / SMS / API, `endpointId`, sender name/email/phone, subject, text, `formFields`, attachment metadata, `externalId` unique per organization and channel, `receivedAt`, `ticketId` set once, `dismissedAt`/`dismissedBy`, channel-validated `details`). **`InboundEndpoint`** (organization configuration: channel, address or token, name, active, optional default ticket type or package) says where messages come in; every organization gets an EMAIL endpoint `<slug>@<MAIL_INBOUND_DOMAIN>`. Channel adapters at the edge call one SYSTEM-only `inboundMessage.receive`; `inboundMessage.submit` (`inbox:submit`) is the truthful `API` channel for outside systems; `inboundMessage.list|get|attachToTicket|dismiss|restore` under feature `inbox`. Rows move by expand/contract (backfill, `inboundEmail.*` as aliases, then dropped). [ADR 0084](decisions/0084-ticket-draft-from-a-message.md): `ticketDraft.fromMessage` reads a draft from any message or pasted text and writes nothing.
+*MVP* · A message that arrived through a channel ([ADR 0085](decisions/0085-inbound-messages-from-any-channel.md), replaces ADR 0083): a mail to the organization's address or a ticket's address, or an API submission. WEB_FORM and SMS are designed, not built. Content columns are append-only by rule; only `ticketId` and the dismissal change. Stored only through the SYSTEM-only `inboundMessage.receive` (idempotent per channel and `externalId`) or `inboundMessage.submit`.
 
 **Attributes**
-- provider email id (unique per organization: a redelivered webhook is stored once)
-- Message-ID
-- sender, recipients
-- subject, text body, HTML body (stored, never rendered in the web app)
-- attachments as metadata (id, file name, content type, size); the bytes stay at the provider
+- channel (`InboundChannel`: EMAIL, WEB_FORM, SMS, API)
+- endpoint (null for a reply on a ticket's own address and for backfilled mail)
+- sender name, email and phone (all optional)
+- subject, text (required, empty when a mail had only HTML)
+- form fields (JSON, for a form or API submission)
+- attachment metadata (the bytes stay at the provider)
+- external id (unique per organization and channel: a redelivery is stored once)
 - received at
+- channel details (JSON; EMAIL: Message-ID, from, to, HTML body, stored and never rendered in the web app)
+- dismissed at, dismissed by
+
+**Relations**
+- `N:1` arrived through → InboundEndpoint
+- `N:0..1` is attached to → Ticket (set once; a message with no ticket is in the inbox)
+
+> Operations: `inboundMessage.list` (`inbox:read`; by ticket, which also needs `ticket:read`, or the inbox: no ticket and not dismissed, `dismissed: true` for dismissed; channel filter), `inboundMessage.get`, `inboundMessage.attachToTicket` (`inbox:write` + `ticket:write`, once, CONFLICT if attached), `inboundMessage.dismiss` and `restore` (`inbox:write`, CONFLICT for attached messages) and `inboundMessage.submit` (`inbox:submit`; the endpoint must be the organization's active API endpoint; stored as channel API with the caller as sender, no ticket, AI not allowed), on every surface (GraphQL also as `Ticket.inboundMessages`). `ticket.create` takes `inboundMessageId` (needs `inbox:read`) and attaches the message in the same transaction. `inboundMessage.receive` is SYSTEM only and has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received message. [ADR 0084](decisions/0084-ticket-draft-from-a-message.md): `ticketDraft.fromMessage` reads a draft from any message and writes nothing.
+
+### InboundEndpoint (`InboundEndpoint`)
+
+*MVP* · Where messages come in: organization configuration ([ADR 0085](decisions/0085-inbound-messages-from-any-channel.md)). Every organization gets an EMAIL and an API endpoint at provisioning (`inboundEndpoint.provision`, SYSTEM only). Organization slugs starting with `ticket-` are reserved.
+
+**Attributes**
+- channel (`InboundChannel`)
+- address (EMAIL: the local part only, the full address `<local>@MAIL_INBOUND_DOMAIN` is derived in code; null for the API endpoint; unique per channel across organizations)
+- name
+- active
+- default ticket type, default package (optional)
+- status (soft delete)
+
+**Relations**
+- `1:N` receives → InboundMessage
+
+> Operations: `inboundEndpoint.list` (`configuration:read`), on every surface. The mail adapter (`deliverInboundEmail`) routes `ticket-<id>@<domain>` to that ticket first, else an organization EMAIL endpoint address to that organization's inbox with no ticket; any other address is dropped (`mail.unmatched`).
+
+### InboundEmail (`InboundEmail`) — legacy
+
+*MVP, legacy* · The pre-ADR 0085 store of a mail received on a ticket's own address, `ticket-<ticketId>@<MAIL_INBOUND_DOMAIN>` ([ADR 0012](decisions/0012-email-provider.md)). Kept only for the expand phase and dropped in the contract release: a mail stored on a ticket is also written here with the same id as its `InboundMessage`, and the migration backfilled every old row into `InboundMessage`. `inboundEmail.list|get` are deprecated aliases that read EMAIL messages on a ticket (permission `ticket:read`). New code uses `InboundMessage`.
 
 **Relations**
 - `N:1` is a reply on → Ticket
-
-> Operations: `inboundEmail.list` (per ticket, newest first) and `inboundEmail.get`, permission `ticket:read`, on every surface (GraphQL also as `Ticket.inboundEmails`). `inboundEmail.receive` is SYSTEM only and deliberately has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received mail.
 
 ### PaymentAccount (`PaymentAccount`)
 

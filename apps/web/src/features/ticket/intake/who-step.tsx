@@ -14,6 +14,8 @@ export type WhoStepProps = {
   recent: CustomerOption[];
   customerTypes: NamedOption[];
   contactTypes: NamedOption[];
+  /** What the customer search starts with (from an inbox message's sender), or null. */
+  search?: string | null;
   onDone: (input: { who: IntakeWho }) => void;
 };
 
@@ -79,5 +81,11 @@ export function WhoStep(props: WhoStepProps) {
       />
     );
   }
-  return <CustomerSearch recent={recent} checking={checking} onPick={choose} onNew={startNew} />;
+  return (
+    <CustomerSearch
+      {...{ recent, checking, initialQuery: props.search ?? "" }}
+      onPick={choose}
+      onNew={startNew}
+    />
+  );
 }

@@ -9,7 +9,13 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "customer.findSimilar", route: "/new/ticket" },
   { operation: "ticket.get", route: "/tickets/[id]" },
   { operation: "ticket.update", route: "/tickets/[id]" },
-  { operation: "inboundEmail.list", route: "/tickets/[id]" },
+  // Inbound messages of every channel (ADR 0085): the inbox, one message, and a ticket's messages.
+  { operation: "inboundMessage.list", route: "/inbox" },
+  { operation: "inboundMessage.get", route: "/inbox/[id]" },
+  { operation: "inboundMessage.attachToTicket", route: "/inbox/[id]" },
+  { operation: "inboundMessage.dismiss", route: "/inbox" },
+  { operation: "inboundMessage.restore", route: "/inbox" },
+  { operation: "inboundEndpoint.list", route: "/inbox" },
   // The status history and the facts that contradict the status (ADR 0054).
   { operation: "ticket.statusHistory", route: "/tickets/[id]" },
   { operation: "ticket.estimateHistory", route: "/tickets/[id]" },

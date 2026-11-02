@@ -1,0 +1,77 @@
+/// The channel a message came in on (ADR 0085): a closed list, a new channel is a code change.
+enum InboundChannel {
+  EMAIL
+  WEB_FORM
+  SMS
+  API
+}
+
+/// Inbound endpoint (ADR 0085 decision 2) – where an organization's messages come in: its inbox
+/// mail address, a web form's token, an SMS number or the API. Organization data
+/// (`configuration:write`). Every column is owned. `address` is the channel's address:
+/// for EMAIL the local part only (`<slug>`); the full address is derived in code with
+/// `MAIL_INBOUND_DOMAIN`, which the database cannot know. Null for the API endpoint, which any
+/// caller with `inbox:submit` may use. Unique per channel across organizations, because routing
+/// resolves the organization from it. `status` is the soft-delete flag (ADR 0006).
+model InboundEndpoint {
+  id                  String           @id @default(cuid(2))
+  organizationId      String
+  channel             InboundChannel
+  address             String?
+  name                String
+  active              Boolean          @default(true)
+  /// Optional defaults for a ticket made from its messages (owned).
+  defaultEntityTypeId String?
+  defaultTemplateId   String?
+  status              RecordStatus     @default(ACTIVE)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  createdBy           String?
+  defaultEntityType   EntityType?      @relation(fields: [defaultEntityTypeId, organizationId], references: [id, organizationId])
+  defaultTemplate     TicketTemplate?  @relation(fields: [defaultTemplateId, organizationId], references: [id, organizationId])
+  messages            InboundMessage[]
+
+  @@unique([id, organizationId])
+  @@unique([channel, address])
+  @@index([organizationId, channel])
+}
+
+/// Inbound message (ADR 0085) – anything that came in on any channel. Written only by a channel
+/// adapter through `inboundMessage.receive` (SYSTEM) or by an outside caller through
+/// `inboundMessage.submit` (channel `API`). The content columns are owned and append-only: never
+/// updated. Only what staff did changes: `ticketId` (owned, set once by `attachToTicket` or
+/// `ticket.create`) and `dismissedAt`/`dismissedBy` (owned, `dismiss`/`restore`).
+/// `endpointId` is null for a reply on a ticket's own address (a reply route, not an endpoint) and
+/// for mail backfilled from `InboundEmail`. `externalId` is the provider's id, unique per
+/// organization and channel so a redelivery is stored once. `formFields` holds values a channel
+/// delivers as structure; `details` the channel's extras, validated by its schema and read only by
+/// that channel's code. `attachments` is metadata only.
+model InboundMessage {
+  id             String           @id @default(cuid(2))
+  organizationId String
+  channel        InboundChannel
+  endpointId     String?
+  fromName       String?
+  fromEmail      String?
+  fromPhone      String?
+  subject        String?
+  text           String
+  formFields     Json?
+  attachments    Json             @default("[]")
+  externalId     String
+  receivedAt     DateTime
+  ticketId       String?
+  details        Json             @default("{}")
+  dismissedAt    DateTime?
+  dismissedBy    String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  createdBy      String?
+  endpoint       InboundEndpoint? @relation(fields: [endpointId, organizationId], references: [id, organizationId])
+  ticket         Ticket?          @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([organizationId, channel, externalId])
+  @@index([organizationId, ticketId, receivedAt])
+  @@index([organizationId, dismissedAt, receivedAt])
+}

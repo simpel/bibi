@@ -5,6 +5,7 @@ import { ASSIGNMENT_UI_ENTRIES } from "./assignment-entries";
 import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import { CUSTOMER_UI_ENTRIES } from "./customer-entries";
 import { INBOUND_EMAIL_UI_ENTRIES } from "./inbound-email-entries";
+import { INBOUND_MESSAGE_UI_ENTRIES } from "./inbound-message-entries";
 import { ITEM_RESOLUTION_UI_ENTRIES } from "./item-resolution-entries";
 import { ITEM_STATE_UI_ENTRIES } from "./item-state-entries";
 import { LINE_UI_ENTRIES } from "./line-entries";
@@ -84,6 +85,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...PIPELINE_SETUP_UI_ENTRIES,
   ...QUOTE_UI_ENTRIES,
   ...INBOUND_EMAIL_UI_ENTRIES,
+  ...INBOUND_MESSAGE_UI_ENTRIES,
   ...PAYMENT_ACCOUNT_UI_ENTRIES,
   ...PAYMENT_UI_ENTRIES,
   ...RECEIVABLE_UI_ENTRIES,

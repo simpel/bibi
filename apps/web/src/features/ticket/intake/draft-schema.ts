@@ -69,5 +69,6 @@ export const DraftSchema = z.object({
       .nullable(),
     review: ReviewSchema.nullable(),
     intakeKey: Id,
+    inboundMessageId: Id.nullable().optional(),
   }),
 });

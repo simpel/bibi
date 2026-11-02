@@ -13,8 +13,8 @@ const READY = ok({ value: true as const });
 
 /**
  * The permissions of the parts `ticket.create` was given, beyond `ticket:write` (ADR 0081
- * decision 9): `template:read` for a template, `program:write` for lines and their needs, and
- * `item:read` for a line's item or options. Checked before any lookup, so ids cannot be probed.
+ * decision 9): `template:read` for a template, `inbox:read` for the message it is made from (ADR
+ * 0085), `program:write` for lines and their needs, and `item:read` for a line's item or options. Checked before any lookup, so ids cannot be probed.
  */
 export function checkIntakeAccess({ context, input }: AccessInput): Result<true> {
   const need = ({ permission, path }: { permission: Permission; path: string }) =>
@@ -22,6 +22,7 @@ export function checkIntakeAccess({ context, input }: AccessInput): Result<true>
   const lines = input.lines ?? [];
   const checks = [
     input.templateId ? need({ permission: "template:read", path: "templateId" }) : READY,
+    input.inboundMessageId ? need({ permission: "inbox:read", path: "inboundMessageId" }) : READY,
     lines.length > 0 ? need({ permission: "program:write", path: "lines" }) : READY,
     ...lines.flatMap((line, index) => [
       line.itemId ? need({ permission: "item:read", path: `lines.${index}.itemId` }) : READY,

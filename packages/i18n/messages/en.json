@@ -471,6 +471,7 @@
     "calendar": "Calendar",
     "financials": "Financials",
     "tickets": "Tickets",
+    "inbox": "Inbox",
     "skills": "Skills",
     "settings": "Settings",
     "openMenu": "Open menu",
@@ -853,6 +854,7 @@
   "ticketIntake": {
     "title": "New ticket",
     "description": "Who asks, when and how many, then a package or a one-off. Nothing is saved until Create.",
+    "fromMessage": "From {sender}'s message",
     "change": "Change",
     "who": {
       "title": "Who",
@@ -2079,6 +2081,7 @@
         "budgetMinor": "Budget (minor units)",
         "estimatedValueMinor": "Estimated value (minor units)",
         "ticketId": "Ticket (id)",
+        "inboundMessageId": "Inbox message",
         "statusId": "Status (id)",
         "reason": "Reason",
         "color": "Color",
@@ -2215,6 +2218,7 @@
         "line_create": "Add line",
         "line_update": "Update line",
         "line_archive": "Remove line",
+        "inboundMessage_attachToTicket": "Attach message to ticket",
         "line_changeState": "Change line state",
         "line_expandBundle": "Add bundle with its parts",
         "line_chooseOptions": "Choose line options",
@@ -2255,7 +2259,9 @@
         "boardPhase_reorder": "Reorder board columns",
         "boardPhase_moveStatus": "Move status between board columns",
         "accountingSettings_update": "Change accounting settings",
-        "accountingExport_create": "Create SIE export"
+        "accountingExport_create": "Create SIE export",
+        "inboundMessage_dismiss": "Dismiss message",
+        "inboundMessage_restore": "Restore message"
       },
       "setup": {
         "title": "Create my first version",
@@ -3195,6 +3201,46 @@
     "htmlOnly": "This email has only an HTML version, which is not shown.",
     "unnamedAttachment": "Unnamed attachment"
   },
+  "inbox": {
+    "title": "Inbox",
+    "description": "Requests that came in by email, form or API and have no ticket yet.",
+    "address": "Forward your booking mail to <code>{address}</code> and it shows up here.",
+    "noAddress": "No inbox address is configured yet, so mail cannot reach the inbox.",
+    "views": "Inbox views",
+    "open": "Open",
+    "dismissedView": "Dismissed",
+    "empty": "No messages.",
+    "columns": {
+      "subject": "Subject",
+      "sender": "From",
+      "channel": "Channel",
+      "received": "Received"
+    },
+    "channels": {
+      "EMAIL": "Email",
+      "WEB_FORM": "Web form",
+      "SMS": "SMS",
+      "API": "API"
+    },
+    "noSubject": "(no subject)",
+    "noBody": "(no text)",
+    "unknownSender": "Unknown sender",
+    "unnamedAttachment": "Unnamed attachment",
+    "newTicket": "New ticket from this message",
+    "attachTitle": "Attach to a ticket",
+    "attachDescription": "The message is added to the ticket's messages. A message is attached once.",
+    "ticket": "Ticket",
+    "attach": "Attach",
+    "attached": "Message attached",
+    "attachedTo": "This message is attached to a ticket. Open the ticket",
+    "dismiss": "Dismiss",
+    "restore": "Restore",
+    "dismissed": "Message dismissed",
+    "restored": "Message restored",
+    "ticketTitle": "Messages",
+    "replyAddress": "Customers reply to <code>{address}</code>; their mail and other messages for the ticket show up here.",
+    "noReplyAddress": "No inbound address is configured, so replies cannot reach this ticket yet."
+  },
   "member": {
     "singular": "Member",
     "plural": "Members",
@@ -3921,10 +3967,12 @@
     "actions": {
       "read": "Read",
       "write": "Write",
-      "delete": "Delete"
+      "delete": "Delete",
+      "submit": "Submit"
     },
     "features": {
       "ticket": "Tickets",
+      "inbox": "Inbox",
       "program": "Program",
       "customer": "Customers",
       "quote": "Quotes",
@@ -3947,6 +3995,7 @@
     },
     "featureDescriptions": {
       "ticket": "Bookings with their lines (rooms, food, activities), statuses and holds.",
+      "inbox": "Requests that came in by email, form or API before there is a ticket.",
       "program": "The schedule of a booking: what happens when, and where.",
       "customer": "Companies and people who book, with their contact persons.",
       "quote": "Offers with prices that are sent to customers.",

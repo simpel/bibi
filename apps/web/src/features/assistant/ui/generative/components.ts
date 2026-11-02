@@ -20,8 +20,7 @@ import { ErrorView } from "./error-view";
 import { FieldDefinitionCardView } from "./field-definition-card-view";
 import { FieldDefinitionTableView } from "./field-definition-table-view";
 import type { GenerativeProps } from "./generative-props";
-import { InboundEmailCardView } from "./inbound-email-card-view";
-import { InboundEmailTableView } from "./inbound-email-table-view";
+import { INBOUND_COMPONENTS } from "./inbound-components";
 import { InvitationCardView } from "./invitation-card-view";
 import { InvitationTableView } from "./invitation-table-view";
 import { ItemCardView } from "./item-card-view";
@@ -110,8 +109,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   ...TICKET_COMPONENTS,
   "quote-card": QuoteCardView,
   "quote-table": QuoteTableView,
-  "inbound-email-table": InboundEmailTableView,
-  "inbound-email-card": InboundEmailCardView,
+  ...INBOUND_COMPONENTS,
   ...MONEY_COMPONENTS,
   "dashboard-summary": DashboardSummaryView,
   "entity-type-table": EntityTypeTableView,

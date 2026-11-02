@@ -4,12 +4,13 @@ import { ok, type Result } from "../../errors/result";
 import { createExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { grantAll } from "../../permissions/permission-set";
-import { bareAddress } from "./address";
+import { receiveInboundMessage } from "../inbound-message/receive-operation";
+import type { InboundMessageDto } from "../inbound-message/schema";
+import { toInboundMessageDto } from "../inbound-message/to-inbound-message-dto";
 import { clampInboundMail } from "./clamp-inbound-mail";
-import { receiveInboundEmail } from "./receive-operation";
-import { resolveInboundTicket } from "./resolve-ticket";
-import type { InboundEmailDto, InboundEmailReceiveInput } from "./schema";
-import { toInboundEmailDto } from "./to-inbound-email-dto";
+import { resolveInboundRoute } from "./resolve-route";
+import type { InboundEmailReceiveInput } from "./schema";
+import { toReceiveInput } from "./to-receive-input";
 
 export type InboundMailContent = Omit<InboundEmailReceiveInput, "ticketId"> & {
   /** Every address the mail was delivered to (to, cc, received-for); matched in order. */
@@ -18,13 +19,13 @@ export type InboundMailContent = Omit<InboundEmailReceiveInput, "ticketId"> & {
 
 export type DeliverInboundEmailInput = {
   mail: InboundMailContent;
-  /** The inbound subdomain the ticket addresses live on (`MAIL_INBOUND_DOMAIN`). */
+  /** The inbound subdomain the ticket and inbox addresses live on (`MAIL_INBOUND_DOMAIN`). */
   domain: string;
   db?: Db;
 };
 
 export type DeliverInboundEmailOutput =
-  | { status: "stored" | "duplicate"; inboundEmail: InboundEmailDto }
+  | { status: "stored" | "duplicate"; inboundMessage: InboundMessageDto }
   | { status: "unmatched" };
 
 const systemContext = ({ db, organizationId }: { db: Db; organizationId: string }) =>
@@ -37,35 +38,39 @@ const systemContext = ({ db, organizationId }: { db: Db; organizationId: string 
   });
 
 /**
- * Stores a verified received mail on the ticket its address names (ADR 0012), as SYSTEM in that
- * ticket's organization. Mail to no known ticket is logged (`mail.unmatched`) and dropped.
- * Logs `mail.received` with the sender masked; never the body.
+ * The EMAIL channel adapter's core part (ADR 0012, 0085): a verified received mail is stored as an
+ * EMAIL message as SYSTEM. A ticket's own address stores it on that ticket; an organization's inbox
+ * address stores it in that organization's inbox, with no ticket. Mail to neither is logged
+ * (`mail.unmatched`) and dropped. Logs `mail.received` with the sender masked; never the body.
  */
 export async function deliverInboundEmail({
   mail: { recipients, ...mail },
   domain,
   db = getDb(),
 }: DeliverInboundEmailInput): Promise<Result<DeliverInboundEmailOutput>> {
-  const sender = maskEmail({ email: bareAddress({ address: mail.fromAddress }) });
-  const fields = { providerEmailId: mail.providerEmailId, sender };
-  const ref = await resolveInboundTicket({ db, recipients, domain });
-  if (!ref) {
+  const input = toReceiveInput({ mail: clampInboundMail({ mail }) });
+  const fields = {
+    providerEmailId: mail.providerEmailId,
+    sender: maskEmail({ email: input.fromEmail ?? "" }),
+  };
+  const route = await resolveInboundRoute({ db, recipients, domain });
+  if (!route) {
     getLogger().warn({ event: "mail.unmatched", ...fields });
     return ok({ value: { status: "unmatched" } });
   }
-  const context = systemContext({ db, organizationId: ref.organizationId });
-  const where = { providerEmailId: mail.providerEmailId };
-  const known = await context.db.inboundEmail.findFirst({ where });
+  const context = systemContext({ db, organizationId: route.organizationId });
+  const where = { channel: "EMAIL" as const, externalId: mail.providerEmailId };
+  const known = await context.db.inboundMessage.findFirst({ where });
   const stored = known
-    ? ok({ value: toInboundEmailDto({ row: known }) })
+    ? ok({ value: toInboundMessageDto({ row: known }) })
     : await execute({
-        operation: receiveInboundEmail,
-        input: { ...clampInboundMail({ mail }), ticketId: ref.ticketId },
+        operation: receiveInboundMessage,
+        input: { ...input, endpointId: route.endpointId, ticketId: route.ticketId },
         context,
       });
   if (!stored.ok) return stored;
   const status = known ? "duplicate" : "stored";
-  const id = stored.value.id;
-  getLogger().info({ event: "mail.received", ...fields, ...ref, inboundEmailId: id, status });
-  return ok({ value: { status, inboundEmail: stored.value } });
+  const inboundMessageId = stored.value.id;
+  getLogger().info({ event: "mail.received", ...fields, ...route, inboundMessageId, status });
+  return ok({ value: { status, inboundMessage: stored.value } });
 }

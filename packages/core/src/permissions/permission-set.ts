@@ -3,6 +3,7 @@ import {
   FEATURES,
   type Feature,
   featureActions,
+  impliesRead,
   PERMISSION_ACTIONS,
   type PermissionAction,
 } from "./features";
@@ -11,21 +12,21 @@ import {
 export type PermissionSet = Partial<Record<string, readonly PermissionAction[]>>;
 
 export const PermissionSetSchema = z
-  .partialRecord(z.enum(FEATURES), z.array(z.enum(PERMISSION_ACTIONS)).max(3))
+  .partialRecord(z.enum(FEATURES), z.array(z.enum(PERMISSION_ACTIONS)).max(4))
   .describe(
-    'Actions per feature, e.g. { "ticket": ["read", "write"] }. Every action implies read.',
+    'Actions per feature, e.g. { "ticket": ["read", "write"] }. Write and delete imply read.',
   );
 
 export type NormalizePermissionsInput = { permissions: PermissionSet };
 
 /**
- * Canonical form: only actions the feature has, any action implies `read`, actions in the
+ * Canonical form: only actions the feature has, `write` and `delete` imply `read`, actions in the
  * feature's order, features in `FEATURES` order, empty features dropped.
  */
 export function normalizePermissions({ permissions }: NormalizePermissionsInput): PermissionSet {
   const entries = FEATURES.flatMap((feature) => {
     const granted = new Set(permissions[feature] ?? []);
-    if (granted.size > 0) granted.add("read");
+    if ([...granted].some((action) => impliesRead({ action }))) granted.add("read");
     const actions = featureActions({ feature }).filter((action) => granted.has(action));
     return actions.length === 0 ? [] : [[feature, actions] as const];
   });

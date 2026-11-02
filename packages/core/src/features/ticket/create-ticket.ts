@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
+import { attachMessage } from "../inbound-message/attach-message";
 import { createWithLines } from "./create-with-lines";
 import { checkIntakeAccess, checkTemplate, findIntake } from "./intake-checks";
 import { checkCreateLines } from "./intake-refs";
@@ -23,7 +24,8 @@ async function earlier({ context, input }: CreateTicketInput): Promise<Result<Ti
 /**
  * `ticket.create` (ADR 0081 decisions 9 and 11): the permissions of the parts given, then the
  * ticket an earlier call with the same `intakeKey` made (returned as is, nothing recorded), the
- * template and every id the lines reference, and the ticket with its lines in the entry status.
+ * template and every id the lines reference, and the ticket with its lines in the entry status,
+ * then the inbox message it is made from is attached to it (ADR 0085), all in one transaction.
  * A template makes the first status change `TEMPLATE`; its own lines and fields are not applied.
  */
 export async function runTicketCreate({
@@ -43,5 +45,10 @@ export async function runTicketCreate({
     if (!check.ok) return check;
   }
   const trigger = input.templateId ? "TEMPLATE" : "MANUAL";
-  return createWithLines({ context, input, lines, trigger, subject: "the ticket" });
+  const made = await createWithLines({ context, input, lines, trigger, subject: "the ticket" });
+  if (!made.ok || !input.inboundMessageId) return made;
+  const ticketId = made.value.id;
+  const id = input.inboundMessageId;
+  const attached = await attachMessage({ context, id, ticketId, path: "inboundMessageId" });
+  return attached.ok ? made : attached;
 }

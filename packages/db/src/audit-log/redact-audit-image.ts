@@ -32,6 +32,10 @@ const PERSONAL_KEYS_BY_ENTITY = new Map<string, readonly string[]>([
   ["conversation", ["title"]],
   ["message", ["metadata"]],
   ["inboundEmail", ["attachments"]],
+  [
+    "inboundMessage",
+    ["fromName", "fromEmail", "fromPhone", "formFields", "attachments", "details"],
+  ],
 ]);
 
 export type RedactAuditImageInput = { value: unknown; entityType: string | null };

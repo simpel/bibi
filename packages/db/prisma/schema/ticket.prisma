@@ -45,6 +45,7 @@ model Ticket {
   contact             Contact?             @relation(fields: [contactId, organizationId], references: [id, organizationId])
   ticketStatus        TicketStatus         @relation(fields: [statusId, organizationId], references: [id, organizationId])
   inboundEmails       InboundEmail[]
+  inboundMessages     InboundMessage[]
   payments            Payment[]
   deposits            Deposit[]
   invoices            Invoice[]

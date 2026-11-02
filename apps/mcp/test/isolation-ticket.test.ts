@@ -1,4 +1,5 @@
-import { deliverInboundEmail, ticketInboundAddress } from "@bibi/core";
+import { ticketInboundAddress } from "@bibi/core/inbound-address";
+import { deliverInboundEmail } from "@bibi/core/inbound-mail";
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 import { gqlQuery } from "./parity-graphql";
@@ -59,7 +60,7 @@ describe("cross-organization isolation for tickets", () => {
       },
     });
     if (!delivered.ok || delivered.value.status === "unmatched") throw new Error("Not stored");
-    const id = delivered.value.inboundEmail.id;
+    const id = delivered.value.inboundMessage.id;
 
     const own = await call({ client: a, name: "inboundEmail_list", args: { ticketId } });
     expect(own.data.items.map((item: { id: string }) => item.id)).toEqual([id]);

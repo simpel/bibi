@@ -1,4 +1,4 @@
-import { ticketReplyAddress } from "@bibi/core";
+import { ticketReplyAddress } from "@bibi/core/inbound-address";
 import { afterEach, describe, expect, it } from "vitest";
 import { createMemoryMailProvider, sendTicketMail, setMailProvider } from "../src/index";
 

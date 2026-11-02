@@ -42,10 +42,18 @@ export type IntakeState = {
   review: IntakeReview | null;
   /** Generated once per intake and kept in the draft: Create is idempotent (ADR 0081). */
   intakeKey: string;
+  /** The inbox message it is made from (ADR 0085), attached on Create; kept in the draft. */
+  inboundMessageId?: string | null | undefined;
 };
 
-export const initialIntake = ({ intakeKey }: { intakeKey: string }): IntakeState => ({
+export type InitialIntakeInput = { intakeKey: string; inboundMessageId?: string | null };
+
+export const initialIntake = ({
+  intakeKey,
+  inboundMessageId = null,
+}: InitialIntakeInput): IntakeState => ({
   ...{ open: "who", who: null, when: null, pick: null, review: null, intakeKey },
+  inboundMessageId,
 });
 
 /** A change to step 4; `lines` replaces the list, the rest patches the review. */

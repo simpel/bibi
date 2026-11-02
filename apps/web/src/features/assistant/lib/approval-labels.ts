@@ -1,6 +1,7 @@
 import { MONEY_FIELD_KEYS, MONEY_OPERATION_KEYS } from "./approval-money-keys";
 import { PEOPLE_FIELD_KEYS, PEOPLE_OPERATION_KEYS } from "./approval-people-keys";
 import { PIPELINE_FIELD_KEYS, PIPELINE_OPERATION_KEYS } from "./approval-pipeline-keys";
+import { SELF_OPERATION_KEYS } from "./approval-self-keys";
 
 /** Field names with a localized label in `assistant.approval.fields`. */
 export const FIELD_KEYS = [
@@ -74,6 +75,7 @@ export const FIELD_KEYS = [
   "discountPercent",
   "budgetMinor",
   "ticketId",
+  "inboundMessageId",
   "statusId",
   "reason",
   ...PEOPLE_FIELD_KEYS,
@@ -101,6 +103,9 @@ export const OPERATION_KEYS = [
   "line_create",
   "line_update",
   "line_archive",
+  "inboundMessage_attachToTicket",
+  "inboundMessage_dismiss",
+  "inboundMessage_restore",
   ...PEOPLE_OPERATION_KEYS,
   ...PIPELINE_OPERATION_KEYS,
   ...MONEY_OPERATION_KEYS,
@@ -127,13 +132,7 @@ export const OPERATION_KEYS = [
   "sheetDefinition_update",
   "sheetDefinition_archive",
   "configuration_importTemplate",
-  "skill_create",
-  "skill_update",
-  "skill_publish",
-  "skill_archive",
-  "skill_share",
-  "skill_import",
-  "conversation_archive",
+  ...SELF_OPERATION_KEYS,
 ] as const;
 export type FieldKey = (typeof FIELD_KEYS)[number];
 export type OperationKey = (typeof OPERATION_KEYS)[number];

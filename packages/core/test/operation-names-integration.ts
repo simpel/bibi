@@ -29,7 +29,7 @@ export const BOOKING_NAMES = [
 ];
 
 /** Operations the AI actor may never run (`aiAllowed: false`, #88). */
-export const AI_FORBIDDEN_NAMES = ["apiKey.create"];
+export const AI_FORBIDDEN_NAMES = ["inboundMessage.submit", "apiKey.create"];
 
 /** The caller's own preferences, profile, working hours and files (`self`, ADR 0039, 0061, 0063). */
 const SELF_NAMES = [
@@ -61,6 +61,17 @@ const MEMBER_PROFILE_NAMES = [
   "memberProfile.setItems",
 ];
 
+/** Inbound messages of every channel and the organization's endpoints (ADR 0085). */
+const INBOX_NAMES = [
+  "inboundEndpoint.list",
+  "inboundMessage.attachToTicket",
+  "inboundMessage.dismiss",
+  "inboundMessage.get",
+  "inboundMessage.list",
+  "inboundMessage.restore",
+  "inboundMessage.submit",
+];
+
 /** The audit trail and the change layer that applies approved change sets (ADR 0049). */
 const CHANGE_NAMES = ["auditLog.get", "auditLog.list", "changeSet.apply"];
 
@@ -75,4 +86,5 @@ export const EXTRA_NAMES = [
   ...SELF_NAMES,
   ...ORGANIZATION_NAMES,
   ...CHANGE_NAMES,
+  ...INBOX_NAMES,
 ];

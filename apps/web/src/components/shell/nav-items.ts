@@ -5,11 +5,13 @@ import {
   CalendarIcon,
   CalendarRangeIcon,
   ContactIcon,
+  InboxIcon,
   KanbanIcon,
   LayoutDashboardIcon,
   type LucideIcon,
   ShieldCheckIcon,
 } from "lucide-react";
+import { INBOX_ROUTE } from "@/lib/inbox-routes";
 import { ROUTES } from "@/lib/routes";
 
 export type NavLabelKey =
@@ -18,6 +20,7 @@ export type NavLabelKey =
   | "calendar"
   | "financials"
   | "tickets"
+  | "inbox"
   | "customers"
   | "items"
   | "venues"
@@ -75,6 +78,13 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       icon: CalendarIcon,
       audience: "everyone",
       permission: "ticket:read",
+    },
+    {
+      href: INBOX_ROUTE,
+      labelKey: "inbox",
+      icon: InboxIcon,
+      audience: "everyone",
+      permission: "inbox:read",
     },
   ],
   catalog: [

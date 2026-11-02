@@ -471,6 +471,7 @@
     "calendar": "Kalender",
     "financials": "Ekonomi",
     "tickets": "Ärenden",
+    "inbox": "Inkorg",
     "skills": "Färdigheter",
     "settings": "Inställningar",
     "openMenu": "Öppna meny",
@@ -853,6 +854,7 @@
   "ticketIntake": {
     "title": "Nytt ärende",
     "description": "Vem som frågar, när och hur många, sedan ett paket eller en engångsbokning. Inget sparas förrän du skapar.",
+    "fromMessage": "Från meddelandet från {sender}",
     "change": "Ändra",
     "who": {
       "title": "Vem",
@@ -2079,6 +2081,7 @@
         "budgetMinor": "Budget (ören)",
         "estimatedValueMinor": "Uppskattat värde (ören)",
         "ticketId": "Ärende (id)",
+        "inboundMessageId": "Meddelande i inkorgen",
         "statusId": "Ärendestatus (id)",
         "reason": "Anledning",
         "color": "Färg",
@@ -2215,6 +2218,7 @@
         "line_create": "Lägg till rad",
         "line_update": "Uppdatera rad",
         "line_archive": "Ta bort rad",
+        "inboundMessage_attachToTicket": "Koppla meddelande till ärende",
         "line_changeState": "Byt läge på rad",
         "line_expandBundle": "Lägg till paket med delar",
         "line_chooseOptions": "Välj tillval för rad",
@@ -2255,7 +2259,9 @@
         "boardPhase_reorder": "Ändra ordning på kolumner",
         "boardPhase_moveStatus": "Flytta ärendestatus mellan kolumner",
         "accountingSettings_update": "Ändra bokföringsinställningar",
-        "accountingExport_create": "Skapa SIE-export"
+        "accountingExport_create": "Skapa SIE-export",
+        "inboundMessage_dismiss": "Avfärda meddelande",
+        "inboundMessage_restore": "Återställ meddelande"
       },
       "setup": {
         "title": "Skapa min första version",
@@ -3195,6 +3201,46 @@
     "htmlOnly": "Det här mejlet har bara en HTML-version, som inte visas.",
     "unnamedAttachment": "Namnlös bilaga"
   },
+  "inbox": {
+    "title": "Inkorg",
+    "description": "Förfrågningar som kommit in via e-post, formulär eller API och som inte har något ärende än.",
+    "address": "Vidarebefordra er bokningsmejl till <code>{address}</code> så visas de här.",
+    "noAddress": "Ingen inkorgsadress är konfigurerad än, så e-post kan inte nå inkorgen.",
+    "views": "Vyer i inkorgen",
+    "open": "Öppna",
+    "dismissedView": "Avfärdade",
+    "empty": "Inga meddelanden.",
+    "columns": {
+      "subject": "Ämne",
+      "sender": "Från",
+      "channel": "Kanal",
+      "received": "Mottaget"
+    },
+    "channels": {
+      "EMAIL": "E-post",
+      "WEB_FORM": "Webbformulär",
+      "SMS": "Sms",
+      "API": "API"
+    },
+    "noSubject": "(inget ämne)",
+    "noBody": "(ingen text)",
+    "unknownSender": "Okänd avsändare",
+    "unnamedAttachment": "Namnlös bilaga",
+    "newTicket": "Nytt ärende från meddelandet",
+    "attachTitle": "Koppla till ett ärende",
+    "attachDescription": "Meddelandet läggs till bland ärendets meddelanden. Ett meddelande kopplas en gång.",
+    "ticket": "Ärende",
+    "attach": "Koppla",
+    "attached": "Meddelandet kopplat",
+    "attachedTo": "Meddelandet är kopplat till ett ärende. Öppna ärendet",
+    "dismiss": "Avfärda",
+    "restore": "Återställ",
+    "dismissed": "Meddelandet avfärdat",
+    "restored": "Meddelandet återställt",
+    "ticketTitle": "Meddelanden",
+    "replyAddress": "Kunder svarar till <code>{address}</code>; deras e-post och andra meddelanden för ärendet visas här.",
+    "noReplyAddress": "Ingen inkommande adress är konfigurerad, så svar kan inte nå ärendet än."
+  },
   "member": {
     "singular": "Medlem",
     "plural": "Medlemmar",
@@ -3921,10 +3967,12 @@
     "actions": {
       "read": "Läsa",
       "write": "Skriva",
-      "delete": "Ta bort"
+      "delete": "Ta bort",
+      "submit": "Skicka in"
     },
     "features": {
       "ticket": "Ärenden",
+      "inbox": "Inkorg",
       "program": "Program",
       "customer": "Kunder",
       "quote": "Offerter",
@@ -3947,6 +3995,7 @@
     },
     "featureDescriptions": {
       "ticket": "Bokningar med sina rader (rum, mat, aktiviteter), ärendestatusar och reservationer.",
+      "inbox": "Förfrågningar som kommit in via e-post, formulär eller API innan det finns ett ärende.",
       "program": "Bokningens schema: vad som händer när, och var.",
       "customer": "Företag och personer som bokar, med sina kontaktpersoner.",
       "quote": "Erbjudanden med priser som skickas till kunder.",

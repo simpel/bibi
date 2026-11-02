@@ -3,6 +3,7 @@ import {
   FEATURES,
   type Feature,
   featureActions,
+  impliesRead,
   isLocked,
   PERMISSION_ACTIONS,
   type PermissionAction,
@@ -32,6 +33,10 @@ export function isValidOverride({ feature, action }: IsValidOverrideInput): bool
   return exists && !isLocked({ feature: known, action: action as PermissionAction });
 }
 
+/** What survives a denied `read`: only actions that do not imply it (`submit`). */
+const keptWithoutRead = ({ action }: { action: PermissionAction }) =>
+  action !== "read" && !impliesRead({ action });
+
 export type ApplyOverridesInput = {
   preset: FixedRole | null;
   overrides: readonly { feature: string; action: string; effect: string }[];
@@ -39,7 +44,7 @@ export type ApplyOverridesInput = {
 
 /**
  * Effective permissions: the preset, plus `allow`, minus `deny`. Locked and unknown overrides
- * are ignored; denying `read` takes the whole feature away (every action implies read).
+ * are ignored; denying `read` takes the feature away: every action that implies read goes with it.
  */
 export function applyOverrides({ preset, overrides }: ApplyOverridesInput): PermissionSet {
   const granted = new Map<Feature, Set<PermissionAction>>();
@@ -56,7 +61,10 @@ export function applyOverrides({ preset, overrides }: ApplyOverridesInput): Perm
   const deniedView = new Set(valid.filter((o) => o.effect === "deny" && o.action === "read"));
   const entries = [...granted].map(([feature, actions]) => {
     const hidden = [...deniedView].some((override) => override.feature === feature);
-    return [feature, hidden ? [] : [...actions]] as const;
+    const kept = hidden
+      ? [...actions].filter((action) => keptWithoutRead({ action }))
+      : [...actions];
+    return [feature, kept] as const;
   });
   return normalizePermissions({ permissions: Object.fromEntries(entries) });
 }

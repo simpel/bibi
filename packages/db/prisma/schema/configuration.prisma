@@ -64,6 +64,7 @@ model EntityType {
   itemStates       ItemState[]                 @relation("ItemStateType")
   statusRules      StatusStateRule[]
   ticketTemplates  TicketTemplate[]
+  inboundEndpoints InboundEndpoint[]
   records          Record[]
   templateLines    TicketTemplateLine[]
   responsibilities ResponsibilityEntityType[]

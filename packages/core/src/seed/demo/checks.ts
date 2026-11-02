@@ -1,75 +1,22 @@
 import { listMembers } from "../../features/member/operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { checkDemoAllocations } from "./allocation-checks";
-import { checkDemoAlternatives } from "./alternative-checks";
-import { checkDemoArchive } from "./archive-checks";
-import { checkDemoAssignments } from "./assignment-checks";
-import { checkDemoBoard } from "./board-checks";
-import { checkDemoBoardLayout } from "./board-layout-checks";
-import { checkDemoBuffers } from "./buffer-checks";
-import { checkDemoBundles } from "./bundle-checks";
 import { checkDemoConfig } from "./config-checks";
 import { checkDemoCustomisations } from "./customisation-checks";
-import { checkDemoDashboard } from "./dashboard-checks";
-import { checkDemoDensity } from "./density-checks";
 import { checkDemoDomainJoin } from "./domain-join-checks";
-import { checkDemoEstimates } from "./estimate-checks";
-import { checkDemoFactGuards } from "./fact-guard-checks";
-import { checkDemoFinance } from "./finance-checks";
-import { checkDemoGrid } from "./grid-checks";
-import { checkDemoHolds } from "./hold-checks";
 import { checkDemoHours } from "./hours-checks";
-import { checkDemoIntakeCreate } from "./intake-create-checks";
 import { checkDemoMemberProfiles } from "./member-profile-checks";
-import { checkDemoOptionQuantities } from "./option-quantity-checks";
-import { checkDemoPayments } from "./payment-checks";
 import { checkDemoPermissions } from "./permission-checks";
-import { checkDemoPipeline } from "./pipeline-checks";
+import { PIPELINE_CHECKS } from "./pipeline-check-list";
 import { checkDemoPools } from "./pool-checks";
-import { checkDemoPreview } from "./preview-checks";
-import { checkDemoPrices } from "./price-checks";
-import { checkDemoQuoteEvents } from "./quote-event-checks";
 import { reconcileProjections } from "./reconcile-checks";
 import { checkDemoRecords } from "./record-checks";
 import { checkDemoResponsibilities } from "./responsibility-checks";
 import { checkDemoSetupNeed } from "./setup-need-checks";
 import { checkDemoSimilarCustomers } from "./similar-customer-checks";
-import { checkDemoTemplates } from "./template-checks";
-import { checkDemoTickets } from "./ticket-checks";
 import { checkDemoTimeZones } from "./time-zone-checks";
 import type { DemoOrg } from "./types";
 import { checkDemoUserSettings } from "./user-settings-checks";
-
-type OrgCheck = (input: { context: ExecuteContext; org: DemoOrg }) => Promise<string[]>;
-
-/** The checks that need the pipeline, in order (the archive checks run before the grid moves). */
-const PIPELINE_CHECKS: readonly OrgCheck[] = [
-  checkDemoPipeline,
-  checkDemoTemplates,
-  checkDemoTickets,
-  checkDemoBoard,
-  checkDemoBoardLayout,
-  checkDemoAssignments,
-  checkDemoHolds,
-  checkDemoAlternatives,
-  checkDemoArchive,
-  checkDemoQuoteEvents,
-  checkDemoEstimates,
-  checkDemoFactGuards,
-  checkDemoGrid,
-  checkDemoPreview,
-  checkDemoIntakeCreate,
-  checkDemoPrices,
-  checkDemoBundles,
-  checkDemoOptionQuantities,
-  checkDemoBuffers,
-  checkDemoAllocations,
-  checkDemoPayments,
-  checkDemoFinance,
-  checkDemoDensity,
-  checkDemoDashboard,
-];
 
 export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPipeline?: boolean };
 

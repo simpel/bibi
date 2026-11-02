@@ -1,14 +1,11 @@
 import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { receiveInboundEmail } from "../src/features/inbound-email/receive-operation";
-import {
-  deliverInboundEmail,
-  execute,
-  getInboundEmail,
-  listInboundEmails,
-  ticketInboundAddress,
-} from "../src/index";
+import { ticketInboundAddress } from "../src/features/inbound-email/address";
+import { deliverInboundEmail } from "../src/features/inbound-email/deliver-inbound-email";
+import { toReceiveInput } from "../src/features/inbound-email/to-receive-input";
+import { receiveInboundMessage } from "../src/features/inbound-message/receive-operation";
+import { execute, getInboundEmail, listInboundEmails } from "../src/index";
 import { errorCode, peer, unwrap } from "./helpers";
 import { inboundMail } from "./inbound-email-helpers";
 import { createTestTicket, ticketSetup } from "./ticket-helpers";
@@ -63,10 +60,13 @@ describe("deliverInboundEmail", () => {
     unwrap({ result: await deliverInboundEmail({ mail, domain }) });
     const again = unwrap({ result: await deliverInboundEmail({ mail, domain }) });
     expect(again.status).toBe("duplicate");
-    const rows = await context.db.inboundEmail.findMany({ where: { ticketId: ticket.id } });
+    const rows = await context.db.inboundMessage.findMany({ where: { ticketId: ticket.id } });
     expect(rows).toHaveLength(1);
+    // Expand phase (ADR 0085): the old table still gets the reply, with the same id.
+    const legacy = await context.db.inboundEmail.findMany({ where: { ticketId: ticket.id } });
+    expect(legacy.map((row) => row.id)).toEqual(rows.map((row) => row.id));
     const audit = await context.db.auditLog.findMany({
-      where: { operation: "inboundEmail.receive" },
+      where: { operation: "inboundMessage.receive" },
     });
     expect(audit.map((row) => row.actorType)).toEqual(["SYSTEM"]);
   });
@@ -85,7 +85,7 @@ describe("deliverInboundEmail", () => {
     unwrap({
       result: await deliverInboundEmail({ mail: inboundMail({ recipients: [address] }), domain }),
     });
-    const stored = await other.context.db.inboundEmail.findMany({});
+    const stored = await other.context.db.inboundMessage.findMany({});
     expect(stored).toEqual([]);
     const listed = await execute({
       operation: listInboundEmails,
@@ -97,14 +97,11 @@ describe("deliverInboundEmail", () => {
 });
 
 describe("inboundEmail operations", () => {
-  it("refuses inboundEmail.receive from a user", async () => {
+  it("refuses inboundMessage.receive from a user", async () => {
     const { context, ticket } = await ticketWithAddress();
     const { recipients: _recipients, ...mail } = inboundMail({ recipients: [] });
-    const result = await execute({
-      operation: receiveInboundEmail,
-      input: { ...mail, ticketId: ticket.id },
-      context,
-    });
+    const input = { ...toReceiveInput({ mail }), endpointId: null, ticketId: ticket.id };
+    const result = await execute({ operation: receiveInboundMessage, input, context });
     expect(errorCode({ result })).toBe("FORBIDDEN");
   });
 
@@ -113,7 +110,7 @@ describe("inboundEmail operations", () => {
     const mail = inboundMail({ recipients: [address] });
     const delivered = unwrap({ result: await deliverInboundEmail({ mail, domain }) });
     if (delivered.status === "unmatched") throw new Error("Expected the mail to be stored");
-    const { inboundEmail } = delivered;
+    const inboundEmail = delivered.inboundMessage;
     const got = await execute({
       operation: getInboundEmail,
       input: { id: inboundEmail.id },

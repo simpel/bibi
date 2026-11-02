@@ -6,17 +6,27 @@ import { ROUTES } from "@/lib/routes";
 import { handleLoadError } from "@/server/load-error";
 import { IntakePage } from "../intake/intake-page";
 import { loadIntakeData } from "../load-intake-data";
+import { loadIntakeMessage } from "../load-intake-message";
 
-export type TicketIntakeProps = { locale: Locale };
+export type TicketIntakeProps = {
+  locale: Locale;
+  /** `?fromMessage=<id>`: the inbox message the ticket is made from (ADR 0085). */
+  fromMessage?: string | undefined;
+};
 
-/** `/new/ticket`: the one-page ticket intake (ADR 0081). */
-export async function TicketIntake({ locale }: TicketIntakeProps) {
+/** `/new/ticket`: the one-page ticket intake (ADR 0081), optionally from an inbox message. */
+export async function TicketIntake({ locale, fromMessage }: TicketIntakeProps) {
   const t = await getTranslations("ticketIntake");
-  const data = await loadIntakeData();
+  const [data, message] = await Promise.all([
+    loadIntakeData(),
+    loadIntakeMessage({ id: fromMessage }),
+  ]);
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
+  // A message's intake keeps its own draft, so it never picks up another draft's message.
+  const draftKey = message ? `${data.value.draftKey}.message.${message.id}` : data.value.draftKey;
   return (
     <FormPageShell backHref={ROUTES.tickets} title={t("title")} description={t("description")}>
-      <IntakePage data={data.value} />
+      <IntakePage data={{ ...data.value, draftKey }} message={message} />
     </FormPageShell>
   );
 }

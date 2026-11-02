@@ -1,12 +1,12 @@
 import { getEnv } from "@bibi/config";
 import { describe, expect, it } from "vitest";
+import { ticketReplyAddress } from "../src/features/inbound-email/address";
 import {
   createTicket,
   execute,
   exportTicket,
   getTicket,
   listTickets,
-  ticketReplyAddress,
   updateTicket,
 } from "../src/index";
 import { createTestCustomer } from "./customer-helpers";

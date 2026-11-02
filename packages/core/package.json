@@ -12,7 +12,9 @@
     "./setup-presets": "./src/templates/setup-presets/setup-presets.ts",
     "./domain-join": "./src/organization/join-by-domain.ts",
     "./known-member": "./src/organization/known-member.ts",
-    "./invitation-code": "./src/features/member/invitation-code.ts"
+    "./invitation-code": "./src/features/member/invitation-code.ts",
+    "./inbound-mail": "./src/features/inbound-email/deliver-inbound-email.ts",
+    "./inbound-address": "./src/features/inbound-email/address.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -1,5 +1,6 @@
 import type { Db } from "@bibi/db";
 import { ok, type Result } from "../errors/result";
+import { provisionEndpoints } from "../features/inbound-message/provision-endpoints";
 import {
   setOrganizationSetupStatus,
   updateOrganizationProfile,
@@ -29,9 +30,9 @@ export type ProvisionOrganizationInput = {
 /**
  * The defaults every new organization starts with, created through core operations as SYSTEM
  * (audited and logged like any command): its profile with the chosen time zone (ADR 0064) and
- * the first setup `PENDING` (ADR 0061), and the default ticket statuses (ADR 0043) with their status
- * grid (ADR 0044), so tickets work immediately, and domain join with the creator's domain (ADR
- * 0078). Called by Better Auth's `afterCreateOrganization`
+ * the first setup `PENDING` (ADR 0061), domain join with the creator's domain (ADR 0078), its
+ * inbox and API endpoints (ADR 0085), and the default ticket statuses (ADR 0043) with their status
+ * grid (ADR 0044), so tickets work immediately. Called by Better Auth's `afterCreateOrganization`
  * and the demo seed.
  */
 export async function provisionOrganization({
@@ -59,6 +60,8 @@ export async function provisionOrganization({
     const claimed = await claimCreatorDomain({ organizationId, creator, ...(db ? { db } : {}) });
     if (!claimed.ok) return claimed;
   }
+  const endpoints = await provisionEndpoints({ context, ...(db ? { db } : {}) });
+  if (!endpoints.ok) return endpoints;
   if (pipeline === "none") return ok({ value: true });
   const input = { template: "default" } as const;
   const statuses = await execute({ operation: importTicketStatusTemplate, input, context });

@@ -12,6 +12,8 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   ticketStatusChange: "ticket",
   assignment: "ticket",
   inboundEmail: "ticket",
+  inboundMessage: "inbox",
+  inboundEndpoint: "configuration",
   programItem: "program",
   requirement: "program",
   line: "program",

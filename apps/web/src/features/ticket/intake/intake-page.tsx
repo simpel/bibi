@@ -6,6 +6,7 @@ import { type Dispatch, useReducer } from "react";
 import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
 import type { IntakeData } from "../load-intake-data";
 import { DraftOffer } from "./draft-offer";
+import type { IntakeMessage } from "./intake-message";
 import { reduceIntake } from "./intake-reducer";
 import {
   hasLines,
@@ -15,6 +16,7 @@ import {
   initialIntake,
   stepView,
 } from "./intake-state";
+import { MessageBanner } from "./message-banner";
 import { PackageStep } from "./package-step";
 import { ReviewStep } from "./review-step";
 import { useIntakeDraft } from "./use-intake-draft";
@@ -29,7 +31,13 @@ type StepsProps = {
   summaries: IntakeSummaries;
 };
 
-function WhoSection({ data, state, dispatch, summaries }: StepsProps) {
+function WhoSection({
+  data,
+  state,
+  dispatch,
+  summaries,
+  search,
+}: StepsProps & { search: string | null }) {
   const t = useTranslations("ticketIntake");
   const draft = useIntakeDraft({
     key: data.draftKey,
@@ -51,7 +59,7 @@ function WhoSection({ data, state, dispatch, summaries }: StepsProps) {
         />
       ) : null}
       <WhoStep
-        {...{ who: state.who, recent: data.recent }}
+        {...{ who: state.who, recent: data.recent, search }}
         {...{ customerTypes: data.customerTypes, contactTypes: data.contactTypes }}
         onDone={({ who }) => dispatch({ type: "setWho", who })}
       />
@@ -110,19 +118,23 @@ function LaterSections(props: StepsProps) {
   );
 }
 
-export type IntakePageProps = { data: IntakeData };
+export type IntakePageProps = { data: IntakeData; message: IntakeMessage | null };
 
-/** `/new/ticket`: the ticket intake on one page, from who asks to Create (ADR 0081). */
-export function IntakePage({ data }: IntakePageProps) {
+/**
+ * `/new/ticket`: the ticket intake on one page, from who asks to Create (ADR 0081); opened from
+ * an inbox message it starts the customer search from the sender and attaches it (ADR 0085).
+ */
+export function IntakePage({ data, message }: IntakePageProps) {
   const [state, dispatch] = useReducer(
     (current: IntakeState, action: IntakeAction) => reduceIntake({ state: current, action }),
     undefined,
-    () => initialIntake({ intakeKey: crypto.randomUUID() }),
+    () => initialIntake({ intakeKey: crypto.randomUUID(), inboundMessageId: message?.id ?? null }),
   );
   const summaries = useIntakeSummaries({ state });
   return (
     <div className="grid gap-3">
-      <WhoSection {...{ data, state, dispatch, summaries }} />
+      {message ? <MessageBanner message={message} /> : null}
+      <WhoSection {...{ data, state, dispatch, summaries, search: message?.search ?? null }} />
       <LaterSections {...{ data, state, dispatch, summaries }} />
     </div>
   );

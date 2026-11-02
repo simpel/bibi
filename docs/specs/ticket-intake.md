@@ -3,7 +3,7 @@
 Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet. Tickets, statuses and line states: `docs/specs/tickets-statuses-and-states.md`. Entities: `docs/domain-model.md`. The click prototype shows every state below: https://claude.ai/artifact/Hmdk44ucTDo135fGNbeqqH
 
 ## The page
-- `/new/ticket`, permission `ticket:write`, opened from the create hub, the ticket list and an inbox mail (`?fromEmail=<id>`).
+- `/new/ticket`, permission `ticket:write`, opened from the create hub, the ticket list and an inbox message (`?fromMessage=<id>`).
 - One page with steps in order: 0 start from a message (optional), 1 who, 2 when and how many, 3 package or one-off, 4 review / build the booking.
   - Only the open step takes input.
   - A done step collapses to a one-line summary with **Change**, which reopens it and keeps later answers.
@@ -12,8 +12,8 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 - **Local draft**: the page keeps the unfinished intake in the browser, per organization and member. On the next visit the first step offers "Continue the draft for <customer> (<date>, <guests> guests)?" with Continue and Discard. A created ticket clears it.
 
 ## 0 · Start from a message
-- Shown when opened from an inbox mail, or when the person chooses "Start from a message". It is hidden when the organization has no model for `ticket.intakeDraft`.
-- A text area (prefilled from the inbox mail) plus **Read the request** and **Fill in by hand instead**.
+- Shown when opened from an inbox message, or when the person chooses "Start from a message". It is hidden when the organization has no model for `ticket.intakeDraft`.
+- A text area (prefilled from the inbox message) plus **Read the request** and **Fill in by hand instead**.
 - Reading calls `ticketDraft.fromMessage`.
   - The result fills steps 1–2, suggests a package, and sets needs and notes, then opens step 3.
   - A panel, **What the assistant read**, lists each field with its value and its quote from the message. Guessed values are marked.

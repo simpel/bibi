@@ -29,7 +29,7 @@ The parity core: every capability is defined **once** as an operation and then e
 - Pagination: `shared/page-input.ts`.
 
 ## Permissions (ADR 0034, 0050)
-- A permission is `<feature>:<action>`. Features and actions: `FEATURE_SPECS` (`permissions/features.ts`); actions are `read|write|delete`, `write` and `delete` imply `read`. The owner feature of every entity type is `ENTITY_FEATURE` (`permissions/entity-features.ts`).
+- A permission is `<feature>:<action>`. Features and actions: `FEATURE_SPECS` (`permissions/features.ts`); actions are `read|write|delete`, `write` and `delete` imply `read`; `submit` (feature `inbox` only) does not, and denying `read` keeps an allowed `submit`. The owner feature of every entity type is `ENTITY_FEATURE` (`permissions/entity-features.ts`).
 - Roles are fixed presets (`member < manager < admin`, `permissions/fixed-roles.ts`, `PRESET_PERMISSIONS` in `permissions/presets.ts`). Admins add per-member and per-API-key allow/deny overrides (`PermissionOverride`, `applyOverrides`, `permission.get|update`). Denying `read` hides the feature. Locked features (`member`, `apiKey`, `paymentAccount`, every action but `read`) come only from the `admin` preset.
 - `self` (own conversations, skills, preferences, settings, connected apps) is always on and is not a feature: `self:read|write`. The system actor gets `FORBIDDEN` on user-scoped data.
 - Anti-escalation (`features/member/role-access.ts`, by rank): nobody gives a role above their own or changes a member above them. The organization always keeps one admin (`checkAdminKept`, also for system). `parseMemberRole` turns an unknown stored role into `null`, which grants nothing.

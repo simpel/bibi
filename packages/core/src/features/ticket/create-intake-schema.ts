@@ -22,6 +22,15 @@ export const TicketIntakeShape = {
         "for items and options. A line whose hard start state would clash is refused (CONFLICT " +
         "at lines.<index>); a soft overlap is prebooked",
     ),
+  inboundMessageId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe(
+      "The inbox message the ticket is made from (inboundMessage.list, ADR 0085): it is " +
+        "attached to the new ticket in the same step. Needs inbox:read; a message that already " +
+        "has a ticket is refused with CONFLICT",
+    ),
   intakeKey: z
     .string()
     .trim()

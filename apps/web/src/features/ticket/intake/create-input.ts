@@ -45,6 +45,8 @@ export type ToCreateInputInput = {
   /** The package's ticket type, or the one-off's chosen type. */
   ticketTypeId: string;
   intakeKey: string;
+  /** The inbox message the ticket is made from (ADR 0085). */
+  inboundMessageId?: string | null | undefined;
   /** The assignee when More leaves it empty: the creating member. */
   userId: string | null;
 };
@@ -58,6 +60,7 @@ export function toCreateInput({
   review,
   ticketTypeId,
   intakeKey,
+  inboundMessageId,
   userId,
 }: ToCreateInputInput): TicketCreateInput {
   const { more } = review;
@@ -74,6 +77,7 @@ export function toCreateInput({
     ...(pick.kind === "PACKAGE" ? { templateId: pick.templateId } : {}),
     lines: review.lines.map((line) => toCreateLine({ line })),
     intakeKey,
+    ...(inboundMessageId ? { inboundMessageId } : {}),
   };
 }
 

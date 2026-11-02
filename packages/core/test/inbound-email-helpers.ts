@@ -1,5 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
-import type { InboundMailContent } from "../src/index";
+import type { InboundMailContent } from "../src/features/inbound-email/deliver-inbound-email";
 
 export type InboundMailInput = { recipients: string[] };
 

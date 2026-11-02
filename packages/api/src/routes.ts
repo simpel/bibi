@@ -15,7 +15,7 @@ import { entityTypeRoutes } from "./features/entity-type/rest";
 import { fieldDefinitionRoutes } from "./features/field-definition/rest";
 import { fileRoutes } from "./features/file/rest";
 import { financeRoutes } from "./features/finance/rest";
-import { inboundEmailRoutes } from "./features/inbound-email/rest";
+import { inboundMessageRoutes } from "./features/inbound-message/rest";
 import { invoiceRoutes } from "./features/invoice/rest";
 import { itemRoutes } from "./features/item/rest";
 import { itemDemandRoutes } from "./features/item-demand/rest";
@@ -106,7 +106,7 @@ export function listRestRoutes(): RestRoute[] {
     ...sheetRoutes,
     ...boardRoutes,
     ...quoteRoutes,
-    ...inboundEmailRoutes,
+    ...inboundMessageRoutes,
     ...moneyRoutes,
     ...conversationRoutes,
     ...messageRoutes,

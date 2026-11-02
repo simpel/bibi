@@ -1,10 +1,6 @@
 import { getEnv } from "@bibi/config";
-import {
-  type AppError,
-  type DeliverInboundEmailInput,
-  deliverInboundEmail,
-  toHttpStatus,
-} from "@bibi/core";
+import { type AppError, toHttpStatus } from "@bibi/core";
+import { type DeliverInboundEmailInput, deliverInboundEmail } from "@bibi/core/inbound-mail";
 import { withRequestLogging } from "@bibi/logger";
 import { getMailProvider } from "../get-mail-provider";
 import type { MailProvider } from "../mail-provider";

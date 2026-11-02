@@ -2,26 +2,27 @@
 /// ticket starts in, default own-field values and lines. `ticket.createFromTemplate` makes a
 /// ticket from it in one step. `status` is the soft-delete flag (ADR 0006).
 model TicketTemplate {
-  id             String               @id
-  organizationId String
-  name           String
-  entityTypeId   String
+  id               String               @id
+  organizationId   String
+  name             String
+  entityTypeId     String
   /// The status created tickets start in (not closing).
-  statusId       String
+  statusId         String
   /// Default values of the ticket type's own fields, keyed by `FieldDefinition.key`.
-  fields         Json                 @default("{}")
+  fields           Json                 @default("{}")
   /// The guest range the package is made for (owned, optional, min <= max, ADR 0081).
-  minGuests      Int?
-  maxGuests      Int?
-  status         RecordStatus         @default(ACTIVE)
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  createdBy      String?
-  entityType     EntityType           @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  ticketStatus   TicketStatus         @relation(fields: [statusId, organizationId], references: [id, organizationId])
-  lines          TicketTemplateLine[]
+  minGuests        Int?
+  maxGuests        Int?
+  status           RecordStatus         @default(ACTIVE)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  createdBy        String?
+  entityType       EntityType           @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  ticketStatus     TicketStatus         @relation(fields: [statusId, organizationId], references: [id, organizationId])
+  lines            TicketTemplateLine[]
+  inboundEndpoints InboundEndpoint[]
   /// The supertable row this record extends (ADR 0056).
-  record         Record               @relation(fields: [id, organizationId], references: [id, organizationId])
+  record           Record               @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

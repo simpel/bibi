@@ -21,6 +21,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   calendar: "calendar",
   financials: "financials",
   tickets: "tickets",
+  inbox: "inbox",
   customers: "customers",
   items: "items",
   venues: "venues",

@@ -3,24 +3,34 @@
  * New feature: add it here; presets, the permission grid and the docs follow from this table.
  */
 /**
- * The three actions (ADR 0050): `read` sees the feature, `write` creates and changes it
- * (including sending, exporting and moving a ticket's status), `delete` archives it. Bibi never
- * hard-deletes; `delete` is the archive action.
+ * The actions (ADR 0050): `read` sees the feature, `write` creates and changes it (including
+ * sending, exporting and moving a ticket's status), `delete` archives it. Bibi never hard-deletes;
+ * `delete` is the archive action. `submit` (ADR 0085, `inbox` only) hands a message in from
+ * outside without seeing the feature, so unlike `write` and `delete` it does not imply `read`.
  */
-export const PERMISSION_ACTIONS = ["read", "write", "delete"] as const;
+export const PERMISSION_ACTIONS = ["read", "write", "delete", "submit"] as const;
 export type PermissionAction = (typeof PERMISSION_ACTIONS)[number];
+
+export type ImpliesReadInput = { action: PermissionAction };
+
+/** Whether granting `action` also grants `read` (`write` and `delete` do, `submit` does not). */
+export function impliesRead({ action }: ImpliesReadInput): boolean {
+  return action === "write" || action === "delete";
+}
 
 export const FEATURE_GROUPS = ["bookings", "selling", "catalog", "setup", "organization"] as const;
 export type FeatureGroup = (typeof FEATURE_GROUPS)[number];
 
 type FeatureSpec = { group: FeatureGroup; actions: readonly PermissionAction[] };
 
-const all = PERMISSION_ACTIONS;
+const all = ["read", "write", "delete"] as const;
 /** Features whose records are never archived. */
 const noDelete = ["read", "write"] as const;
 
 export const FEATURE_SPECS = {
   ticket: { group: "bookings", actions: all },
+  // Inbound messages of every channel (ADR 0085): no archive; dismiss is `write`.
+  inbox: { group: "bookings", actions: ["read", "write", "submit"] },
   program: { group: "bookings", actions: all },
   customer: { group: "selling", actions: all },
   quote: { group: "selling", actions: all },

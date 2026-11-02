@@ -70,6 +70,7 @@ export { LOCAL_SKILL_TOOLS } from "./skills/create-skill-tools";
 export type { AssignmentWire } from "./ui-contract/assignment-entries";
 export type { CalendarRangeWire } from "./ui-contract/calendar-entries";
 export type { InboundEmailWire } from "./ui-contract/inbound-email-entries";
+export type { InboundMessageWire } from "./ui-contract/inbound-message-entries";
 export type { ItemResolutionWire } from "./ui-contract/item-resolution-entries";
 export type { ItemStateWire } from "./ui-contract/item-state-entries";
 export type { LineWire } from "./ui-contract/line-entries";

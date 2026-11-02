@@ -24,9 +24,21 @@ const MANAGER_FEATURES: readonly Feature[] = [
 /** Managers also maintain items (demands, setup times, working hours) but never archive them (ADR 0059). */
 const MANAGER_ITEM_WRITE = grantAll({ features: ["item"], only: "write" });
 
-const member = grantAll({
-  features: FEATURES.filter((feature) => !ADMIN_VIEW.includes(feature)),
-  only: "read",
+/**
+ * Everyone who works the inbox reads and handles it (ADR 0083, 0085). `inbox:submit` is for
+ * outside callers (an API key or partner client) and only the admin preset has it, so a key gets
+ * it by an explicit allow.
+ */
+const INBOX_WORK = grantAll({ features: ["inbox"], only: "write" });
+
+const member = unionPermissions({
+  sets: [
+    grantAll({
+      features: FEATURES.filter((feature) => !ADMIN_VIEW.includes(feature)),
+      only: "read",
+    }),
+    INBOX_WORK,
+  ],
 });
 
 /**

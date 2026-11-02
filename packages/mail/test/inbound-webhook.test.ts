@@ -1,4 +1,5 @@
-import { execute, listInboundEmails, ticketInboundAddress } from "@bibi/core";
+import { execute, listInboundEmails } from "@bibi/core";
+import { ticketInboundAddress } from "@bibi/core/inbound-address";
 import { describe, expect, it } from "vitest";
 import {
   createInboundWebhookHandler,

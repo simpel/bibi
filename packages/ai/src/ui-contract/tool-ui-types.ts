@@ -8,7 +8,7 @@ import type { CalendarRangeWire } from "./calendar-entries";
 import type { DashboardUiProps } from "./dashboard-ui-props";
 import type { FinanceUiProps } from "./finance-ui-props";
 import type { HoursWire } from "./hours-entries";
-import type { InboundEmailWire } from "./inbound-email-entries";
+import type { InboundUiProps } from "./inbound-message-entries";
 import type { ItemResolutionWire } from "./item-resolution-entries";
 import type { ItemStateWire } from "./item-state-entries";
 import type { LineWire } from "./line-entries";
@@ -52,6 +52,7 @@ import type {
  * component; this package only decides which key and validated props a tool result gets.
  */
 export type ToolUiProps = BoardUiProps &
+  InboundUiProps &
   DashboardUiProps &
   FinanceUiProps &
   TicketToolUiProps & {
@@ -91,8 +92,6 @@ export type ToolUiProps = BoardUiProps &
     questionnaire: { question: AskedQuestion };
     "quote-card": { quote: QuoteWire };
     "quote-table": { items: QuoteWire[]; nextCursor: string | null };
-    "inbound-email-table": { items: InboundEmailWire[]; nextCursor: string | null };
-    "inbound-email-card": { email: InboundEmailWire };
     "payment-account-card": { account: PaymentAccountWire };
     "payment-table": { items: PaymentWire[]; nextCursor: string | null };
     "payment-card": { payment: PaymentWire };

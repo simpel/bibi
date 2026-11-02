@@ -31,6 +31,7 @@ function createInputOf({
     review: { ...current.review, ...patch },
     ticketTypeId: values.entityTypeId,
     intakeKey: current.state.intakeKey,
+    inboundMessageId: current.state.inboundMessageId,
     userId: current.data.catalog.userId,
   });
 }

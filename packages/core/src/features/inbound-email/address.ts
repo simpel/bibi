@@ -43,3 +43,26 @@ export function ticketIdFromAddress({ address, domain }: TicketIdFromAddressInpu
   const id = local.slice(PREFIX.length);
   return ID_PATTERN.test(id) ? id : null;
 }
+
+export type MailSender = { name: string | null; email: string };
+
+/** `"Ada Lovelace" <Ada@Example.test>` → `{ name: "Ada Lovelace", email: "ada@example.test" }`. */
+export function mailSender({ address }: { address: string }): MailSender {
+  const email = bareAddress({ address }).toLowerCase();
+  const name = /^([^<]*)</
+    .exec(address)?.[1]
+    ?.trim()
+    .replace(/^"+|"+$/g, "")
+    .trim();
+  return { name: name ? name : null, email };
+}
+
+export type LocalPartInput = { address: string; domain: string };
+
+/** The local part of an address on `domain`, lowercased; null for any other domain. */
+export function localPartOn({ address, domain }: LocalPartInput): string | null {
+  const bare = bareAddress({ address }).toLowerCase();
+  const at = bare.lastIndexOf("@");
+  if (at <= 0 || bare.slice(at + 1) !== domain.toLowerCase()) return null;
+  return bare.slice(0, at);
+}

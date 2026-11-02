@@ -60,7 +60,17 @@ export const UI_EXEMPT: readonly UiExempt[] = [
   },
   {
     operation: "inboundEmail.get",
-    reason: "The ticket page shows each received mail in full from inboundEmail.list",
+    reason: "Deprecated alias (ADR 0085): the app reads inboundMessage.get and inboundMessage.list",
+  },
+  {
+    operation: "inboundEmail.list",
+    reason:
+      "Deprecated alias (ADR 0085): the ticket page lists every channel with inboundMessage.list",
+  },
+  {
+    operation: "inboundMessage.submit",
+    reason:
+      "The API channel (ADR 0085): outside systems hand requests in over REST or MCP; staff never submit their own",
   },
   {
     operation: "payment.get",
