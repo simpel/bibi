@@ -8,7 +8,7 @@ import { openQuestions } from "./open-questions";
 import { newReview } from "./review-state";
 
 const snack = {
-  ...{ name: "Snack", minPick: 1, maxPick: 1, split: false, allowExtras: true },
+  ...{ name: "Snack", minPick: 1, maxPick: 1, split: false },
   options: [
     { itemId: "cake", name: "Carrot cake", priceEffect: "INCLUDED" as const },
     { itemId: "fruit", name: "Fresh fruit", priceEffect: "INCLUDED" as const },

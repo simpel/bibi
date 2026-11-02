@@ -14,7 +14,7 @@
 ## Decision
 1. **A new intake step, Choices, between package and review.** Steps become: 1 who, 2 when and how many, 3 package or one-off, **4 choices**, 5 review. It follows the steps' rules from ADR 0081 (own URL `/new/ticket/choices`, Next and Back, a collapsed summary with Change, kept in the local draft).
 2. **The step shows only when it has something to ask.** It lists the package's lines whose item has at least one **required group** (`minPick ≥ 1`). For each such line it shows:
-   - its required groups, with the line dialog's controls: a pick per normal group, a quantity per option in a split group (ADR 0082), extra picks as add-ons where the group allows extras (ADR 0088);
+   - its required groups, with the line dialog's controls: a pick per normal group, a quantity per option in a split group (ADR 0082), never more than a group's max (ADR 0088, amended);
    - the line's needs (counts per list value, e.g. Vegan 2, Nut allergy 1), stored as line Requirements as in the line dialog.
 
    Optional groups (`minPick 0`) are not asked here; they stay in the review's line dialog. A package with no such line skips the step: Next on step 3 opens review, and the step is not listed. A one-off never has the step, because its lines are built in review.

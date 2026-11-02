@@ -102,7 +102,7 @@ export function LineDialogForm(props: LineDialogFormProps) {
         <TimeFields form={form} date={date} timeZone={timeZone} />
         <LineQuantityField form={form} headcount={model.when.guests} />
         <LineItemFields form={form} item={item} quantity={quantity} />
-        <LineAddOnsField {...{ form, model, item, quantity }} />
+        <LineAddOnsField {...{ form, model, quantity }} />
         <LineNeedsFields form={form} values={catalog.needTypeId ? catalog.needValues : []} />
         <TextField form={form} name="note" label={t("note")} multiline />
         {type ? <TypeFields control={form.control} type={type} data={catalog} /> : null}

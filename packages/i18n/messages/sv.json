@@ -671,8 +671,7 @@
       "removeOption": "Ta bort tillval",
       "option": "Artikel",
       "priceEffect": "Prispåverkan",
-      "split": "Fördela mellan gästerna",
-      "allowExtras": "Tillåt extra val"
+      "split": "Fördela mellan gästerna"
     },
     "customisationGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
     "resolution": {
@@ -1158,7 +1157,6 @@
       "add": "Lägg till rad",
       "addOns": "Tillägg",
       "addOn": "Tillägg",
-      "extraPick": "{name} · extra · {price}",
       "removeAddOn": "Ta bort",
       "ownTime": "Egen tid (annars radens)",
       "addItem": "+ Lägg till en artikel"
@@ -1575,7 +1573,6 @@
     "addOn": "Tillägg",
     "addAddOn": "Lägg till tillägg",
     "addAddOnDescription": "Lägg till något som säljs med {name}: valfri artikel eller fritext till eget pris. Det får radens typ och tid från början; ändra dem om det ska till ett annat underlag eller bara gäller en del av tiden. Tomt antal följer raden.",
-    "extrasHint": "Val utöver en grupps gräns läggs till som tillägg under raden, vart och ett till sitt eget pris.",
     "issueAlerts": {
       "openChoice": {
         "title": "Val saknas",

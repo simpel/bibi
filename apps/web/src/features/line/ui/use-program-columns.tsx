@@ -6,7 +6,6 @@ import { useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";
 import { useNumberFormat } from "@/lib/number/use-number-format";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
-import { extraAddOnsOf } from "./choose-options-extras";
 import { chosenOptions } from "./choose-options-schema";
 import { LineStateCell, stateOf } from "./line-state-cell";
 import { placeOf } from "./place-of";
@@ -105,7 +104,6 @@ export function useProgramColumns({
             data={data}
             access={access}
             chosen={chosenOptions({ line: item, lines })}
-            extras={extraAddOnsOf({ line: item, lines, data })}
           />
         ),
       }),

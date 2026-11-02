@@ -4,8 +4,6 @@ export type PickGroup = {
   minPick: number;
   maxPick: number;
   split: boolean;
-  /** Picks beyond maxPick may be added as add-ons (ADR 0088); unset counts as off. */
-  allowExtras?: boolean;
   options: readonly { itemId: string }[];
 };
 
@@ -28,31 +26,20 @@ export type GroupPickIssuesInput = {
   groups: readonly PickGroup[];
   /** The chosen options of the line (a split group's only with a quantity above 0). */
   chosen: readonly { itemId: string }[];
-  /**
-   * Picks beyond the max become add-ons (the intake's line dialog, ADR 0088): a group that
-   * allows extras (not split) has no upper bound. `line.chooseOptions` keeps the max.
-   */
-  extras?: boolean;
 };
 
 /**
  * Core's `checkChoice` rule (`packages/core/src/features/line/option-groups.ts`) on the client:
  * each group with a pick gets between its minPick and maxPick distinct options, split groups
  * counted by the options with a quantity. A group with no pick is open, even a required one
- * (ADR 0089). Unlike core it names every broken group, not only the first. With
- * `extras`, a non-split group that allows extras has no max: the rest are add-ons.
+ * (ADR 0089). Unlike core it names every broken group, not only the first.
  */
-export function groupPickIssues({
-  groups,
-  chosen,
-  extras = false,
-}: GroupPickIssuesInput): GroupPickIssue[] {
+export function groupPickIssues({ groups, chosen }: GroupPickIssuesInput): GroupPickIssue[] {
   const ids = new Set(chosen.map(({ itemId }) => itemId));
   return groups.flatMap((group, index) => {
     const count = group.options.filter(({ itemId }) => ids.has(itemId)).length;
-    const unbounded = extras && group.allowExtras === true && !group.split;
     if (count === 0) return [];
-    if (count >= group.minPick && (unbounded || count <= group.maxPick)) return [];
+    if (count >= group.minPick && count <= group.maxPick) return [];
     const rule = { min: group.minPick, max: group.maxPick, options: group.options.length };
     const field = group.split ? "quantities" : "picked";
     return [{ index, group: group.name, field, count, rule }];

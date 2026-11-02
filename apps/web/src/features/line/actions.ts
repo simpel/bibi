@@ -3,10 +3,12 @@
 import {
   archiveLine,
   changeLineState,
+  chooseLineOptions,
   createLine,
   expandLineBundle,
   followLineStatus,
-  type LineCreateOperationInput,
+  type LineChooseOptionsInput,
+  type LineCreateInput,
   type LineDto,
   type LineExpandBundleInput,
   type LineUpdateInput,
@@ -17,7 +19,7 @@ import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
 
-export type CreateLineActionInput = { input: LineCreateOperationInput };
+export type CreateLineActionInput = { input: LineCreateInput };
 export type UpdateLineActionInput = { input: LineUpdateInput };
 export type ArchiveLineActionInput = { id: string };
 
@@ -71,6 +73,15 @@ export async function expandBundleAction({
   input,
 }: ExpandBundleActionInput): Promise<ActionResult<{ items: LineDto[] }>> {
   return toActionResult({ result: await runOperation({ operation: expandLineBundle, input }) });
+}
+
+export type ChooseLineOptionsActionInput = { input: LineChooseOptionsInput };
+
+/** Replaces a line's chosen options with one option line each (ADR 0059). */
+export async function chooseLineOptionsAction({
+  input,
+}: ChooseLineOptionsActionInput): Promise<ActionResult<{ items: LineDto[] }>> {
+  return toActionResult({ result: await runOperation({ operation: chooseLineOptions, input }) });
 }
 
 /** Another booking's timed line of an item, as the intake's day snapshot draws it. */

@@ -8,7 +8,7 @@ import {
 import { toLocalInputValue } from "../../occupancy/ui/local-date-time";
 import type { CatalogItem } from "./catalog";
 import type { DraftLine } from "./draft-line";
-import { type AddOnFormValue, addOnDefaults } from "./line-add-ons-form";
+import { type AddOnFormValue, addOnRows } from "./line-add-ons-form";
 
 /** Raw values of the line dialog (spec "The line dialog"); the item is chosen outside the form. */
 export type LineFormValues = WithRawFields & {
@@ -25,7 +25,7 @@ export type LineFormValues = WithRawFields & {
   note: string;
   groups: ChooseOptionsGroupValue[];
   needs: { valueId: string; count: string }[];
-  /** Add-ons added as items (ADR 0088); extra picks stay in `groups`. */
+  /** Add-ons added as items (ADR 0088). */
   addOns: AddOnFormValue[];
 };
 
@@ -61,14 +61,14 @@ export function lineFormDefaults({
   period,
 }: LineDefaultsInput): LineFormValues {
   const times = line ?? newTimes({ item, period });
-  const picked = item
+  const groups = item
     ? chooseOptionsDefaults({
         item: { itemId: item.id, groups: item.groups },
         chosen: line?.options ?? [],
       }).groups
     : [];
-  const { groups, rows } = addOnDefaults({
-    ...{ groups: item?.groups ?? [], picked, addOns: line?.addOns ?? [] },
+  const rows = addOnRows({
+    addOns: line?.addOns ?? [],
     timeOf: ({ at }) => time({ at, timeZone }),
   });
   return {

@@ -20,38 +20,6 @@ describe("groupPickIssues", () => {
     ]);
   });
 
-  it("has no max for a group that allows extras when picks beyond it are add-ons (ADR 0088)", () => {
-    const groups = [
-      group({ allowExtras: true }),
-      group({ name: "Drink", split: true, allowExtras: true }),
-    ];
-    const three = chosen({ ids: ["cake", "fruit", "oat"] });
-    expect(
-      groupPickIssues({
-        groups: [groups[0] as PickGroup],
-        chosen: three,
-        extras: true,
-      }),
-    ).toEqual([]);
-    const strict = groupPickIssues({
-      groups: [group({ allowExtras: false })],
-      chosen: three,
-      extras: true,
-    });
-    expect(strict).toHaveLength(1);
-    const chooseOptions = groupPickIssues({
-      groups: [groups[0] as PickGroup],
-      chosen: three,
-    });
-    expect(chooseOptions).toHaveLength(1);
-    const split = groupPickIssues({
-      groups: [groups[1] as PickGroup],
-      chosen: three,
-      extras: true,
-    });
-    expect(split).toHaveLength(1);
-  });
-
   it("accepts a count inside the range and names every broken group", () => {
     const drink = { name: "Drink", minPick: 2, maxPick: 3, split: true };
     const groups = [group(), group({ ...drink, options: [{ itemId: "tea" }, { itemId: "milk" }] })];

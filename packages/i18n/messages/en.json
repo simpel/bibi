@@ -671,8 +671,7 @@
       "removeOption": "Remove option",
       "option": "Item",
       "priceEffect": "Price effect",
-      "split": "Split between guests",
-      "allowExtras": "Allow extras"
+      "split": "Split between guests"
     },
     "customisationGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
     "resolution": {
@@ -1158,7 +1157,6 @@
       "add": "Add line",
       "addOns": "Add-ons",
       "addOn": "Add-on",
-      "extraPick": "{name} · extra · {price}",
       "removeAddOn": "Remove",
       "ownTime": "Own time (else the line's)",
       "addItem": "+ Add an item"
@@ -1575,7 +1573,6 @@
     "addOn": "Add-on",
     "addAddOn": "Add add-on",
     "addAddOnDescription": "Add something sold with {name}: any item or free text at its own price. It starts with the line's type and time; change them if it goes to another work order or only part of the time. Empty quantity follows the line.",
-    "extrasHint": "Picks beyond a group's limit are added as add-ons under the line, each at its own price.",
     "issueAlerts": {
       "openChoice": {
         "title": "Choice not made yet",

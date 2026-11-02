@@ -27,9 +27,7 @@ export type OptionQuestionsInput = { line: DraftLine; items: readonly ItemGroups
 
 /**
  * One question per group the line's options break, by core's rule as `ticket.create` checks it
- * (`groupPickIssues`, only once the line chose something). Picks beyond the max of a group that
- * allows extras are the line's add-ons (ADR 0088), not options, so they raise none; options
- * beyond it still do, as core refuses them. Answered by editing the line.
+ * (`groupPickIssues`, only once the line chose something). Answered by editing the line.
  */
 export function optionQuestions({ line, items }: OptionQuestionsInput): OptionsQuestion[] {
   const groups = items.find(({ id }) => id === line.itemId)?.groups ?? [];

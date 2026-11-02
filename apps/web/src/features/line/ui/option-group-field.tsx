@@ -18,7 +18,10 @@ export type OptionGroupFieldProps<V extends ChooseOptionsFormValues, O> = {
   group: CustomisableItem["groups"][number];
 };
 
-/** The options of a normal group as checkboxes, each labelled with its price effect. */
+/**
+ * The options of a normal group as checkboxes, each labelled with its price effect, never more
+ * than its max: with max 1 a new pick replaces the old one. More is an add-on of the line.
+ */
 export function OptionGroupField<V extends ChooseOptionsFormValues, O>({
   form,
   index,
@@ -43,6 +46,7 @@ export function OptionGroupField<V extends ChooseOptionsFormValues, O>({
               value={field.value as string[]}
               onChange={field.onChange}
               choices={choices}
+              max={max}
             />
           </FormControl>
           <FormMessage />

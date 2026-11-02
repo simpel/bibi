@@ -46,8 +46,8 @@ async function checkLine({ context, line }: LineInput): Promise<string[]> {
 }
 
 /**
- * ADR 0082: every line the data files give split options (L9's team dinner, 10 + 4 main courses)
- * stores each option's quantity, and its ticket's sent quote snapshots them. Returns failures.
+ * ADR 0082: every line the data files give split options (L9's team dinner 10 + 4, L11's lunch
+ * 7 + 3) stores each option's quantity, and its ticket's sent quote snapshots them. Returns failures.
  */
 export async function checkDemoOptionQuantities({
   context,

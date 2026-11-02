@@ -14,7 +14,7 @@ const item: CatalogItem = {
   },
   groups: [
     {
-      ...{ name: "Main", minPick: 1, maxPick: 2, split: true, allowExtras: true },
+      ...{ name: "Main", minPick: 1, maxPick: 2, split: true },
       options: [
         { itemId: "fish", name: "Fish", priceEffect: "INCLUDED" },
         { itemId: "veg", name: "Veg", priceEffect: "INCLUDED" },
@@ -53,7 +53,7 @@ describe("lineFormSchema", () => {
 
   it("refuses a group choice outside its pick rule, under the group, once one is chosen", () => {
     const snack = {
-      ...{ name: "Snack", minPick: 1, maxPick: 1, split: false, allowExtras: false },
+      ...{ name: "Snack", minPick: 1, maxPick: 1, split: false },
       options: ["cake", "fruit"].map((id) => ({
         ...{ itemId: id, name: id },
         priceEffect: "INCLUDED" as const,
@@ -77,9 +77,9 @@ describe("lineFormSchema", () => {
     expect(strict.safeParse(values).success).toBe(true);
   });
 
-  it("keeps the first picks of a group that allows extras as options and adds the rest (ADR 0088)", () => {
+  it("keeps the options and add-ons apart, also an add-on of an option's item (ADR 0088)", () => {
     const snack = {
-      ...{ name: "Snack", minPick: 1, maxPick: 1, split: false, allowExtras: true },
+      ...{ name: "Snack", minPick: 1, maxPick: 1, split: false },
       options: ["cake", "oat", "fruit"].map((id) => ({
         ...{ itemId: id, name: id },
         priceEffect: "INCLUDED" as const,
@@ -94,10 +94,14 @@ describe("lineFormSchema", () => {
       ...{ itemId: "p1", name: "Projector", quantity: "1", ownTime: true, from: "09:00" },
       ...{ to: "10:00", unitPriceMinor: null },
     };
+    const cake = {
+      ...{ itemId: "cake", name: "cake", quantity: "", ownTime: false, from: "" },
+      ...{ to: "", unitPriceMinor: null },
+    };
     const raw = {
       ...values,
-      groups: [{ picked: ["fruit", "cake"], quantities: {} }],
-      addOns: [projector],
+      groups: [{ picked: ["fruit"], quantities: {} }],
+      addOns: [projector, cake],
     };
     const parsed = open.safeParse(raw);
     if (!parsed.success) throw parsed.error;
@@ -116,8 +120,8 @@ describe("lineFormSchema", () => {
       timeZone: "UTC",
       period: null,
     });
-    expect(back.groups[0]?.picked).toEqual(["fruit", "cake"]);
-    expect(back.addOns).toEqual([{ ...projector }]);
+    expect(back.groups[0]?.picked).toEqual(["fruit"]);
+    expect(back.addOns).toEqual([projector, cake]);
   });
 
   it("refuses a lone time and keeps both empty untimed", () => {

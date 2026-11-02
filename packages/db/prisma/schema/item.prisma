@@ -135,9 +135,6 @@ model ItemCustomisationGroup {
   minPick        Int
   maxPick        Int
   split          Boolean                   @default(false)
-  /// Owned (ADR 0088): picks beyond `maxPick` may be added as add-ons; false = the max is a hard
-  /// limit (one main course per guest).
-  allowExtras    Boolean                   @default(true)
   /// Order of the groups on the item, from 0.
   position       Int
   createdAt      DateTime                  @default(now())

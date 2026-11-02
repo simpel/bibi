@@ -1,8 +1,7 @@
 import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import type { CatalogItem } from "./catalog";
 import { ItemSearch } from "./item-search";
-import { AddOnRow, ExtraPickRow } from "./line-add-on-rows";
+import { AddOnRow } from "./line-add-on-rows";
 import { useLineAddOns } from "./use-line-add-ons";
 import type { LineDialogFormApi } from "./use-line-dialog-form";
 import type { ReviewModel } from "./use-review-model";
@@ -10,7 +9,6 @@ import type { ReviewModel } from "./use-review-model";
 export type LineAddOnsFieldProps = {
   form: LineDialogFormApi;
   model: ReviewModel;
-  item: CatalogItem | null;
   /** The line's quantity, which add-ons follow unless given their own. */
   quantity: number;
 };
@@ -31,24 +29,15 @@ function AddItemButton({ onClick }: { onClick: () => void }) {
 }
 
 /**
- * The line's add-ons (ADR 0088, spec "The line dialog"): extra picks beyond a group's max, each
- * with the item's catalog price (the preview prices it exactly once in the draft), then items
- * added with "Add an item". Removing an extra pick unpicks it.
+ * The line's add-ons (ADR 0088, spec "The line dialog"): items added with "Add an item", each
+ * with the item's catalog price (the preview prices it exactly once in the draft).
  */
-export function LineAddOnsField({ form, model, item, quantity }: LineAddOnsFieldProps) {
+export function LineAddOnsField({ form, model, quantity }: LineAddOnsFieldProps) {
   const t = useTranslations("ticketIntake.line");
-  const addOns = useLineAddOns({ form, model, item });
+  const addOns = useLineAddOns({ form, model });
   return (
     <fieldset className="grid gap-2">
       <legend className="text-sm font-medium">{t("addOns")}</legend>
-      {addOns.extras.map((extra) => (
-        <ExtraPickRow
-          key={`${extra.groupIndex}-${extra.itemId}`}
-          extra={extra}
-          price={addOns.priceOf(extra) ?? "–"}
-          onRemove={() => addOns.unpick({ extra })}
-        />
-      ))}
       {addOns.fields.map((row, index) => (
         <AddOnRow
           key={row.id}

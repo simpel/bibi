@@ -43,7 +43,9 @@ export const l4Lines: readonly DemoLine[] = [
  * L11's lines. ADR 0052: an agreed room price (950 kr in the item) and a flat fee without a time.
  * ADR 0088: the board meeting has a projector add-on for the morning only, and the break buffet
  * picks Carrot cake in its Snack group (choose 1) with Oat ball and Fresh fruit as add-ons at
- * their own line price (dishes have none); the quote lists them under their lines.
+ * their own line price (dishes have none); the quote lists them under their lines. ADR 0082: the
+ * board lunch splits its main course between the ten guests, 7 cod and 3 risotto, at 0 kr on
+ * the line so the quote freezes both (as L9).
  */
 export const l11Lines: readonly DemoLine[] = [
   {
@@ -64,5 +66,12 @@ export const l11Lines: readonly DemoLine[] = [
       { item: "Fresh fruit", name: "Fresh fruit", unitPriceKr: 20 },
     ],
   },
-  { item: "Conference lunch", name: "Board lunch", from: "12:00", to: "13:00", state: "Locked" },
+  {
+    ...{ item: "Conference lunch", name: "Board lunch", from: "12:00", to: "13:00" },
+    state: "Locked",
+    options: [
+      { name: "Oven-baked cod loin, browned butter", quantity: 7, unitPriceKr: 0 },
+      { name: "Mushroom risotto", quantity: 3, unitPriceKr: 0 },
+    ],
+  },
 ];

@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { execute, getItem, updateItem } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { addLine, addOnSetup } from "./line-add-on-helpers";
 import { bundleSetup, expand } from "./line-bundle-helpers";
@@ -39,27 +38,14 @@ describe("line roles (ADR 0088)", () => {
   });
 });
 
-describe("extra picks of a customisation group (ADR 0088)", () => {
-  it("refuses more than the max and points to add-ons while the group allows extras", async () => {
-    const { context, lineId, technician, selfInstall, room } = await optionsSetup();
+describe("picks beyond a customisation group's max (ADR 0088)", () => {
+  it("refuses more than the max and points to add-ons", async () => {
+    const { context, lineId, technician, selfInstall } = await optionsSetup();
     const both = picks({ ids: [technician.id, selfInstall.id] });
     const refused = await choose({ context, lineId, options: both });
     expect(errorCode({ result: refused })).toBe("VALIDATION");
     expect(refused.ok ? "" : refused.error.message).toBe(
       "Installation: choose 1 of its options; add more as add-ons",
     );
-    const item = unwrap({
-      result: await execute({ operation: getItem, input: { id: room.id }, context }),
-    });
-    expect(item.customisationGroups.map((group) => group.allowExtras)).toEqual([true, true]);
-    const customisationGroups = item.customisationGroups.map(({ id: _id, ...group }) => ({
-      ...group,
-      allowExtras: group.name !== "Installation",
-    }));
-    const input = { id: room.id, customisationGroups };
-    const updated = unwrap({ result: await execute({ operation: updateItem, input, context }) });
-    expect(updated.customisationGroups.map((group) => group.allowExtras)).toEqual([false, true]);
-    const hard = await choose({ context, lineId, options: both });
-    expect(hard.ok ? "" : hard.error.message).toBe("Installation: choose 1 of its options");
   });
 });

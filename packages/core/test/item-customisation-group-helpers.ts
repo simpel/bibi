@@ -84,6 +84,5 @@ export const sortedGroups = ({
   groups.map(({ id: _id, ...group }) => ({
     ...group,
     split: group.split ?? false,
-    allowExtras: group.allowExtras ?? true,
     options: [...group.options].sort((a, b) => a.itemId.localeCompare(b.itemId)),
   }));

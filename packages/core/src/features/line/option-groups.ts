@@ -16,7 +16,6 @@ export type OptionGroup = {
   maxPick: number;
   split: boolean;
   /** Picks beyond maxPick may be added as add-ons (ADR 0088). */
-  allowExtras: boolean;
   options: ChoosableOption[];
 };
 
@@ -42,8 +41,8 @@ export async function loadOptionGroups({
       },
     },
   });
-  return groups.map(({ id, name, minPick, maxPick, split, allowExtras, options }) => ({
-    ...{ id, name, minPick, maxPick, split, allowExtras },
+  return groups.map(({ id, name, minPick, maxPick, split, options }) => ({
+    ...{ id, name, minPick, maxPick, split },
     options: options.map(({ itemId: optionId, priceEffect, item }) => ({
       ...{ itemId: optionId, name: item.name, priceEffect },
     })),
@@ -90,8 +89,8 @@ export function checkChoice({ groups, options }: CheckChoiceInput): Result<Chose
     if (picked.length === 0) continue;
     if (picked.length < minPick || picked.length > maxPick) {
       const range = minPick === maxPick ? `${minPick}` : `${minPick} to ${maxPick}`;
-      // ADR 0088: more than the max are add-ons, when the group allows extras.
-      const extras = picked.length > maxPick && group.allowExtras ? "; add more as add-ons" : "";
+      // ADR 0088: more than the max are add-ons of the line.
+      const extras = picked.length > maxPick ? "; add more as add-ons" : "";
       return problem({ message: `${name}: choose ${range} of its options${extras}` });
     }
     for (const { option, match } of picked) {

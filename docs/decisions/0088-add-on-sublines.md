@@ -1,7 +1,7 @@
 # 0088 – Add-ons: extra lines under any line
 
 - **Date:** 2026-11-02
-- **Status:** Accepted (approved by the user on 2026-11-02)
+- **Status:** Accepted (approved by the user on 2026-11-02); decision 5 amended on 2026-11-02 (below)
 - **Amends:** 0059 (a sub-line was a part or an option line, told apart by `priceEffect`), 0082 (picks above a group's `maxPick` were refused)
 - **Related:** 0052 (the line is the booking, snapshots), 0051 (single source of truth), 0053 (holds are a projection), 0043 and 0044 (states per status), 0081 (ticket intake), 0003 (parity), 0021 (configurable items)
 
@@ -32,7 +32,9 @@
    | Same item twice | allowed | no | allowed |
 
 4. **One level.** The parent of an add-on is a top-level line (`role` null): an ordinary line, a bundle line or a line with options. Part, option and add-on lines cannot have add-ons. An add-on cannot be in an `AlternativeGroup` itself; it follows its parent's (left out with an unchosen alternative, as options are). Core checks both (`VALIDATION`).
-5. **Picks above a group's max become add-ons, chosen by staff, not converted by core.** A group gets an owned flag `ItemCustomisationGroup.allowExtras` (default true); with it off, no pick beyond the max is offered and the max stays a hard limit (one main course per guest). `line.chooseOptions` keeps the group rule: `minPick` still applies and more than `maxPick` is still refused, with a message that points to add-ons. In the line dialog, a pick beyond the max turns into an add-on row right away, shown with its price ("Oat ball, extra, 35 kr"). Seeing the price in the dialog is the confirmation; staff remove the row to undo. The included picks (up to the max) stay option lines with the group's price effect. Whether a group's item shows as an extra pick is derived from the add-on's item; no group id is stored, since groups get new ids each time they are replaced (ADR 0082).
+5. **Amended 2026-11-02 (the user's decision): a group's `maxPick` is always a hard limit.** The choice controls never take more than the max (with max 1 a new pick replaces the old one), `allowExtras` is dropped, and anything more is an add-on staff add with "Add add-on" / "+ Add an item". `line.chooseOptions` still refuses more than the max and points to add-ons. Why: on a "choose 1" main course, ticking every dish read as a broken rule, and for food the real answer is a split group (ADR 0082), not extras. The original text follows.
+
+   ~~**Picks above a group's max become add-ons, chosen by staff, not converted by core.** A group gets an owned flag `ItemCustomisationGroup.allowExtras` (default true); with it off, no pick beyond the max is offered and the max stays a hard limit (one main course per guest). `line.chooseOptions` keeps the group rule: `minPick` still applies and more than `maxPick` is still refused, with a message that points to add-ons. In the line dialog, a pick beyond the max turns into an add-on row right away, shown with its price ("Oat ball, extra, 35 kr"). Seeing the price in the dialog is the confirmation; staff remove the row to undo. The included picks (up to the max) stay option lines with the group's price effect. Whether a group's item shows as an extra pick is derived from the add-on's item; no group id is stored, since groups get new ids each time they are replaced (ADR 0082).~~
 6. **Price of an add-on** (the user's decision): unit price line override → the customer's price list → the item's list price, for extra picks too (a group sets no extra price of its own); quantity is the add-on's own, else the parent's effective quantity (source `PARENT_LINE`, as option lines). VAT is the add-on's own (line → item → venue). **The parent's discount does not apply**: the add-on's discount is its own override, else the price list's general discount, as for any line. One inheritance chain per value (ADR 0051); staff set a discount on the add-on when they mean it.
 7. **Totals and snapshots.** An add-on always counts (`inTotal` true), unless its parent is an unchosen alternative. It does not weigh in a bundle's VAT split and is not covered by a `REPLACES` option. `quote.send` and invoicing snapshot it as one `OrderLine` with `parentLineId` (ADR 0052, 0057). `OrderLine` gets `role` (snapshot) so documents can indent it without reading the live line.
 8. **Time and holds.** An add-on created without a time takes its parent's period (copied at insert, owned after, ADR 0059 decision 3); an untimed parent gives an untimed add-on. Staff can set its own period (a projector only for the morning). A bookable add-on holds its item through `sync_line_occupancy` like any line, and its clashes, pool shortage and setup capacity are checked and previewed like any line's. No trigger changes.
@@ -79,7 +81,7 @@
 4. Ticket page program, quote, invoice and payment page rendering, sheets; demo seed and docs.
 
 ## Settled with the user (2026-11-02)
-- A group can forbid extras (`allowExtras`, default on), decision 5.
+- ~~A group can forbid extras (`allowExtras`, default on), decision 5.~~ Amended: the max is always a hard limit, `allowExtras` is dropped (migration `drop_allow_extras`).
 - An extra pick costs the option item's own price; a group has no extra price of its own, decision 6.
 - An add-on's line type defaults to its parent's and can be changed, decision 11.
 

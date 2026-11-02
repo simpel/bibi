@@ -24,7 +24,6 @@ export type CustomisableItem = {
     /** Split between guests (ADR 0082): each chosen option gets its own quantity. */
     split: boolean;
     /** Picks beyond maxPick may be added as add-ons at the item's own price (ADR 0088). */
-    allowExtras: boolean;
     options: { itemId: string; name: string; priceEffect: PriceEffect }[];
   }[];
 };

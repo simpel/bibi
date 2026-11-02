@@ -3,31 +3,7 @@ import { useTranslations } from "next-intl";
 import { CheckField } from "@/components/form/check-field";
 import { TextField } from "@/components/form/text-field";
 import { TimeField } from "@/components/form/time-field";
-import type { ExtraPick } from "../../line/ui/split-picks";
 import type { LineDialogFormApi } from "./use-line-dialog-form";
-
-export type ExtraPickRowProps = {
-  extra: ExtraPick;
-  /** The item's price as written ("65,00 kr"), or "–". */
-  price: string;
-  onRemove: () => void;
-};
-
-/** "Oat ball · extra · 65,00 kr": a pick beyond its group's max, sold as an add-on (ADR 0088). */
-export function ExtraPickRow({ extra, price, onRemove }: ExtraPickRowProps) {
-  const t = useTranslations("ticketIntake.line");
-  return (
-    <div className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
-      <span className="flex min-w-0 items-center gap-2">
-        <Badge variant="outline">{t("addOn")}</Badge>
-        <span className="truncate">{t("extraPick", { name: extra.name, price })}</span>
-      </span>
-      <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
-        {t("removeAddOn")}
-      </Button>
-    </div>
-  );
-}
 
 export type AddOnRowProps = {
   form: LineDialogFormApi;

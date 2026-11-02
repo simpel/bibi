@@ -50,7 +50,8 @@ export const lindholmenMeals: readonly DemoItem[] = [
     parts: named({ names: ["Green salad and bread", "Mineral water"] }),
     customisations: [
       {
-        name: "Main course",
+        // Split between guests: up to four different main courses, counted per dish (7 + 3 on L11).
+        ...{ name: "Main course", pick: 4, minPick: 1, split: true },
         options: named({
           names: [
             "Oven-baked cod loin, browned butter",

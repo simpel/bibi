@@ -112,7 +112,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
 | There are no lines. Create the ticket as a lead without lines? | Yes, a lead without lines · + Add a line |
 | <line> has quantity 0. | Remove the line · Edit line |
 | <line>: <group> is not chosen yet. <rule>. (a required group with no pick, ADR 0089) | Decide later · Edit line |
-| <line>: <group> has <n> chosen. Choose <rule>. (the item's group pick rule as `ticket.create` checks it: only for a group with a pick (ADR 0089); extra picks are add-ons, not options, so they never raise it) | Edit line |
+| <line>: <group> has <n> chosen. Choose <rule>. (the item's group pick rule as `ticket.create` checks it: only for a group with a pick (ADR 0089)) | Edit line |
 | <line>: <n> choices (or needs) but only <q> ordered. | Lower to fit · Edit line |
 | <line>: <q> needed, only <free> left that day. | Prebook all <q> (source <q−free> more) · Lower to <free> |
 | The email doesn't say <field>. The assistant guessed <value>. | Keep <value> · Change it |
@@ -141,10 +141,10 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
 |---|---|
 | `BOOKABLE` | Time, availability for that time |
 | `SETUPS` | Setup (capacity shown) |
-| `CUSTOMISATIONS` | Choices per group: a pick in a normal group, a quantity per option in a split group (ADR 0082). Each group with a pick must get between its min and max picks (core's rule, a split group counting options above 0); a group with no pick is open, even a required one (ADR 0089: review asks it, the ticket's line warns); a broken group says "Choose 1", "Choose 1–2", "Choose at least 1" or "Choose at most 2" under it, and Save waits. An edited line shows it at once. In a normal group that allows extras (ADR 0088), picks beyond the max are allowed: the first max picks, in the order picked, stay options and the rest show at once as add-on rows ("Oat ball · extra · 65,00 kr", the item's catalog price; the preview prices it exactly once the line is in the draft). Removing the row unpicks it. Without extras, and in split groups, the max stays a hard limit. |
+| `CUSTOMISATIONS` | Choices per group: a pick in a normal group, a quantity per option in a split group (ADR 0082). Each group with a pick must get between its min and max picks (core's rule, a split group counting options above 0); a group with no pick is open, even a required one (ADR 0089: review asks it, the ticket's line warns); a broken group says "Choose 1", "Choose 1–2", "Choose at least 1" or "Choose at most 2" under it, and Save waits. An edited line shows it at once. The max is a hard limit (ADR 0088, amended): a normal group takes no more picks than its max, and with max 1 a new pick replaces the old one. More is an add-on (below). |
 | `PRICED` | Unit price (list price shown as the placeholder), discount |
 
-- **Add-ons** (ADR 0088), under the item's fields: the extra picks, then items added with **+ Add an item** (the same item search, or free text with a name). Each added row shows the item and its catalog price, a quantity (empty follows the line's), **Own time (else the line's)** with from and to, and **Remove**. An add-on has the line's type. Saved with the line as `addOns`, created as add-on lines under it.
+- **Add-ons** (ADR 0088), under the item's fields: items added with **+ Add an item** (the same item search, or free text with a name). Each added row shows the item and its catalog price, a quantity (empty follows the line's), **Own time (else the line's)** with from and to, and **Remove**. An add-on has the line's type. Saved with the line as `addOns`, created as add-on lines under it.
 - **Needs**: counts per value from the organization's lists (Vegan 2, Nut allergy 1), stored as line Requirements.
 - **Note** (shown on work orders).
 - **Availability box**: the preview's issues for this line, live. A hard clash says "You can still save; the line is prebooked and shown as blocked."

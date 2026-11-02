@@ -9,8 +9,6 @@ export type GroupRulesInput<V, S extends z.ZodType<unknown, V>> = {
   groups: CustomisableItem["groups"];
   /** The options the raw values choose (`chosenOptionsOf`). */
   chosen: (input: { values: V }) => readonly { itemId: string }[];
-  /** Picks beyond the max of a group that allows extras are add-ons (ADR 0088). */
-  extras?: boolean;
   ruleText: PickRuleText;
 };
 
@@ -22,14 +20,13 @@ export function withGroupRules<V extends ChooseOptionsFormValues, S extends z.Zo
   schema,
   groups,
   chosen,
-  extras = false,
   ruleText,
 }: GroupRulesInput<V, S>) {
   return z
     .custom<V>()
     .superRefine((values, context) => {
       const picks = chosen({ values });
-      for (const issue of groupPickIssues({ groups, chosen: picks, extras })) {
+      for (const issue of groupPickIssues({ groups, chosen: picks })) {
         context.addIssue({
           code: "custom",
           path: ["groups", issue.index, issue.field],

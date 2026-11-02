@@ -33,7 +33,6 @@ export function CustomisationGroupRow(props: CustomisationGroupRowProps) {
       <TextField form={form} name={`${name}.maxPick`} label={t("maxPick")} type="number" />
       <div className="flex flex-wrap gap-6 sm:col-span-3">
         <CheckField form={form} name={`${name}.split`} label={t("split")} />
-        <CheckField form={form} name={`${name}.allowExtras`} label={t("allowExtras")} />
       </div>
       <CustomisationOptionsField form={form} groupIndex={index} items={items} />
       <RemoveButton label={t("remove")} onRemove={onRemove} />

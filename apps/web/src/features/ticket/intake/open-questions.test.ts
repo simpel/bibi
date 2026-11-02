@@ -90,9 +90,9 @@ describe("openQuestions", () => {
     expect(kinds({ items })).toEqual(["OPEN_CHOICE"]);
   });
 
-  it("does not ask about extra picks, which are the line's add-ons (ADR 0088)", () => {
+  it("does not ask about an add-on of an option's item (ADR 0088)", () => {
     const snack = {
-      ...{ name: "Snack", minPick: 1, maxPick: 1, split: false, allowExtras: true },
+      ...{ name: "Snack", minPick: 1, maxPick: 1, split: false },
       options: [{ itemId: "cake" }, { itemId: "fruit" }, { itemId: "oat" }],
     };
     const items = [{ id: "i1", groups: [snack] }];

@@ -80,8 +80,8 @@ export const chooseLineOptions = defineOperation({
     "the line (same time and type) and a dropped one is removed. Each group with a pick needs " +
     "between its minPick and maxPick distinct options; a group can be left open (a required one " +
     "gives the line warning UNCHOSEN_REQUIRED_GROUP, ADR 0089), and opting out is choosing the " +
-    "other option. More than maxPick is refused: add the extra picks as add-ons " +
-    "(line.create with parentLineId, ADR 0088) when the group allows extras. An option of a split group carries its own quantity (how " +
+    "other option. More than maxPick is refused: add more as add-ons (line.create with " +
+    "parentLineId, ADR 0088). An option of a split group carries its own quantity (how " +
     "many of the line get it); any other option applies to the whole line. The option's price " +
     "effect decides the totals: INCLUDED does not count, EXTRA counts at its own price and " +
     "quantity, REPLACES counts instead of the line for its quantity. A chosen option's own needs " +
