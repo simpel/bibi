@@ -28,7 +28,9 @@ export function WhenSection({ state, dispatch, summaries }: Omit<StepsProps, "da
       }
     >
       <WhenStep
-        {...{ key: state.draft ? "read" : "typed", when, prefill: state.draft?.when ?? null }}
+        key={state.draft ? "read" : "typed"}
+        when={when}
+        prefill={state.draft?.when ?? null}
         onDone={({ when: next }) => dispatch({ type: "setWhen", when: next })}
         onValidChange={onValidChange}
       />
