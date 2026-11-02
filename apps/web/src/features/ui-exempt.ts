@@ -4,16 +4,6 @@ export type UiExempt = { operation: string; reason: string };
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
   {
-    operation: "ticket.previewLines",
-    reason:
-      "Used by /new/ticket from slice 6 of docs/plans/ticket-intake.md (package groups and the review step, ADR 0081).",
-  },
-  {
-    operation: "customer.findSimilar",
-    reason:
-      "Used by /new/ticket from slice 6 of docs/plans/ticket-intake.md (the duplicate check before a new customer, ADR 0081).",
-  },
-  {
     operation: "itemDemand.get",
     reason:
       "A demand has no page of its own: the item page lists them with itemDemand.list and edits them inline; the unit picker reads one to find its pool.",

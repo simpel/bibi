@@ -28,6 +28,7 @@ export * from "./components/capability-display/setups-display";
 export * from "./components/card/card";
 export * from "./components/chart/chart";
 export { Checkbox, type CheckboxProps } from "./components/checkbox/checkbox";
+export * from "./components/choice-card/choice-card";
 export * from "./components/collapsible/collapsible";
 export * from "./components/color-swatch/color-swatch";
 export { Combobox, type ComboboxProps } from "./components/combobox/combobox";
@@ -99,16 +100,7 @@ export * from "./components/questionnaire/questionnaire";
 export * from "./components/questionnaire/questionnaire-actions";
 export * from "./components/questionnaire/questionnaire-choices";
 export * from "./components/relative-time/relative-time";
-export {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from "./components/select/select";
+export * from "./components/select/select";
 export { Separator, type SeparatorProps } from "./components/separator/separator";
 export * from "./components/setup-panel/setup-panel";
 export * from "./components/setup-panel/setup-selection";
@@ -136,10 +128,12 @@ export { SidebarMenuAction, SidebarMenuSkeleton } from "./components/sidebar/sid
 export * from "./components/sidebar/sidebar-menu-sub";
 export { Skeleton, type SkeletonProps } from "./components/skeleton/skeleton";
 export * from "./components/stat-card/stat-card";
+export * from "./components/step-section/step-section";
 export { Switch, type SwitchProps } from "./components/switch/switch";
 export * from "./components/table/table";
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/tabs/tabs";
 export { Textarea, type TextareaProps } from "./components/textarea/textarea";
+export * from "./components/time-input/time-input";
 export { Toaster, type ToasterProps, toast } from "./components/toast/toast";
 export * from "./components/tooltip/tooltip";
 export * from "./components/view-switcher/view-switcher";

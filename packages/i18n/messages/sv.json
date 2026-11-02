@@ -855,6 +855,120 @@
       }
     }
   },
+  "ticketIntake": {
+    "title": "Nytt ärende",
+    "description": "Vem som frågar, när och hur många, sedan ett paket eller en engångsbokning. Inget sparas förrän du skapar.",
+    "change": "Ändra",
+    "who": {
+      "title": "Vem",
+      "searchPlaceholder": "Sök kunder på namn",
+      "recent": "Senaste kunder",
+      "matches": "Kunder",
+      "noMatches": "Ingen kund matchar.",
+      "typeToSearch": "Skriv ett namn för att söka.",
+      "newCustomer": "Ny kund ”{name}”",
+      "looksLike": "”{name}” liknar {customer}.",
+      "useCustomer": "Använd {customer}",
+      "notSimilar": "Nej, det är en ny kund",
+      "newCustomerTitle": "Ny kund",
+      "customerName": "Kundens namn",
+      "customerType": "Kundtyp",
+      "contactName": "Kontaktpersonens namn",
+      "contactEmail": "Kontaktpersonens e-post",
+      "contactType": "Kontakttyp",
+      "createCustomer": "Skapa kund",
+      "noContact": "{customer} har ingen kontaktperson. Lägg till en för att fortsätta.",
+      "addContact": "Lägg till kontaktperson",
+      "contact": "Kontaktperson",
+      "contactIs": "Kontaktperson: {contact}",
+      "otherCustomer": "Annan kund",
+      "next": "Nästa: när"
+    },
+    "when": {
+      "title": "När och hur många",
+      "date": "Datum",
+      "from": "Från",
+      "to": "Till",
+      "guests": "Uppskattat antal gäster",
+      "zoneHint": "Tiderna gäller i organisationens tidszon. Ett ”till” före ”från” slutar dagen efter.",
+      "next": "Nästa: paket",
+      "backToReview": "Tillbaka till granskningen"
+    },
+    "package": {
+      "title": "Paket eller engångsbokning",
+      "range": {
+        "both": "{min}–{max} gäster",
+        "min": "Från {min} gäster",
+        "max": "Upp till {max} gäster",
+        "any": "Valfritt antal gäster"
+      },
+      "notes": {
+        "available": "✓ Ledigt",
+        "hidden": "Tillgänglighet dold",
+        "warnings": "⚠ {count, plural, one {# varning} other {# varningar}}",
+        "clashes": "✕ {count, plural, one {# krock} other {# krockar}} med andra bokningar",
+        "guests": "⚠ Gjort för {range}, du frågade om {headcount}",
+        "pastEnd": "⚠ Pågår till {time}, efter önskat slut"
+      },
+      "groups": {
+        "available": "Ledigt {period} för {guests}",
+        "clashes": "Inte ledigt då · krockar med andra bokningar",
+        "outside": "Utanför önskad tid eller antal gäster"
+      },
+      "oneOff": "Engångsbokning",
+      "oneOffDescription": "Bygg bokningen rad för rad.",
+      "none": "Inga paket ännu",
+      "noneDescription": "Gör en engångsbokning, eller skapa ett paket att återanvända.",
+      "createPackage": "Skapa ett paket",
+      "picked": "Valt: {summary}",
+      "next": "Nästa: granska"
+    },
+    "questions": {
+      "progress": "Fråga {number} av {total}",
+      "cancel": "Avbryt, välj ett annat paket",
+      "guests": {
+        "title": "{headcount} gäster ligger utanför paketets antal gäster.",
+        "lower": "Sänk bokningen till {guests} gäster",
+        "raise": "Höj bokningen till {guests} gäster",
+        "keep": "Behåll {headcount} gäster (rader över kapacitet flaggas)"
+      },
+      "end": {
+        "title": "Paketet pågår till {end}, efter önskat slut {requestedEnd}.",
+        "extend": "Förläng ärendet till {end}",
+        "keep": "Behåll {requestedEnd} och korta raderna i granskningen"
+      },
+      "clash": {
+        "title": "Några rader krockar med andra bokningar vid den här tiden.",
+        "titleNoFreeTime": "Några rader krockar med andra bokningar, och ingen senare tid samma dag är ledig.",
+        "move": "Flytta bokningen till {period} (första lediga tid)",
+        "prebook": "Behåll tiden och förboka (blockerad tills det är löst)"
+      }
+    },
+    "summary": {
+      "who": "{customer} · {contact}",
+      "when": "{period} · {guests, plural, one {# gäst} other {# gäster}}",
+      "oneOff": "Engångsbokning",
+      "guestsChanged": "{guests} gäster",
+      "guestsKept": "behåller {guests} gäster",
+      "extended": "förlängt till {times}",
+      "shortened": "rader kortas i granskningen",
+      "moved": "flyttat till {times}",
+      "prebooked": "förbokat"
+    },
+    "draft": {
+      "offer": "Fortsätta utkastet för {customer}?",
+      "offerWithDate": "Fortsätta utkastet för {customer} ({date}, {guests, plural, one {# gäst} other {# gäster}})?",
+      "continue": "Fortsätt",
+      "discard": "Släng"
+    },
+    "review": {
+      "title": "Granska",
+      "who": "Vem",
+      "when": "När",
+      "pick": "Paket",
+      "comingNext": "Att bygga bokningen och Skapa kommer härnäst. Inget är sparat än."
+    }
+  },
   "calendar": {
     "levels": {
       "day": "Dag",

@@ -7,11 +7,14 @@ import {
   expireTicketHolds,
   exportTicket,
   type LineDto,
+  previewTicketLines,
   type TicketChangeStatusInput,
   type TicketCreateFromTemplateInput,
   type TicketCreateInput,
   type TicketDto,
   type TicketExport,
+  type TicketPreviewLines,
+  type TicketPreviewLinesInput,
   type TicketUpdateInput,
   updateTicket,
 } from "@bibi/core";
@@ -64,4 +67,13 @@ export async function expireTicketHoldsAction(): Promise<ActionResult<{ items: L
   return toActionResult({
     result: await runOperation({ operation: expireTicketHolds, input: {} }),
   });
+}
+
+export type PreviewTicketLinesActionInput = { input: TicketPreviewLinesInput };
+
+/** Plans packages or draft lines without writing anything (`ticket.previewLines`, ADR 0081). */
+export async function previewTicketLinesAction({
+  input,
+}: PreviewTicketLinesActionInput): Promise<ActionResult<TicketPreviewLines>> {
+  return toActionResult({ result: await runOperation({ operation: previewTicketLines, input }) });
 }

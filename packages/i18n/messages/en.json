@@ -855,6 +855,120 @@
       }
     }
   },
+  "ticketIntake": {
+    "title": "New ticket",
+    "description": "Who asks, when and how many, then a package or a one-off. Nothing is saved until Create.",
+    "change": "Change",
+    "who": {
+      "title": "Who",
+      "searchPlaceholder": "Search customers by name",
+      "recent": "Recent customers",
+      "matches": "Customers",
+      "noMatches": "No customer matches.",
+      "typeToSearch": "Type a name to search.",
+      "newCustomer": "New customer “{name}”",
+      "looksLike": "“{name}” looks like {customer}.",
+      "useCustomer": "Use {customer}",
+      "notSimilar": "No, it is a new customer",
+      "newCustomerTitle": "New customer",
+      "customerName": "Customer name",
+      "customerType": "Customer type",
+      "contactName": "Contact name",
+      "contactEmail": "Contact email",
+      "contactType": "Contact type",
+      "createCustomer": "Create customer",
+      "noContact": "{customer} has no contact person. Add one to continue.",
+      "addContact": "Add contact",
+      "contact": "Contact",
+      "contactIs": "Contact: {contact}",
+      "otherCustomer": "Other customer",
+      "next": "Next: when"
+    },
+    "when": {
+      "title": "When and how many",
+      "date": "Date",
+      "from": "From",
+      "to": "To",
+      "guests": "Estimated guests",
+      "zoneHint": "Times are in the organization’s time zone. A “to” before “from” ends the next day.",
+      "next": "Next: packages",
+      "backToReview": "Back to review"
+    },
+    "package": {
+      "title": "Package or one-off",
+      "range": {
+        "both": "{min}–{max} guests",
+        "min": "From {min} guests",
+        "max": "Up to {max} guests",
+        "any": "Any number of guests"
+      },
+      "notes": {
+        "available": "✓ Available",
+        "hidden": "Availability hidden",
+        "warnings": "⚠ {count, plural, one {# warning} other {# warnings}}",
+        "clashes": "✕ {count, plural, one {# clash} other {# clashes}} with other bookings",
+        "guests": "⚠ Made for {range}, you asked for {headcount}",
+        "pastEnd": "⚠ Runs to {time}, past the requested end"
+      },
+      "groups": {
+        "available": "Available {period} for {guests}",
+        "clashes": "Not available then · clashes with other bookings",
+        "outside": "Outside your time or guest range"
+      },
+      "oneOff": "One-off",
+      "oneOffDescription": "Build the booking line by line.",
+      "none": "No packages yet",
+      "noneDescription": "Make this a one-off, or create a package to reuse.",
+      "createPackage": "Create a package",
+      "picked": "Picked: {summary}",
+      "next": "Next: review"
+    },
+    "questions": {
+      "progress": "Question {number} of {total}",
+      "cancel": "Cancel, pick another package",
+      "guests": {
+        "title": "{headcount} guests is outside the package’s guest range.",
+        "lower": "Lower the booking to {guests} guests",
+        "raise": "Raise the booking to {guests} guests",
+        "keep": "Keep {headcount} guests (lines over capacity are flagged)"
+      },
+      "end": {
+        "title": "The package runs to {end}, past the requested end {requestedEnd}.",
+        "extend": "Extend the ticket to {end}",
+        "keep": "Keep {requestedEnd} and shorten the lines in review"
+      },
+      "clash": {
+        "title": "Some lines clash with other bookings at this time.",
+        "titleNoFreeTime": "Some lines clash with other bookings, and no time later that day is free.",
+        "move": "Move the booking to {period} (first free time)",
+        "prebook": "Keep the time and prebook (blocked until resolved)"
+      }
+    },
+    "summary": {
+      "who": "{customer} · {contact}",
+      "when": "{period} · {guests, plural, one {# guest} other {# guests}}",
+      "oneOff": "One-off",
+      "guestsChanged": "{guests} guests",
+      "guestsKept": "keeps {guests} guests",
+      "extended": "extended to {times}",
+      "shortened": "lines shortened in review",
+      "moved": "moved to {times}",
+      "prebooked": "prebooked"
+    },
+    "draft": {
+      "offer": "Continue the draft for {customer}?",
+      "offerWithDate": "Continue the draft for {customer} ({date}, {guests, plural, one {# guest} other {# guests}})?",
+      "continue": "Continue",
+      "discard": "Discard"
+    },
+    "review": {
+      "title": "Review",
+      "who": "Who",
+      "when": "When",
+      "pick": "Package",
+      "comingNext": "Building the booking and Create come next. Nothing is saved yet."
+    }
+  },
   "calendar": {
     "levels": {
       "day": "Day",

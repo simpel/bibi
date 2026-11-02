@@ -5,8 +5,11 @@ import {
   type CustomerArchiveInput,
   type CustomerCreateInput,
   type CustomerDto,
+  type CustomerFindSimilar,
   type CustomerUpdateInput,
   createCustomer,
+  findSimilarCustomers,
+  listCustomers,
   updateCustomer,
 } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
@@ -34,5 +37,37 @@ export async function archiveCustomerAction({
 }: ArchiveCustomerActionInput): Promise<ActionResult<CustomerDto>> {
   return toActionResult({
     result: await runOperation({ operation: archiveCustomer, input: values }),
+  });
+}
+
+/** A customer as a picker shows it. */
+export type CustomerOption = { id: string; name: string };
+
+export type SearchCustomersActionInput = { query: string };
+
+/** Up to 8 active customers whose name contains `query` (the intake's live search, ADR 0081). */
+export async function searchCustomersAction({
+  query,
+}: SearchCustomersActionInput): Promise<ActionResult<CustomerOption[]>> {
+  const result = await runOperation({ operation: listCustomers, input: { query, limit: 8 } });
+  const options = result.ok
+    ? {
+        ok: true as const,
+        value: result.value.items
+          .filter(({ status }) => status === "ACTIVE")
+          .map(({ id, name }) => ({ id, name })),
+      }
+    : result;
+  return toActionResult({ result: options });
+}
+
+export type FindSimilarCustomersActionInput = { name: string };
+
+/** Existing customers a new name may duplicate (`customer.findSimilar`, ADR 0081). */
+export async function findSimilarCustomersAction({
+  name,
+}: FindSimilarCustomersActionInput): Promise<ActionResult<CustomerFindSimilar>> {
+  return toActionResult({
+    result: await runOperation({ operation: findSimilarCustomers, input: { name } }),
   });
 }
