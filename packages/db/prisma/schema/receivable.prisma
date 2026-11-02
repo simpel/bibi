@@ -64,6 +64,11 @@ model Invoice {
   /// Sums of the frozen lines in minor units (snapshot).
   totalExclVatMinor Int
   totalInclVatMinor Int
+  /// Owned (ADR 0090): where the invoice was raised when it was sent; null = in Bibi only (the
+  /// customer pays through a payment Bibi requests).
+  provider          InvoiceProvider?
+  /// Mirror: the invoice's document number at the provider (Fortnox); null until raised there.
+  providerReference String?
   createdAt         DateTime                @default(now())
   updatedAt         DateTime                @updatedAt
   createdBy         String?

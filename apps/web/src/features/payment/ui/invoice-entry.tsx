@@ -42,6 +42,13 @@ export function InvoiceEntry({ invoice, actions, dates: format, numbers }: Invoi
         </span>
       ) : null}
       <ReceivableBadges status={invoice.status} progress={invoice.progress} />
+      {invoice.provider === "FORTNOX" && invoice.status === "SENT" ? (
+        <span className="text-xs text-muted-foreground">
+          {invoice.providerReference
+            ? t("inFortnox", { reference: invoice.providerReference })
+            : t("notInFortnox")}
+        </span>
+      ) : null}
       {due ? (
         <time className="text-xs text-muted-foreground" dateTime={due.toISOString()}>
           {t("due", { date: format.date({ instant: due }) })}

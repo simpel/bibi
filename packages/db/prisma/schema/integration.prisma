@@ -45,6 +45,9 @@ model IntegrationConnection {
   updatedAt           DateTime                    @updatedAt
   createdBy           String?
 
+  /// Fortnox's tenant id for this company in the Topics stream (ADR 0090), learned when the
+  /// worker adds the connection; maps a stream event back to the organization.
+  fortnoxTenantId    Int?
   @@unique([id, organizationId])
   @@unique([organizationId, provider])
   @@index([provider, status, refreshExpiresAt])
@@ -63,4 +66,12 @@ enum IntegrationConnectionStatus {
   EXPIRED
   /// An admin disconnected; tokens cleared and revoked.
   DISCONNECTED
+}
+
+/// Where the worker's Fortnox Topics stream stopped, per topic (ADR 0090). Platform table, one
+/// row per topic, written only by the worker with `getDb()`. Fortnox replays up to 14 days.
+model FortnoxTopicOffset {
+  topic     String   @id
+  offset    String
+  updatedAt DateTime @updatedAt
 }

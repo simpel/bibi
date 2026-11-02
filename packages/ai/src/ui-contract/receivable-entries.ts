@@ -50,5 +50,6 @@ export const RECEIVABLE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   invoice_get: invoiceCard,
   invoice_create: invoiceCard,
   invoice_send: invoiceCard,
+  invoice_sync: invoiceCard,
   invoice_void: invoiceCard,
 };

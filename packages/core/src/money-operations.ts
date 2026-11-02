@@ -20,6 +20,33 @@ import {
   getFortnoxGateway,
   setFortnoxGateway,
 } from "./features/integration/fortnox/gateway-registry";
+import type {
+  FortnoxInvoiceInput,
+  FortnoxInvoicingGateway,
+  FortnoxPayment,
+} from "./features/integration/fortnox/invoicing-gateway";
+import {
+  getFortnoxInvoicingGateway,
+  setFortnoxInvoicingGateway,
+} from "./features/integration/fortnox/invoicing-registry";
+import {
+  type FortnoxEventOutcome,
+  type FortnoxTopicEvent,
+  FortnoxTopicEventSchema,
+  handleFortnoxEvent,
+} from "./features/integration/fortnox/topics/events";
+import {
+  FORTNOX_REPLAY_MS,
+  fortnoxStreamSecret,
+  sweepFortnoxInvoices,
+} from "./features/integration/fortnox/topics/sweep";
+import {
+  type FortnoxTenantToken,
+  fortnoxTenantTokens,
+  loadFortnoxOffsets,
+  rememberFortnoxTenant,
+  saveFortnoxOffset,
+} from "./features/integration/fortnox/topics/tenants";
 import {
   completeIntegrationConnect,
   connectIntegration,
@@ -35,6 +62,7 @@ import {
   invoiceOperations,
   listInvoices,
   sendInvoice,
+  syncInvoice,
   voidInvoice,
 } from "./features/invoice/operations";
 import { paymentOperations } from "./features/payment/operations";
@@ -54,7 +82,18 @@ export const moneyOperations = [
 ];
 
 // The integration feature reaches the package index through here (its size limit).
-export type { FortnoxCompany, FortnoxGateway, FortnoxRefresh, FortnoxTokens };
+export type {
+  FortnoxCompany,
+  FortnoxEventOutcome,
+  FortnoxGateway,
+  FortnoxInvoiceInput,
+  FortnoxInvoicingGateway,
+  FortnoxPayment,
+  FortnoxRefresh,
+  FortnoxTenantToken,
+  FortnoxTokens,
+  FortnoxTopicEvent,
+};
 // The invoice and financials operations reach the package index through here (its size limit).
 export {
   completeIntegrationConnect,
@@ -63,20 +102,32 @@ export {
   createInvoice,
   disconnectIntegration,
   downloadAccountingExport,
+  FORTNOX_REPLAY_MS,
+  FortnoxTopicEventSchema,
   financeOverview,
+  fortnoxStreamSecret,
+  fortnoxTenantTokens,
   getAccountingExport,
   getAccountingSettings,
   getFortnoxAccessToken,
   getFortnoxGateway,
+  getFortnoxInvoicingGateway,
   getInvoice,
+  handleFortnoxEvent,
   invoiceOperations,
   listAccountingExports,
   listIntegrations,
   listInvoices,
+  loadFortnoxOffsets,
   previewAccountingExport,
   refreshExpiringIntegrations,
+  rememberFortnoxTenant,
+  saveFortnoxOffset,
   sendInvoice,
   setFortnoxGateway,
+  setFortnoxInvoicingGateway,
+  sweepFortnoxInvoices,
+  syncInvoice,
   updateAccountingSettings,
   voidInvoice,
 };

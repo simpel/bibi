@@ -104,7 +104,12 @@ export const GLOBAL_MODELS = new Set<string>([
 ]);
 
 /** Platform tables (ADR 0015): written only by platform code with `getDb()`, refused by `scopedDb`. */
-export const PLATFORM_MODELS = new Set<string>(["SystemLog", "AiSetting", "StripeWebhookEvent"]);
+export const PLATFORM_MODELS = new Set<string>([
+  "SystemLog",
+  "AiSetting",
+  "StripeWebhookEvent",
+  "FortnoxTopicOffset",
+]);
 
 /**
  * User-scoped tables (ADR 0039): one user's rows (`userId`) across organizations. `scopedDb` pins

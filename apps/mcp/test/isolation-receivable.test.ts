@@ -49,6 +49,7 @@ describe("cross-organization isolation: receivables and balances (ADR 0057)", ()
         ["deposit_create", args],
         ["invoice_get", { id }],
         ["invoice_send", { id }],
+        ["invoice_sync", { id }],
         ["invoice_void", { id }],
         ["invoice_create", { ticketId: ticket.id }],
         ["payment_balance", { ticketId: ticket.id }],

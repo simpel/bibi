@@ -8,6 +8,7 @@ import type {
 } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { DepositEntry } from "./deposit-entry";
+import { FortnoxSyncButton } from "./fortnox-sync-button";
 import { InvoiceEntry } from "./invoice-entry";
 import { InvoiceLines } from "./invoice-lines";
 import { PaidOf } from "./paid-of";
@@ -60,7 +61,10 @@ function InvoiceRow({ invoice, canWrite, ...formats }: InvoiceRowProps) {
   const { id, status, openMinor } = invoice;
   const confirm = t("voidConfirm", { number: invoice.number });
   const actions = canWrite ? (
-    <ReceivableActions {...{ kind: "invoice", id, status, openMinor }} voidConfirm={confirm} />
+    <>
+      {invoice.provider === "FORTNOX" && status === "SENT" ? <FortnoxSyncButton id={id} /> : null}
+      <ReceivableActions {...{ kind: "invoice", id, status, openMinor }} voidConfirm={confirm} />
+    </>
   ) : null;
   return (
     <li>

@@ -53,6 +53,7 @@ export const MONEY_NAMES = [
   "invoice.get",
   "invoice.list",
   "invoice.send",
+  "invoice.sync",
   "invoice.void",
   "payment.balance",
   "dashboard.summary",

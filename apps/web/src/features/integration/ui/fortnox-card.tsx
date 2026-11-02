@@ -52,6 +52,7 @@ export async function FortnoxCard({ connection, canEdit, connectedOn }: FortnoxC
       <CardContent className="flex flex-1 flex-col gap-4 text-sm text-muted-foreground">
         <p>{t(`hint.${status}`)}</p>
         <CompanyFacts facts={facts} />
+        {status === "CONNECTED" ? <p>{t("reconnectNote")}</p> : null}
         {configured ? <p>{t("adminNote")}</p> : <p>{t("notConfigured")}</p>}
         {canEdit ? (
           <div className="mt-auto flex flex-wrap gap-2">

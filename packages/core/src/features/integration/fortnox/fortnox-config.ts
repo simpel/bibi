@@ -7,8 +7,8 @@ export const FORTNOX_TOKEN_URL = "https://apps.fortnox.se/oauth-v1/token";
 export const FORTNOX_REVOKE_URL = "https://apps.fortnox.se/oauth-v1/revoke";
 export const FORTNOX_API_URL = "https://api.fortnox.se/3";
 
-/** Only the company lookup for now; invoicing adds scopes and a reconnect (ADR 0087). */
-export const FORTNOX_SCOPE = "companyinformation";
+/** The company lookup and invoicing (ADR 0087, 0090); a scope change needs a reconnect. */
+export const FORTNOX_SCOPE = "companyinformation invoice customer payment";
 
 /** Fortnox refresh tokens live 45 days from issue and rotate on every refresh. */
 export const FORTNOX_REFRESH_TTL_MS = 45 * 24 * 60 * 60 * 1000;

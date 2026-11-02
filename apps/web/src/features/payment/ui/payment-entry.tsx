@@ -38,6 +38,9 @@ export function PaymentEntry({ payment, dates: format, numbers }: PaymentEntryPr
         {t(`method.${payment.method}`)} · {t(`for.${settles({ payment })}`)}
       </span>
       <PaymentStatusBadge status={payment.status} />
+      {payment.provider === "FORTNOX" ? (
+        <span className="text-xs text-muted-foreground">{t("providerFortnox")}</span>
+      ) : null}
       <time className="text-xs text-muted-foreground" dateTime={when.toISOString()}>
         {format.dateTime({ instant: when })}
       </time>

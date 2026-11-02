@@ -964,12 +964,13 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 > **Ownership:** owned `method`, `amountMinor`, `currency`, `applicationFeeMinor` (agreed at charge time) and the receivable it settles; mirror of Stripe `status`, `paidAt`, `refundedMinor`, `providerReference`, `paymentUrl` (written only by `payment.applySignal` and the after-commit charge).
 
 **Attributes**
-- method: `CARD` (hosted checkout link) or `INVOICE` (Stripe invoice emailed to the customer); Swish comes later through Stripe
+- method: `CARD` (hosted checkout link) or `INVOICE` (Stripe invoice emailed to the customer, or a payment booked on a Fortnox invoice); Swish comes later through Stripe
 - status: `PENDING`, `SUCCEEDED`, `FAILED`, `CANCELLED` or `REFUNDED`
 - amount and currency (`amountMinor` in minor units, ISO 4217)
+- provider (`InvoiceProvider`): `STRIPE` (a charge Bibi requested) or `FORTNOX` (booked on an invoice raised there, mirrored by `invoice.sync`, [ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)); `providerAccountId` (the connected account) is null for Fortnox
 - application fee (`applicationFeeMinor`, null = none; from `STRIPE_APPLICATION_FEE_BPS`), shown on each payment on the ticket page
 - the receivable it settles: exactly one of `quoteId`, `depositId`, `invoiceId` (check constraint)
-- PSP reference (`providerReference`: the Checkout Session or Invoice id, unique; null until Stripe has created it)
+- PSP reference (`providerReference`: the Checkout Session or Invoice id, unique; for Fortnox `fortnox:<organizationId>:<payment number>`; null until the provider has it)
 - payment link (`paymentUrl`) and, for a checkout, when it expires
 - public token (`publicToken`, unique, 256 random bits): addresses the customer's payment page `/pay/<token>`; never in the DTO
 - paid at
@@ -991,13 +992,15 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · The invoice after delivery: a snapshot of the ticket's priced lines, like a sent quote ([ADR 0052](decisions/0052-the-line-is-the-booking.md), [ADR 0057](decisions/0057-money-balance-is-derived.md)). A ticket can be invoiced only in a status with the `invoiceable` flag.
 
-> **Ownership:** owned `number` (per organization, highest + 1), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments).
+> **Ownership:** owned `number` (per organization, highest + 1), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); `provider` (set by send, ADR 0090) and the mirror `providerReference`; snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments).
 
 **Attributes**
 - invoice number, due date (given, else after the customer's payment terms, default 30 days)
 - status: `DRAFT → SENT → VOID` (VOID is final)
 - totals of the frozen lines
 - deducted deposits (`InvoiceDeposit`, snapshot at create) and the amount due: total incl. VAT minus them, which payments settle ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md))
+- provider (`InvoiceProvider`, owned): where the invoice was raised when it was sent; null = in Bibi only
+- Fortnox document number (`providerReference`, a mirror; null until raised there)
 - export status (Fortnox / Visma) – *later*
 - e-invoice – *later*
 
@@ -1007,7 +1010,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `1:N` invoices → OrderLine
 - `1:N` deducts → InvoiceDeposit → Deposit
 
-> Operations (`payment:read` to read, `payment:write` to change): `invoice.list` (per ticket, newest first), `invoice.get`, `invoice.create({ ticketId, dueDate? })` (needs `program:read`, since it copies the lines; an `invoiceable` status; at least one priced line with quantity and VAT; and no other invoice of the ticket that is not VOID, held by a partial unique index so a concurrent second create is `CONFLICT`), `invoice.send` and `invoice.void` (as for a deposit; voiding lets the ticket be invoiced again). On every surface; web on the ticket page.
+> Operations (`payment:read` to read, `payment:write` to change): `invoice.list` (per ticket, newest first), `invoice.get`, `invoice.create({ ticketId, dueDate? })` (needs `program:read`, since it copies the lines; an `invoiceable` status; at least one priced line with quantity and VAT; and no other invoice of the ticket that is not VOID, held by a partial unique index so a concurrent second create is `CONFLICT`), `invoice.send` and `invoice.void` (as for a deposit; voiding lets the ticket be invoiced again). On every surface; web on the ticket page. `invoice.send` raises the invoice in Fortnox after the commit when `provider` is FORTNOX; `invoice.sync` (`payment:write`) raises it again if that failed and mirrors the payments booked on it ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)).
 
 ### InvoiceDeposit (`InvoiceDeposit`)
 
@@ -1431,11 +1434,13 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### IntegrationConnection (`IntegrationConnection`)
 
-*MVP* · The organization's connection to an outside system ([ADR 0087](decisions/0087-fortnox-connection.md)), one per provider; Fortnox is the only provider so far. No row means "not connected". An admin starts it with `integration.connect`, approves at Fortnox (a Fortnox system administrator, service account) and the browser callback finishes it. Only the connection exists so far: nothing is sent to Fortnox yet.
+*MVP* · The organization's connection to an outside system ([ADR 0087](decisions/0087-fortnox-connection.md)), one per provider; Fortnox is the only provider so far. No row means "not connected". An admin starts it with `integration.connect`, approves at Fortnox (a Fortnox system administrator, service account) and the browser callback finishes it. Invoices are raised in Fortnox through this connection ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)).
 
 **Attributes**
 - provider (Fortnox)
 - status: pending, connected, expired (Fortnox refused the stored grant; reconnect) or disconnected
+- granted scopes (`scope`: `companyinformation invoice customer payment`)
+- Fortnox tenant id (`fortnoxTenantId`): the company's id in the worker's Topics stream, which routes its events to the organization (ADR 0090)
 - access and refresh tokens, sealed with AES-256-GCM (`INTEGRATION_SECRET_KEY`), with their expiries; never returned by any operation
 - pending authorization: hash of the OAuth state, sealed PKCE verifier, start time (cleared when the callback runs)
 - refresh lease: when a caller claimed the rotating refresh token (30 seconds)
@@ -1443,6 +1448,17 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - connected at, connected by
 
 > Operations: `integration.list` (permission `integration:read`), `integration.connect` and `integration.disconnect` (`integration:write`, admin only), on every surface. `integration.completeConnect` is run only by the web callback (`/api/integrations/fortnox/callback`) as the signed-in user, and `integration.refreshExpiring` only by the worker's daily job as SYSTEM. Access tokens come only from `getFortnoxAccessToken`, called outside a transaction. The web app offers them under Settings, Integrations. Credentials come from `@bibi/config` (`FORTNOX_CLIENT_ID`, `FORTNOX_CLIENT_SECRET`, `INTEGRATION_SECRET_KEY`).
+
+### FortnoxTopicOffset (`FortnoxTopicOffset`)
+
+*MVP* · Platform data. Where the worker's Fortnox Topics stream stopped, one row per topic; Fortnox replays up to 14 days, so a restart resumes from here ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)).
+
+> **Ownership:** owned; written by the worker after each event (`saveFortnoxOffset`) and read at worker start (`loadFortnoxOffsets`). No organization: the stream is shared by every organization.
+
+**Attributes**
+- topic (key; `invoices` today)
+- offset (Fortnox's, as text)
+- updated at
 
 ### Communication & log
 

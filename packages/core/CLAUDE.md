@@ -60,6 +60,7 @@ The parity core: every capability is defined **once** as an operation and then e
 ## Integrations (ADR 0087)
 - A Fortnox access token comes only from `getFortnoxAccessToken` (`features/integration/fortnox/access-token.ts`), called in `external`, never in a handler: a refresh rotates the refresh token and a rollback would lose it. Tokens are sealed with `sealSecret` (`crypto/secret-box.ts`) and never appear in an output, log or audit row.
 - `integration.completeConnect` (web callback) and `integration.refreshExpiring` (worker) are run directly, never registered. Tests swap Fortnox with `setFortnoxGateway`.
+- Fortnox invoicing goes through `getFortnoxInvoicingGateway` (`features/integration/fortnox/invoicing-registry.ts`), called in `external`; tests swap it with `setFortnoxInvoicingGateway` (ADR 0090).
 
 ## Platform operations (ADR 0015)
 - `src/platform/`: `definePlatformOperation` and `executePlatform` with a `PlatformContext` built only by `resolvePlatformContext` in auth. Same chain as `execute`; handlers see only `PlatformDb`. They are **not** registered in the org registry and not in GraphQL, REST or MCP.

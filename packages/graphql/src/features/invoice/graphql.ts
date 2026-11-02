@@ -7,6 +7,7 @@ import {
   type OrderLineDto,
   OrderLineSchema,
   sendInvoice,
+  syncInvoice,
   voidInvoice,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
@@ -42,7 +43,7 @@ builder.objectField(InvoiceRef, "lines", (t) =>
 
 fieldFromOperation({ operation: listInvoices, type: InvoicePageRef, name: "invoices" });
 fieldFromOperation({ operation: getInvoice, type: InvoiceRef, name: "invoice" });
-for (const operation of [createInvoice, sendInvoice, voidInvoice]) {
+for (const operation of [createInvoice, sendInvoice, syncInvoice, voidInvoice]) {
   mutationFromOperation({ operation, type: InvoiceRef });
 }
 

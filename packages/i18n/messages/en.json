@@ -2498,6 +2498,7 @@
         "deposit_void": "Void deposit request",
         "invoice_create": "Create invoice",
         "invoice_send": "Mark invoice as sent",
+        "invoice_sync": "Refresh invoice from Fortnox",
         "invoice_void": "Void invoice",
         "payment_create": "Request payment",
         "memberProfile_update": "Change a member's schedule kind",
@@ -3345,6 +3346,7 @@
       "connect": "Go to Integrations"
     },
     "created": "The payment has been requested.",
+    "providerFortnox": "Fortnox",
     "openLink": "Open payment link",
     "public": {
       "title": "Payment to {organization}",
@@ -3474,6 +3476,10 @@
     "due": "Due {date}",
     "send": "Mark as sent",
     "sent": "The invoice is marked as sent.",
+    "sync": "Refresh from Fortnox",
+    "synced": "The invoice has been refreshed from Fortnox.",
+    "inFortnox": "In Fortnox #{reference}",
+    "notInFortnox": "Not yet in Fortnox",
     "void": "Void",
     "voidConfirm": "Void invoice #{number}? It is no longer owed and the ticket can be invoiced again.",
     "voided": "The invoice has been voided.",
@@ -3846,15 +3852,16 @@
     },
     "fortnox": {
       "name": "Fortnox",
-      "description": "Connect your organization's Fortnox company. Bibi shows which company is connected; nothing is sent to Fortnox yet.",
+      "description": "Connect your organization's Fortnox company. Invoices can be raised in Fortnox, and payments booked there are mirrored back to Bibi.",
       "hint": {
         "NOT_CONNECTED": "Connect Fortnox to link your accounting system. You are sent to Fortnox to approve the connection.",
         "PENDING": "The connection was started but not approved. Connect again to finish it.",
-        "CONNECTED": "Fortnox is connected.",
+        "CONNECTED": "Fortnox is connected. Invoices are raised in Fortnox when Settings → Payments says so; payments booked there are mirrored back.",
         "EXPIRED": "Fortnox no longer accepts the connection. Reconnect to restore it.",
         "DISCONNECTED": "Fortnox was disconnected. Connect again to restore it."
       },
       "notConfigured": "Fortnox is not available yet: Bibi has no Fortnox app credentials on this server.",
+      "reconnectNote": "Organizations connected before invoicing was added must reconnect once to grant invoicing.",
       "adminNote": "A Fortnox system administrator must approve the connection. If you are not one, ask them to approve when Fortnox asks.",
       "company": "Company",
       "organizationNumber": "Organization number",

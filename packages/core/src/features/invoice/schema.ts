@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { ReceivableStatusSchema, SettlementShape } from "../payment/settlement-schema";
+import { InvoiceProviderSchema } from "../payment-account/settings-schema";
 import { OrderLineSchema } from "../quote/order-line-schema";
 
 /** A paid deposit the invoice deducts (ADR 0090), as paid when the invoice was created. */
@@ -32,6 +33,14 @@ export const InvoiceSchema = z.object({
   deductions: z
     .array(InvoiceDeductionSchema)
     .describe("Paid deposits deducted from the total, frozen at create (ADR 0090)"),
+  provider: InvoiceProviderSchema.nullable().describe(
+    "Where it was raised when sent (ADR 0090): FORTNOX (the venue's Fortnox, payments mirrored " +
+      "from there), STRIPE (paid through a payment Bibi requests) or null (in Bibi only)",
+  ),
+  providerReference: z
+    .string()
+    .nullable()
+    .describe("The invoice's document number in Fortnox; null until raised there"),
   amountDueMinor: z
     .number()
     .int()

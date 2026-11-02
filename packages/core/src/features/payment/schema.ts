@@ -29,6 +29,9 @@ export const PaymentSchema = z.object({
     .int()
     .nullable()
     .describe("Bibi's application fee on this charge in minor units, agreed at charge time"),
+  provider: z
+    .enum(["STRIPE", "FORTNOX"])
+    .describe("STRIPE: a charge Bibi requested. FORTNOX: a payment booked on a Fortnox invoice"),
   providerReference: z
     .string()
     .nullable()

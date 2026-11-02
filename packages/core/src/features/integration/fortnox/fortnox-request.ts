@@ -65,12 +65,47 @@ export async function fortnoxGet({
   }
 }
 
+export type FortnoxSendInput = {
+  method: "POST" | "PUT";
+  path: string;
+  accessToken: string;
+  body?: Record<string, unknown>;
+};
+
+/** One JSON write against the Fortnox REST API with an organization's access token. */
+export async function fortnoxSend({
+  method,
+  path,
+  accessToken,
+  body,
+}: FortnoxSendInput): Promise<Result<FortnoxResponse>> {
+  try {
+    const response = await fetch(`${FORTNOX_API_URL}${path}`, {
+      method,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
+    return ok({ value: { status: response.status, json: await readJson({ response }) } });
+  } catch (cause) {
+    return unreachable({ cause });
+  }
+}
+
 export type RefusedInput = { what: string; response: FortnoxResponse };
 
 /** Fortnox answered with an error status; the message carries its error text, never a token. */
 export function fortnoxRefused({ what, response }: RefusedInput) {
+  const info = response.json.ErrorInformation as { message?: unknown } | undefined;
   const detail =
-    response.json.error_description ?? response.json.error ?? response.json.message ?? "";
+    response.json.error_description ??
+    response.json.error ??
+    response.json.message ??
+    info?.message ??
+    "";
   const message = `Fortnox refused ${what} (${response.status}${detail ? `: ${String(detail)}` : ""}).`;
   return err({ error: new AppError({ code: "UNAVAILABLE", message }) });
 }

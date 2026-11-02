@@ -11,6 +11,7 @@ import {
   InvoiceListOutputSchema,
   InvoiceSchema,
 } from "./schema";
+import { syncInvoice } from "./sync-operation";
 import { INVOICE_INCLUDE, loadInvoice, toInvoiceDtos } from "./to-invoice-dto";
 
 export const listInvoices = defineOperation({
@@ -48,7 +49,7 @@ export const getInvoice = defineOperation({
   },
 });
 
-export { createInvoice, sendInvoice, voidInvoice };
+export { createInvoice, sendInvoice, syncInvoice, voidInvoice };
 
 /** Invoices: frozen snapshots of the ticket's lines that payments settle (ADR 0052, 0057). */
 export const invoiceOperations = [
@@ -57,4 +58,5 @@ export const invoiceOperations = [
   createInvoice,
   sendInvoice,
   voidInvoice,
+  syncInvoice,
 ];

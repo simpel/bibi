@@ -18,6 +18,7 @@ export const MONEY_SURFACES: readonly WebSurface[] = [
   { operation: "invoice.list", route: "/tickets/[id]" },
   { operation: "invoice.create", route: "/tickets/[id]" },
   { operation: "invoice.send", route: "/tickets/[id]" },
+  { operation: "invoice.sync", route: "/tickets/[id]" },
   { operation: "invoice.void", route: "/tickets/[id]" },
   ...FINANCE_SURFACES,
 ];

@@ -44,7 +44,11 @@ export async function chargeAfterCommit({
         publicToken: row.publicToken,
         organizationId: context.organizationId,
         input: { ...row, description: prepared.value.description },
-        target: { ...prepared.value.target, connectedAccountId: row.providerAccountId },
+        // A charge Bibi requests is always on Stripe, with the account it was created for.
+        target: {
+          ...prepared.value.target,
+          connectedAccountId: row.providerAccountId ?? prepared.value.target.connectedAccountId,
+        },
         applicationFeeMinor: row.applicationFeeMinor ?? undefined,
       })
     : prepared;

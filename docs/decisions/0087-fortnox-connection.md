@@ -45,3 +45,7 @@
 - **The callback uses the session's active organization** to find the pending row by its state hash. Approving in a browser whose active organization changed in the meantime is refused as expired; the admin starts again.
 - **`INTEGRATION_SECRET_KEY` is not required by the env schema.** Fortnox counts as configured only when all three variables are set; otherwise it shows as not configured and `connect` is `UNAVAILABLE`. This keeps an `.env` with only the Fortnox credentials from refusing to start.
 - `completeConnect` also requires a session credential (`FORBIDDEN` for an API key or access token) and is `aiAllowed: false`.
+
+## Addendum 2026-11-02 – invoicing scopes (as built)
+- The scope is now `companyinformation invoice customer payment` (ADR 0090). A connection made before holds the old scope only; its organization reconnects once to grant the rest.
+- Fortnox's Topics stream (ADR 0090) is how Bibi learns of invoice payments. Fortnox sends no webhook to Bibi.

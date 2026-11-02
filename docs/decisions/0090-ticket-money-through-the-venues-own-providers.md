@@ -51,3 +51,12 @@
 ## Addendum 2026-11-02 – no Stripe, no payment links
 - Replaces the fallback in decision 4 (user's decision): without an active Stripe account there is no invoice fallback for deposits. Payment links (`deposit.request`, `payment.create`) are unavailable and refuse with `CONFLICT`.
 - The web app keeps the actions visible but dimmed; a click explains that an administrator connects Stripe under Settings → Integrations. `deposit.suggest` carries `paymentLinksAvailable`, so members without `paymentAccount:read` see the same state.
+
+## Addendum – as built
+- **Customers are matched by email, then by name.** Bibi customers have no organization number, so decision 7's match by organization number is not built. Fortnox's filters are exact; a missing customer is created with its name and email.
+- **Deposits are not invoice lines.** `InvoiceDeposit` rows deduct them. The invoice stays billed at the gross total, and `amountDueMinor` is what payments settle (`docs/specs/payments.md`). In Fortnox each deducted deposit is one negative row on the customer advances account, without VAT, so revenue stays on the lines' accounts.
+- **Payments are written inside `invoice.sync`, not through `payment.applySignal`.** Decision 8 named `applySignal`. `invoice.sync` is also a user operation (`payment:write`), so a user can mirror Fortnox payments on demand; it reads them from Fortnox first.
+- **The 14-day catch-up runs at worker start, not daily.** It runs once when the stream has been away longer than Fortnox replays, or has never run (`catchUpFortnox`). Nothing runs on a timer.
+- **The stream adds tenants at start and every 10 minutes for companies without a tenant id.** A refreshed access token is not sent again, unlike decision 8.
+- **Fortnox calls sit behind their own gateway.** `FortnoxInvoicingGateway` (`features/integration/fortnox/invoicing-gateway.ts`) makes the Fortnox calls; it is not a `PaymentProvider` adapter.
+- **Void does not reach Fortnox.** `invoice.void` moves only the Bibi invoice. A cancelled Fortnox invoice whose payment is already mirrored as paid is refused by `invoice.void` (a paid payment must be refunded first), so the event is logged as failed and the invoice stays `SENT`.

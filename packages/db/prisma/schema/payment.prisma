@@ -21,10 +21,14 @@ model Payment {
   currency            String                  @default("SEK")
   /// Bibi's application fee on the charge in minor units; null = no fee.
   applicationFeeMinor Int?
-  /// Connected account the charge was made on (`acct_...`).
-  providerAccountId   String
-  /// PSP reference: the Stripe Checkout Session (`cs_...`) or Invoice (`in_...`) id. Null until
-  /// the provider call after the commit has succeeded (ADR 0058).
+  /// Where the payment was made (ADR 0090): Stripe (a charge Bibi requested) or Fortnox (a
+  /// payment booked on an invoice raised there, mirrored by `invoice.sync`).
+  provider            InvoiceProvider         @default(STRIPE)
+  /// Connected account the charge was made on (`acct_...`); null for Fortnox.
+  providerAccountId   String?
+  /// PSP reference: the Stripe Checkout Session (`cs_...`) or Invoice (`in_...`) id, or
+  /// `fortnox:<organizationId>:<payment number>`. Null until the provider call after the commit
+  /// has succeeded (ADR 0058).
   providerReference   String?
   /// Where the customer pays: the hosted checkout page or the hosted invoice page.
   paymentUrl          String?

@@ -13,6 +13,10 @@ export const invoiceMcpTools = [
     summary: ({ input }) => `Mark invoice ${text({ value: input.id })} as sent`,
   }),
   mcpTool({
+    operation: "invoice.sync",
+    summary: ({ input }) => `Refresh invoice ${text({ value: input.id })} from Fortnox`,
+  }),
+  mcpTool({
     operation: "invoice.void",
     destructive: true,
     summary: ({ input }) => `Void invoice ${text({ value: input.id })}`,

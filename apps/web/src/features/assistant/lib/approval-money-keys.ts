@@ -35,6 +35,7 @@ export const MONEY_OPERATION_KEYS = [
   "deposit_void",
   "invoice_create",
   "invoice_send",
+  "invoice_sync",
   "invoice_void",
   "payment_create",
   "accountingSettings_update",

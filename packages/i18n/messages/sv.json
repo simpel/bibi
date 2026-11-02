@@ -2498,6 +2498,7 @@
         "deposit_void": "Makulera förskott",
         "invoice_create": "Skapa faktura",
         "invoice_send": "Markera faktura som skickad",
+        "invoice_sync": "Uppdatera faktura från Fortnox",
         "invoice_void": "Makulera faktura",
         "payment_create": "Begär betalning",
         "memberProfile_update": "Ändra medlemmens schematyp",
@@ -3345,6 +3346,7 @@
       "connect": "Gå till Integrationer"
     },
     "created": "Betalningen har begärts.",
+    "providerFortnox": "Fortnox",
     "openLink": "Öppna betalningslänken",
     "public": {
       "title": "Betalning till {organization}",
@@ -3474,6 +3476,10 @@
     "due": "Förfaller {date}",
     "send": "Markera som skickad",
     "sent": "Fakturan är markerad som skickad.",
+    "sync": "Uppdatera från Fortnox",
+    "synced": "Fakturan har uppdaterats från Fortnox.",
+    "inFortnox": "I Fortnox #{reference}",
+    "notInFortnox": "Inte i Fortnox än",
     "void": "Makulera",
     "voidConfirm": "Makulera faktura nr {number}? Den är då inte längre skyldig och ärendet kan faktureras igen.",
     "voided": "Fakturan har makulerats.",
@@ -3846,15 +3852,16 @@
     },
     "fortnox": {
       "name": "Fortnox",
-      "description": "Anslut organisationens Fortnox-företag. Bibi visar vilket företag som är anslutet. Ännu skickas inget till Fortnox.",
+      "description": "Anslut organisationens Fortnox-företag. Fakturor kan skapas i Fortnox, och betalningar som bokförs där speglas tillbaka till Bibi.",
       "hint": {
         "NOT_CONNECTED": "Anslut Fortnox för att koppla ihop ditt bokföringssystem. Du skickas till Fortnox för att godkänna anslutningen.",
         "PENDING": "Anslutningen är påbörjad men inte godkänd. Anslut igen för att slutföra den.",
-        "CONNECTED": "Fortnox är anslutet.",
+        "CONNECTED": "Fortnox är anslutet. Fakturor skapas i Fortnox när Inställningar → Betalningar säger det, och betalningar som bokförs där speglas tillbaka.",
         "EXPIRED": "Fortnox godtar inte längre anslutningen. Anslut igen för att återställa den.",
         "DISCONNECTED": "Fortnox har kopplats från. Anslut igen för att återställa anslutningen."
       },
       "notConfigured": "Fortnox är inte tillgängligt än: Bibi saknar inloggningsuppgifter till Fortnox-appen på den här servern.",
+      "reconnectNote": "Organisationer som anslöts innan fakturering lades till måste ansluta om en gång för att ge behörighet för fakturering.",
       "adminNote": "En systemadministratör i Fortnox måste godkänna anslutningen. Är du inte det ber du en sådan person godkänna när Fortnox frågar.",
       "company": "Företag",
       "organizationNumber": "Organisationsnummer",
