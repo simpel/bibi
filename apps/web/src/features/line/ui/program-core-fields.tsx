@@ -24,10 +24,8 @@ export function ProgramCoreFields({ form, data, line }: ProgramCoreFieldsProps) 
   return (
     <>
       <TextField form={form} name="name" label={t("fields.name")} required />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <DateTimeField form={form} name="startsAt" label={t("fields.startsAt")} />
-        <DateTimeField form={form} name="endsAt" label={t("fields.endsAt")} />
-      </div>
+      <DateTimeField form={form} name="startsAt" label={t("fields.startsAt")} />
+      <DateTimeField form={form} name="endsAt" label={t("fields.endsAt")} />
       <ProgramPlaceFields form={form} data={data} />
       {form.watch("itemId") === NONE ? null : (
         <BufferFields
