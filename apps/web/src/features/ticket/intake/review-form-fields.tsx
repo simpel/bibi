@@ -43,6 +43,14 @@ export function TicketTypeFields({ form, catalog, type, oneOff }: TicketTypeFiel
   );
 }
 
+/** The ticket's title; left empty, one is suggested after the ticket is created. */
+export function TicketTitleField({ form }: { form: ReviewForm }) {
+  const t = useTranslations("ticket.fields");
+  return (
+    <TextField form={form} name="title" label={t("title")} placeholder={t("titlePlaceholder")} />
+  );
+}
+
 /** Notes on the booking: `Ticket.note`, shown on the ticket and its sheets. */
 export function BookingNoteField({ form }: { form: ReviewForm }) {
   const t = useTranslations("ticketIntake.review");

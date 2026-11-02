@@ -49,6 +49,8 @@ const ReviewSchema = z.object({
   lines: z.array(DraftLineSchema),
   plannedStart: Instant.nullable(),
   pickKey: z.string(),
+  // Drafts stored before tickets had titles load without one.
+  title: z.string().default(""),
   note: z.string(),
   ticketTypeId: Id.nullable(),
   ticketFields: Fields,

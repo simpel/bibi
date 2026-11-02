@@ -18,6 +18,8 @@ export type IntakeReview = {
   plannedStart: string | null;
   /** The pick the lines were built from (`ONE_OFF` or a package id): Next again keeps them. */
   pickKey: string;
+  /** The ticket's title; empty: one is generated after the ticket is created. */
+  title: string;
   note: string;
   /** One-off: the ticket type; a package uses its own. */
   ticketTypeId: string | null;
@@ -38,6 +40,7 @@ export type NewReviewInput = { lines: DraftLine[]; plannedStart: string | null; 
 export function newReview({ lines, plannedStart, pickKey }: NewReviewInput): IntakeReview {
   return {
     ...{ lines, plannedStart, pickKey },
+    title: "",
     note: "",
     ticketTypeId: null,
     ticketFields: {},

@@ -83,6 +83,8 @@ export function toCreateInput({
     holdsUntil: date({ at: more.holdsUntil }),
     estimatedValueMinor: linesTotalMinor({ planned }),
     fields: review.ticketFields,
+    // Left empty, the title is generated after the create.
+    ...(review.title.trim() ? { title: review.title.trim() } : {}),
     note: review.note.trim() === "" ? null : review.note.trim(),
     ...(pick.kind === "PACKAGE" ? { templateId: pick.templateId } : {}),
     lines: review.lines.map((line) => toCreateLine({ line })),

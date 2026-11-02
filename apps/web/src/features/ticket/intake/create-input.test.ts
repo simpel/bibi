@@ -56,6 +56,17 @@ describe("toCreateInput", () => {
     ]);
   });
 
+  it("sends a given title trimmed and leaves an empty one to be generated", () => {
+    const titled = toCreateInput({
+      ...base,
+      review: { ...review, title: " Kick-off " },
+      userId: "u1",
+    });
+    expect(titled.title).toBe("Kick-off");
+    const empty = toCreateInput({ ...base, review: { ...review, title: "  " }, userId: "u1" });
+    expect(empty).not.toHaveProperty("title");
+  });
+
   it("leaves the package out of a one-off and keeps a chosen assignee", () => {
     const chosen = { ...review, more: { ...review.more, assigneeId: "u2" } };
     const input = toCreateInput({

@@ -9,6 +9,7 @@ import type { IntakeReview } from "./review-state";
 /** Raw values of step 4's own inputs: the lines live in the review, not in the form. */
 export type ReviewFormValues = WithRawFields & {
   entityTypeId: string;
+  title: string;
   note: string;
   /** A member's user id, or `NONE` for the creating member. */
   assigneeId: string;
@@ -37,6 +38,7 @@ export function reviewFormDefaults({
   const holdsUntil = more.holdsUntil ? new Date(more.holdsUntil) : null;
   return {
     entityTypeId: type?.id ?? "",
+    title: review.title,
     note: review.note,
     assigneeId: more.assigneeId ?? NONE,
     holdsUntil: holdsUntil ? toLocalInputValue({ date: holdsUntil, timeZone }) : "",
@@ -56,6 +58,7 @@ export type ReviewPatchOfInput = {
 export function reviewPatchOf({ values, specs, timeZone }: ReviewPatchOfInput): ReviewPatch {
   const holdsUntil = fromLocalInputValue({ value: values.holdsUntil, timeZone });
   return {
+    title: values.title,
     note: values.note,
     ticketTypeId: values.entityTypeId || null,
     ticketFields: fieldsToInput({ values, specs }),

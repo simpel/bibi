@@ -12,7 +12,12 @@ import { EmptyLines } from "./empty-lines";
 import type { IntakeAction, IntakeState } from "./intake-state";
 import { MoreSection } from "./more-section";
 import { OpenQuestionsPanel } from "./open-questions-panel";
-import { BookingNoteField, SavePackageFields, TicketTypeFields } from "./review-form-fields";
+import {
+  BookingNoteField,
+  SavePackageFields,
+  TicketTitleField,
+  TicketTypeFields,
+} from "./review-form-fields";
 import { ReviewHeader } from "./review-header";
 import { StepBack } from "./step-back";
 import { useCreateReadiness } from "./use-create-readiness";
@@ -93,6 +98,7 @@ function ReviewBody({ model, nonce, back, onConflict }: BodyProps) {
         className="grid gap-5"
       >
         <ReviewHeader model={model} />
+        <TicketTitleField form={form} />
         <TicketTypeFields form={form} catalog={catalog} type={model.ticketType} oneOff={oneOff} />
         <CalendarSnapshot model={model} nonce={nonce} />
         <LinesSection model={model} actions={actions} />
