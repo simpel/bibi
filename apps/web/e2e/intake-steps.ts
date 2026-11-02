@@ -2,10 +2,15 @@ import { expect, type Page } from "@playwright/test";
 
 type PageInput = { page: Page };
 
-/** Step 1 by search: type part of the name, pick the match, go on with its only contact. */
-export async function pickCustomer({ page, name }: PageInput & { name: string }) {
-  await page.getByPlaceholder("Search customers by name").fill(name);
-  await page.getByRole("option", { name }).click();
+/** Step 1 by search: type part of the name, pick the customer by its full name, go on. */
+export async function pickCustomer({
+  page,
+  search,
+  name,
+}: PageInput & { search: string; name: string }) {
+  await page.getByPlaceholder("Search customers by name").fill(search);
+  // Wait for the result itself: "+ New customer" also contains the typed text.
+  await page.getByRole("option", { name, exact: true }).click();
   await expect(page.getByText("Contact: Linnea Kvist")).toBeVisible();
   await page.getByRole("button", { name: "Next: when" }).click();
 }
@@ -18,12 +23,12 @@ export async function fillWhen({
   to,
   guests,
 }: PageInput & { day?: number; from: string; to: string; guests: number }) {
-  await page.getByRole("button", { name: "Pick a date" }).click();
+  await page.getByRole("button", { name: /^Date\s?\*?$/ }).click();
   const calendar = page.locator('[data-slot="calendar"]');
   const next = calendar.getByRole("button", { name: /next month/i });
   await next.click();
   await next.click();
-  await calendar.getByRole("button", { name: new RegExp(`\\b${day}(st|nd|rd|th)\\b`) }).click();
+  await calendar.getByRole("button", { name: new RegExp(`, ${day} \\w+ \\d{4}$`) }).click();
   await page.getByLabel(/^From\s?\*?$/).fill(from);
   await page.getByLabel(/^To\s?\*?$/).fill(to);
   await page.getByLabel(/^Estimated guests/).fill(String(guests));

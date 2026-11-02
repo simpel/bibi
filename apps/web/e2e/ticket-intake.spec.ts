@@ -13,14 +13,14 @@ test("flow A: a package for a seeded customer, review and Create", async ({ page
   await setUpIntake({ page });
   await gotoApp({ page, path: INTAKE_PATH, locale: "en" });
 
-  await pickCustomer({ page, name: "Kvarnby" });
+  await pickCustomer({ page, search: "Kvarnby", name: CUSTOMER });
   await fillWhen({ page, from: "10:00", to: "14:00", guests: 12 });
   await expect(page.getByRole("button", { name: new RegExp(PACKAGE) })).toBeVisible();
   await expect(page.getByText(/^Available .* for 12$/)).toBeVisible();
   await pickPackage({ page, name: PACKAGE });
 
   await expect(page.getByRole("heading", { name: "Review the booking" })).toBeVisible();
-  await expect(page.getByText("Nothing is saved until Create.")).toBeVisible();
+  await expect(page.getByText("Nothing is saved until Create.").first()).toBeVisible();
   await expect(page.getByRole("cell", { name: /Tasting room/ })).toBeVisible();
   await expect(page.getByRole("cell", { name: /Coffee and tea/ })).toBeVisible();
   await createTicket({ page });

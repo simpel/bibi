@@ -33,13 +33,17 @@ export type ExtractInput = {
  */
 export type ExtractFn = (input: ExtractInput) => Promise<Result<unknown>>;
 
-let current: ExtractFn | undefined;
+/**
+ * Held on `globalThis`, not in a module variable: Next can load core as several module
+ * instances, and the one running the handler must see the extractor the app set in another.
+ */
+const port = globalThis as typeof globalThis & { __bibiExtract?: ExtractFn | undefined };
 
 export type SetExtractInput = { extract: ExtractFn | undefined };
 
 /** Sets the process-wide extractor; `undefined` unsets it (drafting then returns UNAVAILABLE). */
 export function setExtract({ extract }: SetExtractInput): void {
-  current = extract;
+  port.__bibiExtract = extract;
 }
 
 const missing: ExtractFn = async () =>
@@ -47,7 +51,7 @@ const missing: ExtractFn = async () =>
 
 /** The injected extractor, or one that always answers UNAVAILABLE. */
 export function getExtract(): ExtractFn {
-  return current ?? missing;
+  return port.__bibiExtract ?? missing;
 }
 
 const FEATURE = "ticket.intakeDraft";
