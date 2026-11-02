@@ -13,6 +13,7 @@ import {
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control, Path } from "react-hook-form";
+import { SoleOptionField } from "../form/sole-option-field";
 
 type WithType = { entityTypeId: string };
 
@@ -24,8 +25,8 @@ export type TypeSelectFieldProps<V extends WithType, O> = {
   onTypeChange: (id: string) => void;
 };
 
-/** The record's type, chosen on create: it decides the own fields shown below it. */
-export function TypeSelectField<V extends WithType, O>({
+/** The type select itself. */
+function TypeSelect<V extends WithType, O>({
   control,
   types,
   label,
@@ -62,6 +63,24 @@ export function TypeSelectField<V extends WithType, O>({
           <FormMessage />
         </FormItem>
       )}
+    />
+  );
+}
+
+/**
+ * The record's type, chosen on create: it decides the own fields shown below it. With only one
+ * type there is nothing to choose: the field is left out and takes that type.
+ */
+export function TypeSelectField<V extends WithType, O>(props: TypeSelectFieldProps<V, O>) {
+  const [sole] = props.types;
+  if (props.types.length !== 1 || !sole) return <TypeSelect {...props} />;
+  const name = "entityTypeId" as Path<V>;
+  return (
+    <SoleOptionField
+      control={props.control}
+      name={name}
+      id={sole.id}
+      onChange={props.onTypeChange}
     />
   );
 }

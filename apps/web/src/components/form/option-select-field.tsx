@@ -13,6 +13,7 @@ import {
 import { useTranslations } from "next-intl";
 import type { Control, FieldValues, Path } from "react-hook-form";
 import type { NamedOption } from "./named-option";
+import { SoleOptionField } from "./sole-option-field";
 
 /** Select value standing for "no one" (a Select item cannot have an empty value). */
 export const NONE = "none";
@@ -30,8 +31,8 @@ export type OptionSelectFieldProps<V extends FieldValues, O> = {
   hidden?: boolean;
 };
 
-/** A shadcn select of named options (customers, members) bound to one form field. */
-export function OptionSelectField<V extends FieldValues, O>(props: OptionSelectFieldProps<V, O>) {
+/** The select itself. */
+function OptionSelect<V extends FieldValues, O>(props: OptionSelectFieldProps<V, O>) {
   const { control, name, label, options, noneLabel, onChange, hidden = false } = props;
   const t = useTranslations("common");
   return (
@@ -68,4 +69,16 @@ export function OptionSelectField<V extends FieldValues, O>(props: OptionSelectF
       )}
     />
   );
+}
+
+/**
+ * A shadcn select of named options (customers, members) bound to one form field. A required one
+ * with a single option is left out and takes it.
+ */
+export function OptionSelectField<V extends FieldValues, O>(props: OptionSelectFieldProps<V, O>) {
+  const { options, noneLabel, hidden } = props;
+  const [sole] = options;
+  if (noneLabel || hidden || options.length !== 1 || !sole) return <OptionSelect {...props} />;
+  const { control, name, onChange } = props;
+  return <SoleOptionField {...{ control, name, onChange }} id={sole.id} />;
 }
