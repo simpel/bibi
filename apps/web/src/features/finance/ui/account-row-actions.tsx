@@ -1,7 +1,8 @@
 "use client";
 
 import type { AccountingSettingsDto } from "@bibi/core/schemas";
-import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { DataTableRowAction } from "@bibi/ui";
+import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { AccountRow } from "../lib/account-rows";
@@ -17,13 +18,10 @@ export type AccountRowActionsProps = {
 /** The edit action of one row; it opens the dialog. */
 export function AccountRowActions({ row, settings, types }: AccountRowActionsProps) {
   const t = useTranslations("finance.accounting");
-  const common = useTranslations("common");
   const [open, setOpen] = useState(false);
   return (
     <>
-      <DataTableRowActions label={common("actions")}>
-        <DropdownMenuItem onSelect={() => setOpen(true)}>{t("edit")}</DropdownMenuItem>
-      </DataTableRowActions>
+      <DataTableRowAction label={t("edit")} icon={PencilIcon} onClick={() => setOpen(true)} />
       <AccountDialog
         open={open}
         onOpenChange={setOpen}

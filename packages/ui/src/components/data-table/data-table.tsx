@@ -24,7 +24,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
   const { table, order, setOrder, titles } = useDataTable({ props });
   const selected = table.getSelectedRowModel().rows.map((row) => row.original);
   return (
-    <div data-slot="data-table" className={cn("flex flex-col", props.className)}>
+    <div data-slot="data-table" className={cn("@container flex flex-col", props.className)}>
       {props.bulkActions && selected.length > 0 ? (
         <DataTableToolbar selectedLabel={textLabels.selected(selected.length)}>
           {props.bulkActions(selected)}

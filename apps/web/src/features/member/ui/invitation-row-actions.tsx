@@ -1,25 +1,26 @@
 "use client";
 
 import type { InvitationDto } from "@bibi/core";
-import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { DataTableRowAction } from "@bibi/ui";
+import { XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { CancelInvitationDialog } from "./cancel-invitation-dialog";
 
 export type InvitationRowActionsProps = { invitation: InvitationDto };
 
-/** Revoke menu for one pending invitation. */
+/** Revoke button for one pending invitation. */
 export function InvitationRowActions({ invitation }: InvitationRowActionsProps) {
   const t = useTranslations("member");
-  const common = useTranslations("common");
   const [open, setOpen] = useState(false);
   return (
     <>
-      <DataTableRowActions label={common("actions")}>
-        <DropdownMenuItem destructive onSelect={() => setOpen(true)}>
-          {t("revokeInvitation")}
-        </DropdownMenuItem>
-      </DataTableRowActions>
+      <DataTableRowAction
+        destructive
+        label={t("revokeInvitation")}
+        icon={XIcon}
+        onClick={() => setOpen(true)}
+      />
       <CancelInvitationDialog invitation={invitation} open={open} onOpenChange={setOpen} />
     </>
   );

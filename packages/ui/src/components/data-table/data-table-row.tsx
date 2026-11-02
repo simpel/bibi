@@ -2,6 +2,7 @@ import { flexRender, type Row } from "@tanstack/react-table";
 import { cn } from "../../lib/cn";
 import { TableCell, TableRow } from "../table/table";
 import { isPinnedColumn } from "./data-table-order";
+import { pinnedCellClass } from "./data-table-pinned";
 
 export type DataTableRowProps<TData> = {
   row: Row<TData>;
@@ -30,6 +31,7 @@ export function DataTableRow<TData>({ row, selected, onRowClick }: DataTableRowP
       {row.getVisibleCells().map((cell) => (
         <TableCell
           key={cell.id}
+          className={pinnedCellClass({ id: cell.column.id })}
           onClick={
             isPinnedColumn({ id: cell.column.id }) ? (event) => event.stopPropagation() : undefined
           }

@@ -4,6 +4,7 @@ import { flexRender, type Header } from "@tanstack/react-table";
 import { cn } from "../../lib/cn";
 import { TableHead } from "../table/table";
 import { isPinnedColumn } from "./data-table-order";
+import { pinnedCellClass } from "./data-table-pinned";
 import { DataTableSortButton } from "./data-table-sort-button";
 import type { DataTableTextLabels } from "./data-table-types";
 
@@ -63,7 +64,10 @@ export function DataTableHeadCell<TData>(props: DataTableHeadCellProps<TData>) {
   if (header.isPlaceholder) return <TableHead />;
   if (isPinnedColumn({ id: header.column.id })) {
     return (
-      <TableHead data-column-pinned={header.column.id} className="w-10">
+      <TableHead
+        data-column-pinned={header.column.id}
+        className={cn("w-10", pinnedCellClass({ id: header.column.id }))}
+      >
         {flexRender(header.column.columnDef.header, header.getContext())}
       </TableHead>
     );

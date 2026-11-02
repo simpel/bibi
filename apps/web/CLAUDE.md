@@ -56,7 +56,8 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - Every table is a shadcn TanStack table, rendered with `PersistedDataTable` (`components/data-table/`, on `DataTable` in `@bibi/ui`) with a stable `tableId`. Columns live in a `use-<entity>-columns` hook; the assistant's card has its own hook and `tableId` with the same cells. Never a raw `<table>`, never the `Table*` primitives directly, never another table library. Only exception: the calendar grid.
 - All columns are sortable. Default order: multiselect checkbox (only if bulk editing helps), main title, descriptive columns in the organization's order, status, dates and times, numbers and amounts, row actions (far right).
 - Users reorder columns by drag and drop (always on); the checkbox and row actions stay pinned. The order is saved per user and per table as a server-side user preference, not in `localStorage`.
-- Row actions go in a `DropdownMenu` submenu, each with a text label. Never an icon-only action button.
+- Row actions are the last column (`actionsColumn`), always sticky to the right edge of the visible area, so they stay in reach when the table scrolls sideways. `DataTable` does this; never add actions in another column.
+- Narrow tables (below the `@2xl` container width) show action icons only, wide ones icon and label. One or two clear actions are direct `DataTableRowAction` buttons (in a `DataTableRowActionGroup`); more go in one `DataTableRowActions` menu whose items have text labels. `iconOnly` keeps the label out at every width, only for an unmistakable icon (download, copy); the label stays the accessible name and tooltip.
 
 ## `"use client"`
 - Set only at the client boundary: components that a server component renders and that themselves have state, context or browser events. Children and hooks inherit the boundary.

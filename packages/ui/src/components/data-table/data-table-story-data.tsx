@@ -1,6 +1,12 @@
 import type { ColumnDef } from "@tanstack/react-table";
+import { MapIcon } from "lucide-react";
 import { DropdownMenuItem } from "../dropdown-menu/dropdown-menu";
-import { actionsColumn, DataTableRowActions } from "./data-table-actions";
+import {
+  actionsColumn,
+  DataTableRowAction,
+  DataTableRowActionGroup,
+  DataTableRowActions,
+} from "./data-table-actions";
 import type { DataTableLabels, DataTableTextLabels } from "./data-table-types";
 
 export type Room = { id: string; name: string; floor: string; status: string; seats: number };
@@ -57,10 +63,13 @@ export const columnsWithActions: ColumnDef<Room>[] = [
   actionsColumn<Room>({
     label: "Actions",
     cell: (room) => (
-      <DataTableRowActions label="Actions">
-        <DropdownMenuItem>Edit {room.name}</DropdownMenuItem>
-        <DropdownMenuItem destructive>Archive</DropdownMenuItem>
-      </DataTableRowActions>
+      <DataTableRowActionGroup>
+        <DataTableRowAction label="Open floor plan" icon={MapIcon} onClick={() => {}} />
+        <DataTableRowActions label="Actions">
+          <DropdownMenuItem>Edit {room.name}</DropdownMenuItem>
+          <DropdownMenuItem destructive>Archive</DropdownMenuItem>
+        </DataTableRowActions>
+      </DataTableRowActionGroup>
     ),
   }),
 ];
