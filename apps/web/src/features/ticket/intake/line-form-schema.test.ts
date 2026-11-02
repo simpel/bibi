@@ -20,6 +20,7 @@ const item: CatalogItem = {
 const schema = lineFormSchema({
   ...{ type: undefined, vocabularies: [], item, date: "2026-11-20", timeZone: "UTC" },
   needTypeId: "rt",
+  ruleText: ({ rule }) => `Choose ${rule.min}–${rule.max}`,
 });
 const values = {
   ...lineFormDefaults({ line: null, item, type: undefined, timeZone: "UTC", period: null }),
@@ -42,6 +43,32 @@ describe("lineFormSchema", () => {
       options: [{ itemId: "fish", quantity: 8 }],
       needs: [{ entityTypeId: "rt", vocabularyValueId: "vegan", quantity: 2 }],
     });
+  });
+
+  it("refuses a group choice outside its pick rule, under the group, once one is chosen", () => {
+    const snack = {
+      ...{ name: "Snack", minPick: 1, maxPick: 1, split: false },
+      options: ["cake", "fruit"].map((id) => ({
+        ...{ itemId: id, name: id },
+        priceEffect: "INCLUDED" as const,
+      })),
+    };
+    const buffet = { ...item, groups: [snack] };
+    const strict = lineFormSchema({
+      ...{ type: undefined, vocabularies: [], item: buffet, date: "2026-11-20", timeZone: "UTC" },
+      ...{ needTypeId: null, ruleText: () => "Choose 1" },
+    });
+    const both = { ...values, groups: [{ picked: ["cake", "fruit"], quantities: {} }] };
+    const parsed = strict.safeParse(both);
+    expect(parsed.success).toBe(false);
+    expect(parsed.error?.issues[0]).toMatchObject({
+      path: ["groups", 0, "picked"],
+      message: "Choose 1",
+    });
+    expect(
+      strict.safeParse({ ...both, groups: [{ picked: ["cake"], quantities: {} }] }).success,
+    ).toBe(true);
+    expect(strict.safeParse(values).success).toBe(true);
   });
 
   it("refuses a lone time and keeps both empty untimed", () => {

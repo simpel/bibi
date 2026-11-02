@@ -5,32 +5,22 @@ import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
 import type { IntakeData } from "../load-intake-data";
 import { CalendarSnapshot } from "./calendar-snapshot";
 import { CreateBar } from "./create-bar";
+import { CreateIssuesPanel } from "./create-issues-panel";
 import { DraftLineDialog } from "./draft-line-dialog";
 import { DraftLinesTable } from "./draft-lines-table";
 import { EmptyLines } from "./empty-lines";
 import type { IntakeAction, IntakeState } from "./intake-state";
 import { MoreSection } from "./more-section";
-import { type GuessedValue, openQuestions } from "./open-questions";
 import { OpenQuestionsPanel } from "./open-questions-panel";
 import { BookingNoteField, SavePackageFields, TicketTypeFields } from "./review-form-fields";
 import { ReviewHeader } from "./review-header";
 import { StepBack } from "./step-back";
+import { useCreateReadiness } from "./use-create-readiness";
+import { useOpenQuestions } from "./use-open-questions";
 import { useReviewActions } from "./use-review-actions";
 import { useReviewForm } from "./use-review-form";
 import { type ReviewModel, useReviewModel } from "./use-review-model";
-
-/** Nothing was guessed when no message was read. */
-const NO_GUESSES: readonly GuessedValue[] = [];
-
-function useQuestions({ model }: { model: ReviewModel }) {
-  const { review, period, when, planned, ticketType } = model;
-  const required = (ticketType?.fields ?? []).filter((field) => field.required);
-  return openQuestions({
-    ...{ review, start: period?.startsAt ?? null, headcount: when.guests, planned },
-    ticketType: ticketType ? { name: ticketType.name, required } : null,
-    guesses: model.state.draft?.guesses ?? NO_GUESSES,
-  });
-}
+import { useServerIssues } from "./use-server-issues";
 
 type LinesSectionProps = { model: ReviewModel; actions: ReturnType<typeof useReviewActions> };
 
@@ -69,24 +59,36 @@ function LineDialogSlot({ model, actions }: LinesSectionProps) {
 
 type BodyProps = { model: ReviewModel; nonce: number; back: ReactNode; onConflict: () => void };
 
-/** Step 4's content: a form whose submit is Create. */
-function ReviewBody({ model, nonce, back, onConflict }: BodyProps) {
+/** Step 4's form, its actions and what Create waits for. */
+function useReviewBody({ model, onConflict }: Pick<BodyProps, "model" | "onConflict">) {
   const [conflict, setConflict] = useState(false);
+  const server = useServerIssues({ review: model.review });
   const { form, submit, pending } = useReviewForm({
     model,
     onConflict: () => {
       setConflict(true);
       onConflict();
     },
+    onUnmappedIssues: server.keep,
   });
   const actions = useReviewActions({ model, form });
-  const questions = useQuestions({ model });
+  const questions = useOpenQuestions({ model });
+  const ready = useCreateReadiness({
+    ...{ form, model, questions: questions.length, serverIssues: server.issues },
+  });
+  return { form, submit, pending, conflict, actions, questions, ...ready };
+}
+
+/** Step 4's content: a form whose submit is Create. */
+function ReviewBody({ model, nonce, back, onConflict }: BodyProps) {
+  const body = useReviewBody({ model, onConflict });
+  const { form, actions, questions, block } = body;
   const oneOff = model.pick.kind === "ONE_OFF";
   const { catalog } = model.data;
   return (
     <Form {...form}>
       <form
-        onSubmit={(event) => (questions.length > 0 ? event.preventDefault() : submit(event))}
+        onSubmit={(event) => (block ? event.preventDefault() : body.submit(event))}
         noValidate
         className="grid gap-5"
       >
@@ -102,7 +104,12 @@ function ReviewBody({ model, nonce, back, onConflict }: BodyProps) {
           onAction={actions.act}
         />
         <MoreSection form={form} catalog={catalog} />
-        <CreateBar {...{ model, pending, conflict, back }} questions={questions.length} />
+        <CreateIssuesPanel
+          issues={body.issues}
+          lines={model.review.lines}
+          onEditLine={actions.open}
+        />
+        <CreateBar {...{ model, block, back }} pending={body.pending} conflict={body.conflict} />
       </form>
       <LineDialogSlot model={model} actions={actions} />
     </Form>

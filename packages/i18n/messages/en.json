@@ -967,7 +967,8 @@
         "dontSave": "Don't save as a package",
         "keepGuess": "Keep {value}",
         "changeGuess": "Change it"
-      }
+      },
+      "options": "{line}: {group} has {count, number} chosen. {rule}."
     },
     "summary": {
       "who": "{customer} · {contact}",
@@ -1110,7 +1111,14 @@
       "conflictNamed": "Not created yet. Since you started, #{reference} booked {resource} {period}.",
       "conflictHint": "The lines and calendar are updated. Check them and create again.",
       "savingPackage": "Saving the package…",
-      "packageSaved": "The package has been saved."
+      "packageSaved": "The package has been saved.",
+      "checking": "Checking availability…",
+      "fixIssues": "Fix what is listed above first",
+      "fixFields": "Fix the highlighted fields first",
+      "failed": "Could not create the ticket. See what to fix above Create.",
+      "issuesTitle": "The ticket could not be created",
+      "lineIssue": "{line}: {message}",
+      "editLine": "Edit line"
     },
     "message": {
       "title": "From a message",
@@ -1442,7 +1450,13 @@
     "optionGroup": "{name} (choose {min, number}{same, select, true {} other {–{max, number}}})",
     "optionChoice": "{name} · {effect}",
     "optionSplitHint": "Split between guests: give each chosen option how many of {quantity, number} get it. Leave an option at 0 to not choose it.",
-    "units": "Units"
+    "units": "Units",
+    "pickRule": {
+      "exact": "Choose {min, number}",
+      "range": "Choose {min, number}–{max, number}",
+      "atLeast": "Choose at least {min, number}",
+      "atMost": "Choose at most {max, number}"
+    }
   },
   "priceEffect": {
     "INCLUDED": "Included",
@@ -2876,7 +2890,8 @@
     "approvalUsed": "This proposal has already been used.",
     "approvalExpired": "The proposal has expired or cannot be approved. Ask the assistant to propose it again.",
     "unavailable": "This feature is not available right now. An administrator needs to configure it.",
-    "slugUnavailable": "That address was just taken. Use the suggestion or pick another."
+    "slugUnavailable": "That address was just taken. Use the suggestion or pick another.",
+    "validationUnmapped": "Could not save: {message}"
   },
   "dev": {
     "inviteCodes": "Dev: pending invite codes for this email",

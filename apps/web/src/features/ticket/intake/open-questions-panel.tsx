@@ -9,8 +9,14 @@ export type OpenQuestionsPanelProps = {
   onAction: (input: { question: OpenQuestion; action: AnswerAction }) => void;
 };
 
-const keyOf = ({ question, index }: { question: OpenQuestion; index: number }) =>
-  "lineKey" in question ? `${question.kind}-${question.lineKey}` : `${question.kind}-${index}`;
+const keyOf = ({ question, index }: { question: OpenQuestion; index: number }) => {
+  if (question.kind === "OPTIONS") return `${question.kind}-${question.lineKey}-${question.group}`;
+  if (question.kind === "OVER_QUANTITY")
+    return `${question.kind}-${question.lineKey}-${question.what}`;
+  return "lineKey" in question
+    ? `${question.kind}-${question.lineKey}`
+    : `${question.kind}-${index}`;
+};
 
 /** The yellow panel of what blocks Create, each question with its answers. */
 export function OpenQuestionsPanel({ questions, otherTypes, onAction }: OpenQuestionsPanelProps) {

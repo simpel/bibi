@@ -1,6 +1,7 @@
 import { Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { DateField } from "@/components/date-picker/date-field";
 import { TextField } from "@/components/form/text-field";
@@ -14,18 +15,23 @@ export type WhenStepProps = {
   /** What a read message gave, also when incomplete (ADR 0084); `when` wins once answered. */
   prefill?: WhenFormValues | null;
   onDone: (input: { when: IntakeWhen }) => void;
+  /** Whether the step's values pass its rules now: Next waits for them. */
+  onValidChange?: (input: { valid: boolean }) => void;
 };
 
 /** The form's id: its submit (Next) sits in the step's footer (`WhenSection`). */
 export const WHEN_FORM_ID = "intake-when-form";
 
 /** Step 2: the day, from and to in the organization's zone, and the estimated guests. */
-export function WhenStep({ when, prefill, onDone }: WhenStepProps) {
+export function WhenStep({ when, prefill, onDone, onValidChange }: WhenStepProps) {
   const t = useTranslations("ticketIntake.when");
   const form = useForm<WhenFormValues, unknown, IntakeWhen>({
     resolver: zodResolver(whenFormSchema, useZodMessages()),
+    mode: "onTouched",
     defaultValues: when || !prefill ? whenFormDefaults({ when }) : prefill,
   });
+  const valid = whenFormSchema.safeParse(form.watch()).success;
+  useEffect(() => onValidChange?.({ valid }), [valid, onValidChange]);
   return (
     <Form {...form}>
       <form

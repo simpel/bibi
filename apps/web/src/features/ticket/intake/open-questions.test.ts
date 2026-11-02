@@ -68,6 +68,27 @@ describe("openQuestions", () => {
     ]);
   });
 
+  it("asks about choices that break a group's pick rule, answered by editing the line", () => {
+    const snack = {
+      ...{ name: "Snack", minPick: 1, maxPick: 1, split: false },
+      options: [{ itemId: "cake" }, { itemId: "fruit" }, { itemId: "oat" }],
+    };
+    const items = [{ id: "i1", groups: [snack] }];
+    const options = ["cake", "fruit", "oat"].map((itemId) => ({ itemId, quantity: null }));
+    const current = review({
+      patch: { lines: [draftFixture({ name: "Afternoon break", options })] },
+    });
+    expect(ask({ review: current, items })).toEqual([
+      {
+        ...{ kind: "OPTIONS", lineKey: "l1", name: "Afternoon break", group: "Snack", count: 3 },
+        rule: { min: 1, max: 1, options: 3 },
+      },
+    ]);
+    const one = review({ patch: { lines: [draftFixture({ options: options.slice(0, 1) })] } });
+    expect(kinds({ review: one, items })).toEqual([]);
+    expect(kinds({ items })).toEqual([]);
+  });
+
   it("asks about a short pool until it is prebooked or lowered", () => {
     const short = issueFixture({ kind: "POOL_SHORT", needed: 12, free: 9 });
     const planned = [previewLineFixture({ from: 9, to: 11, issues: [short] })];

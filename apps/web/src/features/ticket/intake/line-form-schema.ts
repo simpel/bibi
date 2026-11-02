@@ -5,7 +5,9 @@ import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsToInput } from "@/components/typed-fields/raw-fields";
 import { blankToNull, minorOrNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
-import { groupOptions } from "../../line/ui/choose-options-schema";
+import { chosenOptionsOf } from "../../line/ui/choose-options-schema";
+import type { PickRuleText } from "../../line/ui/group-pick-rule";
+import { withGroupRules } from "../../line/ui/group-rules-schema";
 import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 import type { CatalogItem } from "./catalog";
 import type { DraftLine } from "./draft-line";
@@ -22,6 +24,8 @@ export type LineSchemaInput = {
   timeZone: string;
   /** The requirement type needs are counted with. */
   needTypeId: string | null;
+  /** A broken group pick rule's message ("Choose 1"). */
+  ruleText: PickRuleText;
 };
 
 type TimesInput = Pick<LineSchemaInput, "date" | "timeZone"> & { values: LineFormValues };
@@ -39,19 +43,28 @@ function times({ values, date, timeZone }: TimesInput) {
 }
 
 const options = ({ item, values }: { item: CatalogItem | null; values: LineFormValues }) =>
-  (item?.groups ?? []).flatMap((group, index) =>
-    groupOptions({ group, value: values.groups[index] ?? { picked: [], quantities: {} } }),
-  );
+  chosenOptionsOf({ groups: item?.groups ?? [], values });
 
-/** Core's draft line schema (as `ticket.create` takes it) over the dialog's raw values. */
-export function lineFormSchema({
+/**
+ * Core's draft line schema (as `ticket.create` takes it) over the dialog's raw values, after the
+ * item's group pick rules as `ticket.create` checks them (only once something is chosen).
+ */
+export function lineFormSchema({ item, ruleText, ...input }: LineSchemaInput) {
+  const raw = rawLineSchema({ ...input, item });
+  return withGroupRules<LineFormValues, typeof raw>({
+    ...{ schema: raw, groups: item?.groups ?? [], ruleText, skipWhenNone: true },
+    chosen: ({ values }) => options({ item, values }),
+  });
+}
+
+function rawLineSchema({
   type,
   vocabularies,
   item,
   date,
   timeZone,
   needTypeId,
-}: LineSchemaInput) {
+}: Omit<LineSchemaInput, "ruleText">) {
   const specs = specsOf({ type, vocabularies });
   const schema = CreateDraftLineSchema.extend({ fields: buildFieldsSchema({ specs }) });
   return formSchema({

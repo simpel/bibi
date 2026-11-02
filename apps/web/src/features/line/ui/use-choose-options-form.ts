@@ -13,6 +13,7 @@ import {
   chooseOptionsDefaults,
   chooseOptionsSchema,
 } from "./choose-options-schema";
+import { usePickRuleText } from "./use-pick-rule-text";
 
 export type UseChooseOptionsFormInput = ChooseOptionsDefaultsInput & {
   lineId: string;
@@ -25,7 +26,11 @@ export function useChooseOptionsForm({ lineId, onDone, ...defaults }: UseChooseO
   const common = useTranslations("common");
   const router = useRouter();
   const { item } = defaults;
-  const schema = useMemo(() => chooseOptionsSchema({ lineId, item }), [lineId, item]);
+  const ruleText = usePickRuleText();
+  const schema = useMemo(
+    () => chooseOptionsSchema({ lineId, item, ruleText }),
+    [lineId, item, ruleText],
+  );
   const form = useForm<ChooseOptionsFormValues, unknown, LineChooseOptionsInput>({
     resolver: zodResolver(schema, useZodMessages()),
     defaultValues: chooseOptionsDefaults(defaults),

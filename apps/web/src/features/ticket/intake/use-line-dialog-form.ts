@@ -1,6 +1,8 @@
 import type { CreateDraftLine } from "@bibi/core";
+import { useEffect } from "react";
 import { type UseFormReturn, useForm } from "react-hook-form";
 import { useTypedResolver } from "@/components/typed-fields/use-typed-resolver";
+import { usePickRuleText } from "../../line/ui/use-pick-rule-text";
 import { toLocalInputValue } from "../../occupancy/ui/local-date-time";
 import type { CatalogItem } from "./catalog";
 import type { DraftLine } from "./draft-line";
@@ -54,6 +56,7 @@ export function useLineDialogForm({ model, item, line, lineKey, onSave }: UseLin
   const { catalog } = model.data;
   const timeZone = item?.timeZone ?? model.timeZone;
   const date = dayOf({ line, timeZone, fallback: model.when.date });
+  const ruleText = usePickRuleText();
   const schemaFor = ({ type }: { type: Parameters<typeof lineFormSchema>[0]["type"] }) =>
     lineFormSchema({
       type,
@@ -62,6 +65,7 @@ export function useLineDialogForm({ model, item, line, lineKey, onSave }: UseLin
       date,
       timeZone,
       needTypeId: catalog.needTypeId,
+      ruleText,
     });
   const resolver = useTypedResolver<LineFormValues, CreateDraftLine>({
     types: catalog.lineTypes,
@@ -74,6 +78,10 @@ export function useLineDialogForm({ model, item, line, lineKey, onSave }: UseLin
     resolver,
     defaultValues: lineFormDefaults({ line, item, type, timeZone, period: model.period }),
   });
+  // An edited line's broken group rule shows under its group at once (its open question).
+  useEffect(() => {
+    if (line) void form.trigger("groups");
+  }, [form, line]);
   const values = form.watch();
   const current = catalog.lineTypes.find(({ id }) => id === values.entityTypeId);
   const parsed = schemaFor({ type: current }).safeParse(values);

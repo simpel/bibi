@@ -967,7 +967,8 @@
         "dontSave": "Spara inte som paket",
         "keepGuess": "Behåll {value}",
         "changeGuess": "Ändra"
-      }
+      },
+      "options": "{line}: {group} har {count, number} valda. {rule}."
     },
     "summary": {
       "who": "{customer} · {contact}",
@@ -1110,7 +1111,14 @@
       "conflictNamed": "Inte skapat än. Sedan du började har #{reference} bokat {resource} {period}.",
       "conflictHint": "Raderna och kalendern är uppdaterade. Kontrollera dem och skapa igen.",
       "savingPackage": "Sparar paketet…",
-      "packageSaved": "Paketet har sparats."
+      "packageSaved": "Paketet har sparats.",
+      "checking": "Kontrollerar tillgänglighet…",
+      "fixIssues": "Åtgärda det som listas ovan först",
+      "fixFields": "Rätta de markerade fälten först",
+      "failed": "Ärendet kunde inte skapas. Se vad som behöver åtgärdas ovanför Skapa.",
+      "issuesTitle": "Ärendet kunde inte skapas",
+      "lineIssue": "{line}: {message}",
+      "editLine": "Ändra raden"
     },
     "message": {
       "title": "Från ett meddelande",
@@ -1442,7 +1450,13 @@
     "optionGroup": "{name} (välj {min, number}{same, select, true {} other {–{max, number}}})",
     "optionChoice": "{name} · {effect}",
     "optionSplitHint": "Fördela mellan gästerna: ange hur många av {quantity, number} som får varje tillval. Lämna 0 för att inte välja tillvalet.",
-    "units": "Enheter"
+    "units": "Enheter",
+    "pickRule": {
+      "exact": "Välj {min, number}",
+      "range": "Välj {min, number}–{max, number}",
+      "atLeast": "Välj minst {min, number}",
+      "atMost": "Välj högst {max, number}"
+    }
   },
   "priceEffect": {
     "INCLUDED": "Ingår",
@@ -2876,7 +2890,8 @@
     "approvalUsed": "Förslaget har redan använts.",
     "approvalExpired": "Förslaget har gått ut eller kan inte godkännas. Be assistenten föreslå på nytt.",
     "unavailable": "Funktionen är inte tillgänglig just nu. En administratör behöver konfigurera den.",
-    "slugUnavailable": "Den adressen togs precis. Använd förslaget eller välj en annan."
+    "slugUnavailable": "Den adressen togs precis. Använd förslaget eller välj en annan.",
+    "validationUnmapped": "Kunde inte spara: {message}"
   },
   "dev": {
     "inviteCodes": "Dev: väntande inbjudningskoder för den här adressen",

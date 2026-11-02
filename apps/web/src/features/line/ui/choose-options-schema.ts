@@ -1,6 +1,8 @@
 import type { LineDto } from "@bibi/core";
 import { LineChooseOptionsInputSchema } from "@bibi/core/schemas";
 import { formSchema } from "@/lib/form-schema";
+import type { PickRuleText } from "./group-pick-rule";
+import { withGroupRules } from "./group-rules-schema";
 import type { CustomisableItem } from "./program-form-data";
 
 /**
@@ -24,19 +26,38 @@ export function groupOptions({ group, value }: GroupInput) {
   });
 }
 
-export type ChooseOptionsSchemaInput = { lineId: string; item: CustomisableItem };
+/** Every option the raw values of the item's groups choose, in group order. */
+export const chosenOptionsOf = ({
+  groups,
+  values,
+}: {
+  groups: CustomisableItem["groups"];
+  values: ChooseOptionsFormValues;
+}) =>
+  groups.flatMap((group, index) =>
+    groupOptions({ group, value: values.groups[index] ?? { picked: [], quantities: {} } }),
+  );
 
-/** Core's `line.chooseOptions` schema over the raw form values, for one line. */
-export function chooseOptionsSchema({ lineId, item }: ChooseOptionsSchemaInput) {
-  return formSchema({
+export type ChooseOptionsSchemaInput = {
+  lineId: string;
+  item: CustomisableItem;
+  ruleText: PickRuleText;
+};
+
+/** Core's `line.chooseOptions` schema over the raw form values, each group's pick rule first. */
+export function chooseOptionsSchema({ lineId, item, ruleText }: ChooseOptionsSchemaInput) {
+  const schema = formSchema({
     schema: LineChooseOptionsInputSchema,
     toInput: ({ values }: { values: ChooseOptionsFormValues }) => ({
       lineId,
-      options: item.groups.flatMap((group, index) => {
-        const value = values.groups[index] ?? { picked: [], quantities: {} };
-        return groupOptions({ group, value });
-      }),
+      options: chosenOptionsOf({ groups: item.groups, values }),
     }),
+  });
+  return withGroupRules<ChooseOptionsFormValues, typeof schema>({
+    ...{ schema, groups: item.groups, ruleText },
+    chosen: ({ values }) => chosenOptionsOf({ groups: item.groups, values }),
+    // `line.chooseOptions` checks every group, also when nothing is chosen.
+    skipWhenNone: false,
   });
 }
 

@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
+import { usePickRuleText } from "../../line/ui/use-pick-rule-text";
 import type { OpenQuestion } from "./open-questions";
 import { useDraftFieldName } from "./use-draft-field-name";
 
@@ -15,12 +16,23 @@ export function useDelta() {
   };
 }
 
+/** "Afternoon break: Snack has 3 chosen. Choose 1." */
+function useOptionsText() {
+  const t = useTranslations("ticketIntake.questions");
+  const ruleText = usePickRuleText();
+  return ({ question }: { question: Extract<OpenQuestion, { kind: "OPTIONS" }> }) => {
+    const { name: line, group, count, rule } = question;
+    return t("options", { line, group, count, rule: ruleText({ rule }) });
+  };
+}
+
 /** The question as the review's yellow panel asks it (spec "Open questions"). */
 export function useOpenQuestionText() {
   const t = useTranslations("ticketIntake.questions");
   const dates = useDateTimeFormat();
   const delta = useDelta();
   const fieldName = useDraftFieldName();
+  const optionsText = useOptionsText();
   return ({ question }: { question: OpenQuestion }): string => {
     switch (question.kind) {
       case "START_CHANGED": {
@@ -37,6 +49,8 @@ export function useOpenQuestionText() {
         const what = question.what === "CHOICES" ? "choices" : "needs";
         return t("overQuantity", { line, count, quantity, what });
       }
+      case "OPTIONS":
+        return optionsText({ question });
       case "POOL_SHORT":
         return t("poolShort", {
           line: question.name,

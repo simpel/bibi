@@ -47,13 +47,17 @@ function SlotFacts({ slot, assets }: { slot: AssetBooking; assets: SlotSheetProp
 function useEscapeFirst({ open, onClose }: { open: boolean; onClose: () => void }) {
   useEffect(() => {
     if (!open) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      event.stopPropagation();
-      onClose();
-    };
-    window.addEventListener("keydown", onKey, { capture: true });
-    return () => window.removeEventListener("keydown", onKey, { capture: true });
+    const controller = new AbortController();
+    window.addEventListener(
+      "keydown",
+      (event) => {
+        if (event.key !== "Escape") return;
+        event.stopPropagation();
+        onClose();
+      },
+      { capture: true, signal: controller.signal },
+    );
+    return () => controller.abort();
   }, [open, onClose]);
 }
 

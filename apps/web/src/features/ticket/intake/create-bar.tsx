@@ -2,6 +2,7 @@ import { Button, StepSectionFooter } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
+import type { CreateBlock } from "./use-create-readiness";
 import type { ReviewModel } from "./use-review-model";
 
 const clashes = ({ model }: { model: ReviewModel }) =>
@@ -39,8 +40,8 @@ function ConflictNotice({ model }: { model: ReviewModel }) {
 
 export type CreateBarProps = {
   model: ReviewModel;
-  /** Open questions left; Create waits for them. */
-  questions: number;
+  /** Why Create waits (`useCreateReadiness`); null when it can run. */
+  block: CreateBlock | null;
   pending: boolean;
   /** Create was refused for a new clash. */
   conflict: boolean;
@@ -50,14 +51,18 @@ export type CreateBarProps = {
 
 /**
  * The blocked-lines summary and Create: "Create ticket", "Create and prebook" when lines clash,
- * "Answer <n> questions first" while questions are open, "Creating…" while it runs.
+ * "Creating…" while it runs, and while it waits why: "Answer <n> questions first", "Checking
+ * availability…", "Fix what is listed above first" or "Fix the highlighted fields first".
  */
-export function CreateBar({ model, questions, pending, conflict, back }: CreateBarProps) {
+export function CreateBar({ model, block, pending, conflict, back }: CreateBarProps) {
   const t = useTranslations("ticketIntake.create");
   const blocked = clashes({ model }).length;
   const label = (() => {
     if (pending) return t("creating");
-    if (questions > 0) return t("answerFirst", { count: questions });
+    if (block?.kind === "QUESTIONS") return t("answerFirst", { count: block.count });
+    if (block?.kind === "CHECKING") return t("checking");
+    if (block?.kind === "ISSUES") return t("fixIssues");
+    if (block?.kind === "FIELDS") return t("fixFields");
     return blocked > 0 ? t("createAndPrebook") : t("create");
   })();
   return (
@@ -69,7 +74,7 @@ export function CreateBar({ model, questions, pending, conflict, back }: CreateB
       <StepSectionFooter
         start={back}
         end={
-          <Button type="submit" disabled={pending || questions > 0}>
+          <Button type="submit" disabled={pending || block !== null}>
             {label}
           </Button>
         }

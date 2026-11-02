@@ -60,6 +60,8 @@ function lineChoices({ question, t, delta }: ChoicesInput): Choice[] {
         answer({ label: t("removeLine"), value: "REMOVE_LINE" }),
         editLine({ t, lineKey: question.lineKey }),
       ];
+    case "OPTIONS":
+      return [editLine({ t, lineKey: question.lineKey })];
     case "OVER_QUANTITY":
       return [
         answer({ label: t("lowerToFit"), value: "LOWER_TO_FIT" }),

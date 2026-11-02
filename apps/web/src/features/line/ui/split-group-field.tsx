@@ -13,6 +13,22 @@ export type SplitGroupFieldProps<V extends ChooseOptionsFormValues, O> = {
   quantity: number | null;
 };
 
+type RuleMessageProps<V extends ChooseOptionsFormValues, O> = {
+  form: UseFormReturn<V, unknown, O>;
+  index: number;
+};
+
+/** The group's broken pick rule ("Choose 1–2"), set on `groups.<n>.quantities` as a whole. */
+function GroupRuleMessage<V extends ChooseOptionsFormValues, O>({
+  form,
+  index,
+}: RuleMessageProps<V, O>) {
+  const name = `groups.${index}.quantities` as Path<V>;
+  const message = form.getFieldState(name, form.formState).error?.message;
+  if (!message) return null;
+  return <p className="text-sm text-destructive">{message}</p>;
+}
+
 /** A split group (ADR 0082): a quantity per option, 0 = not chosen. */
 export function SplitGroupField<V extends ChooseOptionsFormValues, O>({
   form,
@@ -43,6 +59,7 @@ export function SplitGroupField<V extends ChooseOptionsFormValues, O>({
           />
         ))}
       </div>
+      <GroupRuleMessage form={form} index={index} />
     </fieldset>
   );
 }

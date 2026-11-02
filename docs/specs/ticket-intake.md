@@ -29,7 +29,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 
 ## 1 · Who
 - **Customer, required.** A search (name) that shows only the 5 most recent customers while empty (`customer.list` with `recent`), and matches plus **+ New customer** while typing.
-- **Picking a customer** (a match, a recent one, a "looks like" suggestion or a just-created one) opens step 2 at once with its default contact. Only a customer without a contact keeps step 1 open to add one. A customer the step starts with (reopened by Change, or preselected from a message) shows its contact with **Next**.
+- **Picking a customer** (a match, a recent one, a "looks like" suggestion or a just-created one) opens step 2 at once with its default contact. Only a customer without a contact keeps step 1 open to add one. A customer the step starts with (reopened by Change, or preselected from a message) shows its contact with **Next**, which is disabled until a contact is chosen.
 - **New customer** on the title row opens the new-customer form empty; **+ New customer "<text>"** in the search opens it with the name.
   - The search's option first calls `customer.findSimilar`. A match shows "“<text>” looks like <customer>" with **Use <customer>** and **No, it is a new customer**.
   - The new-customer form asks for name, customer type, contact name and contact email, all required. A name not checked yet (typed in the form) is checked with `customer.findSimilar` on create, showing the same "looks like" choice in the form. It runs `customer.create` with the nested contact and selects the result.
@@ -39,7 +39,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 
 ## 2 · When and how many
 - Date, from, to (times in the organization's zone, ADR 0064) and estimated guests. They become `desiredStartsAt`, `desiredEndsAt` and `estimatedHeadcount`.
-- **Next** opens step 3, or the review again when lines exist.
+- **Next** opens step 3, or the review again when lines exist. It is disabled while the date, times or guests break the step's rules (checked on every change); a field's message shows once it was touched. **Back** stays enabled.
 - The date, times and guests sit on one line, aligned at the top whatever messages show under them. An empty date says "Choose a date".
 
 ## 3 · Package or one-off
@@ -91,6 +91,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 | The start changed from <a> to <b>. What should happen to the lines? | Move every timed line <±delta> · Keep the line times |
 | There are no lines. Create the ticket as a lead without lines? | Yes, a lead without lines · + Add a line |
 | <line> has quantity 0. | Remove the line · Edit line |
+| <line>: <group> has <n> chosen. Choose <rule>. (the item's group pick rule as `ticket.create` checks it: only once the line chose an option) | Edit line |
 | <line>: <n> choices (or needs) but only <q> ordered. | Lower to fit · Edit line |
 | <line>: <q> needed, only <free> left that day. | Prebook all <q> (source <q−free> more) · Lower to <free> |
 | The email doesn't say <field>. The assistant guessed <value>. | Keep <value> · Change it |
@@ -100,6 +101,8 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 - **Assignee** (default: the creating member) and **holds until**, always shown. The ticket's estimated value is the lines' total, not typed.
 - **Create**:
   - The label is **Create ticket**, or **Create and prebook** when lines clash. While saving it shows "Creating…" and is disabled.
+  - It is disabled until the ticket can be created, and the label says why, in this order: "Answer <n> questions first", "Checking availability…" (the preview is loading), "Fix what is listed above first" (issues no field can show), "Fix the highlighted fields first" (the form's own fields, marked at once).
+  - The whole `ticket.create` input is checked on every change. Issues that name no field of step 4, from that check or from the server (`lines.1.options`), show in a red panel above Create: a line's issue as "<line>: <message>" with **Edit line**, any other as its message. Server issues stay until the lines or the form change. The error toast then says "Could not create the ticket. See what to fix above Create." instead of pointing at highlighted fields.
   - It runs `ticket.create` with the lines, the note, `templateId` and `inboundMessageId`, and an `intakeKey`.
   - On `CONFLICT` for a new clash, nothing is created. The page previews again and shows "Not created yet. Since you started, #<ref> booked <resource> <period>. The lines and calendar are updated. Check them and create again."
   - After create, with "save as package" ticked, it runs `ticketTemplate.create`. A failure there shows a toast; the ticket stays.
@@ -117,7 +120,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet
 |---|---|
 | `BOOKABLE` | Time, availability for that time |
 | `SETUPS` | Setup (capacity shown) |
-| `CUSTOMISATIONS` | Choices per group: a pick in a normal group, a quantity per option in a split group (ADR 0082) |
+| `CUSTOMISATIONS` | Choices per group: a pick in a normal group, a quantity per option in a split group (ADR 0082). Once anything is chosen, each group must get between its min and max picks (core's rule, a split group counting options above 0); a broken group says "Choose 1", "Choose 1–2", "Choose at least 1" or "Choose at most 2" under it, and Save waits. An edited line shows it at once. |
 | `PRICED` | Unit price (list price shown as the placeholder), discount |
 
 - **Needs**: counts per value from the organization's lists (Vegan 2, Nut allergy 1), stored as line Requirements.

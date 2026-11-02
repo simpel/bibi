@@ -1,6 +1,7 @@
 import type { PreviewLine } from "@bibi/core";
 import { type DraftLine, isTimed, quantityOf } from "./draft-line";
 import type { InputStep } from "./intake-state";
+import { type ItemGroups, type OptionsQuestion, optionQuestions } from "./option-questions";
 import type { IntakeReview } from "./review-state";
 
 /**
@@ -32,6 +33,7 @@ export type OpenQuestion =
       quantity: number;
     }
   | { kind: "POOL_SHORT"; lineKey: string; name: string; needed: number; free: number }
+  | OptionsQuestion
   | ({ kind: "GUESSED" } & GuessedValue)
   | { kind: "TYPE_FIELD"; key: string; fieldName: string; typeName: string }
   | { kind: "PACKAGE_NAME" };
@@ -45,6 +47,8 @@ export type OpenQuestionsInput = {
   planned: readonly PreviewLine[] | null;
   ticketType: { name: string; required: RequiredField[] } | null;
   guesses?: readonly GuessedValue[];
+  /** The catalog's items with their groups: a line's choices are checked against its item's. */
+  items?: readonly ItemGroups[];
 };
 
 function startQuestion({ review, start }: OpenQuestionsInput): OpenQuestion[] {
@@ -58,6 +62,7 @@ function startQuestion({ review, start }: OpenQuestionsInput): OpenQuestion[] {
 const sum = ({ counts }: { counts: number[] }) => counts.reduce((total, count) => total + count, 0);
 
 type LineInput = { line: DraftLine; planned: PreviewLine | undefined; headcount: number };
+type LineQuestionsInput = LineInput & { accepted: string[]; items: readonly ItemGroups[] };
 
 function overQuantity({ line, planned, headcount }: LineInput): OpenQuestion[] {
   const quantity = planned?.effectiveQuantity ?? quantityOf({ line, headcount });
@@ -81,11 +86,14 @@ function overQuantity({ line, planned, headcount }: LineInput): OpenQuestion[] {
   return questions;
 }
 
-function lineQuestions({ line, planned, headcount, accepted }: LineInput & { accepted: string[] }) {
+function lineQuestions({ line, planned, headcount, accepted, items }: LineQuestionsInput) {
   if (line.quantity === 0) {
     return [{ kind: "ZERO_QUANTITY", lineKey: line.key, name: line.name } as const];
   }
-  const questions = overQuantity({ line, planned, headcount });
+  const questions = [
+    ...optionQuestions({ line, items }),
+    ...overQuantity({ line, planned, headcount }),
+  ];
   const short = planned?.issues.find((issue) => issue.kind === "POOL_SHORT");
   if (short && !accepted.includes(`POOL:${line.key}`)) {
     const { needed, free } = { needed: short.needed ?? 0, free: short.free ?? 0 };
@@ -114,16 +122,18 @@ function reviewQuestions({ review, ticketType }: OpenQuestionsInput): OpenQuesti
 
 /**
  * What must be answered before Create (spec "Open questions"): the start moved after lines
- * exist, no lines at all (unless a lead was accepted), a line with quantity 0, choices or needs
- * above the quantity, a pool short that day (unless prebooking it was accepted), a guessed value,
- * a ticket type's required field and the name of a package to save. Clashes are not questions.
+ * exist, no lines at all (unless a lead was accepted), a line with quantity 0, choices breaking
+ * a group's pick rule, choices or needs above the quantity, a pool short that day (unless
+ * prebooking it was accepted), a guessed value, a ticket type's required field and the name of a package to save. Clashes are not questions.
  */
 export function openQuestions({ ...input }: OpenQuestionsInput): OpenQuestion[] {
-  const { review, planned, headcount, guesses = [] } = input;
+  const { review, planned, headcount, guesses = [], items = [] } = input;
   const noLines: OpenQuestion[] =
     review.lines.length === 0 && !review.accepted.includes("LEAD") ? [{ kind: "NO_LINES" }] : [];
   const lines = review.lines.flatMap((line, index) =>
-    lineQuestions({ line, planned: planned?.[index], headcount, accepted: review.accepted }),
+    lineQuestions({
+      ...{ line, planned: planned?.[index], headcount, accepted: review.accepted, items },
+    }),
   );
   const guessed = guesses
     .filter(({ key }) => !review.accepted.includes(`GUESS:${key}`))

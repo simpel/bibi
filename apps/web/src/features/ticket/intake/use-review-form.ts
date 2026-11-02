@@ -1,4 +1,4 @@
-import type { TicketCreateInput } from "@bibi/core";
+import type { AppErrorIssue, TicketCreateInput } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { type UseFormReturn, useForm } from "react-hook-form";
@@ -36,10 +36,12 @@ export type UseReviewFormInput = {
   model: ReviewModel;
   /** Create was refused for a new clash: preview again and say so. */
   onConflict: () => void;
+  /** Create's issues that name no field of the form (a line's, say). */
+  onUnmappedIssues: (input: { issues: AppErrorIssue[] }) => void;
 };
 
 /** Step 4's form; its submit is Create (`ticket.create` with every line, ADR 0081). */
-export function useReviewForm({ model, onConflict }: UseReviewFormInput) {
+export function useReviewForm({ model, onConflict, onUnmappedIssues }: UseReviewFormInput) {
   const t = useTranslations("ticketIntake.create");
   const latest = useRef(model);
   latest.current = model;
@@ -51,6 +53,7 @@ export function useReviewForm({ model, onConflict }: UseReviewFormInput) {
   });
   const form = useForm<ReviewFormValues, unknown, TicketCreateInput>({
     resolver,
+    mode: "onChange",
     defaultValues: reviewFormDefaults({
       ...{ review: model.review, type: model.ticketType, timeZone: model.timeZone },
       packageFields: model.pkg?.fields ?? {},
@@ -61,8 +64,9 @@ export function useReviewForm({ model, onConflict }: UseReviewFormInput) {
   const { submit, pending } = useFormAction({
     form,
     action: ({ values }) => createTicketAction({ input: values }),
-    messages: { pending: t("creating"), success: t("created") },
+    messages: { pending: t("creating"), success: t("created"), unmapped: t("failed") },
     onSuccess: ({ value }) => finish({ ticket: value, values: form.getValues() }),
+    onUnmappedIssues,
     onError: ({ error }) => {
       if (error.code === "CONFLICT") onConflict();
     },
