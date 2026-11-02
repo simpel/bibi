@@ -130,7 +130,8 @@ export function DaySnapshot({
   return (
     <div
       data-slot="day-snapshot"
-      className={cn("grid min-w-0 gap-1 text-sm", className)}
+      // Calendar UI always sits on the card surface (white), wherever it is placed.
+      className={cn("grid min-w-0 gap-1 rounded-xl border bg-card p-3 text-sm sm:p-4", className)}
       {...props}
     >
       <div className={COLUMNS}>
