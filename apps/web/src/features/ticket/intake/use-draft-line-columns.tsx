@@ -3,7 +3,8 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { useNumberFormat } from "@/lib/number/use-number-format";
 import type { DraftLine } from "./draft-line";
-import { AvailabilityCell, type DraftLineRow, LineActions, LineNameCell } from "./draft-line-cells";
+import { AvailabilityCell, type DraftLineRow, LineNameCell } from "./draft-line-cells";
+import { LineActions } from "./line-actions";
 import { lineCostMinor, linesTotalMinor } from "./line-cost";
 import { lineTone } from "./use-issue-text";
 

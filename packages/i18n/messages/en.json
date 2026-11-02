@@ -1056,6 +1056,8 @@
       },
       "clashCanSave": "You can still save; the line is prebooked and shown as blocked.",
       "remove": "Remove line",
+      "removeTitle": "Remove {name}?",
+      "removeDescription": "The line leaves this booking. Nothing is saved until Create.",
       "add": "Add line"
     },
     "issues": {

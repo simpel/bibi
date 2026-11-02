@@ -1,5 +1,5 @@
 import type { PreviewLine } from "@bibi/core";
-import { cn, DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { cn } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { DraftLine } from "./draft-line";
 import type { LineDetails } from "./line-details";
@@ -49,27 +49,5 @@ export function AvailabilityCell({ row, hidden }: { row: DraftLineRow; hidden: b
       {t(`tone.${tone}`)}
       {first ? ` ${issueText({ issue: first })}` : ""}
     </span>
-  );
-}
-
-export type LineActionsProps = {
-  row: DraftLineRow;
-  onEdit: (input: { line: DraftLine }) => void;
-  onRemove: (input: { key: string }) => void;
-};
-
-/** Edit opens the line dialog; Remove drops the draft line (nothing is saved until Create). */
-export function LineActions({ row, onEdit, onRemove }: LineActionsProps) {
-  const common = useTranslations("common");
-  const t = useTranslations("ticketIntake.line");
-  return (
-    <DataTableRowActions label={common("actions")}>
-      <DropdownMenuItem onSelect={() => onEdit({ line: row.line })}>
-        {common("edit")}
-      </DropdownMenuItem>
-      <DropdownMenuItem destructive onSelect={() => onRemove({ key: row.line.key })}>
-        {t("remove")}
-      </DropdownMenuItem>
-    </DataTableRowActions>
   );
 }
