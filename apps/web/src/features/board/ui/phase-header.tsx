@@ -39,7 +39,7 @@ function PhaseMenu({ phase, order, access, onReorder, onOpen }: PhaseMenuProps) 
   const t = useTranslations("boardPhase");
   const at = order.indexOf(phase.id);
   return (
-    <DataTableRowActions label={t("actions", { name: phase.title })}>
+    <DataTableRowActions compact label={t("actions", { name: phase.title })}>
       <DropdownMenuItem onSelect={() => onOpen("edit")}>{t("edit")}</DropdownMenuItem>
       {[-1, 1].map((by) => {
         const ids = swap({ ids: order, at, by });

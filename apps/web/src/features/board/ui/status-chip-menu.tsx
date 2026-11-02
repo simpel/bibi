@@ -61,7 +61,7 @@ export function StatusChipMenu(props: StatusChipMenuProps) {
   const [archiveOpen, setArchiveOpen] = useState(false);
   return (
     <>
-      <DataTableRowActions label={phase("statusActions", { name: ticketStatus.name })}>
+      <DataTableRowActions compact label={phase("statusActions", { name: ticketStatus.name })}>
         {access.configure ? <EditTicketStatusItem id={ticketStatus.id} /> : null}
         <MoveToMenu {...props} />
         {access.configure && access.removeStatus ? (
