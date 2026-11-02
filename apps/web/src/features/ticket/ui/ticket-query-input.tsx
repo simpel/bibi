@@ -1,8 +1,9 @@
-import { Input } from "@bibi/ui";
+import { cn, Input } from "@bibi/ui";
 import type { ComponentProps } from "react";
 import type { SearchField } from "@/components/search-form";
 import type { QueryCatalog } from "../lib/query-suggestion-types";
 import type { QueryVocabulary } from "../lib/query-vocabulary";
+import { QueryHighlight } from "./query-highlight";
 import { QuerySuggestionRow } from "./query-suggestion-row";
 import { useQuerySuggestions } from "./use-query-suggestions";
 
@@ -39,7 +40,8 @@ function SuggestionList({ listId, items, active, pick }: ListProps) {
 
 /**
  * The tickets search with GitHub-style suggestions: qualifiers while typing a word, then the
- * qualifier's values; members and customers are searched on the server as you type.
+ * qualifier's values; members and customers are searched on the server as you type. Known
+ * qualifiers' values are highlighted in the field itself.
  */
 export function TicketQueryInput({
   catalog,
@@ -58,8 +60,15 @@ export function TicketQueryInput({
     vocabulary,
   });
   return (
-    <div className="relative">
-      <Input {...rest} {...inputProps} type="search" />
+    <div className="relative rounded-md bg-background">
+      <QueryHighlight value={value} vocabulary={vocabulary} input={inputProps.ref} />
+      <Input
+        {...rest}
+        {...inputProps}
+        type="search"
+        // The text is drawn by the highlight underneath; the caret and selection stay the input's.
+        className={cn("relative bg-transparent text-transparent caret-foreground", rest.className)}
+      />
       {shown ? <SuggestionList {...list} /> : null}
     </div>
   );
