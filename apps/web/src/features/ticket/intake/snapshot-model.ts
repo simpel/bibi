@@ -1,5 +1,6 @@
 import type { CalendarBlockDto, PreviewLine } from "@bibi/core";
 import type { DaySnapshotBlock, DaySnapshotRow } from "@bibi/ui";
+import { itemRoute } from "@/lib/routes";
 import type { ItemLine } from "../../line/actions";
 import { flattenDraft } from "./draft-add-ons";
 import type { DraftLine } from "./draft-line";
@@ -86,7 +87,8 @@ function itemRow({ input, placed, itemId, name }: ItemRowInput): DaySnapshotRow 
       end: minutesOf({ at: new Date(line.endsAt), midnight }),
     }));
   const own = placed.filter(({ line }) => line.itemId === itemId).map(draftBar);
-  return { id: itemId, label: name, blocks: [...others, ...lines, ...own] };
+  const href = itemRoute({ id: itemId });
+  return { id: itemId, label: name, href, blocks: [...others, ...lines, ...own] };
 }
 
 /**

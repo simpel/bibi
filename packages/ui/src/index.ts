@@ -6,6 +6,7 @@ export * from "./components/ai-elements/prompt-input";
 export * from "./components/ai-elements/shimmer";
 export * from "./components/ai-elements/suggestion";
 export * from "./components/alert/alert";
+export * from "./components/app-link/app-link";
 export * from "./components/availability-calendar/availability-calendar";
 export * from "./components/availability-calendar/booking-sheet";
 export * from "./components/availability-calendar/calendar-labels";
@@ -47,6 +48,7 @@ export * from "./components/data-table/data-table-pagination";
 export type * from "./components/data-table/data-table-types";
 export * from "./components/date-picker/date-button";
 export * from "./components/day-snapshot/day-snapshot";
+export * from "./components/day-snapshot/day-snapshot-variants";
 export * from "./components/dialog/dialog";
 export {
   DropdownMenu,

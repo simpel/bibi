@@ -3,6 +3,7 @@ import { type ItemDto, listEntityTypes, listItems, listVenues, ok, type Result }
 import type { CalendarAsset } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { fileUrl } from "@/lib/file-url";
+import { itemRoute } from "@/lib/routes";
 import { listAll } from "@/server/list-all";
 import { loadUnitPeople, type UnitPerson } from "../line-allocation/load-unit-members";
 import { orEmpty } from "./or-empty";
@@ -51,8 +52,9 @@ function toAssets({ items, types, venues, people, t }: ToAssetsInput): CalendarA
       const detail = detailOf({ item, venue, t });
       const group = types.get(item.entityTypeId) ?? "";
       const person = people.get(item.id);
-      if (person) return { id: item.id, group, ...personRow({ item, person, role: group }) };
-      return { id: item.id, name: item.name, group, ...(detail ? { detail } : {}) };
+      const href = itemRoute({ id: item.id });
+      if (person) return { id: item.id, group, href, ...personRow({ item, person, role: group }) };
+      return { id: item.id, name: item.name, group, href, ...(detail ? { detail } : {}) };
     })
     .sort((a, b) => a.group.localeCompare(b.group) || a.name.localeCompare(b.name));
 }

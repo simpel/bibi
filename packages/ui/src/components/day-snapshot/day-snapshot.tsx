@@ -1,34 +1,20 @@
-import { cva } from "class-variance-authority";
 import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
+import { DaySnapshotLabel } from "./day-snapshot-label";
 import { type DaySnapshotBlock, type LanedBlock, laneBlocks } from "./day-snapshot-lanes";
+import { daySnapshotBlockVariants } from "./day-snapshot-variants";
 
 export type { DaySnapshotBlock } from "./day-snapshot-lanes";
 
-export const daySnapshotBlockVariants = cva(
-  "absolute h-5 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap rounded-sm px-1 text-xs leading-5",
-  {
-    variants: {
-      tone: {
-        /** Another booking's hard hold: subtle gray, so this booking's lines stand out. */
-        hard: "bg-muted-foreground/20 text-muted-foreground",
-        /** Another booking's soft hold: lighter still, with a dashed edge. */
-        soft: "border border-dashed border-muted-foreground/40 bg-muted/60 text-muted-foreground",
-        /** This booking's draft line. */
-        draft: "border border-dashed border-primary bg-primary/10 text-foreground",
-        /** This booking's draft line where it clashes. */
-        clash: "border border-dashed border-destructive bg-destructive/10 text-destructive",
-        /** This ticket's saved line (the ticket page): solid, so the day's others stay dimmed. */
-        own: "border border-primary bg-primary/15 text-foreground",
-      },
-    },
-    defaultVariants: { tone: "draft" },
-  },
-);
-
 export type DaySnapshotTone = DaySnapshotBlock["tone"];
 
-export type DaySnapshotRow = { id: string; label: string; blocks: DaySnapshotBlock[] };
+/** `href`: the resource's own page, which the label links to. */
+export type DaySnapshotRow = {
+  id: string;
+  label: string;
+  href?: string;
+  blocks: DaySnapshotBlock[];
+};
 
 export type DaySnapshotProps = ComponentProps<"div"> & {
   rows: DaySnapshotRow[];
@@ -98,9 +84,7 @@ function Row({ row, ...span }: Span & { row: DaySnapshotRow }) {
   const { blocks, lanes } = laneBlocks({ blocks: row.blocks });
   return (
     <div className={cn(COLUMNS, "items-start")}>
-      <span className="truncate pt-1 text-muted-foreground" title={row.label}>
-        {row.label}
-      </span>
+      <DaySnapshotLabel label={row.label} href={row.href} />
       <div
         className="relative overflow-hidden rounded-md border bg-card"
         style={{ height: `${lanes * LANE + PAD * 2 - 0.25}rem` }}

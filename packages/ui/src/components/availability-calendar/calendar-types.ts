@@ -95,6 +95,8 @@ export type CalendarAsset = {
   detail?: string;
   /** Set when the asset is a person: the row shows their avatar. */
   person?: CalendarPerson;
+  /** The asset's own page: the name links there. */
+  href?: string;
 };
 
 /** A line placed on an asset, with the ticket and customer it belongs to (none for a block). */

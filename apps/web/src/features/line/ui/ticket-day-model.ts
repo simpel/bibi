@@ -1,5 +1,6 @@
 import type { CalendarBlockDto, LineDto } from "@bibi/core";
 import type { DaySnapshotBlock, DaySnapshotRow } from "@bibi/ui";
+import { itemRoute } from "@/lib/routes";
 
 const MINUTE = 60_000;
 const DAY_MS = 86_400_000;
@@ -78,7 +79,7 @@ function itemRows({ input, own }: { input: TicketDayInput; own: OwnBar[] }): Day
     const label = input.itemNames.get(itemId);
     if (!label) return [];
     const blocks = [...(others.get(itemId) ?? []), ...own.filter((b) => b.itemId === itemId)];
-    return [{ id: itemId, label, blocks }];
+    return [{ id: itemId, label, href: itemRoute({ id: itemId }), blocks }];
   });
 }
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { ContactLabelsProvider, Toaster, TooltipProvider } from "@bibi/ui";
+import { AppLinkProvider, ContactLabelsProvider, Toaster, TooltipProvider } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ThemeProvider, useTheme } from "next-themes";
 import type { ReactNode } from "react";
+import { Link } from "@/lib/navigation";
 
 function AppToaster() {
   const { resolvedTheme } = useTheme();
@@ -28,12 +29,17 @@ function ContactLabels({ children }: { children: ReactNode }) {
 
 export type ProvidersProps = { children: ReactNode };
 
-/** Client-side providers: dark-class theming (next-themes), tooltips, toasts, contact words. */
+/**
+ * Client-side providers: dark-class theming (next-themes), tooltips, toasts, contact words and the
+ * scoped link that `@bibi/ui` links to app pages with.
+ */
 export function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <TooltipProvider>
-        <ContactLabels>{children}</ContactLabels>
+        <AppLinkProvider link={Link}>
+          <ContactLabels>{children}</ContactLabels>
+        </AppLinkProvider>
         <AppToaster />
       </TooltipProvider>
     </ThemeProvider>
