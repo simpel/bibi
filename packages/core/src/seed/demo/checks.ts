@@ -34,6 +34,7 @@ import { reconcileProjections } from "./reconcile-checks";
 import { checkDemoRecords } from "./record-checks";
 import { checkDemoResponsibilities } from "./responsibility-checks";
 import { checkDemoSetupNeed } from "./setup-need-checks";
+import { checkDemoSimilarCustomers } from "./similar-customer-checks";
 import { checkDemoTemplates } from "./template-checks";
 import { checkDemoTickets } from "./ticket-checks";
 import { checkDemoTimeZones } from "./time-zone-checks";
@@ -73,8 +74,7 @@ const PIPELINE_CHECKS: readonly OrgCheck[] = [
 export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPipeline?: boolean };
 
 /**
- * The checks in `docs/demo-seed.md` that slices 1–5 can verify: the member count, everyone
- * has their documented role, the configuration and items (`checkDemoConfig`), the responsibilities' id lists (`checkDemoResponsibilities`), that a refused field archive lists its records (`checkDemoRecords`), the pipeline (`checkDemoPipeline`: statuses,
+ * The checks in `docs/demo-seed.md` that slices 1–5 can verify: the member count, everyone has their documented role, the configuration and items (`checkDemoConfig`), the responsibilities' id lists (`checkDemoResponsibilities`), that a refused field archive lists its records (`checkDemoRecords`), the pipeline (`checkDemoPipeline`: statuses,
  * states and grid cells), the predefined tickets and the tickets made from them
  * (`checkDemoTemplates`) and the tickets per status (`checkDemoTickets`), the tickets' assignees and followers
  * (`checkDemoAssignments`), that removing a populated status or state with a target is allowed
@@ -84,9 +84,8 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPip
  * moves the grid drives (`checkDemoGrid`), every line's effective price and inherited quantity
  * (`checkDemoPrices`, ADR 0052), the expanded bundles' part lines and per-rate VAT
  * (`checkDemoBundles`, ADR 0059), every line's setup and teardown buffers (`checkDemoBuffers`, ADR
- * 0059), the allocated units' holds (`checkDemoAllocations`, ADR 0059), the derived balances (`checkDemoPayments`, ADR 0057), the invoices and SIE export (`checkDemoFinance`, ADR 0077), the organization's and venue's zones (`checkDemoTimeZones`, ADR 0064), the claimed email domain (`checkDemoDomainJoin`, ADR 0078), every projection against its owned data
- * (`reconcileProjections`, ADR 0051), and every write
- * was audited as SYSTEM. Returns failure messages.
+ * 0059), the allocated units' holds (`checkDemoAllocations`, ADR 0059), the derived balances (`checkDemoPayments`, ADR 0057), the invoices and SIE export (`checkDemoFinance`, ADR 0077), the organization's and venue's zones (`checkDemoTimeZones`, ADR 0064), the claimed email domain (`checkDemoDomainJoin`, ADR 0078), the duplicate suggestions (`checkDemoSimilarCustomers`, ADR 0081), every projection against its owned data
+ * (`reconcileProjections`, ADR 0051), and every write was audited as SYSTEM. Returns failure messages.
  */
 export async function checkDemoOrg({
   context,
@@ -120,6 +119,7 @@ export async function checkDemoOrg({
   failures.push(...(await checkDemoDomainJoin({ context, org })));
   failures.push(...(await checkDemoHours({ context, org })));
   failures.push(...(await checkDemoUserSettings({ context, org })));
+  failures.push(...(await checkDemoSimilarCustomers({ context, org })));
   if (skipPipeline) return [...failures, ...(await auditFailures({ context, org }))];
   for (const check of PIPELINE_CHECKS) failures.push(...(await check({ context, org })));
   failures.push(...(await reconcileProjections({ context })));

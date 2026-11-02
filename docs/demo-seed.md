@@ -40,6 +40,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 20. Intake preview (ADR 0081, `preview-checks.ts`, after the grid checks): `ticket.previewLines` with L12's Strategy meeting line (Styrsö, D+5 10–12) as a draft line reports a `HARD_CLASH` naming L4's reference (its Booked Styrsö line) with `refusesCreate` false, since Lindholmen's entry status New starts a conference room Prebooked (soft). The first package with a guest range (Lindholmen: Small meeting, 2–12; Vingaleden: its package, 1–12) previewed for one guest above its maximum lands in `OUTSIDE_RANGE`. The preview writes nothing.
 21. Option quantities (ADR 0082, `option-quantity-checks.ts`): the Three-course dinner's Main course is a split group (choose 1–2 different main courses). L9's Team dinner (14, D+8 17–20) chooses Beetroot carpaccio, Cloudberry parfait and the main course split 10 Venison fillet + 4 Celeriac steak with `line.chooseOptions`; the two main course lines get a line price of 0 kr (`line.update`), so the quote lists them (`INCLUDED`, not counted). Each option line stores its quantity, and L9's accepted quote freezes them as order lines of 10 and 4.
 22. Intake create (ADR 0081 decisions 9 and 11, `intake-create-checks.ts`, after the preview check): inside a transaction that is rolled back, `ticket.create` makes a ticket for the first ticket's customer and contact with one line D+400 for 14 of the item with a split group (Lindholmen: the Three-course dinner, every group's least pick, 10 + 4 of the main courses), the line's options and one need (a requirement type made for the check, the first list value × 2), with `intakeKey`. The same call again returns the same ticket. Exactly one ticket has the key, with the line, its option lines and the need. Nothing stays in the demo data.
+23. Similar customers (ADR 0081, `similar-customer-checks.ts`): `customer.findSimilar` for the name "NORDKUST LOGISTIK" and a nordkust.test email returns exactly the organization's Nordkust Logistik customers (Lindholmen: Nordkust Logistik AB and Nordkust Logistik i Göteborg), each by both `NAME` and `EMAIL_DOMAIN`, and a gmail.com address matches nothing. Vingaleden has no such customer and skips it.
 
 The checks that run today:
 - **Dashboard (ADR 0079, 0080, 0086):** `checkDemoDashboard` (`dashboard-checks.ts`, see Dashboard data): the Workload tab's status cards and their trends, what needs attention, scheduled tickets, utilisation and booked-ahead value of `dashboard.summary`, and won and lost tickets and the money trends of `finance.overview` over the last six months.
@@ -297,6 +298,9 @@ Contact persons have the type Contact person; the role in parentheses is its Rol
 | Göta Advokatbyrå KB | Company | Henrik Strand | – |
 | Älvstrand Tech AB | Company | Amir Haddad | – |
 | Göteborgs Seglarsällskap | Association | Ulla Berg | – |
+| Nordkust Logistik i Göteborg | Company | Per Lind (per.lind@nordkust.test) | – |
+
+Nordkust Logistik i Göteborg is a near-duplicate of Nordkust Logistik AB, registered separately by mistake; both have a contact at nordkust.test. It is what `customer.findSimilar` suggests (ADR 0081, check 23).
 
 ## Tickets
 

@@ -72,4 +72,11 @@ export const lindholmenCustomers: readonly DemoCustomer[] = [
     fields: { "Org no.": "857209-6612" },
     contacts: [person({ name: "Ulla Berg", role: "Organizer" })],
   },
+  // A near-duplicate of Nordkust Logistik AB, registered separately by mistake: what
+  // `customer.findSimilar` suggests before another one is created (ADR 0081).
+  {
+    name: "Nordkust Logistik i Göteborg",
+    type: "Company",
+    contacts: [person({ name: "Per Lind", role: "Orderer", email: "per.lind@nordkust.test" })],
+  },
 ];

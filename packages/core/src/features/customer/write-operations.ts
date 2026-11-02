@@ -1,3 +1,4 @@
+import type { ScopedDbClient } from "@bibi/db";
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { createRecord } from "../../records/create-record";
@@ -5,23 +6,35 @@ import type { LinkValue } from "../../records/record-links";
 import { updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
+import { contactEmbeddable } from "../contact/embeddable";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { mergeFields, validateFields } from "../field-definition/field-values";
 import { customerEmbeddable } from "./embeddable";
+import { createFirstContact } from "./first-contact";
 import { CustomerCreateInputSchema, CustomerSchema, CustomerUpdateInputSchema } from "./schema";
 import { CUSTOMER_INCLUDE, loadCustomer, toCustomerDto } from "./to-customer-dto";
+
+type ContactIdsInput = { db: ScopedDbClient; customerId: string };
+
+/** The contacts a new customer was created with, re-indexed for search after the commit. */
+const contactIdsOf = async ({ db, customerId }: ContactIdsInput) =>
+  (await db.contact.findMany({ where: { customerId }, select: { id: true } })).map(({ id }) => id);
 
 export const createCustomer = defineOperation({
   name: "customer.create",
   kind: "command",
   description:
     "Create a customer of one of the organization's customer types. `fields` must match the " +
-    "type's own fields (e.g. org number).",
+    "type's own fields (e.g. org number). With `contact`, its first contact person is created " +
+    "in the same command (find it with contact.list by customerId).",
   input: CustomerCreateInputSchema,
   output: CustomerSchema,
   permission: "customer:write",
   embeddable: customerEmbeddable,
-  handler: async ({ input: { entityTypeId, fields, ...data }, context }) => {
+  alsoIndexed: async ({ output, db }) => [
+    { embeddable: contactEmbeddable, ids: await contactIdsOf({ db, customerId: output.id }) },
+  ],
+  handler: async ({ input: { entityTypeId, fields, contact, ...data }, context }) => {
     const type = await loadTypeOfBase({ context, entityTypeId, base: "CUSTOMER" });
     if (!type.ok) return type;
     const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
@@ -46,6 +59,10 @@ export const createCustomer = defineOperation({
     });
     const customer = toCustomerDto({ row, context });
     context.recordChange({ entityId: row.id, after: customer });
+    if (contact) {
+      const first = await createFirstContact({ context, customerId: row.id, contact });
+      if (!first.ok) return first;
+    }
     return ok({ value: customer });
   },
 });

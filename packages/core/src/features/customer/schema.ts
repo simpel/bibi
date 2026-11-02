@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
+import { ContactCreateInputSchema } from "../contact/schema";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 
 export const CustomerSchema = z.object({
@@ -31,6 +32,18 @@ export const CustomerSchema = z.object({
   createdBy: z.string().nullable(),
 });
 
+/** The first contact person of a new customer (ADR 0081): the `contact.create` fields. */
+export const CustomerFirstContactInputSchema = ContactCreateInputSchema.omit({
+  customerId: true,
+}).extend({
+  entityTypeId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("Id of the contact type; omitted = the organization's only contact type"),
+  email: z.email().describe("The person's email address"),
+});
+
 export const CustomerCreateInputSchema = z.object({
   entityTypeId: z
     .string()
@@ -58,9 +71,15 @@ export const CustomerCreateInputSchema = z.object({
     .nullish()
     .describe("Credit limit in minor units (1/100 kr); null = no limit set"),
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
+  contact: CustomerFirstContactInputSchema.optional().describe(
+    "The customer's first contact person, created with it in the same command",
+  ),
 });
 
-export const CustomerUpdateInputSchema = CustomerCreateInputSchema.omit({ entityTypeId: true })
+export const CustomerUpdateInputSchema = CustomerCreateInputSchema.omit({
+  entityTypeId: true,
+  contact: true,
+})
   .partial()
   .extend({
     id: z.string().min(1),
@@ -100,6 +119,13 @@ export const CustomerListInputSchema = z.object({
     .describe("Only these customers (e.g. to name the customers of tickets on a board)"),
   entityTypeId: z.string().optional().describe("Only customers of this type"),
   query: z.string().trim().max(200).optional().describe("Only customers whose name contains this"),
+  recent: z
+    .boolean()
+    .optional()
+    .describe(
+      "Order by each customer's latest ticket, newest first; customers without a ticket are " +
+        "left out. Needs ticket:read",
+    ),
   ...PageInputShape,
 });
 
@@ -110,5 +136,7 @@ export const CustomerListOutputSchema = z.object({
 
 export type CustomerDto = z.infer<typeof CustomerSchema>;
 export type CustomerCreateInput = z.infer<typeof CustomerCreateInputSchema>;
+export type CustomerFirstContactInput = z.infer<typeof CustomerFirstContactInputSchema>;
+export type CustomerListInput = z.infer<typeof CustomerListInputSchema>;
 export type CustomerUpdateInput = z.infer<typeof CustomerUpdateInputSchema>;
 export type CustomerArchiveInput = z.input<typeof CustomerArchiveInputSchema>;

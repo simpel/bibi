@@ -57,6 +57,9 @@ export type OperationContext = {
 
 export type OperationKind = "command" | "query";
 
+/** Records of one searchable entity a command wrote besides its output (`alsoIndexed`). */
+export type AlsoIndexed = { embeddable: Embeddable; ids: readonly string[] };
+
 export type HandlerInput<I> = { input: I; context: OperationContext };
 
 /** What `external` gets: the input, the committed output and a db outside any transaction. */
@@ -100,6 +103,8 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
   consequences?(args: HandlerInput<z.infer<I>>): Promise<Consequence[]>;
   /** Entity re-indexed for search after a successful command (reads `output.id`). */
   embeddable?: Embeddable;
+  /** Other searchable records the command wrote (e.g. a nested contact), re-indexed after it. */
+  alsoIndexed?(args: { output: z.output<O>; db: ScopedDbClient }): Promise<AlsoIndexed[]>;
   /** Entity type for audit rows; defaults to the name prefix. */
   entityType?: string;
   /**

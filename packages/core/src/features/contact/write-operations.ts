@@ -1,14 +1,13 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import { createRecord } from "../../records/create-record";
 import type { LinkValue } from "../../records/record-links";
 import { archiveRecords, updateRecord } from "../../records/update-record";
 import { invalid, notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
-import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { mergeFields, validateFields } from "../field-definition/field-values";
 import { checkNotLinked } from "../field-definition/link-usage";
 import { contactEmbeddable } from "./embeddable";
+import { insertContact } from "./insert-contact";
 import {
   ContactCreateInputSchema,
   ContactIdInputSchema,
@@ -33,36 +32,14 @@ export const createContact = defineOperation({
   output: ContactSchema,
   permission: "customer:write",
   embeddable: contactEmbeddable,
-  handler: async ({ input: { entityTypeId, customerId, fields, ...data }, context }) => {
+  handler: async ({ input: { customerId, ...input }, context }) => {
     if (!(await context.db.customer.findFirst({ where: { id: customerId } }))) {
       return unknownCustomer();
     }
-    const type = await loadTypeOfBase({ context, entityTypeId, base: "CONTACT" });
-    if (!type.ok) return type;
-    const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
-    if (!checked.ok) return checked;
-    const row = await createRecord({
-      context,
-      base: "CONTACT",
-      entityTypeId,
-      fields: checked.value.fields,
-      links: checked.value.links,
-      insert: ({ id }) =>
-        context.db.contact.create({
-          data: {
-            id,
-            ...data,
-            entityTypeId,
-            customerId,
-            fields: toJson({ value: checked.value.fields }) ?? {},
-            organizationId: context.organizationId,
-          },
-          include: CONTACT_INCLUDE,
-        }),
-    });
-    const contact = toContactDto({ row });
-    context.recordChange({ entityId: row.id, after: contact });
-    return ok({ value: contact });
+    const contact = await insertContact({ context, customerId, contact: input });
+    if (!contact.ok) return contact;
+    context.recordChange({ entityId: contact.value.id, after: contact.value });
+    return contact;
   },
 });
 

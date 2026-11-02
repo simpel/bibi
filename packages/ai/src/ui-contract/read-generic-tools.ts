@@ -8,6 +8,8 @@ export const READ_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
     "a list of unit names with the prepick; shown as JSON until the allocation UI (#384)",
   skill_export: "SKILL.md text; shown as code/JSON",
   ticket_export: "versioned JSON document for handover; shown as code/JSON",
+  customer_findSimilar:
+    "possible duplicates with their match reasons; the /new/ticket intake shows them (ADR 0081); JSON in chat",
   ticket_previewLines:
     "planned lines and their issues; the /new/ticket intake shows them (ADR 0081); JSON in chat",
 };

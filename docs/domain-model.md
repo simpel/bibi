@@ -404,7 +404,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · Orderer, invoice recipient or organizer at a customer.
 
-> **Target ([ADR 0081](decisions/0081-ticket-intake.md)):** `customer.create` can create the first contact in the same command (`contact`); `customer.findSimilar({ name?, email? })` suggests customers with a similar normalised name or a contact on the same non-public email domain; `customer.list` gains `recent`.
+> **Done ([ADR 0081](decisions/0081-ticket-intake.md)):** `customer.create` can create the first contact in the same command (`contact`: name and email required; the contact type defaults to the organization's only one), through the same insert as `contact.create`, with its own audit row; a refused contact rolls the customer back. `customer.findSimilar({ name?, email? })` (`customer:read`) suggests at most 5 active customers, each with its `reasons`: `NAME` (names equal, or one a whole-word part of the other, after folding case and punctuation and stripping legal forms such as AB, KB, ek. för., Ltd, GmbH at either end) and `EMAIL_DOMAIN` (an active contact on the email's domain, never a public one). `customer.list` with `recent` (needs `ticket:read`) orders customers by their latest active ticket's creation, newest first, and leaves out customers without one.
 
 **Attributes**
 - type (base `CONTACT`) and custom fields (`fields` as JSON), e.g. the person's role (orderer / invoice recipient) as a choice field

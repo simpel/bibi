@@ -2,6 +2,7 @@ import { getLogger } from "@bibi/logger";
 import type { AfterCommitHook } from "../operations/execute";
 import type { AnyOperation } from "../operations/types";
 import type { EmbedFn } from "./embed";
+import type { Embeddable } from "./embeddable";
 import { indexEntity } from "./index-entity";
 
 export type CreateIndexingHookInput = { embed: EmbedFn };
@@ -23,10 +24,12 @@ type IndexTargetInput = Target &
   Pick<Parameters<AfterCommitHook>[0], "context"> &
   CreateIndexingHookInput;
 
-async function indexTarget({ operation, output, context, embed }: IndexTargetInput) {
-  const entityId = (output as { id?: unknown } | null)?.id;
-  const { embeddable } = operation;
-  if (!embeddable || typeof entityId !== "string") return;
+type IndexOneInput = Pick<IndexTargetInput, "operation" | "context" | "embed"> & {
+  embeddable: Embeddable;
+  entityId: string;
+};
+
+async function indexOne({ operation, embeddable, entityId, context, embed }: IndexOneInput) {
   try {
     await indexEntity({ embeddable, entityId, db: context.db, embed });
   } catch (error) {
@@ -38,6 +41,33 @@ async function indexTarget({ operation, output, context, embed }: IndexTargetInp
       entityId,
       err: error,
     });
+  }
+}
+
+/** `operation.alsoIndexed`, or nothing (logged) when reading it fails. */
+async function alsoIndexedOf({ operation, output, context }: Omit<IndexTargetInput, "embed">) {
+  try {
+    return (await operation.alsoIndexed?.({ output, db: context.db })) ?? [];
+  } catch (error) {
+    const { organizationId } = context;
+    const event = "search.index_failed";
+    getLogger().error({ event, operation: operation.name, organizationId, err: error });
+    return [];
+  }
+}
+
+/** The output's own entity, then what the operation lists in `alsoIndexed`. */
+async function indexTarget({ operation, output, context, embed }: IndexTargetInput) {
+  const entityId = (output as { id?: unknown } | null)?.id;
+  const { embeddable } = operation;
+  if (embeddable && typeof entityId === "string") {
+    await indexOne({ operation, embeddable, entityId, context, embed });
+  }
+  const also = await alsoIndexedOf({ operation, output, context });
+  for (const { embeddable: other, ids } of also) {
+    for (const id of ids) {
+      await indexOne({ operation, embeddable: other, entityId: id, context, embed });
+    }
   }
 }
 

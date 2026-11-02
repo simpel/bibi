@@ -77,7 +77,7 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 180_000 }, () => {
     expect(allergens).toBe(0);
     const customers = ({ organizationId }: { organizationId?: string }) =>
       db.customer.count({ where: { organizationId } });
-    expect(await customers({ organizationId: lind?.organizationId })).toBe(7);
+    expect(await customers({ organizationId: lind?.organizationId })).toBe(8);
     expect(await customers({ organizationId: vinga?.organizationId })).toBe(3);
     const nordkust = await db.customer.findFirst({
       where: { organizationId: lind?.organizationId, name: "Nordkust Logistik AB" },

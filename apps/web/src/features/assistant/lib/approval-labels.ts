@@ -63,6 +63,7 @@ export const FIELD_KEYS = [
   "paymentTermsDays",
   "creditLimitMinor",
   "contactId",
+  "contact",
   "desiredStartsAt",
   "desiredEndsAt",
   "quantity",
@@ -134,7 +135,6 @@ export const OPERATION_KEYS = [
   "skill_import",
   "conversation_archive",
 ] as const;
-
 export type FieldKey = (typeof FIELD_KEYS)[number];
 export type OperationKey = (typeof OPERATION_KEYS)[number];
 

@@ -1821,6 +1821,7 @@
         "creditLimitMinor": "Kreditgräns (ören)",
         "archiveTickets": "Arkivera även ärenden",
         "contactId": "Kontaktperson (id)",
+        "contact": "Första kontaktperson",
         "desiredStartsAt": "Önskad start",
         "desiredEndsAt": "Önskat slut",
         "quantity": "Antal",

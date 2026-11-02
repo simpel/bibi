@@ -40,6 +40,7 @@ const NAMES = [
   "conversation.rename",
   "customer.archive",
   "customer.create",
+  "customer.findSimilar",
   "customer.get",
   "customer.list",
   "customer.update",
