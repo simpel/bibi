@@ -13,7 +13,12 @@ import { useNotificationLive } from "./notification-live-context";
  * the live state, which every open list applies itself: nothing is rendered again on the server.
  * Opening an unread notification marks it read quietly: bookkeeping, not something asked for.
  */
-export function useMarkNotifications() {
+export type UseMarkNotificationsInput = {
+  /** After the caller's own mark, e.g. to read a list split by read state again. */
+  onMarked?: () => void;
+};
+
+export function useMarkNotifications({ onMarked }: UseMarkNotificationsInput = {}) {
   const t = useTranslations("notifications");
   const common = useTranslations("common");
   const { applyMark } = useNotificationLive();
@@ -26,13 +31,19 @@ export function useMarkNotifications() {
         pending: common("saving"),
         success: t(read ? "markedRead" : "markedUnread", { count: ids.length }),
       },
-      onSuccess: ({ value }) => applyMark({ ids, read, unread: value.unread }),
+      onSuccess: ({ value }) => {
+        applyMark({ ids, read, unread: value.unread });
+        onMarked?.();
+      },
     });
   const markAllRead = () =>
     run({
       action: () => markAllNotificationsReadAction(),
       messages: { pending: common("saving"), success: t("markedAllRead") },
-      onSuccess: ({ value }) => applyMark({ ids: "all", read: true, unread: value.unread }),
+      onSuccess: ({ value }) => {
+        applyMark({ ids: "all", read: true, unread: value.unread });
+        onMarked?.();
+      },
     });
   const openOne = ({ notification }: { notification: NotificationLike }) => {
     if (notification.readAt !== null) return;

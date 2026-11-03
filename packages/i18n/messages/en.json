@@ -4875,18 +4875,12 @@
     "markUnread": "Mark as unread",
     "markedRead": "{count, plural, one {# notification marked as read} other {# notifications marked as read}}",
     "markedUnread": "{count, plural, one {# notification marked as unread} other {# notifications marked as unread}}",
-    "empty": "No notifications yet",
-    "emptyDescription": "You are told here when you are assigned a ticket, sent a work order, or when a ticket you answer for or follow changes status or gets paid.",
     "nothingNew": "You're all caught up",
     "noMatches": "No notifications match",
     "listTotal": "{count, plural, one {# notification} other {# notifications}}",
     "unread": "Unread",
     "read": "Read",
     "filter": {
-      "label": "Show",
-      "all": "All",
-      "unread": "Unread",
-      "read": "Read",
       "kind": "Kind",
       "allKinds": "All kinds"
     },
@@ -4897,7 +4891,6 @@
       "message": "Notification",
       "kind": "Kind",
       "ticket": "Ticket",
-      "read": "Status",
       "created": "When"
     },
     "kinds": {
@@ -4925,6 +4918,8 @@
       "turnedOff": "Notifications turned off"
     },
     "arrivedTitle": "New notification",
-    "arrivedOpen": "Show"
+    "arrivedOpen": "Show",
+    "noUnread": "Nothing unread. You are all caught up.",
+    "noRead": "No read notifications yet."
   }
 }

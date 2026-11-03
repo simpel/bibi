@@ -4875,18 +4875,12 @@
     "markUnread": "Markera som oläst",
     "markedRead": "{count, plural, one {# notis markerad som läst} other {# notiser markerade som lästa}}",
     "markedUnread": "{count, plural, one {# notis markerad som oläst} other {# notiser markerade som olästa}}",
-    "empty": "Inga notiser än",
-    "emptyDescription": "Här får du veta när du blir ansvarig för ett ärende, får en order, eller när ett ärende du ansvarar för eller följer byter status eller blir betalt.",
     "nothingNew": "Du har inget nytt",
     "noMatches": "Inga notiser matchar",
     "listTotal": "{count, plural, one {# notis} other {# notiser}}",
     "unread": "Oläst",
     "read": "Läst",
     "filter": {
-      "label": "Visa",
-      "all": "Alla",
-      "unread": "Olästa",
-      "read": "Lästa",
       "kind": "Typ",
       "allKinds": "Alla typer"
     },
@@ -4897,7 +4891,6 @@
       "message": "Notis",
       "kind": "Typ",
       "ticket": "Ärende",
-      "read": "Status",
       "created": "När"
     },
     "kinds": {
@@ -4925,6 +4918,8 @@
       "turnedOff": "Notiser avstängda"
     },
     "arrivedTitle": "Ny notis",
-    "arrivedOpen": "Visa"
+    "arrivedOpen": "Visa",
+    "noUnread": "Inget oläst. Du är ikapp.",
+    "noRead": "Inga lästa notiser än."
   }
 }

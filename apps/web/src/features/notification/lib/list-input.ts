@@ -8,5 +8,5 @@ export const notificationListInput = ({ params }: { params: NotificationListPara
   direction: params.direction,
   ...(params.q ? { q: params.q } : {}),
   ...(params.kind ? { kind: params.kind } : {}),
-  ...(params.read ? { read: params.read } : {}),
+  read: params.read,
 });
