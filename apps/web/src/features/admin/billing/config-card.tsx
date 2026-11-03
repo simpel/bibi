@@ -1,4 +1,3 @@
-import { getEnv } from "@bibi/config";
 import type { BillingConfigDto } from "@bibi/core";
 import {
   Badge,
@@ -11,19 +10,11 @@ import {
 } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { BillingConfigForm } from "./billing-config-form";
-import { ProvisionForm } from "./provision-form";
-
-const WEBHOOK_PATH = "/api/webhooks/stripe-billing";
-
-/** The app's own webhook URL when it is https; Stripe refuses anything else. */
-function defaultWebhookUrl(): string {
-  const url = `${getEnv().WEB_URL.replace(/\/$/, "")}${WEBHOOK_PATH}`;
-  return url.startsWith("https://") ? url : "";
-}
+import { PlanProducts } from "./plan-products";
 
 export type ConfigCardProps = { config: BillingConfigDto };
 
-/** Bibi's Stripe account: the stored key (test or live), the prices and "Create in Stripe". */
+/** Bibi's Stripe account: the stored key (test or live) and the products it sells. */
 export async function ConfigCard({ config }: ConfigCardProps) {
   const t = await getTranslations("admin.billing");
   return (
@@ -43,16 +34,7 @@ export async function ConfigCard({ config }: ConfigCardProps) {
       </CardHeader>
       <CardContent className="grid gap-8">
         <BillingConfigForm config={config} />
-        <section className="grid gap-3">
-          <div className="grid gap-1">
-            <h2 className="text-base">{t("provision.title")}</h2>
-            <p className="text-sm text-muted-foreground">{t("provision.description")}</p>
-          </div>
-          <ProvisionForm
-            defaultWebhookUrl={defaultWebhookUrl()}
-            hasKey={config.secretKeyHint !== null}
-          />
-        </section>
+        <PlanProducts config={config} />
       </CardContent>
     </Card>
   );

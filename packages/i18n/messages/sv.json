@@ -3400,29 +3400,31 @@
       "description": "Bibis eget Stripe-konto, dess priser och varje organisations abonnemang.",
       "config": {
         "title": "Stripe",
-        "configured": "Faktureringen är igång: organisationer betalar efter provperioden.",
-        "notConfigured": "Inte uppsatt än, så ingen organisation behöver betala.",
+        "configured": "Klart: organisationer betalar efter provperioden.",
+        "notConfigured": "Klistra in Bibis hemliga Stripe-nyckel och spara. Tills dess behöver ingen organisation betala.",
         "live": "Live",
         "test": "Test",
         "secretKey": "Hemlig nyckel",
-        "secretKeyStored": "Den sparade nyckeln slutar på {hint}. Lämna tomt för att behålla den.",
+        "secretKeyStored": "Den sparade nyckeln slutar på {hint}. Lämna tomt för att behålla den; spara igen för att kontrollera Stripe.",
         "noKey": "Ingen nyckel sparad än.",
-        "webhookSecret": "Webhookens signeringshemlighet",
-        "webhookSecretHint": "Valfri. Skapa i Stripe sparar den; klistra in den från stripe listen när du testar lokalt.",
-        "basePriceMonthlyId": "Pris-id per månad",
-        "basePriceYearlyId": "Pris-id per år",
-        "seatPriceId": "Pris-id per plats",
-        "save": "Spara",
-        "saved": "Stripe-inställningarna har sparats."
+        "webhookSecret": "Webhook-hemlighet (bara lokalt)",
+        "webhookSecretHint": "Bara när du testar lokalt: klistra in hemligheten som stripe listen skriver ut. I produktion skapar Bibi webhooken själv.",
+        "save": "Spara och sätt upp Stripe",
+        "saved": "Stripe är uppsatt.",
+        "saving": "Sätter upp Stripe…"
       },
-      "provision": {
-        "title": "Skapa i Stripe",
-        "description": "Skapar produkten, de tre priserna, kundportalen och, med en URL, webhooken. Går bra att köra igen.",
-        "webhookUrl": "Webhook-URL",
-        "webhookUrlHint": "Måste vara https. Lämna tomt lokalt och använd stripe listen.",
-        "run": "Skapa i Stripe",
-        "running": "Skapar i Stripe…",
-        "done": "Stripe är uppsatt."
+      "products": {
+        "title": "Produkter",
+        "description": "Priser exklusive moms. {seats} platser ingår och varje ny organisation får {days} dagar gratis.",
+        "names": {
+          "baseMonthly": "Bibi, månadsvis",
+          "baseYearly": "Bibi, årsvis (10 % rabatt)",
+          "seatMonthly": "Extra plats"
+        },
+        "perMonth": "{price} / mån",
+        "perYear": "{price} / år",
+        "inStripe": "I Stripe",
+        "notInStripe": "Inte i Stripe än"
       },
       "organizations": {
         "title": "Organisationer",

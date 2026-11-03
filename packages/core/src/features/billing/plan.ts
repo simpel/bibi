@@ -10,7 +10,7 @@ export const BILLING_PLAN = {
   seatMonthlyMinor: 4_900,
 } as const;
 
-/** Stripe lookup keys: `billingConfig.provision` finds or creates the prices by them. */
+/** Stripe lookup keys: `billingConfig.update` finds or creates the prices by them. */
 export const BILLING_LOOKUP_KEYS = {
   baseMonthly: "bibi_base_monthly",
   baseYearly: "bibi_base_yearly",

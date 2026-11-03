@@ -1,4 +1,4 @@
-import { type BillingConfigDto, BillingConfigUpdateInputSchema } from "@bibi/core/schemas";
+import { BillingConfigUpdateInputSchema } from "@bibi/core/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
@@ -13,9 +13,6 @@ import { updateBillingConfigAction } from "./actions";
 export type BillingConfigFormValues = {
   secretKey: string;
   webhookSecret: string;
-  basePriceMonthlyId: string;
-  basePriceYearlyId: string;
-  seatPriceId: string;
 };
 export type BillingConfigFormOutput = z.infer<typeof BillingConfigUpdateInputSchema>;
 
@@ -30,31 +27,22 @@ const billingConfigSchema = formSchema({
     ),
 });
 
-type ConfigInput = { config: BillingConfigDto };
-
-const defaults = ({ config }: ConfigInput): BillingConfigFormValues => ({
-  secretKey: "",
-  webhookSecret: "",
-  basePriceMonthlyId: config.basePriceMonthlyId ?? "",
-  basePriceYearlyId: config.basePriceYearlyId ?? "",
-  seatPriceId: config.seatPriceId ?? "",
-});
+const DEFAULTS: BillingConfigFormValues = { secretKey: "", webhookSecret: "" };
 
 /** Form state for `billingConfig.update`; the secret fields are emptied after a save. */
-export function useBillingConfigForm({ config }: ConfigInput) {
+export function useBillingConfigForm() {
   const t = useTranslations("admin.billing.config");
-  const common = useTranslations("common");
   const router = useRouter();
   const form = useForm<BillingConfigFormValues, unknown, BillingConfigFormOutput>({
     resolver: zodResolver(billingConfigSchema, useZodMessages()),
-    defaultValues: defaults({ config }),
+    defaultValues: DEFAULTS,
   });
   const { submit, pending } = useFormAction({
     form,
     action: ({ values }) => updateBillingConfigAction({ input: values }),
-    messages: { pending: common("saving"), success: t("saved") },
-    onSuccess: ({ value }) => {
-      form.reset(defaults({ config: value }));
+    messages: { pending: t("saving"), success: t("saved") },
+    onSuccess: () => {
+      form.reset(DEFAULTS);
       router.refresh();
     },
   });

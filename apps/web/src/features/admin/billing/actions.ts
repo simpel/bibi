@@ -2,7 +2,6 @@
 
 import type {
   BillingConfigDto,
-  BillingConfigProvisionInput,
   BillingConfigUpdateInput,
   BillingOrganizationDto,
   BillingOrganizationUpdateInput,
@@ -14,21 +13,11 @@ import { toActionResult } from "@/server/to-action-result";
 
 export type UpdateBillingConfigActionInput = { input: BillingConfigUpdateInput };
 
-/** Stores the Stripe key, the webhook secret and the price ids (ADR 0095 §1). Superadmins only. */
+/** Stores the Stripe key and sets Bibi up in that account (ADR 0095 §1–2). Superadmins only. */
 export async function updateBillingConfigAction({
   input,
 }: UpdateBillingConfigActionInput): Promise<ActionResult<BillingConfigDto>> {
   const operation = platformOperations().updateBillingConfig;
-  return toActionResult({ result: await runPlatformOperation({ operation, input }) });
-}
-
-export type ProvisionBillingConfigActionInput = { input: BillingConfigProvisionInput };
-
-/** "Create in Stripe": product, prices, portal and (with a URL) the webhook (ADR 0095 §2). */
-export async function provisionBillingConfigAction({
-  input,
-}: ProvisionBillingConfigActionInput): Promise<ActionResult<BillingConfigDto>> {
-  const operation = platformOperations().provisionBillingConfig;
   return toActionResult({ result: await runPlatformOperation({ operation, input }) });
 }
 

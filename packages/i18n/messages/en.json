@@ -3400,29 +3400,31 @@
       "description": "Bibi's own Stripe account, its prices and every organization's subscription.",
       "config": {
         "title": "Stripe",
-        "configured": "Billing is live: organizations pay after their trial.",
-        "notConfigured": "Not set up yet, so no organization is asked to pay.",
+        "configured": "Ready: organizations pay after their trial.",
+        "notConfigured": "Paste Bibi's Stripe secret key and save. Until then no organization is asked to pay.",
         "live": "Live",
         "test": "Test",
         "secretKey": "Secret key",
-        "secretKeyStored": "The stored key ends in {hint}. Leave blank to keep it.",
+        "secretKeyStored": "The stored key ends in {hint}. Leave blank to keep it; saving again checks Stripe.",
         "noKey": "No key stored yet.",
-        "webhookSecret": "Webhook signing secret",
-        "webhookSecretHint": "Optional. Create in Stripe stores it; paste the one from stripe listen when testing locally.",
-        "basePriceMonthlyId": "Monthly price id",
-        "basePriceYearlyId": "Yearly price id",
-        "seatPriceId": "Seat price id",
-        "save": "Save",
-        "saved": "The Stripe settings have been saved."
+        "webhookSecret": "Webhook signing secret (local only)",
+        "webhookSecretHint": "Only when testing locally: paste the secret that stripe listen prints. In production Bibi creates the webhook itself.",
+        "save": "Save and set up Stripe",
+        "saved": "Stripe is set up.",
+        "saving": "Setting up Stripe…"
       },
-      "provision": {
-        "title": "Create in Stripe",
-        "description": "Creates the product, the three prices, the customer portal and, with a URL, the webhook. Safe to run again.",
-        "webhookUrl": "Webhook URL",
-        "webhookUrlHint": "Must be https. Leave it empty locally and use stripe listen.",
-        "run": "Create in Stripe",
-        "running": "Creating in Stripe…",
-        "done": "Stripe is set up."
+      "products": {
+        "title": "Products",
+        "description": "Prices excluding VAT. {seats} seats are included and every new organization gets {days} days free.",
+        "names": {
+          "baseMonthly": "Bibi, monthly",
+          "baseYearly": "Bibi, yearly (10 % off)",
+          "seatMonthly": "Extra seat"
+        },
+        "perMonth": "{price} / month",
+        "perYear": "{price} / year",
+        "inStripe": "In Stripe",
+        "notInStripe": "Not in Stripe yet"
       },
       "organizations": {
         "title": "Organizations",

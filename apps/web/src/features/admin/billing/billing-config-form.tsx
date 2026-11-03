@@ -13,8 +13,6 @@ import {
 
 export type BillingConfigFormProps = { config: BillingConfigDto };
 
-const PRICE_FIELDS = ["basePriceMonthlyId", "basePriceYearlyId", "seatPriceId"] as const;
-
 type SecretFieldProps = {
   form: UseFormReturn<BillingConfigFormValues, unknown, BillingConfigFormOutput>;
   name: "secretKey" | "webhookSecret";
@@ -40,10 +38,10 @@ function SecretField({ form, name, label, hint, placeholder }: SecretFieldProps)
   );
 }
 
-/** The platform's Stripe key, webhook secret and price ids (ADR 0095 §1). Never env variables. */
+/** The platform's Stripe key and, locally, the webhook secret (ADR 0095 §1). Never env variables. */
 export function BillingConfigForm({ config }: BillingConfigFormProps) {
   const t = useTranslations("admin.billing.config");
-  const { form, submit, pending } = useBillingConfigForm({ config });
+  const { form, submit, pending } = useBillingConfigForm();
   const { secretKeyHint, hasWebhookSecret } = config;
   return (
     <Form {...form}>
@@ -62,9 +60,6 @@ export function BillingConfigForm({ config }: BillingConfigFormProps) {
           hint={t("webhookSecretHint")}
           placeholder={hasWebhookSecret ? "••••" : "whsec_…"}
         />
-        {PRICE_FIELDS.map((name) => (
-          <TextField key={name} form={form} name={name} label={t(name)} placeholder="price_…" />
-        ))}
         <div>
           <Button type="submit" disabled={pending}>
             {t("save")}

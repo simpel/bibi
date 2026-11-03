@@ -1,6 +1,16 @@
 import { z } from "zod";
 import { BillingAccessStateSchema, BillingIntervalSchema } from "../../features/billing/schema";
 
+/** One thing Bibi sells, from the plan (ADR 0095), and whether its price exists in Stripe yet. */
+export const BillingProductSchema = z.object({
+  key: z.enum(["baseMonthly", "baseYearly", "seatMonthly"]),
+  amountMinor: z.number().int().describe("Excluding VAT"),
+  currency: z.string(),
+  interval: BillingIntervalSchema,
+  inStripe: z.boolean(),
+});
+export type BillingProductDto = z.infer<typeof BillingProductSchema>;
+
 /** Bibi's billing setup as a superadmin sees it (ADR 0095 §1). Secrets never leave core. */
 export const BillingConfigSchema = z.object({
   configured: z.boolean().describe("Key and all three prices are set, so billing is live"),
@@ -13,15 +23,13 @@ export const BillingConfigSchema = z.object({
   basePriceYearlyId: z.string().nullable(),
   seatPriceId: z.string().nullable(),
   portalConfigId: z.string().nullable(),
+  products: z.array(BillingProductSchema),
+  includedSeats: z.number().int(),
+  trialDays: z.number().int(),
   updatedAt: z.date().nullable(),
   updatedBy: z.string().nullable(),
 });
 export type BillingConfigDto = z.infer<typeof BillingConfigSchema>;
-
-const priceId = z
-  .string()
-  .trim()
-  .regex(/^price_\w+$/, "A Stripe price id (price_…)");
 
 export const BillingConfigUpdateInputSchema = z.object({
   secretKey: z
@@ -33,22 +41,10 @@ export const BillingConfigUpdateInputSchema = z.object({
     .string()
     .trim()
     .regex(/^whsec_\w+$/, "A webhook signing secret (whsec_…)")
-    .optional(),
-  basePriceMonthlyId: priceId.optional(),
-  basePriceYearlyId: priceId.optional(),
-  seatPriceId: priceId.optional(),
+    .optional()
+    .describe("Only locally, from stripe listen; on https Bibi creates the webhook itself"),
 });
 export type BillingConfigUpdateInput = z.infer<typeof BillingConfigUpdateInputSchema>;
-
-export const BillingConfigProvisionInputSchema = z.object({
-  webhookUrl: z
-    .string()
-    .url()
-    .regex(/^https:\/\//, "Stripe only calls https URLs")
-    .optional()
-    .describe("Public URL of /api/webhooks/stripe-billing; leave out locally (stripe listen)"),
-});
-export type BillingConfigProvisionInput = z.infer<typeof BillingConfigProvisionInputSchema>;
 
 /** One organization's billing for the superadmin list. */
 export const BillingOrganizationSchema = z.object({
