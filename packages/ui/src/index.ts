@@ -46,6 +46,7 @@ export {
 export * from "./components/data-table/data-table-actions";
 export * from "./components/data-table/data-table-order";
 export * from "./components/data-table/data-table-pagination";
+export * from "./components/data-table/data-table-row-action";
 export type * from "./components/data-table/data-table-types";
 export * from "./components/date-picker/date-button";
 export * from "./components/day-snapshot/day-snapshot";

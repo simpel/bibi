@@ -2,6 +2,7 @@
 
 import type { RequirementDto } from "@bibi/core";
 import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { nameOf } from "@/components/form/named-option";
@@ -23,10 +24,14 @@ export function RequirementRowActions({ requirement, data, access }: Requirement
   const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
   return (
     <>
-      <DataTableRowActions label={common("actions")}>
-        {access.canEdit ? (
-          <DropdownMenuItem onSelect={() => setDialog("edit")}>{t("edit")}</DropdownMenuItem>
-        ) : null}
+      <DataTableRowActions
+        label={common("actions")}
+        primary={
+          access.canEdit
+            ? [{ label: t("edit"), icon: PencilIcon, onClick: () => setDialog("edit") }]
+            : []
+        }
+      >
         {access.canRemove ? (
           <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
             {t("archive")}

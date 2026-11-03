@@ -1,12 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { MapIcon } from "lucide-react";
 import { DropdownMenuItem } from "../dropdown-menu/dropdown-menu";
-import {
-  actionsColumn,
-  DataTableRowAction,
-  DataTableRowActionGroup,
-  DataTableRowActions,
-} from "./data-table-actions";
+import { actionsColumn, DataTableRowActions } from "./data-table-actions";
+import { DataTableRowAction, DataTableRowActionGroup } from "./data-table-row-action";
 import type { DataTableLabels, DataTableTextLabels } from "./data-table-types";
 
 export type Room = { id: string; name: string; floor: string; status: string; seats: number };

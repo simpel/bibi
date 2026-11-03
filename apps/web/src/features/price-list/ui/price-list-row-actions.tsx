@@ -2,10 +2,11 @@
 
 import type { PriceListDto } from "@bibi/core";
 import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
-import { Link } from "@/lib/navigation";
+import { useRouter } from "@/lib/navigation";
 import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
 import { ArchivePriceListDialog } from "./archive-price-list-dialog";
 import type { PriceListFormData } from "./load-price-list-form-data";
@@ -29,25 +30,23 @@ type MenuProps = {
 function ActionsMenu({ priceList, access, itemsHidden, onOpen }: MenuProps) {
   const t = useTranslations("priceList");
   const common = useTranslations("common");
+  const router = useRouter();
+  const editHref = updateRoute({
+    detail: listItemRoute({ list: ROUTES.settingsPriceLists, id: priceList.id }),
+  });
   return (
-    <DataTableRowActions label={common("actions")}>
-      {access.canEdit ? (
-        <>
-          <DropdownMenuItem asChild>
-            <Link
-              href={updateRoute({
-                detail: listItemRoute({ list: ROUTES.settingsPriceLists, id: priceList.id }),
-              })}
-            >
-              {t("edit")}
-            </Link>
-          </DropdownMenuItem>
-          {itemsHidden ? null : (
-            <DropdownMenuItem onSelect={() => onOpen({ dialog: "items" })}>
-              {t("items.edit")}
-            </DropdownMenuItem>
-          )}
-        </>
+    <DataTableRowActions
+      label={common("actions")}
+      primary={
+        access.canEdit
+          ? [{ label: t("edit"), icon: PencilIcon, onClick: () => router.push(editHref) }]
+          : []
+      }
+    >
+      {access.canEdit && !itemsHidden ? (
+        <DropdownMenuItem onSelect={() => onOpen({ dialog: "items" })}>
+          {t("items.edit")}
+        </DropdownMenuItem>
       ) : null}
       {access.canRemove ? (
         <DropdownMenuItem destructive onSelect={() => onOpen({ dialog: "archive" })}>

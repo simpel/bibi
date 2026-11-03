@@ -2,10 +2,11 @@
 
 import type { ApiKeyDto } from "@bibi/core";
 import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ConfirmActionDialog } from "@/components/confirm-action-dialog";
-import { Link } from "@/lib/navigation";
+import { Link, useRouter } from "@/lib/navigation";
 import { apiKeyPermissionsRoute, apiKeyUpdateRoute } from "@/lib/routes";
 import { revokeApiKeyAction } from "../actions";
 
@@ -16,12 +17,19 @@ export function ApiKeyRowActions({ apiKey }: ApiKeyRowActionsProps) {
   const t = useTranslations("integration.apiKeys");
   const common = useTranslations("common");
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   return (
     <>
-      <DataTableRowActions label={common("actions")}>
-        <DropdownMenuItem asChild>
-          <Link href={apiKeyUpdateRoute({ id: apiKey.id })}>{t("edit")}</Link>
-        </DropdownMenuItem>
+      <DataTableRowActions
+        label={common("actions")}
+        primary={[
+          {
+            label: t("edit"),
+            icon: PencilIcon,
+            onClick: () => router.push(apiKeyUpdateRoute({ id: apiKey.id })),
+          },
+        ]}
+      >
         <DropdownMenuItem asChild>
           <Link href={apiKeyPermissionsRoute({ id: apiKey.id })}>{t("permissions")}</Link>
         </DropdownMenuItem>

@@ -6,6 +6,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@bibi/ui";
+import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useRouter } from "@/lib/navigation";
@@ -52,9 +53,11 @@ export function AlternativeGroupRowActions({ group, lines }: AlternativeGroupRow
   const [dialog, setDialog] = useState<"rename" | "archive" | null>(null);
   return (
     <>
-      <DataTableRowActions label={common("actions")}>
+      <DataTableRowActions
+        label={common("actions")}
+        primary={[{ label: t("rename"), icon: PencilIcon, onClick: () => setDialog("rename") }]}
+      >
         {group.chosenLineId ? null : <ChooseMenu group={group} lines={lines} />}
-        <DropdownMenuItem onSelect={() => setDialog("rename")}>{t("rename")}</DropdownMenuItem>
         <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
           {t("archive")}
         </DropdownMenuItem>

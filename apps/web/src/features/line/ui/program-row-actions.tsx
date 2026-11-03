@@ -2,6 +2,7 @@
 
 import type { LineDto } from "@bibi/core";
 import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
@@ -49,10 +50,14 @@ function RowMenu({ line, data, access, canChoose, canAllocate, onOpen }: RowMenu
   const t = useTranslations("line");
   const common = useTranslations("common");
   return (
-    <DataTableRowActions label={common("actions")}>
-      {access.canEdit ? (
-        <DropdownMenuItem onSelect={() => onOpen("edit")}>{t("edit")}</DropdownMenuItem>
-      ) : null}
+    <DataTableRowActions
+      label={common("actions")}
+      primary={
+        access.canEdit
+          ? [{ label: t("edit"), icon: PencilIcon, onClick: () => onOpen("edit") }]
+          : []
+      }
+    >
       {canAddOn({ line, access }) ? (
         <DropdownMenuItem onSelect={() => onOpen("addOn")}>{t("addAddOn")}</DropdownMenuItem>
       ) : null}

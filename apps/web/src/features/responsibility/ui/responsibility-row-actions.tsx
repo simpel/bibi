@@ -2,10 +2,11 @@
 
 import type { ResponsibilityDto } from "@bibi/core";
 import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
-import { Link } from "@/lib/navigation";
+import { useRouter } from "@/lib/navigation";
 import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
 import { ArchiveResponsibilityDialog } from "./archive-responsibility-dialog";
 
@@ -22,23 +23,20 @@ export function ResponsibilityRowActions({
   const t = useTranslations("responsibility");
   const common = useTranslations("common");
   const [archiving, setArchiving] = useState(false);
+  const router = useRouter();
+  const editHref = updateRoute({
+    detail: listItemRoute({ list: ROUTES.settingsResponsibilities, id: responsibility.id }),
+  });
   return (
     <>
-      <DataTableRowActions label={common("actions")}>
-        {access.canEdit ? (
-          <DropdownMenuItem asChild>
-            <Link
-              href={updateRoute({
-                detail: listItemRoute({
-                  list: ROUTES.settingsResponsibilities,
-                  id: responsibility.id,
-                }),
-              })}
-            >
-              {t("edit")}
-            </Link>
-          </DropdownMenuItem>
-        ) : null}
+      <DataTableRowActions
+        label={common("actions")}
+        primary={
+          access.canEdit
+            ? [{ label: t("edit"), icon: PencilIcon, onClick: () => router.push(editHref) }]
+            : []
+        }
+      >
         {access.canRemove ? (
           <DropdownMenuItem destructive onSelect={() => setArchiving(true)}>
             {t("archive")}

@@ -1,6 +1,7 @@
 "use client";
 
 import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ArchiveDemandDialog } from "./archive-demand-dialog";
@@ -16,8 +17,10 @@ export function DemandRowActions({ row }: DemandRowActionsProps) {
   const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
   return (
     <>
-      <DataTableRowActions label={common("actions")}>
-        <DropdownMenuItem onSelect={() => setDialog("edit")}>{t("edit")}</DropdownMenuItem>
+      <DataTableRowActions
+        label={common("actions")}
+        primary={[{ label: t("edit"), icon: PencilIcon, onClick: () => setDialog("edit") }]}
+      >
         <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
           {t("archive")}
         </DropdownMenuItem>

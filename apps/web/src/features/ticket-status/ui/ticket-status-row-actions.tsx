@@ -2,11 +2,13 @@
 
 import type { TicketStatusDto } from "@bibi/core/schemas";
 import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
+import { useRouter } from "@/lib/navigation";
+import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
 import { ArchiveTicketStatusDialog } from "./archive-ticket-status-dialog";
-import { EditTicketStatusItem } from "./edit-ticket-status-item";
 import { MoveItems } from "./move-items";
 
 export type TicketStatusRowActionsProps = {
@@ -21,14 +23,20 @@ type MenuProps = TicketStatusRowActionsProps & { onArchive: () => void };
 function StatusMenu({ ticketStatus, index, statuses, access, onArchive }: MenuProps) {
   const t = useTranslations("ticketStatus");
   const common = useTranslations("common");
+  const router = useRouter();
+  const editHref = updateRoute({
+    detail: listItemRoute({ list: ROUTES.settingsPipeline, id: ticketStatus.id }),
+  });
   return (
-    <DataTableRowActions label={common("actions")}>
-      {access.canEdit ? (
-        <>
-          <EditTicketStatusItem id={ticketStatus.id} />
-          <MoveItems statuses={statuses} index={index} />
-        </>
-      ) : null}
+    <DataTableRowActions
+      label={common("actions")}
+      primary={
+        access.canEdit
+          ? [{ label: t("edit"), icon: PencilIcon, onClick: () => router.push(editHref) }]
+          : []
+      }
+    >
+      {access.canEdit ? <MoveItems statuses={statuses} index={index} /> : null}
       {access.canRemove ? (
         <DropdownMenuItem destructive onSelect={onArchive}>
           {t("archive")}
