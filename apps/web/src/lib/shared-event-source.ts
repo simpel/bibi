@@ -46,7 +46,9 @@ export function openSharedEventSource({ name, url, types, onEvent }: SharedEvent
       const close = openDirect({
         url,
         types,
+        // An event already queued when the stream closes must not reach the closed channel.
         onEvent: (event) => {
+          if (closed) return;
           onEvent(event);
           channel.postMessage(event);
         },
