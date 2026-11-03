@@ -1,6 +1,7 @@
-import type { PreviewEntry } from "@bibi/core";
-import { useEffect, useRef, useState } from "react";
-import { type ErrorKey, errorKeyForCode } from "@/lib/error-key";
+import type { PreviewEntry, TicketPreviewLines } from "@bibi/core";
+import type { ErrorKey } from "@/lib/error-key";
+import type { LiveQueryState } from "@/lib/live-query-state";
+import { useLiveQuery } from "@/lib/use-live-query";
 import { previewTicketLinesAction } from "../actions";
 import { toPreviewLine } from "./create-input";
 import type { DraftLine } from "./draft-line";
@@ -23,19 +24,24 @@ export type UseDraftPreviewInput = {
 
 const WAIT_MS = 300;
 
-type RequestInput = Parameters<typeof previewTicketLinesAction>[0];
+type Query = Parameters<typeof previewTicketLinesAction>[0];
 
-/** One preview call as the hook's state; a thrown call is the network error. */
-async function requestPreview({ input }: RequestInput): Promise<DraftPreview> {
-  try {
-    const result = await previewTicketLinesAction({ input });
-    if (!result.ok) return { status: "error", errorKey: errorKeyForCode(result.error) };
-    const [entry] = result.value.entries;
-    const { statusId, availabilityHidden } = result.value;
-    return entry ? { status: "ready", entry, statusId, availabilityHidden } : { status: "idle" };
-  } catch {
-    return { status: "error", errorKey: "network" };
-  }
+/** `nonce` only makes the same draft a new input; the action does not take it. */
+const preview = ({ input }: Query & { nonce: number }) => previewTicketLinesAction({ input });
+
+/** The planned draft entry; a preview without one is idle. */
+function entryOf({ value }: { value: TicketPreviewLines }): DraftPreview {
+  const [entry] = value.entries;
+  const { statusId, availabilityHidden } = value;
+  return entry ? { status: "ready", entry, statusId, availabilityHidden } : { status: "idle" };
+}
+
+/** A new preview keeps showing the last planned entry until it answers. */
+function draftOf({ state }: { state: LiveQueryState<TicketPreviewLines> }): DraftPreview {
+  if (state.status === "ready") return entryOf({ value: state.value });
+  if (state.status !== "loading") return state;
+  const before = state.previous ? entryOf({ value: state.previous }) : null;
+  return before?.status === "ready" ? before : { status: "loading" };
 }
 
 /**
@@ -50,28 +56,14 @@ export function useDraftPreview({
   lines,
   nonce,
 }: UseDraftPreviewInput): DraftPreview {
-  const [state, setState] = useState<DraftPreview>({ status: "idle" });
-  const startsAt = period?.startsAt.toISOString() ?? "";
-  const endsAt = period?.endsAt.toISOString() ?? "";
-  const latest = useRef(lines);
-  latest.current = lines;
-  const draft = JSON.stringify(lines.map((line) => toPreviewLine({ line })));
-  useEffect(() => {
-    if (!startsAt || draft === "[]" || nonce < 0) {
-      setState({ status: "idle" });
-      return;
-    }
-    let current = true;
-    setState((before) => (before.status === "ready" ? before : { status: "loading" }));
-    const query = { customerId, startsAt: new Date(startsAt), endsAt: new Date(endsAt), headcount };
-    const timer = setTimeout(() => {
-      const lines = latest.current.map((line) => toPreviewLine({ line }));
-      void requestPreview({ input: { ...query, lines } }).then((next) => current && setState(next));
-    }, WAIT_MS);
-    return () => {
-      current = false;
-      clearTimeout(timer);
-    };
-  }, [customerId, startsAt, endsAt, headcount, draft, nonce]);
-  return state;
+  const { startsAt, endsAt } = period ?? {};
+  const planned = lines.map((line) => toPreviewLine({ line }));
+  const asking = startsAt && endsAt && planned.length > 0 && nonce >= 0;
+  const query = asking ? { customerId, startsAt, endsAt, headcount, lines: planned } : null;
+  const state = useLiveQuery({
+    input: query ? { input: query, nonce } : null,
+    load: preview,
+    waitMs: WAIT_MS,
+  });
+  return draftOf({ state });
 }

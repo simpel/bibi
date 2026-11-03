@@ -1,6 +1,6 @@
 import type { TicketPreviewLines } from "@bibi/core";
-import { useEffect, useState } from "react";
-import { type ErrorKey, errorKeyForCode } from "@/lib/error-key";
+import type { ErrorKey } from "@/lib/error-key";
+import { useLiveQuery } from "@/lib/use-live-query";
 import { previewTicketLinesAction } from "../actions";
 import type { IntakePeriod } from "./intake-period";
 
@@ -27,28 +27,15 @@ export function usePackagePreview({
   headcount,
   packageIds,
 }: UsePackagePreviewInput): PackagePreview {
-  const [state, setState] = useState<PackagePreview>({ status: "idle" });
-  const startsAt = period?.startsAt.toISOString() ?? "";
-  const endsAt = period?.endsAt.toISOString() ?? "";
-  const ids = packageIds.join(",");
-  useEffect(() => {
-    if (!startsAt || !ids) {
-      setState({ status: "idle" });
-      return;
-    }
-    let current = true;
-    setState({ status: "loading" });
-    const query = { customerId, startsAt: new Date(startsAt), endsAt: new Date(endsAt), headcount };
-    previewTicketLinesAction({ input: { ...query, templateIds: ids.split(",") } })
-      .then((result) => {
-        if (!current) return;
-        if (result.ok) setState({ status: "ready", preview: result.value });
-        else setState({ status: "error", errorKey: errorKeyForCode(result.error) });
-      })
-      .catch(() => current && setState({ status: "error", errorKey: "network" }));
-    return () => {
-      current = false;
-    };
-  }, [customerId, startsAt, endsAt, headcount, ids]);
+  const { startsAt, endsAt } = period ?? {};
+  const asking = startsAt && endsAt && packageIds.length > 0;
+  const state = useLiveQuery({
+    input: asking
+      ? { input: { customerId, startsAt, endsAt, headcount, templateIds: packageIds } }
+      : null,
+    load: previewTicketLinesAction,
+  });
+  if (state.status === "ready") return { status: "ready", preview: state.value };
+  if (state.status === "loading") return { status: "loading" };
   return state;
 }

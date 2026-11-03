@@ -1,7 +1,7 @@
 import type { ArchivePreview } from "@bibi/core/schemas";
-import { useEffect, useState } from "react";
 import type { ActionResult } from "@/lib/action-result";
-import { type ErrorKey, errorKeyForCode } from "@/lib/error-key";
+import type { ErrorKey } from "@/lib/error-key";
+import { useLiveQuery } from "@/lib/use-live-query";
 
 type State = { preview: ArchivePreview | null; errorKey: ErrorKey | null; loading: boolean };
 
@@ -15,33 +15,10 @@ export type UseArchivePreviewInput = {
 const DEBOUNCE_MS = 250;
 
 /** Loads a dry-run preview of an archive whenever the form's input changes; nothing is saved. */
-export function useArchivePreview({ load, inputKey }: UseArchivePreviewInput) {
-  const [state, setState] = useState<State>({ preview: null, errorKey: null, loading: true });
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `inputKey` stands for `load`'s input
-  useEffect(() => {
-    let cancelled = false;
-    setState((previous) => ({ ...previous, loading: true }));
-    const timer = setTimeout(async () => {
-      try {
-        const result = await load();
-        if (cancelled) return;
-        setState(
-          result.ok
-            ? { preview: result.value, errorKey: null, loading: false }
-            : {
-                preview: null,
-                errorKey: errorKeyForCode({ code: result.error.code }),
-                loading: false,
-              },
-        );
-      } catch {
-        if (!cancelled) setState({ preview: null, errorKey: "network", loading: false });
-      }
-    }, DEBOUNCE_MS);
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [inputKey]);
-  return state;
+export function useArchivePreview({ load, inputKey }: UseArchivePreviewInput): State {
+  const state = useLiveQuery({ input: { inputKey }, load: () => load(), waitMs: DEBOUNCE_MS });
+  if (state.status === "ready") return { preview: state.value, errorKey: null, loading: false };
+  if (state.status === "error") return { preview: null, errorKey: state.errorKey, loading: false };
+  const preview = state.status === "loading" ? state.previous : null;
+  return { preview, errorKey: null, loading: true };
 }

@@ -1,6 +1,7 @@
 import type { CalendarBlockDto } from "@bibi/core";
 import { addDays, parseIsoDate, toIsoDate } from "@bibi/core/schemas";
-import { useEffect, useState } from "react";
+import { lastValue } from "@/lib/live-query-state";
+import { useLiveQuery } from "@/lib/use-live-query";
 import { loadItemBlocksAction } from "../../calendar/actions";
 
 export type UseItemBlocksInput = {
@@ -11,26 +12,23 @@ export type UseItemBlocksInput = {
   nonce: number;
 };
 
+type Query = { from: string; itemIds: string[]; nonce: number };
+
+const loadBlocks = ({ from, itemIds }: Query) => {
+  const to = toIsoDate({ date: addDays({ date: parseIsoDate({ value: from }), days: 1 }) });
+  return loadItemBlocksAction({ from, to, itemIds });
+};
+
 /**
  * Other bookings of the items the draft uses on the requested day and the next (a line may run
  * past midnight). A failed load shows the snapshot without them.
  */
 export function useItemBlocks({ date, itemIds, nonce }: UseItemBlocksInput): CalendarBlockDto[] {
-  const [blocks, setBlocks] = useState<CalendarBlockDto[]>([]);
-  const ids = [...new Set(itemIds)].sort().slice(0, 50).join(",");
-  useEffect(() => {
-    if (!ids || !date || nonce < 0) {
-      setBlocks([]);
-      return;
-    }
-    let current = true;
-    const to = toIsoDate({ date: addDays({ date: parseIsoDate({ value: date }), days: 1 }) });
-    loadItemBlocksAction({ from: date, to, itemIds: ids.split(",") })
-      .then((result) => current && setBlocks(result.ok ? result.value : []))
-      .catch(() => current && setBlocks([]));
-    return () => {
-      current = false;
-    };
-  }, [date, ids, nonce]);
-  return blocks;
+  const ids = [...new Set(itemIds)].sort().slice(0, 50);
+  const asking = ids.length > 0 && date !== "" && nonce >= 0;
+  const state = useLiveQuery({
+    input: asking ? { from: date, itemIds: ids, nonce } : null,
+    load: loadBlocks,
+  });
+  return lastValue({ state }) ?? [];
 }

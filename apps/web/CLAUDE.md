@@ -67,6 +67,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 ## Effects
 - Data a page needs is read on the server (`runOperation` in the server component) and passed down as props. When an input needs new data, change the URL (path or filter) so the server renders again. Never fetch in `useEffect`.
 - A client island that needs server data later gets a promise from its server parent and unwraps it with `use()` inside `Suspense`.
+- Input the user is still changing (a typeahead, a live check, a preview) is answered by `useLiveQuery` (`lib/use-live-query.ts`), the one effect that fetches. Never write another.
 - Values derived from props or state are computed during render, never copied into state by an effect. Reset state on a prop change with `key`.
 - A reaction to a user action goes in the event handler or the server action, not in an effect that watches state.
 - `useEffect` is only for syncing with something outside React: subscriptions (SSE), timers, browser APIs (shortcuts, focus, measuring, animation). Each effect gets a one-line comment naming that system.

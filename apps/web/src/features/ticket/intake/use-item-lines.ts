@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { lastValue } from "@/lib/live-query-state";
+import { useLiveQuery } from "@/lib/use-live-query";
 import { type ItemLine, loadItemLinesAction } from "../../line/actions";
 
 const DAY = 24 * 60 * 60_000;
@@ -12,27 +13,23 @@ export type UseItemLinesInput = {
   nonce: number;
 };
 
+type Query = { from: string; itemIds: string[]; nonce: number };
+
+const loadLines = ({ from, itemIds }: Query) => {
+  const to = new Date(new Date(from).getTime() + 2 * DAY).toISOString();
+  return loadItemLinesAction({ itemIds, from, to });
+};
+
 /**
  * Other bookings' timed lines of those items on the requested day and the next (a line may run
  * past midnight). A failed load shows the snapshot without them.
  */
 export function useItemLines({ midnight, itemIds, nonce }: UseItemLinesInput): ItemLine[] {
-  const [lines, setLines] = useState<ItemLine[]>([]);
-  const ids = [...new Set(itemIds)].sort().join(",");
-  const from = midnight?.toISOString() ?? "";
-  useEffect(() => {
-    if (!ids || !from || nonce < 0) {
-      setLines([]);
-      return;
-    }
-    let current = true;
-    const to = new Date(new Date(from).getTime() + 2 * DAY).toISOString();
-    loadItemLinesAction({ itemIds: ids.split(","), from, to })
-      .then((result) => current && setLines(result.ok ? result.value : []))
-      .catch(() => current && setLines([]));
-    return () => {
-      current = false;
-    };
-  }, [from, ids, nonce]);
-  return lines;
+  const ids = [...new Set(itemIds)].sort();
+  const from = midnight?.toISOString();
+  const state = useLiveQuery({
+    input: from && ids.length > 0 && nonce >= 0 ? { from, itemIds: ids, nonce } : null,
+    load: loadLines,
+  });
+  return lastValue({ state }) ?? [];
 }

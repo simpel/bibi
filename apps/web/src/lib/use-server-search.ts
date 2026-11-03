@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
 import type { ActionResult } from "@/lib/action-result";
-import { type ErrorKey, errorKeyForCode } from "@/lib/error-key";
+import type { ErrorKey } from "@/lib/error-key";
+import { useLiveQuery } from "@/lib/use-live-query";
 
 const DEBOUNCE_MS = 250;
 
@@ -8,15 +8,13 @@ export type ServerSearchState<T> = { results: T[]; pending: boolean; errorKey: E
 
 export type UseServerSearchInput<T> = {
   query: string;
-  /** A server action; keep it stable (a module import), it is not a dependency. */
+  /** A server action. */
   search: (input: { query: string }) => Promise<ActionResult<T[]>>;
   /** Off: no request and no results (e.g. while the search is about something else). */
   enabled?: boolean;
   /** Search an empty query too (the first rows), instead of showing nothing. */
   allowEmpty?: boolean;
 };
-
-const IDLE = { results: [], pending: false, errorKey: null };
 
 /** Results of a server search, once typing pauses; answers to an older query are dropped. */
 export function useServerSearch<T>({
@@ -25,27 +23,17 @@ export function useServerSearch<T>({
   enabled = true,
   allowEmpty = false,
 }: UseServerSearchInput<T>): ServerSearchState<T> {
-  const [state, setState] = useState<ServerSearchState<T>>(IDLE);
-  const latest = useRef(0);
-  const callSearch = useRef(search);
-  callSearch.current = search;
-  useEffect(() => {
-    const text = query.trim();
-    const call = ++latest.current;
-    if (!enabled || (!text && !allowEmpty)) {
-      setState(IDLE);
-      return;
-    }
-    setState((current) => ({ ...current, pending: true }));
-    const timer = setTimeout(async () => {
-      const result = await callSearch.current({ query: text }).catch(() => null);
-      if (call !== latest.current) return;
-      if (!result) setState({ results: [], pending: false, errorKey: "network" });
-      else if (!result.ok) {
-        setState({ results: [], pending: false, errorKey: errorKeyForCode(result.error) });
-      } else setState({ results: result.value, pending: false, errorKey: null });
-    }, DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [query, enabled, allowEmpty]);
-  return state;
+  const text = query.trim();
+  const asking = enabled && (text !== "" || allowEmpty);
+  const state = useLiveQuery({
+    input: asking ? { query: text } : null,
+    load: search,
+    waitMs: DEBOUNCE_MS,
+  });
+  if (state.status === "ready") return { results: state.value, pending: false, errorKey: null };
+  if (state.status === "error") return { results: [], pending: false, errorKey: state.errorKey };
+  if (state.status === "loading") {
+    return { results: state.previous ?? [], pending: true, errorKey: null };
+  }
+  return { results: [], pending: false, errorKey: null };
 }
