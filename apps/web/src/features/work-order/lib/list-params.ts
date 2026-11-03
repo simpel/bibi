@@ -23,7 +23,7 @@ const positive = ({ value }: { value: string | undefined }) => {
 };
 
 /**
- * `/work-orders/all`'s URL state: page, rows per page, search (with qualifiers) and sort.
+ * `/work-orders`'s URL state: page, rows per page, search (with qualifiers) and sort.
  * Hand-edited values fall back to the defaults instead of erroring.
  */
 export function readWorkOrderListParams({

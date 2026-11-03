@@ -625,9 +625,7 @@
     "itemStates": "Item states",
     "ticketTemplates": "Packages",
     "apiKeys": "API keys",
-    "permissions": "Permissions",
-    "workOrdersToday": "Today",
-    "workOrdersAll": "All"
+    "permissions": "Permissions"
   },
   "venue": {
     "singular": "Venue",
@@ -1844,13 +1842,6 @@
     "goToCurrent": "Open the current version",
     "versions": "Versions",
     "versionCreated": "Version {version} · {when}",
-    "today": {
-      "title": "Today",
-      "description": "Your current work orders for tickets that take place today.",
-      "empty": "Nothing for you today",
-      "emptyDescription": "A work order shows up here when you are the assignee or a follower of its responsibility on a ticket that takes place today.",
-      "seeAll": "All work orders"
-    },
     "query": {
       "keys": {
         "involves": "involves",
@@ -1906,7 +1897,7 @@
         "mine": "Mine",
         "assigned": "Assigned to me",
         "following": "Following",
-        "allVersions": "All versions"
+        "all": "All"
       }
     }
   },

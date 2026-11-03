@@ -27,7 +27,6 @@ export const ROUTES = {
   notifications: "/notifications",
   tickets: "/tickets",
   workOrders: "/work-orders",
-  workOrdersAll: "/work-orders/all",
   calendar: "/calendar",
   financials: "/data/financials", // one of the dashboards (ADR 0086)
   workload: "/data/workload",

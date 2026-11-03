@@ -21,7 +21,10 @@ export type WorkOrderListProps = {
   params: WorkOrderListParams;
 };
 
-/** Work orders page body: header, quick filters and search, then the paged table. */
+/**
+ * Work orders page body: header, quick filters and search, then the paged table. Only each
+ * work order's latest version is listed; older ones are reached from its detail page.
+ */
 export async function WorkOrderList({ locale, params }: WorkOrderListProps) {
   const t = await getTranslations("workOrder");
   const [query, data, format] = await Promise.all([
@@ -31,6 +34,7 @@ export async function WorkOrderList({ locale, params }: WorkOrderListProps) {
   ]);
   const { vocabulary } = query;
   const q = params.q ?? "";
+  const canonical = toCanonicalQuery({ q, vocabulary });
   const result = await runOperation({
     operation: listWorkOrders,
     input: {
@@ -38,7 +42,7 @@ export async function WorkOrderList({ locale, params }: WorkOrderListProps) {
       limit: params.pageSize,
       sort: params.sort,
       direction: params.direction,
-      q: toCanonicalQuery({ q, vocabulary }),
+      q: `${canonical} is:current`.trim(),
     },
   });
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;

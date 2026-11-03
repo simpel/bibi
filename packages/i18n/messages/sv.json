@@ -625,9 +625,7 @@
     "itemStates": "Artikelstatusar",
     "ticketTemplates": "Mallar",
     "apiKeys": "API-nycklar",
-    "permissions": "Behörigheter",
-    "workOrdersToday": "Idag",
-    "workOrdersAll": "Alla"
+    "permissions": "Behörigheter"
   },
   "venue": {
     "singular": "Anläggning",
@@ -1844,13 +1842,6 @@
     "goToCurrent": "Öppna aktuell version",
     "versions": "Versioner",
     "versionCreated": "Version {version} · {when}",
-    "today": {
-      "title": "Idag",
-      "description": "Dina aktuella order för ärenden som äger rum idag.",
-      "empty": "Inget för dig idag",
-      "emptyDescription": "En order visas här när du är ansvarig eller följer dess ansvar på ett ärende som äger rum idag.",
-      "seeAll": "Alla order"
-    },
     "query": {
       "keys": {
         "involves": "inblandad",
@@ -1906,7 +1897,7 @@
         "mine": "Mina",
         "assigned": "Tilldelade mig",
         "following": "Följer",
-        "allVersions": "Alla versioner"
+        "all": "Alla"
       }
     }
   },

@@ -22,8 +22,6 @@ export type NavLabelKey =
   | "financials"
   | "tickets"
   | "workOrders"
-  | "workOrdersToday"
-  | "workOrdersAll"
   | "inbox"
   | "customers"
   | "items"
@@ -98,10 +96,6 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       icon: ClipboardListIcon,
       audience: "everyone",
       permission: "workOrder:read",
-      children: [
-        { href: ROUTES.workOrders, labelKey: "workOrdersToday" },
-        { href: ROUTES.workOrdersAll, labelKey: "workOrdersAll" },
-      ],
     },
     {
       href: INBOX_ROUTE,
