@@ -8,10 +8,15 @@ export type PageHeaderProps = {
   actions?: ReactNode;
 };
 
+/**
+ * A page's title row: title and description left, actions right of the title from `md` up and
+ * under the description below it (the title-row rule in `packages/ui/CLAUDE.md`, like
+ * `CardHeader`). A long description never pushes the actions onto their own row.
+ */
 export function PageHeader({ title, suffix, description, actions }: PageHeaderProps) {
   return (
-    <header className="flex flex-wrap items-start justify-between gap-4">
-      <div className="grid gap-1">
+    <header className="grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
+      <div className="grid min-w-0 gap-1">
         <h1 className="text-3xl">
           {title}
           {suffix ? (
