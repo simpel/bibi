@@ -10,6 +10,7 @@ const SQL_FILES = [
   "domain_history.sql",
   "sync_user_name.sql",
   "notify_notification.sql",
+  "notify_inbox.sql",
 ] as const;
 
 /** The latest migration that applies one trigger SQL file. */

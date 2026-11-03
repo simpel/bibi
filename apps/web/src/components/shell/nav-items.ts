@@ -48,7 +48,11 @@ export type NavItem = {
   permission?: Permission;
   /** Sub-pages; the entry's own `href` is the first of them (the section's default). */
   children?: readonly NavChild[];
+  /** A live count shown as a badge (ADR 0094). */
+  badge?: NavBadgeKind;
 };
+
+export type NavBadgeKind = "inbox";
 
 export type NavGroupId = "primary" | "work" | "catalog" | "admin";
 
@@ -105,6 +109,7 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       icon: InboxIcon,
       audience: "everyone",
       permission: "inbox:read",
+      badge: "inbox",
     },
   ],
   catalog: [

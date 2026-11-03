@@ -3,6 +3,7 @@ import { inboundEmailMcpTools } from "../inbound-email/mcp";
 
 export const inboundMessageMcpTools = [
   mcpTool({ operation: "inboundMessage.list" }),
+  mcpTool({ operation: "inboundMessage.openCount" }),
   mcpTool({ operation: "inboundMessage.get" }),
   mcpTool({ operation: "inboundMessage.submit" }),
   mcpTool({ operation: "inboundMessage.attachToTicket" }),

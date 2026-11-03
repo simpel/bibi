@@ -12,6 +12,8 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "ticket.update", route: "/tickets/[id]" },
   // Inbound messages of every channel (ADR 0085): the inbox, one message, and a ticket's messages.
   { operation: "inboundMessage.list", route: "/inbox" },
+  // The sidebar's inbox badge, on every page (ADR 0085, 0094).
+  { operation: "inboundMessage.openCount", route: "/inbox" },
   { operation: "inboundMessage.get", route: "/inbox/[id]" },
   { operation: "inboundMessage.attachToTicket", route: "/inbox/[id]" },
   { operation: "inboundMessage.dismiss", route: "/inbox" },

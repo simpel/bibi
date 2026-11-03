@@ -80,6 +80,7 @@ const INBOX_NAMES = [
   "inboundMessage.dismiss",
   "inboundMessage.get",
   "inboundMessage.list",
+  "inboundMessage.openCount",
   "inboundMessage.restore",
   "inboundMessage.submit",
 ];

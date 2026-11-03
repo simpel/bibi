@@ -1,8 +1,13 @@
 import "server-only";
 import { resolveExecuteContext } from "@bibi/auth";
-import { countUnreadNotifications, type ExecuteContext, execute } from "@bibi/core";
+import {
+  countOpenInboundMessages,
+  countUnreadNotifications,
+  type ExecuteContext,
+  execute,
+} from "@bibi/core";
 import { getLogContext, runWithLogContext, withRequestLogging } from "@bibi/logger";
-import { subscribeToNotifications } from "./notification-listener";
+import { type LiveChange, subscribeToNotifications } from "./notification-listener";
 import { ensureOperations } from "./operations";
 
 /** A comment line keeps proxies from closing an idle stream. */
@@ -14,31 +19,40 @@ const encoder = new TextEncoder();
 
 type Controller = ReadableStreamDefaultController<Uint8Array>;
 
-/** Sends the caller's current unread count as an `unread` event. */
-async function sendCount({
-  context,
-  controller,
-}: {
-  context: ExecuteContext;
-  controller: Controller;
-}) {
-  const result = await execute({ operation: countUnreadNotifications, input: {}, context });
-  if (!result.ok) return;
-  const data = JSON.stringify({ unread: result.value.unread });
-  controller.enqueue(encoder.encode(`event: unread\ndata: ${data}\n\n`));
+type SendInput = { context: ExecuteContext; controller: Controller; change: LiveChange };
+
+/** The event for one change: the caller's unread count, or the inbox's open count. */
+async function eventFor({ context, change }: Omit<SendInput, "controller">) {
+  if (change === "notification") {
+    const result = await execute({ operation: countUnreadNotifications, input: {}, context });
+    return result.ok ? { type: "unread", data: { unread: result.value.unread } } : null;
+  }
+  // Without `inbox:read` the operation refuses and the member gets no inbox events.
+  const result = await execute({ operation: countOpenInboundMessages, input: {}, context });
+  return result.ok ? { type: "inbox", data: { open: result.value.open } } : null;
+}
+
+/** Sends the changed count as an `unread` or `inbox` event. */
+async function sendCount({ context, controller, change }: SendInput) {
+  const event = await eventFor({ context, change });
+  if (!event) return;
+  const data = JSON.stringify(event.data);
+  controller.enqueue(encoder.encode(`event: ${event.type}\ndata: ${data}\n\n`));
 }
 
 type OpenInput = { context: ExecuteContext; signal: AbortSignal; controller: Controller };
 type Stop = { stop: () => void };
 
 /**
- * Sends the count; pushes start from the listener's callbacks, so they run in the log context
+ * Sends a count; pushes start from the listener's callbacks, so they run in the log context
  * of the request that opened the stream.
  */
 function pusher({ context, controller, stop }: Omit<OpenInput, "signal"> & Stop) {
   const logContext = getLogContext();
-  const send = () => sendCount({ context, controller }).catch(() => stop());
-  return () => void (logContext ? runWithLogContext({ context: logContext, fn: send }) : send());
+  return ({ change }: { change: LiveChange }) => {
+    const send = () => sendCount({ context, controller, change }).catch(() => stop());
+    void (logContext ? runWithLogContext({ context: logContext, fn: send }) : send());
+  };
 }
 
 /** A comment line; a closed stream stops instead of throwing in the timer. */
@@ -74,11 +88,12 @@ function openStream({ context, signal, controller }: OpenInput) {
   const heartbeat = setInterval(pinger({ controller, stop }), HEARTBEAT_MS);
   const lifetime = setTimeout(stop, LIFETIME_MS);
   signal.addEventListener("abort", stop);
-  push();
+  push({ change: "notification" });
+  push({ change: "inbox" });
   return stop;
 }
 
-/** The event stream: the count on connect and on every change, heartbeats, and a set lifetime. */
+/** The event stream: both counts on connect and on every change, heartbeats, and a set lifetime. */
 function unreadStream({ context, signal }: { context: ExecuteContext; signal: AbortSignal }) {
   let stop = () => {};
   return new ReadableStream<Uint8Array>({
@@ -91,7 +106,8 @@ function unreadStream({ context, signal }: { context: ExecuteContext; signal: Ab
 
 /**
  * `GET /api/notifications/stream` (ADR 0094): Server-Sent Events with the signed-in member's
- * unread count, pushed when the database signals a change. Only for a user (no API keys).
+ * unread count and the inbox's open count, pushed when the database signals a change. Only for a
+ * user (no API keys).
  */
 export const notificationStreamResponse = withRequestLogging({
   surface: "web",

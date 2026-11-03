@@ -578,6 +578,7 @@
     "financials": "Ekonomi",
     "tickets": "Ärenden",
     "inbox": "Inkorg",
+    "inboxOpen": "{count, plural, one {# öppet meddelande} other {# öppna meddelanden}}",
     "skills": "Färdigheter",
     "settings": "Inställningar",
     "openMenu": "Öppna meny",

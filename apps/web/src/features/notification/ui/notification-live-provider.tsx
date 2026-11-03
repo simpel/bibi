@@ -7,34 +7,43 @@ import { useNotificationStream } from "./use-notification-stream";
 
 export type NotificationLiveProviderProps = {
   organizationId: string;
-  /** The count the server rendered. */
+  /** The counts the server rendered. */
   unread: number;
+  inboxOpen: number | null;
   children: ReactNode;
 };
 
 /**
- * Holds the unread count for the bell and the list (ADR 0094). The stream moves it; a mark the
+ * Holds the unread count for the bell and the list, and the inbox's open count for the sidebar
+ * (ADR 0094). The stream moves it; a mark the
  * caller made moves it first, so the stream's echo of the same count is not a change.
  */
 export function NotificationLiveProvider({
   organizationId,
   unread: initial,
+  inboxOpen: initialInbox,
   children,
 }: NotificationLiveProviderProps) {
   const [state, setState] = useState({ unread: initial, changed: 0 });
+  const [inboxOpen, setInboxOpen] = useState(initialInbox);
   const [mark, setMark] = useState<NotificationMark | null>(null);
   useEffect(() => setState((current) => ({ ...current, unread: initial })), [initial]);
+  useEffect(() => setInboxOpen(initialInbox), [initialInbox]);
   useNotificationStream({
     organizationId,
     onUnread: (unread) =>
       setState((current) =>
         current.unread === unread ? current : { unread, changed: current.changed + 1 },
       ),
+    onInbox: setInboxOpen,
   });
   const applyMark = useCallback<NotificationLive["applyMark"]>(({ ids, read, unread }) => {
     setState((current) => ({ ...current, unread }));
     setMark({ ids, read, at: new Date() });
   }, []);
-  const value = useMemo(() => ({ ...state, mark, applyMark }), [state, mark, applyMark]);
+  const value = useMemo(
+    () => ({ ...state, inboxOpen, mark, applyMark }),
+    [state, inboxOpen, mark, applyMark],
+  );
   return <NotificationLiveContext value={value}>{children}</NotificationLiveContext>;
 }

@@ -45,7 +45,8 @@ model InboundEndpoint {
 /// for mail backfilled from `InboundEmail`. `externalId` is the provider's id, unique per
 /// organization and channel so a redelivery is stored once. `formFields` holds values a channel
 /// delivers as structure; `details` the channel's extras, validated by its schema and read only by
-/// that channel's code. `attachments` is metadata only.
+/// that channel's code. `attachments` is metadata only. A trigger (`notify_inbox.sql`) sends
+/// `pg_notify('inbox', …)` on insert and on a change of `ticketId` or `dismissedAt` (ADR 0094).
 model InboundMessage {
   id             String           @id @default(cuid(2))
   organizationId String

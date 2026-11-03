@@ -12,6 +12,7 @@ export const READ_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
     "possible duplicates with their match reasons; the /new/ticket intake shows them (ADR 0081); JSON in chat",
   inboundEndpoint_list:
     "the inbox and API addresses; the inbox page shows them (ADR 0085); JSON in chat",
+  inboundMessage_openCount: "the number is the sidebar's inbox badge (ADR 0085), not a tool card",
   inboundMessage_submit:
     "never offered to the assistant (aiAllowed: false): outside callers hand messages in",
   line_amounts:

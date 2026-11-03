@@ -4,13 +4,22 @@ import { getLogger } from "@bibi/logger";
 import pg from "pg";
 import { z } from "zod";
 
-/** The trigger's channel and payload (`notify_notification.sql`, ADR 0094). */
-const CHANNEL = "notification";
-const PayloadSchema = z.object({ organizationId: z.string(), recipientUserId: z.string() });
+/**
+ * The triggers' channels and payloads (ADR 0094): `notify_notification.sql` names the member,
+ * `notify_inbox.sql` only the organization, since the inbox is shared.
+ */
+const CHANNELS = ["notification", "inbox"] as const;
+const PayloadSchema = z.object({
+  organizationId: z.string(),
+  recipientUserId: z.string().optional(),
+});
 
 const RECONNECT_MS = 5_000;
 
-type OnChange = () => void;
+/** Which of the member's counts changed. */
+export type LiveChange = (typeof CHANNELS)[number];
+
+type OnChange = (input: { change: LiveChange }) => void;
 
 type Hub = { subscribers: Map<string, Set<OnChange>>; client: pg.Client | null };
 
@@ -34,16 +43,28 @@ function parsePayload({ payload }: { payload: string | undefined }) {
   }
 }
 
-function dispatch({ payload }: { payload: string | undefined }) {
-  const member = parsePayload({ payload });
-  if (!member) return;
-  const key = keyOf({ organizationId: member.organizationId, userId: member.recipientUserId });
-  for (const onChange of hub().subscribers.get(key) ?? []) onChange();
+/** A member's notification wakes that member's streams; an inbox change every stream of the org. */
+function dispatch({ channel, payload }: { channel: string; payload: string | undefined }) {
+  const target = parsePayload({ payload });
+  if (!target) return;
+  const { organizationId, recipientUserId } = target;
+  if (channel === "notification" && recipientUserId) {
+    const key = keyOf({ organizationId, userId: recipientUserId });
+    for (const onChange of hub().subscribers.get(key) ?? []) onChange({ change: "notification" });
+    return;
+  }
+  if (channel !== "inbox") return;
+  for (const [key, set] of hub().subscribers) {
+    if (key.startsWith(`${organizationId}:`))
+      for (const onChange of set) onChange({ change: "inbox" });
+  }
 }
 
-/** Every open stream re-reads its count: changes may have been missed while disconnected. */
+/** Every open stream re-reads its counts: changes may have been missed while disconnected. */
 const pushAll = () => {
-  for (const set of hub().subscribers.values()) for (const onChange of set) onChange();
+  for (const set of hub().subscribers.values()) {
+    for (const onChange of set) for (const change of CHANNELS) onChange({ change });
+  }
 };
 
 /** A dropped connection is closed and replaced while anyone still listens. */
@@ -64,12 +85,14 @@ async function connect() {
   if (state.client) return;
   const client = new pg.Client({ connectionString: getEnv().DATABASE_URL });
   state.client = client;
-  client.on("notification", (message) => dispatch({ payload: message.payload }));
+  client.on("notification", (message) =>
+    dispatch({ channel: message.channel, payload: message.payload }),
+  );
   client.on("error", (error) => drop({ client, error }));
   client.on("end", () => drop({ client }));
   try {
     await client.connect();
-    await client.query(`LISTEN ${CHANNEL}`);
+    for (const channel of CHANNELS) await client.query(`LISTEN ${channel}`);
     pushAll();
   } catch (error) {
     drop({ client, error });
@@ -78,7 +101,7 @@ async function connect() {
 
 export type SubscribeInput = { organizationId: string; userId: string; onChange: OnChange };
 
-/** Calls `onChange` whenever the member's notifications change; returns the unsubscribe. */
+/** Calls `onChange` when the member's notifications or the org's inbox change; returns the unsubscribe. */
 export function subscribeToNotifications({ organizationId, userId, onChange }: SubscribeInput) {
   const { subscribers } = hub();
   const key = keyOf({ organizationId, userId });

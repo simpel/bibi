@@ -14,5 +14,8 @@ export type ShellAccess = {
 
 export type ShellUser = { name: string; email: string };
 
-/** The bell's server-rendered count (ADR 0094); the stream keeps it live. */
-export type NotificationBellData = { unread: number };
+/**
+ * The shell's server-rendered counts (ADR 0094), kept live by the stream: the bell's unread
+ * notifications and the inbox badge (null without `inbox:read`).
+ */
+export type ShellCounts = { unread: number; inboxOpen: number | null };

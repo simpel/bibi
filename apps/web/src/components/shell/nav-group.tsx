@@ -12,6 +12,7 @@ import {
 import { ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
+import { NavBadge } from "./nav-badge";
 import type { NavItem } from "./nav-items";
 import { NavSubLinks } from "./nav-sub-links";
 
@@ -28,7 +29,7 @@ function NavLinks({ items, current }: Pick<NavGroupProps, "items" | "current">) 
   return (
     <SidebarMenu>
       {items.map((item) => {
-        const { href, labelKey, icon: Icon, children } = item;
+        const { href, labelKey, icon: Icon, children, badge } = item;
         if (children) {
           return <NavSubLinks key={href} item={{ ...item, children }} current={current} />;
         }
@@ -40,6 +41,7 @@ function NavLinks({ items, current }: Pick<NavGroupProps, "items" | "current">) 
                 <span>{t(labelKey)}</span>
               </Link>
             </SidebarMenuButton>
+            {badge ? <NavBadge kind={badge} /> : null}
           </SidebarMenuItem>
         );
       })}

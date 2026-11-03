@@ -578,6 +578,7 @@
     "financials": "Financials",
     "tickets": "Tickets",
     "inbox": "Inbox",
+    "inboxOpen": "{count, plural, one {# open message} other {# open messages}}",
     "skills": "Skills",
     "settings": "Settings",
     "openMenu": "Open menu",

@@ -61,6 +61,8 @@ describe("cross-organization isolation for the inbox (ADR 0085)", () => {
 
     const inbox = await call({ client: b, name: "inboundMessage_list", args: {} });
     expect(inbox.data.items.map((item: { id: string }) => item.id)).toEqual([own.id]);
+    const count = await call({ client: b, name: "inboundMessage_openCount", args: {} });
+    expect(count.data.open).toBe(1);
     const byTicket = await call({
       client: b,
       name: "inboundMessage_list",

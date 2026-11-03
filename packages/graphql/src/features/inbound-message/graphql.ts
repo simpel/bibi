@@ -1,10 +1,12 @@
 import {
   attachInboundMessage,
+  countOpenInboundMessages,
   dismissInboundMessage,
   getInboundMessage,
   type InboundEndpointDto,
   InboundEndpointSchema,
   type InboundMessageDto,
+  InboundMessageOpenCountOutputSchema,
   InboundMessageSchema,
   listInboundEndpoints,
   listInboundMessages,
@@ -46,6 +48,16 @@ fieldFromOperation({
   operation: listInboundMessages,
   type: InboundMessagePageRef,
   name: "inboundMessages",
+});
+const InboundMessageOpenCountRef = objectFromSchema<{ open: number }>({
+  name: "InboundMessageOpenCount",
+  schema: InboundMessageOpenCountOutputSchema,
+  description: "How many messages wait in the inbox (no ticket yet, not dismissed).",
+});
+fieldFromOperation({
+  operation: countOpenInboundMessages,
+  type: InboundMessageOpenCountRef,
+  name: "inboundMessageOpenCount",
 });
 fieldFromOperation({
   operation: getInboundMessage,

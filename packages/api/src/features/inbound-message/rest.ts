@@ -3,6 +3,11 @@ import { inboundEmailRoutes } from "../inbound-email/rest";
 
 export const inboundMessageRoutes = [
   restRoute({ operation: "inboundMessage.list", method: "GET", path: "/inbound-messages" }),
+  restRoute({
+    operation: "inboundMessage.openCount",
+    method: "GET",
+    path: "/inbound-messages/open-count",
+  }),
   restRoute({ operation: "inboundMessage.get", method: "GET", path: "/inbound-messages/{id}" }),
   restRoute({ operation: "inboundMessage.submit", method: "POST", path: "/inbound-messages" }),
   restRoute({

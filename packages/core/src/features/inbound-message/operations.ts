@@ -11,6 +11,8 @@ import {
   type InboundMessageListInput,
   InboundMessageListInputSchema,
   InboundMessageListOutputSchema,
+  InboundMessageOpenCountInputSchema,
+  InboundMessageOpenCountOutputSchema,
   InboundMessageSchema,
 } from "./schema";
 import { toInboundEndpointDto } from "./to-inbound-endpoint-dto";
@@ -59,6 +61,22 @@ export const listInboundMessages = defineOperation({
   },
 });
 
+export const countOpenInboundMessages = defineOperation({
+  name: "inboundMessage.openCount",
+  kind: "query",
+  description:
+    "How many messages wait in the inbox: no ticket yet and not dismissed (ADR 0085). The " +
+    "sidebar's inbox badge.",
+  input: InboundMessageOpenCountInputSchema,
+  output: InboundMessageOpenCountOutputSchema,
+  permission: "inbox:read",
+  handler: async ({ context }) => {
+    const where = { ticketId: null, dismissedAt: null };
+    const open = await context.db.inboundMessage.count({ where });
+    return ok({ value: { open } });
+  },
+});
+
 export const getInboundMessage = defineOperation({
   name: "inboundMessage.get",
   kind: "query",
@@ -96,6 +114,7 @@ export const listInboundEndpoints = defineOperation({
 /** Every inbound operation (ADR 0085), the deprecated `inboundEmail.*` aliases included. */
 export const inboundMessageOperations = [
   listInboundMessages,
+  countOpenInboundMessages,
   getInboundMessage,
   submitInboundMessage,
   attachInboundMessage,

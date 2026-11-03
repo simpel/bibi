@@ -58,6 +58,16 @@ export const InboundMessageListOutputSchema = z.object({
   nextCursor: z.string().nullable(),
 });
 
+export const InboundMessageOpenCountInputSchema = z.object({});
+
+export const InboundMessageOpenCountOutputSchema = z.object({
+  open: z
+    .number()
+    .int()
+    .min(0)
+    .describe("Inbox messages with no ticket yet that are not dismissed"),
+});
+
 export const InboundMessageIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const InboundMessageAttachInputSchema = z.object({
