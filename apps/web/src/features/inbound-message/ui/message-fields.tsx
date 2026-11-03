@@ -6,7 +6,7 @@ import type { InboundMessageValue } from "./message-value";
 type FieldValue = NonNullable<InboundMessageValue["formFields"]>[string];
 
 /** Yes or No for a checkbox; anything else exactly as sent (a number may be a year or a postcode). */
-function useFieldValue() {
+export function useFieldValue() {
   const common = useTranslations("common");
   return (value: FieldValue) => {
     if (value === null || value === "") return "–";

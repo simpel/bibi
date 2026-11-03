@@ -12,8 +12,7 @@ import { handleLoadError } from "@/server/load-error";
 import { AttachedTicket } from "./attached-ticket";
 import { loadTicketOptions } from "./load-ticket-options";
 import { MessageActions } from "./message-actions";
-import { MessageBody } from "./message-body";
-import { MessageFacts } from "./message-facts";
+import { MessageView, receivedText } from "./message-view";
 import { openMessage } from "./open-message";
 
 const BackLink = ({ label }: { label: string }) => (
@@ -63,8 +62,7 @@ export async function MessageDetail({ locale, id }: MessageDetailProps) {
         }
       />
       {message.ticketId ? <AttachedTicket ticketId={message.ticketId} /> : null}
-      <MessageFacts message={message} dates={dates} />
-      <MessageBody message={message} />
+      <MessageView message={message} received={receivedText({ message, dates })} />
     </div>
   );
 }

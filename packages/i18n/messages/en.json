@@ -3880,6 +3880,12 @@
     "filter": {
       "channel": "Channel",
       "allChannels": "All channels"
+    },
+    "form": {
+      "message": "Message"
+    },
+    "api": {
+      "via": "Sent through the API"
     }
   },
   "member": {

@@ -9,80 +9,61 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
+  StatCard,
+  StatCards,
 } from "@bibi/ui";
-import { ClipboardListIcon, MailIcon, TicketIcon } from "lucide-react";
+import { ClipboardListIcon, MailIcon, TicketIcon, Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
-import { RelativeTime } from "@/components/relative-time";
 import { Link } from "@/lib/navigation";
 import { listItemRoute, ROUTES, ticketRoute } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { useNotificationText } from "./use-notification-text";
 
+type OnNotification = (input: { notification: NotificationDto }) => void;
+
 export type NotificationSheetProps = {
   /** The notification clicked; null closes the sheet. */
   notification: NotificationDto | null;
   onClose: () => void;
-  onMarkUnread: (input: { notification: NotificationDto }) => void;
+  onMarkUnread: OnNotification;
+  /** Opens the delete confirmation. */
+  onDelete: OnNotification;
 };
 
-function Fact({ label, children }: { label: string; children: ReactNode }) {
-  if (children === null || children === undefined || children === "") return null;
-  return (
-    <div className="grid grid-cols-[8rem_minmax(0,1fr)] gap-3 py-2 text-sm">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="min-w-0 break-words">{children}</dd>
-    </div>
-  );
-}
-
-/** Kind, ticket (a link), work order and when, from the snapshot the notification carries. */
-function NotificationFacts({ notification }: { notification: NotificationDto }) {
+/** Kind and when, as stat cards. */
+function NotificationStats({ notification }: { notification: NotificationDto }) {
   const t = useTranslations("notifications");
   const dates = useDateTimeFormat();
-  const { ticket } = useNotificationText()({ notification });
-  const { ticketId, workOrderId, data } = notification;
+  const instant = new Date(notification.createdAt);
   return (
-    <dl className="grid divide-y px-4">
-      <Fact label={t("columns.kind")}>{t(`kinds.${notification.kind}`)}</Fact>
-      <Fact label={t("columns.ticket")}>
-        {ticketId ? (
-          <Link href={ticketRoute({ id: ticketId })} className="underline">
-            {ticket}
-          </Link>
-        ) : null}
-      </Fact>
-      <Fact label={t("sheet.workOrder")}>
-        {workOrderId ? (
-          <Link
-            href={listItemRoute({ list: ROUTES.workOrders, id: workOrderId })}
-            className="underline"
-          >
-            {data.workOrderName ?? t("aWorkOrder")}
-          </Link>
-        ) : null}
-      </Fact>
-      <Fact label={t("columns.created")}>
-        {dates.dateTime({ instant: new Date(notification.createdAt) })}
-      </Fact>
-    </dl>
+    <StatCards className="px-4">
+      <StatCard label={t("columns.kind")} value={t(`kinds.${notification.kind}`)} />
+      <StatCard
+        label={t("columns.created")}
+        value={dates.date({ instant })}
+        hint={dates.time({ instant })}
+      />
+    </StatCards>
   );
 }
 
-/** Links to what the notification is about, and mark unread again. */
-function NotificationLinks({
-  notification,
-  onMarkUnread,
-}: Omit<NotificationSheetProps, "notification" | "onClose"> & { notification: NotificationDto }) {
+type ActionsProps = Omit<NotificationSheetProps, "notification" | "onClose"> & {
+  notification: NotificationDto;
+};
+
+/** What it is about, each named once on its own button, then mark unread and delete. */
+function NotificationActions({ notification, onMarkUnread, onDelete }: ActionsProps) {
   const t = useTranslations("notifications");
-  const { ticketId, workOrderId } = notification;
+  const common = useTranslations("common");
+  const { ticket } = useNotificationText()({ notification });
+  const { ticketId, workOrderId, data } = notification;
   return (
     <SheetFooter>
       {ticketId ? (
         <Button asChild>
           <Link href={ticketRoute({ id: ticketId })}>
             <TicketIcon />
-            {t("sheet.openTicket")}
+            <span className="truncate">{ticket}</span>
           </Link>
         </Button>
       ) : null}
@@ -90,23 +71,32 @@ function NotificationLinks({
         <Button asChild variant="outline">
           <Link href={listItemRoute({ list: ROUTES.workOrders, id: workOrderId })}>
             <ClipboardListIcon />
-            {t("sheet.openWorkOrder")}
+            <span className="truncate">{data.workOrderName ?? t("aWorkOrder")}</span>
           </Link>
         </Button>
       ) : null}
       <Button variant="outline" onClick={() => onMarkUnread({ notification })}>
         <MailIcon />
-        {t("markUnread")}
+        {common("markUnread")}
+      </Button>
+      <Button
+        variant="outline"
+        className="text-destructive"
+        onClick={() => onDelete({ notification })}
+      >
+        <Trash2Icon />
+        {common("delete")}
       </Button>
     </SheetFooter>
   );
 }
 
 /**
- * One notification in a side sheet (ADR 0094): what happened, its kind, ticket, work order and
- * when, with links to them. Opening it marks it read; the sheet can mark it unread again.
+ * One notification in a side sheet (ADR 0094): what happened as the title, its kind and when as
+ * stat cards, and the ticket or work order it is about as the buttons that open them. Nothing
+ * shows twice. Opening it marked it read; the sheet can mark it unread or delete it.
  */
-export function NotificationSheet({ notification, onClose, onMarkUnread }: NotificationSheetProps) {
+export function NotificationSheet({ notification, onClose, ...actions }: NotificationSheetProps) {
   const t = useTranslations("notifications");
   const text = useNotificationText();
   return (
@@ -116,13 +106,14 @@ export function NotificationSheet({ notification, onClose, onMarkUnread }: Notif
           <>
             <SheetHeader>
               <SheetTitle>{text({ notification }).message}</SheetTitle>
-              <SheetDescription>
-                {t(`kinds.${notification.kind}`)} ·{" "}
-                <RelativeTime instant={notification.createdAt} />
+              <SheetDescription className="sr-only">
+                {t(`kinds.${notification.kind}`)}
               </SheetDescription>
             </SheetHeader>
-            <NotificationFacts notification={notification} />
-            <NotificationLinks notification={notification} onMarkUnread={onMarkUnread} />
+            <div className="flex-1">
+              <NotificationStats notification={notification} />
+            </div>
+            <NotificationActions notification={notification} {...actions} />
           </>
         ) : null}
       </SheetContent>

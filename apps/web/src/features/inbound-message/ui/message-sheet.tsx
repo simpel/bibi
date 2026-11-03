@@ -15,7 +15,7 @@ import { inboxMessageRoute, ticketFromMessageRoute } from "@/lib/inbox-routes";
 import { Link } from "@/lib/navigation";
 import type { InboxRow } from "./inbox-row";
 import type { InboxAbilities } from "./inbox-row-actions";
-import { MessageAttachments, MessageFields } from "./message-fields";
+import { MessageView } from "./message-view";
 
 export type MessageSheetProps = InboxAbilities & {
   /** The row clicked; null closes the sheet. */
@@ -65,9 +65,9 @@ function MessageSheetActions(props: ActionsProps) {
 }
 
 /**
- * One inbox message in a side sheet (ADR 0085): sender, channel and when, the text and what the
- * sender filled in, with a new ticket, the full page (to attach it), mark unread and delete.
- * Written by an outside sender: shown as text, never as markup.
+ * One inbox message in a side sheet (ADR 0085): its subject over the message drawn the way its
+ * channel looks (who and when show there, once), with a new ticket, the full page (to attach
+ * it), mark unread and delete.
  */
 export function MessageSheet({ row, onClose, ...actions }: MessageSheetProps) {
   const t = useTranslations("inbox");
@@ -79,20 +79,12 @@ export function MessageSheet({ row, onClose, ...actions }: MessageSheetProps) {
           <>
             <SheetHeader>
               <SheetTitle>{row.subject ?? t("noSubject")}</SheetTitle>
-              <SheetDescription>
-                {[
-                  row.sender ?? t("unknownSender"),
-                  t(`channels.${row.channel}`),
-                  row.receivedLabel,
-                ].join(" · ")}
+              <SheetDescription className="sr-only">
+                {t(`channels.${row.channel}`)}
               </SheetDescription>
             </SheetHeader>
-            <div className="grid gap-6 px-4 pb-4">
-              <p className="whitespace-pre-wrap break-words text-base leading-relaxed">
-                {message.text || <span className="text-muted-foreground">{t("noBody")}</span>}
-              </p>
-              {message.formFields ? <MessageFields fields={message.formFields} /> : null}
-              <MessageAttachments attachments={message.attachments} />
+            <div className="flex-1 px-4 pb-4">
+              <MessageView message={message} received={row.receivedLabel} />
             </div>
             <MessageSheetActions row={row} {...actions} />
           </>

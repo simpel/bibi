@@ -48,6 +48,10 @@ export function useTableParts() {
     notification: sheet.selected,
     onClose: sheet.close,
     onMarkUnread: sheet.markUnread,
+    onDelete: ({ notification }: { notification: NotificationDto }) => {
+      sheet.close();
+      setDeleting([notification.id]);
+    },
   };
   return { ...marks, sheet, sheetProps, columns, row, deleting, setDeleting };
 }
