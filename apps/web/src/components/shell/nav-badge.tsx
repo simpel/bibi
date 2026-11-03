@@ -13,7 +13,7 @@ export function NavBadge({ kind }: { kind: NavBadgeKind }) {
   const count = kind === "inbox" ? inboxOpen : null;
   if (!count) return null;
   return (
-    <SidebarMenuBadge className="rounded-full bg-destructive text-destructive-foreground">
+    <SidebarMenuBadge className="rounded-full bg-destructive text-destructive-foreground peer-hover/menu-button:text-destructive-foreground peer-data-[active=true]/menu-button:text-destructive-foreground">
       <span aria-hidden>{count > MAX ? `${MAX}+` : count}</span>
       <span className="sr-only">{t("inboxOpen", { count })}</span>
     </SidebarMenuBadge>
