@@ -59,6 +59,8 @@ describe("workOrder.list search (GitHub style)", () => {
       total: 1,
     });
     expect((await search({ q: "-involves:me", as: asJohan })).versions).toEqual([]);
+    const either = await search({ q: "assignee:me follower:me", as: asJohan });
+    expect(either.versions).toEqual([2, 1]);
   });
 
   it("filters by the definition, the ticket's qualifiers and its reference", async () => {

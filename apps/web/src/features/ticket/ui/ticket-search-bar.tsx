@@ -1,8 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { buildQueryCatalog } from "@/components/query-search/lib/query-catalog";
+import { PeopleQuickFilters } from "@/components/query-search/people-quick-filters";
 import { QuerySearch } from "@/components/query-search/query-search";
+import { ROUTES } from "@/lib/routes";
 import type { loadTicketQuery } from "../load-ticket-query";
-import { TicketQuickFilters } from "./ticket-quick-filters";
 
 type Data = {
   statuses: { name: string }[];
@@ -29,7 +30,7 @@ export async function TicketSearchBar({ q, query, data }: TicketSearchBarProps) 
   };
   return (
     <div className="flex flex-wrap items-center justify-between gap-4">
-      <TicketQuickFilters q={q} vocabulary={vocabulary} />
+      <PeopleQuickFilters pathname={ROUTES.tickets} q={q} vocabulary={vocabulary} />
       <QuerySearch
         value={q}
         label={t("search")}

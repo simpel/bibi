@@ -2,6 +2,7 @@ import type { Prisma } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { Feature } from "../../permissions/features";
 import { canView } from "../../shared/can-view";
+import { withAlternativePeople } from "../../shared/query/alternative-people";
 import { loadZoneOfVenue } from "../../shared/time-zones";
 import { nowOf } from "../../time/now";
 import { type MeasureEnv, measureWhere } from "./list-measures";
@@ -63,12 +64,15 @@ async function filterWhere({ filter, context, env }: FilterWhereInput): Promise<
 
 export type QualifierWheresInput = { filters: TicketFilter[]; context: Context };
 
-/** Every qualifier must hold (GitHub style); commas within one are alternatives. */
+/** Every qualifier must hold (GitHub style); commas within one are alternatives, and `assignee:` and `follower:` are alternatives of each other. */
 export async function qualifierWheres({ filters, context }: QualifierWheresInput) {
   if (filters.length === 0) return [];
   const zoneOf = await loadZoneOfVenue({ context });
   const env = { zone: zoneOf({ venue: null }), now: nowOf({ context }) };
-  const wheres: Where[] = [];
-  for (const filter of filters) wheres.push(await filterWhere({ filter, context, env }));
-  return wheres;
+  const wheres: { where: Where; people: boolean }[] = [];
+  for (const filter of filters) {
+    const people = !filter.negated && (filter.key === "assignee" || filter.key === "follower");
+    wheres.push({ where: await filterWhere({ filter, context, env }), people });
+  }
+  return withAlternativePeople({ wheres });
 }

@@ -1,9 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { buildQueryCatalog } from "@/components/query-search/lib/query-catalog";
+import { PeopleQuickFilters } from "@/components/query-search/people-quick-filters";
 import { QuerySearch } from "@/components/query-search/query-search";
+import { ROUTES } from "@/lib/routes";
 import type { WorkOrderListData } from "../load-work-order-list-data";
 import type { loadWorkOrderQuery } from "../load-work-order-query";
-import { WorkOrderQuickFilters } from "./work-order-quick-filters";
 
 export type WorkOrderSearchBarProps = {
   /** The search in effect: the URL's, else the default. */
@@ -25,7 +26,7 @@ export async function WorkOrderSearchBar({ q, query, data }: WorkOrderSearchBarP
   };
   return (
     <div className="flex flex-wrap items-center justify-between gap-4">
-      <WorkOrderQuickFilters q={q} vocabulary={vocabulary} />
+      <PeopleQuickFilters pathname={ROUTES.workOrders} q={q} vocabulary={vocabulary} />
       <QuerySearch
         value={q}
         label={t("search")}

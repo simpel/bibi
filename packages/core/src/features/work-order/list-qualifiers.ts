@@ -2,6 +2,7 @@ import type { Prisma } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { Feature } from "../../permissions/features";
 import { canView } from "../../shared/can-view";
+import { withAlternativePeople } from "../../shared/query/alternative-people";
 import type { QueryFilter } from "../../shared/query/parse-query";
 import { qualifierWheres } from "../ticket/list-qualifiers";
 import type { TicketFilter } from "../ticket/list-query";
@@ -75,12 +76,17 @@ async function filterWhere({ filter, context }: FilterInput): Promise<Where> {
 
 export type WorkOrderQualifierWheresInput = { filters: WorkOrderFilter[]; context: Context };
 
-/** Every qualifier must hold (GitHub style); commas within one are alternatives. */
+const isPeople = ({ key, negated }: WorkOrderFilter) =>
+  !negated && isIn({ list: WORK_ORDER_PEOPLE_QUALIFIERS, key });
+
+/** Every qualifier must hold (GitHub style); commas within one are alternatives, and the people qualifiers are alternatives of each other. */
 export async function workOrderQualifierWheres({
   filters,
   context,
 }: WorkOrderQualifierWheresInput): Promise<Where[]> {
-  const wheres: Where[] = [];
-  for (const filter of filters) wheres.push(await filterWhere({ filter, context }));
-  return wheres;
+  const wheres: { where: Where; people: boolean }[] = [];
+  for (const filter of filters) {
+    wheres.push({ where: await filterWhere({ filter, context }), people: isPeople(filter) });
+  }
+  return withAlternativePeople({ wheres });
 }

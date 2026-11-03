@@ -1891,12 +1891,6 @@
         "sent": "Skickad",
         "notSent": "Inte skickad",
         "blocked": "Blockerad"
-      },
-      "filter": {
-        "label": "Visa",
-        "assigned": "Tilldelade mig",
-        "following": "Följer",
-        "all": "Alla"
       }
     }
   },

@@ -1891,12 +1891,6 @@
         "sent": "Sent",
         "notSent": "Not sent",
         "blocked": "Blocked"
-      },
-      "filter": {
-        "label": "Show",
-        "assigned": "Assigned to me",
-        "following": "Following",
-        "all": "All"
       }
     }
   },
