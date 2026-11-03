@@ -1,7 +1,7 @@
 import {
   attachInboundMessage,
   countOpenInboundMessages,
-  dismissInboundMessage,
+  deleteInboundMessage,
   getInboundMessage,
   type InboundEndpointDto,
   InboundEndpointSchema,
@@ -10,7 +10,8 @@ import {
   InboundMessageSchema,
   listInboundEndpoints,
   listInboundMessages,
-  restoreInboundMessage,
+  markInboundMessageRead,
+  markInboundMessageUnread,
   submitInboundMessage,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
@@ -52,7 +53,7 @@ fieldFromOperation({
 const InboundMessageOpenCountRef = objectFromSchema<{ open: number }>({
   name: "InboundMessageOpenCount",
   schema: InboundMessageOpenCountOutputSchema,
-  description: "How many messages wait in the inbox (no ticket yet, not dismissed).",
+  description: "How many unread messages wait in the inbox (no ticket yet, nobody has read them).",
 });
 fieldFromOperation({
   operation: countOpenInboundMessages,
@@ -71,8 +72,9 @@ fieldFromOperation({
 });
 mutationFromOperation({ operation: submitInboundMessage, type: InboundMessageRef });
 mutationFromOperation({ operation: attachInboundMessage, type: InboundMessageRef });
-mutationFromOperation({ operation: dismissInboundMessage, type: InboundMessageRef });
-mutationFromOperation({ operation: restoreInboundMessage, type: InboundMessageRef });
+mutationFromOperation({ operation: markInboundMessageRead, type: InboundMessageRef });
+mutationFromOperation({ operation: markInboundMessageUnread, type: InboundMessageRef });
+mutationFromOperation({ operation: deleteInboundMessage, type: InboundMessageRef });
 
 // Graph edge. Goes through `inboundMessage.list`, so its permissions apply here too.
 builder.objectField(TicketRef, "inboundMessages", (t) =>

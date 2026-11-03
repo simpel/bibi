@@ -36,6 +36,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["BillingAccount", "ACTIVE"],
   ["AccountingExport", "ACTIVE"],
   ["InboundEndpoint", "ACTIVE"],
+  ["InboundMessage", "ACTIVE"],
   ["Skill", { not: "ARCHIVED" }],
 ]);
 

@@ -7,7 +7,7 @@ import { uiEntry } from "./ui-entry";
 /** JSON form of an inbound message as tool results carry it (dates = ISO strings). */
 export const InboundMessageWireSchema = InboundMessageSchema.extend({
   receivedAt: z.string(),
-  dismissedAt: z.string().nullable(),
+  readAt: z.string().nullable(),
   createdAt: z.string(),
 });
 export const InboundMessageListWireSchema = z.object({
@@ -40,6 +40,7 @@ export const INBOUND_MESSAGE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> =
   }),
   inboundMessage_get: card,
   inboundMessage_attachToTicket: card,
-  inboundMessage_dismiss: card,
-  inboundMessage_restore: card,
+  inboundMessage_markRead: card,
+  inboundMessage_markUnread: card,
+  inboundMessage_delete: card,
 };

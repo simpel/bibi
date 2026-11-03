@@ -5,13 +5,21 @@ import { useTranslations } from "next-intl";
 import { inboxMessageRoute, ticketFromMessageRoute } from "@/lib/inbox-routes";
 import { Link } from "@/lib/navigation";
 import type { InboxRow } from "./inbox-row";
-import { useDismissMessage } from "./use-dismiss-message";
+import { useReadMessage } from "./use-read-message";
 
-export type InboxRowActionsProps = {
-  row: InboxRow;
+export type InboxAbilities = {
+  /** `inbox:write`: mark read or unread. */
   canWrite: boolean;
+  /** `inbox:delete`. */
+  canDelete: boolean;
   /** `ticket:write`: the message can become a ticket. */
   canCreateTicket: boolean;
+};
+
+export type InboxRowActionsProps = InboxAbilities & {
+  row: InboxRow;
+  /** Opens the table's delete confirmation, which outlives the menu. */
+  onDelete: (row: InboxRow) => void;
 };
 
 type ItemsProps = InboxRowActionsProps & {
@@ -19,23 +27,28 @@ type ItemsProps = InboxRowActionsProps & {
   Item: typeof DropdownMenuItem | typeof ContextMenuItem;
 };
 
-/** Open, new ticket from it, and dismiss or restore, as items of either menu. */
-function InboxRowItems({ row, canWrite, canCreateTicket, Item }: ItemsProps) {
+/** Open, new ticket, mark read or unread, and delete, as items of either menu. */
+function InboxRowItems({ row, canWrite, canDelete, canCreateTicket, onDelete, Item }: ItemsProps) {
   const t = useTranslations("inbox");
-  const { toggle, pending } = useDismissMessage();
+  const { setRead, pending } = useReadMessage();
   return (
     <>
       <Item asChild>
         <Link href={inboxMessageRoute({ id: row.id })}>{t("open")}</Link>
       </Item>
-      {canCreateTicket && !row.dismissed ? (
+      {canCreateTicket ? (
         <Item asChild>
           <Link href={ticketFromMessageRoute({ id: row.id })}>{t("newTicket")}</Link>
         </Item>
       ) : null}
       {canWrite ? (
-        <Item disabled={pending} onSelect={() => toggle({ id: row.id, dismissed: row.dismissed })}>
-          {row.dismissed ? t("restore") : t("dismiss")}
+        <Item disabled={pending} onSelect={() => setRead({ id: row.id, read: !row.read })}>
+          {row.read ? t("markUnread") : t("markRead")}
+        </Item>
+      ) : null}
+      {canDelete ? (
+        <Item destructive onSelect={() => onDelete(row)}>
+          {t("delete")}
         </Item>
       ) : null}
     </>

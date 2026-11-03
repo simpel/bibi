@@ -8,7 +8,7 @@
  * search index (Embedding), Better Auth membership rows (Member; Invitation has its own
  * `status`; core audits both), rows with their
  * own `status` lifecycle that are never removed (PaymentAccount, IntegrationConnection, Payment, Deposit, Invoice, ADR
- * 0057; InboundMessage, ADR 0085: `dismissedAt`), work order versions (`sentAt` is their lifecycle), followers (AssignmentFollower, removed on
+ * 0057), work order versions (`sentAt` is their lifecycle), followers (AssignmentFollower, removed on
  * unfollow), notifications (`readAt` is their lifecycle; preferences are upserted, ADR 0094) and credentials (Apikey: `enabled`; OauthGrantRevocation: one row per user and client).
  */
 export const HARD_DELETE_MODELS = new Set<string>([
@@ -43,7 +43,6 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "Apikey",
   "OauthGrantRevocation",
   "RevenueAccount",
-  "InboundMessage",
   "ResponsibilityEntityType",
   "ResponsibilityDefaultFollower",
   "WorkOrderDefinitionEntityType",

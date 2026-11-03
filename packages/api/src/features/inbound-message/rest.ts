@@ -16,14 +16,19 @@ export const inboundMessageRoutes = [
     path: "/inbound-messages/{id}/attach",
   }),
   restRoute({
-    operation: "inboundMessage.dismiss",
+    operation: "inboundMessage.markRead",
     method: "POST",
-    path: "/inbound-messages/{id}/dismiss",
+    path: "/inbound-messages/{id}/read",
   }),
   restRoute({
-    operation: "inboundMessage.restore",
+    operation: "inboundMessage.markUnread",
     method: "POST",
-    path: "/inbound-messages/{id}/restore",
+    path: "/inbound-messages/{id}/unread",
+  }),
+  restRoute({
+    operation: "inboundMessage.delete",
+    method: "DELETE",
+    path: "/inbound-messages/{id}",
   }),
   restRoute({ operation: "inboundEndpoint.list", method: "GET", path: "/inbound-endpoints" }),
   // The deprecated `inboundEmail.*` aliases (ADR 0085).

@@ -8,9 +8,15 @@ const StoredFormFieldsSchema = FormFieldsSchema.nullable().catch(null);
 
 export type ToInboundMessageDtoInput = { row: InboundMessage };
 
-/** The stored row without the channel's `details` (read only by that channel's code). */
+/** The stored row without the channel's `details` (read only by that channel's code) or `status`. */
 export function toInboundMessageDto({ row }: ToInboundMessageDtoInput): InboundMessageDto {
-  const { details: _details, updatedAt: _updatedAt, createdBy: _createdBy, ...rest } = row;
+  const {
+    details: _details,
+    updatedAt: _updatedAt,
+    createdBy: _createdBy,
+    status: _status,
+    ...rest
+  } = row;
   return {
     ...rest,
     formFields: StoredFormFieldsSchema.parse(row.formFields),

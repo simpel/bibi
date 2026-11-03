@@ -1,7 +1,10 @@
 import { ok, type Result } from "../../errors/result";
 import { toReceiveInput } from "../../features/inbound-email/to-receive-input";
 import { receiveInboundMessage } from "../../features/inbound-message/receive-operation";
-import { submitInboundMessage } from "../../features/inbound-message/write-operations";
+import {
+  markInboundMessageRead,
+  submitInboundMessage,
+} from "../../features/inbound-message/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoOrg } from "./types";
@@ -69,6 +72,7 @@ const PARTNER_REQUEST = {
 /**
  * The inbox (ADR 0085, `docs/demo-seed.md`): a booking request mailed to the organization address,
  * a customer reply on the first ticket, and a request a partner system handed in over the API.
+ * The partner request is read, so the inbox shows both its unread and its read table.
  */
 export async function seedDemoInbox({ context, org }: SeedInboxInput): Promise<Result<true>> {
   const [endpoints, ticket] = await Promise.all([
@@ -84,5 +88,8 @@ export async function seedDemoInbox({ context, org }: SeedInboxInput): Promise<R
   if (!api) return ok({ value: true });
   const input = { endpointId: api.id, ...PARTNER_REQUEST };
   const submitted = await execute({ operation: submitInboundMessage, input, context });
-  return submitted.ok ? ok({ value: true }) : submitted;
+  if (!submitted.ok) return submitted;
+  const read = { id: submitted.value.id };
+  const marked = await execute({ operation: markInboundMessageRead, input: read, context });
+  return marked.ok ? ok({ value: true }) : marked;
 }

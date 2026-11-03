@@ -6,20 +6,20 @@ import { readCursor } from "@/lib/page-cursor";
 
 type InboxPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ cursor?: string | string[]; view?: string | string[] }>;
+  searchParams: Promise<{ cursor?: string | string[]; readCursor?: string | string[] }>;
 };
 
 export default async function InboxPage({ params, searchParams }: InboxPageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale({ value: rawLocale });
-  const { cursor, view } = await searchParams;
+  const { cursor, readCursor: readPage } = await searchParams;
   setRequestLocale(locale);
   return (
     <SimplePage>
       <InboxList
         locale={locale}
         cursor={readCursor({ value: cursor })}
-        dismissed={view === "dismissed"}
+        readCursor={readCursor({ value: readPage })}
       />
     </SimplePage>
   );

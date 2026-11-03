@@ -1,3 +1,4 @@
+import { INBOX_OPERATION_KEYS } from "./approval-inbox-keys";
 import { MONEY_FIELD_KEYS, MONEY_OPERATION_KEYS } from "./approval-money-keys";
 import { PEOPLE_FIELD_KEYS, PEOPLE_OPERATION_KEYS } from "./approval-people-keys";
 import { PIPELINE_FIELD_KEYS, PIPELINE_OPERATION_KEYS } from "./approval-pipeline-keys";
@@ -104,9 +105,7 @@ export const OPERATION_KEYS = [
   "line_create",
   "line_update",
   "line_archive",
-  "inboundMessage_attachToTicket",
-  "inboundMessage_dismiss",
-  "inboundMessage_restore",
+  ...INBOX_OPERATION_KEYS,
   ...PEOPLE_OPERATION_KEYS,
   ...PIPELINE_OPERATION_KEYS,
   ...MONEY_OPERATION_KEYS,

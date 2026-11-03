@@ -2709,8 +2709,9 @@
         "billing_remindAdmins": "Remind the admins to pay",
         "deposit_request": "Request deposit with payment link",
         "accountingExport_create": "Create SIE export",
-        "inboundMessage_dismiss": "Dismiss message",
-        "inboundMessage_restore": "Restore message"
+        "inboundMessage_markRead": "Mark message as read",
+        "inboundMessage_markUnread": "Mark message as unread",
+        "inboundMessage_delete": "Delete message"
       },
       "setup": {
         "title": "Create my first version",
@@ -3817,9 +3818,7 @@
     "description": "Requests that came in by email, form or API and have no ticket yet.",
     "address": "Forward your booking mail to <code>{address}</code> and it shows up here.",
     "noAddress": "No inbox address is configured yet, so mail cannot reach the inbox.",
-    "views": "Inbox views",
     "open": "Open",
-    "dismissedView": "Dismissed",
     "empty": "No messages.",
     "columns": {
       "subject": "Subject",
@@ -3845,14 +3844,20 @@
     "attached": "Message attached",
     "attachedTo": "This message is attached to a ticket. Open the ticket",
     "attachedToTicket": "This message is attached to <ticket></ticket>.",
-    "dismiss": "Dismiss",
-    "restore": "Restore",
-    "dismissed": "Message dismissed",
-    "restored": "Message restored",
     "ticketTitle": "Messages",
     "replyAddress": "Customers reply to <code>{address}</code>; their mail and other messages for the ticket show up here.",
     "noReplyAddress": "No inbound address is configured, so replies cannot reach this ticket yet.",
-    "fieldsTitle": "What the sender filled in"
+    "fieldsTitle": "What the sender filled in",
+    "unreadTitle": "Unread",
+    "readTitle": "Read",
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "markedRead": "Marked as read",
+    "markedUnread": "Marked as unread",
+    "delete": "Delete",
+    "deleting": "Deleting message…",
+    "deleted": "Message deleted",
+    "deleteConfirm": "Delete “{subject}”? It leaves the inbox for everyone in the team."
   },
   "member": {
     "singular": "Member",

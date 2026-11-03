@@ -104,10 +104,10 @@ describe("inboundMessage.submit (the API channel)", () => {
 });
 
 describe("inbox permissions (ADR 0085)", () => {
-  it("gives members read and write, and submit only to admins", () => {
-    expect(PRESET_PERMISSIONS.member.inbox).toEqual(["read", "write"]);
-    expect(PRESET_PERMISSIONS.manager.inbox).toEqual(["read", "write"]);
-    expect(PRESET_PERMISSIONS.admin.inbox).toEqual(["read", "write", "submit"]);
+  it("gives members read, write and delete, and submit only to admins", () => {
+    expect(PRESET_PERMISSIONS.member.inbox).toEqual(["read", "write", "delete"]);
+    expect(PRESET_PERMISSIONS.manager.inbox).toEqual(["read", "write", "delete"]);
+    expect(PRESET_PERMISSIONS.admin.inbox).toEqual(["read", "write", "delete", "submit"]);
   });
 
   it("keeps an allowed submit when read is denied", () => {

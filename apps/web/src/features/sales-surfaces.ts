@@ -16,8 +16,9 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "inboundMessage.openCount", route: "/inbox" },
   { operation: "inboundMessage.get", route: "/inbox/[id]" },
   { operation: "inboundMessage.attachToTicket", route: "/inbox/[id]" },
-  { operation: "inboundMessage.dismiss", route: "/inbox" },
-  { operation: "inboundMessage.restore", route: "/inbox" },
+  { operation: "inboundMessage.markRead", route: "/inbox" },
+  { operation: "inboundMessage.markUnread", route: "/inbox" },
+  { operation: "inboundMessage.delete", route: "/inbox" },
   { operation: "inboundEndpoint.list", route: "/inbox" },
   // The status history and the facts that contradict the status (ADR 0054).
   { operation: "ticket.statusHistory", route: "/tickets/[id]" },

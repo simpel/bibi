@@ -32,11 +32,16 @@ const MANAGER_FEATURES: readonly Feature[] = [
 const MANAGER_ITEM_WRITE = grantAll({ features: ["item"], only: "write" });
 
 /**
- * Everyone who works the inbox reads and handles it (ADR 0083, 0085). `inbox:submit` is for
+ * Everyone who works the inbox reads, marks read or unread and deletes it (ADR 0083, 0085). `inbox:submit` is for
  * outside callers (an API key or partner client) and only the admin preset has it, so a key gets
  * it by an explicit allow.
  */
-const INBOX_WORK = grantAll({ features: ["inbox"], only: "write" });
+const INBOX_WORK = unionPermissions({
+  sets: [
+    grantAll({ features: ["inbox"], only: "write" }),
+    grantAll({ features: ["inbox"], only: "delete" }),
+  ],
+});
 
 const member = unionPermissions({
   sets: [

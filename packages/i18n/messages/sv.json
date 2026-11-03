@@ -2709,8 +2709,9 @@
         "billing_remindAdmins": "Påminn admins om betalning",
         "deposit_request": "Begär förskott med betallänk",
         "accountingExport_create": "Skapa SIE-export",
-        "inboundMessage_dismiss": "Avfärda meddelande",
-        "inboundMessage_restore": "Återställ meddelande"
+        "inboundMessage_markRead": "Markera meddelande som läst",
+        "inboundMessage_markUnread": "Markera meddelande som oläst",
+        "inboundMessage_delete": "Ta bort meddelande"
       },
       "setup": {
         "title": "Skapa min första version",
@@ -3817,9 +3818,7 @@
     "description": "Förfrågningar som kommit in via e-post, formulär eller API och som inte har något ärende än.",
     "address": "Vidarebefordra er bokningsmejl till <code>{address}</code> så visas de här.",
     "noAddress": "Ingen inkorgsadress är konfigurerad än, så e-post kan inte nå inkorgen.",
-    "views": "Vyer i inkorgen",
     "open": "Öppna",
-    "dismissedView": "Avfärdade",
     "empty": "Inga meddelanden.",
     "columns": {
       "subject": "Ämne",
@@ -3845,14 +3844,20 @@
     "attached": "Meddelandet kopplat",
     "attachedTo": "Meddelandet är kopplat till ett ärende. Öppna ärendet",
     "attachedToTicket": "Meddelandet är kopplat till <ticket></ticket>.",
-    "dismiss": "Avfärda",
-    "restore": "Återställ",
-    "dismissed": "Meddelandet avfärdat",
-    "restored": "Meddelandet återställt",
     "ticketTitle": "Meddelanden",
     "replyAddress": "Kunder svarar till <code>{address}</code>; deras e-post och andra meddelanden för ärendet visas här.",
     "noReplyAddress": "Ingen inkommande adress är konfigurerad, så svar kan inte nå ärendet än.",
-    "fieldsTitle": "Det avsändaren fyllde i"
+    "fieldsTitle": "Det avsändaren fyllde i",
+    "unreadTitle": "Olästa",
+    "readTitle": "Lästa",
+    "markRead": "Markera som läst",
+    "markUnread": "Markera som oläst",
+    "markedRead": "Markerat som läst",
+    "markedUnread": "Markerat som oläst",
+    "delete": "Ta bort",
+    "deleting": "Tar bort meddelandet…",
+    "deleted": "Meddelandet borttaget",
+    "deleteConfirm": "Ta bort ”{subject}”? Det försvinner ur inkorgen för alla i teamet."
   },
   "member": {
     "singular": "Medlem",

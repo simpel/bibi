@@ -6,5 +6,6 @@ export type InboxRow = Pick<InboundMessageDto, "id" | "channel" | "subject"> & {
   /** ISO instant, for sorting. */
   receivedAt: string;
   receivedLabel: string;
-  dismissed: boolean;
+  /** Someone in the team has read it (the read state is shared). */
+  read: boolean;
 };

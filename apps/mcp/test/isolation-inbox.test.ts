@@ -36,7 +36,13 @@ describe("cross-organization isolation for the inbox (ADR 0085)", () => {
     const ticketA = await seedTicket({ client: a });
     const ticketB = await seedTicket({ client: b });
 
-    for (const name of ["inboundMessage_get", "inboundMessage_dismiss", "inboundMessage_restore"]) {
+    const refusedTools = [
+      "inboundMessage_get",
+      "inboundMessage_markRead",
+      "inboundMessage_markUnread",
+      "inboundMessage_delete",
+    ];
+    for (const name of refusedTools) {
       const refused = await call({ client: b, name, args: { id: secret.id } });
       expect(refused.data.code, name).toBe("NOT_FOUND");
     }

@@ -2,6 +2,7 @@
 
 - **Date:** 2026-11-01
 - **Status:** Accepted (approved by the user on 2026-11-01)
+- **Amended:** 2026-11-03 (read and unread, and delete, replace dismiss; see Addendum)
 - **Supersedes:** 0083 (organization inbox for email only; accepted, not built)
 - **Amends:** 0012 (inbound mail stored as `InboundEmail`), 0084 (a draft is read from an inbound message of any channel)
 - **Related:** 0081 (ticket intake), 0003 (parity), 0050 (permissions and API keys), 0051 (single source of truth), 0058 (external effects after commit), 0007 (AI proposes, the user confirms)
@@ -45,12 +46,12 @@
    - It stores an `API` message with the caller as sender, and it creates no ticket.
    - It is not `aiAllowed` for Bibi's own assistant: our assistant drafts from messages (ADR 0084), it does not invent them.
 5. **The inbox is every channel's messages without a ticket.** As in ADR 0083, these replace `inboundEmail.listInbox|attachToTicket|dismiss|restore`:
-   - `inboundMessage.list` (by ticket, or the inbox: no ticket, not dismissed; filter by channel);
+   - `inboundMessage.list` (by ticket, or the inbox: no ticket; filter by channel and by read);
    - `inboundMessage.get`;
    - `inboundMessage.attachToTicket` (once);
-   - `inboundMessage.dismiss` and `inboundMessage.restore`.
+   - `inboundMessage.markRead`, `inboundMessage.markUnread` and `inboundMessage.delete` (Addendum; they replace `dismiss` and `restore`).
 
-   Permissions: `inbox:read` and `inbox:write` (from ADR 0083), plus `inbox:submit`. A ticket's page lists its messages of every channel. "New ticket from this message" opens the intake (ADR 0081), and `ticket.create` takes `inboundMessageId`.
+   Permissions: `inbox:read`, `inbox:write` and `inbox:delete` (from ADR 0083, `delete` from the Addendum), plus `inbox:submit`. A ticket's page lists its messages of every channel. "New ticket from this message" opens the intake (ADR 0081), and `ticket.create` takes `inboundMessageId`.
 6. **Drafting works on any message** (amends ADR 0084). `ticketDraft.fromMessage` takes `{ text }` or `{ inboundMessageId }`:
    - Structured `formFields` that an endpoint maps to intake fields (date, guests, email, phone) are taken as given, quoted from the field and never marked guessed. Only free text goes to the model.
    - Customer and contact matching uses the sender's email domain or phone number.
@@ -72,3 +73,11 @@
 - **Store the provider's raw payload only.** Rejected: every reader would have to understand every provider. Normalised fields plus a validated `details` keep the channels apart while the inbox, matching and drafting stay generic.
 - **Let any user or Bibi's assistant create inbound messages.** Rejected: a message must be what it says it is (ADR 0012). Only adapters write their channel, and outside callers get their own, truthful `API` channel.
 - **Open channels as ticket-creating endpoints** (a web form that creates a ticket directly). Rejected: spam and half-filled requests would become tickets. Every channel lands in the inbox, and a person creates the ticket (ADR 0007, 0081).
+
+## Addendum 2026-11-03: read and unread, and delete, replace dismiss
+- **Why:** dismiss mixed two jobs. Staff wanted to see what the team has already looked at, and to get rid of spam. Dismiss did half of each: a dismissed message was neither clearly read nor gone.
+- **Read state is shared by the team.** `InboundMessage.readAt` and `readBy` (owned) are one flag per message, not per member: the inbox is shared work (ADR 0094 keeps personal read state for notifications). `inboundMessage.markRead` and `markUnread` (`inbox:write`) set and clear it. Opening a message in the app marks it read.
+- **The inbox shows unread first.** `inboundMessage.list` takes `read` (true, false or absent for both); the web inbox lists the unread messages in one table and the read ones in a second table below it. `inboundMessage.openCount`, the sidebar badge, counts unread messages without a ticket.
+- **Delete archives.** `inboundMessage.delete` (`inbox:delete`, new action on the `inbox` feature) sets `status = ARCHIVED`, as everywhere in Bibi (ADR 0006): the row is kept and hidden from every read. Only a message without a ticket can be deleted (`CONFLICT` otherwise). Every preset that worked the inbox gets `inbox:delete`, as it had dismiss.
+- **Migration:** a dismissed message became a read one (`readAt = dismissedAt`, `readBy = dismissedBy`); `dismissedAt`, `dismissedBy`, `dismiss`, `restore` and the Dismissed view are gone.
+- **Rejected:** a per-member read state. It would make every member clear the same queue, and nobody could see that a colleague already handled a message.

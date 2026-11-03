@@ -77,11 +77,12 @@ const MEMBER_PROFILE_NAMES = [
 const INBOX_NAMES = [
   "inboundEndpoint.list",
   "inboundMessage.attachToTicket",
-  "inboundMessage.dismiss",
+  "inboundMessage.delete",
   "inboundMessage.get",
   "inboundMessage.list",
+  "inboundMessage.markRead",
+  "inboundMessage.markUnread",
   "inboundMessage.openCount",
-  "inboundMessage.restore",
   "inboundMessage.submit",
 ];
 

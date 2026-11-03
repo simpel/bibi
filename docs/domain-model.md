@@ -1380,7 +1380,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### InboundMessage (`InboundMessage`)
 
-*MVP* · A message that arrived through a channel ([ADR 0085](decisions/0085-inbound-messages-from-any-channel.md), replaces ADR 0083): a mail to the organization's address or a ticket's address, or an API submission. WEB_FORM and SMS are designed, not built. Content columns are append-only by rule; only `ticketId` and the dismissal change. Stored only through the SYSTEM-only `inboundMessage.receive` (idempotent per channel and `externalId`) or `inboundMessage.submit`.
+*MVP* · A message that arrived through a channel ([ADR 0085](decisions/0085-inbound-messages-from-any-channel.md), replaces ADR 0083): a mail to the organization's address or a ticket's address, or an API submission. WEB_FORM and SMS are designed, not built. Content columns are append-only by rule; only `ticketId`, the team's shared read state and the archive status change. Stored only through the SYSTEM-only `inboundMessage.receive` (idempotent per channel and `externalId`) or `inboundMessage.submit`.
 
 **Attributes**
 - channel (`InboundChannel`: EMAIL, WEB_FORM, SMS, API)
@@ -1392,13 +1392,14 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - external id (unique per organization and channel: a redelivery is stored once)
 - received at
 - channel details (JSON; EMAIL: Message-ID, from, to, HTML body, stored and never rendered in the web app)
-- dismissed at, dismissed by
+- read at, read by (shared by the team; null is unread)
+- status (ARCHIVED when deleted)
 
 **Relations**
 - `N:1` arrived through → InboundEndpoint
 - `N:0..1` is attached to → Ticket (set once; a message with no ticket is in the inbox)
 
-> Operations: `inboundMessage.list` (`inbox:read`; by ticket, which also needs `ticket:read`, or the inbox: no ticket and not dismissed, `dismissed: true` for dismissed; channel filter), `inboundMessage.get`, `inboundMessage.attachToTicket` (`inbox:write` + `ticket:write`, once, CONFLICT if attached), `inboundMessage.dismiss` and `restore` (`inbox:write`, CONFLICT for attached messages) and `inboundMessage.submit` (`inbox:submit`; the endpoint must be the organization's active API endpoint; stored as channel API with the caller as sender, no ticket, AI not allowed), on every surface (GraphQL also as `Ticket.inboundMessages`). `ticket.create` takes `inboundMessageId` (needs `inbox:read`) and attaches the message in the same transaction. `inboundMessage.receive` is SYSTEM only and has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received message. [ADR 0084](decisions/0084-ticket-draft-from-a-message.md): `ticketDraft.fromMessage` reads a draft from any message and writes nothing.
+> Operations: `inboundMessage.list` (`inbox:read`; by ticket, which also needs `ticket:read`, or the inbox: no ticket; `read` filter, channel filter), `inboundMessage.get`, `inboundMessage.attachToTicket` (`inbox:write` + `ticket:write`, once, CONFLICT if attached), `inboundMessage.markRead` and `markUnread` (`inbox:write`, shared by the team, opening a message marks it read), `inboundMessage.delete` (`inbox:delete`, archives, CONFLICT for attached messages) and `inboundMessage.submit` (`inbox:submit`; the endpoint must be the organization's active API endpoint; stored as channel API with the caller as sender, no ticket, AI not allowed), on every surface (GraphQL also as `Ticket.inboundMessages`). `ticket.create` takes `inboundMessageId` (needs `inbox:read`) and attaches the message in the same transaction. `inboundMessage.receive` is SYSTEM only and has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received message. [ADR 0084](decisions/0084-ticket-draft-from-a-message.md): `ticketDraft.fromMessage` reads a draft from any message and writes nothing.
 
 ### InboundEndpoint (`InboundEndpoint`)
 

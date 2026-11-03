@@ -1,10 +1,10 @@
 import { createId } from "@paralleldrive/cuid2";
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import type { OperationContext } from "../../operations/types";
-import { conflict, invalid, notFound } from "../../shared/errors";
+import { invalid } from "../../shared/errors";
 import { nowOf } from "../../time/now";
 import { checkReadable } from "../ticket/ticket-rules";
+import { archiveMessage } from "./archive-message";
 import { attachMessage } from "./attach-message";
 import { callerSender } from "./caller-sender";
 import { insertMessage } from "./insert-message";
@@ -14,7 +14,7 @@ import {
   InboundMessageSchema,
   InboundMessageSubmitInputSchema,
 } from "./schema";
-import { toInboundMessageDto } from "./to-inbound-message-dto";
+import { setRead } from "./set-read";
 
 export const attachInboundMessage = defineOperation({
   name: "inboundMessage.attachToTicket",
@@ -38,53 +38,45 @@ export const attachInboundMessage = defineOperation({
   },
 });
 
-type DismissInput = { context: OperationContext; id: string; dismiss: boolean };
-
-/** Sets or clears the dismissal of an inbox message; an unchanged one is returned as is. */
-async function setDismissed({ context, id, dismiss }: DismissInput) {
-  const before = await context.db.inboundMessage.findFirst({ where: { id } });
-  if (!before) return notFound({ entity: "Message" });
-  if (before.ticketId) {
-    return conflict({ message: "A message attached to a ticket is not in the inbox" });
-  }
-  if ((before.dismissedAt !== null) === dismiss)
-    return ok({ value: toInboundMessageDto({ row: before }) });
-  const { actor } = context;
-  const data = dismiss
-    ? { dismissedAt: nowOf({ context }), dismissedBy: actor.userId ?? actor.apiKeyId ?? actor.type }
-    : { dismissedAt: null, dismissedBy: null };
-  const row = await context.db.inboundMessage.update({ where: { id }, data });
-  context.recordChange({
-    entityId: id,
-    before: { id, dismissedAt: before.dismissedAt, dismissedBy: before.dismissedBy },
-    after: { id, ...data },
-  });
-  return ok({ value: toInboundMessageDto({ row }) });
-}
-
-export const dismissInboundMessage = defineOperation({
-  name: "inboundMessage.dismiss",
+export const markInboundMessageRead = defineOperation({
+  name: "inboundMessage.markRead",
   kind: "command",
   description:
-    "Dismiss a message from the inbox (spam, a newsletter, nothing to book). Nothing is " +
-    "deleted: inboundMessage.list with dismissed: true shows it and inboundMessage.restore " +
-    "brings it back. Only messages without a ticket can be dismissed.",
+    "Mark a message read for the whole team (ADR 0085): the read state is shared, not per " +
+    "member. Opening a message in the app marks it read. A read message leaves the inbox count.",
   input: InboundMessageIdInputSchema,
   output: InboundMessageSchema,
   untrustedOutput: true,
   permission: "inbox:write",
-  handler: async ({ input: { id }, context }) => setDismissed({ context, id, dismiss: true }),
+  entityType: "inboundMessage",
+  handler: async ({ input: { id }, context }) => setRead({ context, id, read: true }),
 });
 
-export const restoreInboundMessage = defineOperation({
-  name: "inboundMessage.restore",
+export const markInboundMessageUnread = defineOperation({
+  name: "inboundMessage.markUnread",
   kind: "command",
-  description: "Bring a dismissed message back into the inbox.",
+  description: "Mark a message unread again for the whole team, e.g. to come back to it later.",
   input: InboundMessageIdInputSchema,
   output: InboundMessageSchema,
   untrustedOutput: true,
   permission: "inbox:write",
-  handler: async ({ input: { id }, context }) => setDismissed({ context, id, dismiss: false }),
+  entityType: "inboundMessage",
+  handler: async ({ input: { id }, context }) => setRead({ context, id, read: false }),
+});
+
+export const deleteInboundMessage = defineOperation({
+  name: "inboundMessage.delete",
+  kind: "command",
+  description:
+    "Delete a message from the inbox (spam, a newsletter, nothing to book). It is archived, " +
+    "not erased, and no longer listed. Only messages without a ticket: one attached to a ticket " +
+    "is refused with CONFLICT.",
+  input: InboundMessageIdInputSchema,
+  output: InboundMessageSchema,
+  untrustedOutput: true,
+  permission: "inbox:delete",
+  entityType: "inboundMessage",
+  handler: async ({ input: { id }, context }) => archiveMessage({ context, id }),
 });
 
 /**

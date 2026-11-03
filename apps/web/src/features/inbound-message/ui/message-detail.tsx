@@ -1,4 +1,3 @@
-import { getInboundMessage } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -10,12 +9,12 @@ import { Link } from "@/lib/navigation";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
-import { runOperation } from "@/server/run-operation";
 import { AttachedTicket } from "./attached-ticket";
 import { loadTicketOptions } from "./load-ticket-options";
 import { MessageActions } from "./message-actions";
 import { MessageBody } from "./message-body";
 import { MessageFacts } from "./message-facts";
+import { openMessage } from "./open-message";
 
 const BackLink = ({ label }: { label: string }) => (
   <Link
@@ -29,7 +28,7 @@ const BackLink = ({ label }: { label: string }) => (
 
 export type MessageDetailProps = { locale: Locale; id: string };
 
-/** One inbound message: its content, and what to do with it while it has no ticket. */
+/** One inbound message, marked read on open: its content, and what to do with it while it has no ticket. */
 export async function MessageDetail({ locale, id }: MessageDetailProps) {
   const [t, common, dates, abilities] = await Promise.all([
     getTranslations("inbox"),
@@ -37,12 +36,13 @@ export async function MessageDetail({ locale, id }: MessageDetailProps) {
     getDateTimeFormat(),
     getCallerAbilities(),
   ]);
-  const result = await runOperation({ operation: getInboundMessage, input: { id } });
+  const canWrite = can({ abilities, permission: "inbox:write" });
+  const result = await openMessage({ id, canWrite });
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const message = result.value;
-  const canTicket = can({ abilities, permission: "ticket:write" });
-  const canWrite = can({ abilities, permission: "inbox:write" });
-  const tickets = !message.ticketId && canTicket && canWrite ? await loadTicketOptions() : [];
+  const canCreateTicket = can({ abilities, permission: "ticket:write" });
+  const canDelete = can({ abilities, permission: "inbox:delete" });
+  const tickets = !message.ticketId && canCreateTicket && canWrite ? await loadTicketOptions() : [];
   const title = message.subject ?? t("noSubject");
   return (
     <div className="grid gap-6">
@@ -53,10 +53,10 @@ export async function MessageDetail({ locale, id }: MessageDetailProps) {
         actions={
           message.ticketId ? undefined : (
             <MessageActions
-              id={message.id}
-              dismissed={message.dismissedAt !== null}
-              canTicket={canTicket}
+              message={{ id, subject: message.subject, read: message.readAt !== null }}
               canWrite={canWrite}
+              canDelete={canDelete}
+              canCreateTicket={canCreateTicket}
               tickets={tickets}
             />
           )

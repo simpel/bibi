@@ -163,6 +163,6 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
 - `customer.findSimilar`, `customer.create` with `contact`, `customer.list` with `recent`, `calendar.range` with `itemIds`: ADR 0081.
 - `line.chooseOptions` with `options[{ itemId, quantity? }]`, split groups, `OPTION_SPLIT_MISMATCH`: ADR 0082.
 - A group with no pick is open in `line.chooseOptions` and `ticket.create`, even a required one, and gives the line warning `UNCHOSEN_REQUIRED_GROUP`; `ticketTemplate.create|update` take `lines[].options` (default choices, reads add `stale`), `ticket.previewLines` returns each package line's `options`, `ticket.createFromTemplate` applies them: ADR 0089.
-- `InboundMessage` and `InboundEndpoint`; `inboundMessage.list|get|attachToTicket|dismiss|restore|submit`, feature `inbox` (read, write, submit); EMAIL channel built, WEB_FORM and SMS designed: ADR 0085.
+- `InboundMessage` and `InboundEndpoint`; `inboundMessage.list|get|attachToTicket|markRead|markUnread|delete|submit`, feature `inbox` (read, write, delete, submit); EMAIL channel built, WEB_FORM and SMS designed: ADR 0085.
 - `ticketDraft.fromMessage`, AI feature `ticket.intakeDraft`: ADR 0084.
 - All on web, GraphQL, REST and MCP (ADR 0003).

@@ -2,9 +2,10 @@
 
 import {
   attachInboundMessage,
-  dismissInboundMessage,
+  deleteInboundMessage,
   type InboundMessageDto,
-  restoreInboundMessage,
+  markInboundMessageRead,
+  markInboundMessageUnread,
 } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
@@ -19,16 +20,23 @@ export async function attachMessageAction({
   return toActionResult({ result: await runOperation({ operation: attachInboundMessage, input }) });
 }
 
-export async function dismissMessageAction({
+export async function markMessageReadAction({
   id,
 }: MessageIdActionInput): Promise<ActionResult<InboundMessageDto>> {
-  const result = await runOperation({ operation: dismissInboundMessage, input: { id } });
+  const result = await runOperation({ operation: markInboundMessageRead, input: { id } });
   return toActionResult({ result });
 }
 
-export async function restoreMessageAction({
+export async function markMessageUnreadAction({
   id,
 }: MessageIdActionInput): Promise<ActionResult<InboundMessageDto>> {
-  const result = await runOperation({ operation: restoreInboundMessage, input: { id } });
+  const result = await runOperation({ operation: markInboundMessageUnread, input: { id } });
+  return toActionResult({ result });
+}
+
+export async function deleteMessageAction({
+  id,
+}: MessageIdActionInput): Promise<ActionResult<InboundMessageDto>> {
+  const result = await runOperation({ operation: deleteInboundMessage, input: { id } });
   return toActionResult({ result });
 }

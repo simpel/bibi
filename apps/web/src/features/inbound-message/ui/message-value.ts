@@ -1,12 +1,9 @@
 import type { InboundMessageDto } from "@bibi/core/schemas";
 
 /** An inbound message as the server (Date) or a tool result (ISO string) carries it. */
-export type InboundMessageValue = Omit<
-  InboundMessageDto,
-  "receivedAt" | "createdAt" | "dismissedAt"
-> & {
+export type InboundMessageValue = Omit<InboundMessageDto, "receivedAt" | "createdAt" | "readAt"> & {
   receivedAt: Date | string;
-  dismissedAt: Date | string | null;
+  readAt: Date | string | null;
 };
 
 export type SenderOfInput = {

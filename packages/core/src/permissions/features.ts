@@ -29,8 +29,8 @@ const noDelete = ["read", "write"] as const;
 
 export const FEATURE_SPECS = {
   ticket: { group: "bookings", actions: all },
-  // Inbound messages of every channel (ADR 0085): no archive; dismiss is `write`.
-  inbox: { group: "bookings", actions: ["read", "write", "submit"] },
+  // Inbound messages of every channel (ADR 0085): read and unread are `write`, delete archives.
+  inbox: { group: "bookings", actions: ["read", "write", "delete", "submit"] },
   program: { group: "bookings", actions: all },
   customer: { group: "selling", actions: all },
   quote: { group: "selling", actions: all },
