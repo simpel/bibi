@@ -2,6 +2,7 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { PAYMENT_AMOUNT_MAX_MINOR } from "../payment/schema";
 import { ReceivableStatusSchema, SettlementShape } from "../payment/settlement-schema";
+import { VatRowSchema } from "../quote/order-line-schema";
 
 /**
  * A deposit request (ADR 0057): a frozen receivable with a fixed amount and its own description.
@@ -13,6 +14,12 @@ export const DepositSchema = z.object({
   ticketId: z.string(),
   description: z.string().describe("What the customer pays for"),
   amountMinor: z.number().int().describe("Fixed amount in minor units (öre for SEK)"),
+  vatRows: z
+    .array(VatRowSchema)
+    .describe(
+      "VAT per rate of the amount, snapshot at create from the ticket's priced lines (ADR 0093); " +
+        "empty = no VAT",
+    ),
   currency: z.string(),
   dueDate: z.date().nullable(),
   status: ReceivableStatusSchema.describe("DRAFT, SENT (payments can be requested) or VOID"),

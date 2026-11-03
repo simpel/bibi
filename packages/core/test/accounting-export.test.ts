@@ -1,67 +1,27 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { decodeCp437 } from "../src/accounting/sie4/cp437";
 import {
-  createAccountingExport,
-  createInvoice,
   createPayment,
-  downloadAccountingExport,
-  type ExecuteContext,
   execute,
   listAccountingExports,
-  previewAccountingExport,
-  sendInvoice,
   setPaymentProvider,
   setStripeConnectGateway,
-  updateOrganizationProfile,
   voidInvoice,
 } from "../src/index";
+import {
+  AROUND_NOW,
+  download,
+  LONG_AGO,
+  preview,
+  run,
+  sentInvoice,
+} from "./accounting-export-helpers";
 import { errorCode, unwrap } from "./helpers";
-import { makeInvoiceable, markSucceeded, moneySetup } from "./receivable-helpers";
+import { markSucceeded, moneySetup } from "./receivable-helpers";
 
 afterEach(() => {
   setPaymentProvider({ provider: undefined });
   setStripeConnectGateway({ gateway: undefined });
 });
-
-type Ctx = { context: ExecuteContext };
-
-const DAY = 86_400_000;
-const isoDay = ({ offset }: { offset: number }) =>
-  new Date(Date.now() + offset * DAY).toISOString().slice(0, 10);
-/** Yesterday to tomorrow, so what a test creates now is inside it. */
-const AROUND_NOW = { from: isoDay({ offset: -1 }), to: isoDay({ offset: 1 }) };
-const LONG_AGO = { from: "2020-01-01", to: "2020-12-31" };
-
-type RangeCtx = Ctx & { range?: { from: string; to: string } };
-
-const run = async ({ context, range = AROUND_NOW }: RangeCtx) =>
-  execute({ operation: createAccountingExport, input: range, context });
-
-const preview = async ({ context, range = AROUND_NOW }: RangeCtx) =>
-  unwrap({ result: await execute({ operation: previewAccountingExport, input: range, context }) });
-
-async function download({ context, id }: Ctx & { id: string }) {
-  const file = unwrap({
-    result: await execute({ operation: downloadAccountingExport, input: { id }, context }),
-  });
-  return decodeCp437({ bytes: new Uint8Array(Buffer.from(file.contentBase64, "base64")) });
-}
-
-/** A sent invoice of 5 600 kr (12 % VAT) on a ticket of an organization with an org number. */
-async function sentInvoice() {
-  const setup = await moneySetup();
-  const { context, ticket } = setup;
-  const profile = { legalName: "Gården AB", orgNumber: "556000-0000" };
-  unwrap({
-    result: await execute({ operation: updateOrganizationProfile, input: profile, context }),
-  });
-  await makeInvoiceable({ context, statusId: ticket.statusId });
-  const draft = unwrap({
-    result: await execute({ operation: createInvoice, input: { ticketId: ticket.id }, context }),
-  });
-  unwrap({ result: await execute({ operation: sendInvoice, input: { id: draft.id }, context }) });
-  return { ...setup, invoice: draft };
-}
 
 describe("accounting exports are SIE 4I files of a date range (ADR 0077)", () => {
   it("previews, writes the vouchers and keeps the exact file", async () => {
@@ -124,6 +84,19 @@ describe("accounting exports are SIE 4I files of a date range (ADR 0077)", () =>
     const text = await download({ context, id: both.id });
     expect(text).toContain("Void invoice 1");
     expect(text).toMatch(/#TRANS 1510 \{6 "\d+"\} -5600\.00/);
+  });
+
+  it("reports a deposit's VAT when paid and reverses it on the invoice (ADR 0093)", async () => {
+    const { context } = await sentInvoice({ deposit: 150_000 });
+    const text = await download({ context, id: unwrap({ result: await run({ context }) }).id });
+    const posted = [...text.matchAll(/#TRANS (\d+) \{[^}]*\} (-?[\d.]+)/g)];
+    const total = ({ account }: { account: string }) =>
+      posted.filter((m) => m[1] === account).reduce((sum, m) => sum + Number(m[2]) * 100, 0);
+    // 1 500 kr at the ticket's 12 %: 1 339.29 on advances and 160.71 VAT, then reversed.
+    expect(text).toMatch(/#TRANS 2420 \{6 "\d+"\} -1339\.29/);
+    expect(text).toMatch(/#TRANS 2621 \{6 "\d+"\} -160\.71/);
+    expect(Math.round(total({ account: "2420" }))).toBe(0);
+    expect(Math.round(total({ account: "2621" }))).toBe(-60_000);
   });
 
   it("is blocked without an organization number", async () => {

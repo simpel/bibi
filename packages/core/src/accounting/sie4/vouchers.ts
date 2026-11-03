@@ -4,6 +4,7 @@ import type { AccountMap } from "./accounts";
 import {
   type AccountingEvent,
   type CashEvent,
+  type DepositVat,
   type InvoiceEvent,
   missingVatRates,
   type Settles,
@@ -11,6 +12,25 @@ import {
 import { type Build, saleCredits, scaleParts, withRounding } from "./sale";
 import { voucherText } from "./text";
 import type { SieTransaction, SieVoucher } from "./types";
+
+/**
+ * An advance received (ADR 0093): customer advances excl. VAT and output VAT per rate, the
+ * deposit's split scaled to the amount; all on advances when the deposit carries no VAT.
+ */
+function advanceCredits({
+  accounts,
+  project,
+  parts,
+  amountMinor,
+}: Build & DepositVat & { amountMinor: number }) {
+  if (parts.length === 0)
+    return [{ account: accounts.advances, amountMinor: -amountMinor, objects: project }];
+  const scaled = scaleParts({ parts, amountMinor }).map((part) => ({
+    ...part,
+    account: accounts.advances,
+  }));
+  return saleCredits({ accounts, project, parts: scaled });
+}
 
 /** The credit side of a payment: receivables, customer advances or the sale itself. */
 function paymentCredits({
@@ -26,14 +46,16 @@ function paymentCredits({
       parts: scaleParts({ parts: settles.parts, amountMinor }),
     });
   }
-  const account = settles.kind === "INVOICE" ? accounts.receivable : accounts.advances;
-  return [{ account, amountMinor: -amountMinor, objects: project }];
+  if (settles.kind === "DEPOSIT") {
+    return advanceCredits({ accounts, project, parts: settles.parts, amountMinor });
+  }
+  return [{ account: accounts.receivable, amountMinor: -amountMinor, objects: project }];
 }
 
 const negate = ({ lines }: { lines: SieTransaction[] }) =>
   lines.map((line) => ({ ...line, amountMinor: -line.amountMinor }));
 
-/** The sale, plus moving paid deposits from customer advances to receivables. */
+/** The sale, plus reversing each deducted deposit's advance and VAT against receivables. */
 function invoiceLines({ event, ...build }: Build & { event: InvoiceEvent }): SieTransaction[] {
   const { accounts, project } = build;
   const sale = withRounding({
@@ -43,13 +65,11 @@ function invoiceLines({ event, ...build }: Build & { event: InvoiceEvent }): Sie
       ...saleCredits({ ...build, parts: event.parts }),
     ],
   });
-  const offset = event.depositOffsetMinor;
-  if (offset <= 0) return sale;
-  return [
-    ...sale,
-    { account: accounts.advances, amountMinor: offset },
-    { account: accounts.receivable, amountMinor: -offset },
-  ];
+  const deducted = event.deductions.flatMap(({ parts, amountMinor }) => [
+    ...negate({ lines: advanceCredits({ ...build, parts, amountMinor }) }),
+    { account: accounts.receivable, amountMinor: -amountMinor, objects: project },
+  ]);
+  return [...sale, ...deducted];
 }
 
 /** Clearing against what the payment settled. */

@@ -7,6 +7,7 @@ import { moveReceivable } from "../payment/move-receivable";
 import { loadChargeableTicket } from "../payment/payment-preconditions";
 import { receivableMoveDates } from "../payment/receivable-lifecycle";
 import type { ReceivableStatus } from "../payment/settlement-schema";
+import { depositVatRows } from "./deposit-vat";
 import {
   DepositCreateInputSchema,
   type DepositDto,
@@ -29,12 +30,14 @@ export const createDeposit = defineOperation({
   handler: async ({ input, context }) => {
     const ticket = await loadChargeableTicket({ context, ticketId: input.ticketId });
     if (!ticket.ok) return ticket;
+    const { ticketId, amountMinor } = input;
     const row = await context.db.deposit.create({
       data: {
         organizationId: context.organizationId,
-        ticketId: input.ticketId,
+        ticketId,
         description: input.description,
-        amountMinor: input.amountMinor,
+        amountMinor,
+        vatRows: await depositVatRows({ context, ticketId, amountMinor }),
         dueDate: input.dueDate ?? null,
         createdBy: context.actor.userId,
       },

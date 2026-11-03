@@ -8,6 +8,7 @@ import { insertPayment } from "../payment/insert-payment";
 import { loadChargeTarget } from "../payment/payment-preconditions";
 import { PaymentSchema } from "../payment/schema";
 import { suggestDeposit } from "./deposit-rule";
+import { depositVatRows } from "./deposit-vat";
 import {
   type DepositRequestInput,
   DepositRequestInputSchema,
@@ -69,6 +70,11 @@ export const requestDeposit = defineOperation({
         ticketId: input.ticketId,
         description: input.description,
         amountMinor: amount.value,
+        vatRows: await depositVatRows({
+          context,
+          ticketId: input.ticketId,
+          amountMinor: amount.value,
+        }),
         dueDate: input.dueDate ?? null,
         ...{ status: "SENT", statusChangedAt: at, sentAt: at },
         createdBy: context.actor.userId,

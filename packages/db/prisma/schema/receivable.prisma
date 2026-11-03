@@ -21,6 +21,9 @@ model Deposit {
   description     String
   /// Fixed amount in minor units, set once at create.
   amountMinor     Int
+  /// VAT per rate of the amount (snapshot at create, ADR 0093): the ticket's priced lines scaled
+  /// to the amount, summing to it. `[]` = no VAT (no priced lines, or created before ADR 0093).
+  vatRows         Json             @default("[]")
   /// ISO 4217, upper case.
   currency        String           @default("SEK")
   dueDate         DateTime?

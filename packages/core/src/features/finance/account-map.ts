@@ -1,4 +1,4 @@
-import type { AccountMap, RevenuePart } from "../../accounting/sie4/accounts";
+import type { AccountMap, RevenuePart, VatPart } from "../../accounting/sie4/accounts";
 import { asVatRows } from "../quote/order-line-schema";
 import type { AccountingSettingsDto } from "./settings-schema";
 
@@ -54,3 +54,11 @@ export function revenueParts({ lines, accountOf }: RevenuePartsInput): RevenuePa
     })),
   );
 }
+
+/** A deposit's stored VAT split as parts (ADR 0093); `[]` when it carries no VAT. */
+export const vatParts = ({ vatRows }: { vatRows: unknown }): VatPart[] =>
+  asVatRows({ value: vatRows }).map((row) => ({
+    vatRatePercent: row.vatRatePercent,
+    exclVatMinor: row.totalExclVatMinor,
+    vatMinor: row.vatMinor,
+  }));

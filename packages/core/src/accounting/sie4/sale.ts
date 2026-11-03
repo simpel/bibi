@@ -41,14 +41,16 @@ export function withRounding({
   return [...lines, { account: accounts.rounding, amountMinor: -off }];
 }
 
-/** A quote's parts scaled to an amount paid against it, so a part payment splits pro rata. */
-export function scaleParts({
+type Scalable = { exclVatMinor: number; vatMinor: number };
+
+/** Parts scaled to an amount paid against them (incl. VAT), so a part payment splits pro rata. */
+export function scaleParts<T extends Scalable>({
   parts,
   amountMinor,
 }: {
-  parts: readonly RevenuePart[];
+  parts: readonly T[];
   amountMinor: number;
-}) {
+}): T[] {
   const weights = parts.map((part) => ({
     weightMinor: part.exclVatMinor + part.vatMinor,
     vatRatePercent: null,

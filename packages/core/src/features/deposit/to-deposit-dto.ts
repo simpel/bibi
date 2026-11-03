@@ -1,6 +1,7 @@
 import type { Deposit } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { paidByReceivable, settlementOf } from "../payment/settlement";
+import { asVatRows } from "../quote/order-line-schema";
 import type { DepositDto } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
@@ -13,6 +14,7 @@ export async function toDepositDtos({ context, rows }: ToDepositDtosInput): Prom
   const paid = await paidByReceivable({ context, ticketIds });
   return rows.map((row) => ({
     ...row,
+    vatRows: asVatRows({ value: row.vatRows }),
     ...settlementOf({ paid, id: row.id, amountMinor: row.amountMinor }),
   }));
 }

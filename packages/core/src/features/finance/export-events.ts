@@ -2,7 +2,7 @@ import type { AccountingEvent, Settles } from "../../accounting/sie4/events";
 import type { OperationContext } from "../../operations/types";
 import { toIsoDate } from "../../time/plain-date";
 import { toZonedParts } from "../../time/zoned-time";
-import { type RevenueAccountOf, revenueParts } from "./account-map";
+import { type RevenueAccountOf, revenueParts, vatParts } from "./account-map";
 import type { ExportSources, SourceInvoice, SourcePayment } from "./export-sources";
 
 /** The export entry an event becomes: its kind and its one source (ADR 0077). */
@@ -34,8 +34,11 @@ function invoiceEvent({ invoice, kind, ...build }: InvoiceInput): PendingEvent {
       invoiceNumber: invoice.number,
       totalInclVatMinor: invoice.totalInclVatMinor,
       parts: revenueParts({ lines: invoice.lines, accountOf: build.accountOf }),
-      // Exactly the deposits the invoice deducts move from customer advances (ADR 0090).
-      depositOffsetMinor: invoice.deductions.reduce((sum, d) => sum + d.amountMinor, 0),
+      // Exactly the deposits the invoice deducts, with the VAT reported when paid (ADR 0090, 0093).
+      deductions: invoice.deductions.map((d) => ({
+        amountMinor: d.amountMinor,
+        parts: vatParts({ vatRows: d.deposit.vatRows }),
+      })),
     },
   };
 }
@@ -51,7 +54,7 @@ function settlesOf({
   if (payment.invoice) return { kind: "INVOICE", invoiceNumber: payment.invoice.number };
   if (payment.quote)
     return { kind: "QUOTE", parts: revenueParts({ lines: payment.quote.lines, accountOf }) };
-  return { kind: "DEPOSIT" };
+  return { kind: "DEPOSIT", parts: vatParts({ vatRows: payment.deposit?.vatRows }) };
 }
 
 function paymentEvents({ sources, ...build }: Build & { sources: ExportSources }): PendingEvent[] {

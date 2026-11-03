@@ -3,6 +3,7 @@ import {
   createInvoice,
   createPayment,
   execute,
+  getDeposit,
   getTicketBalance,
   requestDeposit,
   sendInvoice,
@@ -35,6 +36,17 @@ describe("a final invoice deducts paid deposits (ADR 0090)", () => {
       context,
     });
     await markSucceeded({ context, paymentId: deposit.id });
+    const created = unwrap({
+      result: await execute({
+        operation: getDeposit,
+        input: { id: deposit.depositId ?? "" },
+        context,
+      }),
+    });
+    // The ticket's 5 600 kr at 12 % scaled to the deposit (ADR 0093).
+    expect(created.vatRows).toEqual([
+      { vatRatePercent: 12, totalExclVatMinor: 133_929, vatMinor: 16_071 },
+    ]);
     await makeInvoiceable({ context, statusId: ticket.statusId });
     const invoice = unwrap({
       result: await execute({ operation: createInvoice, input: { ticketId }, context }),

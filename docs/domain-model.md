@@ -943,10 +943,11 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · A deposit request: a fixed amount the customer pays in advance, with its own description ([ADR 0057](decisions/0057-money-balance-is-derived.md)). A payment for "something else" is a deposit request too.
 
-> **Ownership:** owned `description`, `amountMinor`, `currency`, `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt`, `voidedAt` (ADR 0077); derived `paidMinor`, `openMinor`, `progress` (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`, from its payments; never stored).
+> **Ownership:** owned `description`, `amountMinor`, `currency`, `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt`, `voidedAt` (ADR 0077); snapshot `vatRows` (ADR 0093); derived `paidMinor`, `openMinor`, `progress` (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`, from its payments; never stored).
 
 **Attributes**
 - description, amount (fixed, set once), currency, due date
+- VAT per rate of the amount (`vatRows`, snapshot at create): the ticket's live priced lines scaled to the amount; empty = no VAT (no priced lines, or created before [ADR 0093](decisions/0093-vat-on-advance-payments.md))
 - status: `DRAFT → SENT → VOID` (a DRAFT may be voided too; VOID is final)
 
 **Relations**
@@ -1013,7 +1014,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### InvoiceDeposit (`InvoiceDeposit`)
 
-*MVP* · A paid deposit a final invoice deducts ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)). Written by `invoice.create` for every deposit of the ticket that is not VOID and has something paid, at what is paid on it then; a deposit paid later is not deducted (void and recreate the invoice). Revenue and VAT stay the invoice lines'; the SIE export moves exactly these amounts from customer advances to receivables (ADR 0077).
+*MVP* · A paid deposit a final invoice deducts ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)). Written by `invoice.create` for every deposit of the ticket that is not VOID and has something paid, at what is paid on it then; a deposit paid later is not deducted (void and recreate the invoice). Revenue and VAT stay the invoice lines'; the SIE export moves exactly these amounts from customer advances to receivables and reverses the VAT reported when the deposit was paid, split by the deposit's `vatRows` (ADR 0077, 0093).
 
 > **Ownership:** snapshot every column, never changed afterwards.
 

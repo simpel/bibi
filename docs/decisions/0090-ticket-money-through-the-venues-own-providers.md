@@ -60,3 +60,6 @@
 - **The stream adds tenants at start and every 10 minutes for companies without a tenant id.** A refreshed access token is not sent again, unlike decision 8.
 - **Fortnox calls sit behind their own gateway.** `FortnoxInvoicingGateway` (`features/integration/fortnox/invoicing-gateway.ts`) makes the Fortnox calls; it is not a `PaymentProvider` adapter.
 - **Void does not reach Fortnox.** `invoice.void` moves only the Bibi invoice. A cancelled Fortnox invoice whose payment is already mirrored as paid is refused by `invoice.void` (a paid payment must be refunded first), so the event is logged as failed and the invoice stays `SENT`.
+
+## Addendum 2026-11-03 – deposits carry VAT (ADR 0093)
+- A deposit snapshots its VAT split at create, and each deducted deposit is one negative Fortnox row per VAT rate on the customer advances account, priced excl. VAT, replacing the single 0 % row above ([ADR 0093](0093-vat-on-advance-payments.md)).

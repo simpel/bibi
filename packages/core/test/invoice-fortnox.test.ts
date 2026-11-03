@@ -52,10 +52,11 @@ describe("invoices in Fortnox (ADR 0090)", () => {
     });
     expect(sent).toMatchObject({ provider: "FORTNOX", providerReference: "1" });
     expect(fake.raised).toHaveLength(1);
+    // The deposit carries the ticket's 12 % (ADR 0093): 1 500 kr = 1 339.29 + 160.71 VAT.
     expect(fake.raised[0]?.rows.at(-1)).toMatchObject({
       description: "Advance",
-      price: -1500,
-      vatPercent: 0,
+      price: -1339.29,
+      vatPercent: 12,
     });
 
     fake.payments = [

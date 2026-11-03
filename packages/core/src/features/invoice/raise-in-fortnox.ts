@@ -23,7 +23,7 @@ async function loadForFortnox({ context, invoiceId }: RaiseInFortnoxInput) {
         orderBy: [{ position: "asc" }, { id: "asc" }],
         include: { item: { select: { entityTypeId: true } } },
       },
-      deductions: { include: { deposit: { select: { description: true } } } },
+      deductions: { include: { deposit: { select: { description: true, vatRows: true } } } },
       ticket: { select: { reference: true, customer: { select: { name: true, email: true } } } },
     },
   });

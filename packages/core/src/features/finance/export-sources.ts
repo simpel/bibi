@@ -15,6 +15,7 @@ const PAYMENT_SELECT = {
   applicationFeeMinor: true,
   paidAt: true,
   depositId: true,
+  deposit: { select: { vatRows: true } },
   ticket: TICKET,
   invoice: { select: { number: true } },
   quote: { select: { lines: LINES } },
@@ -29,7 +30,7 @@ const INVOICE_SELECT = {
   totalInclVatMinor: true,
   ticket: TICKET,
   lines: LINES,
-  deductions: { select: { amountMinor: true } },
+  deductions: { select: { amountMinor: true, deposit: { select: { vatRows: true } } } },
 } as const;
 
 type Range = { start: Date; end: Date };

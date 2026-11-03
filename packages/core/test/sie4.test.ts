@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type { AccountMap } from "../src/accounting/sie4/accounts";
 import { decodeCp437, encodeCp437 } from "../src/accounting/sie4/cp437";
 import type { AccountingEvent } from "../src/accounting/sie4/events";
 import type { SieFile } from "../src/accounting/sie4/types";
@@ -7,48 +6,30 @@ import { buildVouchers } from "../src/accounting/sie4/vouchers";
 import { amount, writeSie, writeSieText } from "../src/accounting/sie4/write";
 import { errorCode, unwrap } from "./helpers";
 
-const ACCOUNTS: AccountMap = {
-  receivable: "1510",
-  clearing: "1580",
-  advances: "2420",
-  fees: "6570",
-  rounding: "3740",
-  vatOutput: { 25: "2611", 12: "2621", 6: "2631" },
-};
-
-const base = { date: "2026-10-05", ticketReference: 1045 };
-const lunch = { account: "3001", vatRatePercent: 12, exclVatMinor: 500_000, vatMinor: 60_000 };
-const room = { account: "3010", vatRatePercent: 25, exclVatMinor: 200_000, vatMinor: 50_000 };
-
-const invoice: AccountingEvent = {
-  ...base,
-  kind: "INVOICE_SENT",
-  invoiceNumber: 12,
-  totalInclVatMinor: 810_000,
-  parts: [lunch, room],
-  depositOffsetMinor: 100_000,
-};
-
-const sumOf = ({ minors }: { minors: number[] }) => minors.reduce((a, b) => a + b, 0);
-const build = ({ events }: { events: AccountingEvent[] }) =>
-  unwrap({ result: buildVouchers({ accounts: ACCOUNTS, events }) });
+import {
+  ACCOUNTS,
+  accountsOf,
+  base,
+  build,
+  depositVat,
+  invoice,
+  lunch,
+  room,
+  sumOf,
+} from "./sie4-helpers";
 
 describe("SIE 4 vouchers (ADR 0077)", () => {
-  it("posts an invoice: receivables, revenue per account, VAT per rate, deposit offset", () => {
+  it("posts an invoice: the sale, and each deposit's advance and VAT reversed (ADR 0093)", () => {
     const [voucher] = build({ events: [invoice] });
-    const by = Object.fromEntries(
-      (voucher?.transactions ?? []).map((t) => [
-        `${t.account}${t.amountMinor > 0 ? "D" : "C"}`,
-        t.amountMinor,
-      ]),
-    );
-    expect(by).toEqual({
+    expect(accountsOf({ transactions: voucher?.transactions ?? [] })).toEqual({
       "1510D": 810_000,
       "3001C": -500_000,
       "2621C": -60_000,
       "3010C": -200_000,
       "2611C": -50_000,
-      "2420D": 100_000,
+      "2420D": 85_200,
+      "2621D": 6_000,
+      "2611D": 8_800,
       "1510C": -100_000,
     });
     expect(voucher?.text).toBe("Invoice 12, ticket 1045");
@@ -61,7 +42,12 @@ describe("SIE 4 vouchers (ADR 0077)", () => {
       { ...invoice, kind: "INVOICE_VOID", date: "2026-10-09" },
       { ...base, kind: "PAYMENT", amountMinor: 405_000, settles: quotePart },
       { ...base, kind: "REFUND", amountMinor: 405_000, settles: quotePart },
-      { ...base, kind: "PAYMENT", amountMinor: 100_000, settles: { kind: "DEPOSIT" } },
+      {
+        ...base,
+        kind: "PAYMENT",
+        amountMinor: 100_000,
+        settles: { kind: "DEPOSIT", ...depositVat },
+      },
       { ...base, kind: "FEE", amountMinor: 1_215 },
     ];
     const vouchers = build({ events });

@@ -70,3 +70,6 @@ Supersedes decision 6 and the rejected "Regenerate by period" alternative, at th
 
 ## Addendum 2026-11-02 – Fortnox connection (ADR 0087)
 - The first step of a direct integration exists: an organization can connect Fortnox ([ADR 0087](0087-fortnox-connection.md)). Nothing is posted yet; the SIE export stays the way vouchers reach accounting.
+
+## Addendum 2026-11-03 – VAT on advance payments (ADR 0093)
+- "VAT on advance payments for deposits" is covered by [ADR 0093](0093-vat-on-advance-payments.md): a deposit payment books output VAT from the deposit's own split, and the invoice voucher reverses it for each deducted deposit.

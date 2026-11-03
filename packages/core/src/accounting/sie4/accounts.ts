@@ -17,10 +17,8 @@ export type AccountMap = {
   vatOutput: Readonly<Record<number, string>>;
 };
 
+/** One VAT rate of an amount: the part excluding VAT and the VAT on it. */
+export type VatPart = { vatRatePercent: number; exclVatMinor: number; vatMinor: number };
+
 /** One revenue component of a sale: its revenue account, VAT rate and amount excluding VAT. */
-export type RevenuePart = {
-  account: string;
-  vatRatePercent: number;
-  exclVatMinor: number;
-  vatMinor: number;
-};
+export type RevenuePart = VatPart & { account: string };
