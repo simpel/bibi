@@ -1,9 +1,11 @@
 import {
   countUnreadNotifications,
+  deleteNotifications,
   listNotifications,
   markAllNotificationsRead,
   markNotificationsRead,
   markNotificationsUnread,
+  NotificationDeleteOutputSchema,
   type NotificationDto,
   NotificationMarkOutputSchema,
   NotificationSchema,
@@ -53,3 +55,9 @@ fieldFromOperation({
 mutationFromOperation({ operation: markNotificationsRead, type: NotificationMarkRef });
 mutationFromOperation({ operation: markNotificationsUnread, type: NotificationMarkRef });
 mutationFromOperation({ operation: markAllNotificationsRead, type: NotificationMarkRef });
+const NotificationDeleteRef = objectFromSchema<z.infer<typeof NotificationDeleteOutputSchema>>({
+  name: "NotificationDeleteResult",
+  schema: NotificationDeleteOutputSchema,
+  description: "How many notifications were deleted, and the caller's unread count afterwards.",
+});
+mutationFromOperation({ operation: deleteNotifications, type: NotificationDeleteRef });

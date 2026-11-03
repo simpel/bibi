@@ -5,6 +5,7 @@ import {
   notificationOperations,
 } from "./features/notification/operations";
 import {
+  deleteNotifications,
   markAllNotificationsRead,
   markNotificationsRead,
   markNotificationsUnread,
@@ -48,6 +49,7 @@ export const selfOperations = [
 
 export {
   countUnreadNotifications,
+  deleteNotifications,
   fileOperations,
   getFile,
   getProfile,

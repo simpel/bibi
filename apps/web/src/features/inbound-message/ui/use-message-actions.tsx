@@ -27,8 +27,10 @@ export function useMessageActions({
   const { setRead } = useReadMessage();
   const label = read ? t("markUnread") : t("markRead");
   const more: HeaderAction[] = [
-    ...(canWrite ? [{ id: "read", label, onSelect: () => setRead({ id, read: !read }) }] : []),
-    ...(canDelete ? [{ id: "delete", label: t("delete"), onSelect: onDelete }] : []),
+    ...(canWrite
+      ? [{ id: "read", label, onSelect: () => setRead({ ids: [id], read: !read }) }]
+      : []),
+    ...(canDelete ? [{ id: "delete", label: common("delete"), onSelect: onDelete }] : []),
   ];
   const open = () => router.push(ticketFromMessageRoute({ id }));
   return [

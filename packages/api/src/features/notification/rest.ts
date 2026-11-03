@@ -14,6 +14,7 @@ export const notificationRoutes = [
     method: "POST",
     path: "/notifications/unread",
   }),
+  restRoute({ operation: "notification.delete", method: "POST", path: "/notifications/delete" }),
   restRoute({
     operation: "notification.markAllRead",
     method: "POST",

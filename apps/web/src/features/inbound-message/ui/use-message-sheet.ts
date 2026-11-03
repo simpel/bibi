@@ -9,7 +9,7 @@ import { useReadMessage } from "./use-read-message";
  * reading, ADR 0085): the row is pending (`openingId`) while the server action runs, then the
  * page reads again, the row turns read in place and the sheet opens. Nothing moves.
  */
-export function useMessageSheet({ onDelete }: { onDelete: (row: InboxRow) => void }) {
+export function useMessageSheet({ onDelete }: { onDelete: (input: { row: InboxRow }) => void }) {
   const router = useRouter();
   const { setRead } = useReadMessage();
   const [selected, setSelected] = useState<InboxRow | null>(null);
@@ -26,11 +26,11 @@ export function useMessageSheet({ onDelete }: { onDelete: (row: InboxRow) => voi
   const close = () => setSelected(null);
   const markUnread = ({ row }: { row: InboxRow }) => {
     setSelected(null);
-    setRead({ id: row.id, read: false });
+    setRead({ ids: [row.id], read: false });
   };
   const remove = ({ row }: { row: InboxRow }) => {
     setSelected(null);
-    onDelete(row);
+    onDelete({ row });
   };
   return { selected, openingId, select, close, markUnread, remove };
 }

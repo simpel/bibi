@@ -11,6 +11,8 @@ export const SELF_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   notification_markRead: "read state bookkeeping (ADR 0094); the count is read out, not a card",
   notification_markUnread: "read state bookkeeping (ADR 0094); the count is read out, not a card",
   notification_markAllRead: "read state bookkeeping (ADR 0094); the count is read out, not a card",
+  notification_delete:
+    "removes the caller's own alerts (ADR 0094); the count is read out, not a card",
   notificationPreference_list: "notification choices are set on /profile (ADR 0094); JSON",
   notificationPreference_set: "notification choices are set on /profile (ADR 0094); JSON",
   userSettings_get: "date and clock formats are set on /profile, not a tool card",

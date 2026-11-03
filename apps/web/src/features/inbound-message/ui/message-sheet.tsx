@@ -28,18 +28,13 @@ export type MessageSheetProps = InboxAbilities & {
 type ActionsProps = Omit<MessageSheetProps, "row" | "onClose"> & { row: InboxRow };
 
 /** New ticket from it, its full page, mark unread and delete. */
-function MessageSheetActions({
-  row,
-  canWrite,
-  canDelete,
-  canCreateTicket,
-  onMarkUnread,
-  onDelete,
-}: ActionsProps) {
+function MessageSheetActions(props: ActionsProps) {
+  const { row, canWrite, canDelete, onMarkUnread, onDelete } = props;
   const t = useTranslations("inbox");
+  const common = useTranslations("common");
   return (
     <SheetFooter>
-      {canCreateTicket ? (
+      {props.canCreateTicket ? (
         <Button asChild>
           <Link href={ticketFromMessageRoute({ id: row.id })}>
             <PlusIcon />
@@ -56,13 +51,13 @@ function MessageSheetActions({
       {canWrite ? (
         <Button variant="outline" onClick={() => onMarkUnread({ row })}>
           <MailIcon />
-          {t("markUnread")}
+          {common("markUnread")}
         </Button>
       ) : null}
       {canDelete ? (
         <Button variant="outline" className="text-destructive" onClick={() => onDelete({ row })}>
           <Trash2Icon />
-          {t("delete")}
+          {common("delete")}
         </Button>
       ) : null}
     </SheetFooter>

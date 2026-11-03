@@ -1,95 +1,23 @@
 "use client";
 
 import type { NotificationDto } from "@bibi/core/schemas";
-import { Button, cn, type SortingState } from "@bibi/ui";
-import { MailCheckIcon, MailIcon, RefreshCwIcon } from "lucide-react";
+import { cn } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { useDataTablePaginationLabels } from "@/lib/use-data-table-pagination-labels";
 import { useQueryNavigation } from "@/lib/use-query-navigation";
-import { NOTIFICATION_PAGE_SIZES, type NotificationListParams } from "../lib/list-params";
+import type { NotificationListParams } from "../lib/list-params";
+import { DeleteNotificationsDialog } from "./delete-notifications-dialog";
 import { NotificationRowMenu } from "./notification-row-menu";
 import { NotificationSheet } from "./notification-sheet";
-import { useMarkNotifications } from "./use-mark-notifications";
-import { useNotificationColumns } from "./use-notification-columns";
+import { BulkActions, StaleBar } from "./notification-table-bars";
 import { useNotificationRows } from "./use-notification-rows";
-import { useNotificationSheet } from "./use-notification-sheet";
+import { sortPatch, usePagination, useTableParts } from "./use-notification-table";
 
 export type NotificationTableProps = {
   notifications: NotificationDto[];
   total: number;
   view: NotificationListParams;
 };
-
-/** The URL patch for a new sort: none clears it back to the newest first. */
-const sortPatch = ({ sorting }: { sorting: SortingState }) => {
-  const [next] = sorting;
-  return next ? { sort: next.id, dir: next.desc ? "desc" : "asc" } : { sort: null, dir: null };
-};
-
-type Mark = ReturnType<typeof useMarkNotifications>["mark"];
-type BulkProps = { rows: NotificationDto[]; mark: Mark };
-
-/** Mark the selected rows read or unread. */
-function BulkActions({ rows, mark }: BulkProps) {
-  const t = useTranslations("notifications");
-  const ids = rows.map((row) => row.id);
-  return (
-    <>
-      <Button size="sm" variant="outline" onClick={() => mark({ ids, read: true })}>
-        <MailCheckIcon />
-        {t("markRead")}
-      </Button>
-      <Button size="sm" variant="outline" onClick={() => mark({ ids, read: false })}>
-        <MailIcon />
-        {t("markUnread")}
-      </Button>
-    </>
-  );
-}
-
-/** Shown when the list changed elsewhere; the rows stay put until the member asks. */
-function StaleBar({ onShow, pending }: { onShow: () => void; pending: boolean }) {
-  const t = useTranslations("notifications");
-  return (
-    <div className="flex items-center justify-between gap-2 rounded-md border bg-muted/50 px-3 py-2 text-sm">
-      <span>{t("listChanged")}</span>
-      <Button size="sm" variant="outline" disabled={pending} onClick={onShow}>
-        <RefreshCwIcon />
-        {t("showLatest")}
-      </Button>
-    </div>
-  );
-}
-
-function usePagination({ total, view }: Pick<NotificationTableProps, "total" | "view">) {
-  const t = useTranslations("notifications");
-  const { navigate } = useQueryNavigation();
-  const labels = useDataTablePaginationLabels({ total: (count) => t("listTotal", { count }) });
-  return {
-    pageIndex: view.page - 1,
-    pageSize: view.pageSize,
-    pageCount: Math.ceil(total / view.pageSize),
-    totalCount: total,
-    pageSizeOptions: NOTIFICATION_PAGE_SIZES,
-    labels,
-    onPaginationChange: ({ pageIndex, pageSize }: { pageIndex: number; pageSize: number }) =>
-      navigate({ patch: { page: String(pageIndex + 1), pageSize: String(pageSize) } }),
-  };
-}
-
-/** The caller's marks, applied in place, the sheet built on them, and the columns. */
-function useTableParts() {
-  const marks = useMarkNotifications();
-  const sheet = useNotificationSheet({ mark: marks.mark });
-  const columns = useNotificationColumns({
-    onSelect: sheet.select,
-    openingId: sheet.openingId,
-    onToggleRead: ({ notification }) =>
-      marks.mark({ ids: [notification.id], read: notification.readAt === null }),
-  });
-  return { ...marks, sheet, columns };
-}
 
 /**
  * The caller's notifications, paged, sorted and filtered on the server (ADR 0094); the URL holds
@@ -100,7 +28,8 @@ export function NotificationTable({ notifications, total, view }: NotificationTa
   const t = useTranslations("notifications");
   const { navigate, pending } = useQueryNavigation();
   const rows = useNotificationRows({ notifications, total, params: view });
-  const { mark, openOne, pending: marking, sheet, columns } = useTableParts();
+  const parts = useTableParts();
+  const { mark, pending: marking, sheet, columns, row, deleting, setDeleting } = parts;
   const pagination = usePagination({ total: rows.total, view });
   return (
     <div className="grid gap-3">
@@ -114,7 +43,7 @@ export function NotificationTable({ notifications, total, view }: NotificationTa
         rowClassName={(notification) => (notification.readAt === null ? "bg-card" : "bg-muted/40")}
         onRowClick={(notification) => void sheet.select({ notification })}
         rowMenu={(notification) => (
-          <NotificationRowMenu {...{ notification, mark, openOne }} disabled={marking} />
+          <NotificationRowMenu notification={notification} {...row} disabled={marking} />
         )}
         emptyText={t("noMatches")}
         pagination={pagination}
@@ -122,13 +51,12 @@ export function NotificationTable({ notifications, total, view }: NotificationTa
         sorting={[{ id: view.sort, desc: view.direction === "desc" }]}
         onSortingChange={(sorting) => navigate({ patch: sortPatch({ sorting }) })}
         selectable
-        bulkActions={(selected) => <BulkActions rows={selected} mark={mark} />}
+        bulkActions={(selected) => (
+          <BulkActions rows={selected} mark={mark} onDelete={setDeleting} />
+        )}
       />
-      <NotificationSheet
-        notification={sheet.selected}
-        onClose={sheet.close}
-        onMarkUnread={sheet.markUnread}
-      />
+      <NotificationSheet {...parts.sheetProps} />
+      <DeleteNotificationsDialog ids={deleting} onClose={() => setDeleting(null)} />
     </div>
   );
 }

@@ -6,4 +6,5 @@ export const notificationMcpTools = [
   mcpTool({ operation: "notification.markRead", idempotent: true }),
   mcpTool({ operation: "notification.markUnread", idempotent: true }),
   mcpTool({ operation: "notification.markAllRead", idempotent: true }),
+  mcpTool({ operation: "notification.delete", idempotent: true }),
 ];

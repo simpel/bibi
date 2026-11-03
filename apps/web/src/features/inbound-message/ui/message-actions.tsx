@@ -43,7 +43,7 @@ export function MessageActions({ message, tickets, ...abilities }: MessageAction
         onOpenChange={setAttaching}
       />
       <DeleteMessageDialog
-        message={deleting ? message : null}
+        messages={deleting ? [message] : null}
         onClose={() => setDeleting(false)}
         onDeleted={() => router.push(INBOX_ROUTE)}
       />

@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  deleteNotifications,
   listNotifications,
   markAllNotificationsRead,
   markNotificationsRead,
@@ -54,6 +55,13 @@ export async function markNotificationsUnreadAction({
   ids,
 }: NotificationIdsActionInput): Promise<MarkResult> {
   const result = await runOperation({ operation: markNotificationsUnread, input: { ids } });
+  return toActionResult({ result });
+}
+
+export async function deleteNotificationsAction({
+  ids,
+}: NotificationIdsActionInput): Promise<ActionResult<{ deleted: number; unread: number }>> {
+  const result = await runOperation({ operation: deleteNotifications, input: { ids } });
   return toActionResult({ result });
 }
 

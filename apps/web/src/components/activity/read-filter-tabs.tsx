@@ -1,8 +1,6 @@
 import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/navigation";
-import { ROUTES } from "@/lib/routes";
-import type { NotificationListParams } from "../lib/list-params";
 
 const SHORTCUTS = [
   { key: "all", read: undefined },
@@ -10,12 +8,16 @@ const SHORTCUTS = [
   { key: "read", read: "read" },
 ] as const;
 
-export type NotificationReadFiltersProps = Pick<NotificationListParams, "read" | "kind" | "q">;
+export type ReadFilterTabsProps = {
+  pathname: string;
+  read: "unread" | "read" | undefined;
+  /** The other filters (search, kind, channel) kept on every link. */
+  keep: Record<string, string>;
+};
 
-/** All, Unread and Read as links that keep the search and kind; the active one is lit. */
-export async function NotificationReadFilters({ read, kind, q }: NotificationReadFiltersProps) {
-  const t = await getTranslations("notifications.filter");
-  const kept = { ...(kind ? { kind } : {}), ...(q ? { q } : {}) };
+/** All, Unread and Read as links that keep the other filters; the active one is lit. */
+export async function ReadFilterTabs({ pathname, read, keep }: ReadFilterTabsProps) {
+  const t = await getTranslations("common.readFilter");
   return (
     <nav className="flex flex-wrap gap-2" aria-label={t("label")}>
       {SHORTCUTS.map((shortcut) => (
@@ -27,8 +29,8 @@ export async function NotificationReadFilters({ read, kind, q }: NotificationRea
         >
           <Link
             href={{
-              pathname: ROUTES.notifications,
-              query: { ...kept, ...(shortcut.read ? { read: shortcut.read } : {}) },
+              pathname,
+              query: { ...keep, ...(shortcut.read ? { read: shortcut.read } : {}) },
             }}
           >
             {t(shortcut.key)}

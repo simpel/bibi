@@ -51,6 +51,13 @@ export const InboundMessageListInputSchema = z.object({
     .optional()
     .describe("Only read (true) or only unread (false) messages; without it both"),
   channel: InboundChannelSchema.optional().describe("Only messages of this channel"),
+  q: z
+    .string()
+    .trim()
+    .min(1)
+    .max(200)
+    .optional()
+    .describe("Search the subject and the sender's name and email (case-insensitive)"),
 });
 
 export const InboundMessageListOutputSchema = z.object({

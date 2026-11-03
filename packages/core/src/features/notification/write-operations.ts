@@ -4,6 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { requireUser } from "../../shared/require-user";
 import { nowOf } from "../../time/now";
 import {
+  NotificationDeleteOutputSchema,
   NotificationIdsInputSchema,
   NotificationMarkOutputSchema,
   NotificationNoInputSchema,
@@ -89,8 +90,30 @@ export const markAllNotificationsRead = defineOperation({
   },
 });
 
+export const deleteNotifications = defineOperation({
+  name: "notification.delete",
+  kind: "command",
+  description:
+    "Delete some of the caller's own notifications for good (ADR 0094); they are the caller's " +
+    "own alerts, not records. Ids of other members' notifications are skipped like unknown " +
+    "ones; `deleted` says how many went.",
+  input: NotificationIdsInputSchema,
+  output: NotificationDeleteOutputSchema,
+  permission: "self:write",
+  handler: async ({ input: { ids }, context }) => {
+    const user = requireUser({ context });
+    if (!user.ok) return user;
+    const where = { recipientUserId: user.value, id: { in: ids } };
+    const { count } = await context.db.notification.deleteMany({ where });
+    context.recordChange({ entityId: user.value, before: { ids }, after: { deleted: count } });
+    const unread = await countUnread({ context, recipientUserId: user.value });
+    return ok({ value: { deleted: count, unread } });
+  },
+});
+
 export const notificationWriteOperations = [
   markNotificationsRead,
   markNotificationsUnread,
   markAllNotificationsRead,
+  deleteNotifications,
 ];

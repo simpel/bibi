@@ -1,51 +1,41 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { DeleteMessageDialog } from "./delete-message-dialog";
+import { InboxBulkActions } from "./inbox-bulk-actions";
 import type { InboxRow } from "./inbox-row";
-import { type InboxAbilities, InboxRowActions, InboxRowMenu } from "./inbox-row-actions";
+import { type InboxAbilities, InboxRowMenu } from "./inbox-row-actions";
 import { MessageSheet } from "./message-sheet";
 import { useInboxColumns } from "./use-inbox-columns";
-import { useMessageSheet } from "./use-message-sheet";
-import { useReadMessage } from "./use-read-message";
+import { useInboxTable } from "./use-inbox-table";
 
-export type InboxTableProps = InboxAbilities & {
-  /** Persisted column layout. */
-  tableId: string;
-  rows: InboxRow[];
-};
+export type InboxTableProps = InboxAbilities & { rows: InboxRow[] };
 
 /**
- * Inbox messages of every channel that have no ticket yet (ADR 0085), with both row menus.
- * Clicking a row or its subject opens the message in a sheet, which marks it read.
+ * Inbox messages of every channel that have no ticket yet (ADR 0085), in the same table as the
+ * notifications: read and unread together, icons for read state and delete, the right-click
+ * menu, and bulk actions. A row opens its sheet, marking it read with the row pending meanwhile.
  */
-export function InboxTable({ tableId, rows, ...abilities }: InboxTableProps) {
+export function InboxTable({ rows, ...abilities }: InboxTableProps) {
   const t = useTranslations("inbox");
-  const [deleting, setDeleting] = useState<InboxRow | null>(null);
-  const sheet = useMessageSheet({ onDelete: setDeleting });
-  const { setRead } = useReadMessage();
-  const actions = { ...abilities, onDelete: setDeleting };
-  const columns = useInboxColumns({
-    renderActions: (row) => <InboxRowActions row={row} {...actions} />,
-    onSelect: sheet.select,
-    openingId: sheet.openingId,
-    ...(abilities.canWrite
-      ? { onToggleRead: ({ row }: { row: InboxRow }) => setRead({ id: row.id, read: !row.read }) }
-      : {}),
-  });
+  const { sheet, handlers, bulk, deleting, closeDelete } = useInboxTable(abilities);
+  const columns = useInboxColumns({ ...handlers, openingId: sheet.openingId });
   return (
     <>
       <PersistedDataTable
-        tableId={tableId}
+        tableId="inbox"
         columns={columns}
         data={rows}
         getRowId={(row) => row.id}
         onRowClick={(row) => void sheet.select({ row })}
         rowClassName={(row) => (row.read ? "bg-muted/40" : "bg-card")}
-        rowMenu={(row) => <InboxRowMenu row={row} {...actions} />}
+        rowMenu={(row) => (
+          <InboxRowMenu row={row} {...handlers} canCreateTicket={abilities.canCreateTicket} />
+        )}
         emptyText={t("empty")}
+        selectable
+        bulkActions={(selected) => <InboxBulkActions rows={selected} {...bulk} />}
       />
       <MessageSheet
         row={sheet.selected}
@@ -54,7 +44,7 @@ export function InboxTable({ tableId, rows, ...abilities }: InboxTableProps) {
         onDelete={sheet.remove}
         {...abilities}
       />
-      <DeleteMessageDialog message={deleting} onClose={() => setDeleting(null)} />
+      <DeleteMessageDialog messages={deleting} onClose={closeDelete} />
     </>
   );
 }

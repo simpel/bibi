@@ -172,7 +172,17 @@
         "last12Months": "Last 12 months",
         "next28Days": "Next 28 days"
       }
-    }
+    },
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "readFilter": {
+      "label": "Show",
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read"
+    },
+    "deleting": "Deleting…",
+    "open": "Open"
   },
   "auth": {
     "signIn": "Sign in",
@@ -2711,7 +2721,8 @@
         "accountingExport_create": "Create SIE export",
         "inboundMessage_markRead": "Mark message as read",
         "inboundMessage_markUnread": "Mark message as unread",
-        "inboundMessage_delete": "Delete message"
+        "inboundMessage_delete": "Delete message",
+        "notification_delete": "Delete notifications"
       },
       "setup": {
         "title": "Create my first version",
@@ -3850,18 +3861,26 @@
     "fieldsTitle": "What the sender filled in",
     "markRead": "Mark as read",
     "markUnread": "Mark as unread",
-    "markedRead": "Marked as read",
-    "markedUnread": "Marked as unread",
-    "delete": "Delete",
+    "markedRead": "{count, plural, one {Marked as read} other {# marked as read}}",
+    "markedUnread": "{count, plural, one {Marked as unread} other {# marked as unread}}",
     "deleting": "Deleting message…",
-    "deleted": "Message deleted",
+    "deleted": "{count, plural, one {Message deleted} other {# messages deleted}}",
     "deleteConfirm": "Delete “{subject}”? It leaves the inbox for everyone in the team.",
     "arrivedTitle": "New message in the inbox",
     "arrivedOpen": "Open",
     "sheet": {
       "openPage": "Open full page"
     },
-    "unread": "Unread"
+    "unread": "Unread",
+    "deleteTitle": "Delete {count, plural, one {message} other {# messages}}",
+    "deleteConfirmMany": "The {count} messages leave the inbox for everyone in the team.",
+    "search": "Search by subject or sender",
+    "searchSubmit": "Search",
+    "searching": "Searching…",
+    "filter": {
+      "channel": "Channel",
+      "allChannels": "All channels"
+    }
   },
   "member": {
     "singular": "Member",
@@ -4884,11 +4903,7 @@
     "read": "Read",
     "filter": {
       "kind": "Kind",
-      "allKinds": "All kinds",
-      "label": "Show",
-      "all": "All",
-      "unread": "Unread",
-      "read": "Read"
+      "allKinds": "All kinds"
     },
     "search": "Search by ticket title or number",
     "searchSubmit": "Search",
@@ -4932,6 +4947,9 @@
       "openWorkOrder": "Open work order"
     },
     "empty": "No notifications yet",
-    "emptyDescription": "You are told here when you are assigned a ticket, sent a work order, or when a ticket you answer for or follow changes status or gets paid."
+    "emptyDescription": "You are told here when you are assigned a ticket, sent a work order, or when a ticket you answer for or follow changes status or gets paid.",
+    "deleteTitle": "Delete {count, plural, one {notification} other {# notifications}}",
+    "deleteConfirm": "{count, plural, one {The notification is} other {The notifications are}} deleted for good. This only affects your own notifications.",
+    "deleted": "{count, plural, one {Notification deleted} other {# notifications deleted}}"
   }
 }

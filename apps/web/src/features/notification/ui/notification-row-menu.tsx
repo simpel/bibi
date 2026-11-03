@@ -1,43 +1,42 @@
 import type { NotificationDto } from "@bibi/core/schemas";
 import { ContextMenuItem, ContextMenuSeparator } from "@bibi/ui";
-import { MailCheckIcon, MailIcon } from "lucide-react";
+import { MailCheckIcon, MailIcon, PanelRightOpenIcon, Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/lib/navigation";
-import { notificationHref } from "../lib/notification-href";
-import type { useMarkNotifications } from "./use-mark-notifications";
 
-type Marks = ReturnType<typeof useMarkNotifications>;
+type OnNotification = (input: { notification: NotificationDto }) => void;
 
 export type NotificationRowMenuProps = {
   notification: NotificationDto;
-  mark: Marks["mark"];
-  openOne: Marks["openOne"];
+  onSelect: OnNotification;
+  onToggleRead: OnNotification;
+  onDelete: OnNotification;
   disabled: boolean;
 };
 
-/** A row's right-click menu: open what it is about, and mark it read or unread. */
+/** A row's right-click menu, the same as the inbox's: open, mark read or unread, delete. */
 export function NotificationRowMenu({
   notification,
-  mark,
-  openOne,
+  onSelect,
+  onToggleRead,
+  onDelete,
   disabled,
 }: NotificationRowMenuProps) {
-  const t = useTranslations("notifications");
+  const common = useTranslations("common");
   const read = notification.readAt !== null;
   return (
     <>
-      <ContextMenuItem asChild>
-        <Link href={notificationHref({ notification })} onClick={() => openOne({ notification })}>
-          {t("open")}
-        </Link>
+      <ContextMenuItem onSelect={() => onSelect({ notification })}>
+        <PanelRightOpenIcon />
+        {common("open")}
       </ContextMenuItem>
       <ContextMenuSeparator />
-      <ContextMenuItem
-        disabled={disabled}
-        onSelect={() => mark({ ids: [notification.id], read: !read })}
-      >
+      <ContextMenuItem disabled={disabled} onSelect={() => onToggleRead({ notification })}>
         {read ? <MailIcon /> : <MailCheckIcon />}
-        {read ? t("markUnread") : t("markRead")}
+        {read ? common("markUnread") : common("markRead")}
+      </ContextMenuItem>
+      <ContextMenuItem destructive onSelect={() => onDelete({ notification })}>
+        <Trash2Icon />
+        {common("delete")}
       </ContextMenuItem>
     </>
   );

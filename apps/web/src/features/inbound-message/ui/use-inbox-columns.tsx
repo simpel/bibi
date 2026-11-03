@@ -1,96 +1,73 @@
-import { actionsColumn, Button, type ColumnDef } from "@bibi/ui";
-import { MailCheckIcon, MailIcon } from "lucide-react";
+import type { ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
-import { RelativeTime } from "@/components/relative-time";
+import { ActivityTimeCell } from "@/components/activity/activity-time-cell";
+import { ActivityTitleCell } from "@/components/activity/activity-title-cell";
 import type { InboxRow } from "./inbox-row";
-import { InboxTitleCell } from "./inbox-title-cell";
+import type { InboxRowHandlers } from "./inbox-row-actions";
 
-type Translate = ReturnType<typeof useTranslations<"inbox">>;
-type OnRow = (input: { row: InboxRow }) => void;
-
-export type UseInboxColumnsInput = {
-  renderActions?: (row: InboxRow) => ReactNode;
-  /** Opens the message's sheet. */
-  onSelect: OnRow;
-  /** The hover action: read becomes unread and back (left out without `inbox:write`). */
-  onToggleRead?: OnRow;
+export type UseInboxColumnsInput = InboxRowHandlers & {
   /** The row being marked read before its sheet opens; it shimmers meanwhile. */
   openingId: string | null;
 };
 
-type ReceivedInput = { t: Translate; onToggleRead: OnRow | undefined };
+type Column = ColumnDef<InboxRow>;
+type ColumnInput = UseInboxColumnsInput & { t: ReturnType<typeof useTranslations<"inbox">> };
 
-/** When it came in, and on hover mark read or unread in its place. */
-const receivedColumn = ({ t, onToggleRead }: ReceivedInput): ColumnDef<InboxRow> => ({
+/** The subject, opening its sheet. */
+const subjectColumn = ({ t, onSelect, openingId }: ColumnInput): Column => ({
+  id: "subject",
+  header: t("columns.subject"),
+  accessorFn: (row) => row.subject ?? "",
+  cell: ({ row: { original: row } }) => (
+    <ActivityTitleCell
+      title={row.subject ?? t("noSubject")}
+      unread={!row.read}
+      unreadLabel={t("unread")}
+      pending={openingId === row.id}
+      onOpen={() => onSelect({ row })}
+    />
+  ),
+});
+
+/** When it came in, then mark read or unread and delete. */
+const receivedColumn = ({ t, onToggleRead, onDelete }: ColumnInput): Column => ({
   id: "received",
   header: t("columns.received"),
   accessorFn: (row) => row.receivedAt,
   cell: ({ row: { original: row } }) => (
-    <div className="flex justify-end text-xs text-muted-foreground">
-      <span
-        className={
-          onToggleRead ? "group-hover/row:hidden group-focus-within/row:hidden" : undefined
-        }
-      >
-        <RelativeTime instant={row.receivedAt} />
-      </span>
-      {onToggleRead ? (
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={row.read ? t("markUnread") : t("markRead")}
-          title={row.read ? t("markUnread") : t("markRead")}
-          className="hidden size-7 group-hover/row:inline-flex group-focus-within/row:inline-flex"
-          onClick={(event) => {
-            event.stopPropagation();
-            onToggleRead({ row });
-          }}
-        >
-          {row.read ? <MailIcon /> : <MailCheckIcon />}
-        </Button>
-      ) : null}
-    </div>
+    <ActivityTimeCell
+      instant={row.receivedAt}
+      read={row.read}
+      {...(onToggleRead ? { onToggleRead: () => onToggleRead({ row }) } : {})}
+      {...(onDelete ? { onDelete: () => onDelete({ row }) } : {})}
+    />
   ),
 });
 
 /**
- * Inbox style (ADR 0040, 0085): the sender over the subject (opens its sheet), the channel as the
- * reason, when it came in (mark read or unread in its place on hover), then the row actions.
+ * The subject (opens its sheet), sender, channel and when, with mark read or unread and delete
+ * as icons: the same as the notifications table (ADR 0040, 0085).
  */
 export function useInboxColumns({
-  renderActions,
   onSelect,
   onToggleRead,
+  onDelete,
   openingId,
-}: UseInboxColumnsInput): ColumnDef<InboxRow>[] {
+}: UseInboxColumnsInput): Column[] {
   const t = useTranslations("inbox");
-  const common = useTranslations("common");
-  const actions: ColumnDef<InboxRow>[] = renderActions
-    ? [actionsColumn<InboxRow>({ label: common("actions"), cell: renderActions })]
-    : [];
+  const columns = { onSelect, onToggleRead, onDelete, openingId, t };
   return [
+    subjectColumn(columns),
     {
-      id: "subject",
-      header: t("columns.subject"),
-      accessorFn: (row) => row.subject ?? "",
-      cell: ({ row }) => (
-        <InboxTitleCell
-          row={row.original}
-          pending={openingId === row.original.id}
-          onSelect={onSelect}
-        />
-      ),
+      id: "sender",
+      header: t("columns.sender"),
+      accessorFn: (row) => row.sender ?? t("unknownSender"),
     },
     {
       id: "channel",
       header: t("columns.channel"),
       accessorFn: (row) => t(`channels.${row.channel}`),
-      cell: ({ getValue }) => (
-        <span className="text-xs text-muted-foreground">{String(getValue())}</span>
-      ),
     },
-    receivedColumn({ t, onToggleRead }),
-    ...actions,
+    receivedColumn(columns),
   ];
 }

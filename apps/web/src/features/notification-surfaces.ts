@@ -6,6 +6,7 @@ export const NOTIFICATION_SURFACES: readonly WebSurface[] = [
   { operation: "notification.markRead", route: "/notifications" },
   { operation: "notification.markUnread", route: "/notifications" },
   { operation: "notification.markAllRead", route: "/notifications" },
+  { operation: "notification.delete", route: "/notifications" },
   {
     operation: "notification.unreadCount",
     route: "*",

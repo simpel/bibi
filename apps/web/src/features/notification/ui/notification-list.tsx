@@ -1,16 +1,17 @@
 import { listNotifications } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
+import { ReadFilterTabs } from "@/components/activity/read-filter-tabs";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { ROUTES } from "@/lib/routes";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { notificationListInput } from "../lib/list-input";
 import type { NotificationListParams } from "../lib/list-params";
 import { MarkAllReadButton } from "./mark-all-read-button";
 import { NotificationFilters } from "./notification-filters";
-import { NotificationReadFilters } from "./notification-read-filters";
 import { NotificationTable } from "./notification-table";
 
 export type NotificationListProps = { locale: Locale; params: NotificationListParams };
@@ -37,7 +38,14 @@ export async function NotificationList({ locale, params }: NotificationListProps
       ) : (
         <>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <NotificationReadFilters read={params.read} kind={params.kind} q={params.q} />
+            <ReadFilterTabs
+              pathname={ROUTES.notifications}
+              read={params.read}
+              keep={{
+                ...(params.kind ? { kind: params.kind } : {}),
+                ...(params.q ? { q: params.q } : {}),
+              }}
+            />
             <NotificationFilters q={params.q} kind={params.kind} />
           </div>
           <NotificationTable notifications={items} total={total ?? 0} view={params} />

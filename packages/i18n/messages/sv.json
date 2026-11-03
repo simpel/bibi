@@ -172,7 +172,17 @@
         "last12Months": "Senaste 12 månaderna",
         "next28Days": "Kommande 28 dagarna"
       }
-    }
+    },
+    "markRead": "Markera som läst",
+    "markUnread": "Markera som oläst",
+    "readFilter": {
+      "label": "Visa",
+      "all": "Alla",
+      "unread": "Olästa",
+      "read": "Lästa"
+    },
+    "deleting": "Tar bort…",
+    "open": "Öppna"
   },
   "auth": {
     "signIn": "Logga in",
@@ -2711,7 +2721,8 @@
         "accountingExport_create": "Skapa SIE-export",
         "inboundMessage_markRead": "Markera meddelande som läst",
         "inboundMessage_markUnread": "Markera meddelande som oläst",
-        "inboundMessage_delete": "Ta bort meddelande"
+        "inboundMessage_delete": "Ta bort meddelande",
+        "notification_delete": "Ta bort notiser"
       },
       "setup": {
         "title": "Skapa min första version",
@@ -3850,18 +3861,26 @@
     "fieldsTitle": "Det avsändaren fyllde i",
     "markRead": "Markera som läst",
     "markUnread": "Markera som oläst",
-    "markedRead": "Markerat som läst",
-    "markedUnread": "Markerat som oläst",
-    "delete": "Ta bort",
+    "markedRead": "{count, plural, one {Markerat som läst} other {# markerade som lästa}}",
+    "markedUnread": "{count, plural, one {Markerat som oläst} other {# markerade som olästa}}",
     "deleting": "Tar bort meddelandet…",
-    "deleted": "Meddelandet borttaget",
+    "deleted": "{count, plural, one {Meddelandet borttaget} other {# meddelanden borttagna}}",
     "deleteConfirm": "Ta bort ”{subject}”? Det försvinner ur inkorgen för alla i teamet.",
     "arrivedTitle": "Nytt meddelande i inkorgen",
     "arrivedOpen": "Öppna",
     "sheet": {
       "openPage": "Öppna hela sidan"
     },
-    "unread": "Oläst"
+    "unread": "Oläst",
+    "deleteTitle": "Ta bort {count, plural, one {meddelandet} other {# meddelanden}}",
+    "deleteConfirmMany": "De {count} meddelandena försvinner ur inkorgen för alla i teamet.",
+    "search": "Sök på ämne eller avsändare",
+    "searchSubmit": "Sök",
+    "searching": "Söker…",
+    "filter": {
+      "channel": "Kanal",
+      "allChannels": "Alla kanaler"
+    }
   },
   "member": {
     "singular": "Medlem",
@@ -4884,11 +4903,7 @@
     "read": "Läst",
     "filter": {
       "kind": "Typ",
-      "allKinds": "Alla typer",
-      "label": "Visa",
-      "all": "Alla",
-      "unread": "Olästa",
-      "read": "Lästa"
+      "allKinds": "Alla typer"
     },
     "search": "Sök på ärendets titel eller nummer",
     "searchSubmit": "Sök",
@@ -4932,6 +4947,9 @@
       "openWorkOrder": "Öppna ordern"
     },
     "empty": "Inga notiser än",
-    "emptyDescription": "Här får du veta när du blir ansvarig för ett ärende, får en order, eller när ett ärende du ansvarar för eller följer byter status eller blir betalt."
+    "emptyDescription": "Här får du veta när du blir ansvarig för ett ärende, får en order, eller när ett ärende du ansvarar för eller följer byter status eller blir betalt.",
+    "deleteTitle": "Ta bort {count, plural, one {notisen} other {# notiser}}",
+    "deleteConfirm": "{count, plural, one {Notisen tas} other {Notiserna tas}} bort för gott. Det gäller bara dina egna notiser.",
+    "deleted": "{count, plural, one {Notisen borttagen} other {# notiser borttagna}}"
   }
 }

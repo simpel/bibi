@@ -1,22 +1,24 @@
 import { resolveLocale } from "@bibi/i18n";
 import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
+import {
+  type InboxSearchParams,
+  readInboxParams,
+} from "@/features/inbound-message/lib/inbox-params";
 import { InboxList } from "@/features/inbound-message/ui/inbox-list";
-import { readCursor } from "@/lib/page-cursor";
 
 type InboxPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ cursor?: string | string[] }>;
+  searchParams: Promise<InboxSearchParams>;
 };
 
 export default async function InboxPage({ params, searchParams }: InboxPageProps) {
-  const { locale: rawLocale } = await params;
-  const locale = resolveLocale({ value: rawLocale });
-  const { cursor } = await searchParams;
+  const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
+  const view = readInboxParams({ params: await searchParams });
   return (
     <SimplePage>
-      <InboxList locale={locale} cursor={readCursor({ value: cursor })} />
+      <InboxList locale={locale} params={view} />
     </SimplePage>
   );
 }

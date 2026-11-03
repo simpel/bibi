@@ -33,6 +33,8 @@ describe("notification isolation (ADR 0094)", () => {
         const result = await call({ client, name, args: { ids: [row.id] } });
         expect(result.data.updated).toBe(0);
       }
+      const removed = await call({ client, name: "notification_delete", args: { ids: [row.id] } });
+      expect(removed.data.deleted).toBe(0);
       const all = await call({ client, name: "notification_markAllRead", args: {} });
       expect(all.data.updated).toBe(0);
       const count = await call({ client, name: "notification_unreadCount", args: {} });

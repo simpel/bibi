@@ -55,6 +55,11 @@ export const NotificationMarkOutputSchema = z.object({
   unread: z.number().int().describe("The caller's unread count afterwards"),
 });
 
+export const NotificationDeleteOutputSchema = z.object({
+  deleted: z.number().int().describe("How many notifications were deleted"),
+  unread: z.number().int().describe("The caller's unread count afterwards"),
+});
+
 export const NotificationUnreadCountOutputSchema = z.object({
   unread: z.number().int().describe("How many of the caller's notifications are unread"),
 });

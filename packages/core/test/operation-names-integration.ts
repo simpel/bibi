@@ -50,6 +50,7 @@ const SELF_NAMES = [
   "file.get",
   "notification.list",
   "notification.unreadCount",
+  "notification.delete",
   "notification.markRead",
   "notification.markUnread",
   "notification.markAllRead",
