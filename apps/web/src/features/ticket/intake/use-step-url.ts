@@ -36,6 +36,7 @@ export function useStepUrl({ state, dispatch, ready, hold }: UseStepUrlInput) {
   const pathname = usePathname();
   const synced = useRef(false);
   const seen = useRef(pathname);
+  // Browser history: the open step is written to the path.
   useEffect(() => {
     if (!ready || hold) return;
     const current = stepFromPathname({ pathname: window.location.pathname });
@@ -45,6 +46,7 @@ export function useStepUrl({ state, dispatch, ready, hold }: UseStepUrlInput) {
     }
     synced.current = true;
   }, [ready, hold, state.open]);
+  // Browser URL: back and forward open the step in the path.
   useEffect(() => {
     if (!ready || pathname === seen.current) return;
     seen.current = pathname;

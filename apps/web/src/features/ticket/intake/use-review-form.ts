@@ -18,6 +18,7 @@ type SyncInput = { form: ReviewForm; model: ReviewModel };
 /** Every change of the form goes into the review: the draft and the open questions follow it. */
 function useReviewSync({ form, model }: SyncInput) {
   const { dispatch, timeZone, data } = model;
+  // react-hook-form subscription: field changes go to the intake state.
   useEffect(() => {
     const sync = () => {
       const values = form.getValues();

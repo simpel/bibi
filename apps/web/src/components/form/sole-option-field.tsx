@@ -24,6 +24,7 @@ export function SoleOptionField<V extends FieldValues, O>({
 }: SoleOptionFieldProps<V, O>) {
   const { field } = useController({ control, name });
   const current = String(field.value ?? "");
+  // react-hook-form store: the only option is written into the empty field.
   useEffect(() => {
     if (current !== "") return;
     field.onChange(id);

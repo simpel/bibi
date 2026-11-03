@@ -2,19 +2,24 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import { AllocationSlots } from "./allocation-slots";
-import { useLineAllocations } from "./use-line-allocations";
+import type { LineAllocations } from "./use-line-allocations";
 
 export type LineAllocationsDialogProps = {
-  lineId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Loaded by the menu item that opens the dialog (`useLineAllocations().open`). */
+  allocations: LineAllocations;
 };
 
 /** The units held for a booking, one slot per demand of its item, each changeable (ADR 0059). */
-export function LineAllocationsDialog({ lineId, open, onOpenChange }: LineAllocationsDialogProps) {
+export function LineAllocationsDialog({
+  open,
+  onOpenChange,
+  allocations,
+}: LineAllocationsDialogProps) {
   const t = useTranslations("lineAllocation");
   const router = useRouter();
-  const { state, reload } = useLineAllocations({ lineId, open });
+  const { state, reload } = allocations;
   const onSaved = () => {
     router.refresh();
     void reload();

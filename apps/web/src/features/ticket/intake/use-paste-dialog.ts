@@ -11,6 +11,7 @@ export function usePasteDialog({ enabled }: { enabled: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(() => enabled && isPastePath({ pathname }));
   const seen = useRef(pathname);
+  // Browser URL: navigating to the paste path opens the dialog.
   useEffect(() => {
     if (pathname === seen.current) return;
     seen.current = pathname;

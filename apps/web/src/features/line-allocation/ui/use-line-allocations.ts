@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { loadLineAllocationsAction } from "../actions";
 import type { AllocationView } from "./allocation-types";
 
@@ -7,10 +7,10 @@ export type LineAllocationsState =
   | { status: "error" }
   | { status: "ready"; view: AllocationView | null };
 
-export type UseLineAllocationsInput = { lineId: string; open: boolean };
+export type LineAllocations = ReturnType<typeof useLineAllocations>;
 
-/** Reads the line's slots and their free units each time the picker opens; `reload` after a save. */
-export function useLineAllocations({ lineId, open }: UseLineAllocationsInput) {
+/** The line's slots and their free units: `open` when the picker opens, `reload` after a save. */
+export function useLineAllocations({ lineId }: { lineId: string }) {
   const [state, setState] = useState<LineAllocationsState>({ status: "loading" });
   const reload = useCallback(async () => {
     try {
@@ -20,10 +20,9 @@ export function useLineAllocations({ lineId, open }: UseLineAllocationsInput) {
       setState({ status: "error" });
     }
   }, [lineId]);
-  useEffect(() => {
-    if (!open) return;
+  const open = useCallback(() => {
     setState({ status: "loading" });
     void reload();
-  }, [open, reload]);
-  return { state, reload };
+  }, [reload]);
+  return { state, open, reload };
 }

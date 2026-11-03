@@ -23,6 +23,7 @@ export type ChoiceLineCardProps = {
 export function ChoiceLineCard({ line, catalog, quantity, onChange }: ChoiceLineCardProps) {
   const groups = catalog.items.find(({ id }) => id === line.itemId)?.groups ?? [];
   const form = useForm<ChoiceValues>({ defaultValues: choiceDefaults({ line, groups }) });
+  // react-hook-form subscription: choices go to the line as they change.
   useEffect(() => {
     const subscription = form.watch(() => {
       const values = form.getValues();

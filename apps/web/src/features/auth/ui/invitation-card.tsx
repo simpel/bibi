@@ -1,22 +1,20 @@
 "use client";
 
 import { FIXED_ROLES } from "@bibi/core/schemas";
-import { Button, Skeleton } from "@bibi/ui";
+import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import type { InvitationView } from "../invitation-type";
 import { AuthCard } from "./auth-card";
-import { useInvitation } from "./use-invitation";
 import { useInvitationActions } from "./use-invitation-actions";
 
-export type InvitationCardProps = { invitationId: string };
+export type InvitationCardProps = { invitationId: string; invitation: InvitationView };
 
 /** Accept or decline an organization invitation (link from the invitation mail). */
-export function InvitationCard({ invitationId }: InvitationCardProps) {
+export function InvitationCard({ invitationId, invitation }: InvitationCardProps) {
   const t = useTranslations("auth");
   const errors = useTranslations("errors");
   const roles = useTranslations("role");
-  const invitation = useInvitation({ invitationId });
   const { pending, accept, decline } = useInvitationActions({ invitationId });
-  if (invitation.status === "loading") return <Skeleton className="h-40 w-full max-w-md" />;
   if (invitation.status === "invalid") {
     return (
       <AuthCard title={t("invitationInvalidTitle")}>

@@ -8,10 +8,10 @@ import { AuthCard } from "./auth-card";
 import { ConsentOrganizationPicker } from "./consent-organization";
 import { ConsentScopes } from "./consent-scopes";
 import { useConsentActions } from "./use-consent-actions";
-import { useOAuthClientName } from "./use-oauth-client-name";
 
 export type ConsentCardProps = {
-  clientId: string | null;
+  /** From the client's public metadata; `null` shows "unknown client". */
+  clientName: string | null;
   scopes: string[];
   /** Where Better Auth sends the code, e.g. `claude.ai`: shown so a look-alike client stands out. */
   redirectHost: string | null;
@@ -23,14 +23,14 @@ export type ConsentCardProps = {
  * OAuth consent: who asks, for which organization, for what, and where access is sent.
  */
 export function ConsentCard({
-  clientId,
+  clientName: name,
   scopes,
   redirectHost,
   organizations,
   defaultId,
 }: ConsentCardProps) {
   const t = useTranslations("auth");
-  const clientName = useOAuthClientName({ clientId }) ?? t("unknownClient");
+  const clientName = name ?? t("unknownClient");
   const [organizationId, setOrganizationId] = useState(defaultId);
   const { pending, allow, deny } = useConsentActions({ organizationId });
   return (

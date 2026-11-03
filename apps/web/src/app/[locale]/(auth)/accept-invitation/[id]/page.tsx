@@ -1,5 +1,6 @@
 import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
+import { loadInvitation } from "@/features/auth/load-invitation";
 import { InvitationCard } from "@/features/auth/ui/invitation-card";
 import { redirect } from "@/lib/navigation";
 import { ROUTES, withNext } from "@/lib/routes";
@@ -17,5 +18,6 @@ export default async function AcceptInvitationPage({ params }: AcceptInvitationP
     const next = `/accept-invitation/${encodeURIComponent(id)}`;
     redirect({ href: withNext({ path: ROUTES.login, next }), locale });
   }
-  return <InvitationCard invitationId={id} />;
+  const invitation = await loadInvitation({ invitationId: id });
+  return <InvitationCard invitationId={id} invitation={invitation} />;
 }

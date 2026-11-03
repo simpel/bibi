@@ -1,5 +1,6 @@
 import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
+import { loadOAuthClientName } from "@/features/auth/load-oauth-client-name";
 import { ConsentCard } from "@/features/auth/ui/consent-card";
 import { urlHost } from "@/lib/url-host";
 import { requireAnySession } from "@/server/auth-pages";
@@ -20,7 +21,7 @@ export default async function ConsentPage({ params, searchParams }: ConsentPageP
   const scopes = scope ? scope.split(" ").filter(Boolean) : [];
   return (
     <ConsentCard
-      clientId={clientId ?? null}
+      clientName={await loadOAuthClientName({ clientId: clientId ?? null })}
       scopes={scopes}
       redirectHost={urlHost({ value: redirectUri })}
       {...(await loadConsentOrganizations())}

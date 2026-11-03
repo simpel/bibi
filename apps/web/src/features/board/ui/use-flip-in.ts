@@ -10,6 +10,7 @@ const FALLBACK_MS = 1500;
 export function useFlipIn() {
   const [flipped, setFlipped] = useState(false);
   const pending = useRef<(() => void) | null>(null);
+  // Animation frame: flips the card in after its first paint.
   useEffect(() => {
     const frame = requestAnimationFrame(() => setFlipped(true));
     return () => cancelAnimationFrame(frame);

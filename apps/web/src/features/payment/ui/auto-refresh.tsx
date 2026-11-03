@@ -9,6 +9,7 @@ const MAX_REFRESHES = 20;
 /** Re-reads the page until the webhook has marked the payment paid, then unmounts itself. */
 export function AutoRefresh() {
   const router = useRouter();
+  // Timer: refreshes the page a few times while the payment settles.
   useEffect(() => {
     let count = 0;
     const timer = setInterval(() => {

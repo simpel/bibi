@@ -17,6 +17,7 @@ type SearchValues = { q: string };
 export function LogSearch({ value, onSearch }: LogSearchProps) {
   const t = useTranslations("admin.logs.filters");
   const form = useForm<SearchValues>({ defaultValues: { q: value ?? "" } });
+  // react-hook-form store: the field follows the URL's `q`.
   useEffect(() => form.reset({ q: value ?? "" }), [form, value]);
   return (
     <search className="flex min-w-64 flex-1">

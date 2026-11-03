@@ -39,6 +39,7 @@ function writeStored({ org, draft }: { org: string; draft: SetupDraft }): void {
 export function SetupDraftProvider({ org, children }: { org: string; children: ReactNode }) {
   const [draft, setState] = useState<SetupDraft>(EMPTY_DRAFT);
   const [ready, setReady] = useState(false);
+  // Browser storage: the stored setup draft is read after hydration.
   useEffect(() => {
     const stored = readStored({ org });
     if (stored) setState(stored);

@@ -78,7 +78,7 @@ export function useLineDialogForm({ model, item, line, lineKey, onSave }: UseLin
     resolver,
     defaultValues: lineFormDefaults({ line, item, type, timeZone, period: model.period }),
   });
-  // An edited line's broken group rule shows under its group at once (its open question).
+  // react-hook-form store: an edited line's broken group rule shows under its group at once.
   useEffect(() => {
     if (line) void form.trigger("groups");
   }, [form, line]);

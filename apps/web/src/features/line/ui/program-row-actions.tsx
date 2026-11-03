@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
 import { LineAllocationsDialog } from "../../line-allocation/ui/line-allocations-dialog";
+import { useLineAllocations } from "../../line-allocation/ui/use-line-allocations";
 import { ArchiveLineDialog } from "./archive-line-dialog";
 import { ChooseOptionsDialog } from "./choose-options-dialog";
 import type { ChosenOption } from "./choose-options-schema";
@@ -43,7 +44,7 @@ const canAddOn = ({ line, access }: Pick<ProgramRowActionsProps, "line" | "acces
 type RowMenuProps = Omit<ProgramRowActionsProps, "chosen"> & {
   canChoose: boolean;
   canAllocate: boolean;
-  onOpen: (dialog: Dialogs) => void;
+  onOpen: (input: { dialog: Dialogs }) => void;
 };
 
 function RowMenu({ line, data, access, canChoose, canAllocate, onOpen }: RowMenuProps) {
@@ -54,22 +55,28 @@ function RowMenu({ line, data, access, canChoose, canAllocate, onOpen }: RowMenu
       label={common("actions")}
       primary={
         access.canEdit
-          ? [{ label: t("edit"), icon: PencilIcon, onClick: () => onOpen("edit") }]
+          ? [{ label: t("edit"), icon: PencilIcon, onClick: () => onOpen({ dialog: "edit" }) }]
           : []
       }
     >
       {canAddOn({ line, access }) ? (
-        <DropdownMenuItem onSelect={() => onOpen("addOn")}>{t("addAddOn")}</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onOpen({ dialog: "addOn" })}>
+          {t("addAddOn")}
+        </DropdownMenuItem>
       ) : null}
       {canChoose ? (
-        <DropdownMenuItem onSelect={() => onOpen("options")}>{t("chooseOptions")}</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onOpen({ dialog: "options" })}>
+          {t("chooseOptions")}
+        </DropdownMenuItem>
       ) : null}
       {canAllocate ? (
-        <DropdownMenuItem onSelect={() => onOpen("units")}>{t("units")}</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onOpen({ dialog: "units" })}>
+          {t("units")}
+        </DropdownMenuItem>
       ) : null}
       {access.canChangeState ? <LineStateMenu line={line} states={data.states} /> : null}
       {access.canRemove ? (
-        <DropdownMenuItem destructive onSelect={() => onOpen("archive")}>
+        <DropdownMenuItem destructive onSelect={() => onOpen({ dialog: "archive" })}>
           {t("archive")}
         </DropdownMenuItem>
       ) : null}
@@ -112,12 +119,17 @@ export function ProgramRowActions({ line, data, access, chosen }: ProgramRowActi
   const state = { dialog, setDialog };
   const customisable = access.canEdit ? customisableOf({ line, data }) : undefined;
   const canAllocate = access.canAllocate && line.itemId !== null && line.startsAt !== null;
+  const allocations = useLineAllocations({ lineId: line.id });
+  const onOpen = ({ dialog: next }: { dialog: Dialogs }) => {
+    setDialog(next);
+    if (next === "units") allocations.open();
+  };
   return (
     <>
       <RowMenu
         {...{ line, data, access, canAllocate }}
         canChoose={customisable !== undefined}
-        onOpen={setDialog}
+        onOpen={onOpen}
       />
       <LineDialogs {...{ line, data, ...state }} canAddOn={canAddOn({ line, access })} />
       {customisable ? (
@@ -129,7 +141,7 @@ export function ProgramRowActions({ line, data, access, chosen }: ProgramRowActi
         />
       ) : null}
       {canAllocate ? (
-        <LineAllocationsDialog lineId={line.id} {...bind({ ...state, name: "units" })} />
+        <LineAllocationsDialog allocations={allocations} {...bind({ ...state, name: "units" })} />
       ) : null}
       <ArchiveLineDialog line={line} {...bind({ ...state, name: "archive" })} />
     </>

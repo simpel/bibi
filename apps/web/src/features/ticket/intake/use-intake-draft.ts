@@ -26,6 +26,7 @@ export type UseIntakeDraftInput = {
 export function useIntakeDraft({ key, state, autoRestore, onRestore }: UseIntakeDraftInput) {
   const [offer, setOffer] = useState<IntakeState | null>(null);
   const [loaded, setLoaded] = useState(false);
+  // localStorage: a saved draft is read after hydration.
   useEffect(() => {
     const stored = readDraft({ key });
     if (stored && autoRestore) onRestore({ state: stored, auto: true });
@@ -34,6 +35,7 @@ export function useIntakeDraft({ key, state, autoRestore, onRestore }: UseIntake
   }, [key, autoRestore, onRestore]);
   // Offered until step 1 has a customer or a message was read here.
   const pending = state.who === null && !state.draft ? offer : null;
+  // localStorage: the draft is saved as it changes.
   useEffect(() => {
     if (loaded && pending === null) writeDraft({ key, state });
   }, [key, state, loaded, pending]);

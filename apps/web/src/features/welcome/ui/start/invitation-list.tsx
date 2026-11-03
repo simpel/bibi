@@ -1,23 +1,23 @@
 "use client";
 
-import { Button, Skeleton } from "@bibi/ui";
+import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useAuthFormAction } from "@/features/auth/ui/use-auth-form-action";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
-import { type UserInvitation, useUserInvitations } from "./use-user-invitations";
+import type { UserInvitation } from "../../user-invitation-type";
 
 const ROLE_KEYS = ["member", "manager", "admin"] as const;
 type RoleKey = (typeof ROLE_KEYS)[number];
 const roleKey = ({ role }: { role: string }): RoleKey | "unknown" =>
   (ROLE_KEYS as readonly string[]).includes(role) ? (role as RoleKey) : "unknown";
 
+export type InvitationListProps = { email: string; invitations: UserInvitation[] };
+
 /** Invitations to accept. Accepting opens `/`, which redirects to the joined organization. */
-export function InvitationList({ email }: { email: string }) {
+export function InvitationList({ email, invitations }: InvitationListProps) {
   const t = useTranslations("welcome.start");
-  const { invitations } = useUserInvitations();
-  if (!invitations) return <Skeleton className="h-10 w-full" />;
   return (
     <div className="grid gap-2">
       <h2 className="text-sm font-medium">{t("invitations")}</h2>

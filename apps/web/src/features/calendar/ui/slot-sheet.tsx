@@ -45,6 +45,7 @@ function SlotFacts({ slot, assets }: { slot: AssetBooking; assets: SlotSheetProp
 
 /** Escape closes the panel before the dialog around it (window capture runs before Radix). */
 function useEscapeFirst({ open, onClose }: { open: boolean; onClose: () => void }) {
+  // Browser keyboard: Escape closes the sheet before anything under it.
   useEffect(() => {
     if (!open) return;
     const controller = new AbortController();

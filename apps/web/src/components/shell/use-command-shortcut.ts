@@ -6,6 +6,7 @@ export type UseCommandShortcutInput = { onToggle: () => void };
 
 /** ⌘K / Ctrl+K toggles the command bar from anywhere in the shell. */
 export function useCommandShortcut({ onToggle }: UseCommandShortcutInput): void {
+  // Browser keyboard: the command palette toggles on its shortcut anywhere on the page.
   useEffect(() => {
     const controller = new AbortController();
     document.addEventListener(

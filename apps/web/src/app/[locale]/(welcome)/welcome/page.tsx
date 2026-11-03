@@ -1,6 +1,7 @@
 import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { loadJoinable } from "@/features/welcome/load-joinable";
+import { loadUserInvitations } from "@/features/welcome/load-user-invitations";
 import { JoinOfferStep } from "@/features/welcome/ui/join/join-offer-step";
 import { WelcomeStart } from "@/features/welcome/ui/start/welcome-start";
 import { requireAnySession } from "@/server/auth-pages";
@@ -18,5 +19,6 @@ export default async function WelcomeRoute({ params }: WelcomeRouteProps) {
   const { offers } = await loadJoinable({ session: state.session });
   const [offer] = offers;
   if (offer) return <JoinOfferStep offer={offer} />;
-  return <WelcomeStart email={state.session.user.email} />;
+  const invitations = await loadUserInvitations();
+  return <WelcomeStart email={state.session.user.email} invitations={invitations} />;
 }

@@ -6,7 +6,9 @@ import type { ComposerDraft } from "../state/use-prefill";
 /** Focuses the message box on open, fills it when a prefilled draft arrives and appends picked text. */
 export function useComposer({ draft }: { draft?: ComposerDraft | null | undefined }) {
   const input = useRef<HTMLTextAreaElement>(null);
+  // DOM focus: the prompt is focused when it mounts.
   useEffect(() => input.current?.focus(), []);
+  // DOM focus: the prompt takes the restored draft and the caret.
   useEffect(() => {
     if (!draft || !input.current) return;
     input.current.value = draft.text;

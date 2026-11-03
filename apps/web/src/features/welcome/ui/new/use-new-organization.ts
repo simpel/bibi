@@ -29,6 +29,7 @@ export function useNewOrganization() {
   });
   // `form` changes identity per render; the stable `resetField` makes this run once, after mount.
   const { resetField } = form;
+  // Browser API: the time zone defaults to the browser's (Intl), known only on the client.
   useEffect(() => resetField("timeZone", { defaultValue: browserTimeZone() }), [resetField]);
   const [slugEdited, setSlugEdited] = useState(false);
   const name = form.watch("name");

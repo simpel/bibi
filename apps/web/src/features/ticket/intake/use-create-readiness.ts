@@ -56,6 +56,7 @@ export function useCreateReadiness({ ...input }: CreateReadinessInput) {
   const block: CreateBlock | null = blockOf({ ...input, rest: rest.length, fields: fields.length });
   const marked = block?.kind === "FIELDS" ? fields.map(({ path }) => path).join(",") : "";
   const { form } = input;
+  // react-hook-form store: fields marked by the server are validated to show their errors.
   useEffect(() => {
     if (marked) void form.trigger(marked.split(",") as FieldPath<ReviewFormValues>[]);
   }, [form, marked]);

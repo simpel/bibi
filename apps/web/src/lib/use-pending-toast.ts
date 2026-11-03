@@ -8,6 +8,7 @@ export type UsePendingToastInput = { pending: boolean; message: string };
  * shown when it starts and dismissed when the next page is there.
  */
 export function usePendingToast({ pending, message }: UsePendingToastInput) {
+  // Toast store: a loading toast shows while pending and is dismissed after.
   useEffect(() => {
     if (!pending) return;
     const id = toast.loading(message);

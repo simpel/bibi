@@ -8,6 +8,7 @@ export type UseCountdownInput = { expiresAt: string; active: boolean };
 /** Whole seconds until `expiresAt`, ticking once a second while `active`. */
 export function useCountdown({ expiresAt, active }: UseCountdownInput): number {
   const [seconds, setSeconds] = useState(() => secondsLeft({ expiresAt, now: Date.now() }));
+  // Timer: ticks once a second until the approval expires.
   useEffect(() => {
     setSeconds(secondsLeft({ expiresAt, now: Date.now() }));
     if (!active) return;

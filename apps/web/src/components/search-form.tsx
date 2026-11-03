@@ -53,6 +53,7 @@ function SearchButton({ submitLabel, pending = false, pendingLabel }: SearchButt
  */
 export function SearchForm({ value, label, onSearch, renderInput, ...button }: SearchFormProps) {
   const form = useForm<SearchValues>({ defaultValues: { q: value ?? "" } });
+  // react-hook-form store: the field follows the URL's `q`.
   useEffect(() => form.reset({ q: value ?? "" }), [form, value]);
   return (
     <search className="flex w-full sm:w-96">

@@ -12,7 +12,6 @@ import {
 } from "@bibi/ui";
 import { DownloadIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { Period } from "../lib/finance-period";
 import { RangeStatus } from "./export-range-status";
 import { FinancePeriodButton } from "./finance-period-button";
@@ -28,13 +27,12 @@ export type ExportSieButtonProps = { period: Period; today: PlainDate };
 export function ExportSieButton({ period, today }: ExportSieButtonProps) {
   const t = useTranslations("finance.export");
   const common = useTranslations("common");
-  const [open, setOpen] = useState(false);
-  const [range, setRange] = useState(period);
-  const { preview, failed, valid } = useExportPreview({ range, enabled: open });
+  const { open, setOpen, openDialog, range, changeRange, preview, failed, valid } =
+    useExportPreview({ initial: period });
   const { confirm, pending } = useCreateExport({ onDone: () => setOpen(false) });
   return (
     <>
-      <Button size="sm" onClick={() => setOpen(true)}>
+      <Button size="sm" onClick={openDialog}>
         <DownloadIcon />
         {t("button")}
       </Button>
@@ -44,7 +42,11 @@ export function ExportSieButton({ period, today }: ExportSieButtonProps) {
             <DialogTitle>{t("title")}</DialogTitle>
             <DialogDescription>{t("description")}</DialogDescription>
           </DialogHeader>
-          <FinancePeriodButton period={range} today={today} onChange={setRange} />
+          <FinancePeriodButton
+            period={range}
+            today={today}
+            onChange={(next) => changeRange({ range: next })}
+          />
           <RangeStatus range={range} valid={valid} failed={failed} preview={preview} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
