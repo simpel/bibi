@@ -9,14 +9,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@bibi/ui";
-import { BellRingIcon, DatabaseIcon, UsersIcon } from "lucide-react";
+import { BellRingIcon, DatabaseIcon, InboxIcon, UsersIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { DevService } from "@/lib/dev-services";
 import { DevAdminMenu } from "./dev-admin-menu";
 import { DevServiceMenu } from "./dev-service-menu";
 import { DevUserMenuGroups } from "./dev-user-menu-groups";
+import { useDevSend } from "./use-dev-send";
 import { useDevSwitcherActions } from "./use-dev-switcher-actions";
-import { useSendTestNotification } from "./use-send-test-notification";
 
 export type DevUserSwitcherProps = {
   users: DevUser[];
@@ -28,17 +28,23 @@ export type DevUserSwitcherProps = {
 
 type DevToolItemsProps = { signedIn: boolean; reseed: () => void };
 
-/** The tools at the bottom: a test notification for the signed-in member, and a reseed. */
+/** The tools at the bottom: a test notification and inbox message, and a reseed. */
 function DevToolItems({ signedIn, reseed }: DevToolItemsProps) {
   const t = useTranslations("dev");
-  const sendTestNotification = useSendTestNotification();
+  const send = useDevSend();
   return (
     <>
       {signedIn ? (
-        <DropdownMenuItem onSelect={sendTestNotification}>
-          <BellRingIcon />
-          {t("sendNotification")}
-        </DropdownMenuItem>
+        <>
+          <DropdownMenuItem onSelect={send.notification}>
+            <BellRingIcon />
+            {t("sendNotification")}
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={send.inboxMessage}>
+            <InboxIcon />
+            {t("sendInboxMessage")}
+          </DropdownMenuItem>
+        </>
       ) : null}
       <DropdownMenuItem onSelect={reseed}>
         <DatabaseIcon />

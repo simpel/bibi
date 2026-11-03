@@ -3273,8 +3273,6 @@
     "switching": "Switching user…",
     "switched": "Signed in as {name}.",
     "sendNotification": "Send me a test notification",
-    "sendingNotification": "Sending a test notification…",
-    "notificationSent": "Test notification sent. It shows up under the bell.",
     "reseed": "Reseed database",
     "reseeding": "Reseeding database…",
     "reseeded": "Database reseeded.",
@@ -3286,7 +3284,9 @@
     "resetOnboarding": "Reset welcome setup",
     "resettingOnboarding": "Resetting welcome setup…",
     "onboardingReset": "Welcome setup reset for {name}'s organization. They see it on their next page.",
-    "platformAdmin": "Superadmin"
+    "platformAdmin": "Superadmin",
+    "sendInboxMessage": "Send a test inbox message",
+    "sendFailed": "Could not send: {message}"
   },
   "shell": {
     "mainNavigation": "Main navigation",

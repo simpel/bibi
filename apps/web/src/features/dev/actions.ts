@@ -8,6 +8,8 @@ import {
   resolveExecuteContext,
   switchDevUser,
 } from "@bibi/auth";
+import type { Result } from "@bibi/core";
+import { sendTestInboxMessage } from "@bibi/core/dev-inbox-message";
 import { sendTestNotification } from "@bibi/core/dev-notification";
 import { seedDemo } from "@bibi/core/seed/demo";
 import { headers } from "next/headers";
@@ -54,18 +56,35 @@ export async function resetDevOnboardingAction({
   return { ok: false, error: { code: "FORBIDDEN", message: "Reset failed", issues: [] } };
 }
 
-/** Dev menu: a test notification about a random ticket for the signed-in member (ADR 0094). */
-export async function sendTestNotificationAction(): Promise<ActionResult<{ kind: string }>> {
-  const forbidden: ActionResult<{ kind: string }> = {
-    ok: false,
-    error: { code: "FORBIDDEN", message: "Dev only", issues: [] },
-  };
-  if (!isDevEnvironment()) return forbidden;
+type DevCaller = { organizationId: string; userId: string };
+
+const FORBIDDEN = {
+  ok: false,
+  error: { code: "FORBIDDEN", message: "Dev only", issues: [] },
+} as const;
+
+/** The signed-in member in development, or null (production, signed out, an API key). */
+async function devCaller(): Promise<DevCaller | null> {
+  if (!isDevEnvironment()) return null;
   const context = await resolveExecuteContext({ headers: await headers() });
   const userId = context.ok ? context.value.actor.userId : null;
-  if (!context.ok || !userId) return forbidden;
-  const sent = await sendTestNotification({ organizationId: context.value.organizationId, userId });
-  if (sent.ok) return { ok: true, value: sent.value };
-  const { code, message } = sent.error;
-  return { ok: false, error: { code, message, issues: [] } };
+  return context.ok && userId ? { organizationId: context.value.organizationId, userId } : null;
+}
+
+/** A core `Result` as an action result. */
+const toAction = <T>({ result }: { result: Result<T> }): ActionResult<T> =>
+  result.ok
+    ? { ok: true, value: result.value }
+    : { ok: false, error: { code: result.error.code, message: result.error.message, issues: [] } };
+
+/** Dev menu: a test notification about a random ticket for the signed-in member (ADR 0094). */
+export async function sendTestNotificationAction(): Promise<ActionResult<{ kind: string }>> {
+  const caller = await devCaller();
+  return caller ? toAction({ result: await sendTestNotification(caller) }) : FORBIDDEN;
+}
+
+/** Dev menu: a made-up booking request mailed to the organization's inbox (ADR 0085). */
+export async function sendTestInboxMessageAction(): Promise<ActionResult<{ id: string }>> {
+  const caller = await devCaller();
+  return caller ? toAction({ result: await sendTestInboxMessage(caller) }) : FORBIDDEN;
 }

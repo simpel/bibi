@@ -3273,8 +3273,6 @@
     "switching": "Byter användare…",
     "switched": "Inloggad som {name}.",
     "sendNotification": "Skicka en testnotis till mig",
-    "sendingNotification": "Skickar en testnotis…",
-    "notificationSent": "Testnotisen är skickad. Den syns under klockan.",
     "reseed": "Återskapa databasen",
     "reseeding": "Återskapar databasen…",
     "reseeded": "Databasen är återskapad.",
@@ -3286,7 +3284,9 @@
     "resetOnboarding": "Återställ välkomstuppsättning",
     "resettingOnboarding": "Återställer välkomstuppsättning…",
     "onboardingReset": "Välkomstuppsättningen återställd för {name}s organisation. De ser den på nästa sida.",
-    "platformAdmin": "Superadmin"
+    "platformAdmin": "Superadmin",
+    "sendInboxMessage": "Skicka ett testmeddelande till inkorgen",
+    "sendFailed": "Kunde inte skicka: {message}"
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",

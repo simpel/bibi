@@ -13,10 +13,13 @@ class FakeEventSource {
 /** A lock that is granted only when the test says so, like a tab waiting for another to close. */
 function deferredLocks() {
   let grant = () => Promise.resolve();
-  const request = (_name: string, _options: unknown, callback: () => Promise<void>) =>
-    new Promise<void>((resolve) => {
-      grant = () => callback().then(resolve);
-    });
+  // A mock of the browser's `request(name, options, callback)`.
+  const request = vi.fn(
+    (_name: string, _options: unknown, callback: () => Promise<void>) =>
+      new Promise<void>((resolve) => {
+        grant = () => callback().then(resolve);
+      }),
+  );
   return { locks: { request }, grant: () => grant() };
 }
 
