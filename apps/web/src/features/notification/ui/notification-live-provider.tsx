@@ -38,7 +38,7 @@ export function NotificationLiveProvider({
       setState((current) =>
         current.unread === unread ? current : { unread, changed: current.changed + 1 },
       );
-      if (arrived) toasts.notification();
+      if (arrived) toasts.notification({ notification: arrived });
     },
     onInbox: ({ open, arrived }) => {
       setInboxOpen(open);

@@ -5,6 +5,7 @@ import {
   type ExecuteContext,
   execute,
   getInboundMessage,
+  listNotifications,
 } from "@bibi/core";
 import { senderOf } from "@/features/inbound-message/ui/message-value";
 import type { LiveChangeInput } from "./notification-listener";
@@ -21,6 +22,13 @@ async function arrivedMessage({ context, id }: { context: ExecuteContext; id: st
   return { id, subject: message.subject, sender: senderOf({ message }) };
 }
 
+/** The new notification among the caller's newest, for the toast; null if it is not there. */
+async function arrivedNotification({ context, id }: { context: ExecuteContext; id: string }) {
+  const input = { limit: 5 };
+  const result = await execute({ operation: listNotifications, input, context });
+  return result.ok ? (result.value.items.find((item) => item.id === id) ?? null) : null;
+}
+
 /**
  * The event for one change (ADR 0094): the caller's unread count or the inbox's open count, and
  * `arrived` when a row just came in, so the browser can toast it. Untrusted sender text stays
@@ -30,7 +38,8 @@ export async function liveEventFor({ context, change, arrivedId }: EventForInput
   if (change === "notification") {
     const result = await execute({ operation: countUnreadNotifications, input: {}, context });
     if (!result.ok) return null;
-    return { type: "unread", data: { unread: result.value.unread, arrived: Boolean(arrivedId) } };
+    const arrived = arrivedId ? await arrivedNotification({ context, id: arrivedId }) : null;
+    return { type: "unread", data: { unread: result.value.unread, arrived } } satisfies LiveEvent;
   }
   // Without `inbox:read` the operation refuses and the member gets no inbox events.
   const result = await execute({ operation: countOpenInboundMessages, input: {}, context });

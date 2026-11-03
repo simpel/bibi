@@ -38,6 +38,13 @@ export const NotificationSchema = z.object({
 });
 export type NotificationDto = z.infer<typeof NotificationSchema>;
 
+/** JSON form of a notification (tool results, the live stream): dates are ISO strings. */
+export const NotificationWireSchema = NotificationSchema.extend({
+  readAt: z.string().nullable(),
+  createdAt: z.string(),
+});
+export type NotificationWire = z.infer<typeof NotificationWireSchema>;
+
 export const NotificationIdsInputSchema = z.object({
   ids: z.array(z.string()).min(1).max(100).describe("Ids of the caller's own notifications"),
 });

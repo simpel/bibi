@@ -1,3 +1,4 @@
+import { type NotificationWire, NotificationWireSchema } from "@bibi/core/schemas";
 import { useEffect, useRef } from "react";
 import { z } from "zod";
 import { openSharedEventSource } from "@/lib/shared-event-source";
@@ -16,7 +17,10 @@ const ArrivedMessageSchema = z.object({
 });
 export type ArrivedMessage = z.infer<typeof ArrivedMessageSchema>;
 
-const UnreadEventSchema = z.object({ unread: z.number(), arrived: z.boolean().catch(false) });
+const UnreadEventSchema = z.object({
+  unread: z.number(),
+  arrived: NotificationWireSchema.nullable().catch(null),
+});
 const InboxEventSchema = z.object({
   open: z.number(),
   arrived: ArrivedMessageSchema.nullable().catch(null),
@@ -33,8 +37,8 @@ function parse<T>({ data, schema }: { data: string; schema: z.ZodType<T> }): T |
 }
 
 export type LiveCountsHandlers = {
-  /** `arrived`: a new notification came in, not just a read or unread mark. */
-  onUnread: (input: { unread: number; arrived: boolean }) => void;
+  /** `arrived`: the notification that just came in, if one did (not a read or unread mark). */
+  onUnread: (input: { unread: number; arrived: NotificationWire | null }) => void;
   /** `arrived`: the inbox message that just came in, if one did. */
   onInbox: (input: { open: number; arrived: ArrivedMessage | null }) => void;
 };
