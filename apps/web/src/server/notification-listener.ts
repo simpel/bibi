@@ -6,12 +6,14 @@ import { z } from "zod";
 
 /**
  * The triggers' channels and payloads (ADR 0094): `notify_notification.sql` names the member,
- * `notify_inbox.sql` only the organization, since the inbox is shared.
+ * `notify_inbox.sql` only the organization, since the inbox is shared. `arrivedId` is the id of
+ * a row that just came in (a new notification, a new inbox message), null for any other change.
  */
 const CHANNELS = ["notification", "inbox"] as const;
 const PayloadSchema = z.object({
   organizationId: z.string(),
   recipientUserId: z.string().optional(),
+  arrivedId: z.string().nullable().optional(),
 });
 
 const RECONNECT_MS = 5_000;
@@ -19,7 +21,10 @@ const RECONNECT_MS = 5_000;
 /** Which of the member's counts changed. */
 export type LiveChange = (typeof CHANNELS)[number];
 
-type OnChange = (input: { change: LiveChange }) => void;
+/** What changed, and the id of the row that just came in, if one did. */
+export type LiveChangeInput = { change: LiveChange; arrivedId?: string | undefined };
+
+type OnChange = (input: LiveChangeInput) => void;
 
 type Hub = { subscribers: Map<string, Set<OnChange>>; client: pg.Client | null };
 
@@ -48,15 +53,17 @@ function dispatch({ channel, payload }: { channel: string; payload: string | und
   const target = parsePayload({ payload });
   if (!target) return;
   const { organizationId, recipientUserId } = target;
+  const arrivedId = target.arrivedId ?? undefined;
   if (channel === "notification" && recipientUserId) {
     const key = keyOf({ organizationId, userId: recipientUserId });
-    for (const onChange of hub().subscribers.get(key) ?? []) onChange({ change: "notification" });
+    for (const onChange of hub().subscribers.get(key) ?? [])
+      onChange({ change: "notification", arrivedId });
     return;
   }
   if (channel !== "inbox") return;
   for (const [key, set] of hub().subscribers) {
     if (key.startsWith(`${organizationId}:`))
-      for (const onChange of set) onChange({ change: "inbox" });
+      for (const onChange of set) onChange({ change: "inbox", arrivedId });
   }
 }
 

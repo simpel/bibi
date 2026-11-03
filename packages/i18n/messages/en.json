@@ -3857,7 +3857,9 @@
     "delete": "Delete",
     "deleting": "Deleting message…",
     "deleted": "Message deleted",
-    "deleteConfirm": "Delete “{subject}”? It leaves the inbox for everyone in the team."
+    "deleteConfirm": "Delete “{subject}”? It leaves the inbox for everyone in the team.",
+    "arrivedTitle": "New message in the inbox",
+    "arrivedOpen": "Open"
   },
   "member": {
     "singular": "Member",
@@ -4921,6 +4923,8 @@
       "PAYMENT_RECEIVED": "When a payment is received on a ticket I answer for or follow",
       "turnedOn": "Notifications turned on",
       "turnedOff": "Notifications turned off"
-    }
+    },
+    "arrivedTitle": "New notification",
+    "arrivedOpen": "Show"
   }
 }

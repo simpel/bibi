@@ -1,25 +1,42 @@
 import { useEffect, useRef } from "react";
+import { z } from "zod";
 import { openSharedEventSource } from "@/lib/shared-event-source";
 
 /**
- * The stream route (ADR 0094): sends `unread` (`{ unread }`) and, with `inbox:read`, `inbox`
- * (`{ open }`) on connect and whenever either changes.
+ * The stream route (ADR 0094): sends `unread` (`{ unread, arrived }`) and, with `inbox:read`,
+ * `inbox` (`{ open, arrived }`) on connect and whenever either changes.
  */
 export const NOTIFICATION_STREAM_PATH = "/api/notifications/stream";
 
-/** The count under `key` in an event's JSON, or null for anything else. */
-const parse = ({ data, key }: { data: string; key: string }) => {
+/** A new inbox message as the stream names it, for the toast. Written by an outside sender. */
+const ArrivedMessageSchema = z.object({
+  id: z.string(),
+  subject: z.string().nullable(),
+  sender: z.string().nullable(),
+});
+export type ArrivedMessage = z.infer<typeof ArrivedMessageSchema>;
+
+const UnreadEventSchema = z.object({ unread: z.number(), arrived: z.boolean().catch(false) });
+const InboxEventSchema = z.object({
+  open: z.number(),
+  arrived: ArrivedMessageSchema.nullable().catch(null),
+});
+
+/** An event's JSON checked against its schema, or null for anything else. */
+function parse<T>({ data, schema }: { data: string; schema: z.ZodType<T> }): T | null {
   try {
-    const value = (JSON.parse(data) as Record<string, unknown> | null)?.[key];
-    return typeof value === "number" ? value : null;
+    const parsed = schema.safeParse(JSON.parse(data));
+    return parsed.success ? parsed.data : null;
   } catch {
     return null;
   }
-};
+}
 
 export type LiveCountsHandlers = {
-  onUnread: (unread: number) => void;
-  onInbox: (open: number) => void;
+  /** `arrived`: a new notification came in, not just a read or unread mark. */
+  onUnread: (input: { unread: number; arrived: boolean }) => void;
+  /** `arrived`: the inbox message that just came in, if one did. */
+  onInbox: (input: { open: number; arrived: ArrivedMessage | null }) => void;
 };
 
 /**
@@ -39,10 +56,13 @@ export function useNotificationStream({
       url: `${NOTIFICATION_STREAM_PATH}?${query}`,
       types: ["unread", "inbox"],
       onEvent: ({ type, data }) => {
-        const count = parse({ data, key: type === "inbox" ? "open" : "unread" });
-        if (count === null) return;
-        if (type === "inbox") callback.current.onInbox(count);
-        else callback.current.onUnread(count);
+        if (type === "inbox") {
+          const event = parse({ data, schema: InboxEventSchema });
+          if (event) callback.current.onInbox(event);
+          return;
+        }
+        const event = parse({ data, schema: UnreadEventSchema });
+        if (event) callback.current.onUnread(event);
       },
     });
   }, [organizationId]);

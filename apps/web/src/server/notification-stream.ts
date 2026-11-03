@@ -1,13 +1,9 @@
 import "server-only";
 import { resolveExecuteContext } from "@bibi/auth";
-import {
-  countOpenInboundMessages,
-  countUnreadNotifications,
-  type ExecuteContext,
-  execute,
-} from "@bibi/core";
+import type { ExecuteContext } from "@bibi/core";
 import { getLogContext, runWithLogContext, withRequestLogging } from "@bibi/logger";
-import { type LiveChange, subscribeToNotifications } from "./notification-listener";
+import { liveEventFor } from "./live-event";
+import { type LiveChangeInput, subscribeToNotifications } from "./notification-listener";
 import { ensureOperations } from "./operations";
 
 /** A comment line keeps proxies from closing an idle stream. */
@@ -19,22 +15,11 @@ const encoder = new TextEncoder();
 
 type Controller = ReadableStreamDefaultController<Uint8Array>;
 
-type SendInput = { context: ExecuteContext; controller: Controller; change: LiveChange };
-
-/** The event for one change: the caller's unread count, or the inbox's open count. */
-async function eventFor({ context, change }: Omit<SendInput, "controller">) {
-  if (change === "notification") {
-    const result = await execute({ operation: countUnreadNotifications, input: {}, context });
-    return result.ok ? { type: "unread", data: { unread: result.value.unread } } : null;
-  }
-  // Without `inbox:read` the operation refuses and the member gets no inbox events.
-  const result = await execute({ operation: countOpenInboundMessages, input: {}, context });
-  return result.ok ? { type: "inbox", data: { open: result.value.open } } : null;
-}
+type SendInput = LiveChangeInput & { context: ExecuteContext; controller: Controller };
 
 /** Sends the changed count as an `unread` or `inbox` event. */
-async function sendCount({ context, controller, change }: SendInput) {
-  const event = await eventFor({ context, change });
+async function sendCount({ context, controller, change, arrivedId }: SendInput) {
+  const event = await liveEventFor({ context, change, arrivedId });
   if (!event) return;
   const data = JSON.stringify(event.data);
   controller.enqueue(encoder.encode(`event: ${event.type}\ndata: ${data}\n\n`));
@@ -49,8 +34,8 @@ type Stop = { stop: () => void };
  */
 function pusher({ context, controller, stop }: Omit<OpenInput, "signal"> & Stop) {
   const logContext = getLogContext();
-  return ({ change }: { change: LiveChange }) => {
-    const send = () => sendCount({ context, controller, change }).catch(() => stop());
+  return ({ change, arrivedId }: LiveChangeInput) => {
+    const send = () => sendCount({ context, controller, change, arrivedId }).catch(() => stop());
     void (logContext ? runWithLogContext({ context: logContext, fn: send }) : send());
   };
 }

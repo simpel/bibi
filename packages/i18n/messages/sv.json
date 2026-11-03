@@ -3857,7 +3857,9 @@
     "delete": "Ta bort",
     "deleting": "Tar bort meddelandet…",
     "deleted": "Meddelandet borttaget",
-    "deleteConfirm": "Ta bort ”{subject}”? Det försvinner ur inkorgen för alla i teamet."
+    "deleteConfirm": "Ta bort ”{subject}”? Det försvinner ur inkorgen för alla i teamet.",
+    "arrivedTitle": "Nytt meddelande i inkorgen",
+    "arrivedOpen": "Öppna"
   },
   "member": {
     "singular": "Medlem",
@@ -4921,6 +4923,8 @@
       "PAYMENT_RECEIVED": "När en betalning kommer in på ett ärende jag ansvarar för eller följer",
       "turnedOn": "Notiser påslagna",
       "turnedOff": "Notiser avstängda"
-    }
+    },
+    "arrivedTitle": "Ny notis",
+    "arrivedOpen": "Visa"
   }
 }
