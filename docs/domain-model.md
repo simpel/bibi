@@ -1161,6 +1161,28 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > Members join only by invitation and leave with `member.remove`, which archives the member's overrides (API keys are not affected). The organization always keeps an admin: the last admin cannot be removed or demoted.
 
+### Notification (`Notification`)
+
+*MVP* · Tells one member that something in the organization concerns them ([ADR 0094](decisions/0094-in-app-notifications.md)). Not the inbox (ADR 0085): that is the organization's shared queue of incoming messages; a notification is internal, personal and read or unread.
+
+**Attributes**
+- recipient (owned): the member it is for; every read and write is filtered on the caller, so another member's notification is `NOT_FOUND`
+- kind (owned): `ASSIGNED`, `WORK_ORDER_SENT`, `TICKET_STATUS_CHANGED`, `PAYMENT_RECEIVED`
+- actor (owned): who caused it; null for the system
+- ticket, work order, payment (owned, foreign keys)
+- data (snapshot, ADR 0051): the ticket's number and title, the old and new status, the work order and version, the amount and currency at the time
+- read (`readAt`, owned by the recipient): the lifecycle; rows are never deleted
+
+**Relations**
+- `N:1` is told to → User
+- `N:0..1` is about → Ticket, Work order, Payment
+
+> Written only by core's `notify`, in the `followUp` of `assignment.assign` (the new assignee), `workOrder.send` (the stored recipients), `ticket.changeStatus` and `payment.applySignal` when a payment succeeds (everyone on the ticket: the main assignee and followers and every responsibility's, stored or by default, ADR 0055). It skips the actor, members who turned the kind off, and members who cannot read the ticket (and the work order or payment the snapshot copies). A trigger (`notify_notification.sql`) sends `pg_notify('notification', …)` on insert and on a change of `readAt`; the web app's `/api/notifications/stream` pushes the unread count over Server-Sent Events. Operations (`self:*`): `notification.list` (search on the ticket, `kind`, `read`, sort, numbered pages), `notification.unreadCount`, `notification.markRead|markUnread|markAllRead`. Web: the bell in the top bar (red dot, the latest eight) and `/notifications`.
+
+### NotificationPreference (`NotificationPreference`)
+
+*MVP* · A member's choice to turn one kind of notification off or back on in the organization (ADR 0094). No row means on: the default is inherited, never copied. Set on `/profile` with `notificationPreference.set`, read with `notificationPreference.list` (one entry per kind).
+
 ### Invitation
 
 *MVP* · An emailed invitation to join the organization as staff (ADR 0004). Created with `member.invite`, revoked with `member.cancelInvitation`; the invitee accepts through the link (Better Auth) and becomes a member with the invited role.

@@ -9,7 +9,7 @@ Current behaviour. Why: ADR 0034 (responsibilities are not roles), 0055 (derived
 
 ## Assignment
 - Every assignable subject (ticket, item) has exactly one main assignee (no responsibility) and any number of followers. A ticket also has one assignment per responsibility that applies to it. Quote has none of its own; it uses the ticket's.
-- Followers are need-to-know: they see the subject in "Following" and are included where the assignee is (work orders, later notifications). Rules never require them.
+- Followers are need-to-know: they see the subject in "Following" and are included where the assignee is (work orders, and notifications of status changes and payments, ADR 0094). Rules never require them.
 - A new ticket gets the creating member as main assignee (a ticket created from a template: the creating member too).
 
 ## What is stored and what is derived

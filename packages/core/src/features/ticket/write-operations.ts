@@ -1,10 +1,12 @@
 import { ok } from "../../errors/result";
+import { allFollowUps } from "../../operations/all-follow-ups";
 import { defineOperation } from "../../operations/define-operation";
 import type { LinkValue } from "../../records/record-links";
 import { updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
+import { notifyCreatedAssignee } from "../notification/follow-ups";
 import { regenerateForTicket } from "../work-order/regenerate";
 import { runTicketCreate } from "./create-ticket";
 import { recordEstimate } from "./estimate-history";
@@ -32,7 +34,7 @@ export const createTicket = defineOperation({
   input: TicketCreateInputSchema,
   output: TicketSchema,
   permission: "ticket:write",
-  followUp: regenerateForTicket,
+  followUp: allFollowUps({ steps: [regenerateForTicket, notifyCreatedAssignee] }),
   handler: async ({ input, context }) => runTicketCreate({ context, input }),
   external: titleAfterCreate,
   externalOptional: true,

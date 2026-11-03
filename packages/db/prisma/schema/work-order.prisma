@@ -36,6 +36,7 @@ model WorkOrder {
   responsibility    Responsibility   @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
   /// Who received it: the derived assignee and followers at send time (ADR 0055); empty until sent.
   recipients        WorkOrderRecipient[]
+  notifications     Notification[]
 
   @@unique([id, organizationId])
   @@unique([ticketId, workOrderDefinitionId, version])

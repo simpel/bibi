@@ -43,6 +43,13 @@ const SELF_NAMES = [
   "workingHours.set",
   "file.upload",
   "file.get",
+  "notification.list",
+  "notification.unreadCount",
+  "notification.markRead",
+  "notification.markUnread",
+  "notification.markAllRead",
+  "notificationPreference.list",
+  "notificationPreference.set",
 ];
 
 /** The organization's own facts and first setup status (ADR 0061). */

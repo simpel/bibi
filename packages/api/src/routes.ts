@@ -26,6 +26,8 @@ import { lineAllocationRoutes } from "./features/line-allocation/rest";
 import { memberRoutes } from "./features/member/rest";
 import { memberProfileRoutes } from "./features/member-profile/rest";
 import { messageRoutes } from "./features/message/rest";
+import { notificationRoutes } from "./features/notification/rest";
+import { notificationPreferenceRoutes } from "./features/notification-preference/rest";
 import { oauthGrantRoutes } from "./features/oauth-grant/rest";
 import { occupancyRoutes } from "./features/occupancy/rest";
 import { organizationProfileRoutes } from "./features/organization-profile/rest";
@@ -68,6 +70,8 @@ const boardRoutes = [
 const gridAndSetupRoutes = [...statusGridRoutes, ...pipelineSetupRoutes, ...changeSetRoutes];
 const lineAndGroupRoutes = [...lineRoutes, ...lineAllocationRoutes, ...alternativeGroupRoutes];
 const selfRoutes = [
+  ...notificationRoutes,
+  ...notificationPreferenceRoutes,
   ...userPreferenceRoutes,
   ...userSettingsRoutes,
   ...profileRoutes,

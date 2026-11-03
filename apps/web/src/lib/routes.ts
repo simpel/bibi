@@ -24,6 +24,7 @@ export const ROUTES = {
   ticketNew: "/new/ticket",
   depositNew: "/new/deposit",
   customers: "/customers",
+  notifications: "/notifications",
   tickets: "/tickets",
   workOrders: "/work-orders",
   workOrdersAll: "/work-orders/all",

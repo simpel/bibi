@@ -3903,7 +3903,9 @@
       "signedIn": "Signed in",
       "lastActive": "Last active"
     },
-    "sessionsEmpty": "No active sessions."
+    "sessionsEmpty": "No active sessions.",
+    "notificationsTitle": "Notifications",
+    "notificationsDescription": "Choose what you want to be told about. Notifications show under the bell in the top bar."
   },
   "assignment": {
     "title": "Assignee and followers",
@@ -4675,5 +4677,68 @@
     "contact": "Contact",
     "none": "–",
     "lines": "Lines"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "What concerns you: tickets you are assigned to, work orders sent to you, and status changes and payments on tickets you answer for or follow.",
+    "bell": "Notifications",
+    "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}",
+    "latest": "Latest notifications",
+    "seeAll": "See all notifications",
+    "markAllRead": "Mark all as read",
+    "markedAllRead": "All notifications marked as read",
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "markedRead": "{count, plural, one {# notification marked as read} other {# notifications marked as read}}",
+    "markedUnread": "{count, plural, one {# notification marked as unread} other {# notifications marked as unread}}",
+    "empty": "No notifications yet",
+    "emptyDescription": "You are told here when you are assigned a ticket, sent a work order, or when a ticket you answer for or follow changes status or gets paid.",
+    "nothingNew": "You're all caught up",
+    "noMatches": "No notifications match",
+    "listTotal": "{count, plural, one {# notification} other {# notifications}}",
+    "unread": "Unread",
+    "read": "Read",
+    "filter": {
+      "label": "Show",
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read",
+      "kind": "Kind",
+      "allKinds": "All kinds"
+    },
+    "search": "Search by ticket title or number",
+    "searchSubmit": "Search",
+    "searching": "Searching…",
+    "columns": {
+      "message": "Notification",
+      "kind": "Kind",
+      "ticket": "Ticket",
+      "read": "Status",
+      "created": "When"
+    },
+    "kinds": {
+      "ASSIGNED": "Assigned",
+      "WORK_ORDER_SENT": "Work order",
+      "TICKET_STATUS_CHANGED": "Status change",
+      "PAYMENT_RECEIVED": "Payment"
+    },
+    "messages": {
+      "ASSIGNED": "{actor} assigned you to #{reference}",
+      "WORK_ORDER_SENT": "{actor} sent you {workOrder} v{version} for #{reference}",
+      "TICKET_STATUS_CHANGED": "#{reference} moved from {from} to {to}",
+      "PAYMENT_RECEIVED": "{amount} received on #{reference}"
+    },
+    "someone": "Someone",
+    "aWorkOrder": "a work order",
+    "noStatus": "no status",
+    "untitled": "Untitled ticket",
+    "preferences": {
+      "ASSIGNED": "When I am made assignee of a ticket",
+      "WORK_ORDER_SENT": "When a work order is sent to me",
+      "TICKET_STATUS_CHANGED": "When a ticket I answer for or follow changes status",
+      "PAYMENT_RECEIVED": "When a payment is received on a ticket I answer for or follow",
+      "turnedOn": "Notifications turned on",
+      "turnedOff": "Notifications turned off"
+    }
   }
 }

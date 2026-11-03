@@ -89,4 +89,4 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 ## Not decided
 - One pipeline per organization; a pipeline per ticket type is deferred (a nullable `pipelineId` on `TicketStatus` would allow it).
 - Automation on status entry (send mail, create task) is deferred; status flags, quote events and line states are the only automation.
-- A line state change does not notify the line's responsibility yet; deferred until notifications exist.
+- A manual status move (`ticket.changeStatus`) notifies everyone on the ticket (ADR 0094); a move a quote event makes runs nested and does not notify yet. A line state change does not notify the line's responsibility yet.

@@ -5,7 +5,12 @@ import { describe, expect, it } from "vitest";
 const root = join(import.meta.dirname, "..");
 
 /** The trigger SQL files and the migrations that apply them (ADR 0053, 0054). */
-const SQL_FILES = ["sync_line_occupancy.sql", "domain_history.sql", "sync_user_name.sql"] as const;
+const SQL_FILES = [
+  "sync_line_occupancy.sql",
+  "domain_history.sql",
+  "sync_user_name.sql",
+  "notify_notification.sql",
+] as const;
 
 /** The latest migration that applies one trigger SQL file. */
 function latestApplying({ file }: { file: string }) {

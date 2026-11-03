@@ -63,6 +63,7 @@ export {
   type LineStateChange,
   type Member,
   type Message,
+  type Notification,
   MessageRole,
   type Occupancy,
   OccupancyType,

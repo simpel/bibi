@@ -3,8 +3,8 @@
 import { LOG_LEVELS, type SystemLogListQuery } from "@bibi/core/schemas";
 import { SURFACES } from "@bibi/logger/surfaces";
 import { useTranslations } from "next-intl";
+import { FilterSelect } from "@/components/filter-select";
 import { ActiveFilterChips } from "./active-filter-chips";
-import { FilterSelect } from "./filter-select";
 import { LogSearch } from "./log-search";
 import { useLogNavigation } from "./use-log-navigation";
 

@@ -1,6 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { conflict, notFound } from "../../shared/errors";
+import { notifyWorkOrderSent } from "../notification/follow-ups";
 import { checkReadable } from "../ticket/ticket-rules";
 import { checkNotBlocked } from "./check-blocked";
 import { checkStatus } from "./check-status";
@@ -21,6 +22,7 @@ export const sendWorkOrder = defineOperation({
   input: WorkOrderIdInputSchema,
   output: WorkOrderSchema,
   permission: "workOrder:write",
+  followUp: notifyWorkOrderSent,
   handler: async ({ input: { id }, context }) => {
     const readable = checkReadable({ context, permission: "ticket:read", path: "id" });
     if (!readable.ok) return readable;

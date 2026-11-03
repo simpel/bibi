@@ -1,7 +1,9 @@
 import { ok, type Result } from "../../errors/result";
+import { allFollowUps } from "../../operations/all-follow-ups";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
+import { notifyCreatedAssignee } from "../notification/follow-ups";
 import { freshDefaults } from "../ticket-template/line-defaults";
 import { loadTicketTemplate } from "../ticket-template/load-ticket-template";
 import type { TicketTemplateDto } from "../ticket-template/schema";
@@ -72,7 +74,7 @@ export const createTicketFromTemplate = defineOperation({
   input: TicketCreateFromTemplateInputSchema,
   output: TicketSchema,
   permission: "ticket:write",
-  followUp: regenerateForTicket,
+  followUp: allFollowUps({ steps: [regenerateForTicket, notifyCreatedAssignee] }),
   handler: async ({ input, context }) => {
     const readable = checkReadable({
       context,

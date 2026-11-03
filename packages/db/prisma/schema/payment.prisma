@@ -48,6 +48,7 @@ model Payment {
   deposit             Deposit?                @relation(fields: [depositId, organizationId], references: [id, organizationId])
   invoice             Invoice?                @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
   refunds             PaymentRefund[]
+  notifications       Notification[]
   exportEntries       AccountingExportEntry[]
 
   @@unique([id, organizationId])

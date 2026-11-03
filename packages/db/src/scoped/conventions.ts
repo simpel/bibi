@@ -111,6 +111,8 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Conversation",
   "Message",
   "Skill",
+  "Notification",
+  "NotificationPreference",
   "OauthGrantRevocation",
 ]);
 

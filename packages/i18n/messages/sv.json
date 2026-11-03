@@ -3903,7 +3903,9 @@
       "signedIn": "Inloggad",
       "lastActive": "Senast aktiv"
     },
-    "sessionsEmpty": "Inga aktiva sessioner."
+    "sessionsEmpty": "Inga aktiva sessioner.",
+    "notificationsTitle": "Notiser",
+    "notificationsDescription": "Välj vad du vill få veta. Notiser visas under klockan i toppfältet."
   },
   "assignment": {
     "title": "Ansvarig och följare",
@@ -4675,5 +4677,68 @@
     "contact": "Kontakt",
     "none": "–",
     "lines": "Rader"
+  },
+  "notifications": {
+    "title": "Notiser",
+    "description": "Det som berör dig: ärenden du blir ansvarig för, order som skickas till dig, och statusändringar och betalningar på ärenden du ansvarar för eller följer.",
+    "bell": "Notiser",
+    "unreadCount": "{count, plural, =0 {Inga olästa notiser} one {# oläst notis} other {# olästa notiser}}",
+    "latest": "Senaste notiser",
+    "seeAll": "Visa alla notiser",
+    "markAllRead": "Markera alla som lästa",
+    "markedAllRead": "Alla notiser markerade som lästa",
+    "markRead": "Markera som läst",
+    "markUnread": "Markera som oläst",
+    "markedRead": "{count, plural, one {# notis markerad som läst} other {# notiser markerade som lästa}}",
+    "markedUnread": "{count, plural, one {# notis markerad som oläst} other {# notiser markerade som olästa}}",
+    "empty": "Inga notiser än",
+    "emptyDescription": "Här får du veta när du blir ansvarig för ett ärende, får en order, eller när ett ärende du ansvarar för eller följer byter status eller blir betalt.",
+    "nothingNew": "Du har inget nytt",
+    "noMatches": "Inga notiser matchar",
+    "listTotal": "{count, plural, one {# notis} other {# notiser}}",
+    "unread": "Oläst",
+    "read": "Läst",
+    "filter": {
+      "label": "Visa",
+      "all": "Alla",
+      "unread": "Olästa",
+      "read": "Lästa",
+      "kind": "Typ",
+      "allKinds": "Alla typer"
+    },
+    "search": "Sök på ärendets titel eller nummer",
+    "searchSubmit": "Sök",
+    "searching": "Söker…",
+    "columns": {
+      "message": "Notis",
+      "kind": "Typ",
+      "ticket": "Ärende",
+      "read": "Status",
+      "created": "När"
+    },
+    "kinds": {
+      "ASSIGNED": "Ansvarig",
+      "WORK_ORDER_SENT": "Order",
+      "TICKET_STATUS_CHANGED": "Statusändring",
+      "PAYMENT_RECEIVED": "Betalning"
+    },
+    "messages": {
+      "ASSIGNED": "{actor} gjorde dig ansvarig för #{reference}",
+      "WORK_ORDER_SENT": "{actor} skickade {workOrder} v{version} för #{reference} till dig",
+      "TICKET_STATUS_CHANGED": "#{reference} flyttades från {from} till {to}",
+      "PAYMENT_RECEIVED": "{amount} betalt på #{reference}"
+    },
+    "someone": "Någon",
+    "aWorkOrder": "en order",
+    "noStatus": "ingen status",
+    "untitled": "Ärende utan titel",
+    "preferences": {
+      "ASSIGNED": "När jag blir ansvarig för ett ärende",
+      "WORK_ORDER_SENT": "När en order skickas till mig",
+      "TICKET_STATUS_CHANGED": "När ett ärende jag ansvarar för eller följer byter status",
+      "PAYMENT_RECEIVED": "När en betalning kommer in på ett ärende jag ansvarar för eller följer",
+      "turnedOn": "Notiser påslagna",
+      "turnedOff": "Notiser avstängda"
+    }
   }
 }

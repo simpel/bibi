@@ -10,6 +10,7 @@ import { ITEM_RESOLUTION_UI_ENTRIES } from "./item-resolution-entries";
 import { ITEM_STATE_UI_ENTRIES } from "./item-state-entries";
 import { LINE_UI_ENTRIES } from "./line-entries";
 import { MEMBER_PROFILE_UI_ENTRIES } from "./member-profile-entries";
+import { NOTIFICATION_UI_ENTRIES } from "./notification-entries";
 import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
 import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
@@ -24,20 +25,14 @@ import { RECEIVABLE_UI_ENTRIES } from "./receivable-entries";
 import { REQUIREMENT_UI_ENTRIES } from "./requirement-entries";
 import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
 import { SELF_GENERIC_UI_TOOLS } from "./self-generic-tools";
+import { SKILL_UI_ENTRIES } from "./skill-entries";
 import { STATUS_GRID_UI_ENTRIES } from "./status-grid-entries";
 import { TICKET_UI_ENTRIES } from "./ticket-entries";
 import { TICKET_STATUS_UI_ENTRIES } from "./ticket-status-entries";
 import { TICKET_TEMPLATE_UI_ENTRIES } from "./ticket-template-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
-import {
-  SearchWireSchema,
-  SkillCardWireSchema,
-  SkillListWireSchema,
-  SkillSearchWireSchema,
-  VenueListWireSchema,
-  VenueWireSchema,
-} from "./wire-schemas";
+import { SearchWireSchema, VenueListWireSchema, VenueWireSchema } from "./wire-schemas";
 import { WORK_ORDER_DEFINITION_UI_ENTRIES } from "./work-order-definition-entries";
 import { WORK_ORDER_UI_ENTRIES } from "./work-order-entries";
 
@@ -50,11 +45,6 @@ const venueCard = uiEntry({
   component: "venue-card",
   schema: VenueWireSchema,
   toProps: ({ value }) => ({ venue: value }),
-});
-const skillCard = uiEntry({
-  component: "skill-card",
-  schema: SkillCardWireSchema,
-  toProps: ({ value }) => ({ skill: value }),
 });
 
 /**
@@ -101,24 +91,8 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
     schema: SearchWireSchema,
     toProps: ({ value }) => value,
   }),
-  skill_list: uiEntry({
-    component: "skill-table",
-    schema: SkillListWireSchema,
-    toProps: ({ value }) => value,
-  }),
-  skill_get: skillCard,
-  skill_create: skillCard,
-  skill_update: skillCard,
-  skill_publish: skillCard,
-  skill_archive: skillCard,
-  skill_share: skillCard,
-  skill_import: skillCard,
-  load_skill: skillCard,
-  skill_search: uiEntry({
-    component: "skill-table",
-    schema: SkillSearchWireSchema,
-    toProps: ({ value }) => ({ items: value.skills, nextCursor: null }),
-  }),
+  ...SKILL_UI_ENTRIES,
+  ...NOTIFICATION_UI_ENTRIES,
 };
 
 /**

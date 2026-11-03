@@ -9,6 +9,9 @@ type ScopeInput = { db: Db; where: { organizationId: { in: string[] } } };
  * predefined tickets use items, setups and types, so they go here too.
  */
 const ticketChildren = ({ db, where }: ScopeInput) => [
+  // Notifications point at tickets, work orders and payments (ADR 0094).
+  db.notification.deleteMany({ where }),
+  db.notificationPreference.deleteMany({ where }),
   db.inboundEmail.deleteMany({ where }),
   // Messages point at their endpoint and ticket; endpoints at a type and a package (ADR 0085).
   db.inboundMessage.deleteMany({ where }),

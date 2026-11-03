@@ -1,3 +1,4 @@
+import { NOTIFICATION_SURFACES } from "./notification-surfaces";
 import type { WebSurface } from "./web-surfaces";
 
 /** The settings pages (members, payments, price lists, API keys), part of `WEB_SURFACES`. */
@@ -65,4 +66,9 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   // The user's own date and clock format.
   { operation: "userSettings.get", route: "/profile" },
   { operation: "userSettings.update", route: "/profile" },
+  // The user's own choice of notifications (ADR 0094).
+  { operation: "notificationPreference.list", route: "/profile" },
+  { operation: "notificationPreference.set", route: "/profile" },
+  // The bell and the list of the user's own notifications (ADR 0094).
+  ...NOTIFICATION_SURFACES,
 ];

@@ -26,6 +26,8 @@ import { lineAllocationMcpTools } from "../features/line-allocation/mcp";
 import { memberMcpTools } from "../features/member/mcp";
 import { memberProfileMcpTools } from "../features/member-profile/mcp";
 import { messageMcpTools } from "../features/message/mcp";
+import { notificationMcpTools } from "../features/notification/mcp";
+import { notificationPreferenceMcpTools } from "../features/notification-preference/mcp";
 import { oauthGrantMcpTools } from "../features/oauth-grant/mcp";
 import { occupancyMcpTools } from "../features/occupancy/mcp";
 import { organizationProfileMcpTools } from "../features/organization-profile/mcp";
@@ -76,6 +78,8 @@ const boardMcpTools = [
   ...boardPhaseMcpTools,
 ];
 const selfMcpTools = [
+  ...notificationMcpTools,
+  ...notificationPreferenceMcpTools,
   ...userPreferenceMcpTools,
   ...userSettingsMcpTools,
   ...profileMcpTools,

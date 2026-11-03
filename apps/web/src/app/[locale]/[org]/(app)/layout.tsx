@@ -6,6 +6,7 @@ import { TablePreferencesProvider } from "@/components/data-table/table-preferen
 import { AppShell } from "@/components/shell/app-shell";
 import { canOpenSettings } from "@/components/shell/settings-items";
 import { AppPinnedBookings } from "@/features/calendar/ui/app-pinned-bookings";
+import { loadBell } from "@/features/notification/load-bell";
 import { loadUserPreferences } from "@/features/user-preference/load";
 import { welcomePath } from "@/features/welcome/lib/welcome-step";
 import { mustWelcomeFirst } from "@/features/welcome/load-welcome-gate";
@@ -29,17 +30,19 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
   if (await mustWelcomeFirst()) redirect({ href: welcomePath(), locale, org: organizationSlug });
   const { id, name, email } = session.user;
   // Only decide which sidebar links show (ADR 0036); `/settings/*` and `/admin` check again.
-  const [platformAdmin, abilities, preferences, canDraftFromMessage] = await Promise.all([
+  const [platformAdmin, abilities, preferences, canDraftFromMessage, bell] = await Promise.all([
     isPlatformAdmin({ userId: id }),
     getCallerAbilities(),
     loadUserPreferences({ prefix: TABLE_COLUMNS_PREFIX }),
     hasDraftModel(),
+    loadBell(),
   ]);
   return (
     <TablePreferencesProvider preferences={preferences}>
       <AppShell
         organizationId={organizationId}
         user={{ name, email }}
+        bell={bell}
         access={{
           canConfigure: canOpenSettings({ permissions: abilities.permissions }),
           canDraftFromMessage,

@@ -3,6 +3,7 @@ import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
+import { notifyPaymentReceived } from "../notification/follow-ups";
 import { nextPaymentState } from "./payment-transition";
 import { recordRefund } from "./record-refund";
 import { toPaymentDto } from "./to-payment-dto";
@@ -22,6 +23,7 @@ export const applyPaymentSignal = defineOperation({
   output: PaymentSignalResultSchema,
   permission: "payment:write",
   approval: false,
+  followUp: notifyPaymentReceived,
   handler: async ({ input, context }) => {
     if (context.actor.type !== "system") {
       const message = "Payments are updated by the Stripe webhook only";

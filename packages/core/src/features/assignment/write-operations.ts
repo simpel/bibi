@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { checkMembers } from "../../shared/check-members";
 import { notFound } from "../../shared/errors";
+import { notifyAssigned } from "../notification/follow-ups";
 import { checkSlot } from "./check-slot";
 import {
   AssignmentAssignInputSchema,
@@ -21,6 +22,7 @@ export const assignAssignment = defineOperation({
   input: AssignmentAssignInputSchema,
   output: AssignmentSchema,
   permission: "ticket:write",
+  followUp: notifyAssigned,
   handler: async ({ input: { assigneeId, ...slot }, context }) => {
     const valid = await checkSlot({ context, ...slot });
     if (!valid.ok) return valid;

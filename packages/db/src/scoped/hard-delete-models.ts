@@ -9,7 +9,7 @@
  * `status`; core audits both), rows with their
  * own `status` lifecycle that are never removed (PaymentAccount, IntegrationConnection, Payment, Deposit, Invoice, ADR
  * 0057; InboundMessage, ADR 0085: `dismissedAt`), work order versions (`sentAt` is their lifecycle), followers (AssignmentFollower, removed on
- * unfollow) and credentials (Apikey: `enabled`; OauthGrantRevocation: one row per user and client).
+ * unfollow), notifications (`readAt` is their lifecycle; preferences are upserted, ADR 0094) and credentials (Apikey: `enabled`; OauthGrantRevocation: one row per user and client).
  */
 export const HARD_DELETE_MODELS = new Set<string>([
   "ItemSetup",
@@ -38,6 +38,8 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "Invoice",
   "WorkOrder",
   "AssignmentFollower",
+  "Notification",
+  "NotificationPreference",
   "Apikey",
   "OauthGrantRevocation",
   "RevenueAccount",

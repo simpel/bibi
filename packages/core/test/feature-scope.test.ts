@@ -65,6 +65,8 @@ const OUTPUT_EXCEPTIONS: Readonly<Record<string, string>> = {
   "workOrder:programItemName":
     "work order rows are a snapshot copied with program:read at generate time",
   "dashboard:customerName": "a view read model (ADR 0071, 0080), null without customer:read",
+  "notification:workOrderName":
+    "a snapshot copied for a recipient who may read work orders (ADR 0094)",
 };
 
 describe("feature scope guard (ADR 0050)", () => {

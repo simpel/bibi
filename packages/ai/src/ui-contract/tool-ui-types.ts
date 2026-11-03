@@ -13,6 +13,7 @@ import type { ItemResolutionWire } from "./item-resolution-entries";
 import type { ItemStateWire } from "./item-state-entries";
 import type { LineWire } from "./line-entries";
 import type { MemberProfileWire } from "./member-profile-entries";
+import type { NotificationUiProps } from "./notification-entries";
 import type { IntegrationWire, PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire, TicketBalanceWire } from "./payment-entries";
 import type { PermissionProfileWire } from "./permission-entries";
@@ -23,6 +24,7 @@ import type { QuoteWire } from "./quote-entries";
 import type { DepositWire, InvoiceWire } from "./receivable-entries";
 import type { RequirementWire } from "./requirement-entries";
 import type { ResponsibilityWire } from "./responsibility-entries";
+import type { SkillUiProps } from "./skill-entries";
 import type { StatusGridCellWire } from "./status-grid-entries";
 import type { TicketToolUiProps } from "./ticket-entries";
 import type { TicketStatusWire } from "./ticket-status-entries";
@@ -39,8 +41,6 @@ import type {
   OccupancyWire,
   SearchHitWire,
   SetupWire,
-  SkillCardWire,
-  SkillRow,
   VenueWire,
   VocabularyWire,
 } from "./wire-schemas";
@@ -53,6 +53,8 @@ import type { WorkOrderWire } from "./work-order-entries";
  */
 export type ToolUiProps = BoardUiProps &
   InboundUiProps &
+  NotificationUiProps &
+  SkillUiProps &
   DashboardUiProps &
   FinanceUiProps &
   TicketToolUiProps & {
@@ -126,8 +128,6 @@ export type ToolUiProps = BoardUiProps &
     "audit-log-table": { items: AuditLogWire[]; nextCursor: string | null };
     "audit-log-card": { entry: AuditLogWire };
     "search-results": { hits: SearchHitWire[] };
-    "skill-table": { items: SkillRow[]; nextCursor: string | null };
-    "skill-card": { skill: SkillCardWire };
     /** Mutation proposal waiting for the user (see `extractPendingApprovals`). */
     "approval-card": { approval: ApprovalRequired };
     /** Tool error (`isError`): AppError code + message. */

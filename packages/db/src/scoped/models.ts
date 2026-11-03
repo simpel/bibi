@@ -78,6 +78,8 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "Conversation",
   "Message",
   "Skill",
+  "Notification",
+  "NotificationPreference",
   "Member",
   "Invitation",
   "Apikey",

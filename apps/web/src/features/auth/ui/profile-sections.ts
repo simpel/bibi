@@ -2,6 +2,7 @@
 export const PROFILE_SECTIONS = [
   { id: "details", label: "details" },
   { id: "display", label: "displayTitle" },
+  { id: "notifications", label: "notificationsTitle" },
   { id: "password", label: "passwordTitle" },
   { id: "sessions", label: "sessionsTitle" },
   { id: "apps", label: "appsTitle" },

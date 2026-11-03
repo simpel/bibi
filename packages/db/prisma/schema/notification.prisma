@@ -1,0 +1,54 @@
+/// What happened that a member is told about (ADR 0094): a closed list, a new kind is a code change.
+enum NotificationKind {
+  ASSIGNED
+  WORK_ORDER_SENT
+  TICKET_STATUS_CHANGED
+  PAYMENT_RECEIVED
+}
+
+/// Notification (ADR 0094) – tells one member (`recipientUserId`) that something in the organization
+/// concerns them. Written only by core's `notify` (SYSTEM, in a command's `followUp`), never by a
+/// caller. Private to the recipient: core filters every read and write on `recipientUserId`.
+/// `kind`, the subject ids and `actorUserId` are owned; `data` is a snapshot (ADR 0051) of the
+/// display facts at the time (e.g. status names, amount) that later changes do not rewrite.
+/// `readAt` is owned by the recipient and is the row's lifecycle (no `status`, never deleted).
+/// A trigger (`notify_notification.sql`) sends `pg_notify('notification', …)` on insert and on a
+/// change of `readAt` so the web app can push the unread count (ADR 0094).
+model Notification {
+  id              String           @id @default(cuid(2))
+  organizationId  String
+  recipientUserId String
+  kind            NotificationKind
+  /// Who caused it; null for the system (e.g. a payment the provider reported).
+  actorUserId     String?
+  ticketId        String?
+  workOrderId     String?
+  paymentId       String?
+  data            Json             @default("{}")
+  readAt          DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  createdBy       String?
+  ticket          Ticket?          @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  workOrder       WorkOrder?       @relation(fields: [workOrderId, organizationId], references: [id, organizationId])
+  payment         Payment?         @relation(fields: [paymentId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@index([organizationId, recipientUserId, readAt, createdAt])
+  @@index([organizationId, recipientUserId, createdAt])
+}
+
+/// A member's choice to turn one kind of notification off or back on (ADR 0094). No row means the
+/// default (on): defaults are inherited, never copied (ADR 0051). Every column is owned.
+model NotificationPreference {
+  id             String           @id @default(cuid(2))
+  organizationId String
+  userId         String
+  kind           NotificationKind
+  enabled        Boolean
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  createdBy      String?
+
+  @@unique([organizationId, userId, kind])
+}

@@ -11,7 +11,6 @@ import { customerOperations } from "./features/customer/operations";
 import { dashboardOperations } from "./features/dashboard/operations";
 import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
-import { fileOperations } from "./features/file/operations";
 import { inboundMessageOperations } from "./features/inbound-message/operations";
 import { itemOperations } from "./features/item/operations";
 import { itemDemandOperations } from "./features/item-demand/operations";
@@ -28,7 +27,6 @@ import { permissionOperations } from "./features/permission/operations";
 import { pipelineOperations } from "./features/pipeline/operations";
 import { pipelineSetupOperations } from "./features/pipeline-setup/operations";
 import { priceListOperations } from "./features/price-list/operations";
-import { profileOperations } from "./features/profile/operations";
 import { quoteOperations } from "./features/quote/operations";
 import { requirementOperations } from "./features/requirement/operations";
 import { responsibilityOperations } from "./features/responsibility/operations";
@@ -38,8 +36,6 @@ import { statusGridOperations } from "./features/status-grid/operations";
 import { ticketOperations } from "./features/ticket/operations";
 import { ticketStatusOperations } from "./features/ticket-status/operations";
 import { ticketTemplateOperations } from "./features/ticket-template/operations";
-import { userPreferenceOperations } from "./features/user-preference/operations";
-import { userSettingsOperations } from "./features/user-settings/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
 import { workOrderOperations } from "./features/work-order/operations";
@@ -49,6 +45,7 @@ import { moneyOperations } from "./money-operations";
 import type { AnyOperation } from "./operations/types";
 import type { EmbedFn } from "./search/embed";
 import { createSearchOperation } from "./search/search-operation";
+import { selfOperations } from "./self-operations";
 
 export type CreateCoreOperationsInput = { embed: EmbedFn };
 
@@ -72,17 +69,6 @@ const lineGroupOperations = [
 
 /** What occupies bookable items, their hours and the calendar (ADR 0022, 0064). */
 const bookingOperations = [...occupancyOperations, ...calendarOperations, ...hoursOperations];
-
-/**
- * The caller's own data: preferences, settings, profile, working hours and files
- * (ADR 0039, 0046, 0061, 0063).
- */
-const selfOperations = [
-  ...userPreferenceOperations,
-  ...userSettingsOperations,
-  ...profileOperations,
-  ...fileOperations,
-];
 
 /** Every operation that does not depend on the app's `embed` (all but `search`). */
 function staticOperations(): AnyOperation[] {

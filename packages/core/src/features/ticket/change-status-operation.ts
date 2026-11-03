@@ -1,5 +1,7 @@
+import { allFollowUps } from "../../operations/all-follow-ups";
 import { defineOperation } from "../../operations/define-operation";
 import { invalid, notFound } from "../../shared/errors";
+import { notifyStatusChanged } from "../notification/follow-ups";
 import { regenerateForTicket } from "../work-order/regenerate";
 import { moveTicket } from "./move-ticket";
 import { TicketChangeStatusInputSchema, TicketSchema } from "./schema";
@@ -18,7 +20,7 @@ export const changeTicketStatus = defineOperation({
   input: TicketChangeStatusInputSchema,
   output: TicketSchema,
   permission: "ticket:write",
-  followUp: regenerateForTicket,
+  followUp: allFollowUps({ steps: [regenerateForTicket, notifyStatusChanged] }),
   handler: async ({ input: { ticketId, statusId, reason }, context }) => {
     const before = await loadTicket({ context, id: ticketId });
     if (!before) return notFound({ entity: "Ticket" });

@@ -18,6 +18,7 @@ import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
 import { checkDemoInbox } from "./inbox-checks";
 import { checkDemoIntakeCreate } from "./intake-create-checks";
+import { checkDemoNotifications } from "./notification-checks";
 import { checkDemoOptionQuantities } from "./option-quantity-checks";
 import { checkDemoPayments } from "./payment-checks";
 import { checkDemoPaymentSettings } from "./payment-settings-checks";
@@ -41,6 +42,7 @@ export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoBoard,
   checkDemoBoardLayout,
   checkDemoAssignments,
+  checkDemoNotifications,
   checkDemoHolds,
   checkDemoAlternatives,
   checkDemoArchive,

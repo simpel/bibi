@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { PageHeader } from "@/components/states/page-header";
+import { NotificationPreferencesSection } from "@/features/notification/ui/notification-preferences-section";
 import { OauthGrantSection } from "@/features/oauth-grant/ui/oauth-grant-section";
 import { DisplayFormatForm } from "@/features/user-settings/ui/display-format-form";
 import { runOperation } from "@/server/run-operation";
@@ -41,7 +42,10 @@ const NO_FORMATS = {
   moneyFormat: null,
 };
 
-/** Profile page body: name, email (read-only), formats, password, sessions and connected apps, with an in-page nav. */
+/**
+ * Profile page body: name, email (read-only), formats, notifications, password, sessions and
+ * connected apps, with an in-page nav.
+ */
 export async function ProfileView({ name, email, locale }: ProfileViewProps) {
   const t = await getTranslations("profile");
   const settings = await runOperation({ operation: getUserSettings, input: {} });
@@ -58,6 +62,7 @@ export async function ProfileView({ name, email, locale }: ProfileViewProps) {
         <ProfileCard id="display" title={t("displayTitle")} description={t("displayDescription")}>
           <DisplayFormatForm formats={settings.ok ? settings.value : NO_FORMATS} />
         </ProfileCard>
+        <NotificationPreferencesSection id="notifications" locale={locale} />
         <ProfileCard
           id="password"
           title={t("passwordTitle")}

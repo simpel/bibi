@@ -1,4 +1,5 @@
 import { type ParityEntity, tool } from "./parity-entities";
+import { notificationEntity, notificationPreferenceEntity } from "./parity-entities-notification";
 import { userPreferenceEntity } from "./parity-entities-user-preference";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
@@ -20,5 +21,10 @@ export const userSettingsEntity: ParityEntity = {
   },
 };
 
-/** The caller's own data: preferences and settings. */
-export const selfEntities = (): ParityEntity[] => [userPreferenceEntity, userSettingsEntity];
+/** The caller's own data: preferences, settings and notifications. */
+export const selfEntities = (): ParityEntity[] => [
+  userPreferenceEntity,
+  userSettingsEntity,
+  notificationEntity,
+  notificationPreferenceEntity,
+];
