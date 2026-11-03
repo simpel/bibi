@@ -23,6 +23,7 @@ const toRow = ({ message, dates }: ToRowInput): InboxRow => ({
   receivedAt: message.receivedAt.toISOString(),
   receivedLabel: dates.dateTime({ instant: message.receivedAt }),
   read: message.readAt !== null,
+  message,
 });
 
 export type InboxSectionProps = {

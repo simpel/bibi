@@ -3859,7 +3859,10 @@
     "deleted": "Message deleted",
     "deleteConfirm": "Delete “{subject}”? It leaves the inbox for everyone in the team.",
     "arrivedTitle": "New message in the inbox",
-    "arrivedOpen": "Open"
+    "arrivedOpen": "Open",
+    "sheet": {
+      "openPage": "Open full page"
+    }
   },
   "member": {
     "singular": "Member",
@@ -4920,6 +4923,11 @@
     "arrivedTitle": "New notification",
     "arrivedOpen": "Show",
     "noUnread": "Nothing unread. You are all caught up.",
-    "noRead": "No read notifications yet."
+    "noRead": "No read notifications yet.",
+    "sheet": {
+      "workOrder": "Work order",
+      "openTicket": "Open ticket",
+      "openWorkOrder": "Open work order"
+    }
   }
 }

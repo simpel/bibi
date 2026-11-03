@@ -3859,7 +3859,10 @@
     "deleted": "Meddelandet borttaget",
     "deleteConfirm": "Ta bort ”{subject}”? Det försvinner ur inkorgen för alla i teamet.",
     "arrivedTitle": "Nytt meddelande i inkorgen",
-    "arrivedOpen": "Öppna"
+    "arrivedOpen": "Öppna",
+    "sheet": {
+      "openPage": "Öppna hela sidan"
+    }
   },
   "member": {
     "singular": "Medlem",
@@ -4920,6 +4923,11 @@
     "arrivedTitle": "Ny notis",
     "arrivedOpen": "Visa",
     "noUnread": "Inget oläst. Du är ikapp.",
-    "noRead": "Inga lästa notiser än."
+    "noRead": "Inga lästa notiser än.",
+    "sheet": {
+      "workOrder": "Order",
+      "openTicket": "Öppna ärendet",
+      "openWorkOrder": "Öppna ordern"
+    }
   }
 }

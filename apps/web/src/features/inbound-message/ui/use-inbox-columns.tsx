@@ -1,33 +1,52 @@
 import { actionsColumn, Badge, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { inboxMessageRoute } from "@/lib/inbox-routes";
-import { Link } from "@/lib/navigation";
 import type { InboxRow } from "./inbox-row";
 
-export type UseInboxColumnsInput = { renderActions?: (row: InboxRow) => ReactNode };
+export type UseInboxColumnsInput = {
+  renderActions?: (row: InboxRow) => ReactNode;
+  /** Opens the message's sheet. */
+  onSelect: (input: { row: InboxRow }) => void;
+};
 
-/** Subject (opens the message), sender, channel, received, row actions. */
-export function useInboxColumns({ renderActions }: UseInboxColumnsInput): ColumnDef<InboxRow>[] {
+type SubjectColumnInput = {
+  t: ReturnType<typeof useTranslations<"inbox">>;
+  onSelect: UseInboxColumnsInput["onSelect"];
+};
+
+/** The subject, opening the message's sheet; bold while unread. */
+const subjectColumn = ({ t, onSelect }: SubjectColumnInput): ColumnDef<InboxRow> => ({
+  id: "subject",
+  header: t("columns.subject"),
+  accessorFn: (row) => row.subject ?? "",
+  cell: ({ row }) => (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onSelect({ row: row.original });
+      }}
+      className={
+        row.original.read ? "text-left hover:underline" : "text-left font-medium hover:underline"
+      }
+    >
+      {row.original.subject ?? t("noSubject")}
+    </button>
+  ),
+});
+
+/** Subject (opens the message's sheet), sender, channel, received, row actions. */
+export function useInboxColumns({
+  renderActions,
+  onSelect,
+}: UseInboxColumnsInput): ColumnDef<InboxRow>[] {
   const t = useTranslations("inbox");
   const common = useTranslations("common");
   const actions: ColumnDef<InboxRow>[] = renderActions
     ? [actionsColumn<InboxRow>({ label: common("actions"), cell: renderActions })]
     : [];
   return [
-    {
-      id: "subject",
-      header: t("columns.subject"),
-      accessorFn: (row) => row.subject ?? "",
-      cell: ({ row }) => (
-        <Link
-          href={inboxMessageRoute({ id: row.original.id })}
-          className="font-medium hover:underline"
-        >
-          {row.original.subject ?? t("noSubject")}
-        </Link>
-      ),
-    },
+    subjectColumn({ t, onSelect }),
     {
       id: "sender",
       header: t("columns.sender"),

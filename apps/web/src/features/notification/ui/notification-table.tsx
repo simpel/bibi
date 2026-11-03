@@ -14,9 +14,11 @@ import {
   type NotificationListParams,
 } from "../lib/list-params";
 import { NotificationRowMenu } from "./notification-row-menu";
+import { NotificationSheet } from "./notification-sheet";
 import { useMarkNotifications } from "./use-mark-notifications";
 import { useNotificationColumns } from "./use-notification-columns";
 import { useNotificationRows } from "./use-notification-rows";
+import { useNotificationSheet } from "./use-notification-sheet";
 
 export type NotificationTableProps = {
   notifications: NotificationDto[];
@@ -90,19 +92,25 @@ function usePagination({ total, view }: Pick<NotificationTableProps, "total" | "
   };
 }
 
+/** Marks that read the page again (rows move tables), and the sheet built on them. */
+function useTableMarks() {
+  const router = useRouter();
+  const marks = useMarkNotifications({ onMarked: () => router.refresh() });
+  const sheet = useNotificationSheet({ mark: marks.mark, openOne: marks.openOne });
+  return { mark: marks.mark, openOne: marks.openOne, marking: marks.pending, sheet };
+}
+
 /**
  * One of the page's two tables, unread or read: paged, sorted and filtered on the server (ADR
- * 0094), with the URL holding the state. Rows are marked from the right-click menu or in bulk,
- * then the page reads again so they move to the other table.
+ * 0094), with the URL holding the state. A row opens its sheet; rows are marked from the
+ * right-click menu, the sheet or in bulk, then the page reads again so they move tables.
  */
 export function NotificationTable({ notifications, total, view }: NotificationTableProps) {
   const t = useTranslations("notifications");
   const { navigate, pending } = useQueryNavigation();
   const rows = useNotificationRows({ notifications, total, params: view });
-  const router = useRouter();
-  const marks = useMarkNotifications({ onMarked: () => router.refresh() });
-  const { mark, openOne, pending: marking } = marks;
-  const columns = useNotificationColumns({ onOpen: openOne });
+  const { mark, openOne, marking, sheet } = useTableMarks();
+  const columns = useNotificationColumns({ onSelect: sheet.select });
   const pagination = usePagination({ total: rows.total, view });
   return (
     <div className="grid gap-3">
@@ -113,6 +121,7 @@ export function NotificationTable({ notifications, total, view }: NotificationTa
         columns={columns}
         data={rows.rows}
         getRowId={(notification) => notification.id}
+        onRowClick={(notification) => sheet.select({ notification })}
         rowMenu={(notification) => (
           <NotificationRowMenu {...{ notification, mark, openOne }} disabled={marking} />
         )}
@@ -125,6 +134,11 @@ export function NotificationTable({ notifications, total, view }: NotificationTa
         bulkActions={(selected) => (
           <BulkAction rows={selected} mark={mark} read={view.read === "read"} />
         )}
+      />
+      <NotificationSheet
+        notification={sheet.selected}
+        onClose={sheet.close}
+        onMarkUnread={sheet.markUnread}
       />
     </div>
   );
