@@ -4854,6 +4854,8 @@
     "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}",
     "latest": "Latest notifications",
     "seeAll": "See all notifications",
+    "listChanged": "The list has changed since you opened it.",
+    "showLatest": "Show latest",
     "markAllRead": "Mark all as read",
     "markedAllRead": "All notifications marked as read",
     "markRead": "Mark as read",

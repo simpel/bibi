@@ -3,13 +3,9 @@ import { useTranslations } from "next-intl";
 import { NotificationBell } from "@/features/notification/ui/notification-bell";
 import { Breadcrumb } from "./breadcrumb";
 import { CommandBar } from "./command-bar";
-import type { NotificationBellData, ShellAccess } from "./shell-types";
+import type { ShellAccess } from "./shell-types";
 
-export type TopBarProps = {
-  organizationId: string;
-  access: ShellAccess;
-  bell: NotificationBellData;
-};
+export type TopBarProps = { access: ShellAccess };
 
 /**
  * Three columns: sidebar toggle and breadcrumb on the left, the ⌘K command bar in the middle,
@@ -17,7 +13,7 @@ export type TopBarProps = {
  * so the search stays centred. Below `md` it is a row: the breadcrumb takes the room, the search a
  * fixed narrow width.
  */
-export function TopBar({ organizationId, access, bell }: TopBarProps) {
+export function TopBar({ access }: TopBarProps) {
   const t = useTranslations("nav");
   return (
     <header className="flex h-14 items-center gap-2 border-b bg-background px-4 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,28rem)_minmax(0,1fr)]">
@@ -30,11 +26,7 @@ export function TopBar({ organizationId, access, bell }: TopBarProps) {
         <CommandBar permissions={access.permissions} />
       </div>
       <div className="flex shrink-0 justify-end">
-        <NotificationBell
-          unread={bell.unread}
-          latest={bell.latest}
-          organizationId={organizationId}
-        />
+        <NotificationBell />
       </div>
     </header>
   );

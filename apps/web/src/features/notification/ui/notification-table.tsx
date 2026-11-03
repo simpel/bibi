@@ -8,7 +8,7 @@ import {
   DataTableRowActionGroup,
   type SortingState,
 } from "@bibi/ui";
-import { MailCheckIcon, MailIcon } from "lucide-react";
+import { MailCheckIcon, MailIcon, RefreshCwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { useDataTablePaginationLabels } from "@/lib/use-data-table-pagination-labels";
@@ -17,15 +17,12 @@ import { NOTIFICATION_PAGE_SIZES, type NotificationListParams } from "../lib/lis
 import { useMarkNotifications } from "./use-mark-notifications";
 import { useNotificationColumns } from "./use-notification-columns";
 
-export type NotificationTablePage = Pick<
-  NotificationListParams,
-  "page" | "pageSize" | "sort" | "direction"
->;
+import { useNotificationRows } from "./use-notification-rows";
 
 export type NotificationTableProps = {
   notifications: NotificationDto[];
   total: number;
-  view: NotificationTablePage;
+  view: NotificationListParams;
 };
 
 /** The URL patch for a new sort: none clears it back to the newest first. */
@@ -34,7 +31,8 @@ const sortPatch = ({ sorting }: { sorting: SortingState }) => {
   return next ? { sort: next.id, dir: next.desc ? "desc" : "asc" } : { sort: null, dir: null };
 };
 
-type BulkProps = { rows: NotificationDto[]; mark: ReturnType<typeof useMarkNotifications>["mark"] };
+type Mark = ReturnType<typeof useMarkNotifications>["mark"];
+type BulkProps = { rows: NotificationDto[]; mark: Mark };
 
 /** Mark the selected rows read or unread. */
 function BulkActions({ rows, mark }: BulkProps) {
@@ -51,6 +49,38 @@ function BulkActions({ rows, mark }: BulkProps) {
         {t("markUnread")}
       </Button>
     </>
+  );
+}
+
+type RowActionsProps = { notification: NotificationDto; mark: Mark; disabled: boolean };
+
+/** Toggle one row between read and unread. */
+function RowActions({ notification, mark, disabled }: RowActionsProps) {
+  const t = useTranslations("notifications");
+  const read = notification.readAt !== null;
+  return (
+    <DataTableRowActionGroup>
+      <DataTableRowAction
+        label={read ? t("markUnread") : t("markRead")}
+        icon={read ? MailIcon : MailCheckIcon}
+        disabled={disabled}
+        onClick={() => mark({ ids: [notification.id], read: !read })}
+      />
+    </DataTableRowActionGroup>
+  );
+}
+
+/** Shown when the list changed elsewhere; the rows stay put until the member asks. */
+function StaleBar({ onShow, pending }: { onShow: () => void; pending: boolean }) {
+  const t = useTranslations("notifications");
+  return (
+    <div className="flex items-center justify-between gap-2 rounded-md border bg-muted/50 px-3 py-2 text-sm">
+      <span>{t("listChanged")}</span>
+      <Button size="sm" variant="outline" disabled={pending} onClick={onShow}>
+        <RefreshCwIcon />
+        {t("showLatest")}
+      </Button>
+    </div>
   );
 }
 
@@ -77,37 +107,32 @@ function usePagination({ total, view }: Pick<NotificationTableProps, "total" | "
 export function NotificationTable({ notifications, total, view }: NotificationTableProps) {
   const t = useTranslations("notifications");
   const { navigate, pending } = useQueryNavigation();
+  const rows = useNotificationRows({ notifications, total, params: view });
   const { mark, openOne, pending: marking } = useMarkNotifications();
   const columns = useNotificationColumns({
     onOpen: openOne,
-    renderActions: (notification) => {
-      const read = notification.readAt !== null;
-      return (
-        <DataTableRowActionGroup>
-          <DataTableRowAction
-            label={read ? t("markUnread") : t("markRead")}
-            icon={read ? MailIcon : MailCheckIcon}
-            disabled={marking}
-            onClick={() => mark({ ids: [notification.id], read: !read })}
-          />
-        </DataTableRowActionGroup>
-      );
-    },
+    renderActions: (notification) => (
+      <RowActions notification={notification} mark={mark} disabled={marking} />
+    ),
   });
+  const pagination = usePagination({ total: rows.total, view });
   return (
-    <PersistedDataTable
-      tableId="notification.list"
-      className={cn(pending && "opacity-60 transition-opacity")}
-      columns={columns}
-      data={notifications}
-      getRowId={(notification) => notification.id}
-      emptyText={t("noMatches")}
-      pagination={usePagination({ total, view })}
-      manualSorting
-      sorting={[{ id: view.sort, desc: view.direction === "desc" }]}
-      onSortingChange={(sorting) => navigate({ patch: sortPatch({ sorting }) })}
-      selectable
-      bulkActions={(rows) => <BulkActions rows={rows} mark={mark} />}
-    />
+    <div className="grid gap-3">
+      {rows.stale ? <StaleBar onShow={rows.reload} pending={rows.reloading} /> : null}
+      <PersistedDataTable
+        tableId="notification.list"
+        className={cn((pending || rows.reloading) && "opacity-60 transition-opacity")}
+        columns={columns}
+        data={rows.rows}
+        getRowId={(notification) => notification.id}
+        emptyText={t("noMatches")}
+        pagination={pagination}
+        manualSorting
+        sorting={[{ id: view.sort, desc: view.direction === "desc" }]}
+        onSortingChange={(sorting) => navigate({ patch: sortPatch({ sorting }) })}
+        selectable
+        bulkActions={(selected) => <BulkActions rows={selected} mark={mark} />}
+      />
+    </div>
   );
 }

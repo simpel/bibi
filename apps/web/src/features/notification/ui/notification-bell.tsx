@@ -1,45 +1,23 @@
 "use client";
 
-import type { NotificationDto } from "@bibi/core/schemas";
 import { Button, Popover, PopoverContent, PopoverTrigger } from "@bibi/ui";
 import { BellIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "@/lib/navigation";
-import { ROUTES } from "@/lib/routes";
+import { useState } from "react";
+import { useNotificationLive } from "./notification-live-context";
 import { NotificationPopover } from "./notification-popover";
 import { UnreadDot } from "./unread-dot";
-import { useNotificationStream } from "./use-notification-stream";
-
-export type NotificationBellProps = {
-  /** The caller's unread count and latest notifications, rendered on the server. */
-  unread: number;
-  latest: NotificationDto[];
-  /** The page's organization; the stream refuses another one's count. */
-  organizationId: string;
-};
+import { useLatestNotifications } from "./use-latest-notifications";
 
 /**
  * The top bar's bell (ADR 0094): a red dot while anything is unread, kept live by the stream; it
- * opens the latest notifications. A change while the popover or the list is open re-renders them.
+ * opens the latest notifications, read when it opens.
  */
-export function NotificationBell({
-  unread: initial,
-  latest,
-  organizationId,
-}: NotificationBellProps) {
+export function NotificationBell() {
   const t = useTranslations("notifications");
-  const router = useRouter();
-  const pathname = usePathname();
+  const { unread } = useNotificationLive();
   const [open, setOpen] = useState(false);
-  const { unread, changes } = useNotificationStream({ initial, organizationId });
-  const [shown, setShown] = useState(0);
-  // The first message is the count on connect; later ones mean the rows the server rendered moved on.
-  useEffect(() => {
-    if (changes <= Math.max(shown, 1) || !(open || pathname === ROUTES.notifications)) return;
-    setShown(changes);
-    router.refresh();
-  }, [changes, shown, open, pathname, router]);
+  const latest = useLatestNotifications({ open });
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

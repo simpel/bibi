@@ -4854,6 +4854,8 @@
     "unreadCount": "{count, plural, =0 {Inga olästa notiser} one {# oläst notis} other {# olästa notiser}}",
     "latest": "Senaste notiser",
     "seeAll": "Visa alla notiser",
+    "listChanged": "Listan har ändrats sedan du öppnade den.",
+    "showLatest": "Visa senaste",
     "markAllRead": "Markera alla som lästa",
     "markedAllRead": "Alla notiser markerade som lästa",
     "markRead": "Markera som läst",

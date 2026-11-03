@@ -1,4 +1,4 @@
-import type { NotificationDto, PermissionSet } from "@bibi/core";
+import type { PermissionSet } from "@bibi/core";
 
 /**
  * What the signed-in member may see in the shell; navigation only, pages check again.
@@ -14,5 +14,5 @@ export type ShellAccess = {
 
 export type ShellUser = { name: string; email: string };
 
-/** The bell's server-rendered state (ADR 0094); the stream keeps the count live. */
-export type NotificationBellData = { unread: number; latest: NotificationDto[] };
+/** The bell's server-rendered count (ADR 0094); the stream keeps it live. */
+export type NotificationBellData = { unread: number };

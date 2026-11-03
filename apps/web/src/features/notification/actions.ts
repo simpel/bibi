@@ -1,9 +1,11 @@
 "use server";
 
 import {
+  listNotifications,
   markAllNotificationsRead,
   markNotificationsRead,
   markNotificationsUnread,
+  type NotificationDto,
   type NotificationKind,
   type NotificationPreferenceDto,
   setNotificationPreference,
@@ -11,6 +13,32 @@ import {
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
+import { notificationListInput } from "./lib/list-input";
+import type { NotificationListParams } from "./lib/list-params";
+
+/** How many of the latest notifications the bell's popover shows. */
+const LATEST = 8;
+
+/** The bell's popover rows, read when it opens instead of on every page (ADR 0094). */
+export async function loadLatestNotificationsAction(): Promise<ActionResult<NotificationDto[]>> {
+  const result = await runOperation({ operation: listNotifications, input: { limit: LATEST } });
+  return result.ok ? { ok: true, value: result.value.items } : toActionResult({ result });
+}
+
+type ListResult = ActionResult<{ items: NotificationDto[]; total: number }>;
+
+/** `/notifications`' current page again, when the list has changed elsewhere. */
+export async function listNotificationsAction({
+  params,
+}: {
+  params: NotificationListParams;
+}): Promise<ListResult> {
+  const input = notificationListInput({ params });
+  const result = await runOperation({ operation: listNotifications, input });
+  if (!result.ok) return toActionResult({ result });
+  const { items, total } = result.value;
+  return { ok: true, value: { items, total: total ?? 0 } };
+}
 
 export type NotificationIdsActionInput = { ids: string[] };
 type MarkResult = ActionResult<{ updated: number; unread: number }>;

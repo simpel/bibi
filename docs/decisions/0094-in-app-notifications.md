@@ -16,12 +16,13 @@
    - `workOrder.send`: the stored recipients.
    - `ticket.changeStatus` and `payment.applySignal` (a payment that becomes `SUCCEEDED`): the ticket's main assignee and followers, plus the assignee and followers of every responsibility slot on it, stored or by default (ADR 0055).
 4. **Preferences are per member, per kind, default on.** `NotificationPreference` stores only a choice; no row means on.
-5. **Live updates through Server-Sent Events.** A trigger on `Notification` (insert, and update of `readAt`) calls `pg_notify('notification', {organizationId, recipientUserId})`. The web app holds one `LISTEN` connection per process and pushes the caller's unread count over `/api/notifications/stream`. The page that renders it re-reads on events.
+5. **Live updates through Server-Sent Events.** A trigger on `Notification` (insert, and update of `readAt`) calls `pg_notify('notification', {organizationId, recipientUserId})`. The web app holds one `LISTEN` connection per process and pushes the caller's unread count over `/api/notifications/stream`. One browser holds one stream per organization: the tab with the Web Lock opens it and relays events to its other tabs over a BroadcastChannel (HTTP/1.1 allows only six connections per origin). The stream is only a signal; nothing is rendered again on the server. The shell renders the count, the bell reads its latest rows with a server action when it opens, the caller's own marks apply to open lists locally, and `/notifications` offers to show changes from elsewhere instead of moving rows under the pointer. `LISTEN` needs a direct database connection, not a transaction pooler.
 6. **Operations are `self:*`** (`notification.list|unreadCount|markRead|markUnread|markAllRead`, `notificationPreference.list|set`) on every surface. An API key, which has no user, cannot use them.
 
 ## Rejected
 - **Reusing the inbox.** It is shared organization work with a different lifecycle (attach, dismiss); mixing in personal alerts would make both worse.
 - **Polling the count.** Simpler, but the dot lags by the interval and every open tab queries every minute. SSE with `LISTEN/NOTIFY` is instant and only talks when something changes.
+- **`router.refresh()` on each event.** It renders the whole layout and page again to update one dot, runs twice after the caller's own mark, and reorders a paged table while someone is using it.
 - **WebSockets.** Two-way traffic is not needed, and SSE works through the existing Next.js route handlers and proxy.
 - **Reading `AuditLog` to build a feed.** Domain history never comes from the audit log.
 - **A user-scoped model.** `scopedDb` refuses the system actor on user-scoped models, and a notification belongs to one organization.

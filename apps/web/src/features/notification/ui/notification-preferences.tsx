@@ -3,23 +3,24 @@
 import type { NotificationKind, NotificationPreferenceDto } from "@bibi/core/schemas";
 import { Label, Switch } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/lib/navigation";
+import { useState } from "react";
 import { useToastAction } from "@/lib/use-toast-action";
 import { setNotificationPreferenceAction } from "../actions";
 
 export type NotificationPreferencesProps = { preferences: NotificationPreferenceDto[] };
 
-/** One switch per kind of notification (ADR 0094); each saves on change. */
-export function NotificationPreferences({ preferences }: NotificationPreferencesProps) {
+/** One switch per kind of notification (ADR 0094); each saves on change and keeps what was saved. */
+export function NotificationPreferences({ preferences: initial }: NotificationPreferencesProps) {
   const t = useTranslations("notifications.preferences");
   const common = useTranslations("common");
-  const router = useRouter();
+  const [preferences, setPreferences] = useState(initial);
   const { run, pending } = useToastAction();
   const change = ({ kind, enabled }: { kind: NotificationKind; enabled: boolean }) =>
     run({
       action: () => setNotificationPreferenceAction({ kind, enabled }),
       messages: { pending: common("saving"), success: enabled ? t("turnedOn") : t("turnedOff") },
-      onSuccess: () => router.refresh(),
+      onSuccess: ({ value }) =>
+        setPreferences((list) => list.map((entry) => (entry.kind === value.kind ? value : entry))),
     });
   return (
     <ul className="grid max-w-xl gap-4">

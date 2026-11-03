@@ -8,7 +8,8 @@ import { NotificationRow } from "./notification-row";
 import { useMarkNotifications } from "./use-mark-notifications";
 
 export type NotificationPopoverProps = {
-  latest: NotificationDto[];
+  /** `null` while the first read is under way. */
+  latest: NotificationDto[] | null;
   unread: number;
   onClose: () => void;
 };
@@ -16,6 +17,7 @@ export type NotificationPopoverProps = {
 /** The bell's popover: mark all read, the latest notifications, and a link to all of them. */
 export function NotificationPopover({ latest, unread, onClose }: NotificationPopoverProps) {
   const t = useTranslations("notifications");
+  const common = useTranslations("common");
   const { markAllRead, openOne, pending } = useMarkNotifications();
   const open = ({ notification }: { notification: NotificationLike }) => {
     openOne({ notification });
@@ -30,7 +32,9 @@ export function NotificationPopover({ latest, unread, onClose }: NotificationPop
         </Button>
       </PopoverHeader>
       <Separator />
-      {latest.length === 0 ? (
+      {latest === null ? (
+        <p className="px-4 py-6 text-center text-sm text-muted-foreground">{common("loading")}</p>
+      ) : latest.length === 0 ? (
         <p className="px-4 py-6 text-center text-sm text-muted-foreground">{t("nothingNew")}</p>
       ) : (
         <div className="grid max-h-96 gap-0.5 overflow-y-auto p-1">
