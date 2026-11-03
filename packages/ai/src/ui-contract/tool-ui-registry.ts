@@ -2,6 +2,7 @@ import { ACCESS_UI_ENTRIES } from "./access-entries";
 import { ALLOCATION_GENERIC_UI_TOOLS } from "./allocation-generic-tools";
 import { ALTERNATIVE_GROUP_UI_ENTRIES } from "./alternative-group-entries";
 import { ASSIGNMENT_UI_ENTRIES } from "./assignment-entries";
+import { BILLING_GENERIC_UI_TOOLS, BILLING_UI_ENTRIES } from "./billing-entries";
 import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import { CUSTOMER_UI_ENTRIES } from "./customer-entries";
 import { INBOUND_EMAIL_UI_ENTRIES } from "./inbound-email-entries";
@@ -93,6 +94,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   }),
   ...SKILL_UI_ENTRIES,
   ...NOTIFICATION_UI_ENTRIES,
+  ...BILLING_UI_ENTRIES,
 };
 
 /**
@@ -120,4 +122,5 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   ...SELF_GENERIC_UI_TOOLS,
   ...ALLOCATION_GENERIC_UI_TOOLS,
   ...READ_GENERIC_UI_TOOLS,
+  ...BILLING_GENERIC_UI_TOOLS,
 };

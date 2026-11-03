@@ -10,14 +10,11 @@ import { contactMcpTools } from "../features/contact/mcp";
 import { conversationMcpTools } from "../features/conversation/mcp";
 import { customerMcpTools } from "../features/customer/mcp";
 import { dashboardMcpTools } from "../features/dashboard/mcp";
-import { depositMcpTools } from "../features/deposit/mcp";
 import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
 import { fileMcpTools } from "../features/file/mcp";
 import { financeMcpTools } from "../features/finance/mcp";
 import { inboundMessageMcpTools } from "../features/inbound-message/mcp";
-import { integrationMcpTools } from "../features/integration/mcp";
-import { invoiceMcpTools } from "../features/invoice/mcp";
 import { itemMcpTools } from "../features/item/mcp";
 import { itemDemandMcpTools } from "../features/item-demand/mcp";
 import { itemStateMcpTools } from "../features/item-state/mcp";
@@ -31,8 +28,6 @@ import { notificationPreferenceMcpTools } from "../features/notification-prefere
 import { oauthGrantMcpTools } from "../features/oauth-grant/mcp";
 import { occupancyMcpTools } from "../features/occupancy/mcp";
 import { organizationProfileMcpTools } from "../features/organization-profile/mcp";
-import { paymentMcpTools } from "../features/payment/mcp";
-import { paymentAccountMcpTools } from "../features/payment-account/mcp";
 import { permissionMcpTools } from "../features/permission/mcp";
 import { pipelineMcpTools } from "../features/pipeline/mcp";
 import { pipelineSetupMcpTools } from "../features/pipeline-setup/mcp";
@@ -56,6 +51,7 @@ import { workOrderMcpTools } from "../features/work-order/mcp";
 import { workOrderDefinitionMcpTools } from "../features/work-order-definition/mcp";
 import { searchMcpTools } from "../search-mcp";
 import type { McpToolMeta } from "./meta";
+import { moneyMcpTools } from "./money-mcp-tools";
 
 const accessMcpTools = [...memberMcpTools, ...apiKeyMcpTools, ...permissionMcpTools];
 const gridAndSetupMcpTools = [
@@ -84,15 +80,6 @@ const selfMcpTools = [
   ...userSettingsMcpTools,
   ...profileMcpTools,
   ...fileMcpTools,
-];
-
-/** Payments, the receivables they settle (ADR 0057) and the payout account. */
-const moneyMcpTools = [
-  ...integrationMcpTools,
-  ...paymentAccountMcpTools,
-  ...paymentMcpTools,
-  ...depositMcpTools,
-  ...invoiceMcpTools,
 ];
 
 /** The organization's profile and its members' profiles (ADR 0061, 0068). */

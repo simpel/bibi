@@ -1,4 +1,100 @@
 {
+  "billing": {
+    "title": "Billing",
+    "description": "Your Bibi subscription, your seats and anyone waiting for one.",
+    "state": {
+      "EXEMPT": "Free of charge",
+      "UNCONFIGURED": "Not set up",
+      "TRIAL": "Free trial",
+      "ACTIVE": "Active",
+      "PAST_DUE": "Payment due",
+      "REQUIRED": "Payment needed"
+    },
+    "interval": {
+      "MONTH": "Monthly",
+      "YEAR": "Yearly"
+    },
+    "plans": {
+      "month": "Monthly",
+      "year": "Yearly",
+      "monthPrice": "{price}/month",
+      "yearPrice": "{price}/year",
+      "exclVat": "excl. VAT",
+      "monthNote": "Pay month by month.",
+      "yearNote": "Pay once a year and save {saving}.",
+      "saveBadge": "10 % off",
+      "seats": "{included} seats are included. Each extra seat is {price}/month.",
+      "continue": "Continue to payment",
+      "opening": "Opening the payment page…",
+      "redirecting": "Taking you to Stripe…"
+    },
+    "pay": {
+      "adminTitle": "Your free trial has ended",
+      "adminDescription": "We hope Bibi has been a good help! Pick a plan to carry on – everything you have set up is right where you left it.",
+      "memberTitle": "Your free trial has ended",
+      "memberDescription": "Bibi is paused until an admin in your organization picks a plan. Don't worry, everything you have done is saved.",
+      "remind": "Remind your admin",
+      "reminding": "Sending a reminder…",
+      "reminded": "Your admins have been told. Thanks for the nudge!",
+      "alreadyReminded": "Your admins have already been reminded. They'll be with you soon."
+    },
+    "done": {
+      "title": "Thank you!",
+      "finishing": "Finishing your payment…"
+    },
+    "settings": {
+      "planTitle": "Plan",
+      "trialEndsAt": "Trial ends",
+      "interval": "Plan",
+      "noPlan": "No plan yet",
+      "periodEnd": "Next payment",
+      "endsOn": "Ends on",
+      "none": "–",
+      "cancelAtPeriodEnd": "The subscription ends when this period is over.",
+      "readOnly": "Only admins can change billing.",
+      "addPaymentDetails": "Add payment details",
+      "addPaymentTitle": "Choose your plan",
+      "addPaymentDescription": "Nothing is charged until your free trial ends.",
+      "manage": "Manage billing",
+      "openingPortal": "Opening Stripe…",
+      "redirecting": "Taking you to Stripe…",
+      "seatsTitle": "Seats",
+      "seats": {
+        "included": "Included",
+        "extra": "Extra",
+        "used": "In use",
+        "held": "Waiting"
+      },
+      "autoAssign": "Add seats automatically",
+      "autoAssignHint": "On: inviting someone when every seat is taken adds a paid seat. Off: the invitation waits below until you approve it.",
+      "autoAssignOn": "New seats are added automatically.",
+      "autoAssignOff": "New seats now wait for your approval.",
+      "extraSeats": "Extra seats",
+      "extraSeatsHint": "Each extra seat is {price}/month. You can't go below the seats in use.",
+      "saveSeats": "Save seats",
+      "seatsSaved": "The seats have been saved.",
+      "requestsTitle": "Seat requests",
+      "requestsDescription": "Invitations waiting for a seat. Approving one adds a paid seat and sends the invitation."
+    },
+    "requests": {
+      "columns": {
+        "email": "Email",
+        "role": "Role",
+        "requested": "Requested"
+      },
+      "empty": "No one is waiting for a seat.",
+      "approve": "Approve",
+      "decline": "Decline",
+      "approveTitle": "Approve a seat for {email}?",
+      "approveDescription": "This adds a paid seat ({price}/month) and sends the invitation.",
+      "declineTitle": "Decline {email}?",
+      "declineDescription": "The invitation is cancelled and never sent.",
+      "approving": "Approving…",
+      "approved": "The seat was added and the invitation is on its way.",
+      "declining": "Declining…",
+      "declined": "The invitation was declined."
+    }
+  },
   "common": {
     "hidden": "Hidden",
     "appName": "Bibi",
@@ -467,6 +563,7 @@
     }
   },
   "nav": {
+    "billing": "Billing",
     "dashboard": "Data",
     "pipeline": "Pipeline",
     "venues": "Venues",
@@ -2490,6 +2587,8 @@
         "fiscalYearStartMonth": "First month of the fiscal year",
         "depositPercent": "Deposit (percent)",
         "depositMinimumMinor": "Minimum for a deposit (minor units)",
+        "autoAssignSeats": "Add seats automatically",
+        "extraSeats": "Extra seats",
         "invoiceProvider": "Invoice provider",
         "revenueAccounts": "Revenue accounts per item type or item"
       },
@@ -2603,6 +2702,10 @@
         "boardPhase_moveStatus": "Move status between board columns",
         "accountingSettings_update": "Change accounting settings",
         "paymentSettings_update": "Change payment settings",
+        "billing_update": "Change seat settings",
+        "billing_approveSeat": "Approve a seat",
+        "billing_rejectSeat": "Decline a seat",
+        "billing_remindAdmins": "Remind the admins to pay",
         "deposit_request": "Request deposit with payment link",
         "accountingExport_create": "Create SIE export",
         "inboundMessage_dismiss": "Dismiss message",
@@ -2673,6 +2776,12 @@
       "running": "Running {tool}..."
     },
     "ui": {
+      "billing": {
+        "singular": "Bibi subscription",
+        "trialEndsAt": "The free trial ends {date}.",
+        "seats": "{used} of {total} seats in use, {held} waiting",
+        "open": "Open billing"
+      },
       "open": "Open",
       "openVenue": "Open the venue",
       "more": "There are more results. Ask the assistant to show more.",
@@ -3217,6 +3326,7 @@
     "title": "Settings",
     "description": "How your organization is set up. Changes here affect everyone.",
     "items": {
+      "billing": "Your Bibi plan, seats and seat requests.",
       "organization": "The organization's time zone, used by every venue without its own.",
       "types": "The kinds of items you offer and the fields they have.",
       "lists": "Your own value lists, such as allergens or equipment.",
@@ -3285,6 +3395,60 @@
     "openAssistant": "Open the assistant"
   },
   "admin": {
+    "billing": {
+      "title": "Billing",
+      "description": "Bibi's own Stripe account, its prices and every organization's subscription.",
+      "config": {
+        "title": "Stripe",
+        "configured": "Billing is live: organizations pay after their trial.",
+        "notConfigured": "Not set up yet, so no organization is asked to pay.",
+        "live": "Live",
+        "test": "Test",
+        "secretKey": "Secret key",
+        "secretKeyStored": "The stored key ends in {hint}. Leave blank to keep it.",
+        "noKey": "No key stored yet.",
+        "webhookSecret": "Webhook signing secret",
+        "webhookSecretHint": "Optional. Create in Stripe stores it; paste the one from stripe listen when testing locally.",
+        "basePriceMonthlyId": "Monthly price id",
+        "basePriceYearlyId": "Yearly price id",
+        "seatPriceId": "Seat price id",
+        "save": "Save",
+        "saved": "The Stripe settings have been saved."
+      },
+      "provision": {
+        "title": "Create in Stripe",
+        "description": "Creates the product, the three prices, the customer portal and, with a URL, the webhook. Safe to run again.",
+        "webhookUrl": "Webhook URL",
+        "webhookUrlHint": "Must be https. Leave it empty locally and use stripe listen.",
+        "run": "Create in Stripe",
+        "running": "Creating in Stripe…",
+        "done": "Stripe is set up."
+      },
+      "organizations": {
+        "title": "Organizations",
+        "empty": "No organizations yet.",
+        "columns": {
+          "name": "Organization",
+          "state": "State",
+          "trialEndsAt": "Trial ends",
+          "plan": "Plan",
+          "extraSeats": "Extra seats",
+          "exempt": "Exempt"
+        },
+        "noPlan": "No plan",
+        "exemptOn": "{name} is never asked to pay.",
+        "exemptOff": "{name} pays after its trial again.",
+        "changeTrial": "Change trial end",
+        "trialTitle": "Trial end for {name}",
+        "trialDescription": "The trial lasts through this day, Swedish time.",
+        "trialEnd": "Last trial day",
+        "resetTrial": "Back to 14 days",
+        "saveTrial": "Save",
+        "trialSaved": "The trial end has been saved.",
+        "first": "First page",
+        "next": "Next page"
+      }
+    },
     "title": "Mothership",
     "navLabel": "Mothership",
     "backToApp": "Back to app",
@@ -3292,6 +3456,7 @@
     "sidebarTitle": "Mothership",
     "sidebarDescription": "Mothership navigation",
     "nav": {
+      "billing": "Billing",
       "logs": "System log",
       "aiModels": "AI models"
     },
@@ -3713,6 +3878,7 @@
     "expiresAt": "Expires {date}",
     "invitationStatus": {
       "pending": "Pending",
+      "held": "Waiting for a seat",
       "accepted": "Accepted",
       "rejected": "Declined",
       "canceled": "Revoked"
@@ -4244,6 +4410,7 @@
       "haveCode": "Have an invite code?"
     },
     "join": {
+      "held": "Every seat in {organization} is taken, so an admin needs to approve yours. You'll get an invitation email once they do.",
       "offerTitle": "Join {organization}",
       "offerDescription": "Your colleagues at {domain} use Bibi in {organization}.",
       "joinOrganization": "Join {organization}",
@@ -4467,6 +4634,7 @@
       "submit": "Submit"
     },
     "features": {
+      "billing": "Billing",
       "ticket": "Tickets",
       "inbox": "Inbox",
       "program": "Program",
@@ -4491,6 +4659,7 @@
       "assistant": "Assistant and organization skills"
     },
     "featureDescriptions": {
+      "billing": "Bibi's own subscription: the plan, payment details and seats.",
       "ticket": "Bookings with their lines (rooms, food, activities), statuses and holds.",
       "inbox": "Requests that came in by email, form or API before there is a ticket.",
       "program": "The schedule of a booking: what happens when, and where.",

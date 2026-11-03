@@ -29,7 +29,12 @@ export const BOOKING_NAMES = [
 ];
 
 /** Operations the AI actor may never run (`aiAllowed: false`, #88). */
-export const AI_FORBIDDEN_NAMES = ["inboundMessage.submit", "apiKey.create"];
+export const AI_FORBIDDEN_NAMES = [
+  "inboundMessage.submit",
+  "billing.startCheckout",
+  "billing.openPortal",
+  "apiKey.create",
+];
 
 /** The caller's own preferences, profile, working hours and files (`self`, ADR 0039, 0061, 0063). */
 const SELF_NAMES = [

@@ -7,7 +7,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@bibi/ui";
-import { BotIcon, ScrollTextIcon } from "lucide-react";
+import { BotIcon, ReceiptIcon, ScrollTextIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
@@ -15,6 +15,7 @@ import { ROUTES } from "@/lib/routes";
 const ITEMS = [
   { href: ROUTES.mothershipLogs, labelKey: "logs", icon: ScrollTextIcon },
   { href: ROUTES.mothershipAiModels, labelKey: "aiModels", icon: BotIcon },
+  { href: ROUTES.mothershipBilling, labelKey: "billing", icon: ReceiptIcon },
 ] as const;
 
 /** Sections of the superadmin area. */

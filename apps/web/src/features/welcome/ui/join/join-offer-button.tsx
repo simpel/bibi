@@ -25,9 +25,14 @@ export function JoinOfferButton({ organizationId, name, stay, variant }: JoinOff
       action: () => joinOfferAction({ input: { organizationId } }),
       messages: {
         pending: t("joining", { organization: name }),
-        success: t("joined", { organization: name }),
+        success: ({ value }) =>
+          value === "held"
+            ? t("held", { organization: name })
+            : t("joined", { organization: name }),
       },
-      onSuccess: () => (stay ? router.refresh() : router.push(JOIN_PATHS.organizations)),
+      // A held join is no membership yet: stay and let the page show the offer as it is.
+      onSuccess: ({ value }) =>
+        stay || value === "held" ? router.refresh() : router.push(JOIN_PATHS.organizations),
     });
   return (
     <Button

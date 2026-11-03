@@ -1,5 +1,14 @@
 import { createAiSettingOperations, listAiFeatures } from "./ai-settings/operations";
 import type { ListCompatibleModels } from "./ai-settings/schema";
+import {
+  getBillingConfig,
+  provisionBillingConfig,
+  updateBillingConfig,
+} from "./billing/config-operations";
+import {
+  listBillingOrganizations,
+  updateBillingOrganization,
+} from "./billing/organization-operations";
 import { getSystemLog, listSystemLogs } from "./system-log/operations";
 
 export type CreatePlatformOperationsInput = { listCompatibleModels: ListCompatibleModels };
@@ -16,6 +25,11 @@ export function createPlatformOperations({ listCompatibleModels }: CreatePlatfor
     listAiFeatures,
     listAiModels,
     updateAiFeature,
+    getBillingConfig,
+    updateBillingConfig,
+    provisionBillingConfig,
+    listBillingOrganizations,
+    updateBillingOrganization,
   } as const;
 }
 

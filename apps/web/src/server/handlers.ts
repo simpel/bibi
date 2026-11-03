@@ -1,6 +1,6 @@
 import "server-only";
 import { createRestHandler } from "@bibi/api";
-import { invitationMailHook, resolveExecuteContext } from "@bibi/auth";
+import { billingMailHook, invitationMailHook, resolveExecuteContext } from "@bibi/auth";
 import { createGraphqlHandler } from "@bibi/graphql";
 import { embed } from "./embed";
 import { ensureOperations } from "./operations";
@@ -17,7 +17,7 @@ export function graphqlHandler(): Handler {
   holder.__bibiGraphql ??= createGraphqlHandler({
     resolveContext: resolveExecuteContext,
     embed,
-    afterCommit: [invitationMailHook],
+    afterCommit: [invitationMailHook, billingMailHook],
   });
   return holder.__bibiGraphql;
 }
@@ -28,7 +28,7 @@ export function restHandler(): Handler {
     operations: ensureOperations(),
     resolveContext: resolveExecuteContext,
     embed,
-    afterCommit: [invitationMailHook],
+    afterCommit: [invitationMailHook, billingMailHook],
   });
   return holder.__bibiRest;
 }

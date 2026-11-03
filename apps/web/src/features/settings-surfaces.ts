@@ -1,3 +1,4 @@
+import { BILLING_SURFACES } from "./billing-surfaces";
 import { NOTIFICATION_SURFACES } from "./notification-surfaces";
 import type { WebSurface } from "./web-surfaces";
 
@@ -71,4 +72,6 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "notificationPreference.set", route: "/profile" },
   // The bell and the list of the user's own notifications (ADR 0094).
   ...NOTIFICATION_SURFACES,
+  // Bibi's own subscription, its payment page and seat requests (ADR 0095).
+  ...BILLING_SURFACES,
 ];

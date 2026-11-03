@@ -1,4 +1,100 @@
 {
+  "billing": {
+    "title": "Fakturering",
+    "description": "Ert Bibi-abonnemang, era platser och vilka som väntar på en.",
+    "state": {
+      "EXEMPT": "Kostnadsfritt",
+      "UNCONFIGURED": "Inte uppsatt",
+      "TRIAL": "Provperiod",
+      "ACTIVE": "Aktivt",
+      "PAST_DUE": "Betalning försenad",
+      "REQUIRED": "Betalning krävs"
+    },
+    "interval": {
+      "MONTH": "Månadsvis",
+      "YEAR": "Årsvis"
+    },
+    "plans": {
+      "month": "Månadsvis",
+      "year": "Årsvis",
+      "monthPrice": "{price}/mån",
+      "yearPrice": "{price}/år",
+      "exclVat": "exkl. moms",
+      "monthNote": "Betala månad för månad.",
+      "yearNote": "Betala en gång om året och spara {saving}.",
+      "saveBadge": "10 % rabatt",
+      "seats": "{included} platser ingår. Varje extra plats kostar {price}/mån.",
+      "continue": "Fortsätt till betalning",
+      "opening": "Öppnar betalsidan…",
+      "redirecting": "Skickar dig till Stripe…"
+    },
+    "pay": {
+      "adminTitle": "Provperioden är slut",
+      "adminDescription": "Vi hoppas att Bibi har varit till hjälp! Välj en plan för att fortsätta – allt ni har satt upp finns kvar precis där ni lämnade det.",
+      "memberTitle": "Provperioden är slut",
+      "memberDescription": "Bibi är pausat tills en admin i er organisation väljer en plan. Ingen fara, allt du har gjort är sparat.",
+      "remind": "Påminn din admin",
+      "reminding": "Skickar en påminnelse…",
+      "reminded": "Era admins har fått veta. Tack för knuffen!",
+      "alreadyReminded": "Era admins har redan blivit påminda. De är snart med er."
+    },
+    "done": {
+      "title": "Tack!",
+      "finishing": "Slutför din betalning…"
+    },
+    "settings": {
+      "planTitle": "Plan",
+      "trialEndsAt": "Provperioden slutar",
+      "interval": "Plan",
+      "noPlan": "Ingen plan än",
+      "periodEnd": "Nästa betalning",
+      "endsOn": "Slutar",
+      "none": "–",
+      "cancelAtPeriodEnd": "Abonnemanget upphör när den här perioden är slut.",
+      "readOnly": "Bara admins kan ändra faktureringen.",
+      "addPaymentDetails": "Lägg till betalningsuppgifter",
+      "addPaymentTitle": "Välj er plan",
+      "addPaymentDescription": "Inget dras förrän provperioden är slut.",
+      "manage": "Hantera fakturering",
+      "openingPortal": "Öppnar Stripe…",
+      "redirecting": "Skickar dig till Stripe…",
+      "seatsTitle": "Platser",
+      "seats": {
+        "included": "Ingår",
+        "extra": "Extra",
+        "used": "Används",
+        "held": "Väntar"
+      },
+      "autoAssign": "Lägg till platser automatiskt",
+      "autoAssignHint": "På: en inbjudan när alla platser är tagna lägger till en betald plats. Av: inbjudan väntar nedan tills du godkänner den.",
+      "autoAssignOn": "Nya platser läggs till automatiskt.",
+      "autoAssignOff": "Nya platser väntar nu på ditt godkännande.",
+      "extraSeats": "Extra platser",
+      "extraSeatsHint": "Varje extra plats kostar {price}/mån. Du kan inte gå under antalet platser som används.",
+      "saveSeats": "Spara platser",
+      "seatsSaved": "Platserna har sparats.",
+      "requestsTitle": "Platsförfrågningar",
+      "requestsDescription": "Inbjudningar som väntar på en plats. Godkänner du en läggs en betald plats till och inbjudan skickas."
+    },
+    "requests": {
+      "columns": {
+        "email": "E-post",
+        "role": "Roll",
+        "requested": "Begärd"
+      },
+      "empty": "Ingen väntar på en plats.",
+      "approve": "Godkänn",
+      "decline": "Avböj",
+      "approveTitle": "Godkänna en plats för {email}?",
+      "approveDescription": "Det lägger till en betald plats ({price}/mån) och skickar inbjudan.",
+      "declineTitle": "Avböja {email}?",
+      "declineDescription": "Inbjudan avbryts och skickas aldrig.",
+      "approving": "Godkänner…",
+      "approved": "Platsen är tillagd och inbjudan är på väg.",
+      "declining": "Avböjer…",
+      "declined": "Inbjudan har avböjts."
+    }
+  },
   "common": {
     "hidden": "Dold",
     "appName": "Bibi",
@@ -467,6 +563,7 @@
     }
   },
   "nav": {
+    "billing": "Fakturering",
     "dashboard": "Data",
     "pipeline": "Pipeline",
     "venues": "Anläggningar",
@@ -2490,6 +2587,8 @@
         "fiscalYearStartMonth": "Räkenskapsårets första månad",
         "depositPercent": "Förskott (procent)",
         "depositMinimumMinor": "Lägsta belopp för förskott (ören)",
+        "autoAssignSeats": "Lägg till platser automatiskt",
+        "extraSeats": "Extra platser",
         "invoiceProvider": "Fakturaleverantör",
         "revenueAccounts": "Intäktskonton per artikeltyp eller artikel"
       },
@@ -2603,6 +2702,10 @@
         "boardPhase_moveStatus": "Flytta ärendestatus mellan kolumner",
         "accountingSettings_update": "Ändra bokföringsinställningar",
         "paymentSettings_update": "Ändra betalningsinställningar",
+        "billing_update": "Ändra platsinställningar",
+        "billing_approveSeat": "Godkänn en plats",
+        "billing_rejectSeat": "Avböj en plats",
+        "billing_remindAdmins": "Påminn admins om betalning",
         "deposit_request": "Begär förskott med betallänk",
         "accountingExport_create": "Skapa SIE-export",
         "inboundMessage_dismiss": "Avfärda meddelande",
@@ -2673,6 +2776,12 @@
       "running": "Kör {tool}..."
     },
     "ui": {
+      "billing": {
+        "singular": "Bibi-abonnemang",
+        "trialEndsAt": "Provperioden slutar {date}.",
+        "seats": "{used} av {total} platser används, {held} väntar",
+        "open": "Öppna faktureringen"
+      },
       "open": "Öppna",
       "openVenue": "Öppna anläggningen",
       "more": "Det finns fler resultat. Be assistenten visa fler.",
@@ -3217,6 +3326,7 @@
     "title": "Inställningar",
     "description": "Hur er organisation är uppsatt. Ändringar här påverkar alla.",
     "items": {
+      "billing": "Er Bibi-plan, era platser och platsförfrågningar.",
       "organization": "Organisationens tidszon, som varje anläggning utan egen zon använder.",
       "types": "Vilka sorters artiklar ni erbjuder och vilka fält de har.",
       "lists": "Era egna värdelistor, till exempel allergener eller utrustning.",
@@ -3285,6 +3395,60 @@
     "openAssistant": "Öppna assistenten"
   },
   "admin": {
+    "billing": {
+      "title": "Fakturering",
+      "description": "Bibis eget Stripe-konto, dess priser och varje organisations abonnemang.",
+      "config": {
+        "title": "Stripe",
+        "configured": "Faktureringen är igång: organisationer betalar efter provperioden.",
+        "notConfigured": "Inte uppsatt än, så ingen organisation behöver betala.",
+        "live": "Live",
+        "test": "Test",
+        "secretKey": "Hemlig nyckel",
+        "secretKeyStored": "Den sparade nyckeln slutar på {hint}. Lämna tomt för att behålla den.",
+        "noKey": "Ingen nyckel sparad än.",
+        "webhookSecret": "Webhookens signeringshemlighet",
+        "webhookSecretHint": "Valfri. Skapa i Stripe sparar den; klistra in den från stripe listen när du testar lokalt.",
+        "basePriceMonthlyId": "Pris-id per månad",
+        "basePriceYearlyId": "Pris-id per år",
+        "seatPriceId": "Pris-id per plats",
+        "save": "Spara",
+        "saved": "Stripe-inställningarna har sparats."
+      },
+      "provision": {
+        "title": "Skapa i Stripe",
+        "description": "Skapar produkten, de tre priserna, kundportalen och, med en URL, webhooken. Går bra att köra igen.",
+        "webhookUrl": "Webhook-URL",
+        "webhookUrlHint": "Måste vara https. Lämna tomt lokalt och använd stripe listen.",
+        "run": "Skapa i Stripe",
+        "running": "Skapar i Stripe…",
+        "done": "Stripe är uppsatt."
+      },
+      "organizations": {
+        "title": "Organisationer",
+        "empty": "Inga organisationer än.",
+        "columns": {
+          "name": "Organisation",
+          "state": "Läge",
+          "trialEndsAt": "Provperioden slutar",
+          "plan": "Plan",
+          "extraSeats": "Extra platser",
+          "exempt": "Undantagen"
+        },
+        "noPlan": "Ingen plan",
+        "exemptOn": "{name} behöver aldrig betala.",
+        "exemptOff": "{name} betalar efter provperioden igen.",
+        "changeTrial": "Ändra provperiodens slut",
+        "trialTitle": "Provperiodens slut för {name}",
+        "trialDescription": "Provperioden varar till och med den här dagen, svensk tid.",
+        "trialEnd": "Sista dag i provperioden",
+        "resetTrial": "Tillbaka till 14 dagar",
+        "saveTrial": "Spara",
+        "trialSaved": "Provperiodens slut har sparats.",
+        "first": "Första sidan",
+        "next": "Nästa sida"
+      }
+    },
     "title": "Mothership",
     "navLabel": "Mothership",
     "backToApp": "Till appen",
@@ -3292,6 +3456,7 @@
     "sidebarTitle": "Mothership",
     "sidebarDescription": "Navigering för mothership",
     "nav": {
+      "billing": "Fakturering",
       "logs": "Systemlogg",
       "aiModels": "AI-modeller"
     },
@@ -3713,6 +3878,7 @@
     "expiresAt": "Går ut {date}",
     "invitationStatus": {
       "pending": "Väntar",
+      "held": "Väntar på plats",
       "accepted": "Accepterad",
       "rejected": "Avböjd",
       "canceled": "Återkallad"
@@ -4244,6 +4410,7 @@
       "haveCode": "Har du en inbjudningskod?"
     },
     "join": {
+      "held": "Alla platser i {organization} är tagna, så en admin behöver godkänna din. Du får en inbjudan via e-post när de har gjort det.",
       "offerTitle": "Gå med i {organization}",
       "offerDescription": "Dina kollegor på {domain} använder Bibi i {organization}.",
       "joinOrganization": "Gå med i {organization}",
@@ -4467,6 +4634,7 @@
       "submit": "Skicka in"
     },
     "features": {
+      "billing": "Fakturering",
       "ticket": "Ärenden",
       "inbox": "Inkorg",
       "program": "Program",
@@ -4491,6 +4659,7 @@
       "assistant": "Assistent och organisationens färdigheter"
     },
     "featureDescriptions": {
+      "billing": "Bibis eget abonnemang: planen, betalningsuppgifterna och platserna.",
       "ticket": "Bokningar med sina rader (rum, mat, aktiviteter), ärendestatusar och reservationer.",
       "inbox": "Förfrågningar som kommit in via e-post, formulär eller API innan det finns ett ärende.",
       "program": "Bokningens schema: vad som händer när, och var.",

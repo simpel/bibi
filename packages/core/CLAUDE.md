@@ -63,6 +63,10 @@ The parity core: every capability is defined **once** as an operation and then e
 - `integration.completeConnect` (web callback) and `integration.refreshExpiring` (worker) are run directly, never registered. Tests swap Fortnox with `setFortnoxGateway`.
 - Fortnox invoicing goes through `getFortnoxInvoicingGateway` (`features/integration/fortnox/invoicing-registry.ts`), called in `external`; tests swap it with `setFortnoxInvoicingGateway` (ADR 0090).
 
+## Bibi's own billing (ADR 0091, 0095)
+- Stripe goes only through `getBillingGateway()` (tests: `setBillingGateway({ gateway: createMemoryBillingGateway() })`); its key and prices come from the platform row `BillingConfig` (`loadBillingKeys`), never env. Unconfigured, nothing is gated.
+- A new member or invitation takes a seat only through `claimSeat` (in the caller's transaction); seat quantity reaches Stripe only through `syncSeats` in a `followUp`. Access is derived on read (`deriveAccess`), never stored.
+
 ## Platform operations (ADR 0015)
 - `src/platform/`: `definePlatformOperation` and `executePlatform` with a `PlatformContext` built only by `resolvePlatformContext` in auth. Same chain as `execute`; handlers see only `PlatformDb`. They are **not** registered in the org registry and not in GraphQL, REST or MCP.
 - `resolveAiModel({ feature })` returns the admin's choice (cached 30 s). No default: unchosen → `UNAVAILABLE` and `ai.modelNotConfigured`. New AI feature: an entry in `AI_FEATURES`, `resolveAiModel` where it runs, texts in `admin.aiModels.features`.

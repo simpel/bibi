@@ -49,6 +49,8 @@ export const FEATURE_SPECS = {
   apiKey: { group: "organization", actions: all },
   paymentAccount: { group: "organization", actions: noDelete },
   integration: { group: "organization", actions: noDelete },
+  // Bibi's own subscription (ADR 0091, 0095): plan, seats, checkout.
+  billing: { group: "organization", actions: noDelete },
   audit: { group: "organization", actions: ["read"] },
   assistant: { group: "organization", actions: noDelete },
 } as const satisfies Record<string, FeatureSpec>;
@@ -65,6 +67,7 @@ export const LOCKED_FEATURES: readonly Feature[] = [
   "apiKey",
   "paymentAccount",
   "integration",
+  "billing",
 ];
 
 /**

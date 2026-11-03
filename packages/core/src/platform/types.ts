@@ -18,7 +18,10 @@ export type PlatformContext = {
 };
 
 /** Least privilege: platform handlers only see the platform tables. */
-export type PlatformDb = Pick<Db, "systemLog" | "aiSetting">;
+export type PlatformDb = Pick<
+  Db,
+  "systemLog" | "aiSetting" | "billingConfig" | "billingAccount" | "organization"
+>;
 
 export type PlatformHandlerContext = {
   actor: PlatformActor;

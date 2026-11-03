@@ -47,6 +47,7 @@ export const ROUTES = {
   settingsTicketTemplates: "/settings/ticket-templates",
   settingsMembers: "/admin/members",
   settingsPayments: "/settings/payments",
+  settingsBilling: "/settings/billing",
   settingsAccounting: "/settings/accounting",
   settingsIntegrations: "/settings/integrations",
   settingsApiKeys: "/admin/api-keys",
@@ -56,6 +57,7 @@ export const ROUTES = {
   mothership: "/mothership",
   mothershipLogs: "/mothership/logs",
   mothershipAiModels: "/mothership/ai-models",
+  mothershipBilling: "/mothership/billing",
   adminLogs: "/mothership/logs",
   adminAiModels: "/mothership/ai-models",
 } as const;

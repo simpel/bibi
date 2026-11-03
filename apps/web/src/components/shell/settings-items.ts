@@ -11,6 +11,7 @@ import {
   ListIcon,
   type LucideIcon,
   PlugIcon,
+  ReceiptIcon,
   ReceiptTextIcon,
   ShapesIcon,
   TagIcon,
@@ -33,6 +34,7 @@ export type SettingsKey =
   | "ticketTemplates"
   | "members"
   | "payments"
+  | "billing"
   | "accounting"
   | "integrations"
   | "skills";
@@ -104,6 +106,7 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
     icon: CreditCardIcon,
     permission: "paymentAccount:read",
   },
+  { href: ROUTES.settingsBilling, key: "billing", icon: ReceiptIcon, permission: "billing:read" },
   {
     href: ROUTES.settingsAccounting,
     key: "accounting",

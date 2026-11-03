@@ -1,3 +1,4 @@
+import { billingOperations } from "./features/billing/operations";
 import { depositOperations } from "./features/deposit/operations";
 import {
   createAccountingExport,
@@ -73,6 +74,7 @@ import { paymentAccountOperations } from "./features/payment-account/operations"
  * their accounting export (ADR 0077), and the connections to accounting systems (ADR 0087).
  */
 export const moneyOperations = [
+  ...billingOperations,
   ...paymentAccountOperations,
   ...paymentOperations,
   ...depositOperations,

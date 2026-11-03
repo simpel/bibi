@@ -43,6 +43,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   "api-keys": "apiKeys",
   permissions: "permissions",
   payments: "payments",
+  billing: "billing",
   accounting: "accounting",
   "item-states": "itemStates",
   "ticket-templates": "ticketTemplates",

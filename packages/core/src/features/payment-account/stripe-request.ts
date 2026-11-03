@@ -20,6 +20,8 @@ export type StripeFetchInput = {
   headers?: Record<string, string>;
   body?: string;
   idempotencyKey?: string | undefined;
+  /** Bibi's billing key from `BillingConfig` (ADR 0095); without it, the Connect env key. */
+  secretKey?: string | undefined;
 };
 
 type StripeErrorBody = { error?: { message?: string } };
@@ -28,6 +30,12 @@ type UnavailableInput = { message: string };
 const unavailable = ({ message }: UnavailableInput) =>
   err({ error: new AppError({ code: "UNAVAILABLE", message }) });
 
+/** The Connect platform key from env (ADR 0028), or null when Connect is not configured. */
+function connectKey(): string | null {
+  const { STRIPE_SECRET_KEY, STRIPE_PLATFORM_ACCOUNT_ID } = getEnv();
+  return STRIPE_SECRET_KEY && STRIPE_PLATFORM_ACCOUNT_ID ? STRIPE_SECRET_KEY : null;
+}
+
 /** One Stripe call with the platform key (v1 or v2). Failures become `AppError`, never exceptions. */
 export async function stripeFetch({
   method,
@@ -35,9 +43,10 @@ export async function stripeFetch({
   headers = {},
   body,
   idempotencyKey,
+  secretKey,
 }: StripeFetchInput): Promise<Result<Record<string, unknown>>> {
-  const { STRIPE_SECRET_KEY, STRIPE_PLATFORM_ACCOUNT_ID } = getEnv();
-  if (!STRIPE_SECRET_KEY || !STRIPE_PLATFORM_ACCOUNT_ID) {
+  const key = secretKey ?? connectKey();
+  if (!key) {
     return unavailable({
       message: "Stripe is not configured (STRIPE_SECRET_KEY, STRIPE_PLATFORM_ACCOUNT_ID).",
     });
@@ -46,7 +55,7 @@ export async function stripeFetch({
     const response = await fetch(url, {
       method,
       headers: {
-        Authorization: `Bearer ${STRIPE_SECRET_KEY}`,
+        Authorization: `Bearer ${key}`,
         "Stripe-Version": STRIPE_API_VERSION,
         ...headers,
         ...(idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {}),

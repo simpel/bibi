@@ -2,6 +2,7 @@ import type { ExecuteContext } from "@bibi/core";
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { call, type Json } from "./helpers";
 import { accessEntities } from "./parity-entities-access";
+import { billingEntity } from "./parity-entities-billing";
 import { boardEntities } from "./parity-entities-board";
 import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
@@ -137,6 +138,7 @@ export const ENTITIES: ParityEntity[] = [
   }),
   ...accessEntities(),
   ...moneyEntities(),
+  billingEntity,
   ...integrationEntities(),
   ...selfEntities(),
   ...welcomeEntities(),

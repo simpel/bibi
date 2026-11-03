@@ -46,7 +46,14 @@ export const MemberRemoveInputSchema = z.object({
 });
 
 /** Better Auth's invitation states; only `pending` invitations can be accepted or cancelled. */
-export const InvitationStatusSchema = z.enum(["pending", "accepted", "rejected", "canceled"]);
+/** `held`: every seat is taken and auto-assign is off; an admin approves it (ADR 0095 §6). */
+export const InvitationStatusSchema = z.enum([
+  "pending",
+  "held",
+  "accepted",
+  "rejected",
+  "canceled",
+]);
 
 /** An invitation to join the organization as staff, with the role the invitee will get. */
 export const InvitationSchema = z.object({

@@ -1,0 +1,54 @@
+/// Bibi's own Stripe Billing setup (ADR 0095). Platform table (one row, `id = "default"`): NOT
+/// org-scoped, written only by the superadmin operations `billingConfig.*`. Every column is owned.
+/// Secrets are AES-256-GCM sealed with `INTEGRATION_SECRET_KEY` and never leave core.
+model BillingConfig {
+  id                  String   @id
+  secretKeySealed     String?
+  /// Last four characters of the secret key, to show which key is stored.
+  secretKeyHint       String?
+  livemode            Boolean  @default(false)
+  webhookSecretSealed String?
+  webhookEndpointId   String?
+  productId           String?
+  basePriceMonthlyId  String?
+  basePriceYearlyId   String?
+  seatPriceId         String?
+  portalConfigId      String?
+  updatedAt           DateTime @updatedAt
+  updatedBy           String
+}
+
+/// What an organization pays Bibi (ADR 0091, 0095). One row per organization, created on the first
+/// write; no row = trial from `Organization.createdAt`, auto-assign on, no extra seats.
+/// Owned: `trialEndsAt` (null = inherit createdAt + 14 days) and `exempt` (superadmin only),
+/// `autoAssignSeats`, `extraSeats` (admin), `remindedAt` (throttles `billing.remindAdmins`).
+/// Snapshots of Stripe, written only by `billing.applySignal` and checkout's `external`:
+/// `stripeCustomerId`, `stripeSubscriptionId`, `subscriptionStatus`, `interval`,
+/// `currentPeriodEnd`, `cancelAtPeriodEnd`.
+model BillingAccount {
+  id                   String           @id @default(cuid(2))
+  organizationId       String           @unique
+  trialEndsAt          DateTime?
+  exempt               Boolean          @default(false)
+  autoAssignSeats      Boolean          @default(true)
+  extraSeats           Int              @default(0)
+  remindedAt           DateTime?
+  stripeCustomerId     String?          @unique
+  stripeSubscriptionId String?          @unique
+  subscriptionStatus   String?
+  interval             BillingInterval?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean          @default(false)
+  status               RecordStatus     @default(ACTIVE)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  createdBy            String?
+
+  @@unique([id, organizationId])
+}
+
+/// How often the base price is billed (ADR 0095). Seats are always monthly.
+enum BillingInterval {
+  MONTH
+  YEAR
+}

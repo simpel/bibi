@@ -52,16 +52,16 @@ describe("joinOrganizationByDomain (ADR 0078)", () => {
     const email = `colleague@${own}`;
     const userId = await createUser({ email });
     const input = { organizationId: context.organizationId, userId, email };
-    expect(await joinOrganizationByDomain(input)).toBe(true);
+    expect(await joinOrganizationByDomain(input)).toBe("joined");
     const member = await context.db.member.findFirst({ where: { userId } });
     expect(member?.role).toBe("member");
     const audit = await context.db.auditLog.findFirst({
       where: { operation: "member.joinByDomain", entityId: member?.id },
     });
     expect(audit?.actorType).toBe("SYSTEM");
-    expect(await joinOrganizationByDomain(input)).toBe(false);
+    expect(await joinOrganizationByDomain(input)).toBe("refused");
     await getDb().member.deleteMany({ where: { userId } });
-    expect(await joinOrganizationByDomain(input)).toBe(false);
+    expect(await joinOrganizationByDomain(input)).toBe("refused");
   });
 
   it("leaves a pending invitation to decide the role", async () => {
@@ -81,6 +81,6 @@ describe("joinOrganizationByDomain (ADR 0078)", () => {
       },
     });
     const input = { organizationId: context.organizationId, userId, email };
-    expect(await joinOrganizationByDomain(input)).toBe(false);
+    expect(await joinOrganizationByDomain(input)).toBe("refused");
   });
 });

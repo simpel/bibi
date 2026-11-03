@@ -1424,6 +1424,24 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Relations**
 - `N:1` is a reply on → Ticket
 
+### BillingAccount (`BillingAccount`)
+
+*MVP* · What the organization pays Bibi ([ADR 0091](decisions/0091-bibi-subscription-billing-with-stripe.md), [ADR 0095](decisions/0095-subscription-plan-seats-and-trial-gate.md)): one plan, 3 999 SEK a month excl. VAT or yearly with 10 % off, 10 seats included and 49 SEK a month per extra seat. Stripe Billing on Bibi's own account, never on the venue's connected account. One row per organization, created by the first change; no row means a 14-day trial from the organization's creation, auto-assign on and no extra seats.
+
+> **Ownership:** owned: trial end (null = inherit creation + 14 days) and exempt (superadmin only), auto-assign seats and extra seats (admin), reminded at. Snapshots of Stripe written only by `billing.applySignal`, `billing.sync` and checkout's `external`: customer, subscription, status, interval, period end, cancel at period end. Access (trial, active, past due, required, exempt, unconfigured) is derived on read.
+
+**Attributes**
+- trial end (empty = 14 days after the organization was created)
+- exempt: never asked to pay
+- auto-assign seats: on, an invitation beyond the seats adds a paid seat; off, it is held (`Invitation.status = held`) until an admin approves it
+- extra seats: paid seats beyond the included 10, never below the seats in use (members plus pending invitations)
+- Stripe customer and subscription ids, subscription status, interval (`BillingInterval`: month or year), current period end, cancel at period end
+
+**Relations**
+- `1:1` Organization has one (`organizationId`, unique)
+
+> Operations: `billing.get`, `billing.listSeatRequests` (`billing:read`), `billing.access` (every member), `billing.startCheckout`, `billing.openPortal` (`billing:write`, never the AI), `billing.sync`, `billing.update`, `billing.approveSeat`, `billing.rejectSeat` (`billing:write`) and `billing.remindAdmins` (every member, mails the admins at most once an hour), on every surface. The SYSTEM-only `billing.applySignal` runs from `POST /api/webhooks/stripe-billing`. When access is required, every page leads to `/:org/billing/pay?returnTo=…`. Bibi's Stripe key, webhook secret and price ids are platform data (`BillingConfig`), set by a superadmin in `/mothership/billing`.
+
 ### PaymentAccount (`PaymentAccount`)
 
 *MVP* · The organization's Stripe Connect payout account ([ADR 0028](decisions/0028-payments-with-stripe.md)): one connected account per organization, created with Stripe's Accounts v2 API, so venues are paid directly and Bibi never holds their funds. No row means "not connected". Created by `paymentAccount.startOnboarding`, which also returns a short-lived Stripe onboarding link.

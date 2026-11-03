@@ -1,7 +1,7 @@
 # 0091 – Bibi's own subscription billing with Stripe
 
 - **Date:** 2026-11-02
-- **Status:** Accepted (approved by the user on 2026-11-02)
+- **Status:** Accepted (approved by the user on 2026-11-02); amended by [0095](0095-subscription-plan-seats-and-trial-gate.md): config in the superadmin UI, the decided plan, seats and the trial gate
 - **Related:** 0028 (Connect, a separate flow), 0090, 0015 (platform operations), 0058, 0013 (hosting)
 
 ## Context

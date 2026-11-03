@@ -1,8 +1,11 @@
 import { type Db, type ScopedDbClient, SYSTEM_ACTOR_ID, scopedDb } from "@bibi/db";
 import { getLogContext, getLogger } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
+import { claimSeat } from "../features/billing/claim-seat";
+import { syncSeats } from "../features/billing/sync-seats";
 import { prefillMemberProfile } from "../features/member-profile/prefill-contact";
 import { MEMBER_ROLE } from "../permissions/fixed-roles";
+import { type DomainJoinOutcome, holdDomainJoin } from "./hold-domain-join";
 
 export type JoinOrganizationByDomainInput = {
   organizationId: string;
@@ -36,7 +39,7 @@ export async function mayJoin({
   }
   if (await tx.knownMember.findFirst({ where: { userId }, select: { id: true } })) return false;
   const invitation = await tx.invitation.findFirst({
-    where: { email: { equals: email, mode: "insensitive" }, status: "pending" },
+    where: { email: { equals: email, mode: "insensitive" }, status: { in: ["pending", "held"] } },
     select: { id: true },
   });
   return !invitation;
@@ -52,30 +55,35 @@ export async function joinOrganizationByDomain({
   userId,
   email,
   db,
-}: JoinOrganizationByDomainInput): Promise<boolean> {
+}: JoinOrganizationByDomainInput): Promise<DomainJoinOutcome> {
   const scoped = scopedDb({ organizationId, actorId: SYSTEM_ACTOR_ID, ...(db ? { db } : {}) });
   const { requestId = null, surface = "system" } = getLogContext() ?? {};
-  const joined = await scoped.$transaction(async (tx) => {
-    if (!(await mayJoin({ tx, organizationId, userId, email }))) return false;
+  let seatAdded = false;
+  const outcome = await scoped.$transaction(async (tx): Promise<DomainJoinOutcome> => {
+    if (!(await mayJoin({ tx, organizationId, userId, email }))) return "refused";
+    // Every seat taken and auto-assign off: an admin approves the join (ADR 0095 §6).
+    const seat = await claimSeat({ db: tx, organizationId });
+    if (seat === "held") {
+      await holdDomainJoin({ tx, organizationId, userId, email });
+      return "held";
+    }
+    seatAdded = seat === "added";
     const row = { id: createId(), userId, role: MEMBER_ROLE, createdAt: new Date() };
     await tx.member.create({ data: { ...row, organizationId } });
     await tx.knownMember.create({ data: { organizationId, userId } });
+    const audit = { actorType: "SYSTEM" as const, operation: "member.joinByDomain", requestId };
     const after = { userId, role: MEMBER_ROLE };
-    const audit = {
-      actorType: "SYSTEM" as const,
-      operation: "member.joinByDomain",
-      requestId,
-      surface,
-    };
-    const entity = { entityType: "member", entityId: row.id, after };
+    const entity = { entityType: "member", entityId: row.id, after, surface };
     await tx.auditLog.create({ data: { organizationId, ...audit, ...entity } });
-    return true;
+    return "joined";
   });
+  // A paid seat added for the join is billed from now on (logged on failure, ADR 0095 §6).
+  if (seatAdded) await syncSeats({ context: { db: scoped, organizationId } });
   // The join stands either way; a missing prefill only leaves the contact fields empty.
-  if (joined) {
+  if (outcome === "joined") {
     await prefillMemberProfile({ organizationId, userId }).catch((error: unknown) =>
       getLogger().warn({ event: "domainJoin.prefillFailed", organizationId, err: error }),
     );
   }
-  return joined;
+  return outcome;
 }

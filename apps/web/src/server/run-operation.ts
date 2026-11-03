@@ -1,5 +1,5 @@
 import "server-only";
-import { invitationMailHook, resolveExecuteContext } from "@bibi/auth";
+import { billingMailHook, invitationMailHook, resolveExecuteContext } from "@bibi/auth";
 import {
   createIndexingHook,
   type ExecuteContext,
@@ -19,7 +19,7 @@ export type RunOperationInput<I extends z.ZodType, O extends z.ZodType> = {
   input: z.input<I>;
 };
 
-const afterCommit = [createIndexingHook({ embed }), invitationMailHook];
+const afterCommit = [createIndexingHook({ embed }), invitationMailHook, billingMailHook];
 
 /**
  * THE web data-access layer (ADR 0010). Every server component and server action runs core

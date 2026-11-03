@@ -12,7 +12,7 @@
 - Configurable domain: each organization sets up its own types, fields, lists, statuses and responsibilities (ADR 0021, 0034). Access uses three fixed roles as presets (member, manager, admin) of `<feature>:<action>` permissions, which admins fine-tune per member or API key with allow/deny overrides (ADR 0034, 0050).
 - A ticket moves through the organization's own statuses, and each line (room, food, activity) has a state per status set in a grid: soft holds with a held-since date and one expiry date per ticket, hard holds that block (ADR 0043, 0044). A ticket may move to any status unless a status restricts its next move; gates sit on the target status, and the flow is admin-only (`pipeline:write`) while boards use `board:*` (ADR 0076).
 - Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing (Swish, Visma and Peppol deferred, ADR 0028 and 0029). Accounting systems are reached through the SIE 4I export (ADR 0077); an organization can connect Fortnox (OAuth only so far, ADR 0087).
-- Bibi's own prices are published and venues can sign up without talking to sales.
+- Bibi's own prices are published and venues can sign up without talking to sales: 3 999 SEK a month excl. VAT (yearly 10 % off), 10 seats included, extra seats 49 SEK a month, 14 days free, then the app waits for payment (ADR 0095).
 
 ## Domain model
 - Source: `docs/domain-model.md`. Update it and `docs/artifacts/domain-model.html` together.
@@ -127,7 +127,6 @@
 - `pnpm --filter @bibi/web test:e2e`: Playwright with a scripted model (`E2E_MOCK_MODEL`), see `apps/web/CLAUDE.md`.
 
 ## Open questions
-- Pricing model (per venue, per room, per ticket) not decided.
 - Claude Design export (tokens) for `packages/ui` not delivered. Placeholder tokens are used until then.
 - Staging: production only until the first paying venue (ADR 0031). Hosting per `docs/decisions/0013-hosting-and-deploy.md` (Hetzner + Coolify, accepted; runbook `docs/runbooks/deploy.md`).
 - Payments (Stripe) and invoicing (Stripe) decided in `docs/decisions/0028-payments-with-stripe.md` and `0029-invoicing-via-stripe.md`. Swish, Visma and Peppol are deferred; Fortnox has a connection only (ADR 0087).

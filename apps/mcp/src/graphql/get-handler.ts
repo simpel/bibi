@@ -1,4 +1,4 @@
-import { invitationMailHook } from "@bibi/auth";
+import { billingMailHook, invitationMailHook } from "@bibi/auth";
 import type { EmbedFn } from "@bibi/core";
 import { createGraphqlHandler } from "@bibi/graphql";
 import { resolveRelayedContext } from "./context-relay";
@@ -15,7 +15,7 @@ export function getGraphqlHandler({ embed }: GetHandlerInput): Handler {
   if (!handler) {
     handler = createGraphqlHandler({
       embed,
-      afterCommit: [invitationMailHook],
+      afterCommit: [invitationMailHook, billingMailHook],
       development: false,
       resolveContext: resolveRelayedContext,
     });

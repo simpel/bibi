@@ -2,6 +2,7 @@ import { alternativeGroupRoutes } from "./features/alternative-group/rest";
 import { apiKeyRoutes } from "./features/api-key/rest";
 import { assignmentRoutes } from "./features/assignment/rest";
 import { auditLogRoutes } from "./features/audit-log/rest";
+import { billingRoutes } from "./features/billing/rest";
 import { boardRoutes as boardCrudRoutes, boardPhaseRoutes } from "./features/board/rest";
 import { calendarRoutes } from "./features/calendar/rest";
 import { changeSetRoutes } from "./features/change-set/rest";
@@ -82,6 +83,7 @@ const selfRoutes = [
 const moneyRoutes = [
   ...integrationRoutes,
   ...paymentAccountRoutes,
+  ...billingRoutes,
   ...paymentRoutes,
   ...depositRoutes,
   ...invoiceRoutes,

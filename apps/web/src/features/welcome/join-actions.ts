@@ -21,18 +21,21 @@ const signedIn = async () => {
   return state.status === "anonymous" ? null : state.session.user;
 };
 
-/** "Join <organization>" on a domain offer (ADR 0078). */
+/**
+ * "Join <organization>" on a domain offer (ADR 0078). `held`: every seat is taken, so the join
+ * waits for an admin to approve a seat (ADR 0095 §6).
+ */
 export async function joinOfferAction({
   input,
 }: {
   input: { organizationId: string };
-}): Promise<ActionResult<true>> {
+}): Promise<ActionResult<"joined" | "held">> {
   const user = await signedIn();
   const parsed = IdSchema.safeParse(input);
   if (!user) return fail({ code: "UNAUTHENTICATED" });
   if (!parsed.success) return fail({ code: "NOT_FOUND" });
-  const joined = await joinOffer({ userId: user.id, organizationId: parsed.data.organizationId });
-  return joined ? { ok: true, value: true } : fail({ code: "NOT_FOUND" });
+  const outcome = await joinOffer({ userId: user.id, organizationId: parsed.data.organizationId });
+  return outcome === "refused" ? fail({ code: "NOT_FOUND" }) : { ok: true, value: outcome };
 }
 
 /** `/welcome/join`: accepts the invitation an invite code names, for the signed-in email only. */

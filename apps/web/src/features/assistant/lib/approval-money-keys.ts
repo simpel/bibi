@@ -25,6 +25,8 @@ export const MONEY_FIELD_KEYS = [
   "depositPercent",
   "depositMinimumMinor",
   "invoiceProvider",
+  "autoAssignSeats",
+  "extraSeats",
 ] as const;
 
 /** Money operations with a localized label in `assistant.approval.operations`. */
@@ -41,4 +43,8 @@ export const MONEY_OPERATION_KEYS = [
   "accountingSettings_update",
   "paymentSettings_update",
   "accountingExport_create",
+  "billing_update",
+  "billing_approveSeat",
+  "billing_rejectSeat",
+  "billing_remindAdmins",
 ] as const;

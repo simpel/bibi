@@ -1,5 +1,6 @@
 import { type Db, getDb, SYSTEM_ACTOR_ID, scopedDb } from "@bibi/db";
 import { emailDomainOf } from "./email-domain";
+import type { DomainJoinOutcome } from "./hold-domain-join";
 import { joinOrganizationByDomain, mayJoin } from "./join-organization";
 
 export type DomainOffersInput = {
@@ -60,18 +61,18 @@ export async function domainOffers({
 
 export type JoinDomainOfferInput = { userId: string; organizationId: string; db?: Db };
 
-/** Joins one offered organization when the user clicks Join; false when it is not offered. */
+/** Joins one offered organization when the user clicks Join (ADR 0078, 0095 §6). */
 export async function joinDomainOffer({
   userId,
   organizationId,
   db = getDb(),
-}: JoinDomainOfferInput): Promise<boolean> {
+}: JoinDomainOfferInput): Promise<DomainJoinOutcome> {
   const user = await verifiedUser({ userId, db });
-  if (!user) return false;
+  if (!user) return "refused";
   const claim = await db.organizationProfile.findFirst({
     where: { organizationId, emailDomain: user.domain, domainJoin: true, status: "ACTIVE" },
     select: { id: true },
   });
-  if (!claim) return false;
+  if (!claim) return "refused";
   return joinOrganizationByDomain({ organizationId, userId, email: user.email, db });
 }

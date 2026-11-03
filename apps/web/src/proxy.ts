@@ -2,6 +2,7 @@ import { getEnv } from "@bibi/config";
 import { routing } from "@bibi/i18n/routing";
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
+import { setCurrentPathHeader } from "./server/current-path-header";
 import { resolveHostAction } from "./server/host-routing";
 import { syncActiveOrganization } from "./server/sync-active-organization";
 
@@ -30,6 +31,7 @@ function createProxy({ intl }: CreateProxyInput) {
   return async (request: NextRequest) => {
     const hostResponse = routeByHost({ request });
     if (hostResponse) return hostResponse;
+    setCurrentPathHeader({ request });
     const response = intl(request);
     await syncActiveOrganization({ request, response });
     return response;

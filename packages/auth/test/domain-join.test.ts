@@ -48,7 +48,7 @@ describe("domain offers (ADR 0078)", () => {
     const before = await loadJoinableOrganizations(colleague);
     expect(before.offers.map((offer) => offer.organizationId)).toEqual([organizationId]);
 
-    expect(await joinOffer({ userId: colleague.userId, organizationId })).toBe(true);
+    expect(await joinOffer({ userId: colleague.userId, organizationId })).toBe("joined");
     const after = await loadJoinableOrganizations(colleague);
     expect(after.offers).toEqual([]);
     expect(after.memberships).toMatchObject([{ organizationId, primary: false }]);
@@ -60,7 +60,7 @@ describe("domain offers (ADR 0078)", () => {
     const organizationId = await createOrg({ headers: creator.headers });
     const unverified = await signUpAt({ email: `new@${domain}`, verified: false });
     expect((await loadJoinableOrganizations(unverified)).offers).toEqual([]);
-    expect(await joinOffer({ userId: unverified.userId, organizationId })).toBe(false);
+    expect(await joinOffer({ userId: unverified.userId, organizationId })).toBe("refused");
 
     await getDb().organizationProfile.update({
       where: { organizationId },

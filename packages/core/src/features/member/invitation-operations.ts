@@ -4,6 +4,8 @@ import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { claimSeat } from "../billing/claim-seat";
+import { syncSeats } from "../billing/sync-seats";
 import { newInvitationCode } from "./invitation-code";
 import { findInvitationConflict } from "./invitation-conflict";
 import { checkCanGrantRole } from "./role-access";
@@ -26,7 +28,9 @@ export const inviteMember = defineOperation({
   description:
     "Invite a person by email to join the organization as staff with one fixed role (member, " +
     "manager or admin). They get an email with a link and a code, and become a " +
-    "member when they accept. You cannot invite with a role above your own.",
+    "member when they accept. You cannot invite with a role above your own. When every seat " +
+    "is taken, a paid seat is added, or (auto-assign off) the invitation is held with status " +
+    "held until an admin approves it in billing.approveSeat.",
   input: MemberInviteInputSchema,
   output: InvitationSchema,
   permission: "member:write",
@@ -39,6 +43,7 @@ export const inviteMember = defineOperation({
     const email = input.email.toLowerCase();
     const conflict = await findInvitationConflict({ context, email });
     if (conflict) return fail({ code: "CONFLICT", message: conflict });
+    const seat = await claimSeat({ db: context.db, organizationId: context.organizationId });
     const now = new Date();
     const row = await context.db.invitation.create({
       data: {
@@ -46,7 +51,7 @@ export const inviteMember = defineOperation({
         organizationId: context.organizationId,
         email,
         role: input.role,
-        status: "pending",
+        status: seat === "held" ? "held" : "pending",
         code: newInvitationCode(),
         inviterId,
         expiresAt: new Date(now.getTime() + INVITATION_TTL_MS),
@@ -58,6 +63,8 @@ export const inviteMember = defineOperation({
     context.recordChange({ entityId: invitation.id, after: invitation });
     return ok({ value: invitation });
   },
+  // A seat added above is billed from now on (ADR 0095 §6).
+  followUp: ({ context }) => syncSeats({ context }),
 });
 
 export const cancelInvitation = defineOperation({
@@ -70,7 +77,7 @@ export const cancelInvitation = defineOperation({
   permission: "member:write",
   handler: async ({ input, context }) => {
     const before = await context.db.invitation.findFirst({
-      where: { id: input.id, status: "pending" },
+      where: { id: input.id, status: { in: ["pending", "held"] } },
       select: INVITATION_SELECT,
     });
     if (!before) return fail({ code: "NOT_FOUND", message: "Pending invitation not found" });
@@ -93,13 +100,15 @@ export const listInvitations = defineOperation({
   name: "member.listInvitations",
   kind: "query",
   entityType: "invitation",
-  description: "List the organization's pending, unexpired invitations with the role they give.",
+  description:
+    "List the organization's pending and held (waiting for a seat), unexpired invitations " +
+    "with the role they give.",
   input: InvitationListInputSchema,
   output: InvitationListOutputSchema,
   permission: "member:write",
   handler: async ({ input, context }) => {
     const rows = await context.db.invitation.findMany({
-      where: { status: "pending", expiresAt: { gt: new Date() } },
+      where: { status: { in: ["pending", "held"] }, expiresAt: { gt: new Date() } },
       select: INVITATION_SELECT,
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
       ...pageArgs(input),

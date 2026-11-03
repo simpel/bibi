@@ -106,6 +106,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "InvoiceDeposit",
   "AccountingSettings",
   "PaymentSettings",
+  "BillingAccount",
   "RevenueAccount",
   "AccountingExport",
   "Conversation",

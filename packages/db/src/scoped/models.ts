@@ -67,6 +67,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "PaymentRefund",
   "AccountingSettings",
   "PaymentSettings",
+  "BillingAccount",
   "RevenueAccount",
   "AccountingExport",
   "AccountingExportEntry",
@@ -109,6 +110,7 @@ export const GLOBAL_MODELS = new Set<string>([
 export const PLATFORM_MODELS = new Set<string>([
   "SystemLog",
   "AiSetting",
+  "BillingConfig",
   "StripeWebhookEvent",
   "FortnoxTopicOffset",
 ]);

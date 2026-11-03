@@ -1,6 +1,7 @@
 import { AccountingExportCardView } from "./accounting-export-card-view";
 import { AccountingExportFileView } from "./accounting-export-file-view";
 import { AccountingExportPreviewView } from "./accounting-export-preview-view";
+import { BillingCardView } from "./billing-card-view";
 import { DepositCardView } from "./deposit-card-view";
 import { DepositTableView } from "./deposit-table-view";
 import { FinanceOverviewView } from "./finance-overview-view";
@@ -27,4 +28,5 @@ export const MONEY_COMPONENTS = {
   "accounting-export-preview": AccountingExportPreviewView,
   "accounting-export-card": AccountingExportCardView,
   "accounting-export-file": AccountingExportFileView,
+  "billing-card": BillingCardView,
 } as const;

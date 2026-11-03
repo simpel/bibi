@@ -49,6 +49,7 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "inbound-message-table",
   "inbound-message-card",
   "notification-list",
+  "billing-card",
   "payment-account-card",
   "integration-card",
   "payment-table",

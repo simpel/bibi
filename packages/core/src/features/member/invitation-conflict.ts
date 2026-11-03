@@ -13,7 +13,7 @@ export async function findInvitationConflict({
   });
   if (member) return "This person is already a member";
   const pending = await context.db.invitation.findFirst({
-    where: { email, status: "pending", expiresAt: { gt: new Date() } },
+    where: { email, status: { in: ["pending", "held"] }, expiresAt: { gt: new Date() } },
     select: { id: true },
   });
   return pending ? "This person already has a pending invitation" : null;

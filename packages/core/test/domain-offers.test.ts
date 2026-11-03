@@ -17,11 +17,11 @@ describe("domain offers (ADR 0078)", () => {
     expect((await domainOffers({ userId })).map((offer) => offer.organizationId)).toEqual([
       organizationId,
     ]);
-    expect(await joinDomainOffer({ userId, organizationId })).toBe(true);
+    expect(await joinDomainOffer({ userId, organizationId })).toBe("joined");
     expect(await domainOffers({ userId })).toEqual([]);
     await getDb().member.deleteMany({ where: { userId, organizationId } });
     expect(await domainOffers({ userId })).toEqual([]);
-    expect(await joinDomainOffer({ userId, organizationId })).toBe(false);
+    expect(await joinDomainOffer({ userId, organizationId })).toBe("refused");
   });
 
   it("never offers an organization that does not claim the domain", async () => {
@@ -29,7 +29,7 @@ describe("domain offers (ADR 0078)", () => {
     unwrap({ result: await turn({ context, enabled: true }) });
     const userId = await createUser({ email: `someone@${domain()}` });
     const organizationId = context.organizationId;
-    expect(await joinDomainOffer({ userId, organizationId })).toBe(false);
+    expect(await joinDomainOffer({ userId, organizationId })).toBe("refused");
   });
 });
 

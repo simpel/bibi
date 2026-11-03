@@ -42,6 +42,16 @@ export const SALES_NAMES = [
 
 /** Receivables and the derived balance (ADR 0057). */
 export const MONEY_NAMES = [
+  "billing.access",
+  "billing.approveSeat",
+  "billing.get",
+  "billing.listSeatRequests",
+  "billing.openPortal",
+  "billing.rejectSeat",
+  "billing.remindAdmins",
+  "billing.startCheckout",
+  "billing.sync",
+  "billing.update",
   "deposit.create",
   "deposit.get",
   "deposit.list",

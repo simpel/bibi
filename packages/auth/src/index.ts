@@ -1,4 +1,5 @@
 export { type Auth, type CreateAuthInput, createAuth } from "./auth";
+export { billingMailHook } from "./billing/billing-mail-hook";
 export {
   type DevInvitationCode,
   listDevInvitationCodes,
@@ -28,7 +29,7 @@ export {
   type SlugCheck,
   type SlugStatus,
 } from "./organization/check-slug";
-export { joinOffer } from "./organization/join-offer";
+export { type JoinOfferOutcome, joinOffer } from "./organization/join-offer";
 export {
   type JoinableOrganizations,
   loadJoinableOrganizations,

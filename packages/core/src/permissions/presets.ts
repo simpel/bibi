@@ -6,7 +6,14 @@ import { grantAll, type PermissionSet, unionPermissions } from "./permission-set
  * Features members do not see by default (managers get `finance`, ADR 0077); `read` on them can
  * still be allowed per member.
  */
-const ADMIN_VIEW: readonly Feature[] = ["audit", "assistant", "apiKey", "finance", "integration"];
+const ADMIN_VIEW: readonly Feature[] = [
+  "audit",
+  "assistant",
+  "apiKey",
+  "finance",
+  "integration",
+  "billing",
+];
 
 /** The daily work a manager does in full: bookings, selling and money (ADR 0050). */
 const MANAGER_FEATURES: readonly Feature[] = [
