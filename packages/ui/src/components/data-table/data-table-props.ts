@@ -27,6 +27,11 @@ export type DataTableProps<TData, TValue> = {
   /** Omit to render all rows without a footer. */
   pagination?: DataTableServerPagination;
   onRowClick?: (row: TData) => void;
+  /**
+   * The row's actions again as a right-click menu: `ContextMenuItem`s, each with a text label.
+   * The actions column stays; this is the shortcut, never the only way.
+   */
+  rowMenu?: (row: TData) => ReactNode;
   getRowId?: (row: TData) => string;
   selectedRowId?: string;
   emptyText: string;

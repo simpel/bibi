@@ -4857,6 +4857,7 @@
     "seeAll": "See all notifications",
     "listChanged": "The list has changed since you opened it.",
     "showLatest": "Show latest",
+    "open": "Open",
     "markAllRead": "Mark all as read",
     "markedAllRead": "All notifications marked as read",
     "markRead": "Mark as read",

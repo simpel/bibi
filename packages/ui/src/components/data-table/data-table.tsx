@@ -39,6 +39,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
               columnCount={table.getVisibleLeafColumns().length}
               emptyText={props.emptyText}
               onRowClick={props.onRowClick}
+              rowMenu={props.rowMenu}
               selectedRowId={props.selectedRowId}
             />
             <DataTableFooter groups={table.getFooterGroups()} />

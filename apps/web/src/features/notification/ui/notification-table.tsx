@@ -14,6 +14,7 @@ import { PersistedDataTable } from "@/components/data-table/persisted-data-table
 import { useDataTablePaginationLabels } from "@/lib/use-data-table-pagination-labels";
 import { useQueryNavigation } from "@/lib/use-query-navigation";
 import { NOTIFICATION_PAGE_SIZES, type NotificationListParams } from "../lib/list-params";
+import { NotificationRowMenu } from "./notification-row-menu";
 import { useMarkNotifications } from "./use-mark-notifications";
 import { useNotificationColumns } from "./use-notification-columns";
 
@@ -64,6 +65,7 @@ function RowActions({ notification, mark, disabled }: RowActionsProps) {
         label={read ? t("markUnread") : t("markRead")}
         icon={read ? MailIcon : MailCheckIcon}
         disabled={disabled}
+        iconOnly
         onClick={() => mark({ ids: [notification.id], read: !read })}
       />
     </DataTableRowActionGroup>
@@ -125,6 +127,9 @@ export function NotificationTable({ notifications, total, view }: NotificationTa
         columns={columns}
         data={rows.rows}
         getRowId={(notification) => notification.id}
+        rowMenu={(notification) => (
+          <NotificationRowMenu {...{ notification, mark, openOne }} disabled={marking} />
+        )}
         emptyText={t("noMatches")}
         pagination={pagination}
         manualSorting

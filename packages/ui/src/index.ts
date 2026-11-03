@@ -37,6 +37,7 @@ export * from "./components/color-swatch/color-swatch";
 export { Combobox, type ComboboxProps } from "./components/combobox/combobox";
 export type { ComboboxOption } from "./components/combobox/combobox-groups";
 export * from "./components/command/command";
+export * from "./components/context-menu/context-menu";
 export {
   DataTable,
   type DataTableProps,
@@ -50,17 +51,7 @@ export * from "./components/date-picker/date-button";
 export * from "./components/day-snapshot/day-snapshot";
 export * from "./components/day-snapshot/day-snapshot-variants";
 export * from "./components/dialog/dialog";
-export {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  type DropdownMenuItemProps,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./components/dropdown-menu/dropdown-menu";
+export * from "./components/dropdown-menu/dropdown-menu";
 export * from "./components/dropdown-menu/dropdown-menu-sub";
 export * from "./components/field-controls/boolean-control";
 export * from "./components/field-controls/choice-control";

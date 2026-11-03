@@ -1,4 +1,5 @@
 import type { Row } from "@tanstack/react-table";
+import type { ReactNode } from "react";
 import { TableBody, TableCell, TableRow } from "../table/table";
 import { DataTableRow } from "./data-table-row";
 
@@ -7,6 +8,7 @@ export type DataTableBodyProps<TData> = {
   columnCount: number;
   emptyText: string;
   onRowClick?: (row: TData) => void;
+  rowMenu?: (row: TData) => ReactNode;
   selectedRowId?: string;
 };
 
@@ -30,6 +32,7 @@ export function DataTableBody<TData>(props: DataTableBodyProps<TData>) {
           row={row}
           selected={row.id === props.selectedRowId}
           onRowClick={props.onRowClick}
+          menu={props.rowMenu}
         />
       ))}
     </TableBody>

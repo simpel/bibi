@@ -2,6 +2,7 @@ import { CheckIcon } from "lucide-react";
 import { DropdownMenu as MenuPrimitive } from "radix-ui";
 import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
+import { MENU_CONTENT_CLASS, MENU_SEPARATOR_CLASS, menuItemClass } from "./menu-styles";
 
 export const DropdownMenu = MenuPrimitive.Root;
 export const DropdownMenuTrigger = MenuPrimitive.Trigger;
@@ -17,10 +18,7 @@ export function DropdownMenuContent({
       <MenuPrimitive.Content
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
-        className={cn(
-          "z-50 min-w-32 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
-          className,
-        )}
+        className={cn(MENU_CONTENT_CLASS, className)}
         {...props}
       />
     </MenuPrimitive.Portal>
@@ -35,11 +33,7 @@ export function DropdownMenuItem({ className, destructive, ...props }: DropdownM
   return (
     <MenuPrimitive.Item
       data-slot="dropdown-menu-item"
-      className={cn(
-        "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
-        destructive && "text-destructive focus:bg-destructive/10 focus:text-destructive",
-        className,
-      )}
+      className={cn(menuItemClass({ destructive }), className)}
       {...props}
     />
   );
@@ -85,7 +79,5 @@ export function DropdownMenuSeparator({
   className,
   ...props
 }: ComponentProps<typeof MenuPrimitive.Separator>) {
-  return (
-    <MenuPrimitive.Separator className={cn("-mx-1 my-1 h-px bg-border", className)} {...props} />
-  );
+  return <MenuPrimitive.Separator className={cn(MENU_SEPARATOR_CLASS, className)} {...props} />;
 }

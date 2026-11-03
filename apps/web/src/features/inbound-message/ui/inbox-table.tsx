@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import type { InboxRow } from "./inbox-row";
-import { InboxRowActions } from "./inbox-row-actions";
+import { InboxRowActions, InboxRowMenu } from "./inbox-row-actions";
 import { useInboxColumns } from "./use-inbox-columns";
 
 export type InboxTableProps = {
@@ -26,6 +26,9 @@ export function InboxTable({ rows, canWrite, canCreateTicket }: InboxTableProps)
       columns={columns}
       data={rows}
       getRowId={(row) => row.id}
+      rowMenu={(row) => (
+        <InboxRowMenu row={row} canWrite={canWrite} canCreateTicket={canCreateTicket} />
+      )}
       emptyText={t("empty")}
     />
   );

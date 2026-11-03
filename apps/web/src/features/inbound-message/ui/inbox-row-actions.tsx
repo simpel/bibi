@@ -1,6 +1,6 @@
 "use client";
 
-import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { ContextMenuItem, DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { inboxMessageRoute, ticketFromMessageRoute } from "@/lib/inbox-routes";
 import { Link } from "@/lib/navigation";
@@ -14,29 +14,45 @@ export type InboxRowActionsProps = {
   canCreateTicket: boolean;
 };
 
-/** Open, new ticket from it, and dismiss or restore. */
-export function InboxRowActions({ row, canWrite, canCreateTicket }: InboxRowActionsProps) {
+type ItemsProps = InboxRowActionsProps & {
+  /** The menu's item: the actions column's dropdown or the row's right-click menu. */
+  Item: typeof DropdownMenuItem | typeof ContextMenuItem;
+};
+
+/** Open, new ticket from it, and dismiss or restore, as items of either menu. */
+function InboxRowItems({ row, canWrite, canCreateTicket, Item }: ItemsProps) {
   const t = useTranslations("inbox");
-  const common = useTranslations("common");
   const { toggle, pending } = useDismissMessage();
   return (
-    <DataTableRowActions label={common("actions")}>
-      <DropdownMenuItem asChild>
+    <>
+      <Item asChild>
         <Link href={inboxMessageRoute({ id: row.id })}>{t("open")}</Link>
-      </DropdownMenuItem>
+      </Item>
       {canCreateTicket && !row.dismissed ? (
-        <DropdownMenuItem asChild>
+        <Item asChild>
           <Link href={ticketFromMessageRoute({ id: row.id })}>{t("newTicket")}</Link>
-        </DropdownMenuItem>
+        </Item>
       ) : null}
       {canWrite ? (
-        <DropdownMenuItem
-          disabled={pending}
-          onSelect={() => toggle({ id: row.id, dismissed: row.dismissed })}
-        >
+        <Item disabled={pending} onSelect={() => toggle({ id: row.id, dismissed: row.dismissed })}>
           {row.dismissed ? t("restore") : t("dismiss")}
-        </DropdownMenuItem>
+        </Item>
       ) : null}
+    </>
+  );
+}
+
+/** The actions column's menu. */
+export function InboxRowActions(props: InboxRowActionsProps) {
+  const common = useTranslations("common");
+  return (
+    <DataTableRowActions label={common("actions")}>
+      <InboxRowItems {...props} Item={DropdownMenuItem} />
     </DataTableRowActions>
   );
+}
+
+/** The same actions on right click. */
+export function InboxRowMenu(props: InboxRowActionsProps) {
+  return <InboxRowItems {...props} Item={ContextMenuItem} />;
 }
