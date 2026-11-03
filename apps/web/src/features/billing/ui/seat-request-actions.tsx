@@ -1,7 +1,7 @@
 "use client";
 
 import type { SeatRequestDto } from "@bibi/core/schemas";
-import { DataTableRowAction, DataTableRowActionGroup } from "@bibi/ui";
+import { DataTableRowActions } from "@bibi/ui";
 import { CheckIcon, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -40,23 +40,23 @@ function useSeatDecision({ request }: UseSeatDecisionInput) {
 /** Approve (adds a paid seat, sends the invitation) or decline (cancels it), each confirmed. */
 export function SeatRequestActions({ request, seatPrice }: SeatRequestActionsProps) {
   const t = useTranslations("billing.requests");
+  const common = useTranslations("common");
   const { decision, setDecision, approve, decide, pending } = useSeatDecision({ request });
   const { email } = request;
   return (
     <>
-      <DataTableRowActionGroup>
-        <DataTableRowAction
-          label={t("approve")}
-          icon={CheckIcon}
-          onClick={() => setDecision("approve")}
-        />
-        <DataTableRowAction
-          destructive
-          label={t("decline")}
-          icon={XIcon}
-          onClick={() => setDecision("decline")}
-        />
-      </DataTableRowActionGroup>
+      <DataTableRowActions
+        label={common("actions")}
+        primary={[
+          { label: t("approve"), icon: CheckIcon, onClick: () => setDecision("approve") },
+          {
+            destructive: true,
+            label: t("decline"),
+            icon: XIcon,
+            onClick: () => setDecision("decline"),
+          },
+        ]}
+      />
       <ConfirmDialog
         open={decision !== null}
         onOpenChange={(open) => (open ? null : setDecision(null))}

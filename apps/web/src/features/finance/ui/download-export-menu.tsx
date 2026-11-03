@@ -1,6 +1,6 @@
 "use client";
 
-import { DataTableRowAction } from "@bibi/ui";
+import { DataTableRowActions } from "@bibi/ui";
 import { DownloadIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { downloadBytes } from "@/lib/download-bytes";
@@ -12,6 +12,7 @@ export type DownloadExportMenuProps = { id: string };
 /** Row action of the export history: saves the file of one export again. */
 export function DownloadExportMenu({ id }: DownloadExportMenuProps) {
   const t = useTranslations("finance.export");
+  const common = useTranslations("common");
   const { run } = useToastAction();
   const download = () =>
     run({
@@ -25,6 +26,9 @@ export function DownloadExportMenu({ id }: DownloadExportMenuProps) {
         }),
     });
   return (
-    <DataTableRowAction iconOnly label={t("download")} icon={DownloadIcon} onClick={download} />
+    <DataTableRowActions
+      label={common("actions")}
+      primary={[{ iconOnly: true, label: t("download"), icon: DownloadIcon, onClick: download }]}
+    />
   );
 }

@@ -1,13 +1,7 @@
 "use client";
 
 import type { NotificationDto } from "@bibi/core/schemas";
-import {
-  Button,
-  cn,
-  DataTableRowAction,
-  DataTableRowActionGroup,
-  type SortingState,
-} from "@bibi/ui";
+import { Button, cn, DataTableRowActions, type SortingState } from "@bibi/ui";
 import { MailCheckIcon, MailIcon, RefreshCwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
@@ -58,17 +52,21 @@ type RowActionsProps = { notification: NotificationDto; mark: Mark; disabled: bo
 /** Toggle one row between read and unread. */
 function RowActions({ notification, mark, disabled }: RowActionsProps) {
   const t = useTranslations("notifications");
+  const common = useTranslations("common");
   const read = notification.readAt !== null;
   return (
-    <DataTableRowActionGroup>
-      <DataTableRowAction
-        label={read ? t("markUnread") : t("markRead")}
-        icon={read ? MailIcon : MailCheckIcon}
-        disabled={disabled}
-        iconOnly
-        onClick={() => mark({ ids: [notification.id], read: !read })}
-      />
-    </DataTableRowActionGroup>
+    <DataTableRowActions
+      label={common("actions")}
+      primary={[
+        {
+          label: read ? t("markUnread") : t("markRead"),
+          icon: read ? MailIcon : MailCheckIcon,
+          disabled,
+          iconOnly: true,
+          onClick: () => mark({ ids: [notification.id], read: !read }),
+        },
+      ]}
+    />
   );
 }
 

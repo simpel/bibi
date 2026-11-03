@@ -1,7 +1,7 @@
 "use client";
 
 import type { OauthGrantDto } from "@bibi/core";
-import { DataTableRowAction } from "@bibi/ui";
+import { DataTableRowActions } from "@bibi/ui";
 import { UnplugIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -13,14 +13,15 @@ export type OauthGrantRowActionsProps = { grant: OauthGrantDto };
 /** Disconnect button; the client's tokens stop working as soon as it succeeds. */
 export function OauthGrantRowActions({ grant }: OauthGrantRowActionsProps) {
   const t = useTranslations("integration.oauthGrants");
+  const common = useTranslations("common");
   const [open, setOpen] = useState(false);
   return (
     <>
-      <DataTableRowAction
-        destructive
-        label={t("revoke")}
-        icon={UnplugIcon}
-        onClick={() => setOpen(true)}
+      <DataTableRowActions
+        label={common("actions")}
+        primary={[
+          { destructive: true, label: t("revoke"), icon: UnplugIcon, onClick: () => setOpen(true) },
+        ]}
       />
       <ConfirmActionDialog
         open={open}

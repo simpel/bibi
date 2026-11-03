@@ -12,6 +12,8 @@ import {
 import { DATA_TABLE_ACTIONS_COLUMN_ID } from "./data-table-order";
 import { DataTableRowAction, type DataTableRowActionProps } from "./data-table-row-action";
 
+export type { DataTableRowActionProps };
+
 export type DataTableRowActionsProps = {
   /** The trigger's accessible name, e.g. "Actions". Never shown as text. */
   label: string;
@@ -60,9 +62,10 @@ function RowMenu({ label, compact, primary, className, children }: RowMenuProps)
 }
 
 /**
- * Row actions: primary actions as buttons, the rest in a menu of text items behind a dots-only
- * trigger. Below the `@2xl` container width every action lives in the menu. The menu is portalled
- * out of the container query, so each width gets its own trigger and the container picks one.
+ * The one row actions component: primary actions as buttons, the rest in a menu of text items
+ * behind a dots-only trigger. Below the `@2xl` container width every action lives in the menu,
+ * except a lone primary action, which stays a button (its icon alone). The menu is portalled out
+ * of the container query, so each width gets its own trigger and the container picks one.
  */
 export function DataTableRowActions({
   label,
@@ -71,8 +74,9 @@ export function DataTableRowActions({
   children,
 }: DataTableRowActionsProps) {
   const hasMenu = children != null && children !== false;
-  const hasPrimary = primary.length > 0;
-  if (!hasPrimary)
+  const [only] = primary;
+  if (primary.length === 1 && only && !hasMenu) return <DataTableRowAction {...only} />;
+  if (primary.length === 0)
     return (
       <RowMenu label={label} compact={compact} primary={[]}>
         {children}
@@ -99,7 +103,7 @@ export function DataTableRowActions({
 
 export type ActionsColumnInput<TData> = {
   label: string;
-  /** `DataTableRowActions` (a menu) or `DataTableRowAction`s in a `DataTableRowActionGroup`. */
+  /** One `DataTableRowActions` per row. */
   cell: (row: TData) => ReactNode;
 };
 

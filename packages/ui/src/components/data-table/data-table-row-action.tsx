@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode, SVGProps } from "react";
+import type { ComponentType, SVGProps } from "react";
 import { cn } from "../../lib/cn";
 import { Button } from "../button/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip/tooltip";
@@ -15,8 +15,8 @@ export type DataTableRowActionProps = {
 };
 
 /**
- * One direct row action in the actions column. A narrow table shows the icon, a wide one icon and
- * label, unless `iconOnly`. The label is always the accessible name and the tooltip.
+ * One primary row action, drawn only by `DataTableRowActions`. A narrow table shows the icon, a
+ * wide one icon and label, unless `iconOnly`. The label is always the accessible name and tooltip.
  */
 export function DataTableRowAction({
   label,
@@ -44,9 +44,4 @@ export function DataTableRowAction({
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>
   );
-}
-
-/** Lays out the actions of one row side by side, right-aligned. */
-export function DataTableRowActionGroup({ children }: { children: ReactNode }) {
-  return <div className="flex items-center justify-end gap-1.5">{children}</div>;
 }
