@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/states/page-header";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { defaultWorkOrderQuery, type WorkOrderListParams } from "../lib/list-params";
+import type { WorkOrderListParams } from "../lib/list-params";
 import { toWorkOrderRows } from "../lib/work-order-rows";
 import { loadWorkOrderListData } from "../load-work-order-list-data";
 import { loadWorkOrderQuery } from "../load-work-order-query";
@@ -30,7 +30,7 @@ export async function WorkOrderList({ locale, params }: WorkOrderListProps) {
     getDateTimeFormat(),
   ]);
   const { vocabulary } = query;
-  const q = params.q ?? defaultWorkOrderQuery({ vocabulary });
+  const q = params.q ?? "";
   const result = await runOperation({
     operation: listWorkOrders,
     input: {

@@ -1,5 +1,4 @@
 import { WORK_ORDER_LIST_SORTS, type WorkOrderListSort } from "@bibi/core/schemas";
-import type { QueryVocabulary } from "@/components/query-search/lib/query-vocabulary";
 
 /** Rows per page under the work order table; the first is the default. */
 export const WORK_ORDER_PAGE_SIZES = [25, 50, 100];
@@ -7,7 +6,7 @@ export const WORK_ORDER_PAGE_SIZES = [25, 50, 100];
 export type WorkOrderListParams = {
   page: number;
   pageSize: number;
-  /** The search as in the URL: undefined when there is none (the default search applies). */
+  /** The search as in the URL: undefined when there is none (everything is listed). */
   q: string | undefined;
   sort: WorkOrderListSort;
   direction: "asc" | "desc";
@@ -43,10 +42,4 @@ export function readWorkOrderListParams({
     sort: sort ?? "created",
     direction: first({ value: params.dir }) === "asc" ? "asc" : "desc",
   };
-}
-
-/** Mine: involved in the version to work from, in the UI language (`inblandad:jag är:aktuell`). */
-export function defaultWorkOrderQuery({ vocabulary }: { vocabulary: QueryVocabulary }) {
-  const { words, values } = vocabulary;
-  return `${words.involves}:${values.me} ${words.is}:${values.current}`;
 }

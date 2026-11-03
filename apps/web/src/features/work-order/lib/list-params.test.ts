@@ -1,7 +1,5 @@
-import sv from "@bibi/i18n/messages/sv.json";
 import { describe, expect, it } from "vitest";
-import { defaultWorkOrderQuery, readWorkOrderListParams } from "./list-params";
-import { buildWorkOrderQuery } from "./work-order-query";
+import { readWorkOrderListParams } from "./list-params";
 
 describe("readWorkOrderListParams", () => {
   it("defaults to the first page of 25, newest first, without a search", () => {
@@ -32,12 +30,5 @@ describe("readWorkOrderListParams", () => {
       pageSize: 25,
       sort: "created",
     });
-  });
-});
-
-describe("defaultWorkOrderQuery", () => {
-  it("is mine and current in the UI language", () => {
-    const { vocabulary } = buildWorkOrderQuery({ messages: sv });
-    expect(defaultWorkOrderQuery({ vocabulary })).toBe("inblandad:jag är:aktuell");
   });
 });
