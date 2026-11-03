@@ -64,6 +64,13 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - Never add `"use client"` to make a hook work. What a page renders on the server is prepared on the server: dates and amounts come from `getDateTimeFormat()` / `getNumberFormat()` and go down as props (`dates`, `numbers`); a component shared with an assistant card takes them as props and the card passes its hook's. `pnpm check:structure` flags client-only hooks reachable from a page through server files (`tools/lib/server-render-rules.mjs`).
 - A table inside a card runs edge to edge: `flush` on the table (`FinanceSection flush` for the card), the card's heading and text keep their padding. Never a bordered table in a card (no box in a box). Why: ADR 0086.
 
+## Effects
+- Data a page needs is read on the server (`runOperation` in the server component) and passed down as props. When an input needs new data, change the URL (path or filter) so the server renders again. Never fetch in `useEffect`.
+- A client island that needs server data later gets a promise from its server parent and unwraps it with `use()` inside `Suspense`.
+- Values derived from props or state are computed during render, never copied into state by an effect. Reset state on a prop change with `key`.
+- A reaction to a user action goes in the event handler or the server action, not in an effect that watches state.
+- `useEffect` is only for syncing with something outside React: subscriptions (SSE), timers, browser APIs (shortcuts, focus, measuring, animation). Each effect gets a one-line comment naming that system.
+
 ## Cards and stat figures (ADR 0086)
 - A headline figure is a `StatCard` (`@bibi/ui`) in `StatCards`: its line, tooltip texts and trend are prepared on the server (`features/dashboard/lib/stat-trend.ts`, `use-stat-texts.ts`) from a core `Trend`; never compute a trend in the client.
 - A row holds cards of one kind: charts with charts, tables full width. Charts and tables never share a row.
