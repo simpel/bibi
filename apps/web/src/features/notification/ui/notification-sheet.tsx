@@ -2,6 +2,7 @@
 
 import type { NotificationDto } from "@bibi/core/schemas";
 import {
+  Avatar,
   Button,
   Sheet,
   SheetContent,
@@ -30,13 +31,29 @@ export type NotificationSheetProps = {
   onDelete: OnNotification;
 };
 
+/** What happened, first and largest: who did it, then the sentence. */
+function NotificationMessage({ notification }: { notification: NotificationDto }) {
+  const t = useTranslations("notifications");
+  const { message } = useNotificationText()({ notification });
+  const actor = notification.data.actorName ?? t("someone");
+  return (
+    <section className="grid gap-3 rounded-lg border border-l-4 border-l-primary bg-card p-5">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Avatar name={actor} size="sm" />
+        <span className="font-medium text-foreground">{actor}</span>
+      </div>
+      <p className="text-xl leading-snug font-medium">{message}</p>
+    </section>
+  );
+}
+
 /** Kind and when, as stat cards. */
 function NotificationStats({ notification }: { notification: NotificationDto }) {
   const t = useTranslations("notifications");
   const dates = useDateTimeFormat();
   const instant = new Date(notification.createdAt);
   return (
-    <StatCards className="px-4">
+    <StatCards>
       <StatCard label={t("columns.kind")} value={t(`kinds.${notification.kind}`)} />
       <StatCard
         label={t("columns.created")}
@@ -92,25 +109,26 @@ function NotificationActions({ notification, onMarkUnread, onDelete }: ActionsPr
 }
 
 /**
- * One notification in a side sheet (ADR 0094): what happened as the title, its kind and when as
- * stat cards, and the ticket or work order it is about as the buttons that open them. Nothing
- * shows twice. Opening it marked it read; the sheet can mark it unread or delete it.
+ * One notification in a side sheet (ADR 0094): what happened first and largest (who did it and
+ * the sentence), its kind and when as stat cards, and the ticket or work order it is about as the
+ * buttons that open them. Nothing shows twice. Opening it marked it read; the sheet can mark it unread or delete it.
  */
 export function NotificationSheet({ notification, onClose, ...actions }: NotificationSheetProps) {
   const t = useTranslations("notifications");
   const text = useNotificationText();
   return (
     <Sheet open={notification !== null} onOpenChange={(open) => (open ? undefined : onClose())}>
-      <SheetContent className="w-full gap-0 overflow-y-auto sm:max-w-lg">
+      <SheetContent className="w-full gap-6 overflow-y-auto sm:max-w-lg">
         {notification ? (
           <>
             <SheetHeader>
-              <SheetTitle>{text({ notification }).message}</SheetTitle>
+              <SheetTitle className="pr-8">{t("sheet.title")}</SheetTitle>
               <SheetDescription className="sr-only">
-                {t(`kinds.${notification.kind}`)}
+                {text({ notification }).message}
               </SheetDescription>
             </SheetHeader>
-            <div className="flex-1">
+            <div className="grid flex-1 content-start gap-4">
+              <NotificationMessage notification={notification} />
               <NotificationStats notification={notification} />
             </div>
             <NotificationActions notification={notification} {...actions} />

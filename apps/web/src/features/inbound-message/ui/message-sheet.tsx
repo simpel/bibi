@@ -74,16 +74,16 @@ export function MessageSheet({ row, onClose, ...actions }: MessageSheetProps) {
   const message = row?.message;
   return (
     <Sheet open={row !== null} onOpenChange={(open) => (open ? undefined : onClose())}>
-      <SheetContent className="w-full gap-0 overflow-y-auto sm:max-w-lg">
+      <SheetContent className="w-full gap-6 overflow-y-auto sm:max-w-lg">
         {row && message ? (
           <>
             <SheetHeader>
-              <SheetTitle>{row.subject ?? t("noSubject")}</SheetTitle>
+              <SheetTitle className="pr-8 text-2xl">{row.subject ?? t("noSubject")}</SheetTitle>
               <SheetDescription className="sr-only">
                 {t(`channels.${row.channel}`)}
               </SheetDescription>
             </SheetHeader>
-            <div className="flex-1 px-4 pb-4">
+            <div className="flex-1">
               <MessageView message={message} received={row.receivedLabel} />
             </div>
             <MessageSheetActions row={row} {...actions} />

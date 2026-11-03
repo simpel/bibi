@@ -4950,7 +4950,8 @@
     "sheet": {
       "workOrder": "Work order",
       "openTicket": "Open ticket",
-      "openWorkOrder": "Open work order"
+      "openWorkOrder": "Open work order",
+      "title": "Notification"
     },
     "empty": "No notifications yet",
     "emptyDescription": "You are told here when you are assigned a ticket, sent a work order, or when a ticket you answer for or follow changes status or gets paid.",

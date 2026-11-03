@@ -4950,7 +4950,8 @@
     "sheet": {
       "workOrder": "Order",
       "openTicket": "Öppna ärendet",
-      "openWorkOrder": "Öppna ordern"
+      "openWorkOrder": "Öppna ordern",
+      "title": "Notis"
     },
     "empty": "Inga notiser än",
     "emptyDescription": "Här får du veta när du blir ansvarig för ett ärende, får en order, eller när ett ärende du ansvarar för eller följer byter status eller blir betalt.",
