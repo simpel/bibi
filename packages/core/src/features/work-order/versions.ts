@@ -54,8 +54,11 @@ export type CreateVersionInput = Db & {
   sent: WorkOrderWithRecipients | null;
 };
 
-/** The next version, with the rows marked ★ that differ from the last sent version. */
-export function createVersion({
+/**
+ * The next version, with the rows marked ★ that differ from the last sent version. The only writer
+ * of the `current` projection: the new version takes it from the previous one.
+ */
+export async function createVersion({
   context,
   ticket,
   definition,
@@ -65,6 +68,10 @@ export function createVersion({
   sent,
 }: CreateVersionInput) {
   const before = sent ? toWorkOrderDto({ row: sent }).content : null;
+  await context.db.workOrder.updateMany({
+    where: { ticketId: ticket.id, workOrderDefinitionId: definition.id, current: true },
+    data: { current: false },
+  });
   return context.db.workOrder.create({
     data: {
       organizationId: context.organizationId,
@@ -77,6 +84,7 @@ export function createVersion({
       matches: toJson({ value: matches }) ?? [],
       blocked: matches.some((match) => match.blocking),
       baseVersion: sent?.version ?? null,
+      current: true,
     },
     include: WORK_ORDER_INCLUDE,
   });

@@ -3,6 +3,8 @@ import type { Locale } from "@bibi/i18n";
 import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
+import { toCanonicalQuery } from "@/components/query-search/lib/query-canonical";
+import type { QueryVocabulary } from "@/components/query-search/lib/query-vocabulary";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
@@ -12,16 +14,12 @@ import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-a
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import type { TicketListParams } from "../lib/list-params";
-import { toCanonicalQuery } from "../lib/query-canonical";
-import { buildQueryCatalog } from "../lib/query-catalog";
-import type { QueryVocabulary } from "../lib/query-vocabulary";
-import { loadQueryVocabulary } from "../load-query-vocabulary";
 import { loadTicketData } from "../load-ticket-data";
+import { loadTicketQuery } from "../load-ticket-query";
 import { CreateTicketButton } from "./create-ticket-button";
 import { ExpireHoldsButton } from "./expire-holds-button";
 import { TicketListTable } from "./ticket-list-table";
-import { TicketQuickFilters } from "./ticket-quick-filters";
-import { TicketSearch } from "./ticket-search";
+import { TicketSearchBar } from "./ticket-search-bar";
 
 export type TicketListProps = {
   locale: Locale;
@@ -69,10 +67,13 @@ const listInput = ({ params, vocabulary }: ListInputArgs) => ({
 /** Tickets page body: header with create, filters and search, then the paged table. */
 export async function TicketList({ locale, params }: TicketListProps) {
   const t = await getTranslations("ticket");
-  const [abilities, vocabulary] = await Promise.all([getCallerAbilities(), loadQueryVocabulary()]);
+  const [abilities, query] = await Promise.all([getCallerAbilities(), loadTicketQuery()]);
   const [data, result] = await Promise.all([
     loadTicketData(),
-    runOperation({ operation: listTickets, input: listInput({ params, vocabulary }) }),
+    runOperation({
+      operation: listTickets,
+      input: listInput({ params, vocabulary: query.vocabulary }),
+    }),
   ]);
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
@@ -91,14 +92,7 @@ export async function TicketList({ locale, params }: TicketListProps) {
         />
       ) : (
         <>
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <TicketQuickFilters q={params.q} vocabulary={vocabulary} />
-            <TicketSearch
-              value={params.q}
-              vocabulary={vocabulary}
-              catalog={buildQueryCatalog({ ...data.value, vocabulary })}
-            />
-          </div>
+          <TicketSearchBar q={params.q} query={query} data={data.value} />
           <TicketListTable tickets={items} total={total ?? 0} view={params} data={data.value} />
         </>
       )}

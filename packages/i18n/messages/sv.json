@@ -517,7 +517,9 @@
     "itemStates": "Artikelstatusar",
     "ticketTemplates": "Mallar",
     "apiKeys": "API-nycklar",
-    "permissions": "Behörigheter"
+    "permissions": "Behörigheter",
+    "workOrdersToday": "Idag",
+    "workOrdersAll": "Alla"
   },
   "venue": {
     "singular": "Anläggning",
@@ -1727,6 +1729,76 @@
         "need": "Behov",
         "count": "Antal",
         "appliesTo": "Gäller"
+      }
+    },
+    "currentVersion": "Aktuell version",
+    "notCurrentVersion": "Inte aktuell version",
+    "goToCurrent": "Öppna aktuell version",
+    "versions": "Versioner",
+    "versionCreated": "Version {version} · {when}",
+    "today": {
+      "title": "Idag",
+      "description": "Dina aktuella order för ärenden som äger rum idag.",
+      "empty": "Inget för dig idag",
+      "emptyDescription": "En order visas här när du är ansvarig eller följer dess ansvar på ett ärende som äger rum idag.",
+      "seeAll": "Alla order"
+    },
+    "query": {
+      "keys": {
+        "involves": "inblandad",
+        "definition": "order",
+        "responsibility": "ansvar"
+      },
+      "values": {
+        "current": "aktuell",
+        "sent": "skickad",
+        "unsent": "oskickad",
+        "blocked": "blockerad"
+      },
+      "labels": {
+        "involves": "Inblandad",
+        "definition": "Order",
+        "responsibility": "Ansvar",
+        "is": "Versionens tillstånd"
+      },
+      "hints": {
+        "involves": "ansvarig eller följare på ärendet: jag eller ett namn",
+        "definition": "ordens namn",
+        "responsibility": "ansvarets namn",
+        "is": "aktuell, skickad, oskickad, blockerad, öppen eller stängd"
+      },
+      "rows": {
+        "excludeInvolves": "Uteslut inblandad"
+      }
+    },
+    "list": {
+      "description": "Alla orderversioner, de nyaste först.",
+      "empty": "Inga order än",
+      "emptyDescription": "Order dyker upp här när de skapas från ett ärende.",
+      "noMatches": "Inga order matchar.",
+      "total": "{count, plural, one {# order} other {# order}}",
+      "search": "Sök eller filtrera, t.ex. inblandad:jag är:aktuell",
+      "searchSubmit": "Sök",
+      "columns": {
+        "ticket": "Ärende",
+        "workOrder": "Order",
+        "responsibility": "Ansvar",
+        "when": "När",
+        "version": "Version",
+        "status": "Status",
+        "sentAt": "Skickad"
+      },
+      "status": {
+        "sent": "Skickad",
+        "notSent": "Inte skickad",
+        "blocked": "Blockerad"
+      },
+      "filter": {
+        "label": "Visa",
+        "mine": "Mina",
+        "assigned": "Tilldelade mig",
+        "following": "Följer",
+        "allVersions": "Alla versioner"
       }
     }
   },

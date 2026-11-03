@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
+import { QUERY_PIECE, QUERY_TOKEN } from "../../shared/query/query-tokens";
 import { TicketSchema } from "./schema";
 
 export const TICKET_LIST_SORTS = [
@@ -34,14 +35,9 @@ export const TICKET_QUALIFIERS = [...TICKET_NAME_QUALIFIERS, ...TICKET_MEASURES]
 export type TicketQualifier = (typeof TICKET_QUALIFIERS)[number];
 export type TicketMeasure = (typeof TICKET_MEASURES)[number];
 
-/**
- * One search word: an optional `-`, an optional `key:` (any letters, so a UI can map its own
- * language's words, ADR 0009), then quoted and bare pieces (`"Volvo Cars",Lead`).
- */
-export const TICKET_QUERY_TOKEN = /(-)?(?:(\p{L}+):)?((?:"[^"]*"?|[^\s"]+)+)/giu;
-
-/** One comma-separated piece of a value: quoted (group 1) or bare (group 2). */
-export const TICKET_QUERY_PIECE = /"([^"]*)"?|([^,"]+)/gu;
+/** The shared search token patterns, under the names the web already imports. */
+export const TICKET_QUERY_TOKEN = QUERY_TOKEN;
+export const TICKET_QUERY_PIECE = QUERY_PIECE;
 
 /** Fixed values: `is:`, `holds:` (besides dates) and `no:`. */
 export const TICKET_IS_VALUES = ["open", "closed"] as const;

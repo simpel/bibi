@@ -4,6 +4,7 @@ import {
   BuildingIcon,
   CalendarIcon,
   CalendarRangeIcon,
+  ClipboardListIcon,
   ContactIcon,
   InboxIcon,
   KanbanIcon,
@@ -20,6 +21,9 @@ export type NavLabelKey =
   | "calendar"
   | "financials"
   | "tickets"
+  | "workOrders"
+  | "workOrdersToday"
+  | "workOrdersAll"
   | "inbox"
   | "customers"
   | "items"
@@ -32,6 +36,9 @@ export type NavLabelKey =
 /** Who sees an entry: everyone (subject to its permission) or settings viewers. */
 export type NavAudience = "everyone" | "configure";
 
+/** A page under an entry, shown as a sub-item while the entry is expanded. */
+export type NavChild = { href: string; labelKey: NavLabelKey };
+
 export type NavItem = {
   href: string;
   labelKey: NavLabelKey;
@@ -39,6 +46,8 @@ export type NavItem = {
   audience: NavAudience;
   /** The view permission an entry needs (ADR 0050); absent = no permission needed. */
   permission?: Permission;
+  /** Sub-pages; the entry's own `href` is the first of them (the section's default). */
+  children?: readonly NavChild[];
 };
 
 export type NavGroupId = "primary" | "work" | "catalog" | "admin";
@@ -78,6 +87,17 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       icon: CalendarIcon,
       audience: "everyone",
       permission: "ticket:read",
+    },
+    {
+      href: ROUTES.workOrders,
+      labelKey: "workOrders",
+      icon: ClipboardListIcon,
+      audience: "everyone",
+      permission: "workOrder:read",
+      children: [
+        { href: ROUTES.workOrders, labelKey: "workOrdersToday" },
+        { href: ROUTES.workOrdersAll, labelKey: "workOrdersAll" },
+      ],
     },
     {
       href: INBOX_ROUTE,

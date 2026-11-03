@@ -1,9 +1,9 @@
 import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { toCanonicalQuery } from "@/components/query-search/lib/query-canonical";
+import type { QueryVocabulary } from "@/components/query-search/lib/query-vocabulary";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
-import { toCanonicalQuery } from "../lib/query-canonical";
-import type { QueryVocabulary } from "../lib/query-vocabulary";
 
 export type TicketQuickFiltersProps = { q: string | undefined; vocabulary: QueryVocabulary };
 

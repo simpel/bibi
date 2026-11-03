@@ -29,6 +29,14 @@ export type DemoResponsibility = {
   followers?: readonly string[];
 };
 
+/** A work order definition (ADR 0092) by name: item types, counted lists and its responsibility. */
+export type DemoWorkOrderDefinition = {
+  name: string;
+  types: readonly string[];
+  lists: readonly string[];
+  responsibility: string;
+};
+
 /**
  * One cell of the status grid (ADR 0044) by name: entering `status` moves lines of item type
  * `type` to `state`. Cells that are not listed keep the state.
@@ -80,6 +88,8 @@ export type DemoOrg = {
   config: DemoConfig;
   /** Slice 2: what each person answers for, with covered item types and default people. */
   responsibilities: readonly DemoResponsibility[];
+  /** Slice 2: work order definitions, made before the tickets so their commands generate versions. */
+  workOrders: readonly DemoWorkOrderDefinition[];
   /** Slice 4: customers with their contact persons. */
   customers: readonly DemoCustomer[];
   /** Slice 3: member profiles with their staff item links (ADR 0068); none when left out. */

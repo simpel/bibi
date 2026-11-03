@@ -20,6 +20,7 @@ import { lindholmenStaff, lindholmenStaffTypes } from "./staff";
 import { lindholmenTemplates } from "./templates";
 import { lindholmenTickets } from "./tickets";
 import { lindholmenTypes } from "./types";
+import { lindholmenWorkOrders } from "./work-orders";
 import { lindholmenYearTickets } from "./year-tickets";
 
 const fixtures = [
@@ -92,6 +93,7 @@ export const lindholmen: DemoOrg = {
     checks: { listSizes: { Allergens: 14 } },
   },
   responsibilities: lindholmenResponsibilities,
+  workOrders: lindholmenWorkOrders,
   staff: lindholmenStaff,
   customers: lindholmenCustomers,
   pipeline: lindholmenPipeline,

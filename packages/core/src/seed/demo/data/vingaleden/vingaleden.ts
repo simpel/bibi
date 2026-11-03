@@ -10,6 +10,7 @@ import { vingaledenResponsibilities } from "./responsibilities";
 import { vingaledenTemplates } from "./templates";
 import { vingaledenTickets } from "./tickets";
 import { vingaledenTours } from "./tours";
+import { vingaledenWorkOrders } from "./work-orders";
 
 const items = [...vingaledenBoats, ...vingaledenTours];
 const reserved = usedAssetDays({
@@ -48,6 +49,7 @@ export const vingaleden: DemoOrg = {
     checks: { absentLists: ["Allergens"] },
   },
   responsibilities: vingaledenResponsibilities,
+  workOrders: vingaledenWorkOrders,
   customers: vingaledenCustomers,
   pipeline: vingaledenPipeline,
   templates: vingaledenTemplates,

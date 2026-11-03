@@ -42,7 +42,9 @@ export function SidebarNav({ groups, access, headings, closed = [] }: SidebarNav
       items: NAV_GROUPS[group].filter((item) => isVisible({ item, access })),
     }))
     .filter(({ items }) => items.length > 0);
-  const hrefs = visible.flatMap(({ items }) => items.map((item) => item.href));
+  const hrefs = visible.flatMap(({ items }) =>
+    items.flatMap((item) => [item.href, ...(item.children ?? []).map((child) => child.href)]),
+  );
   const current = activeHref({ pathname, hrefs });
   return visible.map(({ group, items }) => (
     <NavGroup

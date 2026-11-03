@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { PageInputShape } from "../../shared/page-input";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 
 export const WORK_ORDER_ROW_KINDS = ["TICKET", "ITEM", "REQUIREMENT"] as const;
@@ -100,6 +99,9 @@ export const WorkOrderSchema = z.object({
     .int()
     .nullable()
     .describe("The last sent version the changes are measured against; null = none sent before"),
+  current: z
+    .boolean()
+    .describe("true on the newest version of its ticket and definition; older ones are history"),
   sentAt: z.date().nullable(),
   sentBy: z.string().nullable(),
   recipients: z
@@ -122,20 +124,6 @@ export const WorkOrderGenerateInputSchema = z.object({
 });
 
 export const WorkOrderIdInputSchema = z.object({ id: z.string().min(1) });
-
-export const WorkOrderListInputSchema = z.object({
-  ticketId: z.string().optional().describe("Only work orders of this ticket"),
-  workOrderDefinitionId: z
-    .string()
-    .optional()
-    .describe("Only versions of this work order definition"),
-  ...PageInputShape,
-});
-
-export const WorkOrderListOutputSchema = z.object({
-  items: z.array(WorkOrderSchema),
-  nextCursor: z.string().nullable(),
-});
 
 export type WorkOrderRow = z.infer<typeof WorkOrderRowSchema>;
 export type WorkOrderContent = z.infer<typeof WorkOrderContentSchema>;

@@ -517,7 +517,9 @@
     "itemStates": "Item states",
     "ticketTemplates": "Packages",
     "apiKeys": "API keys",
-    "permissions": "Permissions"
+    "permissions": "Permissions",
+    "workOrdersToday": "Today",
+    "workOrdersAll": "All"
   },
   "venue": {
     "singular": "Venue",
@@ -1727,6 +1729,76 @@
         "need": "Need",
         "count": "Count",
         "appliesTo": "Applies to"
+      }
+    },
+    "currentVersion": "Current version",
+    "notCurrentVersion": "Not the current version",
+    "goToCurrent": "Open the current version",
+    "versions": "Versions",
+    "versionCreated": "Version {version} · {when}",
+    "today": {
+      "title": "Today",
+      "description": "Your current work orders for tickets that take place today.",
+      "empty": "Nothing for you today",
+      "emptyDescription": "A work order shows up here when you are the assignee or a follower of its responsibility on a ticket that takes place today.",
+      "seeAll": "All work orders"
+    },
+    "query": {
+      "keys": {
+        "involves": "involves",
+        "definition": "definition",
+        "responsibility": "responsibility"
+      },
+      "values": {
+        "current": "current",
+        "sent": "sent",
+        "unsent": "unsent",
+        "blocked": "blocked"
+      },
+      "labels": {
+        "involves": "Involves",
+        "definition": "Work order",
+        "responsibility": "Responsibility",
+        "is": "Version state"
+      },
+      "hints": {
+        "involves": "assignee or follower on the ticket: me or a name",
+        "definition": "the work order's name",
+        "responsibility": "the responsibility's name",
+        "is": "current, sent, unsent, blocked, open or closed"
+      },
+      "rows": {
+        "excludeInvolves": "Exclude involved"
+      }
+    },
+    "list": {
+      "description": "Every work order version, newest first.",
+      "empty": "No work orders yet",
+      "emptyDescription": "Work orders appear here when they are generated from a ticket.",
+      "noMatches": "No work orders match.",
+      "total": "{count, plural, one {# work order} other {# work orders}}",
+      "search": "Search or filter, e.g. involves:me is:current",
+      "searchSubmit": "Search",
+      "columns": {
+        "ticket": "Ticket",
+        "workOrder": "Work order",
+        "responsibility": "Responsibility",
+        "when": "When",
+        "version": "Version",
+        "status": "Status",
+        "sentAt": "Sent"
+      },
+      "status": {
+        "sent": "Sent",
+        "notSent": "Not sent",
+        "blocked": "Blocked"
+      },
+      "filter": {
+        "label": "Show",
+        "mine": "Mine",
+        "assigned": "Assigned to me",
+        "following": "Following",
+        "allVersions": "All versions"
       }
     }
   },

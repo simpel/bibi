@@ -13,6 +13,7 @@ import { ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
 import type { NavItem } from "./nav-items";
+import { NavSubLinks } from "./nav-sub-links";
 
 export type NavGroupProps = {
   /** The group's label; without one the links stand on their own (no heading, not collapsible). */
@@ -26,16 +27,22 @@ function NavLinks({ items, current }: Pick<NavGroupProps, "items" | "current">) 
   const t = useTranslations("nav");
   return (
     <SidebarMenu>
-      {items.map(({ href, labelKey, icon: Icon }) => (
-        <SidebarMenuItem key={href}>
-          <SidebarMenuButton asChild isActive={href === current} tooltip={t(labelKey)}>
-            <Link href={href}>
-              <Icon />
-              <span>{t(labelKey)}</span>
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      ))}
+      {items.map((item) => {
+        const { href, labelKey, icon: Icon, children } = item;
+        if (children) {
+          return <NavSubLinks key={href} item={{ ...item, children }} current={current} />;
+        }
+        return (
+          <SidebarMenuItem key={href}>
+            <SidebarMenuButton asChild isActive={href === current} tooltip={t(labelKey)}>
+              <Link href={href}>
+                <Icon />
+                <span>{t(labelKey)}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        );
+      })}
     </SidebarMenu>
   );
 }
@@ -50,7 +57,9 @@ export function NavGroup({ heading, items, current, defaultOpen = true }: NavGro
       </SidebarGroup>
     );
   }
-  const containsActive = items.some((item) => item.href === current);
+  const containsActive = items.some(
+    (item) => item.href === current || item.children?.some((child) => child.href === current),
+  );
   return (
     <Collapsible defaultOpen={defaultOpen || containsActive} className="group/collapsible">
       <SidebarGroup>

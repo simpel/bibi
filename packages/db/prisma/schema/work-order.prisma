@@ -22,6 +22,9 @@ model WorkOrder {
   blocked           Boolean          @default(false)
   /// The last sent version the changes are measured against; null when none was sent before.
   baseVersion       Int?
+  /// Projection (ADR 0051): true on the newest version of its ticket and definition. Written only
+  /// by core `createVersion`, which clears it on the previous version in the same transaction.
+  current           Boolean          @default(false)
   sentAt            DateTime?
   /// User id of whoever sent it.
   sentBy            String?
@@ -39,6 +42,7 @@ model WorkOrder {
   @@index([organizationId, ticketId])
   @@index([organizationId, workOrderDefinitionId])
   @@index([organizationId, responsibilityId])
+  @@index([organizationId, current])
 }
 
 /// How a recipient took part in a sent work order (ADR 0055).

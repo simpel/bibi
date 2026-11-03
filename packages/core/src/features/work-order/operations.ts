@@ -1,19 +1,13 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
-import { pageArgs } from "../../shared/page-input";
-import { paginate } from "../../shared/paginate";
 import { buildWorkOrderContent } from "./build-content";
 import { checkSourcesReadable } from "./check-sources-readable";
+import { loadWorkOrderPage } from "./list-page";
+import { WorkOrderListInputSchema, WorkOrderListOutputSchema } from "./list-schema";
 import { loadMatches } from "./load-matches";
 import { loadSources } from "./load-sources";
-import {
-  WorkOrderGenerateInputSchema,
-  WorkOrderIdInputSchema,
-  WorkOrderListInputSchema,
-  WorkOrderListOutputSchema,
-  WorkOrderSchema,
-} from "./schema";
+import { WorkOrderGenerateInputSchema, WorkOrderIdInputSchema, WorkOrderSchema } from "./schema";
 import { sendWorkOrder } from "./send-operation";
 import { toWorkOrderDto, WORK_ORDER_INCLUDE } from "./to-work-order-dto";
 import { createVersion, findVersions, sameAsLatest } from "./versions";
@@ -22,28 +16,16 @@ export const listWorkOrders = defineOperation({
   name: "workOrder.list",
   kind: "query",
   description:
-    "List generated work order versions (e.g. kitchen orders), newest first: version, receiving " +
-    "responsibility, the rows of the snapshot, the changes marked ★ since the last sent version and " +
-    "when it was sent. Filter by ticket or work order definition.",
+    "List generated work order versions (e.g. kitchen orders), newest first: version, whether it " +
+    "is the current one, receiving responsibility, the rows of the snapshot, the changes marked ★ " +
+    "since the last sent version and when it was sent. Filter by ticket, work order definition " +
+    "or a window over the ticket's period (`from`/`to`); search with `q` (`involves:me " +
+    "is:current` = my current work orders) and order with `sort`/`direction`. Page with " +
+    "`cursor`, or with `page` to get numbered pages and the `total` count.",
   input: WorkOrderListInputSchema,
   output: WorkOrderListOutputSchema,
   permission: "workOrder:read",
-  handler: async ({ input, context }) => {
-    const rows = await context.db.workOrder.findMany({
-      where: {
-        ...(input.ticketId ? { ticketId: input.ticketId } : {}),
-        ...(input.workOrderDefinitionId
-          ? { workOrderDefinitionId: input.workOrderDefinitionId }
-          : {}),
-      },
-      include: WORK_ORDER_INCLUDE,
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-      ...pageArgs(input),
-    });
-    const page = paginate({ rows, limit: input.limit });
-    const items = page.items.map((row) => toWorkOrderDto({ row }));
-    return ok({ value: { items, nextCursor: page.nextCursor } });
-  },
+  handler: async ({ input, context }) => ok({ value: await loadWorkOrderPage({ input, context }) }),
 });
 
 export const getWorkOrder = defineOperation({

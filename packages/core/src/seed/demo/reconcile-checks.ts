@@ -3,6 +3,7 @@ import { lineHoldsReconciliation } from "./line-holds-reconcile";
 import { type ReconcileContext, runReconciliations } from "./reconcile";
 import { recordReconciliation } from "./record-reconciliation";
 import { paymentRefundReconciliation } from "./refund-reconcile";
+import { workOrderCurrentReconciliation } from "./work-order-current-reconcile";
 
 export const RECONCILIATIONS = [
   lineHoldsReconciliation,
@@ -10,6 +11,7 @@ export const RECONCILIATIONS = [
   ticketStatusReconciliation,
   lineStateReconciliation,
   paymentRefundReconciliation,
+  workOrderCurrentReconciliation,
 ];
 
 /** Runs every registered projection check (ADR 0051); also called from Vitest. */

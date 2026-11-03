@@ -26,6 +26,7 @@ export const ROUTES = {
   customers: "/customers",
   tickets: "/tickets",
   workOrders: "/work-orders",
+  workOrdersAll: "/work-orders/all",
   calendar: "/calendar",
   financials: "/data/financials", // one of the dashboards (ADR 0086)
   workload: "/data/workload",
@@ -70,6 +71,10 @@ export type ListItemRouteInput = { list: string; id: string };
 export function listItemRoute({ list, id }: ListItemRouteInput): string {
   return `${list}/${encodeURIComponent(id)}`;
 }
+
+/** The input of a record's detail route. */
+export type IdRouteInput = { id: string };
+
 export type UpdateRouteInput = { detail: string };
 
 /** Update pages live under the detail page: `/<things>/<id>/update`. */
@@ -77,21 +82,15 @@ export function updateRoute({ detail }: UpdateRouteInput): string {
   return `${detail}/update`;
 }
 
-export type VenueRouteInput = { id: string };
-
-export function venueRoute({ id }: VenueRouteInput): string {
+export function venueRoute({ id }: IdRouteInput): string {
   return `${ROUTES.venues}/${encodeURIComponent(id)}`;
 }
 
-export type CustomerRouteInput = { id: string };
-
-export function customerRoute({ id }: CustomerRouteInput): string {
+export function customerRoute({ id }: IdRouteInput): string {
   return `${ROUTES.customers}/${encodeURIComponent(id)}`;
 }
 
-export type TicketRouteInput = { id: string };
-
-export function ticketRoute({ id }: TicketRouteInput): string {
+export function ticketRoute({ id }: IdRouteInput): string {
   return `${ROUTES.tickets}/${encodeURIComponent(id)}`;
 }
 
@@ -102,15 +101,11 @@ export function depositNewRoute({ ticketId }: DepositNewRouteInput): string {
   return `${ROUTES.depositNew}?ticket=${encodeURIComponent(ticketId)}`;
 }
 
-export type QuoteRouteInput = { id: string };
-
-export function quoteRoute({ id }: QuoteRouteInput): string {
+export function quoteRoute({ id }: IdRouteInput): string {
   return `${ROUTES.quotes}/${encodeURIComponent(id)}`;
 }
 
-export type SkillRouteInput = { id: string };
-
-export function skillRoute({ id }: SkillRouteInput): string {
+export function skillRoute({ id }: IdRouteInput): string {
   return `${ROUTES.skills}/${encodeURIComponent(id)}`;
 }
 

@@ -6,6 +6,7 @@ import type { DemoCatalog } from "./seed-items";
 import { seedDemoPaymentSettings } from "./seed-payment-settings";
 import { seedDemoPipeline } from "./seed-pipeline";
 import { seedDemoSales } from "./seed-sales";
+import { seedDemoWorkOrders } from "./seed-work-orders";
 import type { DemoOrg } from "./types";
 import type { DemoUserIds } from "./users";
 
@@ -19,7 +20,7 @@ export type PipelineAndSalesInput = {
 };
 
 /**
- * The pipeline, then customers and tickets with their money, the deposit rule (ADR 0090), the
+ * The pipeline, then customers and tickets with their money and work orders (ADR 0092), the deposit rule (ADR 0090), the
  * inbox (ADR 0085), then the accounts and the first SIE export (ADR 0077); without a pipeline (ADR 0044) only customers.
  */
 export async function seedPipelineAndSales({ skipPipeline, ...input }: PipelineAndSalesInput) {
@@ -32,6 +33,8 @@ export async function seedPipelineAndSales({ skipPipeline, ...input }: PipelineA
   }
   const sales = await seedDemoSales({ ...input, skipPipeline });
   if (!sales.ok || skipPipeline) return sales;
+  const workOrders = await seedDemoWorkOrders({ context: input.context });
+  if (!workOrders.ok) return workOrders;
   const settings = await seedDemoPaymentSettings({ context: input.context, org: input.org });
   if (!settings.ok) return settings;
   const inbox = await seedDemoInbox({ context: input.context, org: input.org });

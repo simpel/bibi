@@ -189,9 +189,11 @@ L7 and L10 are created with `ticket.createFromTemplate` from these (see Tickets)
 ### Work orders
 | Work order | Item types | Requirements | To (responsibility, ADR 0034) |
 |---|---|---|---|
-| Kitchen order | Dish, Drink, Meal | Allergens, Diet | Kitchen |
-| Setup order | Conference room, Equipment | Accessibility | Caretaker |
+| Kitchen order | Dish, Drink, Meal | Allergens, Diet | Head of kitchen |
+| Setup order | Conference room, Equipment | Accessibility | Coordinator |
 | Guide brief | Tour, Guide | Accessibility | Coordinator |
+
+The definitions (`data/<org>/work-orders.ts`) are made with `workOrderDefinition.create` right after the responsibilities, before any ticket, so the tickets' line and need commands generate versions (ADR 0092). After the tickets, `seed-work-orders.ts` runs `workOrder.generate` for every ticket with an active line of an included type in an `inWorkOrders` state, which gives tickets made without a later line command their first version; an unchanged work order keeps its version. Lindholmen's Kitchen order is regenerated during the seed, so it has an older, non-current version. `checkDemoWorkOrders` (`work-order-checks.ts`) asserts that each organization with definitions has work orders and that the default assignee of a current one's responsibility finds it with `involves:me is:current` as a member; the `work-order-current` reconciliation checks `WorkOrder.current`.
 
 ### Finance (ADR 0077)
 - Organization number 556677-8899. Revenue accounts per item type: Conference room 3010, Meal 3051, Dish 3051 and Drink 3052. Every other type and item uses the organization's default, 3001. The other accounts are the BAS defaults: receivables 1510, clearing 1580, advances 2420, fees 6570, rounding 3740, output VAT 2611, 2621 and 2631, fiscal year from January.
@@ -363,7 +365,7 @@ About 40 Lindholmen tickets with 90 room lines and about 57 Vingaleden tickets w
 - **Open statuses.** Every open status has a ticket with an estimate or a priced line: Lindholmen L9, L11, L12 and L13 (Final count locked) got estimates beside L3, F2 and F3; Vingaleden V5 (Request), V6 (Confirmed), V3 and V4 got estimates.
 - **Holds.** The busy calendar's blocks (hard and soft holds from D-7) give every bookable type utilisation above 0 in the range. Closed tickets release their lines, so the closed tickets add none. Expiring holds: Lindholmen's F2 and F3 (`holdsUntil` D+5) and Vingaleden's V5 (a soft hold on RIB Snabben on D+16, `holdsUntil` D+4).
 - **Overdue.** Lindholmen's open invoices past due (L2, L23, L25) give the attention list its overdue row; Vingaleden has no invoices, so it has none.
-- **Work orders.** The seed generates no work orders yet, so the unsent-work-orders list is empty in both organizations.
+- **Work orders.** The seeded work orders are unsent, so the unsent-work-orders list has rows in both organizations.
 - **Dates.** A past ticket (`day` on or before today) reaches its closing status at its own day through the context clock (`seed-clock.ts`, ADR 0064): `recordStatusChange` stamps `TicketStatusChange.changedAt` with `nowOf`, so closings spread over the last year, as the invoices do. Won also counts a sent invoice (L16–L28 and the other invoiced past events), so those are won; tickets without a quote or invoice are lost.
 - **Check.** `checkDemoDashboard` runs `dashboard.summary` from the first of this month to four weeks ahead in each organization and asserts: every open status card has tickets, an estimated or agreed value and a trend against the month's start, at least one expiring hold, an overdue row where the organization has a finance block, tickets scheduled, utilisation above 0 for at least one type and some value booked ahead. It then runs `finance.overview` for the last 182 days and asserts at least the data files' won tickets, won tickets in at least 2 months and lost tickets in at least 2 months, and, with a finance block, an invoiced and a received trend above 0. The board check reads closed tickets of the last year (`closedWithinDays: 365`).
 

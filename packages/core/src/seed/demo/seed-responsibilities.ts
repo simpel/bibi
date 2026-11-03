@@ -1,9 +1,10 @@
-import { AppError } from "../../errors/app-error";
-import { err, ok, type Result } from "../../errors/result";
+import type { Result } from "../../errors/result";
 import { createResponsibility } from "../../features/responsibility/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoRefs } from "./demo-refs";
+import { resolveNames as resolve } from "./resolve-names";
+import { seedDemoWorkOrderDefinitions } from "./seed-work-order-definitions";
 import type { DemoOrg } from "./types";
 import type { DemoUserIds } from "./users";
 
@@ -14,21 +15,10 @@ export type SeedDemoResponsibilitiesInput = {
   userIds: DemoUserIds;
 };
 
-type Names = { kind: string; names: readonly string[]; ids: ReadonlyMap<string, string> };
-
-/** The ids of the names, or `INTERNAL` for a name the data files got wrong. */
-function resolve({ kind, names, ids }: Names): Result<string[]> {
-  const found: string[] = [];
-  for (const name of names) {
-    const id = ids.get(name);
-    if (!id)
-      return err({ error: new AppError({ code: "INTERNAL", message: `Unknown ${kind} ${name}` }) });
-    found.push(id);
-  }
-  return ok({ value: found });
-}
-
-/** Slice 2 of ADR 0025: responsibilities via `responsibility.create` as SYSTEM. */
+/**
+ * Slice 2 of ADR 0025: responsibilities via `responsibility.create` as SYSTEM, then the work order
+ * definitions that go to them.
+ */
 export async function seedDemoResponsibilities({
   context,
   org,
@@ -36,6 +26,7 @@ export async function seedDemoResponsibilities({
   userIds,
 }: SeedDemoResponsibilitiesInput): Promise<Result<true>> {
   const typeIds = new Map([...refs.itemTypes].map(([name, type]) => [name, type.id]));
+  const responsibilityIds = new Map<string, string>();
   for (const { name, types, assignee, followers = [] } of org.responsibilities) {
     const entityTypeIds = resolve({ kind: "item type", names: types, ids: typeIds });
     if (!entityTypeIds.ok) return entityTypeIds;
@@ -50,6 +41,7 @@ export async function seedDemoResponsibilities({
     };
     const result = await execute({ operation: createResponsibility, input, context });
     if (!result.ok) return result;
+    responsibilityIds.set(name, result.value.id);
   }
-  return ok({ value: true });
+  return seedDemoWorkOrderDefinitions({ context, org, refs, responsibilityIds });
 }

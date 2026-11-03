@@ -29,6 +29,7 @@ import { checkDemoShowcase } from "./showcase-checks";
 import { checkDemoTemplates } from "./template-checks";
 import { checkDemoTickets } from "./ticket-checks";
 import type { DemoOrg } from "./types";
+import { checkDemoWorkOrders } from "./work-order-checks";
 
 type OrgCheck = (input: { context: ExecuteContext; org: DemoOrg }) => Promise<string[]>;
 
@@ -63,4 +64,5 @@ export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoDensity,
   checkDemoDashboard,
   checkDemoInbox,
+  checkDemoWorkOrders,
 ];

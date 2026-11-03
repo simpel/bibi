@@ -73,7 +73,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "requirement.create", route: "/tickets/[id]" },
   { operation: "requirement.update", route: "/tickets/[id]" },
   { operation: "requirement.archive", route: "/tickets/[id]" },
-  { operation: "workOrder.list", route: "/tickets/[id]" },
+  { operation: "workOrder.list", route: "/work-orders" },
   { operation: "workOrder.get", route: "/work-orders/[id]" },
   { operation: "workOrder.generate", route: "/tickets/[id]" },
   { operation: "workOrder.send", route: "/tickets/[id]" },

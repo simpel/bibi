@@ -23,6 +23,7 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   // Payments settle quotes, deposits and invoices (ADR 0057): before all three.
   db.payment.deleteMany({ where }),
   db.deposit.deleteMany({ where }),
+  db.workOrderRecipient.deleteMany({ where }),
   db.workOrder.deleteMany({ where }),
   db.requirement.deleteMany({ where }),
   // Order lines point at the lines they froze and at their quote or invoice (ADR 0052).

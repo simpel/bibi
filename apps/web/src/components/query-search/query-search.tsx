@@ -1,0 +1,40 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { SearchForm } from "@/components/search-form";
+import { usePendingToast } from "@/lib/use-pending-toast";
+import { useQueryNavigation } from "@/lib/use-query-navigation";
+import type { QueryCatalog, QueryTexts } from "./lib/query-suggestion-types";
+import type { QueryVocabulary } from "./lib/query-vocabulary";
+import { QueryInput } from "./query-input";
+
+export type QuerySearchProps = {
+  value: string | undefined;
+  /** Placeholder and accessible name of the field, and of its button. */
+  label: string;
+  submitLabel: string;
+  catalog: QueryCatalog;
+  vocabulary: QueryVocabulary;
+  texts: QueryTexts;
+};
+
+/**
+ * A list's search and GitHub-style filters (`assignee:me status:Lead`), with suggestions while
+ * typing; a new search starts on page 1, with a loading toast until its page is there.
+ */
+export function QuerySearch({ value, label, submitLabel, ...query }: QuerySearchProps) {
+  const common = useTranslations("common");
+  const { navigate, pending } = useQueryNavigation();
+  usePendingToast({ pending, message: common("searching") });
+  return (
+    <SearchForm
+      value={value}
+      label={label}
+      submitLabel={submitLabel}
+      onSearch={(q) => navigate({ patch: { q } })}
+      pending={pending}
+      pendingLabel={common("searching")}
+      renderInput={(field) => <QueryInput {...field} {...query} />}
+    />
+  );
+}

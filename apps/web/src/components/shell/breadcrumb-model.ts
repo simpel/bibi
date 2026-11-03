@@ -33,6 +33,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   lists: "lists",
   setups: "setups",
   "work-orders": "workOrders",
+  all: "workOrdersAll",
   "price-lists": "priceLists",
   responsibilities: "responsibilities",
   integrations: "integrations",
