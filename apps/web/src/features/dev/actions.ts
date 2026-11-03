@@ -5,8 +5,10 @@ import {
   isDevEnvironment,
   listDevUsers,
   resetDevOnboarding,
+  resolveExecuteContext,
   switchDevUser,
 } from "@bibi/auth";
+import { sendTestNotification } from "@bibi/core/dev-notification";
 import { seedDemo } from "@bibi/core/seed/demo";
 import { headers } from "next/headers";
 import type { ActionResult } from "@/lib/action-result";
@@ -50,4 +52,20 @@ export async function resetDevOnboardingAction({
 }: ResetDevOnboardingActionInput): Promise<ActionResult<null>> {
   if (await resetDevOnboarding({ userId })) return { ok: true, value: null };
   return { ok: false, error: { code: "FORBIDDEN", message: "Reset failed", issues: [] } };
+}
+
+/** Dev menu: a test notification about a random ticket for the signed-in member (ADR 0094). */
+export async function sendTestNotificationAction(): Promise<ActionResult<{ kind: string }>> {
+  const forbidden: ActionResult<{ kind: string }> = {
+    ok: false,
+    error: { code: "FORBIDDEN", message: "Dev only", issues: [] },
+  };
+  if (!isDevEnvironment()) return forbidden;
+  const context = await resolveExecuteContext({ headers: await headers() });
+  const userId = context.ok ? context.value.actor.userId : null;
+  if (!context.ok || !userId) return forbidden;
+  const sent = await sendTestNotification({ organizationId: context.value.organizationId, userId });
+  if (sent.ok) return { ok: true, value: sent.value };
+  const { code, message } = sent.error;
+  return { ok: false, error: { code, message, issues: [] } };
 }
