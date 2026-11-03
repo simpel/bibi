@@ -1,5 +1,6 @@
 import { getInboundMessage } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
+import { Card } from "@bibi/ui";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
@@ -47,19 +48,24 @@ export async function MessageDetail({ locale, id }: MessageDetailProps) {
     <div className="grid gap-6">
       <CrumbName href={inboxMessageRoute({ id })} name={title} />
       <BackLink label={common("back")} />
-      <PageHeader title={title} />
-      {message.ticketId ? (
-        <AttachedTicket ticketId={message.ticketId} />
-      ) : (
-        <MessageActions
-          id={message.id}
-          dismissed={message.dismissedAt !== null}
-          canTicket={canTicket}
-          canWrite={canWrite}
-          tickets={tickets}
-        />
-      )}
-      <MessageEntry message={message} dates={dates} />
+      <PageHeader
+        title={title}
+        actions={
+          message.ticketId ? undefined : (
+            <MessageActions
+              id={message.id}
+              dismissed={message.dismissedAt !== null}
+              canTicket={canTicket}
+              canWrite={canWrite}
+              tickets={tickets}
+            />
+          )
+        }
+      />
+      {message.ticketId ? <AttachedTicket ticketId={message.ticketId} /> : null}
+      <Card className="px-6 shadow-none">
+        <MessageEntry message={message} dates={dates} withSubject={false} />
+      </Card>
     </div>
   );
 }

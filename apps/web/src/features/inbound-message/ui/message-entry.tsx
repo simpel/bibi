@@ -8,6 +8,8 @@ export type MessageEntryProps = {
   message: InboundMessageValue;
   /** The viewer's date and time format: `getDateTimeFormat()` on the server, the hook in a card. */
   dates: DateTimeFormat;
+  /** Show the subject line; off where the page title already is the subject. */
+  withSubject?: boolean;
 };
 
 function FormFields({ fields }: { fields: NonNullable<InboundMessageValue["formFields"]> }) {
@@ -29,7 +31,7 @@ function FormFields({ fields }: { fields: NonNullable<InboundMessageValue["formF
  * One inbound message of any channel (ADR 0085): sender, channel, time, subject, the plain text,
  * form fields and attachment names. Written by outside senders: shown as text, never as markup.
  */
-export function MessageEntry({ message, dates }: MessageEntryProps) {
+export function MessageEntry({ message, dates, withSubject = true }: MessageEntryProps) {
   const t = useTranslations("inbox");
   const received = new Date(message.receivedAt);
   return (
@@ -41,7 +43,7 @@ export function MessageEntry({ message, dates }: MessageEntryProps) {
           {dates.dateTime({ instant: received })}
         </time>
       </header>
-      <p className="font-medium">{message.subject ?? t("noSubject")}</p>
+      {withSubject ? <p className="font-medium">{message.subject ?? t("noSubject")}</p> : null}
       <p className="whitespace-pre-wrap break-words text-muted-foreground">
         {message.text || t("noBody")}
       </p>
