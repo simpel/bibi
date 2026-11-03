@@ -3,9 +3,9 @@ export const BILLING_PLAN = {
   currency: "sek",
   trialDays: 14,
   includedSeats: 10,
-  baseMonthlyMinor: 399_900,
+  baseMonthlyMinor: 999_000,
   /** 12 months with 10 % off. */
-  baseYearlyMinor: 4_318_920,
+  baseYearlyMinor: 10_789_200,
   /** Per extra seat and month, on every plan, never discounted. */
   seatMonthlyMinor: 4_900,
 } as const;

@@ -1427,7 +1427,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### BillingAccount (`BillingAccount`)
 
-*MVP* · What the organization pays Bibi ([ADR 0091](decisions/0091-bibi-subscription-billing-with-stripe.md), [ADR 0095](decisions/0095-subscription-plan-seats-and-trial-gate.md)): one plan, 3 999 SEK a month excl. VAT or yearly with 10 % off, 10 seats included and 49 SEK a month per extra seat. Stripe Billing on Bibi's own account, never on the venue's connected account. One row per organization, created by the first change; no row means a 14-day trial from the organization's creation, auto-assign on and no extra seats.
+*MVP* · What the organization pays Bibi ([ADR 0091](decisions/0091-bibi-subscription-billing-with-stripe.md), [ADR 0095](decisions/0095-subscription-plan-seats-and-trial-gate.md)): one plan, 9 990 SEK a month excl. VAT or yearly with 10 % off, 10 seats included and 49 SEK a month per extra seat. Stripe Billing on Bibi's own account, never on the venue's connected account. One row per organization, created by the first change; no row means a 14-day trial from the organization's creation, auto-assign on and no extra seats.
 
 > **Ownership:** owned: trial end (null = inherit creation + 14 days) and exempt (superadmin only), auto-assign seats and extra seats (admin), reminded at. Snapshots of Stripe written only by `billing.applySignal`, `billing.sync` and checkout's `external`: customer, subscription, status, interval, period end, cancel at period end. Access (trial, active, past due, required, exempt, unconfigured) is derived on read.
 

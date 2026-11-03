@@ -9,7 +9,10 @@ const SAAS_TAX_CODE = "txcd_10103001";
 
 const PriceListSchema = z.object({
   data: z.array(
-    z.object({ id: z.string(), lookup_key: z.string().nullable(), product: z.string() }),
+    z.object({
+      ...{ id: z.string(), lookup_key: z.string().nullable(), product: z.string() },
+      unit_amount: z.number().nullable(),
+    }),
   ),
 });
 const IdSchema = z.object({ id: z.string() });
@@ -84,7 +87,10 @@ async function createPrice({ secretKey, productId, spec }: CreatePriceInput) {
   return parsed.success ? ok({ value: parsed.data.id }) : stripeBadResponse({ what: "price" });
 }
 
-/** Finds the plan's prices by lookup key and creates what is missing (ADR 0095 §2). */
+/**
+ * Finds the plan's prices by lookup key and creates what is missing (ADR 0095 §2). A price whose
+ * amount no longer matches the plan is replaced: the new one takes over the lookup key.
+ */
 export async function provisionPrices({
   secretKey,
   productId: storedProductId,
@@ -99,7 +105,9 @@ export async function provisionPrices({
   }
   const ids: Record<string, string> = {};
   for (const [name, spec] of Object.entries(SPECS)) {
-    const found = existing.value.find((price) => price.lookup_key === spec.lookupKey);
+    const found = existing.value.find(
+      (price) => price.lookup_key === spec.lookupKey && price.unit_amount === spec.amount,
+    );
     const id = found ? ok({ value: found.id }) : await createPrice({ secretKey, productId, spec });
     if (!id.ok) return err({ error: id.error });
     ids[name] = id.value;

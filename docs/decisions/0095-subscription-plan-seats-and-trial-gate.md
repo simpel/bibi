@@ -6,13 +6,13 @@
 - **Related:** 0015 (platform operations), 0058 (`external`), 0078 (domain join), 0087 (sealed secrets), 0094 (notifications)
 
 ## Context
-- The pricing is decided: one plan, 3 999 SEK a month excluding VAT, or yearly with 10 % off. 10 seats are included; each extra seat is 49 SEK a month, always monthly, never discounted.
+- The pricing is decided: one plan, 9 990 SEK a month excluding VAT (raised from 3 999 on 2026-11-03), or yearly with 10 % off. 10 seats are included; each extra seat is 49 SEK a month, always monthly, never discounted.
 - A new organization gets 14 days free without giving payment details. When the trial ends, the app is closed until an admin pays.
 - Bibi is not live, so no existing organization needs a migration.
 
 ## Decision
 1. **Stripe config is platform data, set by a superadmin in `/mothership/billing`.** `BillingConfig` (one platform row) holds the platform's secret key and the billing webhook secret, sealed with `sealSecret` (ADR 0087), and the three price ids. No billing env variables; `STRIPE_BILLING_*` from ADR 0091 are never added. Unset, billing is `UNAVAILABLE` and the gate stays open (a fresh environment is not locked out).
-2. **Provision from the UI.** `billingConfig.provision` creates, idempotently by lookup key, the product `Bibi`, prices `bibi_base_monthly` (399 900 öre/month), `bibi_base_yearly` (4 318 920 öre/year) and `bibi_seat_monthly` (4 900 öre/month), all `tax_behavior: exclusive`, and, given a public URL, the webhook endpoint for `/api/webhooks/stripe-billing` (storing its secret). The Customer Portal configuration is created there too.
+2. **Provision from the UI.** `billingConfig.provision` creates, idempotently by lookup key, the product `Bibi`, prices `bibi_base_monthly` (999 000 öre/month), `bibi_base_yearly` (10 789 200 öre/year) and `bibi_seat_monthly` (4 900 öre/month), all `tax_behavior: exclusive`; a price whose amount differs from the plan is replaced and the new one takes over the lookup key, and, given a public URL, the webhook endpoint for `/api/webhooks/stripe-billing` (storing its secret). The Customer Portal configuration is created there too.
 3. **One subscription per organization in flexible billing mode:** the base price (monthly or yearly) plus the seat price (monthly) with quantity = extra seats, a mixed-interval subscription. Stripe Tax computes VAT (`automatic_tax`), Checkout collects the billing address and VAT number.
 4. **The trial is Bibi's, not Stripe's.** `BillingAccount.trialEndsAt` null = inherit `Organization.createdAt + 14 days`; a superadmin may set it (extend) or set `exempt`. No Stripe customer exists until an admin starts checkout. Paying during the trial starts the subscription with `trial_end` = the remaining trial, so nothing is charged early.
 5. **Access** is derived on read (`billingAccess`): open when exempt, in trial, when billing is not configured, or when the subscription is `active`, `trialing` or `past_due` (Stripe is retrying). Otherwise `REQUIRED`: the `(app)` layout redirects every page to `/:org/billing/pay?returnTo=<path>`, and Checkout returns there.
