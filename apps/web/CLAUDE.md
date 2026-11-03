@@ -58,6 +58,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - Users reorder columns by drag and drop (always on); the checkbox and row actions stay pinned. The order is saved per user and per table as a server-side user preference, not in `localStorage`.
 - Row actions are the last column (`actionsColumn`), always sticky to the right edge of the visible area, so they stay in reach when the table scrolls sideways. `DataTable` does this; never add actions in another column.
 - Row actions are always one `DataTableRowActions`: clear actions in `primary` (buttons with icon and label on wide tables), the rest as menu items with text labels. Below the `@2xl` container width every action folds into the menu, except a lone primary action, which stays a button with its icon alone. `iconOnly` keeps the label out at every width, only for an unmistakable icon (download, copy); the label stays the accessible name and tooltip. Why: ADR 0040.
+- Activity tables (notifications, the inbox) keep read and unread in one table so marks never move rows: unread white with a dot, read grey (`rowClassName`), a small context line over the title, and a quick action in place of the time on hover. Opening an item that changes state (read on open) shows the title as `Shimmer` while the server action runs. Why: ADR 0040.
 
 ## `"use client"`
 - Set only at the client boundary: components that a server component renders and that themselves have state, context or browser events. Children and hooks inherit the boundary.

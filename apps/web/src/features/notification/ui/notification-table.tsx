@@ -5,14 +5,9 @@ import { Button, cn, type SortingState } from "@bibi/ui";
 import { MailCheckIcon, MailIcon, RefreshCwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { useRouter } from "@/lib/navigation";
 import { useDataTablePaginationLabels } from "@/lib/use-data-table-pagination-labels";
 import { useQueryNavigation } from "@/lib/use-query-navigation";
-import {
-  NOTIFICATION_PAGE_PARAMS,
-  NOTIFICATION_PAGE_SIZES,
-  type NotificationListParams,
-} from "../lib/list-params";
+import { NOTIFICATION_PAGE_SIZES, type NotificationListParams } from "../lib/list-params";
 import { NotificationRowMenu } from "./notification-row-menu";
 import { NotificationSheet } from "./notification-sheet";
 import { useMarkNotifications } from "./use-mark-notifications";
@@ -33,30 +28,25 @@ const sortPatch = ({ sorting }: { sorting: SortingState }) => {
 };
 
 type Mark = ReturnType<typeof useMarkNotifications>["mark"];
-type BulkProps = { rows: NotificationDto[]; mark: Mark; read: boolean };
+type BulkProps = { rows: NotificationDto[]; mark: Mark };
 
-/** The selected rows to the other table: unread ones marked read, read ones unread. */
-function BulkAction({ rows, mark, read }: BulkProps) {
+/** Mark the selected rows read or unread. */
+function BulkActions({ rows, mark }: BulkProps) {
   const t = useTranslations("notifications");
   const ids = rows.map((row) => row.id);
   return (
-    <Button size="sm" variant="outline" onClick={() => mark({ ids, read: !read })}>
-      {read ? <MailIcon /> : <MailCheckIcon />}
-      {read ? t("markUnread") : t("markRead")}
-    </Button>
+    <>
+      <Button size="sm" variant="outline" onClick={() => mark({ ids, read: true })}>
+        <MailCheckIcon />
+        {t("markRead")}
+      </Button>
+      <Button size="sm" variant="outline" onClick={() => mark({ ids, read: false })}>
+        <MailIcon />
+        {t("markUnread")}
+      </Button>
+    </>
   );
 }
-
-type EmptyTextInput = {
-  t: ReturnType<typeof useTranslations<"notifications">>;
-  view: NotificationListParams;
-};
-
-/** Nothing here: no unread (or read) ones, or none that match the search and kind. */
-const emptyText = ({ t, view }: EmptyTextInput) => {
-  if (view.q || view.kind) return t("noMatches");
-  return view.read === "unread" ? t("noUnread") : t("noRead");
-};
 
 /** Shown when the list changed elsewhere; the rows stay put until the member asks. */
 function StaleBar({ onShow, pending }: { onShow: () => void; pending: boolean }) {
@@ -83,34 +73,34 @@ function usePagination({ total, view }: Pick<NotificationTableProps, "total" | "
     totalCount: total,
     pageSizeOptions: NOTIFICATION_PAGE_SIZES,
     labels,
-    onPaginationChange: ({ pageIndex, pageSize }: { pageIndex: number; pageSize: number }) => {
-      const names = NOTIFICATION_PAGE_PARAMS[view.read];
-      navigate({
-        patch: { [names.page]: String(pageIndex + 1), [names.pageSize]: String(pageSize) },
-      });
-    },
+    onPaginationChange: ({ pageIndex, pageSize }: { pageIndex: number; pageSize: number }) =>
+      navigate({ patch: { page: String(pageIndex + 1), pageSize: String(pageSize) } }),
   };
 }
 
-/** Marks that read the page again (rows move tables), and the sheet built on them. */
-function useTableMarks() {
-  const router = useRouter();
-  const marks = useMarkNotifications({ onMarked: () => router.refresh() });
-  const sheet = useNotificationSheet({ mark: marks.mark, openOne: marks.openOne });
-  return { mark: marks.mark, openOne: marks.openOne, marking: marks.pending, sheet };
+/** The caller's marks, applied in place, the sheet built on them, and the columns. */
+function useTableParts() {
+  const marks = useMarkNotifications();
+  const sheet = useNotificationSheet({ mark: marks.mark });
+  const columns = useNotificationColumns({
+    onSelect: sheet.select,
+    openingId: sheet.openingId,
+    onToggleRead: ({ notification }) =>
+      marks.mark({ ids: [notification.id], read: notification.readAt === null }),
+  });
+  return { ...marks, sheet, columns };
 }
 
 /**
- * One of the page's two tables, unread or read: paged, sorted and filtered on the server (ADR
- * 0094), with the URL holding the state. A row opens its sheet; rows are marked from the
- * right-click menu, the sheet or in bulk, then the page reads again so they move tables.
+ * The caller's notifications, paged, sorted and filtered on the server (ADR 0094); the URL holds
+ * the state. A row opens its sheet (marking it read, the row pending meanwhile); marks from the
+ * hover action, the right-click menu, the sheet or the bulk bar apply in place, so nothing moves.
  */
 export function NotificationTable({ notifications, total, view }: NotificationTableProps) {
   const t = useTranslations("notifications");
   const { navigate, pending } = useQueryNavigation();
   const rows = useNotificationRows({ notifications, total, params: view });
-  const { mark, openOne, marking, sheet } = useTableMarks();
-  const columns = useNotificationColumns({ onSelect: sheet.select });
+  const { mark, openOne, pending: marking, sheet, columns } = useTableParts();
   const pagination = usePagination({ total: rows.total, view });
   return (
     <div className="grid gap-3">
@@ -121,19 +111,18 @@ export function NotificationTable({ notifications, total, view }: NotificationTa
         columns={columns}
         data={rows.rows}
         getRowId={(notification) => notification.id}
-        onRowClick={(notification) => sheet.select({ notification })}
+        rowClassName={(notification) => (notification.readAt === null ? "bg-card" : "bg-muted/40")}
+        onRowClick={(notification) => void sheet.select({ notification })}
         rowMenu={(notification) => (
           <NotificationRowMenu {...{ notification, mark, openOne }} disabled={marking} />
         )}
-        emptyText={emptyText({ t, view })}
+        emptyText={t("noMatches")}
         pagination={pagination}
         manualSorting
         sorting={[{ id: view.sort, desc: view.direction === "desc" }]}
         onSortingChange={(sorting) => navigate({ patch: sortPatch({ sorting }) })}
         selectable
-        bulkActions={(selected) => (
-          <BulkAction rows={selected} mark={mark} read={view.read === "read"} />
-        )}
+        bulkActions={(selected) => <BulkActions rows={selected} mark={mark} />}
       />
       <NotificationSheet
         notification={sheet.selected}

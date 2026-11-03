@@ -1,5 +1,5 @@
 import { flexRender, type Row } from "@tanstack/react-table";
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, KeyboardEvent, ReactNode } from "react";
 import { cn } from "../../lib/cn";
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from "../context-menu/context-menu";
 import { TableCell, TableRow } from "../table/table";
@@ -12,6 +12,7 @@ export type DataTableRowProps<TData> = {
   onRowClick?: (row: TData) => void;
   /** The row's right-click menu items; none = the browser's own menu. */
   menu?: (row: TData) => ReactNode;
+  rowClassName?: (row: TData) => string | undefined;
 };
 
 /** A row with a right-click menu when `menu` is given. */
@@ -29,7 +30,23 @@ export function DataTableRow<TData>({ menu, ...props }: DataTableRowProps<TData>
 
 type PlainRowProps<TData> = Omit<DataTableRowProps<TData>, "menu"> & ComponentProps<"tr">;
 
-function PlainRow<TData>({ row, selected, onRowClick, ...rest }: PlainRowProps<TData>) {
+type OpenOnKeyInput = { event: KeyboardEvent<HTMLTableRowElement>; open: () => void };
+
+/** Enter or Space on the focused row itself (not a control inside it) opens it. */
+function openOnKey({ event, open }: OpenOnKeyInput) {
+  if (event.target !== event.currentTarget) return;
+  if (event.key !== "Enter" && event.key !== " ") return;
+  event.preventDefault();
+  open();
+}
+
+function PlainRow<TData>({
+  row,
+  selected,
+  onRowClick,
+  rowClassName,
+  ...rest
+}: PlainRowProps<TData>) {
   const clickable = onRowClick !== undefined;
   return (
     <TableRow
@@ -37,16 +54,12 @@ function PlainRow<TData>({ row, selected, onRowClick, ...rest }: PlainRowProps<T
       data-state={selected || row.getIsSelected() ? "selected" : undefined}
       tabIndex={clickable ? 0 : undefined}
       className={cn(
+        "group/row",
         clickable && "cursor-pointer focus-visible:bg-muted focus-visible:outline-none",
+        rowClassName?.(row.original),
       )}
       onClick={() => onRowClick?.(row.original)}
-      onKeyDown={(event) => {
-        if (!clickable || event.target !== event.currentTarget) return;
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onRowClick(row.original);
-        }
-      }}
+      onKeyDown={(event) => openOnKey({ event, open: () => onRowClick?.(row.original) })}
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell

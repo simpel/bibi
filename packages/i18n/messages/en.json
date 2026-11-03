@@ -3848,8 +3848,6 @@
     "replyAddress": "Customers reply to <code>{address}</code>; their mail and other messages for the ticket show up here.",
     "noReplyAddress": "No inbound address is configured, so replies cannot reach this ticket yet.",
     "fieldsTitle": "What the sender filled in",
-    "unreadTitle": "Unread",
-    "readTitle": "Read",
     "markRead": "Mark as read",
     "markUnread": "Mark as unread",
     "markedRead": "Marked as read",
@@ -3862,7 +3860,8 @@
     "arrivedOpen": "Open",
     "sheet": {
       "openPage": "Open full page"
-    }
+    },
+    "unread": "Unread"
   },
   "member": {
     "singular": "Member",
@@ -4885,7 +4884,11 @@
     "read": "Read",
     "filter": {
       "kind": "Kind",
-      "allKinds": "All kinds"
+      "allKinds": "All kinds",
+      "label": "Show",
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read"
     },
     "search": "Search by ticket title or number",
     "searchSubmit": "Search",
@@ -4894,7 +4897,8 @@
       "message": "Notification",
       "kind": "Kind",
       "ticket": "Ticket",
-      "created": "When"
+      "created": "When",
+      "actor": "By"
     },
     "kinds": {
       "ASSIGNED": "Assigned",
@@ -4922,12 +4926,12 @@
     },
     "arrivedTitle": "New notification",
     "arrivedOpen": "Show",
-    "noUnread": "Nothing unread. You are all caught up.",
-    "noRead": "No read notifications yet.",
     "sheet": {
       "workOrder": "Work order",
       "openTicket": "Open ticket",
       "openWorkOrder": "Open work order"
-    }
+    },
+    "empty": "No notifications yet",
+    "emptyDescription": "You are told here when you are assigned a ticket, sent a work order, or when a ticket you answer for or follow changes status or gets paid."
   }
 }

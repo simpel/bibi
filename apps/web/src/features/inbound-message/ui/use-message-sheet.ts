@@ -5,23 +5,25 @@ import type { InboxRow } from "./inbox-row";
 import { useReadMessage } from "./use-read-message";
 
 /**
- * The sheet's message: opening an unread one marks it read for the team quietly (opening is
- * reading, ADR 0085), closing reads the page again so it moves to Read, and the sheet can mark
- * it unread or hand it to the delete confirmation.
+ * The sheet's message. Opening an unread one marks it read for the team first (opening is
+ * reading, ADR 0085): the row is pending (`openingId`) while the server action runs, then the
+ * page reads again, the row turns read in place and the sheet opens. Nothing moves.
  */
 export function useMessageSheet({ onDelete }: { onDelete: (row: InboxRow) => void }) {
   const router = useRouter();
   const { setRead } = useReadMessage();
   const [selected, setSelected] = useState<InboxRow | null>(null);
-  const select = ({ row }: { row: InboxRow }) => {
-    if (!row.read) void markMessageReadAction({ id: row.id });
-    setSelected(row);
+  const [openingId, setOpeningId] = useState<string | null>(null);
+  const select = async ({ row }: { row: InboxRow }) => {
+    if (openingId) return;
+    if (row.read) return setSelected(row);
+    setOpeningId(row.id);
+    const result = await markMessageReadAction({ id: row.id }).catch(() => null);
+    setOpeningId(null);
+    if (result?.ok) router.refresh();
+    setSelected({ ...row, read: result?.ok === true });
   };
-  const close = () => {
-    const wasUnread = selected !== null && !selected.read;
-    setSelected(null);
-    if (wasUnread) router.refresh();
-  };
+  const close = () => setSelected(null);
   const markUnread = ({ row }: { row: InboxRow }) => {
     setSelected(null);
     setRead({ id: row.id, read: false });
@@ -30,5 +32,5 @@ export function useMessageSheet({ onDelete }: { onDelete: (row: InboxRow) => voi
     setSelected(null);
     onDelete(row);
   };
-  return { selected, select, close, markUnread, remove };
+  return { selected, openingId, select, close, markUnread, remove };
 }

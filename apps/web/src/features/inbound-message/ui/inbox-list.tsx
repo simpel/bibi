@@ -6,19 +6,13 @@ import { getDateTimeFormat } from "@/server/date-time-format";
 import { InboxAddress } from "./inbox-address";
 import { InboxSection } from "./inbox-section";
 
-export type InboxListProps = {
-  locale: Locale;
-  /** The unread table's page. */
-  cursor?: string | undefined;
-  /** The read table's page. */
-  readCursor?: string | undefined;
-};
+export type InboxListProps = { locale: Locale; cursor?: string | undefined };
 
 /**
- * The inbox page body (ADR 0085): its address, the unread messages, and below them the ones
- * someone in the team has read. Each table pages on its own.
+ * The inbox page body (ADR 0085): its address and its messages without a ticket, read and
+ * unread in one table (unread ones white with a dot, read ones grey), newest first.
  */
-export async function InboxList({ locale, cursor, readCursor }: InboxListProps) {
+export async function InboxList({ locale, cursor }: InboxListProps) {
   const [t, dates, abilities] = await Promise.all([
     getTranslations("inbox"),
     getDateTimeFormat(),
@@ -29,27 +23,11 @@ export async function InboxList({ locale, cursor, readCursor }: InboxListProps) 
     canDelete: can({ abilities, permission: "inbox:delete" }),
     canCreateTicket: can({ abilities, permission: "ticket:write" }),
   };
-  const shared = { locale, dates, abilities: allowed };
   return (
     <div className="grid gap-6">
       <PageHeader title={t("title")} description={t("description")} />
       <InboxAddress />
-      <InboxSection
-        {...shared}
-        title={t("unreadTitle")}
-        read={false}
-        cursor={cursor}
-        param="cursor"
-        keep={readCursor ? { readCursor } : {}}
-      />
-      <InboxSection
-        {...shared}
-        title={t("readTitle")}
-        read
-        cursor={readCursor}
-        param="readCursor"
-        keep={cursor ? { cursor } : {}}
-      />
+      <InboxSection locale={locale} cursor={cursor} dates={dates} abilities={allowed} />
     </div>
   );
 }

@@ -3848,8 +3848,6 @@
     "replyAddress": "Kunder svarar till <code>{address}</code>; deras e-post och andra meddelanden för ärendet visas här.",
     "noReplyAddress": "Ingen inkommande adress är konfigurerad, så svar kan inte nå ärendet än.",
     "fieldsTitle": "Det avsändaren fyllde i",
-    "unreadTitle": "Olästa",
-    "readTitle": "Lästa",
     "markRead": "Markera som läst",
     "markUnread": "Markera som oläst",
     "markedRead": "Markerat som läst",
@@ -3862,7 +3860,8 @@
     "arrivedOpen": "Öppna",
     "sheet": {
       "openPage": "Öppna hela sidan"
-    }
+    },
+    "unread": "Oläst"
   },
   "member": {
     "singular": "Medlem",
@@ -4885,7 +4884,11 @@
     "read": "Läst",
     "filter": {
       "kind": "Typ",
-      "allKinds": "Alla typer"
+      "allKinds": "Alla typer",
+      "label": "Visa",
+      "all": "Alla",
+      "unread": "Olästa",
+      "read": "Lästa"
     },
     "search": "Sök på ärendets titel eller nummer",
     "searchSubmit": "Sök",
@@ -4894,7 +4897,8 @@
       "message": "Notis",
       "kind": "Typ",
       "ticket": "Ärende",
-      "created": "När"
+      "created": "När",
+      "actor": "Av"
     },
     "kinds": {
       "ASSIGNED": "Ansvarig",
@@ -4922,12 +4926,12 @@
     },
     "arrivedTitle": "Ny notis",
     "arrivedOpen": "Visa",
-    "noUnread": "Inget oläst. Du är ikapp.",
-    "noRead": "Inga lästa notiser än.",
     "sheet": {
       "workOrder": "Order",
       "openTicket": "Öppna ärendet",
       "openWorkOrder": "Öppna ordern"
-    }
+    },
+    "empty": "Inga notiser än",
+    "emptyDescription": "Här får du veta när du blir ansvarig för ett ärende, får en order, eller när ett ärende du ansvarar för eller följer byter status eller blir betalt."
   }
 }

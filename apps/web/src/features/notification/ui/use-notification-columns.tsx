@@ -1,81 +1,106 @@
 import type { NotificationDto } from "@bibi/core/schemas";
-import type { ColumnDef } from "@bibi/ui";
+import { Avatar, Button, type ColumnDef } from "@bibi/ui";
+import { MailCheckIcon, MailIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { RelativeTime } from "@/components/relative-time";
-import { Link } from "@/lib/navigation";
-import { ticketRoute } from "@/lib/routes";
-import { UnreadDot } from "./unread-dot";
+import { NotificationTitleCell } from "./notification-title-cell";
 import { useNotificationText } from "./use-notification-text";
 
 type Column = ColumnDef<NotificationDto>;
 type Translate = ReturnType<typeof useTranslations<"notifications">>;
 type Text = ReturnType<typeof useNotificationText>;
-type OnSelect = (input: { notification: NotificationDto }) => void;
+type OnNotification = (input: { notification: NotificationDto }) => void;
 
-export type UseNotificationColumnsInput = { onSelect: OnSelect };
+export type UseNotificationColumnsInput = {
+  /** Opens the sheet. */
+  onSelect: OnNotification;
+  /** The hover action: read becomes unread and back. */
+  onToggleRead: OnNotification;
+  /** The row being marked read before its sheet opens; it shimmers meanwhile. */
+  openingId: string | null;
+};
 
-type MessageColumnInput = { t: Translate; text: Text; onSelect: OnSelect };
+type ColumnInput = UseNotificationColumnsInput & { t: Translate; text: Text };
 
-/** What happened, opening its sheet; the server cannot order by the sentence. */
-const messageColumn = ({ t, text, onSelect }: MessageColumnInput): Column => ({
+/** The ticket above what happened (inbox style); the sentence opens the sheet. */
+const messageColumn = ({ t, text, onSelect, openingId }: ColumnInput): Column => ({
   id: "message",
   header: t("columns.message"),
   enableSorting: false,
   accessorFn: (notification) => text({ notification }).message,
+  cell: ({ row: { original: notification } }) => (
+    <NotificationTitleCell
+      notification={notification}
+      text={text({ notification })}
+      unreadLabel={t("unread")}
+      pending={openingId === notification.id}
+      onSelect={onSelect}
+    />
+  ),
+});
+
+/** When, and on hover the quick action in its place: mark read or unread. */
+const createdColumn = ({ t, onToggleRead }: ColumnInput): Column => ({
+  id: "created",
+  header: t("columns.created"),
+  accessorFn: (notification) => notification.createdAt,
   cell: ({ row: { original: notification } }) => {
-    const unread = notification.readAt === null;
+    const read = notification.readAt !== null;
     return (
-      <button
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-          onSelect({ notification });
-        }}
-        className="flex items-center gap-2 text-left hover:underline"
-      >
-        {unread ? <UnreadDot label={t("unread")} /> : null}
-        <span className={unread ? "font-medium" : undefined}>{text({ notification }).message}</span>
-      </button>
+      <div className="flex justify-end text-xs text-muted-foreground">
+        <span className="group-hover/row:hidden group-focus-within/row:hidden">
+          <RelativeTime instant={notification.createdAt} />
+        </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={read ? t("markUnread") : t("markRead")}
+          title={read ? t("markUnread") : t("markRead")}
+          className="hidden size-7 group-hover/row:inline-flex group-focus-within/row:inline-flex"
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggleRead({ notification });
+          }}
+        >
+          {read ? <MailIcon /> : <MailCheckIcon />}
+        </Button>
+      </div>
     );
   },
 });
 
-/** The ticket at the time, as a link to it; text alone when there is no ticket. */
-const ticketColumn = ({ t, text }: { t: Translate; text: Text }): Column => ({
-  id: "ticket",
-  header: t("columns.ticket"),
-  accessorFn: (notification) => text({ notification }).ticket,
-  cell: ({ row: { original: notification } }) =>
-    notification.ticketId ? (
-      <Link
-        href={ticketRoute({ id: notification.ticketId })}
-        onClick={(event) => event.stopPropagation()}
-        className="hover:underline"
-      >
-        {text({ notification }).ticket}
-      </Link>
-    ) : (
-      text({ notification }).ticket
-    ),
-});
-
 /**
- * What happened (opens its sheet), kind, ticket (a link) and when. No read status and no row actions: the page
- * splits unread from read, and marking is in the right-click menu and the bulk bar. Column ids
- * are core's sort keys (`notification.list`).
+ * Inbox style (ADR 0040, 0094): the ticket over what happened (opens its sheet), the kind as the
+ * reason, who did it and when, with mark read or unread in place of the time on hover. Column
+ * ids are core's sort keys (`notification.list`) where they sort.
  */
-export function useNotificationColumns({ onSelect }: UseNotificationColumnsInput): Column[] {
+export function useNotificationColumns({
+  onSelect,
+  onToggleRead,
+  openingId,
+}: UseNotificationColumnsInput): Column[] {
   const t = useTranslations("notifications");
   const text = useNotificationText();
+  const columns = { onSelect, onToggleRead, openingId, t, text };
   return [
-    messageColumn({ t, text, onSelect }),
-    { id: "kind", header: t("columns.kind"), accessorFn: (n) => t(`kinds.${n.kind}`) },
-    ticketColumn({ t, text }),
+    messageColumn(columns),
     {
-      id: "created",
-      header: t("columns.created"),
-      accessorFn: (notification) => notification.createdAt,
-      cell: ({ row }) => <RelativeTime instant={row.original.createdAt} />,
+      id: "kind",
+      header: t("columns.kind"),
+      accessorFn: (n) => t(`kinds.${n.kind}`),
+      cell: ({ getValue }) => (
+        <span className="text-xs text-muted-foreground">{String(getValue())}</span>
+      ),
     },
+    {
+      id: "actor",
+      header: t("columns.actor"),
+      enableSorting: false,
+      accessorFn: (n) => n.data.actorName ?? t("someone"),
+      cell: ({ row: { original: n } }) => (
+        <Avatar name={n.data.actorName ?? t("someone")} size="sm" />
+      ),
+    },
+    createdColumn(columns),
   ];
 }

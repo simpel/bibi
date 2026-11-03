@@ -111,3 +111,17 @@ export const Empty: Story = {
     <DataTable columns={baseColumns} data={[]} emptyText="No rooms" textLabels={textLabels} />
   ),
 };
+
+/** `rowClassName` styles a row from its data: here rooms in maintenance are muted (read rows in inboxes). */
+export const RowClassName: Story = {
+  args,
+  render: () => (
+    <DataTable
+      columns={baseColumns}
+      data={rooms.slice(0, 8)}
+      rowClassName={(room) => (room.status === "Maintenance" ? "bg-muted/40" : "bg-card")}
+      emptyText="No rooms"
+      textLabels={textLabels}
+    />
+  ),
+};

@@ -33,6 +33,11 @@ export type DataTableProps<TData, TValue> = {
    */
   rowMenu?: (row: TData) => ReactNode;
   getRowId?: (row: TData) => string;
+  /**
+   * Extra classes for a row from its data, e.g. a muted background for read items. Rows are a
+   * `group/row`, so cells can show things on hover with `group-hover/row:`.
+   */
+  rowClassName?: (row: TData) => string | undefined;
   selectedRowId?: string;
   emptyText: string;
   /** Sorting, column order and selection texts. */

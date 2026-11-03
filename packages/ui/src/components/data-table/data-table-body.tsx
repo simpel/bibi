@@ -9,6 +9,7 @@ export type DataTableBodyProps<TData> = {
   emptyText: string;
   onRowClick?: (row: TData) => void;
   rowMenu?: (row: TData) => ReactNode;
+  rowClassName?: (row: TData) => string | undefined;
   selectedRowId?: string;
 };
 
@@ -33,6 +34,7 @@ export function DataTableBody<TData>(props: DataTableBodyProps<TData>) {
           selected={row.id === props.selectedRowId}
           onRowClick={props.onRowClick}
           menu={props.rowMenu}
+          rowClassName={props.rowClassName}
         />
       ))}
     </TableBody>

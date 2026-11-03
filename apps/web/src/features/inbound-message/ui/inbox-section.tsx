@@ -28,51 +28,28 @@ const toRow = ({ message, dates }: ToRowInput): InboxRow => ({
 
 export type InboxSectionProps = {
   locale: Locale;
-  title: string;
-  read: boolean;
-  /** This table's own page cursor and its query-string name. */
   cursor: string | undefined;
-  param: string;
-  /** The other table's cursor, kept on this table's page links. */
-  keep: Record<string, string>;
   dates: DateTimeFormat;
   abilities: InboxAbilities;
 };
 
-/** One of the inbox's two tables, unread or read, with its own pages. */
-export async function InboxSection({
-  locale,
-  title,
-  read,
-  cursor,
-  param,
-  keep,
-  dates,
-  abilities,
-}: InboxSectionProps) {
-  const input = { limit: PAGE_SIZE, read, ...(cursor ? { cursor } : {}) };
+/** The inbox's one table, read and unread together, newest first, so nothing moves. */
+export async function InboxSection({ locale, cursor, dates, abilities }: InboxSectionProps) {
+  const input = { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) };
   const result = await runOperation({ operation: listInboundMessages, input });
+  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
-    <section className="grid gap-3">
-      <h2 className="text-lg">{title}</h2>
-      {result.ok ? (
-        <>
-          <InboxTable
-            tableId={read ? "inbox-read" : "inbox"}
-            rows={result.value.items.map((message) => toRow({ message, dates }))}
-            {...abilities}
-          />
-          <CursorPagination
-            pathname={INBOX_ROUTE}
-            cursor={cursor}
-            nextCursor={result.value.nextCursor}
-            param={param}
-            query={keep}
-          />
-        </>
-      ) : (
-        <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />
-      )}
-    </section>
+    <div className="grid gap-3">
+      <InboxTable
+        tableId="inbox"
+        rows={result.value.items.map((message) => toRow({ message, dates }))}
+        {...abilities}
+      />
+      <CursorPagination
+        pathname={INBOX_ROUTE}
+        cursor={cursor}
+        nextCursor={result.value.nextCursor}
+      />
+    </div>
   );
 }
