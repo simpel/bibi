@@ -36,9 +36,13 @@ export function openSharedEventSource({ name, url, types, onEvent }: SharedEvent
   const channel = new BroadcastChannel(name);
   channel.onmessage = (message: MessageEvent<SharedEvent>) => onEvent(message.data);
   const abort = new AbortController();
+  let closed = false;
   let release = () => {};
+  // The lock can be granted after the close (an abort does not undo a granted request): then
+  // give it straight back instead of opening a stream nobody closes on a closed channel.
   const lead = () =>
     new Promise<void>((resolve) => {
+      if (closed) return resolve();
       const close = openDirect({
         url,
         types,
@@ -55,6 +59,7 @@ export function openSharedEventSource({ name, url, types, onEvent }: SharedEvent
   // Aborting while waiting rejects the request; that is the normal close of a follower.
   navigator.locks.request(name, { signal: abort.signal }, lead).catch(() => undefined);
   return () => {
+    closed = true;
     abort.abort();
     release();
     channel.close();
