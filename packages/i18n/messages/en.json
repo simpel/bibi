@@ -1894,7 +1894,6 @@
       },
       "filter": {
         "label": "Show",
-        "mine": "Mine",
         "assigned": "Assigned to me",
         "following": "Following",
         "all": "All"

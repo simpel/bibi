@@ -1894,7 +1894,6 @@
       },
       "filter": {
         "label": "Visa",
-        "mine": "Mina",
         "assigned": "Tilldelade mig",
         "following": "Följer",
         "all": "Alla"
