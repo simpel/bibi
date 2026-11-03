@@ -202,4 +202,29 @@
   --font-body: var(--font-sans);
   --font-price-hero: var(--font-serif);
   --font-wordmark: var(--font-cherry-bomb);
+
+  /* Motion: the bell wiggles when a notification comes in (ADR 0094); use with `motion-safe:`. */
+  --animate-wiggle: wiggle 0.8s ease-in-out;
+
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    15% {
+      transform: rotate(14deg);
+    }
+    30% {
+      transform: rotate(-12deg);
+    }
+    45% {
+      transform: rotate(9deg);
+    }
+    60% {
+      transform: rotate(-6deg);
+    }
+    75% {
+      transform: rotate(3deg);
+    }
+  }
 }
