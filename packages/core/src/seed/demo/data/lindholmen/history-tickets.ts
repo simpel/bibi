@@ -21,7 +21,8 @@ export const lindholmenHistoryTickets: readonly DemoTicket[] = [
   {
     title: "Kvarnby anniversary dinner",
     ...{ ref: "L2", customer: kvarnby, type: "Event", day: -10, from: "17:00", to: "23:00" },
-    ...{ status: "Completed", headcount: 80, assignee: "Maria Holm", followers: ["Sara Nilsson"] },
+    ...{ status: "Completed", headcount: 80, assignee: "Maria Holm" },
+    followers: ["Sara Nilsson", "Anna Berg"],
     fields: { Dresscode: "Blazer" },
     lines: [{ item: "Three-course dinner", name: "Dinner", from: "19:00", to: "22:00" }],
     // ADR 0077: invoiced, unpaid and five days overdue (aging on the Financials page).

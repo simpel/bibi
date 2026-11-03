@@ -106,7 +106,12 @@ export type DemoOrg = {
   finance?: DemoFinance;
   /** ADR 0090: the deposit rule and invoice provider; none for an organization without one. */
   paymentSettings?: DemoPaymentSettings;
+  /** ADR 0094: members who have read their oldest notifications; the rest stay unread. */
+  notificationReads?: readonly DemoNotificationReads[];
 };
+
+/** ADR 0094: `user` has read their `read` oldest notifications (`notification.markRead`). */
+export type DemoNotificationReads = { user: string; read: number };
 
 /** ADR 0090: the deposit rule and the invoice provider (`PaymentSettings`); none when left out. */
 export type DemoPaymentSettings = {

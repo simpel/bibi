@@ -12,6 +12,7 @@ import { runPlatformSeed } from "./run-platform-seed";
 import { seedAcrossOrganizations } from "./seed-across-organizations";
 import { seedDemoConfig } from "./seed-config";
 import { seedDemoItems } from "./seed-items";
+import { seedNotificationReads } from "./seed-notification-reads";
 import { seedPipelineAndSales } from "./seed-pipeline-and-sales";
 import { seedDemoProfiles } from "./seed-profiles";
 import { seedDemoResponsibilities } from "./seed-responsibilities";
@@ -109,6 +110,8 @@ async function seedOne({ db, org, skipPipeline }: SeedOneInput): Promise<Result<
   const slices = await seedSlices({ context, org, members, userIds, skipPipeline });
   if (!slices.ok) return slices;
   const ranParts = slices.value;
+  const reads = await seedNotificationReads({ db, context, org, userIds });
+  if (!reads.ok) return reads;
   const postSeed = await postSeedLogging({ context, org, ranParts, skipPipeline });
   if (!postSeed.ok) return postSeed;
   return ok({ value: organizationId });

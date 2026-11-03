@@ -51,6 +51,8 @@ export const lindholmen: DemoOrg = {
   slug: "lindholmen-demo",
   name: "Lindholmen Experience Center",
   timeZone: "Europe/Stockholm",
+  // ADR 0094: Anna has read her oldest notifications; the newest wait under the bell.
+  notificationReads: [{ user: "Anna Berg", read: 4 }],
   users: [
     { name: "Anna Berg", role: "admin" },
     // Reads dates as 2026-08-27, a 12 hour clock (ADR 0046) and amounts as SEK 1,234.50 (#482).

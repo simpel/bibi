@@ -5,11 +5,11 @@ const quoteSent: DensityStatus = { status: "Quote sent", quote: "Conference lunc
 /** Leads further out: New (no move), a site visit, a sent quote, or already confirmed. */
 const FAR: readonly DensityStatus[] = [{}, { status: "Site visit" }, quoteSent, confirmed];
 
-/** Who works the tickets, in turn: the coordinators and sellers, with a seller following. */
+/** Who works the tickets, in turn: the coordinators and sellers, with a seller or Anna following. */
 const PEOPLE: readonly Pick<DensityShape, "assignee" | "followers">[] = [
-  { assignee: "Maria Holm", followers: ["Sara Nilsson"] },
+  { assignee: "Maria Holm", followers: ["Sara Nilsson", "Anna Berg"] },
   { assignee: "Johan Ek", followers: ["Erik Lund"] },
-  { assignee: "Sara Nilsson" },
+  { assignee: "Sara Nilsson", followers: ["Anna Berg"] },
   { assignee: "Erik Lund", followers: ["Lena Strand"] },
   { assignee: "Lena Strand" },
 ];
