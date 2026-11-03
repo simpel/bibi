@@ -3851,7 +3851,8 @@
     "restored": "Meddelandet återställt",
     "ticketTitle": "Meddelanden",
     "replyAddress": "Kunder svarar till <code>{address}</code>; deras e-post och andra meddelanden för ärendet visas här.",
-    "noReplyAddress": "Ingen inkommande adress är konfigurerad, så svar kan inte nå ärendet än."
+    "noReplyAddress": "Ingen inkommande adress är konfigurerad, så svar kan inte nå ärendet än.",
+    "fieldsTitle": "Det avsändaren fyllde i"
   },
   "member": {
     "singular": "Medlem",

@@ -3851,7 +3851,8 @@
     "restored": "Message restored",
     "ticketTitle": "Messages",
     "replyAddress": "Customers reply to <code>{address}</code>; their mail and other messages for the ticket show up here.",
-    "noReplyAddress": "No inbound address is configured, so replies cannot reach this ticket yet."
+    "noReplyAddress": "No inbound address is configured, so replies cannot reach this ticket yet.",
+    "fieldsTitle": "What the sender filled in"
   },
   "member": {
     "singular": "Member",

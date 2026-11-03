@@ -1,6 +1,5 @@
 import { getInboundMessage } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { Card } from "@bibi/ui";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
@@ -15,7 +14,8 @@ import { runOperation } from "@/server/run-operation";
 import { AttachedTicket } from "./attached-ticket";
 import { loadTicketOptions } from "./load-ticket-options";
 import { MessageActions } from "./message-actions";
-import { MessageEntry } from "./message-entry";
+import { MessageBody } from "./message-body";
+import { MessageFacts } from "./message-facts";
 
 const BackLink = ({ label }: { label: string }) => (
   <Link
@@ -63,9 +63,8 @@ export async function MessageDetail({ locale, id }: MessageDetailProps) {
         }
       />
       {message.ticketId ? <AttachedTicket ticketId={message.ticketId} /> : null}
-      <Card className="px-6 shadow-none">
-        <MessageEntry message={message} dates={dates} withSubject={false} />
-      </Card>
+      <MessageFacts message={message} dates={dates} />
+      <MessageBody message={message} />
     </div>
   );
 }
