@@ -55,14 +55,23 @@ function Bar({ block, ...span }: Span & { block: LanedBlock }) {
     daySnapshotBlockVariants({ tone: block.tone }),
     "cursor-pointer select-none no-underline hover:no-underline hover:opacity-90 transition-opacity",
   );
+  // A striped bar's label sits centered on a solid chip so the stripes do not cut through it.
+  const label =
+    block.tone === "missing" ? (
+      <span className="absolute left-1/2 top-1/2 max-w-full -translate-x-1/2 -translate-y-1/2 truncate rounded-sm bg-card px-2 leading-4">
+        {block.label}
+      </span>
+    ) : (
+      block.label
+    );
 
   const element = block.href ? (
     <AppLink href={block.href} data-slot="day-snapshot-block" className={className} style={style}>
-      {block.label}
+      {label}
     </AppLink>
   ) : (
     <div data-slot="day-snapshot-block" className={className} style={style}>
-      {block.label}
+      {label}
     </div>
   );
 
