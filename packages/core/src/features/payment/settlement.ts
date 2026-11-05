@@ -3,7 +3,7 @@ import type { ReceivableProgress } from "./settlement-schema";
 
 /**
  * The one module that derives money (ADR 0057): what a receivable has been paid, how far it is
- * paid and, in `ticket-balance.ts`, what a ticket still owes. Nothing here is ever stored.
+ * paid and, in `order-balance.ts`, what an order still owes. Nothing here is ever stored.
  */
 
 /** Payment statuses whose money reached the venue; a refund is subtracted from them. */
@@ -32,15 +32,15 @@ export type PaymentFacts = ReceivableRef & { amountMinor: number; refundedMinor:
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-export type PaidByReceivableInput = Db & { ticketIds: readonly string[] };
+export type PaidByReceivableInput = Db & { orderIds: readonly string[] };
 
-/** Net paid per receivable id (quote, deposit or invoice) on the tickets, in one query. */
+/** Net paid per receivable id (quote, deposit or invoice) on the orders, in one query. */
 export async function paidByReceivable({
   context,
-  ticketIds,
+  orderIds,
 }: PaidByReceivableInput): Promise<Map<string, number>> {
-  if (ticketIds.length === 0) return new Map();
-  return sumPaid({ context, where: { ticketId: { in: [...ticketIds] } } });
+  if (orderIds.length === 0) return new Map();
+  return sumPaid({ context, where: { orderId: { in: [...orderIds] } } });
 }
 
 export type PaidForInvoicesInput = Db & { invoiceIds: readonly string[] };
@@ -55,7 +55,7 @@ export async function paidForInvoices({
 }
 
 type SumPaidInput = Db & {
-  where: { ticketId: { in: string[] } } | { invoiceId: { in: string[] } };
+  where: { orderId: { in: string[] } } | { invoiceId: { in: string[] } };
 };
 
 /** Settled payments matching `where`, summed per receivable id, refunds subtracted. */

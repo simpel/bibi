@@ -12,11 +12,11 @@ import { errorCode, testContext, unwrap } from "./helpers";
 import { createHoldLine, insertHold } from "./hold-helpers";
 import { createTestItem } from "./item-helpers";
 import { createBookableItem, hours } from "./occupancy-helpers";
-import { ticketSetup } from "./ticket-helpers";
+import { orderSetup } from "./order-helpers";
 
 describe("occupancy (ADR 0022)", () => {
   it("blocks an item and rejects overlapping non-option periods", async () => {
-    const { context } = await ticketSetup();
+    const { context } = await orderSetup();
     const item = await createBookableItem({ context });
     const block = { itemId: item.id, type: "MAINTENANCE" as const, ...hours({ from: 8, to: 12 }) };
     const created = unwrap({
@@ -34,7 +34,7 @@ describe("occupancy (ADR 0022)", () => {
   });
 
   it("lets options overlap each other and blocked periods", async () => {
-    const { context } = await ticketSetup();
+    const { context } = await orderSetup();
     const item = await createBookableItem({ context });
     const input = { itemId: item.id, type: "INTERNAL" as const, ...hours({ from: 8, to: 12 }) };
     unwrap({ result: await execute({ operation: createOccupancy, input, context }) });
@@ -66,7 +66,7 @@ describe("occupancy (ADR 0022)", () => {
   });
 
   it("updates and releases manual blocks, never other types", async () => {
-    const { context } = await ticketSetup();
+    const { context } = await orderSetup();
     const item = await createBookableItem({ context });
     const input = { itemId: item.id, type: "MAINTENANCE" as const, ...hours({ from: 8, to: 10 }) };
     const block = unwrap({ result: await execute({ operation: createOccupancy, input, context }) });
@@ -84,8 +84,8 @@ describe("occupancy (ADR 0022)", () => {
     unwrap({ result: await execute({ operation: archiveOccupancy, input: block, context }) });
     const gone = await execute({ operation: getOccupancy, input: block, context });
     expect(errorCode({ result: gone })).toBe("NOT_FOUND");
-    const ticket = await insertHold({ context, itemId: item.id, hold: "HARD", from: 8, to: 9 });
-    const locked = await execute({ operation: archiveOccupancy, input: ticket, context });
+    const order = await insertHold({ context, itemId: item.id, hold: "HARD", from: 8, to: 9 });
+    const locked = await execute({ operation: archiveOccupancy, input: order, context });
     expect(errorCode({ result: locked })).toBe("CONFLICT");
   });
 

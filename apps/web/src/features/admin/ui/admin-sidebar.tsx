@@ -10,14 +10,19 @@ import {
 } from "@bibi/ui";
 import { ArrowLeftIcon, ShieldCheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ShellUser } from "@/components/shell/shell-types";
+import { UserMenu } from "@/components/shell/user-menu";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { AdminNav } from "./admin-nav";
 
-export type AdminSidebarProps = { email: string };
+export type AdminSidebarProps = {
+  user: ShellUser;
+  organizationId: string;
+};
 
 /** Collapsible (icon rail) sidebar of the admin area; a sheet on mobile. */
-export function AdminSidebar({ email }: AdminSidebarProps) {
+export function AdminSidebar({ user, organizationId }: AdminSidebarProps) {
   const t = useTranslations("admin");
   return (
     <Sidebar
@@ -45,9 +50,7 @@ export function AdminSidebar({ email }: AdminSidebarProps) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <p className="truncate px-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
-          {email}
-        </p>
+        <UserMenu user={user} organizationId={organizationId} />
       </SidebarFooter>
       <SidebarRail label={t("toggleSidebar")} />
     </Sidebar>

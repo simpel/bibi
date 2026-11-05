@@ -31,7 +31,7 @@ export type SearchFieldProps = Pick<AvailabilityFilterProps, "query" | "onQuery"
   className?: string;
 };
 
-/** Search by asset, or by the customer or ticket booked on it. */
+/** Search by asset, or by the customer or order booked on it. */
 export function SearchField({ query, onQuery, autoFocus, className }: SearchFieldProps) {
   const labels = useCalendarLabels();
   return (
@@ -79,7 +79,7 @@ export function AvailabilityFilter(props: AvailabilityFilterProps) {
   );
 }
 
-/** An asset matches by its own name or fact, or by a customer or ticket booked on it. */
+/** An asset matches by its own name or fact, or by a customer or order booked on it. */
 export function matches({
   asset,
   bookings,
@@ -94,6 +94,6 @@ export function matches({
   const own = [asset.name, asset.detail ?? ""];
   const booked = bookings
     .filter((booking) => booking.assetId === asset.id)
-    .flatMap((booking) => [booking.customer ?? "", booking.ticket ?? "", booking.name]);
+    .flatMap((booking) => [booking.customer ?? "", booking.order ?? "", booking.name]);
   return [...own, ...booked].some((text) => text.toLocaleLowerCase().includes(needle));
 }

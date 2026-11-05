@@ -45,7 +45,7 @@ export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
       enabled: true,
       minPasswordLength: 10,
       sendResetPassword: async ({ user, url }) => {
-        await sendPasswordResetMail({ to: user.email, url });
+        await sendPasswordResetMail({ to: user.email, url, userId: user.id });
       },
     },
     databaseHooks: {

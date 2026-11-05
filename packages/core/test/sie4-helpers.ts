@@ -12,7 +12,7 @@ export const ACCOUNTS: AccountMap = {
   vatOutput: { 25: "2611", 12: "2621", 6: "2631" },
 };
 
-export const base = { date: "2026-10-05", ticketReference: 1045 };
+export const base = { date: "2026-10-05", orderReference: 1045 };
 export const lunch = {
   account: "3001",
   vatRatePercent: 12,
@@ -26,7 +26,7 @@ export const room = {
   vatMinor: 50_000,
 };
 
-/** A 1 000 kr deposit split like the ticket (ADR 0093): 560 kr at 12 %, 440 kr at 25 %. */
+/** A 1 000 kr deposit split like the order (ADR 0093): 560 kr at 12 %, 440 kr at 25 %. */
 export const depositVat = {
   parts: [
     { vatRatePercent: 12, exclVatMinor: 50_000, vatMinor: 6_000 },

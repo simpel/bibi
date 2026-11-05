@@ -7,20 +7,20 @@ import {
   getQuote,
   sendQuote,
   updateLine,
-  updateTicket,
+  updateOrder,
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { addTestLines, createTestQuote, quoteSetup } from "./quote-helpers";
-import { createTestTicket } from "./ticket-helpers";
+import { createTestOrder } from "./order-helpers";
 
 async function sentQuote() {
   const setup = await quoteSetup();
-  const { context, ticket, lineType, lunch, coffee } = setup;
+  const { context, order, lineType, lunch, coffee } = setup;
   const lines = [{ itemId: lunch.id }, { itemId: coffee.id, name: "Coffee", quantity: 20 }];
   const created = await addTestLines({
-    ...{ context, ticketId: ticket.id, lineTypeId: lineType.id, lines },
+    ...{ context, orderId: order.id, lineTypeId: lineType.id, lines },
   });
-  const draft = await createTestQuote({ context, ticketId: ticket.id });
+  const draft = await createTestQuote({ context, orderId: order.id });
   const input = { id: draft.id };
   const sent = unwrap({ result: await execute({ operation: sendQuote, input, context }) });
   return { ...setup, sent, lunchLine: created[0], coffeeLine: created[1] };
@@ -39,11 +39,11 @@ describe("a sent quote is a frozen snapshot of the lines (ADR 0052)", () => {
     expect(rows.map((row) => row.lineId)).toEqual([lunchLine?.id, coffeeLine?.id]);
     const stored = await context.db.quote.findFirst({ where: { id: sent.id } });
     expect(stored).toMatchObject({ totalExclVatMinor: 580_000, totalInclVatMinor: 649_600 });
-    expect(sent).toMatchObject({ quoteStatus: "SENT", differsFromTicket: null });
+    expect(sent).toMatchObject({ quoteStatus: "SENT", differsFromOrder: null });
   });
 
   it("is unchanged by a later line edit, which the accepted quote shows", async () => {
-    const { context, ticket, sent, lineType, lunch, lunchLine, coffeeLine } = await sentQuote();
+    const { context, order, sent, lineType, lunch, lunchLine, coffeeLine } = await sentQuote();
     const edit = { id: lunchLine?.id ?? "", quantity: 25 };
     unwrap({ result: await execute({ operation: updateLine, input: edit, context }) });
     const after = await read({ context, id: sent.id });
@@ -52,45 +52,45 @@ describe("a sent quote is a frozen snapshot of the lines (ADR 0052)", () => {
     const input = { id: sent.id };
     const accepted = unwrap({ result: await execute({ operation: acceptQuote, input, context }) });
     expect(accepted.lines.map((line) => line.quantity)).toEqual([20, 20]);
-    expect(accepted.differsFromTicket).toBe(true);
+    expect(accepted.differsFromOrder).toBe(true);
     expect(
-      accepted.ticketChanges.map((line) => [line.lineId, line.change, line.changedFields]),
+      accepted.orderChanges.map((line) => [line.lineId, line.change, line.changedFields]),
     ).toEqual([[lunchLine?.id, "CHANGED", ["quantity"]]]);
     const extra = [{ itemId: lunch.id, name: "Dinner" }];
-    await addTestLines({ context, ticketId: ticket.id, lineTypeId: lineType.id, lines: extra });
+    await addTestLines({ context, orderId: order.id, lineTypeId: lineType.id, lines: extra });
     const archive = { id: coffeeLine?.id ?? "" };
     unwrap({ result: await execute({ operation: archiveLine, input: archive, context }) });
     const drifted = await read({ context, id: sent.id });
-    expect(drifted.ticketChanges.map((line) => [line.name, line.change])).toEqual([
+    expect(drifted.orderChanges.map((line) => [line.name, line.change])).toEqual([
       ["Lunch", "CHANGED"],
       ["Dinner", "ADDED"],
     ]);
-    expect(drifted.ticketRemovedLines.map((line) => line.lineId)).toEqual([coffeeLine?.id]);
+    expect(drifted.orderRemovedLines.map((line) => line.lineId)).toEqual([coffeeLine?.id]);
     expect(drifted.lines).toEqual(accepted.lines);
   });
 
-  it("matches the ticket until it changes, also through the headcount", async () => {
-    const { context, ticket, sent } = await sentQuote();
+  it("matches the order until it changes, also through the headcount", async () => {
+    const { context, order, sent } = await sentQuote();
     const input = { id: sent.id };
     const accepted = unwrap({ result: await execute({ operation: acceptQuote, input, context }) });
-    expect(accepted).toMatchObject({ differsFromTicket: false, ticketChanges: [] });
-    const headcount = { id: ticket.id, estimatedHeadcount: 30 };
-    unwrap({ result: await execute({ operation: updateTicket, input: headcount, context }) });
+    expect(accepted).toMatchObject({ differsFromOrder: false, orderChanges: [] });
+    const headcount = { id: order.id, estimatedHeadcount: 30 };
+    unwrap({ result: await execute({ operation: updateOrder, input: headcount, context }) });
     const drifted = await read({ context, id: sent.id });
-    expect(drifted.differsFromTicket).toBe(true);
-    expect(drifted.ticketChanges.map((line) => line.quantity)).toEqual([30]);
+    expect(drifted.differsFromOrder).toBe(true);
+    expect(drifted.orderChanges.map((line) => line.quantity)).toEqual([30]);
   });
 
   it("refuses to send a priced line without a quantity", async () => {
     const { context, type, customer, lineType, lunch } = await quoteSetup();
-    const ticket = await createTestTicket({
+    const order = await createTestOrder({
       context,
       entityTypeId: type.id,
       customerId: customer.id,
     });
     const lines = [{ itemId: lunch.id }];
-    await addTestLines({ context, ticketId: ticket.id, lineTypeId: lineType.id, lines });
-    const draft = await createTestQuote({ context, ticketId: ticket.id });
+    await addTestLines({ context, orderId: order.id, lineTypeId: lineType.id, lines });
+    const draft = await createTestQuote({ context, orderId: order.id });
     expect(draft.lines[0]?.quantity).toBe(0);
     const sent = await execute({ operation: sendQuote, input: { id: draft.id }, context });
     expect(errorCode({ result: sent })).toBe("VALIDATION");

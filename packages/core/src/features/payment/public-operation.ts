@@ -23,22 +23,22 @@ export const getPublicPaymentOperation = defineOperation({
   handler: async ({ input, context }) => {
     const payment = await context.db.payment.findFirst({ where: { publicToken: input.token } });
     if (!payment) return notFound({ entity: "Payment" });
-    const ticket = await context.db.ticket.findFirst({
-      where: { id: payment.ticketId },
+    const order = await context.db.order.findFirst({
+      where: { id: payment.orderId },
       select: { reference: true },
     });
     const organization = await getDb().organization.findUnique({
       where: { id: payment.organizationId },
       select: { name: true },
     });
-    if (!ticket || !organization) return notFound({ entity: "Payment" });
+    if (!order || !organization) return notFound({ entity: "Payment" });
     const document = await publicDocument({ context, payment });
     const expired =
       payment.status === "PENDING" && payment.expiresAt && payment.expiresAt <= new Date();
     return ok({
       value: {
         organizationName: organization.name,
-        ticketReference: ticket.reference,
+        orderReference: order.reference,
         method: payment.method,
         status: expired ? "EXPIRED" : payment.status,
         amountMinor: payment.amountMinor,

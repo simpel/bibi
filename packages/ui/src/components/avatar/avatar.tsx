@@ -1,9 +1,10 @@
 import { cva, type VariantProps } from "class-variance-authority";
+import { Avatar as AvatarPrimitive } from "radix-ui";
 import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
 
 export const avatarVariants = cva(
-  "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted font-medium text-muted-foreground",
+  "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted font-medium text-muted-foreground",
   {
     variants: {
       size: {
@@ -11,16 +12,17 @@ export const avatarVariants = cva(
         sm: "size-6 text-[0.625rem]",
         md: "size-8 text-xs",
         lg: "size-16 text-lg",
+        xl: "size-24 text-2xl",
       },
     },
     defaultVariants: { size: "md" },
   },
 );
 
-export type AvatarProps = Omit<ComponentProps<"span">, "children"> &
+export type AvatarProps = ComponentProps<typeof AvatarPrimitive.Root> &
   VariantProps<typeof avatarVariants> & {
-    /** Full name: gives the initials and the accessible label. */
-    name: string;
+    /** Full name: gives the initials and the accessible label when used without children. */
+    name?: string;
     photoUrl?: string | null;
   };
 
@@ -34,21 +36,52 @@ export function initialsOf({ name }: { name: string }): string {
     .toUpperCase();
 }
 
-/** A person's photo, or their initials while there is none. */
-export function Avatar({ name, photoUrl, size, className, ...props }: AvatarProps) {
+/** shadcn / Radix Avatar image */
+export function AvatarImage({ className, ...props }: ComponentProps<typeof AvatarPrimitive.Image>) {
   return (
-    <span
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
+      className={cn("aspect-square size-full object-cover", className)}
+      {...props}
+    />
+  );
+}
+
+/** shadcn / Radix Avatar fallback */
+export function AvatarFallback({
+  className,
+  ...props
+}: ComponentProps<typeof AvatarPrimitive.Fallback>) {
+  return (
+    <AvatarPrimitive.Fallback
+      data-slot="avatar-fallback"
+      className={cn("flex size-full items-center justify-center rounded-full bg-muted", className)}
+      {...props}
+    />
+  );
+}
+
+/**
+ * Standard shadcn Avatar: composable with `<AvatarImage>` and `<AvatarFallback>`,
+ * or used with `name` and `photoUrl` convenience props.
+ */
+export function Avatar({ name, photoUrl, size, className, children, ...props }: AvatarProps) {
+  return (
+    <AvatarPrimitive.Root
       data-slot="avatar"
-      role="img"
+      role={name ? "img" : undefined}
       aria-label={name}
       className={cn(avatarVariants({ size }), className)}
       {...props}
     >
-      {photoUrl ? (
-        <img src={photoUrl} alt="" className="size-full object-cover" />
-      ) : (
-        <span aria-hidden>{initialsOf({ name })}</span>
+      {children ?? (
+        <>
+          {photoUrl ? <AvatarImage src={photoUrl} alt="" /> : null}
+          <AvatarFallback aria-hidden={Boolean(name)}>
+            {name ? initialsOf({ name }) : null}
+          </AvatarFallback>
+        </>
       )}
-    </span>
+    </AvatarPrimitive.Root>
   );
 }

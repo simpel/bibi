@@ -17,7 +17,7 @@ export type QuerySuggestion = {
   open?: boolean;
 };
 
-/** Texts of the rows, from `ticket.query` or `workOrder.query` in the UI language. */
+/** Texts of the rows, from `order.query` or `runSheet.query` in the UI language. */
 export type QueryTexts = {
   labels: Record<string, string>;
   hints: Record<string, string>;

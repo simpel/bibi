@@ -1,0 +1,313 @@
+{
+  "admin": {
+    "billing": {
+      "title": "Billing",
+      "description": "Bibi's own Stripe account, balances, financial data and subscription setup.",
+      "settingsAction": "Stripe settings",
+      "financials": {
+        "title": "Financial overview",
+        "description": "Live balances and revenue metrics from Stripe.",
+        "availableBalance": "Available balance",
+        "pendingBalance": "Pending balance",
+        "activeSubscriptions": "Active subscriptions",
+        "mrr": "MRR (est.)",
+        "mrrHint": "{count} paying orgs",
+        "notConfigured": "Stripe is not configured yet. Set up Bibi's Stripe key below to see balances and transactions.",
+        "tabs": {
+          "transactions": "Transactions",
+          "invoices": "Invoices"
+        },
+        "transactions": {
+          "title": "Recent transactions",
+          "empty": "No Stripe transactions yet.",
+          "columns": {
+            "date": "Date",
+            "type": "Type",
+            "description": "Description",
+            "gross": "Gross",
+            "fee": "Fee",
+            "net": "Net",
+            "status": "Status"
+          }
+        },
+        "invoices": {
+          "title": "Recent invoices",
+          "empty": "No Stripe invoices yet.",
+          "columns": {
+            "date": "Date",
+            "invoice": "Invoice",
+            "customer": "Customer",
+            "amount": "Amount",
+            "status": "Status",
+            "link": "Link"
+          },
+          "view": "View"
+        }
+      },
+      "productsBreakdown": {
+        "title": "Revenue by product",
+        "description": "Active customers on monthly vs annual billing, and extra seat fees.",
+        "columns": {
+          "product": "Product",
+          "active": "Active",
+          "unitPrice": "Price",
+          "monthlyRevenue": "Monthly revenue",
+          "annualRevenue": "Annual billing"
+        },
+        "names": {
+          "baseMonthly": "Bibi, monthly",
+          "baseYearly": "Bibi, yearly (10 % off)",
+          "seatMonthly": "Extra seats"
+        },
+        "orgCount": "{count, plural, one {# organization} other {# organizations}}",
+        "seatCount": "{count, plural, one {# extra seat} other {# extra seats}}",
+        "perMonth": "{price} / mo",
+        "perYear": "{price} / yr",
+        "total": "Total",
+        "empty": "No products."
+      },
+      "config": {
+        "title": "Stripe settings",
+        "configured": "Ready: organizations pay after their trial.",
+        "notConfigured": "Paste Bibi's Stripe secret key and save. Until then no organization is asked to pay.",
+        "live": "Live mode",
+        "test": "Test mode (sandbox)",
+        "secretKey": "Secret key",
+        "secretKeyStored": "The stored key ends in {hint}. Leave blank to keep it; saving again checks Stripe.",
+        "noKey": "No key stored yet.",
+        "webhookSecret": "Webhook signing secret (local only)",
+        "webhookSecretHint": "Only when testing locally: paste the secret that stripe listen prints. In production Bibi creates the webhook itself.",
+        "save": "Save and set up Stripe",
+        "saved": "Stripe is set up.",
+        "saving": "Setting up Stripe…"
+      },
+      "products": {
+        "title": "Products",
+        "description": "Prices excluding VAT. {seats} seats are included and every new organization gets {days} days free.",
+        "names": {
+          "baseMonthly": "Bibi, monthly",
+          "baseYearly": "Bibi, yearly (10 % off)",
+          "seatMonthly": "Extra seat"
+        },
+        "perMonth": "{price} / month",
+        "perYear": "{price} / year",
+        "total": "Total",
+        "empty": "No products.",
+        "inStripe": "In Stripe",
+        "notInStripe": "Not in Stripe yet"
+      },
+      "organizations": {
+        "title": "Organizations",
+        "empty": "No organizations yet.",
+        "columns": {
+          "name": "Organization",
+          "state": "State",
+          "trialEndsAt": "Trial ends",
+          "plan": "Plan",
+          "extraSeats": "Extra seats",
+          "exempt": "Exempt"
+        },
+        "noPlan": "No plan",
+        "exemptOn": "{name} is never asked to pay.",
+        "exemptOff": "{name} pays after its trial again.",
+        "changeTrial": "Change trial end",
+        "trialTitle": "Trial end for {name}",
+        "trialDescription": "The trial lasts through this day, Swedish time.",
+        "trialEnd": "Last trial day",
+        "resetTrial": "Back to 14 days",
+        "saveTrial": "Save",
+        "trialSaved": "The trial end has been saved.",
+        "first": "First page",
+        "next": "Next page"
+      }
+    },
+    "organizations": {
+      "title": "Organizations",
+      "description": "Every organization registered on Bibi, its state, trial and subscription.",
+      "empty": "No organizations yet.",
+      "columns": {
+        "name": "Organization",
+        "state": "State",
+        "trialEndsAt": "Trial ends",
+        "plan": "Plan",
+        "extraSeats": "Extra seats",
+        "exempt": "Exempt"
+      },
+      "noPlan": "No plan",
+      "exemptOn": "{name} is never asked to pay.",
+      "exemptOff": "{name} pays after its trial again.",
+      "changeTrial": "Change trial end",
+      "trialTitle": "Trial end for {name}",
+      "trialDescription": "The trial lasts through this day, Swedish time.",
+      "trialEnd": "Last trial day",
+      "resetTrial": "Back to 14 days",
+      "saveTrial": "Save",
+      "trialSaved": "The trial end has been saved.",
+      "first": "First page",
+      "next": "Next page"
+    },
+    "title": "Mothership",
+    "navLabel": "Mothership",
+    "backToApp": "Back to app",
+    "toggleSidebar": "Show or hide the sidebar",
+    "sidebarTitle": "Mothership",
+    "sidebarDescription": "Mothership navigation",
+    "nav": {
+      "organizations": "Organizations",
+      "billing": "Billing",
+      "logs": "System log",
+      "aiModels": "AI models"
+    },
+    "logs": {
+      "title": "System log",
+      "description": "Every event in the system: operations, requests, sign-ins, mail and errors. Kept for {days} days.",
+      "empty": "No log events match the filter.",
+      "columns": {
+        "time": "Time",
+        "level": "Level",
+        "event": "Event",
+        "message": "Message",
+        "surface": "Surface",
+        "operation": "Operation",
+        "status": "Status",
+        "duration": "Duration (ms)"
+      },
+      "filters": {
+        "search": "Search or filter, e.g. type:error surface:web",
+        "searchSubmit": "Search",
+        "searching": "Searching…",
+        "level": "Minimum level",
+        "allLevels": "All levels",
+        "surface": "Surface",
+        "allSurfaces": "All surfaces",
+        "requestId": "Request id",
+        "apply": "Filter",
+        "clear": "Clear filters"
+      },
+      "query": {
+        "keys": {
+          "level": "level",
+          "type": "type",
+          "surface": "surface",
+          "requestId": "request",
+          "operation": "operation",
+          "status": "status"
+        },
+        "values": {
+          "trace": "trace",
+          "debug": "debug",
+          "info": "info",
+          "warn": "warn",
+          "error": "error",
+          "fatal": "fatal",
+          "web": "web",
+          "graphql": "graphql",
+          "rest": "rest",
+          "mcp": "mcp",
+          "ai": "ai",
+          "auth": "auth",
+          "cli": "cli",
+          "system": "system",
+          "webhook": "webhook"
+        },
+        "labels": {
+          "level": "Level",
+          "type": "Type (level)",
+          "surface": "Surface",
+          "requestId": "Request ID",
+          "operation": "Operation",
+          "status": "HTTP status"
+        },
+        "hints": {
+          "level": "minimum level: trace, debug, info, warn, error, fatal",
+          "type": "alias for level: error, warn, info...",
+          "surface": "surface: web, graphql, rest, mcp, ai, auth, cli, system, webhook",
+          "requestId": "trace a request id",
+          "operation": "operation name, e.g. order.list",
+          "status": "HTTP status code, e.g. 500, 404"
+        }
+      },
+      "detail": {
+        "title": "Log event",
+        "description": "Every field logged for the event.",
+        "fields": "Fields",
+        "raw": "Raw data (JSON)",
+        "sameRequest": "Show whole request",
+        "close": "Close",
+        "notFound": "The log event no longer exists."
+      },
+      "pagination": {
+        "rowsPerPage": "Rows per page",
+        "pageOf": "Page {page} of {pageCount}",
+        "first": "First page",
+        "previous": "Previous page",
+        "next": "Next page",
+        "last": "Last page",
+        "total": "{count, plural, one {# event} other {# events}}"
+      }
+    },
+    "aiModels": {
+      "title": "AI models",
+      "description": "Choose the model each AI feature uses. There are no default models: without a choice the feature does not work. Models are fetched from the Vercel AI Gateway.",
+      "catalogFailed": "The model list from the Vercel AI Gateway could not be fetched. Current choices still apply.",
+      "changedAt": "Changed {date}",
+      "choose": "Choose model",
+      "save": "Save",
+      "saved": "The model is saved.",
+      "reindexTitle": "Change the embedding model?",
+      "reindexDescription": "The search index was built with the old model. Until it is rebuilt, semantic search is unreliable. Run `pnpm --filter @bibi/ai reindex` right after the change. The model must support 1536 dimensions.",
+      "reindexConfirm": "Change model",
+      "features": {
+        "assistantChat": {
+          "name": "Assistant",
+          "description": "The language model answering in the chat and ⌘K."
+        },
+        "searchEmbedding": {
+          "name": "Semantic search",
+          "description": "The embedding model that indexes and searches venues, items, conversations and skills."
+        },
+        "orderIntakeDraft": {
+          "name": "Draft from a message",
+          "description": "The language model that reads a request into an order draft with quotes and guesses."
+        },
+        "orderTitle": {
+          "name": "Order title",
+          "description": "The small language model that names a new order in a few words."
+        }
+      },
+      "notInCatalog": "The chosen model is no longer possible for this feature. Choose a new one.",
+      "notConfigured": "Not configured",
+      "notConfiguredHint": "The feature does not work until a model is chosen. Every attempt is logged as an error.",
+      "saving": "Saving model…",
+      "columns": {
+        "feature": "AI feature",
+        "model": "Model",
+        "price": "Price (USD / 1M tokens)",
+        "changed": "Changed"
+      },
+      "priceInOut": "In {input} · Out {output}",
+      "priceIn": "In {input}",
+      "noPrice": "No price",
+      "noPossibleModels": "No possible models found. Check AI_GATEWAY_API_KEY.",
+      "modelLabel": "Model for {feature}",
+      "possibleHint": "Only models the feature can use are shown.",
+      "empty": "No AI features.",
+      "filters": {
+        "search": "Search features or models",
+        "searchSubmit": "Search",
+        "searching": "Searching…"
+      },
+      "pagination": {
+        "total": "{count, plural, one {# feature} other {# features}}"
+      }
+    },
+    "levels": {
+      "trace": "Trace",
+      "debug": "Debug",
+      "info": "Info",
+      "warn": "Warning",
+      "error": "Error",
+      "fatal": "Fatal"
+    }
+  }
+}

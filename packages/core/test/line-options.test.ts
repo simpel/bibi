@@ -19,27 +19,27 @@ describe("line.chooseOptions (ADR 0059)", () => {
   });
 
   it("counts EXTRA on top of the line", async () => {
-    const { context, ticket, lineId, technician } = await optionsSetup();
+    const { context, order, lineId, technician } = await optionsSetup();
     unwrap({ result: await choose({ context, lineId, options: picks({ ids: [technician.id] }) }) });
-    const quote = await createTestQuote({ context, ticketId: ticket.id });
+    const quote = await createTestQuote({ context, orderId: order.id });
     expect(quote.totalExclVatMinor).toBe(150_000);
   });
 
   it("leaves an INCLUDED option out of the total", async () => {
-    const { context, ticket, lineId, selfInstall } = await optionsSetup();
+    const { context, order, lineId, selfInstall } = await optionsSetup();
     unwrap({
       result: await choose({ context, lineId, options: picks({ ids: [selfInstall.id] }) }),
     });
-    const quote = await createTestQuote({ context, ticketId: ticket.id });
+    const quote = await createTestQuote({ context, orderId: order.id });
     expect(quote.totalExclVatMinor).toBe(100_000);
     expect(quote.lines.map((line) => line.inTotal)).toEqual([true, false]);
   });
 
   it("counts a REPLACES option instead of its line", async () => {
-    const { context, ticket, lineId, selfInstall, lounge } = await optionsSetup();
+    const { context, order, lineId, selfInstall, lounge } = await optionsSetup();
     const options = picks({ ids: [selfInstall.id, lounge.id] });
     unwrap({ result: await choose({ context, lineId, options }) });
-    const quote = await createTestQuote({ context, ticketId: ticket.id });
+    const quote = await createTestQuote({ context, orderId: order.id });
     expect(quote.totalExclVatMinor).toBe(150_000);
     const room = quote.lines.find((line) => line.lineId === lineId);
     expect(room?.inTotal).toBe(false);
@@ -63,9 +63,9 @@ describe("line.chooseOptions (ADR 0059)", () => {
     });
     expect(second.items.map((line) => line.itemId)).toEqual([selfInstall.id, lounge.id]);
     expect(second.items[1]?.id).toBe(first.items[1]?.id);
-    const { ticketId } = first.items[0] ?? { ticketId: "" };
+    const { orderId } = first.items[0] ?? { orderId: "" };
     const listed = unwrap({
-      result: await execute({ operation: listLines, input: { ticketId }, context }),
+      result: await execute({ operation: listLines, input: { orderId }, context }),
     });
     expect(listed.items.filter((line) => line.parentLineId === lineId)).toHaveLength(2);
   });

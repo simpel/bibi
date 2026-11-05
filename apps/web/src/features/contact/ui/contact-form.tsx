@@ -1,6 +1,8 @@
 import type { ContactDto } from "@bibi/core";
 import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { EmailField } from "@/components/form/email-field";
+import { PhoneField } from "@/components/form/phone-field";
 import { TextField } from "@/components/form/text-field";
 import { rawFields } from "@/components/typed-fields/raw-fields";
 import { TypeFields } from "@/components/typed-fields/type-fields";
@@ -38,8 +40,8 @@ export function ContactForm({ customerId, data, contact, onDone }: ContactFormPr
           <>
             <TextField form={form} name="name" label={t("name")} required />
             <div className="grid gap-4 sm:grid-cols-2">
-              <TextField form={form} name="email" label={t("email")} type="email" />
-              <TextField form={form} name="phone" label={t("phone")} type="tel" />
+              <EmailField form={form} name="email" label={t("email")} />
+              <PhoneField form={form} name="phone" label={t("phone")} />
             </div>
             <TypeFields control={form.control} type={type} data={data} />
           </>

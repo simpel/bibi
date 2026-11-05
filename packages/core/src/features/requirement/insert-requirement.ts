@@ -11,16 +11,16 @@ import { REQUIREMENT_INCLUDE, toRequirementDto } from "./to-requirement-dto";
 export type InsertRequirementInput = { context: OperationContext; input: RequirementCreateInput };
 
 /**
- * Creates a requirement on a ticket or one of its lines and records the change: a type of base
+ * Creates a requirement on an order or one of its lines and records the change: a type of base
  * `REQUIREMENT`, an active list value of the organization, one count per value and level
  * (`CONFLICT` otherwise) and field values that match the type. Shared by `requirement.create`
- * and `ticket.create` (a new line's needs, ADR 0081).
+ * and `order.create` (a new line's needs, ADR 0081).
  */
 export async function insertRequirement({
   context,
   input: { entityTypeId, fields, ...data },
 }: InsertRequirementInput): Promise<Result<RequirementDto>> {
-  const level = { ticketId: data.ticketId, lineId: data.lineId ?? null };
+  const level = { orderId: data.orderId, lineId: data.lineId ?? null };
   const { vocabularyValueId } = data;
   for (const check of [
     await loadTypeOfBase({ context, entityTypeId, base: "REQUIREMENT" }),

@@ -9,10 +9,10 @@ import {
   setWorkingHours,
   updateOrganizationProfile,
   updateProfile,
-  uploadFile,
   type WorkingHoursDto,
   type WorkingHoursSetInput,
 } from "@bibi/core";
+import { uploadFileAction } from "@/features/file/actions";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
@@ -32,7 +32,7 @@ export async function uploadAvatarAction({
 }: {
   input: FileUploadInput;
 }): Promise<ActionResult<{ key: string }>> {
-  return toActionResult({ result: await runOperation({ operation: uploadFile, input }) });
+  return uploadFileAction({ input });
 }
 
 /** `/:org/welcome/hours`: the whole week. */

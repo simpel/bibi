@@ -8,7 +8,7 @@
 ## Context
 - Today a person gets into an organization only by invitation, or by creating one (ADR 0061). At a venue with twenty staff, the first admin invites nineteen people one by one.
 - Staff at a venue share a work email domain (`worldofvolvo.com`). An address at that domain is good evidence that someone works there, once they have proved they own the address.
-- An organization that claims a domain decides who may see its tickets and customers. A wrong claim lets strangers in, so who can claim a domain and which addresses count matters more than the convenience.
+- An organization that claims a domain decides who may see its orders and customers. A wrong claim lets strangers in, so who can claim a domain and which addresses count matters more than the convenience.
 
 ## Decision
 1. **An organization has at most one email domain** (`OrganizationProfile.emailDomain`, owned, lowercase) **and a switch** (`domainJoin`, owned, on by default).

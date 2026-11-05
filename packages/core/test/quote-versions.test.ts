@@ -13,7 +13,7 @@ import { addTestLines, draftQuote as draft } from "./quote-helpers";
 
 describe("quote.revise (ADR 0022)", () => {
   it("copies the latest version into a marked DRAFT and supersedes it on send", async () => {
-    const { context, ticket, lineType, quote, coffee, lineId } = await draft();
+    const { context, order, lineType, quote, coffee, lineId } = await draft();
     const draftRevise = await execute({ operation: reviseQuote, input: { id: quote.id }, context });
     expect(errorCode({ result: draftRevise })).toBe("CONFLICT");
     unwrap({ result: await execute({ operation: sendQuote, input: { id: quote.id }, context }) });
@@ -25,7 +25,7 @@ describe("quote.revise (ADR 0022)", () => {
     const older = await execute({ operation: reviseQuote, input: { id: quote.id }, context });
     expect(errorCode({ result: older })).toBe("CONFLICT");
     const lines = [{ itemId: coffee.id, name: "Coffee" }];
-    await addTestLines({ context, ticketId: ticket.id, lineTypeId: lineType.id, lines });
+    await addTestLines({ context, orderId: order.id, lineTypeId: lineType.id, lines });
     const input = { id: lineId, quantity: 25 };
     unwrap({ result: await execute({ operation: updateLine, input, context }) });
     const edited = unwrap({

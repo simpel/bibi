@@ -3,8 +3,8 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
-import { checkReadable } from "../ticket/ticket-rules";
-import { regenerateForLine } from "../work-order/regenerate";
+import { checkReadable } from "../order/order-rules";
+import { regenerateForLine } from "../run-sheet/regenerate";
 import { lineAmounts } from "./amounts-operation";
 import { changeLineState } from "./change-state-operation";
 import { chooseOptions } from "./choose-options";
@@ -27,7 +27,7 @@ export const listLines = defineOperation({
   kind: "query",
   description:
     "List lines (the run schedule: sessions, breaks, meals, activities), earliest " +
-    "first (lines on one item and start: the oldest held-since date first). Filter by ticket, " +
+    "first (lines on one item and start: the oldest held-since date first). Filter by order, " +
     "item, item state, parent line (its part, option and add-on lines) and a time window (from/to).",
   input: LineListInputSchema,
   output: LineListOutputSchema,
@@ -35,7 +35,7 @@ export const listLines = defineOperation({
   handler: async ({ input, context }) => {
     const rows = await context.db.line.findMany({
       where: {
-        ...(input.ticketId ? { ticketId: input.ticketId } : {}),
+        ...(input.orderId ? { orderId: input.orderId } : {}),
         ...(input.itemId ? { itemId: input.itemId } : {}),
         ...(input.stateId ? { stateId: input.stateId } : {}),
         ...(input.parentLineId ? { parentLineId: input.parentLineId } : {}),
@@ -100,7 +100,7 @@ export const chooseLineOptions = defineOperation({
   },
 });
 
-/** The ticket-scoped reads, defined in their own files. */
+/** The order-scoped reads, defined in their own files. */
 export { lineAmounts, lineIssues };
 
 export const lineOperations = [

@@ -26,14 +26,14 @@ afterEach(() => {
 
 describe("the Fortnox Topics stream (ADR 0090)", () => {
   it("routes a payment event by tenant id and ignores invoices Bibi did not raise", async () => {
-    const { context, ticket } = await moneySetup();
+    const { context, order } = await moneySetup();
     await connectFortnox({ context });
     const fake = installFakeInvoicing();
     const input = { invoiceProvider: "FORTNOX" as const };
     await execute({ operation: updatePaymentSettings, input, context });
-    await makeInvoiceable({ context, statusId: ticket.statusId });
+    await makeInvoiceable({ context, statusId: order.statusId });
     const draft = unwrap({
-      result: await execute({ operation: createInvoice, input: { ticketId: ticket.id }, context }),
+      result: await execute({ operation: createInvoice, input: { orderId: order.id }, context }),
     });
     await execute({ operation: sendInvoice, input: { id: draft.id }, context });
     const tenantId = Math.floor(Math.random() * 1_000_000_000);
@@ -47,7 +47,7 @@ describe("the Fortnox Topics stream (ADR 0090)", () => {
     const stranger = { ...paid, tenantId: tenantId + 1 };
     expect(await handleFortnoxEvent({ event: stranger })).toBe("unmatched");
     const page = unwrap({
-      result: await execute({ operation: listPayments, input: { ticketId: ticket.id }, context }),
+      result: await execute({ operation: listPayments, input: { orderId: order.id }, context }),
     });
     expect(page.items.find((p) => p.provider === "FORTNOX")).toMatchObject({ status: "SUCCEEDED" });
   });

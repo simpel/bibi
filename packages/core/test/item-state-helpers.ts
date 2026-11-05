@@ -20,13 +20,13 @@ export type RoomStatesInput = Ctx & { entityTypeId: string };
 
 /**
  * The bookable template of ADR 0044 on a room type: Prebooked (soft, expires, initial), Booked
- * (hard, in work orders) and Released (final, the expiry state). The default "Active" stays first.
+ * (hard, in run sheets) and Released (final, the expiry state). The default "Active" stays first.
  */
 export async function roomStates({ context, entityTypeId }: RoomStatesInput) {
   const add = async ({ ...input }: Omit<AddStateInput, "context" | "entityTypeId">) =>
     unwrap({ result: await addState({ context, entityTypeId, ...input }) });
   const prebooked = await add({ name: "Prebooked", hold: "SOFT", expires: true, initial: true });
-  const booked = await add({ name: "Booked", hold: "HARD", inWorkOrders: true });
+  const booked = await add({ name: "Booked", hold: "HARD", inRunSheets: true });
   const released = await add({ name: "Released", released: true });
   unwrap({
     result: await execute({

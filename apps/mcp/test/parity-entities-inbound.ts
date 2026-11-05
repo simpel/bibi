@@ -1,5 +1,5 @@
 import { provisionOrganization } from "@bibi/core";
-import { ticketInboundAddress } from "@bibi/core/inbound-address";
+import { orderInboundAddress } from "@bibi/core/inbound-address";
 import { deliverInboundEmail } from "@bibi/core/inbound-mail";
 import type { Json } from "./helpers";
 import { byId, type ParityEntity, tool } from "./parity-entities";
@@ -11,7 +11,7 @@ const timeZone = "Europe/Stockholm";
 
 /**
  * A received mail (ADR 0012, 0085). There is no user command that creates one: the inbound webhook
- * stores it as SYSTEM, so the parity test delivers it the same way to the ticket made earlier.
+ * stores it as SYSTEM, so the parity test delivers it the same way to the order made earlier.
  */
 const inboundEmail = (): ParityEntity => ({
   ...byId({
@@ -22,11 +22,11 @@ const inboundEmail = (): ParityEntity => ({
     args: {},
   }),
   create: async ({ made, mcp }) => {
-    const address = ticketInboundAddress({ ticketId: made.ticket.id, domain });
+    const address = orderInboundAddress({ orderId: made.order.id, domain });
     const delivered = await deliverInboundEmail({
       domain,
       mail: {
-        providerEmailId: `email_${made.ticket.id}`,
+        providerEmailId: `email_${made.order.id}`,
         messageId: null,
         fromAddress: "Guest <guest@example.test>",
         toAddresses: [address],

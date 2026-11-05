@@ -63,5 +63,5 @@ Record every test here. The ADR 0013 gate ("restore is tested before the first c
 
 | Date | Source | Result | By |
 | --- | --- | --- | --- |
-| 2026-10-15 | Dump of the development schema (11 migrations), local file | OK: 11 migrations, 39 tables, `vector` present | Claude (ticket #75) |
+| 2026-10-15 | Dump of the development schema (11 migrations), local file | OK: 11 migrations, 39 tables, `vector` present | Claude (order #75) |
 | _pending_ | Latest production dump (`--latest`) | Not yet performed: no production environment exists | |

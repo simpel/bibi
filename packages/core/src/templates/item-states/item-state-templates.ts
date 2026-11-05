@@ -27,18 +27,18 @@ const released: ItemStateTemplateState = {
 export const ITEM_STATE_TEMPLATES = {
   bookable: [
     { name: "Prebooked", color: "#f59e0b", holdIfBookable: "SOFT", flags: { expires: true } },
-    { name: "Booked", color: "#16a34a", holdIfBookable: "HARD", flags: { inWorkOrders: true } },
+    { name: "Booked", color: "#16a34a", holdIfBookable: "HARD", flags: { inRunSheets: true } },
     released,
   ],
   food: [
     { name: "Estimated", color: "#f59e0b" },
     { name: "Ordered", color: "#2563eb" },
-    { name: "Locked", color: "#16a34a", flags: { inWorkOrders: true } },
+    { name: "Locked", color: "#16a34a", flags: { inRunSheets: true } },
     released,
   ],
   other: [
     { name: "Planned", color: "#f59e0b", holdIfBookable: "SOFT" },
-    { name: "Confirmed", color: "#16a34a", holdIfBookable: "HARD", flags: { inWorkOrders: true } },
+    { name: "Confirmed", color: "#16a34a", holdIfBookable: "HARD", flags: { inRunSheets: true } },
     released,
   ],
 } as const satisfies Record<string, readonly ItemStateTemplateState[]>;

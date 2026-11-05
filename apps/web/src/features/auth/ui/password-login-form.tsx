@@ -4,6 +4,7 @@ import { Button, Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
+import { EmailField } from "@/components/form/email-field";
 import { TextField } from "@/components/form/text-field";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "@/lib/navigation";
@@ -19,6 +20,7 @@ function usePasswordLogin({ next }: PasswordLoginFormProps) {
   const router = useRouter();
   const messages = useZodMessages();
   const form = useForm<SignInValues>({
+    mode: "onBlur",
     resolver: zodResolver(SignInSchema, messages),
     defaultValues: { email: "", password: "" },
   });
@@ -39,14 +41,7 @@ export function PasswordLoginForm({ next }: PasswordLoginFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} noValidate className="grid gap-4">
-        <TextField
-          form={form}
-          name="email"
-          label={t("email")}
-          type="email"
-          autoComplete="email"
-          required
-        />
+        <EmailField form={form} name="email" label={t("email")} required />
         <TextField
           form={form}
           name="password"

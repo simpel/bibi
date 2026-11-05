@@ -6,7 +6,7 @@ import {
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
-import { seedTicket } from "./seed-ticket";
+import { seedOrder } from "./seed-order";
 
 afterEach(() => {
   setPaymentProvider({ provider: undefined });
@@ -14,15 +14,15 @@ afterEach(() => {
 });
 
 describe("cross-organization isolation: payments", () => {
-  it("hides one organization's payments from another and refuses to charge its ticket", async () => {
+  it("hides one organization's payments from another and refuses to charge its order", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
-    const { id: ticketId } = await seedTicket({ client: a });
+    const { id: orderId } = await seedOrder({ client: a });
     installFakeStripe({ status: "ACTIVE" });
     setPaymentProvider({ provider: createMemoryPaymentProvider() });
     await call({ client: a, name: "paymentAccount_startOnboarding" });
     await call({ client: a, name: "paymentAccount_sync" });
-    const depositArgs = { ticketId, description: "Advance", amountMinor: 100_000 };
+    const depositArgs = { orderId, description: "Advance", amountMinor: 100_000 };
     const draft = await call({ client: a, name: "deposit_create", args: depositArgs });
     await call({ client: a, name: "deposit_send", args: { id: draft.data.id } });
     const args = { depositId: draft.data.id, method: "CARD", amountMinor: 50_000 };
@@ -31,7 +31,7 @@ describe("cross-organization isolation: payments", () => {
 
     const get = await call({ client: b, name: "payment_get", args: { id: payment.data.id } });
     expect(get.data.code).toBe("NOT_FOUND");
-    const listed = await call({ client: b, name: "payment_list", args: { ticketId } });
+    const listed = await call({ client: b, name: "payment_list", args: { orderId } });
     expect(listed.data.items).toEqual([]);
     const created = await call({ client: b, name: "payment_create", args });
     expect(created.data.code).toBe("NOT_FOUND");
@@ -39,20 +39,20 @@ describe("cross-organization isolation: payments", () => {
       client: b,
       name: "graphql_query",
       args: {
-        query: "query($id: String!) { payments(ticketId: $id) { items { id } } }",
-        variables: { id: ticketId },
+        query: "query($id: String!) { payments(orderId: $id) { items { id } } }",
+        variables: { id: orderId },
       },
     });
     expect(graph.data.data.payments.items).toEqual([]);
-    const suggest = await call({ client: b, name: "deposit_suggest", args: { ticketId } });
+    const suggest = await call({ client: b, name: "deposit_suggest", args: { orderId } });
     expect(suggest.data.code).toBe("NOT_FOUND");
     const request = await call({
       client: b,
       name: "deposit_request",
-      args: { ticketId, description: "Advance", amountMinor: 100_000 },
+      args: { orderId, description: "Advance", amountMinor: 100_000 },
     });
     expect(request.data.code).toBe("NOT_FOUND");
-    const own = await call({ client: a, name: "payment_list", args: { ticketId } });
+    const own = await call({ client: a, name: "payment_list", args: { orderId } });
     expect(own.data.items).toHaveLength(1);
   });
 });

@@ -11,7 +11,7 @@ export type NotificationFiltersProps = {
   kind: NotificationKind | undefined;
 };
 
-/** Search on the ticket and a kind filter, both kept in the URL (a navigation form, no action). */
+/** Search on the order and a kind filter, both kept in the URL (a navigation form, no action). */
 export function NotificationFilters({ q, kind }: NotificationFiltersProps) {
   const t = useTranslations("notifications");
   const { navigate, pending } = useQueryNavigation();

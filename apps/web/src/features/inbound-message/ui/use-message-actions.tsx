@@ -1,7 +1,7 @@
 import type { HeaderAction, TitleRowAction } from "@bibi/ui";
 import { EllipsisIcon, LinkIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ticketFromMessageRoute } from "@/lib/inbox-routes";
+import { orderFromMessageRoute } from "@/lib/inbox-routes";
 import { useRouter } from "@/lib/navigation";
 import type { InboxAbilities } from "./inbox-row-actions";
 import { useReadMessage } from "./use-read-message";
@@ -12,12 +12,12 @@ export type UseMessageActionsInput = InboxAbilities & {
   onDelete: () => void;
 };
 
-/** New ticket and attach as buttons, then mark read or unread and delete in the more menu. */
+/** New order and attach as buttons, then mark read or unread and delete in the more menu. */
 export function useMessageActions({
   message: { id, read },
   canWrite,
   canDelete,
-  canCreateTicket,
+  canCreateOrder,
   onAttach,
   onDelete,
 }: UseMessageActionsInput): TitleRowAction[] {
@@ -32,12 +32,12 @@ export function useMessageActions({
       : []),
     ...(canDelete ? [{ id: "delete", label: common("delete"), onSelect: onDelete }] : []),
   ];
-  const open = () => router.push(ticketFromMessageRoute({ id }));
+  const open = () => router.push(orderFromMessageRoute({ id }));
   return [
-    ...(canCreateTicket
-      ? [{ id: "ticket", label: t("newTicket"), icon: <PlusIcon aria-hidden />, onSelect: open }]
+    ...(canCreateOrder
+      ? [{ id: "order", label: t("newOrder"), icon: <PlusIcon aria-hidden />, onSelect: open }]
       : []),
-    ...(canCreateTicket && canWrite
+    ...(canCreateOrder && canWrite
       ? [
           {
             id: "attach",

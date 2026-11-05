@@ -4,15 +4,15 @@ import type { BookedAheadMonth } from "./schema";
 
 type Context = Pick<OperationContext, "db">;
 
-/** ACCEPTED quotes on active tickets that have no SENT invoice yet: won, not billed. */
+/** ACCEPTED quotes on active orders that have no SENT invoice yet: won, not billed. */
 function loadAcceptedNotInvoiced({ context }: { context: Context }) {
   return context.db.quote.findMany({
     where: {
       quoteStatus: "ACCEPTED",
-      ticket: { status: "ACTIVE", invoices: { none: { status: "SENT" } } },
+      order: { status: "ACTIVE", invoices: { none: { status: "SENT" } } },
     },
     select: {
-      ticketId: true,
+      orderId: true,
       version: true,
       acceptedAt: true,
       totalExclVatMinor: true,
@@ -38,7 +38,7 @@ export type BookedAheadInput = {
 
 /**
  * Won but not billed, per event month in the range (ADR 0080, 0086); the newest accepted version
- * counts once per ticket.
+ * counts once per order.
  */
 export async function bookedAhead({
   context,
@@ -46,8 +46,8 @@ export async function bookedAhead({
 }: BookedAheadInput): Promise<BookedAheadMonth[]> {
   const newest = new Map<string, AcceptedQuote>();
   for (const quote of await loadAcceptedNotInvoiced({ context })) {
-    const seen = newest.get(quote.ticketId);
-    if (!seen || seen.version < quote.version) newest.set(quote.ticketId, quote);
+    const seen = newest.get(quote.orderId);
+    if (!seen || seen.version < quote.version) newest.set(quote.orderId, quote);
   }
   const byMonth = new Map<string, BookedAheadMonth>();
   for (const quote of newest.values()) {
@@ -55,9 +55,9 @@ export async function bookedAhead({
     if (!instant) continue;
     const month = period.monthOf({ instant });
     if (!period.months.includes(month)) continue;
-    const entry = byMonth.get(month) ?? { month, valueExclVatMinor: 0, tickets: 0 };
+    const entry = byMonth.get(month) ?? { month, valueExclVatMinor: 0, orders: 0 };
     entry.valueExclVatMinor += quote.totalExclVatMinor;
-    entry.tickets += 1;
+    entry.orders += 1;
     byMonth.set(month, entry);
   }
   return [...byMonth.values()].sort((a, b) => a.month.localeCompare(b.month));

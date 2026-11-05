@@ -75,29 +75,39 @@ function BookingCard({
   booking,
   bookings,
   onOpen,
-}: { booking: AssetBooking } & Pick<DayTrackProps, "bookings" | "onOpen">) {
+  asset,
+}: { booking: AssetBooking; asset: CalendarAsset } & Pick<DayTrackProps, "bookings" | "onOpen">) {
   const clashes = clashesWith({ line: booking, lines: bookings });
+  const itemBooking = { ...booking, assetName: booking.assetName ?? asset.name };
   if (!clashes.length) {
-    return <BookingDetails booking={booking} onOpen={onOpen ? () => onOpen(booking) : undefined} />;
+    return (
+      <BookingDetails
+        booking={itemBooking}
+        onOpen={onOpen ? () => onOpen(itemBooking) : undefined}
+      />
+    );
   }
   const stretch = {
     from: Math.min(...clashes.map((clash) => clash.from)),
     to: Math.max(...clashes.map((clash) => clash.to)),
   };
-  const all = [booking, ...clashes.map((clash) => clash.line)];
+  const all = [
+    itemBooking,
+    ...clashes.map((clash) => ({ ...clash.line, assetName: clash.line.assetName ?? asset.name })),
+  ];
   return <ClashCards bookings={all} stretch={stretch} onOpen={onOpen} />;
 }
 
 type BookingsProps = Pick<
   DayTrackProps,
-  "bookings" | "window" | "lane" | "selectedId" | "onOpen" | "withHours"
+  "bookings" | "window" | "lane" | "selectedId" | "onOpen" | "withHours" | "asset"
 >;
 
 /**
  * Each booking in its sub-lane; the lane box lets the pointer through to the empty track. Zoomed
  * out to thin blocks, buffers are dropped: they would take the name's room.
  */
-function Bookings({ bookings, window, lane, selectedId, onOpen, withHours }: BookingsProps) {
+function Bookings({ bookings, window, lane, selectedId, onOpen, withHours, asset }: BookingsProps) {
   return bookings.map((booking) => (
     <div
       key={booking.id}
@@ -112,7 +122,7 @@ function Bookings({ bookings, window, lane, selectedId, onOpen, withHours }: Boo
         bookingClassName="inset-y-0"
         bufferClassName="inset-y-2"
         selected={booking.id === selectedId}
-        card={<BookingCard booking={booking} bookings={bookings} onOpen={onOpen} />}
+        card={<BookingCard booking={booking} bookings={bookings} onOpen={onOpen} asset={asset} />}
         onSelect={onOpen ? () => onOpen(booking) : undefined}
       >
         {() => <BlockLabel booking={booking} />}
@@ -134,7 +144,7 @@ export function DayTrack({ asset, date, withHours, onAdd, ...props }: DayTrackPr
           onAdd={(slot) => onAdd({ asset, date, ...slot })}
         />
       ) : null}
-      <Bookings withHours={withHours} {...props} />
+      <Bookings withHours={withHours} asset={asset} {...props} />
       <Clashes bookings={props.bookings} window={props.window} />
     </>
   );

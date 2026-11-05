@@ -9,6 +9,8 @@ export type BookableOption = NamedOption & {
   timeZone: string;
   priceMinor: number | null;
   priceUnit: ItemDto["priceUnit"];
+  entityTypeId: string;
+  typeName?: string;
 };
 
 /** A `BUNDLE` item with its venue's zone (ADR 0064). */

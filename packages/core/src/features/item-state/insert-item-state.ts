@@ -77,7 +77,7 @@ export type FlagsOfInput = { input: Partial<ItemStateFlags> };
 export const flagsOf = ({ input }: FlagsOfInput): ItemStateFlags => ({
   initial: input.initial ?? DEFAULT_FLAGS.initial,
   hold: input.hold ?? DEFAULT_FLAGS.hold,
-  inWorkOrders: input.inWorkOrders ?? DEFAULT_FLAGS.inWorkOrders,
+  inRunSheets: input.inRunSheets ?? DEFAULT_FLAGS.inRunSheets,
   released: input.released ?? DEFAULT_FLAGS.released,
   expires: input.expires ?? DEFAULT_FLAGS.expires,
 });

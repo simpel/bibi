@@ -6,7 +6,7 @@
 
 ## Context
 - Checked on 2026-10-22: there is no file storage, no upload endpoint and no multipart handling in `apps/` or `packages/`. `User.image` is never read; avatars are initials.
-- The welcome flow (ADR 0061) needs a profile avatar. Later needs (venue images, attachments on tickets) will use the same storage.
+- The welcome flow (ADR 0061) needs a profile avatar. Later needs (venue images, attachments on orders) will use the same storage.
 
 ## Decision
 1. **New package `@bibi/storage`** with a `StorageProvider` interface (`put`, `get`, `delete`). It mirrors `MailProvider` in `@bibi/mail`. Two adapters:

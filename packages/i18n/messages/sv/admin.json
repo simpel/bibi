@@ -1,0 +1,313 @@
+{
+  "admin": {
+    "billing": {
+      "title": "Fakturering",
+      "description": "Bibis eget Stripe-konto, saldon, ekonomisk data och abonnemangsinställningar.",
+      "settingsAction": "Stripe-inställningar",
+      "financials": {
+        "title": "Ekonomisk översikt",
+        "description": "Realtidssaldon och intäktsdata från Stripe.",
+        "availableBalance": "Tillgängligt saldo",
+        "pendingBalance": "Kommande saldo",
+        "activeSubscriptions": "Aktiva abonnemang",
+        "mrr": "MRR (uppskattat)",
+        "mrrHint": "{count} betalande org",
+        "notConfigured": "Stripe är inte konfigurerat ännu. Klistra in Bibis Stripe-nyckel nedan för att se saldon och transaktioner.",
+        "tabs": {
+          "transactions": "Transaktioner",
+          "invoices": "Fakturor"
+        },
+        "transactions": {
+          "title": "Senaste transaktioner",
+          "empty": "Inga Stripe-transaktioner ännu.",
+          "columns": {
+            "date": "Datum",
+            "type": "Typ",
+            "description": "Beskrivning",
+            "gross": "Brutto",
+            "fee": "Avgift",
+            "net": "Netto",
+            "status": "Status"
+          }
+        },
+        "invoices": {
+          "title": "Senaste fakturor",
+          "empty": "Inga Stripe-fakturor ännu.",
+          "columns": {
+            "date": "Datum",
+            "invoice": "Faktura",
+            "customer": "Kund",
+            "amount": "Belopp",
+            "status": "Status",
+            "link": "Länk"
+          },
+          "view": "Visa"
+        }
+      },
+      "productsBreakdown": {
+        "title": "Intäkter per produkt",
+        "description": "Aktiva kunder på månads- kontra årsabonnemang, samt intäkter från extra platser.",
+        "columns": {
+          "product": "Produkt",
+          "active": "Aktiva",
+          "unitPrice": "Pris",
+          "monthlyRevenue": "Månadsintäkt",
+          "annualRevenue": "Årlig debitering"
+        },
+        "names": {
+          "baseMonthly": "Bibi, månadsvis",
+          "baseYearly": "Bibi, årsvis (10 % rabatt)",
+          "seatMonthly": "Extra platser"
+        },
+        "orgCount": "{count, plural, one {# organisation} other {# organisationer}}",
+        "seatCount": "{count, plural, one {# extra plats} other {# extra platser}}",
+        "perMonth": "{price} / mån",
+        "perYear": "{price} / år",
+        "total": "Totalt",
+        "empty": "Inga produkter."
+      },
+      "config": {
+        "title": "Stripe-inställningar",
+        "configured": "Klart: organisationer betalar efter provperioden.",
+        "notConfigured": "Klistra in Bibis hemliga Stripe-nyckel och spara. Tills dess behöver ingen organisation betala.",
+        "live": "Live-läge",
+        "test": "Testläge (sandlåda)",
+        "secretKey": "Hemlig nyckel",
+        "secretKeyStored": "Den sparade nyckeln slutar på {hint}. Lämna tomt för att behålla den; spara igen för att kontrollera Stripe.",
+        "noKey": "Ingen nyckel sparad än.",
+        "webhookSecret": "Webhook-hemlighet (bara lokalt)",
+        "webhookSecretHint": "Bara när du testar lokalt: klistra in hemligheten som stripe listen skriver ut. I produktion skapar Bibi webhooken själv.",
+        "save": "Spara och sätt upp Stripe",
+        "saved": "Stripe är uppsatt.",
+        "saving": "Sätter upp Stripe…"
+      },
+      "products": {
+        "title": "Produkter",
+        "description": "Priser exklusive moms. {seats} platser ingår och varje ny organisation får {days} dagar gratis.",
+        "names": {
+          "baseMonthly": "Bibi, månadsvis",
+          "baseYearly": "Bibi, årsvis (10 % rabatt)",
+          "seatMonthly": "Extra plats"
+        },
+        "perMonth": "{price} / mån",
+        "perYear": "{price} / år",
+        "total": "Totalt",
+        "empty": "Inga produkter.",
+        "inStripe": "I Stripe",
+        "notInStripe": "Inte i Stripe än"
+      },
+      "organizations": {
+        "title": "Organisationer",
+        "empty": "Inga organisationer än.",
+        "columns": {
+          "name": "Organisation",
+          "state": "Läge",
+          "trialEndsAt": "Provperioden slutar",
+          "plan": "Plan",
+          "extraSeats": "Extra platser",
+          "exempt": "Undantagen"
+        },
+        "noPlan": "Ingen plan",
+        "exemptOn": "{name} behöver aldrig betala.",
+        "exemptOff": "{name} betalar efter provperioden igen.",
+        "changeTrial": "Ändra provperiodens slut",
+        "trialTitle": "Provperiodens slut för {name}",
+        "trialDescription": "Provperioden varar till och med den här dagen, svensk tid.",
+        "trialEnd": "Sista dag i provperioden",
+        "resetTrial": "Tillbaka till 14 dagar",
+        "saveTrial": "Spara",
+        "trialSaved": "Provperiodens slut har sparats.",
+        "first": "Första sidan",
+        "next": "Nästa sida"
+      }
+    },
+    "organizations": {
+      "title": "Organisationer",
+      "description": "Alla organisationer registrerade på Bibi, deras status, provperiod och abonnemang.",
+      "empty": "Inga organisationer än.",
+      "columns": {
+        "name": "Organisation",
+        "state": "Läge",
+        "trialEndsAt": "Provperioden slutar",
+        "plan": "Plan",
+        "extraSeats": "Extra platser",
+        "exempt": "Undantagen"
+      },
+      "noPlan": "Ingen plan",
+      "exemptOn": "{name} behöver aldrig betala.",
+      "exemptOff": "{name} betalar efter provperioden igen.",
+      "changeTrial": "Ändra provperiodens slut",
+      "trialTitle": "Provperiodens slut för {name}",
+      "trialDescription": "Provperioden varar till och med den här dagen, svensk tid.",
+      "trialEnd": "Sista dag i provperioden",
+      "resetTrial": "Tillbaka till 14 dagar",
+      "saveTrial": "Spara",
+      "trialSaved": "Provperiodens slut har sparats.",
+      "first": "Första sidan",
+      "next": "Nästa sida"
+    },
+    "title": "Mothership",
+    "navLabel": "Mothership",
+    "backToApp": "Till appen",
+    "toggleSidebar": "Visa eller dölj sidomenyn",
+    "sidebarTitle": "Mothership",
+    "sidebarDescription": "Navigering för mothership",
+    "nav": {
+      "organizations": "Organisationer",
+      "billing": "Fakturering",
+      "logs": "Systemlogg",
+      "aiModels": "AI-modeller"
+    },
+    "logs": {
+      "title": "Systemlogg",
+      "description": "Alla händelser i systemet: operationer, anrop, inloggningar, mejl och fel. Sparas i {days} dagar.",
+      "empty": "Inga logghändelser matchar filtret.",
+      "columns": {
+        "time": "Tid",
+        "level": "Nivå",
+        "event": "Händelse",
+        "message": "Meddelande",
+        "surface": "Yta",
+        "operation": "Operation",
+        "status": "Status",
+        "duration": "Tid (ms)"
+      },
+      "filters": {
+        "search": "Sök eller filtrera, t.ex. typ:error yta:web",
+        "searchSubmit": "Sök",
+        "searching": "Söker…",
+        "level": "Lägsta nivå",
+        "allLevels": "Alla nivåer",
+        "surface": "Yta",
+        "allSurfaces": "Alla ytor",
+        "requestId": "Request-id",
+        "apply": "Filtrera",
+        "clear": "Rensa filter"
+      },
+      "query": {
+        "keys": {
+          "level": "nivå",
+          "type": "typ",
+          "surface": "yta",
+          "requestId": "request",
+          "operation": "operation",
+          "status": "status"
+        },
+        "values": {
+          "trace": "trace",
+          "debug": "debug",
+          "info": "info",
+          "warn": "warn",
+          "error": "error",
+          "fatal": "fatal",
+          "web": "web",
+          "graphql": "graphql",
+          "rest": "rest",
+          "mcp": "mcp",
+          "ai": "ai",
+          "auth": "auth",
+          "cli": "cli",
+          "system": "system",
+          "webhook": "webhook"
+        },
+        "labels": {
+          "level": "Nivå",
+          "type": "Typ (nivå)",
+          "surface": "Yta",
+          "requestId": "Request-id",
+          "operation": "Operation",
+          "status": "HTTP-status"
+        },
+        "hints": {
+          "level": "lägsta nivå: trace, debug, info, warn, error, fatal",
+          "type": "alias för nivå: error, warn, info...",
+          "surface": "yta: web, graphql, rest, mcp, ai, auth, cli, system, webhook",
+          "requestId": "spåra ett request-id",
+          "operation": "operationsnamn, t.ex. order.list",
+          "status": "HTTP-statuskod, t.ex. 500, 404"
+        }
+      },
+      "detail": {
+        "title": "Logghändelse",
+        "description": "Alla fält som loggades för händelsen.",
+        "fields": "Fält",
+        "raw": "Rådata (JSON)",
+        "sameRequest": "Visa hela requesten",
+        "close": "Stäng",
+        "notFound": "Logghändelsen finns inte längre."
+      },
+      "pagination": {
+        "rowsPerPage": "Rader per sida",
+        "pageOf": "Sida {page} av {pageCount}",
+        "first": "Första sidan",
+        "previous": "Föregående sida",
+        "next": "Nästa sida",
+        "last": "Sista sidan",
+        "total": "{count, plural, one {# händelse} other {# händelser}}"
+      }
+    },
+    "aiModels": {
+      "title": "AI-modeller",
+      "description": "Välj vilken modell varje AI-funktion använder. Det finns inga standardmodeller: utan val fungerar inte funktionen. Modellerna hämtas från Vercel AI Gateway.",
+      "catalogFailed": "Modellistan från Vercel AI Gateway kunde inte hämtas. Nuvarande val gäller fortfarande.",
+      "changedAt": "Ändrad {date}",
+      "choose": "Välj modell",
+      "save": "Spara",
+      "saved": "Modellen är sparad.",
+      "reindexTitle": "Byta embedding-modell?",
+      "reindexDescription": "Sökindexet är skapat med den gamla modellen. Tills det byggts om blir semantisk sökning missvisande. Kör `pnpm --filter @bibi/ai reindex` direkt efter bytet. Modellen måste stödja 1536 dimensioner.",
+      "reindexConfirm": "Byt modell",
+      "features": {
+        "assistantChat": {
+          "name": "Assistenten",
+          "description": "Språkmodellen som svarar i chatten och ⌘K."
+        },
+        "searchEmbedding": {
+          "name": "Semantisk sökning",
+          "description": "Embedding-modellen som indexerar och söker bland anläggningar, artiklar, konversationer och färdigheter."
+        },
+        "orderIntakeDraft": {
+          "name": "Utkast från meddelande",
+          "description": "Språkmodellen som läser en förfrågan till ett bokningsutkast med citat och gissningar."
+        },
+        "orderTitle": {
+          "name": "Bokningenitel",
+          "description": "Den lilla språkmodellen som ger ett ny bokning en titel med några ord."
+        }
+      },
+      "notInCatalog": "Den valda modellen är inte längre möjlig för funktionen. Välj en ny.",
+      "notConfigured": "Inte konfigurerad",
+      "notConfiguredHint": "Funktionen fungerar inte förrän en modell är vald. Varje försök loggas som fel.",
+      "saving": "Sparar modell…",
+      "columns": {
+        "feature": "AI-funktion",
+        "model": "Modell",
+        "price": "Pris (USD / 1M tokens)",
+        "changed": "Ändrad"
+      },
+      "priceInOut": "In {input} · Ut {output}",
+      "priceIn": "In {input}",
+      "noPrice": "Pris saknas",
+      "noPossibleModels": "Inga möjliga modeller hittades. Kontrollera AI_GATEWAY_API_KEY.",
+      "modelLabel": "Modell för {feature}",
+      "possibleHint": "Bara modeller som funktionen kan använda visas.",
+      "empty": "Inga AI-funktioner.",
+      "filters": {
+        "search": "Sök funktioner eller modeller",
+        "searchSubmit": "Sök",
+        "searching": "Söker…"
+      },
+      "pagination": {
+        "total": "{count, plural, one {# funktion} other {# funktioner}}"
+      }
+    },
+    "levels": {
+      "trace": "Trace",
+      "debug": "Debug",
+      "info": "Info",
+      "warn": "Varning",
+      "error": "Fel",
+      "fatal": "Kritiskt"
+    }
+  }
+}

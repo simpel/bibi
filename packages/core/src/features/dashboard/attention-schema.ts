@@ -1,29 +1,29 @@
 import { z } from "zod";
 
 const minor = ({ what }: { what: string }) => z.number().int().describe(`${what}, minor units`);
-const ticketTitle = z.string().nullable().describe("The ticket's title; null until it has one");
+const orderTitle = z.string().nullable().describe("The order's title; null until it has one");
 const customerName = z
   .string()
   .nullable()
   .describe("The customer's name; null without customer:read");
 
 export const ExpiringHoldSchema = z.object({
-  ticketId: z.string().describe("ticket.get"),
+  orderId: z.string().describe("order.get"),
   reference: z.number().int(),
-  title: ticketTitle,
+  title: orderTitle,
   customerName,
   holdsUntil: z.date().describe("When the expiring lines fall to their expiry state"),
   lines: z.number().int().describe("Active lines still in an expiring state"),
 });
 
-export const UnsentWorkOrderSchema = z.object({
-  workOrderId: z.string().describe("workOrder.get"),
-  ticketId: z.string().describe("ticket.get"),
+export const UnsentRunSheetSchema = z.object({
+  runSheetId: z.string().describe("runSheet.get"),
+  orderId: z.string().describe("order.get"),
   reference: z.number().int(),
-  title: ticketTitle,
-  name: z.string().describe("The work order definition's name"),
+  title: orderTitle,
+  name: z.string().describe("The run sheet definition's name"),
   version: z.number().int(),
-  startsAt: z.date().describe("The ticket's first line start inside the horizon"),
+  startsAt: z.date().describe("The order's first line start inside the horizon"),
 });
 
 export const OverdueSchema = z.object({
@@ -35,27 +35,27 @@ export const OverdueSchema = z.object({
 export const AttentionSchema = z.object({
   expiringHolds: z
     .array(ExpiringHoldSchema)
-    .describe("Tickets whose holdsUntil falls within the next 7 days, soonest first"),
-  unsentWorkOrders: z
-    .array(UnsentWorkOrderSchema)
+    .describe("Orders whose holdsUntil falls within the next 7 days, soonest first"),
+  unsentRunSheets: z
+    .array(UnsentRunSheetSchema)
     .nullable()
     .describe(
-      "Newest work order versions not sent, for tickets starting within the horizon; needs workOrder:read",
+      "Newest run sheet versions not sent, for orders starting within the horizon; needs runSheet:read",
     ),
   overdue: OverdueSchema.nullable().describe("Needs finance:read and payment:read"),
 });
 
 export const ScheduledSchema = z.object({
-  ticketId: z.string().describe("ticket.get"),
+  orderId: z.string().describe("order.get"),
   reference: z.number().int(),
-  title: ticketTitle,
+  title: orderTitle,
   customerName,
-  statusName: z.string().describe("The ticket's status"),
+  statusName: z.string().describe("The order's status"),
   startsAt: z.date().describe("The first line start inside the range"),
   lines: z.number().int().describe("Lines starting inside the range"),
 });
 
 export type Attention = z.infer<typeof AttentionSchema>;
 export type ExpiringHold = z.infer<typeof ExpiringHoldSchema>;
-export type UnsentWorkOrder = z.infer<typeof UnsentWorkOrderSchema>;
+export type UnsentRunSheet = z.infer<typeof UnsentRunSheetSchema>;
 export type Scheduled = z.infer<typeof ScheduledSchema>;

@@ -7,7 +7,7 @@ import { seedDemoCustomers } from "./seed-customers";
 import type { DemoCatalog } from "./seed-items";
 import { activateDemoPayments } from "./seed-money";
 import { seedDemoTemplates } from "./seed-templates";
-import { seedDemoTickets } from "./seed-tickets";
+import { seedDemoOrders } from "./seed-orders";
 import type { DemoOrg } from "./types";
 import type { DemoUserIds } from "./users";
 
@@ -22,7 +22,7 @@ export type SeedDemoSalesInput = {
 };
 
 /**
- * Slices 4 and 5 of ADR 0025: customers first, then the predefined tickets and the tickets that
+ * Slices 4 and 5 of ADR 0025: customers first, then the predefined orders and the orders that
  * refer to them with their money (the pipeline is seeded before).
  */
 export async function seedDemoSales({
@@ -44,10 +44,10 @@ export async function seedDemoSales({
       const account = await activateDemoPayments({ context, org });
       if (!account.ok) return account;
       const zones = demoTimeZones({ org });
-      const tickets = await seedDemoTickets({
-        ...{ context, tickets: org.tickets, refs, userIds, zones },
+      const orders = await seedDemoOrders({
+        ...{ context, orders: org.orders, refs, userIds, zones },
       });
-      return tickets.ok ? ok({ value: true as const }) : tickets;
+      return orders.ok ? ok({ value: true as const }) : orders;
     },
   });
 }

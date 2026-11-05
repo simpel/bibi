@@ -204,13 +204,13 @@ hero_numbers:
 | **Heading 3** | `text-xl font-normal tracking-tight` | Fraunces (400) | `text-black dark:text-white` • Card groups, subsection headers |
 | **Grand Total** | `font-serif text-2xl font-light` | Fraunces (300) | `text-black dark:text-white` • Quote grand totals (`184 500 SEK`) |
 | **Body Large** | `text-lg text-muted-foreground leading-relaxed` | Inter | Introductions and explanatory subtitles |
-| **Body Regular**| `text-base leading-relaxed` | Inter | Descriptions, ticket notes, instructions |
+| **Body Regular**| `text-base leading-relaxed` | Inter | Descriptions, order notes, instructions |
 | **Body Medium** | `text-sm font-medium` | Inter | Buttons, form labels, table cells, tabs |
 | **Caption** | `text-xs text-muted-foreground` | Inter | Helper text, breadcrumbs |
 | **Runsheet Time** | `text-xs font-medium tabular-nums` | Inter (`tabular-nums`) | Schedule slots (`08:30 – 17:00`) |
 | **Line Price** | `text-sm font-semibold tabular-nums` | Inter (`tabular-nums`) | Itemized rows (`1 850 SEK / kuvert`) |
 | **Capacity** | `text-sm font-medium tabular-nums` | Inter (`tabular-nums`) | Headcounts (`240 pers`, `80 / 120 platser`) |
-| **Reference ID**| `text-xs tracking-wider uppercase font-medium` | Inter | Ticket codes (`TKT-2026-4401`) |
+| **Reference ID**| `text-xs tracking-wider uppercase font-medium` | Inter | Order codes (`TKT-2026-4401`) |
 
 ---
 
@@ -262,7 +262,13 @@ geometry:
 
 ### Buttons & Interactive Controls
 - **Single Primary Rule**: Never place more than one primary button (`bg-primary text-primary-foreground`) in a single view or action group. Secondary actions must use `secondary` or `outline`/`ghost`.
-- **Action Verbs**: Always label buttons with specific verbs (`Skicka offert`, `Generera körschema`, `Spara anläggning`), never vague placeholders like `OK` or `Submit`.
+- **Action Verbs & "Create" over "New"**: Always label buttons with specific imperative verbs (`Create order`, `Save venue`, `Send quote`), never vague placeholders like `OK` or `Submit`, and never adjectives like `New` (`Create order`, not `New order`). Follow the Action Verb Taxonomy:
+  - **Create** (*Skapa*): Bringing a new entity into existence (not New, Add, Make).
+  - **Add** (*Lägg till*): Attaching an existing entity or line item to a list or parent container.
+  - **Edit** (*Redigera*/*Ändra*): Modifying existing properties or configuration.
+  - **Delete** (*Ta bort*/*Radera*): Permanently destroying an entity from the database.
+  - **Remove** (*Ta bort*/*Koppla bort*): Detaching an entity from a group without destroying it.
+  - **Save** (*Spara*): Confirming and persisting form inputs.
 - **Interactive State Completeness**: Every clickable element must support `hover`, `active`, `focus-visible`, and `disabled` states. Focus indicators must use `outline-ring/50` or `ring-2 ring-ring`.
 
 ### Data Tables & Run Sheets (ADR 0040)
@@ -282,7 +288,7 @@ geometry:
 - **Do** keep headings pitch black (`#000000` / `text-black` in light mode, `dark:text-white` in dark mode) for authoritative hierarchy.
 - **Do** treat WCAG 2.2 AA as a strict non-negotiable floor across all views: full keyboard access, high-contrast focus rings, semantic markup, and accessible labels.
 - **Do** use `font-serif` (`Fraunces`) for headings and grand financial totals, and `font-sans` (`Inter`) with `tabular-nums` for all interface copy, runsheet timetables, line-item pricing, and capacity counts.
-- **Do** format booking and ticket reference IDs in tracked uppercase Inter (`text-xs tracking-wider uppercase font-medium`).
+- **Do** format booking and order reference IDs in tracked uppercase Inter (`text-xs tracking-wider uppercase font-medium`).
 - **Do** test interfaces in both light mode and dark mode via Storybook foundations.
 - **Do** keep files under 400 lines of code; decompose complex views into modular feature components.
 - **Do** honor page width tiers: forms in `narrow`, lists in `default`, calendar in `canvas`.

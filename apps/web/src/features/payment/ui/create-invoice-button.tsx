@@ -9,8 +9,8 @@ import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { createInvoiceAction } from "../../invoice/actions";
 
-/** Freezes the ticket's priced lines as an invoice (`invoice.create`) after a confirmation. */
-export function CreateInvoiceButton({ ticketId }: { ticketId: string }) {
+/** Freezes the order's priced lines as an invoice (`invoice.create`) after a confirmation. */
+export function CreateInvoiceButton({ orderId }: { orderId: string }) {
   const t = useTranslations("invoice");
   const common = useTranslations("common");
   const router = useRouter();
@@ -18,7 +18,7 @@ export function CreateInvoiceButton({ ticketId }: { ticketId: string }) {
   const [open, setOpen] = useState(false);
   const create = () =>
     run({
-      action: () => createInvoiceAction({ ticketId }),
+      action: () => createInvoiceAction({ orderId }),
       messages: { pending: common("saving"), success: t("created") },
       onSuccess: () => {
         setOpen(false);

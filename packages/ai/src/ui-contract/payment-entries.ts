@@ -1,4 +1,4 @@
-import { PaymentSchema, TicketBalanceSchema } from "@bibi/core/schemas";
+import { PaymentSchema, OrderBalanceSchema } from "@bibi/core/schemas";
 import { z } from "zod";
 import { DASHBOARD_UI_ENTRIES } from "./dashboard-entries";
 import { FINANCE_UI_ENTRIES } from "./finance-entries";
@@ -18,7 +18,7 @@ export const PaymentListWireSchema = z.object({
 });
 
 export type PaymentWire = z.infer<typeof PaymentWireSchema>;
-export type TicketBalanceWire = z.infer<typeof TicketBalanceSchema>;
+export type OrderBalanceWire = z.infer<typeof OrderBalanceSchema>;
 
 const paymentCard = uiEntry({
   component: "payment-card",
@@ -39,8 +39,8 @@ export const PAYMENT_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   payment_create: paymentCard,
   deposit_request: paymentCard,
   payment_balance: uiEntry({
-    component: "ticket-balance-card",
-    schema: TicketBalanceSchema,
+    component: "order-balance-card",
+    schema: OrderBalanceSchema,
     toProps: ({ value }) => ({ balance: value }),
   }),
 };

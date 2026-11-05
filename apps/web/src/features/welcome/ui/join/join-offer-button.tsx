@@ -12,11 +12,18 @@ export type JoinOfferButtonProps = {
   name: string;
   /** Stay on the page (the list) instead of going on to it (the offer step). */
   stay?: boolean;
-  variant?: "default" | "outline";
+  variant?: "default" | "secondary" | "outline" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
 };
 
 /** Joins a domain offer (ADR 0078), then shows every organization the user can join. */
-export function JoinOfferButton({ organizationId, name, stay, variant }: JoinOfferButtonProps) {
+export function JoinOfferButton({
+  organizationId,
+  name,
+  stay,
+  variant,
+  size,
+}: JoinOfferButtonProps) {
   const t = useTranslations("welcome.join");
   const router = useRouter();
   const { run, pending } = useToastAction();
@@ -38,6 +45,7 @@ export function JoinOfferButton({ organizationId, name, stay, variant }: JoinOff
     <Button
       type="button"
       variant={variant}
+      size={size}
       className={stay ? undefined : "w-full"}
       disabled={pending}
       onClick={join}

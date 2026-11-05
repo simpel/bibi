@@ -4,7 +4,7 @@ import { RecordStatusSchema } from "../../shared/record-status";
 import { HoldKindSchema } from "./hold-kind";
 
 /** The generic boolean state flags (ADR 0044); `hold` is the fourth. */
-export const STATE_FLAGS = ["initial", "inWorkOrders", "released", "expires"] as const;
+export const STATE_FLAGS = ["initial", "inRunSheets", "released", "expires"] as const;
 
 const FlagShape = {
   initial: z.boolean().describe("New lines of the type start here; exactly one state per type"),
@@ -12,11 +12,11 @@ const FlagShape = {
     "NONE, SOFT (reserves the item without blocking; soft holds may overlap) or HARD (blocks " +
       "the item). SOFT and HARD only for types with BOOKABLE",
   ),
-  inWorkOrders: z.boolean().describe("Lines in this state are included in generated work orders"),
+  inRunSheets: z.boolean().describe("Lines in this state are included in generated run sheets"),
   released: z.boolean().describe("Final state: the hold is dropped and nothing leaves it"),
   expires: z
     .boolean()
-    .describe("Lines fall to the type's expiry state when the ticket's holdsUntil date passes"),
+    .describe("Lines fall to the type's expiry state when the order's holdsUntil date passes"),
 };
 
 export const ItemStateSchema = z.object({

@@ -1,36 +1,36 @@
 import { ok, type Result } from "../../errors/result";
 import { runNested } from "../../operations/run-nested";
 import type { OperationContext } from "../../operations/types";
-import { archiveTicketStatus } from "../ticket-status/archive-operations";
-import { loadAllTicketStatuses } from "../ticket-status/load-ticket-status";
-import { reorderTicketStatuses, setTicketStatusGates } from "../ticket-status/order-operations";
-import { createTicketStatus, updateTicketStatus } from "../ticket-status/write-operations";
+import { archiveOrderStatus } from "../order-status/archive-operations";
+import { loadAllOrderStatuses } from "../order-status/load-order-status";
+import { reorderOrderStatuses, setOrderStatusGates } from "../order-status/order-operations";
+import { createOrderStatus, updateOrderStatus } from "../order-status/write-operations";
 import type { PipelineStatusDraft } from "./schema";
 
 type StatusesInput = { context: OperationContext; statuses: readonly PipelineStatusDraft[] };
 
-const flagsOf = ({ ticketStatus }: { ticketStatus: PipelineStatusDraft }) => ({
-  color: ticketStatus.color,
-  entry: ticketStatus.entry ?? false,
-  closes: ticketStatus.closes ?? false,
-  invoiceable: ticketStatus.invoiceable ?? false,
-  event: ticketStatus.event ?? null,
+const flagsOf = ({ orderStatus }: { orderStatus: PipelineStatusDraft }) => ({
+  color: orderStatus.color,
+  entry: orderStatus.entry ?? false,
+  closes: orderStatus.closes ?? false,
+  invoiceable: orderStatus.invoiceable ?? false,
+  event: orderStatus.event ?? null,
 });
 
 /** Entry first, then closing statuses: no step leaves the organization without either. */
-const rank = ({ ticketStatus }: { ticketStatus: PipelineStatusDraft }) =>
-  ticketStatus.entry ? 0 : ticketStatus.closes ? 1 : 2;
+const rank = ({ orderStatus }: { orderStatus: PipelineStatusDraft }) =>
+  orderStatus.entry ? 0 : orderStatus.closes ? 1 : 2;
 
-type CreateInput = { context: OperationContext; ticketStatus: PipelineStatusDraft };
+type CreateInput = { context: OperationContext; orderStatus: PipelineStatusDraft };
 
-/** `ticketStatus.create` takes only a name and a colour; the draft's flags follow as an update. */
-async function createWithFlags({ context, ticketStatus }: CreateInput) {
-  const { name, color } = ticketStatus;
+/** `orderStatus.create` takes only a name and a colour; the draft's flags follow as an update. */
+async function createWithFlags({ context, orderStatus }: CreateInput) {
+  const { name, color } = orderStatus;
   const input = { name, color };
-  const created = await runNested({ operation: createTicketStatus, input, context });
+  const created = await runNested({ operation: createOrderStatus, input, context });
   if (!created.ok) return created;
-  const flags = { id: created.value.id, ...flagsOf({ ticketStatus }) };
-  return runNested({ operation: updateTicketStatus, input: flags, context });
+  const flags = { id: created.value.id, ...flagsOf({ orderStatus }) };
+  return runNested({ operation: updateOrderStatus, input: flags, context });
 }
 
 /** Creates or updates (by name) every status of the draft; returns their ids by name. */
@@ -38,22 +38,22 @@ export async function upsertStatuses({
   context,
   statuses,
 }: StatusesInput): Promise<Result<Map<string, string>>> {
-  const existing = await loadAllTicketStatuses({ context });
+  const existing = await loadAllOrderStatuses({ context });
   const ordered = [...statuses].sort(
-    (a, b) => rank({ ticketStatus: a }) - rank({ ticketStatus: b }),
+    (a, b) => rank({ orderStatus: a }) - rank({ orderStatus: b }),
   );
   const ids = new Map<string, string>();
-  for (const ticketStatus of ordered) {
-    const found = existing.find((row) => row.name === ticketStatus.name);
+  for (const orderStatus of ordered) {
+    const found = existing.find((row) => row.name === orderStatus.name);
     const saved = found
       ? await runNested({
-          operation: updateTicketStatus,
-          input: { id: found.id, ...flagsOf({ ticketStatus }) },
+          operation: updateOrderStatus,
+          input: { id: found.id, ...flagsOf({ orderStatus }) },
           context,
         })
-      : await createWithFlags({ context, ticketStatus });
+      : await createWithFlags({ context, orderStatus });
     if (!saved.ok) return saved;
-    ids.set(ticketStatus.name, saved.value.id);
+    ids.set(orderStatus.name, saved.value.id);
   }
   return ok({ value: ids });
 }
@@ -61,7 +61,7 @@ export async function upsertStatuses({
 type FinishInput = StatusesInput & { ids: Map<string, string> };
 
 /**
- * Archives the statuses the draft left out (their tickets move to the entry status through the
+ * Archives the statuses the draft left out (their orders move to the entry status through the
  * normal move checks), then sets the draft's order and the gates on moves into each status, from any
  * status (ADR 0076). Statuses keep free movement.
  */
@@ -71,25 +71,25 @@ export async function finishStatuses({
   ids,
 }: FinishInput): Promise<Result<true>> {
   const idOf = ({ name }: { name: string }) => ids.get(name) ?? "";
-  const entry = statuses.find((ticketStatus) => ticketStatus.entry);
+  const entry = statuses.find((orderStatus) => orderStatus.entry);
   const targetStatusId = entry ? idOf({ name: entry.name }) : undefined;
-  const existing = await loadAllTicketStatuses({ context });
+  const existing = await loadAllOrderStatuses({ context });
   const kept = new Set(ids.values());
   for (const row of existing.filter((candidate) => !kept.has(candidate.id))) {
     const input = { id: row.id, ...(targetStatusId ? { targetStatusId } : {}) };
-    const archived = await runNested({ operation: archiveTicketStatus, input, context });
+    const archived = await runNested({ operation: archiveOrderStatus, input, context });
     if (!archived.ok) return archived;
   }
-  const order = { ids: statuses.map((ticketStatus) => idOf({ name: ticketStatus.name })) };
-  const reordered = await runNested({ operation: reorderTicketStatuses, input: order, context });
+  const order = { ids: statuses.map((orderStatus) => idOf({ name: orderStatus.name })) };
+  const reordered = await runNested({ operation: reorderOrderStatuses, input: order, context });
   if (!reordered.ok) return reordered;
-  for (const ticketStatus of statuses) {
-    const gates = [...(ticketStatus.gatesIn ?? [])];
+  for (const orderStatus of statuses) {
+    const gates = [...(orderStatus.gatesIn ?? [])];
     const input = {
-      id: idOf({ name: ticketStatus.name }),
+      id: idOf({ name: orderStatus.name }),
       gates: gates.length > 0 ? [{ fromStatusId: null, gates }] : [],
     };
-    const set = await runNested({ operation: setTicketStatusGates, input, context });
+    const set = await runNested({ operation: setOrderStatusGates, input, context });
     if (!set.ok) return set;
   }
   return ok({ value: true });

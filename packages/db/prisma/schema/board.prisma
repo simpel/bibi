@@ -1,7 +1,7 @@
-// Boards (ADR 0067): saved views over the organization's tickets. A board owns no ticket data; its
-// phases are its columns and group ticket statuses, one phase per status per board.
+// Boards (ADR 0067): saved views over the organization's orders. A board owns no order data; its
+// phases are its columns and group order statuses, one phase per status per board.
 
-/// Board – a saved view of tickets, e.g. Sales or Ops. Owned: `name`, `position` and the filter
+/// Board – a saved view of orders, e.g. Sales or Ops. Owned: `name`, `position` and the filter
 /// (`entityTypeId`, `assigneeId`, both optional). The first active board by `position` is the
 /// default; a new status without a phase gets its own phase there (ADR 0067).
 model Board {
@@ -9,9 +9,9 @@ model Board {
   organizationId String
   name           String
   position       Int                @default(0)
-  /// Filter: only tickets of this type; null for every type.
+  /// Filter: only orders of this type; null for every type.
   entityTypeId   String?
-  /// Filter: only tickets this member (user id) is the main assignee of; null for everyone.
+  /// Filter: only orders this member (user id) is the main assignee of; null for everyone.
   assigneeId     String?
   status         RecordStatus       @default(ACTIVE)
   createdAt      DateTime           @default(now())
@@ -45,7 +45,7 @@ model BoardPhase {
   @@index([organizationId, boardId, status, position])
 }
 
-/// Board phase status – a ticket status shown in a phase (join row, ADR 0056). A status is in at
+/// Board phase status – a order status shown in a phase (join row, ADR 0056). A status is in at
 /// most one phase per board (`@@unique([boardId, statusId])`); with none it is not on that board.
 /// Replaced through `boardPhase.moveStatus` and audited on the board.
 model BoardPhaseStatus {
@@ -60,7 +60,7 @@ model BoardPhaseStatus {
   board          Board        @relation(fields: [boardId, organizationId], references: [id, organizationId])
   /// Through the board too, so a row's `boardId` is always its phase's board.
   phase          BoardPhase   @relation(fields: [phaseId, boardId, organizationId], references: [id, boardId, organizationId])
-  ticketStatus   TicketStatus @relation(fields: [statusId, organizationId], references: [id, organizationId])
+  orderStatus   OrderStatus @relation(fields: [statusId, organizationId], references: [id, organizationId])
 
   @@unique([boardId, statusId])
   @@index([organizationId, phaseId])

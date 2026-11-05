@@ -12,7 +12,7 @@ export type SeedDefaultBoardInput = {
 };
 
 /**
- * One column per status on the default board, as a template import gives it: `ticketStatus.create`
+ * One column per status on the default board, as a template import gives it: `orderStatus.create`
  * leaves a new status off the board, so the seed places each one itself (`boardPhase.create`).
  * Open statuses go after the open ones already there, closing ones last.
  */

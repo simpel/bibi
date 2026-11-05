@@ -1,0 +1,404 @@
+{
+  "common": {
+    "hidden": "Hidden",
+    "appName": "Bibi",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "close": "Close",
+    "loading": "Loading...",
+    "search": "Search",
+    "actions": "Actions",
+    "table": {
+      "sortAscending": "Sort ascending",
+      "sortDescending": "Sort descending",
+      "clearSort": "Clear sorting",
+      "dragColumn": "Move column {column}",
+      "dragInstructions": "Press space to pick up the column, use the arrow keys to move it and press space to drop it.",
+      "columnPickedUp": "Picked up column {column}",
+      "columnMoved": "Column {column} is at position {position} of {total}",
+      "columnDropped": "Dropped column {column} at position {position} of {total}",
+      "selectAll": "Select all rows on the page",
+      "selectRow": "Select row",
+      "selected": "{count} selected",
+      "orderSaved": "Column order saved",
+      "rowsPerPage": "Rows per page",
+      "pageOf": "Page {page} of {pageCount}",
+      "firstPage": "First page",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "lastPage": "Last page"
+    },
+    "yes": "Yes",
+    "no": "No",
+    "name": "Name",
+    "description": "Description",
+    "status": "Status",
+    "language": "Language",
+    "theme": "Theme",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "system": "System theme",
+    "archive": "Archive",
+    "retry": "Try again",
+    "previous": "Previous",
+    "firstPage": "First page",
+    "nextPage": "Next page",
+    "active": "Active",
+    "archived": "Archived",
+    "or": "or",
+    "optional": "optional",
+    "skipToContent": "Skip to content",
+    "saving": "Saving…",
+    "searching": "Searching…",
+    "archiving": "Archiving…",
+    "sending": "Sending…",
+    "removing": "Removing…",
+    "select": "Select…",
+    "noOptions": "No options.",
+    "noMatches": "No matches.",
+    "datePicker": {
+      "placeholder": "Pick a date",
+      "chooseDate": "Choose a date",
+      "rangePlaceholder": "Pick a span",
+      "clear": "Clear date",
+      "presets": {
+        "last7Days": "Last 7 days",
+        "last30Days": "Last 30 days",
+        "thisMonth": "This month",
+        "last3Months": "Last 3 months",
+        "last6Months": "Last 6 months",
+        "last12Months": "Last 12 months",
+        "next7Days": "Next 7 days",
+        "next14Days": "Next 14 days",
+        "next28Days": "Next 28 days",
+        "next30Days": "Next 30 days",
+        "next3Months": "Next 3 months",
+        "next6Months": "Next 6 months",
+        "next12Months": "Next 12 months"
+      }
+    },
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "readFilter": {
+      "label": "Show",
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read"
+    },
+    "deleting": "Deleting…",
+    "open": "Open"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "We could not find what you were looking for.",
+    "unauthorized": "You need to sign in.",
+    "forbidden": "You do not have permission to do this.",
+    "validation": "Please check the highlighted fields.",
+    "required": "This field is required.",
+    "conflict": "This clashes with existing information.",
+    "network": "The server could not be reached.",
+    "invalidCredentials": "Wrong email or password.",
+    "emailTaken": "An account with that email address already exists.",
+    "passwordTooShort": "The password is too short.",
+    "invalidCode": "The code is invalid or has expired.",
+    "tooManyRequests": "Too many attempts. Wait a moment and try again.",
+    "invalidEmail": "Enter a valid email address.",
+    "invalidNumber": "Enter a valid number.",
+    "tooLong": "The text is too long.",
+    "tooShort": "The value is too small.",
+    "tooBig": "The value is too large.",
+    "invalid": "The value is invalid.",
+    "invitationInvalid": "The invitation is invalid or has expired.",
+    "loadFailed": "We couldn't load this right now",
+    "oauthQueryMissing": "The request is missing information. Start again from the application that asked for access.",
+    "textTooShort": "The text is too short.",
+    "approvalUsed": "This proposal has already been used.",
+    "approvalExpired": "The proposal has expired or cannot be approved. Ask the assistant to propose it again.",
+    "unavailable": "This feature is not available right now. An administrator needs to configure it.",
+    "slugUnavailable": "That address was just taken. Use the suggestion or pick another.",
+    "validationUnmapped": "Could not save: {message}"
+  },
+  "nav": {
+    "billing": "Billing",
+    "dashboard": "Data",
+    "pipeline": "Pipeline",
+    "venues": "Venues",
+    "items": "Items",
+    "customers": "Customers",
+    "types": "Types",
+    "lists": "Lists",
+    "setups": "Setups",
+    "responsibilities": "Responsibilities",
+    "runSheets": "Run sheets",
+    "calendar": "Calendar",
+    "forecast": "Forecast",
+    "financials": "Financial Results",
+    "workload": "Workload",
+    "orders": "Orders",
+    "inbox": "Inbox",
+    "inboxOpen": "{count, plural, one {# open message} other {# open messages}}",
+    "skills": "Skills",
+    "settings": "Settings",
+    "openMenu": "Open menu",
+    "commandBar": "Command bar",
+    "members": "Members",
+    "orderStatuses": "Statuses",
+    "payments": "Payments",
+    "accounting": "Accounting",
+    "organization": "Organization",
+    "priceLists": "Price lists",
+    "assistant": "Assistant",
+    "profile": "Profile",
+    "quotes": "Quotes",
+    "breadcrumb": "Breadcrumb",
+    "new": "Create",
+    "edit": "Edit",
+    "detail": "Details",
+    "newChat": "Create chat",
+    "newOrder": "Create order",
+    "newOrderOptions": "More ways to create an order",
+    "newOrderFromMessage": "From a message",
+    "recent": "Recent",
+    "chats": "Chats",
+    "showMore": "Show more",
+    "platformAdmin": "Mothership",
+    "admin": "Administration",
+    "groups": {
+      "primary": "Overview",
+      "work": "Work",
+      "catalog": "Catalog",
+      "admin": "Administration"
+    },
+    "integrations": "Integrations",
+    "itemStates": "Item states",
+    "orderTemplates": "Packages",
+    "apiKeys": "API keys",
+    "permissions": "Permissions",
+    "notifications": "Notifications",
+    "organizations": "Organizations",
+    "logs": "System logs",
+    "aiModels": "AI models",
+    "docs": "Documentation"
+  },
+  "shell": {
+    "mainNavigation": "Main navigation",
+    "userMenu": "User menu",
+    "signedInAs": "Signed in as",
+    "organization": "Organization",
+    "noOrganization": "No organization",
+    "noOtherOrganizations": "No other organizations",
+    "switchedOrganization": "You are now working in {name}.",
+    "languageSv": "Svenska",
+    "languageEn": "English",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "adminNavigation": "Administration",
+    "mySkills": "My skills",
+    "profile": "Profile",
+    "platformAdminTitle": "Mothership",
+    "platformAdminDescription": "System log and AI models for the whole platform.",
+    "platformAdminOpen": "Open mothership"
+  },
+  "commandBar": {
+    "title": "Command bar",
+    "description": "Navigate or run a quick action.",
+    "placeholder": "Search or type a command...",
+    "empty": "No commands found.",
+    "navigate": "Navigate",
+    "actions": "Actions",
+    "venuesGroup": "Venues",
+    "goToVenues": "Go to venues",
+    "createVenue": "Create venue",
+    "openVenue": "Open {name}",
+    "goToItems": "Go to items",
+    "createItem": "Create item",
+    "assistant": "Assistant",
+    "askAssistant": "Ask the assistant: “{query}”",
+    "openAssistant": "Open the assistant"
+  },
+  "search": {
+    "placeholder": "Search venues, items and more...",
+    "noResults": "No results for \"{query}\".",
+    "results": "{count, plural, one {# result} other {# results}}",
+    "searching": "Searching...",
+    "label": "Semantic search",
+    "hint": "Search by content and meaning, not just exact words.",
+    "clear": "Clear search",
+    "entity": {
+      "venue": "Venue",
+      "item": "Item",
+      "customer": "Customer",
+      "contact": "Contact person"
+    },
+    "error": "The search failed."
+  },
+  "wizard": {
+    "progress": "Steps",
+    "steps": {
+      "type": "Type",
+      "details": "Details",
+      "fields": "Type fields"
+    },
+    "descriptions": {
+      "type": "Pick the type. It decides which own fields there are.",
+      "details": "Fill in the details.",
+      "fields": "Fill in the fields of this type."
+    }
+  },
+  "createHub": {
+    "title": "Create",
+    "description": "Everything you can create. Pick one to start.",
+    "groups": {
+      "work": "Work",
+      "catalog": "Catalog",
+      "settings": "Setup"
+    },
+    "items": {
+      "order": {
+        "title": "Order",
+        "description": "A customer request, from first contact to the finished event."
+      },
+      "customer": {
+        "title": "Customer",
+        "description": "A company or person you book for."
+      },
+      "item": {
+        "title": "Item",
+        "description": "Something you sell or book, such as a room, a dish or equipment."
+      },
+      "venue": {
+        "title": "Venue",
+        "description": "A place where events happen."
+      },
+      "priceList": {
+        "title": "Price list",
+        "description": "Prices that override the item prices."
+      },
+      "skill": {
+        "title": "Skill",
+        "description": "Reusable behaviour for the assistant."
+      },
+      "type": {
+        "title": "Type",
+        "description": "A kind of item, order or customer and its fields."
+      },
+      "list": {
+        "title": "List",
+        "description": "A value list, such as allergens or equipment."
+      },
+      "setup": {
+        "title": "Setup",
+        "description": "A room layout such as theatre or boardroom."
+      },
+      "responsibility": {
+        "title": "Responsibility",
+        "description": "What someone answers for, and who it defaults to."
+      },
+      "runSheet": {
+        "title": "Run sheet",
+        "description": "A run sheet such as the kitchen order, and who gets it."
+      },
+      "orderStatus": {
+        "title": "Status",
+        "description": "A step an order passes through."
+      },
+      "member": {
+        "title": "Member",
+        "description": "Invite someone to your organization."
+      }
+    }
+  },
+  "archivePreview": {
+    "loading": "Checking what would change…",
+    "movingOrders": "{count, plural, =0 {No orders move.} one {# order moves to the target.} other {# orders move to the target.}}",
+    "movingLines": "{count, plural, =0 {No lines move.} one {# line moves to the target.} other {# lines move to the target.}}",
+    "cells": "{count, plural, =0 {No grid cells are affected.} one {# grid cell is moved or cleared.} other {# grid cells are moved or cleared.}}",
+    "targetRequired": "Choose a target. Rows still use this.",
+    "blockedTitle": "This cannot be archived yet",
+    "blockedDescription": "Nothing changes until every blocker is resolved."
+  },
+  "buffers": {
+    "legend": "Setup and teardown",
+    "setupMinutes": "Setup before (minutes)",
+    "teardownMinutes": "Teardown after (minutes)",
+    "inherits": {
+      "none": "Default for the type's items, held around each booking of a bookable item. Empty = none.",
+      "type": "Held around each booking of a bookable item. Empty = the item type's.",
+      "item": "Held around this booking. Empty = the item's, else its type's. The setup's changeover time is the least setup time."
+    },
+    "inEffect": "In effect: {setup} min setup, {teardown} min teardown."
+  },
+  "timeZone": {
+    "placeholder": "Choose a time zone",
+    "search": "Search time zones",
+    "empty": "No time zone found"
+  },
+  "country": {
+    "placeholder": "Choose a country",
+    "search": "Search countries…",
+    "empty": "No country found"
+  },
+  "phone": {
+    "searchCountry": "Search country or dial code…",
+    "selectCountry": "Select country"
+  },
+  "dev": {
+    "inviteCodes": "Dev: pending invite codes for this email",
+    "services": "Services",
+    "devUsers": "Dev users",
+    "switchUser": "Switch dev user",
+    "switching": "Switching user…",
+    "switched": "Signed in as {name}.",
+    "sendNotification": "Send me a test notification",
+    "reseed": "Reseed database",
+    "reseeding": "Reseeding database…",
+    "reseeded": "Database reseeded.",
+    "searchUsers": "Search users…",
+    "noUsers": "No users found.",
+    "allUsers": "All users ({count})",
+    "currentUser": "Signed in",
+    "switchTo": "Switch to {name}",
+    "resetOnboarding": "Reset welcome setup",
+    "resettingOnboarding": "Resetting welcome setup…",
+    "onboardingReset": "Welcome setup reset for {name}'s organization. They see it on their next page.",
+    "platformAdmin": "Superadmin",
+    "sendInboxMessage": "Send a test inbox message",
+    "sendFailed": "Could not send: {message}",
+    "logOut": "Log out"
+  },
+  "site": {
+    "brand": "Bibi",
+    "metaTitle": "Bibi – the app for your organisation's daily operation",
+    "metaDescription": "Bibi is an app that helps organisations handle their daily operation: bookings, rooms, food and drink, activities and payments in one place.",
+    "heading": "The app that helps your organisation run its daily operation",
+    "lead": "Bibi helps organisations handle their daily operation, from the first customer request to the finished event. Bookings, rooms, food and drink, activities and payments live in one place, and the customer pays through a link.",
+    "login": "Log in",
+    "signUp": "Get started",
+    "footer": "© Bibi",
+    "features": {
+      "orders": {
+        "title": "Packages",
+        "body": "Create an order for a smaller meeting without a quote. The customer pays by card or on invoice through a link and never has to use the app."
+      },
+      "needs": {
+        "title": "Needs as counts",
+        "body": "Allergens and other needs are counted against your own lists and compiled automatically. No personal data about guests."
+      },
+      "runSheets": {
+        "title": "Run sheets that reach the right person",
+        "body": "Versioned run sheets, such as the kitchen order, go to the person responsible and can be exported as json, pdf and csv."
+      },
+      "setup": {
+        "title": "Your own setup",
+        "body": "You decide the types, fields, lists, statuses and responsibilities. Access follows roles that you fine-tune per person."
+      }
+    }
+  }
+}

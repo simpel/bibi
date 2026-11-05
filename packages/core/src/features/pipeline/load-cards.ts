@@ -1,7 +1,7 @@
 import type { OperationContext } from "../../operations/types";
 import { canView } from "../../shared/can-view";
 import { subjectIdFilter } from "../assignment/subject-filter";
-import { LATEST_STATUS_CHANGE } from "../ticket/status-history";
+import { LATEST_STATUS_CHANGE } from "../order/status-history";
 import { cardValues } from "./card-values";
 import type { PipelineBoardInput, PipelineCard } from "./schema";
 
@@ -30,39 +30,39 @@ async function mainAssignees({ context, ids }: { context: Db; ids: string[] }) {
 
 type Counts = { heldLines: number; bookedLines: number };
 
-/** Per ticket: how many lines are in a soft-hold and in a hard-hold state (ADR 0044). */
+/** Per order: how many lines are in a soft-hold and in a hard-hold state (ADR 0044). */
 async function lineCounts({ context, ids }: { context: Db; ids: string[] }) {
   const lines = await context.db.line.findMany({
-    where: { ticketId: { in: ids }, status: "ACTIVE", state: { hold: { in: ["SOFT", "HARD"] } } },
-    select: { ticketId: true, state: { select: { hold: true } } },
+    where: { orderId: { in: ids }, status: "ACTIVE", state: { hold: { in: ["SOFT", "HARD"] } } },
+    select: { orderId: true, state: { select: { hold: true } } },
   });
   const counts = new Map<string, Counts>();
   for (const line of lines) {
-    const current = counts.get(line.ticketId) ?? { heldLines: 0, bookedLines: 0 };
+    const current = counts.get(line.orderId) ?? { heldLines: 0, bookedLines: 0 };
     if (line.state?.hold === "SOFT") current.heldLines += 1;
     else current.bookedLines += 1;
-    counts.set(line.ticketId, current);
+    counts.set(line.orderId, current);
   }
   return counts;
 }
 
-/** Tickets in open statuses, plus those that entered a closing status since `since`. */
+/** Orders in open statuses, plus those that entered a closing status since `since`. */
 /**
- * Open tickets, and closed ones that entered their closing status since `since`: nothing leaves
+ * Open orders, and closed ones that entered their closing status since `since`: nothing leaves
  * a closing status, so a change into one is the current one (status history, ADR 0054).
  */
 const openOrRecentlyClosed = ({ since }: { since: Date }) => [
-  { ticketStatus: { closes: false } },
+  { orderStatus: { closes: false } },
   {
-    ticketStatus: { closes: true },
+    orderStatus: { closes: true },
     statusChanges: { some: { changedAt: { gte: since }, toStatus: { closes: true } } },
   },
 ];
 
-/** The tickets a board shows: its filter, open or recently closed, in the given statuses. */
-async function ticketWhere({ context, input, since, statusIds }: LoadCardsInput) {
+/** The orders a board shows: its filter, open or recently closed, in the given statuses. */
+async function orderWhere({ context, input, since, statusIds }: LoadCardsInput) {
   const { assigneeId, entityTypeId } = input;
-  const ids = await subjectIdFilter({ context, subjectType: "TICKET", assigneeId });
+  const ids = await subjectIdFilter({ context, subjectType: "ORDER", assigneeId });
   return {
     ...ids,
     ...(entityTypeId ? { entityTypeId } : {}),
@@ -71,17 +71,17 @@ async function ticketWhere({ context, input, since, statusIds }: LoadCardsInput)
   };
 }
 
-/** Matching tickets whose status is on no phase of the board (`statusIds` is `notIn` here). */
-export async function countTickets({ context, ...query }: LoadCardsInput) {
-  return context.db.ticket.count({ where: await ticketWhere({ context, ...query }) });
+/** Matching orders whose status is on no phase of the board (`statusIds` is `notIn` here). */
+export async function countOrders({ context, ...query }: LoadCardsInput) {
+  return context.db.order.count({ where: await orderWhere({ context, ...query }) });
 }
 
-export async function loadTicketCards({
+export async function loadOrderCards({
   context,
   ...query
 }: LoadCardsInput): Promise<LoadedCard[]> {
-  const rows = await context.db.ticket.findMany({
-    where: await ticketWhere({ context, ...query }),
+  const rows = await context.db.order.findMany({
+    where: await orderWhere({ context, ...query }),
     include: { entityType: { select: { name: true } }, ...LATEST_STATUS_CHANGE },
     orderBy: [{ reference: "desc" }, { id: "desc" }],
     take: CARD_LIMIT,
@@ -89,7 +89,7 @@ export async function loadTicketCards({
   const ids = rows.map((row) => row.id);
   const [owners, valuesOf] = await Promise.all([
     mainAssignees({ context, ids }),
-    cardValues({ context, ticketIds: ids }),
+    cardValues({ context, orderIds: ids }),
   ]);
   // Line states belong to the program: counted only for a caller who may view it (ADR 0050).
   const counted = canView({ context, feature: "program" });
@@ -108,6 +108,6 @@ export async function loadTicketCards({
     quantity: row.guaranteedHeadcount ?? row.estimatedHeadcount,
     statusChangedAt: row.statusChanges[0]?.changedAt ?? row.createdAt,
     assigneeId: owners.get(row.id) ?? null,
-    ...valuesOf({ ticketId: row.id }),
+    ...valuesOf({ orderId: row.id }),
   }));
 }

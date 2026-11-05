@@ -1,4 +1,4 @@
-/** A SIE object (dimension 6 = project, SIE 4B §8): here a ticket, by its reference. */
+/** A SIE object (dimension 6 = project, SIE 4B §8): here an order, by its reference. */
 export type SieObject = { dimension: number; id: string; name: string };
 
 /** One `#TRANS`: debit is positive, credit negative (SIE 4B `#TRANS`). */

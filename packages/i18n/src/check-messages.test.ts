@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import en from "../messages/en.json";
-import sv from "../messages/sv.json";
+import { EN_BUNDLES, enMessages, pickMessages, SV_BUNDLES, svMessages } from "./catalog";
 import { diffMessageKeys, flattenKeys, hasKeyParity } from "./check-messages";
 
 const REQUIRED_NAMESPACES = [
@@ -31,15 +30,46 @@ describe("diffMessageKeys", () => {
 
 describe("message catalogues", () => {
   it("sv and en have identical keys", () => {
-    expect(diffMessageKeys({ base: sv, other: en })).toEqual({
+    expect(diffMessageKeys({ base: svMessages, other: enMessages })).toEqual({
       missingInOther: [],
       extraInOther: [],
     });
-    expect(hasKeyParity({ base: sv, other: en })).toBe(true);
+    expect(hasKeyParity({ base: svMessages, other: enMessages })).toBe(true);
+  });
+
+  it("each domain bundle has identical keys in sv and en", () => {
+    expect(Object.keys(SV_BUNDLES)).toEqual(Object.keys(EN_BUNDLES));
+    for (const [bundleName, svBundle] of Object.entries(SV_BUNDLES)) {
+      const enBundle = EN_BUNDLES[bundleName];
+      expect(enBundle, `missing en bundle ${bundleName}`).toBeDefined();
+      if (enBundle) {
+        expect(diffMessageKeys({ base: svBundle, other: enBundle })).toEqual({
+          missingInOther: [],
+          extraInOther: [],
+        });
+      }
+    }
+  });
+
+  it("domain bundles have disjoint top-level namespaces", () => {
+    const seen = new Set<string>();
+    for (const bundle of Object.values(SV_BUNDLES)) {
+      for (const ns of Object.keys(bundle)) {
+        expect(seen.has(ns), `duplicate top-level namespace "${ns}" across bundles`).toBe(false);
+        seen.add(ns);
+      }
+    }
+    expect(seen.size).toBe(Object.keys(svMessages).length);
   });
 
   it("contain all required namespaces", () => {
-    expect(Object.keys(sv)).toEqual(expect.arrayContaining(REQUIRED_NAMESPACES));
-    expect(Object.keys(en)).toEqual(expect.arrayContaining(REQUIRED_NAMESPACES));
+    expect(Object.keys(svMessages)).toEqual(expect.arrayContaining(REQUIRED_NAMESPACES));
+    expect(Object.keys(enMessages)).toEqual(expect.arrayContaining(REQUIRED_NAMESPACES));
+  });
+
+  it("pickMessages selects only the requested namespaces", () => {
+    const picked = pickMessages({ locale: "sv", namespaces: ["common", "errors"] });
+    expect(Object.keys(picked).sort()).toEqual(["common", "errors"]);
+    expect(picked.common).toBe(svMessages.common);
   });
 });

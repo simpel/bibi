@@ -34,6 +34,7 @@ export function useContactForm({ customerId, data, contact, onDone }: UseContact
   });
   const initial = typeOf({ id: contact?.entityTypeId ?? data.types[0]?.id ?? "" });
   const form = useForm<ContactFormValues, unknown, ContactFormOutput>({
+    mode: "onBlur",
     resolver,
     defaultValues: contactFormDefaults({ type: initial, ...(contact ? { contact } : {}) }),
   });

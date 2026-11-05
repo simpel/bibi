@@ -8,7 +8,7 @@ export type NewInboundMessage = {
   id?: string;
   channel: InboundChannel;
   endpointId: string | null;
-  ticketId: string | null;
+  orderId: string | null;
   fromName: string | null;
   fromEmail: string | null;
   fromPhone: string | null;
@@ -39,10 +39,10 @@ export async function insertMessage({
       organizationId: context.organizationId,
     },
   });
-  const { id, channel, endpointId, ticketId, externalId, receivedAt } = row;
+  const { id, channel, endpointId, orderId, externalId, receivedAt } = row;
   context.recordChange({
     entityId: id,
-    after: { id, channel, endpointId, ticketId, externalId, receivedAt },
+    after: { id, channel, endpointId, orderId, externalId, receivedAt },
   });
   return toInboundMessageDto({ row });
 }

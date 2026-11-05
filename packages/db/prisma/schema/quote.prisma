@@ -12,17 +12,17 @@ enum AcceptanceMethod {
   MANUAL
 }
 
-/// Quote – a versioned proposal to a ticket (ADR 0022). `quoteStatus` follows a fixed state
+/// Quote – a versioned proposal to a order (ADR 0022). `quoteStatus` follows a fixed state
 /// machine (`DRAFT → SENT → ACCEPTED | DECLINED | EXPIRED`) and is never set by `quote.update`.
-/// A DRAFT stores no lines: it is a live view of the ticket's priced lines (ADR 0052). `quote.send`
+/// A DRAFT stores no lines: it is a live view of the order's priced lines (ADR 0052). `quote.send`
 /// freezes them as `OrderLine` rows and stores the totals. A new version (`previousId`) is a new
-/// DRAFT. It has no owner of its own: it uses the ticket's (ADR 0034).
+/// DRAFT. It has no owner of its own: it uses the order's (ADR 0034).
 /// `status` is the soft-delete flag (ADR 0006).
 model Quote {
   id                String            @id @default(cuid(2))
   organizationId    String
-  ticketId          String
-  /// 1 for the first quote of the ticket, then one higher per new version.
+  orderId          String
+  /// 1 for the first quote of the order, then one higher per new version.
   version           Int
   /// The version this one was made from; the lines' change markers compare against it.
   previousId        String?
@@ -42,19 +42,19 @@ model Quote {
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   createdBy         String?
-  ticket            Ticket            @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  order            Order            @relation(fields: [orderId, organizationId], references: [id, organizationId])
   previous          Quote?            @relation("QuoteVersions", fields: [previousId, organizationId], references: [id, organizationId])
   next              Quote[]           @relation("QuoteVersions")
   lines             OrderLine[]
   payments          Payment[]
 
   @@unique([id, organizationId])
-  @@unique([ticketId, version])
+  @@unique([orderId, version])
   @@index([organizationId, status, quoteStatus])
-  @@index([organizationId, ticketId])
+  @@index([organizationId, orderId])
 }
 
-/// Order line – a frozen snapshot of one priced ticket line (ADR 0052): its name, effective price,
+/// Order line – a frozen snapshot of one priced order line (ADR 0052): its name, effective price,
 /// VAT, the item's inherited tags and the totals when the quote was sent or the invoice created.
 /// Belongs to exactly one quote or invoice (check constraint in the migration). Written only by
 /// `quote.send` and `invoice.create` and never changed afterwards; audited on its owner.
@@ -63,7 +63,7 @@ model OrderLine {
   organizationId         String
   quoteId                String?
   invoiceId              String?
-  /// The ticket line this snapshot was taken from; pairs versions' lines (ADR 0052).
+  /// The order line this snapshot was taken from; pairs versions' lines (ADR 0052).
   lineId                 String
   itemId                 String?
   /// Order on the quote, from 0.

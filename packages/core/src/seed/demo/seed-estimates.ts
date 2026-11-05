@@ -1,23 +1,23 @@
 import { ok, type Result } from "../../errors/result";
-import { updateTicket } from "../../features/ticket/write-operations";
+import { updateOrder } from "../../features/order/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import type { DemoTicket } from "./ticket-types";
+import type { DemoOrder } from "./order-types";
 
-export type SeedEstimatesInput = { context: ExecuteContext; ticket: DemoTicket; ticketId: string };
+export type SeedEstimatesInput = { context: ExecuteContext; order: DemoOrder; orderId: string };
 
 /**
- * The ticket's estimates in order (ADR 0074): the first at inquiry, then each re-estimate, each
- * through `ticket.update` so it lands in the estimate history.
+ * The order's estimates in order (ADR 0074): the first at inquiry, then each re-estimate, each
+ * through `order.update` so it lands in the estimate history.
  */
-export async function seedTicketEstimates({
+export async function seedOrderEstimates({
   context,
-  ticket,
-  ticketId,
+  order,
+  orderId,
 }: SeedEstimatesInput): Promise<Result<true>> {
-  for (const kr of ticket.estimatesKr ?? []) {
-    const input = { id: ticketId, estimatedValueMinor: kr * 100 };
-    const result = await execute({ operation: updateTicket, input, context });
+  for (const kr of order.estimatesKr ?? []) {
+    const input = { id: orderId, estimatedValueMinor: kr * 100 };
+    const result = await execute({ operation: updateOrder, input, context });
     if (!result.ok) return result;
   }
   return ok({ value: true });

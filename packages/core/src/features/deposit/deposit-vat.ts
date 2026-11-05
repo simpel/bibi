@@ -1,6 +1,6 @@
 import { scaleParts } from "../../accounting/sie4/sale";
 import type { OperationContext } from "../../operations/types";
-import { deriveTicketLines } from "../quote/derive-lines";
+import { deriveOrderLines } from "../quote/derive-lines";
 import type { VatRow } from "../quote/order-line-schema";
 
 type PricedLine = { inTotal: boolean; vatRows: readonly VatRow[] };
@@ -42,12 +42,12 @@ export function splitDepositVat({ lines, amountMinor }: SplitDepositVatInput): V
 
 export type DepositVatRowsInput = {
   context: Pick<OperationContext, "db" | "permissions">;
-  ticketId: string;
+  orderId: string;
   amountMinor: number;
 };
 
-/** The split of a new deposit from the ticket's live priced lines, the basis of the deposit rule. */
-export async function depositVatRows({ context, ticketId, amountMinor }: DepositVatRowsInput) {
-  const derived = (await deriveTicketLines({ context, ticketIds: [ticketId] })).get(ticketId) ?? [];
+/** The split of a new deposit from the order's live priced lines, the basis of the deposit rule. */
+export async function depositVatRows({ context, orderId, amountMinor }: DepositVatRowsInput) {
+  const derived = (await deriveOrderLines({ context, orderIds: [orderId] })).get(orderId) ?? [];
   return splitDepositVat({ lines: derived.map((d) => d.line), amountMinor });
 }

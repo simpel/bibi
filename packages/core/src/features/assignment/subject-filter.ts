@@ -27,13 +27,13 @@ export async function subjectIdsOf({ context, subjectType, userId, kind }: Subje
     select: { recordId: true },
   });
   const ids = rows.map((row) => row.recordId);
-  if (subjectType !== "TICKET") return new Set(ids);
+  if (subjectType !== "ORDER") return new Set(ids);
   const derived = await derivedSlots({ context, userId, kind });
-  return new Set([...ids, ...derived.map((slot) => slot.ticketId)]);
+  return new Set([...ids, ...derived.map((slot) => slot.orderId)]);
 }
 
 /**
- * The `id` filter for a list of subjects by assignment (e.g. `ticket.list({ assigneeId })`), or
+ * The `id` filter for a list of subjects by assignment (e.g. `order.list({ assigneeId })`), or
  * `{}` when neither filter is given. Both filters together keep the subjects that match both.
  */
 export async function subjectIdFilter({

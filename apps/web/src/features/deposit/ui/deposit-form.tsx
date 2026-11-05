@@ -6,12 +6,12 @@ import { DateField } from "@/components/date-picker/date-field";
 import { TextField } from "@/components/form/text-field";
 import { useDepositForm } from "./use-deposit-form";
 
-export type DepositFormProps = { ticketId: string };
+export type DepositFormProps = { orderId: string };
 
 /** Description, fixed amount and due date of a new deposit request (`deposit.create`). */
-export function DepositForm({ ticketId }: DepositFormProps) {
+export function DepositForm({ orderId }: DepositFormProps) {
   const t = useTranslations("deposit");
-  const { form, submit, pending } = useDepositForm({ ticketId });
+  const { form, submit, pending } = useDepositForm({ orderId });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid max-w-lg gap-4">

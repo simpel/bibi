@@ -35,7 +35,6 @@ export function useVocabularyColumns({ access }: { access: RowAccess }): Column[
         cell: ({ row }) => t("valueCount", { count: row.original.values.length }),
       },
     ];
-    if (!access.canEdit && !access.canRemove) return data;
     return [
       ...data,
       actionsColumn<VocabularyDto>({

@@ -13,7 +13,7 @@ export type NotificationRowProps = {
   onOpen?: (input: { notification: NotificationLike }) => void;
 };
 
-/** One notification as a link: unread dot, what happened, the ticket and when. */
+/** One notification as a link: unread dot, what happened, the order and when. */
 export function NotificationRow({ notification, onOpen }: NotificationRowProps) {
   const t = useTranslations("notifications");
   const text = useNotificationText()({ notification });
@@ -30,7 +30,7 @@ export function NotificationRow({ notification, onOpen }: NotificationRowProps) 
       <span className="pt-1.5">{unread ? <UnreadDot label={t("unread")} /> : null}</span>
       <span className={cn("truncate", unread && "font-medium")}>{text.message}</span>
       <span className="col-start-2 flex min-w-0 gap-2 text-xs text-muted-foreground">
-        <span className="truncate">{text.ticket}</span>
+        <span className="truncate">{text.order}</span>
         <span aria-hidden>·</span>
         <span className="shrink-0">
           <RelativeTime instant={notification.createdAt} />

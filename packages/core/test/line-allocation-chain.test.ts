@@ -29,7 +29,7 @@ async function roomNeedsAv({ setup }: { setup: Setup }) {
 const bookRoom = ({ setup }: { setup: Setup }) =>
   createTestLine({
     context: setup.context,
-    ticketId: setup.ticket.id,
+    orderId: setup.order.id,
     entityTypeId: setup.type.id,
     itemId: setup.room.id,
     from: 10,
@@ -104,7 +104,7 @@ describe("chained demands (ADR 0059)", () => {
     const line = unwrap({
       result: await createTestLine({
         context: setup.context,
-        ticketId: setup.ticket.id,
+        orderId: setup.order.id,
         entityTypeId: setup.type.id,
         itemId: setup.av.ids[0],
         from: 10,

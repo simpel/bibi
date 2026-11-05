@@ -12,7 +12,7 @@ import {
   updateBoard,
 } from "../src/index";
 import { errorCode, peer, unwrap } from "./helpers";
-import { ticketSetup } from "./ticket-helpers";
+import { orderSetup } from "./order-helpers";
 
 async function defaultBoard({ context }: { context: ExecuteContext }) {
   const page = unwrap({ result: await execute({ operation: listBoards, input: {}, context }) });
@@ -26,14 +26,14 @@ const names = ({ board }: { board: { phases: readonly { name: string }[] } }) =>
 
 describe("boards and phases (ADR 0067)", () => {
   it("gives a provisioned organization one default board, one phase per status", async () => {
-    const { context } = await ticketSetup();
+    const { context } = await orderSetup();
     const board = await defaultBoard({ context });
     expect(names({ board })).toEqual(["Lead", "Confirmed", "Completed", "Lost"]);
     expect(board.phases.every((phase) => phase.statusIds.length === 1)).toBe(true);
   });
 
   it("groups statuses into a new phase and reorders phases", async () => {
-    const { context } = await ticketSetup();
+    const { context } = await orderSetup();
     const board = await defaultBoard({ context });
     const [lead, confirmed, completed, lost] = board.phases;
     if (!lead || !confirmed || !completed || !lost) throw new Error("Missing phases");
@@ -61,7 +61,7 @@ describe("boards and phases (ADR 0067)", () => {
   });
 
   it("moves a status between phases and off the board, one phase per board", async () => {
-    const { context } = await ticketSetup();
+    const { context } = await orderSetup();
     const board = await defaultBoard({ context });
     const [lead, confirmed] = board.phases;
     const statusId = confirmed?.statusIds[0];
@@ -80,7 +80,7 @@ describe("boards and phases (ADR 0067)", () => {
   });
 
   it("creates boards mirroring the statuses, keeps the last one, and checks the filter", async () => {
-    const { context, type } = await ticketSetup();
+    const { context, type } = await orderSetup();
     const first = await defaultBoard({ context });
     const input = { name: "Ops", entityTypeId: type.id };
     const ops = unwrap({ result: await execute({ operation: createBoard, input, context }) });
@@ -95,7 +95,7 @@ describe("boards and phases (ADR 0067)", () => {
   });
 
   it("needs board:write to change a board, which managers have and members do not (ADR 0076)", async () => {
-    const { context } = await ticketSetup();
+    const { context } = await orderSetup();
     const create = ({ access }: { access: "read" | "write" }) =>
       execute({
         operation: createBoard,

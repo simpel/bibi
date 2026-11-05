@@ -7,7 +7,7 @@ import { seedOrgMember } from "./seed-org-member";
 export type SeedResponsibilityInput = { client: Client; context: ExecuteContext };
 
 /**
- * A responsibility (ADR 0034) a work order can go to, defaulting to a new member. Seeds the
+ * A responsibility (ADR 0034) a run sheet can go to, defaulting to a new member. Seeds the
  * organization's Better Auth rows, so call it once per context.
  */
 export async function seedResponsibility({

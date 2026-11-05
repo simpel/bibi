@@ -2,19 +2,19 @@
 
 - **Date:** 2026-10-14
 - **Status:** Accepted
-- **Related:** 0021 (configurable items), 0027 (job scheduler), 0034 (assignments), 0043 (ticket and phases), 0044 (line states)
+- **Related:** 0021 (configurable items), 0027 (job scheduler), 0034 (assignments), 0043 (order and phases), 0044 (line states)
 
 ## Context
-- A ticket (ADR 0043) is quoted, its rooms and resources are reserved, and the customer accepts. Quotes must be reviewable, versioned and never edited after they are sent. Reserved resources must never be double-booked.
+- An order (ADR 0043) is quoted, its rooms and resources are reserved, and the customer accepts. Quotes must be reviewable, versioned and never edited after they are sent. Reserved resources must never be double-booked.
 
 ## Decision
 
 ### Quotes
-- A quote (`Quote`) belongs to a ticket and is versioned. The state machine is fixed and lives in core (`features/quote/transitions.ts`): `DRAFT → SENT → ACCEPTED`, `DECLINED` or `EXPIRED`. Only a `DRAFT` can be edited; a changed quote is a new version.
+- A quote (`Quote`) belongs to an order and is versioned. The state machine is fixed and lives in core (`features/quote/transitions.ts`): `DRAFT → SENT → ACCEPTED`, `DECLINED` or `EXPIRED`. Only a `DRAFT` can be edited; a changed quote is a new version.
 - Transitions are their own commands: `quote.send`, `quote.accept`, `quote.decline`, `quote.expire`. Status can never be set through `update`. A disallowed transition gives `CONFLICT`.
-- `quote.send` and `quote.accept` fire the quote events of ADR 0043, which move the ticket into the organization's phase for that event, if it has one.
+- `quote.send` and `quote.accept` fire the quote events of ADR 0043, which move the order into the organization's phase for that event, if it has one.
 - `quote.accept` stores `acceptedBy`, `acceptedAt` and `acceptanceMethod` (`MANUAL` now, later `BANKID` and `LINK`). It creates no other record.
-- A quote uses the ticket's assignment (ADR 0034). Signing is postponed.
+- A quote uses the order's assignment (ADR 0034). Signing is postponed.
 - A `SENT` quote past `validUntil` expires automatically (job, ADR 0027).
 
 ### Occupancy
@@ -27,4 +27,4 @@
 - AI can propose quote commands but not perform them without approval (ADR 0007).
 
 ## Addenda
-- 2026-10-19: a `DRAFT` quote is a live view of the ticket's lines and `quote.send` freezes a snapshot (ADR 0052). Line holds are a database projection (ADR 0053). History comes from history tables, not `AuditLog` (ADR 0054).
+- 2026-10-19: a `DRAFT` quote is a live view of the order's lines and `quote.send` freezes a snapshot (ADR 0052). Line holds are a database projection (ADR 0053). History comes from history tables, not `AuditLog` (ADR 0054).

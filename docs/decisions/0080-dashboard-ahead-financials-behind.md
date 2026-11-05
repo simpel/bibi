@@ -15,10 +15,10 @@
 3. **Dashboard panels:**
    - **Pipeline** per open status, now (unchanged from ADR 0079 decision 2).
    - **Needs attention**: a list, each row linking to its source.
-     - Tickets whose `holdsUntil` falls in the next 7 days and that still have lines in an `expires` state (`ticket:read`).
-     - The latest version of a sheet that has not been sent, for tickets with lines starting within the horizon (`sheet:read`).
+     - Orders whose `holdsUntil` falls in the next 7 days and that still have lines in an `expires` state (`order:read`).
+     - The latest version of a sheet that has not been sent, for orders with lines starting within the horizon (`sheet:read`).
      - Overdue invoices: count and total, linking to Financials (`finance:read`). This is the dashboard's only money figure.
-   - **Coming up**: tickets with lines starting within the horizon, by day (`ticket:read`).
+   - **Coming up**: orders with lines starting within the horizon, by day (`order:read`).
    - **Utilisation ahead** per bookable item type over the horizon, same definition as ADR 0079 decision 4 (`item:read`).
    - **Booked ahead**: accepted quotes not yet invoiced, by event month (`quote:read`). This was "forward booked" on Financials.
 4. **Financials keeps the period** (`/financials/{from}/{to}`) and everything it owns today, apart from forward-booked value. It gains **won and lost per month** with the win rate (`quote:read`), moved from the dashboard and defined as in ADR 0079 decision 3. Its "now" section stays: outstanding, overdue, aging, the overdue table and the export history.
@@ -30,7 +30,7 @@
 - `/dashboard/{from}/{to}` redirects to `/dashboard`. `EconomyPanel` and the dashboard's `PeriodSwitcher` are removed.
 - `finance.overview` gains `outcomes` and loses `forwardBooked`. `ForwardBookedCard` moves to the dashboard feature.
 - Updates on acceptance: `docs/specs/dashboard.md`, the finance section of `docs/domain-model.md` and its artifact, and addenda on 0079 and 0077.
-- The demo seed needs tickets with `holdsUntil` in the next week, unsent sheets for upcoming tickets, and an overdue invoice. Without them every attention row would be empty.
+- The demo seed needs orders with `holdsUntil` in the next week, unsent sheets for upcoming orders, and an overdue invoice. Without them every attention row would be empty.
 
 ## Alternatives rejected
 - **Split by role (members get the dashboard, managers get Financials).** Rejected: both pages would still be period reports. Permissions already hide what a role may not read (ADR 0071).

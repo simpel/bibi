@@ -17,14 +17,14 @@ export const listDeposits = defineOperation({
   name: "deposit.list",
   kind: "query",
   description:
-    "Deposit requests on a ticket, newest first: description, fixed amount, due date, status " +
+    "Deposit requests on an order, newest first: description, fixed amount, due date, status " +
     "(DRAFT, SENT, VOID) and what is paid against each (paidMinor, openMinor, progress).",
   input: DepositListInputSchema,
   output: DepositListOutputSchema,
   permission: "payment:read",
-  handler: async ({ input: { ticketId, limit, cursor }, context }) => {
+  handler: async ({ input: { orderId, limit, cursor }, context }) => {
     const rows = await context.db.deposit.findMany({
-      where: { ticketId },
+      where: { orderId },
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       ...pageArgs({ limit, cursor }),
     });

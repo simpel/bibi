@@ -15,12 +15,12 @@ import { fieldFromOperation, mutationFromOperation } from "../../schema/from-ope
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { type Page, pageType } from "../../schema/page";
 import { runOperation } from "../../schema/run-operation";
-import { TicketRef } from "../ticket/graphql";
+import { OrderRef } from "../order/graphql";
 
 const InvoiceLineRef = objectFromSchema<OrderLineDto>({
   name: "InvoiceLine",
   schema: OrderLineSchema,
-  description: "An order line on an invoice: one ticket line's price, frozen at invoicing.",
+  description: "An order line on an invoice: one order line's price, frozen at invoicing.",
 });
 
 export const InvoiceRef = objectFromSchema<InvoiceDto>({
@@ -28,7 +28,7 @@ export const InvoiceRef = objectFromSchema<InvoiceDto>({
   schema: InvoiceSchema,
   omit: ["organizationId", "lines"],
   description:
-    "An invoice (ADR 0052, 0057): a frozen snapshot of the ticket's priced lines with totals. " +
+    "An invoice (ADR 0052, 0057): a frozen snapshot of the order's priced lines with totals. " +
     "Lifecycle DRAFT → SENT → VOID; what is paid against it is derived from its payments.",
 });
 const InvoicePageRef = pageType({ name: "InvoicePage", item: InvoiceRef });
@@ -48,12 +48,12 @@ for (const operation of [createInvoice, sendInvoice, syncInvoice, voidInvoice]) 
 }
 
 // Graph edge. Goes through `invoice.list`, so its permission applies here too.
-builder.objectField(TicketRef, "invoices", (t) =>
+builder.objectField(OrderRef, "invoices", (t) =>
   t.field({
     type: [InvoiceRef],
-    description: "Invoices of the ticket, newest first.",
-    resolve: async (ticket, _args, ctx) => {
-      const input = { ticketId: ticket.id, limit: 100 };
+    description: "Invoices of the order, newest first.",
+    resolve: async (order, _args, ctx) => {
+      const input = { orderId: order.id, limit: 100 };
       const page = (await runOperation({
         operation: listInvoices,
         input,

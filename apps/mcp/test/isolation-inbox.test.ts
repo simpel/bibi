@@ -3,7 +3,7 @@ import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 import { gqlQuery } from "./parity-graphql";
-import { seedTicket } from "./seed-ticket";
+import { seedOrder } from "./seed-order";
 
 const timeZone = "Europe/Stockholm";
 
@@ -33,8 +33,8 @@ describe("cross-organization isolation for the inbox (ADR 0085)", () => {
     const b = await connect({ context: contextB });
     const secret = await seedMessage({ context: contextA, client: a });
     const own = await seedMessage({ context: contextB, client: b });
-    const ticketA = await seedTicket({ client: a });
-    const ticketB = await seedTicket({ client: b });
+    const orderA = await seedOrder({ client: a });
+    const orderB = await seedOrder({ client: b });
 
     const refusedTools = [
       "inboundMessage_get",
@@ -48,16 +48,16 @@ describe("cross-organization isolation for the inbox (ADR 0085)", () => {
     }
     const attach = await call({
       client: b,
-      name: "inboundMessage_attachToTicket",
-      args: { id: secret.id, ticketId: ticketB.id },
+      name: "inboundMessage_attachToOrder",
+      args: { id: secret.id, orderId: orderB.id },
     });
     expect(attach.data.code).toBe("NOT_FOUND");
-    const intoForeignTicket = await call({
+    const intoForeignOrder = await call({
       client: b,
-      name: "inboundMessage_attachToTicket",
-      args: { id: own.id, ticketId: ticketA.id },
+      name: "inboundMessage_attachToOrder",
+      args: { id: own.id, orderId: orderA.id },
     });
-    expect(intoForeignTicket.data.code).toBe("VALIDATION");
+    expect(intoForeignOrder.data.code).toBe("VALIDATION");
     const submit = await call({
       client: b,
       name: "inboundMessage_submit",
@@ -69,23 +69,23 @@ describe("cross-organization isolation for the inbox (ADR 0085)", () => {
     expect(inbox.data.items.map((item: { id: string }) => item.id)).toEqual([own.id]);
     const count = await call({ client: b, name: "inboundMessage_openCount", args: {} });
     expect(count.data.open).toBe(1);
-    const byTicket = await call({
+    const byOrder = await call({
       client: b,
       name: "inboundMessage_list",
-      args: { ticketId: ticketA.id },
+      args: { orderId: orderA.id },
     });
-    expect(byTicket.data.items).toEqual([]);
+    expect(byOrder.data.items).toEqual([]);
     const endpoints = await call({ client: b, name: "inboundEndpoint_list", args: {} });
     const ids = endpoints.data.items.map((item: { id: string }) => item.id);
     expect(ids).not.toContain(secret.endpointId);
 
     const created = await call({
       client: b,
-      name: "ticket_create",
+      name: "order_create",
       args: {
-        entityTypeId: ticketB.entityTypeId,
-        customerId: ticketB.customerId,
-        contactId: ticketB.contactId,
+        entityTypeId: orderB.entityTypeId,
+        customerId: orderB.customerId,
+        contactId: orderB.contactId,
         inboundMessageId: secret.id,
       },
     });

@@ -7,13 +7,13 @@ import type { DemoOrg } from "./types";
 export type CheckDemoConfigInput = {
   context: ExecuteContext;
   org: DemoOrg;
-  /** `--skip-pipeline`: no tickets are expected. */
+  /** `--skip-pipeline`: no orders are expected. */
   skipPipeline?: boolean;
 };
 
 type Count = { what: string; actual: number; expected: number };
 
-/** Slices 4–5: customers, their contact persons and the tickets. */
+/** Slices 4–5: customers, their contact persons and the orders. */
 async function customerCounts({
   context,
   org,
@@ -28,9 +28,9 @@ async function customerCounts({
     },
     { what: "contacts", actual: await context.db.contact.count(), expected: contacts },
     {
-      what: "tickets",
-      actual: await context.db.ticket.count(),
-      expected: skipPipeline ? 0 : org.tickets.length,
+      what: "orders",
+      actual: await context.db.order.count(),
+      expected: skipPipeline ? 0 : org.orders.length,
     },
   ];
 }

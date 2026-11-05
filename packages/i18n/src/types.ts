@@ -1,8 +1,10 @@
-import type messages from "../messages/sv.json";
+import "use-intl";
+import type { svMessages } from "./catalog";
 import type { Locale } from "./routing";
 
-/** Shape of the message catalogue; `sv.json` is the source of truth, `en.json` must match. */
-export type Messages = typeof messages;
+/** Shape of the message catalogue; `sv` is the source of truth, `en` must match. */
+export type Messages = typeof svMessages;
+export type MessageNamespace = keyof Messages;
 
 declare module "use-intl" {
   interface AppConfig {

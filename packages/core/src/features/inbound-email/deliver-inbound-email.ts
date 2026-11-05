@@ -12,14 +12,14 @@ import { resolveInboundRoute } from "./resolve-route";
 import type { InboundEmailReceiveInput } from "./schema";
 import { toReceiveInput } from "./to-receive-input";
 
-export type InboundMailContent = Omit<InboundEmailReceiveInput, "ticketId"> & {
+export type InboundMailContent = Omit<InboundEmailReceiveInput, "orderId"> & {
   /** Every address the mail was delivered to (to, cc, received-for); matched in order. */
   recipients: readonly string[];
 };
 
 export type DeliverInboundEmailInput = {
   mail: InboundMailContent;
-  /** The inbound subdomain the ticket and inbox addresses live on (`MAIL_INBOUND_DOMAIN`). */
+  /** The inbound subdomain the order and inbox addresses live on (`MAIL_INBOUND_DOMAIN`). */
   domain: string;
   db?: Db;
 };
@@ -39,8 +39,8 @@ const systemContext = ({ db, organizationId }: { db: Db; organizationId: string 
 
 /**
  * The EMAIL channel adapter's core part (ADR 0012, 0085): a verified received mail is stored as an
- * EMAIL message as SYSTEM. A ticket's own address stores it on that ticket; an organization's inbox
- * address stores it in that organization's inbox, with no ticket. Mail to neither is logged
+ * EMAIL message as SYSTEM. An order's own address stores it on that order; an organization's inbox
+ * address stores it in that organization's inbox, with no order. Mail to neither is logged
  * (`mail.unmatched`) and dropped. Logs `mail.received` with the sender masked; never the body.
  */
 export async function deliverInboundEmail({
@@ -65,7 +65,7 @@ export async function deliverInboundEmail({
     ? ok({ value: toInboundMessageDto({ row: known }) })
     : await execute({
         operation: receiveInboundMessage,
-        input: { ...input, endpointId: route.endpointId, ticketId: route.ticketId },
+        input: { ...input, endpointId: route.endpointId, orderId: route.orderId },
         context,
       });
   if (!stored.ok) return stored;

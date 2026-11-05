@@ -11,9 +11,9 @@ export function inboxMessageRoute({ id }: InboxMessageRouteInput): string {
 }
 
 /** The intake with its paste dialog open (ADR 0084); not a step of its own. */
-export const TICKET_FROM_MESSAGE_ROUTE = `${ROUTES.ticketNew}/message`;
+export const ORDER_FROM_MESSAGE_ROUTE = `${ROUTES.orderNew}/message`;
 
 /** The intake opened from an inbound message, its paste dialog open (ADR 0081, 0084, 0085). */
-export function ticketFromMessageRoute({ id }: InboxMessageRouteInput): string {
-  return `${TICKET_FROM_MESSAGE_ROUTE}?fromMessage=${encodeURIComponent(id)}`;
+export function orderFromMessageRoute({ id }: InboxMessageRouteInput): string {
+  return `${ORDER_FROM_MESSAGE_ROUTE}?fromMessage=${encodeURIComponent(id)}`;
 }

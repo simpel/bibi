@@ -11,7 +11,7 @@ export type JobHandlerInput = {
 
 /** A queue plus its schedule, defined in code (ADR 0027). No schedules live in Coolify's UI. */
 export type JobDefinition = {
-  /** Queue name, e.g. `ticket.expireHolds`. */
+  /** Queue name, e.g. `order.expireHolds`. */
   name: string;
   /** Cron expression, evaluated in the zone `effectiveTimeZone({})` resolves (no organization). */
   cron: string;

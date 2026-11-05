@@ -16,6 +16,7 @@ export function useVenueForm({ venue }: UseVenueFormInput) {
     error: zodMessageMap({ translate: (key) => t(key) }),
   });
   return useForm<VenueFormValues, unknown, VenueCreateInput>({
+    mode: "onBlur",
     resolver,
     defaultValues: venueFormDefaults({ venue }),
   });

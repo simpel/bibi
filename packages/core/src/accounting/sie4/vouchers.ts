@@ -104,7 +104,7 @@ function transactionsOf({ event, ...build }: Build & { event: AccountingEvent })
 export type BuildVouchersInput = { accounts: AccountMap; events: readonly AccountingEvent[] };
 
 /**
- * One voucher per event, in date order; the ticket is the project object (dimension 6).
+ * One voucher per event, in date order; the order is the project object (dimension 6).
  * VALIDATION when a VAT rate in use has no output VAT account.
  */
 export function buildVouchers({ accounts, events }: BuildVouchersInput): Result<SieVoucher[]> {
@@ -116,7 +116,7 @@ export function buildVouchers({ accounts, events }: BuildVouchersInput): Result<
   const vouchers = [...events]
     .sort((a, b) => a.date.localeCompare(b.date))
     .map((event) => {
-      const project = [{ dimension: 6, id: String(event.ticketReference) }];
+      const project = [{ dimension: 6, id: String(event.orderReference) }];
       const transactions = transactionsOf({ accounts, project, event }).filter(
         (line) => line.amountMinor !== 0,
       );

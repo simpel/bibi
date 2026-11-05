@@ -18,9 +18,9 @@ const block = ({ over = {} }: { over?: Partial<CalendarBlockDto> }): CalendarBlo
   startsAt: new Date("2026-11-01T09:00:00Z"),
   endsAt: new Date("2026-11-01T11:00:00Z"),
   lineId: "l1",
-  ticketId: "t1",
+  orderId: "t1",
   reference: 12,
-  ticketTitle: null,
+  orderTitle: null,
   title: "Lunch",
   soft: false,
   allocated: false,
@@ -40,8 +40,8 @@ const map = ({ blocks }: { blocks: CalendarBlockDto[] }) =>
     timeZone: "Europe/Stockholm",
     blocked: BLOCKED,
     unnamed: UNNAMED,
-    via: { LINE: "Line assignee", TICKET: "Ticket assignee" },
-    ticketHref: ({ ticketId }) => `/tickets/${ticketId}`,
+    via: { LINE: "Line assignee", ORDER: "Order assignee" },
+    orderHref: ({ orderId }) => `/orders/${orderId}`,
   });
 
 const SETUP = {
@@ -62,8 +62,8 @@ describe("toAssetBookings", () => {
       setupMinutes: 30,
       teardownMinutes: 0,
       name: "Lunch",
-      ticket: "#12",
-      href: "/tickets/t1",
+      order: "#12",
+      href: "/orders/t1",
       state: { name: "Booked", color: "#16a34a", hold: "hard" },
     });
   });
@@ -85,8 +85,8 @@ describe("toAssetBookings", () => {
   });
 
   it("draws a manual block grey and unsold", () => {
-    const over = { type: "MAINTENANCE" as const, lineId: null, ticketId: null, reference: null };
-    expect(map({ blocks: [block({ over })] })[0]).toMatchObject({ ticket: null, state: BLOCKED });
+    const over = { type: "MAINTENANCE" as const, lineId: null, orderId: null, reference: null };
+    expect(map({ blocks: [block({ over })] })[0]).toMatchObject({ order: null, state: BLOCKED });
   });
 
   it("carries the details the caller may see, and leaves hidden ones off", () => {
@@ -100,7 +100,7 @@ describe("toAssetBookings", () => {
       note: null,
       contact: {
         ...{ userId: "u1", name: "Anna Berg", email: null, phone: "+46 31 123" },
-        ...{ avatarKey: null, via: "TICKET" as const },
+        ...{ avatarKey: null, via: "ORDER" as const },
       },
       staff: [
         { itemId: "i1", name: "Sam", type: "Host", person: true },
@@ -113,7 +113,7 @@ describe("toAssetBookings", () => {
       client: { name: "Kim Ek", email: "kim@example.com" },
       headcount: 40,
       value: { amount: 10_800, currency: "SEK" },
-      contact: { person: { name: "Anna Berg" }, via: "Ticket assignee", inherited: true },
+      contact: { person: { name: "Anna Berg" }, via: "Order assignee", inherited: true },
       staff: [{ id: "i1", name: "Sam", role: "Host" }],
     });
     expect(booking).not.toHaveProperty("notes");

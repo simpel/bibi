@@ -3,22 +3,22 @@ import type { WebSurface } from "./web-surfaces";
 
 /**
  * Payments and the receivables they settle (ADR 0057), part of `WEB_SURFACES`: all on the
- * ticket page's money section, except the deposit request's create page.
+ * order page's money section, except the deposit request's create page.
  */
 export const MONEY_SURFACES: readonly WebSurface[] = [
-  { operation: "payment.list", route: "/tickets/[id]" },
-  { operation: "payment.create", route: "/tickets/[id]" },
-  { operation: "payment.balance", route: "/tickets/[id]" },
-  { operation: "deposit.list", route: "/tickets/[id]" },
+  { operation: "payment.list", route: "/orders/[id]" },
+  { operation: "payment.create", route: "/orders/[id]" },
+  { operation: "payment.balance", route: "/orders/[id]" },
+  { operation: "deposit.list", route: "/orders/[id]" },
   { operation: "deposit.create", route: "/new/deposit" },
-  { operation: "deposit.suggest", route: "/tickets/[id]" },
-  { operation: "deposit.request", route: "/tickets/[id]" },
-  { operation: "deposit.send", route: "/tickets/[id]" },
-  { operation: "deposit.void", route: "/tickets/[id]" },
-  { operation: "invoice.list", route: "/tickets/[id]" },
-  { operation: "invoice.create", route: "/tickets/[id]" },
-  { operation: "invoice.send", route: "/tickets/[id]" },
-  { operation: "invoice.sync", route: "/tickets/[id]" },
-  { operation: "invoice.void", route: "/tickets/[id]" },
+  { operation: "deposit.suggest", route: "/orders/[id]" },
+  { operation: "deposit.request", route: "/orders/[id]" },
+  { operation: "deposit.send", route: "/orders/[id]" },
+  { operation: "deposit.void", route: "/orders/[id]" },
+  { operation: "invoice.list", route: "/orders/[id]" },
+  { operation: "invoice.create", route: "/orders/[id]" },
+  { operation: "invoice.send", route: "/orders/[id]" },
+  { operation: "invoice.sync", route: "/orders/[id]" },
+  { operation: "invoice.void", route: "/orders/[id]" },
   ...FINANCE_SURFACES,
 ];

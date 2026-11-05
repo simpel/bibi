@@ -27,21 +27,21 @@ import {
 
 export type AttachDialogProps = {
   messageId: string;
-  /** Recent active tickets, labelled by title (or reference) and customer. */
-  tickets: readonly NamedOption[];
+  /** Recent active orders, labelled by title (or reference) and customer. */
+  orders: readonly NamedOption[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-type AttachFormProps = Pick<AttachDialogProps, "messageId" | "tickets"> & { onDone: () => void };
+type AttachFormProps = Pick<AttachDialogProps, "messageId" | "orders"> & { onDone: () => void };
 
-function AttachForm({ messageId, tickets, onDone }: AttachFormProps) {
+function AttachForm({ messageId, orders, onDone }: AttachFormProps) {
   const t = useTranslations("inbox");
   const common = useTranslations("common");
   const router = useRouter();
   const form = useForm<AttachFormValues, unknown, AttachFormOutput>({
     resolver: zodResolver(attachFormSchema({ id: messageId }), useZodMessages()),
-    defaultValues: { ticketId: "" },
+    defaultValues: { orderId: "" },
   });
   const { submit, pending } = useFormAction({
     form,
@@ -57,9 +57,9 @@ function AttachForm({ messageId, tickets, onDone }: AttachFormProps) {
       <form onSubmit={submit} noValidate className="grid gap-4">
         <OptionSelectField
           control={form.control}
-          name="ticketId"
-          label={t("ticket")}
-          options={tickets}
+          name="orderId"
+          label={t("order")}
+          options={orders}
         />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>
@@ -74,8 +74,8 @@ function AttachForm({ messageId, tickets, onDone }: AttachFormProps) {
   );
 }
 
-/** Attach an inbox message to an existing ticket, once (`inboundMessage.attachToTicket`). */
-export function AttachDialog({ messageId, tickets, open, onOpenChange }: AttachDialogProps) {
+/** Attach an inbox message to an existing order, once (`inboundMessage.attachToOrder`). */
+export function AttachDialog({ messageId, orders, open, onOpenChange }: AttachDialogProps) {
   const t = useTranslations("inbox");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -84,7 +84,7 @@ export function AttachDialog({ messageId, tickets, open, onOpenChange }: AttachD
           <DialogTitle>{t("attachTitle")}</DialogTitle>
           <DialogDescription>{t("attachDescription")}</DialogDescription>
         </DialogHeader>
-        <AttachForm messageId={messageId} tickets={tickets} onDone={() => onOpenChange(false)} />
+        <AttachForm messageId={messageId} orders={orders} onDone={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   );

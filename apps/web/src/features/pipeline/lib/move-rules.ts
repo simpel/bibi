@@ -6,7 +6,7 @@ export type MoveRuleInput = {
   from: PipelineStatus;
   /** The status it moves to. */
   to: PipelineStatus;
-  /** The organization's ticket status transitions: status id → ids it may move to. */
+  /** The organization's order status transitions: status id → ids it may move to. */
   transitions: Readonly<Record<string, readonly string[]>>;
 };
 

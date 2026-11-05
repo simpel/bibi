@@ -12,7 +12,7 @@ import type { ProgramFormData } from "./program-form-data";
 
 export type UseLineFormInput = {
   data: ProgramFormData;
-  ticketId: string;
+  orderId: string;
   /** Where a new line starts by default. */
   startsAt: Date;
   /** Present = edit mode, absent = create mode. */
@@ -35,8 +35,8 @@ const save = ({ line, parent, values, type }: SaveInput) =>
     ? updateLineAction({ input: toLineUpdate({ line, values, type }) })
     : createLineAction({ input: { ...values, ...(parent ? { parentLineId: parent.id } : {}) } });
 
-/** Line form state; the ticket page reloads with the changed run schedule. */
-export function useLineForm({ data, ticketId, startsAt, line, parent, onDone }: UseLineFormInput) {
+/** Line form state; the order page reloads with the changed run schedule. */
+export function useLineForm({ data, orderId, startsAt, line, parent, onDone }: UseLineFormInput) {
   const t = useTranslations("line");
   const common = useTranslations("common");
   const router = useRouter();
@@ -44,7 +44,7 @@ export function useLineForm({ data, ticketId, startsAt, line, parent, onDone }: 
   const resolver = useTypedResolver<LineFormValues, LineFormOutput>({
     types: data.types,
     schemaFor: ({ type }) =>
-      lineFormSchema({ ticketId, type, vocabularies: data.vocabularies, zones: data, line }),
+      lineFormSchema({ orderId, type, vocabularies: data.vocabularies, zones: data, line }),
   });
   // An add-on starts as its parent's type and period (ADR 0088 decision 11); both can change.
   const initial = typeOf({

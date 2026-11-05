@@ -7,11 +7,11 @@ import type { DemoOrg } from "./types";
 export type CheckDemoLinksInput = {
   context: ExecuteContext;
   org: DemoOrg;
-  /** `--skip-pipeline`: no tickets, so no ticket links. */
+  /** `--skip-pipeline`: no orders, so no order links. */
   skipPipeline: boolean;
 };
 
-/** How many LINK values the data files give the tickets (one row each). */
+/** How many LINK values the data files give the orders (one row each). */
 function expectedLinks({ org, skipPipeline }: Omit<CheckDemoLinksInput, "context">) {
   if (skipPipeline) return 0;
   const linkFields = new Map(
@@ -20,9 +20,9 @@ function expectedLinks({ org, skipPipeline }: Omit<CheckDemoLinksInput, "context
       new Set((type.fields ?? []).filter((f) => f.kind === "LINK").map((f) => f.name)),
     ]),
   );
-  return org.tickets
-    .flatMap((ticket) => Object.keys(ticket.fields ?? {}).map((name) => ({ ticket, name })))
-    .filter(({ ticket, name }) => linkFields.get(ticket.type)?.has(name)).length;
+  return org.orders
+    .flatMap((order) => Object.keys(order.fields ?? {}).map((name) => ({ order, name })))
+    .filter(({ order, name }) => linkFields.get(order.type)?.has(name)).length;
 }
 
 /** No LINK field has a key in `Record.fields`: link ids live only in `RecordLink` (ADR 0056). */
@@ -49,7 +49,7 @@ async function archiveOfLinkedRefused({ context, org }: Omit<CheckDemoLinksInput
 }
 
 /**
- * ADR 0056: the tickets' LINK values are `RecordLink` rows (as many as the data files give), each
+ * ADR 0056: the orders' LINK values are `RecordLink` rows (as many as the data files give), each
  * pointing at an active record, none stored in `fields` JSON, and a linked record cannot be
  * archived.
  */

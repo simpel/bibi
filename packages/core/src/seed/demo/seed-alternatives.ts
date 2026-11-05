@@ -3,20 +3,20 @@ import { createAlternativeGroup } from "../../features/alternative-group/operati
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { missing } from "./seed-fields";
-import type { DemoAlternative } from "./ticket-types";
+import type { DemoAlternative } from "./order-types";
 
-type Ctx = { context: ExecuteContext; ticketId: string };
+type Ctx = { context: ExecuteContext; orderId: string };
 
 export type LineIdsByNameInput = Ctx & { names: readonly string[] };
 
-/** The ids of the ticket's lines with these names, in the same order, or the first missing one. */
+/** The ids of the order's lines with these names, in the same order, or the first missing one. */
 export async function lineIdsByName({
   context,
-  ticketId,
+  orderId,
   names,
 }: LineIdsByNameInput): Promise<Result<string[]>> {
   const rows = await context.db.line.findMany({
-    where: { ticketId, name: { in: [...names] } },
+    where: { orderId, name: { in: [...names] } },
     select: { id: true, name: true },
   });
   const ids: string[] = [];
@@ -30,16 +30,16 @@ export async function lineIdsByName({
 
 export type SeedAlternativesInput = Ctx & { alternatives: readonly DemoAlternative[] };
 
-/** The ticket's alternative groups (ADR 0052) via `alternativeGroup.create` as SYSTEM. */
+/** The order's alternative groups (ADR 0052) via `alternativeGroup.create` as SYSTEM. */
 export async function seedDemoAlternatives({
   context,
-  ticketId,
+  orderId,
   alternatives,
 }: SeedAlternativesInput): Promise<Result<true>> {
   for (const { name, lines } of alternatives) {
-    const lineIds = await lineIdsByName({ context, ticketId, names: lines });
+    const lineIds = await lineIdsByName({ context, orderId, names: lines });
     if (!lineIds.ok) return lineIds;
-    const input = { ticketId, name, lineIds: lineIds.value };
+    const input = { orderId, name, lineIds: lineIds.value };
     const created = await execute({ operation: createAlternativeGroup, input, context });
     if (!created.ok) return created;
   }
@@ -49,9 +49,9 @@ export async function seedDemoAlternatives({
 /** The line ids of the options the customer picks on accept (`chosen`), for `quote.accept`. */
 export async function chosenLineIds({
   context,
-  ticketId,
+  orderId,
   alternatives,
 }: SeedAlternativesInput): Promise<Result<string[]>> {
   const names = alternatives.flatMap((group) => (group.chosen ? [group.chosen] : []));
-  return lineIdsByName({ context, ticketId, names });
+  return lineIdsByName({ context, orderId, names });
 }

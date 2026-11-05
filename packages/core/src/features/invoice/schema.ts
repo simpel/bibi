@@ -12,13 +12,13 @@ export const InvoiceDeductionSchema = z.object({
 });
 
 /**
- * An invoice (ADR 0052, 0057): a frozen receivable whose lines are a snapshot of the ticket's
+ * An invoice (ADR 0052, 0057): a frozen receivable whose lines are a snapshot of the order's
  * priced lines when it was created. `status` holds only its lifecycle; what is paid is derived.
  */
 export const InvoiceSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  ticketId: z.string(),
+  orderId: z.string(),
   number: z.number().int().describe("The organization's invoice number"),
   currency: z.string(),
   dueDate: z.date().nullable(),
@@ -29,7 +29,7 @@ export const InvoiceSchema = z.object({
     .number()
     .int()
     .describe("Sum of the frozen lines incl. VAT, minor units: the amount owed"),
-  lines: z.array(OrderLineSchema).describe("The ticket's priced lines, frozen at create"),
+  lines: z.array(OrderLineSchema).describe("The order's priced lines, frozen at create"),
   deductions: z
     .array(InvoiceDeductionSchema)
     .describe("Paid deposits deducted from the total, frozen at create (ADR 0090)"),
@@ -53,7 +53,7 @@ export const InvoiceSchema = z.object({
 
 export const InvoiceListInputSchema = z.object({
   ...PageInputShape,
-  ticketId: z.string().min(1).describe("Id of the ticket whose invoices to list"),
+  orderId: z.string().min(1).describe("Id of the order whose invoices to list"),
 });
 
 export const InvoiceListOutputSchema = z.object({
@@ -64,10 +64,10 @@ export const InvoiceListOutputSchema = z.object({
 export const InvoiceIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const InvoiceCreateInputSchema = z.object({
-  ticketId: z
+  orderId: z
     .string()
     .min(1)
-    .describe("Id of the ticket to invoice; its status must be invoiceable"),
+    .describe("Id of the order to invoice; its status must be invoiceable"),
   dueDate: z.coerce
     .date()
     .nullish()

@@ -7,10 +7,10 @@ import { roomStates, toState } from "./item-state-helpers";
 import { activeOccupancies, createTestLine, programSetup } from "./line-helpers";
 
 async function setup() {
-  const { context, ticket, type, room } = await programSetup();
+  const { context, order, type, room } = await programSetup();
   const states = await roomStates({ context, entityTypeId: room.entityTypeId });
-  const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
-  return { context, ticket, type, room, states, base };
+  const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
+  return { context, order, type, room, states, base };
 }
 
 const historyOf = ({ lineId }: { lineId: string }) =>

@@ -11,7 +11,13 @@ export type CrumbLabelKey =
   | "apiKeys"
   | "permissions"
   | "edit"
-  | "detail";
+  | "detail"
+  | "notifications"
+  | "organizations"
+  | "logs"
+  | "aiModels"
+  | "platformAdmin"
+  | "docs";
 
 const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   chats: "chats",
@@ -19,8 +25,10 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   dashboard: "dashboard",
   data: "dashboard",
   calendar: "calendar",
+  forecast: "forecast",
   financials: "financials",
-  tickets: "tickets",
+  workload: "workload",
+  orders: "orders",
   inbox: "inbox",
   customers: "customers",
   items: "items",
@@ -32,7 +40,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   types: "types",
   lists: "lists",
   setups: "setups",
-  "work-orders": "workOrders",
+  "run-sheets": "runSheets",
   "price-lists": "priceLists",
   responsibilities: "responsibilities",
   integrations: "integrations",
@@ -45,31 +53,47 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   billing: "billing",
   accounting: "accounting",
   "item-states": "itemStates",
-  "ticket-templates": "ticketTemplates",
+  "order-templates": "orderTemplates",
+  notifications: "notifications",
+  mothership: "platformAdmin",
+  organizations: "organizations",
+  logs: "logs",
+  "ai-models": "aiModels",
+  docs: "docs",
   new: "new",
   edit: "edit",
   update: "edit",
 };
 
+/** Settings collections that have an update page but no detail page of their own. */
+const NO_DETAIL_SETTINGS = new Set([
+  "pipeline",
+  "price-lists",
+  "run-sheets",
+  "order-templates",
+  "responsibilities",
+  "item-states",
+]);
+
 /** `/new/<thing>` pages: the path of the thing's list page, which is the parent crumb. */
 const NEW_PARENTS: Record<string, string> = {
   item: "items",
   skill: "skills",
-  ticket: "tickets",
-  deposit: "tickets",
+  order: "orders",
+  deposit: "orders",
   type: "settings/types",
   venue: "venues",
   customer: "customers",
-  "work-order": "settings/work-orders",
+  "run-sheet": "settings/run-sheets",
   responsibility: "settings/responsibilities",
   "price-list": "settings/price-lists",
-  "ticket-status": "settings/pipeline",
+  "order-status": "settings/pipeline",
   "item-state": "settings/item-states",
-  "ticket-template": "settings/ticket-templates",
+  "order-template": "settings/order-templates",
 };
 
-/** Pages whose later segments are a tab or period, not a page (`/calendar/{from}/{to}`, `/data/{dashboard}/{from}/{to}`, ADR 0064, 0086). */
-const PERIOD_PAGES = new Set(["calendar", "dashboard", "data", "financials"]);
+/** Pages whose later segments are a period, not a page (`/calendar/{from}/{to}`, ADR 0064). */
+const PERIOD_PAGES = new Set(["calendar"]);
 
 export type Crumb = { href: string; labelKey: CrumbLabelKey };
 
@@ -78,7 +102,40 @@ export type BuildCrumbsInput = { pathname: string };
 /** One crumb per path segment; unknown segments (ids) are a generic "Details". Empty on `/`. */
 export function buildCrumbs({ pathname }: BuildCrumbsInput): Crumb[] {
   const all = pathname.split("/").filter(Boolean);
+  if (all[0] === "data" || all[0] === "dashboard") {
+    const rootCrumb: Crumb = { href: "/data", labelKey: "dashboard" };
+    const tab = all[1];
+    if (tab && (tab === "forecast" || tab === "financials" || tab === "workload")) {
+      return [rootCrumb, { href: `/data/${tab}`, labelKey: SEGMENT_KEYS[tab] ?? "detail" }];
+    }
+    return [rootCrumb];
+  }
   const segments = PERIOD_PAGES.has(all[0] ?? "") ? all.slice(0, 1) : all;
+  if (segments[0] === "quotes") {
+    return [
+      { href: "/orders", labelKey: "orders" },
+      ...(segments.length > 1 ? [{ href: pathname, labelKey: "quotes" as const }] : []),
+    ];
+  }
+  if (segments[0] === "docs") {
+    if (segments.length <= 1) return [{ href: "/docs", labelKey: "docs" }];
+    return [
+      { href: "/docs", labelKey: "docs" },
+      { href: pathname, labelKey: "detail" },
+    ];
+  }
+  if (
+    segments[0] === "settings" &&
+    NO_DETAIL_SETTINGS.has(segments[1] ?? "") &&
+    segments[3] === "update"
+  ) {
+    const section = segments[1] ?? "";
+    return [
+      { href: "/settings", labelKey: "settings" },
+      { href: `/settings/${section}`, labelKey: SEGMENT_KEYS[section] ?? "detail" },
+      { href: pathname, labelKey: "edit" },
+    ];
+  }
   const parent = segments[0] === "new" ? NEW_PARENTS[segments[1] ?? ""] : undefined;
   if (parent) {
     return [...buildCrumbs({ pathname: `/${parent}` }), { href: pathname, labelKey: "new" }];

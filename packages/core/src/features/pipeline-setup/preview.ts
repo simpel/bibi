@@ -4,7 +4,7 @@ import { type SimulateInput, simulate } from "./simulate";
 
 /**
  * The guided setup's preview (ADR 0044), pure and without writes: the draft's configuration
- * problems and a simulated ticket stepped through every status. Errors block activation.
+ * problems and a simulated order stepped through every status. Errors block activation.
  */
 export function previewPipeline({ draft, bookable }: SimulateInput): PipelinePreview {
   const typeNames = draft.itemTypes.map((type) => type.name);

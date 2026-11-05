@@ -11,7 +11,7 @@ export type SeedDemoFinanceInput = { context: ExecuteContext; org: DemoOrg };
 
 /**
  * ADR 0077: the organization's revenue accounts per item type (BAS defaults otherwise) and its
- * first SIE export (the last 12 months) of the invoices and payments seeded with the tickets.
+ * first SIE export (the last 12 months) of the invoices and payments seeded with the orders.
  */
 export async function seedDemoFinance({
   context,

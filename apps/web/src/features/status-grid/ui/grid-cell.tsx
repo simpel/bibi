@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { KEEP, useSetCell } from "./use-set-cell";
 
 export type GridCellProps = {
-  ticketStatus: { id: string; name: string };
+  orderStatus: { id: string; name: string };
   type: { id: string; name: string };
   /** The type's active states. */
   states: readonly ItemStateDto[];
@@ -16,12 +16,12 @@ export type GridCellProps = {
 };
 
 /** One cell: a dropdown of the type's states or "keep", with what it does in plain words. */
-export function GridCell({ ticketStatus, type, states, stateId, canEdit }: GridCellProps) {
+export function GridCell({ orderStatus, type, states, stateId, canEdit }: GridCellProps) {
   const t = useTranslations("statusGrid");
-  const { pending, change } = useSetCell({ statusId: ticketStatus.id, entityTypeId: type.id });
+  const { pending, change } = useSetCell({ statusId: orderStatus.id, entityTypeId: type.id });
   const current = states.find((state) => state.id === stateId);
   const words = current
-    ? t("cellSets", { type: type.name, state: current.name, status: ticketStatus.name })
+    ? t("cellSets", { type: type.name, state: current.name, status: orderStatus.name })
     : t("cellKeeps", { type: type.name });
   return (
     <div className="grid gap-1">
@@ -30,7 +30,7 @@ export function GridCell({ ticketStatus, type, states, stateId, canEdit }: GridC
         onValueChange={(value) => change({ value })}
         disabled={!canEdit || pending}
       >
-        <SelectTrigger aria-label={t("cellLabel", { status: ticketStatus.name, type: type.name })}>
+        <SelectTrigger aria-label={t("cellLabel", { status: orderStatus.name, type: type.name })}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

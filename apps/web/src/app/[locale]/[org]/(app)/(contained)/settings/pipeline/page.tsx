@@ -1,16 +1,22 @@
 import { resolveLocale } from "@bibi/i18n";
 import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
-import { TicketStatusList } from "@/features/ticket-status/ui/ticket-status-list";
+import { OrderStatusList } from "@/features/order-status/ui/order-status-list";
+import { pageTitle } from "@/lib/page-metadata";
 
-type TicketStatusesPageProps = { params: Promise<{ locale: string }> };
+type OrderStatusesPageProps = { params: Promise<{ locale: string }> };
 
-export default async function TicketStatusesPage({ params }: TicketStatusesPageProps) {
+export async function generateMetadata({ params }: OrderStatusesPageProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "nav", key: "orderStatuses" });
+}
+
+export default async function OrderStatusesPage({ params }: OrderStatusesPageProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   return (
     <SimplePage>
-      <TicketStatusList locale={locale} />
+      <OrderStatusList locale={locale} />
     </SimplePage>
   );
 }

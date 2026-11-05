@@ -13,9 +13,9 @@ type Expected = { value: number | null; source: LineDto["unitPriceSource"] };
 async function expectedPrice({ context, line }: Ctx & { line: LineDto }): Promise<Expected> {
   if (line.unitPriceMinor !== null) return { value: line.unitPriceMinor, source: "LINE" };
   if (!line.itemId) return { value: null, source: null };
-  const ticket = await context.db.ticket.findFirst({ where: { id: line.ticketId } });
+  const order = await context.db.order.findFirst({ where: { id: line.orderId } });
   const agreed = await context.db.priceListItem.findFirst({
-    where: { itemId: line.itemId, priceList: { customerId: ticket?.customerId ?? "" } },
+    where: { itemId: line.itemId, priceList: { customerId: order?.customerId ?? "" } },
   });
   if (agreed) return { value: agreed.priceMinor, source: "PRICE_LIST" };
   const item = await context.db.item.findFirst({ where: { id: line.itemId } });
@@ -23,7 +23,7 @@ async function expectedPrice({ context, line }: Ctx & { line: LineDto }): Promis
   return { value: price, source: price === null ? null : "ITEM" };
 }
 
-/** A line without its own quantity counts the ticket's headcount. */
+/** A line without its own quantity counts the order's headcount. */
 const quantityFailure = ({ line }: { line: LineDto }) =>
   line.quantity === null && line.quantitySource === "LINE"
     ? [`${line.name}: has no quantity but its source is LINE`]
@@ -51,21 +51,32 @@ export async function checkDemoPrices({ context, org }: CheckDemoPricesInput): P
     }
     failures.push(...quantityFailure({ line }));
   }
-  const want = org.tickets.flatMap((ticket) => ticket.lines ?? []);
+  const dbOrders = await context.db.order.findMany({
+    where: { organizationId: context.organizationId },
+    select: { id: true, reference: true },
+  });
+  const orderIdByRef = new Map(dbOrders.map((row) => [row.reference, row.id]));
+  const want = org.orders.flatMap((order, index) => {
+    const orderId = orderIdByRef.get(index + 1);
+    return (order.lines ?? []).map((line) => ({ ...line, orderId }));
+  });
   failures.push(...(await checkSpecials({ context, org, lines, want })));
   return failures;
 }
 
 type SpecialsInput = CheckDemoPricesInput & {
   lines: LineDto[];
-  want: { name: string; from?: string; unitPriceKr?: number }[];
+  want: { name: string; from?: string; unitPriceKr?: number; orderId?: string }[];
 };
 
 /** The data's price overrides and untimed lines exist as given; untimed ones hold nothing. */
 async function checkSpecials({ context, org, lines, want }: SpecialsInput) {
   const failures: string[] = [];
   for (const line of want) {
-    const row = lines.find((candidate) => candidate.name === line.name);
+    const row = lines.find(
+      (candidate) =>
+        candidate.name === line.name && (!line.orderId || candidate.orderId === line.orderId),
+    );
     if (line.unitPriceKr !== undefined && row?.unitPriceMinor !== line.unitPriceKr * 100) {
       failures.push(`${org.slug}: ${line.name} lacks its price override`);
     }

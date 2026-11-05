@@ -21,7 +21,7 @@ async function createBundleType({ context }: Ctx) {
 }
 
 /**
- * The quote setup (ticket for 20, lunch 250 kr and coffee 40 kr at 12 %) plus a room at 1 000 kr
+ * The quote setup (order for 20, lunch 250 kr and coffee 40 kr at 12 %) plus a room at 1 000 kr
  * and 25 %, and the bundle "Conference day" at 600 kr per person: the room for the whole bundle,
  * coffee 90 minutes in for 30 minutes and lunch 3 hours in for an hour.
  */
@@ -56,7 +56,7 @@ export async function bundleSetup() {
 }
 
 export type ExpandInput = Ctx &
-  Partial<LineExpandBundleInput> & { ticketId: string; entityTypeId: string; itemId: string };
+  Partial<LineExpandBundleInput> & { orderId: string; entityTypeId: string; itemId: string };
 
 /** `line.expandBundle` from 09:00 to 17:00 on 1 November 2037 (UTC) unless times are given. */
 export const expand = ({ context, ...input }: ExpandInput) =>

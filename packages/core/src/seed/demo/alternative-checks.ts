@@ -1,5 +1,5 @@
 import type { ExecuteContext } from "../../operations/context";
-import type { DemoAlternative } from "./ticket-types";
+import type { DemoAlternative } from "./order-types";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoAlternativesInput = { context: ExecuteContext; org: DemoOrg };
@@ -50,7 +50,7 @@ export async function checkDemoAlternatives({
   context,
   org,
 }: CheckDemoAlternativesInput): Promise<string[]> {
-  const groups = org.tickets.flatMap((ticket) => ticket.alternatives ?? []);
+  const groups = org.orders.flatMap((order) => order.alternatives ?? []);
   const failures: string[] = [];
   for (const group of groups) failures.push(...(await checkGroup({ context, group })));
   return failures.map((failure) => `${org.slug}: ${failure}`);

@@ -31,7 +31,7 @@ export function TypefaceCards() {
         </p>
         <p className="text-xs text-muted-foreground">
           Lining tabular numerals with identical horizontal advance widths. Agendas, line items, and
-          ticket IDs.
+          order IDs.
         </p>
         <code className="mt-2 text-[11px] text-primary">tabular-nums (OpenType)</code>
       </div>

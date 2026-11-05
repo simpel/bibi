@@ -3,7 +3,7 @@ import { notFound } from "../../shared/errors";
 import { chooseOnAccept } from "../alternative-group/choose-on-accept";
 import { moveOnQuoteEvent } from "./move-on-event";
 import { moveQuote } from "./move-quote";
-import { loadOpenTicket } from "./quote-rules";
+import { loadOpenOrder } from "./quote-rules";
 import {
   QuoteAcceptInputSchema,
   QuoteIdInputSchema,
@@ -35,8 +35,8 @@ export const declineQuote = closeQuote({
   name: "quote.decline",
   to: "DECLINED",
   description:
-    "Record that the customer declined a SENT quote (ADR 0022). The ticket stays open: make a " +
-    "new version with quote.revise or move the ticket to a closing status. Any other status is a CONFLICT.",
+    "Record that the customer declined a SENT quote (ADR 0022). The order stays open: make a " +
+    "new version with quote.revise or move the order to a closing status. Any other status is a CONFLICT.",
 });
 
 export const expireQuote = closeQuote({
@@ -53,9 +53,9 @@ export const acceptQuote = defineOperation({
   description:
     "Record that the customer accepted a SENT quote (ADR 0022). Stores who recorded it " +
     "(`acceptedBy`), when (`acceptedAt`) and `acceptanceMethod` MANUAL, and creates no other " +
-    "record. The ticket must not be in a closing status. The ticket moves into the status with " +
+    "record. The order must not be in a closing status. The order moves into the status with " +
     "the QUOTE_ACCEPTED event, if there is one and the organization allows the move from its " +
-    "current status (needs ticket:write); its lines move through that status's grid. A blocked " +
+    "current status (needs order:write); its lines move through that status's grid. A blocked " +
     "move fails the accept without any change. Any other starting status is a CONFLICT. " +
     "chosenLineIds records the customer's pick per alternative group first (ADR 0052): the " +
     "other options are released, as alternativeGroup.choose does.",
@@ -67,9 +67,9 @@ export const acceptQuote = defineOperation({
     if (!before) return notFound({ entity: "Quote" });
     const allowed = checkQuoteTransition({ from: before.quoteStatus, to: "ACCEPTED" });
     if (!allowed.ok) return allowed;
-    const ticket = await loadOpenTicket({ context, ticketId: before.ticketId });
-    if (!ticket.ok) return ticket;
-    const chosen = await chooseOnAccept({ context, ticketId: before.ticketId, chosenLineIds });
+    const order = await loadOpenOrder({ context, orderId: before.orderId });
+    if (!order.ok) return order;
+    const chosen = await chooseOnAccept({ context, orderId: before.orderId, chosenLineIds });
     if (!chosen.ok) return chosen;
     const extra = {
       acceptedBy: context.actor.userId,
@@ -79,7 +79,7 @@ export const acceptQuote = defineOperation({
     const accepted = await moveQuote({ context, before, to: "ACCEPTED", extra });
     if (!accepted.ok) return accepted;
     const event = "QUOTE_ACCEPTED";
-    const moved = await moveOnQuoteEvent({ context, ticketId: before.ticketId, event });
+    const moved = await moveOnQuoteEvent({ context, orderId: before.orderId, event });
     return moved.ok ? accepted : moved;
   },
 });

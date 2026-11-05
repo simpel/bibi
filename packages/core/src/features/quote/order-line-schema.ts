@@ -17,12 +17,12 @@ export const VatRowSchema = z.object({
 });
 
 /**
- * What is charged for one priced ticket line (ADR 0052): its name, effective price, VAT and the
+ * What is charged for one priced order line (ADR 0052): its name, effective price, VAT and the
  * item's tags. Frozen on a sent quote; on a DRAFT derived live from the line (`id` = `lineId`).
  */
 export const OrderLineSchema = z.object({
   id: z.string(),
-  lineId: z.string().describe("The ticket line (line.get) this is the price of"),
+  lineId: z.string().describe("The order line (line.get) this is the price of"),
   itemId: z.string().nullable(),
   position: z.number().int().describe("Order on the quote, from 0"),
   name: z.string().describe("The line's name"),

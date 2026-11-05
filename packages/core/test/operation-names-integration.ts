@@ -43,6 +43,7 @@ const SELF_NAMES = [
   "userSettings.get",
   "userSettings.update",
   "profile.get",
+  "profile.setLocale",
   "profile.update",
   "workingHours.get",
   "workingHours.set",
@@ -77,7 +78,7 @@ const MEMBER_PROFILE_NAMES = [
 /** Inbound messages of every channel and the organization's endpoints (ADR 0085). */
 const INBOX_NAMES = [
   "inboundEndpoint.list",
-  "inboundMessage.attachToTicket",
+  "inboundMessage.attachToOrder",
   "inboundMessage.delete",
   "inboundMessage.get",
   "inboundMessage.list",

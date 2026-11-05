@@ -11,13 +11,13 @@ import { VatRowSchema } from "../quote/order-line-schema";
 export const DepositSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  ticketId: z.string(),
+  orderId: z.string(),
   description: z.string().describe("What the customer pays for"),
   amountMinor: z.number().int().describe("Fixed amount in minor units (öre for SEK)"),
   vatRows: z
     .array(VatRowSchema)
     .describe(
-      "VAT per rate of the amount, snapshot at create from the ticket's priced lines (ADR 0093); " +
+      "VAT per rate of the amount, snapshot at create from the order's priced lines (ADR 0093); " +
         "empty = no VAT",
     ),
   currency: z.string(),
@@ -32,7 +32,7 @@ export const DepositSchema = z.object({
 
 export const DepositListInputSchema = z.object({
   ...PageInputShape,
-  ticketId: z.string().min(1).describe("Id of the ticket whose deposit requests to list"),
+  orderId: z.string().min(1).describe("Id of the order whose deposit requests to list"),
 });
 
 export const DepositListOutputSchema = z.object({
@@ -43,7 +43,7 @@ export const DepositListOutputSchema = z.object({
 export const DepositIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const DepositCreateInputSchema = z.object({
-  ticketId: z.string().min(1).describe("Id of the ticket the deposit is requested for"),
+  orderId: z.string().min(1).describe("Id of the order the deposit is requested for"),
   description: z
     .string()
     .trim()
@@ -60,12 +60,12 @@ export const DepositCreateInputSchema = z.object({
 });
 
 export const DepositSuggestInputSchema = z.object({
-  ticketId: z.string().min(1).describe("Id of the ticket to suggest a deposit for"),
+  orderId: z.string().min(1).describe("Id of the order to suggest a deposit for"),
 });
 
-/** What the organization's deposit rule asks of a ticket (ADR 0090). */
+/** What the organization's deposit rule asks of an order (ADR 0090). */
 export const DepositSuggestionSchema = z.object({
-  totalInclVatMinor: z.number().int().describe("The ticket's priced lines incl. VAT"),
+  totalInclVatMinor: z.number().int().describe("The order's priced lines incl. VAT"),
   basis: z
     .enum(["PERCENT", "FULL", "NONE"])
     .describe(

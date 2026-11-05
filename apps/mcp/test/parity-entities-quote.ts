@@ -19,7 +19,7 @@ export const alternativeGroupEntity = (): ParityEntity => ({
       mcp,
       name: "line_create",
       args: {
-        ticketId: made.ticket.id,
+        orderId: made.order.id,
         entityTypeId: made.line.entityTypeId,
         name: "Afternoon session",
         unitPriceMinor: 90_000,
@@ -30,13 +30,13 @@ export const alternativeGroupEntity = (): ParityEntity => ({
     return tool({
       mcp,
       name: "alternativeGroup_create",
-      args: { ticketId: made.ticket.id, name: "Session", lineIds: [made.line.id, other.id] },
+      args: { orderId: made.order.id, name: "Session", lineIds: [made.line.id, other.id] },
     });
   },
 });
 
 /**
- * A quote (ADR 0022, 0052) to the ticket created earlier: a DRAFT that shows the ticket's priced
+ * A quote (ADR 0022, 0052) to the order created earlier: a DRAFT that shows the order's priced
  * lines live; a function so the import cycle with `parity-entities.ts` resolves first.
  */
 export const quoteEntity = (): ParityEntity => ({
@@ -49,8 +49,8 @@ export const quoteEntity = (): ParityEntity => ({
     nested: {
       lines: `{ ${LINE} change changedFields }`,
       removedLines: `{ ${LINE} }`,
-      ticketChanges: `{ ${LINE} change changedFields }`,
-      ticketRemovedLines: `{ ${LINE} }`,
+      orderChanges: `{ ${LINE} change changedFields }`,
+      orderRemovedLines: `{ ${LINE} }`,
     },
   }),
   create: ({ mcp, made }) =>
@@ -58,7 +58,7 @@ export const quoteEntity = (): ParityEntity => ({
       mcp,
       name: "quote_create",
       args: {
-        ticketId: made.ticket.id,
+        orderId: made.order.id,
         validUntil: "2026-12-01T00:00:00.000Z",
         terms: "Net 30",
       },

@@ -13,7 +13,7 @@ export type KanbanStatusChipData = {
   id: string;
   title: string;
   color?: string;
-  /** Tickets in this status, when known; shown as a small count. */
+  /** Orders in this status, when known; shown as a small count. */
   count?: number;
 };
 
@@ -33,7 +33,7 @@ export type KanbanCustomizeLabels = {
   emptyPhase: string;
   /** Accessible name of a column's drag handle. */
   phaseHandle: (phase: string) => string;
-  /** Accessible text of a chip's ticket count. */
+  /** Accessible text of a chip's order count. */
   count: (count: number) => string;
   pickedUp: (item: string) => string;
   movedOver: (item: string, target: string) => string;

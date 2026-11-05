@@ -15,7 +15,7 @@ export type Headcount = {
 
 export type EffectiveQuantityInput = {
   quantity: number | null;
-  ticket: Headcount;
+  order: Headcount;
   /**
    * An option line's parent line (ADR 0082): an option line without its own quantity has its
    * parent's in effect. Leave out for any other line.
@@ -29,19 +29,19 @@ export type EffectiveQuantityInput = {
  */
 export function effectiveQuantity({
   quantity,
-  ticket,
+  order,
   parent,
 }: EffectiveQuantityInput): Sourced<number | null, QuantitySource> {
   if (quantity !== null) return { value: quantity, source: "LINE" };
   if (parent) {
-    const inherited = effectiveQuantity({ quantity: parent.quantity, ticket });
+    const inherited = effectiveQuantity({ quantity: parent.quantity, order });
     return { value: inherited.value, source: inherited.value === null ? null : "PARENT_LINE" };
   }
-  if (ticket.guaranteedHeadcount !== null) {
-    return { value: ticket.guaranteedHeadcount, source: "GUARANTEED_HEADCOUNT" };
+  if (order.guaranteedHeadcount !== null) {
+    return { value: order.guaranteedHeadcount, source: "GUARANTEED_HEADCOUNT" };
   }
-  if (ticket.estimatedHeadcount !== null) {
-    return { value: ticket.estimatedHeadcount, source: "ESTIMATED_HEADCOUNT" };
+  if (order.estimatedHeadcount !== null) {
+    return { value: order.estimatedHeadcount, source: "ESTIMATED_HEADCOUNT" };
   }
   return { value: null, source: null };
 }
@@ -100,7 +100,7 @@ export function effectiveVat({ line, item }: EffectiveVatInput): Sourced<number 
 
 export type EffectiveOfInput = {
   line: EffectivePriceInput["line"] & EffectiveVatInput["line"] & { quantity: number | null };
-  ticket: Headcount;
+  order: Headcount;
   parent?: EffectiveQuantityInput["parent"];
   item: (EffectivePriceInput["item"] & EffectiveVatInput["item"]) | null;
   terms: PriceTerms | null;
@@ -109,12 +109,12 @@ export type EffectiveOfInput = {
 /** All effective values of one line, flat as the line DTO carries them. */
 export function effectiveOf({
   line,
-  ticket,
+  order,
   parent,
   item,
   terms,
 }: EffectiveOfInput): LineEffective {
-  const amount = effectiveQuantity({ quantity: line.quantity, ticket, parent });
+  const amount = effectiveQuantity({ quantity: line.quantity, order, parent });
   const { price, discount } = effectivePrice({ line, item, terms });
   const vat = effectiveVat({ line, item });
   return {

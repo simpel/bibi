@@ -1,26 +1,26 @@
 import { getDb, pseudonymiseAuditLog } from "@bibi/db";
 import { describe, expect, it } from "vitest";
-import { createTestTicket, moveToStatus, ticketSetup } from "./ticket-helpers";
+import { createTestOrder, moveToStatus, orderSetup } from "./order-helpers";
 
 const DAY = 86_400_000;
 
 describe("status history and audit pseudonymisation (ADR 0032, 0054)", () => {
   it("leaves the status history intact when the audit log is pseudonymised", async () => {
-    const { context, type, customer } = await ticketSetup();
-    const ticket = await createTestTicket({
+    const { context, type, customer } = await orderSetup();
+    const order = await createTestOrder({
       context,
       entityTypeId: type.id,
       customerId: customer.id,
     });
     await moveToStatus({
       context,
-      ticketId: ticket.id,
+      orderId: order.id,
       name: "Lost",
       reason: "Anna chose another venue",
     });
     const db = getDb();
     const where = { organizationId: context.organizationId };
-    const history = await db.ticketStatusChange.findMany({ where, orderBy: { seq: "asc" } });
+    const history = await db.orderStatusChange.findMany({ where, orderBy: { seq: "asc" } });
     expect(history).toHaveLength(2);
     // Age this organization's audit rows past the retention cutoff (ADR 0032).
     await db.auditLog.updateMany({ where, data: { createdAt: new Date(Date.now() - 400 * DAY) } });
@@ -29,10 +29,10 @@ describe("status history and audit pseudonymisation (ADR 0032, 0054)", () => {
     const audited = await db.auditLog.findMany({ where });
     expect(audited.length).toBeGreaterThan(0);
     expect(audited.every((row) => row.pseudonymisedAt !== null)).toBe(true);
-    expect(await db.ticketStatusChange.findMany({ where, orderBy: { seq: "asc" } })).toEqual(
+    expect(await db.orderStatusChange.findMany({ where, orderBy: { seq: "asc" } })).toEqual(
       history,
     );
-    const after = await db.ticket.findUniqueOrThrow({ where: { id: ticket.id } });
+    const after = await db.order.findUniqueOrThrow({ where: { id: order.id } });
     expect(after.statusId).toBe(history[1]?.toStatusId);
   });
 });

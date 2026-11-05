@@ -19,7 +19,7 @@ import { fieldFromOperation, mutationFromOperation } from "../../schema/from-ope
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { type Page, pageType } from "../../schema/page";
 import { runOperation } from "../../schema/run-operation";
-import { TicketRef } from "../ticket/graphql";
+import { OrderRef } from "../order/graphql";
 
 export const InboundMessageRef = objectFromSchema<InboundMessageDto>({
   name: "InboundMessage",
@@ -53,7 +53,7 @@ fieldFromOperation({
 const InboundMessageOpenCountRef = objectFromSchema<{ open: number }>({
   name: "InboundMessageOpenCount",
   schema: InboundMessageOpenCountOutputSchema,
-  description: "How many unread messages wait in the inbox (no ticket yet, nobody has read them).",
+  description: "How many unread messages wait in the inbox (no order yet, nobody has read them).",
 });
 fieldFromOperation({
   operation: countOpenInboundMessages,
@@ -77,13 +77,13 @@ mutationFromOperation({ operation: markInboundMessageUnread, type: InboundMessag
 mutationFromOperation({ operation: deleteInboundMessage, type: InboundMessageRef });
 
 // Graph edge. Goes through `inboundMessage.list`, so its permissions apply here too.
-builder.objectField(TicketRef, "inboundMessages", (t) =>
+builder.objectField(OrderRef, "inboundMessages", (t) =>
   t.field({
     type: [InboundMessageRef],
-    description: "Messages of every channel attached to the ticket, newest first.",
+    description: "Messages of every channel attached to the order, newest first.",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
-    resolve: async (ticket, { limit }, ctx) => {
-      const input = { ticketId: ticket.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) };
+    resolve: async (order, { limit }, ctx) => {
+      const input = { orderId: order.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) };
       const page = (await runOperation({
         operation: listInboundMessages,
         input,

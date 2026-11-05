@@ -15,29 +15,29 @@ export async function pickCustomer({
   await expect(page.getByText(/Linnea Kvist/).first()).toBeVisible();
 }
 
-/** Step 1's title-row New customer: the form, checked for duplicates when it creates. */
+/** Step 1's title-row Create customer: the form, checked for duplicates when it creates. */
 export async function startNewCustomer({ page }: PageInput) {
-  await page.getByRole("button", { name: "New customer", exact: true }).click();
+  await page.getByRole("button", { name: "Create customer", exact: true }).click();
 }
 
 /** Step 3's Custom booking, under the package tabs: it opens the build step. */
 export async function startCustomBooking({ page }: PageInput) {
   await page.getByRole("button", { name: "Custom booking", exact: true }).click();
-  await expect(page).toHaveURL(/\/new\/ticket\/custom/);
+  await expect(page).toHaveURL(/\/new\/order\/custom/);
 }
 
-/** The paste dialog (`/new/ticket/message`): Read the request; it closes on step 1. */
+/** The paste dialog (`/new/order/message`): Read the request; it closes on step 1. */
 export async function readRequest({ page }: PageInput) {
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("heading", { name: "From a message" })).toBeVisible();
   await dialog.getByRole("button", { name: "Read the request" }).click();
   await expect(dialog).toHaveCount(0, { timeout: 20_000 });
-  await expect(page).toHaveURL(/\/new\/ticket(\?.*)?$/);
+  await expect(page).toHaveURL(/\/new\/order(\?.*)?$/);
 }
 
-/** The open step is in the path: `/new/ticket/<step>` (step 1 is the bare `/new/ticket`). */
+/** The open step is in the path: `/new/order/<step>` (step 1 is the bare `/new/order`). */
 export async function expectStep({ page, step }: PageInput & { step: string }) {
-  await expect(page).toHaveURL(new RegExp(`/new/ticket/${step}(\\?.*)?$`));
+  await expect(page).toHaveURL(new RegExp(`/new/order/${step}(\\?.*)?$`));
 }
 
 /** Step 2: a day two months ahead (the calendar is the only way to a date), times and guests. */
@@ -67,11 +67,11 @@ export async function pickPackage({ page, name }: PageInput & { name: string }) 
   await page.getByRole("button", { name: "Next", exact: true }).click();
 }
 
-/** Create, then the ticket page opens (a ticket id in the path). */
-export async function createTicket({ page }: PageInput) {
-  await page.getByRole("button", { name: /^Create( ticket| and prebook)?$/ }).click();
-  await expect(page).toHaveURL(/\/en\/[^/]+\/tickets\/[^/]+$/, { timeout: 20_000 });
+/** Create, then the order page opens (an order id in the path). */
+export async function createOrder({ page }: PageInput) {
+  await page.getByRole("button", { name: /^Create( order| and prebook)?$/ }).click();
+  await expect(page).toHaveURL(/\/en\/[^/]+\/orders\/[^/]+$/, { timeout: 20_000 });
 }
 
-/** The intake page of the active organization, in English (labels in `ticketIntake`). */
-export const INTAKE_PATH = "/new/ticket";
+/** The intake page of the active organization, in English (labels in `orderIntake`). */
+export const INTAKE_PATH = "/new/order";

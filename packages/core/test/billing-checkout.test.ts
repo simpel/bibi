@@ -21,7 +21,7 @@ type Context = Awaited<ReturnType<typeof withInviter>>;
 const checkout = ({ context }: { context: Context }) =>
   execute({
     operation: startBillingCheckout,
-    input: { interval: "YEAR", returnTo: "/tickets" },
+    input: { interval: "YEAR", returnTo: "/orders" },
     context,
   });
 
@@ -57,7 +57,7 @@ describe("checkout and the subscription (ADR 0095 §3, §4, §8)", () => {
     expect(one?.customerId).toBe(two?.customerId);
     expect(one).toMatchObject({ interval: "YEAR", extraSeats: 0 });
     expect(one?.trialEnd).toBeInstanceOf(Date);
-    expect(one?.successUrl).toContain("/billing/pay/done?returnTo=%2Ftickets");
+    expect(one?.successUrl).toContain("/billing/pay/done?returnTo=%2Forders");
   });
 
   it("opens access when the subscription is mirrored, and refuses a second checkout", async () => {

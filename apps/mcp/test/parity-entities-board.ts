@@ -7,20 +7,20 @@ const phaseOf = ({ board, id }: { board: { phases: Phase[] }; id: string }) =>
   board.phases.find((phase) => phase.id === id);
 
 const statusById = byId({
-  name: "ticketStatus",
-  field: "ticketStatus",
-  list: "ticket-statuses",
-  createTool: "ticketStatus_create",
+  name: "orderStatus",
+  field: "orderStatus",
+  list: "order-statuses",
+  createTool: "orderStatus_create",
   args: { name: "Parity status", color: "#22c55e" },
 });
 
-/** A new status is a name and a colour; the entry flag (tickets made later need one) is an update. */
-const ticketStatus: ParityEntity = {
+/** A new status is a name and a colour; the entry flag (orders made later need one) is an update. */
+const orderStatus: ParityEntity = {
   ...statusById,
   create: async (input) => {
     const created = await statusById.create(input);
     const args = { id: created.id, entry: true };
-    return tool({ mcp: input.mcp, name: "ticketStatus_update", args });
+    return tool({ mcp: input.mcp, name: "orderStatus_update", args });
   },
 };
 
@@ -63,5 +63,5 @@ const boardPhase: ParityEntity = {
 
 /** The pipeline's entities in creation order: a status, then a board and one of its phases. */
 export function boardEntities(): ParityEntity[] {
-  return [ticketStatus, board, boardPhase];
+  return [orderStatus, board, boardPhase];
 }

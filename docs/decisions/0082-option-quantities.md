@@ -3,7 +3,7 @@
 - **Date:** 2026-11-01
 - **Status:** Accepted (approved by the user on 2026-11-01)
 - **Amends:** 0059 (customisations: an option line had the parent's quantity, chosen at most once)
-- **Related:** 0081 (ticket intake), 0052 (the line is the booking, headcount inheritance), 0021 (needs as counts, Requirements)
+- **Related:** 0081 (order intake), 0052 (the line is the booking, headcount inheritance), 0021 (needs as counts, Requirements)
 
 ## Context
 - Today `line.chooseOptions({ lineId, optionItemIds })` makes one option line per chosen option, with the same quantity as its parent line. A group's `minPick` and `maxPick` count distinct options.
@@ -23,7 +23,7 @@
    - `EXTRA` counts the option line's effective quantity at the option's price.
    - `REPLACES` counts the option line at its price. The parent counts only the quantity no `REPLACES` option covers: its effective quantity minus the sum of its `REPLACES` option quantities, at least 0. In a normal group nothing changes, because a `REPLACES` option covers the whole line, as today.
 6. **Quotes and invoices snapshot option lines as they are**, each with its own quantity (`OrderLine` already has a quantity). The parent's snapshotted quantity is the remainder from decision 5 when a split `REPLACES` option exists.
-7. **Sheets list option lines with their quantities** (10 Fish, 4 Vegetarian under Dinner). The option's item tags are matched against the ticket's Requirements as any line's are.
+7. **Sheets list option lines with their quantities** (10 Fish, 4 Vegetarian under Dinner). The option's item tags are matched against the order's Requirements as any line's are.
 8. **Moving and archiving are unchanged**: option lines move and are archived with their parent. A split option line keeps its quantity when the parent's quantity changes. The warning in decision 4 shows the mismatch.
 
 ## Consequences
@@ -36,7 +36,7 @@
   - sheet rendering.
 - Existing data: every group starts as not split, so every existing option line stays as it is.
 - The intake line dialog (ADR 0081) shows a quantity stepper per option in split groups and a pick per group otherwise.
-- The demo seed marks the three-course dinner's main course as split and books 10 / 4 on one ticket.
+- The demo seed marks the three-course dinner's main course as split and books 10 / 4 on one order.
 
 ## Alternatives rejected
 - **Two lines for one dinner** (one per main course). Rejected: the run sheet and the quote show two dinners, and the headcount no longer belongs to one line.

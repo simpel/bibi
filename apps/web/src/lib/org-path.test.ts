@@ -23,7 +23,7 @@ describe("org paths", () => {
   });
 
   it("strips the slug from pathnames", () => {
-    expect(stripOrg({ pathname: "/acme/tickets/1", org: "acme" })).toBe("/tickets/1");
+    expect(stripOrg({ pathname: "/acme/orders/1", org: "acme" })).toBe("/orders/1");
     expect(stripOrg({ pathname: "/acme", org: "acme" })).toBe("/");
     expect(stripOrg({ pathname: "/acmeish/x", org: "acme" })).toBe("/acmeish/x");
     expect(stripOrg({ pathname: "/login", org: undefined })).toBe("/login");

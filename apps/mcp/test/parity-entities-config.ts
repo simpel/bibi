@@ -1,6 +1,6 @@
 import { byId, type ParityEntity, tool } from "./parity-entities";
 import { responsibility } from "./parity-entities-responsibility";
-import { workOrderDefinition } from "./parity-entities-work-order";
+import { runSheetDefinition } from "./parity-entities-run-sheet";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
@@ -130,7 +130,7 @@ const occupancy: ParityEntity = {
 };
 
 /**
- * The configurable domain (ADR 0021): types, fields, lists, setups, work order definitions, items and
+ * The configurable domain (ADR 0021): types, fields, lists, setups, run sheet definitions, items and
  * their occupancy.
  */
 export function configurationEntities(): ParityEntity[] {
@@ -141,7 +141,7 @@ export function configurationEntities(): ParityEntity[] {
     vocabularyValue,
     setup,
     responsibility,
-    workOrderDefinition,
+    runSheetDefinition,
     item,
     occupancy,
   ];

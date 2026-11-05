@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../dropdown-menu/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip/tooltip";
 import { DATA_TABLE_ACTIONS_COLUMN_ID } from "./data-table-order";
 import { DataTableRowAction, type DataTableRowActionProps } from "./data-table-row-action";
 
@@ -34,16 +35,21 @@ type RowMenuProps = Pick<DataTableRowActionsProps, "label" | "compact" | "childr
 function RowMenu({ label, compact, primary, className, children }: RowMenuProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant={compact ? "ghost" : "outline"}
-          size="icon"
-          aria-label={label}
-          className={cn(!compact && "size-8", className)}
-        >
-          <MoreHorizontalIcon aria-hidden />
-        </Button>
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant={compact ? "ghost" : "outline"}
+              size="icon"
+              aria-label={label}
+              className={cn(!compact && "size-8 shrink-0", className)}
+            >
+              <MoreHorizontalIcon aria-hidden className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>{label}</TooltipContent>
+      </Tooltip>
       <DropdownMenuContent align="end">
         {primary.map(({ label: text, onClick, destructive, disabled }) => (
           <DropdownMenuItem
@@ -62,10 +68,8 @@ function RowMenu({ label, compact, primary, className, children }: RowMenuProps)
 }
 
 /**
- * The one row actions component: primary actions as buttons, the rest in a menu of text items
- * behind a dots-only trigger. Below the `@2xl` container width every action lives in the menu,
- * except a lone primary action, which stays a button (its icon alone). The menu is portalled out
- * of the container query, so each width gets its own trigger and the container picks one.
+ * The unified row actions component: all actions rendered as icon-only buttons with shadcn tooltips,
+ * plus an optional overflow menu behind a dots-only trigger. Inline text labels are never shown on buttons.
  */
 export function DataTableRowActions({
   label,
@@ -84,16 +88,11 @@ export function DataTableRowActions({
     );
   return (
     <span className="flex items-center justify-end gap-1.5">
-      <span className="hidden items-center gap-1.5 @2xl:flex">
-        {primary.map((action) => (
-          <DataTableRowAction key={action.label} {...action} />
-        ))}
-      </span>
-      <RowMenu label={label} compact={compact} primary={primary} className="@2xl:hidden">
-        {children}
-      </RowMenu>
+      {primary.map((action) => (
+        <DataTableRowAction key={action.label} {...action} />
+      ))}
       {hasMenu ? (
-        <RowMenu label={label} compact={compact} primary={[]} className="hidden @2xl:inline-flex">
+        <RowMenu label={label} compact={compact} primary={[]}>
           {children}
         </RowMenu>
       ) : null}
@@ -116,7 +115,7 @@ export function actionsColumn<TData>({
     id: DATA_TABLE_ACTIONS_COLUMN_ID,
     enableSorting: false,
     enableHiding: false,
-    size: 120,
+    size: 80,
     header: () => <span className="sr-only">{label}</span>,
     cell: ({ row }) => cell(row.original),
   };

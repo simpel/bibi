@@ -23,7 +23,7 @@ export const Default: Story = {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Confirm ticket</DialogTitle>
+          <DialogTitle>Confirm order</DialogTitle>
           <DialogDescription>Check the details before you continue.</DialogDescription>
         </DialogHeader>
         <DialogFooter>

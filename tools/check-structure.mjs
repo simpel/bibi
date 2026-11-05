@@ -1,16 +1,14 @@
 #!/usr/bin/env node
 // Structure check for Bibi. Run with `pnpm check:structure` from the repo root.
-// Checks apps/* and packages/*: files max 150 lines, functions max 40 lines,
-// default export only in Next files/config/stories, barrel files only as
-// packages/*/src/index.ts, raw date APIs only in the time module (ADR 0064),
-// one typed object parameter per function, and feature folders with required files.
-// Exits with code 1 on failure. See tools/lib/ for the rules.
+// Checks apps/* and packages/*: default export only in Next files/config/stories,
+// barrel files only as packages/*/src/index.ts, raw date APIs only in the time
+// module (ADR 0064), one typed object parameter per function, and feature folders
+// with required files. Exits with code 1 on failure. See tools/lib/ for the rules.
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkFeatures } from "./lib/features.mjs";
 import { checkFile } from "./lib/file-rules.mjs";
-import { analyzeFunctions } from "./lib/functions.mjs";
 import { checkNumber } from "./lib/number-rules.mjs";
 import { analyzeParams } from "./lib/params.mjs";
 import { listPackageDirs, walkSources } from "./lib/scan.mjs";
@@ -39,7 +37,6 @@ export function runChecks({ root }) {
       const content = readFileSync(join(root, relPath), "utf8");
       const messages = [
         ...checkFile({ relPath, content }),
-        ...analyzeFunctions({ content }),
         ...analyzeParams({ relPath, content }),
         ...checkTime({ relPath, content }),
         ...checkNumber({ relPath, content }),

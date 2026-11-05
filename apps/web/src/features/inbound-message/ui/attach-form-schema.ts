@@ -2,12 +2,12 @@ import { InboundMessageAttachInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { formSchema } from "@/lib/form-schema";
 
-export type AttachFormValues = { ticketId: string };
+export type AttachFormValues = { orderId: string };
 export type AttachFormOutput = z.infer<typeof InboundMessageAttachInputSchema>;
 
-/** Core's `inboundMessage.attachToTicket` schema for one message. */
+/** Core's `inboundMessage.attachToOrder` schema for one message. */
 export const attachFormSchema = ({ id }: { id: string }) =>
   formSchema({
     schema: InboundMessageAttachInputSchema,
-    toInput: ({ values }: { values: AttachFormValues }) => ({ id, ticketId: values.ticketId }),
+    toInput: ({ values }: { values: AttachFormValues }) => ({ id, orderId: values.orderId }),
   });

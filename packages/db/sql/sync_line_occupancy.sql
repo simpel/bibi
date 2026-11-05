@@ -2,7 +2,7 @@
 -- functions and triggers; the latest migration that includes it applies it verbatim
 -- (`packages/db/test/line-holds-sql.test.ts` keeps the two in step).
 --
--- A line holds its item when: the line and its ticket are ACTIVE, the ticket's status does not
+-- A line holds its item when: the line and its order are ACTIVE, the order's status does not
 -- close it, the line is timed, its item's type is BOOKABLE and its state is not released and
 -- holds (SOFT or HARD). It then has one HOLD row of the state's kind for [startsAt, endsAt), a
 -- SETUP row right before and a TEARDOWN row right after, each of the same kind and only when its
@@ -64,8 +64,8 @@ LANGUAGE sql STABLE AS $$
              COALESCE(l."teardownMinutes", i."teardownMinutes", et."teardownMinutes", 0))
              AS teardown_to
       FROM "Line" l
-      JOIN "Ticket" t ON t."id" = l."ticketId" AND t."organizationId" = l."organizationId"
-      JOIN "TicketStatus" p ON p."id" = t."statusId" AND p."organizationId" = t."organizationId"
+      JOIN "Order" t ON t."id" = l."orderId" AND t."organizationId" = l."organizationId"
+      JOIN "OrderStatus" p ON p."id" = t."statusId" AND p."organizationId" = t."organizationId"
       JOIN "Item" i ON i."id" = l."itemId" AND i."organizationId" = l."organizationId"
       JOIN "EntityType" et ON et."id" = i."entityTypeId"
         AND et."organizationId" = i."organizationId"
@@ -206,21 +206,21 @@ BEGIN
   RETURN NULL;
 END $$;
 
-CREATE OR REPLACE FUNCTION line_occupancy_on_ticket() RETURNS trigger LANGUAGE plpgsql AS $$
+CREATE OR REPLACE FUNCTION line_occupancy_on_order() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
   PERFORM sync_line_occupancies(ARRAY(
     SELECT l."id" FROM "Line" l
-     WHERE l."ticketId" = NEW."id" AND l."organizationId" = NEW."organizationId"
+     WHERE l."orderId" = NEW."id" AND l."organizationId" = NEW."organizationId"
      ORDER BY l."id"));
   RETURN NULL;
 END $$;
 
-CREATE OR REPLACE FUNCTION line_occupancy_on_ticket_status() RETURNS trigger
+CREATE OR REPLACE FUNCTION line_occupancy_on_order_status() RETURNS trigger
 LANGUAGE plpgsql AS $$
 BEGIN
   PERFORM sync_line_occupancies(ARRAY(
     SELECT l."id" FROM "Line" l
-      JOIN "Ticket" t ON t."id" = l."ticketId" AND t."organizationId" = l."organizationId"
+      JOIN "Order" t ON t."id" = l."orderId" AND t."organizationId" = l."organizationId"
      WHERE t."statusId" = NEW."id" AND t."organizationId" = NEW."organizationId"
        AND line_not_ended(l."endsAt") ORDER BY l."id"));
   RETURN NULL;
@@ -255,10 +255,10 @@ DROP TRIGGER IF EXISTS line_occupancy_update ON "Line";
 CREATE TRIGGER line_occupancy_update AFTER UPDATE ON "Line"
   FOR EACH ROW WHEN (
     (OLD."itemId", OLD."setupId", OLD."setupMinutes", OLD."teardownMinutes", OLD."startsAt",
-     OLD."endsAt", OLD."stateId", OLD."ticketId", OLD."status")
+     OLD."endsAt", OLD."stateId", OLD."orderId", OLD."status")
     IS DISTINCT FROM
     (NEW."itemId", NEW."setupId", NEW."setupMinutes", NEW."teardownMinutes", NEW."startsAt",
-     NEW."endsAt", NEW."stateId", NEW."ticketId", NEW."status"))
+     NEW."endsAt", NEW."stateId", NEW."orderId", NEW."status"))
   EXECUTE FUNCTION line_occupancy_on_line();
 
 DROP TRIGGER IF EXISTS line_occupancy_item_state ON "ItemState";
@@ -285,15 +285,15 @@ CREATE TRIGGER line_occupancy_item AFTER UPDATE ON "Item"
     IS DISTINCT FROM (NEW."setupMinutes", NEW."teardownMinutes"))
   EXECUTE FUNCTION line_occupancy_on_item();
 
-DROP TRIGGER IF EXISTS line_occupancy_ticket ON "Ticket";
-CREATE TRIGGER line_occupancy_ticket AFTER UPDATE ON "Ticket"
+DROP TRIGGER IF EXISTS line_occupancy_order ON "Order";
+CREATE TRIGGER line_occupancy_order AFTER UPDATE ON "Order"
   FOR EACH ROW WHEN ((OLD."statusId", OLD."status") IS DISTINCT FROM (NEW."statusId", NEW."status"))
-  EXECUTE FUNCTION line_occupancy_on_ticket();
+  EXECUTE FUNCTION line_occupancy_on_order();
 
-DROP TRIGGER IF EXISTS line_occupancy_ticket_status ON "TicketStatus";
-CREATE TRIGGER line_occupancy_ticket_status AFTER UPDATE ON "TicketStatus"
+DROP TRIGGER IF EXISTS line_occupancy_order_status ON "OrderStatus";
+CREATE TRIGGER line_occupancy_order_status AFTER UPDATE ON "OrderStatus"
   FOR EACH ROW WHEN (OLD."closes" IS DISTINCT FROM NEW."closes")
-  EXECUTE FUNCTION line_occupancy_on_ticket_status();
+  EXECUTE FUNCTION line_occupancy_on_order_status();
 
 DROP TRIGGER IF EXISTS line_occupancy_allocation_insert ON "LineAllocation";
 CREATE TRIGGER line_occupancy_allocation_insert AFTER INSERT ON "LineAllocation"

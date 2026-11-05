@@ -19,10 +19,10 @@ function expectedStates({ org }: { org: DemoOrg }): number {
 /** Counts and the minimum configuration of the statuses and the grid. */
 async function statusFailures({ context, org }: CheckDemoPipelineInput): Promise<string[]> {
   const { slug, pipeline } = org;
-  const statuses = await context.db.ticketStatus.findMany({ where: { status: "ACTIVE" } });
-  const transitions = await context.db.ticketStatusTransition.count();
+  const statuses = await context.db.orderStatus.findMany({ where: { status: "ACTIVE" } });
+  const transitions = await context.db.orderStatusTransition.count();
   const cells = await context.db.statusStateRule.count();
-  const entries = statuses.filter((ticketStatus) => ticketStatus.entry).length;
+  const entries = statuses.filter((orderStatus) => orderStatus.entry).length;
   const failures = [
     ...countFailure({
       slug,
@@ -39,43 +39,43 @@ async function statusFailures({ context, org }: CheckDemoPipelineInput): Promise
     ...countFailure({ slug, what: "grid cells", found: cells, expected: pipeline.cells.length }),
     ...countFailure({ slug, what: "entry statuses", found: entries, expected: 1 }),
   ];
-  if (!statuses.some((ticketStatus) => ticketStatus.closes))
+  if (!statuses.some((orderStatus) => orderStatus.closes))
     failures.push(`${slug}: no closing status`);
   // Every status gets the gates of its `gatesIn` from any status (ADR 0076).
   const expected = pipeline.statuses.statuses.reduce((sum, s) => sum + (s.gatesIn?.length ?? 0), 0);
-  const found = await context.db.ticketStatusGate.count();
+  const found = await context.db.orderStatusGate.count();
   failures.push(...countFailure({ slug, what: "status gates", found, expected }));
   return failures;
 }
 
 /**
- * The status history (ADR 0054): every ticket's first change is its start (no `fromStatusId`, by
- * `TEMPLATE` for each ticket made from a predefined ticket, else `MANUAL`), and a ticket in a
+ * The status history (ADR 0054): every order's first change is its start (no `fromStatusId`, by
+ * `TEMPLATE` for each order made from a predefined order, else `MANUAL`), and an order in a
  * status with a quote event got there by `QUOTE_EVENT` (or started there from a template). That `statusId` is the newest change is the
  * reconciliation's job.
  */
 async function historyFailures({ context, org }: CheckDemoPipelineInput): Promise<string[]> {
   const { slug } = org;
-  const tickets = await context.db.ticket.findMany({
+  const orders = await context.db.order.findMany({
     select: {
       reference: true,
-      ticketStatus: { select: { event: true } },
+      orderStatus: { select: { event: true } },
       statusChanges: { select: { fromStatusId: true, trigger: true }, orderBy: { seq: "asc" } },
     },
   });
   const failures: string[] = [];
-  for (const { reference, ticketStatus, statusChanges } of tickets) {
+  for (const { reference, orderStatus, statusChanges } of orders) {
     const first = statusChanges[0];
     if (!first || first.fromStatusId !== null || !["MANUAL", "TEMPLATE"].includes(first.trigger)) {
-      failures.push(`${slug}: ticket #${reference} has no start in its status history`);
+      failures.push(`${slug}: order #${reference} has no start in its status history`);
     }
     const byEvent = statusChanges.some((change) => change.trigger === "QUOTE_EVENT");
-    if (ticketStatus.event && !byEvent && first?.trigger !== "TEMPLATE") {
-      failures.push(`${slug}: ticket #${reference} reached its event status by hand`);
+    if (orderStatus.event && !byEvent && first?.trigger !== "TEMPLATE") {
+      failures.push(`${slug}: order #${reference} reached its event status by hand`);
     }
   }
-  const found = tickets.filter((ticket) => ticket.statusChanges[0]?.trigger === "TEMPLATE").length;
-  const expected = org.tickets.filter((ticket) => ticket.template).length;
+  const found = orders.filter((order) => order.statusChanges[0]?.trigger === "TEMPLATE").length;
+  const expected = org.orders.filter((order) => order.template).length;
   return [...failures, ...countFailure({ slug, what: "template starts", found, expected })];
 }
 
@@ -107,7 +107,7 @@ async function stateFailures({ context, org }: CheckDemoPipelineInput): Promise<
 /**
  * ADR 0043 and 0044: the status, transition, state and grid cell counts against the data files,
  * the minimum configuration (one entry and one closing status) and that every item type has
- * exactly one initial state. Run before the grid checks move any ticket. Returns failures.
+ * exactly one initial state. Run before the grid checks move any order. Returns failures.
  */
 export async function checkDemoPipeline({
   context,

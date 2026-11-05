@@ -5,7 +5,7 @@ import type { StatPoint, StatTrend } from "@bibi/ui";
 export type Polarity = "upIsGood" | "downIsGood";
 
 export type StatTexts = {
-  /** The figure written out, e.g. "12 400 kr" or "8 tickets". */
+  /** The figure written out, e.g. "12 400 kr" or "8 orders". */
   value: (input: { value: number }) => string;
   /** The bucket's first day as the tooltip's label. */
   bucket: (input: { bucket: string }) => string;

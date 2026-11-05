@@ -8,8 +8,14 @@ import { SkipSetupButton } from "@/features/welcome/ui/setup/skip-setup-button";
 import { welcomeProgress } from "@/features/welcome/ui/welcome-progress";
 import { WelcomeStepFrame } from "@/features/welcome/ui/welcome-step-frame";
 import { Link } from "@/lib/navigation";
+import { pageTitle } from "@/lib/page-metadata";
 
 type KindStepProps = { params: Promise<{ locale: string; org: string }> };
+
+export async function generateMetadata({ params }: KindStepProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "welcome", key: "setup.kind.title" });
+}
 
 /** What kind of place: nine venue kinds plus "Start empty" (ADR 0061). */
 export default async function KindStep({ params }: KindStepProps) {

@@ -6,7 +6,7 @@ export type ChoiceRow = Assignment & {
   followers: { userId: string; effect: "FOLLOW" | "UNFOLLOW" }[];
 };
 
-/** What a responsibility gives every ticket it applies to (ADR 0055): never copied onto it. */
+/** What a responsibility gives every order it applies to (ADR 0055): never copied onto it. */
 export type SlotDefaults = { assigneeId: string; followerIds: readonly string[] };
 
 export type DeriveAssignmentInput = {

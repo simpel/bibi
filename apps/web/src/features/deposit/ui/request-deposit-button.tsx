@@ -20,14 +20,14 @@ export type DepositSuggestionView = {
   basis: "PERCENT" | "FULL" | "NONE";
   /** Kronor text for the amount field; empty when there is no rule. */
   defaultAmount: string;
-  /** The ticket's total incl. VAT, formatted. */
+  /** The order's total incl. VAT, formatted. */
   total: string;
 };
 
-export type RequestDepositButtonProps = { ticketId: string; suggestion: DepositSuggestionView };
+export type RequestDepositButtonProps = { orderId: string; suggestion: DepositSuggestionView };
 
 /** Opens the dialog that asks the customer for a deposit and shows its payment link. */
-export function RequestDepositButton({ ticketId, suggestion }: RequestDepositButtonProps) {
+export function RequestDepositButton({ orderId, suggestion }: RequestDepositButtonProps) {
   const t = useTranslations("deposit.request");
   const [open, setOpen] = useState(false);
   if (!usePaymentLinksAvailable()) {
@@ -52,7 +52,7 @@ export function RequestDepositButton({ ticketId, suggestion }: RequestDepositBut
           </DialogHeader>
           <RequestDepositForm
             key={String(open)}
-            ticketId={ticketId}
+            orderId={orderId}
             suggestion={suggestion}
             onDone={() => setOpen(false)}
           />

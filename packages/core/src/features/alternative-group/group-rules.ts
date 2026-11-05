@@ -7,7 +7,7 @@ import { hardStateIds } from "./hard-hold";
 type Db = { context: Pick<OperationContext, "db"> };
 
 export type CheckOptionsInput = Db & {
-  ticketId: string;
+  orderId: string;
   lineIds: readonly string[];
   /** The group being changed; its own options may stay in it. */
   groupId?: string;
@@ -15,15 +15,15 @@ export type CheckOptionsInput = Db & {
 
 type OptionRow = {
   id: string;
-  ticketId: string;
+  orderId: string;
   alternativeGroupId: string | null;
   role: string | null;
 };
 
-function optionIssue({ row, at, ticketId, groupId }: { row?: OptionRow; at: number } & CheckIds) {
+function optionIssue({ row, at, orderId, groupId }: { row?: OptionRow; at: number } & CheckIds) {
   const path = `lineIds.${at}`;
   if (!row) return { path, message: "Unknown line" };
-  if (row.ticketId !== ticketId) return { path, message: "The line belongs to another ticket" };
+  if (row.orderId !== orderId) return { path, message: "The line belongs to another order" };
   // ADR 0088 decision 4: an add-on follows its parent's group and is never an option itself.
   if (row.role === "ADD_ON") return { path, message: "An add-on follows its parent line" };
   if (row.alternativeGroupId && row.alternativeGroupId !== groupId) {
@@ -32,22 +32,22 @@ function optionIssue({ row, at, ticketId, groupId }: { row?: OptionRow; at: numb
   return null;
 }
 
-type CheckIds = { ticketId: string; groupId?: string | undefined };
+type CheckIds = { orderId: string; groupId?: string | undefined };
 
 /**
- * The options of a group (ADR 0052): distinct active lines of the ticket, none an option of
+ * The options of a group (ADR 0052): distinct active lines of the order, none an option of
  * another group, and at most one of them in a hard-hold state. `VALIDATION` with one issue per
  * offending `lineIds.N` otherwise.
  */
 export async function checkOptions({
   context,
-  ticketId,
+  orderId,
   lineIds,
   groupId,
 }: CheckOptionsInput): Promise<Result<true>> {
   const rows = await context.db.line.findMany({
     where: { id: { in: [...lineIds] } },
-    select: { id: true, ticketId: true, alternativeGroupId: true, role: true, stateId: true },
+    select: { id: true, orderId: true, alternativeGroupId: true, role: true, stateId: true },
   });
   const byId = new Map(rows.map((row) => [row.id, row]));
   const issues: AppErrorIssue[] = [];
@@ -55,7 +55,7 @@ export async function checkOptions({
     const duplicate = lineIds.indexOf(id) !== at;
     const issue = duplicate
       ? { path: `lineIds.${at}`, message: "The line is listed twice" }
-      : optionIssue({ row: byId.get(id), at, ticketId, groupId });
+      : optionIssue({ row: byId.get(id), at, orderId, groupId });
     if (issue) issues.push(issue);
   }
   const states = rows.flatMap((row) => (row.stateId ? [row.stateId] : []));

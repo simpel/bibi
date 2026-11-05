@@ -1,11 +1,11 @@
 import type { ExecuteContext } from "../../operations/context";
-import type { DemoLine } from "./ticket-types";
+import type { DemoLine } from "./order-types";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoAddOnsInput = { context: ExecuteContext; org: DemoOrg };
 
 type Db = { context: ExecuteContext };
-type Parent = { id: string; ticketId: string; startsAt: Date | null };
+type Parent = { id: string; orderId: string; startsAt: Date | null };
 
 /** The parent's sub-lines: options are OPTION, the data's add-ons ADD_ON with its period or own. */
 async function checkRoles({ context, line, parent }: Db & { line: DemoLine; parent: Parent }) {
@@ -43,10 +43,10 @@ function followsParent({ rows, parentId }: { rows: readonly Row[]; parentId: str
   return at >= 0 && next.every((row) => row.parentLineId === parentId);
 }
 
-/** Every quote of the ticket that was sent froze each add-on under its parent, in the total. */
+/** Every quote of the order that was sent froze each add-on under its parent, in the total. */
 async function checkQuotes({ context, line, parent }: Db & { line: DemoLine; parent: Parent }) {
   const quotes = await context.db.quote.findMany({
-    where: { ticketId: parent.ticketId, quoteStatus: { not: "DRAFT" } },
+    where: { orderId: parent.orderId, quoteStatus: { not: "DRAFT" } },
     select: { id: true, totalExclVatMinor: true, lines: true },
   });
   if (quotes.length === 0) return ["no sent quote"];
@@ -71,19 +71,19 @@ async function checkQuotes({ context, line, parent }: Db & { line: DemoLine; par
 
 /**
  * ADR 0088: every line the data files give add-ons (L11's board meeting and break buffet) has
- * them as ADD_ON lines under it (its options as OPTION lines), and its ticket's sent quotes
+ * them as ADD_ON lines under it (its options as OPTION lines), and its order's sent quotes
  * freeze each add-on as an order line with role ADD_ON under that line, counted in the totals.
  * Returns failures.
  */
 export async function checkDemoAddOns({ context, org }: CheckDemoAddOnsInput): Promise<string[]> {
-  const lines = org.tickets
-    .flatMap((ticket) => ticket.lines ?? [])
+  const lines = org.orders
+    .flatMap((order) => order.lines ?? [])
     .filter((line) => (line.addOns ?? []).length > 0);
   const failures: string[] = [];
   for (const line of lines) {
     const parent = await context.db.line.findFirst({
       where: { name: line.name, item: { name: line.item }, role: null },
-      select: { id: true, ticketId: true, startsAt: true },
+      select: { id: true, orderId: true, startsAt: true },
     });
     const found = parent
       ? [

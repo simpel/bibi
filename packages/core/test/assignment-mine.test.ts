@@ -4,15 +4,15 @@ import {
   createResponsibility,
   execute,
   listMyAssignments,
-  listTickets,
+  listOrders,
 } from "../src/index";
-import { assignTo, followAs, ticketSubject } from "./assignment-helpers";
+import { assignTo, followAs, orderSubject } from "./assignment-helpers";
 import { errorCode, testContext, unwrap } from "./helpers";
-import { createTestTicket, memberUser, ticketSetup } from "./ticket-helpers";
+import { createTestOrder, memberUser, orderSetup } from "./order-helpers";
 
 async function setup() {
-  const { context, type, customer } = await ticketSetup();
-  const book = () => createTestTicket({ context, entityTypeId: type.id, customerId: customer.id });
+  const { context, type, customer } = await orderSetup();
+  const book = () => createTestOrder({ context, entityTypeId: type.id, customerId: customer.id });
   const [first, second] = [await book(), await book()];
   const erik = await memberUser({ context, name: "Erik Lund" });
   const johan = await memberUser({ context, name: "Johan Ek" });
@@ -22,9 +22,9 @@ async function setup() {
 describe("assignment.listMine and the list filters (ADR 0034)", () => {
   it("lists what a member is assigned to and what they follow", async () => {
     const { context, first, second, erik, johan } = await setup();
-    await assignTo({ context, ...ticketSubject(first), assigneeId: johan });
-    await followAs({ context, ...ticketSubject(second), userId: johan });
-    await assignTo({ context, ...ticketSubject(second), assigneeId: erik });
+    await assignTo({ context, ...orderSubject(first), assigneeId: johan });
+    await followAs({ context, ...orderSubject(second), userId: johan });
+    await assignTo({ context, ...orderSubject(second), assigneeId: erik });
     const asJohan = testContext({
       organizationId: context.organizationId,
       actor: { type: "user", userId: johan },
@@ -36,7 +36,7 @@ describe("assignment.listMine and the list filters (ADR 0034)", () => {
     const following = unwrap({ result: await mine({ kind: "FOLLOWING" }) });
     expect(following.items.map((row) => row.subjectId)).toEqual([second.id]);
     const page = ({ filter }: { filter: { assigneeId: string } | { followerId: string } }) =>
-      execute({ operation: listTickets, input: { limit: 50, ...filter }, context });
+      execute({ operation: listOrders, input: { limit: 50, ...filter }, context });
     const byAssignee = unwrap({ result: await page({ filter: { assigneeId: johan } }) });
     expect(byAssignee.items.map((row) => row.id)).toEqual([first.id]);
     const byFollower = unwrap({ result: await page({ filter: { followerId: johan } }) });
@@ -52,7 +52,7 @@ describe("assignment.listMine and the list filters (ADR 0034)", () => {
         context,
       }),
     });
-    const subject = ticketSubject(first);
+    const subject = orderSubject(first);
     await assignTo({ context, ...subject, assigneeId: johan });
     const part = await assignTo({
       context,

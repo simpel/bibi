@@ -13,7 +13,7 @@ export const FinanceOverviewInputSchema = z.object({
   customerId: z
     .string()
     .optional()
-    .describe("Only this customer's tickets, invoices and payments (customer.list)"),
+    .describe("Only this customer's orders, invoices and payments (customer.list)"),
 });
 
 const minor = ({ what }: { what: string }) => z.number().int().describe(`${what}, minor units`);
@@ -29,9 +29,9 @@ export const FinanceMonthSchema = z.object({
 export const OverdueInvoiceSchema = z.object({
   invoiceId: z.string().describe("invoice.get"),
   number: z.number().int(),
-  ticketId: z.string().describe("ticket.get"),
-  ticketReference: z.number().int().nullable().describe("null without ticket:read"),
-  ticketTitle: z.string().nullable().describe("null without ticket:read or a title"),
+  orderId: z.string().describe("order.get"),
+  orderReference: z.number().int().nullable().describe("null without order:read"),
+  orderTitle: z.string().nullable().describe("null without order:read or a title"),
   dueDate: z.date(),
   daysOverdue: z.number().int(),
   openMinor: minor({ what: "Still owed" }),
@@ -47,12 +47,12 @@ export const FinanceAgingSchema = z.object({
 
 export const OutcomeMonthSchema = z.object({
   month: MonthSchema,
-  wonTickets: z
+  wonOrders: z
     .number()
     .int()
-    .describe("Tickets that closed with an accepted quote or a sent invoice"),
+    .describe("Orders that closed with an accepted quote or a sent invoice"),
   wonValueMinor: minor({ what: "Their accepted quote totals excl. VAT, else their estimates" }),
-  lostTickets: z.number().int().describe("Tickets that closed with neither"),
+  lostOrders: z.number().int().describe("Orders that closed with neither"),
   lostValueMinor: minor({ what: "Their estimates excl. VAT" }),
 });
 
@@ -79,7 +79,7 @@ export const FinanceTrendsSchema = z.object({
 
 /**
  * The organization's money for a period (ADR 0077, a view read model, ADR 0071): everything is
- * derived on read. Invoices and payments need `payment:read`, won and lost tickets `quote:read`;
+ * derived on read. Invoices and payments need `payment:read`, won and lost orders `quote:read`;
  * a part the caller may not read is null. What is booked ahead is `dashboard.summary` (ADR 0080).
  */
 export const FinanceOverviewSchema = z.object({
@@ -96,7 +96,7 @@ export const FinanceOverviewSchema = z.object({
   outcomes: z
     .array(OutcomeMonthSchema)
     .nullable()
-    .describe("Tickets won and lost per month; needs quote:read"),
+    .describe("Orders won and lost per month; needs quote:read"),
   revenueByType: z.array(RevenueByTypeSchema).nullable(),
   vatByRate: z.array(VatByRateSchema).nullable(),
   trends: FinanceTrendsSchema.nullable().describe("Needs payment:read"),

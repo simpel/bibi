@@ -36,11 +36,11 @@ export type CalendarLabels = {
   blocked: string;
   notSold: string;
   guests: (input: { count: number }) => string;
-  /** Where the guests are on a ticket's lanes: "Guests here", or with how many. */
+  /** Where the guests are on an order's lanes: "Guests here", or with how many. */
   guestsHere: (input: { count?: number }) => string;
   guestsAt: (input: { place: string }) => string;
   lineCount: (input: { count: number }) => string;
-  /** Heading of a ticket's lines with no time yet. */
+  /** Heading of an order's lines with no time yet. */
   unscheduled: string;
   /** Minutes after midnight in the user's clock format: `14:05` or `2:05 PM`. */
   clock: (input: { minutes: number }) => string;
@@ -65,7 +65,7 @@ export type CalendarLabels = {
     /** Next to the day: "48% booked". */
     rate: (input: { percent: number }) => string;
   };
-  open: (input: { ticket: string }) => string;
+  open: (input: { order: string }) => string;
   /** Pinning a booking's card to the tray at the bottom, to compare it with others. */
   pin: (input: { name: string }) => string;
   unpin: (input: { name: string }) => string;
@@ -78,14 +78,14 @@ export type CalendarLabels = {
     guests: string;
     value: string;
     exclVat: string;
-    seeTicket: string;
+    seeOrder: string;
     minimize: (input: { name: string }) => string;
     expand: (input: { name: string }) => string;
   };
   openLine: string;
   notes: string;
   staff: string;
-  fromTicket: (input: { via: string }) => string;
+  fromOrder: (input: { via: string }) => string;
   holds: Record<CalendarHold, string>;
   buffers: string;
   buffersText: string;
@@ -101,6 +101,10 @@ export function CalendarLabelsProvider({
   children: ReactNode;
 }) {
   return <CalendarLabelsContext value={labels}>{children}</CalendarLabelsContext>;
+}
+
+export function useOptionalCalendarLabels(): CalendarLabels | null {
+  return useContext(CalendarLabelsContext);
 }
 
 /** The calendar's words; every part of it sits inside `CalendarLabelsProvider`. */

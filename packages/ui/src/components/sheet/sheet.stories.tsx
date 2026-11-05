@@ -23,7 +23,7 @@ export const AssistantPanel: Story = {
       <SheetContent side="right">
         <SheetHeader>
           <SheetTitle>Assistant</SheetTitle>
-          <SheetDescription>Ask about venues, rooms and tickets.</SheetDescription>
+          <SheetDescription>Ask about venues, rooms and orders.</SheetDescription>
         </SheetHeader>
       </SheetContent>
     </Sheet>

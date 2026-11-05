@@ -16,7 +16,7 @@ describe("the dev menu's test inbox message", () => {
     expect(message).toMatchObject({
       channel: "EMAIL",
       endpointId: email.id,
-      ticketId: null,
+      orderId: null,
       readAt: null,
     });
   });

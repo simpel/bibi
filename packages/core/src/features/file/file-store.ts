@@ -12,17 +12,22 @@ export type FileStore = {
   get(input: { key: string }): Promise<Result<StoredFileBody | null>>;
 };
 
-let current: FileStore | undefined;
+/**
+ * Held on `globalThis`, not in a module variable: Next can load core as several module
+ * instances, and the one running the handler must see the store the app set in another
+ * (same pattern as `extract` in order-draft).
+ */
+const port = globalThis as typeof globalThis & { __bibiFileStore?: FileStore | undefined };
 
 export type SetFileStoreInput = { store: FileStore | undefined };
 
 /** Sets the process-wide store; `undefined` unsets it (file operations then return UNAVAILABLE). */
 export function setFileStore({ store }: SetFileStoreInput): void {
-  current = store;
+  port.__bibiFileStore = store;
 }
 
 export function getFileStore(): FileStore | undefined {
-  return current;
+  return port.__bibiFileStore;
 }
 
 /** In-memory stand-in for tests (like `createMemoryPaymentProvider`). */

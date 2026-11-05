@@ -1,29 +1,29 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
-import type { TicketDto } from "../ticket/schema";
-import { loadTicket } from "../ticket/to-ticket-dto";
+import type { OrderDto } from "../order/schema";
+import { loadOrder } from "../order/to-order-dto";
 import type { QuoteDto } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-export type LoadOpenTicketInput = Db & { ticketId: string };
+export type LoadOpenOrderInput = Db & { orderId: string };
 
-/** The quote's ticket; a ticket in a closing status gets no new quotes or versions (`CONFLICT`). */
-export async function loadOpenTicket({
+/** The quote's order; an order in a closing status gets no new quotes or versions (`CONFLICT`). */
+export async function loadOpenOrder({
   context,
-  ticketId,
-}: LoadOpenTicketInput): Promise<Result<TicketDto>> {
-  const ticket = await loadTicket({ context, id: ticketId });
-  if (!ticket) return notFound({ entity: "Ticket" });
-  const ticketStatus = await context.db.ticketStatus.findFirst({
-    where: { id: ticket.statusId, status: { in: ["ACTIVE", "ARCHIVED"] } },
+  orderId,
+}: LoadOpenOrderInput): Promise<Result<OrderDto>> {
+  const order = await loadOrder({ context, id: orderId });
+  if (!order) return notFound({ entity: "Order" });
+  const orderStatus = await context.db.orderStatus.findFirst({
+    where: { id: order.statusId, status: { in: ["ACTIVE", "ARCHIVED"] } },
     select: { name: true, closes: true },
   });
-  if (ticketStatus?.closes) {
-    return conflict({ message: `The ticket is in "${ticketStatus.name}" and takes no quotes` });
+  if (orderStatus?.closes) {
+    return conflict({ message: `The order is in "${orderStatus.name}" and takes no quotes` });
   }
-  return ok({ value: ticket });
+  return ok({ value: order });
 }
 
 /** Only a DRAFT can be edited; a sent quote is changed by making a new version. */
@@ -34,10 +34,10 @@ export function checkDraft({ quote }: { quote: QuoteDto }): Result<true> {
   });
 }
 
-/** The next version number of the ticket's quote (1 when it has none). */
-export async function nextVersion({ context, ticketId }: LoadOpenTicketInput): Promise<number> {
+/** The next version number of the order's quote (1 when it has none). */
+export async function nextVersion({ context, orderId }: LoadOpenOrderInput): Promise<number> {
   const latest = await context.db.quote.findFirst({
-    where: { ticketId },
+    where: { orderId },
     orderBy: { version: "desc" },
     select: { version: true },
   });

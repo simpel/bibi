@@ -6,7 +6,7 @@ import {
   setPriceListItems,
   updateItem,
   updateLine,
-  updateTicket,
+  updateOrder,
 } from "../src/index";
 import { unwrap } from "./helpers";
 import { createTestLine, programSetup } from "./line-helpers";
@@ -26,7 +26,7 @@ async function pricedSetup() {
   unwrap({ result: await execute({ operation: updateItem, input, context }) });
   const line = unwrap({
     result: await createTestLine({
-      ...{ context, ticketId: setup.ticket.id, entityTypeId: setup.type.id },
+      ...{ context, orderId: setup.order.id, entityTypeId: setup.type.id },
       ...{ itemId: room.id, from: 10, to: 12 },
     }),
   });
@@ -64,11 +64,11 @@ describe("line commercial values (ADR 0052)", () => {
 
   it("shows a price list change at once, with no change to the line", async () => {
     const setup = await pricedSetup();
-    const { context, line, room, ticket } = setup;
+    const { context, line, room, order } = setup;
     const list = unwrap({
       result: await execute({
         operation: createPriceList,
-        input: { name: "Agreement", customerId: ticket.customerId },
+        input: { name: "Agreement", customerId: order.customerId },
         context,
       }),
     });
@@ -85,7 +85,7 @@ describe("line commercial values (ADR 0052)", () => {
     });
     // An expired list is ignored; of the valid ones, the newest start wins.
     const later = async ({ name, from, to, priceMinor }: Later) => {
-      const input = { name, customerId: ticket.customerId, validFrom: from, validTo: to };
+      const input = { name, customerId: order.customerId, validFrom: from, validTo: to };
       const made = unwrap({
         result: await execute({ operation: createPriceList, input, context }),
       });
@@ -104,8 +104,8 @@ describe("line commercial values (ADR 0052)", () => {
 
   it("applies the customer's general discount to the item's price", async () => {
     const setup = await pricedSetup();
-    const { context, line, ticket } = setup;
-    const input = { name: "Framework", customerId: ticket.customerId, discountPercent: 15 };
+    const { context, line, order } = setup;
+    const input = { name: "Framework", customerId: order.customerId, discountPercent: 15 };
     unwrap({ result: await execute({ operation: createPriceList, input, context }) });
     expect(await read({ setup, id: line.id })).toMatchObject({
       ...{ effectiveUnitPriceMinor: 100_000, unitPriceSource: "ITEM" },
@@ -113,17 +113,17 @@ describe("line commercial values (ADR 0052)", () => {
     });
   });
 
-  it("counts the ticket's headcount when the line has no quantity", async () => {
+  it("counts the order's headcount when the line has no quantity", async () => {
     const setup = await pricedSetup();
-    const { context, line, ticket } = setup;
+    const { context, line, order } = setup;
     expect(line).toMatchObject({ effectiveQuantity: null, quantitySource: null });
-    const estimate = { id: ticket.id, estimatedHeadcount: 40 };
-    unwrap({ result: await execute({ operation: updateTicket, input: estimate, context }) });
+    const estimate = { id: order.id, estimatedHeadcount: 40 };
+    unwrap({ result: await execute({ operation: updateOrder, input: estimate, context }) });
     expect(await read({ setup, id: line.id })).toMatchObject({
       ...{ effectiveQuantity: 40, quantitySource: "ESTIMATED_HEADCOUNT" },
     });
-    const guaranteed = { id: ticket.id, guaranteedHeadcount: 36 };
-    unwrap({ result: await execute({ operation: updateTicket, input: guaranteed, context }) });
+    const guaranteed = { id: order.id, guaranteedHeadcount: 36 };
+    unwrap({ result: await execute({ operation: updateOrder, input: guaranteed, context }) });
     expect(await read({ setup, id: line.id })).toMatchObject({
       ...{ effectiveQuantity: 36, quantitySource: "GUARANTEED_HEADCOUNT" },
     });

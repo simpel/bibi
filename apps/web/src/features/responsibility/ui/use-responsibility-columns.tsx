@@ -3,7 +3,7 @@ import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersonNames } from "@/components/people/person-names";
-import { namesOf } from "@/features/work-order-definition/ui/work-order-options";
+import { namesOf } from "@/features/run-sheet-definition/ui/run-sheet-options";
 import type { RowAccess } from "@/lib/can";
 import type { ResponsibilityOption, ResponsibilityOptions } from "./responsibility-options";
 import { ResponsibilityRowActions } from "./responsibility-row-actions";

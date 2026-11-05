@@ -2,7 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
-import { checkReadable } from "../ticket/ticket-rules";
+import { checkReadable } from "../order/order-rules";
 import type { StatusGridSetCellInput } from "./schema";
 
 type Context = Pick<OperationContext, "db" | "permissions">;
@@ -17,10 +17,10 @@ async function checkStatus({ context, statusId }: StatusInput): Promise<Result<t
   const path = "statusId";
   const readable = checkReadable({ context, permission: "pipeline:read", path });
   if (!readable.ok) return readable;
-  const ticketStatus = await context.db.ticketStatus.findFirst({ where: { id: statusId } });
-  if (!ticketStatus) return problem({ path, message: "Unknown or archived status" });
-  if (ticketStatus.closes) {
-    return problem({ path, message: `"${ticketStatus.name}" is closing: it releases every line` });
+  const orderStatus = await context.db.orderStatus.findFirst({ where: { id: statusId } });
+  if (!orderStatus) return problem({ path, message: "Unknown or archived status" });
+  if (orderStatus.closes) {
+    return problem({ path, message: `"${orderStatus.name}" is closing: it releases every line` });
   }
   return ok({ value: true });
 }
@@ -47,8 +47,8 @@ export type CheckCellInput = { context: Context; input: StatusGridSetCellInput }
  */
 export async function checkCell({ context, input }: CheckCellInput): Promise<Result<true>> {
   const { statusId, entityTypeId, stateId } = input;
-  const ticketStatus = await checkStatus({ context, statusId });
-  if (!ticketStatus.ok) return ticketStatus;
+  const orderStatus = await checkStatus({ context, statusId });
+  if (!orderStatus.ok) return orderStatus;
   const path = "entityTypeId";
   const readable = checkReadable({ context, permission: "configuration:read", path });
   if (!readable.ok) return readable;

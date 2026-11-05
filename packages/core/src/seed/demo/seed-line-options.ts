@@ -4,7 +4,7 @@ import { updateLine } from "../../features/line/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { missing } from "./seed-fields";
-import type { DemoLineOption } from "./ticket-types";
+import type { DemoLineOption } from "./order-types";
 
 export type SeedLineOptionsInput = {
   context: ExecuteContext;

@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
-import { checkTicket } from "../line/line-rules";
+import { checkOrder } from "../line/line-rules";
 import { checkOptions } from "./group-rules";
 import type {
   AlternativeGroupCreateInput,
@@ -14,15 +14,15 @@ import { loadGroup } from "./to-group-dto";
 type Command<I> = { input: I; context: OperationContext };
 type GroupResult = Promise<Result<AlternativeGroupDto>>;
 
-/** `alternativeGroup.create`: a new group of two or more lines of the ticket. */
+/** `alternativeGroup.create`: a new group of two or more lines of the order. */
 export async function insertGroup({ input, context }: Command<AlternativeGroupCreateInput>) {
-  const { ticketId, name, lineIds } = input;
-  const ticket = await checkTicket({ context, ticketId });
-  if (!ticket.ok) return ticket;
-  const options = await checkOptions({ context, ticketId, lineIds });
+  const { orderId, name, lineIds } = input;
+  const order = await checkOrder({ context, orderId });
+  if (!order.ok) return order;
+  const options = await checkOptions({ context, orderId, lineIds });
   if (!options.ok) return options;
   const row = await context.db.alternativeGroup.create({
-    data: { ticketId, name, organizationId: context.organizationId },
+    data: { orderId, name, organizationId: context.organizationId },
   });
   const set = await setOptions({ context, groupId: row.id, lineIds });
   if (!set.ok) return set;
@@ -41,8 +41,8 @@ export async function changeGroup({
   if (!before) return notFound({ entity: "Alternative group" });
   if (lineIds) {
     if (before.chosenLineId) return conflict({ message: "An option is already chosen" });
-    const ticketId = before.ticketId;
-    const options = await checkOptions({ context, ticketId, lineIds, groupId: id });
+    const orderId = before.orderId;
+    const options = await checkOptions({ context, orderId, lineIds, groupId: id });
     if (!options.ok) return options;
     const set = await setOptions({ context, groupId: id, lineIds });
     if (!set.ok) return set;

@@ -6,5 +6,5 @@ type AdminPageProps = { params: Promise<{ locale: string }> };
 
 export default async function MothershipPage({ params }: AdminPageProps) {
   const locale = resolveLocale({ value: (await params).locale });
-  redirect({ href: ROUTES.mothershipLogs, locale });
+  redirect({ href: ROUTES.mothershipOrganizations, locale });
 }

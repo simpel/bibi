@@ -5,18 +5,18 @@ const LINES = {
   where: { inTotal: true },
   select: { itemId: true, vatRows: true, item: { select: { entityTypeId: true } } },
 } as const;
-const TICKET = { select: { reference: true } } as const;
+const ORDER = { select: { reference: true } } as const;
 
 /** What a payment settled, as the voucher needs it: an invoice's number or a quote's lines. */
 const PAYMENT_SELECT = {
   id: true,
-  ticketId: true,
+  orderId: true,
   amountMinor: true,
   applicationFeeMinor: true,
   paidAt: true,
   depositId: true,
   deposit: { select: { vatRows: true } },
-  ticket: TICKET,
+  order: ORDER,
   invoice: { select: { number: true } },
   quote: { select: { lines: LINES } },
 } as const;
@@ -24,11 +24,11 @@ const PAYMENT_SELECT = {
 const INVOICE_SELECT = {
   id: true,
   number: true,
-  ticketId: true,
+  orderId: true,
   sentAt: true,
   voidedAt: true,
   totalInclVatMinor: true,
-  ticket: TICKET,
+  order: ORDER,
   lines: LINES,
   deductions: { select: { amountMinor: true, deposit: { select: { vatRows: true } } } },
 } as const;

@@ -3,9 +3,9 @@ import type { DerivedLine } from "./derive-lines";
 import { lineAmounts } from "./line-totals";
 
 export type ApplyPriceEffectsInput = {
-  /** The tickets' priced lines as order lines, after alternatives. */
+  /** The orders' priced lines as order lines, after alternatives. */
   derived: readonly DerivedLine[];
-  /** Every active line of the same tickets, priced or not. */
+  /** Every active line of the same orders, priced or not. */
   lines: readonly LineDto[];
 };
 

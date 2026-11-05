@@ -22,6 +22,7 @@ const text = ({
 }): Column => ({
   id,
   header,
+  accessorFn: pick,
   cell: ({ row }) => <Muted value={pick(row.original)} />,
 });
 
@@ -33,6 +34,7 @@ export function useLogColumns(): Column[] {
     const time: Column = {
       id: "time",
       header: t("time"),
+      accessorFn: (e) => e.time,
       cell: ({ row }) => (
         <time className="whitespace-nowrap tabular-nums" dateTime={row.original.time.toISOString()}>
           {format.dateTime({ instant: row.original.time, seconds: true })}
@@ -40,19 +42,21 @@ export function useLogColumns(): Column[] {
       ),
     };
     return [
-      time,
-      {
-        id: "level",
-        header: t("level"),
-        cell: ({ row }) => <LevelBadge level={row.original.level} />,
-      },
       {
         id: "event",
         header: t("event"),
+        accessorFn: (e) => e.event,
         cell: ({ row }) => <span className="font-mono text-xs">{row.original.event}</span>,
       },
       text({ id: "operation", header: t("operation"), pick: (e) => e.operation }),
       text({ id: "surface", header: t("surface"), pick: (e) => e.surface }),
+      {
+        id: "level",
+        header: t("level"),
+        accessorFn: (e) => e.level,
+        cell: ({ row }) => <LevelBadge level={row.original.level} />,
+      },
+      time,
       text({ id: "status", header: t("status"), pick: (e) => e.status }),
       text({ id: "duration", header: t("duration"), pick: (e) => e.durationMs }),
     ];

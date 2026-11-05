@@ -7,7 +7,6 @@ import { handleLoadError } from "@/server/load-error";
 import { getNumberFormat } from "@/server/number-format";
 import { runOperation } from "@/server/run-operation";
 import { AttentionPanel } from "./attention-panel";
-import { BookedAheadCard } from "./booked-ahead-card";
 import { ScheduledPanel } from "./scheduled-panel";
 import { StatusStatCards } from "./status-stat-cards";
 import { UtilisationPanel } from "./utilisation-panel";
@@ -16,7 +15,7 @@ export type WorkloadTabProps = { locale: Locale; period: Period };
 
 /**
  * The Workload tab (ADR 0086): a stat card per open status, then what needs attention beside the
- * tickets in the range, then utilisation beside what is booked and not yet invoiced.
+ * orders in the range, then utilisation beside what is booked and not yet invoiced.
  */
 export async function WorkloadTab({ locale, period }: WorkloadTabProps) {
   const [numbers, dates, result] = await Promise.all([
@@ -37,7 +36,6 @@ export async function WorkloadTab({ locale, period }: WorkloadTabProps) {
         {summary.utilisation ? (
           <UtilisationPanel utilisation={summary.utilisation} numbers={numbers} />
         ) : null}
-        {summary.bookedAhead ? <BookedAheadCard summary={summary} numbers={numbers} /> : null}
       </div>
     </div>
   );

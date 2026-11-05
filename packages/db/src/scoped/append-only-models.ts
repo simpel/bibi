@@ -4,9 +4,9 @@
  * newest estimate is read from its table.
  */
 export const DOMAIN_HISTORY_MODELS = [
-  "TicketStatusChange",
+  "OrderStatusChange",
   "LineStateChange",
-  "TicketEstimate",
+  "OrderEstimate",
 ] as const;
 
 /** Append-only models: no update/delete/upsert through `scopedDb`. */
@@ -14,7 +14,7 @@ export const APPEND_ONLY_MODELS = new Set<string>([
   "AuditLog",
   "Message",
   "InboundEmail",
-  "WorkOrderRecipient",
+  "RunSheetRecipient",
   "KnownMember",
   "PaymentRefund",
   "AccountingExportEntry",

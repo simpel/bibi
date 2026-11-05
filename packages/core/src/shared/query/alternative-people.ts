@@ -1,7 +1,7 @@
 /**
  * The positive people qualifiers (`assignee:`, `follower:`, `involves:`) are alternatives of each
  * other, so `assignee:me follower:me` finds what I answer for or follow; every other qualifier
- * must hold. Shared by the ticket and work order searches so they read alike.
+ * must hold. Shared by the order and run sheet searches so they read alike.
  */
 export function withAlternativePeople<W extends { OR?: W[] }>({
   wheres,

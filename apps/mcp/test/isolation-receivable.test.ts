@@ -6,7 +6,7 @@ import {
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
-import { seedTicket } from "./seed-ticket";
+import { seedOrder } from "./seed-order";
 
 afterEach(() => {
   setPaymentProvider({ provider: undefined });
@@ -33,10 +33,10 @@ describe("cross-organization isolation: receivables and balances (ADR 0057)", ()
   it("hides one organization's deposits, invoices and balance from another", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
-    const ticket = await seedTicket({ client: a });
+    const order = await seedOrder({ client: a });
     installFakeStripe({ status: "ACTIVE" });
     setPaymentProvider({ provider: createMemoryPaymentProvider() });
-    const args = { ticketId: ticket.id, description: "Advance", amountMinor: 100_000 };
+    const args = { orderId: order.id, description: "Advance", amountMinor: 100_000 };
     const deposit = await call({ client: a, name: "deposit_create", args });
     expect(deposit.isError, JSON.stringify(deposit.data)).toBe(false);
     const { id } = deposit.data;
@@ -51,20 +51,20 @@ describe("cross-organization isolation: receivables and balances (ADR 0057)", ()
         ["invoice_send", { id }],
         ["invoice_sync", { id }],
         ["invoice_void", { id }],
-        ["invoice_create", { ticketId: ticket.id }],
-        ["payment_balance", { ticketId: ticket.id }],
+        ["invoice_create", { orderId: order.id }],
+        ["payment_balance", { orderId: order.id }],
       ],
     });
-    const deposits = await call({ client: b, name: "deposit_list", args: { ticketId: ticket.id } });
+    const deposits = await call({ client: b, name: "deposit_list", args: { orderId: order.id } });
     expect(deposits.data.items).toEqual([]);
-    const invoices = await call({ client: b, name: "invoice_list", args: { ticketId: ticket.id } });
+    const invoices = await call({ client: b, name: "invoice_list", args: { orderId: order.id } });
     expect(invoices.data.items).toEqual([]);
     const graph = await call({
       client: b,
       name: "graphql_query",
       args: {
-        query: "query($id: String!) { deposits(ticketId: $id) { items { id } } }",
-        variables: { id: ticket.id },
+        query: "query($id: String!) { deposits(orderId: $id) { items { id } } }",
+        variables: { id: order.id },
       },
     });
     expect(graph.data.data.deposits.items).toEqual([]);

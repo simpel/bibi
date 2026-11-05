@@ -4,7 +4,7 @@
 - **Status:** Accepted
 - **Amends:** 0068 (member profiles), 0061 (the person's profile), 0063 (who reads a file)
 - **Related:** 0071 (view read models), 0051 (single source of truth)
-- **Ticket:** #486
+- **Order:** #486
 
 ## Context
 - A booking on the calendar names who to call internally. Staff need that person's phone, email and photo, not only a name.

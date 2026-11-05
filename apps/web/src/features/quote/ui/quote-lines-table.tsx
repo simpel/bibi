@@ -9,7 +9,7 @@ import { type QuoteLineRow, useQuoteLineColumns } from "./use-quote-line-columns
 export type QuoteLinesTableProps = {
   lines: readonly QuoteLineRow["line"][];
   removedLines?: readonly OrderLineDto[];
-  /** Saved column order key; the ticket's differences use their own. */
+  /** Saved column order key; the order's differences use their own. */
   tableId?: string;
 };
 

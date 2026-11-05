@@ -1,4 +1,4 @@
-import { LOCALES } from "@bibi/i18n";
+import { LOCALES, type Locale } from "@bibi/i18n";
 import {
   DropdownMenuItem,
   DropdownMenuSub,
@@ -8,6 +8,7 @@ import {
 import { CheckIcon, LanguagesIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { saveProfileLocale } from "@/features/profile/actions";
 import { usePathname, useRouter } from "@/lib/navigation";
 
 const LABEL_KEY = { sv: "languageSv", en: "languageEn" } as const;
@@ -21,6 +22,12 @@ export function LocaleMenu() {
   const pathname = usePathname();
   const query = useSearchParams().toString();
   const href = query ? `${pathname}?${query}` : pathname;
+
+  const handleSelect = ({ locale }: { locale: Locale }) => {
+    void saveProfileLocale({ locale }).catch(() => {});
+    router.replace(href, { locale });
+  };
+
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger>
@@ -29,7 +36,7 @@ export function LocaleMenu() {
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent>
         {LOCALES.map((locale) => (
-          <DropdownMenuItem key={locale} onSelect={() => router.replace(href, { locale })}>
+          <DropdownMenuItem key={locale} onSelect={() => handleSelect({ locale })}>
             <span className="flex-1">{t(LABEL_KEY[locale])}</span>
             {locale === current ? <CheckIcon /> : null}
           </DropdownMenuItem>

@@ -7,9 +7,9 @@ import { createTestItem } from "./item-helpers";
 const DAY = { from: "2037-11-01", to: "2037-11-01" };
 
 describe("calendar.range (ADR 0064)", () => {
-  it("joins each block with its line, ticket, state and status, earliest first", async () => {
+  it("joins each block with its line, order, state and status, earliest first", async () => {
     const { context, line, manual } = await calendarSetup();
-    const ticket = await context.db.ticket.findFirstOrThrow({ where: { id: line.ticketId } });
+    const order = await context.db.order.findFirstOrThrow({ where: { id: line.orderId } });
     const state = await context.db.itemState.findFirstOrThrow({
       where: { id: line.stateId ?? "" },
     });
@@ -21,19 +21,19 @@ describe("calendar.range (ADR 0064)", () => {
       expect.objectContaining({
         type: "HOLD",
         lineId: line.id,
-        ticketId: line.ticketId,
-        reference: ticket.reference,
+        orderId: line.orderId,
+        reference: order.reference,
         title: line.name,
         soft: false,
         stateId: line.stateId,
         stateName: state.name,
-        statusId: ticket.statusId,
+        statusId: order.statusId,
       }),
       expect.objectContaining({
         id: manual.id,
         type: "MAINTENANCE",
         lineId: null,
-        ticketId: null,
+        orderId: null,
         title: "Floor polish",
         stateId: null,
       }),
@@ -51,13 +51,13 @@ describe("calendar.range (ADR 0064)", () => {
     expect(result.blocks).toEqual([]);
   });
 
-  it("narrows by ticket, state, status and type; line filters hide manual blocks", async () => {
+  it("narrows by order, state, status and type; line filters hide manual blocks", async () => {
     const { context, line, item } = await calendarSetup();
-    const ticket = await context.db.ticket.findFirstOrThrow({ where: { id: line.ticketId } });
+    const order = await context.db.order.findFirstOrThrow({ where: { id: line.orderId } });
     for (const filter of [
-      { ticketId: line.ticketId },
+      { orderId: line.orderId },
       { stateId: line.stateId },
-      { statusId: ticket.statusId },
+      { statusId: order.statusId },
     ]) {
       const { blocks } = await range({ context, input: { ...DAY, ...filter } });
       expect(blocks.map((block) => block.type)).toEqual(["HOLD"]);
@@ -113,7 +113,7 @@ describe("calendar.range (ADR 0064)", () => {
 
   it("hides the line's name and the state's name without program and pipeline read", async () => {
     const { context } = await calendarSetup();
-    const reader = { ...context, permissions: { ticket: ["read" as const] } };
+    const reader = { ...context, permissions: { order: ["read" as const] } };
     const { blocks } = await range({ context: reader, input: DAY });
     expect(blocks[0]).toMatchObject({
       title: null,
@@ -125,9 +125,9 @@ describe("calendar.range (ADR 0064)", () => {
     expect(blocks[1]).toMatchObject({ title: "Floor polish" });
   });
 
-  it("answers NOT_FOUND for a venue or ticket out of reach", async () => {
+  it("answers NOT_FOUND for a venue or order out of reach", async () => {
     const { context } = await calendarSetup();
-    for (const filter of [{ venueId: "missing" }, { ticketId: "missing" }]) {
+    for (const filter of [{ venueId: "missing" }, { orderId: "missing" }]) {
       const result = await runRange({ context, input: { ...DAY, ...filter } });
       expect(errorCode({ result })).toBe("NOT_FOUND");
     }

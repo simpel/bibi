@@ -2,7 +2,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useDashboardsNavigate } from "@/features/dashboard/ui/dashboards-pending";
+import { useRouter } from "@/lib/navigation";
 import { financialsHref } from "../lib/finance-href";
 import type { Period } from "../lib/finance-period";
 
@@ -17,14 +17,12 @@ export type CustomerFilterProps = {
 /** Narrows the financials to one customer; "All customers" clears it. */
 export function CustomerFilter({ period, customers, customerId }: CustomerFilterProps) {
   const t = useTranslations("finance.customerFilter");
-  const { navigate } = useDashboardsNavigate();
+  const router = useRouter();
   return (
     <Select
       value={customerId ?? ALL}
       onValueChange={(value) =>
-        navigate({
-          href: financialsHref({ ...period, customerId: value === ALL ? undefined : value }),
-        })
+        router.push(financialsHref({ ...period, customerId: value === ALL ? undefined : value }))
       }
     >
       <SelectTrigger aria-label={t("label")} className="h-8 w-56">

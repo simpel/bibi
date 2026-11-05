@@ -15,7 +15,7 @@ import type { LineWire } from "./line-entries";
 import type { MemberProfileWire } from "./member-profile-entries";
 import type { NotificationUiProps } from "./notification-entries";
 import type { IntegrationWire, PaymentAccountWire } from "./payment-account-entries";
-import type { PaymentWire, TicketBalanceWire } from "./payment-entries";
+import type { PaymentWire, OrderBalanceWire } from "./payment-entries";
 import type { PermissionProfileWire } from "./permission-entries";
 import type { PipelineBoardWire } from "./pipeline-entries";
 import type { PipelinePreviewWire, PipelineSetupDraftWire } from "./pipeline-setup-entries";
@@ -26,9 +26,9 @@ import type { RequirementWire } from "./requirement-entries";
 import type { ResponsibilityWire } from "./responsibility-entries";
 import type { SkillUiProps } from "./skill-entries";
 import type { StatusGridCellWire } from "./status-grid-entries";
-import type { TicketToolUiProps } from "./ticket-entries";
-import type { TicketStatusWire } from "./ticket-status-entries";
-import type { TicketTemplateWire } from "./ticket-template-entries";
+import type { OrderToolUiProps } from "./order-entries";
+import type { OrderStatusWire } from "./order-status-entries";
+import type { OrderTemplateWire } from "./order-template-entries";
 import type {
   AuditLogWire,
   ContactWire,
@@ -44,8 +44,8 @@ import type {
   VenueWire,
   VocabularyWire,
 } from "./wire-schemas";
-import type { WorkOrderDefinitionWire } from "./work-order-definition-entries";
-import type { WorkOrderWire } from "./work-order-entries";
+import type { RunSheetDefinitionWire } from "./run-sheet-definition-entries";
+import type { RunSheetWire } from "./run-sheet-entries";
 
 /**
  * Generative-UI contract: component key → props. The web maps each key to an `@bibi/ui`
@@ -57,7 +57,7 @@ export type ToolUiProps = BoardUiProps &
   SkillUiProps &
   DashboardUiProps &
   FinanceUiProps &
-  TicketToolUiProps & {
+  OrderToolUiProps & {
     "venue-table": { items: VenueWire[]; nextCursor: string | null };
     "venue-card": { venue: VenueWire };
     "item-table": { items: ItemWire[]; nextCursor: string | null };
@@ -71,11 +71,11 @@ export type ToolUiProps = BoardUiProps &
     "occupancy-card": { occupancy: OccupancyWire };
     "price-list-table": { items: PriceListWire[]; nextCursor: string | null };
     "price-list-card": { priceList: PriceListWire };
-    "ticket-status-table": { items: TicketStatusWire[]; nextCursor: string | null };
-    "ticket-status-card": { ticketStatus: TicketStatusWire };
+    "order-status-table": { items: OrderStatusWire[]; nextCursor: string | null };
+    "order-status-card": { orderStatus: OrderStatusWire };
     "archive-preview-card": { preview: ArchivePreviewWire };
-    "ticket-template-table": { items: TicketTemplateWire[]; nextCursor: string | null };
-    "ticket-template-card": { template: TicketTemplateWire };
+    "order-template-table": { items: OrderTemplateWire[]; nextCursor: string | null };
+    "order-template-card": { template: OrderTemplateWire };
     "item-state-table": { items: ItemStateWire[]; nextCursor: string | null };
     "item-state-card": { state: ItemStateWire };
     "status-grid-table": { cells: StatusGridCellWire[] };
@@ -98,7 +98,7 @@ export type ToolUiProps = BoardUiProps &
     "integration-card": { items: IntegrationWire[]; authorizeUrl: string | null };
     "payment-table": { items: PaymentWire[]; nextCursor: string | null };
     "payment-card": { payment: PaymentWire };
-    "ticket-balance-card": { balance: TicketBalanceWire };
+    "order-balance-card": { balance: OrderBalanceWire };
     "deposit-table": { items: DepositWire[]; nextCursor: string | null };
     "deposit-card": { deposit: DepositWire };
     "invoice-table": { items: InvoiceWire[]; nextCursor: string | null };
@@ -115,10 +115,10 @@ export type ToolUiProps = BoardUiProps &
     "responsibility-card": { responsibility: ResponsibilityWire };
     "assignment-table": { items: AssignmentWire[]; nextCursor: string | null };
     "assignment-card": { assignment: AssignmentWire };
-    "work-order-definition-table": { items: WorkOrderDefinitionWire[]; nextCursor: string | null };
-    "work-order-definition-card": { workOrder: WorkOrderDefinitionWire };
-    "work-order-table": { items: WorkOrderWire[]; nextCursor: string | null };
-    "work-order-card": { workOrder: WorkOrderWire };
+    "run-sheet-definition-table": { items: RunSheetDefinitionWire[]; nextCursor: string | null };
+    "run-sheet-definition-card": { runSheet: RunSheetDefinitionWire };
+    "run-sheet-table": { items: RunSheetWire[]; nextCursor: string | null };
+    "run-sheet-card": { runSheet: RunSheetWire };
     "member-table": { items: MemberWire[]; nextCursor: string | null };
     "member-card": { member: MemberWire };
     "member-profile-card": { profile: MemberProfileWire };

@@ -1,6 +1,6 @@
 import { previewArchiveItemState } from "../../features/item-state/archive-preview-operation";
-import { previewArchiveTicketStatus } from "../../features/ticket-status/archive-operations";
-import { loadAllTicketStatuses } from "../../features/ticket-status/load-ticket-status";
+import { previewArchiveOrderStatus } from "../../features/order-status/archive-operations";
+import { loadAllOrderStatuses } from "../../features/order-status/load-order-status";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoOrg } from "./types";
@@ -8,40 +8,40 @@ import type { DemoOrg } from "./types";
 export type CheckDemoArchiveInput = { context: ExecuteContext; org: DemoOrg };
 
 /**
- * ADR 0043: previewing the removal of a status that holds tickets, with a target, reports that
- * all of its tickets move and nothing blocks; the preview changes nothing. An organization
+ * ADR 0043: previewing the removal of a status that holds orders, with a target, reports that
+ * all of its orders move and nothing blocks; the preview changes nothing. An organization
  * without such a status (or state) has nothing to check.
  */
 async function statusFailures({ context, org }: CheckDemoArchiveInput): Promise<string[]> {
-  const statuses = await context.db.ticketStatus.findMany({
+  const statuses = await context.db.orderStatus.findMany({
     where: { status: "ACTIVE", entry: false, closes: false },
   });
-  const all = await loadAllTicketStatuses({ context });
+  const all = await loadAllOrderStatuses({ context });
   const gated = new Set(
     (
-      await context.db.ticketStatusGate.findMany({
+      await context.db.orderStatusGate.findMany({
         where: { key: { in: ["REASON", "ACCEPTED_QUOTE"] } },
       })
     ).map(({ toStatusId }) => toStatusId),
   );
-  for (const ticketStatus of statuses) {
-    const tickets = await context.db.ticket.count({ where: { statusId: ticketStatus.id } });
-    // Tickets cannot be moved into a status that only a quote event enters (ADR 0043), and a
+  for (const orderStatus of statuses) {
+    const orders = await context.db.order.count({ where: { statusId: orderStatus.id } });
+    // Orders cannot be moved into a status that only a quote event enters (ADR 0043), and a
     // REASON or ACCEPTED_QUOTE gate (ADR 0067, 0076) would block the move.
     // Forward only: a line's state cannot move back (ADR 0044), and movement is free (ADR 0076).
-    const allowed = all.find(({ id }) => id === ticketStatus.id)?.transitionsTo ?? [];
-    const forward = all.filter((s) => allowed.includes(s.id) && s.position > ticketStatus.position);
+    const allowed = all.find(({ id }) => id === orderStatus.id)?.transitionsTo ?? [];
+    const forward = all.filter((s) => allowed.includes(s.id) && s.position > orderStatus.position);
     const target = forward.find(({ id }) => !gated.has(id))?.id;
-    const templates = await context.db.ticketTemplate.count({
-      where: { statusId: ticketStatus.id },
+    const templates = await context.db.orderTemplate.count({
+      where: { statusId: orderStatus.id },
     });
-    if (tickets === 0 || templates > 0 || !target) continue;
-    const input = { id: ticketStatus.id, targetStatusId: target };
-    const result = await execute({ operation: previewArchiveTicketStatus, input, context });
-    if (!result.ok) return [`${org.slug}: archive preview of ${ticketStatus.name} failed`];
+    if (orders === 0 || templates > 0 || !target) continue;
+    const input = { id: orderStatus.id, targetStatusId: target };
+    const result = await execute({ operation: previewArchiveOrderStatus, input, context });
+    if (!result.ok) return [`${org.slug}: archive preview of ${orderStatus.name} failed`];
     const { archivable, moving, blockers } = result.value;
-    if (archivable && moving === tickets) return [];
-    return [`${org.slug}: removing "${ticketStatus.name}" is blocked: ${blockers.join("; ")}`];
+    if (archivable && moving === orders) return [];
+    return [`${org.slug}: removing "${orderStatus.name}" is blocked: ${blockers.join("; ")}`];
   }
   return [];
 }

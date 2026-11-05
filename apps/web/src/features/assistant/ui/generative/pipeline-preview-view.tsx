@@ -6,7 +6,7 @@ import type { GenerativeProps } from "./generative-props";
 
 export type PipelinePreviewViewProps = GenerativeProps<"pipeline-preview">;
 
-/** A proposed pipeline setup (ADR 0044): its problems and the simulated ticket. */
+/** A proposed pipeline setup (ADR 0044): its problems and the simulated order. */
 export function PipelinePreviewView({ preview }: PipelinePreviewViewProps) {
   return (
     <Card data-slot="pipeline-preview" className="p-4 shadow-none">

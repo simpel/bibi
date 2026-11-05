@@ -2,6 +2,7 @@ import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { loadOAuthClientName } from "@/features/auth/load-oauth-client-name";
 import { ConsentCard } from "@/features/auth/ui/consent-card";
+import { pageTitle } from "@/lib/page-metadata";
 import { urlHost } from "@/lib/url-host";
 import { requireAnySession } from "@/server/auth-pages";
 import { loadConsentOrganizations } from "@/server/consent-organizations";
@@ -10,6 +11,11 @@ type ConsentPageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ client_id?: string; scope?: string; redirect_uri?: string }>;
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "auth", key: "consentTitle", values: { client: "App" } });
+}
 
 /** Better Auth's `consentPage`; the signed authorize query stays in the URL for the client. */
 export default async function ConsentPage({ params, searchParams }: ConsentPageProps) {

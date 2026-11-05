@@ -11,7 +11,7 @@ export const PIPELINE_SURFACES: readonly WebSurface[] = [
   // The Workload dashboard (ADR 0086).
   { operation: "dashboard.summary", route: "/data/[dashboard]/[from]/[to]" },
   { operation: "board.list", ...PIPELINE },
-  { operation: "ticketStatus.setGates", route: "/settings/pipeline" },
+  { operation: "orderStatus.setGates", route: "/settings/pipeline" },
   { operation: "board.get", ...PIPELINE },
   { operation: "board.create", ...PIPELINE },
   { operation: "board.update", ...PIPELINE },

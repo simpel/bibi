@@ -52,7 +52,7 @@ const LineDetailsShape = {
     .min(0)
     .max(100_000)
     .nullish()
-    .describe("How many; null = the ticket's headcount (guaranteed if set, else estimated)"),
+    .describe("How many; null = the order's headcount (guaranteed if set, else estimated)"),
   unitPriceMinor: z
     .number()
     .int()
@@ -78,7 +78,7 @@ const LineDetailsShape = {
 };
 
 export const LineCreateInputSchema = z.object({
-  ticketId: z.string().min(1).describe("Id of the ticket (ticket.list)"),
+  orderId: z.string().min(1).describe("Id of the order (order.list)"),
   entityTypeId: z.string().min(1).describe("Id of the line type (entityType.list base LINE)"),
   ...LineDetailsShape,
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
@@ -102,7 +102,7 @@ export const LineCreateOperationInputSchema = LineCreateInputSchema.extend({
     .min(1)
     .optional()
     .describe(
-      "Id of a top-level line of the same ticket (line.list): the new line is an add-on under it " +
+      "Id of a top-level line of the same order (line.list): the new line is an add-on under it " +
         "(ADR 0088), any item or free text, sold at its own effective price (the parent's discount " +
         "does not apply), quantity its own else the parent's. Without startsAt/endsAt it takes " +
         "the parent's period (an untimed parent gives an untimed add-on). It moves and is removed " +

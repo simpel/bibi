@@ -12,7 +12,7 @@ import {
 } from "./schema";
 
 const unknownStatus = () => {
-  const message = "Unknown or archived ticket status";
+  const message = "Unknown or archived order status";
   return invalid({ message, issues: [{ path: "statusIds", message }] });
 };
 
@@ -24,7 +24,7 @@ export const createBoardPhaseHandler = async ({
   const board = await context.db.board.findFirst({ where: { id: boardId } });
   if (!board) return notFound({ entity: "Board" });
   const unique = [...new Set(statusIds)];
-  const found = await context.db.ticketStatus.count({ where: { id: { in: unique } } });
+  const found = await context.db.orderStatus.count({ where: { id: { in: unique } } });
   if (found !== unique.length) return unknownStatus();
   const position = input.position ?? Number.MAX_SAFE_INTEGER;
   const row = await insertPhase({ context, boardId, name, position });

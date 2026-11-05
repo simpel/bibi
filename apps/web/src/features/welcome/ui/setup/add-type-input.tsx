@@ -1,38 +1,40 @@
 "use client";
 
-import { Button, Input } from "@bibi/ui";
-import { useTranslations } from "next-intl";
+import { PlusIcon } from "lucide-react";
 import { useId, useState } from "react";
 
-/** "+ Add another": a name and a button; Enter adds too. */
-export function AddTypeInput({ onAdd }: { onAdd: ({ name }: { name: string }) => void }) {
-  const t = useTranslations("welcome.setup");
+export type AddTypeInputProps = {
+  onAdd: ({ name }: { name: string }) => void;
+  placeholder?: string;
+};
+
+/** Inline input as the last item in the list; Enter creates the item. */
+export function AddTypeInput({ onAdd, placeholder }: AddTypeInputProps) {
   const id = useId();
   const [name, setName] = useState("");
-  const add = () => {
-    if (!name.trim()) return;
-    onAdd({ name: name.trim() });
-    setName("");
-  };
+
   return (
-    <div className="flex gap-2">
+    <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3.5 transition-colors focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
       <label htmlFor={id} className="sr-only">
-        {t("newTypeName")}
+        {placeholder}
       </label>
-      <Input
+      <PlusIcon className="ml-0.5 size-4 shrink-0 text-muted-foreground" />
+      <input
         id={id}
+        type="text"
         value={name}
-        placeholder={t("newTypeName")}
+        placeholder={placeholder}
         onChange={(event) => setName(event.target.value)}
         onKeyDown={(event) => {
           if (event.key !== "Enter") return;
           event.preventDefault();
-          add();
+          const trimmed = name.trim();
+          if (!trimmed) return;
+          onAdd({ name: trimmed });
+          setName("");
         }}
+        className="w-full bg-transparent text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none"
       />
-      <Button type="button" variant="outline" onClick={add}>
-        {t("addAnother")}
-      </Button>
     </div>
   );
 }

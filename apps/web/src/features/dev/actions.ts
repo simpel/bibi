@@ -77,7 +77,7 @@ const toAction = <T>({ result }: { result: Result<T> }): ActionResult<T> =>
     ? { ok: true, value: result.value }
     : { ok: false, error: { code: result.error.code, message: result.error.message, issues: [] } };
 
-/** Dev menu: a test notification about a random ticket for the signed-in member (ADR 0094). */
+/** Dev menu: a test notification about a random order for the signed-in member (ADR 0094). */
 export async function sendTestNotificationAction(): Promise<ActionResult<{ kind: string }>> {
   const caller = await devCaller();
   return caller ? toAction({ result: await sendTestNotification(caller) }) : FORBIDDEN;

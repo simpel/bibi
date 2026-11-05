@@ -1,7 +1,7 @@
 import type { FixedRole } from "@bibi/core/schemas";
 import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { TextField } from "@/components/form/text-field";
+import { EmailField } from "@/components/form/email-field";
 import { RoleField } from "./role-field";
 import { useInviteMemberForm } from "./use-invite-member-form";
 
@@ -15,7 +15,7 @@ export function InviteMemberForm({ roles, onDone }: InviteMemberFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
-        <TextField form={form} name="email" type="email" label={t("columns.email")} required />
+        <EmailField form={form} name="email" label={t("columns.email")} required />
         <RoleField control={form.control} name="role" roles={roles} />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>

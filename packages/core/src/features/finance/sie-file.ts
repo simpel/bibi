@@ -18,12 +18,12 @@ export type ToSieFileInput = { plan: ExportPlan; vouchers: readonly SieVoucher[]
 
 /**
  * The SIE 4I file of one export (ADR 0077): header with the fiscal year of the range's first day,
- * the tickets as projects, the vouchers.
+ * the orders as projects, the vouchers.
  */
 export function toSieFile({ plan, vouchers, now }: ToSieFileInput): SieFile {
   const today = toZonedParts({ instant: now, timeZone: plan.timeZone }).date;
   const rangeStart = toZonedParts({ instant: plan.period.start, timeZone: plan.timeZone }).date;
-  const tickets = [
+  const orders = [
     ...new Set(
       vouchers.flatMap((v) => v.transactions.flatMap((t) => t.objects ?? []).map((o) => o.id)),
     ),
@@ -36,7 +36,7 @@ export function toSieFile({ plan, vouchers, now }: ToSieFileInput): SieFile {
     companyName: plan.profile?.legalName ?? "",
     fiscalYear: fiscalYear({ day: rangeStart, startMonth: plan.settings.fiscalYearStartMonth }),
     accounts: [],
-    objects: tickets.map((id) => ({ dimension: 6, id, name: `Ticket ${id}` })),
+    objects: orders.map((id) => ({ dimension: 6, id, name: `Order ${id}` })),
     vouchers,
   };
 }

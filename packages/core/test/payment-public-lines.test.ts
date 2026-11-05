@@ -38,13 +38,13 @@ async function tokenFor({ context, ...receivable }: PayInput) {
 
 /** A sent quote: lunch with a coffee add-on and a snack sub-line frozen as an OPTION. */
 async function quoteWithSubLines() {
-  const { context, ticket, parent, coffee } = await addOnSetup();
-  const base = { context, ticketId: ticket.id, parentLineId: parent.id, itemId: coffee.id };
+  const { context, order, parent, coffee } = await addOnSetup();
+  const base = { context, orderId: order.id, parentLineId: parent.id, itemId: coffee.id };
   unwrap({ result: await addLine({ ...base, name: "Coffee" }) });
   const option = unwrap({ result: await addLine({ ...base, name: "Snack" }) });
   await activatePaymentAccount({ context });
   setPaymentProvider({ provider: createMemoryPaymentProvider() });
-  const quote = await sentTestQuote({ context, ticketId: ticket.id });
+  const quote = await sentTestQuote({ context, orderId: order.id });
   await getDb().orderLine.updateMany({
     where: { quoteId: quote.id, lineId: option.id },
     data: { role: "OPTION" },
@@ -77,9 +77,9 @@ describe("the public payment page lists what is paid for", () => {
   });
 
   it("shows the invoice's frozen lines", async () => {
-    const { context, ticket } = await moneySetup();
-    await makeInvoiceable({ context, statusId: ticket.statusId });
-    const input = { ticketId: ticket.id };
+    const { context, order } = await moneySetup();
+    await makeInvoiceable({ context, statusId: order.statusId });
+    const input = { orderId: order.id };
     const draft = unwrap({ result: await execute({ operation: createInvoice, input, context }) });
     const sent = { id: draft.id };
     unwrap({ result: await execute({ operation: sendInvoice, input: sent, context }) });

@@ -24,7 +24,7 @@ export const OTHER_ROWS: readonly BusyRow[] = [
     s: "10:00",
     e: "15:00",
     st: "booked",
-    no: "Double-booked with Ticket 21 until 12:00.",
+    no: "Double-booked with Order 21 until 12:00.",
   },
   {
     a: "projector-2",

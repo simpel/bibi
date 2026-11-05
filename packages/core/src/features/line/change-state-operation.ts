@@ -4,7 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
 import { loadItemState } from "../item-state/load-item-state";
 import type { ItemStateDto } from "../item-state/schema";
-import { regenerateForLine } from "../work-order/regenerate";
+import { regenerateForLine } from "../run-sheet/regenerate";
 import { lineMoveBlockers } from "./line-move-check";
 import { applyLineState, itemTypeOf } from "./line-state";
 import { LineChangeStateInputSchema, type LineRecord, LineSchema } from "./schema";
@@ -31,7 +31,7 @@ export const changeLineState = defineOperation({
   kind: "command",
   description:
     "Set one line (line with an item) to a state of its item type, e.g. order a drink " +
-    "while the ticket is still a lead (ADR 0044). The move must be allowed by the type's " +
+    "while the order is still a lead (ADR 0044). The move must be allowed by the type's " +
     "transitions (CONFLICT otherwise). The line becomes overridden: status moves skip it until " +
     "line.followStatus. Its hold follows the new state; a collision with a hard hold gives " +
     "CONFLICT naming the blocker.",

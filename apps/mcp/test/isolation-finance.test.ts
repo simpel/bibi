@@ -11,7 +11,7 @@ describe("cross-organization isolation: financials", () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
     const secret = await seedQuoteBasis({ client: a });
-    const args = { ticketId: secret.ticketId, validUntil: "2099-12-01T00:00:00.000Z" };
+    const args = { orderId: secret.orderId, validUntil: "2099-12-01T00:00:00.000Z" };
     const quote = await call({ client: a, name: "quote_create", args });
     for (const name of ["quote_send", "quote_accept"]) {
       const moved = await call({ client: a, name, args: { id: quote.data.id } });
@@ -20,7 +20,7 @@ describe("cross-organization isolation: financials", () => {
 
     const own = await call({ client: a, name: "dashboard_summary", args: thisMonth() });
     expect(own.isError, JSON.stringify(own.data)).toBe(false);
-    expect(own.data.bookedAhead).toEqual([expect.objectContaining({ tickets: 1 })]);
+    expect(own.data.bookedAhead).toEqual([expect.objectContaining({ orders: 1 })]);
 
     const ahead = await call({ client: b, name: "dashboard_summary", args: thisMonth() });
     expect(ahead.data.bookedAhead).toEqual([]);
@@ -28,7 +28,7 @@ describe("cross-organization isolation: financials", () => {
     expect(theirs.isError, JSON.stringify(theirs.data)).toBe(false);
     expect([theirs.data.invoicedExclVatMinor, theirs.data.outstandingMinor]).toEqual([0, 0]);
     for (const row of theirs.data.outcomes ?? []) {
-      expect([row.wonTickets, row.lostTickets]).toEqual([0, 0]);
+      expect([row.wonOrders, row.lostOrders]).toEqual([0, 0]);
     }
   });
 
@@ -81,13 +81,13 @@ async function exportOf({ client }: { client: Client }): Promise<string> {
   const profile = { orgNumber: "556000-0000", legalName: "A AB" };
   await call({ client, name: "organizationProfile_update", args: profile });
   const secret = await seedQuoteBasis({ client });
-  const ticket = await call({ client, name: "ticket_get", args: { id: secret.ticketId } });
-  const status = { id: ticket.data.statusId, invoiceable: true };
-  await call({ client, name: "ticketStatus_update", args: status });
+  const order = await call({ client, name: "order_get", args: { id: secret.orderId } });
+  const status = { id: order.data.statusId, invoiceable: true };
+  await call({ client, name: "orderStatus_update", args: status });
   const invoice = await call({
     client,
     name: "invoice_create",
-    args: { ticketId: secret.ticketId },
+    args: { orderId: secret.orderId },
   });
   await call({ client, name: "invoice_send", args: { id: invoice.data.id } });
   const made = await call({ client, name: "accountingExport_create", args: RANGE });

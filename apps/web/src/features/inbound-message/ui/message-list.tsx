@@ -9,7 +9,7 @@ export type MessageListProps = {
   dates: DateTimeFormat;
 };
 
-/** Inbound messages, newest first; shared by the ticket page and the assistant's tool card. */
+/** Inbound messages, newest first; shared by the order page and the assistant's tool card. */
 export function MessageList({ messages, dates }: MessageListProps) {
   const t = useTranslations("inbox");
   if (messages.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;

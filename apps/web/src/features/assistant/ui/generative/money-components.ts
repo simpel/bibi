@@ -11,7 +11,7 @@ import { InvoiceTableView } from "./invoice-table-view";
 import { PaymentAccountCardView } from "./payment-account-card-view";
 import { PaymentCardView } from "./payment-card-view";
 import { PaymentTableView } from "./payment-table-view";
-import { TicketBalanceCardView } from "./ticket-balance-card-view";
+import { OrderBalanceCardView } from "./order-balance-card-view";
 
 /** Payments, receivables and the derived balance (ADR 0057), part of `GENERATIVE_COMPONENTS`. */
 export const MONEY_COMPONENTS = {
@@ -19,7 +19,7 @@ export const MONEY_COMPONENTS = {
   "integration-card": IntegrationCardView,
   "payment-table": PaymentTableView,
   "payment-card": PaymentCardView,
-  "ticket-balance-card": TicketBalanceCardView,
+  "order-balance-card": OrderBalanceCardView,
   "deposit-table": DepositTableView,
   "deposit-card": DepositCardView,
   "invoice-table": InvoiceTableView,

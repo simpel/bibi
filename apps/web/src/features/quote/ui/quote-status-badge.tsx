@@ -1,13 +1,13 @@
 import type { QuoteStatus } from "@bibi/core/schemas";
-import { Badge, type BadgeProps } from "@bibi/ui";
+import { StatusBadge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
-const VARIANT: Record<QuoteStatus, BadgeProps["variant"]> = {
-  DRAFT: "secondary",
-  SENT: "warning",
-  ACCEPTED: "success",
-  DECLINED: "destructive",
-  EXPIRED: "outline",
+const COLOR: Record<QuoteStatus, string> = {
+  DRAFT: "var(--muted-foreground)",
+  SENT: "var(--warning)",
+  ACCEPTED: "var(--success)",
+  DECLINED: "var(--destructive)",
+  EXPIRED: "var(--muted-foreground)",
 };
 
 export type QuoteStatusBadgeProps = { status: QuoteStatus };
@@ -15,5 +15,5 @@ export type QuoteStatusBadgeProps = { status: QuoteStatus };
 /** The quote's fixed status (ADR 0022) as a colored badge. */
 export function QuoteStatusBadge({ status }: QuoteStatusBadgeProps) {
   const t = useTranslations("quote.statuses");
-  return <Badge variant={VARIANT[status]}>{t(status)}</Badge>;
+  return <StatusBadge label={t(status)} color={COLOR[status]} />;
 }

@@ -3,6 +3,9 @@
 import type { VenueCreateInput } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import { CountryField } from "@/components/form/country-field";
+import { EmailField } from "@/components/form/email-field";
+import { PhoneField } from "@/components/form/phone-field";
 import { TextField } from "@/components/form/text-field";
 import { TimeZoneField } from "@/components/form/time-zone-field";
 import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
@@ -33,7 +36,7 @@ export function VenueAddressFields({ form }: VenueStepFieldsProps) {
         <TextField form={form} name="postalCode" label={t("postalCode")} />
         <TextField form={form} name="city" label={t("city")} />
       </div>
-      <TextField form={form} name="country" label={t("country")} />
+      <CountryField form={form} name="country" label={t("country")} />
       <TimeZoneField
         control={form.control}
         name="timeZone"
@@ -48,8 +51,8 @@ export function VenueContactFields({ form }: VenueStepFieldsProps) {
   const t = useTranslations("venue.fields");
   return (
     <>
-      <TextField form={form} name="contactEmail" label={t("contactEmail")} type="email" />
-      <TextField form={form} name="contactPhone" label={t("contactPhone")} type="tel" />
+      <EmailField form={form} name="contactEmail" label={t("contactEmail")} />
+      <PhoneField form={form} name="contactPhone" label={t("contactPhone")} />
       <TextField form={form} name="openingHours" label={t("openingHours")} />
       <TextField
         form={form}

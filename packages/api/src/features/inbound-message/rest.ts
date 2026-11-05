@@ -11,7 +11,7 @@ export const inboundMessageRoutes = [
   restRoute({ operation: "inboundMessage.get", method: "GET", path: "/inbound-messages/{id}" }),
   restRoute({ operation: "inboundMessage.submit", method: "POST", path: "/inbound-messages" }),
   restRoute({
-    operation: "inboundMessage.attachToTicket",
+    operation: "inboundMessage.attachToOrder",
     method: "POST",
     path: "/inbound-messages/{id}/attach",
   }),

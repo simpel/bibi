@@ -3,7 +3,7 @@ import { invalid } from "../../shared/errors";
 import type { DerivedLine } from "./derive-lines";
 
 const MISSING = {
-  quantity: "has no quantity: set its own or the ticket's headcount",
+  quantity: "has no quantity: set its own or the order's headcount",
   vatRatePercent: "has no VAT rate: set it on the line, the item or the venue",
 } as const;
 
@@ -15,7 +15,7 @@ export type CheckPricedLinesInput = { lines: readonly DerivedLine[]; what: strin
  */
 export function checkPricedLines({ lines, what }: CheckPricedLinesInput): Result<true> {
   if (lines.length === 0) {
-    const message = `${what} needs at least one priced line on the ticket`;
+    const message = `${what} needs at least one priced line on the order`;
     return invalid({ message, issues: [{ path: "lines", message }] });
   }
   for (const [at, { line, missing }] of lines.entries()) {

@@ -25,7 +25,7 @@ export const BoardPhaseRef = objectFromSchema<BoardPhaseDto>({
   schema: BoardPhaseSchema,
   omit: ["organizationId"],
   description:
-    "Board phase – a column of a board with a name, a color and the ticket statuses it shows " +
+    "Board phase – a column of a board with a name, a color and the order statuses it shows " +
     "(`statusIds`, in status order). Reordering phases and moving a status return the Board; " +
     "see the board mutations.",
 });
@@ -39,7 +39,7 @@ export const BoardRef = objectFromSchema<BoardDto>({
   schema: BoardSchema,
   omit: ["organizationId", "phases"],
   description:
-    "Board – a saved view of tickets: a name, an optional type and assignee filter and its " +
+    "Board – a saved view of orders: a name, an optional type and assignee filter and its " +
     "phases (columns). The first board is the default.",
 });
 const BoardPageRef = pageType({ name: "BoardPage", item: BoardRef });

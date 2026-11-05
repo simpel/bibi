@@ -7,7 +7,7 @@ import { type DetailSources, loadDetailSources } from "./detail-sources";
 import type { CalendarBlockDto, CalendarDetails } from "./schema";
 
 type Context = Pick<OperationContext, "db" | "permissions">;
-type Block = Pick<CalendarBlockDto, "lineId" | "ticketId">;
+type Block = Pick<CalendarBlockDto, "lineId" | "orderId">;
 
 /** The line's total excl. VAT (ADR 0052), when it has a quantity and a price. */
 function lineValueOf({ line }: { line: LineDto | undefined }) {
@@ -22,15 +22,15 @@ function lineValueOf({ line }: { line: LineDto | undefined }) {
   }).totalExclVatMinor;
 }
 
-/** Who to reach: the line's own assignee when the caller sees the program, else the ticket's. */
-function contactOf({ context, sources, lineId, ticketId }: DetailInput) {
+/** Who to reach: the line's own assignee when the caller sees the program, else the order's. */
+function contactOf({ context, sources, lineId, orderId }: DetailInput) {
   const own = visibleTo({ context, feature: "program", value: sources.assignees.get(lineId) });
   if (own) return { ...own, via: "LINE" as const };
-  const ticket = sources.assignees.get(ticketId);
-  return ticket ? { ...ticket, via: "TICKET" as const } : null;
+  const order = sources.assignees.get(orderId);
+  return order ? { ...order, via: "ORDER" as const } : null;
 }
 
-type DetailInput = { context: Context; sources: DetailSources; lineId: string; ticketId: string };
+type DetailInput = { context: Context; sources: DetailSources; lineId: string; orderId: string };
 
 /** The units allocated to the line, persons and equipment alike (ADR 0059, 0068). */
 const staffOf = ({ sources, lineId }: Pick<DetailInput, "sources" | "lineId">) =>
@@ -47,20 +47,20 @@ const staffOf = ({ sources, lineId }: Pick<DetailInput, "sources" | "lineId">) =
       : [],
   );
 
-function detailsOf({ context, sources, lineId, ticketId }: DetailInput): CalendarDetails {
+function detailsOf({ context, sources, lineId, orderId }: DetailInput): CalendarDetails {
   const line = sources.lines.get(lineId);
-  const ticket = sources.tickets.get(ticketId);
+  const order = sources.orders.get(orderId);
   const program = { context, feature: "program" as const };
   const customer = { context, feature: "customer" as const };
   return {
-    customer: ticket ? visibleTo({ ...customer, value: ticket.customer.name }) : null,
-    client: ticket?.contact ? visibleTo({ ...customer, value: ticket.contact }) : null,
-    headcount: ticket ? (ticket.guaranteedHeadcount ?? ticket.estimatedHeadcount) : null,
+    customer: order ? visibleTo({ ...customer, value: order.customer.name }) : null,
+    client: order?.contact ? visibleTo({ ...customer, value: order.contact }) : null,
+    headcount: order ? (order.guaranteedHeadcount ?? order.estimatedHeadcount) : null,
     quantity: visibleTo({ ...program, value: line?.effectiveQuantity ?? null }),
     valueMinor: visibleTo({ ...program, value: lineValueOf({ line }) }),
     currency: DEFAULT_CURRENCY,
     note: visibleTo({ ...program, value: line?.note ?? null }),
-    contact: contactOf({ context, sources, lineId, ticketId }),
+    contact: contactOf({ context, sources, lineId, orderId }),
     staff: visibleTo({ ...program, value: staffOf({ sources, lineId }) }) ?? [],
   };
 }
@@ -71,8 +71,8 @@ function detailsOf({ context, sources, lineId, ticketId }: DetailInput): Calenda
  */
 export async function loadDetails({ context, blocks }: { context: Context; blocks: Block[] }) {
   const lineIds = [...new Set(blocks.flatMap((block) => block.lineId ?? []))];
-  const ticketIds = [...new Set(blocks.flatMap((block) => block.ticketId ?? []))];
-  const sources = await loadDetailSources({ context, lineIds, ticketIds });
-  return ({ lineId, ticketId }: Block) =>
-    lineId && ticketId ? detailsOf({ context, sources, lineId, ticketId }) : null;
+  const orderIds = [...new Set(blocks.flatMap((block) => block.orderId ?? []))];
+  const sources = await loadDetailSources({ context, lineIds, orderIds });
+  return ({ lineId, orderId }: Block) =>
+    lineId && orderId ? detailsOf({ context, sources, lineId, orderId }) : null;
 }

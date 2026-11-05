@@ -1,6 +1,6 @@
 /**
  * What a search understands: its qualifiers, the fixed values each takes (canonical English words)
- * and the fields `no:` names. A list (tickets, work orders) brings its own; the generic search
+ * and the fields `no:` names. A list (orders, run sheets) brings its own; the generic search
  * code reads only this.
  */
 export type QuerySpec = {
@@ -10,7 +10,7 @@ export type QuerySpec = {
 };
 
 /**
- * The search words of the UI language (`ticket.query`, `workOrder.query` in sv/en), e.g.
+ * The search words of the UI language (`order.query`, `runSheet.query` in sv/en), e.g.
  * assignee → `ansvarig`. Core understands only the canonical English words; the web maps between
  * them (ADR 0009).
  */

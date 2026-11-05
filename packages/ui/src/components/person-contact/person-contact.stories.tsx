@@ -20,5 +20,5 @@ export const WithoutAvatar: Story = {
 export const Mini: Story = { args: { size: "mini", name: "Mona Berg", description: "Waiter" } };
 export const NameOnly: Story = { args: { description: undefined, phone: undefined } };
 export const Inherited: Story = {
-  args: { name: "Erik Lund", description: "Ticket assignee, from ticket", phone: undefined },
+  args: { name: "Erik Lund", description: "Order assignee, from order", phone: undefined },
 };

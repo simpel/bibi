@@ -28,8 +28,8 @@ export const CalendarRangeInputSchema = z.object({
     .string()
     .min(1)
     .optional()
-    .describe("Only blocks whose ticket is in this ticket status"),
-  ticketId: z.string().min(1).optional().describe("Only blocks of this ticket"),
+    .describe("Only blocks whose order is in this order status"),
+  orderId: z.string().min(1).optional().describe("Only blocks of this order"),
 });
 
 const ClientSchema = z.object({
@@ -44,7 +44,7 @@ const ContactSchema = z.object({
   email: z.string().nullable().describe("Work email here, else the login email"),
   phone: z.string().nullable().describe("From the member's profile here (ADR 0072)"),
   avatarKey: z.string().nullable().describe("Read the photo with file.get"),
-  via: z.enum(["LINE", "TICKET"]).describe("The line's own assignee, else the ticket's"),
+  via: z.enum(["LINE", "ORDER"]).describe("The line's own assignee, else the order's"),
 });
 
 const StaffSchema = z.object({
@@ -59,15 +59,15 @@ const StaffSchema = z.object({
  * another feature is null or empty without that feature's read.
  */
 export const CalendarDetailsSchema = z.object({
-  customer: z.string().nullable().describe("The ticket's customer; null without customer:read"),
+  customer: z.string().nullable().describe("The order's customer; null without customer:read"),
   client: ClientSchema.nullable().describe(
-    "The ticket's contact person; null without customer:read",
+    "The order's contact person; null without customer:read",
   ),
   headcount: z
     .number()
     .int()
     .nullable()
-    .describe("The ticket's guaranteed, else estimated, guests"),
+    .describe("The order's guaranteed, else estimated, guests"),
   quantity: z.number().int().nullable().describe("The line's effective quantity; program:read"),
   valueMinor: z
     .number()
@@ -77,7 +77,7 @@ export const CalendarDetailsSchema = z.object({
   currency: z.string().describe("ISO 4217 code of valueMinor"),
   note: z.string().nullable().describe("The line's internal note; null without program:read"),
   contact: ContactSchema.nullable().describe(
-    "Who to reach: the line's assignee (program:read), else the ticket's",
+    "Who to reach: the line's assignee (program:read), else the order's",
   ),
   staff: z.array(StaffSchema).describe("Units allocated to the line (ADR 0059); program:read"),
 });
@@ -92,13 +92,13 @@ export const CalendarBlockSchema = z.object({
     .string()
     .nullable()
     .describe("The line the hold or buffer belongs to; null for a manual block"),
-  ticketId: z.string().nullable().describe("The line's ticket; null for a manual block"),
-  reference: z.number().int().nullable().describe("The ticket's reference number"),
-  ticketTitle: z
+  orderId: z.string().nullable().describe("The line's order; null for a manual block"),
+  reference: z.number().int().nullable().describe("The order's reference number"),
+  orderTitle: z
     .string()
     .nullable()
     .describe(
-      "The ticket's title; null for a manual block, an untitled ticket or without ticket:read",
+      "The order's title; null for a manual block, an untitled order or without order:read",
     ),
   title: z
     .string()
@@ -115,11 +115,11 @@ export const CalendarBlockSchema = z.object({
   stateId: z.string().nullable().describe("The line's item state; null for manual blocks"),
   stateName: z.string().nullable().describe("The state's name; null without pipeline:read"),
   stateColor: z.string().nullable().describe("The state's colour; null without pipeline:read"),
-  statusId: z.string().nullable().describe("The ticket's status"),
+  statusId: z.string().nullable().describe("The order's status"),
   expiresAt: z
     .date()
     .nullable()
-    .describe("Soft holds in an expiring state: the ticket's hold expiry (holdsUntil)"),
+    .describe("Soft holds in an expiring state: the order's hold expiry (holdsUntil)"),
   details: CalendarDetailsSchema.nullable().describe("Null for a manual block"),
 });
 

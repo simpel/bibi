@@ -23,7 +23,7 @@ const versionColumn = ({ t }: { t: Translate }): ColumnDef<QuoteCardRow> => ({
   ),
 });
 
-/** Version (links to the quote) · valid until · total · status. */
+/** Version (links to the quote) · status · valid until · total. */
 export function useQuoteCardColumns(): ColumnDef<QuoteCardRow>[] {
   const t = useTranslations("assistant.ui.quote");
   const format = useDateTimeFormat();
@@ -31,6 +31,12 @@ export function useQuoteCardColumns(): ColumnDef<QuoteCardRow>[] {
   return useMemo(
     () => [
       versionColumn({ t }),
+      {
+        id: "status",
+        header: t("columns.status"),
+        accessorFn: (q) => q.quoteStatus,
+        cell: ({ row }) => <QuoteStatusBadge status={row.original.quoteStatus} />,
+      },
       {
         id: "validUntil",
         header: t("columns.validUntil"),
@@ -43,12 +49,6 @@ export function useQuoteCardColumns(): ColumnDef<QuoteCardRow>[] {
         header: t("columns.total"),
         accessorFn: (q) => q.totalInclVatMinor,
         cell: ({ row }) => money({ minor: row.original.totalInclVatMinor }),
-      },
-      {
-        id: "status",
-        header: t("columns.status"),
-        accessorFn: (q) => q.quoteStatus,
-        cell: ({ row }) => <QuoteStatusBadge status={row.original.quoteStatus} />,
       },
     ],
     [t, format, money],

@@ -16,6 +16,7 @@ export type QuerySearchProps = {
   catalog: QueryCatalog;
   vocabulary: QueryVocabulary;
   texts: QueryTexts;
+  className?: string;
 };
 
 /**
@@ -34,6 +35,7 @@ export function QuerySearch({ value, label, submitLabel, ...query }: QuerySearch
       onSearch={(q) => navigate({ patch: { q } })}
       pending={pending}
       pendingLabel={common("searching")}
+      className={query.className}
       renderInput={(field) => <QueryInput {...field} {...query} />}
     />
   );

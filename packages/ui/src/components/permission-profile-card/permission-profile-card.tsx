@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../card/ca
 import { PermissionChipList } from "./permission-chip-list";
 
 export type PermissionFeatureRow = {
-  /** Translated feature name, e.g. "Tickets". */
+  /** Translated feature name, e.g. "Orders". */
   label: string;
   /** Translated actions, e.g. "View, Edit". */
   actions: string;

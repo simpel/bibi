@@ -1,11 +1,11 @@
-import { ROUTES, ticketRoute } from "@/lib/routes";
+import { ROUTES, orderRoute } from "@/lib/routes";
 import type { DashboardWireish } from "../ui/dashboard-wireish";
 
 export type AttentionRow = { key: string; href: string; title: string; detail: string };
 
 export type AttentionTexts = {
-  /** "Title · Customer" (or "#12 · Customer" without a title) for a ticket row. */
-  ticket: (row: {
+  /** "Title · Customer" (or "#12 · Customer" without a title) for an order row. */
+  order: (row: {
     reference: number;
     title: string | null;
     customerName?: string | null;
@@ -15,10 +15,10 @@ export type AttentionTexts = {
   money: (minor: number) => string;
   overdue: (values: { count: number }) => string;
   expiring: (values: { count: number; date: string }) => string;
-  unsent: (values: { workOrder: string; version: number; date: string }) => string;
+  unsent: (values: { runSheet: string; version: number; date: string }) => string;
 };
 
-/** Overdue money first, then expiring holds, then unsent work orders; each linked to where it is handled. */
+/** Overdue money first, then expiring holds, then unsent run sheets; each linked to where it is handled. */
 export function attentionRows({
   attention,
   texts,
@@ -38,20 +38,20 @@ export function attentionRows({
       ]
     : [];
   const holds = attention.expiringHolds.map((row) => ({
-    key: `hold-${row.ticketId}`,
-    href: ticketRoute({ id: row.ticketId }),
-    title: texts.ticket(row),
+    key: `hold-${row.orderId}`,
+    href: orderRoute({ id: row.orderId }),
+    title: texts.order(row),
     detail: texts.expiring({ count: row.lines, date: texts.date(row.holdsUntil) }),
   }));
-  const workOrders = (attention.unsentWorkOrders ?? []).map((row) => ({
-    key: `work-order-${row.workOrderId}`,
-    href: ticketRoute({ id: row.ticketId }),
-    title: texts.ticket(row),
+  const runSheets = (attention.unsentRunSheets ?? []).map((row) => ({
+    key: `run-sheet-${row.runSheetId}`,
+    href: orderRoute({ id: row.orderId }),
+    title: texts.order(row),
     detail: texts.unsent({
-      workOrder: row.name,
+      runSheet: row.name,
       version: row.version,
       date: texts.date(row.startsAt),
     }),
   }));
-  return [...late, ...holds, ...workOrders];
+  return [...late, ...holds, ...runSheets];
 }

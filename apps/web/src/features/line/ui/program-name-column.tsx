@@ -6,15 +6,20 @@ import type { useTranslations } from "next-intl";
 type Translator = ReturnType<typeof useTranslations<"line">>;
 type EffectTranslator = ReturnType<typeof useTranslations<"priceEffect">>;
 
-export type NameColumnInput = { t: Translator; effects: EffectTranslator };
+export type NameColumnInput = {
+  t: Translator;
+  effects: EffectTranslator;
+  onEdit?: (line: LineDto) => void;
+};
 
 /**
  * The line's name. A part, option or add-on line (ADR 0059, 0088) is indented and marked: a part
  * with "Part" (its bundle line carries the price), an option with its price effect, an add-on with
  * "Add-on" (its own time, quantity and price). A warning shows a triangle and a short label, the
  * full sentence as its tooltip.
+ * Clicking the name triggers line edit, matching the pen action button.
  */
-export function nameColumn({ t, effects }: NameColumnInput): ColumnDef<LineDto> {
+export function nameColumn({ t, effects, onEdit }: NameColumnInput): ColumnDef<LineDto> {
   return {
     id: "name",
     header: t("columns.name"),
@@ -26,7 +31,20 @@ export function nameColumn({ t, effects }: NameColumnInput): ColumnDef<LineDto> 
           original.parentLineId ? "flex items-center gap-2 pl-4" : "flex items-center gap-2"
         }
       >
-        {original.name}
+        {onEdit ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(original);
+            }}
+            className="cursor-pointer text-left font-medium hover:underline focus-visible:underline outline-none"
+          >
+            {original.name}
+          </button>
+        ) : (
+          <span>{original.name}</span>
+        )}
         {original.role === "PART" || original.role === "OPTION" ? (
           <Badge variant="outline">
             {original.role === "OPTION" && original.priceEffect

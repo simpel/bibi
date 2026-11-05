@@ -1,7 +1,9 @@
 import { type AfterCommitHook, approveSeat, InvitationSchema, inviteMember } from "@bibi/core";
 import { getDb } from "@bibi/db";
+import { renderInvitationEmail } from "@bibi/mail";
 import { sendAuthMail } from "../mail";
 import { webUrl } from "../urls";
+import { resolveUserLocale } from "../user-locale";
 
 /**
  * Sends the invitation link and its invite code (ADR 0078) after `member.invite` or
@@ -20,34 +22,36 @@ export const invitationMailHook: AfterCommitHook = async ({ operation, output })
     status: true,
   }).parse(output);
   if (invitation.status !== "pending") return;
+  const db = getDb();
   const [organization, inviter] = await Promise.all([
-    getDb().organization.findUniqueOrThrow({ where: { id: invitation.organizationId } }),
-    getDb().user.findUniqueOrThrow({ where: { id: invitation.inviterId } }),
+    db.organization.findUniqueOrThrow({ where: { id: invitation.organizationId } }),
+    db.user.findUniqueOrThrow({ where: { id: invitation.inviterId } }),
   ]);
   const url = webUrl({ path: `/accept-invitation/${invitation.id}` });
+
+  const inviteeUser = await db.user.findUnique({
+    where: { email: invitation.email },
+    select: { id: true },
+  });
+  const locale = await resolveUserLocale(
+    inviteeUser
+      ? { userId: inviteeUser.id, email: invitation.email }
+      : { userId: invitation.inviterId },
+  );
+
+  const rendered = renderInvitationEmail({
+    inviter: inviter.name,
+    organization: organization.name,
+    url,
+    code: invitation.code,
+    locale,
+  });
+
   await sendAuthMail({
     kind: "auth.invitation",
     to: invitation.email,
-    subject: `Invitation to ${organization.name} on Bibi`,
-    text: invitationText({
-      inviter: inviter.name,
-      organization: organization.name,
-      url,
-      code: invitation.code,
-    }),
+    subject: rendered.subject,
+    text: rendered.text,
+    html: rendered.html,
   });
 };
-
-type InvitationTextInput = {
-  inviter: string;
-  organization: string;
-  url: string;
-  code: string | null;
-};
-
-/** The mail body: the link, and the code for "Join a different organization" in Bibi (ADR 0078). */
-function invitationText({ inviter, organization, url, code }: InvitationTextInput): string {
-  const accept = `${inviter} has invited you to ${organization}.\n\nAccept: ${url}`;
-  if (!code) return accept;
-  return `${accept}\n\nOr sign in to Bibi, choose "Join a different organization" and enter the code ${code}.`;
-}

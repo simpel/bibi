@@ -1,12 +1,29 @@
 import { resolveLocale } from "@bibi/i18n";
-import { defaultDashboard, defaultDashboardHref } from "@/features/dashboard/dashboard-path";
+import { setRequestLocale } from "next-intl/server";
 import { redirect } from "@/lib/navigation";
+import { pageTitle } from "@/lib/page-metadata";
+import { ROUTES } from "@/lib/routes";
 
-type DashboardsStartProps = { params: Promise<{ locale: string; org: string }> };
+type DashboardsStartProps = {
+  params: Promise<{ locale: string; org: string }>;
+  searchParams: Promise<{ customer?: string | string[] }>;
+};
 
-/** Bare `/data`: the first dashboard the caller may read, on this month (ADR 0086). */
-export default async function DashboardsStart({ params }: DashboardsStartProps) {
-  const { locale, org } = await params;
-  const href = await defaultDashboardHref({ dashboard: await defaultDashboard() });
-  redirect({ href, locale: resolveLocale({ value: locale }), org });
+export async function generateMetadata({ params }: DashboardsStartProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "nav", key: "dashboard" });
+}
+
+/** Bare `/data`: server-side redirects to `/data/forecast`. */
+export default async function DashboardsStart({ params, searchParams }: DashboardsStartProps) {
+  const { locale: localeParam, org } = await params;
+  const { customer } = await searchParams;
+  const locale = resolveLocale({ value: localeParam });
+  setRequestLocale(locale);
+
+  const search =
+    typeof customer === "string" && customer !== ""
+      ? `?customer=${encodeURIComponent(customer)}`
+      : "";
+  redirect({ href: `${ROUTES.forecast}${search}`, locale, org });
 }

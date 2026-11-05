@@ -6,7 +6,7 @@ import type { AssignmentSlot, AssignmentSubjectType } from "./schema";
 type Db = { context: Pick<OperationContext, "db"> };
 
 const ENTITY: Record<AssignmentSubjectType, string> = {
-  TICKET: "Ticket",
+  ORDER: "Order",
   ITEM: "Item",
 };
 
@@ -24,7 +24,7 @@ export async function checkSubject({
   return found > 0 ? ok({ value: true }) : notFound({ entity: ENTITY[subjectType] });
 }
 
-/** A responsibility applies only to a ticket and must be an active one of the organization. */
+/** A responsibility applies only to an order and must be an active one of the organization. */
 async function checkResponsibility({
   context,
   subjectType,
@@ -32,8 +32,8 @@ async function checkResponsibility({
 }: Db & AssignmentSlot) {
   if (!responsibilityId) return ok({ value: true as const });
   const path = "responsibilityId";
-  if (subjectType !== "TICKET") {
-    const message = "Only a ticket has assignments per responsibility";
+  if (subjectType !== "ORDER") {
+    const message = "Only an order has assignments per responsibility";
     return invalid({ message, issues: [{ path, message }] });
   }
   const found = await context.db.responsibility.count({ where: { id: responsibilityId } });

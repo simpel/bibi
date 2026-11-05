@@ -7,6 +7,7 @@ export const PROFILE_SELECT = {
   lastName: true,
   phone: true,
   avatarKey: true,
+  locale: true,
 } as const;
 
 export type LoadProfileInput = { context: Pick<OperationContext, "db">; userId: string };
@@ -28,6 +29,7 @@ export async function loadProfile({ context, userId }: LoadProfileInput): Promis
     lastName: row?.lastName ?? null,
     phone: row?.phone ?? null,
     avatarKey: row?.avatarKey ?? null,
+    locale: row?.locale === "en" ? "en" : "sv",
     complete: named && days > 0,
   };
 }

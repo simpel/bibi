@@ -1,6 +1,7 @@
 import { resolveLocale } from "@bibi/i18n";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
+import { CrumbName } from "@/components/shell/crumb-name";
 import { DOC_SECTIONS, findDocPage } from "@/features/docs/pages";
 import { loadDocText } from "@/features/docs/server/doc-text";
 import { DocArticle } from "@/features/docs/ui/doc-article";
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: DocPageProps) {
   const page = findDocPage({ section, slug });
   if (!page) return {};
   const text = await loadDocText({ locale, key: `pages.${page.section}.${page.slug}` });
-  return { title: `${text.title} · Bibi`, description: text.lead };
+  return { title: text.title, description: text.lead };
 }
 
 /** A guide or developer page; the text comes from i18n (`docs.pages.<section>.<slug>`). */
@@ -31,5 +32,10 @@ export default async function DocPage({ params }: DocPageProps) {
   const page = findDocPage({ section, slug });
   if (!page) notFound();
   const text = await loadDocText({ locale, key: `pages.${page.section}.${page.slug}` });
-  return <DocArticle title={text.title} lead={text.lead} markdown={text.body} />;
+  return (
+    <>
+      <CrumbName href={`/docs/${section}/${slug}`} name={text.title} />
+      <DocArticle title={text.title} lead={text.lead} markdown={text.body} />
+    </>
+  );
 }

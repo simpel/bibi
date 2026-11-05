@@ -1,5 +1,5 @@
 import { defineOperation } from "../../operations/define-operation";
-import { checkCustomer } from "../ticket/ticket-rules";
+import { checkCustomer } from "../order/order-rules";
 import { ItemSaveAsBundleInputSchema } from "./bundle-schema";
 import { itemEmbeddable } from "./embeddable";
 import { insertItem } from "./insert-item";

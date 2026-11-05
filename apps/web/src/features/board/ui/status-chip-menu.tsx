@@ -1,4 +1,4 @@
-import type { TicketStatusDto } from "@bibi/core/schemas";
+import type { OrderStatusDto } from "@bibi/core/schemas";
 import {
   DataTableRowActions,
   DropdownMenuItem,
@@ -10,23 +10,23 @@ import {
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { BoardAccess } from "@/features/pipeline/load-pipeline-data";
-import { ArchiveTicketStatusDialog } from "@/features/ticket-status/ui/archive-ticket-status-dialog";
-import { EditTicketStatusItem } from "@/features/ticket-status/ui/edit-ticket-status-item";
+import { ArchiveOrderStatusDialog } from "@/features/order-status/ui/archive-order-status-dialog";
+import { EditOrderStatusItem } from "@/features/order-status/ui/edit-order-status-item";
 
 export type StatusChipMenuProps = {
-  ticketStatus: TicketStatusDto;
+  orderStatus: OrderStatusDto;
   /** The column the chip is in; null = the tray. */
   phaseId: string | null;
   phases: readonly KanbanPhaseData[];
-  statuses: readonly TicketStatusDto[];
+  statuses: readonly OrderStatusDto[];
   access: BoardAccess;
   onMove: (input: { statusId: string; toPhaseId: string | null }) => void;
 };
 
-type MoveToProps = Pick<StatusChipMenuProps, "ticketStatus" | "phaseId" | "phases" | "onMove">;
+type MoveToProps = Pick<StatusChipMenuProps, "orderStatus" | "phaseId" | "phases" | "onMove">;
 
 /** "Move to" a column or the unphased column: the keyboard-free alternative to dragging a chip. */
-function MoveToMenu({ ticketStatus, phaseId, phases, onMove }: MoveToProps) {
+function MoveToMenu({ orderStatus, phaseId, phases, onMove }: MoveToProps) {
   const t = useTranslations("boardPhase");
   const board = useTranslations("board.customize");
   const targets = [
@@ -40,7 +40,7 @@ function MoveToMenu({ ticketStatus, phaseId, phases, onMove }: MoveToProps) {
         {targets.map((target) => (
           <DropdownMenuItem
             key={target.id ?? "unphased"}
-            onSelect={() => onMove({ statusId: ticketStatus.id, toPhaseId: target.id })}
+            onSelect={() => onMove({ statusId: orderStatus.id, toPhaseId: target.id })}
           >
             {target.name}
           </DropdownMenuItem>
@@ -55,14 +55,14 @@ function MoveToMenu({ ticketStatus, phaseId, phases, onMove }: MoveToProps) {
  * the flow for everyone and show only with `pipeline:write` / `pipeline:delete` (ADR 0076).
  */
 export function StatusChipMenu(props: StatusChipMenuProps) {
-  const { ticketStatus, statuses, access } = props;
-  const t = useTranslations("ticketStatus");
+  const { orderStatus, statuses, access } = props;
+  const t = useTranslations("orderStatus");
   const phase = useTranslations("boardPhase");
   const [archiveOpen, setArchiveOpen] = useState(false);
   return (
     <>
-      <DataTableRowActions compact label={phase("statusActions", { name: ticketStatus.name })}>
-        {access.configure ? <EditTicketStatusItem id={ticketStatus.id} /> : null}
+      <DataTableRowActions compact label={phase("statusActions", { name: orderStatus.name })}>
+        {access.configure ? <EditOrderStatusItem id={orderStatus.id} /> : null}
         <MoveToMenu {...props} />
         {access.configure && access.removeStatus ? (
           <DropdownMenuItem destructive onSelect={() => setArchiveOpen(true)}>
@@ -71,8 +71,8 @@ export function StatusChipMenu(props: StatusChipMenuProps) {
         ) : null}
       </DataTableRowActions>
       {archiveOpen ? (
-        <ArchiveTicketStatusDialog
-          ticketStatus={ticketStatus}
+        <ArchiveOrderStatusDialog
+          orderStatus={orderStatus}
           statuses={statuses}
           open
           onOpenChange={(open) => !open && setArchiveOpen(false)}

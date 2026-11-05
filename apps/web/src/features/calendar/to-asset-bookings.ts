@@ -34,8 +34,8 @@ export type ToAssetBookingsInput = {
   unnamed: CalendarState;
   /** Why the contact is the one to call, in the app's words. */
   via: ContactVia;
-  /** Where a booking opens: its ticket. */
-  ticketHref: (input: { ticketId: string }) => string;
+  /** Where a booking opens: its order. */
+  orderHref: (input: { orderId: string }) => string;
 };
 
 /** The block's state: the line's own colour, a soft or hard hold (ADR 0044). */
@@ -59,7 +59,7 @@ type ToStateInput = Pick<ToAssetBookingsInput, "blocked" | "unnamed">;
 export function toAssetBookings({
   blocks,
   timeZone,
-  ticketHref,
+  orderHref,
   via,
   ...states
 }: ToAssetBookingsInput) {
@@ -69,15 +69,15 @@ export function toAssetBookings({
     const buffer = buffers.get(bufferKey(block));
     const state = stateOf({ block, ...states });
     const reference = block.reference === null ? null : `#${block.reference}`;
-    // The ticket goes by its title; an untitled one by its reference.
-    const ticket = block.ticketTitle ?? reference;
-    const href = block.ticketId ? ticketHref({ ticketId: block.ticketId }) : undefined;
+    // The order goes by its title; an untitled one by its reference.
+    const order = block.orderTitle ?? reference;
+    const href = block.orderId ? orderHref({ orderId: block.orderId }) : undefined;
     const details = block.details ? bookingDetailsOf({ details: block.details, via }) : {};
     return daySegments({ ...block, timeZone }).map((segment) => ({
       id: `${block.id}:${segment.date}`,
       assetId: block.itemId,
       date: segment.date,
-      name: block.title ?? ticket ?? "",
+      name: block.title ?? order ?? "",
       type: "",
       place: null,
       start: segment.start,
@@ -86,12 +86,13 @@ export function toAssetBookings({
       teardownMinutes: segment.last ? (buffer?.teardown ?? 0) : 0,
       state,
       quantity: 1,
-      ticket,
+      order,
+      reference,
       customer: null,
       ...details,
       ...(href ? { href } : {}),
       ...(block.lineId ? { lineId: block.lineId } : {}),
-      ...(block.ticketId ? { ticketId: block.ticketId } : {}),
+      ...(block.orderId ? { orderId: block.orderId } : {}),
     }));
   });
 }

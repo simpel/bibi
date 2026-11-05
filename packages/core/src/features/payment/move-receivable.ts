@@ -1,11 +1,11 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
-import { loadChargeableTicket } from "./payment-preconditions";
+import { loadChargeableOrder } from "./payment-preconditions";
 import { checkReceivableMove, checkVoidable } from "./receivable-lifecycle";
 import type { ReceivableStatus } from "./settlement-schema";
 
-type Moveable = { id: string; ticketId: string; status: ReceivableStatus; paidMinor: number };
+type Moveable = { id: string; orderId: string; status: ReceivableStatus; paidMinor: number };
 
 export type MoveReceivableInput<T extends Moveable> = {
   context: Pick<OperationContext, "db" | "recordChange">;
@@ -20,7 +20,7 @@ export type MoveReceivableInput<T extends Moveable> = {
 /**
  * The one place a deposit's or an invoice's status changes (ADR 0057). The claim locks the row
  * first, so a concurrent `payment.create` either waits and is then seen by the void check, or
- * sees the VOID itself. Sending needs a chargeable ticket.
+ * sees the VOID itself. Sending needs a chargeable order.
  */
 export async function moveReceivable<T extends Moveable>({
   context,
@@ -36,8 +36,8 @@ export async function moveReceivable<T extends Moveable>({
   const allowed = checkReceivableMove({ what: kind, from: before.status, to });
   if (!allowed.ok) return allowed;
   if (to === "SENT") {
-    const ticket = await loadChargeableTicket({ context, ticketId: before.ticketId });
-    if (!ticket.ok) return ticket;
+    const order = await loadChargeableOrder({ context, orderId: before.orderId });
+    if (!order.ok) return order;
   }
   if ((await claim({ from: before.status, to })) === 0) {
     return conflict({ message: `The ${kind} was changed meanwhile` });

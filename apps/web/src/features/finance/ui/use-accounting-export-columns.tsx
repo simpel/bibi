@@ -6,7 +6,7 @@ import { DownloadExportMenu } from "./download-export-menu";
 
 export type UseAccountingExportColumnsInput = { canDownload: boolean };
 
-/** Number, date, voucher count and file name; "Download" in the row menu with `finance:write`. */
+/** Number, file name, range, date and voucher count; "Download" in the row menu with `finance:write`. */
 export function useAccountingExportColumns({
   canDownload,
 }: UseAccountingExportColumnsInput): ColumnDef<ExportRow>[] {
@@ -15,15 +15,15 @@ export function useAccountingExportColumns({
   return useMemo<ColumnDef<ExportRow>[]>(
     () => [
       { id: "number", header: t("number"), accessorFn: (row) => row.number },
+      { id: "fileName", header: t("fileName"), accessorFn: (row) => row.fileName },
+      { id: "range", header: t("range"), accessorFn: (row) => row.rangeText },
       {
         id: "date",
         header: t("date"),
         accessorFn: (row) => row.createdAt,
         cell: ({ row }) => row.original.dateText,
       },
-      { id: "range", header: t("range"), accessorFn: (row) => row.rangeText },
       { id: "vouchers", header: t("vouchers"), accessorFn: (row) => row.voucherCount },
-      { id: "fileName", header: t("fileName"), accessorFn: (row) => row.fileName },
       ...(canDownload
         ? [
             actionsColumn<ExportRow>({

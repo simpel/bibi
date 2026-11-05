@@ -3,6 +3,7 @@
 import {
   Button,
   ButtonGroup,
+  cn,
   Form,
   FormControl,
   FormController,
@@ -28,6 +29,7 @@ export type SearchFormProps = {
   pendingLabel?: string;
   /** Replaces the plain text input, e.g. with one that suggests filters while typing. */
   renderInput?: (field: SearchField) => ReactNode;
+  className?: string;
 };
 
 type SearchValues = { q: string };
@@ -46,17 +48,49 @@ function SearchButton({ submitLabel, pending = false, pendingLabel }: SearchButt
   );
 }
 
+type SearchFieldContentProps = {
+  label: string;
+  renderInput?: ((field: SearchField) => ReactNode) | undefined;
+  button: SearchButtonProps;
+  field: ControllerRenderProps<SearchValues, "q">;
+};
+
+function SearchFieldContent({ label, renderInput, button, field }: SearchFieldContentProps) {
+  return (
+    <FormItem className="flex-1">
+      <FormLabel className="sr-only">{label}</FormLabel>
+      <ButtonGroup className="w-full">
+        <FormControl>
+          {renderInput ? (
+            renderInput({ ...field, placeholder: label })
+          ) : (
+            <Input type="search" placeholder={label} {...field} />
+          )}
+        </FormControl>
+        <SearchButton {...button} />
+      </ButtonGroup>
+    </FormItem>
+  );
+}
+
 /**
  * Free-text search of a list, the field and its button joined (shadcn Button Group), applied on
  * submit (Enter), not per keystroke, so a large list is queried once. A navigation form
  * (CLAUDE.md "Forms"): no server action.
  */
-export function SearchForm({ value, label, onSearch, renderInput, ...button }: SearchFormProps) {
+export function SearchForm({
+  value,
+  label,
+  onSearch,
+  renderInput,
+  className,
+  ...button
+}: SearchFormProps) {
   const form = useForm<SearchValues>({ defaultValues: { q: value ?? "" } });
   // react-hook-form store: the field follows the URL's `q`.
   useEffect(() => form.reset({ q: value ?? "" }), [form, value]);
   return (
-    <search className="flex w-full sm:w-96">
+    <search className={cn("flex w-full sm:w-96", className)}>
       <Form {...form}>
         <form
           className="flex flex-1"
@@ -66,19 +100,12 @@ export function SearchForm({ value, label, onSearch, renderInput, ...button }: S
             control={form.control}
             name="q"
             render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormLabel className="sr-only">{label}</FormLabel>
-                <ButtonGroup className="w-full">
-                  <FormControl>
-                    {renderInput ? (
-                      renderInput({ ...field, placeholder: label })
-                    ) : (
-                      <Input type="search" placeholder={label} {...field} />
-                    )}
-                  </FormControl>
-                  <SearchButton {...button} />
-                </ButtonGroup>
-              </FormItem>
+              <SearchFieldContent
+                label={label}
+                renderInput={renderInput}
+                button={button}
+                field={field}
+              />
             )}
           />
         </form>

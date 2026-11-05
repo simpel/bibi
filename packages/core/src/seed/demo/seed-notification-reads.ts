@@ -43,12 +43,14 @@ export async function seedNotificationReads({
       db,
     });
     const ids = oldest.map(({ id }) => id);
-    const marked = await execute({
-      operation: markNotificationsRead,
-      input: { ids },
-      context: self,
-    });
-    if (!marked.ok) return marked;
+    if (ids.length > 0) {
+      const marked = await execute({
+        operation: markNotificationsRead,
+        input: { ids },
+        context: self,
+      });
+      if (!marked.ok) return marked;
+    }
   }
   return ok({ value: true });
 }

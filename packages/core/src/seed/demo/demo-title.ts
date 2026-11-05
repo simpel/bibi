@@ -1,4 +1,4 @@
-import type { DemoTicket } from "./ticket-types";
+import type { DemoOrder } from "./order-types";
 
 /** "Hisingen Energi AB" → "Hisingen Energi": a title names the customer as staff say it. */
 const spoken = ({ customer }: { customer: string }) => customer.replace(/ (AB|KB|HB)$/, "");
@@ -13,13 +13,13 @@ export const titleFor = ({ customer, what }: TitleForInput) =>
   `${spoken({ customer })} ${lower({ what })}`;
 
 /**
- * The demo ticket's title as staff would write it: its own (the data files name each ticket),
- * else the customer and what it is ("Hisingen Energi sales kickoff"). The seed names every ticket
+ * The demo order's title as staff would write it: its own (the data files name each order),
+ * else the customer and what it is ("Hisingen Energi sales kickoff"). The seed names every order
  * itself, so it never waits for a model.
  */
-export function demoTitle({ ticket }: { ticket: DemoTicket }): string {
-  if (ticket.title) return ticket.title;
-  const purpose = ticket.fields?.Purpose;
-  const what = typeof purpose === "string" ? purpose : ticket.type;
-  return titleFor({ customer: ticket.customer, what });
+export function demoTitle({ order }: { order: DemoOrder }): string {
+  if (order.title) return order.title;
+  const purpose = order.fields?.Purpose;
+  const what = typeof purpose === "string" ? purpose : order.type;
+  return titleFor({ customer: order.customer, what });
 }

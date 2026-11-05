@@ -9,19 +9,19 @@ enum ReceivableStatus {
   VOID
 }
 
-/// Deposit – a frozen receivable (ADR 0057): an amount requested from the ticket's customer before
+/// Deposit – a frozen receivable (ADR 0057): an amount requested from the order's customer before
 /// delivery, with its own description. Owned: amount, currency, description, due date and the
 /// lifecycle `status`. Derived: what is paid and its progress (from `Payment`). Never deleted:
 /// `status` is its lifecycle.
 model Deposit {
   id              String           @id @default(cuid(2))
   organizationId  String
-  ticketId        String
+  orderId        String
   /// What the customer pays for; shown on the payment.
   description     String
   /// Fixed amount in minor units, set once at create.
   amountMinor     Int
-  /// VAT per rate of the amount (snapshot at create, ADR 0093): the ticket's priced lines scaled
+  /// VAT per rate of the amount (snapshot at create, ADR 0093): the order's priced lines scaled
   /// to the amount, summing to it. `[]` = no VAT (no priced lines, or created before ADR 0093).
   vatRows         Json             @default("[]")
   /// ISO 4217, upper case.
@@ -36,23 +36,23 @@ model Deposit {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   createdBy       String?
-  ticket          Ticket           @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  order          Order           @relation(fields: [orderId, organizationId], references: [id, organizationId])
   payments        Payment[]
   deductions      InvoiceDeposit[]
 
   @@unique([id, organizationId])
-  @@index([organizationId, ticketId])
+  @@index([organizationId, orderId])
 }
 
-/// Invoice – a frozen receivable (ADR 0052, 0057): the ticket's priced lines snapshotted as
+/// Invoice – a frozen receivable (ADR 0052, 0057): the order's priced lines snapshotted as
 /// `OrderLine` rows when it is created, like a sent quote, with their totals. Owned: number, due
 /// date, lifecycle `status`. Snapshot: lines and totals. Derived: what is paid and its progress.
-/// At most one invoice per ticket is not VOID (partial unique index in the migration). Never
+/// At most one invoice per order is not VOID (partial unique index in the migration). Never
 /// deleted: `status` is its lifecycle.
 model Invoice {
   id                String                  @id @default(cuid(2))
   organizationId    String
-  ticketId          String
+  orderId          String
   /// Per organization, highest + 1; the unique index refuses a concurrent duplicate.
   number            Int
   /// ISO 4217, upper case.
@@ -75,7 +75,7 @@ model Invoice {
   createdAt         DateTime                @default(now())
   updatedAt         DateTime                @updatedAt
   createdBy         String?
-  ticket            Ticket                  @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  order            Order                  @relation(fields: [orderId, organizationId], references: [id, organizationId])
   lines             OrderLine[]
   payments          Payment[]
   exportEntries     AccountingExportEntry[]
@@ -84,7 +84,7 @@ model Invoice {
 
   @@unique([id, organizationId])
   @@unique([organizationId, number])
-  @@index([organizationId, ticketId])
+  @@index([organizationId, orderId])
 }
 
 /// InvoiceDeposit – a paid deposit a final invoice deducts (ADR 0090). Snapshot at

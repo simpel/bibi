@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { TICKET_18 } from "./calendar-data";
+import { ORDER_18 } from "./calendar-data";
 import { DayColumn } from "./day-column";
 
 const meta = {
   title: "Calendar/Day column",
   component: DayColumn,
-  args: { ticket: TICKET_18, audience: "internal", locale: "en-GB" },
+  args: { order: ORDER_18, audience: "internal", locale: "en-GB" },
   argTypes: {
     audience: { control: "inline-radio", options: ["internal", "external"] },
-    ticket: { control: false },
+    order: { control: false },
   },
   decorators: [
     (Story) => (

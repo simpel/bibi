@@ -14,7 +14,7 @@
 - **All writes go through `execute` with core operations** as `SYSTEM`, including configuration and phase changes, so each organization sets itself up the way a real customer would. Rejected: writing directly with Prisma.
 - **`docs/demo-seed.md` is the source** and the data files follow it. Checks defined there run after the seed in CI, so the seed is an integration test of the whole flow.
 - The script is idempotent per org slug (it deletes and recreates only the demo organizations), refuses to run in production, and computes all dates relative to today.
-- The seed grows with each part that is built; every ticket that adds or changes data states its seed change.
+- The seed grows with each part that is built; every order that adds or changes data states its seed change.
 
 ## Consequences
 - The seed can only create what the operations support, so a missing operation is visible immediately.

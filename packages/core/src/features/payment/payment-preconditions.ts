@@ -7,40 +7,40 @@ import type { PaymentMethod } from "./schema";
 type Db = { context: Pick<OperationContext, "db"> };
 
 export type ChargeTarget = {
-  ticket: { id: string; reference: number };
+  order: { id: string; reference: number };
   customer: Customer;
   connectedAccountId: string;
 };
 
-export type ChargeableTicketInput = Db & { ticketId: string };
+export type ChargeableOrderInput = Db & { orderId: string };
 
-/** A ticket can be charged unless it is in a `closes` status that is not `invoiceable`. */
-export async function loadChargeableTicket({ context, ticketId }: ChargeableTicketInput) {
-  const ticket = await context.db.ticket.findFirst({ where: { id: ticketId } });
-  if (!ticket) return notFound({ entity: "Ticket" });
-  const ticketStatus = await context.db.ticketStatus.findFirst({
-    where: { id: ticket.statusId, status: { in: ["ACTIVE", "ARCHIVED"] } },
+/** An order can be charged unless it is in a `closes` status that is not `invoiceable`. */
+export async function loadChargeableOrder({ context, orderId }: ChargeableOrderInput) {
+  const order = await context.db.order.findFirst({ where: { id: orderId } });
+  if (!order) return notFound({ entity: "Order" });
+  const orderStatus = await context.db.orderStatus.findFirst({
+    where: { id: order.statusId, status: { in: ["ACTIVE", "ARCHIVED"] } },
     select: { closes: true, invoiceable: true, name: true },
   });
-  if (ticketStatus?.closes && !ticketStatus.invoiceable) {
-    return conflict({ message: `A ticket in "${ticketStatus.name}" cannot be charged` });
+  if (orderStatus?.closes && !orderStatus.invoiceable) {
+    return conflict({ message: `An order in "${orderStatus.name}" cannot be charged` });
   }
-  return ok({ value: ticket });
+  return ok({ value: order });
 }
 
-export type LoadTargetInput = Db & { ticketId: string; method: PaymentMethod };
+export type LoadTargetInput = Db & { orderId: string; method: PaymentMethod };
 
 /**
- * What a new payment needs: a chargeable ticket, its customer (with an email for invoices) and
+ * What a new payment needs: a chargeable order, its customer (with an email for invoices) and
  * the organization's connected account with card payments active.
  */
 export async function loadChargeTarget({
   context,
-  ticketId,
+  orderId,
   method,
 }: LoadTargetInput): Promise<Result<ChargeTarget>> {
-  const ticket = await loadChargeableTicket({ context, ticketId });
-  if (!ticket.ok) return ticket;
+  const order = await loadChargeableOrder({ context, orderId });
+  if (!order.ok) return order;
   const account = await context.db.paymentAccount.findFirst({});
   if (account?.status !== "ACTIVE" || !account.stripeAccountId || account.disconnectedAt) {
     return conflict({
@@ -48,7 +48,7 @@ export async function loadChargeTarget({
     });
   }
   const customer = await context.db.customer.findFirst({
-    where: { id: ticket.value.customerId, status: { in: ["ACTIVE", "ARCHIVED"] } },
+    where: { id: order.value.customerId, status: { in: ["ACTIVE", "ARCHIVED"] } },
   });
   if (!customer) return notFound({ entity: "Customer" });
   if (method === "INVOICE" && !customer.email) {
@@ -57,8 +57,8 @@ export async function loadChargeTarget({
       issues: [{ path: "method", message: "The customer has no email address" }],
     });
   }
-  const { id, reference } = ticket.value;
+  const { id, reference } = order.value;
   return ok({
-    value: { ticket: { id, reference }, customer, connectedAccountId: account.stripeAccountId },
+    value: { order: { id, reference }, customer, connectedAccountId: account.stripeAccountId },
   });
 }

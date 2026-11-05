@@ -19,7 +19,7 @@ const LineAmountsRef = objectFromSchema<LineAmounts>({
   name: "LineAmounts",
   schema: LineAmountsOutputSchema,
   omit: ["lines"],
-  description: "A ticket's line amounts and total, by the draft quote's rules; nothing is written.",
+  description: "An order's line amounts and total, by the draft quote's rules; nothing is written.",
 });
 builder.objectField(LineAmountsRef, "lines", (t) =>
   t.field({ type: [LineAmountRef], resolve: (amounts) => amounts.lines }),

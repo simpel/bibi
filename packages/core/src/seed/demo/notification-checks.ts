@@ -23,7 +23,7 @@ async function checkReads({ context, org }: CheckDemoNotificationsInput) {
 }
 
 /**
- * ADR 0094: every seeded ticket's main assignee was told (ASSIGNED, made by the ticket and
+ * ADR 0094: every seeded order's main assignee was told (ASSIGNED, made by the order and
  * assignment commands' `followUp`), every notification is for a member, and the members in
  * `notificationReads` read what the data says. Returns failure messages.
  */
@@ -33,16 +33,16 @@ export async function checkDemoNotifications({
 }: CheckDemoNotificationsInput): Promise<string[]> {
   const [assigned, told, members] = await Promise.all([
     context.db.assignment.findMany({
-      where: { record: { base: "TICKET" }, responsibilityId: null, assigneeId: { not: null } },
+      where: { record: { base: "ORDER" }, responsibilityId: null, assigneeId: { not: null } },
       select: { recordId: true, assigneeId: true },
     }),
     context.db.notification.findMany({
       where: { kind: "ASSIGNED" },
-      select: { ticketId: true, recipientUserId: true },
+      select: { orderId: true, recipientUserId: true },
     }),
     context.db.member.findMany({ select: { userId: true } }),
   ]);
-  const toldKeys = new Set(told.map((row) => `${row.ticketId}:${row.recipientUserId}`));
+  const toldKeys = new Set(told.map((row) => `${row.orderId}:${row.recipientUserId}`));
   const missing = assigned.filter((row) => !toldKeys.has(`${row.recordId}:${row.assigneeId}`));
   const memberIds = new Set(members.map((member) => member.userId));
   const strangers = await context.db.notification.count({
@@ -51,7 +51,7 @@ export async function checkDemoNotifications({
   const failures: string[] = [];
   if (missing.length > 0) {
     failures.push(
-      `${org.slug}: ${missing.length} assigned tickets without an ASSIGNED notification`,
+      `${org.slug}: ${missing.length} assigned orders without an ASSIGNED notification`,
     );
   }
   if (strangers > 0) failures.push(`${org.slug}: ${strangers} notifications for non-members`);

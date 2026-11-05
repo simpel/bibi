@@ -2,10 +2,11 @@ import { listApiKeys } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
 import { FormPageShell } from "@/components/wizard/form-page-shell";
 import { assignableRoles } from "@/features/member/assignable-roles";
-import { ROUTES } from "@/lib/routes";
+import { apiKeyRoute, ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -28,6 +29,7 @@ export async function ApiKeyUpdatePage({ locale, id }: ApiKeyUpdatePageProps) {
       title={t("edit")}
       description={t("editDescription")}
     >
+      <CrumbName href={apiKeyRoute({ id })} name={apiKey.name} />
       <ApiKeyUpdateForm apiKey={apiKey} roles={assignableRoles({ caller: abilities.role })} />
     </FormPageShell>
   );

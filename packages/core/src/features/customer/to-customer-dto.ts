@@ -5,30 +5,30 @@ import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../rec
 import type { CustomerDto } from "./schema";
 
 /**
- * Prisma `include` for every customer read: counts the tickets that are not archived. The
+ * Prisma `include` for every customer read: counts the orders that are not archived. The
  * composite foreign key (`customerId`, `organizationId`) keeps them in the customer's organization.
  */
 export const CUSTOMER_INCLUDE = {
-  _count: { select: { tickets: { where: { status: "ACTIVE" as const } } } },
+  _count: { select: { orders: { where: { status: "ACTIVE" as const } } } },
   ...WITH_RECORD_LINKS,
 };
 
-export type CustomerRow = Customer & WithRecordLinks & { _count: { tickets: number } };
+export type CustomerRow = Customer & WithRecordLinks & { _count: { orders: number } };
 
 export type ToCustomerDtoInput = {
   row: CustomerRow;
-  /** The caller: `ticketCount` is only filled when it may view tickets (ADR 0050). */
+  /** The caller: `orderCount` is only filled when it may view orders (ADR 0050). */
   context: Pick<OperationContext, "permissions">;
 };
 
 export const toCustomerDto = ({ row, context }: ToCustomerDtoInput): CustomerDto => {
   const { _count, record: _record, ...customer } = row;
   const { permissions } = context;
-  const ticketsVisible = hasPermission({ permissions, permission: "ticket:read" });
+  const ordersVisible = hasPermission({ permissions, permission: "order:read" });
   return {
     ...customer,
     fields: recordFields({ row }),
-    ticketCount: ticketsVisible ? _count.tickets : null,
+    orderCount: ordersVisible ? _count.orders : null,
   };
 };
 

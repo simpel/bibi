@@ -13,7 +13,7 @@ import {
   QuoteSchema,
   reviseQuote,
   sendQuote,
-  type TicketDto,
+  type OrderDto,
   updateQuote,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
@@ -21,13 +21,13 @@ import { fieldFromOperation, mutationFromOperation } from "../../schema/from-ope
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
 import { runOperation } from "../../schema/run-operation";
-import { TicketRef } from "../ticket/graphql";
+import { OrderRef } from "../order/graphql";
 
 const QuoteLineRef = objectFromSchema<QuoteLineDto>({
   name: "QuoteLine",
   schema: QuoteLineSchema,
   description:
-    "An order line on a quote: the price of one ticket line (live on a DRAFT, frozen once " +
+    "An order line on a quote: the price of one order line (live on a DRAFT, frozen once " +
     "sent), marked against an earlier snapshot by line.",
 });
 
@@ -40,11 +40,11 @@ const RemovedLineRef = objectFromSchema<OrderLineDto>({
 export const QuoteRef = objectFromSchema<QuoteDto>({
   name: "Quote",
   schema: QuoteSchema,
-  omit: ["organizationId", "lines", "removedLines", "ticketChanges", "ticketRemovedLines"],
+  omit: ["organizationId", "lines", "removedLines", "orderChanges", "orderRemovedLines"],
   description:
-    "Quote – a versioned proposal to a ticket with terms and totals; a DRAFT shows the ticket's " +
+    "Quote – a versioned proposal to an order with terms and totals; a DRAFT shows the order's " +
     "priced lines live and sending freezes them (ADR 0052). Fixed status DRAFT → SENT → " +
-    "ACCEPTED, DECLINED or EXPIRED. It uses the ticket's owner, none of its own.",
+    "ACCEPTED, DECLINED or EXPIRED. It uses the order's owner, none of its own.",
 });
 const QuotePageRef = pageType({ name: "QuotePage", item: QuoteRef });
 
@@ -59,15 +59,15 @@ builder.objectFields(QuoteRef, (t) => ({
     description: QuoteSchema.shape.removedLines.description,
     resolve: (quote) => quote.removedLines,
   }),
-  ticketChanges: t.field({
+  orderChanges: t.field({
     type: [QuoteLineRef],
-    description: QuoteSchema.shape.ticketChanges.description,
-    resolve: (quote) => quote.ticketChanges,
+    description: QuoteSchema.shape.orderChanges.description,
+    resolve: (quote) => quote.orderChanges,
   }),
-  ticketRemovedLines: t.field({
+  orderRemovedLines: t.field({
     type: [RemovedLineRef],
-    description: QuoteSchema.shape.ticketRemovedLines.description,
-    resolve: (quote) => quote.ticketRemovedLines,
+    description: QuoteSchema.shape.orderRemovedLines.description,
+    resolve: (quote) => quote.orderRemovedLines,
   }),
 }));
 
@@ -85,14 +85,14 @@ for (const operation of [
   mutationFromOperation({ operation, type: QuoteRef });
 }
 
-builder.objectField(TicketRef, "quotes", (t) =>
+builder.objectField(OrderRef, "quotes", (t) =>
   t.field({
     type: [QuoteRef],
-    description: "Every version of the ticket's quote, newest first.",
-    resolve: async (ticket: TicketDto, _args, ctx) => {
+    description: "Every version of the order's quote, newest first.",
+    resolve: async (order: OrderDto, _args, ctx) => {
       const page = (await runOperation({
         operation: listQuotes,
-        input: { ticketId: ticket.id, limit: 100 },
+        input: { orderId: order.id, limit: 100 },
         ctx,
       })) as { items: QuoteDto[] };
       return page.items;
@@ -100,20 +100,20 @@ builder.objectField(TicketRef, "quotes", (t) =>
   }),
 );
 
-builder.objectField(TicketRef, "differsFromAcceptedQuote", (t) =>
+builder.objectField(OrderRef, "differsFromAcceptedQuote", (t) =>
   t.field({
     type: "Boolean",
     nullable: true,
     description:
-      "ADR 0052: the ticket's priced lines differ from its accepted quote (derived, never " +
-      "stored); null when no quote is accepted. The differences are on the quote's ticketChanges.",
-    resolve: async (ticket: TicketDto, _args, ctx) => {
+      "ADR 0052: the order's priced lines differ from its accepted quote (derived, never " +
+      "stored); null when no quote is accepted. The differences are on the quote's orderChanges.",
+    resolve: async (order: OrderDto, _args, ctx) => {
       const page = (await runOperation({
         operation: listQuotes,
-        input: { ticketId: ticket.id, quoteStatus: "ACCEPTED", limit: 1 },
+        input: { orderId: order.id, quoteStatus: "ACCEPTED", limit: 1 },
         ctx,
       })) as { items: QuoteDto[] };
-      return page.items[0]?.differsFromTicket ?? null;
+      return page.items[0]?.differsFromOrder ?? null;
     },
   }),
 );

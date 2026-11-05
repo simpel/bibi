@@ -1,0 +1,83 @@
+/// Run sheet definition (ADR 0021) – an organization's own run sheet, e.g. Kitchen order or Brewing order.
+/// It names the item types and fields a run sheet includes, the lists whose requirements it includes
+/// and the responsibility it goes to. The referenced ids are join rows with foreign keys (ADR 0056),
+/// validated by core (`runSheetDefinition.*`), and archiving a referenced type, field or list is
+/// refused while an active definition uses it.
+model RunSheetDefinition {
+  id               String                      @id @default(cuid(2))
+  organizationId   String
+  name             String
+  /// The responsibility (ADR 0034) that receives the run sheet.
+  responsibilityId String
+  status           RecordStatus                @default(ACTIVE)
+  createdAt        DateTime                    @default(now())
+  updatedAt        DateTime                    @updatedAt
+  createdBy        String?
+  responsibility   Responsibility              @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
+  /// Item types (`EntityType` of base ITEM) whose items appear on the run sheet.
+  entityTypes      RunSheetDefinitionEntityType[]
+  /// Fields (`FieldDefinition` of those types) shown per item.
+  fields           RunSheetDefinitionField[]
+  /// Lists (`Vocabulary`) whose requirements are counted on the run sheet.
+  vocabularies     RunSheetDefinitionVocabulary[]
+  /// The versions generated from this definition.
+  runSheets           RunSheet[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, responsibilityId])
+}
+
+/// An item type a run sheet definition includes (ADR 0056). A replacement set, audited on the
+/// definition. `position` keeps the given order.
+model RunSheetDefinitionEntityType {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  runSheetDefinitionId String
+  entityTypeId      String
+  position          Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?
+  runSheetDefinition   RunSheetDefinition @relation(fields: [runSheetDefinitionId, organizationId], references: [id, organizationId])
+  entityType        EntityType      @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+
+  @@unique([runSheetDefinitionId, entityTypeId])
+  @@index([organizationId, entityTypeId])
+}
+
+/// A field a run sheet definition shows per item (ADR 0056). A replacement set, audited on the
+/// definition. `position` keeps the given order.
+model RunSheetDefinitionField {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  runSheetDefinitionId String
+  fieldId           String
+  position          Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?
+  runSheetDefinition   RunSheetDefinition @relation(fields: [runSheetDefinitionId, organizationId], references: [id, organizationId])
+  field             FieldDefinition @relation(fields: [fieldId, organizationId], references: [id, organizationId])
+
+  @@unique([runSheetDefinitionId, fieldId])
+  @@index([organizationId, fieldId])
+}
+
+/// A list whose requirements a run sheet definition counts (ADR 0056). A replacement set, audited on
+/// the definition. `position` keeps the given order.
+model RunSheetDefinitionVocabulary {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  runSheetDefinitionId String
+  vocabularyId      String
+  position          Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?
+  runSheetDefinition   RunSheetDefinition @relation(fields: [runSheetDefinitionId, organizationId], references: [id, organizationId])
+  vocabulary        Vocabulary      @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
+
+  @@unique([runSheetDefinitionId, vocabularyId])
+  @@index([organizationId, vocabularyId])
+}

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 export type * from "./kanban-customize-types";
 
-/** A drop zone inside a column (e.g. one ticket status of a board phase). */
+/** A drop zone inside a column (e.g. one order status of a board phase). */
 export type KanbanZoneData = {
   id: string;
   title: string;

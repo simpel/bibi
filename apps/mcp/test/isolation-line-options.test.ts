@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
-import { seedTicket } from "./seed-ticket";
+import { seedOrder } from "./seed-order";
 
 type Client = Awaited<ReturnType<typeof connect>>;
 
@@ -10,9 +10,9 @@ async function ok({ client, name, args }: { client: Client; name: string; args: 
   return result.data;
 }
 
-/** A ticket with one line for an item offering one option ("Secret technician"). */
+/** An order with one line for an item offering one option ("Secret technician"). */
 async function seedOptions({ client }: { client: Client }) {
-  const { id: ticketId } = await seedTicket({ client });
+  const { id: orderId } = await seedOrder({ client });
   const base = "ITEM";
   const service = await ok({ client, name: "entityType_create", args: { base, name: "Svc" } });
   const option = await ok({
@@ -41,7 +41,7 @@ async function seedOptions({ client }: { client: Client }) {
   const line = await ok({
     client,
     name: "line_create",
-    args: { ticketId, entityTypeId: lineType.id, name: "Hidden", itemId: item.id },
+    args: { orderId, entityTypeId: lineType.id, name: "Hidden", itemId: item.id },
   });
   return { lineId: line.id as string, optionId: option.id as string };
 }

@@ -5,15 +5,15 @@ export type DeleteOrganizationsInput = { db: Db; organizationIds: string[] };
 type ScopeInput = { db: Db; where: { organizationId: { in: string[] } } };
 
 /**
- * What hangs off a ticket (ADR 0043), children first; deleted before the items they use. The
- * predefined tickets use items, setups and types, so they go here too.
+ * What hangs off an order (ADR 0043), children first; deleted before the items they use. The
+ * predefined orders use items, setups and types, so they go here too.
  */
-const ticketChildren = ({ db, where }: ScopeInput) => [
-  // Notifications point at tickets, work orders and payments (ADR 0094).
+const orderChildren = ({ db, where }: ScopeInput) => [
+  // Notifications point at orders, run sheets and payments (ADR 0094).
   db.notification.deleteMany({ where }),
   db.notificationPreference.deleteMany({ where }),
   db.inboundEmail.deleteMany({ where }),
-  // Messages point at their endpoint and ticket; endpoints at a type and a package (ADR 0085).
+  // Messages point at their endpoint and order; endpoints at a type and a package (ADR 0085).
   db.inboundMessage.deleteMany({ where }),
   db.inboundEndpoint.deleteMany({ where }),
   // SIE exports point at invoices, payments and refunds (ADR 0077); refunds at their payment.
@@ -26,8 +26,8 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   // Payments settle quotes, deposits and invoices (ADR 0057): before all three.
   db.payment.deleteMany({ where }),
   db.deposit.deleteMany({ where }),
-  db.workOrderRecipient.deleteMany({ where }),
-  db.workOrder.deleteMany({ where }),
+  db.runSheetRecipient.deleteMany({ where }),
+  db.runSheet.deleteMany({ where }),
   db.requirement.deleteMany({ where }),
   // Order lines point at the lines they froze and at their quote or invoice (ADR 0052).
   db.orderLine.deleteMany({ where }),
@@ -35,10 +35,10 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.quote.deleteMany({ where }),
   // A chosen alternative points at its line and the lines at their group (ADR 0052).
   db.alternativeGroup.updateMany({ where, data: { chosenLineId: null } }),
-  // The status, state and estimate history (ADR 0054, 0074) points at lines, tickets and states.
+  // The status, state and estimate history (ADR 0054, 0074) points at lines, orders and states.
   db.lineStateChange.deleteMany({ where }),
-  db.ticketStatusChange.deleteMany({ where }),
-  db.ticketEstimate.deleteMany({ where }),
+  db.orderStatusChange.deleteMany({ where }),
+  db.orderEstimate.deleteMany({ where }),
   // Allocations point at their lines, demands and each other (ADR 0059); their holds cascade.
   db.lineAllocation.updateMany({ where, data: { parentAllocationId: null } }),
   db.lineAllocation.deleteMany({ where }),
@@ -47,8 +47,8 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.line.updateMany({ where, data: { parentLineId: null, role: null, priceEffect: null } }),
   db.line.deleteMany({ where }),
   db.alternativeGroup.deleteMany({ where }),
-  db.ticketTemplateLine.deleteMany({ where }),
-  db.ticketTemplate.deleteMany({ where }),
+  db.orderTemplateLine.deleteMany({ where }),
+  db.orderTemplate.deleteMany({ where }),
 ];
 
 /** Item states, their transitions and the status grid (ADR 0044); after the lines that use them. */
@@ -61,14 +61,14 @@ const itemStates = ({ db, where }: ScopeInput) => [
 ];
 
 /**
- * Work order definitions and the id lists of definitions and responsibilities (ADR 0056); after the
- * work order versions, before the responsibilities, types, fields and lists they point at.
+ * Run sheet definitions and the id lists of definitions and responsibilities (ADR 0056); after the
+ * run sheet versions, before the responsibilities, types, fields and lists they point at.
  */
 const configLinks = ({ db, where }: ScopeInput) => [
-  db.workOrderDefinitionEntityType.deleteMany({ where }),
-  db.workOrderDefinitionField.deleteMany({ where }),
-  db.workOrderDefinitionVocabulary.deleteMany({ where }),
-  db.workOrderDefinition.deleteMany({ where }),
+  db.runSheetDefinitionEntityType.deleteMany({ where }),
+  db.runSheetDefinitionField.deleteMany({ where }),
+  db.runSheetDefinitionVocabulary.deleteMany({ where }),
+  db.runSheetDefinition.deleteMany({ where }),
   db.responsibilityEntityType.deleteMany({ where }),
   db.responsibilityDefaultFollower.deleteMany({ where }),
 ];
@@ -112,7 +112,7 @@ export async function deleteOrganizations({
     db.embedding.deleteMany({ where }),
     db.message.deleteMany({ where }),
     db.conversation.deleteMany({ where }),
-    ...ticketChildren({ db, where }),
+    ...orderChildren({ db, where }),
     ...itemStates({ db, where }),
     ...configLinks({ db, where }),
     db.priceListItem.deleteMany({ where }),
@@ -122,12 +122,12 @@ export async function deleteOrganizations({
     db.item.deleteMany({ where }),
     db.assignmentFollower.deleteMany({ where }),
     db.assignment.deleteMany({ where }),
-    db.ticket.deleteMany({ where }),
-    db.ticketStatusTransition.deleteMany({ where }),
+    db.order.deleteMany({ where }),
+    db.orderStatusTransition.deleteMany({ where }),
     db.boardPhaseStatus.deleteMany({ where }),
     db.boardPhase.deleteMany({ where }),
     db.board.deleteMany({ where }),
-    db.ticketStatus.deleteMany({ where }),
+    db.orderStatus.deleteMany({ where }),
     ...recordRoots({ db, where }),
     db.fieldDefinition.deleteMany({ where }),
     db.vocabularyValue.deleteMany({ where }),

@@ -14,7 +14,7 @@ const meta = {
     noOverrides: "No changes from the preset.",
     effectiveTitle: "Can use",
     features: [
-      { label: "Tickets", actions: "View, Create, Edit" },
+      { label: "Orders", actions: "View, Create, Edit" },
       { label: "Items", actions: "View, Edit" },
     ],
     hiddenTitle: "Hidden",

@@ -2,8 +2,14 @@ import { resolveLocale } from "@bibi/i18n";
 import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { SkillCreate } from "@/features/skill/ui/skill-create";
+import { pageTitle } from "@/lib/page-metadata";
 
 type NewSkillPageProps = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: NewSkillPageProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "skills", key: "create" });
+}
 
 export default async function NewSkillPage({ params }: NewSkillPageProps) {
   setRequestLocale(resolveLocale({ value: (await params).locale }));

@@ -98,8 +98,9 @@ export function DateRangeButton({
       <PopoverTrigger asChild>
         <DatePickerTrigger label={label} placeholder={placeholder} disabled={disabled} id={id} />
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto max-w-[calc(100vw-2rem)] p-2">
+      <PopoverContent align="start" className="w-auto max-w-[calc(100vw-2rem)] p-3">
         <DateRangePanel
+          key={open ? "open" : "closed"}
           {...panel}
           onPick={(range) => {
             setOpen(false);

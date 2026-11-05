@@ -14,11 +14,11 @@ import { useState } from "react";
 import { AlternativeGroupForm } from "./alternative-group-form";
 import type { OptionLine } from "./option-line";
 
-export type CreateAlternativeGroupButtonProps = { ticketId: string; lines: OptionLine[] };
+export type CreateAlternativeGroupButtonProps = { orderId: string; lines: OptionLine[] };
 
-/** Opens the dialog that makes some of the ticket's lines alternatives (like line create). */
+/** Opens the dialog that makes some of the order's lines alternatives (like line create). */
 export function CreateAlternativeGroupButton({
-  ticketId,
+  orderId,
   lines,
 }: CreateAlternativeGroupButtonProps) {
   const t = useTranslations("alternativeGroup");
@@ -35,7 +35,7 @@ export function CreateAlternativeGroupButton({
             <DialogTitle>{t("create")}</DialogTitle>
             <DialogDescription>{t("createDescription")}</DialogDescription>
           </DialogHeader>
-          <AlternativeGroupForm ticketId={ticketId} lines={lines} onDone={() => setOpen(false)} />
+          <AlternativeGroupForm orderId={orderId} lines={lines} onDone={() => setOpen(false)} />
         </DialogContent>
       </Dialog>
     </>

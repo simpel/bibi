@@ -20,6 +20,7 @@ import {
   getProfile,
   getWorkingHours,
   profileOperations,
+  setProfileLocale,
   setWorkingHours,
   updateProfile,
 } from "./features/profile/operations";
@@ -66,6 +67,7 @@ export {
   notificationWriteOperations,
   profileOperations,
   setNotificationPreference,
+  setProfileLocale,
   setUserPreference,
   setWorkingHours,
   updateProfile,

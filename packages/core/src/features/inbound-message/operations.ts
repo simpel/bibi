@@ -4,7 +4,7 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { inboundEmailOperations } from "../inbound-email/operations";
-import { checkReadable } from "../ticket/ticket-rules";
+import { checkReadable } from "../order/order-rules";
 import { InboundEndpointListInputSchema, InboundEndpointListOutputSchema } from "./endpoint-schema";
 import {
   InboundMessageIdInputSchema,
@@ -31,9 +31,9 @@ const UNTRUSTED =
 /** What `q` searches: the subject and who sent it. */
 const searchFields = ["subject", "fromName", "fromEmail"] as const;
 
-/** A ticket's messages, or the inbox (no ticket); read, unread or both; channel and search. */
-const listWhere = ({ ticketId, read, channel, q }: InboundMessageListInput) => ({
-  ticketId: ticketId ?? null,
+/** An order's messages, or the inbox (no order); read, unread or both; channel and search. */
+const listWhere = ({ orderId, read, channel, q }: InboundMessageListInput) => ({
+  orderId: orderId ?? null,
   ...(read === undefined ? {} : { readAt: read ? { not: null } : null }),
   ...(channel ? { channel } : {}),
   ...(q
@@ -50,16 +50,16 @@ export const listInboundMessages = defineOperation({
   kind: "query",
   description:
     "Messages that came in on any channel (email, web form, SMS, API), newest first. With " +
-    "`ticketId` (needs ticket:read): that ticket's messages. Without: the inbox, messages with " +
-    "no ticket yet. `read: false` lists the unread ones, `read: true` the read ones (the read " +
+    "`orderId` (needs order:read): that order's messages. Without: the inbox, messages with " +
+    "no order yet. `read: false` lists the unread ones, `read: true` the read ones (the read " +
     `state is shared by the team). Filter by \`channel\`, search with \`q\`. ${UNTRUSTED}`,
   input: InboundMessageListInputSchema,
   output: InboundMessageListOutputSchema,
   permission: "inbox:read",
   untrustedOutput: true,
   handler: async ({ input, context }) => {
-    if (input.ticketId) {
-      const access = checkReadable({ context, permission: "ticket:read", path: "ticketId" });
+    if (input.orderId) {
+      const access = checkReadable({ context, permission: "order:read", path: "orderId" });
       if (!access.ok) return access;
     }
     const rows = await context.db.inboundMessage.findMany({
@@ -77,13 +77,13 @@ export const countOpenInboundMessages = defineOperation({
   name: "inboundMessage.openCount",
   kind: "query",
   description:
-    "How many unread messages wait in the inbox: no ticket yet and nobody in the team has " +
+    "How many unread messages wait in the inbox: no order yet and nobody in the team has " +
     "read them (ADR 0085). The sidebar's inbox badge.",
   input: InboundMessageOpenCountInputSchema,
   output: InboundMessageOpenCountOutputSchema,
   permission: "inbox:read",
   handler: async ({ context }) => {
-    const where = { ticketId: null, readAt: null };
+    const where = { orderId: null, readAt: null };
     const open = await context.db.inboundMessage.count({ where });
     return ok({ value: { open } });
   },

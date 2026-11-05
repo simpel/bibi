@@ -4,7 +4,7 @@ import type {
   CalendarLine,
 } from "../../components/availability-calendar/calendar-types";
 import { storyValue } from "./busy-row";
-import { TICKET_18 } from "./calendar-data";
+import { ORDER_18 } from "./calendar-data";
 import { CLIENT_CONTACTS } from "./client-contacts-data";
 import { PEOPLE } from "./people-data";
 import { STATES } from "./states-data";
@@ -34,12 +34,12 @@ export const ASSETS: readonly CalendarAsset[] = [
 ];
 
 const t18 = {
-  ticket: TICKET_18.reference,
-  customer: TICKET_18.customer,
-  headcount: TICKET_18.headcount,
+  order: ORDER_18.reference,
+  customer: ORDER_18.customer,
+  headcount: ORDER_18.headcount,
 };
-const erik = { person: PEOPLE.erik, via: "Ticket assignee" };
-const lineOf = ({ id }: { id: string }) => TICKET_18.lines.find((line) => line.id === id);
+const erik = { person: PEOPLE.erik, via: "Order assignee" };
+const lineOf = ({ id }: { id: string }) => ORDER_18.lines.find((line) => line.id === id);
 const on = ({ line, assetId }: { line?: CalendarLine; assetId: string }) =>
   line ? [{ ...line, ...t18, assetId }] : [];
 
@@ -71,7 +71,7 @@ export const BOOKINGS: readonly AssetBooking[] = withClients({
       teardownMinutes: 30,
       state: STATES.booked,
       assetId: "branno",
-      ticket: "Ticket 21",
+      order: "Order 21",
       customer: "Volvo Cars",
       contact: erik,
       headcount: 18,
@@ -85,7 +85,7 @@ export const BOOKINGS: readonly AssetBooking[] = withClients({
       setupMinutes: 30,
       state: STATES.prebooked,
       assetId: "branno",
-      ticket: "Ticket 22",
+      order: "Order 22",
       customer: "Göteborgs Stad",
       contact: erik,
       headcount: 18,
@@ -100,7 +100,7 @@ export const BOOKINGS: readonly AssetBooking[] = withClients({
       teardownMinutes: 45,
       state: STATES.booked,
       assetId: "vinga",
-      ticket: "Ticket 19",
+      order: "Order 19",
       customer: "Chalmers",
       contact: erik,
       headcount: 120,
@@ -114,7 +114,7 @@ export const BOOKINGS: readonly AssetBooking[] = withClients({
       end: "15:30",
       state: STATES.booked,
       assetId: "sara",
-      ticket: "Ticket 19",
+      order: "Order 19",
       customer: "Chalmers",
       contact: erik,
     },
@@ -126,7 +126,7 @@ export const BOOKINGS: readonly AssetBooking[] = withClients({
       end: "09:00",
       state: STATES.maintenance,
       assetId: "aspero",
-      ticket: null,
+      order: null,
       customer: null,
     },
   ],

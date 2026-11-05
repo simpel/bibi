@@ -2,7 +2,7 @@ import type { EntityTypeDto, RequirementDto } from "@bibi/core";
 import { NONE } from "@/components/form/option-select-field";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 
-/** Raw values of the requirement form: inputs are strings, `NONE` = the whole ticket. */
+/** Raw values of the requirement form: inputs are strings, `NONE` = the whole order. */
 export type RequirementFormValues = {
   entityTypeId: string;
   lineId: string;

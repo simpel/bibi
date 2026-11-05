@@ -4,7 +4,7 @@ import { notFound } from "../../shared/errors";
 import type { PaymentSettingsDto } from "../payment-account/settings-schema";
 import { loadPaymentSettings } from "../payment-account/settings-store";
 import { checkLinesReadable } from "../quote/check-lines-readable";
-import { deriveTicketLines } from "../quote/derive-lines";
+import { deriveOrderLines } from "../quote/derive-lines";
 import { quoteTotals } from "../quote/line-totals";
 import type { DepositSuggestion } from "./schema";
 
@@ -31,25 +31,25 @@ export function depositFromRule({
 
 export type SuggestDepositInput = {
   context: Pick<OperationContext, "db" | "permissions">;
-  ticketId: string;
+  orderId: string;
 };
 
 /**
- * The rule applied to the ticket's live priced lines incl. VAT (what an invoice would freeze).
+ * The rule applied to the order's live priced lines incl. VAT (what an invoice would freeze).
  * The rule itself is `paymentAccount` data (ADR 0071): only the amount it gives leaves here.
  */
 export async function suggestDeposit({
   context,
-  ticketId,
+  orderId,
 }: SuggestDepositInput): Promise<Result<DepositSuggestion>> {
-  const readable = checkLinesReadable({ context, path: "ticketId" });
+  const readable = checkLinesReadable({ context, path: "orderId" });
   if (!readable.ok) return readable;
-  const ticket = await context.db.ticket.findFirst({
-    where: { id: ticketId },
+  const order = await context.db.order.findFirst({
+    where: { id: orderId },
     select: { id: true },
   });
-  if (!ticket) return notFound({ entity: "Ticket" });
-  const derived = (await deriveTicketLines({ context, ticketIds: [ticketId] })).get(ticketId) ?? [];
+  if (!order) return notFound({ entity: "Order" });
+  const derived = (await deriveOrderLines({ context, orderIds: [orderId] })).get(orderId) ?? [];
   const { totalInclVatMinor } = quoteTotals({ lines: derived.map((d) => d.line) });
   const [settings, account] = await Promise.all([
     loadPaymentSettings({ context }),

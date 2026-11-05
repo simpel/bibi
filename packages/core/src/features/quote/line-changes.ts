@@ -22,7 +22,7 @@ export type MarkLineChangesInput = {
 export type MarkedLines = { lines: QuoteLineDto[]; removedLines: OrderLineDto[] };
 
 /**
- * Change markers against an earlier snapshot (ADR 0022, 0052). Lines are paired by the ticket line
+ * Change markers against an earlier snapshot (ADR 0022, 0052). Lines are paired by the order line
  * they price (`lineId`). Unpaired lines are ADDED; earlier lines left over are removed.
  */
 export function markLineChanges({ lines, previous }: MarkLineChangesInput): MarkedLines {

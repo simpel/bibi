@@ -1,13 +1,13 @@
 import { type ExecuteContext, execute, listAssignments, updateResponsibility } from "../src/index";
-import { ticketSubject } from "./assignment-helpers";
+import { orderSubject } from "./assignment-helpers";
 import { testContext, unwrap } from "./helpers";
-import { memberUser } from "./ticket-helpers";
-import { workOrderSetup } from "./work-order-helpers";
+import { memberUser } from "./order-helpers";
+import { runSheetSetup } from "./run-sheet-helpers";
 
-/** A ticket with a room line, and its responsibility covering the room's type (ADR 0055). */
+/** An order with a room line, and its responsibility covering the room's type (ADR 0055). */
 export async function derivedSetup() {
-  const base = await workOrderSetup();
-  const { context, roomType, definition, ticket } = base;
+  const base = await runSheetSetup();
+  const { context, roomType, definition, order } = base;
   const erik = await memberUser({ context, name: "Erik Lund" });
   const johan = await memberUser({ context, name: "Johan Ek" });
   const maria = await memberUser({ context, name: "Maria Holm" });
@@ -27,10 +27,10 @@ export async function derivedSetup() {
       context,
     }),
   });
-  const slot = { ...ticketSubject(ticket), responsibilityId };
+  const slot = { ...orderSubject(order), responsibilityId };
   const part = async () => {
     const list = unwrap({
-      result: await execute({ operation: listAssignments, input: ticketSubject(ticket), context }),
+      result: await execute({ operation: listAssignments, input: orderSubject(order), context }),
     });
     return list.items.find((item) => item.responsibilityId === responsibilityId);
   };

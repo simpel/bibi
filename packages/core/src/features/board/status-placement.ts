@@ -37,13 +37,13 @@ export type PlaceNewStatusInput = Ctx & {
   /**
    * Without `phaseId`: true gives it its own phase on the default board (a template import, so a
    * new organization's board shows every status); false leaves it off every board until staff
-   * drag it onto one (`ticketStatus.create`).
+   * drag it onto one (`orderStatus.create`).
    */
   ownPhase: boolean;
 };
 
 /**
- * Where a new ticket status shows (ADR 0067): in the given phase, else as its own phase on the
+ * Where a new order status shows (ADR 0067): in the given phase, else as its own phase on the
  * default board (after the open statuses' phases unless it closes) or on no board, per
  * `ownPhase`. Other boards leave it off. With no board yet, a default board mirrors every status.
  */

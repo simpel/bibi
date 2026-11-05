@@ -1,12 +1,12 @@
 "use client";
 
 import type { VenueDto } from "@bibi/core";
-import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
-import { PencilIcon } from "lucide-react";
+import { ContextMenuItem, DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { ExternalLinkIcon, PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
-import { useRouter } from "@/lib/navigation";
+import { Link, useRouter } from "@/lib/navigation";
 import { updateRoute, venueRoute } from "@/lib/routes";
 import { ArchiveVenueDialog } from "./archive-venue-dialog";
 
@@ -18,22 +18,13 @@ export function VenueRowActions({ venue, redirectToList = false, access }: Venue
   const common = useTranslations("common");
   const [archiving, setArchiving] = useState(false);
   const router = useRouter();
+  const detail = venueRoute({ id: venue.id });
+  const primary = access.canEdit
+    ? [{ label: t("edit"), icon: PencilIcon, onClick: () => router.push(updateRoute({ detail })) }]
+    : [{ label: common("open"), icon: ExternalLinkIcon, onClick: () => router.push(detail) }];
   return (
     <>
-      <DataTableRowActions
-        label={common("actions")}
-        primary={
-          access.canEdit
-            ? [
-                {
-                  label: t("edit"),
-                  icon: PencilIcon,
-                  onClick: () => router.push(updateRoute({ detail: venueRoute({ id: venue.id }) })),
-                },
-              ]
-            : []
-        }
-      >
+      <DataTableRowActions label={common("actions")} primary={primary}>
         {access.canRemove ? (
           <DropdownMenuItem destructive onSelect={() => setArchiving(true)}>
             {t("archive")}
@@ -46,6 +37,31 @@ export function VenueRowActions({ venue, redirectToList = false, access }: Venue
         onOpenChange={setArchiving}
         redirectToList={redirectToList}
       />
+    </>
+  );
+}
+
+/** Right-click context menu for a venue row. */
+export function VenueRowMenu({ venue, access }: VenueRowActionsProps) {
+  const t = useTranslations("venue");
+  const common = useTranslations("common");
+  const detail = venueRoute({ id: venue.id });
+  return (
+    <>
+      <ContextMenuItem asChild>
+        <Link href={detail}>
+          <ExternalLinkIcon />
+          {common("open")}
+        </Link>
+      </ContextMenuItem>
+      {access.canEdit ? (
+        <ContextMenuItem asChild>
+          <Link href={updateRoute({ detail })}>
+            <PencilIcon />
+            {t("edit")}
+          </Link>
+        </ContextMenuItem>
+      ) : null}
     </>
   );
 }

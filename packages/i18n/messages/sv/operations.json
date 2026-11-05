@@ -1,0 +1,627 @@
+{
+  "pipeline": {
+    "title": "Pipeline",
+    "phaseValue": {
+      "confirmedLabel": "Överenskommet",
+      "estimatedLabel": "Uppskattat",
+      "confirmed": "Överenskommet värde exkl. moms (accepterade offerter)",
+      "estimated": "Uppskattat värde exkl. moms för bokningar utan accepterad offert"
+    },
+    "clash": "Tidskrock",
+    "noDate": "Inget datum",
+    "quantity": "{count, plural, one {# person} other {# personer}}",
+    "moved": "Flyttad till {column}.",
+    "noMoves": "Det här bokningen kan inte flyttas till {column}.",
+    "picker": {
+      "title": "Flytta till {column}",
+      "description": "Välj vilken bokningsstatus i kolumnen bokningen ska flyttas till.",
+      "needs": "Kräver {list}",
+      "noRequirements": "Inga krav",
+      "gate": {
+        "REASON": "en anledning",
+        "ASSIGNEE": "en huvudansvarig",
+        "ACCEPTED_QUOTE": "en accepterad offert"
+      }
+    },
+    "kanban": {
+      "dragInstructions": "Tryck mellanslag för att lyfta kortet, piltangenterna för att flytta det mellan kolumner och mellanslag för att släppa det.",
+      "emptyColumn": "Inget här",
+      "pickedUp": "Lyfte {card}.",
+      "movedOver": "{card} är över {column}.",
+      "dropped": "{card} släpptes i {column}.",
+      "cancelled": "Flytten av {card} avbröts."
+    },
+    "moving": "Flyttar…",
+    "inStatus": "I bokningsstatusen <time></time>",
+    "heldLines": "{count, plural, one {# rad reserverad} other {# rader reserverade}}",
+    "bookedLines": "{count, plural, one {# rad bokad} other {# rader bokade}}",
+    "reason": {
+      "title": "Flytta till {column}",
+      "description": "Den här bokningsstatusen kräver en anledning.",
+      "label": "Anledning",
+      "confirm": "Flytta"
+    },
+    "blockers": {
+      "title": "Kan inte flytta till {column}",
+      "description": "Åtgärda dessa först och försök igen.",
+      "close": "Stäng"
+    }
+  },
+  "board": {
+    "switcher": "Tavla: {name}",
+    "switcherLabel": "Byt tavla",
+    "default": "Standard",
+    "configure": "Anpassa",
+    "done": "Klar",
+    "rename": "Byt namn på tavlan",
+    "create": "Skapa tavla",
+    "makeDefault": "Gör till standardtavla",
+    "archive": "Arkivera tavlan",
+    "archiveConfirm": "Arkivera tavlan {name}? Dess kolumner försvinner med den. Bokningar och bokningsstatusar finns kvar.",
+    "fields": {
+      "name": "Namn"
+    },
+    "saving": "Sparar…",
+    "archiving": "Arkiverar…",
+    "created": "Tavlan har skapats.",
+    "updated": "Tavlan har sparats.",
+    "archived": "Tavlan har arkiverats.",
+    "madeDefault": "Standardtavlan har ändrats.",
+    "unmapped": "{count, plural, one {# bokning har} other {# bokningar har}} en bokningsstatus som inte finns på den här tavlan.",
+    "unmappedLink": "Anpassa tavlan",
+    "customize": {
+      "dragInstructions": "Tryck mellanslag för att lyfta en kolumn eller bokningsstatus, piltangenterna för att flytta den och mellanslag för att släppa den.",
+      "unphased": "Inte på den här tavlan",
+      "unphasedEmpty": "Alla bokningsstatusar finns på tavlan",
+      "emptyPhase": "Dra hit en bokningsstatus",
+      "phaseHandle": "Flytta kolumnen {phase}",
+      "count": "{count, plural, one {# bokning} other {# bokningar}}",
+      "pickedUp": "Lyfte {item}.",
+      "movedOver": "{item} är över {target}.",
+      "dropped": "{item} släpptes i {target}.",
+      "cancelled": "Flytten av {item} avbröts."
+    }
+  },
+  "boardPhase": {
+    "addColumn": "Lägg till kolumn",
+    "addColumnHere": "Lägg till en kolumn här",
+    "edit": "Redigera kolumnen",
+    "actions": "Åtgärder för kolumnen {name}",
+    "moveLeft": "Flytta vänster",
+    "moveRight": "Flytta höger",
+    "remove": "Ta bort kolumnen",
+    "removeConfirm": "Ta bort kolumnen {name}? Dess bokningsstatusar hamnar under \"Inte på den här tavlan\". Inga bokningar ändras.",
+    "fields": {
+      "name": "Namn"
+    },
+    "saving": "Sparar…",
+    "removing": "Tar bort…",
+    "created": "Kolumnen har lagts till.",
+    "updated": "Kolumnen har sparats.",
+    "removed": "Kolumnen har tagits bort.",
+    "reordered": "Kolumnordningen har sparats.",
+    "statusMoved": "Bokningsstatusen har flyttats.",
+    "addStatus": "Lägg till bokningsstatus",
+    "statusActions": "Åtgärder för {name}",
+    "moveTo": "Flytta till"
+  },
+  "orderStatus": {
+    "singular": "Bokningsstatus",
+    "plural": "Bokningsstatusar",
+    "listDescription": "Era egna bokningsstatusar för bokningar, i tavlans ordning. Flaggorna avgör vad systemet gör; inget annat om en bokningsstatus är fast. Ni behöver en startstatus och minst en bokningsstatus som avslutar bokningen.",
+    "create": "Skapa bokningsstatus",
+    "edit": "Redigera bokningsstatus",
+    "createDescription": "Namnge bokningsstatusen, välj en färg och vad den gör.",
+    "editDescription": "Byt namn eller färg eller ändra vad bokningsstatusen gör.",
+    "archive": "Arkivera bokningsstatus",
+    "archiveConfirm": "Vill du arkivera bokningsstatusen {name}? Dess övergångar tas bort. Bokningar i den flyttas till den bokningsstatus du väljer.",
+    "archived": "Bokningsstatusen har arkiverats.",
+    "created": "Bokningsstatusen har skapats.",
+    "updated": "Bokningsstatusen har uppdaterats.",
+    "empty": "Inga bokningsstatusar ännu.",
+    "emptyDescription": "Importera mallen för att komma igång.",
+    "saving": "Sparar bokningsstatus…",
+    "archiving": "Arkiverar bokningsstatus…",
+    "importTemplate": "Importera mallen Konferensgård",
+    "importing": "Importerar bokningsstatusar…",
+    "imported": "{created} bokningsstatusar skapades, {skipped} fanns redan.",
+    "noTransitions": "Inga",
+    "anyStatus": "Vilken bokningsstatus som helst",
+    "noTarget": "Inga bokningar att flytta",
+    "moveUp": "Flytta vänster",
+    "moveDown": "Flytta höger",
+    "reordering": "Sparar ordning…",
+    "reordered": "Ordningen har sparats.",
+    "fields": {
+      "name": "Namn",
+      "color": "Färg",
+      "targetStatus": "Flytta dess bokningar till",
+      "reason": "Anledning för de flyttade bokningarna"
+    },
+    "columns": {
+      "name": "Namn",
+      "flags": "Gör",
+      "transitions": "Får gå till",
+      "order": "Ordning"
+    },
+    "flow": {
+      "title": "Flöde",
+      "description": "Vart bokningar får flyttas och vad en flytt kräver. Alla flyttar bokningar efter de här reglerna på tavlorna; bara du ändrar dem här.",
+      "saving": "Sparar…",
+      "movesSaved": "Flytterna har sparats.",
+      "gatesSaved": "Kraven har sparats.",
+      "closing": "Den här bokningsstatusen avslutar bokningen, så bokningar i den kan inte flyttas vidare.",
+      "movesOut": "Flyttar från {name}",
+      "movesIn": "Flyttar till {name}",
+      "movesAny": "Bokningar i {name} får flyttas till vilken bokningsstatus som helst",
+      "movesOnly": "Bokningar i {name} får bara flyttas till bokningsstatusarna nedan",
+      "onlyTheseLegend": "Bokningsstatusar som bokningar i {name} får flyttas till",
+      "canMoveTo": "Bokningar i {name} får flyttas till {target}",
+      "requirementsIntro": "Vad en bokning behöver för att flyttas till {name}:",
+      "requires": {
+        "REASON": "Att flytta till {name} kräver en anledning",
+        "ASSIGNEE": "Att flytta till {name} kräver en huvudansvarig",
+        "ACCEPTED_QUOTE": "Att flytta till {name} kräver en accepterad offert"
+      },
+      "scopeLabel": "Vilka flyttar till {name} kravet gäller",
+      "fromAny": "Från vilken bokningsstatus som helst",
+      "fromSpecific": "Bara från vissa bokningsstatusar",
+      "fromStatus": "Från {name}"
+    },
+    "flags": {
+      "entry": "Nya bokningar startar här",
+      "closes": "Avslutar bokningen",
+      "invoiceable": "Kan faktureras",
+      "event": "Nås genom en offerthändelse",
+      "noEvent": "Ingen händelse (flyttas för hand)",
+      "events": {
+        "QUOTE_SENT": "När en offert skickas",
+        "QUOTE_ACCEPTED": "När en offert godkänns"
+      }
+    }
+  },
+  "calendar": {
+    "levels": {
+      "day": "Dag",
+      "week": "Vecka",
+      "month": "Månad",
+      "custom": "Anpassad"
+    },
+    "range": "Period",
+    "earlier": "Tidigare",
+    "today": "Idag",
+    "later": "Senare",
+    "jumpInTime": "Hoppa i tiden",
+    "search": "Sök",
+    "searchPlaceholder": "Sök artiklar, kunder, bokningar",
+    "searchLabel": "Sök artiklar, kunder och bokningar",
+    "assetGroups": "Artikelgrupper",
+    "allAssets": "Alla artiklar",
+    "groupCount": "{count, plural, one {# grupp} other {# grupper}}",
+    "searchGroups": "Sök grupper",
+    "noGroupMatch": "Ingen grupp matchar.",
+    "noMatch": "Inget matchar ”{query}”.",
+    "noMatchIn": "Inget matchar ”{query}” i {groups}.",
+    "addBooking": "Lägg till en bokning på {asset}",
+    "clash": "Krock {from}–{to}",
+    "free": "ledig",
+    "bookedShare": "{percent} % bokad, {count, plural, one {# bokning} other {# bokningar}}",
+    "dayCell": "{asset}, {day}: {booked}",
+    "dayCellClash": "{asset}, {day}: {booked}, krock",
+    "openDay": "{label}. Öppna dagen",
+    "client": "Kund",
+    "internal": "Intern",
+    "blocked": "Spärrad",
+    "notSold": "inte såld",
+    "booked": "Bokad",
+    "guests": "{count, plural, one {# gäst} other {# gäster}}",
+    "exclVat": "{amount} exkl. moms",
+    "value": {
+      "booked": "Bokat",
+      "prebooked": "Preliminärt",
+      "open": "Kvar att sälja",
+      "note": "Exkl. moms. Kvar att sälja är ledig tid inom öppettiderna till varje rums timpris.",
+      "rate": "{percent} % bokat"
+    },
+    "open": "Öppna {order}",
+    "pin": "Fäst {name} för att jämföra",
+    "unpin": "Lossa {name}",
+    "pinned": "Fästa bokningar",
+    "pinCard": {
+      "when": "När",
+      "where": "Var",
+      "state": "Läge",
+      "guests": "Gäster",
+      "value": "Värde",
+      "exclVat": "exkl. moms",
+      "seeOrder": "Visa bokningen",
+      "minimize": "Minimera {name}",
+      "expand": "Expandera {name}"
+    },
+    "openLine": "Öppna rad",
+    "notes": "Anteckningar",
+    "staff": "Personal",
+    "fromOrder": "{via}, från bokningen",
+    "holds": {
+      "hard": "hård hållning, blockerar",
+      "soft": "mjuk hållning, får överlappa",
+      "none": "ingen hållning"
+    },
+    "buffers": "Ställtid / nedplock",
+    "buffersText": "utrymmet upptaget, inte sålt",
+    "capacity": "{count, plural, one {# person} other {# personer}}",
+    "bookPrompt": "Boka {space} den {date} kl. {time}.",
+    "loadFailed": "Vissa dagar kunde inte laddas. Scrolla igen för att försöka på nytt.",
+    "noSpaces": "Inget bokningsbart ännu",
+    "noSpacesDescription": "Artiklar vars typ är bokningsbar visas här som rader.",
+    "goToItems": "Gå till artiklar",
+    "viaLine": "Ansvarig för raden",
+    "viaOrder": "Ansvarig för bokningen",
+    "guestsHere": "Gästerna är här",
+    "guestsHereCount": "{count, plural, one {# gäst} other {# gäster}} här",
+    "guestsAt": "Gäster: {place}",
+    "lineCount": "{count, plural, one {# rad} other {# rader}}",
+    "unscheduled": "Inte schemalagt",
+    "slot": {
+      "title": "Bokning",
+      "description": "Det som är bokat här.",
+      "order": "Bokning",
+      "customer": "Kund",
+      "state": "Läge",
+      "line": "Rad",
+      "resource": "Resurs",
+      "period": "När",
+      "quantity": "Antal",
+      "hold": "Hållning",
+      "hard": "Hård (blockerar)",
+      "soft": "Mjuk (preliminär)"
+    }
+  },
+  "runSheet": {
+    "singular": "Körschema",
+    "plural": "Körscheman",
+    "empty": "Inga order är definierade än. Definiera dem under Inställningar.",
+    "noVersion": "Ingen version har skapats än.",
+    "nothingIncluded": "Bokningen har inget som den här ordern innehåller än.",
+    "generate": "Skapa version",
+    "generating": "Skapar ordern…",
+    "generated": "Version {version} av ordern är klar.",
+    "send": "Skicka",
+    "sent": "Ordern har skickats.",
+    "publish": "Publicera",
+    "published": "Ordern har publicerats.",
+    "reopen": "Återöppna",
+    "reopened": "Ordern återöppnad.",
+    "markAsDone": "Markera som klar",
+    "fulfilled": "Ordern markerad som klar.",
+    "fulfilledAt": "Klar {when}",
+    "publishedAt": "Publicerad {when}",
+    "history": {
+      "title": "Historik",
+      "empty": "Ingen historik än",
+      "changesSummary": "{count, plural, one {# ändring} other {# ändringar}}",
+      "events": {
+        "created": "Order skapad",
+        "revised": "Revision skapad",
+        "published": "Publicerad till teamet",
+        "fulfilled": "Markerad som klar"
+      }
+    },
+    "columns": {
+      "publishedAt": "Publicerad"
+    },
+    "status": {
+      "draft": "Utkast",
+      "blocked": "Blockerad",
+      "pending": "Väntar",
+      "revision_pending": "Revision väntar",
+      "fulfilled": "Klar",
+      "published": "Publicerad",
+      "sent": "Publicerad",
+      "notSent": "Utkast"
+    },
+    "version": "Version {version}",
+    "notSent": "Inte skickad",
+    "sentAt": "Skickad {when}",
+    "changes": "{count, plural, =0 {Inga ändringar} one {# ändring} other {# ändringar}} sedan version {version}",
+    "order": "Bokning {reference}",
+    "headcount": "{count, plural, one {# gäst} other {# gäster}}",
+    "onOrder": "Hela bokningen",
+    "onLine": "En programpost",
+    "change": {
+      "ADDED": "Tillagd sedan senast skickade version",
+      "CHANGED": "Ändrad sedan senast skickade version",
+      "REMOVED": "Borttagen sedan senast skickade version"
+    },
+    "blocked": "Blockerad: kan inte skickas",
+    "matches": {
+      "CONTAINS": "Innehåller",
+      "MAY_CONTAIN": "Kan innehålla",
+      "line": "{count, plural, one {# gäst} other {# gäster}}: {name} i {item} ({carriers})"
+    },
+    "addOn": "Tillägg",
+    "addOnTo": "{name} (tillägg till {parent})",
+    "document": {
+      "open": "Öppna",
+      "back": "← Tillbaka till bokningen",
+      "tasks": "Att leverera",
+      "needs": "Behov",
+      "noTasks": "Inget att leverera på den här ordern än.",
+      "noNeeds": "Inga behov räknade.",
+      "columns": {
+        "when": "När",
+        "name": "Vad",
+        "item": "Artikel",
+        "quantity": "Antal",
+        "need": "Behov",
+        "count": "Antal",
+        "appliesTo": "Gäller"
+      }
+    },
+    "currentVersion": "Aktuell version",
+    "notCurrentVersion": "Inte aktuell version",
+    "goToCurrent": "Öppna aktuell version",
+    "versions": "Versioner",
+    "versionCreated": "Version {version} · {when}",
+    "query": {
+      "keys": {
+        "involves": "inblandad",
+        "definition": "order",
+        "responsibility": "ansvar"
+      },
+      "values": {
+        "current": "aktuell",
+        "sent": "skickad",
+        "unsent": "oskickad",
+        "blocked": "blockerad"
+      },
+      "labels": {
+        "involves": "Inblandad",
+        "definition": "Order",
+        "responsibility": "Ansvar",
+        "is": "Versionens tillstånd"
+      },
+      "hints": {
+        "involves": "ansvarig eller följare på bokningen: jag eller ett namn",
+        "definition": "ordens namn",
+        "responsibility": "ansvarets namn",
+        "is": "aktuell, skickad, oskickad, blockerad, öppen eller stängd"
+      },
+      "rows": {
+        "excludeInvolves": "Uteslut inblandad"
+      }
+    },
+    "list": {
+      "description": "Alla orderversioner, de nyaste först.",
+      "empty": "Inga order än",
+      "emptyDescription": "Order dyker upp här när de skapas från en bokning.",
+      "noMatches": "Inga order matchar.",
+      "total": "{count, plural, one {# order} other {# order}}",
+      "search": "Sök eller filtrera, t.ex. inblandad:jag är:aktuell",
+      "searchSubmit": "Sök",
+      "columns": {
+        "order": "Bokning",
+        "runSheet": "Körschema",
+        "responsibility": "Ansvar",
+        "when": "När",
+        "version": "Version",
+        "status": "Status",
+        "publishedAt": "Publicerad",
+        "sentAt": "Skickad"
+      },
+      "status": {
+        "draft": "Utkast",
+        "blocked": "Blockerad",
+        "pending": "Väntar",
+        "revision_pending": "Revision väntar",
+        "fulfilled": "Klar",
+        "published": "Publicerad",
+        "sent": "Publicerad",
+        "notSent": "Utkast"
+      }
+    }
+  },
+  "runSheetDefinition": {
+    "singular": "Körschema",
+    "plural": "Körscheman",
+    "listDescription": "Era egna order, t.ex. Köksorder eller Bryggorder: vilka artikeltyper, fält och listors behov varje order tar med och vilket ansvar det går till.",
+    "create": "Skapa körschema",
+    "edit": "Redigera order",
+    "createDescription": "Namnge ordern, välj vad den tar med och vem som tar emot den.",
+    "editDescription": "Ändra namnet, vad ordern tar med eller vem som tar emot den.",
+    "archive": "Arkivera körschema",
+    "archiveConfirm": "Vill du arkivera ordern {name}?",
+    "archived": "Ordern har arkiverats.",
+    "created": "Ordern har skapats.",
+    "updated": "Ordern har uppdaterats.",
+    "empty": "Inga order ännu.",
+    "emptyDescription": "Skapa körschema som Köksorder eller Bryggorder.",
+    "saving": "Sparar order…",
+    "archiving": "Arkiverar order…",
+    "selectResponsibility": "Välj ett ansvar",
+    "fields": {
+      "name": "Namn",
+      "entityTypeIds": "Artikeltyper",
+      "fieldIds": "Fält",
+      "vocabularyIds": "Listor",
+      "responsibilityId": "Mottagande ansvar"
+    },
+    "hints": {
+      "entityTypeIds": "Artiklar av dessa typer kommer med på ordern.",
+      "fieldIds": "Fält som visas för varje artikel.",
+      "vocabularyIds": "Behov från dessa listor räknas ihop på ordern."
+    },
+    "none": {
+      "entityTypeIds": "Det finns inga artikeltyper. Skapa dem under Typer.",
+      "fieldIds": "Välj först artikeltyper som har fält.",
+      "vocabularyIds": "Det finns inga listor. Skapa dem under Listor."
+    },
+    "columns": {
+      "name": "Namn",
+      "types": "Artikeltyper",
+      "lists": "Listor",
+      "responsibility": "Mottagande ansvar"
+    },
+    "wizard": {
+      "progress": "Steg",
+      "steps": {
+        "name": "Namn",
+        "content": "Innehåll",
+        "receiver": "Mottagare"
+      },
+      "descriptions": {
+        "name": "Namnge underlaget, till exempel Köksorder.",
+        "content": "Välj artikeltyper, deras fält och de listor underlaget sammanställs från.",
+        "receiver": "Välj det ansvar som får underlaget."
+      }
+    }
+  },
+  "inbox": {
+    "title": "Inkorg",
+    "description": "Förfrågningar som kommit in via e-post, formulär eller API och som inte har något bokning än.",
+    "address": "Vidarebefordra er bokningsmejl till <code>{address}</code> så visas de här.",
+    "noAddress": "Ingen inkorgsadress är konfigurerad än, så e-post kan inte nå inkorgen.",
+    "configureAddress": "Ställ in i inställningar",
+    "open": "Öppna",
+    "empty": "Inga meddelanden.",
+    "columns": {
+      "subject": "Ämne",
+      "sender": "Från",
+      "channel": "Kanal",
+      "received": "Mottaget"
+    },
+    "channels": {
+      "EMAIL": "E-post",
+      "WEB_FORM": "Webbformulär",
+      "SMS": "Sms",
+      "API": "API"
+    },
+    "noSubject": "(inget ämne)",
+    "noBody": "(ingen text)",
+    "unknownSender": "Okänd avsändare",
+    "unnamedAttachment": "Namnlös bilaga",
+    "newOrder": "Skapa bokning från meddelandet",
+    "attachTitle": "Koppla till en bokning",
+    "attachDescription": "Meddelandet läggs till bland bokningens meddelanden. Ett meddelande kopplas en gång.",
+    "order": "Bokning",
+    "attach": "Koppla",
+    "attached": "Meddelandet kopplat",
+    "attachedTo": "Meddelandet är kopplat till en bokning. Öppna bokningen",
+    "attachedToOrder": "Meddelandet är kopplat till <order></order>.",
+    "orderTitle": "Meddelanden",
+    "replyAddress": "Kunder svarar till <code>{address}</code>; deras e-post och andra meddelanden för bokningen visas här.",
+    "noReplyAddress": "Ingen inkommande adress är konfigurerad, så svar kan inte nå bokningen än.",
+    "fieldsTitle": "Det avsändaren fyllde i",
+    "markRead": "Markera som läst",
+    "markUnread": "Markera som oläst",
+    "markedRead": "{count, plural, one {Markerat som läst} other {# markerade som lästa}}",
+    "markedUnread": "{count, plural, one {Markerat som oläst} other {# markerade som olästa}}",
+    "deleting": "Tar bort meddelandet…",
+    "deleted": "{count, plural, one {Meddelandet borttaget} other {# meddelanden borttagna}}",
+    "deleteConfirm": "Ta bort ”{subject}”? Det försvinner ur inkorgen för alla i teamet.",
+    "arrivedTitle": "Nytt meddelande i inkorgen",
+    "arrivedOpen": "Öppna",
+    "sheet": {
+      "openPage": "Öppna hela sidan"
+    },
+    "unread": "Oläst",
+    "deleteTitle": "Ta bort {count, plural, one {meddelandet} other {# meddelanden}}",
+    "deleteConfirmMany": "De {count} meddelandena försvinner ur inkorgen för alla i teamet.",
+    "search": "Sök på ämne eller avsändare",
+    "searchSubmit": "Sök",
+    "searching": "Söker…",
+    "filter": {
+      "channel": "Kanal",
+      "allChannels": "Alla kanaler"
+    },
+    "form": {
+      "message": "Meddelande"
+    },
+    "api": {
+      "via": "Skickat via API:t"
+    }
+  },
+  "inboundEmail": {
+    "title": "Mottagen e-post",
+    "address": "Kunder svarar till <code>{address}</code> och deras e-post visas här.",
+    "noAddress": "Ingen inkommande adress är konfigurerad, så svar kan inte nå bokningen än.",
+    "empty": "Ingen e-post har tagits emot än.",
+    "noSubject": "(inget ämne)",
+    "noBody": "(ingen text)",
+    "htmlOnly": "Det här mejlet har bara en HTML-version, som inte visas.",
+    "unnamedAttachment": "Namnlös bilaga"
+  },
+  "notifications": {
+    "title": "Notiser",
+    "description": "Det som berör dig: bokningar du blir ansvarig för, order som skickas till dig, och statusändringar och betalningar på bokningar du ansvarar för eller följer.",
+    "bell": "Notiser",
+    "unreadCount": "{count, plural, =0 {Inga olästa notiser} one {# oläst notis} other {# olästa notiser}}",
+    "latest": "Senaste notiser",
+    "seeAll": "Visa alla notiser",
+    "listChanged": "Listan har ändrats sedan du öppnade den.",
+    "showLatest": "Visa senaste",
+    "open": "Öppna",
+    "markAllRead": "Markera alla som lästa",
+    "markedAllRead": "Alla notiser markerade som lästa",
+    "markRead": "Markera som läst",
+    "markUnread": "Markera som oläst",
+    "markedRead": "{count, plural, one {# notis markerad som läst} other {# notiser markerade som lästa}}",
+    "markedUnread": "{count, plural, one {# notis markerad som oläst} other {# notiser markerade som olästa}}",
+    "nothingNew": "Du har inget nytt",
+    "noMatches": "Inga notiser matchar",
+    "listTotal": "{count, plural, one {# notis} other {# notiser}}",
+    "unread": "Oläst",
+    "read": "Läst",
+    "filter": {
+      "kind": "Typ",
+      "allKinds": "Alla typer"
+    },
+    "search": "Sök på bokningens titel eller nummer",
+    "searchSubmit": "Sök",
+    "searching": "Söker…",
+    "columns": {
+      "message": "Notis",
+      "kind": "Typ",
+      "order": "Bokning",
+      "created": "När",
+      "actor": "Av"
+    },
+    "kinds": {
+      "ASSIGNED": "Ansvarig",
+      "RUN_SHEET_SENT": "Order",
+      "ORDER_STATUS_CHANGED": "Statusändring",
+      "PAYMENT_RECEIVED": "Betalning"
+    },
+    "messages": {
+      "ASSIGNED": "{actor} gjorde dig ansvarig för #{reference}",
+      "RUN_SHEET_SENT": "{actor} skickade {runSheet} v{version} för #{reference} till dig",
+      "ORDER_STATUS_CHANGED": "#{reference} flyttades från {from} till {to}",
+      "PAYMENT_RECEIVED": "{amount} betalt på #{reference}"
+    },
+    "someone": "Någon",
+    "aRunSheet": "ett körschema",
+    "noStatus": "ingen status",
+    "untitled": "Bokning utan titel",
+    "preferences": {
+      "ASSIGNED": "När jag blir ansvarig för en bokning",
+      "RUN_SHEET_SENT": "När ett körschema skickas till mig",
+      "ORDER_STATUS_CHANGED": "När en bokning jag ansvarar för eller följer byter status",
+      "PAYMENT_RECEIVED": "När en betalning kommer in på en bokning jag ansvarar för eller följer",
+      "turnedOn": "Notiser påslagna",
+      "turnedOff": "Notiser avstängda"
+    },
+    "arrivedTitle": "Ny notis",
+    "arrivedOpen": "Visa",
+    "sheet": {
+      "runSheet": "Körschema",
+      "openOrder": "Öppna bokningen",
+      "openRunSheet": "Öppna körschemat",
+      "title": "Notis"
+    },
+    "empty": "Inga notiser än",
+    "emptyDescription": "Här får du veta när du blir ansvarig för en bokning, får ett körschema, eller när en bokning du ansvarar för eller följer byter status eller blir betalt.",
+    "deleteTitle": "Ta bort {count, plural, one {notisen} other {# notiser}}",
+    "deleteConfirm": "{count, plural, one {Notisen tas} other {Notiserna tas}} bort för gott. Det gäller bara dina egna notiser.",
+    "deleted": "{count, plural, one {Notisen borttagen} other {# notiser borttagna}}"
+  }
+}

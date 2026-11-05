@@ -32,7 +32,7 @@ describe("SIE 4 vouchers (ADR 0077)", () => {
       "2611D": 8_800,
       "1510C": -100_000,
     });
-    expect(voucher?.text).toBe("Invoice 12, ticket 1045");
+    expect(voucher?.text).toBe("Invoice 12, order 1045");
   });
 
   it("balances every voucher, and a void or refund is the exact reversal", () => {
@@ -57,7 +57,7 @@ describe("SIE 4 vouchers (ADR 0077)", () => {
       );
     }
     const [sent, voided] = [vouchers[0], vouchers.at(-1)];
-    expect(voided?.text).toBe("Void invoice 12, ticket 1045");
+    expect(voided?.text).toBe("Void invoice 12, order 1045");
     expect(voided?.transactions.map((t) => -t.amountMinor)).toEqual(
       sent?.transactions.map((t) => t.amountMinor),
     );
@@ -88,7 +88,7 @@ const file = ({ vouchers }: { vouchers: SieFile["vouchers"] }): SieFile => ({
   companyName: 'Konferensgården Ö "Södra"',
   fiscalYear: { start: "2026-01-01", end: "2026-12-31" },
   accounts: [{ number: "3001", name: "Försäljning mat" }],
-  objects: [{ dimension: 6, id: "1045", name: "Ticket 1045" }],
+  objects: [{ dimension: 6, id: "1045", name: "Order 1045" }],
   vouchers,
 });
 
@@ -109,8 +109,8 @@ describe("SIE 4 file (SIE 4B, type 4I)", () => {
         "#VALUTA SEK",
         '#DIM 6 "Projekt"',
         '#KONTO 3001 "Försäljning mat"',
-        '#OBJEKT 6 "1045" "Ticket 1045"',
-        '#VER "" "" 20261005 "Payment fee, ticket 1045"',
+        '#OBJEKT 6 "1045" "Order 1045"',
+        '#VER "" "" 20261005 "Payment fee, order 1045"',
         "{",
         '   #TRANS 6570 {6 "1045"} 12.15',
         "   #TRANS 1580 {} -12.15",

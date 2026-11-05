@@ -2,7 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid } from "../../shared/errors";
 import { loadDemand } from "../item-demand/to-demand-dto";
-import { checkReadable } from "../ticket/ticket-rules";
+import { checkReadable } from "../order/order-rules";
 import { chainShortfall, freeUnitsWhere, unitMatches } from "./free-unit";
 import { lineWindows } from "./line-windows";
 import { missingUnit } from "./missing-unit";

@@ -6,7 +6,7 @@ describe("presets and overrides (ADR 0050)", () => {
     expect(PRESET_PERMISSIONS.manager.quote).toEqual(["read", "write", "delete"]);
     expect(PRESET_PERMISSIONS.manager.item).toEqual(["read", "write"]);
     expect(PRESET_PERMISSIONS.member.item).toEqual(["read"]);
-    expect(PRESET_PERMISSIONS.member.ticket).toEqual(["read"]);
+    expect(PRESET_PERMISSIONS.member.order).toEqual(["read"]);
     expect(PRESET_PERMISSIONS.member.audit).toBeUndefined();
     expect(PRESET_PERMISSIONS.admin.member).toEqual(["read", "write", "delete"]);
   });
@@ -16,11 +16,11 @@ describe("presets and overrides (ADR 0050)", () => {
       preset: "member",
       overrides: [
         { feature: "item", action: "write", effect: "allow" },
-        { feature: "ticket", action: "read", effect: "deny" },
+        { feature: "order", action: "read", effect: "deny" },
       ],
     });
     expect(effective.item).toEqual(["read", "write"]);
-    expect(effective.ticket).toBeUndefined();
+    expect(effective.order).toBeUndefined();
   });
 
   it("hides a whole feature when view is denied, even if other actions are in the preset", () => {

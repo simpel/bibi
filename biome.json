@@ -14,7 +14,8 @@
       "!**/*.generated.*",
       "!packages/i18n/messages/*.json",
       "!docs/artifacts",
-      "!.claude"
+      "!**/.claude",
+      "!**/*.svg"
     ]
   },
   "css": {

@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { ActivityTimeCell } from "@/components/activity/activity-time-cell";
 import { ActivityTitleCell } from "@/components/activity/activity-title-cell";
 import { Link } from "@/lib/navigation";
-import { ticketRoute } from "@/lib/routes";
+import { orderRoute } from "@/lib/routes";
 import { useNotificationText } from "./use-notification-text";
 
 type Column = ColumnDef<NotificationDto>;
@@ -41,22 +41,22 @@ const messageColumn = ({ t, text, onSelect, openingId }: ColumnInput): Column =>
   ),
 });
 
-/** The ticket at the time, as a link to it. */
-const ticketColumn = ({ t, text }: ColumnInput): Column => ({
-  id: "ticket",
-  header: t("columns.ticket"),
-  accessorFn: (notification) => text({ notification }).ticket,
+/** The order at the time, as a link to it. */
+const orderColumn = ({ t, text }: ColumnInput): Column => ({
+  id: "order",
+  header: t("columns.order"),
+  accessorFn: (notification) => text({ notification }).order,
   cell: ({ row: { original: notification } }) =>
-    notification.ticketId ? (
+    notification.orderId ? (
       <Link
-        href={ticketRoute({ id: notification.ticketId })}
+        href={orderRoute({ id: notification.orderId })}
         onClick={(event) => event.stopPropagation()}
         className="hover:underline"
       >
-        {text({ notification }).ticket}
+        {text({ notification }).order}
       </Link>
     ) : (
-      text({ notification }).ticket
+      text({ notification }).order
     ),
 });
 
@@ -76,7 +76,7 @@ const createdColumn = ({ t, onToggleRead, onDelete }: ColumnInput): Column => ({
 });
 
 /**
- * What happened (opens its sheet), the ticket (a link), the kind, who did it and when, with mark
+ * What happened (opens its sheet), the order (a link), the kind, who did it and when, with mark
  * read or unread and delete as icons (ADR 0040, 0094). Ids are core's sort keys where they sort.
  */
 export function useNotificationColumns({
@@ -90,7 +90,7 @@ export function useNotificationColumns({
   const columns = { onSelect, onToggleRead, onDelete, openingId, t, text };
   return [
     messageColumn(columns),
-    ticketColumn(columns),
+    orderColumn(columns),
     { id: "kind", header: t("columns.kind"), accessorFn: (n) => t(`kinds.${n.kind}`) },
     {
       id: "actor",

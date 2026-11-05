@@ -3,7 +3,7 @@ import type { QuoteAbilities } from "./quote-actions";
 
 export type QuoteAbilitiesInput = {
   quote: QuoteDto;
-  /** The highest version of the ticket's quote. */
+  /** The highest version of the order's quote. */
   latestVersion: number;
   /** The caller holds `quote:write` (edit, accept, decline, expire, revise). */
   canEdit: boolean;

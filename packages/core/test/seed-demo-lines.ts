@@ -1,5 +1,5 @@
 /**
- * F6 expired, L11 confirmed, L12 blocked; L7, L10 from templates; quoted tickets get lunch;
+ * F6 expired, L11 confirmed, L12 blocked; L7, L10 from templates; quoted orders get lunch;
  * L13's alternatives both soft, L14's pick booked and the other option released (ADR 0052);
  * L15's bundle with its part lines in Quote sent (ADR 0059); L9's dinner with its options (ADR 0082);
  * L11's break buffet with its pick and two add-ons, and its board meeting's projector add-on (ADR 0088);
@@ -31,7 +31,9 @@ export const LINDHOLMEN_LINE_STATES = [
   ["Lunch", "Released", false],
   ["Morning break", "Estimated", false],
   ["Morning coffee", "Ordered", false],
+  ["Mushroom risotto", "Ordered", false],
   ["Oat ball", "Ordered", false],
+  ["Oven-baked cod loin, browned butter", "Ordered", false],
   ["Planning in Hönö", "Booked", false],
   ["Planning in Styrsö", "Released", true],
   ["Product launch", "Prebooked", false],

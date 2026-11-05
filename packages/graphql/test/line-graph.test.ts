@@ -6,15 +6,15 @@ import { createClient, testContext } from "./helpers";
 
 const TYPE = `mutation($i: EntityTypeCreateInput!) { entityTypeCreate(input: $i) { id } }`;
 const CUSTOMER = `mutation($i: CustomerCreateInput!) { customerCreate(input: $i) { id } }`;
-const TICKET = `mutation($i: TicketCreateInput!) { ticketCreate(input: $i) { id } }`;
+const ORDER = `mutation($i: OrderCreateInput!) { orderCreate(input: $i) { id } }`;
 const ITEM = `mutation($i: ItemCreateInput!) { itemCreate(input: $i) { id } }`;
 const LINES =
-  "query($id: String!) { ticket(id: $id) { lines " +
+  "query($id: String!) { order(id: $id) { lines " +
   "{ name entityType { base } state { name hold } } } }";
 const ADD = `mutation($i: LineCreateInput!) { lineCreate(input: $i) { id } }`;
 
 describe("line graph (ADR 0022)", () => {
-  it("resolves ticket { lines } and maps a double booking to CONFLICT", async () => {
+  it("resolves order { lines } and maps a double booking to CONFLICT", async () => {
     const context = testContext();
     expect(
       (
@@ -33,33 +33,33 @@ describe("line graph (ADR 0022)", () => {
       variables: { i: { entityTypeId: await type({ base: "CUSTOMER" }), name: "Kvarnby AB" } },
     });
     const period = {
-      desiredStartsAt: "2026-11-03T08:00:00.000Z",
-      desiredEndsAt: "2026-11-03T16:00:00.000Z",
+      desiredStartsAt: "2037-11-03T08:00:00.000Z",
+      desiredEndsAt: "2037-11-03T16:00:00.000Z",
     };
-    const ticket = await gql({
-      query: TICKET,
+    const order = await gql({
+      query: ORDER,
       variables: {
         i: {
-          entityTypeId: await type({ base: "TICKET" }),
+          entityTypeId: await type({ base: "ORDER" }),
           customerId: customer.body.data.customerCreate.id,
           contactId: await graphContact({ gql, customerId: customer.body.data.customerCreate.id }),
           ...period,
         },
       },
     });
-    const ticketId = ticket.body.data.ticketCreate.id;
+    const orderId = order.body.data.orderCreate.id;
     const roomType = await type({ base: "ITEM", capabilities: ["BOOKABLE"] });
     const room = await gql({
       query: ITEM,
       variables: { i: { entityTypeId: roomType, name: "Ek" } },
     });
     const add = {
-      ticketId,
+      orderId,
       entityTypeId: await type({ base: "LINE" }),
       name: "Opening",
       itemId: room.body.data.itemCreate.id,
-      startsAt: "2026-11-03T09:00:00.000Z",
-      endsAt: "2026-11-03T10:00:00.000Z",
+      startsAt: "2037-11-03T09:00:00.000Z",
+      endsAt: "2037-11-03T10:00:00.000Z",
     };
     const created = await gql({ query: ADD, variables: { i: add } });
     expect(created.body.errors).toBeUndefined();
@@ -67,10 +67,10 @@ describe("line graph (ADR 0022)", () => {
     expect(clash.body.errors?.[0]?.extensions?.code).toBe("CONFLICT");
     const res = await gql({
       query: LINES,
-      variables: { id: ticketId },
+      variables: { id: orderId },
     });
     expect(res.body.errors).toBeUndefined();
-    expect(res.body.data.ticket.lines).toEqual([
+    expect(res.body.data.order.lines).toEqual([
       // A new item type starts with one hard-holding state (ADR 0044).
       {
         name: "Opening",

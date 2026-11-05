@@ -6,8 +6,8 @@ export const alternativeGroupMcpTools = [
   mcpTool({
     operation: "alternativeGroup.create",
     summary: ({ input }) =>
-      `Make ${Array.isArray(input.lineIds) ? input.lineIds.length : 0} lines of ticket ` +
-      `${text({ value: input.ticketId })} alternatives ` +
+      `Make ${Array.isArray(input.lineIds) ? input.lineIds.length : 0} lines of order ` +
+      `${text({ value: input.orderId })} alternatives ` +
       `"${text({ value: input.name })}"`,
   }),
   mcpTool({

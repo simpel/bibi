@@ -55,10 +55,10 @@ async function loadItems({ context, lines }: WithEffectiveInput) {
 }
 
 async function loadSources({ context, lines }: WithEffectiveInput) {
-  const ticketIds = [...new Set(lines.map((line) => line.ticketId))];
-  const [tickets, items, changeovers] = await Promise.all([
-    context.db.ticket.findMany({
-      where: { id: { in: ticketIds } },
+  const orderIds = [...new Set(lines.map((line) => line.orderId))];
+  const [orders, items, changeovers] = await Promise.all([
+    context.db.order.findMany({
+      where: { id: { in: orderIds } },
       select: {
         ...{ id: true, customerId: true, desiredStartsAt: true },
         ...{ estimatedHeadcount: true, guaranteedHeadcount: true },
@@ -69,10 +69,10 @@ async function loadSources({ context, lines }: WithEffectiveInput) {
   ]);
   const terms = await loadPriceTerms({
     context,
-    customerIds: tickets.map((ticket) => ticket.customerId),
+    customerIds: orders.map((order) => order.customerId),
   });
   return {
-    tickets: new Map(tickets.map((ticket) => [ticket.id, ticket])),
+    orders: new Map(orders.map((order) => [order.id, order])),
     ...items,
     changeovers,
     terms,
@@ -83,7 +83,7 @@ const NO_HEADCOUNT = { estimatedHeadcount: null, guaranteedHeadcount: null };
 
 /**
  * The lines with their effective quantity, price, discount and VAT (ADR 0052) and warnings (ADR
- * 0059, 0082, 0089), from the ticket's headcount (an option line: its parent's quantity), the
+ * 0059, 0082, 0089), from the order's headcount (an option line: its parent's quantity), the
  * customer's price list on the line's day (else the desired start, else today), the item and its
  * venue. A fixed number of queries for any number of lines.
  */
@@ -97,19 +97,19 @@ export async function withEffective({ context, lines }: WithEffectiveInput): Pro
     loadSplitSums({ context, lines }),
     loadOpenRequiredGroups({ context, lines }),
   ]);
-  const { tickets, items, changeovers, terms, organizationZone } = sources;
+  const { orders, items, changeovers, terms, organizationZone } = sources;
   return lines.map((line) => {
-    const ticket = tickets.get(line.ticketId);
+    const order = orders.get(line.orderId);
     const item = line.itemId ? (items.get(line.itemId) ?? null) : null;
-    const on = line.startsAt ?? ticket?.desiredStartsAt ?? new Date();
-    const priceTerms = ticket ? terms({ customerId: ticket.customerId, on }) : null;
-    const headcount = ticket ?? NO_HEADCOUNT;
+    const on = line.startsAt ?? order?.desiredStartsAt ?? new Date();
+    const priceTerms = order ? terms({ customerId: order.customerId, on }) : null;
+    const headcount = order ?? NO_HEADCOUNT;
     const changeoverMinutes = line.setupId ? (changeovers.get(line.setupId) ?? null) : null;
     const type = item?.entityType ?? null;
     const buffers = effectiveBuffers({ line, item, type, changeoverMinutes });
     const outside = outsideHours.get(line.id);
     const parent = parents.get(line.id) ?? null;
-    const effective = effectiveOf({ line, ticket: headcount, parent, item, terms: priceTerms });
+    const effective = effectiveOf({ line, order: headcount, parent, item, terms: priceTerms });
     const expected = effective.effectiveQuantity;
     const split = splitWarnings({ sums: splitSums.get(line.id), expected });
     const own = [...(warnings.get(line.id) ?? []), ...(outside ? [outside] : [])];

@@ -5,8 +5,8 @@ export const alternativeGroupRoutes = [
   restRoute({
     operation: "alternativeGroup.list",
     method: "GET",
-    path: "/tickets/{ticketId}/alternative-groups",
-    operationId: "alternativeGroupListByTicket",
+    path: "/orders/{orderId}/alternative-groups",
+    operationId: "alternativeGroupListByOrder",
   }),
   restRoute({ operation: "alternativeGroup.get", method: "GET", path: "/alternative-groups/{id}" }),
   restRoute({ operation: "alternativeGroup.create", method: "POST", path: "/alternative-groups" }),

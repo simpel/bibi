@@ -8,6 +8,6 @@
 export const DEMO_AI_MODELS = {
   "assistant.chat": "anthropic/claude-sonnet-5.5",
   "search.embedding": "openai/text-embedding-3-small",
-  "ticket.intakeDraft": "anthropic/claude-sonnet-5.5",
-  "ticket.title": "anthropic/claude-haiku-5.5",
+  "order.intakeDraft": "anthropic/claude-sonnet-5.5",
+  "order.title": "anthropic/claude-haiku-5.5",
 } as const;

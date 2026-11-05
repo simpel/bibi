@@ -30,16 +30,16 @@ enum PaymentAccountStatus {
   RESTRICTED
 }
 
-/// PaymentSettings – how the organization takes ticket money (ADR 0090). One row per organization,
+/// PaymentSettings – how the organization takes order money (ADR 0090). One row per organization,
 /// created on the first `paymentSettings.update`; no row = no deposit rule and the invoice
 /// provider follows what is connected. Owned: every column. Nothing is copied onto deposits: a
 /// deposit keeps the amount it was created with (ADR 0057).
 model PaymentSettings {
   id                  String           @id @default(cuid(2))
   organizationId      String           @unique
-  /// Share of the ticket's total incl. VAT asked as a deposit, 1–100; null = no deposit rule.
+  /// Share of the order's total incl. VAT asked as a deposit, 1–100; null = no deposit rule.
   depositPercent      Int?
-  /// A ticket whose total incl. VAT is below this (minor units) is paid in full up front.
+  /// A order whose total incl. VAT is below this (minor units) is paid in full up front.
   depositMinimumMinor Int?
   /// Where invoices are raised when both Stripe and Fortnox are connected; null = whichever is.
   invoiceProvider     InvoiceProvider?

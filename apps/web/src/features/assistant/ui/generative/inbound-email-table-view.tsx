@@ -8,7 +8,7 @@ import { MoreHint } from "./more-hint";
 
 export type InboundEmailTableViewProps = GenerativeProps<"inbound-email-table">;
 
-/** A page of mails received on a ticket's inbound address, newest first. */
+/** A page of mails received on an order's inbound address, newest first. */
 export function InboundEmailTableView({ items, nextCursor }: InboundEmailTableViewProps) {
   const dates = useDateTimeFormat();
   return (

@@ -23,13 +23,13 @@ export const Medium: Story = { args: { size: "md", withYear: true } };
 /** Swedish: month and weekday follow the locale. */
 export const Swedish: Story = { args: { locale: "sv-SE" } };
 
-/** In context: a ticket list row. */
+/** In context: an order list row. */
 export const InListRow: Story = {
   render: (args) => (
     <div className="flex w-96 items-center gap-3 rounded-lg border bg-card p-3 font-sans">
       <DateLeaf {...args} />
       <div className="min-w-0">
-        <p className="truncate text-sm font-medium">Ticket 18 · Sales conference</p>
+        <p className="truncate text-sm font-medium">Order 18 · Sales conference</p>
         <p className="truncate text-xs text-muted-foreground">
           Hisingen Energi AB · 09:00–17:00 · 24 guests
         </p>

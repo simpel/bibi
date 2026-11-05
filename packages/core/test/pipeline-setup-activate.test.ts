@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { activatePipelineSetup, execute, previewPipelineSetup } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { estateDraft, roomType } from "./pipeline-setup-helpers";
-import { provisionedContext, statuses } from "./ticket-status-helpers";
+import { provisionedContext, statuses } from "./order-status-helpers";
 
 describe("pipelineSetup.activate (ADR 0044)", () => {
   it("creates the previewed pipeline as one audited batch", async () => {
@@ -12,7 +12,7 @@ describe("pipelineSetup.activate (ADR 0044)", () => {
     const result = unwrap({
       result: await execute({ operation: activatePipelineSetup, input, context }),
     });
-    expect(result.statuses.map((ticketStatus) => ticketStatus.name)).toEqual(
+    expect(result.statuses.map((orderStatus) => orderStatus.name)).toEqual(
       input.statuses.map((p) => p.name),
     );
     const roomStates = result.states.filter((state) => state.entityTypeId === room.id);
@@ -29,7 +29,7 @@ describe("pipelineSetup.activate (ADR 0044)", () => {
     const newStatus = result.statuses[0];
     expect(newStatus?.entry).toBe(true);
     // Free movement: every other status, except those only a quote event enters (ADR 0076).
-    const byHand = input.statuses.filter((ticketStatus) => !ticketStatus.event);
+    const byHand = input.statuses.filter((orderStatus) => !orderStatus.event);
     expect(newStatus?.transitionsTo).toHaveLength(byHand.length - 1);
     const audit = await context.db.auditLog.findMany({
       where: { operation: "pipelineSetup.activate" },
@@ -37,7 +37,7 @@ describe("pipelineSetup.activate (ADR 0044)", () => {
     const types = new Set(audit.map((row) => row.entityType));
     // Each new status also lands on the default board (ADR 0067), audited on that board.
     expect(types).toEqual(
-      new Set(["entityType", "itemState", "ticketStatus", "statusStateRule", "board"]),
+      new Set(["entityType", "itemState", "orderStatus", "statusStateRule", "board"]),
     );
   });
 
@@ -47,13 +47,13 @@ describe("pipelineSetup.activate (ADR 0044)", () => {
     const input = estateDraft();
     unwrap({ result: await execute({ operation: activatePipelineSetup, input, context }) });
     const after = await statuses({ context });
-    expect(after.map((ticketStatus) => ticketStatus.name)).toEqual(
-      input.statuses.map((ticketStatus) => ticketStatus.name),
+    expect(after.map((orderStatus) => orderStatus.name)).toEqual(
+      input.statuses.map((orderStatus) => orderStatus.name),
     );
-    const confirmed = before.find((ticketStatus) => ticketStatus.name === "Confirmed");
-    expect(after.find((ticketStatus) => ticketStatus.name === "Confirmed")?.id).toBe(confirmed?.id);
+    const confirmed = before.find((orderStatus) => orderStatus.name === "Confirmed");
+    expect(after.find((orderStatus) => orderStatus.name === "Confirmed")?.id).toBe(confirmed?.id);
     expect(
-      after.filter((ticketStatus) => ticketStatus.entry).map((ticketStatus) => ticketStatus.name),
+      after.filter((orderStatus) => orderStatus.entry).map((orderStatus) => orderStatus.name),
     ).toEqual(["New"]);
   });
 
@@ -62,7 +62,7 @@ describe("pipelineSetup.activate (ADR 0044)", () => {
     const draft = estateDraft();
     const input = {
       ...draft,
-      statuses: draft.statuses.filter((ticketStatus) => !ticketStatus.closes),
+      statuses: draft.statuses.filter((orderStatus) => !orderStatus.closes),
     };
     const preview = unwrap({
       result: await execute({ operation: previewPipelineSetup, input, context }),
@@ -70,7 +70,7 @@ describe("pipelineSetup.activate (ADR 0044)", () => {
     expect(preview.ready).toBe(false);
     const refused = await execute({ operation: activatePipelineSetup, input, context });
     expect(errorCode({ result: refused })).toBe("VALIDATION");
-    expect(await context.db.ticketStatus.count()).toBe(0);
+    expect(await context.db.orderStatus.count()).toBe(0);
     expect(await context.db.entityType.count()).toBe(0);
   });
 
@@ -83,7 +83,7 @@ describe("pipelineSetup.activate (ADR 0044)", () => {
       context,
     });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
-    expect(await context.db.ticketStatus.count()).toBe(0);
+    expect(await context.db.orderStatus.count()).toBe(0);
     expect(await context.db.entityType.count({ where: { name: "Dish" } })).toBe(0);
     expect(
       await context.db.auditLog.count({ where: { operation: "pipelineSetup.activate" } }),
@@ -98,7 +98,7 @@ describe("pipelineSetup.activate (ADR 0044)", () => {
     const noStatuses = { ...context, permissions: { ...all, pipeline: ["read" as const] } };
     const refused = await execute({ operation: activatePipelineSetup, input, context: noStatuses });
     expect(errorCode({ result: refused })).toBe("FORBIDDEN");
-    expect(await context.db.ticketStatus.count()).toBe(0);
+    expect(await context.db.orderStatus.count()).toBe(0);
     const foreign = await execute({
       operation: activatePipelineSetup,
       input,

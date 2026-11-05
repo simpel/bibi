@@ -1,0 +1,74 @@
+import { ok, type Result } from "../../errors/result";
+import type { OperationContext } from "../../operations/types";
+import { invalid } from "../../shared/errors";
+import { loadTypeOfBase } from "../entity-type/load-type-of-base";
+import { validateFields } from "../field-definition/field-values";
+import type { CheckedFields } from "../field-definition/split-links";
+import { checkReadable } from "../order/order-rules";
+import { checkTemplateLines } from "./check-template-lines";
+import type { OrderTemplateLineInput } from "./schema";
+
+export type CheckTemplateInput = {
+  context: Pick<OperationContext, "db" | "permissions">;
+  entityTypeId: string;
+  statusId: string;
+  fields?: Record<string, unknown> | undefined;
+  minGuests?: number | null | undefined;
+  maxGuests?: number | null | undefined;
+  lines: readonly OrderTemplateLineInput[];
+};
+
+type RangeInput = Pick<CheckTemplateInput, "minGuests" | "maxGuests">;
+
+/** The guest range holds together: the lower limit is not above the upper one (ADR 0081). */
+function checkGuestRange({ minGuests, maxGuests }: RangeInput): Result<true> {
+  if (minGuests == null || maxGuests == null || minGuests <= maxGuests) return ok({ value: true });
+  const message = "The fewest guests cannot be more than the most guests";
+  return invalid({ message, issues: [{ path: "minGuests", message }] });
+}
+
+type StatusInput = Pick<CheckTemplateInput, "context" | "statusId">;
+
+/** The start status is an active status orders can be created in: never a closing one. */
+async function checkStartStatus({ context, statusId }: StatusInput): Promise<Result<true>> {
+  const orderStatus = await context.db.orderStatus.findFirst({ where: { id: statusId } });
+  const message = !orderStatus
+    ? "Unknown status"
+    : orderStatus.closes
+      ? "An order cannot start in a closing status"
+      : null;
+  return message
+    ? invalid({ message, issues: [{ path: "statusId", message }] })
+    : ok({ value: true });
+}
+
+/**
+ * The checks a template passes on create and on every change: referenced records are readable by
+ * the caller (`pipeline:read`, `item:read`), the type is a `ORDER` type, the start status can
+ * receive orders, the guest range holds together, default field values match the type and the
+ * lines point at fitting records.
+ * Returns the validated default field values.
+ */
+export async function checkTemplate({
+  context,
+  entityTypeId,
+  statusId,
+  fields,
+  lines,
+  ...range
+}: CheckTemplateInput): Promise<Result<CheckedFields>> {
+  const hasItems = lines.some((line) => line.itemId);
+  for (const check of [
+    checkGuestRange(range),
+    checkReadable({ context, permission: "pipeline:read", path: "statusId" }),
+    hasItems
+      ? checkReadable({ context, permission: "item:read", path: "lines" })
+      : ok({ value: true as const }),
+    await loadTypeOfBase({ context, entityTypeId, base: "ORDER" }),
+    await checkStartStatus({ context, statusId }),
+    await checkTemplateLines({ context, lines }),
+  ]) {
+    if (!check.ok) return check;
+  }
+  return validateFields({ context, entityTypeId, values: fields ?? {} });
+}

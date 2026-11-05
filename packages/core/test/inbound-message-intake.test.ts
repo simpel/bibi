@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   applyOverrides,
   createExecuteContext,
-  createTicket,
+  createOrder,
   execute,
   listInboundMessages,
   PRESET_PERMISSIONS,
@@ -11,10 +11,10 @@ import {
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { inboxSetup, mailTo, withPermissions } from "./inbound-message-helpers";
-import { contactAt } from "./ticket-helpers";
+import { contactAt } from "./order-helpers";
 
-describe("ticket.create from an inbox message (ADR 0081, 0085)", () => {
-  it("attaches the message to the new ticket, once", async () => {
+describe("order.create from an inbox message (ADR 0081, 0085)", () => {
+  it("attaches the message to the new order, once", async () => {
     const { context, type, customer, address } = await inboxSetup();
     const message = await mailTo({ recipients: [address] });
     const contact = await contactAt({ context, customerId: customer.id });
@@ -24,19 +24,19 @@ describe("ticket.create from an inbox message (ADR 0081, 0085)", () => {
       contactId: contact.id,
       inboundMessageId: message.id,
     };
-    const ticket = unwrap({ result: await execute({ operation: createTicket, input, context }) });
+    const order = unwrap({ result: await execute({ operation: createOrder, input, context }) });
     const page = unwrap({
       result: await execute({
         operation: listInboundMessages,
-        input: { ticketId: ticket.id },
+        input: { orderId: order.id },
         context,
       }),
     });
     expect(page.items.map((item) => item.id)).toEqual([message.id]);
-    const before = await context.db.ticket.count({});
-    const again = await execute({ operation: createTicket, input, context });
+    const before = await context.db.order.count({});
+    const again = await execute({ operation: createOrder, input, context });
     expect(errorCode({ result: again })).toBe("CONFLICT");
-    expect(await context.db.ticket.count({})).toBe(before);
+    expect(await context.db.order.count({})).toBe(before);
   });
 
   it("needs inbox:read for the message", async () => {
@@ -45,7 +45,7 @@ describe("ticket.create from an inbox message (ADR 0081, 0085)", () => {
     const contact = await contactAt({ context, customerId: customer.id });
     const permissions = { ...context.permissions, inbox: [] };
     const result = await execute({
-      operation: createTicket,
+      operation: createOrder,
       input: {
         entityTypeId: type.id,
         customerId: customer.id,
@@ -71,7 +71,7 @@ describe("inboundMessage.submit (the API channel)", () => {
     const message = unwrap({
       result: await execute({ operation: submitInboundMessage, input, context: caller }),
     });
-    expect(message).toMatchObject({ channel: "API", ticketId: null, endpointId: api.id });
+    expect(message).toMatchObject({ channel: "API", orderId: null, endpointId: api.id });
     const listed = await execute({ operation: listInboundMessages, input: {}, context: caller });
     expect(errorCode({ result: listed })).toBe("FORBIDDEN");
     const inbox = unwrap({

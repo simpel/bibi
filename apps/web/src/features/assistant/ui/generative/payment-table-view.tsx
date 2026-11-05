@@ -9,7 +9,7 @@ import { MoreHint } from "./more-hint";
 
 export type PaymentTableViewProps = GenerativeProps<"payment-table">;
 
-/** A page of payments requested for a ticket, newest first. */
+/** A page of payments requested for an order, newest first. */
 export function PaymentTableView({ items, nextCursor }: PaymentTableViewProps) {
   const dates = useDateTimeFormat();
   const numbers = useNumberFormat();

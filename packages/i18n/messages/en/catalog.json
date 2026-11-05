@@ -1,0 +1,623 @@
+{
+  "venue": {
+    "singular": "Venue",
+    "plural": "Venues",
+    "create": "Create venue",
+    "edit": "Edit venue",
+    "delete": "Delete venue",
+    "deleteConfirm": "Do you want to delete the venue {name}?",
+    "empty": "No venues yet.",
+    "created": "The venue has been created.",
+    "updated": "The venue has been updated.",
+    "fields": {
+      "name": "Name",
+      "description": "Description",
+      "address": "Address",
+      "postalCode": "Postal code",
+      "city": "City",
+      "website": "Website",
+      "streetAddress": "Street address",
+      "country": "Country (ISO code)",
+      "contactEmail": "Contact email",
+      "contactPhone": "Contact phone",
+      "openingHours": "Opening hours note",
+      "timeZone": "Time zone",
+      "timeZoneInherit": "The organization's zone ({zone})",
+      "defaultVatRatePercent": "VAT (%)"
+    },
+    "listDescription": "Buildings and sites with items to book.",
+    "emptyDescription": "Create your first venue to get started.",
+    "archive": "Archive venue",
+    "archiveConfirm": "Do you want to archive {name}?",
+    "archived": "The venue has been archived.",
+    "notFound": "The venue does not exist or is archived.",
+    "createDescription": "Enter details about the venue. You can add items afterwards.",
+    "editDescription": "Change the venue details.",
+    "columns": {
+      "name": "Name",
+      "city": "City",
+      "contact": "Contact",
+      "status": "Status"
+    },
+    "itemsEmpty": "No items at this venue yet.",
+    "wizard": {
+      "progress": "Steps",
+      "steps": {
+        "identity": "Name",
+        "address": "Address",
+        "contact": "Contact and VAT"
+      },
+      "descriptions": {
+        "identity": "Name the venue.",
+        "address": "Where the venue is.",
+        "contact": "How to reach the venue, when it is open and its default VAT."
+      }
+    },
+    "hours": {
+      "title": "Opening hours",
+      "description": "Used to warn when a booking falls outside opening hours. It never blocks a booking.",
+      "empty": "No opening hours set. Bookings are not checked against opening hours."
+    }
+  },
+  "item": {
+    "singular": "Item",
+    "plural": "Items",
+    "listDescription": "What you sell and book, e.g. rooms, dishes and equipment. The type decides which fields an item has.",
+    "create": "Create item",
+    "edit": "Edit item",
+    "createDescription": "Pick a type and fill in the details.",
+    "editDescription": "Change the item details.",
+    "archive": "Archive item",
+    "archiveConfirm": "Do you want to archive the item {name}?",
+    "archived": "The item has been archived.",
+    "created": "The item has been created.",
+    "updated": "The item has been updated.",
+    "empty": "No items yet.",
+    "emptyDescription": "Create an item type under Types, then add items.",
+    "noTypes": "There are no item types yet. Create a type first.",
+    "goToTypes": "Go to types",
+    "filterLabel": "Filter by type",
+    "allTypes": "All types",
+    "saving": "Saving item…",
+    "archiving": "Archiving item…",
+    "select": "Select…",
+    "search": "Search…",
+    "noOptions": "No options.",
+    "saveBundle": "Save as bundle",
+    "saveBundleDescription": "Pick a bundle type and its parts. The bundle is shown only for this customer; the catalog is unchanged.",
+    "bundleSaved": "The bundle has been saved.",
+    "bundles": "Bundles",
+    "bundlesEmpty": "No bundles for this customer yet.",
+    "bundlesNoTypes": "There is no item type with the Bundle capability yet. Create one under Types first.",
+    "bundleFor": "Bundle for {customer}",
+    "fields": {
+      "type": "Type",
+      "name": "Name",
+      "description": "Description",
+      "venue": "Venue",
+      "noVenue": "No venue",
+      "price": "Price (SEK)",
+      "priceUnit": "Price unit",
+      "vatRatePercent": "VAT (%)",
+      "defaultDurationMinutes": "Default length (minutes)"
+    },
+    "sections": {
+      "price": "Price",
+      "bookable": "Booking",
+      "setups": "Setups",
+      "parts": "Parts",
+      "customisations": "Customisations"
+    },
+    "setupsHint": "Capacity, max number of people, per setup. Leave empty for setups that are not used.",
+    "noSetups": "There are no setups. Create them under Setups.",
+    "priceUnits": {
+      "PER_PERSON": "per person",
+      "PER_UNIT": "per unit",
+      "PER_HOUR": "per hour",
+      "FLAT": "flat"
+    },
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "venue": "Venue",
+      "price": "Price"
+    },
+    "priceValue": "{amount} {unit}",
+    "durationValue": "{minutes} min",
+    "capacityValue": "{name}: {capacity}",
+    "parts": {
+      "hint": "The items this item contains, with quantity and timing relative to its start.",
+      "none": "No parts yet.",
+      "add": "Add part",
+      "remove": "Remove part",
+      "part": "Part",
+      "quantity": "Quantity",
+      "offsetMinutes": "Starts after (minutes)",
+      "durationMinutes": "Length (minutes)",
+      "required": "Mandatory"
+    },
+    "partValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (optional)}}",
+    "customisationGroups": {
+      "hint": "Groups of other items to choose between, each with how many to pick and what an option does to the price.",
+      "none": "No customisation groups yet.",
+      "add": "Add customisation group",
+      "remove": "Remove customisation group",
+      "name": "Name",
+      "minPick": "Choose at least",
+      "maxPick": "Choose at most",
+      "options": "Options",
+      "noOptions": "No options yet.",
+      "addOption": "Add option",
+      "removeOption": "Remove option",
+      "option": "Item",
+      "priceEffect": "Price effect",
+      "split": "Split between guests"
+    },
+    "customisationGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
+    "resolution": {
+      "title": "Contents",
+      "contains": "Contains",
+      "mayContain": "May contain",
+      "none": "Nothing",
+      "via": "{name} (via {items})",
+      "parts": "Parts",
+      "part": "{quantity} × {name}",
+      "optional": "optional",
+      "option": "option in {group}"
+    },
+    "wizard": {
+      "progress": "Steps",
+      "steps": {
+        "type": "Type",
+        "details": "Details",
+        "setup": "Price and setup"
+      },
+      "descriptions": {
+        "type": "Pick the item type. It decides which fields the item has.",
+        "details": "Name the item and fill in the fields of its type.",
+        "setup": "Set the price, booking, setups and contents."
+      }
+    },
+    "hours": {
+      "title": "Working hours",
+      "description": "When this item is available, for example a person or a room. It never blocks a booking.",
+      "followsVenue": "No own hours: this item follows its venue's opening hours.",
+      "followHint": "Switch off every day and remove all exceptions to follow the venue's opening hours again."
+    }
+  },
+  "itemState": {
+    "flags": {
+      "initial": "Initial",
+      "inRunSheets": "In run sheets",
+      "released": "Released",
+      "expires": "Expires"
+    },
+    "holds": {
+      "NONE": "No hold",
+      "SOFT": "Soft hold",
+      "HARD": "Hard hold"
+    },
+    "singular": "State",
+    "plural": "Item states",
+    "listDescription": "The states a line can be in, per item type. The flags decide what the system does; nothing else about a state is fixed. Every type needs one initial state.",
+    "create": "Create state",
+    "edit": "Edit state",
+    "createDescription": "Add a state to {type}: name it, pick a color and choose what it does.",
+    "editDescription": "Rename, recolor or change what the state does.",
+    "archive": "Archive state",
+    "archiveConfirm": "Do you want to archive the state {name}? Lines in it, grid cells and the expiry state move to the state you choose.",
+    "archiveInitialConfirm": "{name} is the initial state. Make another state initial before archiving it. Lines in it move to the state you choose.",
+    "archived": "The state has been archived.",
+    "created": "The state has been created.",
+    "updated": "The state has been updated.",
+    "empty": "No states yet.",
+    "noTypes": "No item types yet.",
+    "noTypesDescription": "Create an item type first. Its states are set up here.",
+    "saving": "Saving state…",
+    "archiving": "Archiving state…",
+    "editTransitions": "Edit transitions",
+    "transitionsDescription": "Choose which states a line in {name} may move to.",
+    "releasedTransitions": "{name} is a released state: it is final and nothing leaves it.",
+    "transitionsSaved": "The transitions have been saved.",
+    "noTransitions": "None",
+    "noTargets": "There are no other states to move to.",
+    "noTarget": "No lines to move",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "reordering": "Saving order…",
+    "reordered": "The order has been saved.",
+    "fields": {
+      "name": "Name",
+      "color": "Color",
+      "hold": "What it does to the item",
+      "transitions": "May move to",
+      "targetState": "Move its lines to"
+    },
+    "columns": {
+      "name": "Name",
+      "flags": "Does",
+      "transitions": "May move to"
+    },
+    "flagChoices": {
+      "initial": "New lines start here",
+      "inRunSheets": "Lines are included in run sheets",
+      "released": "Final: the hold is dropped and nothing leaves it",
+      "expires": "Falls to the expiry state when the order's hold date passes"
+    }
+  },
+  "itemDemand": {
+    "plural": "Needs",
+    "create": "Add need",
+    "edit": "Edit need",
+    "archive": "Remove need",
+    "archiving": "Removing…",
+    "archived": "Need removed",
+    "archiveConfirm": "Remove the need for {name}?",
+    "created": "Need added",
+    "updated": "Need saved",
+    "formDescription": "What this item asks of a pool each time it is booked.",
+    "lists": {
+      "resources": "Resources",
+      "staffing": "Staffing"
+    },
+    "empty": {
+      "resources": "No equipment needed.",
+      "staffing": "No staff needed."
+    },
+    "mandatory": "Mandatory",
+    "optional": "Optional",
+    "columns": {
+      "target": "Pool",
+      "required": "Need",
+      "quantity": "Quantity",
+      "windows": "Windows"
+    },
+    "fields": {
+      "pool": "Pool",
+      "quantity": "Quantity per booking",
+      "required": "Mandatory (a booking is refused when no unit is free)",
+      "windows": "Held during"
+    },
+    "windows": {
+      "SETUP": "Setup",
+      "BOOKING": "Booking",
+      "TEARDOWN": "Teardown"
+    }
+  },
+  "setup": {
+    "singular": "Setup",
+    "plural": "Setups",
+    "listDescription": "How a space can be set up, e.g. Cinema, U-shape or Mingle, and how long the changeover takes.",
+    "create": "Create setup",
+    "edit": "Edit setup",
+    "createDescription": "Name the setup and enter the changeover time.",
+    "editDescription": "Change the name and changeover time.",
+    "archive": "Archive setup",
+    "archiveConfirm": "Do you want to archive the setup {name}?",
+    "archived": "The setup has been archived.",
+    "created": "The setup has been created.",
+    "updated": "The setup has been updated.",
+    "empty": "No setups yet.",
+    "emptyDescription": "Create setups such as Cinema, U-shape and Mingle.",
+    "saving": "Saving setup…",
+    "archiving": "Archiving setup…",
+    "changeoverValue": "{minutes} min",
+    "fields": {
+      "name": "Name",
+      "changeoverMinutes": "Changeover time (minutes)"
+    },
+    "columns": {
+      "name": "Name",
+      "changeover": "Changeover"
+    }
+  },
+  "entityType": {
+    "singular": "Type",
+    "plural": "Types",
+    "listDescription": "Types decide which fields and capabilities items, customers and orders have in your organization.",
+    "create": "Create type",
+    "edit": "Edit type",
+    "createDescription": "Choose what the type is for and name it.",
+    "editDescription": "Change the name and capabilities.",
+    "archive": "Archive type",
+    "archiveConfirm": "Do you want to archive the type {name}? This is refused while it is in use.",
+    "archived": "The type has been archived.",
+    "created": "The type has been created.",
+    "updated": "The type has been updated.",
+    "empty": "No types yet.",
+    "emptyDescription": "Create a type, e.g. Conference room or Dish, and add its fields.",
+    "saving": "Saving type…",
+    "archiving": "Archiving type…",
+    "importTemplate": "Import Conference venue template",
+    "importing": "Importing template…",
+    "imported": "{created, plural, one {# type} other {# types}} created, {skipped} already existed.",
+    "fieldCount": "{count, plural, one {# field} other {# fields}}",
+    "noCapabilities": "No capabilities",
+    "capabilitiesHeading": "Capabilities",
+    "fieldsHeading": "Fields",
+    "fields": {
+      "base": "Applies to",
+      "name": "Name",
+      "sections": "Sections",
+      "resourceKind": "Equipment or person"
+    },
+    "resourceKinds": {
+      "EQUIPMENT": "Equipment",
+      "PERSON": "Person"
+    },
+    "columns": {
+      "name": "Name",
+      "capabilities": "Capabilities",
+      "fields": "Fields"
+    },
+    "bases": {
+      "ITEM": "Items",
+      "CUSTOMER": "Customers",
+      "CONTACT": "Contacts",
+      "ORDER": "Orders",
+      "REQUIREMENT": "Requirements",
+      "LINE": "Lines"
+    },
+    "capabilities": {
+      "PRICED": "Priced",
+      "BUNDLE": "Bundle",
+      "CUSTOMISATIONS": "Customisations",
+      "BOOKABLE": "Bookable",
+      "SETUPS": "Setups"
+    },
+    "wizard": {
+      "progress": "Steps",
+      "steps": {
+        "base": "Name",
+        "capabilities": "Capabilities"
+      },
+      "descriptions": {
+        "base": "Choose what the type is for and name it.",
+        "capabilities": "Pick what items of this type can do. You add its fields next."
+      }
+    },
+    "sectionsHint": "Switch on the parts an item of this type needs. A section cannot be switched off while items have data for it.",
+    "needs": "Needs {section}.",
+    "sections": {
+      "PRICED": {
+        "title": "Pricing",
+        "description": "Items have a price, a price unit and VAT."
+      },
+      "BOOKABLE": {
+        "title": "Availability",
+        "description": "Items take up time and have a default length. Set the default setup and teardown time here."
+      },
+      "SETUPS": {
+        "title": "Room layouts",
+        "description": "Each item has layouts with a capacity per layout."
+      },
+      "BUNDLE": {
+        "title": "Bundle",
+        "description": "An item contains other items."
+      },
+      "CUSTOMISATIONS": {
+        "title": "Customisations",
+        "description": "Groups of options the customer can choose between."
+      }
+    }
+  },
+  "fieldDefinition": {
+    "singular": "Field",
+    "plural": "Fields",
+    "create": "Add field",
+    "edit": "Edit field",
+    "createDescription": "The field appears on every record of the type.",
+    "editDescription": "Change the field. The value type cannot change once there are values.",
+    "archive": "Archive field",
+    "archiveConfirm": "Do you want to archive the field {name}?",
+    "archived": "The field has been archived.",
+    "created": "The field has been added.",
+    "updated": "The field has been updated.",
+    "empty": "No fields yet.",
+    "saving": "Saving field…",
+    "archiving": "Archiving field…",
+    "reordering": "Moving field…",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "selectList": "Select a list",
+    "noLists": "There are no lists. Create one under Lists.",
+    "selectLinkType": "Select a type",
+    "listSource": "List: {name}",
+    "linkSource": "Links to: {name}",
+    "optionsSource": "{count, plural, one {# option} other {# options}}",
+    "fields": {
+      "name": "Name",
+      "kind": "Value type",
+      "required": "Required",
+      "source": "Options come from",
+      "vocabulary": "List",
+      "options": "Options (one per line)",
+      "linkType": "Links to"
+    },
+    "sources": {
+      "list": "A list",
+      "options": "Own options"
+    },
+    "columns": {
+      "name": "Name",
+      "kind": "Value type",
+      "required": "Required",
+      "source": "Options"
+    },
+    "kinds": {
+      "TEXT": "Text",
+      "NUMBER": "Number",
+      "BOOLEAN": "Yes/no",
+      "DATE": "Date",
+      "CHOICE": "Choice",
+      "MULTI_CHOICE": "Multiple choice",
+      "LINK": "Link to a record"
+    }
+  },
+  "vocabulary": {
+    "singular": "List",
+    "plural": "Lists",
+    "listDescription": "Your own word lists, e.g. allergens or dress code, that fields and requirements point to.",
+    "create": "Create list",
+    "edit": "Rename",
+    "createDescription": "Name the list and optionally add the first values.",
+    "editDescription": "Change the name of the list.",
+    "archive": "Archive list",
+    "archiveConfirm": "Do you want to archive the list {name}? This is refused while a field uses it.",
+    "archived": "The list has been archived.",
+    "created": "The list has been created.",
+    "updated": "The list has been updated.",
+    "empty": "No lists yet.",
+    "emptyDescription": "Create a list or import the EU's 14 allergens.",
+    "saving": "Saving list…",
+    "archiving": "Archiving list…",
+    "importTemplate": "Import the EU's 14 allergens",
+    "importing": "Importing list…",
+    "imported": "The list {name} has been created.",
+    "valueCount": "{count, plural, one {# value} other {# values}}",
+    "fields": {
+      "name": "Name",
+      "values": "Values (one per line)"
+    },
+    "columns": {
+      "name": "Name",
+      "values": "Values"
+    },
+    "value": {
+      "heading": "List values",
+      "add": "Add value",
+      "edit": "Rename value",
+      "archive": "Archive value",
+      "archiveConfirm": "Do you want to archive the value {name}?",
+      "archived": "The value has been archived.",
+      "created": "The value has been added.",
+      "updated": "The value has been updated.",
+      "empty": "No values yet.",
+      "name": "Value",
+      "saving": "Saving value…",
+      "archiving": "Archiving value…"
+    }
+  },
+  "alternativeGroup": {
+    "plural": "Alternatives",
+    "description": "Lines the customer picks one of, e.g. Room A or Room B. The quote counts the cheapest as a from price until one is chosen.",
+    "empty": "No alternatives on this order.",
+    "create": "Group as alternatives",
+    "createDescription": "Pick two or more lines the customer chooses between. Each keeps its own state and hold.",
+    "rename": "Rename",
+    "archive": "Dissolve",
+    "archiveConfirm": "Dissolve “{name}”? Its options become ordinary lines and keep their states.",
+    "archived": "The alternatives were dissolved.",
+    "created": "The alternatives were created.",
+    "updated": "The alternatives were renamed.",
+    "choose": "Choose option",
+    "chooseDone": "The option was chosen and the others released.",
+    "chosen": "Chosen: {name}",
+    "open": "Not chosen",
+    "fields": {
+      "name": "Name",
+      "lineIds": "Options"
+    },
+    "columns": {
+      "name": "Name",
+      "options": "Options",
+      "status": "Status"
+    }
+  },
+  "requirement": {
+    "singular": "Requirement",
+    "plural": "Requirements",
+    "create": "Add requirement",
+    "edit": "Edit requirement",
+    "createDescription": "Count how many need a value from one of your lists, e.g. Gluten × 3. On a line the count replaces the order's for that value. Counts only, never names.",
+    "editDescription": "Change the count or the type's fields.",
+    "archive": "Remove requirement",
+    "archiveConfirm": "Do you want to remove the count for \"{name}\"?",
+    "archived": "The requirement has been removed.",
+    "created": "The requirement has been added.",
+    "updated": "The requirement has been updated.",
+    "taken": "There is already a count for this value here. Edit it instead.",
+    "empty": "The order has no requirements yet.",
+    "wholeOrder": "Whole order",
+    "fields": {
+      "type": "Type",
+      "line": "Applies to",
+      "value": "List value",
+      "quantity": "Quantity"
+    },
+    "columns": {
+      "value": "List value",
+      "where": "Applies to",
+      "quantity": "Quantity",
+      "type": "Type"
+    }
+  },
+  "priceList": {
+    "singular": "Price list",
+    "plural": "Price lists",
+    "listDescription": "Customer prices: a general discount or agreed prices per item, optionally for one customer and a period.",
+    "create": "Create price list",
+    "edit": "Edit price list",
+    "createDescription": "Name the price list, pick the customer and set either a general discount or, afterwards, item prices.",
+    "editDescription": "Change the name, customer, validity or general discount.",
+    "archive": "Archive price list",
+    "archiveConfirm": "Do you want to archive the price list {name}? New order lines will no longer use its prices.",
+    "archived": "The price list has been archived.",
+    "created": "The price list has been created.",
+    "updated": "The price list has been updated.",
+    "empty": "No price lists yet.",
+    "emptyDescription": "Create a price list for a framework agreement, e.g. 15 % off for a customer.",
+    "noCustomer": "All customers (general)",
+    "discountHint": "A price list has either a general discount or item prices, never both. Leave the discount empty to set item prices.",
+    "fields": {
+      "name": "Name",
+      "customer": "Customer",
+      "validFrom": "Valid from",
+      "validTo": "Valid to",
+      "discountPercent": "General discount (%)"
+    },
+    "columns": {
+      "name": "Name",
+      "customer": "Customer",
+      "validity": "Validity",
+      "pricing": "Pricing"
+    },
+    "validity": {
+      "always": "Always valid",
+      "from": "From {from}",
+      "to": "Until {to}",
+      "range": "{from} – {to}"
+    },
+    "pricing": {
+      "discount": "{percent} % discount",
+      "items": "{count, plural, =0 {No item prices} one {# item price} other {# item prices}}"
+    },
+    "items": {
+      "edit": "Item prices",
+      "title": "Item prices – {name}",
+      "description": "Agreed prices per item. Saving replaces the whole set.",
+      "none": "No item prices yet.",
+      "item": "Item",
+      "price": "Price (kr)",
+      "add": "Add item",
+      "remove": "Remove item",
+      "saved": "The item prices have been saved."
+    },
+    "wizard": {
+      "progress": "Steps",
+      "steps": {
+        "identity": "Name",
+        "terms": "Terms"
+      },
+      "descriptions": {
+        "identity": "Name the price list and pick the customer it is for, if any.",
+        "terms": "Set when it is valid and a general discount."
+      }
+    }
+  },
+  "priceEffect": {
+    "INCLUDED": "Included",
+    "EXTRA": "Extra",
+    "REPLACES": "Replaces"
+  }
+}

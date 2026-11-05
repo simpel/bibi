@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { cn } from "../../lib/cn";
+import { StatusBadge } from "../data-table/data-table-column-helpers";
 import { MoneyNumberFlow } from "../hero-number/money-number-flow";
 import { ContactName } from "../person-contact/contact-name";
 import type { FormatDate } from "./calendar-dates";
@@ -51,14 +52,7 @@ export function PinnedFacts({ booking, formatDate }: PinnedFactsProps) {
       <Fact label={labels.pinCard.when}>{`${day} · ${time}`}</Fact>
       {booking.assetName ? <Fact label={labels.pinCard.where}>{booking.assetName}</Fact> : null}
       <Fact label={labels.pinCard.state}>
-        <span className="inline-flex items-center gap-1.5">
-          <span
-            aria-hidden
-            className="size-2 rounded-full"
-            style={{ background: booking.state.color }}
-          />
-          {booking.state.name}
-        </span>
+        <StatusBadge label={booking.state.name} color={booking.state.color} />
       </Fact>
       {booking.headcount ? <Fact label={labels.pinCard.guests}>{booking.headcount}</Fact> : null}
       {person ? (

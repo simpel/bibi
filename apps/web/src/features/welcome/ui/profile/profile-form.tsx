@@ -14,14 +14,19 @@ import { WelcomeStepActions } from "../welcome-step-actions";
 import { AvatarField } from "./avatar-field";
 import { ProfileFields } from "./profile-fields";
 
-export type ProfileFormProps = { org: string; defaults: ProfileUpdateInput };
+export type ProfileFormProps = {
+  org: string;
+  defaults: ProfileUpdateInput;
+  gravatarUrl?: string | null;
+};
 
 /** First name, last name, phone and photo; saved once for every organization (ADR 0061). */
-export function ProfileForm({ org, defaults }: ProfileFormProps) {
+export function ProfileForm({ org, defaults, gravatarUrl }: ProfileFormProps) {
   const t = useTranslations("welcome");
   const common = useTranslations("common");
   const router = useRouter();
   const form = useForm<ProfileUpdateInput>({
+    mode: "onBlur",
     resolver: zodResolver(ProfileUpdateInputSchema, useZodMessages()),
     defaultValues: defaults,
   });
@@ -39,6 +44,7 @@ export function ProfileForm({ org, defaults }: ProfileFormProps) {
         <AvatarField
           avatarKey={form.watch("avatarKey") ?? null}
           initials={initials}
+          gravatarUrl={gravatarUrl}
           onChange={(key) => form.setValue("avatarKey", key)}
         />
         <ProfileFields form={form} />

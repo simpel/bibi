@@ -7,14 +7,14 @@ import { createId } from "@paralleldrive/cuid2";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
-import { seedTicket } from "./seed-ticket";
+import { seedOrder } from "./seed-order";
 
 afterEach(() => {
   setPaymentProvider({ provider: undefined });
   setStripeConnectGateway({ gateway: undefined });
 });
 
-/** A ticket at an organization with an active payment account, and the user's AI assistant. */
+/** An order at an organization with an active payment account, and the user's AI assistant. */
 async function setup() {
   const userId = `user_${createId()}`;
   const base = testContext({ actor: { type: "user", userId } });
@@ -23,7 +23,7 @@ async function setup() {
     actor: { type: "ai", userId, conversationId: "conv_pay" },
   });
   const user = await connect({ context: base });
-  const { id: ticketId, customerId } = await seedTicket({ client: user });
+  const { id: orderId, customerId } = await seedOrder({ client: user });
   const email = { id: customerId, email: "billing@example.com" };
   await call({ client: user, name: "customer_update", args: email });
   installFakeStripe({ status: "ACTIVE" });
@@ -31,7 +31,7 @@ async function setup() {
   await call({ client: user, name: "paymentAccount_sync" });
   const provider = createMemoryPaymentProvider();
   setPaymentProvider({ provider });
-  const args = { ticketId, description: "Advance", amountMinor: 100_000 };
+  const args = { orderId, description: "Advance", amountMinor: 100_000 };
   const draft = await call({ client: user, name: "deposit_create", args });
   await call({ client: user, name: "deposit_send", args: { id: draft.data.id } });
   const depositId: string = draft.data.id;

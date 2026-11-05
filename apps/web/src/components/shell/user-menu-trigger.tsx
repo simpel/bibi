@@ -19,7 +19,7 @@ export function UserMenuTrigger({ user, organizationId, ...props }: UserMenuTrig
     <button
       type="button"
       aria-label={t("userMenu")}
-      className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left transition-colors hover:bg-accent data-[state=open]:bg-accent"
+      className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left transition-colors hover:bg-accent data-[state=open]:bg-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
       {...props}
     >
       <span
@@ -28,13 +28,13 @@ export function UserMenuTrigger({ user, organizationId, ...props }: UserMenuTrig
       >
         {initials}
       </span>
-      <span className="grid min-w-0 flex-1">
+      <span className="grid min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
         <span className="truncate text-sm font-medium">{user.name || user.email}</span>
         <span className="truncate text-xs text-muted-foreground">
           {organization ?? (isPending ? "" : t("noOrganization"))}
         </span>
       </span>
-      <ChevronsUpDownIcon className="size-4 opacity-50" />
+      <ChevronsUpDownIcon className="size-4 opacity-50 group-data-[collapsible=icon]:hidden" />
     </button>
   );
 }

@@ -15,7 +15,7 @@ type Db = { context: Pick<OperationContext, "db" | "permissions"> };
 /** An effective value a priced line needs before the quote can be sent. */
 export type MissingValue = "quantity" | "vatRatePercent";
 
-/** A priced ticket line as an order line, with the values it still lacks to be sent. */
+/** A priced order line as an order line, with the values it still lacks to be sent. */
 export type DerivedLine = { line: OrderLineDto; missing: MissingValue[] };
 
 /** Timed lines in time order, then untimed ones (fees) in the order they were added. */
@@ -67,23 +67,23 @@ function toDerived({ line, unitPriceMinor, position, facts }: ToDerivedInput): D
   return { line: order, missing };
 }
 
-export type DeriveTicketLinesInput = Db & { ticketIds: readonly string[] };
+export type DeriveOrderLinesInput = Db & { orderIds: readonly string[] };
 
 /**
- * The tickets' priced lines as order lines (ADR 0052): every active line with an effective unit
+ * The orders' priced lines as order lines (ADR 0052): every active line with an effective unit
  * price, at its effective quantity, discount and VAT, with the item's price unit and tags. What a
  * DRAFT quote shows and what `quote.send` freezes, with their alternative groups, a bundle
  * line's VAT per rate of its parts and the options' price effects and quantities (ADR 0059,
- * 0082). Sub-lines (parts, options, add-ons) follow their parent line (ADR 0088). Keyed by ticket.
+ * 0082). Sub-lines (parts, options, add-ons) follow their parent line (ADR 0088). Keyed by order.
  */
-export async function deriveTicketLines({
+export async function deriveOrderLines({
   context,
-  ticketIds,
-}: DeriveTicketLinesInput): Promise<Map<string, DerivedLine[]>> {
-  const out = new Map<string, DerivedLine[]>(ticketIds.map((id) => [id, []]));
-  if (ticketIds.length === 0) return out;
+  orderIds,
+}: DeriveOrderLinesInput): Promise<Map<string, DerivedLine[]>> {
+  const out = new Map<string, DerivedLine[]>(orderIds.map((id) => [id, []]));
+  if (orderIds.length === 0) return out;
   const rows = await context.db.line.findMany({
-    where: { ticketId: { in: [...ticketIds] } },
+    where: { orderId: { in: [...orderIds] } },
     orderBy: LINE_ORDER,
     include: LINE_INCLUDE,
   });
@@ -96,11 +96,11 @@ export async function deriveTicketLines({
   const itemIds = [...new Set(priced.flatMap((line) => (line.itemId ? [line.itemId] : [])))];
   const facts = await itemFacts({ context, itemIds });
   for (const line of priced) {
-    const list = out.get(line.ticketId) ?? [];
+    const list = out.get(line.orderId) ?? [];
     const unitPriceMinor = line.effectiveUnitPriceMinor ?? 0;
     const known = line.itemId ? facts.get(line.itemId) : undefined;
     list.push(toDerived({ line, unitPriceMinor, position: list.length, facts: known }));
-    out.set(line.ticketId, list);
+    out.set(line.orderId, list);
   }
   const derived = [...out.values()].flat();
   await applyAlternatives({ context, lines: derived });

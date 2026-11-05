@@ -1,23 +1,23 @@
 import { describe, expect, it } from "vitest";
 import {
-  archiveTicketStatus,
+  archiveOrderStatus,
   execute,
-  setTicketStatusGates,
-  setTicketStatusTransitions,
+  setOrderStatusGates,
+  setOrderStatusTransitions,
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { createTestTicket, moveToStatus, ticketSetup } from "./ticket-helpers";
-import { provisionedContext, statusByName } from "./ticket-status-helpers";
+import { createTestOrder, moveToStatus, orderSetup } from "./order-helpers";
+import { provisionedContext, statusByName } from "./order-status-helpers";
 
-/** A ticket in Lead (the provisioned pipeline), with nobody assigned. */
-async function ticketInLead() {
-  const { context, type, customer } = await ticketSetup();
-  const ticket = await createTestTicket({
+/** An order in Lead (the provisioned pipeline), with nobody assigned. */
+async function orderInLead() {
+  const { context, type, customer } = await orderSetup();
+  const order = await createTestOrder({
     context,
     entityTypeId: type.id,
     customerId: customer.id,
   });
-  return { context, ticket };
+  return { context, order };
 }
 
 describe("gates on moves into a status (ADR 0067 §5, 0076)", () => {
@@ -31,7 +31,7 @@ describe("gates on moves into a status (ADR 0067 §5, 0076)", () => {
     ];
     const set = unwrap({
       result: await execute({
-        operation: setTicketStatusGates,
+        operation: setOrderStatusGates,
         input: { id: confirmed.id, gates },
         context,
       }),
@@ -48,7 +48,7 @@ describe("gates on moves into a status (ADR 0067 §5, 0076)", () => {
     expect(completed.gatesInto).toEqual([{ fromStatusId: null, gates: ["ASSIGNEE"] }]);
     const cleared = unwrap({
       result: await execute({
-        operation: setTicketStatusGates,
+        operation: setOrderStatusGates,
         input: { id: confirmed.id, gates: [] },
         context,
       }),
@@ -62,7 +62,7 @@ describe("gates on moves into a status (ADR 0067 §5, 0076)", () => {
     const foreign = await statusByName({ context: await provisionedContext(), name: "Lead" });
     const run = ({ id, from }: { id: string; from: string }) =>
       execute({
-        operation: setTicketStatusGates,
+        operation: setOrderStatusGates,
         input: { id, gates: [{ fromStatusId: from, gates: ["REASON" as const] }] },
         context,
       });
@@ -72,38 +72,38 @@ describe("gates on moves into a status (ADR 0067 §5, 0076)", () => {
   });
 
   it("checks the gates of the move taken, from any status plus the source", async () => {
-    const { context, ticket } = await ticketInLead();
+    const { context, order } = await orderInLead();
     const lead = await statusByName({ context, name: "Lead" });
     const lost = await statusByName({ context, name: "Lost" });
     const confirmed = await statusByName({ context, name: "Confirmed" });
     // Into Lost a reason is needed from any status, but not when coming from Lead.
     expect(confirmed.transitionGates).toContainEqual({ toStatusId: lost.id, gates: ["REASON"] });
-    const refused = await moveToStatus({ context, ticketId: ticket.id, name: "Lost" });
+    const refused = await moveToStatus({ context, orderId: order.id, name: "Lost" });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
     const gates = [{ fromStatusId: confirmed.id, gates: ["REASON" as const] }];
     const input = { id: lost.id, gates };
-    unwrap({ result: await execute({ operation: setTicketStatusGates, input, context }) });
-    const moved = await moveToStatus({ context, ticketId: ticket.id, name: "Lost" });
+    unwrap({ result: await execute({ operation: setOrderStatusGates, input, context }) });
+    const moved = await moveToStatus({ context, orderId: order.id, name: "Lost" });
     expect(unwrap({ result: moved }).statusId).toBe(lost.id);
     expect(lead.id).not.toBe(lost.id);
   });
 
   it("limits a restricting status to its list and drops rules that name an archived status", async () => {
-    const { context, ticket } = await ticketInLead();
+    const { context, order } = await orderInLead();
     const lead = await statusByName({ context, name: "Lead" });
     const completed = await statusByName({ context, name: "Completed" });
     const confirmed = await statusByName({ context, name: "Confirmed" });
     const only = { id: lead.id, allowedNext: "ONLY_THESE" as const, toStatusIds: [completed.id] };
     unwrap({
-      result: await execute({ operation: setTicketStatusTransitions, input: only, context }),
+      result: await execute({ operation: setOrderStatusTransitions, input: only, context }),
     });
-    const refused = await moveToStatus({ context, ticketId: ticket.id, name: "Confirmed" });
+    const refused = await moveToStatus({ context, orderId: order.id, name: "Confirmed" });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
     const archive = { id: completed.id, targetStatusId: confirmed.id };
-    unwrap({ result: await execute({ operation: archiveTicketStatus, input: archive, context }) });
+    unwrap({ result: await execute({ operation: archiveOrderStatus, input: archive, context }) });
     const after = await statusByName({ context, name: "Lead" });
     expect(after).toMatchObject({ restrictsNext: true, transitionsTo: [] });
-    expect(await context.db.ticketStatusGate.count({ where: { toStatusId: completed.id } })).toBe(
+    expect(await context.db.orderStatusGate.count({ where: { toStatusId: completed.id } })).toBe(
       0,
     );
   });

@@ -19,7 +19,7 @@
 
 ## Consequences
 - Proposing `payment.create` through MCP makes zero provider calls; the approval card shows the PENDING row without a reference or link. Tested in `apps/mcp/test/approval-payment.test.ts` and `packages/core/test/payment-after-commit.test.ts`.
-- A crash between the commit and the Stripe call leaves a `PENDING` row with no reference and no link. It is harmless (nothing was charged) and visible in the ticket's payment list. Repeating the call for that row would reuse the same idempotency key; no retry operation exists yet.
+- A crash between the commit and the Stripe call leaves a `PENDING` row with no reference and no link. It is harmless (nothing was charged) and visible in the order's payment list. Repeating the call for that row would reuse the same idempotency key; no retry operation exists yet.
 - Mail: core handlers send no mail today. Invitation mail is an `afterCommit` hook in `packages/auth`, which a preview never runs. New mail to customers belongs in `external` (or an `afterCommit` hook when its outcome does not change the output).
 - ~~Open: `paymentAccount.startOnboarding` still calls Stripe inside its handler.~~ Closed, see the addendum.
 

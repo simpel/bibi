@@ -1,5 +1,6 @@
 import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
+import { CrumbName } from "@/components/shell/crumb-name";
 import { loadDocText } from "@/features/docs/server/doc-text";
 import { mcpReference } from "@/features/docs/server/mcp-reference";
 import { DocArticle } from "@/features/docs/ui/doc-article";
@@ -13,7 +14,7 @@ type McpReferencePageProps = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: McpReferencePageProps) {
   const { locale } = await params;
   const text = await loadDocText({ locale, key: "reference.mcp" });
-  return { title: `${text.title} · Bibi`, description: text.lead };
+  return { title: text.title, description: text.lead };
 }
 
 /** Generated from the core operations, so it always matches what the MCP server lists. */
@@ -23,6 +24,7 @@ export default async function McpReferencePage({ params }: McpReferencePageProps
   const text = await loadDocText({ locale, key: "reference.mcp" });
   return (
     <div className="grid min-w-0 gap-8">
+      <CrumbName href="/docs/reference/mcp" name={text.title} />
       <DocArticle title={text.title} lead={text.lead} markdown={text.body} />
       <ReferenceExplorer entries={mcpReference()} />
     </div>

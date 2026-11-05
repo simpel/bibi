@@ -19,7 +19,7 @@ async function bookRoomWithOptionalAv({ setup }: { setup: Setup }) {
   const line = unwrap({
     result: await createTestLine({
       context,
-      ticketId: setup.ticket.id,
+      orderId: setup.order.id,
       entityTypeId: setup.type.id,
       itemId: setup.room.id,
       from: 10,
@@ -45,7 +45,7 @@ describe("derived line warnings (ADR 0059)", () => {
     const listed = unwrap({
       result: await execute({
         operation: listLines,
-        input: { ticketId: setup.ticket.id },
+        input: { orderId: setup.order.id },
         context,
       }),
     });
@@ -63,7 +63,7 @@ describe("derived line warnings (ADR 0059)", () => {
     const line = unwrap({
       result: await createTestLine({
         context: setup.context,
-        ticketId: setup.ticket.id,
+        orderId: setup.order.id,
         entityTypeId: setup.type.id,
         itemId: setup.av.ids[0],
         from: 10,

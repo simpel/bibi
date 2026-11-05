@@ -4,7 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
 import { moveReceivable } from "../payment/move-receivable";
-import { loadChargeableTicket } from "../payment/payment-preconditions";
+import { loadChargeableOrder } from "../payment/payment-preconditions";
 import { receivableMoveDates } from "../payment/receivable-lifecycle";
 import type { ReceivableStatus } from "../payment/settlement-schema";
 import { depositVatRows } from "./deposit-vat";
@@ -20,24 +20,24 @@ export const createDeposit = defineOperation({
   name: "deposit.create",
   kind: "command",
   description:
-    "Create a DRAFT deposit request on a ticket: a fixed amount with its own description, e.g. " +
+    "Create a DRAFT deposit request on an order: a fixed amount with its own description, e.g. " +
     "an advance at confirmation. Send it (deposit.send) before requesting a payment against it " +
-    "(payment.create with depositId). The ticket must not be in a closing status unless it is " +
+    "(payment.create with depositId). The order must not be in a closing status unless it is " +
     "invoiceable.",
   input: DepositCreateInputSchema,
   output: DepositSchema,
   permission: "payment:write",
   handler: async ({ input, context }) => {
-    const ticket = await loadChargeableTicket({ context, ticketId: input.ticketId });
-    if (!ticket.ok) return ticket;
-    const { ticketId, amountMinor } = input;
+    const order = await loadChargeableOrder({ context, orderId: input.orderId });
+    if (!order.ok) return order;
+    const { orderId, amountMinor } = input;
     const row = await context.db.deposit.create({
       data: {
         organizationId: context.organizationId,
-        ticketId,
+        orderId,
         description: input.description,
         amountMinor,
-        vatRows: await depositVatRows({ context, ticketId, amountMinor }),
+        vatRows: await depositVatRows({ context, orderId, amountMinor }),
         dueDate: input.dueDate ?? null,
         createdBy: context.actor.userId,
       },

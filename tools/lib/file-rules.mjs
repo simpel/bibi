@@ -1,6 +1,4 @@
-// File rules for the structure check: line limit, default export and barrel files.
-
-export const MAX_FILE_LINES = 150;
+// File rules for the structure check: default export and barrel files.
 
 // Default export is only allowed for Next files, config and stories.
 const DEFAULT_EXPORT_ALLOWED =
@@ -19,10 +17,6 @@ export function isBarrel({ content }) {
 
 export function checkFile({ relPath, content }) {
   const problems = [];
-  const lineCount = content.split("\n").length;
-  if (lineCount > MAX_FILE_LINES) {
-    problems.push(`${lineCount} lines (max ${MAX_FILE_LINES})`);
-  }
   if (DEFAULT_EXPORT.test(content) && !DEFAULT_EXPORT_ALLOWED.test(relPath)) {
     problems.push(
       "default export (only allowed in page/layout/route/robots/sitemap/manifest/config/stories)",

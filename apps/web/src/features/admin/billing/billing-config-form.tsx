@@ -11,7 +11,10 @@ import {
   useBillingConfigForm,
 } from "./use-billing-config-form";
 
-export type BillingConfigFormProps = { config: BillingConfigDto };
+export type BillingConfigFormProps = {
+  config: BillingConfigDto;
+  onSaved?: (() => void) | undefined;
+};
 
 type SecretFieldProps = {
   form: UseFormReturn<BillingConfigFormValues, unknown, BillingConfigFormOutput>;
@@ -39,9 +42,9 @@ function SecretField({ form, name, label, hint, placeholder }: SecretFieldProps)
 }
 
 /** The platform's Stripe key and, locally, the webhook secret (ADR 0095 §1). Never env variables. */
-export function BillingConfigForm({ config }: BillingConfigFormProps) {
+export function BillingConfigForm({ config, onSaved }: BillingConfigFormProps) {
   const t = useTranslations("admin.billing.config");
-  const { form, submit, pending } = useBillingConfigForm();
+  const { form, submit, pending } = useBillingConfigForm({ onSaved });
   const { secretKeyHint, hasWebhookSecret } = config;
   return (
     <Form {...form}>

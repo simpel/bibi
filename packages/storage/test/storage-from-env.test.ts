@@ -14,8 +14,8 @@ describe("storageFromEnv", () => {
       S3_ENDPOINT: "https://s3.example.test",
       S3_REGION: "eu-1",
       S3_BUCKET: "bibi",
-      S3_ACCESS_KEY_ID: "id",
-      S3_SECRET_ACCESS_KEY: "secret",
+      S3_ACCESS_KEY: "id",
+      S3_SECRET_KEY: "secret",
     };
     expect(storageFromEnv({ env }).name).toBe("s3");
   });

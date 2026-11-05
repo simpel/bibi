@@ -11,6 +11,8 @@ import {
 import { BookOpenIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { Breadcrumb } from "@/components/shell/breadcrumb";
+import { CrumbNamesProvider } from "@/components/shell/crumb-names";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { DocsNav } from "./docs-nav";
@@ -35,15 +37,19 @@ export function DocsShell({ children }: DocsShellProps) {
         <SidebarRail label={t("toggleSidebar")} />
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background px-4">
-          <SidebarTrigger label={t("toggleSidebar")} />
-          <Separator orientation="vertical" className="h-4" />
-          <span className="flex-1 text-sm font-medium">{t("title")}</span>
-          <Link href={ROUTES.login} className="text-sm text-muted-foreground hover:text-foreground">
-            {t("signIn")}
-          </Link>
-        </header>
-        <div className="min-w-0 flex-1 p-4 md:p-8">{children}</div>
+        <CrumbNamesProvider>
+          <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background px-4">
+            <SidebarTrigger label={t("toggleSidebar")} />
+            <Separator orientation="vertical" className="h-4" />
+            <div className="flex-1 min-w-0">
+              <Breadcrumb />
+            </div>
+            <Link href={ROUTES.login} className="text-sm text-muted-foreground hover:text-foreground">
+              {t("signIn")}
+            </Link>
+          </header>
+          <div className="min-w-0 flex-1 p-4 md:p-8">{children}</div>
+        </CrumbNamesProvider>
       </SidebarInset>
     </SidebarProvider>
   );

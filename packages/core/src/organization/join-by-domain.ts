@@ -9,7 +9,13 @@ export type DomainOffersInput = {
   db?: Db;
 };
 
-export type DomainOffer = { organizationId: string; name: string; slug: string; domain: string };
+export type DomainOffer = {
+  organizationId: string;
+  name: string;
+  slug: string;
+  domain: string;
+  logo?: string | null;
+};
 
 type VerifiedUser = { email: string; domain: string };
 
@@ -46,14 +52,14 @@ export async function domainOffers({
   const ids = claims.map((claim) => claim.organizationId);
   const organizations = await db.organization.findMany({
     where: { id: { in: ids } },
-    select: { id: true, name: true, slug: true },
+    select: { id: true, name: true, slug: true, logo: true },
     orderBy: { name: "asc" },
   });
   const offers: DomainOffer[] = [];
-  for (const { id, name, slug } of organizations) {
+  for (const { id, name, slug, logo } of organizations) {
     const tx = scopedDb({ organizationId: id, actorId: SYSTEM_ACTOR_ID, db });
     if (await mayJoin({ tx, organizationId: id, userId, email: user.email })) {
-      offers.push({ organizationId: id, name, slug, domain: user.domain });
+      offers.push({ organizationId: id, name, slug, domain: user.domain, logo });
     }
   }
   return offers;

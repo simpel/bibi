@@ -20,7 +20,7 @@ model InboundEndpoint {
   address             String?
   name                String
   active              Boolean          @default(true)
-  /// Optional defaults for a ticket made from its messages (owned).
+  /// Optional defaults for a order made from its messages (owned).
   defaultEntityTypeId String?
   defaultTemplateId   String?
   status              RecordStatus     @default(ACTIVE)
@@ -28,7 +28,7 @@ model InboundEndpoint {
   updatedAt           DateTime         @updatedAt
   createdBy           String?
   defaultEntityType   EntityType?      @relation(fields: [defaultEntityTypeId, organizationId], references: [id, organizationId])
-  defaultTemplate     TicketTemplate?  @relation(fields: [defaultTemplateId, organizationId], references: [id, organizationId])
+  defaultTemplate     OrderTemplate?  @relation(fields: [defaultTemplateId, organizationId], references: [id, organizationId])
   messages            InboundMessage[]
 
   @@unique([id, organizationId])
@@ -39,15 +39,15 @@ model InboundEndpoint {
 /// Inbound message (ADR 0085) – anything that came in on any channel. Written only by a channel
 /// adapter through `inboundMessage.receive` (SYSTEM) or by an outside caller through
 /// `inboundMessage.submit` (channel `API`). The content columns are owned and append-only: never
-/// updated. Only what staff did changes: `ticketId` (owned, set once by `attachToTicket` or
-/// `ticket.create`), `readAt`/`readBy` (owned, shared by the team: `markRead`/`markUnread`, and
+/// updated. Only what staff did changes: `orderId` (owned, set once by `attachToOrder` or
+/// `order.create`), `readAt`/`readBy` (owned, shared by the team: `markRead`/`markUnread`, and
 /// opening the message) and `status` (owned, `delete` archives an inbox message).
-/// `endpointId` is null for a reply on a ticket's own address (a reply route, not an endpoint) and
+/// `endpointId` is null for a reply on a order's own address (a reply route, not an endpoint) and
 /// for mail backfilled from `InboundEmail`. `externalId` is the provider's id, unique per
 /// organization and channel so a redelivery is stored once. `formFields` holds values a channel
 /// delivers as structure; `details` the channel's extras, validated by its schema and read only by
 /// that channel's code. `attachments` is metadata only. A trigger (`notify_inbox.sql`) sends
-/// `pg_notify('inbox', …)` on insert and on a change of `ticketId`, `readAt` or `status` (ADR 0094).
+/// `pg_notify('inbox', …)` on insert and on a change of `orderId`, `readAt` or `status` (ADR 0094).
 model InboundMessage {
   id             String           @id @default(cuid(2))
   organizationId String
@@ -62,7 +62,7 @@ model InboundMessage {
   attachments    Json             @default("[]")
   externalId     String
   receivedAt     DateTime
-  ticketId       String?
+  orderId       String?
   details        Json             @default("{}")
   readAt         DateTime?
   readBy         String?
@@ -71,10 +71,10 @@ model InboundMessage {
   updatedAt      DateTime         @updatedAt
   createdBy      String?
   endpoint       InboundEndpoint? @relation(fields: [endpointId, organizationId], references: [id, organizationId])
-  ticket         Ticket?          @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  order         Order?          @relation(fields: [orderId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@unique([organizationId, channel, externalId])
-  @@index([organizationId, ticketId, receivedAt])
-  @@index([organizationId, status, ticketId, readAt, receivedAt])
+  @@index([organizationId, orderId, receivedAt])
+  @@index([organizationId, status, orderId, readAt, receivedAt])
 }

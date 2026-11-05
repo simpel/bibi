@@ -1,8 +1,14 @@
 import { resolveLocale } from "@bibi/i18n";
 import { redirect } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
+import { pageTitle } from "@/lib/page-metadata";
 
 type MembersPageProps = { params: Promise<{ locale: string; org: string }> };
+
+export async function generateMetadata({ params }: MembersPageProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "nav", key: "members" });
+}
 
 export default async function SettingsMembersRedirect({ params }: MembersPageProps) {
   const { locale, org } = await params;

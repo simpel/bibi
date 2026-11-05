@@ -1,7 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
-import { regenerateForLine } from "../work-order/regenerate";
+import { regenerateForLine } from "../run-sheet/regenerate";
 import { createInsertInput } from "./add-on";
 import { insertLine } from "./insert-line";
 import { archiveLineRow, archiveParts } from "./line-parts";
@@ -26,7 +26,7 @@ export const createLine = defineOperation({
   name: "line.create",
   kind: "command",
   description:
-    "Add a line (a row in the ticket's run schedule) of one of the organization's " +
+    "Add a line (a row in the order's run schedule) of one of the organization's " +
     "line types. With parentLineId it is an add-on under that top-level line (ADR 0088): " +
     "something sold with it at its own price (a projector on a room, an extra snack on a break), " +
     `of any item or free text. ${OCCUPY_NOTE}`,

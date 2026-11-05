@@ -30,7 +30,7 @@ export const SPECIMENS: TypeSpecimen[] = [
     font: "Fraunces (Weight 300)",
     size: "30px / 1.875rem",
     sample: "Höstkonferens & Festmiddag",
-    meta: "Primary page headers (venues, tickets, runsheets)",
+    meta: "Primary page headers (venues, orders, runsheets)",
   },
   {
     role: "Heading 2",
@@ -71,7 +71,7 @@ export const SPECIMENS: TypeSpecimen[] = [
     size: "16px / 1rem",
     sample:
       "Lokalen iordningställs i biosittning med dubbla projektorer och trådlösa headset kl. 07:30. Kaffe och hembakta kanelbullar serveras i foajén.",
-    meta: "Standard body copy, ticket descriptions, correspondence",
+    meta: "Standard body copy, order descriptions, correspondence",
   },
   {
     role: "Body Medium / UI",

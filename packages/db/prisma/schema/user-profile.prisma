@@ -10,6 +10,8 @@ model UserProfile {
   phone     String
   /// Key in `@bibi/storage` (ADR 0063); null shows initials.
   avatarKey String?
+  /// Preferred UI and email locale (ADR 0009): "sv" or "en".
+  locale    String?  @default("sv")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

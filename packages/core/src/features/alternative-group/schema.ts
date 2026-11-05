@@ -3,13 +3,13 @@ import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 
 /**
- * Lines on one ticket of which the customer picks exactly one (ADR 0052), e.g. "Room A or Room
+ * Lines on one order of which the customer picks exactly one (ADR 0052), e.g. "Room A or Room
  * B". The options are the active lines with this `alternativeGroupId`.
  */
 export const AlternativeGroupSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  ticketId: z.string(),
+  orderId: z.string(),
   name: z.string(),
   chosenLineId: z
     .string()
@@ -36,12 +36,12 @@ const LineIdsSchema = z
   .min(2)
   .max(20)
   .describe(
-    "Ids of two or more active lines of the ticket (line.list) that are the options; none may " +
+    "Ids of two or more active lines of the order (line.list) that are the options; none may " +
       "be an option of another group, and at most one may be in a hard-hold state",
   );
 
 export const AlternativeGroupCreateInputSchema = z.object({
-  ticketId: z.string().min(1).describe("Id of the ticket (ticket.list)"),
+  orderId: z.string().min(1).describe("Id of the order (order.list)"),
   name: NameSchema,
   lineIds: LineIdsSchema,
 });
@@ -63,7 +63,7 @@ export const AlternativeGroupChooseInputSchema = z.object({
 export const AlternativeGroupIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const AlternativeGroupListInputSchema = z.object({
-  ticketId: z.string().optional().describe("Only the groups of this ticket"),
+  orderId: z.string().optional().describe("Only the groups of this order"),
   ...PageInputShape,
 });
 

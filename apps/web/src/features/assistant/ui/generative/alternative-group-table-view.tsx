@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { Link } from "@/lib/navigation";
-import { ticketRoute } from "@/lib/routes";
+import { orderRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 
@@ -23,7 +23,7 @@ function useAlternativeGroupViewColumns(): ColumnDef<Row>[] {
         accessorFn: (group) => group.name,
         cell: ({ row }) => (
           <Link
-            href={ticketRoute({ id: row.original.ticketId })}
+            href={orderRoute({ id: row.original.orderId })}
             className="font-medium hover:underline"
           >
             {row.original.name}
@@ -46,7 +46,7 @@ function useAlternativeGroupViewColumns(): ColumnDef<Row>[] {
   );
 }
 
-/** A page of alternative groups; each name links to its ticket's page. */
+/** A page of alternative groups; each name links to its order's page. */
 export function AlternativeGroupTableView({ items, nextCursor }: AlternativeGroupTableViewProps) {
   const t = useTranslations("assistant.ui.alternativeGroup");
   const columns = useAlternativeGroupViewColumns();

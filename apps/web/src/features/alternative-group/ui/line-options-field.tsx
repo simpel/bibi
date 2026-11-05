@@ -9,7 +9,7 @@ export type LineOptionsFieldProps<O> = {
   label: string;
 };
 
-/** The ticket's lines as checkboxes; the checked ones become the group's options. */
+/** The order's lines as checkboxes; the checked ones become the group's options. */
 export function LineOptionsField<O>({ form, lines, label }: LineOptionsFieldProps<O>) {
   return (
     <FormController

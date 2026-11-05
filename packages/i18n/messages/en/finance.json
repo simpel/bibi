@@ -1,0 +1,653 @@
+{
+  "billing": {
+    "title": "Billing",
+    "description": "Your Bibi subscription, your seats and anyone waiting for one.",
+    "state": {
+      "EXEMPT": "Free of charge",
+      "UNCONFIGURED": "Not set up",
+      "TRIAL": "Free trial",
+      "ACTIVE": "Active",
+      "PAST_DUE": "Payment due",
+      "REQUIRED": "Payment needed"
+    },
+    "interval": {
+      "MONTH": "Monthly",
+      "YEAR": "Yearly"
+    },
+    "plans": {
+      "month": "Monthly",
+      "year": "Yearly",
+      "monthPrice": "{price}/month",
+      "yearPrice": "{price}/year",
+      "exclVat": "excl. VAT",
+      "monthNote": "Pay month by month.",
+      "yearNote": "Pay once a year and save {saving}.",
+      "saveBadge": "10 % off",
+      "seats": "{included} seats are included. Each extra seat is {price}/month.",
+      "continue": "Continue to payment",
+      "opening": "Opening the payment page…",
+      "redirecting": "Taking you to Stripe…"
+    },
+    "pay": {
+      "adminTitle": "Your free trial has ended",
+      "adminDescription": "We hope Bibi has been a good help! Pick a plan to carry on – everything you have set up is right where you left it.",
+      "memberTitle": "Your free trial has ended",
+      "memberDescription": "Bibi is paused until an admin in your organization picks a plan. Don't worry, everything you have done is saved.",
+      "remind": "Remind your admin",
+      "reminding": "Sending a reminder…",
+      "reminded": "Your admins have been told. Thanks for the nudge!",
+      "alreadyReminded": "Your admins have already been reminded. They'll be with you soon."
+    },
+    "done": {
+      "title": "Thank you!",
+      "finishing": "Finishing your payment…"
+    },
+    "settings": {
+      "planTitle": "Plan",
+      "trialEndsAt": "Trial ends",
+      "interval": "Plan",
+      "noPlan": "No plan yet",
+      "periodEnd": "Next payment",
+      "endsOn": "Ends on",
+      "none": "–",
+      "cancelAtPeriodEnd": "The subscription ends when this period is over.",
+      "readOnly": "Only admins can change billing.",
+      "addPaymentDetails": "Add payment details",
+      "addPaymentTitle": "Choose your plan",
+      "addPaymentDescription": "Nothing is charged until your free trial ends.",
+      "manage": "Manage billing",
+      "openingPortal": "Opening Stripe…",
+      "redirecting": "Taking you to Stripe…",
+      "seatsTitle": "Seats",
+      "seats": {
+        "included": "Included",
+        "extra": "Extra",
+        "used": "In use",
+        "held": "Waiting"
+      },
+      "autoAssign": "Add seats automatically",
+      "autoAssignHint": "On: inviting someone when every seat is taken adds a paid seat. Off: the invitation waits below until you approve it.",
+      "autoAssignOn": "New seats are added automatically.",
+      "autoAssignOff": "New seats now wait for your approval.",
+      "extraSeats": "Extra seats",
+      "extraSeatsHint": "Each extra seat is {price}/month. You can't go below the seats in use.",
+      "saveSeats": "Save seats",
+      "seatsSaved": "The seats have been saved.",
+      "requestsTitle": "Seat requests",
+      "requestsDescription": "Invitations waiting for a seat. Approving one adds a paid seat and sends the invitation."
+    },
+    "requests": {
+      "columns": {
+        "email": "Email",
+        "role": "Role",
+        "requested": "Requested"
+      },
+      "empty": "No one is waiting for a seat.",
+      "approve": "Approve",
+      "decline": "Decline",
+      "approveTitle": "Approve a seat for {email}?",
+      "approveDescription": "This adds a paid seat ({price}/month) and sends the invitation.",
+      "declineTitle": "Decline {email}?",
+      "declineDescription": "The invitation is cancelled and never sent.",
+      "approving": "Approving…",
+      "approved": "The seat was added and the invitation is on its way.",
+      "declining": "Declining…",
+      "declined": "The invitation was declined."
+    }
+  },
+  "finance": {
+    "title": "Financials",
+    "description": "Invoiced, received and outstanding money, what is booked ahead and the VAT to report.",
+    "noAccess": "You do not have access to this part.",
+    "noAccessShort": "No access",
+    "noData": "Nothing to show for this period.",
+    "monthLabel": "{month, select, 1 {jan} 2 {feb} 3 {mar} 4 {apr} 5 {may} 6 {jun} 7 {jul} 8 {aug} 9 {sep} 10 {oct} 11 {nov} 12 {dec} other {}} {year}",
+    "accountingSettings": "Accounting settings",
+    "openFinancials": "Open financials",
+    "accounting": {
+      "title": "Accounting",
+      "description": "The accounts the SIE export books to. Every account has a BAS default.",
+      "saved": "The accounting settings have been saved.",
+      "default": "Default {account}",
+      "usesDefault": "Empty uses the default revenue account ({account})",
+      "revenueByTypeHint": "Revenue account per item type. Leave empty to use the default revenue account.",
+      "empty": "No accounts.",
+      "emptyRevenue": "No item types have their own account. They use the default revenue account.",
+      "add": "Add account",
+      "edit": "Edit account",
+      "editDescription": "Change the account number. The BAS default applies as a hint.",
+      "pickType": "Item type",
+      "columns": {
+        "name": "Name",
+        "group": "Group",
+        "account": "Account"
+      },
+      "readOnly": "You can view these settings but not change them.",
+      "groups": {
+        "accounts": "Accounts",
+        "vat": "Output VAT",
+        "fiscalYear": "Fiscal year",
+        "revenueByType": "Revenue per item type"
+      },
+      "fields": {
+        "receivableAccount": "Receivables",
+        "clearingAccount": "Payments on their way",
+        "advancesAccount": "Customer advances",
+        "feesAccount": "Payment fees",
+        "roundingAccount": "Rounding",
+        "revenueAccount": "Revenue (default)",
+        "vat25Account": "Output VAT 25 %",
+        "vat12Account": "Output VAT 12 %",
+        "vat6Account": "Output VAT 6 %",
+        "fiscalYearStartMonth": "First month of the fiscal year"
+      },
+      "monthName": "{month, select, 1 {January} 2 {February} 3 {March} 4 {April} 5 {May} 6 {June} 7 {July} 8 {August} 9 {September} 10 {October} 11 {November} 12 {December} other {}}"
+    },
+    "export": {
+      "button": "Export SIE",
+      "title": "Export SIE",
+      "description": "Choose the range to report. The file holds every voucher dated in it, also those exported before, so a range can be exported again.",
+      "confirm": "Export and download",
+      "created": "The export has been created.",
+      "downloading": "Preparing the file…",
+      "downloaded": "The file is ready.",
+      "download": "Download",
+      "history": "Export history",
+      "historyEmpty": "No exports yet.",
+      "exportNumber": "Export {number}",
+      "openToDownload": "Open financials to download",
+      "fileSize": "{bytes} bytes",
+      "vouchers": "{count, plural, one {# voucher} other {# vouchers}}",
+      "fixOrganization": "Open organization settings",
+      "fixAccounting": "Open accounting settings",
+      "kinds": {
+        "INVOICE_SENT": "Invoices sent",
+        "INVOICE_VOID": "Invoices voided",
+        "PAYMENT": "Payments",
+        "FEE": "Fees",
+        "REFUND": "Refunds"
+      },
+      "blockers": {
+        "ORG_NUMBER_MISSING": "Organization number is missing",
+        "VAT_ACCOUNT_MISSING": "VAT account is missing for {detail}",
+        "NOTHING_TO_EXPORT": "Nothing dated in this range"
+      },
+      "columns": {
+        "number": "Number",
+        "date": "Created",
+        "vouchers": "Vouchers",
+        "fileName": "File name",
+        "range": "Range"
+      },
+      "earlierExports": "{count, plural, one {# earlier export overlaps this range. Importing both duplicates the vouchers.} other {# earlier exports overlap this range. Importing them together duplicates the vouchers.}}",
+      "previewFailed": "The range could not be read."
+    },
+    "kpi": {
+      "invoiced": "Invoiced",
+      "received": "Received",
+      "outstanding": "Outstanding",
+      "overdue": "Overdue",
+      "exclVat": "Excluding VAT",
+      "netOfRefunds": "Refunds subtracted"
+    },
+    "period": {
+      "label": "Period",
+      "range": "{from} – {to}",
+      "invalid": "Pick two days in order, at most {months} months apart.",
+      "forwardOnly": "Forecast only supports forward dates from today onwards.",
+      "historicalOnly": "This view only supports past dates up to today."
+    },
+    "customerFilter": {
+      "label": "Customer",
+      "all": "All customers"
+    },
+    "charts": {
+      "month": "Month",
+      "monthly": {
+        "title": "Invoiced and received per month",
+        "invoiced": "Invoiced",
+        "received": "Received"
+      },
+      "aging": {
+        "title": "Open invoices by age",
+        "bucket": "Age",
+        "open": "Open",
+        "notDue": "Not due",
+        "overdue1to30": "1–30 days overdue",
+        "overdue31to60": "31–60 days overdue",
+        "overdue61Plus": "Over 60 days overdue"
+      },
+      "revenue": {
+        "title": "Invoiced by type",
+        "type": "Type",
+        "invoiced": "Invoiced excluding VAT",
+        "withoutType": "Without type"
+      }
+    },
+    "overdue": {
+      "title": "Overdue invoices",
+      "empty": "No overdue invoices.",
+      "invoiceNumber": "Invoice {number}",
+      "orderReference": "Order #{reference}",
+      "order": "Order",
+      "columns": {
+        "invoice": "Invoice",
+        "order": "Order",
+        "dueDate": "Due date",
+        "daysOverdue": "Days overdue",
+        "open": "Open"
+      }
+    },
+    "vat": {
+      "title": "VAT per rate",
+      "empty": "No invoices in this period.",
+      "columns": {
+        "rate": "VAT rate",
+        "base": "Invoiced excluding VAT",
+        "vat": "VAT"
+      }
+    },
+    "now": {
+      "title": "Right now",
+      "description": "Open and overdue money and the SIE exports. Not tied to the period above."
+    },
+    "outcomes": {
+      "title": "Won and lost orders",
+      "month": "Month",
+      "won": "Won",
+      "lost": "Lost",
+      "winRate": "Win rate {rate} ({won} of {total})",
+      "text": "{count} · {amount}",
+      "empty": "No orders were closed in this period."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboards",
+    "description": "Money and workload for the range you pick.",
+    "tabs": {
+      "label": "Dashboards",
+      "forecast": "Forecast",
+      "financials": "Financial Results",
+      "workload": "Workload",
+      "descriptions": {
+        "forecast": "Forward projections, booked ahead and future trends",
+        "financials": "Invoiced, received and open money",
+        "workload": "Pipeline, bookings and utilisation"
+      }
+    },
+    "trend": {
+      "weekOf": "Week of {date}",
+      "percent": "{sign}{value} %",
+      "vsPrevious": "vs. the previous period of the same length"
+    },
+    "order": "#{reference}",
+    "orderCustomer": "#{reference} · {customer}",
+    "orderTitleCustomer": "{title} · {customer}",
+    "pipeline": {
+      "title": "Open orders by status",
+      "orders": "{count, plural, one {# order} other {# orders}}",
+      "noValue": "No value yet",
+      "empty": "No open statuses."
+    },
+    "attention": {
+      "title": "Needs attention",
+      "empty": "Nothing needs attention right now.",
+      "overdue": "{count, plural, one {# overdue invoice} other {# overdue invoices}}",
+      "expiring": "{count, plural, one {# hold runs} other {# holds run}} out {date}",
+      "unsent": "{runSheet} version {version} not sent, starts {date}"
+    },
+    "scheduled": {
+      "title": "Scheduled in the range",
+      "empty": "Nothing is scheduled in this range.",
+      "detail": "{date} · {status} · {count, plural, one {# line} other {# lines}}"
+    },
+    "utilisation": {
+      "title": "Utilisation",
+      "type": "Item type",
+      "rate": "Utilisation",
+      "text": "{rate} · {booked} h booked of {open} h open",
+      "closed": "Closed in this range",
+      "empty": "No bookable items."
+    },
+    "bookedAhead": {
+      "title": "Booked, not yet invoiced",
+      "value": "Value excluding VAT"
+    },
+    "forecast": {
+      "title": "Forecast",
+      "extrapolation": "Projected Revenue",
+      "pipelineConversion": "Pipeline Potential",
+      "forwardPeriod": "Future Range",
+      "expectedRevenue": "Expected Invoiced",
+      "bookedConfirmed": "Confirmed Bookings",
+      "weightedPipeline": "Weighted Pipeline",
+      "confidenceNote": "Extrapolated from historical monthly run-rate and open pipeline conversion rate.",
+      "noHistoricalData": "Not enough historical data to compute forward run rate."
+    }
+  },
+  "occupancy": {
+    "singular": "Occupancy",
+    "plural": "Occupancy",
+    "create": "Block item",
+    "edit": "Edit block",
+    "formDescription": "Block the item for maintenance or internal use. Bookings and setup time cannot overlap a block.",
+    "archive": "Release block",
+    "archiveConfirm": "Do you want to release the block so the item can be booked again?",
+    "archived": "The block has been released.",
+    "created": "The item has been blocked.",
+    "updated": "The block has been updated.",
+    "empty": "The item is not occupied from now on.",
+    "overlap": "The item is already occupied during this period.",
+    "releasing": "Releasing block…",
+    "types": {
+      "HOLD": "Hold",
+      "SETUP": "Setup time",
+      "TEARDOWN": "Teardown",
+      "MAINTENANCE": "Maintenance",
+      "INTERNAL": "Internal use"
+    },
+    "fields": {
+      "type": "Reason",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "note": "Note"
+    },
+    "columns": {
+      "type": "Type",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "note": "Note"
+    }
+  },
+  "quote": {
+    "singular": "Quote",
+    "plural": "Quotes",
+    "title": "Quote, version {version}",
+    "versionLabel": "Version {version}",
+    "backToOrder": "Back to the order",
+    "empty": "No quote yet.",
+    "create": "Create quote",
+    "edit": "Edit quote",
+    "formDescription": "Set the validity and the terms. The lines are the order's own: add and price them on the order.",
+    "created": "The quote has been created.",
+    "saved": "The quote has been saved.",
+    "send": "Mark as sent",
+    "sent": "The quote has been marked as sent.",
+    "accept": "Mark as accepted",
+    "accepted": "The quote has been accepted.",
+    "decline": "Declined",
+    "declined": "The quote has been marked as declined.",
+    "expire": "Expire",
+    "expired": "The quote has expired.",
+    "revise": "Create new version",
+    "revised": "A new version has been created.",
+    "confirm": {
+      "send": "Mark version {version} as sent to the customer? The order's lines are frozen into it, it can no longer be edited and older sent versions expire.",
+      "accept": "Record that the customer accepted version {version}? The order moves on if the pipeline has a status for it.",
+      "decline": "Record that the customer declined version {version}?",
+      "expire": "Expire version {version}? The customer can no longer accept it."
+    },
+    "statuses": {
+      "DRAFT": "Draft",
+      "SENT": "Sent",
+      "ACCEPTED": "Accepted",
+      "DECLINED": "Declined",
+      "EXPIRED": "Expired"
+    },
+    "changes": {
+      "ADDED": "New",
+      "CHANGED": "Changed",
+      "UNCHANGED": "Unchanged",
+      "REMOVED": "Removed"
+    },
+    "fields": {
+      "version": "Version",
+      "status": "Status",
+      "validUntil": "Valid until",
+      "terms": "Terms",
+      "salesOwner": "Salesperson (from the order)"
+    },
+    "totals": {
+      "exclVat": "Total excl. VAT",
+      "vat": "VAT",
+      "inclVat": "Total incl. VAT",
+      "from": "From {amount}"
+    },
+    "lines": {
+      "title": "Order lines",
+      "none": "No priced lines on the order yet.",
+      "item": "Item",
+      "quantity": "Quantity",
+      "unitPrice": "Unit price (SEK)",
+      "discount": "Discount %",
+      "vat": "VAT",
+      "vatRow": "{rate} %: {base} excl. VAT, VAT {vat}",
+      "vatRowsTotal": "Sum: {base} excl. VAT, VAT {vat}",
+      "total": "Total excl. VAT",
+      "change": "Change",
+      "option": "Option of {name}",
+      "notInTotal": "Not in the total",
+      "addOn": "Add-on"
+    },
+    "draftLines": "A draft shows the order's priced lines as they are now; sending freezes them.",
+    "editLinesOnOrder": "Edit the lines on the order",
+    "drift": {
+      "title": "The order differs from accepted version {version}",
+      "badge": "Changed since accepted",
+      "description": "The order's lines have changed since the customer accepted. The accepted quote is unchanged; these are the differences."
+    }
+  },
+  "payment": {
+    "singular": "Payment",
+    "plural": "Payments",
+    "empty": "No payments requested yet.",
+    "request": "Request payment",
+    "requestDescription": "Charged directly on your Stripe account. A card payment gives a link to send to the customer; an invoice is emailed to the customer's email address.",
+    "stripeRequired": {
+      "title": "Connect Stripe first",
+      "description": "Payment links and payments go straight to your organization's own Stripe account. An administrator connects Stripe under Settings → Integrations; until then these actions are not available.",
+      "connect": "Go to Integrations"
+    },
+    "created": "The payment has been requested.",
+    "providerFortnox": "Fortnox",
+    "openLink": "Open payment link",
+    "public": {
+      "title": "Payment to {organization}",
+      "description": "Booking #{reference}",
+      "amount": "Amount",
+      "pay": "Pay now",
+      "processingTitle": "Processing your payment",
+      "processingDescription": "Thank you. We are waiting for the payment to be confirmed. This page updates by itself.",
+      "paidTitle": "Payment received",
+      "paidDescription": "Thank you. The payment to {organization} is complete.",
+      "expiredTitle": "This payment link has expired",
+      "expiredDescription": "Contact {organization} to get a new link.",
+      "unavailableTitle": "This payment can no longer be made",
+      "unavailableDescription": "Contact {organization} if you think this is wrong.",
+      "invoiceDescription": "An invoice has been sent to you. Use the link in it to pay.",
+      "secured": "Payment is handled by Stripe.",
+      "lines": "What you are paying for",
+      "addOn": "Add-on",
+      "option": "Option",
+      "quantity": "{quantity} pcs",
+      "quantityPrice": "{quantity} × {price}",
+      "discount": "−{percent} %",
+      "notInTotal": "Not included",
+      "totalExclVat": "Total excl. VAT",
+      "vat": "VAT",
+      "totalInclVat": "Total incl. VAT",
+      "from": "from {amount}",
+      "deduction": "Paid deposit: {description}",
+      "amountDue": "Left to pay"
+    },
+    "fields": {
+      "method": "Method",
+      "amount": "Amount (SEK)",
+      "description": "Text for the customer"
+    },
+    "method": {
+      "CARD": "Card",
+      "INVOICE": "Invoice"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "SUCCEEDED": "Paid",
+      "FAILED": "Failed",
+      "CANCELLED": "Cancelled",
+      "REFUNDED": "Refunded"
+    },
+    "fee": "Bibi fee {amount}",
+    "for": {
+      "QUOTE": "Quote",
+      "DEPOSIT": "Deposit",
+      "INVOICE": "Invoice"
+    },
+    "requestFor": "Request payment",
+    "amountHint": "Leave empty to request the open balance of {open}.",
+    "progress": {
+      "OPEN": "Open",
+      "PARTLY_PAID": "Partly paid",
+      "PAID": "Paid",
+      "OVERPAID": "Overpaid"
+    },
+    "receivableStatus": {
+      "DRAFT": "Draft",
+      "SENT": "Sent",
+      "VOID": "Void"
+    },
+    "paidOf": "{paid} paid of {amount}",
+    "receivables": "What the customer pays for",
+    "noReceivables": "Nothing to pay for yet: send a quote, request a deposit or create an invoice.",
+    "quoteVersion": "Quote",
+    "balance": {
+      "title": "Balance",
+      "billed": "Billed",
+      "paid": "Paid",
+      "balance": "Left to pay",
+      "billedFrom": {
+        "INVOICE": "From the sent invoice",
+        "QUOTE": "From the accepted quote",
+        "NONE": "Nothing billed yet"
+      }
+    }
+  },
+  "deposit": {
+    "singular": "Deposit request",
+    "plural": "Deposit requests",
+    "create": "Request deposit",
+    "createDescription": "A fixed amount the customer pays in advance. Send it before you request a payment against it.",
+    "created": "The deposit request has been created.",
+    "send": "Mark as sent",
+    "sent": "The deposit request is marked as sent.",
+    "void": "Void",
+    "voidConfirm": "Void the deposit request \"{description}\"? It is no longer owed.",
+    "voided": "The deposit request has been voided.",
+    "request": {
+      "action": "Deposit with payment link",
+      "title": "Request deposit",
+      "description": "Creates a deposit and a payment link to send to the customer.",
+      "amount": "Amount (SEK)",
+      "text": "Text for the customer",
+      "defaultDescription": "Deposit",
+      "submit": "Request deposit",
+      "created": "The deposit has been requested.",
+      "linkReady": "Send the link to the customer. The customer pays without an account.",
+      "link": "Payment link",
+      "copy": "Copy the link",
+      "copied": "The link has been copied.",
+      "copyFailed": "Could not copy the link.",
+      "hint": {
+        "PERCENT": "Suggested by your deposit rule. Order total incl. VAT: {total}.",
+        "FULL": "The order total incl. VAT ({total}) is below the minimum, so it is paid in full up front.",
+        "NONE": "No deposit rule is set. Enter an amount. Order total incl. VAT: {total}."
+      }
+    },
+    "fields": {
+      "description": "What the customer pays for",
+      "amount": "Amount (SEK)",
+      "dueDate": "Due date"
+    }
+  },
+  "invoice": {
+    "singular": "Invoice",
+    "plural": "Invoices",
+    "create": "Create invoice",
+    "createConfirm": "Freeze the order's priced lines as an invoice? Later line changes do not change it.",
+    "created": "The invoice has been created.",
+    "number": "Invoice #{number}",
+    "lines": "Lines",
+    "due": "Due {date}",
+    "send": "Mark as sent",
+    "sent": "The invoice is marked as sent.",
+    "sync": "Refresh from Fortnox",
+    "synced": "The invoice has been refreshed from Fortnox.",
+    "inFortnox": "In Fortnox #{reference}",
+    "notInFortnox": "Not yet in Fortnox",
+    "void": "Void",
+    "voidConfirm": "Void invoice #{number}? It is no longer owed and the order can be invoiced again.",
+    "voided": "The invoice has been voided.",
+    "deducted": "{amount} in paid deposits deducted"
+  },
+  "paymentSettings": {
+    "title": "Payments",
+    "description": "The deposit rule and which system sends invoices. Stripe is connected under Integrations.",
+    "saved": "Payment settings saved.",
+    "readOnly": "You can view these settings but not change them.",
+    "save": "Save",
+    "deposit": {
+      "title": "Deposits",
+      "description": "The deposit suggested when you request one for an order."
+    },
+    "invoice": {
+      "title": "Invoice provider",
+      "description": "Which system sends invoices when both Stripe and Fortnox are connected."
+    },
+    "fields": {
+      "depositPercent": "Deposit (% of the order total incl. VAT)",
+      "depositMinimum": "Minimum for a deposit (SEK)",
+      "invoiceProvider": "Send invoices via"
+    },
+    "placeholders": {
+      "none": "No rule"
+    },
+    "hints": {
+      "depositMinimum": "Orders below this amount are paid in full up front.",
+      "invoiceProvider": "Follow what is connected uses whichever system is connected."
+    },
+    "provider": {
+      "AUTO": "Follow what is connected",
+      "STRIPE": "Stripe",
+      "FORTNOX": "Fortnox"
+    }
+  },
+  "paymentAccount": {
+    "title": "Payments",
+    "description": "Connect your organization to Stripe so customers pay you directly. Bibi never holds your funds.",
+    "stripe": "Stripe payout account",
+    "status": {
+      "NOT_CONNECTED": "Not connected",
+      "ONBOARDING": "Onboarding",
+      "ACTIVE": "Active",
+      "RESTRICTED": "Restricted",
+      "DISCONNECTED": "Disconnected"
+    },
+    "hint": {
+      "NOT_CONNECTED": "Connect to Stripe to start taking payments. You will be sent to Stripe to verify your business.",
+      "ONBOARDING": "Onboarding with Stripe is not finished yet. Continue where you left off, then refresh the status.",
+      "ACTIVE": "Your account can take card payments.",
+      "RESTRICTED": "Stripe has restricted card payments on this account. Continue onboarding to provide what Stripe asks for.",
+      "DISCONNECTED": "Stripe is disconnected. Payment links and card payments are off. Connect again to use the same Stripe account."
+    },
+    "connect": "Connect to Stripe",
+    "continueOnboarding": "Continue onboarding",
+    "refresh": "Refresh status",
+    "starting": "Preparing Stripe onboarding…",
+    "redirecting": "Opening Stripe…",
+    "refreshing": "Refreshing status…",
+    "refreshed": "The payment status has been refreshed.",
+    "disconnect": "Disconnect",
+    "disconnectConfirm": "Disconnect Stripe? Bibi stops sending payment links. Links already sent keep working until they expire. Your Stripe account stays yours.",
+    "disconnecting": "Disconnecting Stripe…",
+    "disconnected": "Stripe has been disconnected."
+  }
+}

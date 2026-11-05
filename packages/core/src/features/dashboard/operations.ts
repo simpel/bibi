@@ -16,8 +16,8 @@ import { statusTrends } from "./status-trends";
 import { utilisation } from "./utilisation";
 
 /**
- * The Workload tab (ADR 0079, 0080, 0086): open tickets per status now with their trend over the
- * range, what needs attention now, the tickets scheduled in the range, utilisation per bookable
+ * The Workload tab (ADR 0079, 0080, 0086): open orders per status now with their trend over the
+ * range, what needs attention now, the orders scheduled in the range, utilisation per bookable
  * item type and accepted quotes not invoiced by event month in the range. A view read model
  * (ADR 0071): each part from another feature needs that feature's `read`.
  */
@@ -25,16 +25,16 @@ export const dashboardSummary = defineOperation({
   name: "dashboard.summary",
   kind: "query",
   description:
-    "The Workload tab of the dashboard for a range: open tickets and their estimated and confirmed value per ticket status now, " +
-    "with the count's trend over the range; what needs attention now (holds expiring within 7 days, unsent work orders for tickets " +
-    "in the next 28 days, overdue invoices); tickets with lines in the range; utilisation (booked over open hours) per bookable " +
-    "item type over the range; and accepted quotes not invoiced yet per event month in the range. Unsent work orders are null " +
-    "without workOrder:read, overdue without finance:read and payment:read, utilisation without item:read, booked ahead without " +
+    "The Workload tab of the dashboard for a range: open orders and their estimated and confirmed value per order status now, " +
+    "with the count's trend over the range; what needs attention now (holds expiring within 7 days, unsent run sheets for orders " +
+    "in the next 28 days, overdue invoices); orders with lines in the range; utilisation (booked over open hours) per bookable " +
+    "item type over the range; and accepted quotes not invoiced yet per event month in the range. Unsent run sheets are null " +
+    "without runSheet:read, overdue without finance:read and payment:read, utilisation without item:read, booked ahead without " +
     "quote:read. Money for the range (invoiced, received, won and lost) is finance.overview.",
   input: DashboardSummaryInputSchema,
   output: DashboardSummarySchema,
-  permission: "ticket:read",
-  entityType: "ticket",
+  permission: "order:read",
+  entityType: "order",
   handler: async ({ input, context }) => {
     const resolved = await resolvePeriod({ context, input });
     if (!resolved.ok) return resolved;

@@ -1,0 +1,653 @@
+{
+  "billing": {
+    "title": "Fakturering",
+    "description": "Ert Bibi-abonnemang, era platser och vilka som väntar på en.",
+    "state": {
+      "EXEMPT": "Kostnadsfritt",
+      "UNCONFIGURED": "Inte uppsatt",
+      "TRIAL": "Provperiod",
+      "ACTIVE": "Aktivt",
+      "PAST_DUE": "Betalning försenad",
+      "REQUIRED": "Betalning krävs"
+    },
+    "interval": {
+      "MONTH": "Månadsvis",
+      "YEAR": "Årsvis"
+    },
+    "plans": {
+      "month": "Månadsvis",
+      "year": "Årsvis",
+      "monthPrice": "{price}/mån",
+      "yearPrice": "{price}/år",
+      "exclVat": "exkl. moms",
+      "monthNote": "Betala månad för månad.",
+      "yearNote": "Betala en gång om året och spara {saving}.",
+      "saveBadge": "10 % rabatt",
+      "seats": "{included} platser ingår. Varje extra plats kostar {price}/mån.",
+      "continue": "Fortsätt till betalning",
+      "opening": "Öppnar betalsidan…",
+      "redirecting": "Skickar dig till Stripe…"
+    },
+    "pay": {
+      "adminTitle": "Provperioden är slut",
+      "adminDescription": "Vi hoppas att Bibi har varit till hjälp! Välj en plan för att fortsätta – allt ni har satt upp finns kvar precis där ni lämnade det.",
+      "memberTitle": "Provperioden är slut",
+      "memberDescription": "Bibi är pausat tills en admin i er organisation väljer en plan. Ingen fara, allt du har gjort är sparat.",
+      "remind": "Påminn din admin",
+      "reminding": "Skickar en påminnelse…",
+      "reminded": "Era admins har fått veta. Tack för knuffen!",
+      "alreadyReminded": "Era admins har redan blivit påminda. De är snart med er."
+    },
+    "done": {
+      "title": "Tack!",
+      "finishing": "Slutför din betalning…"
+    },
+    "settings": {
+      "planTitle": "Plan",
+      "trialEndsAt": "Provperioden slutar",
+      "interval": "Plan",
+      "noPlan": "Ingen plan än",
+      "periodEnd": "Nästa betalning",
+      "endsOn": "Slutar",
+      "none": "–",
+      "cancelAtPeriodEnd": "Abonnemanget upphör när den här perioden är slut.",
+      "readOnly": "Bara admins kan ändra faktureringen.",
+      "addPaymentDetails": "Lägg till betalningsuppgifter",
+      "addPaymentTitle": "Välj er plan",
+      "addPaymentDescription": "Inget dras förrän provperioden är slut.",
+      "manage": "Hantera fakturering",
+      "openingPortal": "Öppnar Stripe…",
+      "redirecting": "Skickar dig till Stripe…",
+      "seatsTitle": "Platser",
+      "seats": {
+        "included": "Ingår",
+        "extra": "Extra",
+        "used": "Används",
+        "held": "Väntar"
+      },
+      "autoAssign": "Lägg till platser automatiskt",
+      "autoAssignHint": "På: en inbjudan när alla platser är tagna lägger till en betald plats. Av: inbjudan väntar nedan tills du godkänner den.",
+      "autoAssignOn": "Nya platser läggs till automatiskt.",
+      "autoAssignOff": "Nya platser väntar nu på ditt godkännande.",
+      "extraSeats": "Extra platser",
+      "extraSeatsHint": "Varje extra plats kostar {price}/mån. Du kan inte gå under antalet platser som används.",
+      "saveSeats": "Spara platser",
+      "seatsSaved": "Platserna har sparats.",
+      "requestsTitle": "Platsförfrågningar",
+      "requestsDescription": "Inbjudningar som väntar på en plats. Godkänner du en läggs en betald plats till och inbjudan skickas."
+    },
+    "requests": {
+      "columns": {
+        "email": "E-post",
+        "role": "Roll",
+        "requested": "Begärd"
+      },
+      "empty": "Ingen väntar på en plats.",
+      "approve": "Godkänn",
+      "decline": "Avböj",
+      "approveTitle": "Godkänna en plats för {email}?",
+      "approveDescription": "Det lägger till en betald plats ({price}/mån) och skickar inbjudan.",
+      "declineTitle": "Avböja {email}?",
+      "declineDescription": "Inbjudan avbryts och skickas aldrig.",
+      "approving": "Godkänner…",
+      "approved": "Platsen är tillagd och inbjudan är på väg.",
+      "declining": "Avböjer…",
+      "declined": "Inbjudan har avböjts."
+    }
+  },
+  "finance": {
+    "title": "Ekonomi",
+    "description": "Fakturerat, inbetalt och utestående, vad som är bokat framåt och momsen att redovisa.",
+    "noAccess": "Du har inte behörighet till den här delen.",
+    "noAccessShort": "Ingen åtkomst",
+    "noData": "Inget att visa för perioden.",
+    "monthLabel": "{month, select, 1 {jan} 2 {feb} 3 {mar} 4 {apr} 5 {maj} 6 {jun} 7 {jul} 8 {aug} 9 {sep} 10 {okt} 11 {nov} 12 {dec} other {}} {year}",
+    "accountingSettings": "Bokföringsinställningar",
+    "openFinancials": "Öppna ekonomi",
+    "accounting": {
+      "title": "Bokföring",
+      "description": "Konton som SIE-exporten bokför mot. Alla konton har ett standardvärde enligt BAS.",
+      "saved": "Bokföringsinställningarna har sparats.",
+      "default": "Standard {account}",
+      "usesDefault": "Tomt använder standardkontot för försäljning ({account})",
+      "revenueByTypeHint": "Intäktskonto per artikeltyp. Lämna tomt för att använda standardkontot för försäljning.",
+      "empty": "Inga konton.",
+      "emptyRevenue": "Inga artikeltyper har något eget konto. De använder standardkontot för försäljning.",
+      "add": "Lägg till konto",
+      "edit": "Redigera konto",
+      "editDescription": "Ändra kontonumret. Standardvärdet enligt BAS visas som ledtext.",
+      "pickType": "Artikeltyp",
+      "columns": {
+        "name": "Namn",
+        "group": "Grupp",
+        "account": "Konto"
+      },
+      "readOnly": "Du kan se de här inställningarna men inte ändra dem.",
+      "groups": {
+        "accounts": "Konton",
+        "vat": "Utgående moms",
+        "fiscalYear": "Räkenskapsår",
+        "revenueByType": "Intäktskonto per artikeltyp"
+      },
+      "fields": {
+        "receivableAccount": "Kundfordringar",
+        "clearingAccount": "Betalningar på väg",
+        "advancesAccount": "Förskott från kunder",
+        "feesAccount": "Betalavgifter",
+        "roundingAccount": "Öresavrundning",
+        "revenueAccount": "Försäljning (standard)",
+        "vat25Account": "Utgående moms 25 %",
+        "vat12Account": "Utgående moms 12 %",
+        "vat6Account": "Utgående moms 6 %",
+        "fiscalYearStartMonth": "Räkenskapsårets första månad"
+      },
+      "monthName": "{month, select, 1 {januari} 2 {februari} 3 {mars} 4 {april} 5 {maj} 6 {juni} 7 {juli} 8 {augusti} 9 {september} 10 {oktober} 11 {november} 12 {december} other {}}"
+    },
+    "export": {
+      "button": "Exportera SIE",
+      "title": "Exportera SIE",
+      "description": "Välj perioden som ska rapporteras. Filen innehåller alla verifikationer med datum i perioden, även sådana som redan exporterats, så en period kan exporteras flera gånger.",
+      "confirm": "Exportera och ladda ner",
+      "created": "Exporten har skapats.",
+      "downloading": "Förbereder filen…",
+      "downloaded": "Filen är klar.",
+      "download": "Ladda ner",
+      "history": "Exporthistorik",
+      "historyEmpty": "Inga exporter ännu.",
+      "exportNumber": "Export {number}",
+      "openToDownload": "Öppna ekonomi för att ladda ner",
+      "fileSize": "{bytes} byte",
+      "vouchers": "{count, plural, one {# verifikation} other {# verifikationer}}",
+      "fixOrganization": "Öppna organisationsinställningar",
+      "fixAccounting": "Öppna bokföringsinställningar",
+      "kinds": {
+        "INVOICE_SENT": "Fakturor skickade",
+        "INVOICE_VOID": "Fakturor makulerade",
+        "PAYMENT": "Betalningar",
+        "FEE": "Avgifter",
+        "REFUND": "Återbetalningar"
+      },
+      "blockers": {
+        "ORG_NUMBER_MISSING": "Organisationsnummer saknas",
+        "VAT_ACCOUNT_MISSING": "Momskonto saknas för {detail}",
+        "NOTHING_TO_EXPORT": "Inget har datum i den här perioden"
+      },
+      "columns": {
+        "number": "Nummer",
+        "date": "Skapad",
+        "vouchers": "Verifikationer",
+        "fileName": "Filnamn",
+        "range": "Period"
+      },
+      "earlierExports": "{count, plural, one {# tidigare export överlappar perioden. Importeras båda dupliceras verifikationerna.} other {# tidigare exporter överlappar perioden. Importeras de tillsammans dupliceras verifikationerna.}}",
+      "previewFailed": "Perioden kunde inte läsas."
+    },
+    "kpi": {
+      "invoiced": "Fakturerat",
+      "received": "Inbetalt",
+      "outstanding": "Utestående",
+      "overdue": "Förfallet",
+      "exclVat": "Exklusive moms",
+      "netOfRefunds": "Efter återbetalningar"
+    },
+    "period": {
+      "label": "Period",
+      "range": "{from} – {to}",
+      "invalid": "Välj två dagar i ordning, högst {months} månader isär.",
+      "forwardOnly": "Prognos visar endast framtida datum från och med idag.",
+      "historicalOnly": "Denna vy visar endast historiska datum fram till idag."
+    },
+    "customerFilter": {
+      "label": "Kund",
+      "all": "Alla kunder"
+    },
+    "charts": {
+      "month": "Månad",
+      "monthly": {
+        "title": "Fakturerat och inbetalt per månad",
+        "invoiced": "Fakturerat",
+        "received": "Inbetalt"
+      },
+      "aging": {
+        "title": "Öppna fakturor efter ålder",
+        "bucket": "Ålder",
+        "open": "Öppet",
+        "notDue": "Ej förfallna",
+        "overdue1to30": "1–30 dagar försenade",
+        "overdue31to60": "31–60 dagar försenade",
+        "overdue61Plus": "Över 60 dagar försenade"
+      },
+      "revenue": {
+        "title": "Fakturerat per typ",
+        "type": "Typ",
+        "invoiced": "Fakturerat exklusive moms",
+        "withoutType": "Utan typ"
+      }
+    },
+    "overdue": {
+      "title": "Förfallna fakturor",
+      "empty": "Inga förfallna fakturor.",
+      "invoiceNumber": "Faktura {number}",
+      "orderReference": "Bokning #{reference}",
+      "order": "Bokning",
+      "columns": {
+        "invoice": "Faktura",
+        "order": "Bokning",
+        "dueDate": "Förfallodatum",
+        "daysOverdue": "Dagar försenad",
+        "open": "Öppet belopp"
+      }
+    },
+    "vat": {
+      "title": "Moms per momssats",
+      "empty": "Inga fakturor under perioden.",
+      "columns": {
+        "rate": "Momssats",
+        "base": "Fakturerat exklusive moms",
+        "vat": "Moms"
+      }
+    },
+    "now": {
+      "title": "Just nu",
+      "description": "Öppna och förfallna belopp och SIE-exporterna. Gäller oavsett perioden ovan."
+    },
+    "outcomes": {
+      "title": "Vunna och förlorade bokningar",
+      "month": "Månad",
+      "won": "Vunna",
+      "lost": "Förlorade",
+      "winRate": "Vinstandel {rate} ({won} av {total})",
+      "text": "{count} · {amount}",
+      "empty": "Inga bokningar stängdes under perioden."
+    }
+  },
+  "dashboard": {
+    "title": "Översikter",
+    "description": "Ekonomi och arbetsbelastning för perioden du väljer.",
+    "tabs": {
+      "label": "Översikter",
+      "forecast": "Prognos",
+      "financials": "Ekonomiskt resultat",
+      "workload": "Arbetsbelastning",
+      "descriptions": {
+        "forecast": "Framåtblickande prognoser, bokat framåt och framtida trender",
+        "financials": "Fakturerat, inbetalt och öppna belopp",
+        "workload": "Pipeline, bokningar och beläggning"
+      }
+    },
+    "trend": {
+      "weekOf": "Veckan från {date}",
+      "percent": "{sign}{value} %",
+      "vsPrevious": "jämfört med föregående lika lång period"
+    },
+    "order": "#{reference}",
+    "orderCustomer": "#{reference} · {customer}",
+    "orderTitleCustomer": "{title} · {customer}",
+    "pipeline": {
+      "title": "Öppna bokningar per bokningsstatus",
+      "orders": "{count, plural, one {# bokning} other {# bokningar}}",
+      "noValue": "Inget värde ännu",
+      "empty": "Inga öppna bokningsstatusar."
+    },
+    "attention": {
+      "title": "Behöver åtgärdas",
+      "empty": "Inget behöver åtgärdas just nu.",
+      "overdue": "{count, plural, one {# förfallen faktura} other {# förfallna fakturor}}",
+      "expiring": "{count, plural, one {# reservation går} other {# reservationer går}} ut {date}",
+      "unsent": "{runSheet} version {version} inte skickad, börjar {date}"
+    },
+    "scheduled": {
+      "title": "Inplanerat under perioden",
+      "empty": "Inget är inplanerat under perioden.",
+      "detail": "{date} · {status} · {count, plural, one {# rad} other {# rader}}"
+    },
+    "utilisation": {
+      "title": "Beläggning",
+      "type": "Objekttyp",
+      "rate": "Beläggning",
+      "text": "{rate} · {booked} h bokade av {open} h öppet",
+      "closed": "Stängt under perioden",
+      "empty": "Inga bokningsbara objekt."
+    },
+    "bookedAhead": {
+      "title": "Bokat, ännu inte fakturerat",
+      "value": "Värde exklusive moms"
+    },
+    "forecast": {
+      "title": "Prognos",
+      "extrapolation": "Beräknad omsättning",
+      "pipelineConversion": "Pipelinepotential",
+      "forwardPeriod": "Framtida period",
+      "expectedRevenue": "Förväntat fakturerat",
+      "bookedConfirmed": "Bekräftade bokningar",
+      "weightedPipeline": "Viktad pipeline",
+      "confidenceNote": "Framskrivet baserat på historisk månadsomsättning och konverteringsgrad i pipeline.",
+      "noHistoricalData": "Inte tillräckligt med historiska data för att beräkna framtida takt."
+    }
+  },
+  "occupancy": {
+    "singular": "Beläggning",
+    "plural": "Beläggning",
+    "create": "Blockera artikel",
+    "edit": "Redigera blockering",
+    "formDescription": "Blockera artikeln för underhåll eller internt bruk. Bokningar och ställtid kan inte överlappa en blockering.",
+    "archive": "Släpp blockering",
+    "archiveConfirm": "Vill du släppa blockeringen så att artikeln kan bokas igen?",
+    "archived": "Blockeringen har släppts.",
+    "created": "Artikeln har blockerats.",
+    "updated": "Blockeringen har uppdaterats.",
+    "empty": "Artikeln är inte belagd framöver.",
+    "overlap": "Artikeln är redan belagd under den här perioden.",
+    "releasing": "Släpper blockering…",
+    "types": {
+      "HOLD": "Reservation",
+      "SETUP": "Ställtid",
+      "TEARDOWN": "Nedplock",
+      "MAINTENANCE": "Underhåll",
+      "INTERNAL": "Internt bruk"
+    },
+    "fields": {
+      "type": "Anledning",
+      "startsAt": "Börjar",
+      "endsAt": "Slutar",
+      "note": "Anteckning"
+    },
+    "columns": {
+      "type": "Typ",
+      "startsAt": "Börjar",
+      "endsAt": "Slutar",
+      "note": "Anteckning"
+    }
+  },
+  "quote": {
+    "singular": "Offert",
+    "plural": "Offerter",
+    "title": "Offert, version {version}",
+    "versionLabel": "Version {version}",
+    "backToOrder": "Tillbaka till bokningen",
+    "empty": "Ingen offert ännu.",
+    "create": "Skapa offert",
+    "edit": "Redigera offert",
+    "formDescription": "Ange giltighet och villkor. Raderna hör till bokningen: lägg till och prissätt dem på bokningen.",
+    "created": "Offerten har skapats.",
+    "saved": "Offerten har sparats.",
+    "send": "Markera som skickad",
+    "sent": "Offerten har markerats som skickad.",
+    "accept": "Markera som godkänd",
+    "accepted": "Offerten har godkänts.",
+    "decline": "Avböjd",
+    "declined": "Offerten har markerats som avböjd.",
+    "expire": "Låt gå ut",
+    "expired": "Offerten har gått ut.",
+    "revise": "Skapa ny version",
+    "revised": "En ny version har skapats.",
+    "confirm": {
+      "send": "Markera version {version} som skickad till kunden? Bokningens rader fryses i den, den kan inte längre redigeras och äldre skickade versioner förfaller.",
+      "accept": "Registrera att kunden godkände version {version}? Bokningen flyttas om pipelinen har en bokningsstatus för det.",
+      "decline": "Registrera att kunden avböjde version {version}?",
+      "expire": "Låta version {version} gå ut? Kunden kan inte längre acceptera den."
+    },
+    "statuses": {
+      "DRAFT": "Utkast",
+      "SENT": "Skickad",
+      "ACCEPTED": "Accepterad",
+      "DECLINED": "Avböjd",
+      "EXPIRED": "Utgången"
+    },
+    "changes": {
+      "ADDED": "Ny",
+      "CHANGED": "Ändrad",
+      "UNCHANGED": "Oförändrad",
+      "REMOVED": "Borttagen"
+    },
+    "fields": {
+      "version": "Version",
+      "status": "Status",
+      "validUntil": "Giltig till",
+      "terms": "Villkor",
+      "salesOwner": "Säljare (från bokningen)"
+    },
+    "totals": {
+      "exclVat": "Summa exkl. moms",
+      "vat": "Moms",
+      "inclVat": "Summa inkl. moms",
+      "from": "Från {amount}"
+    },
+    "lines": {
+      "title": "Orderrader",
+      "none": "Inga prissatta rader på bokningen än.",
+      "item": "Artikel",
+      "quantity": "Antal",
+      "unitPrice": "À-pris (kr)",
+      "discount": "Rabatt %",
+      "vat": "Moms",
+      "vatRow": "{rate} %: {base} exkl. moms, moms {vat}",
+      "vatRowsTotal": "Summa: {base} exkl. moms, moms {vat}",
+      "total": "Summa exkl. moms",
+      "change": "Ändring",
+      "option": "Alternativ i {name}",
+      "notInTotal": "Ingår inte i summan",
+      "addOn": "Tillägg"
+    },
+    "draftLines": "Ett utkast visar bokningens prissatta rader som de är nu; när offerten skickas fryses de.",
+    "editLinesOnOrder": "Redigera raderna på bokningen",
+    "drift": {
+      "title": "Bokningen skiljer sig från accepterad version {version}",
+      "badge": "Ändrat sedan accepterad",
+      "description": "Bokningens rader har ändrats sedan kunden accepterade. Den accepterade offerten är oförändrad; här är skillnaderna."
+    }
+  },
+  "payment": {
+    "singular": "Betalning",
+    "plural": "Betalningar",
+    "empty": "Inga betalningar begärda ännu.",
+    "request": "Begär betalning",
+    "requestDescription": "Debiteras direkt på ert Stripe-konto. Kortbetalning ger en länk att skicka till kunden; en faktura mejlas till kundens e-postadress.",
+    "stripeRequired": {
+      "title": "Koppla Stripe först",
+      "description": "Betallänkar och betalningar går direkt till organisationens eget Stripe-konto. En administratör kopplar Stripe under Inställningar → Integrationer; tills dess går de här åtgärderna inte att använda.",
+      "connect": "Gå till Integrationer"
+    },
+    "created": "Betalningen har begärts.",
+    "providerFortnox": "Fortnox",
+    "openLink": "Öppna betalningslänken",
+    "public": {
+      "title": "Betalning till {organization}",
+      "description": "Bokning #{reference}",
+      "amount": "Belopp",
+      "pay": "Betala nu",
+      "processingTitle": "Betalningen behandlas",
+      "processingDescription": "Tack. Vi väntar på att betalningen ska bekräftas. Sidan uppdateras av sig själv.",
+      "paidTitle": "Betalningen är mottagen",
+      "paidDescription": "Tack. Betalningen till {organization} är genomförd.",
+      "expiredTitle": "Betalningslänken har gått ut",
+      "expiredDescription": "Kontakta {organization} för att få en ny länk.",
+      "unavailableTitle": "Betalningen kan inte längre göras",
+      "unavailableDescription": "Kontakta {organization} om du tror att det är fel.",
+      "invoiceDescription": "En faktura har skickats till dig. Använd länken i den för att betala.",
+      "secured": "Betalningen hanteras av Stripe.",
+      "lines": "Det här betalar du för",
+      "addOn": "Tillägg",
+      "option": "Tillval",
+      "quantity": "{quantity} st",
+      "quantityPrice": "{quantity} × {price}",
+      "discount": "−{percent} %",
+      "notInTotal": "Ingår inte",
+      "totalExclVat": "Summa exkl. moms",
+      "vat": "Moms",
+      "totalInclVat": "Summa inkl. moms",
+      "from": "från {amount}",
+      "deduction": "Betalt förskott: {description}",
+      "amountDue": "Kvar att betala"
+    },
+    "fields": {
+      "method": "Betalsätt",
+      "amount": "Belopp (kr)",
+      "description": "Text till kunden"
+    },
+    "method": {
+      "CARD": "Kort",
+      "INVOICE": "Faktura"
+    },
+    "status": {
+      "PENDING": "Väntar",
+      "SUCCEEDED": "Betald",
+      "FAILED": "Misslyckad",
+      "CANCELLED": "Avbruten",
+      "REFUNDED": "Återbetald"
+    },
+    "fee": "Bibis avgift {amount}",
+    "for": {
+      "QUOTE": "Offert",
+      "DEPOSIT": "Förskott",
+      "INVOICE": "Faktura"
+    },
+    "requestFor": "Begär betalning",
+    "amountHint": "Lämna tomt för att begära det som återstår, {open}.",
+    "progress": {
+      "OPEN": "Obetald",
+      "PARTLY_PAID": "Delvis betald",
+      "PAID": "Betald",
+      "OVERPAID": "Överbetald"
+    },
+    "receivableStatus": {
+      "DRAFT": "Utkast",
+      "SENT": "Skickad",
+      "VOID": "Makulerad"
+    },
+    "paidOf": "{paid} betalt av {amount}",
+    "receivables": "Det kunden betalar för",
+    "noReceivables": "Inget att betala för ännu: skicka en offert, begär förskott eller skapa en faktura.",
+    "quoteVersion": "Offert",
+    "balance": {
+      "title": "Saldo",
+      "billed": "Debiterat",
+      "paid": "Betalt",
+      "balance": "Kvar att betala",
+      "billedFrom": {
+        "INVOICE": "Från den skickade fakturan",
+        "QUOTE": "Från den accepterade offerten",
+        "NONE": "Inget debiterat ännu"
+      }
+    }
+  },
+  "deposit": {
+    "singular": "Förskott",
+    "plural": "Förskott",
+    "create": "Begär förskott",
+    "createDescription": "Ett fast belopp som kunden betalar i förväg. Skicka det innan du begär en betalning mot det.",
+    "created": "Förskottet har skapats.",
+    "send": "Markera som skickat",
+    "sent": "Förskottet är markerat som skickat.",
+    "void": "Makulera",
+    "voidConfirm": "Makulera förskottet \"{description}\"? Det är då inte längre skyldigt.",
+    "voided": "Förskottet har makulerats.",
+    "request": {
+      "action": "Förskott med betallänk",
+      "title": "Begär förskott",
+      "description": "Skapar ett förskott och en betallänk att skicka till kunden.",
+      "amount": "Belopp (kr)",
+      "text": "Text till kunden",
+      "defaultDescription": "Förskott",
+      "submit": "Begär förskott",
+      "created": "Förskottet har begärts.",
+      "linkReady": "Skicka länken till kunden. Kunden betalar utan konto.",
+      "link": "Betalningslänk",
+      "copy": "Kopiera länken",
+      "copied": "Länken har kopierats.",
+      "copyFailed": "Kunde inte kopiera länken.",
+      "hint": {
+        "PERCENT": "Föreslaget enligt er förskottsregel. Bokningens summa inkl. moms: {total}.",
+        "FULL": "Bokningens summa inkl. moms ({total}) understiger minimibeloppet, så hela beloppet betalas i förväg.",
+        "NONE": "Ingen förskottsregel är inställd. Ange ett belopp. Bokningens summa inkl. moms: {total}."
+      }
+    },
+    "fields": {
+      "description": "Vad kunden betalar för",
+      "amount": "Belopp (kr)",
+      "dueDate": "Förfallodag"
+    }
+  },
+  "invoice": {
+    "singular": "Faktura",
+    "plural": "Fakturor",
+    "create": "Skapa faktura",
+    "createConfirm": "Frys bokningens prissatta rader som en faktura? Senare ändringar av raderna ändrar den inte.",
+    "created": "Fakturan har skapats.",
+    "number": "Faktura nr {number}",
+    "lines": "Rader",
+    "due": "Förfaller {date}",
+    "send": "Markera som skickad",
+    "sent": "Fakturan är markerad som skickad.",
+    "sync": "Uppdatera från Fortnox",
+    "synced": "Fakturan har uppdaterats från Fortnox.",
+    "inFortnox": "I Fortnox #{reference}",
+    "notInFortnox": "Inte i Fortnox än",
+    "void": "Makulera",
+    "voidConfirm": "Makulera faktura nr {number}? Den är då inte längre skyldig och bokningen kan faktureras igen.",
+    "voided": "Fakturan har makulerats.",
+    "deducted": "{amount} i betalda förskott avdraget"
+  },
+  "paymentSettings": {
+    "title": "Betalningar",
+    "description": "Förskottsregel och vilket system som skickar fakturor. Stripe kopplas under Integrationer.",
+    "saved": "Betalningsinställningarna har sparats.",
+    "readOnly": "Du kan se inställningarna men inte ändra dem.",
+    "save": "Spara",
+    "deposit": {
+      "title": "Förskott",
+      "description": "Förskottet som föreslås när du begär ett för en bokning."
+    },
+    "invoice": {
+      "title": "Fakturaleverantör",
+      "description": "Vilket system som skickar fakturorna när både Stripe och Fortnox är kopplade."
+    },
+    "fields": {
+      "depositPercent": "Förskott (% av bokningens summa inkl. moms)",
+      "depositMinimum": "Lägsta belopp för förskott (kr)",
+      "invoiceProvider": "Skicka fakturor via"
+    },
+    "placeholders": {
+      "none": "Ingen regel"
+    },
+    "hints": {
+      "depositMinimum": "Bokningar under det här beloppet betalas helt i förväg.",
+      "invoiceProvider": "Följ vad som är kopplat använder det system som är anslutet."
+    },
+    "provider": {
+      "AUTO": "Följ vad som är kopplat",
+      "STRIPE": "Stripe",
+      "FORTNOX": "Fortnox"
+    }
+  },
+  "paymentAccount": {
+    "title": "Betalningar",
+    "description": "Koppla organisationen till Stripe så att kunderna betalar er direkt. Bibi håller aldrig era pengar.",
+    "stripe": "Stripe-utbetalningskonto",
+    "status": {
+      "NOT_CONNECTED": "Inte kopplat",
+      "ONBOARDING": "Registrering pågår",
+      "ACTIVE": "Aktivt",
+      "RESTRICTED": "Begränsat",
+      "DISCONNECTED": "Frånkopplad"
+    },
+    "hint": {
+      "NOT_CONNECTED": "Koppla till Stripe för att ta emot betalningar. Du skickas till Stripe för att verifiera ert företag.",
+      "ONBOARDING": "Registreringen hos Stripe är inte klar. Fortsätt där du slutade och uppdatera sedan statusen.",
+      "ACTIVE": "Ert konto kan ta emot kortbetalningar.",
+      "RESTRICTED": "Stripe har begränsat kortbetalningar på kontot. Fortsätt registreringen och lämna de uppgifter Stripe ber om.",
+      "DISCONNECTED": "Stripe är frånkopplat. Betallänkar och kortbetalningar är avstängda. Koppla igen för att använda samma Stripe-konto."
+    },
+    "connect": "Koppla till Stripe",
+    "continueOnboarding": "Fortsätt registreringen",
+    "refresh": "Uppdatera status",
+    "starting": "Förbereder registrering hos Stripe…",
+    "redirecting": "Öppnar Stripe…",
+    "refreshing": "Uppdaterar status…",
+    "refreshed": "Betalningsstatusen har uppdaterats.",
+    "disconnect": "Koppla från",
+    "disconnectConfirm": "Koppla från Stripe? Bibi slutar skicka betallänkar. Länkar som redan skickats fungerar tills de går ut. Stripe-kontot förblir ert.",
+    "disconnecting": "Kopplar från Stripe…",
+    "disconnected": "Stripe har kopplats från."
+  }
+}

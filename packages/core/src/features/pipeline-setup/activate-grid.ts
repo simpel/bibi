@@ -22,13 +22,13 @@ export async function activateGrid({
   statusIds,
   types,
 }: ActivateGridInput): Promise<Result<true>> {
-  for (const ticketStatus of draft.statuses.filter((row) => !row.closes)) {
+  for (const orderStatus of draft.statuses.filter((row) => !row.closes)) {
     for (const type of draft.itemTypes) {
       const setUp = types.get(type.name);
-      const statusId = statusIds.get(ticketStatus.name);
+      const statusId = statusIds.get(orderStatus.name);
       if (!setUp || !statusId) continue;
       const cell = draft.cells.find(
-        (row) => row.ticketStatus === ticketStatus.name && row.type === type.name,
+        (row) => row.orderStatus === orderStatus.name && row.type === type.name,
       );
       const stateId = cell ? (setUp.stateIds.get(cell.state) ?? null) : null;
       const input = { statusId, entityTypeId: setUp.entityTypeId, stateId };

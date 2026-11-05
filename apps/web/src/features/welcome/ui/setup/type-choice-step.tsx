@@ -1,36 +1,54 @@
 "use client";
 
+import type { SetupCategory } from "@bibi/core/setup-presets";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import type { TypeChoice } from "../../lib/setup-draft";
 import { type WelcomeStep, welcomePath } from "../../lib/welcome-step";
 import { WelcomeStepActions } from "../welcome-step-actions";
-import { AddTypeInput } from "./add-type-input";
 import { SkipSetupButton } from "./skip-setup-button";
 import { TypeChoiceList } from "./type-choice-list";
 import { useDraftGuard } from "./use-draft-guard";
 
-export type TypeChoiceStepProps = { bookable: boolean; back: WelcomeStep; next: WelcomeStep };
+export type TypeChoiceStepProps = { category: SetupCategory; back: WelcomeStep; next: WelcomeStep };
 
-/** The bookable or sellable types of the draft as checkboxes, prefilled from the kind. */
-export function TypeChoiceStep({ bookable, back, next }: TypeChoiceStepProps) {
+/** The spaces, food or extras types of the draft as checkboxes, prefilled from the kind. */
+export function TypeChoiceStep({ category, back, next }: TypeChoiceStepProps) {
   const t = useTranslations("welcome.setup");
   const router = useRouter();
   const { org, draft, setDraft } = useDraftGuard();
-  const toggle = ({ index, checked }: { index: number; checked: boolean }) =>
+
+  const add = ({ name }: { name: string }) =>
     setDraft({
       draft: {
         ...draft,
-        types: draft.types.map((type, at) => (at === index ? { ...type, checked } : type)),
+        types: [
+          ...draft.types,
+          {
+            key: null,
+            name,
+            category,
+            bookable: category === "spaces",
+            checked: true,
+          },
+        ],
       },
     });
-  const add = ({ name }: { name: string }) =>
+
+  const remove = ({ index }: { index: number }) =>
     setDraft({
-      draft: { ...draft, types: [...draft.types, { key: null, name, bookable, checked: true }] },
+      draft: {
+        ...draft,
+        types: draft.types.filter((_, at) => at !== index),
+      },
     });
+
   const rows = draft.types
     .map((type, index): [TypeChoice, number] => [type, index])
-    .filter(([type]) => type.bookable === bookable);
+    .filter(([type]) => (type.category ?? (type.bookable ? "spaces" : "food")) === category);
+
+  const continueDisabled = category === "spaces" ? rows.length === 0 : false;
+
   return (
     <form
       className="grid gap-4"
@@ -39,13 +57,16 @@ export function TypeChoiceStep({ bookable, back, next }: TypeChoiceStepProps) {
         router.push(welcomePath({ step: next }), { org });
       }}
     >
-      <TypeChoiceList rows={rows} onToggle={toggle} />
-      <AddTypeInput onAdd={add} />
-      <p className="text-sm text-muted-foreground">
-        {t(bookable ? "bookable.later" : "sellable.later")}
-      </p>
+      <TypeChoiceList
+        rows={rows}
+        onRemove={remove}
+        onAdd={add}
+        addPlaceholder={t(`${category}.placeholder`)}
+      />
+      <p className="text-sm text-muted-foreground">{t(`${category}.later`)}</p>
       <WelcomeStepActions
         back={{ href: welcomePath({ step: back }), org }}
+        disabled={continueDisabled}
         aside={<SkipSetupButton org={org} />}
       />
     </form>

@@ -43,7 +43,7 @@ type TypeIdOfInput = { refs: DemoRefs; name: string };
 
 /** The id of a type seeded earlier, by name. */
 const typeIdOf = ({ refs, name }: TypeIdOfInput) =>
-  [refs.itemTypes, refs.customerTypes, refs.contactTypes, refs.ticketTypes]
+  [refs.itemTypes, refs.customerTypes, refs.contactTypes, refs.orderTypes]
     .map((types) => types.get(name)?.id)
     .find(Boolean);
 
@@ -120,7 +120,7 @@ export async function seedDemoConfig({
     itemTypes: new Map(),
     customerTypes: new Map(),
     contactTypes: new Map(),
-    ticketTypes: new Map(),
+    orderTypes: new Map(),
   };
   for (const setup of config.setups) {
     const result = await execute({ operation: createSetup, input: setup, context });
@@ -134,7 +134,7 @@ export async function seedDemoConfig({
       ITEM: refs.itemTypes,
       CUSTOMER: refs.customerTypes,
       CONTACT: refs.contactTypes,
-      TICKET: refs.ticketTypes,
+      ORDER: refs.orderTypes,
     };
     byBase[type.base as keyof typeof byBase]?.set(type.name, result.value);
   }

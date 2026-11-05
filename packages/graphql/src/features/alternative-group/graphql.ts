@@ -13,14 +13,14 @@ import { fieldFromOperation, mutationFromOperation } from "../../schema/from-ope
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
 import { runOperation } from "../../schema/run-operation";
-import { TicketRef } from "../ticket/graphql";
+import { OrderRef } from "../order/graphql";
 
 export const AlternativeGroupRef = objectFromSchema<AlternativeGroupDto>({
   name: "AlternativeGroup",
   schema: AlternativeGroupSchema,
   omit: ["organizationId"],
   description:
-    "Alternative group – lines of a ticket the customer picks exactly one of, e.g. Room A or " +
+    "Alternative group – lines of an order the customer picks exactly one of, e.g. Room A or " +
     "Room B (ADR 0052): its options and the chosen one.",
 });
 const AlternativeGroupPageRef = pageType({
@@ -43,16 +43,16 @@ mutationFromOperation({ operation: updateAlternativeGroup, type: AlternativeGrou
 mutationFromOperation({ operation: archiveAlternativeGroup, type: AlternativeGroupRef });
 mutationFromOperation({ operation: chooseAlternative, type: AlternativeGroupRef });
 
-// Graph edge. It lives here so that ticket/graphql.ts does not need to import this file.
-builder.objectField(TicketRef, "alternativeGroups", (t) =>
+// Graph edge. It lives here so that order/graphql.ts does not need to import this file.
+builder.objectField(OrderRef, "alternativeGroups", (t) =>
   t.field({
     type: [AlternativeGroupRef],
-    description: "The ticket's alternative groups, oldest first.",
+    description: "The order's alternative groups, oldest first.",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
-    resolve: async (ticket, { limit }, ctx) => {
+    resolve: async (order, { limit }, ctx) => {
       const page = (await runOperation({
         operation: listAlternativeGroups,
-        input: { ticketId: ticket.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) },
+        input: { orderId: order.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) },
         ctx,
       })) as { items: AlternativeGroupDto[] };
       return page.items;

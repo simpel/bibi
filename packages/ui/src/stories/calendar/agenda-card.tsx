@@ -3,20 +3,20 @@ import { dotStyle } from "../../components/availability-calendar/calendar-marks"
 import {
   LineContact,
   StaffList,
-  ticketLines,
+  orderLines,
 } from "../../components/availability-calendar/calendar-people";
 import { durationLabel, toMinutes } from "../../components/availability-calendar/calendar-time";
 import type {
   CalendarAudience,
   CalendarLine,
-  CalendarTicket,
+  CalendarOrder,
 } from "../../components/availability-calendar/calendar-types";
 import { DateLeaf } from "../../components/availability-calendar/date-leaf";
 import { GuestMark } from "../../components/availability-calendar/guest-mark";
 import { cn } from "../../lib/cn";
 
 export type AgendaCardProps = {
-  ticket: CalendarTicket;
+  order: CalendarOrder;
   audience: CalendarAudience;
   locale?: string;
 };
@@ -80,26 +80,26 @@ function AgendaRow({
 
 type AgendaHeaderProps = AgendaCardProps & { frame?: CalendarLine; rows: CalendarLine[] };
 
-function AgendaHeader({ ticket, audience, locale, frame, rows }: AgendaHeaderProps) {
+function AgendaHeader({ order, audience, locale, frame, rows }: AgendaHeaderProps) {
   const first = rows[0]?.start ?? "";
   const last = rows.reduce((end, line) => (line.end > end ? line.end : end), "");
   return (
     <div className="flex items-center gap-4">
       <DateLeaf
-        date={ticket.date}
+        date={order.date}
         locale={locale}
         size={audience === "external" ? "md" : "sm"}
         withYear={audience === "external"}
       />
       <div className="min-w-0">
         <p className="truncate text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          {frame?.name ?? ticket.reference}
+          {frame?.name ?? order.reference}
         </p>
         <h3 className="truncate font-serif text-xl font-light text-black dark:text-white">
-          {ticket.purpose}
+          {order.purpose}
         </h3>
         <p className="text-xs text-muted-foreground tabular-nums">
-          {frame?.start ?? first}–{frame?.end ?? last} · {ticket.headcount} guests
+          {frame?.start ?? first}–{frame?.end ?? last} · {order.headcount} guests
         </p>
       </div>
     </div>
@@ -107,15 +107,15 @@ function AgendaHeader({ ticket, audience, locale, frame, rows }: AgendaHeaderPro
 }
 
 /** The day in order. Bundle parts are listed; the bundle itself names the day. */
-export function AgendaCard({ ticket, audience, locale }: AgendaCardProps) {
-  const lines = ticketLines({ ticket, audience });
+export function AgendaCard({ order, audience, locale }: AgendaCardProps) {
+  const lines = orderLines({ order, audience });
   const frame = lines.find((line) => lines.some((other) => other.parentId === line.id));
   const rows = lines
     .filter((line) => line !== frame)
     .sort((a, b) => a.start.localeCompare(b.start));
   return (
     <div className="grid gap-5 rounded-xl border bg-card p-5 shadow-xs">
-      <AgendaHeader ticket={ticket} audience={audience} locale={locale} frame={frame} rows={rows} />
+      <AgendaHeader order={order} audience={audience} locale={locale} frame={frame} rows={rows} />
       <ol>
         {rows.map((line, index) => (
           <AgendaRow

@@ -2,7 +2,7 @@ import { fromZonedParts, toZonedParts } from "@bibi/core/schemas";
 
 /**
  * `timeZone` is the zone the time belongs to (ADR 0064): the venue's for lines and occupancy, the
- * organization's (`useTimeZone()`) for ticket-level times. Never the host's or the browser's.
+ * organization's (`useTimeZone()`) for order-level times. Never the host's or the browser's.
  */
 export type ToLocalInputValueInput = { date: Date; timeZone: string };
 

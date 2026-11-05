@@ -24,7 +24,7 @@ model Customer {
   createdBy            String?
   entityType           EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   contacts             Contact[]
-  tickets              Ticket[]
+  orders              Order[]
   /// Customer-specific packages (`Item.customerId`, ADR 0021).
   items                Item[]
   /// Customer prices (ADR 0023).
@@ -55,7 +55,7 @@ model Contact {
   createdBy      String?
   entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   customer       Customer     @relation(fields: [customerId, organizationId], references: [id, organizationId])
-  tickets        Ticket[]
+  orders        Order[]
   /// The supertable row this record extends (ADR 0056).
   record         Record       @relation(fields: [id, organizationId], references: [id, organizationId])
 

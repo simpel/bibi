@@ -33,13 +33,13 @@ import { responsibilityOperations } from "./features/responsibility/operations";
 import { setupOperations } from "./features/setup/operations";
 import { skillOperations } from "./features/skill/operations";
 import { statusGridOperations } from "./features/status-grid/operations";
-import { ticketOperations } from "./features/ticket/operations";
-import { ticketStatusOperations } from "./features/ticket-status/operations";
-import { ticketTemplateOperations } from "./features/ticket-template/operations";
+import { orderOperations } from "./features/order/operations";
+import { orderStatusOperations } from "./features/order-status/operations";
+import { orderTemplateOperations } from "./features/order-template/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
-import { workOrderOperations } from "./features/work-order/operations";
-import { workOrderDefinitionOperations } from "./features/work-order-definition/operations";
+import { runSheetOperations } from "./features/run-sheet/operations";
+import { runSheetDefinitionOperations } from "./features/run-sheet-definition/operations";
 import { hoursOperations } from "./hours/operations";
 import { moneyOperations } from "./money-operations";
 import type { AnyOperation } from "./operations/types";
@@ -80,22 +80,22 @@ function staticOperations(): AnyOperation[] {
     ...setupOperations,
     ...permissionOperations,
     ...responsibilityOperations,
-    ...workOrderDefinitionOperations,
+    ...runSheetDefinitionOperations,
     ...configurationOperations,
     ...itemGroupOperations,
     ...customerOperations,
     ...contactOperations,
     ...priceListOperations,
     ...bookingOperations,
-    ...ticketStatusOperations,
-    ...ticketTemplateOperations,
+    ...orderStatusOperations,
+    ...orderTemplateOperations,
     ...itemStateOperations,
     ...statusGridOperations,
-    ...ticketOperations,
+    ...orderOperations,
     ...lineGroupOperations,
     ...assignmentOperations,
     ...requirementOperations,
-    ...workOrderOperations,
+    ...runSheetOperations,
     ...pipelineGroupOperations,
     ...quoteOperations,
     ...inboundMessageOperations,

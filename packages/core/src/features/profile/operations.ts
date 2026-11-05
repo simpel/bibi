@@ -4,7 +4,12 @@ import { invalid } from "../../shared/errors";
 import { requireUser } from "../../shared/require-user";
 import { prefillMemberContact } from "../member-profile/prefill-contact";
 import { loadProfile } from "./load-profile";
-import { ProfileGetInputSchema, ProfileSchema, ProfileUpdateInputSchema } from "./schema";
+import {
+  ProfileGetInputSchema,
+  ProfileSchema,
+  ProfileSetLocaleInputSchema,
+  ProfileUpdateInputSchema,
+} from "./schema";
 import {
   WorkingHoursGetInputSchema,
   WorkingHoursSchema,
@@ -100,5 +105,54 @@ export const setWorkingHours = defineOperation({
   },
 });
 
+export const setProfileLocale = defineOperation({
+  name: "profile.setLocale",
+  kind: "command",
+  description: "Save the caller's preferred UI and email language ('sv' or 'en').",
+  input: ProfileSetLocaleInputSchema,
+  output: ProfileSchema,
+  permission: "self:write",
+  handler: async ({ input, context }) => {
+    const user = requireUser({ context });
+    if (!user.ok) return user;
+    const userId = user.value;
+    const before = await loadProfile({ context, userId });
+    const existing = await context.db.userProfile.findUnique({ where: { userId } });
+    if (existing) {
+      await context.db.userProfile.update({
+        where: { userId },
+        data: { locale: input.locale },
+      });
+    } else {
+      const dbUser = await context.db.user.findUnique({
+        where: { id: userId },
+        select: { name: true },
+      });
+      const parts = (dbUser?.name ?? "").trim().split(/\s+/);
+      const firstName = parts[0] || "";
+      const lastName = parts.slice(1).join(" ") || "";
+      await context.db.userProfile.create({
+        data: {
+          userId,
+          firstName,
+          lastName,
+          phone: "",
+          locale: input.locale,
+        },
+      });
+    }
+    const after = await loadProfile({ context, userId });
+    const entityId = after.id ?? userId;
+    context.recordChange({ entityId, before: before.id ? before : undefined, after });
+    return ok({ value: after });
+  },
+});
+
 /** The caller's own profile (ADR 0061, user-scoped) and working hours here (#449). */
-export const profileOperations = [getProfile, updateProfile, getWorkingHours, setWorkingHours];
+export const profileOperations = [
+  getProfile,
+  updateProfile,
+  setProfileLocale,
+  getWorkingHours,
+  setWorkingHours,
+];

@@ -4,7 +4,7 @@ import {
   createPayment,
   execute,
   getDeposit,
-  getTicketBalance,
+  getOrderBalance,
   requestDeposit,
   sendInvoice,
   setPaymentProvider,
@@ -19,20 +19,20 @@ afterEach(() => {
 });
 
 describe("a final invoice deducts paid deposits (ADR 0090)", () => {
-  it("freezes what was paid, asks for the rest and keeps the ticket balance", async () => {
-    const { context, ticket } = await moneySetup();
-    const ticketId = ticket.id;
+  it("freezes what was paid, asks for the rest and keeps the order balance", async () => {
+    const { context, order } = await moneySetup();
+    const orderId = order.id;
     const deposit = unwrap({
       result: await execute({
         operation: requestDeposit,
-        input: { ticketId, description: "Advance", amountMinor: 150_000 },
+        input: { orderId, description: "Advance", amountMinor: 150_000 },
         context,
       }),
     });
     // A second deposit with nothing paid is not deducted.
     await execute({
       operation: requestDeposit,
-      input: { ticketId, description: "Unpaid", amountMinor: 10_000 },
+      input: { orderId, description: "Unpaid", amountMinor: 10_000 },
       context,
     });
     await markSucceeded({ context, paymentId: deposit.id });
@@ -43,13 +43,13 @@ describe("a final invoice deducts paid deposits (ADR 0090)", () => {
         context,
       }),
     });
-    // The ticket's 5 600 kr at 12 % scaled to the deposit (ADR 0093).
+    // The order's 5 600 kr at 12 % scaled to the deposit (ADR 0093).
     expect(created.vatRows).toEqual([
       { vatRatePercent: 12, totalExclVatMinor: 133_929, vatMinor: 16_071 },
     ]);
-    await makeInvoiceable({ context, statusId: ticket.statusId });
+    await makeInvoiceable({ context, statusId: order.statusId });
     const invoice = unwrap({
-      result: await execute({ operation: createInvoice, input: { ticketId }, context }),
+      result: await execute({ operation: createInvoice, input: { orderId }, context }),
     });
     expect(invoice).toMatchObject({
       totalInclVatMinor: 560_000,
@@ -68,7 +68,7 @@ describe("a final invoice deducts paid deposits (ADR 0090)", () => {
     expect(rest.amountMinor).toBe(410_000);
     await markSucceeded({ context, paymentId: rest.id });
     const balance = unwrap({
-      result: await execute({ operation: getTicketBalance, input: { ticketId }, context }),
+      result: await execute({ operation: getOrderBalance, input: { orderId }, context }),
     });
     expect(balance).toMatchObject({ billedMinor: 560_000, paidMinor: 560_000, balanceMinor: 0 });
     const billed = balance.receivables.find((r) => r.id === invoice.id);

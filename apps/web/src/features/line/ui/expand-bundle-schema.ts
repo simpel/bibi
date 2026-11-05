@@ -14,13 +14,13 @@ export type ExpandBundleFormValues = {
   quantity: string;
 };
 
-export type ExpandBundleSchemaInput = { ticketId: string; zones: LineTimeZoneInput["data"] };
+export type ExpandBundleSchemaInput = { orderId: string; zones: LineTimeZoneInput["data"] };
 
 /**
- * Core's `line.expandBundle` schema over the raw form values, for one ticket. The times are read
+ * Core's `line.expandBundle` schema over the raw form values, for one order. The times are read
  * in the zone of the bundle's venue (ADR 0064).
  */
-export function expandBundleSchema({ ticketId, zones }: ExpandBundleSchemaInput) {
+export function expandBundleSchema({ orderId, zones }: ExpandBundleSchemaInput) {
   return formSchema({
     schema: LineExpandBundleInputSchema,
     toInput: ({ values }: { values: ExpandBundleFormValues }) => {
@@ -28,7 +28,7 @@ export function expandBundleSchema({ ticketId, zones }: ExpandBundleSchemaInput)
       const instant = ({ value }: { value: string }) =>
         fromLocalInputValue({ value, timeZone }) ?? null;
       return {
-        ticketId,
+        orderId,
         entityTypeId: values.entityTypeId,
         itemId: values.itemId,
         name: blankToNull({ value: values.name }) ?? undefined,
@@ -51,7 +51,7 @@ export type ExpandBundleDefaultsInput = {
   timeZone: string;
 };
 
-/** The first line type and bundle, from the ticket's start for four hours. */
+/** The first line type and bundle, from the order's start for four hours. */
 export const expandBundleDefaults = ({
   entityTypeId,
   itemId,

@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 export type WelcomeStepFrameProps = {
   title: string;
   description?: string;
+  /** Centered visual element (such as an organization logo or avatar) rendered directly above the title. */
+  logo?: ReactNode;
   /** "Step n of m"; omitted on pages that are not part of a sequence. */
   progress?: { step: number; total: number };
   /** `wide` for the 3×3 grid; everything else reads best narrow. */
@@ -16,6 +18,7 @@ export type WelcomeStepFrameProps = {
 export function WelcomeStepFrame({
   title,
   description,
+  logo,
   progress,
   width = "narrow",
   children,
@@ -24,6 +27,7 @@ export function WelcomeStepFrame({
   return (
     <section className={cn("grid w-full gap-6", width === "wide" ? "max-w-4xl" : "max-w-xl")}>
       <div className="grid gap-2 text-center">
+        {logo ? <div className="flex justify-center pb-1">{logo}</div> : null}
         {progress ? (
           <p className="text-sm text-muted-foreground">
             {t("stepOf", { step: progress.step, total: progress.total })}

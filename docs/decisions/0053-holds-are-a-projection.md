@@ -5,7 +5,7 @@
 - **Related:** 0022 (occupancy), 0044 (line states and the phase grid), 0051 (single source of truth), 0052
 
 ## Context
-- ADR 0044 says a line's occupancy is *derived* from its state. In practice it is a second stored copy, written by application code in several operations: line create, update and archive, `line.changeState`, `ticket.changePhase`, `ticket.expireHolds`, `itemState.update` (changing `hold` or `released`), customer and ticket archive.
+- ADR 0044 says a line's occupancy is *derived* from its state. In practice it is a second stored copy, written by application code in several operations: line create, update and archive, `line.changeState`, `order.changePhase`, `order.expireHolds`, `itemState.update` (changing `hold` or `released`), customer and order archive.
 - Every new path that changes a line, a state or a setup must remember to resync occupancy. Forgetting one gives a room that looks free but is booked, or one that looks booked but is free.
 - The `SETUP` buffer is derived from `Setup.changeoverMinutes` at write time. A later change to the changeover time does not reach existing bookings.
 - The exclusion constraint (`Occupancy_no_overlap`) must stay: it is the only thing that makes double booking impossible under concurrency. A constraint needs a table, so holds cannot simply be computed on read.

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /**
- * Where a line's quantity comes from (ADR 0052): its own, else the ticket's headcount. An option
+ * Where a line's quantity comes from (ADR 0052): its own, else the order's headcount. An option
  * line without its own quantity has its parent line's (ADR 0082).
  */
 export const QuantitySourceSchema = z.enum([
@@ -30,7 +30,7 @@ export const LineEffectiveShape = {
     .nullable()
     .describe(
       "The quantity in effect: the line's own, else (an option line) its parent line's, else " +
-        "the ticket's headcount",
+        "the order's headcount",
     ),
   quantitySource: QuantitySourceSchema.nullable().describe(inherited),
   effectiveUnitPriceMinor: z

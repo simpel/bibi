@@ -6,7 +6,7 @@ export const invoiceMcpTools = [
   mcpTool({
     operation: "invoice.create",
     summary: ({ input }) =>
-      `Invoice ticket ${text({ value: input.ticketId })}, freezing its priced lines`,
+      `Invoice order ${text({ value: input.orderId })}, freezing its priced lines`,
   }),
   mcpTool({
     operation: "invoice.send",

@@ -17,15 +17,15 @@
 3. **A new permission feature `finance`** (`read`, `write`). Managers and admins have it by default; members do not. Exporting is `write` (ADR 0050).
 4. **Account mapping is organization data.** `AccountingSettings` (one row per organization) holds the receivable, payment clearing, customer advance, fee, rounding and default revenue accounts, one output VAT account per rate, and the fiscal year's first month. A new row is prefilled with BAS defaults (1510, 1580, 2420, 6570, 3740, 3001; 2611/2621/2631). The revenue account inherits: item → item type → organization default (`null` = inherit, ADR 0051). Set in Settings → Accounting.
 5. **Vouchers are derived from facts**, one per event, each summing to zero:
-   - invoice sent: receivables (incl. VAT) against revenue per account and VAT per rate from `vatRows`; deposits paid on the ticket move from customer advances to receivables;
+   - invoice sent: receivables (incl. VAT) against revenue per account and VAT per rate from `vatRows`; deposits paid on the order move from customer advances to receivables;
    - invoice voided after it was exported: the reversal;
    - payment: clearing against receivables (invoice), customer advances (deposit) or revenue and VAT pro rata from the accepted quote (quote paid by card);
    - refund: the reverse of its payment, on the refund date;
    - application fee: fee expense against clearing.
-   The ticket reference is `#OBJEKT` in dimension 6 (Projekt). Voucher text holds the invoice number and ticket reference, never customer or guest names.
+   The order reference is `#OBJEKT` in dimension 6 (Projekt). Voucher text holds the invoice number and order reference, never customer or guest names.
 6. **Exports are incremental batches.** `accountingExport.create` (a command: AI proposes, staff approve, audited) writes every event not exported before into one SIE 4I file. `AccountingExport` snapshots the file bytes; `AccountingExportEntry` records each source event once (unique on kind and source id, ADR 0056). Re-downloading returns the same bytes. Re-importing a batch never duplicates vouchers, because the next batch holds only new events. `accountingExport.preview` lists what is pending and what blocks an export (an unmapped account, no organization number).
 7. **New owned facts.** `Invoice` and `Deposit` get `sentAt` and `voidedAt`. `PaymentRefund` (amount, date, provider refund id) is written only by `payment.applySignal`; `Payment.refundedMinor` stays the Stripe mirror and gets a reconciliation check against the sum of refunds.
-8. **Transport is inline bytes for now.** `accountingExport.download` returns `{ filename, mime, size, contentBase64 }`, like `ticket.export` returns inline content, because ADR 0033's signed URL is not built. The file is a few hundred kilobytes at most. Moving to the signed URL is a follow-up.
+8. **Transport is inline bytes for now.** `accountingExport.download` returns `{ filename, mime, size, contentBase64 }`, like `order.export` returns inline content, because ADR 0033's signed URL is not built. The file is a few hundred kilobytes at most. Moving to the signed URL is a follow-up.
 9. **Dates are local.** A voucher date is the instant converted with `effectiveTimeZone` (ADR 0064).
 
 ## Consequences
@@ -41,7 +41,7 @@
 - **Regenerate by period.** Simpler, but re-importing a period duplicates vouchers in the accounting program and a later void has nowhere to go.
 - **A ledger table in Bibi.** Rejected: it would duplicate facts the invoices and payments already hold (ADR 0051). Vouchers are derived and only the exported file is a snapshot.
 - **Snapshot the revenue account on each order line.** Rejected for now: the mapping is resolved once, at export, and the batch freezes it.
-- **Gate on `payment:read`.** Rejected: financial totals for the whole organization are broader than one ticket's payments.
+- **Gate on `payment:read`.** Rejected: financial totals for the whole organization are broader than one order's payments.
 - **Money on the dashboard.** Rejected: the dashboard is the operational state (ADR 0041); finance has its own audience and permission.
 
 ## Addendum 2026-11-01 – exports report a date range
@@ -55,7 +55,7 @@ Supersedes decision 6 and the rejected "Regenerate by period" alternative, at th
 ## Addendum 2026-11-01 – as built
 - Revenue accounts are a finance-owned `RevenueAccount` table (one row per item type or per item, exactly one set), not columns on item type and item as Consequences says. Inheritance is unchanged: item, then item type, then `AccountingSettings.revenueAccount`.
 - The demo seed has two invoices (Lindholmen L1 paid, L2 overdue) and one export, but no refund yet; refunds are covered by tests.
-- A payment against a quote is booked as a sale; if the same ticket is later invoiced, the revenue counts twice. Card-paid predefined tickets are the case it is built for; invoicing a quote-paid ticket needs a follow-up decision.
+- A payment against a quote is booked as a sale; if the same order is later invoiced, the revenue counts twice. Card-paid predefined orders are the case it is built for; invoicing a quote-paid order needs a follow-up decision.
 
 ## Addendum 2026-11-01 – a year of demo history
 - The demo seed now has a year of invoices, payments and one refund (L16–L28, `docs/demo-seed.md`), dated through the context clock (ADR 0064 addendum), as Consequences asked.
@@ -66,7 +66,7 @@ Supersedes decision 6 and the rejected "Regenerate by period" alternative, at th
 
 ## Addendum 2026-11-01 – the dashboard looks ahead (ADR 0080)
 - "Money on the dashboard" is rejected again, as first decided: the money panel of ADR 0079 is gone. The dashboard shows only the overdue count and total, linking here.
-- Forward-booked value moved to `dashboard.summary` as "booked ahead". Won and lost tickets per month moved here from the dashboard as a part of `finance.overview` (`quote:read`).
+- Forward-booked value moved to `dashboard.summary` as "booked ahead". Won and lost orders per month moved here from the dashboard as a part of `finance.overview` (`quote:read`).
 
 ## Addendum 2026-11-02 – Fortnox connection (ADR 0087)
 - The first step of a direct integration exists: an organization can connect Fortnox ([ADR 0087](0087-fortnox-connection.md)). Nothing is posted yet; the SIE export stays the way vouchers reach accounting.

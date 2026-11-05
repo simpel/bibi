@@ -105,7 +105,7 @@ export type LoadValuesInput = {
  */
 export async function loadValues({ context, input, timeZone, blocks }: LoadValuesInput) {
   const lines = canView({ context, feature: "program" });
-  const lineFilter = Boolean(input.ticketId || input.stateId || input.statusId);
+  const lineFilter = Boolean(input.orderId || input.stateId || input.statusId);
   const open = canView({ context, feature: "item" }) && !lineFilter;
   const items = open ? await loadPricedItems({ context, input }) : [];
   return dayValues({ days: daysOf({ input, timeZone }), blocks, items, lines, open });

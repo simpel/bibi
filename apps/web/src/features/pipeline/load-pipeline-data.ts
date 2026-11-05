@@ -3,11 +3,11 @@ import {
   type BoardDto,
   listBoards,
   listCustomers,
-  listTicketStatuses,
+  listOrderStatuses,
   type PipelineBoard,
   pipelineBoard,
   type Result,
-  type TicketStatusDto,
+  type OrderStatusDto,
 } from "@bibi/core";
 import type { TransitionGate } from "@bibi/core/schemas";
 import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
@@ -29,11 +29,11 @@ export type PipelineData = {
   board: PipelineBoard;
   /** The organization's boards in order (the first is the default), for the switcher. */
   boards: BoardDto[];
-  /** Every active ticket status (customize mode places them and opens their dialogs). */
-  statuses: TicketStatusDto[];
-  /** Ticket status id → the ids it may move to (`ticketStatus.list` transitionsTo, ADR 0076). */
+  /** Every active order status (customize mode places them and opens their dialogs). */
+  statuses: OrderStatusDto[];
+  /** Order status id → the ids it may move to (`orderStatus.list` transitionsTo, ADR 0076). */
   transitions: Record<string, string[]>;
-  /** Ticket status id → target id → the gates of that move (ADR 0067 §5); gate-free moves are absent. */
+  /** Order status id → target id → the gates of that move (ADR 0067 §5); gate-free moves are absent. */
   moveGates: Record<string, Record<string, TransitionGate[]>>;
   /** Customer id → name; empty when the caller may not view customers (ADR 0050). */
   customerNames: Record<string, string>;
@@ -72,7 +72,7 @@ export async function loadPipelineData({
   const [board, boards, statuses, abilities] = await Promise.all([
     runOperation({ operation: pipelineBoard, input: boardId ? { boardId } : {} }),
     runOperation({ operation: listBoards, input: { limit: LIMIT } }),
-    runOperation({ operation: listTicketStatuses, input: { limit: LIMIT } }),
+    runOperation({ operation: listOrderStatuses, input: { limit: LIMIT } }),
     getCallerAbilities(),
   ]);
   if (!board.ok) return board;

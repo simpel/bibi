@@ -2,14 +2,14 @@ import type { InboundMessageReceiveInput } from "../inbound-message/receive-sche
 import { mailSender } from "./address";
 import type { InboundEmailReceiveInput } from "./schema";
 
-type MailFields = Omit<InboundEmailReceiveInput, "ticketId">;
+type MailFields = Omit<InboundEmailReceiveInput, "orderId">;
 
 /** A received mail as an EMAIL message (ADR 0085); the route is added by the caller. */
 export function toReceiveInput({
   mail,
 }: {
   mail: MailFields;
-}): Omit<InboundMessageReceiveInput, "endpointId" | "ticketId"> {
+}): Omit<InboundMessageReceiveInput, "endpointId" | "orderId"> {
   const sender = mailSender({ address: mail.fromAddress });
   return {
     channel: "EMAIL",

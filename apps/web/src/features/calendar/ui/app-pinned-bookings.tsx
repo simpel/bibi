@@ -10,7 +10,7 @@ export type AppPinnedBookingsProps = { organizationId: string; children: ReactNo
 
 /**
  * Bookings pinned from any calendar card stay along the bottom on every page of the
- * organization, and through a reload of the tab. Their open icon goes to the ticket.
+ * organization, and through a reload of the tab. Their open icon goes to the order.
  */
 export function AppPinnedBookings({ organizationId, children }: AppPinnedBookingsProps) {
   const labels = useCalendarText();
@@ -23,7 +23,7 @@ export function AppPinnedBookings({ organizationId, children }: AppPinnedBooking
       formatDate={format.date}
       storageKey={`bibi:pinned-bookings:${organizationId}`}
       onOpen={(booking) => {
-        if (booking.ticketId) router.push(`/tickets/${booking.ticketId}`);
+        if (booking.orderId) router.push(`/orders/${booking.orderId}`);
       }}
     >
       {children}

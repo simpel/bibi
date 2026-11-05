@@ -20,6 +20,7 @@ export function SignUpForm({ next }: SignUpFormProps) {
   const router = useRouter();
   const messages = useZodMessages();
   const form = useForm<SignUpValues>({
+    mode: "onBlur",
     resolver: zodResolver(SignUpSchema, messages),
     defaultValues: { name: "", email: "", password: "" },
   });

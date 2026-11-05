@@ -31,7 +31,7 @@ describe("approving the first setup (ADR 0045, #311)", () => {
       status: "approval_required",
       operation: "pipelineSetup.activate",
     });
-    expect(await base.db.ticketStatus.count()).toBe(0);
+    expect(await base.db.orderStatus.count()).toBe(0);
     expect(await base.db.auditLog.count()).toBe(0);
 
     const confirmed = await call({
@@ -41,9 +41,9 @@ describe("approving the first setup (ADR 0045, #311)", () => {
     });
     expect(confirmed.isError, JSON.stringify(confirmed.data)).toBe(false);
 
-    const statuses = await call({ client: user, name: "ticketStatus_list", args: {} });
+    const statuses = await call({ client: user, name: "orderStatus_list", args: {} });
     expect(statuses.data.items.map((row: { name: string }) => row.name)).toEqual(
-      draft.statuses.map((ticketStatus) => ticketStatus.name),
+      draft.statuses.map((orderStatus) => orderStatus.name),
     );
     const types = await call({ client: user, name: "entityType_list", args: {} });
     const names = types.data.items.map((row: { name: string }) => row.name);

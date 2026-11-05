@@ -4,7 +4,7 @@ import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoRefs } from "./demo-refs";
 import { resolveNames as resolve } from "./resolve-names";
-import { seedDemoWorkOrderDefinitions } from "./seed-work-order-definitions";
+import { seedDemoRunSheetDefinitions } from "./seed-run-sheet-definitions";
 import type { DemoOrg } from "./types";
 import type { DemoUserIds } from "./users";
 
@@ -16,7 +16,7 @@ export type SeedDemoResponsibilitiesInput = {
 };
 
 /**
- * Slice 2 of ADR 0025: responsibilities via `responsibility.create` as SYSTEM, then the work order
+ * Slice 2 of ADR 0025: responsibilities via `responsibility.create` as SYSTEM, then the run sheet
  * definitions that go to them.
  */
 export async function seedDemoResponsibilities({
@@ -43,5 +43,5 @@ export async function seedDemoResponsibilities({
     if (!result.ok) return result;
     responsibilityIds.set(name, result.value.id);
   }
-  return seedDemoWorkOrderDefinitions({ context, org, refs, responsibilityIds });
+  return seedDemoRunSheetDefinitions({ context, org, refs, responsibilityIds });
 }

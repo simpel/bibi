@@ -11,8 +11,8 @@ export type ActivityTitleCellProps = {
 };
 
 /**
- * The title of a notification or inbox row (ADR 0040): the unread dot, then the title, which
- * opens the item, bold while unread and shimmering while pending.
+ * The title of a notification or inbox row (ADR 0040): the unread dot when unread, then the
+ * title, which opens the item, bold while unread and shimmering while pending.
  */
 export function ActivityTitleCell({
   title,
@@ -22,14 +22,12 @@ export function ActivityTitleCell({
   onOpen,
 }: ActivityTitleCellProps) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="w-2 shrink-0">
-        {unread ? (
-          <span className="block size-2 rounded-full bg-destructive">
-            <span className="sr-only">{unreadLabel}</span>
-          </span>
-        ) : null}
-      </span>
+    <div className="flex items-center gap-2">
+      {unread ? (
+        <span className="size-2 shrink-0 rounded-full bg-destructive">
+          <span className="sr-only">{unreadLabel}</span>
+        </span>
+      ) : null}
       {pending ? (
         <Shimmer className="truncate font-medium text-foreground">{title}</Shimmer>
       ) : (

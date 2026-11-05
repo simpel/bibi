@@ -8,19 +8,19 @@ import type {
 } from "./schema";
 
 export type ProblemInput = Pick<PipelineProblem, "code" | "message"> &
-  Partial<Pick<PipelineProblem, "severity" | "ticketStatus" | "type" | "state">>;
+  Partial<Pick<PipelineProblem, "severity" | "orderStatus" | "type" | "state">>;
 
 /** A problem with the unset references as null; errors unless said otherwise. */
 export const problem = ({
   severity = "error",
-  ticketStatus,
+  orderStatus,
   type,
   state,
   ...rest
 }: ProblemInput) => ({
   ...rest,
   severity,
-  ticketStatus: ticketStatus ?? null,
+  orderStatus: orderStatus ?? null,
   type: type ?? null,
   state: state ?? null,
 });
@@ -33,8 +33,8 @@ export const duplicates = ({ names }: { names: readonly string[] }) => [
 /** One entry status, at least one closing status, no entry status that is closing (ADR 0043). */
 export function statusProblems({ statuses }: { statuses: readonly PipelineStatusDraft[] }) {
   const found: PipelineProblem[] = duplicates({ names: statuses.map((row) => row.name) }).map(
-    (ticketStatus) =>
-      problem({ code: "DUPLICATE_NAME", message: "Two statuses share a name", ticketStatus }),
+    (orderStatus) =>
+      problem({ code: "DUPLICATE_NAME", message: "Two statuses share a name", orderStatus }),
   );
   const entries = statuses.filter((row) => row.entry).length;
   if (entries === 0) found.push(problem({ code: "NO_ENTRY_STATUS", message: "No entry status" }));
@@ -46,7 +46,7 @@ export function statusProblems({ statuses }: { statuses: readonly PipelineStatus
   }
   for (const row of statuses.filter((candidate) => candidate.entry && candidate.closes)) {
     const message = "A status cannot be both the entry status and closing";
-    found.push(problem({ code: "INVALID_STATUS_FLAGS", message, ticketStatus: row.name }));
+    found.push(problem({ code: "INVALID_STATUS_FLAGS", message, orderStatus: row.name }));
   }
   return found;
 }
@@ -59,7 +59,7 @@ function stateProblems({ draft, bookable }: TypeProblemsInput): PipelineProblem[
   const { states } = draft;
   return states.flatMap((row) => {
     const found: PipelineProblem[] = [];
-    const flags = { initial: false, inWorkOrders: false, released: false, expires: false, ...row };
+    const flags = { initial: false, inRunSheets: false, released: false, expires: false, ...row };
     const checked = checkStateFlags({ flags: { ...flags, hold: row.hold ?? "NONE" }, bookable });
     if (!checked.ok) {
       const { message } = checked.error;
@@ -102,16 +102,16 @@ export type CellProblemsInput = { draft: PipelineSetupDraft };
 
 /** Every cell names a non-closing status, a type and one of its states, once per status and type. */
 export function cellProblems({ draft }: CellProblemsInput): PipelineProblem[] {
-  const keys = draft.cells.map((cell) => `${cell.ticketStatus}\u0000${cell.type}`);
+  const keys = draft.cells.map((cell) => `${cell.orderStatus}\u0000${cell.type}`);
   return draft.cells.flatMap((cell, index) => {
-    const at = { ticketStatus: cell.ticketStatus, type: cell.type, state: cell.state };
-    const ticketStatus = draft.statuses.find((row) => row.name === cell.ticketStatus);
+    const at = { orderStatus: cell.orderStatus, type: cell.type, state: cell.state };
+    const orderStatus = draft.statuses.find((row) => row.name === cell.orderStatus);
     const type = draft.itemTypes.find((row) => row.name === cell.type);
-    if (!ticketStatus || !type?.states.some((row) => row.name === cell.state)) {
+    if (!orderStatus || !type?.states.some((row) => row.name === cell.state)) {
       const message = "The cell names an unknown status, type or state";
       return [problem({ code: "UNKNOWN_CELL", message, ...at })];
     }
-    if (ticketStatus.closes) {
+    if (orderStatus.closes) {
       const message = "A closing status releases every line and has no cells";
       return [problem({ code: "CLOSING_CELL", message, ...at })];
     }

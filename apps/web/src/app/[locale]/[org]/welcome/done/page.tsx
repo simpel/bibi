@@ -4,10 +4,16 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { loadStepState } from "@/features/welcome/load-step-state";
 import { WelcomeStepFrame } from "@/features/welcome/ui/welcome-step-frame";
 import { Link } from "@/lib/navigation";
+import { pageTitle } from "@/lib/page-metadata";
 import { ROUTES } from "@/lib/routes";
 import { requireReadySession } from "@/server/guard";
 
 type DoneStepProps = { params: Promise<{ locale: string; org: string }> };
+
+export async function generateMetadata({ params }: DoneStepProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "welcome", key: "done.title" });
+}
 
 /** The end of the flow: ready, or waiting for an admin to finish the setup (ADR 0061). */
 export default async function DoneStep({ params }: DoneStepProps) {

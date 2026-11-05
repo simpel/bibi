@@ -5,14 +5,14 @@ import type { useTranslations } from "next-intl";
 
 type Translator = ReturnType<typeof useTranslations<"line">>;
 
-export type AmountColumnsInput = { t: Translator; money: NumberFormat["money"] };
+export type AmountColumnsInput = { t: Translator; money?: NumberFormat["money"] };
 
 /** "(inherited)" after a value the line does not set itself (ADR 0052). */
 const inherited = ({ t, source }: { t: Translator; source: string | null }) =>
   source && source !== "LINE" ? ` ${t("inherited")}` : "";
 
-/** The effective quantity and unit price, each marked when inherited. */
-export function amountColumns({ t, money }: AmountColumnsInput): ColumnDef<LineDto>[] {
+/** The effective quantity, marked when inherited. */
+export function amountColumns({ t }: AmountColumnsInput): ColumnDef<LineDto>[] {
   return [
     {
       id: "quantity",
@@ -23,26 +23,18 @@ export function amountColumns({ t, money }: AmountColumnsInput): ColumnDef<LineD
           ? "–"
           : `${original.effectiveQuantity}${inherited({ t, source: original.quantitySource })}`,
     },
-    {
-      id: "unitPrice",
-      header: t("columns.unitPrice"),
-      accessorFn: (item) => item.effectiveUnitPriceMinor ?? undefined,
-      cell: ({ row: { original } }) =>
-        original.effectiveUnitPriceMinor === null
-          ? "–"
-          : `${money({ minor: original.effectiveUnitPriceMinor })}${inherited({
-              t,
-              source: original.unitPriceSource,
-            })}`,
-    },
   ];
 }
 
-export type AmountColumnInput = AmountColumnsInput & { amounts: LineAmounts | null };
+export type AmountColumnInput = {
+  t: Translator;
+  money: NumberFormat["money"];
+  amounts: LineAmounts | null;
+};
 
 /**
  * What each priced line costs (`line.amounts`, the draft quote's rules), muted when it does not
- * count in the total (a part, an included option, an unchosen alternative), and the ticket's
+ * count in the total (a part, an included option, an unchosen alternative), and the order's
  * total in the footer ("From" while an alternative is unchosen): incl. VAT, the same basis as
  * Billed in the balance, with the excl. VAT sum beneath it.
  */

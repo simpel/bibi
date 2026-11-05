@@ -53,24 +53,24 @@ describe("option quantities in split groups (ADR 0082)", () => {
   });
 
   it("counts EXTRA options at their own quantities", async () => {
-    const { context, ticket, lineId, fish, veg } = await splitSetup();
+    const { context, order, lineId, fish, veg } = await splitSetup();
     const options = [
       { itemId: fish.id, quantity: 10 },
       { itemId: veg.id, quantity: 4 },
     ];
     unwrap({ result: await choose({ context, lineId, options }) });
-    const quote = await createTestQuote({ context, ticketId: ticket.id });
+    const quote = await createTestQuote({ context, orderId: order.id });
     expect(quote.totalExclVatMinor).toBe(14 * 50_000 + 10 * 10_000 + 4 * 5_000);
   });
 
   it("counts a split REPLACES option and the rest of its parent, and freezes both", async () => {
-    const { context, ticket, lineId, fish, vegan } = await splitSetup();
+    const { context, order, lineId, fish, vegan } = await splitSetup();
     const options = [
       { itemId: fish.id, quantity: 10 },
       { itemId: vegan.id, quantity: 4 },
     ];
     unwrap({ result: await choose({ context, lineId, options }) });
-    const draft = await createTestQuote({ context, ticketId: ticket.id });
+    const draft = await createTestQuote({ context, orderId: order.id });
     expect(draft.totalExclVatMinor).toBe(10 * 50_000 + 10 * 10_000 + 4 * 60_000);
     const sent = unwrap({
       result: await execute({ operation: sendQuote, input: { id: draft.id }, context }),

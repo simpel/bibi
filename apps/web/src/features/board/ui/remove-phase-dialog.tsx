@@ -10,7 +10,7 @@ export type RemovePhaseDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-/** `boardPhase.archive`: the column goes; its statuses move to the tray, tickets are untouched. */
+/** `boardPhase.archive`: the column goes; its statuses move to the tray, orders are untouched. */
 export function RemovePhaseDialog({ phase, open, onOpenChange }: RemovePhaseDialogProps) {
   const t = useTranslations("boardPhase");
   const router = useRouter();

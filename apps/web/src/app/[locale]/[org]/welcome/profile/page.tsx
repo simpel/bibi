@@ -4,9 +4,16 @@ import { loadStepState } from "@/features/welcome/load-step-state";
 import { ProfileForm } from "@/features/welcome/ui/profile/profile-form";
 import { welcomeProgress } from "@/features/welcome/ui/welcome-progress";
 import { WelcomeStepFrame } from "@/features/welcome/ui/welcome-step-frame";
+import { pageTitle } from "@/lib/page-metadata";
+import { gravatarUrl } from "@/server/gravatar";
 import { requireReadySession } from "@/server/guard";
 
 type ProfileStepProps = { params: Promise<{ locale: string; org: string }> };
+
+export async function generateMetadata({ params }: ProfileStepProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "welcome", key: "profile.title" });
+}
 
 /** Name, phone and photo (ADR 0061); the sign-up name prefills first and last name. */
 export default async function ProfileStep({ params }: ProfileStepProps) {
@@ -26,13 +33,14 @@ export default async function ProfileStep({ params }: ProfileStepProps) {
     phone: profile.phone ?? "",
     avatarKey: profile.avatarKey,
   };
+  const gravatar = session.user.email ? gravatarUrl({ email: session.user.email }) : null;
   return (
     <WelcomeStepFrame
       title={t("title")}
       description={t("description")}
       progress={welcomeProgress({ step: "profile", state })}
     >
-      <ProfileForm org={org} defaults={defaults} />
+      <ProfileForm org={org} gravatarUrl={gravatar} defaults={defaults} />
     </WelcomeStepFrame>
   );
 }

@@ -5,7 +5,7 @@ import {
   execute,
   sendQuote,
   setPaymentProvider,
-  updateTicketStatus,
+  updateOrderStatus,
 } from "../src/index";
 import { unwrap } from "./helpers";
 import { activatePaymentAccount } from "./payment-helpers";
@@ -17,20 +17,20 @@ import { addTestLines, createTestQuote, quoteSetup } from "./quote-helpers";
  */
 export async function moneySetup() {
   const setup = await quoteSetup();
-  const { context, ticket, lineType, lunch } = setup;
+  const { context, order, lineType, lunch } = setup;
   const lines = [{ itemId: lunch.id }];
-  await addTestLines({ context, ticketId: ticket.id, lineTypeId: lineType.id, lines });
+  await addTestLines({ context, orderId: order.id, lineTypeId: lineType.id, lines });
   await activatePaymentAccount({ context });
   const provider = createMemoryPaymentProvider();
   setPaymentProvider({ provider });
   return { ...setup, provider };
 }
 
-export type QuoteFlowInput = { context: ExecuteContext; ticketId: string; accept?: boolean };
+export type QuoteFlowInput = { context: ExecuteContext; orderId: string; accept?: boolean };
 
-/** A SENT quote of the ticket's lines, accepted when asked. */
-export async function sentTestQuote({ context, ticketId, accept = false }: QuoteFlowInput) {
-  const draft = await createTestQuote({ context, ticketId });
+/** A SENT quote of the order's lines, accepted when asked. */
+export async function sentTestQuote({ context, orderId, accept = false }: QuoteFlowInput) {
+  const draft = await createTestQuote({ context, orderId });
   const input = { id: draft.id };
   const sent = unwrap({ result: await execute({ operation: sendQuote, input, context }) });
   if (!accept) return sent;
@@ -39,10 +39,10 @@ export async function sentTestQuote({ context, ticketId, accept = false }: Quote
 
 export type InvoiceableInput = { context: ExecuteContext; statusId: string };
 
-/** Flags the ticket's current status `invoiceable`. */
+/** Flags the order's current status `invoiceable`. */
 export async function makeInvoiceable({ context, statusId }: InvoiceableInput) {
   const input = { id: statusId, invoiceable: true };
-  unwrap({ result: await execute({ operation: updateTicketStatus, input, context }) });
+  unwrap({ result: await execute({ operation: updateOrderStatus, input, context }) });
 }
 
 export type SettleInput = { context: ExecuteContext; paymentId: string; refundedMinor?: number };

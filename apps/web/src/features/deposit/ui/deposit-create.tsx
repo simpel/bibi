@@ -1,20 +1,20 @@
 import { getTranslations } from "next-intl/server";
 import { FormPageShell } from "@/components/wizard/form-page-shell";
-import { ticketRoute } from "@/lib/routes";
+import { orderRoute } from "@/lib/routes";
 import { DepositForm } from "./deposit-form";
 
-export type DepositCreateProps = { ticketId: string };
+export type DepositCreateProps = { orderId: string };
 
-/** `/new/deposit?ticket=<id>`: a deposit request on the ticket. */
-export async function DepositCreate({ ticketId }: DepositCreateProps) {
+/** `/new/deposit?order=<id>`: a deposit request on the order. */
+export async function DepositCreate({ orderId }: DepositCreateProps) {
   const t = await getTranslations("deposit");
   return (
     <FormPageShell
-      backHref={ticketRoute({ id: ticketId })}
+      backHref={orderRoute({ id: orderId })}
       title={t("create")}
       description={t("createDescription")}
     >
-      <DepositForm ticketId={ticketId} />
+      <DepositForm orderId={orderId} />
     </FormPageShell>
   );
 }

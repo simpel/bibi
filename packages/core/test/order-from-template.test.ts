@@ -1,0 +1,104 @@
+import { describe, expect, it } from "vitest";
+import { createOrderFromTemplate, execute } from "../src/index";
+import { errorCode, testContext, unwrap } from "./helpers";
+import { toState } from "./item-state-helpers";
+import { addLine } from "./status-grid-helpers";
+import { memberUser, partyOf } from "./order-helpers";
+import { makeTemplate, templateSetup } from "./order-template-helpers";
+
+const startsAt = new Date(Date.UTC(2037, 10, 1, 9));
+
+describe("order.createFromTemplate (ADR 0043)", () => {
+  it("creates the order in the template's status with its lines in the grid's states", async () => {
+    const setup = await templateSetup();
+    const { context, room, roomState, food } = setup;
+    const template = unwrap({ result: await makeTemplate({ context, setup }) });
+    const party = partyOf({ order: await setup.newOrder() });
+    const { customerId } = party;
+    const assigneeId = await memberUser({ context, name: "Eva Lind" });
+    const order = unwrap({
+      result: await execute({
+        operation: createOrderFromTemplate,
+        input: { templateId: template.id, ...party, startsAt, headcount: 8, assigneeId },
+        context,
+      }),
+    });
+    expect(order).toMatchObject({
+      statusId: setup.confirmed.id,
+      estimatedHeadcount: 8,
+      customerId,
+    });
+    expect(order.desiredEndsAt?.toISOString()).toBe("2037-11-01T11:00:00.000Z");
+    const lines = await context.db.line.findMany({
+      where: { orderId: order.id },
+      orderBy: { startsAt: "asc" },
+    });
+    expect(lines.map((line) => [line.name, line.stateId, line.quantity])).toEqual([
+      ["Meeting room", roomState.booked.id, 1],
+      ["Coffee", food.locked.id, null],
+    ]);
+    expect(lines[1]?.startsAt?.toISOString()).toBe("2037-11-01T09:30:00.000Z");
+    expect(room.id).toBe(lines[0]?.itemId);
+  });
+
+  it("refuses the whole creation and lists the blocking line when a hard hold collides", async () => {
+    const setup = await templateSetup();
+    const { context, room, roomState } = setup;
+    const template = unwrap({ result: await makeTemplate({ context, setup }) });
+    const other = await setup.newOrder();
+    const holder = await addLine({ setup, orderId: other.id, itemId: room.id, from: 10 });
+    unwrap({ result: await toState({ context, lineId: holder.id, stateId: roomState.booked.id }) });
+    const before = await context.db.order.count();
+    const assigneeId = await memberUser({ context, name: "Eva Lind" });
+    const refused = await execute({
+      operation: createOrderFromTemplate,
+      input: {
+        templateId: template.id,
+        ...partyOf({ order: other }),
+        startsAt,
+        headcount: 8,
+        assigneeId,
+      },
+      context,
+    });
+    expect(errorCode({ result: refused })).toBe("CONFLICT");
+    const issues = refused.ok ? [] : refused.error.issues;
+    expect(issues.map((issue) => issue.path)).toEqual(["lines.0"]);
+    expect(issues[0]?.message).toContain(`order #${other.reference}`);
+    expect(await context.db.order.count()).toBe(before);
+  });
+
+  it("starts in the template's status without an assignee: creating is not a move", async () => {
+    const setup = await templateSetup();
+    const { context } = setup;
+    const template = unwrap({ result: await makeTemplate({ context, setup }) });
+    const party = partyOf({ order: await setup.newOrder() });
+    const { customerId } = party;
+    const before = await context.db.order.count();
+    const created = await execute({
+      operation: createOrderFromTemplate,
+      input: { templateId: template.id, ...party, startsAt, headcount: 8 },
+      context,
+    });
+    expect(created.ok).toBe(true);
+    expect(await context.db.order.count()).toBe(before + 1);
+  });
+
+  it("needs read access to the template and customer", async () => {
+    const setup = await templateSetup();
+    const { context } = setup;
+    const template = unwrap({ result: await makeTemplate({ context, setup }) });
+    const party = partyOf({ order: await setup.newOrder() });
+    const { customerId } = party;
+    const writer = testContext({
+      organizationId: context.organizationId,
+      permissions: { order: ["read", "write", "delete"], customer: ["read"] },
+    });
+    const refused = await execute({
+      operation: createOrderFromTemplate,
+      input: { templateId: template.id, ...party, startsAt, headcount: 8 },
+      context: writer,
+    });
+    expect(errorCode({ result: refused })).toBe("VALIDATION");
+  });
+});

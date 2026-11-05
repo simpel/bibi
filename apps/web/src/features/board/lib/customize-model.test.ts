@@ -1,4 +1,4 @@
-import type { PipelineBoard, TicketStatusDto } from "@bibi/core/schemas";
+import type { PipelineBoard, OrderStatusDto } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { customizeChips, customizePhases, moveInLayout, reorderLayout } from "./customize-model";
 
@@ -30,7 +30,7 @@ const board = {
   unmappedCount: 0,
 } as unknown as PipelineBoard;
 
-const dto = ({ id }: { id: string }) => ({ id, name: id, color: "#000000" }) as TicketStatusDto;
+const dto = ({ id }: { id: string }) => ({ id, name: id, color: "#000000" }) as OrderStatusDto;
 
 describe("customize model", () => {
   it("lists the columns with their status ids", () => {
@@ -40,7 +40,7 @@ describe("customize model", () => {
     ]);
   });
 
-  it("counts tickets only for statuses on the board", () => {
+  it("counts orders only for statuses on the board", () => {
     const statuses = ["lead", "confirmed", "locked", "spare"].map((id) => dto({ id }));
     const chips = customizeChips({ board, statuses });
     expect(chips.map((chip) => chip.count)).toEqual([2, 1, 0, undefined]);

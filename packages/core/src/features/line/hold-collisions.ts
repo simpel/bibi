@@ -45,20 +45,20 @@ type TimedLine = LineRecord & { startsAt: Date; endsAt: Date };
 
 type Holder = { lineId: string | null };
 
-/** Ticket reference per line id, for the lines among the holders (one query). */
-async function ticketRefs({ context, holders }: Db & { holders: readonly Holder[] }) {
+/** Order reference per line id, for the lines among the holders (one query). */
+async function orderRefs({ context, holders }: Db & { holders: readonly Holder[] }) {
   const ids = holders.flatMap((holder) => (holder.lineId ? [holder.lineId] : []));
   const lines = await context.db.line.findMany({
     where: { id: { in: ids } },
-    select: { id: true, ticket: { select: { reference: true } } },
+    select: { id: true, order: { select: { reference: true } } },
   });
-  return new Map(lines.map((line) => [line.id, line.ticket.reference]));
+  return new Map(lines.map((line) => [line.id, line.order.reference]));
 }
 
 /**
  * What a line moving into a state would collide with (ADR 0044): only a `HARD` hold on a
  * `BOOKABLE` item can collide, with another hard hold or buffer or a block on the item in the
- * period it would block with its buffers. One issue per collision, e.g. "Knippla is booked by ticket #42 on 2026-03-14". The
+ * period it would block with its buffers. One issue per collision, e.g. "Knippla is booked by order #42 on 2026-03-14". The
  * database's exclusion constraint stays the guarantee; this names the blockers up front.
  */
 export async function holdCollisions({
@@ -91,11 +91,11 @@ export async function holdCollisions({
     },
     orderBy: { startsAt: "asc" },
   });
-  const refs = await ticketRefs({ context, holders });
+  const refs = await orderRefs({ context, holders });
   const path = `lines.${line.id}`;
   return holders.map((holder) => {
     const ref = holder.lineId ? refs.get(holder.lineId) : undefined;
-    const by = ref === undefined ? `blocked (${holder.type})` : `booked by ticket #${ref}`;
+    const by = ref === undefined ? `blocked (${holder.type})` : `booked by order #${ref}`;
     const message = `"${line.name}": ${item.name} is ${by} on ${day({ at: holder.startsAt })}`;
     return { path, message };
   });

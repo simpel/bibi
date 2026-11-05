@@ -11,7 +11,7 @@ export type OutcomesCardProps = {
   numbers: NumberFormat;
 };
 
-/** Won against lost tickets per month in the period, with the win rate (ADR 0080). */
+/** Won against lost orders per month in the period, with the win rate (ADR 0080). */
 export function OutcomesCard({ overview, numbers }: OutcomesCardProps) {
   const t = useTranslations("finance.outcomes");
   const finance = useTranslations("finance");

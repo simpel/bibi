@@ -12,7 +12,7 @@ export type AlternativeGroupTableProps = {
   canWrite: boolean;
 };
 
-/** The ticket's alternative groups: name, options and which one is chosen. */
+/** The order's alternative groups: name, options and which one is chosen. */
 export function AlternativeGroupTable({ groups, lines, canWrite }: AlternativeGroupTableProps) {
   const t = useTranslations("alternativeGroup");
   const columns = useAlternativeGroupColumns({ lines, canWrite });

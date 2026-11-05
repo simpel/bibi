@@ -77,11 +77,11 @@ await ctx.request.post('http://localhost:3330/api/auth/sign-in/email-otp', {
   data: { email: 'anna.berg@lindholmen-demo.bibi.test', otp: CODE },
 });
 const page = await ctx.newPage();
-await page.goto('http://localhost:3330/en/lindholmen-demo/tickets', { waitUntil: 'networkidle' });
-await page.screenshot({ path: 'tickets.png' });
+await page.goto('http://localhost:3330/en/lindholmen-demo/orders', { waitUntil: 'networkidle' });
+await page.screenshot({ path: 'orders.png' });
 ```
 
-Pages that exist: `/en/lindholmen-demo/` (assistant), `tickets`, `pipeline`, `calendar`. Codes expire, so request a fresh one per sign-in. Look at the screenshots before reporting.
+Pages that exist: `/en/lindholmen-demo/` (assistant), `orders`, `pipeline`, `calendar`. Codes expire, so request a fresh one per sign-in. Look at the screenshots before reporting.
 
 ## Not covered
 

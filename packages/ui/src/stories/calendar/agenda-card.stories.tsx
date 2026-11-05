@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { AgendaCard } from "./agenda-card";
-import { TICKET_18 } from "./calendar-data";
-import { TICKET_SMALL } from "./ticket-small-data";
+import { ORDER_18 } from "./calendar-data";
+import { ORDER_SMALL } from "./order-small-data";
 
 const meta = {
   title: "Calendar/Agenda",
   component: AgendaCard,
-  args: { ticket: TICKET_18, audience: "internal", locale: "en-GB" },
+  args: { order: ORDER_18, audience: "internal", locale: "en-GB" },
   argTypes: {
     audience: { control: "inline-radio", options: ["internal", "external"] },
-    ticket: { control: false },
+    order: { control: false },
   },
   decorators: [
     (Story) => (
@@ -29,8 +29,8 @@ export const Internal: Story = {};
 /** Customer: what they bought and when. No states, buffers or staffing. */
 export const External: Story = { args: { audience: "external" } };
 
-/** A small ticket without a bundle or buffers. */
-export const SmallTicket: Story = { args: { ticket: TICKET_SMALL } };
+/** A small order without a bundle or buffers. */
+export const SmallOrder: Story = { args: { order: ORDER_SMALL } };
 
 /** Phone width (375px): the list needs no change; tap a line for details. */
 export const Phone: Story = {

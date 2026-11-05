@@ -46,7 +46,7 @@ test("a proposed venue needs approval: nothing is created until the user approve
   const panel = page.locator(PANEL);
   await page
     .getByRole("navigation", { name: "Assistent" })
-    .getByRole("button", { name: "Ny chatt" })
+    .getByRole("button", { name: "Skapa chatt" })
     .click();
   await expect(card).toHaveCount(0);
   await gotoApp({ page, path: "/chats" });
@@ -91,7 +91,7 @@ test("a read tool renders as a venue table with links; history keeps the convers
   await history.getByRole("button", { name: "Spara" }).click();
   await expect(history.getByText("My venues")).toBeVisible();
 
-  await history.getByRole("button", { name: "Ny konversation" }).click();
+  await history.getByRole("button", { name: "Skapa konversation" }).click();
   await expect(page.getByText("Vad kan jag hjälpa dig med?")).toBeVisible();
   await gotoApp({ page, path: "/chats" });
   await history.getByText("My venues").click();

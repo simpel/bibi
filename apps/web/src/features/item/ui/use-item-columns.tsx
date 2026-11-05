@@ -1,7 +1,7 @@
 import type { EntityTypeDto, ItemDto } from "@bibi/core";
-import type { ColumnDef } from "@bibi/ui";
+import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { type ReactNode, useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";
 import { itemRoute } from "@/lib/configuration-routes";
 import { Link } from "@/lib/navigation";
@@ -15,11 +15,18 @@ export type UseItemColumnsInput = {
   venues: { id: string; name: string }[];
   /** Venue cell text when the caller may not view venues (ADR 0050). */
   hidden?: string | undefined;
+  renderActions?: ((row: ItemDto) => ReactNode) | undefined;
 };
 
-/** Name · type · venue · price. */
-export function useItemColumns({ types, venues, hidden }: UseItemColumnsInput): Column[] {
+/** Name · type · venue · price · sticky actions. */
+export function useItemColumns({
+  types,
+  venues,
+  hidden,
+  renderActions,
+}: UseItemColumnsInput): Column[] {
   const t = useTranslations("item");
+  const common = useTranslations("common");
   const { money } = useNumberFormat();
   return useMemo<Column[]>(
     () => [
@@ -49,7 +56,10 @@ export function useItemColumns({ types, venues, hidden }: UseItemColumnsInput): 
         accessorFn: (item) => item.priceMinor ?? undefined,
         cell: ({ row }) => priceText({ item: row.original, money, t }),
       },
+      ...(renderActions
+        ? [actionsColumn<ItemDto>({ label: common("actions"), cell: renderActions })]
+        : []),
     ],
-    [t, types, venues, hidden, money],
+    [t, common, types, venues, hidden, money, renderActions],
   );
 }

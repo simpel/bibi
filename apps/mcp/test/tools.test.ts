@@ -87,7 +87,7 @@ describe("MCP tools", () => {
       context: testContext({ permissions: PRESET_PERMISSIONS.manager }),
     });
     const memberNames = (await member.listTools()).tools.map((tool) => tool.name);
-    expect(memberNames).toEqual(expect.arrayContaining(["ticket_create", "item_list"]));
+    expect(memberNames).toEqual(expect.arrayContaining(["order_create", "item_list"]));
     expect(memberNames).toContain("item_update");
     expect(memberNames).not.toContain("item_archive");
     const admin = await names({ access: "admin" });

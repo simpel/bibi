@@ -11,16 +11,16 @@ import {
 import { createTypeWithField } from "./customer-helpers";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
 import { addRequirement, requirementSetup } from "./requirement-helpers";
-import { createTestTicket } from "./ticket-helpers";
+import { createTestOrder } from "./order-helpers";
 
 describe("requirement (ADR 0021)", () => {
-  it("registers counts on the ticket and on a line, with own fields", async () => {
-    const { context, ticket, morning, type, key, gluten } = await requirementSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id };
-    const onTicket = unwrap({
+  it("registers counts on the order and on a line, with own fields", async () => {
+    const { context, order, morning, type, key, gluten } = await requirementSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id };
+    const onOrder = unwrap({
       result: await addRequirement({ ...base, vocabularyValueId: gluten, quantity: 3 }),
     });
-    expect(onTicket).toMatchObject({ lineId: null, quantity: 3, fields: {} });
+    expect(onOrder).toMatchObject({ lineId: null, quantity: 3, fields: {} });
     const onItem = unwrap({
       result: await addRequirement({
         ...base,
@@ -34,15 +34,15 @@ describe("requirement (ADR 0021)", () => {
     const all = unwrap({
       result: await execute({ operation: listRequirements, input: base, context }),
     });
-    expect(all.items.map((row) => row.id)).toEqual([onTicket.id, onItem.id]);
+    expect(all.items.map((row) => row.id)).toEqual([onOrder.id, onItem.id]);
     const input = { lineId: morning.id };
     const own = unwrap({ result: await execute({ operation: listRequirements, input, context }) });
     expect(own.items.map((row) => row.id)).toEqual([onItem.id]);
   });
 
   it("updates the count, merges fields and archives", async () => {
-    const { context, ticket, type, key, gluten } = await requirementSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id };
+    const { context, order, type, key, gluten } = await requirementSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id };
     const row = unwrap({
       result: await addRequirement({ ...base, vocabularyValueId: gluten, quantity: 3 }),
     });
@@ -59,8 +59,8 @@ describe("requirement (ADR 0021)", () => {
   });
 
   it("allows one count per value and level", async () => {
-    const { context, ticket, morning, type, gluten } = await requirementSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id, quantity: 1 };
+    const { context, order, morning, type, gluten } = await requirementSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id, quantity: 1 };
     unwrap({ result: await addRequirement({ ...base, vocabularyValueId: gluten }) });
     const twice = await addRequirement({ ...base, vocabularyValueId: gluten });
     expect(errorCode({ result: twice })).toBe("CONFLICT");
@@ -69,9 +69,9 @@ describe("requirement (ADR 0021)", () => {
     expect(errorCode({ result: await addRequirement(onItem) })).toBe("CONFLICT");
   });
 
-  it("refuses a foreign or archived list value, a wrong type and another ticket's item", async () => {
-    const { context, ticket, morning, type, gluten, lactose } = await requirementSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id, quantity: 1 };
+  it("refuses a foreign or archived list value, a wrong type and another order's item", async () => {
+    const { context, order, morning, type, gluten, lactose } = await requirementSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id, quantity: 1 };
     const other = testContext();
     const foreign = unwrap({
       result: await execute({
@@ -89,21 +89,21 @@ describe("requirement (ADR 0021)", () => {
     });
     const archived = await addRequirement({ ...base, vocabularyValueId: lactose });
     expect(errorCode({ result: archived })).toBe("VALIDATION");
-    const ticketType = await createTypeWithField({ context, base: "TICKET", name: "Other" });
+    const orderType = await createTypeWithField({ context, base: "ORDER", name: "Other" });
     const wrongType = await addRequirement({
       ...base,
-      entityTypeId: ticketType.type.id,
+      entityTypeId: orderType.type.id,
       vocabularyValueId: gluten,
     });
     expect(errorCode({ result: wrongType })).toBe("VALIDATION");
-    const second = await createTestTicket({
+    const second = await createTestOrder({
       context,
-      entityTypeId: ticket.entityTypeId,
-      customerId: ticket.customerId,
+      entityTypeId: order.entityTypeId,
+      customerId: order.customerId,
     });
     const elsewhere = await addRequirement({
       ...base,
-      ticketId: second.id,
+      orderId: second.id,
       lineId: morning.id,
       vocabularyValueId: gluten,
     });
@@ -111,14 +111,14 @@ describe("requirement (ADR 0021)", () => {
   });
 
   it("lets readers list but only writers register", async () => {
-    const { context, ticket, type, gluten } = await requirementSetup();
+    const { context, order, type, gluten } = await requirementSetup();
     const reader = peer({ of: context, access: "read" });
-    const input = { ticketId: ticket.id };
+    const input = { orderId: order.id };
     const listed = await execute({ operation: listRequirements, input, context: reader });
     expect(errorCode({ result: listed })).toBeNull();
     const denied = await addRequirement({
       context: reader,
-      ticketId: ticket.id,
+      orderId: order.id,
       entityTypeId: type.id,
       vocabularyValueId: gluten,
       quantity: 1,

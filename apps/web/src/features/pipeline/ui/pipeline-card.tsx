@@ -8,16 +8,16 @@ import type { BoardCard } from "../lib/kanban-model";
 export type PipelineCardContentProps = {
   /** `customerName` is null when the caller may not view customers: then none is shown. */
   card: BoardCard;
-  /** Opens the ticket's sheet beside the board; without it (customize mode) the title is plain. */
-  onOpen?: (input: { ticketId: string }) => void;
+  /** Opens the order's sheet beside the board; without it (customize mode) the title is plain. */
+  onOpen?: (input: { orderId: string }) => void;
 };
 
-/** Enter and space open the ticket; they must not reach the card, where they lift it. */
+/** Enter and space open the order; they must not reach the card, where they lift it. */
 const keepKeys = ({ event }: { event: KeyboardEvent }) => {
   if (event.key === "Enter" || event.key === " ") event.stopPropagation();
 };
 
-/** What a board card shows: its title (opens the ticket), status in a grouped column, type and customer, start. */
+/** What a board card shows: its title (opens the order), status in a grouped column, type and customer, start. */
 export function PipelineCardContent({ card, onOpen }: PipelineCardContentProps) {
   const t = useTranslations("pipeline");
   const format = useDateTimeFormat();
@@ -29,7 +29,7 @@ export function PipelineCardContent({ card, onOpen }: PipelineCardContentProps) 
           <button
             type="button"
             className="text-left font-medium underline-offset-4 hover:underline focus-visible:underline"
-            onClick={() => onOpen({ ticketId: card.id })}
+            onClick={() => onOpen({ orderId: card.id })}
             onKeyDown={(event) => keepKeys({ event })}
           >
             {card.title}

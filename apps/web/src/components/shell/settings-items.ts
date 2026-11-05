@@ -27,11 +27,11 @@ export type SettingsKey =
   | "lists"
   | "setups"
   | "responsibilities"
-  | "workOrders"
+  | "runSheets"
   | "priceLists"
-  | "ticketStatuses"
+  | "orderStatuses"
   | "itemStates"
-  | "ticketTemplates"
+  | "orderTemplates"
   | "members"
   | "payments"
   | "billing"
@@ -70,8 +70,8 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
     permission: "responsibility:read",
   },
   {
-    href: ROUTES.settingsWorkOrders,
-    key: "workOrders",
+    href: ROUTES.settingsRunSheets,
+    key: "runSheets",
     icon: ClipboardListIcon,
     permission: "template:read",
   },
@@ -83,7 +83,7 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
   },
   {
     href: ROUTES.settingsPipeline,
-    key: "ticketStatuses",
+    key: "orderStatuses",
     icon: CircleDotIcon,
     permission: "pipeline:read",
   },
@@ -94,8 +94,8 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
     permission: "pipeline:read",
   },
   {
-    href: ROUTES.settingsTicketTemplates,
-    key: "ticketTemplates",
+    href: ROUTES.settingsOrderTemplates,
+    key: "orderTemplates",
     icon: CopyPlusIcon,
     permission: "template:read",
   },

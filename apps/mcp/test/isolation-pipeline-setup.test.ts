@@ -17,7 +17,7 @@ const draft = ({ entityTypeId }: { entityTypeId: string }) => ({
     { name: "Open", color: "#f59e0b", entry: true },
     { name: "Closed", color: "#6b7280", closes: true },
   ],
-  cells: [{ ticketStatus: "Open", type: "Room", state: "Held" }],
+  cells: [{ orderStatus: "Open", type: "Room", state: "Held" }],
 });
 
 describe("cross-organization isolation: the guided pipeline setup", () => {
@@ -32,7 +32,7 @@ describe("cross-organization isolation: the guided pipeline setup", () => {
     expect(preview.data.code).toBe("NOT_FOUND");
     const activated = await call({ client: b, name: "pipelineSetup_activate", args: foreign });
     expect(activated.data.code).toBe("NOT_FOUND");
-    const statuses = await call({ client: b, name: "ticketStatus_list", args: {} });
+    const statuses = await call({ client: b, name: "orderStatus_list", args: {} });
     expect(statuses.data.items).toEqual([]);
     const own = await call({ client: a, name: "pipelineSetup_activate", args: foreign });
     expect(own.isError, JSON.stringify(own.data)).toBe(false);

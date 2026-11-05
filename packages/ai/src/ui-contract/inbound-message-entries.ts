@@ -39,7 +39,7 @@ export const INBOUND_MESSAGE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> =
     toProps: ({ value }) => value,
   }),
   inboundMessage_get: card,
-  inboundMessage_attachToTicket: card,
+  inboundMessage_attachToOrder: card,
   inboundMessage_markRead: card,
   inboundMessage_markUnread: card,
   inboundMessage_delete: card,

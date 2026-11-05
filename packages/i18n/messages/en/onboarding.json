@@ -1,0 +1,382 @@
+{
+  "welcome": {
+    "stepOf": "Step {step} of {total}",
+    "back": "Back",
+    "continue": "Continue",
+    "skipForNow": "Skip for now",
+    "saved": "Saved",
+    "skipped": "Setup skipped. You can finish it later in Settings.",
+    "activated": "{organization} is set up",
+    "logoAlt": "Bibi",
+    "start": {
+      "title": "Welcome to Bibi",
+      "description": "Join your team or set up Bibi for your venue.",
+      "yourOrganizations": "Your organizations",
+      "open": "Open",
+      "invitations": "Invitations",
+      "invitedAs": "Invited as {role}",
+      "accept": "Accept",
+      "accepting": "Joining {organization}…",
+      "noInvitations": "No invitations for {email}. Ask your admin to invite this email.",
+      "createTitle": "Create a new organization",
+      "createDescription": "Set up Bibi for your venue.",
+      "create": "Create organization",
+      "haveCode": "Have an invite code?",
+      "invitedTitle": "{inviter} invited you to {organization}",
+      "invitedTitleNoInviter": "You have been invited to {organization}"
+    },
+    "join": {
+      "held": "Every seat in {organization} is taken, so an admin needs to approve yours. You'll get an invitation email once they do.",
+      "offerTitle": "Join {organization}",
+      "offerDescription": "Your colleagues at {domain} use Bibi in {organization}.",
+      "joinOrganization": "Join {organization}",
+      "different": "Join a different organization",
+      "createInstead": "Create a new organization instead",
+      "join": "Join",
+      "joining": "Joining {organization}…",
+      "joined": "You have joined {organization}.",
+      "codeTitle": "Join a different organization",
+      "codeDescription": "Enter the code from your invitation email.",
+      "code": "Invite code",
+      "codeHint": "The code works only for the email address the invitation was sent to.",
+      "useCode": "Join",
+      "checkingCode": "Checking the code…",
+      "codeAccepted": "You have joined the organization.",
+      "listTitle": "Your organizations",
+      "listDescription": "Join the organizations you work in, then pick the one Bibi opens first.",
+      "member": "You are a member",
+      "isMember": "Joined",
+      "byDomain": "Open to everyone at {domain}",
+      "invited": "You are invited",
+      "nothing": "There is nothing to join yet. Ask your admin for an invitation.",
+      "primary": "Primary organization",
+      "primaryHint": "Bibi opens this organization when you sign in.",
+      "continue": "Continue to {organization}",
+      "finishing": "Opening…",
+      "finished": "{organization} is your primary organization."
+    },
+    "new": {
+      "title": "Name your organization",
+      "description": "This is also the address your team uses.",
+      "name": "Name",
+      "slug": "Address",
+      "slugPrefix": "heybibi.se/",
+      "timeZone": "Time zone",
+      "submit": "Create",
+      "creating": "Creating {organization}…",
+      "slugChecking": "Checking heybibi.se/{slug}…",
+      "slugFree": "heybibi.se/{slug} is yours",
+      "slugTaken": "/{slug} is taken. We picked /{suggestion}. Use it or change it.",
+      "slugReserved": "/{slug} is reserved. Use /{suggestion} or change it.",
+      "slugInvalid": "Use 3–40 letters, numbers or dashes",
+      "useSuggestion": "Use /{suggestion}"
+    },
+    "profile": {
+      "title": "About you",
+      "description": "Your team sees this on orders and assignments.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phone": "Phone",
+      "avatar": "Photo",
+      "avatarHint": "PNG, JPEG or WebP, at most 2 MB. Optional.",
+      "uploadAvatar": "Upload photo",
+      "changeAvatar": "Change photo",
+      "removeAvatar": "Remove",
+      "uploading": "Uploading…",
+      "avatarTooLarge": "The photo is larger than 2 MB",
+      "avatarWrongType": "Use a PNG, JPEG or WebP image"
+    },
+    "hours": {
+      "title": "Your working hours",
+      "description": "Used to show when you are available. You can change them later in your profile."
+    },
+    "setup": {
+      "organization": {
+        "title": "About {organization}",
+        "description": "Shown on quotes and invoices.",
+        "legalName": "Legal name",
+        "orgNumber": "Organization number",
+        "streetAddress": "Street address",
+        "postalCode": "Postal code",
+        "city": "City",
+        "country": "Country",
+        "website": "Website",
+        "contactEmail": "Email",
+        "contactPhone": "Phone",
+        "alsoVenue": "This address is also our first venue"
+      },
+      "kind": {
+        "title": "What kind of place do you run?",
+        "description": "We prefill what you book and sell. You can change everything.",
+        "startEmpty": "Start empty instead"
+      },
+      "spaces": {
+        "title": "Spaces & rooms",
+        "description": "The rooms, halls, and areas available to reserve.",
+        "later": "You can add, rename, or remove spaces any time in Settings → Types.",
+        "placeholder": "Add a space or room (e.g. Boardroom, Main Hall)…"
+      },
+      "food": {
+        "title": "Food & beverage",
+        "description": "Meals, fika, drinks, and catering packages.",
+        "later": "You can add more later, for example when you build your menu.",
+        "placeholder": "Add an item (e.g. Lunch buffet, Wine package)…"
+      },
+      "extras": {
+        "title": "Equipment & extras",
+        "description": "AV equipment, extra furniture, and event tools.",
+        "later": "You can add more later in Settings → Types.",
+        "placeholder": "Add equipment or extra (e.g. Wireless mic, Projector)…"
+      },
+      "bookable": {
+        "title": "Spaces & rooms",
+        "description": "The rooms, halls, and areas available to reserve.",
+        "later": "You can add, rename or remove these any time in Settings → Types.",
+        "placeholder": "Add a space…"
+      },
+      "sellable": {
+        "title": "Food & beverage",
+        "description": "Meals, fika, drinks, and catering packages.",
+        "later": "You can add more later, for example when you build your menu.",
+        "placeholder": "Add an item…"
+      },
+      "customBadge": "Custom",
+      "remove": "Remove",
+      "review": {
+        "title": "Here's your setup",
+        "description": "A starting point. Nothing is saved until you activate it.",
+        "spaces": "Spaces & rooms",
+        "food": "Food & beverage",
+        "extras": "Equipment & extras",
+        "book": "Spaces & rooms",
+        "sell": "Food & beverage",
+        "path": "How a request moves",
+        "none": "None yet",
+        "activate": "Activate",
+        "activating": "Setting up {organization}…"
+      }
+    },
+    "done": {
+      "title": "You're all set",
+      "readyDescription": "{organization} is ready.",
+      "pendingTitle": "Almost there",
+      "pendingDescription": "Your admin is still setting up {organization}. You can look around in the meantime.",
+      "goToBoard": "Go to the board"
+    },
+    "kinds": {
+      "conference-estate": {
+        "name": "Conference estate",
+        "example": "Meeting rooms, day conferences, lunch"
+      },
+      "manor-house": {
+        "name": "Manor house",
+        "example": "Weddings, dinners, a few large rooms"
+      },
+      "experience-centre": {
+        "name": "Experience centre",
+        "example": "Halls, guided tours, groups and food"
+      },
+      "museum": {
+        "name": "Museum",
+        "example": "Guided tours, event spaces, café"
+      },
+      "restaurant": {
+        "name": "Restaurant with private rooms",
+        "example": "Private rooms, set menus, drinks"
+      },
+      "event-hall": {
+        "name": "Event & congress hall",
+        "example": "Large halls, exhibitor stands, catering"
+      },
+      "arena-hospitality": {
+        "name": "Arena hospitality",
+        "example": "Lodges and match-day packages"
+      },
+      "theatre": {
+        "name": "Theatre & concert hall",
+        "example": "Foyers, pre-show dinners, rentals"
+      },
+      "meeting-space": {
+        "name": "Meeting space",
+        "example": "Bookable rooms, coffee, equipment"
+      },
+      "empty": {
+        "name": "Start empty",
+        "example": "Set up everything yourself"
+      }
+    },
+    "types": {
+      "conferenceRoom": "Conference room",
+      "breakoutRoom": "Breakout room",
+      "equipment": "Equipment",
+      "coffeeBreak": "Coffee break",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "drink": "Drink",
+      "activity": "Activity",
+      "banquetHall": "Banquet hall",
+      "meetingRoom": "Meeting room",
+      "garden": "Garden",
+      "dinnerMenu": "Dinner menu",
+      "drinkPackage": "Drink package",
+      "hall": "Hall",
+      "guide": "Guide",
+      "tour": "Tour",
+      "workshop": "Workshop",
+      "meal": "Meal",
+      "eventSpace": "Event space",
+      "guidedTour": "Guided tour",
+      "privateRoom": "Private room",
+      "setMenu": "Set menu",
+      "dish": "Dish",
+      "winePackage": "Wine package",
+      "exhibitionStand": "Exhibition stand",
+      "catering": "Catering",
+      "lodge": "Lodge",
+      "lounge": "Lounge",
+      "matchDayPackage": "Match-day package",
+      "foyer": "Foyer",
+      "rehearsalRoom": "Rehearsal room",
+      "preShowDinner": "Pre-show dinner",
+      "intervalPackage": "Interval package"
+    }
+  },
+  "administration": {
+    "title": "Administration",
+    "description": "Manage your organization members, API keys, and settings.",
+    "members": {
+      "title": "Members",
+      "description": "Manage organization staff, roles, invitations, and fine-grained permissions.",
+      "action": "Manage members"
+    },
+    "apiKeys": {
+      "title": "API keys",
+      "description": "Generate and manage keys for external integrations and the REST API.",
+      "action": "Manage API keys"
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Configure entity types, item states, order templates, price lists, and pipelines.",
+      "action": "Open settings"
+    }
+  },
+  "settingsHub": {
+    "title": "Settings",
+    "description": "How your organization is set up. Changes here affect everyone.",
+    "items": {
+      "billing": "Your Bibi plan, seats and seat requests.",
+      "organization": "The organization's time zone, used by every venue without its own.",
+      "types": "The kinds of items you offer and the fields they have.",
+      "lists": "Your own value lists, such as allergens or equipment.",
+      "setups": "Room setups like theatre, classroom or boardroom.",
+      "responsibilities": "What someone answers for, such as head of kitchen, and who it defaults to.",
+      "runSheets": "Run sheet definitions, such as the kitchen order, and who gets them.",
+      "priceLists": "Prices per customer group or season.",
+      "orderStatuses": "The statuses an order moves through.",
+      "members": "Who has access and with which role.",
+      "payments": "Deposit rule and invoice provider for payments.",
+      "accounting": "Accounts, VAT and fiscal year for the accounting export.",
+      "skills": "Reusable instructions for the assistant.",
+      "integrations": "Connect Stripe and Fortnox and manage API keys for other systems.",
+      "itemStates": "The states a line can be in, per item type.",
+      "orderTemplates": "Ready-made orders that staff create an order from in one step."
+    }
+  },
+  "organizationSettings": {
+    "title": "Organization",
+    "description": "Settings that apply to the whole organization.",
+    "timeZone": "Time zone",
+    "timeZoneHint": "Order times and every venue without its own zone use this zone. Changing it changes how times are shown and entered; saved times stay the same.",
+    "saved": "The time zone has been saved.",
+    "domainJoin": {
+      "label": "Colleagues can join by email domain",
+      "hint": "Anyone who signs in with a verified @{domain} email is offered to join as a member. Someone you remove is not offered it again.",
+      "noDomain": "No email domain yet. Turn this on while signed in with a verified work email to use its domain.",
+      "turnedOn": "Colleagues with your email domain are now offered to join when they sign in.",
+      "turnedOff": "Colleagues now need an invitation to join."
+    }
+  },
+  "hours": {
+    "off": "Off",
+    "lunch": "Lunch {start}–{end}",
+    "change": "Change",
+    "done": "Done",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "saved": "Hours saved",
+    "workday": "Works",
+    "start": "Start",
+    "end": "End",
+    "breakStart": "Break from",
+    "breakEnd": "Break to",
+    "exceptions": "Exceptions",
+    "noExceptions": "No exceptions. Add a day that differs from the week, such as a holiday.",
+    "addException": "Add exception",
+    "removeException": "Remove",
+    "exceptionDate": "Date",
+    "exceptionNote": "Note",
+    "closedAllDay": "Closed all day",
+    "closed": "Closed",
+    "day": {
+      "0": "Monday",
+      "1": "Tuesday",
+      "2": "Wednesday",
+      "3": "Thursday",
+      "4": "Friday",
+      "5": "Saturday",
+      "6": "Sunday"
+    },
+    "exceptionsHelp": "Only dated exceptions and no weekdays means every other day is closed."
+  },
+  "pipelineSetup": {
+    "preview": {
+      "ready": "Ready to activate.",
+      "notReady": "Fix the errors below before you activate.",
+      "severity": {
+        "error": "Error",
+        "warning": "Warning"
+      },
+      "problems": {
+        "NO_ENTRY_STATUS": "No status where new orders start",
+        "MANY_ENTRY_STATUSES": "More than one status where new orders start",
+        "NO_CLOSING_STATUS": "No status that ends the order",
+        "INVALID_STATUS_FLAGS": "A status cannot both start and end an order",
+        "DUPLICATE_NAME": "The same name is used twice",
+        "NO_INITIAL_STATE": "An item type has no state that new lines start in",
+        "MANY_INITIAL_STATES": "An item type has more than one state that new lines start in",
+        "INVALID_STATE_FLAGS": "A state's choices contradict each other or the type",
+        "UNKNOWN_EXPIRY_STATE": "The expiry state is not one of the type's states",
+        "UNKNOWN_CELL": "A grid cell names a status, type or state that does not exist",
+        "CLOSING_CELL": "A status that ends the order cannot have grid cells",
+        "STATE_CANNOT_LEAVE": "Lines in this state can never move on",
+        "LINE_BLOCKED": "A line cannot move to the state the grid sets"
+      },
+      "calendar": "Holds over the order's life",
+      "slot": "{status}: {state}",
+      "legend": "Solid: hard hold. Hatched: soft hold. Outline: no hold.",
+      "status": "Status",
+      "empty": "No statuses.",
+      "released": "Released",
+      "holds": {
+        "NONE": "No hold",
+        "SOFT": "Soft hold",
+        "HARD": "Hard hold"
+      },
+      "blocked": "Cannot move as the grid says"
+    }
+  },
+  "statusGrid": {
+    "title": "The grid",
+    "description": "What happens to each item type's lines when an order enters a status. Choose a state, or keep to leave the lines as they are.",
+    "status": "Status",
+    "keep": "Keep",
+    "closes": "Releases every line",
+    "empty": "No statuses yet.",
+    "saving": "Saving cell…",
+    "saved": "The cell has been saved.",
+    "cellLabel": "{status}: {type}",
+    "cellSets": "When an order enters {status}, lines of {type} move to {state}.",
+    "cellKeeps": "Lines of {type} keep their state."
+  }
+}

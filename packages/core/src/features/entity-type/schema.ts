@@ -63,7 +63,7 @@ export const EntityTypeUpdateInputSchema = z.object({
     .optional()
     .describe(
       "Item types: the state (itemState.list) lines in an expiring state fall to when the " +
-        "ticket's holdsUntil date passes; null clears it",
+        "order's holdsUntil date passes; null clears it",
     ),
   ...TypeBufferInputShape,
   resourceKind: ResourceKindSchema.optional(),

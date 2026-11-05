@@ -41,14 +41,14 @@ async function candidateSlots({ context, userId, kind, subjectType }: MineQuery)
   }));
   if (subjectType === "ITEM") return slots;
   const derived = await derivedSlots({ context, userId, kind });
-  const tickets = await context.db.ticket.findMany({
-    where: { id: { in: derived.map((slot) => slot.ticketId) } },
+  const orders = await context.db.order.findMany({
+    where: { id: { in: derived.map((slot) => slot.orderId) } },
     select: { id: true, createdAt: true },
   });
-  const createdAt = new Map(tickets.map((ticket) => [ticket.id, ticket.createdAt]));
-  for (const { ticketId, responsibilityId } of derived) {
-    const at = createdAt.get(ticketId);
-    if (at) slots.push({ subjectId: ticketId, responsibilityId, at });
+  const createdAt = new Map(orders.map((order) => [order.id, order.createdAt]));
+  for (const { orderId, responsibilityId } of derived) {
+    const at = createdAt.get(orderId);
+    if (at) slots.push({ subjectId: orderId, responsibilityId, at });
   }
   return slots;
 }
@@ -79,7 +79,7 @@ async function hydrate({
       rows.find((r) => r.recordId === subjectId && r.responsibilityId === responsibilityId) ?? null;
     return deriveAssignment({
       organizationId: context.organizationId,
-      subjectType: AssignmentSubjectTypeSchema.parse(row?.record.base ?? "TICKET"),
+      subjectType: AssignmentSubjectTypeSchema.parse(row?.record.base ?? "ORDER"),
       subjectId,
       responsibilityId,
       row,
@@ -90,7 +90,7 @@ async function hydrate({
 
 /**
  * The member's assignments, newest first (ADR 0055): stored choices plus what their
- * responsibilities' defaults give them on tickets. The cursor is the key of the last slot.
+ * responsibilities' defaults give them on orders. The cursor is the key of the last slot.
  */
 export async function listMineAssignments({ cursor, limit, ...query }: ListMineInput) {
   const all = ordered({ slots: await candidateSlots(query) });

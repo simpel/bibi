@@ -24,8 +24,8 @@ async function rebuildRecords({ context: { db } }: ReconcileContext): Promise<Mi
     ...mirror({ base: "ITEM", rows: await db.item.findMany(query) }),
     ...mirror({ base: "CUSTOMER", rows: await db.customer.findMany(query) }),
     ...mirror({ base: "CONTACT", rows: await db.contact.findMany(query) }),
-    ...mirror({ base: "TICKET", rows: await db.ticket.findMany(query) }),
-    ...mirror({ base: "TICKET_TEMPLATE", rows: await db.ticketTemplate.findMany(query) }),
+    ...mirror({ base: "ORDER", rows: await db.order.findMany(query) }),
+    ...mirror({ base: "ORDER_TEMPLATE", rows: await db.orderTemplate.findMany(query) }),
     ...mirror({ base: "LINE", rows: await db.line.findMany(query) }),
     ...mirror({ base: "REQUIREMENT", rows: await db.requirement.findMany(query) }),
   ];

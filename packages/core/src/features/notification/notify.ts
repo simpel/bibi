@@ -10,18 +10,18 @@ export type NotifyInput = {
   kind: NotificationKind;
   /** Everyone the event concerns; the actor, duplicates and unreachable members are dropped. */
   userIds: readonly (string | null)[];
-  ticketId: string;
-  workOrderId?: string;
+  orderId: string;
+  runSheetId?: string;
   paymentId?: string;
   data: NotificationData;
 };
 
-/** What a recipient must be able to read: the ticket, and the feature the snapshot copies from. */
+/** What a recipient must be able to read: the order, and the feature the snapshot copies from. */
 const NEEDS: Record<NotificationKind, readonly Permission[]> = {
-  ASSIGNED: ["ticket:read"],
-  TICKET_STATUS_CHANGED: ["ticket:read"],
-  WORK_ORDER_SENT: ["ticket:read", "workOrder:read"],
-  PAYMENT_RECEIVED: ["ticket:read", "payment:read"],
+  ASSIGNED: ["order:read"],
+  ORDER_STATUS_CHANGED: ["order:read"],
+  RUN_SHEET_SENT: ["order:read", "runSheet:read"],
+  PAYMENT_RECEIVED: ["order:read", "payment:read"],
 };
 
 /** The acting member's name for the snapshot; none for the system or an API key. */
@@ -38,7 +38,7 @@ async function actorName({ context }: { context: OperationContext }) {
 /**
  * Tells members that something concerns them (ADR 0094). Runs in a command's `followUp`: the
  * rows are written as the system, never for the member who acted, and only for members who may
- * see the ticket (and the work order or payment it names) and want this kind.
+ * see the order (and the run sheet or payment it names) and want this kind.
  */
 export async function notify({ context, kind, userIds, data, ...subject }: NotifyInput) {
   const actorUserId = context.actor.userId;

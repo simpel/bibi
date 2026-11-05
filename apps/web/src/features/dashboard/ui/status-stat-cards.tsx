@@ -15,8 +15,8 @@ export type StatusStatCardsProps = {
 };
 
 /**
- * One stat card per open status (ADR 0086): the open tickets now, their value, and the count's
- * line over the range. More open tickets is neither good nor bad, so the trend stays neutral.
+ * One stat card per open status (ADR 0086): the open orders now, their value, and the count's
+ * line over the range. More open orders is neither good nor bad, so the trend stays neutral.
  */
 export function StatusStatCards({ summary, dates, numbers }: StatusStatCardsProps) {
   const t = useTranslations("dashboard.pipeline");
@@ -24,7 +24,7 @@ export function StatusStatCards({ summary, dates, numbers }: StatusStatCardsProp
   const { statuses, bucketSize, timeZone, currency } = summary;
   const texts = useStatTexts({
     ...{ size: bucketSize, timeZone, dates, numbers },
-    value: ({ value: count }) => t("tickets", { count }),
+    value: ({ value: count }) => t("orders", { count }),
   });
   const labels = { confirmed: value("confirmedLabel"), estimated: value("estimatedLabel") };
   const money = ({ minor }: { minor: number }) => numbers.money({ minor, currency });
@@ -40,7 +40,7 @@ export function StatusStatCards({ summary, dates, numbers }: StatusStatCardsProp
             label={status.name}
             value={
               <MoneyNumberFlow
-                value={status.tickets}
+                value={status.orders}
                 flow={countFlow}
                 format={WHOLE}
                 memoryKey={`status-stat:${status.statusId}`}

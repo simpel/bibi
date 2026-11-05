@@ -20,7 +20,7 @@ export function KindGrid() {
   const pick = ({ key }: { key: SetupPresetKey }) => {
     const same = draft.kind === key;
     if (!same) setDraft({ draft: draftFromKind({ preset: getSetupPreset({ key }), label }) });
-    const step = key === "empty" ? "setup/review" : "setup/bookable";
+    const step = key === "empty" ? "setup/review" : "setup/spaces";
     router.push(welcomePath({ step }), { org });
   };
   return (

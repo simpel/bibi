@@ -2,13 +2,13 @@ import { z } from "zod";
 import { STATUS_GRID_TEMPLATE_KEYS } from "../../templates/status-grid/status-grid-templates";
 
 /**
- * One cell of the status grid (ADR 0044): when a ticket enters `statusId`, its lines of item type
+ * One cell of the status grid (ADR 0044): when an order enters `statusId`, its lines of item type
  * `entityTypeId` move to `stateId`. A cell that is not listed means "keep the state".
  */
 export const StatusGridCellSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  /** A non-closing ticket status (ticketStatus.list). */
+  /** A non-closing order status (orderStatus.list). */
   statusId: z.string(),
   /** An item type (entityType.list base ITEM). */
   entityTypeId: z.string(),
@@ -35,11 +35,11 @@ export const StatusGridGetInputSchema = z.object({
     .string()
     .min(1)
     .optional()
-    .describe("Only the cells of this status (ticketStatus.list)"),
+    .describe("Only the cells of this status (orderStatus.list)"),
 });
 
 export const StatusGridSetCellInputSchema = z.object({
-  statusId: z.string().min(1).describe("Id of a non-closing ticket status (ticketStatus.list)"),
+  statusId: z.string().min(1).describe("Id of a non-closing order status (orderStatus.list)"),
   entityTypeId: z.string().min(1).describe("Id of an item type (entityType.list base ITEM)"),
   stateId: z
     .string()

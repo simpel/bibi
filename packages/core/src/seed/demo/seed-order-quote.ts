@@ -1,0 +1,88 @@
+import { err, ok, type Result } from "../../errors/result";
+import { createLine, updateLine } from "../../features/line/write-operations";
+import { acceptQuote } from "../../features/quote/lifecycle-operations";
+import { sendQuote } from "../../features/quote/send-operation";
+import { createQuote } from "../../features/quote/write-operations";
+import type { ExecuteContext } from "../../operations/context";
+import { execute } from "../../operations/execute";
+import { chosenLineIds } from "./seed-alternatives";
+import { missing } from "./seed-fields";
+import type { DemoOrder } from "./order-types";
+
+type QuoteInput = { context: ExecuteContext; order: DemoOrder; orderId: string; now?: Date };
+
+/** 30 days after the run: the quote's last day to accept. */
+const validUntilOf = ({ now }: { now: Date }) => new Date(now.getTime() + 30 * 24 * 3_600_000);
+
+/**
+ * ADR 0052: what a quote charges is a line. The order gets an untimed line of the `order.quote`
+ * item (counting the headcount) unless one of its lines already has that item.
+ */
+async function ensureQuoteLine({ context, order, orderId }: QuoteInput): Promise<Result<true>> {
+  const item = order.quote
+    ? await context.db.item.findFirst({ where: { name: order.quote } })
+    : null;
+  if (!item) return missing({ what: `quote item of order ${order.ref}` });
+  if ((await context.db.line.count({ where: { orderId, itemId: item.id } })) > 0) {
+    return ok({ value: true });
+  }
+  const type = await context.db.entityType.findFirst({ where: { base: "LINE" } });
+  if (!type) return missing({ what: "a line type (base LINE)" });
+  const input = { orderId, entityTypeId: type.id, itemId: item.id, name: item.name };
+  const created = await execute({ operation: createLine, input, context });
+  return created.ok ? ok({ value: true }) : created;
+}
+
+/** Adds the quote's line if needed, creates the quote and sends it; returns the quote id. */
+export async function createSentQuote({
+  now = new Date(),
+  ...rest
+}: QuoteInput): Promise<Result<string>> {
+  const { context, orderId } = rest;
+  const line = await ensureQuoteLine(rest);
+  if (!line.ok) return line;
+  const input = { orderId, validUntil: validUntilOf({ now }) };
+  const quote = await execute({ operation: createQuote, input, context });
+  if (!quote.ok) return quote;
+  const id = quote.value.id;
+  const sent = await execute({ operation: sendQuote, input: { id }, context });
+  return sent.ok ? ok({ value: id }) : err({ error: sent.error });
+}
+
+/** `order.changeAfterQuote`: a line edited after the quote, which the accepted quote shows. */
+async function changeAfterQuote({ context, order, orderId }: QuoteInput): Promise<Result<true>> {
+  const change = order.changeAfterQuote;
+  if (!change) return ok({ value: true });
+  const line = await context.db.line.findFirst({ where: { orderId, name: change.line } });
+  if (!line) return missing({ what: `line ${change.line} of order ${order.ref}` });
+  const input = { id: line.id, quantity: change.quantity };
+  const updated = await execute({ operation: updateLine, input, context });
+  return updated.ok ? ok({ value: true }) : updated;
+}
+
+export type SeedOrderQuoteInput = QuoteInput & {
+  /** The quote event of the status the order belongs in. */
+  event: "QUOTE_SENT" | "QUOTE_ACCEPTED";
+};
+
+/**
+ * Brings the order into its status through its quote (ADR 0043, 0052): the order's lines are
+ * quoted and sent, and for the accepted event also accepted, with the customer's pick of each
+ * alternative group that has `chosen` (ADR 0052). The statuses follow from the
+ * organization's events, never from `order.changeStatus`.
+ */
+export async function seedOrderQuote({
+  event,
+  ...rest
+}: SeedOrderQuoteInput): Promise<Result<true>> {
+  const sent = await createSentQuote(rest);
+  if (!sent.ok) return sent;
+  if (event === "QUOTE_SENT") return changeAfterQuote(rest);
+  const { context, orderId, order } = rest;
+  const alternatives = order.alternatives ?? [];
+  const chosen = await chosenLineIds({ context, orderId, alternatives });
+  if (!chosen.ok) return chosen;
+  const input = { id: sent.value, chosenLineIds: chosen.value };
+  const accepted = await execute({ operation: acceptQuote, input, context: rest.context });
+  return accepted.ok ? changeAfterQuote(rest) : accepted;
+}

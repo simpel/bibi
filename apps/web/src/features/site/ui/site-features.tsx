@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, PageContainer } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 
-const FEATURES = ["tickets", "needs", "workOrders", "setup"] as const;
+const FEATURES = ["orders", "needs", "runSheets", "setup"] as const;
 
 /** What sets Bibi apart, in plain words (CLAUDE.md "Differentiators"). */
 export async function SiteFeatures() {

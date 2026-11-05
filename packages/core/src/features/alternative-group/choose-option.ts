@@ -48,10 +48,10 @@ export async function chooseOption({
   });
   if (claimed.count === 0) return conflict({ message: `"${group.name}" is already chosen` });
   const others = group.optionLineIds.filter((id) => id !== lineId);
-  const { ticketId } = group;
+  const { orderId } = group;
   const released = await releaseLineStates({
     context,
-    ticketId,
+    orderId,
     lineIds: others,
     overridden: true,
   });

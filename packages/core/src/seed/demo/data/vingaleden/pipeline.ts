@@ -1,7 +1,7 @@
-import type { TicketStatusTemplate } from "../../../../templates/ticket-statuses/ticket-status-template";
+import type { OrderStatusTemplate } from "../../../../templates/order-statuses/order-status-template";
 import type { DemoGridCell, DemoPipeline } from "../../types";
 
-const statuses: TicketStatusTemplate["statuses"] = [
+const statuses: OrderStatusTemplate["statuses"] = [
   { name: "Request", color: "#f59e0b", entry: true },
   { name: "Weather hold", color: "#0ea5e9" },
   { name: "Confirmed", color: "#16a34a", gatesIn: ["ASSIGNEE"] },
@@ -15,15 +15,15 @@ const SOFT = ["Request", "Weather hold"];
 const BOOKED = ["Confirmed", "Weather OK"];
 
 const cells: readonly DemoGridCell[] = [
-  ...SOFT.flatMap((ticketStatus) => [
-    { ticketStatus, type: "Boat", state: "Prebooked" },
-    { ticketStatus, type: "Skipper", state: "Prebooked" },
-    { ticketStatus, type: "Tour", state: "Planned" },
+  ...SOFT.flatMap((orderStatus) => [
+    { orderStatus, type: "Boat", state: "Prebooked" },
+    { orderStatus, type: "Skipper", state: "Prebooked" },
+    { orderStatus, type: "Tour", state: "Planned" },
   ]),
-  ...BOOKED.flatMap((ticketStatus) => [
-    { ticketStatus, type: "Boat", state: "Booked" },
-    { ticketStatus, type: "Skipper", state: "Booked" },
-    { ticketStatus, type: "Tour", state: "Confirmed" },
+  ...BOOKED.flatMap((orderStatus) => [
+    { orderStatus, type: "Boat", state: "Booked" },
+    { orderStatus, type: "Skipper", state: "Booked" },
+    { orderStatus, type: "Tour", state: "Confirmed" },
   ]),
 ];
 

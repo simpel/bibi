@@ -24,6 +24,7 @@ export function useNewOrganization() {
   const auth = useTranslations("auth");
   const router = useRouter();
   const form = useForm<NewOrganizationValues>({
+    mode: "onBlur",
     resolver: zodResolver(NewOrganizationSchema, useZodMessages()),
     defaultValues: { name: "", slug: "", timeZone: effectiveTimeZone({}) },
   });

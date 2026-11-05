@@ -5,7 +5,7 @@ import { createHoldLine } from "./hold-helpers";
 import { ALL_DAYS, OFFICE_DAYS, runItemHours, runVenueHours, warningsOf } from "./hours-helpers";
 import { createTestItem } from "./item-helpers";
 import { createBookableItem } from "./occupancy-helpers";
-import { ticketSetup } from "./ticket-helpers";
+import { orderSetup } from "./order-helpers";
 
 const CHRISTMAS = {
   date: "2037-12-24",
@@ -17,7 +17,7 @@ const CHRISTMAS = {
 };
 
 async function venueSetup() {
-  const setup = await ticketSetup();
+  const setup = await orderSetup();
   const input = { name: "Harbour", timeZone: "Europe/London" };
   const venue = unwrap({
     result: await execute({ operation: createVenue, input, context: setup.context }),

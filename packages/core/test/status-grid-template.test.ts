@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import {
   execute,
   importStatusGridTemplate,
-  importTicketStatusTemplate,
+  importOrderStatusTemplate,
   provisionOrganization,
 } from "../src/index";
 import { FALLBACK_TIME_ZONE } from "../src/time/time-zone";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
 import { addLine, gridSetup, lineNow, setCell } from "./status-grid-helpers";
-import { moveToStatus } from "./ticket-helpers";
+import { moveToStatus } from "./order-helpers";
 
 const estate = { template: "conference-estate" } as const;
 
@@ -17,7 +17,7 @@ async function importBoth({
 }: {
   context: Awaited<ReturnType<typeof gridSetup>>["context"];
 }) {
-  const statuses = { operation: importTicketStatusTemplate, input: estate, context };
+  const statuses = { operation: importOrderStatusTemplate, input: estate, context };
   unwrap({ result: await execute(statuses) });
   return unwrap({
     result: await execute({ operation: importStatusGridTemplate, input: estate, context }),
@@ -27,7 +27,7 @@ async function importBoth({
 describe("statusGrid.importTemplate (ADR 0044)", () => {
   it("fills the cells by state name, keeps set cells and is idempotent", async () => {
     const { context, room, roomState, food } = await gridSetup();
-    const kept = { context, ticketStatus: "Confirmed", entityTypeId: room.entityTypeId };
+    const kept = { context, orderStatus: "Confirmed", entityTypeId: room.entityTypeId };
     unwrap({ result: await setCell({ ...kept, stateId: roomState.prebooked.id }) });
     const first = await importBoth({ context });
     const of = ({ typeId }: { typeId: string }) =>
@@ -54,14 +54,14 @@ describe("statusGrid.importTemplate (ADR 0044)", () => {
     expect(second.applied).toBe(0);
   });
 
-  it("books a room and orders food when a ticket enters Confirmed", async () => {
+  it("books a room and orders food when an order enters Confirmed", async () => {
     const setup = await gridSetup();
     const { context, room, roomState, food } = setup;
     await importBoth({ context });
-    const ticket = await setup.newTicket();
-    const hall = await addLine({ setup, ticketId: ticket.id, itemId: room.id });
-    const dish = await addLine({ setup, ticketId: ticket.id, itemId: food.dish.id });
-    unwrap({ result: await moveToStatus({ context, ticketId: ticket.id, name: "Confirmed" }) });
+    const order = await setup.newOrder();
+    const hall = await addLine({ setup, orderId: order.id, itemId: room.id });
+    const dish = await addLine({ setup, orderId: order.id, itemId: food.dish.id });
+    unwrap({ result: await moveToStatus({ context, orderId: order.id, name: "Confirmed" }) });
     expect((await lineNow({ context, lineId: hall.id })).stateId).toBe(roomState.booked.id);
     expect((await lineNow({ context, lineId: dish.id })).stateId).toBe(food.ordered.id);
   });

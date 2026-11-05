@@ -2,7 +2,7 @@ import type { z } from "zod";
 import { ok } from "../../errors/result";
 import type { HandlerInput } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
-import { serializeStatusChanges } from "../ticket-status/flag-rules";
+import { serializeStatusChanges } from "../order-status/flag-rules";
 import { loadBoard, toBoardDto, WITH_PHASES } from "./load-board";
 import {
   type BoardIdInputSchema,

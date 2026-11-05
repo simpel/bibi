@@ -41,6 +41,34 @@ export function freeSlotAt({
 }
 
 /**
+ * Free span dragged between `anchor` and `target` (each a 30-minute step), stopped by the window
+ * and any adjacent booking's footprint in either direction. Null if `anchor` itself is taken.
+ */
+export function freeSpanAt({
+  lines,
+  anchor,
+  target,
+  window,
+}: {
+  lines: readonly CalendarLine[];
+  anchor: number;
+  target: number;
+  window: CalendarWindow;
+}): CalendarWindow | null {
+  if (anchor < window.from || anchor >= window.to) return null;
+  const spans = lines.map((line) => footprint({ line, audience: "internal" }));
+  if (spans.some((span) => span.from <= anchor && span.to > anchor)) return null;
+  const earliest = Math.max(
+    window.from,
+    ...spans.map((span) => span.to).filter((at) => at <= anchor),
+  );
+  const latest = Math.min(window.to, ...spans.map((span) => span.from).filter((at) => at > anchor));
+  const from = Math.max(earliest, Math.min(anchor, target));
+  const to = Math.min(latest, Math.max(anchor, target) + 30);
+  return to - from >= 15 ? { from, to } : null;
+}
+
+/**
  * Overlapping lines on one asset get their own sub-lane, so a clash shows both bookings in full
  * instead of one over the other. Greedy by start, buffers included.
  */

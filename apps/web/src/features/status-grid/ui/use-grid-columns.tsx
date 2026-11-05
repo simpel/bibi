@@ -12,14 +12,14 @@ export type GridColumnsInput = { types: readonly TypeStates[]; canEdit: boolean 
 export function useGridColumns({ types, canEdit }: GridColumnsInput): ColumnDef<GridRow>[] {
   const t = useTranslations("statusGrid");
   return useMemo(() => {
-    const ticketStatus: ColumnDef<GridRow> = {
+    const orderStatus: ColumnDef<GridRow> = {
       id: "status",
       header: t("status"),
-      accessorFn: (row) => row.ticketStatus.name,
+      accessorFn: (row) => row.orderStatus.name,
       cell: ({ row: { original: row } }) => (
         <span className="inline-flex items-center gap-2 font-medium">
-          <ColorSwatch color={row.ticketStatus.color} />
-          {row.ticketStatus.name}
+          <ColorSwatch color={row.orderStatus.color} />
+          {row.orderStatus.name}
         </span>
       ),
     };
@@ -30,11 +30,11 @@ export function useGridColumns({ types, canEdit }: GridColumnsInput): ColumnDef<
         enableSorting: false,
         accessorFn: (row) => states.find((s) => s.id === row.cells[type.id])?.name ?? "",
         cell: ({ row: { original: row } }) =>
-          row.ticketStatus.closes ? (
+          row.orderStatus.closes ? (
             <span className="text-sm text-muted-foreground">{t("closes")}</span>
           ) : (
             <GridCell
-              ticketStatus={row.ticketStatus}
+              orderStatus={row.orderStatus}
               type={type}
               states={states}
               stateId={row.cells[type.id] ?? null}
@@ -43,6 +43,6 @@ export function useGridColumns({ types, canEdit }: GridColumnsInput): ColumnDef<
           ),
       }),
     );
-    return [ticketStatus, ...perType];
+    return [orderStatus, ...perType];
   }, [t, types, canEdit]);
 }

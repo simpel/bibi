@@ -15,7 +15,7 @@ const labels: KanbanCustomizeLabels = {
   unphasedEmpty: "Every status is on the board",
   emptyPhase: "Drag a status here",
   phaseHandle: (phase) => `Move column ${phase}`,
-  count: (count) => `${count} tickets`,
+  count: (count) => `${count} orders`,
   pickedUp: (item) => `Picked up ${item}`,
   movedOver: (item, target) => `${item} is over ${target}`,
   dropped: (item, target) => `${item} dropped in ${target}`,

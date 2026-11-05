@@ -20,8 +20,10 @@ export type NavLabelKey =
   | "pipeline"
   | "calendar"
   | "financials"
-  | "tickets"
-  | "workOrders"
+  | "forecast"
+  | "workload"
+  | "orders"
+  | "runSheets"
   | "inbox"
   | "customers"
   | "items"
@@ -65,14 +67,14 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       labelKey: "pipeline",
       icon: KanbanIcon,
       audience: "everyone",
-      permission: "ticket:read",
+      permission: "order:read",
     },
     {
       href: ROUTES.dashboard,
       labelKey: "dashboard",
       icon: LayoutDashboardIcon,
       audience: "everyone",
-      permission: "ticket:read",
+      permission: "order:read",
     },
   ],
   work: [
@@ -81,21 +83,21 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       labelKey: "calendar",
       icon: CalendarRangeIcon,
       audience: "everyone",
-      permission: "ticket:read",
+      permission: "order:read",
     },
     {
-      href: ROUTES.tickets,
-      labelKey: "tickets",
+      href: ROUTES.orders,
+      labelKey: "orders",
       icon: CalendarIcon,
       audience: "everyone",
-      permission: "ticket:read",
+      permission: "order:read",
     },
     {
-      href: ROUTES.workOrders,
-      labelKey: "workOrders",
+      href: ROUTES.runSheets,
+      labelKey: "runSheets",
       icon: ClipboardListIcon,
       audience: "everyone",
-      permission: "workOrder:read",
+      permission: "runSheet:read",
     },
     {
       href: INBOX_ROUTE,

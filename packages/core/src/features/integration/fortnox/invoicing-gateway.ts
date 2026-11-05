@@ -18,7 +18,7 @@ export type FortnoxInvoiceInput = {
   invoiceDate: string;
   dueDate: string | null;
   currency: string;
-  /** Bibi's own reference, shown on the invoice: `Ticket #<reference>, invoice #<number>`. */
+  /** Bibi's own reference, shown on the invoice: `Order #<reference>, invoice #<number>`. */
   yourOrderNumber: string;
   rows: FortnoxInvoiceRow[];
 };

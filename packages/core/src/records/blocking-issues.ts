@@ -11,8 +11,8 @@ export const BASE_FEATURE: Readonly<Record<RecordBase, Feature>> = {
   ITEM: "item",
   CUSTOMER: "customer",
   CONTACT: "customer",
-  TICKET: "ticket",
-  TICKET_TEMPLATE: "template",
+  ORDER: "order",
+  ORDER_TEMPLATE: "template",
   LINE: "program",
   REQUIREMENT: "program",
 };

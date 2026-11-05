@@ -5,7 +5,7 @@ import {
   api,
   chip,
   columnBack,
-  createTicket,
+  createOrder,
   dragUntil,
 } from "./pipeline-customize-steps";
 import { signUpWithOrganization } from "./steps";
@@ -17,7 +17,7 @@ test("an admin customizes the board: columns, statuses and the unphased column",
   page,
 }) => {
   await signUpWithOrganization({ page, name: "Tavla AB" });
-  const ticketId = await createTicket({ page });
+  const orderId = await createOrder({ page });
   await gotoApp({ page, path: "/pipeline" });
   await page.getByRole("link", { name: "Anpassa" }).click();
   await expect(page).toHaveURL(/\/pipeline\?(.*&)?mode=customize/);
@@ -39,7 +39,7 @@ test("an admin customizes the board: columns, statuses and the unphased column",
     target: columnBack({ page, name: "Completed" }).locator('[data-slot="kanban-chip-list"]'),
     landed: chip({ scope: columnBack({ page, name: "Completed" }), name: "Lost" }),
   });
-  await expect(page.getByText("Ärendestatusen har flyttats.").first()).toBeVisible();
+  await expect(page.getByText("Bokningsstatusen har flyttats.").first()).toBeVisible();
 
   // Add a column after the last one. A new status lands in the unphased column; drag it in.
   await page.getByRole("button", { name: "Lägg till kolumn", exact: true }).click();
@@ -71,24 +71,24 @@ test("an admin customizes the board: columns, statuses and the unphased column",
     landed: chip({ scope: unphased, name: "Reserv" }),
   });
 
-  // The new status takes tickets at once (movement is free, ADR 0076); archive it with a target.
-  const statuses = await api({ page, method: "get", path: "/ticket-statuses" });
+  // The new status takes orders at once (movement is free, ADR 0076); archive it with a target.
+  const statuses = await api({ page, method: "get", path: "/order-statuses" });
   const items = statuses.items as { id: string; name: string }[];
   const visit = items.find((status) => status.name === "Platsbesök");
   await api({
     page,
     method: "post",
-    path: `/tickets/${ticketId}/status`,
+    path: `/orders/${orderId}/status`,
     data: { statusId: visit?.id },
   });
   await page.reload();
   await page.getByRole("button", { name: "Åtgärder för Platsbesök" }).click();
-  await page.getByRole("menuitem", { name: "Arkivera ärendestatus" }).click();
+  await page.getByRole("menuitem", { name: "Arkivera bokningsstatus" }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("combobox").click();
   await page.getByRole("option", { name: "Completed" }).click();
-  await dialog.getByRole("button", { name: "Arkivera ärendestatus" }).click();
-  await expect(page.getByText("Ärendestatusen har arkiverats.").first()).toBeVisible();
+  await dialog.getByRole("button", { name: "Arkivera bokningsstatus" }).click();
+  await expect(page.getByText("Bokningsstatusen har arkiverats.").first()).toBeVisible();
   await expect(
     page.locator('[data-slot="kanban-status-chip"]', { hasText: "Platsbesök" }),
   ).toHaveCount(0);
@@ -97,7 +97,7 @@ test("an admin customizes the board: columns, statuses and the unphased column",
   await page.getByRole("button", { name: "Klar" }).click();
   await expect(page).not.toHaveURL(/mode=customize/);
   await expect(page.getByRole("link", { name: "Anpassa" })).toBeVisible();
-  // The archive moved the ticket to Completed; Uppföljning, left empty, was archived with it.
+  // The archive moved the order to Completed; Uppföljning, left empty, was archived with it.
   const completed = page.locator('[data-slot="kanban-column"][aria-label="Completed"]');
   await expect(completed).toContainText("Nordkust AB");
   await expect(page.locator('[data-slot="kanban-column"][aria-label="Uppföljning"]')).toHaveCount(

@@ -1,5 +1,6 @@
 import {
   MemberProfileSetItemsInputSchema,
+  PhoneSchema,
   type ScheduleKind,
   ScheduleKindSchema,
 } from "@bibi/core/schemas";
@@ -15,7 +16,7 @@ import { setMemberProfileItemsAction, updateMemberProfileAction } from "../actio
 // The form edits text: an empty field clears the value (sent as null).
 const SCHEMA = z.object({
   scheduleKind: ScheduleKindSchema,
-  phone: z.string().trim().max(40),
+  phone: z.union([z.literal(""), PhoneSchema]),
   email: z.union([z.literal(""), z.email().max(254)]),
   itemIds: MemberProfileSetItemsInputSchema.shape.itemIds,
 });
@@ -34,6 +35,7 @@ export function useMemberWorkForm({ memberId, saved }: UseMemberWorkFormInput) {
   const t = useTranslations("memberProfile");
   const router = useRouter();
   const form = useForm<MemberWorkValues>({
+    mode: "onBlur",
     resolver: zodResolver(SCHEMA, useZodMessages()),
     defaultValues: saved,
   });

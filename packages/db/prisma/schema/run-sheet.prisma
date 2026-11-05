@@ -1,0 +1,76 @@
+/// Run sheet – one version of a order's compilation for a responsibility (ADR 0021), e.g. a kitchen order.
+/// `content` is a snapshot of the order at generation, shaped by its `RunSheetDefinition`.
+/// `changes` marks (★) what differs from `baseVersion`, the last version that was published before
+/// this one; both are null/empty for the first publish. A version is never edited or removed:
+/// `publishedAt` and `fulfilledAt` are its lifecycle, and a changed order produces the next version.
+model RunSheet {
+  id                String           @id @default(cuid(2))
+  organizationId    String
+  orderId          String
+  runSheetDefinitionId String
+  /// 1, 2, 3, … per order and definition.
+  version           Int
+  /// The receiving responsibility at generation (ADR 0034).
+  responsibilityId  String
+  /// Snapshot of the order's rows the definition includes.
+  content           Json
+  /// Rows added, changed or removed since `baseVersion` (see core `RunSheetChange`).
+  changes           Json             @default("[]")
+  /// Counts that hit the order's items at generation (core `RunSheetMatch`), blocking ones first.
+  matches           Json             @default("[]")
+  /// True when a match is blocking (an item contains a counted value): `runSheet.publish` is refused.
+  blocked           Boolean          @default(false)
+  /// The last published version the changes are measured against; null when none was published before.
+  baseVersion       Int?
+  /// Projection (ADR 0051): true on the newest version of its order and definition. Written only
+  /// by core `createVersion`, which clears it on the previous version in the same transaction.
+  current           Boolean          @default(false)
+  publishedAt       DateTime?
+  /// User id of whoever published it.
+  publishedBy       String?
+  fulfilledAt       DateTime?
+  /// User id of whoever marked it fulfilled/done.
+  fulfilledBy       String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  createdBy         String?
+  order            Order           @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  runSheetDefinition   RunSheetDefinition  @relation(fields: [runSheetDefinitionId, organizationId], references: [id, organizationId])
+  responsibility    Responsibility   @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
+  /// Who received it: the derived assignee and followers at publish time (ADR 0055); empty until published.
+  recipients        RunSheetRecipient[]
+  notifications     Notification[]
+
+  @@unique([id, organizationId])
+  @@unique([orderId, runSheetDefinitionId, version])
+  @@index([organizationId, orderId])
+  @@index([organizationId, runSheetDefinitionId])
+  @@index([organizationId, responsibilityId])
+  @@index([organizationId, current])
+}
+
+/// How a recipient took part in a sent run sheet (ADR 0055).
+enum RunSheetRecipientRole {
+  ASSIGNEE
+  FOLLOWER
+}
+
+/// A member (user id) who received a sent run sheet (ADR 0055, ADR 0051 snapshot): the responsibility's
+/// derived assignee and followers at send time. Written once by `runSheet.send`, never changed, so
+/// later changes of defaults or choices do not rewrite who received it. `userId` is a member
+/// validated by core, like `AssignmentFollower`. `position` keeps the order.
+model RunSheetRecipient {
+  id             String             @id @default(cuid(2))
+  organizationId String
+  runSheetId        String
+  userId         String
+  role           RunSheetRecipientRole
+  position       Int
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  createdBy      String?
+  runSheet          RunSheet              @relation(fields: [runSheetId, organizationId], references: [id, organizationId])
+
+  @@unique([runSheetId, userId])
+  @@index([organizationId, userId])
+}

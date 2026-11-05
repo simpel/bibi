@@ -1,7 +1,7 @@
 import type { VenueDto } from "@bibi/core";
-import { actionsColumn, Badge, type ColumnDef } from "@bibi/ui";
+import { actionsColumn, type ColumnDef, createTableColumns, statusColumn } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 import { Link } from "@/lib/navigation";
 import { venueRoute } from "@/lib/routes";
 
@@ -21,38 +21,45 @@ export function useVenueColumns<TRow extends VenueRow>({
 }: UseVenueColumnsInput<TRow>): ColumnDef<TRow>[] {
   const t = useTranslations("venue.columns");
   const common = useTranslations("common");
-  const statusLabel = ({ venue }: { venue: VenueRow }) =>
-    venue.status === "ACTIVE" ? common("active") : common("archived");
-  const actionColumn: ColumnDef<TRow>[] = renderActions
-    ? [actionsColumn<TRow>({ label: common("actions"), cell: renderActions })]
-    : [];
-  return [
-    {
-      id: "name",
-      header: t("name"),
-      accessorFn: (v) => v.name,
-      cell: ({ row }) => (
-        <Link href={venueRoute({ id: row.original.id })} className="font-medium hover:underline">
-          {row.original.name}
-        </Link>
-      ),
-    },
-    { id: "city", header: t("city"), accessorFn: (v) => v.city ?? "–" },
-    {
-      id: "contact",
-      header: t("contact"),
-      accessorFn: (v) => v.contactEmail ?? v.contactPhone ?? "–",
-    },
-    {
-      id: "status",
-      header: t("status"),
-      accessorFn: (venue) => statusLabel({ venue }),
-      cell: ({ row }) => (
-        <Badge variant={row.original.status === "ACTIVE" ? "success" : "secondary"}>
-          {statusLabel({ venue: row.original })}
-        </Badge>
-      ),
-    },
-    ...actionColumn,
-  ];
+  return useMemo(
+    () =>
+      createTableColumns<TRow>({
+        primary: [
+          {
+            id: "name",
+            header: t("name"),
+            accessorFn: (v) => v.name,
+            cell: ({ row }) => (
+              <Link
+                href={venueRoute({ id: row.original.id })}
+                className="font-medium hover:underline"
+              >
+                {row.original.name}
+              </Link>
+            ),
+          },
+        ],
+        relations: [
+          { id: "city", header: t("city"), accessorFn: (v) => v.city ?? "–" },
+          {
+            id: "contact",
+            header: t("contact"),
+            accessorFn: (v) => v.contactEmail ?? v.contactPhone ?? "–",
+          },
+        ],
+        status: [
+          statusColumn<TRow>({
+            header: t("status"),
+            getStatus: (venue) => ({
+              label: venue.status === "ACTIVE" ? common("active") : common("archived"),
+              color: venue.status === "ACTIVE" ? "var(--success)" : "var(--muted-foreground)",
+            }),
+          }),
+        ],
+        actions: renderActions
+          ? [actionsColumn<TRow>({ label: common("actions"), cell: renderActions })]
+          : [],
+      }),
+    [t, common, renderActions],
+  );
 }

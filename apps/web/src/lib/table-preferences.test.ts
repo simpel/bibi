@@ -3,18 +3,18 @@ import { parseTableOrders, tableColumnsKey } from "./table-preferences";
 
 describe("table preferences", () => {
   it("builds the key for a table", () => {
-    expect(tableColumnsKey({ tableId: "ticket" })).toBe("table.columns.ticket");
+    expect(tableColumnsKey({ tableId: "order" })).toBe("table.columns.order");
   });
 
   it("returns saved orders by table id and ignores everything else", () => {
     const orders = parseTableOrders({
       preferences: {
-        "table.columns.ticket": ["customer", "title"],
+        "table.columns.order": ["customer", "title"],
         "table.columns.venue": "name",
         "table.columns.item": [1, 2],
         "sidebar.collapsed": true,
       },
     });
-    expect(orders).toEqual({ ticket: ["customer", "title"] });
+    expect(orders).toEqual({ order: ["customer", "title"] });
   });
 });

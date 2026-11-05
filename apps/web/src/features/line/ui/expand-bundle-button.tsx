@@ -16,11 +16,11 @@ import type { ProgramFormData } from "./program-form-data";
 
 export type ExpandBundleButtonProps = {
   data: ProgramFormData;
-  ticketId: string;
+  orderId: string;
   startsAt: Date;
 };
 
-/** Opens the dialog that adds a bundle with its part lines to the ticket (like line create). */
+/** Opens the dialog that adds a bundle with its part lines to the order (like line create). */
 export function ExpandBundleButton(props: ExpandBundleButtonProps) {
   const t = useTranslations("line");
   const [open, setOpen] = useState(false);

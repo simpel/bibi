@@ -47,8 +47,8 @@ export const vingaledenConfig: Omit<DemoConfig, "items" | "venue" | "venueHours"
     { base: "CUSTOMER", name: "Company", fields: [{ name: "Org no.", kind: "TEXT" }] },
     { base: "CUSTOMER", name: "Private" },
     { base: "CONTACT", name: "Contact person" },
-    { base: "TICKET", name: "Charter" },
-    { base: "TICKET", name: "Round trip" },
+    { base: "ORDER", name: "Charter" },
+    { base: "ORDER", name: "Round trip" },
     { base: "LINE", name: "Line" },
   ],
 };

@@ -10,17 +10,17 @@ export type WriteLegacyEmailInput = {
 };
 
 /**
- * Expand phase of ADR 0085 decision 7 (ADR 0013): a mail stored on a ticket is also written to the
+ * Expand phase of ADR 0085 decision 7 (ADR 0013): a mail stored on an order is also written to the
  * old `InboundEmail` table with the same id, so the previous release still shows it during a
  * rollout or rollback. Removed with the table in the contract release.
  */
 export async function writeLegacyEmail({ context, message, details }: WriteLegacyEmailInput) {
-  if (message.channel !== "EMAIL" || !message.ticketId) return;
+  if (message.channel !== "EMAIL" || !message.orderId) return;
   await context.db.inboundEmail.create({
     data: {
       id: message.id,
       organizationId: context.organizationId,
-      ticketId: message.ticketId,
+      orderId: message.orderId,
       providerEmailId: message.externalId,
       messageId: details.messageId,
       fromAddress: details.fromAddress,

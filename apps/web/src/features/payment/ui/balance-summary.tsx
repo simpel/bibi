@@ -1,9 +1,9 @@
-import type { NumberFormat, TicketBalanceDto } from "@bibi/core/schemas";
+import type { NumberFormat, OrderBalanceDto } from "@bibi/core/schemas";
 import { StatCard, type StatCardProps, StatCards } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type BalanceSummaryProps = {
-  balance: TicketBalanceDto;
+  balance: OrderBalanceDto;
   /** The viewer's number format: `getNumberFormat()` on the server, the hook in a client card. */
   numbers: NumberFormat;
 };
@@ -11,7 +11,7 @@ export type BalanceSummaryProps = {
 type Figure = { key: "billed" | "paid" | "balance"; minor: number; tone: StatCardProps["tone"] };
 
 /**
- * What the ticket owes, derived (ADR 0057): billed, paid and what is left, as the dashboards'
+ * What the order owes, derived (ADR 0057): billed, paid and what is left, as the dashboards'
  * stat cards (ADR 0086). Nothing left to pay shows as neutral.
  */
 export function BalanceSummary({ balance, numbers }: BalanceSummaryProps) {

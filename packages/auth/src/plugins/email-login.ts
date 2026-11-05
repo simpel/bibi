@@ -1,5 +1,7 @@
+import { renderMagicLinkEmail, renderOtpEmail } from "@bibi/mail";
 import { emailOTP, magicLink } from "better-auth/plugins";
 import { sendAuthMail } from "../mail";
+import { resolveUserLocale } from "../user-locale";
 
 /** Passwordless sign-in: magic link and one-time code by mail (ADR 0005). */
 export function emailLoginPlugins() {
@@ -7,22 +9,28 @@ export function emailLoginPlugins() {
     magicLink({
       expiresIn: 60 * 15,
       sendMagicLink: async ({ email, url }) => {
+        const locale = await resolveUserLocale({ email });
+        const rendered = renderMagicLinkEmail({ url, locale });
         await sendAuthMail({
           to: email,
           kind: "auth.magic-link",
-          subject: "Sign in to Bibi",
-          text: `Click the link to sign in (valid for 15 minutes):\n\n${url}`,
+          subject: rendered.subject,
+          text: rendered.text,
+          html: rendered.html,
         });
       },
     }),
     emailOTP({
       expiresIn: 60 * 10,
       sendVerificationOTP: async ({ email, otp }) => {
+        const locale = await resolveUserLocale({ email });
+        const rendered = renderOtpEmail({ otp, locale });
         await sendAuthMail({
           to: email,
           kind: "auth.sign-in-code",
-          subject: "Your Bibi sign-in code",
-          text: `Your one-time code is ${otp}. It is valid for 10 minutes.`,
+          subject: rendered.subject,
+          text: rendered.text,
+          html: rendered.html,
         });
       },
     }),

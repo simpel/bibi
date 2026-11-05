@@ -21,7 +21,7 @@ const SPACE_ROWS: readonly BusyRow[] = [
     e: "14:00",
     st: "prebooked",
     su: 15,
-    no: "Holds Hönö until Friday. Clashes with Ticket 31: one of them moves.",
+    no: "Holds Hönö until Friday. Clashes with Order 31: one of them moves.",
   },
   { a: "kopstadso", t: 46, c: C.sca, n: "Köpstadsö", s: "14:00", e: "17:30", st: "ordered" },
   // Clash 2: teardown runs into the next setup.
@@ -35,7 +35,7 @@ const SPACE_ROWS: readonly BusyRow[] = [
     e: "15:00",
     st: "booked",
     su: 30,
-    no: "Ticket 25 must be out by 11:00.",
+    no: "Order 25 must be out by 11:00.",
   },
   {
     a: "vinga",

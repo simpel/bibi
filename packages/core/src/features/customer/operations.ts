@@ -21,7 +21,7 @@ import { createCustomer, updateCustomer } from "./write-operations";
 
 type ListInput = { input: CustomerListInput; context: OperationContext };
 
-/** The rows of one page: by name, or by latest ticket with `recent` (ADR 0081). */
+/** The rows of one page: by name, or by latest order with `recent` (ADR 0081). */
 async function listRows({ input, context }: ListInput): Promise<CustomerRow[]> {
   const where = {
     ...(input.ids ? { id: { in: input.ids } } : {}),
@@ -41,7 +41,7 @@ const recentForbidden = () =>
   err({
     error: appError({
       code: "FORBIDDEN",
-      message: "Missing permission ticket:read to order customers by their latest ticket",
+      message: "Missing permission order:read to order customers by their latest order",
     }),
   });
 
@@ -51,13 +51,13 @@ export const listCustomers = defineOperation({
   description:
     "List the organization's customers: the companies, agencies, associations or private " +
     "persons that buy. Filter by ids, customer type or part of the name. With `recent`, the " +
-    "customers with tickets, the latest booked first.",
+    "customers with orders, the latest booked first.",
   input: CustomerListInputSchema,
   output: CustomerListOutputSchema,
   permission: "customer:read",
   handler: async ({ input, context }) => {
     const { permissions } = context;
-    if (input.recent && !hasPermission({ permissions, permission: "ticket:read" })) {
+    if (input.recent && !hasPermission({ permissions, permission: "order:read" })) {
       return recentForbidden();
     }
     const rows = await listRows({ input, context });

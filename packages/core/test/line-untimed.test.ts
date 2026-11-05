@@ -7,26 +7,26 @@ import { hours } from "./occupancy-helpers";
 
 describe("untimed lines (ADR 0052)", () => {
   it("creates a line without times that holds nothing and is left out of time windows", async () => {
-    const { context, ticket, type, room } = await programSetup();
-    const input = { ticketId: ticket.id, entityTypeId: type.id, name: "Parking", itemId: room.id };
+    const { context, order, type, room } = await programSetup();
+    const input = { orderId: order.id, entityTypeId: type.id, name: "Parking", itemId: room.id };
     const line = unwrap({ result: await execute({ operation: createLine, input, context }) });
     expect(line).toMatchObject({ startsAt: null, endsAt: null });
     expect(await activeOccupancies({ context, lineId: line.id })).toEqual([]);
-    const window = { ticketId: ticket.id, ...{ from: hours({ from: 0, to: 23 }).startsAt } };
+    const window = { orderId: order.id, ...{ from: hours({ from: 0, to: 23 }).startsAt } };
     const page = unwrap({
       result: await execute({ operation: listLines, input: window, context }),
     });
     expect(page.items.map(({ id }) => id)).not.toContain(line.id);
     const all = unwrap({
-      result: await execute({ operation: listLines, input: { ticketId: ticket.id }, context }),
+      result: await execute({ operation: listLines, input: { orderId: order.id }, context }),
     });
     expect(all.items.map(({ id }) => id)).toContain(line.id);
   });
 
   it("refuses a start without an end", async () => {
-    const { context, ticket, type } = await programSetup();
+    const { context, order, type } = await programSetup();
     const input = {
-      ...{ ticketId: ticket.id, entityTypeId: type.id, name: "Half" },
+      ...{ orderId: order.id, entityTypeId: type.id, name: "Half" },
       startsAt: hours({ from: 10, to: 11 }).startsAt,
     };
     expect(errorCode({ result: await execute({ operation: createLine, input, context }) })).toBe(
@@ -35,8 +35,8 @@ describe("untimed lines (ADR 0052)", () => {
   });
 
   it("releases the hold when a timed line becomes untimed, and holds again when timed", async () => {
-    const { context, ticket, type, room } = await programSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
+    const { context, order, type, room } = await programSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const line = unwrap({ result: await createTestLine({ ...base, from: 10, to: 12 }) });
     expect(await activeOccupancies({ context, lineId: line.id })).toHaveLength(1);
     const untimed = { id: line.id, startsAt: null, endsAt: null };

@@ -36,6 +36,22 @@ export function isValidPeriod({ from, to }: Period): boolean {
   return from <= to && periodMonths({ from, to }) <= MAX_PERIOD_MONTHS;
 }
 
+export type DirectionCheckInput = { period: Period; today: PlainDate };
+
+/** Historical range check: `to` must not be in the future (at most today). */
+export function isHistoricalPeriod({ period, today }: DirectionCheckInput): boolean {
+  if (!isValidPeriod(period)) return false;
+  const todayStr = toIsoDate({ date: today });
+  return period.to <= todayStr;
+}
+
+/** Forward/future range check: `from` must be today or in the future. */
+export function isForwardPeriod({ period, today }: DirectionCheckInput): boolean {
+  if (!isValidPeriod(period)) return false;
+  const todayStr = toIsoDate({ date: today });
+  return period.from >= todayStr;
+}
+
 const periodOf = ({ from, to }: { from: PlainDate; to: PlainDate }): Period => ({
   from: toIsoDate({ date: from }),
   to: toIsoDate({ date: to }),

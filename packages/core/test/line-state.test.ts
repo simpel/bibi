@@ -5,12 +5,12 @@ import { createTestItem } from "./item-helpers";
 import { addState, roomStates, toState } from "./item-state-helpers";
 import { activeOccupancies, createTestLine, programSetup } from "./line-helpers";
 
-/** A ticket with a room of the bookable template (ADR 0044) and a base for its lines. */
+/** An order with a room of the bookable template (ADR 0044) and a base for its lines. */
 async function setup() {
-  const { context, ticket, type, room } = await programSetup();
+  const { context, order, type, room } = await programSetup();
   const states = await roomStates({ context, entityTypeId: room.entityTypeId });
-  const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
-  return { context, ticket, type, room, states, base };
+  const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
+  return { context, order, type, room, states, base };
 }
 
 const holdsOf = async ({ ...input }: Parameters<typeof activeOccupancies>[0]) =>
@@ -66,12 +66,12 @@ describe("line states and derived holds (ADR 0044)", () => {
     expect(errorCode({ result: none })).toBe("VALIDATION");
   });
 
-  it("is a program change: ticket:write alone may not set a line's state (ADR 0050)", async () => {
+  it("is a program change: order:write alone may not set a line's state (ADR 0050)", async () => {
     const { context, base, states } = await setup();
     const line = unwrap({ result: await createTestLine({ ...base, from: 9, to: 10 }) });
-    const ticketOnly = { ...context, permissions: { ticket: ["read" as const, "write" as const] } };
+    const orderOnly = { ...context, permissions: { order: ["read" as const, "write" as const] } };
     const stateId = states.booked.id;
-    const denied = await toState({ context: ticketOnly, lineId: line.id, stateId });
+    const denied = await toState({ context: orderOnly, lineId: line.id, stateId });
     expect(errorCode({ result: denied })).toBe("FORBIDDEN");
   });
 

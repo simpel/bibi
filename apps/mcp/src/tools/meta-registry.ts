@@ -39,16 +39,16 @@ import { responsibilityMcpTools } from "../features/responsibility/mcp";
 import { setupMcpTools } from "../features/setup/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { statusGridMcpTools } from "../features/status-grid/mcp";
-import { ticketMcpTools } from "../features/ticket/mcp";
-import { ticketDraftMcpTools } from "../features/ticket-draft/mcp";
-import { ticketStatusMcpTools } from "../features/ticket-status/mcp";
-import { ticketTemplateMcpTools } from "../features/ticket-template/mcp";
+import { orderMcpTools } from "../features/order/mcp";
+import { orderDraftMcpTools } from "../features/order-draft/mcp";
+import { orderStatusMcpTools } from "../features/order-status/mcp";
+import { orderTemplateMcpTools } from "../features/order-template/mcp";
 import { userPreferenceMcpTools } from "../features/user-preference/mcp";
 import { userSettingsMcpTools } from "../features/user-settings/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
 import { vocabularyMcpTools } from "../features/vocabulary/mcp";
-import { workOrderMcpTools } from "../features/work-order/mcp";
-import { workOrderDefinitionMcpTools } from "../features/work-order-definition/mcp";
+import { runSheetMcpTools } from "../features/run-sheet/mcp";
+import { runSheetDefinitionMcpTools } from "../features/run-sheet-definition/mcp";
 import { searchMcpTools } from "../search-mcp";
 import type { McpToolMeta } from "./meta";
 import { moneyMcpTools } from "./money-mcp-tools";
@@ -85,8 +85,8 @@ const selfMcpTools = [
 /** The organization's profile and its members' profiles (ADR 0061, 0068). */
 const profilesMcpTools = [...organizationProfileMcpTools, ...memberProfileMcpTools];
 
-/** Customers and the ticket draft read from a message (ADR 0081, 0084). */
-const intakeMcpTools = [...customerMcpTools, ...ticketDraftMcpTools];
+/** Customers and the order draft read from a message (ADR 0081, 0084). */
+const intakeMcpTools = [...customerMcpTools, ...orderDraftMcpTools];
 
 /** Every declared operation tool; add a feature's tools here when it gets an `mcp.ts`. */
 export function listMcpToolMetas(): McpToolMeta[] {
@@ -97,7 +97,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...vocabularyMcpTools,
     ...setupMcpTools,
     ...responsibilityMcpTools,
-    ...workOrderDefinitionMcpTools,
+    ...runSheetDefinitionMcpTools,
     ...configurationMcpTools,
     ...itemMcpTools,
     ...itemDemandMcpTools,
@@ -105,15 +105,15 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...priceListMcpTools,
     ...contactMcpTools,
     ...occupancyMcpTools,
-    ...ticketStatusMcpTools,
-    ...ticketTemplateMcpTools,
+    ...orderStatusMcpTools,
+    ...orderTemplateMcpTools,
     ...itemStateMcpTools,
     ...gridAndSetupMcpTools,
-    ...ticketMcpTools,
+    ...orderMcpTools,
     ...assignmentMcpTools,
     ...lineAndGroupMcpTools,
     ...requirementMcpTools,
-    ...workOrderMcpTools,
+    ...runSheetMcpTools,
     ...boardMcpTools,
     ...quoteMcpTools,
     ...inboundMessageMcpTools,

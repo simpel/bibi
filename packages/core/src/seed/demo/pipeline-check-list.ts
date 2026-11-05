@@ -28,9 +28,9 @@ import { checkDemoPrices } from "./price-checks";
 import { checkDemoQuoteEvents } from "./quote-event-checks";
 import { checkDemoShowcase } from "./showcase-checks";
 import { checkDemoTemplates } from "./template-checks";
-import { checkDemoTickets } from "./ticket-checks";
+import { checkDemoOrders } from "./order-checks";
 import type { DemoOrg } from "./types";
-import { checkDemoWorkOrders } from "./work-order-checks";
+import { checkDemoRunSheets } from "./run-sheet-checks";
 
 type OrgCheck = (input: { context: ExecuteContext; org: DemoOrg }) => Promise<string[]>;
 
@@ -38,7 +38,7 @@ type OrgCheck = (input: { context: ExecuteContext; org: DemoOrg }) => Promise<st
 export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoPipeline,
   checkDemoTemplates,
-  checkDemoTickets,
+  checkDemoOrders,
   checkDemoBoard,
   checkDemoBoardLayout,
   checkDemoAssignments,
@@ -66,5 +66,5 @@ export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoDensity,
   checkDemoDashboard,
   checkDemoInbox,
-  checkDemoWorkOrders,
+  checkDemoRunSheets,
 ];

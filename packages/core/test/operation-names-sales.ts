@@ -36,8 +36,8 @@ export const SALES_NAMES = [
   "quote.revise",
   "quote.send",
   "quote.update",
-  "ticket.expireHolds",
-  "ticketDraft.fromMessage",
+  "order.expireHolds",
+  "orderDraft.fromMessage",
 ];
 
 /** Receivables and the derived balance (ADR 0057). */

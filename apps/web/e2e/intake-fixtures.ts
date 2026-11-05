@@ -34,15 +34,15 @@ async function createTypes({ page }: PageInput) {
   const type = ({ base, name, capabilities }: TypeInput) =>
     rest({ page, method: "post", path: "/entity-types", data: { base, name, capabilities } });
   const capabilities = ["BOOKABLE", "SETUPS"];
-  const [customer, contact, ticket, line, room, dish] = [
+  const [customer, contact, order, line, room, dish] = [
     await type({ base: "CUSTOMER", name: "Company" }),
     await type({ base: "CONTACT", name: "Person" }),
-    await type({ base: "TICKET", name: "Conference" }),
+    await type({ base: "ORDER", name: "Conference" }),
     await type({ base: "LINE", name: "Line" }),
     await type({ base: "ITEM", name: "Room", capabilities }),
     await type({ base: "ITEM", name: "Dish" }),
   ];
-  return { customer, contact, ticket, line, room, dish };
+  return { customer, contact, order, line, room, dish };
 }
 
 /** A customer with one contact whose email domain is the customer's (what a message resolves). */
@@ -70,7 +70,7 @@ async function createPackage({ page, types }: PageInput & { types: Types }) {
   const room = await rest({ page, method: "post", path: "/items", data: roomData });
   const food = { entityTypeId: types.dish.id, name: ITEM };
   const coffee = await rest({ page, method: "post", path: "/items", data: food });
-  const statuses = await rest({ page, method: "get", path: "/ticket-statuses" });
+  const statuses = await rest({ page, method: "get", path: "/order-statuses" });
   const entry = statuses.items.find((status) => status.entry === true);
   const base = { entityTypeId: types.line.id, offsetMinutes: 0, durationMinutes: 90 };
   const lines = [
@@ -78,10 +78,10 @@ async function createPackage({ page, types }: PageInput & { types: Types }) {
     { ...base, name: "Coffee and tea", itemId: coffee.id, quantity: null },
   ];
   const data = {
-    ...{ name: PACKAGE, entityTypeId: types.ticket.id, statusId: entry?.id, lines },
+    ...{ name: PACKAGE, entityTypeId: types.order.id, statusId: entry?.id, lines },
     ...{ minGuests: 8, maxGuests: 20 },
   };
-  await rest({ page, method: "post", path: "/ticket-templates", data });
+  await rest({ page, method: "post", path: "/order-templates", data });
 }
 
 /**

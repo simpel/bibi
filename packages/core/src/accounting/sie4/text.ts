@@ -1,8 +1,8 @@
 import type { AccountingEvent, Settles } from "./events";
 
-/** Voucher text: what happened, the invoice number and the ticket reference, never a name. */
+/** Voucher text: what happened, the invoice number and the order reference, never a name. */
 export function voucherText({ event }: { event: AccountingEvent }): string {
-  const ticket = `ticket ${event.ticketReference}`;
+  const order = `order ${event.orderReference}`;
   const settled = ({ settles }: { settles: Settles }) =>
     settles.kind === "INVOICE"
       ? `invoice ${settles.invoiceNumber}`
@@ -11,14 +11,14 @@ export function voucherText({ event }: { event: AccountingEvent }): string {
         : "quote";
   switch (event.kind) {
     case "INVOICE_SENT":
-      return `Invoice ${event.invoiceNumber}, ${ticket}`;
+      return `Invoice ${event.invoiceNumber}, ${order}`;
     case "INVOICE_VOID":
-      return `Void invoice ${event.invoiceNumber}, ${ticket}`;
+      return `Void invoice ${event.invoiceNumber}, ${order}`;
     case "PAYMENT":
-      return `Payment ${settled({ settles: event.settles })}, ${ticket}`;
+      return `Payment ${settled({ settles: event.settles })}, ${order}`;
     case "REFUND":
-      return `Refund ${settled({ settles: event.settles })}, ${ticket}`;
+      return `Refund ${settled({ settles: event.settles })}, ${order}`;
     case "FEE":
-      return `Payment fee, ${ticket}`;
+      return `Payment fee, ${order}`;
   }
 }

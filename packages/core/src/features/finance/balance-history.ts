@@ -5,7 +5,7 @@ import { daysOverdue } from "./aging";
 type Scope = { customerId?: string | undefined };
 type Input = { context: Pick<OperationContext, "db">; end: Date } & Scope;
 
-const ticketOf = ({ customerId }: Scope) => (customerId ? { ticket: { customerId } } : {});
+const orderOf = ({ customerId }: Scope) => (customerId ? { order: { customerId } } : {});
 
 /**
  * Every SENT invoice sent before `end`, with the payments and refunds against it: enough to
@@ -13,7 +13,7 @@ const ticketOf = ({ customerId }: Scope) => (customerId ? { ticket: { customerId
  */
 export async function loadBalanceHistory({ context, end, customerId }: Input) {
   const invoices = await context.db.invoice.findMany({
-    where: { status: "SENT", sentAt: { lt: end }, ...ticketOf({ customerId }) },
+    where: { status: "SENT", sentAt: { lt: end }, ...orderOf({ customerId }) },
     select: {
       ...{ id: true, sentAt: true, dueDate: true, totalInclVatMinor: true },
       deductions: { select: { amountMinor: true } },

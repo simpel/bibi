@@ -8,7 +8,7 @@ import {
 import { unwrap } from "./helpers";
 import { createHoldLine } from "./hold-helpers";
 import { createBookableItem, hours } from "./occupancy-helpers";
-import { ticketSetup } from "./ticket-helpers";
+import { orderSetup } from "./order-helpers";
 
 export type RangeInput = { context: ExecuteContext; input: Record<string, unknown> };
 
@@ -26,7 +26,7 @@ export async function range({ context, input }: RangeInput): Promise<CalendarRan
  * maintenance block 13–14 UTC, both on 1 November 2037.
  */
 export async function calendarSetup() {
-  const setup = await ticketSetup();
+  const setup = await orderSetup();
   const { context } = setup;
   const item = await createBookableItem({ context });
   const line = unwrap({

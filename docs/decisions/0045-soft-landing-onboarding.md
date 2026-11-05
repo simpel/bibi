@@ -2,7 +2,7 @@
 
 - **Date:** 2026-10-19
 - **Status:** Superseded by 0061
-- **Related:** 0007 (AI-first UX), 0044 (line states and the phase grid), 0021 (configurable items), 0043 (ticket and phases), 0004 (multi-tenancy), 0015 (superadmin)
+- **Related:** 0007 (AI-first UX), 0044 (line states and the phase grid), 0021 (configurable items), 0043 (order and phases), 0004 (multi-tenancy), 0015 (superadmin)
 - **Spec:** `docs/specs/onboarding.md`
 
 ## Context
@@ -25,4 +25,4 @@
 - Dependency approved: React Flow (`@xyflow/react`) for the read-only phase path.
 
 ## Out of scope for now
-- A guided tour of the board, an example ticket, editing items in the panel, more presets.
+- A guided tour of the board, an example order, editing items in the panel, more presets.

@@ -6,8 +6,8 @@ import { FieldValuesSchema } from "../field-definition/field-values-schema";
 export const RequirementSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  ticketId: z.string(),
-  lineId: z.string().nullable().describe("The line it applies to; null = the whole ticket"),
+  orderId: z.string(),
+  lineId: z.string().nullable().describe("The line it applies to; null = the whole order"),
   entityTypeId: z.string(),
   vocabularyValueId: z.string().describe("The list value counted, e.g. Gluten"),
   quantity: z.number().int(),
@@ -24,17 +24,17 @@ const QuantitySchema = z
   .min(0)
   .max(100_000)
   .describe(
-    "How many, e.g. 3 guests. On a line it replaces the ticket's count for the value " +
+    "How many, e.g. 3 guests. On a line it replaces the order's count for the value " +
       "there; 0 means none there.",
   );
 
 export const RequirementCreateInputSchema = z.object({
-  ticketId: z.string().min(1).describe("Id of the ticket (ticket.list)"),
+  orderId: z.string().min(1).describe("Id of the order (order.list)"),
   lineId: z
     .string()
     .min(1)
     .nullish()
-    .describe("Id of one of the ticket's lines (line.list); omit for the ticket"),
+    .describe("Id of one of the order's lines (line.list); omit for the order"),
   entityTypeId: z
     .string()
     .min(1)
@@ -47,9 +47,9 @@ export const RequirementCreateInputSchema = z.object({
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
 });
 
-/** A need on a line that does not exist yet (`ticket.create` lines, ADR 0081): no ticket or line. */
+/** A need on a line that does not exist yet (`order.create` lines, ADR 0081): no order or line. */
 export const LineRequirementInputSchema = RequirementCreateInputSchema.omit({
-  ticketId: true,
+  orderId: true,
   lineId: true,
 });
 
@@ -64,7 +64,7 @@ export const RequirementUpdateInputSchema = z.object({
 export const RequirementIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const RequirementListInputSchema = z.object({
-  ticketId: z.string().optional().describe("Only requirements on this ticket (both levels)"),
+  orderId: z.string().optional().describe("Only requirements on this order (both levels)"),
   lineId: z.string().optional().describe("Only requirements on this line"),
   vocabularyValueId: z.string().optional().describe("Only requirements for this list value"),
   ...PageInputShape,

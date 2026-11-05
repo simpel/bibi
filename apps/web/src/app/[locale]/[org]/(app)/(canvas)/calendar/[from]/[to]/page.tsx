@@ -3,10 +3,16 @@ import { setRequestLocale } from "next-intl/server";
 import { canonicalCalendarHref } from "@/features/calendar/calendar-path";
 import { CalendarPage } from "@/features/calendar/ui/calendar-page";
 import { redirect } from "@/lib/navigation";
+import { pageTitle } from "@/lib/page-metadata";
 
 type CalendarRouteProps = {
   params: Promise<{ locale: string; org: string; from: string; to: string }>;
 };
+
+export async function generateMetadata({ params }: CalendarRouteProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "nav", key: "calendar" });
+}
 
 /** Every bookable item from `{from}` to `{to}`, inclusive, on one endless timeline (ADR 0064). */
 export default async function CalendarRoute({ params }: CalendarRouteProps) {

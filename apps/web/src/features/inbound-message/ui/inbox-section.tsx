@@ -1,18 +1,16 @@
 import { type InboundMessageDto, listInboundMessages } from "@bibi/core";
 import type { DateTimeFormat } from "@bibi/core/schemas";
 import type { Locale } from "@bibi/i18n";
-import { CursorPagination } from "@/components/cursor-pagination";
 import { ErrorState } from "@/components/states/error-state";
-import { INBOX_ROUTE } from "@/lib/inbox-routes";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { type InboxParams, inboxFilterQuery } from "../lib/inbox-params";
+import type { InboxParams } from "../lib/inbox-params";
 import type { InboxRow } from "./inbox-row";
 import type { InboxAbilities } from "./inbox-row-actions";
 import { InboxTable } from "./inbox-table";
 import { senderOf } from "./message-value";
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 100;
 
 type ToRowInput = { message: InboundMessageDto; dates: DateTimeFormat };
 
@@ -36,28 +34,19 @@ export type InboxSectionProps = {
 
 /** The inbox's one table, read and unread together, newest first, so nothing moves. */
 export async function InboxSection({ locale, params, dates, abilities }: InboxSectionProps) {
-  const { cursor, read, channel, q } = params;
+  const { cursor, read, channel } = params;
   const input = {
     limit: PAGE_SIZE,
     ...(cursor ? { cursor } : {}),
     ...(read ? { read: read === "read" } : {}),
     ...(channel ? { channel } : {}),
-    ...(q ? { q } : {}),
   };
   const result = await runOperation({ operation: listInboundMessages, input });
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
-    <div className="grid gap-3">
-      <InboxTable
-        rows={result.value.items.map((message) => toRow({ message, dates }))}
-        {...abilities}
-      />
-      <CursorPagination
-        pathname={INBOX_ROUTE}
-        cursor={cursor}
-        nextCursor={result.value.nextCursor}
-        query={{ ...inboxFilterQuery({ params }), ...(read ? { read } : {}) }}
-      />
-    </div>
+    <InboxTable
+      rows={result.value.items.map((message) => toRow({ message, dates }))}
+      {...abilities}
+    />
   );
 }

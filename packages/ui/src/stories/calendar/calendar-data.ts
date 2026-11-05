@@ -1,6 +1,6 @@
 import type {
   CalendarLine,
-  CalendarTicket,
+  CalendarOrder,
 } from "../../components/availability-calendar/calendar-types";
 import { PEOPLE } from "./people-data";
 import { STATES } from "./states-data";
@@ -27,14 +27,14 @@ const part = ({ ...line }: PartInput): CalendarLine => ({
   href: `#line-${line.id}`,
 });
 
-/** Ticket 18 in the Lindholmen demo, with the buffers and staffing ADR 0059 adds. */
-export const TICKET_18: CalendarTicket = {
-  reference: "Ticket 18",
+/** Order 18 in the Lindholmen demo, with the buffers and staffing ADR 0059 adds. */
+export const ORDER_18: CalendarOrder = {
+  reference: "Order 18",
   customer: "Hisingen Energi AB",
   purpose: "Sales conference",
   date: "2026-11-12",
   headcount: 24,
-  contact: { person: PEOPLE.johan, via: "Ticket assignee" },
+  contact: { person: PEOPLE.johan, via: "Order assignee" },
   lines: [
     day,
     part({

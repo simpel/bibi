@@ -2,8 +2,8 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
-import { checkReadable } from "../ticket/ticket-rules";
-import { regenerateForLine } from "../work-order/regenerate";
+import { checkReadable } from "../order/order-rules";
+import { regenerateForLine } from "../run-sheet/regenerate";
 import { loadBundle, planParts } from "./bundle-parts";
 import { effectiveQuantity } from "./effective-values";
 import {
@@ -32,11 +32,11 @@ async function prepare({ context, input }: ExpandInput) {
     const message = "Unknown bundle item";
     return invalid({ message, issues: [{ path: "itemId", message }] });
   }
-  const ticket = await context.db.ticket.findFirst({
-    where: { id: input.ticketId },
+  const order = await context.db.order.findFirst({
+    where: { id: input.orderId },
     select: { estimatedHeadcount: true, guaranteedHeadcount: true },
   });
-  const headcount = ticket ? effectiveQuantity({ quantity: null, ticket }).value : null;
+  const headcount = order ? effectiveQuantity({ quantity: null, order }).value : null;
   const times = { startsAt: input.startsAt ?? null, endsAt: input.endsAt ?? null };
   const quantity = input.quantity ?? null;
   const plans = planParts({ bundle: { ...times, quantity }, headcount, parts: bundle.parts });
@@ -49,8 +49,8 @@ async function expand({ context, input }: ExpandInput): Promise<Result<LineRecor
   const prepared = await prepare({ context, input });
   if (!prepared.ok) return prepared;
   const { name, plans } = prepared.value;
-  const { ticketId, entityTypeId, fields } = input;
-  const common = { ticketId, entityTypeId, ...(fields ? { fields } : {}) };
+  const { orderId, entityTypeId, fields } = input;
+  const common = { orderId, entityTypeId, ...(fields ? { fields } : {}) };
   const bundle = await insertLine({
     context,
     input: { ...input, ...common, name: input.name ?? name },
@@ -72,7 +72,7 @@ export const expandLineBundle = defineOperation({
   name: "line.expandBundle",
   kind: "command",
   description:
-    "Add a BUNDLE item to a ticket as one bundle line plus one part line per part (ADR 0059). " +
+    "Add a BUNDLE item to an order as one bundle line plus one part line per part (ADR 0059). " +
     "The bundle line carries the price; the part lines show their own effective prices but do " +
     "not count in the totals, and a quote splits the bundle price's VAT per rate across them. " +
     "A part line starts at the bundle's start plus the part's offset and lasts its duration " +

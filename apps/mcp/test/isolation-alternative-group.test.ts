@@ -5,27 +5,27 @@ import { seedProgram } from "./seed-program";
 
 type SeedGroupInput = { client: Client };
 
-/** A ticket with two lines made alternatives in the client's organization. */
+/** An order with two lines made alternatives in the client's organization. */
 async function seedGroup({ client }: SeedGroupInput) {
   const seed = await seedProgram({ client });
   const other = await call({
     client,
     name: "line_create",
-    args: { ticketId: seed.ticketId, entityTypeId: seed.programTypeId, name: "Hidden option" },
+    args: { orderId: seed.orderId, entityTypeId: seed.programTypeId, name: "Hidden option" },
   });
   expect(other.isError, JSON.stringify(other.data)).toBe(false);
   const lineIds = [seed.lineId, other.data.id as string];
   const group = await call({
     client,
     name: "alternativeGroup_create",
-    args: { ticketId: seed.ticketId, name: "Hidden choice", lineIds },
+    args: { orderId: seed.orderId, name: "Hidden choice", lineIds },
   });
   expect(group.isError, JSON.stringify(group.data)).toBe(false);
   return { ...seed, lineIds, groupId: group.data.id as string };
 }
 
 describe("cross-organization isolation: alternative groups (ADR 0052)", () => {
-  it("hides one organization's groups and refuses its lines and tickets", async () => {
+  it("hides one organization's groups and refuses its lines and orders", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
     const secret = await seedGroup({ client: a });
@@ -40,22 +40,22 @@ describe("cross-organization isolation: alternative groups (ADR 0052)", () => {
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");
     }
-    const foreignTicket = await call({
+    const foreignOrder = await call({
       client: b,
       name: "alternativeGroup_create",
-      args: { ticketId: secret.ticketId, name: "Intruder", lineIds: secret.lineIds },
+      args: { orderId: secret.orderId, name: "Intruder", lineIds: secret.lineIds },
     });
-    expect(["NOT_FOUND", "VALIDATION"]).toContain(foreignTicket.data.code);
+    expect(["NOT_FOUND", "VALIDATION"]).toContain(foreignOrder.data.code);
 
     const own = await seedProgram({ client: b });
     const foreignLines = await call({
       client: b,
       name: "alternativeGroup_create",
-      args: { ticketId: own.ticketId, name: "Intruder", lineIds: secret.lineIds },
+      args: { orderId: own.orderId, name: "Intruder", lineIds: secret.lineIds },
     });
     expect(foreignLines.data.code).toBe("VALIDATION");
     expect(JSON.stringify(foreignLines.data)).not.toContain("Hidden");
-    for (const args of [{}, { ticketId: secret.ticketId }]) {
+    for (const args of [{}, { orderId: secret.orderId }]) {
       const listed = await call({ client: b, name: "alternativeGroup_list", args });
       expect(listed.data.items).toEqual([]);
     }

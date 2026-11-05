@@ -5,7 +5,7 @@ const quoteSent: DensityStatus = { status: "Quote sent", quote: "Conference lunc
 /** Leads further out: New (no move), a site visit, a sent quote, or already confirmed. */
 const FAR: readonly DensityStatus[] = [{}, { status: "Site visit" }, quoteSent, confirmed];
 
-/** Who works the tickets, in turn: the coordinators and sellers, with a seller or Anna following. */
+/** Who works the orders, in turn: the coordinators and sellers, with a seller or Anna following. */
 const PEOPLE: readonly Pick<DensityShape, "assignee" | "followers">[] = [
   { assignee: "Maria Holm", followers: ["Sara Nilsson", "Anna Berg"] },
   { assignee: "Johan Ek", followers: ["Erik Lund"] },
@@ -28,14 +28,14 @@ const conference = ({
 
 /**
  * Lindholmen's busy weeks (#488): 2–5 room blocks on weekdays, at most one on Saturday and none
- * on Sunday (the venue is closed), up to three rooms per ticket (a plenary and breakouts).
- * Until D+14 nearly every ticket is Confirmed through an accepted quote, so its rooms are hard
+ * on Sunday (the venue is closed), up to three rooms per order (a plenary and breakouts).
+ * Until D+14 nearly every order is Confirmed through an accepted quote, so its rooms are hard
  * holds; further out they spread over New, Site visit, Quote sent and Confirmed.
  */
 export const lindholmenDensity: DemoDensity = {
   prefix: "G",
   timeZone: "Europe/Stockholm",
-  ...{ fromDay: -7, toDay: 30, perTicket: 3, rotateSlots: true },
+  ...{ fromDay: -7, toDay: 30, perOrder: 3, rotateSlots: true },
   perWeekday: [
     [2, 5],
     [2, 5],

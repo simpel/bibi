@@ -9,7 +9,7 @@ import type { CalendarAudience, CalendarState } from "./calendar-types";
  * - Grey fill = blocked but not sold (maintenance, internal blocks). Grey lines and text are
  *              structure: package frames, grid, chrome.
  * - External = a white card with an ink outline: customers never see states, so never a hue.
- * - Focus    = the ticket in focus gets an ink ring; the rest is lowered but keeps its hue.
+ * - Focus    = the order in focus gets an ink ring; the rest is lowered but keeps its hue.
  */
 
 const mix = ({ color, percent }: { color: string; percent: number }) =>

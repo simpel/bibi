@@ -1,14 +1,14 @@
 /**
  * Org-scoped models that are neither soft-deleted nor append-only, so hard deletion is permitted:
  * replacement sets owned by a parent and audited on it (ItemSetup, ItemPart, ItemCustomisationGroup,
- * ItemCustomisationOption, ItemDemandTag, BoardPhaseStatus, HoursDay, HoursException, MemberProfileItem, TicketStatusTransition, TicketStatusGate, ItemStateTransition, TicketTemplateLine,
- * TicketTemplateLineOption, PriceListItem, RevenueAccount (ADR 0077), OrderLine, InvoiceDeposit (ADR 0090), the id lists of responsibilities and work order
+ * ItemCustomisationOption, ItemDemandTag, BoardPhaseStatus, HoursDay, HoursException, MemberProfileItem, OrderStatusTransition, OrderStatusGate, ItemStateTransition, OrderTemplateLine,
+ * OrderTemplateLineOption, PriceListItem, RevenueAccount (ADR 0077), OrderLine, InvoiceDeposit (ADR 0090), the id lists of responsibilities and run sheet
  * definitions and
  * RecordLink, ADR 0056), status grid cells (StatusStateRule, audited on itself), the derived
  * search index (Embedding), Better Auth membership rows (Member; Invitation has its own
  * `status`; core audits both), rows with their
  * own `status` lifecycle that are never removed (PaymentAccount, IntegrationConnection, Payment, Deposit, Invoice, ADR
- * 0057), work order versions (`sentAt` is their lifecycle), followers (AssignmentFollower, removed on
+ * 0057), run sheet versions (`sentAt` is their lifecycle), followers (AssignmentFollower, removed on
  * unfollow), notifications (`readAt` is their lifecycle; preferences are upserted, ADR 0094) and credentials (Apikey: `enabled`; OauthGrantRevocation: one row per user and client).
  */
 export const HARD_DELETE_MODELS = new Set<string>([
@@ -18,13 +18,13 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "ItemCustomisationOption",
   "ItemDemandTag",
   "MemberProfileItem",
-  "TicketStatusTransition",
-  "TicketStatusGate",
+  "OrderStatusTransition",
+  "OrderStatusGate",
   "BoardPhaseStatus",
   "ItemStateTransition",
   "StatusStateRule",
-  "TicketTemplateLine",
-  "TicketTemplateLineOption",
+  "OrderTemplateLine",
+  "OrderTemplateLineOption",
   "PriceListItem",
   "OrderLine",
   "InvoiceDeposit",
@@ -36,7 +36,7 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "Payment",
   "Deposit",
   "Invoice",
-  "WorkOrder",
+  "RunSheet",
   "AssignmentFollower",
   "Notification",
   "NotificationPreference",
@@ -45,9 +45,9 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "RevenueAccount",
   "ResponsibilityEntityType",
   "ResponsibilityDefaultFollower",
-  "WorkOrderDefinitionEntityType",
-  "WorkOrderDefinitionField",
-  "WorkOrderDefinitionVocabulary",
+  "RunSheetDefinitionEntityType",
+  "RunSheetDefinitionField",
+  "RunSheetDefinitionVocabulary",
   "RecordLink",
   "HoursDay",
   "HoursException",

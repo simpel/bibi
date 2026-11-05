@@ -27,7 +27,7 @@ export function storyValues({
     const hourly = hourlyOf({ asset });
     if (hourly === 0) return [];
     return dates.map((date) => {
-      const own = bookings.filter((b) => b.assetId === asset.id && b.date === date && b.ticket);
+      const own = bookings.filter((b) => b.assetId === asset.id && b.date === date && b.order);
       const sum = ({ hold }: { hold: "hard" | "soft" }) =>
         own
           .filter((b) => b.state.hold === hold)

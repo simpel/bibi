@@ -4,10 +4,10 @@ import {
   type EntityTypeDto,
   type ItemStateDto,
   type PermissionSet,
-  type TicketStatusDto,
+  type OrderStatusDto,
   toCustomerDto,
   toItemStateDto,
-  toTicketStatusDto,
+  toOrderStatusDto,
   type VocabularyDto,
   type VocabularyValueDto,
   WITH_MOVES,
@@ -24,7 +24,7 @@ export type Loaders = {
   venue: BatchLoader<VenueRow>;
   setup: BatchLoader<SetupRow>;
   customer: BatchLoader<CustomerDto>;
-  ticketStatus: BatchLoader<TicketStatusDto>;
+  orderStatus: BatchLoader<OrderStatusDto>;
   itemState: BatchLoader<ItemStateDto>;
   entityType: BatchLoader<EntityTypeDto>;
   vocabulary: BatchLoader<VocabularyDto>;
@@ -67,15 +67,15 @@ async function loadVocabularies({ db, ids }: DbInput & Ids) {
   return byId({ rows: dtos });
 }
 
-/** Statuses by id, archived ones included: a ticket keeps a status that has been archived. */
-async function loadTicketStatuses({ db, ids }: DbInput & Ids) {
-  const rows = await db.ticketStatus.findMany({
+/** Statuses by id, archived ones included: an order keeps a status that has been archived. */
+async function loadOrderStatuses({ db, ids }: DbInput & Ids) {
+  const rows = await db.orderStatus.findMany({
     where: { id: { in: [...ids] }, status: { in: ["ACTIVE", "ARCHIVED"] } },
     include: WITH_MOVES,
   });
   // A free status allows every active status, so its moves are derived from the whole set.
-  const active = await db.ticketStatus.findMany({ include: WITH_MOVES });
-  return byId({ rows: rows.map((row) => toTicketStatusDto({ row, rows: active })) });
+  const active = await db.orderStatus.findMany({ include: WITH_MOVES });
+  return byId({ rows: rows.map((row) => toOrderStatusDto({ row, rows: active })) });
 }
 
 /** States by id, archived ones included: an archived line keeps the state it had. */
@@ -105,7 +105,7 @@ export function createLoaders({ db, permissions }: CreateLoadersInput): Loaders 
         return byId({ rows: rows.map((row) => toCustomerDto({ row, context: { permissions } })) });
       },
     }),
-    ticketStatus: createBatchLoader({ batch: (ids) => loadTicketStatuses({ db, ids }) }),
+    orderStatus: createBatchLoader({ batch: (ids) => loadOrderStatuses({ db, ids }) }),
     itemState: createBatchLoader({ batch: (ids) => loadItemStates({ db, ids }) }),
     entityType: createBatchLoader({ batch: (ids) => loadEntityTypes({ db, ids }) }),
     vocabulary: createBatchLoader({ batch: (ids) => loadVocabularies({ db, ids }) }),

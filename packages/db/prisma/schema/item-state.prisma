@@ -23,11 +23,11 @@ model ItemState {
   /// New lines of the type start here.
   initial         Boolean               @default(false)
   hold            HoldKind              @default(NONE)
-  /// Lines in this state are included in generated work orders.
-  inWorkOrders        Boolean               @default(false)
+  /// Lines in this state are included in generated run sheets.
+  inRunSheets        Boolean               @default(false)
   /// Final state: the hold is dropped and nothing leaves it.
   released        Boolean               @default(false)
-  /// Lines in this state fall to the type's `expiryStateId` when the ticket's `holdsUntil` passes.
+  /// Lines in this state fall to the type's `expiryStateId` when the order's `holdsUntil` passes.
   expires         Boolean               @default(false)
   status          RecordStatus          @default(ACTIVE)
   createdAt       DateTime              @default(now())
@@ -63,7 +63,7 @@ model ItemStateTransition {
   @@index([organizationId, fromStateId])
 }
 
-/// Status state rule – one cell of the status grid (ADR 0044): when a ticket enters `statusId`, its
+/// Status state rule – one cell of the status grid (ADR 0044): when a order enters `statusId`, its
 /// lines of item type `entityTypeId` move to `stateId`. A missing cell means "keep the state".
 /// Replaced per cell by `statusGrid.setCell` (cleared = deleted), audited on the cell.
 model StatusStateRule {
@@ -75,7 +75,7 @@ model StatusStateRule {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   createdBy      String?
-  ticketStatus   TicketStatus @relation(fields: [statusId, organizationId], references: [id, organizationId])
+  orderStatus   OrderStatus @relation(fields: [statusId, organizationId], references: [id, organizationId])
   entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   state          ItemState    @relation(fields: [stateId, organizationId], references: [id, organizationId])
 

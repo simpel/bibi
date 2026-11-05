@@ -2,6 +2,7 @@
 
 import { PinIcon, SquareArrowOutUpRightIcon } from "lucide-react";
 import { cn } from "../../lib/cn";
+import { AppLink } from "../app-link/app-link";
 import { Button } from "../button/button";
 import { useCalendarLabels } from "./calendar-labels";
 import type { AssetBooking } from "./calendar-types";
@@ -12,7 +13,7 @@ export type BookingActionsProps = {
   onOpen?: (() => void) | undefined;
 };
 
-const iconClass = "size-8 shrink-0";
+const iconClass = "size-7 shrink-0 text-muted-foreground hover:text-foreground";
 
 /** Pins the booking to the tray at the bottom, or takes it off. */
 function PinButton({ booking }: Pick<BookingActionsProps, "booking">) {
@@ -25,33 +26,53 @@ function PinButton({ booking }: Pick<BookingActionsProps, "booking">) {
     <Button
       size="icon"
       variant="ghost"
-      className={cn(iconClass, pinned && "text-primary")}
-      onClick={() => pins.toggle({ booking })}
+      className={cn(iconClass, pinned && "text-primary hover:text-primary")}
+      onClick={(e) => {
+        e.stopPropagation();
+        pins.toggle({ booking });
+      }}
       aria-pressed={pinned}
-      aria-label={labels.pin({ name })}
+      aria-label={pinned ? labels.unpin({ name }) : labels.pin({ name })}
       title={pinned ? labels.unpin({ name }) : labels.pin({ name })}
     >
-      <PinIcon aria-hidden className={cn(pinned && "fill-current")} />
+      <PinIcon aria-hidden className={cn("size-3.5", pinned && "fill-current")} />
     </Button>
   );
 }
 
-/** Pin it to compare, then open its ticket. */
+/** Pin it to compare, then open its order. */
 export function BookingActions({ booking, onOpen }: BookingActionsProps) {
   const labels = useCalendarLabels();
   return (
-    <div className="-my-1 -mr-1.5 flex shrink-0">
+    <div className="-my-1 -mr-1 flex shrink-0 items-center gap-0.5">
       <PinButton booking={booking} />
-      {onOpen && booking.ticket ? (
+      {onOpen && (booking.order || booking.orderId) ? (
         <Button
           size="icon"
           variant="ghost"
           className={iconClass}
-          onClick={onOpen}
-          aria-label={labels.open({ ticket: booking.ticket })}
-          title={labels.open({ ticket: booking.ticket })}
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpen();
+          }}
+          aria-label={labels.open({ order: booking.order ?? booking.name })}
+          title={labels.open({ order: booking.order ?? booking.name })}
         >
-          <SquareArrowOutUpRightIcon aria-hidden />
+          <SquareArrowOutUpRightIcon aria-hidden className="size-3.5" />
+        </Button>
+      ) : booking.href ? (
+        <Button
+          asChild
+          size="icon"
+          variant="ghost"
+          className={iconClass}
+          onClick={(e) => e.stopPropagation()}
+          aria-label={labels.open({ order: booking.order ?? booking.name })}
+          title={labels.open({ order: booking.order ?? booking.name })}
+        >
+          <AppLink href={booking.href}>
+            <SquareArrowOutUpRightIcon aria-hidden className="size-3.5" />
+          </AppLink>
         </Button>
       ) : null}
     </div>

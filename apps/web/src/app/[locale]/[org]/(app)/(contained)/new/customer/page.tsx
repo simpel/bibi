@@ -3,8 +3,14 @@ import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { PermissionGate } from "@/components/states/permission-gate";
 import { CustomerCreate } from "@/features/customer/ui/customer-create";
+import { pageTitle } from "@/lib/page-metadata";
 
 type NewCustomerPageProps = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: NewCustomerPageProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "customer", key: "create" });
+}
 
 export default async function NewCustomerPage({ params }: NewCustomerPageProps) {
   const locale = resolveLocale({ value: (await params).locale });

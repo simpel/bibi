@@ -6,7 +6,7 @@ export const inboundMessageMcpTools = [
   mcpTool({ operation: "inboundMessage.openCount" }),
   mcpTool({ operation: "inboundMessage.get" }),
   mcpTool({ operation: "inboundMessage.submit" }),
-  mcpTool({ operation: "inboundMessage.attachToTicket" }),
+  mcpTool({ operation: "inboundMessage.attachToOrder" }),
   mcpTool({ operation: "inboundMessage.markRead" }),
   mcpTool({ operation: "inboundMessage.markUnread" }),
   mcpTool({ operation: "inboundMessage.delete" }),

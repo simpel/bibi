@@ -10,10 +10,10 @@ type Context = Pick<OperationContext, "db">;
 const atParent = ({ message }: { message: string }) =>
   invalid({ message, issues: [{ path: "parentLineId", message }] });
 
-/** ADR 0088 decision 4: the parent is a top-level line of the same ticket, one level only. */
-function checkParent({ parent, ticketId }: { parent: LineRecord; ticketId: string }) {
-  if (parent.ticketId !== ticketId) {
-    return atParent({ message: "The parent line belongs to another ticket" });
+/** ADR 0088 decision 4: the parent is a top-level line of the same order, one level only. */
+function checkParent({ parent, orderId }: { parent: LineRecord; orderId: string }) {
+  if (parent.orderId !== orderId) {
+    return atParent({ message: "The parent line belongs to another order" });
   }
   if (parent.role !== null) {
     return atParent({
@@ -36,7 +36,7 @@ export type CreateInsertInput = { context: Context; input: LineCreateOperationIn
 /**
  * `line.create`'s input as `insertLine` takes it. Without `parentLineId` an ordinary line, which
  * needs its type. With it an add-on (ADR 0088): the parent must be a top-level line of the same
- * ticket (another organization's line is NOT_FOUND); type and period default to the parent's.
+ * order (another organization's line is NOT_FOUND); type and period default to the parent's.
  */
 export async function createInsertInput({
   context,
@@ -50,7 +50,7 @@ export async function createInsertInput({
   }
   const parent = await loadLine({ context, id: parentLineId });
   if (!parent) return notFound({ entity: "Line" });
-  const checked = checkParent({ parent, ticketId: input.ticketId });
+  const checked = checkParent({ parent, orderId: input.orderId });
   if (!checked.ok) return checked;
   return ok({
     value: {

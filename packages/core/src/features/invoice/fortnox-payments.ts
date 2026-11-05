@@ -5,7 +5,7 @@ import { newPublicToken } from "../payment/public-token";
 import { toPaymentDto } from "../payment/to-payment-dto";
 
 type Context = Pick<OperationContext, "db" | "organizationId" | "actor" | "recordChange">;
-type Invoice = { id: string; ticketId: string; currency: string };
+type Invoice = { id: string; orderId: string; currency: string };
 
 export type RecordFortnoxPaymentsInput = {
   context: Context;
@@ -39,7 +39,7 @@ async function upsertPayment({ context, invoice, payment, before }: UpsertInput)
     : await context.db.payment.create({
         data: {
           ...data,
-          ...{ organizationId, ticketId: invoice.ticketId, invoiceId: invoice.id },
+          ...{ organizationId, orderId: invoice.orderId, invoiceId: invoice.id },
           ...{ method: "INVOICE", provider: "FORTNOX", providerReference },
           ...{ currency: invoice.currency, publicToken: newPublicToken() },
           createdBy: context.actor.userId,

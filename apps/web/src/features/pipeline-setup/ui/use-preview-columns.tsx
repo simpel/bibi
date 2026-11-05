@@ -31,14 +31,14 @@ export function usePreviewColumns({
 }: PreviewColumnsInput): ColumnDef<PipelinePreviewStep>[] {
   const t = useTranslations("pipelineSetup.preview");
   return useMemo(() => {
-    const ticketStatus: ColumnDef<PipelinePreviewStep> = {
+    const orderStatus: ColumnDef<PipelinePreviewStep> = {
       id: "status",
       header: t("status"),
-      accessorFn: (step) => step.ticketStatus,
+      accessorFn: (step) => step.orderStatus,
       cell: ({ row: { original } }) => (
         <span className="inline-flex items-center gap-2 font-medium">
           <ColorSwatch color={original.color} />
-          {original.ticketStatus}
+          {original.orderStatus}
         </span>
       ),
     };
@@ -50,6 +50,6 @@ export function usePreviewColumns({
         cell: ({ row: { original } }) => <LineCell line={original.lines[index]} />,
       }),
     );
-    return [ticketStatus, ...perType];
+    return [orderStatus, ...perType];
   }, [t, types]);
 }

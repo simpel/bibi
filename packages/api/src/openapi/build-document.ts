@@ -45,7 +45,7 @@ export function buildOpenApiDocument({ compiled, basePath }: BuildOpenApiInput):
       title: "Bibi API",
       version: "1.0.0",
       description:
-        "REST API for Bibi (conference + food & beverage ticket). Derived from the same operations as GraphQL and MCP.",
+        "REST API for Bibi (conference + food & beverage order). Derived from the same operations as GraphQL and MCP.",
     },
     servers: [{ url: basePath }],
     paths,

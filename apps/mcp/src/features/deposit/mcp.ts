@@ -11,14 +11,14 @@ export const depositMcpTools = [
   mcpTool({
     operation: "deposit.request",
     summary: ({ input }) =>
-      `Ask the customer of ticket ${text({ value: input.ticketId })} for a deposit ` +
+      `Ask the customer of order ${text({ value: input.orderId })} for a deposit ` +
       `("${text({ value: input.description })}") with a card payment link`,
   }),
   mcpTool({
     operation: "deposit.create",
     summary: ({ input }) =>
       `Create a deposit request of ${kronor({ value: input.amountMinor })} ` +
-      `("${text({ value: input.description })}") on ticket ${text({ value: input.ticketId })}`,
+      `("${text({ value: input.description })}") on order ${text({ value: input.orderId })}`,
   }),
   mcpTool({
     operation: "deposit.send",

@@ -6,7 +6,7 @@ Shared component package for all UI in Bibi. Apps import **only** from here (`@b
 - `src/styles/tokens.css` – the ONLY place for design tokens (colors, radius, spacing, fonts, shadows; light + `.dark`).
 - `src/styles/base.css` – base styles (body, headings) via token utilities.
 - `src/styles/index.css` – `@import "tailwindcss"` + tokens + base. Exported as `@bibi/ui/styles.css`.
-- `src/components/<name>/<name>.tsx` – one component family per file (≤150 lines, functions ≤40 lines), plus `<name>.stories.tsx`.
+- `src/components/<name>/<name>.tsx` – one component family per file (aim for ~150 lines per file and ~40 lines per function as a guideline, not a hard cut), plus `<name>.stories.tsx`.
 - `src/lib/cn.ts` – `cn()` (clsx + tailwind-merge).
 - `src/index.ts` – the only barrel file. Add each new component here.
 

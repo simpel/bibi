@@ -7,7 +7,7 @@ import { validateFields } from "../field-definition/field-values";
 import type { PriceEffect } from "../item/customisation-group-schema";
 import { syncAllocations } from "../line-allocation/sync-allocations";
 import type { LineRole } from "./line-role";
-import { checkLinePeriod, checkPlace, checkTicket } from "./line-rules";
+import { checkLinePeriod, checkPlace, checkOrder } from "./line-rules";
 import { initialStateOf } from "./line-state";
 import type { LineCreateInput, LineRecord } from "./schema";
 import { recordFirstState } from "./state-history";
@@ -42,7 +42,7 @@ async function afterInsert({ context, row, stateId }: AfterInsertInput) {
 }
 
 /**
- * Creates a line in the state the status grid gives it for the ticket's status (else its
+ * Creates a line in the state the status grid gives it for the order's status (else its
  * type's initial state), holds its bookable item as the state says and records the change.
  * Shared by `line.create`, `line.expandBundle` and `line.chooseOptions`.
  */
@@ -54,15 +54,15 @@ export async function insertLine({
   const period = { startsAt: data.startsAt ?? null, endsAt: data.endsAt ?? null };
   for (const check of [
     await loadTypeOfBase({ context, entityTypeId, base: "LINE" }),
-    await checkTicket({ context, ticketId: data.ticketId }),
+    await checkOrder({ context, orderId: data.orderId }),
     checkLinePeriod(period),
-    await checkPlace({ context, ticketId: data.ticketId, itemId, setupId: data.setupId ?? null }),
+    await checkPlace({ context, orderId: data.orderId, itemId, setupId: data.setupId ?? null }),
   ]) {
     if (!check.ok) return check;
   }
   const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
   if (!checked.ok) return checked;
-  const stateId = await initialStateOf({ context, ticketId: data.ticketId, itemId });
+  const stateId = await initialStateOf({ context, orderId: data.orderId, itemId });
   const row = await createRecord({
     context,
     base: "LINE",

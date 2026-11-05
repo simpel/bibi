@@ -82,3 +82,69 @@ export const BillingOrganizationUpdateInputSchema = z.object({
     .describe("A new trial end; null goes back to 14 days from creation"),
 });
 export type BillingOrganizationUpdateInput = z.infer<typeof BillingOrganizationUpdateInputSchema>;
+
+export const StripeBalanceAmountSchema = z.object({
+  amount: z.number().int(),
+  currency: z.string(),
+});
+export type StripeBalanceAmount = z.infer<typeof StripeBalanceAmountSchema>;
+
+export const StripeBalanceTransactionSchema = z.object({
+  id: z.string(),
+  amount: z.number().int(),
+  fee: z.number().int(),
+  net: z.number().int(),
+  currency: z.string(),
+  type: z.string(),
+  status: z.string(),
+  created: z.coerce.date(),
+  description: z.string().nullable().optional(),
+});
+export type StripeBalanceTransaction = z.infer<typeof StripeBalanceTransactionSchema>;
+
+export const StripeInvoiceSchema = z.object({
+  id: z.string(),
+  number: z.string().nullable().optional(),
+  customerName: z.string().nullable().optional(),
+  customerEmail: z.string().nullable().optional(),
+  amountDue: z.number().int(),
+  amountPaid: z.number().int(),
+  currency: z.string(),
+  status: z.string().nullable().optional(),
+  created: z.coerce.date(),
+  hostedInvoiceUrl: z.string().nullable().optional(),
+});
+export type StripeInvoice = z.infer<typeof StripeInvoiceSchema>;
+
+export const ProductMetricSchema = z.object({
+  key: z.enum(["baseMonthly", "baseYearly", "seatMonthly"]),
+  count: z.number().int().describe("Organizations or extra seats"),
+  unitPriceMinor: z.number().int(),
+  currency: z.string(),
+  interval: BillingIntervalSchema,
+  monthlyRevenueMinor: z.number().int(),
+  annualRevenueMinor: z.number().int().nullable().optional(),
+});
+export type ProductMetric = z.infer<typeof ProductMetricSchema>;
+
+export const ProductBreakdownSchema = z.object({
+  monthly: ProductMetricSchema,
+  yearly: ProductMetricSchema,
+  extraSeats: ProductMetricSchema,
+});
+export type ProductBreakdown = z.infer<typeof ProductBreakdownSchema>;
+
+export const BillingFinancialsSchema = z.object({
+  configured: z.boolean(),
+  livemode: z.boolean(),
+  available: z.array(StripeBalanceAmountSchema),
+  pending: z.array(StripeBalanceAmountSchema),
+  recentTransactions: z.array(StripeBalanceTransactionSchema),
+  recentInvoices: z.array(StripeInvoiceSchema),
+  activeSubscriptions: z.number().int(),
+  mrrMinor: z.number().int().nullable(),
+  products: ProductBreakdownSchema,
+  currency: z.string(),
+  error: z.string().nullable().optional(),
+});
+export type BillingFinancialsDto = z.infer<typeof BillingFinancialsSchema>;

@@ -1,0 +1,79 @@
+/// Order – one customer request from first contact to the delivered event (ADR 0043). Its type
+/// (base `ORDER`) decides its own fields. `statusId` is one of the organization's own statuses. It
+/// is a projection of the status history (ADR 0054): the trigger on `OrderStatusChange` insert sets
+/// it (`domain_history.sql`), and core never writes it after the insert. When the order entered
+/// its status and why come from the newest `OrderStatusChange`.
+/// `status` is the soft-delete flag (ADR 0006), not the status.
+/// Trigger (ADR 0053): changing `statusId` or `status` re-derives the holds of the order's lines
+/// (an archived order or one in a closing status holds nothing, `sync_line_occupancy.sql`).
+model Order {
+  id                  String               @id
+  organizationId      String
+  /// Reference number, sequential per organization (1, 2, 3, …).
+  reference           Int
+  /// A short name staff know the order by, shown wherever the order is listed (owned, at most
+  /// 120 characters). Given on create or update; when a create gives none, a language model
+  /// writes one after the commit (feature `order.title`); null until then or when none came.
+  title               String?
+  entityTypeId        String
+  customerId          String
+  /// A contact person at the customer. Required for new orders and never cleared (core, ADR 0081);
+  /// nullable because older orders may have none.
+  contactId           String?
+  statusId            String
+  /// The period the customer asked for; each line has its own time.
+  desiredStartsAt     DateTime?
+  desiredEndsAt       DateTime?
+  /// The expected number of guests; lines with no quantity inherit it (ADR 0052).
+  estimatedHeadcount  Int?
+  /// Locked some days before the event; wins over the estimate when set.
+  guaranteedHeadcount Int?
+  /// Budget in minor units (1/100 kr).
+  budgetMinor         Int?
+  /// Lines in an `expires` state fall to their type's `expiryStateId` after this date (ADR 0044).
+  holdsUntil          DateTime?
+  /// Values of the type's own fields, keyed by `FieldDefinition.key`.
+  fields              Json                 @default("{}")
+  /// Booking-level notes for the whole order (owned, at most 4000 characters, ADR 0081).
+  note                String?
+  /// The client's idempotency key of the create that made the order (owned, 1–100 characters,
+  /// ADR 0081): `order.create` with the same key returns this order instead of a second one.
+  /// Unique per organization; null for orders created without one. Not on the order DTO.
+  intakeKey           String?
+  status              RecordStatus         @default(ACTIVE)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  createdBy           String?
+  entityType          EntityType           @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  customer            Customer             @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  contact             Contact?             @relation(fields: [contactId, organizationId], references: [id, organizationId])
+  orderStatus        OrderStatus         @relation(fields: [statusId, organizationId], references: [id, organizationId])
+  inboundEmails       InboundEmail[]
+  inboundMessages     InboundMessage[]
+  payments            Payment[]
+  deposits            Deposit[]
+  invoices            Invoice[]
+  lines               Line[]
+  alternativeGroups   AlternativeGroup[]
+  quotes              Quote[]
+  statusChanges       OrderStatusChange[]
+  estimates           OrderEstimate[]
+  requirements        Requirement[]
+  runSheets              RunSheet[]
+  notifications       Notification[]
+  /// The supertable row this record extends (ADR 0056).
+  record              Record               @relation(fields: [id, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([organizationId, reference])
+  @@unique([organizationId, intakeKey])
+  @@index([organizationId, status, desiredStartsAt])
+  @@index([organizationId, customerId])
+  @@index([organizationId, statusId])
+  @@index([organizationId, holdsUntil])
+  @@index([organizationId, desiredStartsAt])
+  @@index([organizationId, entityTypeId])
+  @@index([organizationId, estimatedHeadcount])
+  @@index([organizationId, title])
+  @@index([organizationId, createdAt])
+}

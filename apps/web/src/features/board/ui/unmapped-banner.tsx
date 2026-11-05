@@ -5,7 +5,7 @@ import { Link } from "@/lib/navigation";
 
 export type UnmappedBannerProps = { count: number; boardId: string | null };
 
-/** For board editors: tickets whose status is on no column of this board, so not shown. */
+/** For board editors: orders whose status is on no column of this board, so not shown. */
 export function UnmappedBanner({ count, boardId }: UnmappedBannerProps) {
   const t = useTranslations("board");
   return (

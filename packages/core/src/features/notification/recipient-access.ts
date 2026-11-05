@@ -9,7 +9,7 @@ type Db = { context: Pick<OperationContext, "db"> };
 export type ReachableInput = Db & {
   userIds: readonly string[];
   kind: NotificationKind;
-  /** What the recipient needs to see the subject and its snapshot, e.g. `ticket:read`. */
+  /** What the recipient needs to see the subject and its snapshot, e.g. `order:read`. */
   needs: readonly Permission[];
 };
 

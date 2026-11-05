@@ -56,7 +56,7 @@ describe("cross-organization isolation for the customer intake (ADR 0081)", () =
     expect((await call({ client: a, name: "contact_list" })).data.items).toHaveLength(1);
   });
 
-  it("lists only the organization's own customers by recent tickets", async () => {
+  it("lists only the organization's own customers by recent orders", async () => {
     const a = await connect({ context: testContext() });
     await seedA({ client: a });
     const b = await connect({ context: testContext() });

@@ -9,13 +9,21 @@ export const TooltipTrigger = TooltipPrimitive.Trigger;
 export function TooltipContent({
   className,
   sideOffset = 6,
+  side = "top",
+  align = "center",
+  collisionPadding = 12,
+  avoidCollisions = true,
   ...props
 }: ComponentProps<typeof TooltipPrimitive.Content>) {
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
+        side={side}
+        align={align}
         sideOffset={sideOffset}
+        collisionPadding={collisionPadding}
+        avoidCollisions={avoidCollisions}
         className={cn(
           "z-50 w-fit rounded-md bg-foreground px-3 py-1.5 text-xs text-background shadow-md data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0 data-[state=delayed-open]:zoom-in-95",
           className,

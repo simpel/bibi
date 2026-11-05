@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@bibi/ui";
-import { BellRingIcon, DatabaseIcon, InboxIcon, UsersIcon } from "lucide-react";
+import { BellRingIcon, DatabaseIcon, InboxIcon, LogOutIcon, UsersIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { DevService } from "@/lib/dev-services";
 import { DevAdminMenu } from "./dev-admin-menu";
@@ -26,10 +26,10 @@ export type DevUserSwitcherProps = {
   currentUserId: string | null;
 };
 
-type DevToolItemsProps = { signedIn: boolean; reseed: () => void };
+type DevToolItemsProps = { signedIn: boolean; reseed: () => void; signOut: () => void };
 
-/** The tools at the bottom: a test notification and inbox message, and a reseed. */
-function DevToolItems({ signedIn, reseed }: DevToolItemsProps) {
+/** The tools at the bottom: a test notification and inbox message, a reseed, and log out. */
+function DevToolItems({ signedIn, reseed, signOut }: DevToolItemsProps) {
   const t = useTranslations("dev");
   const send = useDevSend();
   return (
@@ -50,6 +50,15 @@ function DevToolItems({ signedIn, reseed }: DevToolItemsProps) {
         <DatabaseIcon />
         {t("reseed")}
       </DropdownMenuItem>
+      {signedIn ? (
+        <>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={signOut}>
+            <LogOutIcon />
+            {t("logOut")}
+          </DropdownMenuItem>
+        </>
+      ) : null}
     </>
   );
 }
@@ -57,7 +66,8 @@ function DevToolItems({ signedIn, reseed }: DevToolItemsProps) {
 /** Development only (rendered by `DevUserSwitcherSlot`): pick a seeded user to sign in as. */
 export function DevUserSwitcher({ users, admins, services, currentUserId }: DevUserSwitcherProps) {
   const t = useTranslations("dev");
-  const { open, setOpen, pending, switchTo, resetOnboarding, reseed } = useDevSwitcherActions();
+  const { open, setOpen, pending, switchTo, resetOnboarding, reseed, signOut } =
+    useDevSwitcherActions();
   return (
     <div className="fixed bottom-4 right-4 z-50">
       <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -83,7 +93,11 @@ export function DevUserSwitcher({ users, admins, services, currentUserId }: DevU
             onResetOnboarding={resetOnboarding}
           />
           <DropdownMenuSeparator />
-          <DevToolItems signedIn={currentUserId !== null} reseed={reseed} />
+          <DevToolItems
+            signedIn={currentUserId !== null}
+            reseed={reseed}
+            signOut={signOut}
+          />
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

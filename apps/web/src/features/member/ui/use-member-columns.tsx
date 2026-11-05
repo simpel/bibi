@@ -33,11 +33,13 @@ export function useMemberColumns<TRow extends MemberRow>({
       header: t("name"),
       accessorFn: (m) => m.name,
       cell: ({ row: { original } }) => (
-        <ContactName
-          contact={original}
-          href={linkNames ? memberRoute({ id: original.id }) : undefined}
-          className="font-medium"
-        />
+        <div onClick={(event) => event.stopPropagation()}>
+          <ContactName
+            contact={original}
+            href={linkNames ? memberRoute({ id: original.id }) : undefined}
+            className="font-medium"
+          />
+        </div>
       ),
     },
     { id: "email", header: t("email"), accessorFn: (m) => m.email },

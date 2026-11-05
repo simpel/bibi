@@ -4,7 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { usageConflict } from "../../records/blocking-issues";
 import { conflict, notFound } from "../../shared/errors";
 import { recordsOfType } from "../field-definition/field-usage";
-import { checkNotOnWorkOrders } from "../work-order-definition/usage";
+import { checkNotOnRunSheets } from "../run-sheet-definition/usage";
 import { checkCapabilities, checkCapabilitiesRemovable } from "./capabilities";
 import type { EntityBase } from "./capability-kinds";
 import { checkExpiryState } from "./expiry-state";
@@ -51,7 +51,7 @@ export const updateEntityType = defineOperation({
   kind: "command",
   description:
     "Rename a type, replace its capabilities, set an item type's expiry state (where lines in " +
-    "an expiring state fall when the ticket's holdsUntil passes) or its default setup and " +
+    "an expiring state fall when the order's holdsUntil passes) or its default setup and " +
     "teardown minutes (held around bookings; a hard hold that would then collide is CONFLICT). " +
     "Switching a capability off while items of the " +
     "type have data for it (e.g. prices for PRICED) is refused with CONFLICT.",
@@ -89,9 +89,9 @@ export const archiveEntityType = defineOperation({
   name: "entityType.archive",
   kind: "command",
   description:
-    "Archive a type. Refused while active records (items, customers, contacts, tickets, " +
+    "Archive a type. Refused while active records (items, customers, contacts, orders, " +
     "lines, requirements) still have the " +
-    "type, a LINK field points to it, or a work order definition includes it.",
+    "type, a LINK field points to it, or a run sheet definition includes it.",
   input: EntityTypeIdInputSchema,
   output: EntityTypeSchema,
   permission: "configuration:delete",
@@ -105,12 +105,12 @@ export const archiveEntityType = defineOperation({
     if (linking > 0)
       return conflict({ message: `${linking} LINK fields point to the type ${before.name}` });
     const what = `The type ${before.name}`;
-    const onWorkOrders = await checkNotOnWorkOrders({
+    const onRunSheets = await checkNotOnRunSheets({
       context,
       reference: { entityTypeId: id },
       what,
     });
-    if (!onWorkOrders.ok) return onWorkOrders;
+    if (!onRunSheets.ok) return onRunSheets;
     const row = await context.db.entityType.update({ where: { id }, data: { status: "ARCHIVED" } });
     const type = await toEntityTypeDto({ context, row });
     context.recordChange({ entityId: id, before, after: type });

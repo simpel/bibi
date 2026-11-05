@@ -10,7 +10,7 @@ export type RecordsOfTypeInput = { context: Db; entityTypeId: string };
 
 /**
  * Active records of a type on the `Record` supertable (ADR 0056), plus the lines of active
- * predefined tickets with the type (counted, not listed). Archived rows are hidden by the
+ * predefined orders with the type (counted, not listed). Archived rows are hidden by the
  * org-scoped client (ADR 0026).
  */
 export async function recordsOfType({
@@ -24,7 +24,7 @@ export async function recordsOfType({
     take: LISTED,
   });
   const total = await context.db.record.count({ where: { entityTypeId } });
-  const templateLines = await context.db.ticketTemplateLine.count({
+  const templateLines = await context.db.orderTemplateLine.count({
     where: { entityTypeId, template: { status: "ACTIVE" } },
   });
   return { total: total + templateLines, rows };

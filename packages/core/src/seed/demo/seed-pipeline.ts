@@ -1,12 +1,12 @@
 import { ok, type Result } from "../../errors/result";
 import {
-  setTicketStatusGates,
-  setTicketStatusTransitions,
-} from "../../features/ticket-status/order-operations";
+  setOrderStatusGates,
+  setOrderStatusTransitions,
+} from "../../features/order-status/order-operations";
 import {
-  createTicketStatus,
-  updateTicketStatus,
-} from "../../features/ticket-status/write-operations";
+  createOrderStatus,
+  updateOrderStatus,
+} from "../../features/order-status/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { seedDemoBoards } from "./seed-boards";
@@ -17,17 +17,17 @@ import type { DemoPipeline } from "./types";
 export type SeedPipelineInput = { context: ExecuteContext; pipeline: DemoPipeline };
 
 /**
- * Creates the statuses in order through `ticketStatus.create` (a name and a colour), then sets
- * each one's flags and event with `ticketStatus.update`; returns their ids by name.
+ * Creates the statuses in order through `orderStatus.create` (a name and a colour), then sets
+ * each one's flags and event with `orderStatus.update`; returns their ids by name.
  */
 async function createStatuses({ context, pipeline }: SeedPipelineInput) {
   const ids = new Map<string, string>();
   for (const { name, color, gatesIn: _gatesIn, ...flags } of pipeline.statuses.statuses) {
     const input = { name, color };
-    const created = await execute({ operation: createTicketStatus, input, context });
+    const created = await execute({ operation: createOrderStatus, input, context });
     if (!created.ok) return created;
     const update = { id: created.value.id, ...flags };
-    const updated = await execute({ operation: updateTicketStatus, input: update, context });
+    const updated = await execute({ operation: updateOrderStatus, input: update, context });
     if (!updated.ok) return updated;
     ids.set(name, created.value.id);
   }
@@ -45,7 +45,7 @@ async function setMoveRules({ context, pipeline, ids }: MovesInput): Promise<Res
     const id = ids.get(name);
     if (!id || gatesIn.length === 0) continue;
     const input = { id, gates: [{ fromStatusId: null, gates: [...gatesIn] }] };
-    const set = await execute({ operation: setTicketStatusGates, input, context });
+    const set = await execute({ operation: setOrderStatusGates, input, context });
     if (!set.ok) return set;
   }
   for (const { from, to } of pipeline.restrictedMoves ?? []) {
@@ -53,7 +53,7 @@ async function setMoveRules({ context, pipeline, ids }: MovesInput): Promise<Res
     if (!id) continue;
     const toStatusIds = to.flatMap((name) => ids.get(name) ?? []);
     const input = { id, allowedNext: "ONLY_THESE" as const, toStatusIds };
-    const set = await execute({ operation: setTicketStatusTransitions, input, context });
+    const set = await execute({ operation: setOrderStatusTransitions, input, context });
     if (!set.ok) return set;
   }
   return ok({ value: true });
@@ -62,7 +62,7 @@ async function setMoveRules({ context, pipeline, ids }: MovesInput): Promise<Res
 /**
  * The organization's pipeline (ADR 0043, 0044, 0025) as SYSTEM: statuses with flags and
  * move rules, then the status grid. After the item types and their states exist, before any
- * ticket. The organization was provisioned without the default statuses (`pipeline: "none"`).
+ * order. The organization was provisioned without the default statuses (`pipeline: "none"`).
  */
 export async function seedDemoPipeline({
   context,

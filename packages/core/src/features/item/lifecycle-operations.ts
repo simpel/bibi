@@ -14,7 +14,7 @@ export const archiveItem = defineOperation({
   description:
     "Archive (soft-delete) an item. Archived items are hidden from lists and search. Refused " +
     "while another record's LINK field points to it, an active line occupies it or a " +
-    "predefined ticket has a line with it.",
+    "predefined order has a line with it.",
   input: ItemIdInputSchema,
   output: ItemSchema,
   permission: "item:delete",

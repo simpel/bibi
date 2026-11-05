@@ -6,21 +6,21 @@ import { unwrap } from "./helpers";
 
 describe("derived assignments (ADR 0055)", () => {
   it("derives the responsibility from the lines, with its defaults, and stores nothing", async () => {
-    const { context, ticket, erik, johan, part } = await derivedSetup();
+    const { context, order, erik, johan, part } = await derivedSetup();
     expect(await part()).toMatchObject({
       id: null,
       assigneeId: erik,
       assigneeSource: "DEFAULT",
       followers: [{ userId: johan, source: "DEFAULT" }],
     });
-    expect(await context.db.assignment.count({ where: { recordId: ticket.id } })).toBe(0);
+    expect(await context.db.assignment.count({ where: { recordId: order.id } })).toBe(0);
   });
 
-  it("follows a changed default on every ticket with no data change", async () => {
-    const { context, ticket, maria, update, part } = await derivedSetup();
+  it("follows a changed default on every order with no data change", async () => {
+    const { context, order, maria, update, part } = await derivedSetup();
     unwrap({ result: await update({ defaultAssigneeId: maria, defaultFollowerIds: [] }) });
     expect(await part()).toMatchObject({ assigneeId: maria, followers: [] });
-    expect(await context.db.assignment.count({ where: { recordId: ticket.id } })).toBe(0);
+    expect(await context.db.assignment.count({ where: { recordId: order.id } })).toBe(0);
   });
 
   it("stops applying when the covering line goes", async () => {

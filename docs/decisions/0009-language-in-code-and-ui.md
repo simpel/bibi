@@ -2,7 +2,7 @@
 
 - **Date:** 2026-10-13
 - **Status:** Accepted
-- **Amended:** 2026-10-14 (English only, see Addendum)
+- **Amended:** 2026-10-14 (English only, see Addendum), 2026-11-04 (Action Verb Taxonomy)
 
 ## Context
 The team worked in Swedish for documentation and product, but the codebase must be developable by more people and by AI tools. Entity names have a large impact on APIs and AI tools. At the same time, the user interface is in Swedish for customers in Sweden and in English for international users. The language choice for entity names has been open in CLAUDE.md.
@@ -26,3 +26,14 @@ The team worked in Swedish for documentation and product, but the codebase must 
 - Swedish appears only in translations (`packages/i18n/messages/sv.json`) and in test inputs that specifically exercise Swedish text (for example handling of Swedish characters).
 - UI text still goes through next-intl, in sv and en.
 - This replaces the earlier rule that documentation is written in Swedish.
+
+## Addendum 2026-11-04 – Controlled Vocabulary & Action Verb Taxonomy
+- For anything that creates an entity or resource, always use the active imperative verb **Create** (Swedish: *Skapa*), never *New* (Swedish: *Ny*).
+- Actions follow `[Action Verb] + [Noun]` (e.g. `Create order`, `Create customer`, `Create package`, `Create board`, `Create chat`).
+- Standardize CRUD verbs across both English and Swedish:
+  - Creation: **Create** (*Skapa*)
+  - Association / Sub-items: **Add** (*Lägg till*)
+  - Modification: **Edit** (*Redigera* / *Ändra*)
+  - Permanent Destruction: **Delete** (*Ta bort* / *Radera*)
+  - Disassociation: **Remove** (*Ta bort* / *Koppla bort*)
+  - Confirmation / Persistence: **Save** (*Spara*)

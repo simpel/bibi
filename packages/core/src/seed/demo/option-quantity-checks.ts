@@ -1,5 +1,5 @@
 import type { ExecuteContext } from "../../operations/context";
-import type { DemoLine } from "./ticket-types";
+import type { DemoLine } from "./order-types";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoOptionQuantitiesInput = { context: ExecuteContext; org: DemoOrg };
@@ -8,17 +8,17 @@ type LineInput = { context: ExecuteContext; line: DemoLine };
 
 /**
  * One seeded line with split options: each option line has its own quantity, and every quote of
- * its ticket that was sent froze each of them with that quantity (ADR 0082).
+ * its order that was sent froze each of them with that quantity (ADR 0082).
  */
 async function checkLine({ context, line }: LineInput): Promise<string[]> {
   const parent = await context.db.line.findFirst({
     where: { name: line.name, item: { name: line.item } },
-    select: { id: true, ticketId: true },
+    select: { id: true, orderId: true },
   });
   if (!parent) return [`line ${line.name} is missing`];
   const failures: string[] = [];
   const sent = await context.db.quote.findMany({
-    where: { ticketId: parent.ticketId, quoteStatus: { not: "DRAFT" } },
+    where: { orderId: parent.orderId, quoteStatus: { not: "DRAFT" } },
     select: { id: true },
   });
   if (sent.length === 0) failures.push(`${line.name}: no sent quote`);
@@ -47,14 +47,14 @@ async function checkLine({ context, line }: LineInput): Promise<string[]> {
 
 /**
  * ADR 0082: every line the data files give split options (L9's team dinner 10 + 4, L11's lunch
- * 7 + 3) stores each option's quantity, and its ticket's sent quote snapshots them. Returns failures.
+ * 7 + 3) stores each option's quantity, and its order's sent quote snapshots them. Returns failures.
  */
 export async function checkDemoOptionQuantities({
   context,
   org,
 }: CheckDemoOptionQuantitiesInput): Promise<string[]> {
-  const lines = org.tickets
-    .flatMap((ticket) => ticket.lines ?? [])
+  const lines = org.orders
+    .flatMap((order) => order.lines ?? [])
     .filter((line) => line.options?.some((option) => option.quantity !== undefined));
   const failures: string[] = [];
   for (const line of lines) failures.push(...(await checkLine({ context, line })));

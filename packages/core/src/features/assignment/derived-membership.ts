@@ -3,7 +3,7 @@ import type { AssignmentKind } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-export type DerivedSlot = { ticketId: string; responsibilityId: string };
+export type DerivedSlot = { orderId: string; responsibilityId: string };
 
 export type DerivedSlotsInput = Db & { userId: string; kind: AssignmentKind };
 
@@ -18,20 +18,20 @@ function defaultedTo({ context, userId, kind }: DerivedSlotsInput) {
   });
 }
 
-/** Tickets with an active line whose item is of one of the types. */
-async function ticketsCovering({ context, types }: Db & { types: string[] }) {
+/** Orders with an active line whose item is of one of the types. */
+async function ordersCovering({ context, types }: Db & { types: string[] }) {
   if (types.length === 0) return [];
   const lines = await context.db.line.findMany({
     where: { status: "ACTIVE", item: { entityTypeId: { in: types } } },
-    select: { ticketId: true },
-    distinct: ["ticketId"],
+    select: { orderId: true },
+    distinct: ["orderId"],
   });
-  return lines.map((line) => line.ticketId);
+  return lines.map((line) => line.orderId);
 }
 
 /**
- * The (ticket, responsibility) slots the member gets from the responsibilities' defaults (ADR
- * 0055): the ticket has a line the responsibility covers, and nobody chose otherwise on it. For
+ * The (order, responsibility) slots the member gets from the responsibilities' defaults (ADR
+ * 0055): the order has a line the responsibility covers, and nobody chose otherwise on it. For
  * `ASSIGNED` an explicit assignee replaces the default; for `FOLLOWING` an explicit unfollow of
  * the member removes it.
  */
@@ -43,9 +43,9 @@ export async function derivedSlots({
   const slots: DerivedSlot[] = [];
   for (const responsibility of await defaultedTo({ context, userId, kind })) {
     const types = responsibility.entityTypes.map((type) => type.entityTypeId);
-    const ticketIds = await ticketsCovering({ context, types });
+    const orderIds = await ordersCovering({ context, types });
     const choices = await context.db.assignment.findMany({
-      where: { recordId: { in: ticketIds }, responsibilityId: responsibility.id },
+      where: { recordId: { in: orderIds }, responsibilityId: responsibility.id },
       select: {
         recordId: true,
         assigneeId: true,
@@ -61,8 +61,8 @@ export async function derivedSlots({
         )
         .map((choice) => choice.recordId),
     );
-    for (const ticketId of ticketIds) {
-      if (!overridden.has(ticketId)) slots.push({ ticketId, responsibilityId: responsibility.id });
+    for (const orderId of orderIds) {
+      if (!overridden.has(orderId)) slots.push({ orderId, responsibilityId: responsibility.id });
     }
   }
   return slots;

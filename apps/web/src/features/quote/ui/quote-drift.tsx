@@ -6,11 +6,11 @@ import { QuoteLinesTable } from "./quote-lines-table";
 export type QuoteDriftProps = { quote: QuoteDto };
 
 /**
- * ADR 0052: how the ticket's lines now differ from an accepted quote (derived, never stored).
- * Nothing when the quote is not accepted or still matches the ticket.
+ * ADR 0052: how the order's lines now differ from an accepted quote (derived, never stored).
+ * Nothing when the quote is not accepted or still matches the order.
  */
 export async function QuoteDrift({ quote }: QuoteDriftProps) {
-  if (!quote.differsFromTicket) return null;
+  if (!quote.differsFromOrder) return null;
   const t = await getTranslations("quote.drift");
   return (
     <Card>
@@ -23,8 +23,8 @@ export async function QuoteDrift({ quote }: QuoteDriftProps) {
       </CardHeader>
       <CardContent>
         <QuoteLinesTable
-          lines={quote.ticketChanges}
-          removedLines={quote.ticketRemovedLines}
+          lines={quote.orderChanges}
+          removedLines={quote.orderRemovedLines}
           tableId="quote.drift"
         />
       </CardContent>

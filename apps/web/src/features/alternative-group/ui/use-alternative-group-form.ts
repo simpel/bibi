@@ -9,21 +9,21 @@ import { useZodMessages } from "@/lib/use-zod-messages";
 /** Raw values of the create form: a name and the picked lines. */
 export type AlternativeGroupFormValues = { name: string; lineIds: string[] };
 
-export type UseAlternativeGroupFormInput = { ticketId: string };
+export type UseAlternativeGroupFormInput = { orderId: string };
 
-/** react-hook-form wired to core's `alternativeGroup.create` schema, for one ticket. */
-export function useAlternativeGroupForm({ ticketId }: UseAlternativeGroupFormInput) {
+/** react-hook-form wired to core's `alternativeGroup.create` schema, for one order. */
+export function useAlternativeGroupForm({ orderId }: UseAlternativeGroupFormInput) {
   const schema = useMemo(
     () =>
       formSchema({
         schema: AlternativeGroupCreateInputSchema,
         toInput: ({ values }: { values: AlternativeGroupFormValues }) => ({
-          ticketId,
+          orderId,
           name: values.name.trim(),
           lineIds: values.lineIds,
         }),
       }),
-    [ticketId],
+    [orderId],
   );
   return useForm<AlternativeGroupFormValues, unknown, AlternativeGroupCreateInput>({
     resolver: zodResolver(schema, useZodMessages()),

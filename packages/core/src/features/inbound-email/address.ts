@@ -1,28 +1,28 @@
 /**
- * Inbound address scheme (ADR 0012): every ticket has its own address on the inbound subdomain,
- * `ticket-<ticketId>@<domain>`. Ticket ids are random cuid2 strings, so an address cannot be
+ * Inbound address scheme (ADR 0012): every order has its own address on the inbound subdomain,
+ * `order-<orderId>@<domain>`. Order ids are random cuid2 strings, so an address cannot be
  * guessed from another one, and the id alone resolves the organization.
  */
-const PREFIX = "ticket-";
+const PREFIX = "order-";
 
 /** Lowercase letters and digits only: the cuid2 alphabet. */
 const ID_PATTERN = /^[a-z0-9]{1,64}$/;
 
-export type TicketInboundAddressInput = { ticketId: string; domain: string };
+export type OrderInboundAddressInput = { orderId: string; domain: string };
 
-/** The address a customer replies to so the mail lands on this ticket. */
-export function ticketInboundAddress({ ticketId, domain }: TicketInboundAddressInput): string {
-  return `${PREFIX}${ticketId}@${domain.toLowerCase()}`;
+/** The address a customer replies to so the mail lands on this order. */
+export function orderInboundAddress({ orderId, domain }: OrderInboundAddressInput): string {
+  return `${PREFIX}${orderId}@${domain.toLowerCase()}`;
 }
 
-export type TicketReplyAddressInput = { ticketId: string; domain: string | undefined };
+export type OrderReplyAddressInput = { orderId: string; domain: string | undefined };
 
 /**
- * The ticket's reply address, or null when no inbound domain is configured (`MAIL_INBOUND_DOMAIN`
- * unset): carried as `Ticket.inboundAddress` and used as reply-to on ticket mail.
+ * The order's reply address, or null when no inbound domain is configured (`MAIL_INBOUND_DOMAIN`
+ * unset): carried as `Order.inboundAddress` and used as reply-to on order mail.
  */
-export function ticketReplyAddress({ ticketId, domain }: TicketReplyAddressInput): string | null {
-  return domain ? ticketInboundAddress({ ticketId, domain }) : null;
+export function orderReplyAddress({ orderId, domain }: OrderReplyAddressInput): string | null {
+  return domain ? orderInboundAddress({ orderId, domain }) : null;
 }
 
 /** `Name <a@b>` → `a@b`; a bare address is returned trimmed. */
@@ -31,10 +31,10 @@ export function bareAddress({ address }: { address: string }): string {
   return (angled?.[1] ?? address).trim();
 }
 
-export type TicketIdFromAddressInput = { address: string; domain: string };
+export type OrderIdFromAddressInput = { address: string; domain: string };
 
-/** The ticket id of an inbound address on `domain`, or null for any other address. */
-export function ticketIdFromAddress({ address, domain }: TicketIdFromAddressInput): string | null {
+/** The order id of an inbound address on `domain`, or null for any other address. */
+export function orderIdFromAddress({ address, domain }: OrderIdFromAddressInput): string | null {
   const bare = bareAddress({ address }).toLowerCase();
   const at = bare.lastIndexOf("@");
   if (at < 0 || bare.slice(at + 1) !== domain.toLowerCase()) return null;

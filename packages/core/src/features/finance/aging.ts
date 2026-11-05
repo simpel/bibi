@@ -7,9 +7,9 @@ const OVERDUE_LISTED = 10;
 export type AgingInput = {
   open: readonly OpenInvoice[];
   now: Date;
-  /** The ticket reference, or null for a caller without `ticket:read`. */
+  /** The order reference, or null for a caller without `order:read`. */
   referenceOf: (input: { reference: number }) => number | null;
-  /** The ticket title, gated like the reference. */
+  /** The order title, gated like the reference. */
   titleOf: (input: { title: string | null }) => string | null;
 };
 
@@ -40,9 +40,9 @@ export function aging({ open, now, referenceOf, titleOf }: AgingInput): FinanceA
     .map(({ row, days }) => ({
       invoiceId: row.id,
       number: row.number,
-      ticketId: row.ticketId,
-      ticketReference: referenceOf({ reference: row.ticket.reference }),
-      ticketTitle: titleOf({ title: row.ticket.title }),
+      orderId: row.orderId,
+      orderReference: referenceOf({ reference: row.order.reference }),
+      orderTitle: titleOf({ title: row.order.title }),
       dueDate: row.dueDate as Date,
       daysOverdue: days,
       openMinor: row.openMinor,

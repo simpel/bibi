@@ -3,7 +3,7 @@ import { orgRelativePath, payPath, safeReturnTo } from "./return-to";
 
 describe("safeReturnTo", () => {
   it("keeps a path in the organization with its query", () => {
-    expect(safeReturnTo({ value: "/tickets/abc?tab=lines" })).toBe("/tickets/abc?tab=lines");
+    expect(safeReturnTo({ value: "/orders/abc?tab=lines" })).toBe("/orders/abc?tab=lines");
     expect(safeReturnTo({ value: ["/pipeline", "/x"] })).toBe("/pipeline");
   });
 
@@ -12,7 +12,7 @@ describe("safeReturnTo", () => {
       "https://evil.example",
       "//evil.example",
       "/\\evil",
-      "tickets",
+      "orders",
       "",
       null,
     ]) {
@@ -30,14 +30,14 @@ describe("safeReturnTo", () => {
 
 describe("payPath and orgRelativePath", () => {
   it("encodes the return path into the query", () => {
-    expect(payPath({ returnTo: "/tickets?q=a b" })).toBe(
-      "/billing/pay?returnTo=%2Ftickets%3Fq%3Da%20b",
+    expect(payPath({ returnTo: "/orders?q=a b" })).toBe(
+      "/billing/pay?returnTo=%2Forders%3Fq%3Da%20b",
     );
   });
 
   it("strips the locale and the organization slug", () => {
-    expect(orgRelativePath({ pathname: "/sv/acme/tickets/1", search: "?x=1" })).toBe(
-      "/tickets/1?x=1",
+    expect(orgRelativePath({ pathname: "/sv/acme/orders/1", search: "?x=1" })).toBe(
+      "/orders/1?x=1",
     );
     expect(orgRelativePath({ pathname: "/sv/acme", search: "" })).toBe("/");
     expect(orgRelativePath({ pathname: "/sv", search: "" })).toBeNull();

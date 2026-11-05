@@ -7,14 +7,14 @@ import type { PaymentSignal } from "../../features/payment/webhook-schema";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { atDay as at } from "./seed-clock";
-import type { DemoTicket } from "./ticket-types";
+import type { DemoOrder } from "./order-types";
 
 const DAY_MS = 86_400_000;
 
 type SeedInvoiceInput = {
   context: ExecuteContext;
-  ticket: DemoTicket;
-  ticketId: string;
+  order: DemoOrder;
+  orderId: string;
   now: Date;
 };
 
@@ -47,18 +47,18 @@ async function payInvoice({ context, invoiceId, refund }: PayInput) {
   return signal({ context: refundContext, paymentId, kind: "refunded", refundedMinor });
 }
 
-/** `money.invoice` (ADR 0077): the ticket invoiced and sent; paid in full when asked. */
+/** `money.invoice` (ADR 0077): the order invoiced and sent; paid in full when asked. */
 export async function seedInvoice({
   context,
-  ticket,
-  ticketId,
+  order,
+  orderId,
   now,
 }: SeedInvoiceInput): Promise<Result<true>> {
-  const wanted = ticket.money?.invoice;
+  const wanted = order.money?.invoice;
   if (!wanted) return ok({ value: true });
   const sentContext = at({ context, now, day: wanted.sentDay });
   const dueDate = new Date(now.getTime() + wanted.dueDay * DAY_MS);
-  const input = { ticketId, dueDate };
+  const input = { orderId, dueDate };
   const draft = await execute({ operation: createInvoice, input, context: sentContext });
   if (!draft.ok) return draft;
   const id = draft.value.id;

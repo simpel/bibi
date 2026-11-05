@@ -1,8 +1,10 @@
 import { getDb } from "@bibi/db";
 import { getLogger } from "@bibi/logger";
+import { renderSeatRequestEmail } from "@bibi/mail";
 import { sendAuthMail } from "../mail";
 import { webUrl } from "../urls";
-import { billingAudience, greeting } from "./billing-admins";
+import { resolveUserLocale } from "../user-locale";
+import { billingAudience } from "./billing-admins";
 
 export type SeatRequestMailInput = {
   organizationId: string;
@@ -26,18 +28,23 @@ export async function sendSeatRequestMail({
     getDb().user.findUnique({ where: { id: requesterId }, select: { name: true, email: true } }),
   ]);
   const who = requester?.name || requester?.email || "Someone";
-  const what = inviteeEmail ? `${who} invited ${inviteeEmail} to` : `${who} asked to join`;
   const url = webUrl({ path: `/${organization.slug}/settings/billing` });
   for (const admin of admins) {
-    const text = [
-      greeting(admin),
-      `${what} ${organization.name} on Bibi, but all seats are taken.`,
-      `Approve it to add a seat (49 SEK a month), or decline it:\n${url}`,
-      "— Bibi",
-    ].join("\n\n");
+    const locale = await resolveUserLocale({ userId: admin.id, email: admin.email });
+    const rendered = renderSeatRequestEmail({
+      who,
+      organization: organization.name,
+      inviteeEmail,
+      url,
+      adminName: admin.name,
+      locale,
+    });
     await sendAuthMail({
-      ...{ kind: "billing.seat-request", to: admin.email, text },
-      subject: `A seat is waiting for your approval in ${organization.name}`,
+      kind: "billing.seat-request",
+      to: admin.email,
+      subject: rendered.subject,
+      text: rendered.text,
+      html: rendered.html,
     }).catch((error: unknown) =>
       getLogger().warn({ event: "billing.seatRequestMailFailed", organizationId, err: error }),
     );

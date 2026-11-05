@@ -3,54 +3,54 @@ import { describe, expect, it } from "vitest";
 import { archiveCustomer, execute } from "../src/index";
 import { archiveContactsOf } from "./contact-archive-helpers";
 import { errorCode } from "./helpers";
-import { createTestTicket, ticketSetup } from "./ticket-helpers";
+import { createTestOrder, orderSetup } from "./order-helpers";
 
-async function setupWithTickets({ count }: { count: number }) {
-  const setup = await ticketSetup();
+async function setupWithOrders({ count }: { count: number }) {
+  const setup = await orderSetup();
   const { context, type, customer } = setup;
   for (let index = 0; index < count; index += 1)
-    await createTestTicket({ context, entityTypeId: type.id, customerId: customer.id });
+    await createTestOrder({ context, entityTypeId: type.id, customerId: customer.id });
   return setup;
 }
 
-const activeTickets = ({ customerId }: { customerId: string }) =>
-  getDb().ticket.count({ where: { customerId, status: "ACTIVE" } });
+const activeOrders = ({ customerId }: { customerId: string }) =>
+  getDb().order.count({ where: { customerId, status: "ACTIVE" } });
 
-describe("customer.archive expectedTicketCount (#144)", () => {
-  it("refuses with CONFLICT when tickets were added after the approval", async () => {
-    const { context, type, customer } = await setupWithTickets({ count: 2 });
-    await createTestTicket({ context, entityTypeId: type.id, customerId: customer.id });
+describe("customer.archive expectedOrderCount (#144)", () => {
+  it("refuses with CONFLICT when orders were added after the approval", async () => {
+    const { context, type, customer } = await setupWithOrders({ count: 2 });
+    await createTestOrder({ context, entityTypeId: type.id, customerId: customer.id });
     await archiveContactsOf({ customerId: customer.id });
     const refused = await execute({
       operation: archiveCustomer,
-      input: { id: customer.id, archiveTickets: true, expectedTicketCount: 2 },
+      input: { id: customer.id, archiveOrders: true, expectedOrderCount: 2 },
       context,
     });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
     if (refused.ok) throw new Error("expected a conflict");
     expect(refused.error.issues).toEqual([
-      expect.objectContaining({ path: "expectedTicketCount" }),
+      expect.objectContaining({ path: "expectedOrderCount" }),
     ]);
-    expect(await activeTickets({ customerId: customer.id })).toBe(3);
+    expect(await activeOrders({ customerId: customer.id })).toBe(3);
   });
 
   it("archives when the count matches what was approved", async () => {
-    const { context, customer } = await setupWithTickets({ count: 2 });
+    const { context, customer } = await setupWithOrders({ count: 2 });
     await archiveContactsOf({ customerId: customer.id });
     const archived = await execute({
       operation: archiveCustomer,
-      input: { id: customer.id, archiveTickets: true, expectedTicketCount: 2 },
+      input: { id: customer.id, archiveOrders: true, expectedOrderCount: 2 },
       context,
     });
     expect(errorCode({ result: archived })).toBeNull();
-    expect(await activeTickets({ customerId: customer.id })).toBe(0);
+    expect(await activeOrders({ customerId: customer.id })).toBe(0);
   });
 
-  it("refuses when fewer tickets remain than were approved, even none", async () => {
-    const { context, customer } = await setupWithTickets({ count: 0 });
+  it("refuses when fewer orders remain than were approved, even none", async () => {
+    const { context, customer } = await setupWithOrders({ count: 0 });
     const refused = await execute({
       operation: archiveCustomer,
-      input: { id: customer.id, archiveTickets: true, expectedTicketCount: 1 },
+      input: { id: customer.id, archiveOrders: true, expectedOrderCount: 1 },
       context,
     });
     expect(errorCode({ result: refused })).toBe("CONFLICT");

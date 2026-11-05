@@ -18,8 +18,8 @@ export function storageFromEnv({ env }: StorageFromEnvInput): StorageProvider {
       endpoint: env.S3_ENDPOINT,
       region: env.S3_REGION ?? "",
       bucket: env.S3_BUCKET ?? "",
-      accessKeyId: env.S3_ACCESS_KEY_ID ?? "",
-      secretAccessKey: env.S3_SECRET_ACCESS_KEY ?? "",
+      accessKeyId: env.S3_ACCESS_KEY ?? "",
+      secretAccessKey: env.S3_SECRET_KEY ?? "",
     });
   }
   const dir = env.STORAGE_DISK_DIR;

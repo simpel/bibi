@@ -19,7 +19,7 @@ const itemState = (): ParityEntity => ({
         entityTypeId: made.item.entityTypeId,
         name: "Parity state",
         color: "#22c55e",
-        inWorkOrders: true,
+        inRunSheets: true,
       },
     }),
 });
@@ -33,7 +33,7 @@ const statusStateRule = (): ParityEntity => ({
   name: "statusStateRule",
   create: async ({ mcp, made }) => {
     const args = {
-      statusId: made.ticketStatus.id,
+      statusId: made.orderStatus.id,
       entityTypeId: made.itemState.entityTypeId,
       stateId: made.itemState.id,
     };

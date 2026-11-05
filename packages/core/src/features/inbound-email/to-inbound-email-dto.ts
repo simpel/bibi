@@ -5,7 +5,7 @@ import { InboundAttachmentSchema, type InboundEmailDto } from "./schema";
 
 const AttachmentsSchema = z.array(InboundAttachmentSchema).catch([]);
 
-export type ToInboundEmailDtoInput = { row: InboundMessage & { ticketId: string } };
+export type ToInboundEmailDtoInput = { row: InboundMessage & { orderId: string } };
 
 /**
  * An EMAIL message in the old `InboundEmail` shape, for the `inboundEmail.list|get` aliases
@@ -19,7 +19,7 @@ export function toInboundEmailDto({ row }: ToInboundEmailDtoInput): InboundEmail
   return {
     id: row.id,
     organizationId: row.organizationId,
-    ticketId: row.ticketId,
+    orderId: row.orderId,
     providerEmailId: row.externalId,
     messageId: details.messageId,
     fromAddress: details.fromAddress,

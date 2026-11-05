@@ -12,7 +12,7 @@ import { errorCode, peer, unwrap } from "./helpers";
 import { toState } from "./item-state-helpers";
 import { activeOccupancies } from "./line-helpers";
 import { addLine, lineNow, setCell } from "./status-grid-helpers";
-import { moveToStatus } from "./ticket-helpers";
+import { moveToStatus } from "./order-helpers";
 
 describe("alternative groups (ADR 0052)", () => {
   it("groups two soft-held lines as options and lists them", async () => {
@@ -32,10 +32,10 @@ describe("alternative groups (ADR 0052)", () => {
   });
 
   it("fails a status move that would hard-hold both options, without any change", async () => {
-    const { context, a, b, room, roomState, ticket } = await roomAlternatives();
+    const { context, a, b, room, roomState, order } = await roomAlternatives();
     const cell = { entityTypeId: room.entityTypeId, stateId: roomState.booked.id };
-    unwrap({ result: await setCell({ context, ticketStatus: "Confirmed", ...cell }) });
-    const moved = await moveToStatus({ context, ticketId: ticket.id, name: "Confirmed" });
+    unwrap({ result: await setCell({ context, orderStatus: "Confirmed", ...cell }) });
+    const moved = await moveToStatus({ context, orderId: order.id, name: "Confirmed" });
     expect(errorCode({ result: moved })).toBe("CONFLICT");
     for (const lineId of [a.id, b.id]) {
       expect((await lineNow({ context, lineId })).stateId).toBe(roomState.prebooked.id);
@@ -44,9 +44,9 @@ describe("alternative groups (ADR 0052)", () => {
 
   it("refuses options that are hard-held twice, listed twice or in another group", async () => {
     const setup = await roomAlternatives();
-    const { context, ticket, a, room, roomState } = setup;
-    const c = await addLine({ setup, ticketId: ticket.id, itemId: room.id, from: 14 });
-    const d = await addLine({ setup, ticketId: ticket.id, itemId: room.id, from: 17 });
+    const { context, order, a, room, roomState } = setup;
+    const c = await addLine({ setup, orderId: order.id, itemId: room.id, from: 14 });
+    const d = await addLine({ setup, orderId: order.id, itemId: room.id, from: 17 });
     for (const lineId of [c.id, d.id]) {
       unwrap({ result: await toState({ context, lineId, stateId: roomState.booked.id }) });
     }
@@ -56,7 +56,7 @@ describe("alternative groups (ADR 0052)", () => {
       [a.id, c.id],
       ["missing", c.id],
     ]) {
-      const result = await groupLines({ context, ticketId: ticket.id, lineIds });
+      const result = await groupLines({ context, orderId: order.id, lineIds });
       expect(errorCode({ result }), JSON.stringify(lineIds)).toBe("VALIDATION");
     }
   });
@@ -80,8 +80,8 @@ describe("alternative groups (ADR 0052)", () => {
 
   it("refuses a line that is not an option, and a caller without line:write", async () => {
     const setup = await roomAlternatives();
-    const { context, ticket, room, group, a } = setup;
-    const loose = await addLine({ setup, ticketId: ticket.id, itemId: room.id, from: 14 });
+    const { context, order, room, group, a } = setup;
+    const loose = await addLine({ setup, orderId: order.id, itemId: room.id, from: 14 });
     const result = await choose({ context, id: group.id, lineId: loose.id });
     expect(errorCode({ result })).toBe("VALIDATION");
     const reader = peer({ of: context, access: "read" });
@@ -104,10 +104,10 @@ describe("alternative groups (ADR 0052)", () => {
     expect(errorCode({ result: gone })).toBe("NOT_FOUND");
   });
 
-  it("archives the group with its ticket", async () => {
-    const { context, ticket, group } = await roomAlternatives();
-    await archiveContactsOf({ customerId: ticket.customerId });
-    const input = { id: ticket.customerId, archiveTickets: true };
+  it("archives the group with its order", async () => {
+    const { context, order, group } = await roomAlternatives();
+    await archiveContactsOf({ customerId: order.customerId });
+    const input = { id: order.customerId, archiveOrders: true };
     unwrap({ result: await execute({ operation: archiveCustomer, input, context }) });
     const row = await context.db.alternativeGroup.findFirst({
       where: { id: group.id, status: "ARCHIVED" },

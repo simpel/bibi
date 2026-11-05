@@ -14,7 +14,7 @@ export function ComboboxItem(props: ComboboxItemProps) {
   return (
     <CommandItem
       value={option.value}
-      keywords={[option.label, option.description ?? ""]}
+      keywords={[option.label, option.description ?? "", option.trailing ?? ""]}
       onSelect={() => onSelect(option.value)}
     >
       <div className="flex min-w-0 flex-1 flex-col">

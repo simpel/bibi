@@ -14,18 +14,18 @@ import { toInboundMessageDto } from "./to-inbound-message-dto";
 
 type Input = { context: OperationContext; input: InboundMessageReceiveInput };
 
-/** The endpoint must be an active one of the channel; the reply hint an active ticket. */
+/** The endpoint must be an active one of the channel; the reply hint an active order. */
 async function checkRoute({ context, input }: Input): Promise<Result<true>> {
-  const { endpointId, ticketId, channel } = input;
-  if (!endpointId && !ticketId) return invalid({ message: "An endpoint or a ticket is required" });
+  const { endpointId, orderId, channel } = input;
+  if (!endpointId && !orderId) return invalid({ message: "An endpoint or an order is required" });
   if (endpointId) {
     const where = { id: endpointId, channel, active: true };
     if ((await context.db.inboundEndpoint.count({ where })) === 0) {
       return notFound({ entity: "Inbound endpoint" });
     }
   }
-  if (ticketId && (await context.db.ticket.count({ where: { id: ticketId } })) === 0) {
-    return notFound({ entity: "Ticket" });
+  if (orderId && (await context.db.order.count({ where: { id: orderId } })) === 0) {
+    return notFound({ entity: "Order" });
   }
   return ok({ value: true });
 }

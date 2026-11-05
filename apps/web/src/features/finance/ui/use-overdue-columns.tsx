@@ -2,22 +2,22 @@ import type { ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Link } from "@/lib/navigation";
-import { ticketRoute } from "@/lib/routes";
+import { orderRoute } from "@/lib/routes";
 import type { OverdueRow } from "../lib/table-rows";
 
-/** Invoice, ticket (link), due date, days overdue and the open amount. */
+/** Invoice, order (link), due date, days overdue and the open amount. */
 export function useOverdueColumns(): ColumnDef<OverdueRow>[] {
   const t = useTranslations("finance.overdue.columns");
   return useMemo<ColumnDef<OverdueRow>[]>(
     () => [
       { id: "invoice", header: t("invoice"), accessorFn: (row) => row.invoiceLabel },
       {
-        id: "ticket",
-        header: t("ticket"),
-        accessorFn: (row) => row.ticketLabel,
+        id: "order",
+        header: t("order"),
+        accessorFn: (row) => row.orderLabel,
         cell: ({ row: { original: row } }) => (
-          <Link href={ticketRoute({ id: row.ticketId })} className="font-medium hover:underline">
-            {row.ticketLabel}
+          <Link href={orderRoute({ id: row.orderId })} className="font-medium hover:underline">
+            {row.orderLabel}
           </Link>
         ),
       },

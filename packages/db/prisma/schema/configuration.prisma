@@ -6,7 +6,7 @@ enum EntityBase {
   ITEM
   CUSTOMER
   CONTACT
-  TICKET
+  ORDER
   REQUIREMENT
   LINE
 }
@@ -41,7 +41,7 @@ model EntityType {
   base             EntityBase
   name             String
   capabilities     ItemCapability[]
-  /// Item types: where lines in an `expires` state fall when the ticket's `holdsUntil` passes.
+  /// Item types: where lines in an `expires` state fall when the order's `holdsUntil` passes.
   expiryStateId    String?
   /// Item types: default buffers before and after a booking, in minutes (ADR 0059, owned);
   /// null = none. An item or a line overrides them.
@@ -58,17 +58,17 @@ model EntityType {
   items            Item[]
   customers        Customer[]
   contacts         Contact[]
-  tickets          Ticket[]
+  orders          Order[]
   lines            Line[]
   requirements     Requirement[]
   itemStates       ItemState[]                 @relation("ItemStateType")
   statusRules      StatusStateRule[]
-  ticketTemplates  TicketTemplate[]
+  orderTemplates  OrderTemplate[]
   inboundEndpoints InboundEndpoint[]
   records          Record[]
-  templateLines    TicketTemplateLine[]
+  templateLines    OrderTemplateLine[]
   responsibilities ResponsibilityEntityType[]
-  workOrderDefinitions WorkOrderDefinitionEntityType[]
+  runSheetDefinitions RunSheetDefinitionEntityType[]
   /// Demands whose pool is this item type (ADR 0059).
   demands          ItemDemand[]
   boards           Board[]
@@ -80,7 +80,7 @@ model EntityType {
 }
 
 /// Field definition – one field of a type. Values live as JSON on the row, keyed by `key`.
-/// A LINK field holds the id of one record of `linkTypeId` (an item, customer, contact or ticket type).
+/// A LINK field holds the id of one record of `linkTypeId` (an item, customer, contact or order type).
 model FieldDefinition {
   id             String       @id @default(cuid(2))
   organizationId String
@@ -101,7 +101,7 @@ model FieldDefinition {
   linkType       EntityType?  @relation("FieldLinkType", fields: [linkTypeId, organizationId], references: [id, organizationId])
   vocabulary     Vocabulary?  @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
 
-  workOrderDefinitions WorkOrderDefinitionField[]
+  runSheetDefinitions RunSheetDefinitionField[]
   /// Values of this field when it is a `LINK` (ADR 0056).
   links            RecordLink[]
 
@@ -121,7 +121,7 @@ model Vocabulary {
   createdBy        String?
   values           VocabularyValue[]
   fields           FieldDefinition[]
-  workOrderDefinitions WorkOrderDefinitionVocabulary[]
+  runSheetDefinitions RunSheetDefinitionVocabulary[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])
@@ -161,7 +161,7 @@ model Setup {
   createdBy         String?
   items             ItemSetup[]
   lines             Line[]
-  templateLines     TicketTemplateLine[]
+  templateLines     OrderTemplateLine[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

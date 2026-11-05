@@ -18,7 +18,7 @@ const flagsOf = ({ state }: { state: PipelineStateDraft }) => ({
   color: state.color,
   initial: state.initial ?? false,
   hold: state.hold ?? "NONE",
-  inWorkOrders: state.inWorkOrders ?? false,
+  inRunSheets: state.inRunSheets ?? false,
   released: state.released ?? false,
   expires: state.expires ?? false,
 });

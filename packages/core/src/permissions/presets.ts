@@ -17,12 +17,12 @@ const ADMIN_VIEW: readonly Feature[] = [
 
 /** The daily work a manager does in full: bookings, selling and money (ADR 0050). */
 const MANAGER_FEATURES: readonly Feature[] = [
-  "ticket",
+  "order",
   "program",
   "customer",
   "quote",
   "payment",
-  "workOrder",
+  "runSheet",
   // Boards are views of the pipeline, not its flow (ADR 0076): managers set them up.
   "board",
   "finance",

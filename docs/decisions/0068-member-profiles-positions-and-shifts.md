@@ -3,7 +3,7 @@
 - **Date:** 2026-10-24
 - **Status:** Accepted, contact details per organization added by 0072
 - **Related:** amends 0059 (staff are items, no login) and 0061 (user working hours); builds on 0050 (permissions), 0051 (single source of truth), 0053 (holds), 0056 (foreign keys), 0064 (time, advisory hours)
-- **Ticket:** #442
+- **Order:** #442
 
 ## Context
 - Checked on 2026-10-24:
@@ -11,7 +11,7 @@
   - `auth.prisma`: `Member` (organization, user, role) is the only org-scoped record of a person. Nothing links a member to a staff item.
   - ADR 0059 rule 9: a Person-type item has no profile or login. Rule 15 and 16: working hours are advisory.
   - `occupancy.prisma` and migrations `20261015044802_occupancy`, `20261103000000_item_states`: the no-double-booking constraint is `EXCLUDE USING gist ("itemId" WITH =, tsrange(...) WITH &&)`. It is per item, not per person.
-- Target: Lindholmen with 50 users and 100 tickets on the calendar and boards. People work in several roles (a waiter who also bartends) and, over time, for several organizations.
+- Target: Lindholmen with 50 users and 100 orders on the calendar and boards. People work in several roles (a waiter who also bartends) and, over time, for several organizations.
 - Gaps: a user cannot be staffed because staff items do not know the user; schedules cannot differ per organization; two staff items for one person can be held at the same time; there is no way to say "works these dated shifts" or "is called in when needed".
 
 ## Decision
@@ -28,7 +28,7 @@
 
 ### Person-wide collision
 8. A person must not be held twice at once even through two staff items. The hard rule moves from item to **person**: holds of staff items carry a derived `personKey` (the profile id, else the item id), written only by the hold trigger (projection, ADR 0053), and a second `EXCLUDE USING gist ("personKey" WITH =, tsrange(...) WITH &&)` applies to hard holds. Soft holds still may overlap. Linking or unlinking an item recomputes the key and is refused when it would create an overlap.
-9. A conflict reads as "already held as <position> on <ticket>", not as a constraint error.
+9. A conflict reads as "already held as <position> on <order>", not as a constraint error.
 
 ### Permissions and surfaces
 10. Profile fields, schedule, links and shifts need `item:write` (the manager preset has it, ADR 0050). A member edits their own phone and avatar through `UserProfile` as today. New operations live in `packages/core` first and appear in web, GraphQL, REST and MCP in the same change (parity). Seed: the demo organizations get linked staff items and a few shifts.
@@ -45,11 +45,11 @@
 - Specs: new `docs/specs/member-profiles.md` (profile, links, schedule kinds, shifts, collision); update `docs/specs/welcome.md` (hours step writes the profile) and the staffing and allocation spec.
 - Docs: Target notes in `docs/domain-model.md` and `docs/artifacts/domain-model.html` together; addenda in ADR 0059 (rule 9, staff are linked to a member profile) and 0061 (working hours are org-scoped).
 - Cost: a data migration that copies hours per organization, and a second exclusion constraint on a hot table.
-- Implementation tickets already exist: #448 (profiles and staff item links), #449 (working hours per org), #450 (shifts, ranking and warnings), #451 (person-wide collision constraint and trigger). The demo seed is #456.
+- Implementation orders already exist: #448 (profiles and staff item links), #449 (working hours per org), #450 (shifts, ranking and warnings), #451 (person-wide collision constraint and trigger). The demo seed is #456.
 
 ## Alternatives rejected
 - **Keep hours on the global user.** One schedule cannot serve two employers.
 - **A separate position list** next to item types. Two lists to keep in step, and the staffing pool would still be item types.
 - **One staff item per person with several positions.** Breaks "type = position" and the pool targeting of ADR 0059.
-- **Enforce the person-wide rule in code only.** Races between two tickets; the database already owns the item-wide rule (ADR 0053).
+- **Enforce the person-wide rule in code only.** Races between two orders; the database already owns the item-wide rule (ADR 0053).
 - **Hard enforcement of shifts.** Swaps and overtime are normal (ADR 0059, ADR 0064).

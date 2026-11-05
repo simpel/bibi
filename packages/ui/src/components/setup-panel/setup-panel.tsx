@@ -72,8 +72,8 @@ function PathSection({ statuses, label }: { statuses: PathStatus[]; label: strin
       <StatusPath statuses={statuses} label={label} />
       {readOnly ? (
         <ol className="sr-only">
-          {statuses.map((ticketStatus) => (
-            <li key={ticketStatus.name}>{ticketStatus.name}</li>
+          {statuses.map((orderStatus) => (
+            <li key={orderStatus.name}>{orderStatus.name}</li>
           ))}
         </ol>
       ) : null}

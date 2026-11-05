@@ -1,47 +1,45 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "../hover-card/hover-card";
-import { CalendarDetails, type CalendarDetailsProps } from "./calendar-details";
+import type { ReactNode } from "react";
+import { CursorHoverCard } from "../cursor-hover/cursor-hover-card";
+import {
+  CalendarHoverDetails,
+  type CalendarHoverDetailsProps,
+} from "../cursor-hover/cursor-hover-details";
 
-export type CalendarHoverCardProps = CalendarDetailsProps & {
+export type CalendarHoverCardProps = CalendarHoverDetailsProps & {
   children: ReactNode;
   /** Replaces the line card, e.g. the booking card in availability. */
   card?: ReactNode;
+  content?: ReactNode;
   /** Never peek, e.g. while the item is open in a sheet beside it. */
   disabled?: boolean;
+  asChild?: boolean;
+  className?: string;
 };
 
 /**
- * Wraps a calendar item (a block, a buffer, an agenda row) so its details show on hover or focus,
- * and on tap for touch, where hover does not exist. A tap outside closes it.
+ * Wraps a calendar item so its details follow the mouse cursor on hover.
+ * Unifies hover behavior across all availability calendar views.
  */
 export function CalendarHoverCard({
   children,
   card,
+  content,
   disabled,
+  asChild = true,
+  className,
   ...details
 }: CalendarHoverCardProps) {
-  const [open, setOpen] = useState(false);
+  const cardContent = content ?? card ?? <CalendarHoverDetails {...details} />;
   return (
-    <HoverCard open={open && !disabled} onOpenChange={setOpen} openDelay={150} closeDelay={80}>
-      <HoverCardTrigger
-        asChild
-        onPointerUp={(event) => {
-          if (event.pointerType !== "mouse") setOpen(true);
-        }}
-        // A click opens the item itself (its ticket, its line), so the peek steps aside.
-        onClick={(event) => {
-          const touch =
-            "pointerType" in event.nativeEvent && event.nativeEvent.pointerType === "touch";
-          if (!touch) setOpen(false);
-        }}
-      >
-        {children}
-      </HoverCardTrigger>
-      <HoverCardContent side="top" collisionPadding={16} className="w-80 max-w-[calc(100vw-2rem)]">
-        {card ?? <CalendarDetails {...details} />}
-      </HoverCardContent>
-    </HoverCard>
+    <CursorHoverCard
+      disabled={disabled}
+      content={cardContent}
+      asChild={asChild}
+      className={className}
+    >
+      {children}
+    </CursorHoverCard>
   );
 }

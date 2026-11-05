@@ -8,7 +8,7 @@ import type { ItemStateTableViewProps } from "./item-state-table-view";
 
 type Row = ItemStateTableViewProps["items"][number];
 
-/** "Soft hold, Initial, In work orders": the hold kind (unless none) and the flags that are set. */
+/** "Soft hold, Initial, In run sheets": the hold kind (unless none) and the flags that are set. */
 export function useStateFlagLabels() {
   const t = useTranslations("itemState");
   return useCallback(

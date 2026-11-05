@@ -1,7 +1,7 @@
 import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
-import { useNewTicketStatusForm } from "@/features/ticket-status/ui/use-new-ticket-status-form";
+import { useNewOrderStatusForm } from "@/features/order-status/ui/use-new-order-status-form";
 import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { createStatusOnBoardAction } from "../actions";
@@ -9,14 +9,14 @@ import { createStatusOnBoardAction } from "../actions";
 export type AddStatusFormProps = { onDone: () => void };
 
 /**
- * A new ticket status made in customize mode: a name and a colour. It lands on no column (staff
+ * A new order status made in customize mode: a name and a colour. It lands on no column (staff
  * drag it onto one) and may move freely (ADR 0076); its flags are set on the status page.
  */
 export function AddStatusForm({ onDone }: AddStatusFormProps) {
-  const t = useTranslations("ticketStatus");
+  const t = useTranslations("orderStatus");
   const common = useTranslations("common");
   const router = useRouter();
-  const form = useNewTicketStatusForm();
+  const form = useNewOrderStatusForm();
   const { submit, pending } = useFormAction({
     form,
     action: ({ values }) => createStatusOnBoardAction({ input: values }),

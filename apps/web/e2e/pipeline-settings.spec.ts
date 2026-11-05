@@ -14,15 +14,15 @@ async function createStatus({
   flag?: string;
 }) {
   await gotoApp({ page, path: SETTINGS });
-  await page.getByRole("link", { name: "Skapa ärendestatus" }).first().click();
-  await expect(page).toHaveURL(/\/sv\/[^/]+\/new\/ticket-status$/);
+  await page.getByRole("link", { name: "Skapa bokningsstatus" }).first().click();
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/new\/order-status$/);
   // A new status is a name and a colour; its flags are set on its update page.
   await page.getByLabel("Namn").fill(name);
   await page.getByRole("button", { name: "Spara" }).click();
   await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline$/, { timeout: 15_000 });
   await expect(page.getByRole("cell", { name }).first()).toBeVisible();
   if (!flag) return;
-  await rowAction({ page, row: name, item: "Redigera ärendestatus" });
+  await rowAction({ page, row: name, item: "Redigera bokningsstatus" });
   await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline\/[^/]+\/update$/);
   await page.getByRole("checkbox", { name: flag }).click();
   await page.getByRole("button", { name: "Spara" }).click();
@@ -50,11 +50,11 @@ test("an admin edits statuses and the grid on step pages", async ({ page }) => {
   await createItemType({ page, name: "Conference room", numberField: "Max guests" });
 
   // A new organization already has the default statuses (Lead, Confirmed, Completed, Lost).
-  await createStatus({ page, name: "Cancelled", flag: "Avslutar ärendet" });
+  await createStatus({ page, name: "Cancelled", flag: "Avslutar bokningen" });
   await createStatus({ page, name: "Booked" });
   await createStatus({ page, name: "Spare" });
 
-  await rowAction({ page, row: "Booked", item: "Redigera ärendestatus" });
+  await rowAction({ page, row: "Booked", item: "Redigera bokningsstatus" });
   await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline\/[^/]+\/update$/);
   await page.getByLabel("Namn").fill("Reserved");
   await page.getByRole("button", { name: "Spara" }).click();
@@ -85,12 +85,12 @@ test("an admin edits statuses and the grid on step pages", async ({ page }) => {
   }).toPass({ timeout: 30_000 });
   await expect(
     page.getByText(
-      "När ett ärende går in i Reserved flyttas rader av Conference room till Active.",
+      "När en bokning går in i Reserved flyttas rader av Conference room till Active.",
     ),
   ).toBeVisible();
 
-  await rowAction({ page, row: "Spare", item: "Arkivera ärendestatus" });
-  await page.getByRole("dialog").getByRole("button", { name: "Arkivera ärendestatus" }).click();
+  await rowAction({ page, row: "Spare", item: "Arkivera bokningsstatus" });
+  await page.getByRole("dialog").getByRole("button", { name: "Arkivera bokningsstatus" }).click();
   await expect(page.getByRole("cell", { name: "Spare" })).toHaveCount(0);
 });
 

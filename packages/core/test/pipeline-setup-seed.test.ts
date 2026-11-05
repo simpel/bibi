@@ -11,7 +11,7 @@ import {
   execute,
   grantAll,
   listEntityTypes,
-  listTicketStatuses,
+  listOrderStatuses,
 } from "../src/index";
 import { lindholmen } from "../src/seed/demo/data/lindholmen/lindholmen";
 import { seedDemo } from "../src/seed/demo/seed-demo";
@@ -33,7 +33,7 @@ describe("guided setup from the empty demo (seed:demo --skip-pipeline)", {
     const seeded = unwrap({ result: await seedDemo({ orgs: [org], skipPipeline: true }) });
     const organizationId = seeded.organizations[0]?.organizationId ?? "";
     const context = adminOf({ organizationId });
-    const statuses = { operation: listTicketStatuses, input: {}, context };
+    const statuses = { operation: listOrderStatuses, input: {}, context };
     expect(unwrap({ result: await execute(statuses) }).items).toEqual([]);
     const listed = await execute({
       operation: listEntityTypes,
@@ -58,8 +58,8 @@ describe("guided setup from the empty demo (seed:demo --skip-pipeline)", {
     };
     unwrap({ result: await execute({ operation: activatePipelineSetup, input, context }) });
     const after = unwrap({ result: await execute(statuses) }).items;
-    expect(after.map((ticketStatus) => ticketStatus.name)).toEqual(
-      draftStatuses.map((ticketStatus) => ticketStatus.name),
+    expect(after.map((orderStatus) => orderStatus.name)).toEqual(
+      draftStatuses.map((orderStatus) => orderStatus.name),
     );
   });
 });

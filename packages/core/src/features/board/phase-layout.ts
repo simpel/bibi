@@ -48,11 +48,11 @@ export async function insertPhase({ context, boardId, name, position }: InsertPh
 
 /** One phase per active status, open statuses first and closing ones last (a new board's layout). */
 export async function mirrorStatuses({ context, boardId }: Ctx & { boardId: string }) {
-  const statuses = await context.db.ticketStatus.findMany({
+  const statuses = await context.db.orderStatus.findMany({
     orderBy: [{ closes: "asc" }, { position: "asc" }, { id: "asc" }],
   });
-  for (const [position, ticketStatus] of statuses.entries()) {
-    const { name, id: statusId } = ticketStatus;
+  for (const [position, orderStatus] of statuses.entries()) {
+    const { name, id: statusId } = orderStatus;
     const phase = await context.db.boardPhase.create({
       data: { organizationId: context.organizationId, boardId, name, position },
     });
@@ -65,9 +65,9 @@ export async function openStatusEnd({ context, boardId }: Ctx & { boardId: strin
   const phases = await context.db.boardPhase.findMany({
     where: { boardId },
     orderBy: [{ position: "asc" }, { id: "asc" }],
-    include: { statuses: { select: { ticketStatus: { select: { closes: true } } } } },
+    include: { statuses: { select: { orderStatus: { select: { closes: true } } } } },
   });
-  const open = phases.map((phase) => phase.statuses.some((row) => !row.ticketStatus.closes));
+  const open = phases.map((phase) => phase.statuses.some((row) => !row.orderStatus.closes));
   const last = open.lastIndexOf(true);
   return last === -1 ? 0 : last + 1;
 }

@@ -40,7 +40,7 @@ export function RequirementRowActions({ requirement, data, access }: Requirement
       </DataTableRowActions>
       <RequirementDialog
         data={data}
-        ticketId={requirement.ticketId}
+        orderId={requirement.orderId}
         requirement={requirement}
         open={dialog === "edit"}
         onOpenChange={(open) => !open && setDialog(null)}

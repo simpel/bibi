@@ -3,7 +3,7 @@ import { PageInputShape } from "../../shared/page-input";
 import { NotificationKindSchema, NotificationSchema } from "./schema";
 
 /** Sort keys of `notification.list`; the web table's column ids match them. */
-export const NOTIFICATION_LIST_SORTS = ["created", "kind", "ticket", "read"] as const;
+export const NOTIFICATION_LIST_SORTS = ["created", "kind", "order", "read"] as const;
 export type NotificationListSort = (typeof NOTIFICATION_LIST_SORTS)[number];
 
 /** `unread` and `read` narrow the list; no value lists both. */
@@ -15,7 +15,7 @@ export const NotificationListInputSchema = z.object({
     .trim()
     .max(200)
     .optional()
-    .describe("Text in the ticket's title, or its reference number"),
+    .describe("Text in the order's title, or its reference number"),
   kind: NotificationKindSchema.optional().describe("Only notifications of this kind"),
   read: z.enum(NOTIFICATION_READ_FILTERS).optional().describe("Only unread or only read ones"),
   sort: z.enum(NOTIFICATION_LIST_SORTS).default("created"),

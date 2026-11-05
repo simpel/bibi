@@ -17,7 +17,7 @@ import { objectFromSchema } from "../../schema/object-from-schema";
 import { type Page, pageType } from "../../schema/page";
 import { runOperation } from "../../schema/run-operation";
 import { PaymentRef } from "../payment/graphql";
-import { TicketRef } from "../ticket/graphql";
+import { OrderRef } from "../order/graphql";
 
 export const DepositRef = objectFromSchema<DepositDto>({
   name: "Deposit",
@@ -38,7 +38,7 @@ for (const operation of [createDeposit, sendDeposit, voidDeposit]) {
 const DepositSuggestionRef = objectFromSchema<DepositSuggestion>({
   name: "DepositSuggestion",
   schema: DepositSuggestionSchema,
-  description: "What the organization's deposit rule asks of a ticket (ADR 0090).",
+  description: "What the organization's deposit rule asks of an order (ADR 0090).",
 });
 fieldFromOperation({
   operation: suggestDepositAmount,
@@ -48,12 +48,12 @@ fieldFromOperation({
 mutationFromOperation({ operation: requestDeposit, type: PaymentRef });
 
 // Graph edge. Goes through `deposit.list`, so its permission applies here too.
-builder.objectField(TicketRef, "deposits", (t) =>
+builder.objectField(OrderRef, "deposits", (t) =>
   t.field({
     type: [DepositRef],
-    description: "Deposit requests on the ticket, newest first.",
-    resolve: async (ticket, _args, ctx) => {
-      const input = { ticketId: ticket.id, limit: 100 };
+    description: "Deposit requests on the order, newest first.",
+    resolve: async (order, _args, ctx) => {
+      const input = { orderId: order.id, limit: 100 };
       const page = (await runOperation({
         operation: listDeposits,
         input,

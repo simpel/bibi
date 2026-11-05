@@ -1,9 +1,9 @@
-import { expireTicketHolds } from "../../features/ticket/expire-holds-operation";
+import { expireOrderHolds } from "../../features/order/expire-holds-operation";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { lineHoldsReconciliation } from "./line-holds-reconcile";
 import { runReconciliations } from "./reconcile";
-import type { DemoLine, DemoTicket } from "./ticket-types";
+import type { DemoLine, DemoOrder } from "./order-types";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoHoldsInput = { context: ExecuteContext; org: DemoOrg };
@@ -12,17 +12,18 @@ export type CheckDemoHoldsInput = { context: ExecuteContext; org: DemoOrg };
  * `initial`: the line should still be in its type's initial state (a lead without override).
  * `expired`: it should be released after expiry, or already by the customer's pick (ADR 0052).
  */
-type Expected = DemoLine & { day: number; expired: boolean; initial: boolean };
+type Expected = DemoLine & { day: number; expired: boolean; initial: boolean; orderId: string };
 
 /** An option the customer did not pick in a chosen alternative group (released, ADR 0052). */
-const pickedAway = ({ ticket, line }: { ticket: DemoTicket; line: DemoLine }) =>
-  (ticket.alternatives ?? []).some(
+const pickedAway = ({ order, line }: { order: DemoOrder; line: DemoLine }) =>
+  (order.alternatives ?? []).some(
     (group) => group.chosen && group.chosen !== line.name && group.lines.includes(line.name),
   );
 
 const SELECT = {
   id: true,
   name: true,
+  orderId: true,
   // "Held since" is the newest state change (ADR 0054); `seq` orders changes strictly.
   stateChanges: { select: { seq: true }, orderBy: { seq: "desc" }, take: 1 },
   state: { select: { name: true, initial: true, released: true, hold: true } },
@@ -31,10 +32,16 @@ const SELECT = {
 /** The seeded lines by name, in data order, with their state. */
 async function loadLines({ context, lines }: { context: ExecuteContext; lines: Expected[] }) {
   const rows = await context.db.line.findMany({
-    where: { name: { in: lines.map((line) => line.name) } },
+    where: {
+      organizationId: context.organizationId,
+      orderId: { in: [...new Set(lines.map((line) => line.orderId))] },
+    },
     select: SELECT,
   });
-  return lines.map((line) => ({ line, row: rows.find((row) => row.name === line.name) }));
+  return lines.map((line) => ({
+    line,
+    row: rows.find((row) => row.orderId === line.orderId && row.name === line.name),
+  }));
 }
 
 type Loaded = Awaited<ReturnType<typeof loadLines>>;
@@ -63,26 +70,33 @@ function checkOverlaps({ loaded }: { loaded: Loaded }) {
 /**
  * Checks 5 and 6 of `docs/demo-seed.md` (ADR 0044): every seeded line of a lead without an
  * override starts in its type's initial state, overlapping lines are soft holds ordered by when they were held (state history), and after
- * `ticket.expireHolds` the lines of tickets whose holdsUntil has passed are released while the
- * others keep their state; lines of a ticket in a closing status are released. Returns failure
+ * `order.expireHolds` the lines of orders whose holdsUntil has passed are released while the
+ * others keep their state; lines of an order in a closing status are released. Returns failure
  * messages.
  */
 export async function checkDemoHolds({ context, org }: CheckDemoHoldsInput): Promise<string[]> {
-  // A closing status (Completed, ADR 0043) released every line of its ticket on entry.
+  // A closing status (Completed, ADR 0043) released every line of its order on entry.
   const closing = new Set(
     org.pipeline.statuses.statuses.filter((s) => s.closes).map((s) => s.name),
   );
-  const lines = org.tickets.flatMap((ticket) =>
-    (ticket.lines ?? []).map((line) => ({
+  const dbOrders = await context.db.order.findMany({
+    where: { organizationId: context.organizationId },
+    select: { id: true, reference: true },
+  });
+  const orderIdByRef = new Map(dbOrders.map((row) => [row.reference, row.id]));
+  const lines = org.orders.flatMap((order, index) => {
+    const orderId = orderIdByRef.get(index + 1) ?? "";
+    return (order.lines ?? []).map((line) => ({
       ...line,
-      day: ticket.day,
+      orderId,
+      day: order.day,
       expired:
-        (ticket.holdsUntilDay ?? 0) < 0 ||
-        pickedAway({ ticket, line }) ||
-        closing.has(ticket.status ?? ""),
-      initial: !ticket.status && !line.state,
-    })),
-  );
+        (order.holdsUntilDay ?? 0) < 0 ||
+        pickedAway({ order, line }) ||
+        closing.has(order.status ?? ""),
+      initial: !order.status && !line.state,
+    }));
+  });
   if (lines.length === 0) return [];
   const failures: string[] = [];
   const before = await loadLines({ context, lines });
@@ -92,8 +106,8 @@ export async function checkDemoHolds({ context, org }: CheckDemoHoldsInput): Pro
     }
   }
   failures.push(...checkOverlaps({ loaded: before }));
-  const run = await execute({ operation: expireTicketHolds, input: {}, context });
-  if (!run.ok) return [...failures, `${org.slug}: ticket.expireHolds failed`];
+  const run = await execute({ operation: expireOrderHolds, input: {}, context });
+  if (!run.ok) return [...failures, `${org.slug}: order.expireHolds failed`];
   // The released lines' holds are gone, the others' kept: checked against the lines.
   failures.push(...(await runReconciliations({ context, checks: [lineHoldsReconciliation] })));
   for (const { line, row } of await loadLines({ context, lines })) {

@@ -4,7 +4,7 @@ import type { PipelineBoard } from "@bibi/core";
 import type { TransitionGate } from "@bibi/core/schemas";
 import { KanbanBoard } from "@bibi/ui";
 import { useState } from "react";
-import { TicketSheet } from "@/features/ticket/sheet/ui/ticket-sheet";
+import { OrderSheet } from "@/features/order/sheet/ui/order-sheet";
 import { findDrop, kanbanCards, kanbanColumns } from "../lib/kanban-model";
 import { PhaseValue } from "./phase-value";
 import { PipelineCardContent } from "./pipeline-card";
@@ -21,9 +21,9 @@ export type PipelineBoardViewProps = {
 };
 
 /**
- * The kanban board of tickets by phase (ADR 0067, 0076). A drop on a phase runs
- * `ticket.changeStatus`: straight into its only allowed status, or after the picker when it
- * holds several. A card's title opens the ticket's sheet beside the board.
+ * The kanban board of orders by phase (ADR 0067, 0076). A drop on a phase runs
+ * `order.changeStatus`: straight into its only allowed status, or after the picker when it
+ * holds several. A card's title opens the order's sheet beside the board.
  */
 export function PipelineBoardView(props: PipelineBoardViewProps) {
   const { board, transitions, moveGates, customerNames } = props;
@@ -37,7 +37,7 @@ export function PipelineBoardView(props: PipelineBoardViewProps) {
         cards={kanbanCards({ board, customerNames })}
         labels={labels}
         renderCard={(card) => (
-          <PipelineCardContent card={card} onOpen={({ ticketId }) => setOpenId(ticketId)} />
+          <PipelineCardContent card={card} onOpen={({ orderId }) => setOpenId(orderId)} />
         )}
         renderSummary={({ cards }) => (
           <PhaseValue cards={cards} currency={board.currency} size="sm" />
@@ -54,7 +54,7 @@ export function PipelineBoardView(props: PipelineBoardViewProps) {
         }}
       />
       {dialog}
-      <TicketSheet ticketId={openId} onClose={() => setOpenId(null)} />
+      <OrderSheet orderId={openId} onClose={() => setOpenId(null)} />
     </>
   );
 }

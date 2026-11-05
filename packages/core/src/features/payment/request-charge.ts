@@ -50,9 +50,9 @@ export async function requestCharge({
     amountMinor: input.amountMinor,
     currency: input.currency,
     applicationFeeMinor,
-    description: input.description ?? `Ticket #${target.ticket.reference}`,
+    description: input.description ?? `Order #${target.order.reference}`,
     idempotencyKey: `bibi-payment-${paymentId}`,
-    metadata: { paymentId, ticketId: target.ticket.id, organizationId },
+    metadata: { paymentId, orderId: target.order.id, organizationId },
   };
   const provider = getPaymentProvider();
   if (input.method === "CARD") {

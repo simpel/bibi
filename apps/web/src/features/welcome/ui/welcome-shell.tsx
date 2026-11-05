@@ -8,7 +8,7 @@ export function WelcomeShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col items-center bg-background px-4 py-8 sm:py-12">
       <header className="flex shrink-0 justify-center pb-8 sm:pb-12">
-        <Wordmark size="md" name={common("appName")}>
+        <Wordmark size="3xl" name={common("appName")}>
           {common("appName")}
         </Wordmark>
       </header>

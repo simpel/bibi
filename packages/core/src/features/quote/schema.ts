@@ -27,8 +27,8 @@ export const QuoteLineSchema = OrderLineSchema.extend({
 export const QuoteSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  ticketId: z.string(),
-  version: z.number().int().describe("1 for the first quote of the ticket, then +1 per version"),
+  orderId: z.string(),
+  version: z.number().int().describe("1 for the first quote of the order, then +1 per version"),
   previousId: z.string().nullable().describe("The version this one was made from"),
   /** Changed only by the quote's own commands (`quote.send`, `quote.accept`, …). */
   quoteStatus: QuoteStatusSchema,
@@ -51,20 +51,20 @@ export const QuoteSchema = z.object({
   acceptanceMethod: AcceptanceMethodSchema.nullable().describe("How the acceptance was recorded"),
   lines: z
     .array(QuoteLineSchema)
-    .describe("A DRAFT: the ticket's priced lines now (live). Sent: the frozen snapshot"),
+    .describe("A DRAFT: the order's priced lines now (live). Sent: the frozen snapshot"),
   removedLines: z
     .array(OrderLineSchema)
     .describe("Lines of the previous version that this version no longer has"),
-  differsFromTicket: z
+  differsFromOrder: z
     .boolean()
     .nullable()
-    .describe("ACCEPTED only: the ticket's priced lines differ from this snapshot; else null"),
-  ticketChanges: z
+    .describe("ACCEPTED only: the order's priced lines differ from this snapshot; else null"),
+  orderChanges: z
     .array(QuoteLineSchema)
-    .describe("ACCEPTED only: the ticket's lines now that are ADDED or CHANGED against it"),
-  ticketRemovedLines: z
+    .describe("ACCEPTED only: the order's lines now that are ADDED or CHANGED against it"),
+  orderRemovedLines: z
     .array(OrderLineSchema)
-    .describe("ACCEPTED only: accepted lines the ticket no longer has (removed or unpriced)"),
+    .describe("ACCEPTED only: accepted lines the order no longer has (removed or unpriced)"),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -80,13 +80,13 @@ const QuoteTermsShape = {
 };
 
 export const QuoteCreateInputSchema = z.object({
-  ticketId: z.string().min(1).describe("Id of the open ticket the quote answers (ticket.list)"),
+  orderId: z.string().min(1).describe("Id of the open order the quote answers (order.list)"),
   ...QuoteTermsShape,
 });
 
 /**
  * Status is not here: it changes only through the quote's own commands. Lines are not here either:
- * they are the ticket's lines (line.update), ADR 0052.
+ * they are the order's lines (line.update), ADR 0052.
  */
 export const QuoteUpdateInputSchema = z.object({ id: z.string().min(1), ...QuoteTermsShape });
 
@@ -99,14 +99,14 @@ export const QuoteAcceptInputSchema = z.object({
     .max(20)
     .optional()
     .describe(
-      "The options the customer picked: per alternative group of the ticket not yet chosen, " +
+      "The options the customer picked: per alternative group of the order not yet chosen, " +
         "the id of one of its lines (alternativeGroup.list optionLineIds). The other options " +
         "are released, as alternativeGroup.choose does",
     ),
 });
 
 export const QuoteListInputSchema = z.object({
-  ticketId: z.string().optional().describe("Only the versions of this ticket's quote"),
+  orderId: z.string().optional().describe("Only the versions of this order's quote"),
   quoteStatus: QuoteStatusSchema.optional().describe("Only quotes with this status"),
   ...PageInputShape,
 });

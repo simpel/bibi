@@ -5,7 +5,7 @@ description: Implement a piece of work in bibi and commit it straight to main, a
 
 # Implement
 
-One piece of work, one commit, pushed to `main`. No ticket is needed. No pull request. You are the only gate before main, so run the checks.
+One piece of work, one commit, pushed to `main`. No order is needed. No pull request. You are the only gate before main, so run the checks.
 
 Every run works in its own worktree with its own environment: a fresh `.env`, database (`bibi_<name>`, test database `bibi_<name>_test`) and port block. Never build in the main checkout; it may hold the user's own work.
 

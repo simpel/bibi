@@ -11,12 +11,12 @@ import { archiveContactsOf } from "./contact-archive-helpers";
 import { errorCode, unwrap } from "./helpers";
 import { createMealSetup } from "./item-customisation-group-helpers";
 import { createTestLine, programSetup } from "./line-helpers";
-import { createTestTicket, ticketSetup } from "./ticket-helpers";
+import { createTestOrder, orderSetup } from "./order-helpers";
 
 type ArchiveInput = {
   context: ExecuteContext;
   id: string;
-  archiveTickets?: boolean;
+  archiveOrders?: boolean;
 };
 
 const archive = ({ context, ...input }: ArchiveInput) =>
@@ -24,7 +24,7 @@ const archive = ({ context, ...input }: ArchiveInput) =>
 
 describe("customer.archive with bundles (#151)", () => {
   it("archives the customer's bundles with it, one audit row each", async () => {
-    const { context, customer } = await ticketSetup();
+    const { context, customer } = await orderSetup();
     const { meal, cod, veal } = await createMealSetup({ context });
     const pkg = unwrap({
       result: await execute({
@@ -48,24 +48,24 @@ describe("customer.archive with bundles (#151)", () => {
   });
 });
 
-describe("archiving tickets releases lines and rooms (#166, #145)", () => {
+describe("archiving orders releases lines and rooms (#166, #145)", () => {
   it("frees the room after the customer cascade and archives the line", async () => {
-    const { context, ticket, type, room, setup } = await programSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
+    const { context, order, type, room, setup } = await programSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({
       result: await createTestLine({ ...base, from: 10, to: 12, setupId: setup.id }),
     });
-    const other = await createTestTicket({
+    const other = await createTestOrder({
       context,
-      entityTypeId: ticket.entityTypeId,
-      customerId: ticket.customerId,
+      entityTypeId: order.entityTypeId,
+      customerId: order.customerId,
     });
-    const clash = await createTestLine({ ...base, ticketId: other.id, from: 10, to: 12 });
+    const clash = await createTestLine({ ...base, orderId: other.id, from: 10, to: 12 });
     expect(errorCode({ result: clash })).toBe("CONFLICT");
 
-    await archiveContactsOf({ customerId: ticket.customerId });
+    await archiveContactsOf({ customerId: order.customerId });
     unwrap({
-      result: await archive({ context: context, id: ticket.customerId, archiveTickets: true }),
+      result: await archive({ context: context, id: order.customerId, archiveOrders: true }),
     });
 
     const archived = await context.db.line.findFirst({
@@ -85,8 +85,8 @@ describe("archiving tickets releases lines and rooms (#166, #145)", () => {
 
 describe("item.archive and setup.archive with lines", () => {
   it("are refused while an active line uses the item or the setup", async () => {
-    const { context, ticket, type, room, setup } = await programSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
+    const { context, order, type, room, setup } = await programSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     unwrap({ result: await createTestLine({ ...base, from: 10, to: 12, setupId: setup.id }) });
     const item = await execute({ operation: archiveItem, input: { id: room.id }, context });
     expect(errorCode({ result: item })).toBe("CONFLICT");

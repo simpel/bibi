@@ -4,7 +4,7 @@ import type { LucideIcon } from "lucide-react";
 export type CreateGroup = "work" | "catalog" | "settings";
 
 export type CreateKey =
-  | "ticket"
+  | "order"
   | "customer"
   | "item"
   | "venue"
@@ -13,9 +13,9 @@ export type CreateKey =
   | "list"
   | "setup"
   | "responsibility"
-  | "workOrder"
+  | "runSheet"
   | "priceList"
-  | "ticketStatus"
+  | "orderStatus"
   | "member";
 
 export type CreateItem = {

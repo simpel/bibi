@@ -92,7 +92,7 @@ describe("accounting exports are SIE 4I files of a date range (ADR 0077)", () =>
     const posted = [...text.matchAll(/#TRANS (\d+) \{[^}]*\} (-?[\d.]+)/g)];
     const total = ({ account }: { account: string }) =>
       posted.filter((m) => m[1] === account).reduce((sum, m) => sum + Number(m[2]) * 100, 0);
-    // 1 500 kr at the ticket's 12 %: 1 339.29 on advances and 160.71 VAT, then reversed.
+    // 1 500 kr at the order's 12 %: 1 339.29 on advances and 160.71 VAT, then reversed.
     expect(text).toMatch(/#TRANS 2420 \{6 "\d+"\} -1339\.29/);
     expect(text).toMatch(/#TRANS 2621 \{6 "\d+"\} -160\.71/);
     expect(Math.round(total({ account: "2420" }))).toBe(0);

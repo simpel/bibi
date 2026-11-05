@@ -32,6 +32,7 @@ export function useCustomerForm({ data, customer, onDone }: UseCustomerFormInput
   });
   const initial = typeOf({ id: customer?.entityTypeId ?? data.types[0]?.id ?? "" });
   const form = useForm<CustomerFormValues, unknown, CustomerFormOutput>({
+    mode: "onBlur",
     resolver,
     defaultValues: customerFormDefaults({ type: initial, customer }),
   });

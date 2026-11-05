@@ -9,7 +9,7 @@ import { MoreHint } from "./more-hint";
 
 export type InvoiceTableViewProps = GenerativeProps<"invoice-table">;
 
-/** A page of a ticket's invoices, newest first. */
+/** A page of an order's invoices, newest first. */
 export function InvoiceTableView({ items, nextCursor }: InvoiceTableViewProps) {
   const dates = useDateTimeFormat();
   const numbers = useNumberFormat();

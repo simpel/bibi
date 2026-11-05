@@ -32,18 +32,18 @@ export const toOrderLineDto = ({ row }: { row: OrderLine }): OrderLineDto => ({
   inTotal: row.inTotal,
 });
 
-type Drift = Pick<QuoteDto, "differsFromTicket" | "ticketChanges" | "ticketRemovedLines">;
+type Drift = Pick<QuoteDto, "differsFromOrder" | "orderChanges" | "orderRemovedLines">;
 
-const NO_DRIFT: Drift = { differsFromTicket: null, ticketChanges: [], ticketRemovedLines: [] };
+const NO_DRIFT: Drift = { differsFromOrder: null, orderChanges: [], orderRemovedLines: [] };
 
 type DriftInput = { snapshot: readonly OrderLineDto[]; live: readonly OrderLineDto[] };
 
-/** ADR 0052: the ticket's priced lines now, marked against the accepted snapshot. Never stored. */
-function ticketDrift({ snapshot, live }: DriftInput): Drift {
+/** ADR 0052: the order's priced lines now, marked against the accepted snapshot. Never stored. */
+function orderDrift({ snapshot, live }: DriftInput): Drift {
   const { lines, removedLines } = markLineChanges({ lines: live, previous: snapshot });
-  const ticketChanges = lines.filter((line: QuoteLineDto) => line.change !== "UNCHANGED");
-  const differsFromTicket = ticketChanges.length > 0 || removedLines.length > 0;
-  return { differsFromTicket, ticketChanges, ticketRemovedLines: removedLines };
+  const orderChanges = lines.filter((line: QuoteLineDto) => line.change !== "UNCHANGED");
+  const differsFromOrder = orderChanges.length > 0 || removedLines.length > 0;
+  return { differsFromOrder, orderChanges, orderRemovedLines: removedLines };
 }
 
 export type ToQuoteDtoInput = {
@@ -51,23 +51,23 @@ export type ToQuoteDtoInput = {
   /** The previous version's frozen lines; null on version 1. */
   previous: readonly OrderLineDto[] | null;
   /**
-   * The ticket's priced lines now (`deriveTicketLines`); null for a caller without
+   * The order's priced lines now (`deriveOrderLines`); null for a caller without
    * `program:read` (ADR 0050): a DRAFT then shows no lines and an ACCEPTED quote no drift.
    */
   live: readonly OrderLineDto[] | null;
 };
 
 /**
- * A DRAFT shows the ticket's lines live with derived totals; a sent quote its frozen snapshot and
+ * A DRAFT shows the order's lines live with derived totals; a sent quote its frozen snapshot and
  * stored totals. Both are marked against the previous version; an ACCEPTED quote also against
- * the ticket's lines now.
+ * the order's lines now.
  */
 export function toQuoteDto({ row: { lines: rows, ...quote }, previous, live }: ToQuoteDtoInput) {
   const draft = quote.quoteStatus === "DRAFT";
   const own = draft ? [...(live ?? [])] : rows.map((row) => toOrderLineDto({ row }));
   const { totalExclVatMinor, totalInclVatMinor } = draft ? quoteTotals({ lines: own }) : quote;
   const accepted = quote.quoteStatus === "ACCEPTED" && live;
-  const drift = accepted ? ticketDrift({ snapshot: own, live }) : NO_DRIFT;
+  const drift = accepted ? orderDrift({ snapshot: own, live }) : NO_DRIFT;
   const marked = markLineChanges({ lines: own, previous });
   const from = totalIsFrom({ lines: own });
   const dto: QuoteDto = {

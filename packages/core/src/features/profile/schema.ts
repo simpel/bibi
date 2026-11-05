@@ -10,6 +10,7 @@ export const ProfileSchema = z.object({
   lastName: z.string().nullable(),
   phone: z.string().nullable(),
   avatarKey: z.string().nullable().describe("Storage key of the avatar from file.upload"),
+  locale: z.enum(["sv", "en"]).default("sv").describe("Preferred UI and email language"),
   complete: z.boolean().describe("First name, last name and phone are set and working hours exist"),
 });
 
@@ -26,7 +27,13 @@ export const ProfileUpdateInputSchema = z.object({
     .max(512)
     .nullish()
     .describe("Key returned by file.upload; null removes the avatar, omitted keeps it"),
+  locale: z.enum(["sv", "en"]).nullish().describe("Preferred UI and email language"),
+});
+
+export const ProfileSetLocaleInputSchema = z.object({
+  locale: z.enum(["sv", "en"]).describe("Preferred UI and email language"),
 });
 
 export type ProfileDto = z.infer<typeof ProfileSchema>;
 export type ProfileUpdateInput = z.infer<typeof ProfileUpdateInputSchema>;
+export type ProfileSetLocaleInput = z.infer<typeof ProfileSetLocaleInputSchema>;

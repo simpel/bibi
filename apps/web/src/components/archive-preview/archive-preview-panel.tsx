@@ -7,8 +7,8 @@ export type ArchivePreviewPanelProps = {
   preview: ArchivePreview | null;
   loading?: boolean;
   errorKey?: ErrorKey | null;
-  /** What moves: the tickets of a status or the lines of a state. */
-  unit: "tickets" | "lines";
+  /** What moves: the orders of a status or the lines of a state. */
+  unit: "orders" | "lines";
 };
 
 /** What archiving would move and clear, and the blockers that would refuse it (ADR 0043, 0044). */
@@ -23,7 +23,7 @@ export function ArchivePreviewPanel({
   if (!preview) return <p className="text-sm text-muted-foreground">{t("loading")}</p>;
   return (
     <div className="grid gap-2 text-sm" aria-live="polite" aria-busy={loading}>
-      <p>{t(unit === "tickets" ? "movingTickets" : "movingLines", { count: preview.moving })}</p>
+      <p>{t(unit === "orders" ? "movingOrders" : "movingLines", { count: preview.moving })}</p>
       <p className="text-muted-foreground">{t("cells", { count: preview.cells })}</p>
       {preview.blockers.length === 0 ? null : (
         <div

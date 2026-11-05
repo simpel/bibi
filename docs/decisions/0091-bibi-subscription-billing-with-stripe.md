@@ -5,8 +5,8 @@
 - **Related:** 0028 (Connect, a separate flow), 0090, 0015 (platform operations), 0058, 0013 (hosting)
 
 ## Context
-- Venues pay Bibi for the service. Prices are meant to be published and venues sign up without talking to sales, but the pricing model (per venue, room or ticket) is not decided.
-- Stripe already holds Bibi's platform account for Connect (ADR 0028). Ticket money never touches it (ADR 0090); only Bibi's own fees do.
+- Venues pay Bibi for the service. Prices are meant to be published and venues sign up without talking to sales, but the pricing model (per venue, room or order) is not decided.
+- Stripe already holds Bibi's platform account for Connect (ADR 0028). Order money never touches it (ADR 0090); only Bibi's own fees do.
 
 ## Decision
 1. **Stripe Billing on Bibi's platform account,** never on a venue's connected account.

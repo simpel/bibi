@@ -1,14 +1,14 @@
 import type { BillingAccessState } from "@bibi/core/schemas";
-import { Badge, type BadgeProps } from "@bibi/ui";
+import { StatusBadge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
-const VARIANT: Record<BillingAccessState, BadgeProps["variant"]> = {
-  EXEMPT: "secondary",
-  UNCONFIGURED: "outline",
-  TRIAL: "secondary",
-  ACTIVE: "success",
-  PAST_DUE: "warning",
-  REQUIRED: "destructive",
+const COLOR: Record<BillingAccessState, string> = {
+  EXEMPT: "var(--muted-foreground)",
+  UNCONFIGURED: "var(--muted-foreground)",
+  TRIAL: "var(--warning)",
+  ACTIVE: "var(--success)",
+  PAST_DUE: "var(--warning)",
+  REQUIRED: "var(--destructive)",
 };
 
 export type BillingStateBadgeProps = { state: BillingAccessState };
@@ -16,5 +16,5 @@ export type BillingStateBadgeProps = { state: BillingAccessState };
 /** Whether the organization may use Bibi (ADR 0095 §5), in words. */
 export function BillingStateBadge({ state }: BillingStateBadgeProps) {
   const t = useTranslations("billing.state");
-  return <Badge variant={VARIANT[state]}>{t(state)}</Badge>;
+  return <StatusBadge label={t(state)} color={COLOR[state]} />;
 }

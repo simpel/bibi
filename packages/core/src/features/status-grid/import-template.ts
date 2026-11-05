@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import type { StatusGridTemplate } from "../../templates/status-grid/status-grid-template";
-import { checkReadable } from "../ticket/ticket-rules";
+import { checkReadable } from "../order/order-rules";
 import { loadGrid } from "./load-grid";
 import type { StatusGridImportTemplateOutput } from "./schema";
 
@@ -18,15 +18,15 @@ const READS = [
 /** The template's cells for the organization's active statuses and item types, by name. */
 async function resolveTargets({ context, template }: ImportStatusGridInput): Promise<Target[]> {
   const active = { status: "ACTIVE" } as const;
-  const statuses = await context.db.ticketStatus.findMany({ where: { ...active, closes: false } });
+  const statuses = await context.db.orderStatus.findMany({ where: { ...active, closes: false } });
   const types = await context.db.entityType.findMany({ where: { ...active, base: "ITEM" } });
   const states = await context.db.itemState.findMany({ where: active });
-  return statuses.flatMap((ticketStatus) =>
+  return statuses.flatMap((orderStatus) =>
     types.flatMap((type) => {
       const own = states.filter((state) => state.entityTypeId === type.id);
-      for (const cell of template.cells.filter((row) => row.status === ticketStatus.name)) {
+      for (const cell of template.cells.filter((row) => row.status === orderStatus.name)) {
         const state = own.find((row) => row.name === cell.state);
-        if (state) return [{ statusId: ticketStatus.id, entityTypeId: type.id, stateId: state.id }];
+        if (state) return [{ statusId: orderStatus.id, entityTypeId: type.id, stateId: state.id }];
       }
       return [];
     }),

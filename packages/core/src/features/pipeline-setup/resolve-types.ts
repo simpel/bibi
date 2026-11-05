@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
-import { checkReadable } from "../ticket/ticket-rules";
+import { checkReadable } from "../order/order-rules";
 import type { PipelineSetupDraft } from "./schema";
 
 export type ResolveTypesInput = {

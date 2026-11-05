@@ -2,13 +2,13 @@ import { deliverInboundEmail } from "../src/features/inbound-email/deliver-inbou
 import { type ExecuteContext, execute, listInboundEndpoints } from "../src/index";
 import { unwrap } from "./helpers";
 import { inboundMail } from "./inbound-email-helpers";
-import { ticketSetup } from "./ticket-helpers";
+import { orderSetup } from "./order-helpers";
 
 export const INBOX_DOMAIN = "in.bibi.test";
 
 /** A provisioned organization (with its EMAIL and API endpoints) and its inbox address. */
 export async function inboxSetup() {
-  const setup = await ticketSetup();
+  const setup = await orderSetup();
   const { items } = unwrap({
     result: await execute({ operation: listInboundEndpoints, input: {}, context: setup.context }),
   });

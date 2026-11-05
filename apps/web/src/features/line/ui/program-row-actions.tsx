@@ -99,7 +99,7 @@ type LineDialogsProps = Pick<ProgramRowActionsProps, "line" | "data"> &
 
 /** Edit the line, or add an add-on under it (ADR 0088): the line dialog in its two modes. */
 function LineDialogs({ line, data, canAddOn, ...state }: LineDialogsProps) {
-  const base = { data, ticketId: line.ticketId, startsAt: line.startsAt ?? new Date() };
+  const base = { data, orderId: line.orderId, startsAt: line.startsAt ?? new Date() };
   return (
     <>
       <LineDialog {...base} line={line} {...bind({ ...state, name: "edit" })} />

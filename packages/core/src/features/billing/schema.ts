@@ -74,7 +74,7 @@ export const BillingUpdateInputSchema = z.object({
 });
 export type BillingUpdateInput = z.infer<typeof BillingUpdateInputSchema>;
 
-/** A same-origin path to come back to, e.g. `/tickets/abc` (never a full URL). */
+/** A same-origin path to come back to, e.g. `/orders/abc` (never a full URL). */
 export const ReturnPathSchema = z
   .string()
   .max(2000)

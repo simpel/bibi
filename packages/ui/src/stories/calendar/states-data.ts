@@ -3,7 +3,7 @@ import type { CalendarState } from "../../components/availability-calendar/calen
 /**
  * The fixed stage palette: a state picks a stage, never a color. Amber tentative, blue ordered,
  * green confirmed, matching the item-state templates (`item-state-templates.ts`). Released lines
- * are never drawn. Today the app stores a free hex per state; the settings change is a ticket.
+ * are never drawn. Today the app stores a free hex per state; the settings change is an order.
  */
 export const STAGE_COLORS = {
   tentative: { color: "var(--warning)", ink: "var(--warning-foreground)" },

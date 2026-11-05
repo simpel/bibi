@@ -51,7 +51,7 @@ describe("cross-organization isolation: item states and line states", () => {
     expect(foreign.data.archivable).toBe(false);
     const listed = await call({ client: b, name: "itemState_list", args: { entityTypeId } });
     expect(listed.data.items).toEqual([]);
-    const expired = await call({ client: b, name: "ticket_expireHolds" });
+    const expired = await call({ client: b, name: "order_expireHolds" });
     expect(expired.data.items).toEqual([]);
     const graph = await call({
       client: b,

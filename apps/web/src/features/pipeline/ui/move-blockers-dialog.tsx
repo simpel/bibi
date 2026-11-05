@@ -18,7 +18,7 @@ export type MoveBlockersDialogProps = {
   onClose: () => void;
 };
 
-/** Lists everything that blocks a move (`ticket.changeStatus` CONFLICT issues). */
+/** Lists everything that blocks a move (`order.changeStatus` CONFLICT issues). */
 export function MoveBlockersDialog({ issues, title, onClose }: MoveBlockersDialogProps) {
   const t = useTranslations("pipeline.blockers");
   return (

@@ -30,7 +30,7 @@ function invoiceEvent({ invoice, kind, ...build }: InvoiceInput): PendingEvent {
     event: {
       kind,
       date: dateOf({ instant, timeZone: build.timeZone }),
-      ticketReference: invoice.ticket.reference,
+      orderReference: invoice.order.reference,
       invoiceNumber: invoice.number,
       totalInclVatMinor: invoice.totalInclVatMinor,
       parts: revenueParts({ lines: invoice.lines, accountOf: build.accountOf }),
@@ -60,7 +60,7 @@ function settlesOf({
 function paymentEvents({ sources, ...build }: Build & { sources: ExportSources }): PendingEvent[] {
   const base = ({ payment, instant }: { payment: SourcePayment; instant: Date }) => ({
     date: dateOf({ instant, timeZone: build.timeZone }),
-    ticketReference: payment.ticket.reference,
+    orderReference: payment.order.reference,
   });
   const paidAt = ({ payment }: { payment: { paidAt: Date | null } }) =>
     payment.paidAt ?? new Date();

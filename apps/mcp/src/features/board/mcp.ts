@@ -33,7 +33,7 @@ export const boardPhaseMcpTools = [
     operation: "boardPhase.moveStatus",
     idempotent: true,
     summary: ({ input }) =>
-      `Show ticket status ${text({ value: input.statusId })} ` +
+      `Show order status ${text({ value: input.statusId })} ` +
       (input.phaseId === null
         ? `nowhere on board ${text({ value: input.boardId })}`
         : `in phase ${text({ value: input.phaseId })}`),

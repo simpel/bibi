@@ -20,7 +20,7 @@ export type NavSubLinksProps = {
 };
 
 /**
- * An entry with sub-pages (Work orders → Today, All): the entry opens its default page and,
+ * An entry with sub-pages (Run sheets → Today, All): the entry opens its default page and,
  * while one of its pages is open, shows the sub-pages; the chevron expands it anywhere.
  */
 export function NavSubLinks({ item, current }: NavSubLinksProps) {

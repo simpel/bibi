@@ -6,7 +6,7 @@ import type { ProgramFormData } from "./program-form-data";
 
 export type LineDialogProps = {
   data: ProgramFormData;
-  ticketId: string;
+  orderId: string;
   startsAt: Date;
   /** Present = edit mode, absent = create mode. */
   line?: LineDto | undefined;

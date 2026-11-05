@@ -29,8 +29,10 @@ const billingConfigSchema = formSchema({
 
 const DEFAULTS: BillingConfigFormValues = { secretKey: "", webhookSecret: "" };
 
+export type UseBillingConfigFormInput = { onSaved?: (() => void) | undefined };
+
 /** Form state for `billingConfig.update`; the secret fields are emptied after a save. */
-export function useBillingConfigForm() {
+export function useBillingConfigForm({ onSaved }: UseBillingConfigFormInput = {}) {
   const t = useTranslations("admin.billing.config");
   const router = useRouter();
   const form = useForm<BillingConfigFormValues, unknown, BillingConfigFormOutput>({
@@ -43,6 +45,7 @@ export function useBillingConfigForm() {
     messages: { pending: t("saving"), success: t("saved") },
     onSuccess: () => {
       form.reset(DEFAULTS);
+      onSaved?.();
       router.refresh();
     },
   });

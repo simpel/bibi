@@ -1,0 +1,83 @@
+/// Order template – an organization's predefined order (ADR 0043): a order type, the status the
+/// order starts in, default own-field values and lines. `order.createFromTemplate` makes a
+/// order from it in one step. `status` is the soft-delete flag (ADR 0006).
+model OrderTemplate {
+  id               String               @id
+  organizationId   String
+  name             String
+  entityTypeId     String
+  /// The status created orders start in (not closing).
+  statusId         String
+  /// Default values of the order type's own fields, keyed by `FieldDefinition.key`.
+  fields           Json                 @default("{}")
+  /// The guest range the package is made for (owned, optional, min <= max, ADR 0081).
+  minGuests        Int?
+  maxGuests        Int?
+  status           RecordStatus         @default(ACTIVE)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  createdBy        String?
+  entityType       EntityType           @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  orderStatus     OrderStatus         @relation(fields: [statusId, organizationId], references: [id, organizationId])
+  lines            OrderTemplateLine[]
+  inboundEndpoints InboundEndpoint[]
+  /// The supertable row this record extends (ADR 0056).
+  record           Record               @relation(fields: [id, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, statusId])
+}
+
+/// Order template line – a line the order gets, timed from the order's start.
+/// Replaced as a set by `orderTemplate.update`.
+model OrderTemplateLine {
+  id              String                     @id @default(cuid(2))
+  organizationId  String
+  templateId      String
+  position        Int                        @default(0)
+  /// The line type (base `LINE`) of the created line.
+  entityTypeId    String
+  name            String
+  itemId          String?
+  setupId         String?
+  /// Minutes from the order's start to the line's start.
+  offsetMinutes   Int
+  durationMinutes Int
+  /// The line's quantity; null = the order's headcount (ADR 0052).
+  quantity        Int?
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+  createdBy       String?
+  template        OrderTemplate             @relation(fields: [templateId, organizationId], references: [id, organizationId])
+  entityType      EntityType                 @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  item            Item?                      @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  setup           Setup?                     @relation(fields: [setupId, organizationId], references: [id, organizationId])
+  options         OrderTemplateLineOption[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, templateId, position])
+  @@index([organizationId, itemId])
+}
+
+/// Order template line option – a choice the package preselects for its line (ADR 0089, owned):
+/// the option's item, never `ItemCustomisationOption.id` (groups get new ids when an item's groups
+/// are replaced, ADR 0082). Replaced with the template's lines; removed with its line. A default
+/// that is no longer an option of the line's item is ignored on use and flagged on the package.
+model OrderTemplateLineOption {
+  id             String             @id @default(cuid(2))
+  organizationId String
+  templateLineId String
+  itemId         String
+  /// Order of the defaults on the line, from 0.
+  position       Int
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  createdBy      String?
+  templateLine   OrderTemplateLine @relation(fields: [templateLineId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  item           Item               @relation(fields: [itemId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([templateLineId, itemId])
+  @@index([organizationId, itemId])
+}

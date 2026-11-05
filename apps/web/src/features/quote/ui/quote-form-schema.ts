@@ -5,7 +5,7 @@ import { blankToNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 
 /**
- * Raw values of the quote form: the validity a `YYYY-MM-DD` day. The lines are the ticket's own
+ * Raw values of the quote form: the validity a `YYYY-MM-DD` day. The lines are the order's own
  * and are edited there (ADR 0052).
  */
 export type QuoteFormValues = { validUntil: string; terms: string };
@@ -14,8 +14,8 @@ export type QuoteFormOutput =
   | z.infer<typeof QuoteCreateInputSchema>
   | z.infer<typeof QuoteUpdateInputSchema>;
 
-/** The quote answers `ticketId` (create) or is the draft `id` (update). */
-export type QuoteFormTarget = { ticketId: string } | { id: string };
+/** The quote answers `orderId` (create) or is the draft `id` (update). */
+export type QuoteFormTarget = { orderId: string } | { id: string };
 
 /** The end of the chosen day in local time: a quote is valid all through its last day. */
 const endOfDay = ({ value }: { value: string }) => {
@@ -43,7 +43,7 @@ export const quoteFormSchema = ({ target }: { target: QuoteFormTarget }) =>
         schema: QuoteCreateInputSchema,
         toInput: ({ values }: { values: QuoteFormValues }) => ({
           ...quoteFormToInput({ values }),
-          ticketId: target.ticketId,
+          orderId: target.orderId,
         }),
       });
 

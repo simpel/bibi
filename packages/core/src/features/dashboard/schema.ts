@@ -4,11 +4,11 @@ import { BucketSizeSchema, TrendSchema } from "../../trend/trend-schema";
 import { MAX_FINANCE_MONTHS } from "../finance/schema";
 import { AttentionSchema, ScheduledSchema } from "./attention-schema";
 
-/** How far ahead "Needs attention" looks for unsent work orders, in days from today (ADR 0080). */
+/** How far ahead "Needs attention" looks for unsent run sheets, in days from today (ADR 0080). */
 export const DASHBOARD_HORIZON_DAYS = 28;
 /** Holds expiring within this many days are listed as needing attention. */
 export const EXPIRY_WARNING_DAYS = 7;
-/** At most this many tickets in "scheduled". */
+/** At most this many orders in "scheduled". */
 export const SCHEDULED_LIMIT = 50;
 
 /** The range the Workload tab shows (ADR 0086); attention and the tiles' counts stay "now". */
@@ -23,25 +23,25 @@ export type DashboardSummaryInput = z.infer<typeof DashboardSummaryInputSchema>;
 const minor = ({ what }: { what: string }) => z.number().int().describe(`${what}, minor units`);
 
 export const StatusTileSchema = z.object({
-  statusId: z.string().describe("The ticket status id"),
+  statusId: z.string().describe("The order status id"),
   name: z.string().describe("The status name"),
   color: z.string().describe("The status colour"),
-  tickets: z.number().int().describe("Open tickets in the status now"),
+  orders: z.number().int().describe("Open orders in the status now"),
   estimatedValueMinor: minor({
-    what: "Estimated value excl. VAT of the tickets without an accepted quote",
+    what: "Estimated value excl. VAT of the orders without an accepted quote",
   })
     .nullable()
     .describe("Null when none has an estimate or priced lines (priced lines need program:read)"),
-  confirmedValueMinor: minor({ what: "Accepted quotes' totals excl. VAT of those tickets" })
+  confirmedValueMinor: minor({ what: "Accepted quotes' totals excl. VAT of those orders" })
     .nullable()
     .describe("Null without an accepted quote or quote:read"),
-  trend: TrendSchema.describe("Open tickets in the status at each bucket's end (ADR 0086)"),
+  trend: TrendSchema.describe("Open orders in the status at each bucket's end (ADR 0086)"),
 });
 
 export const BookedAheadMonthSchema = z.object({
   month: z.string().describe("Month of the event's first line, else of the acceptance, YYYY-MM"),
-  valueExclVatMinor: minor({ what: "Accepted quotes on tickets not invoiced yet, excluding VAT" }),
-  tickets: z.number().int().describe("How many tickets"),
+  valueExclVatMinor: minor({ what: "Accepted quotes on orders not invoiced yet, excluding VAT" }),
+  orders: z.number().int().describe("How many orders"),
 });
 
 export const UtilisationSchema = z.object({
@@ -54,8 +54,8 @@ export const UtilisationSchema = z.object({
 });
 
 /**
- * The Workload tab (ADR 0079, 0080, 0086; a view read model, ADR 0071): open tickets per status
- * now with their trend over the range, what needs attention now, the tickets, utilisation and
+ * The Workload tab (ADR 0079, 0080, 0086; a view read model, ADR 0071): open orders per status
+ * now with their trend over the range, what needs attention now, the orders, utilisation and
  * accepted quotes not invoiced in the range. A part the caller may not read is null.
  */
 export const DashboardSummarySchema = z.object({

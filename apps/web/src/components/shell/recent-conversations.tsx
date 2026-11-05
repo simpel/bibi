@@ -1,4 +1,4 @@
-import { cn } from "@bibi/ui";
+import { SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useAssistant } from "@/features/assistant/state/assistant-context";
@@ -17,34 +17,39 @@ export function RecentConversations({ onHome }: RecentConversationsProps) {
   useEffect(() => void refresh(), [refresh]);
   if (items.length === 0) return null;
   return (
-    <div className="mt-2 grid gap-0.5">
-      <span className="px-3 text-xs font-medium text-muted-foreground">{t("recent")}</span>
-      <ul className="grid gap-0.5">
+    <div className="mt-2 flex min-w-0 flex-col gap-0.5 group-data-[collapsible=icon]:hidden">
+      <SidebarGroupLabel className="h-6 px-2 text-xs font-medium text-sidebar-foreground/70">
+        {t("recent")}
+      </SidebarGroupLabel>
+      <SidebarMenu className="gap-0.5">
         {items.slice(0, RECENT_LIMIT).map(({ id, title }) => {
           const current = onHome && id === session.conversationId;
           return (
-            <li key={id}>
-              <button
+            <SidebarMenuItem key={id} className="min-w-0">
+              <SidebarMenuButton
                 type="button"
-                onClick={() => void selectConversation({ id })}
+                isActive={current}
                 aria-current={current ? "page" : undefined}
-                className={cn(
-                  "w-full truncate rounded-md px-3 py-1.5 text-left text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
-                  current && "bg-accent text-accent-foreground",
-                )}
+                onClick={() => void selectConversation({ id })}
+                title={title}
+                className="h-8 text-sm font-normal text-muted-foreground hover:text-sidebar-accent-foreground data-[active=true]:text-sidebar-accent-foreground"
               >
-                {title}
-              </button>
-            </li>
+                <span className="truncate">{title}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           );
         })}
-      </ul>
-      <Link
-        href={ROUTES.chats}
-        className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-      >
-        {t("showMore")}
-      </Link>
+        <SidebarMenuItem className="min-w-0">
+          <SidebarMenuButton
+            asChild
+            className="h-8 text-sm font-normal text-muted-foreground hover:text-sidebar-accent-foreground"
+          >
+            <Link href={ROUTES.chats}>
+              <span>{t("showMore")}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
     </div>
   );
 }

@@ -58,7 +58,7 @@ export async function updateLineRow({
   const after = placeAfter({ before, data });
   for (const check of [
     checkLinePeriod(after),
-    await checkPlace({ context, ticketId: before.ticketId, ...after }),
+    await checkPlace({ context, orderId: before.orderId, ...after }),
     await checkBundleItem({ context, lineId: id, before, itemId: after.itemId }),
     await checkOptionQuantity({ context, before, quantity: data.quantity }),
   ]) {

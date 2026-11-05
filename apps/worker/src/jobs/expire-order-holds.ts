@@ -1,0 +1,18 @@
+import { execute, expireOrderHolds } from "@bibi/core";
+import { getLogger } from "@bibi/logger";
+import { forEachOrganization } from "../for-each-organization";
+import type { JobDefinition } from "../job-definition";
+
+/** Runs `order.expireHolds` for every organization as SYSTEM every 15 minutes (ADR 0027, 0044). */
+export const expireOrderHoldsJob: JobDefinition = {
+  name: "order.expireHolds",
+  cron: "*/15 * * * *",
+  handler: async ({ db, organizationIds }) => {
+    const { succeeded, failed } = await forEachOrganization({
+      db,
+      organizationIds,
+      run: ({ context }) => execute({ operation: expireOrderHolds, input: {}, context }),
+    });
+    getLogger().info({ event: "order.expireHoldsRun", succeeded, failed });
+  },
+};

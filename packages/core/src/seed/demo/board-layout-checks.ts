@@ -8,10 +8,10 @@ export type CheckDemoBoardLayoutInput = { context: ExecuteContext; org: DemoOrg 
 
 type Board = { id: string; name: string; phases: { id: string; statusIds: string[] }[] };
 
-/** Closed tickets of the whole seed fall inside the retention window of this many days. */
+/** Closed orders of the whole seed fall inside the retention window of this many days. */
 const CLOSED_WITHIN_DAYS = 365;
 
-/** One board's shape: a status in at most one phase, and every ticket in the right column. */
+/** One board's shape: a status in at most one phase, and every order in the right column. */
 async function boardFailures({
   context,
   org,
@@ -29,17 +29,17 @@ async function boardFailures({
   const input = { boardId: board.id, closedWithinDays: CLOSED_WITHIN_DAYS };
   const result = await execute({ operation: pipelineBoard, input, context });
   if (!result.ok) return [...failures, `${label}: pipeline.board failed: ${result.error.message}`];
-  const tickets = await context.db.ticket.findMany({ select: { id: true, statusId: true } });
-  const shown = tickets.filter((ticket) => phaseOf.has(ticket.statusId));
+  const orders = await context.db.order.findMany({ select: { id: true, statusId: true } });
+  const shown = orders.filter((order) => phaseOf.has(order.statusId));
   const { cards, unmappedCount } = result.value;
   const column = new Map(cards.map((card) => [card.id, card.columnId]));
-  if (column.size !== cards.length) failures.push(`${label}: a ticket is on two cards`);
-  const wrong = shown.filter((ticket) => column.get(ticket.id) !== phaseOf.get(ticket.statusId));
-  if (wrong.length > 0) failures.push(`${label}: ${wrong.length} tickets not in their column`);
+  if (column.size !== cards.length) failures.push(`${label}: an order is on two cards`);
+  const wrong = shown.filter((order) => column.get(order.id) !== phaseOf.get(order.statusId));
+  if (wrong.length > 0) failures.push(`${label}: ${wrong.length} orders not in their column`);
   if (cards.length !== shown.length) {
     failures.push(`${label}: ${cards.length} cards, expected ${shown.length}`);
   }
-  const off = tickets.length - shown.length;
+  const off = orders.length - shown.length;
   if (unmappedCount !== off) failures.push(`${label}: ${unmappedCount} unmapped, expected ${off}`);
   return failures;
 }
@@ -47,7 +47,7 @@ async function boardFailures({
 /**
  * ADR 0067: the boards and phases match the data files (the default board has a phase per
  * status, `pipeline.boards` add theirs), every status is in at most one phase per board, and every
- * seeded ticket shows in exactly one column of each board that has a phase for its status.
+ * seeded order shows in exactly one column of each board that has a phase for its status.
  */
 export async function checkDemoBoardLayout({
   context,

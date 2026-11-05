@@ -5,8 +5,8 @@ export const requirementRoutes = [
   restRoute({
     operation: "requirement.list",
     method: "GET",
-    path: "/tickets/{ticketId}/requirements",
-    operationId: "requirementListByTicket",
+    path: "/orders/{orderId}/requirements",
+    operationId: "requirementListByOrder",
   }),
   restRoute({
     operation: "requirement.list",

@@ -21,7 +21,7 @@ export const personContactVariants = cva("flex min-w-0", {
 export type PersonContactProps = Omit<ComponentProps<"div">, "children"> &
   VariantProps<typeof personContactVariants> & {
     name: string;
-    /** Why this person: a role, a responsibility, "Ticket assignee". */
+    /** Why this person: a role, a responsibility, "Order assignee". */
     description?: string;
     /** Shown in the default size only. */
     phone?: string | null;

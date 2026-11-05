@@ -2,22 +2,22 @@ import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
 import { REQUIREMENT_INCLUDE, toRequirementDto } from "./to-requirement-dto";
 
-/** Exactly one parent: the ticket (its own requirements and those on its lines) or one line. */
+/** Exactly one parent: the order (its own requirements and those on its lines) or one line. */
 export type ArchiveRequirementsInput = {
   context: OperationContext;
-} & ({ ticketId: string; lineId?: never } | { lineId: string; ticketId?: never });
+} & ({ orderId: string; lineId?: never } | { lineId: string; orderId?: never });
 
 /**
- * Archives every active requirement under an archived parent (a line or a ticket), one audit row
+ * Archives every active requirement under an archived parent (a line or an order), one audit row
  * each, so no active requirement remains under an archived parent (#215). Shared by `line.archive`
- * and `archiveTicket`.
+ * and `archiveOrder`.
  */
 export async function archiveRequirements({
   context,
-  ticketId,
+  orderId,
   lineId,
 }: ArchiveRequirementsInput): Promise<number> {
-  const where = lineId ? { lineId } : { ticketId };
+  const where = lineId ? { lineId } : { orderId };
   const rows = await context.db.requirement.findMany({ where, include: REQUIREMENT_INCLUDE });
   for (const row of rows) {
     const archived = await context.db.requirement.update({

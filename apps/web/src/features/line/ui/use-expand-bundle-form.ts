@@ -17,14 +17,14 @@ import {
 import { lineTimeZone } from "./line-time-zone";
 
 export type UseExpandBundleFormInput = Omit<ExpandBundleDefaultsInput, "timeZone"> & {
-  ticketId: string;
+  orderId: string;
   zones: ExpandBundleSchemaInput["zones"];
   onDone: () => void;
 };
 
-/** The form state of `line.expandBundle`; the ticket page reloads with the new lines. */
+/** The form state of `line.expandBundle`; the order page reloads with the new lines. */
 export function useExpandBundleForm({
-  ticketId,
+  orderId,
   zones,
   onDone,
   ...defaults
@@ -32,7 +32,7 @@ export function useExpandBundleForm({
   const t = useTranslations("line");
   const common = useTranslations("common");
   const router = useRouter();
-  const schema = useMemo(() => expandBundleSchema({ ticketId, zones }), [ticketId, zones]);
+  const schema = useMemo(() => expandBundleSchema({ orderId, zones }), [orderId, zones]);
   const timeZone = lineTimeZone({ data: zones, itemId: defaults.itemId });
   const form = useForm<ExpandBundleFormValues, unknown, LineExpandBundleInput>({
     resolver: zodResolver(schema, useZodMessages()),

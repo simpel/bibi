@@ -28,6 +28,14 @@ x-app-env: &app-env
   MAIL_INBOUND_DOMAIN: ${MAIL_INBOUND_DOMAIN:-}
   AI_GATEWAY_API_KEY: ${AI_GATEWAY_API_KEY:-}
   WEB_OAUTH_CLIENT_ID: ${WEB_OAUTH_CLIENT_ID:-}
+  # ADR 0063: uploaded files live in Hetzner Object Storage (docs/runbooks/object-storage.md).
+  # Required: the containers' disk is wiped on every deploy, so there is no disk fallback.
+  STORAGE_DRIVER: s3
+  S3_ENDPOINT: ${S3_ENDPOINT:?set S3_ENDPOINT}
+  S3_REGION: ${S3_REGION:?set S3_REGION}
+  S3_BUCKET: ${S3_BUCKET:?set S3_BUCKET}
+  S3_ACCESS_KEY: ${S3_ACCESS_KEY:?set S3_ACCESS_KEY}
+  S3_SECRET_KEY: ${S3_SECRET_KEY:?set S3_SECRET_KEY}
 
 services:
   postgres:

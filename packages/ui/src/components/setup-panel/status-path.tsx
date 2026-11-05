@@ -48,15 +48,15 @@ function StatusNodeView({ data }: NodeProps<StatusNode>) {
   );
 }
 
-const NODE_TYPES = { ticketStatus: StatusNodeView };
+const NODE_TYPES = { orderStatus: StatusNodeView };
 const GAP = 190;
 
 function toFlow({ statuses }: { statuses: PathStatus[] }) {
-  const nodes: StatusNode[] = statuses.map((ticketStatus, index) => ({
+  const nodes: StatusNode[] = statuses.map((orderStatus, index) => ({
     id: String(index),
     type: "status",
     position: { x: index * GAP, y: 0 },
-    data: ticketStatus,
+    data: orderStatus,
   }));
   const edges: Edge[] = statuses.slice(1).map((_, index) => ({
     id: `e${index}`,
@@ -78,7 +78,7 @@ export function StatusPath({ statuses, label }: StatusPathProps) {
   const flow = (
     <ReactFlowProvider>
       <ReactFlow
-        key={statuses.map((ticketStatus) => ticketStatus.name).join("|")}
+        key={statuses.map((orderStatus) => orderStatus.name).join("|")}
         nodes={nodes}
         edges={edges}
         nodeTypes={NODE_TYPES}

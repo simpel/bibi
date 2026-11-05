@@ -25,7 +25,7 @@ const base = {
   connectedAccountId: "acct_venue",
   amountMinor: 125_000,
   currency: "SEK",
-  description: "Ticket #7",
+  description: "Order #7",
   idempotencyKey: "bibi-payment-p1",
   metadata: { paymentId: "p1" },
 };

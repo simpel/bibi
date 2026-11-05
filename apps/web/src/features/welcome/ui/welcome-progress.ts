@@ -6,8 +6,9 @@ const SETUP_ORDER: readonly WelcomeStep[] = [
   "hours",
   "setup/organization",
   "setup/kind",
-  "setup/bookable",
-  "setup/sellable",
+  "setup/spaces",
+  "setup/food",
+  "setup/extras",
   "setup/review",
 ];
 
@@ -16,7 +17,7 @@ export type WelcomeProgressInput = {
   state: Pick<WelcomeState, "canSetup" | "organization">;
 };
 
-/** "Step n of m": 2 steps for a member, 7 for whoever sets up a pending organization. */
+/** "Step n of m": 2 steps for a member, 8 for whoever sets up a pending organization. */
 export function welcomeProgress({ step, state }: WelcomeProgressInput) {
   const setup = state.canSetup && state.organization.setupStatus === "PENDING";
   return { step: SETUP_ORDER.indexOf(step) + 1, total: setup ? SETUP_ORDER.length : 2 };

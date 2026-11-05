@@ -6,7 +6,7 @@ export const quoteMcpTools = [
   mcpTool({
     operation: "quote.create",
     summary: ({ input }) =>
-      `Create a quote of the lines of ticket ${text({ value: input.ticketId })}`,
+      `Create a quote of the lines of order ${text({ value: input.orderId })}`,
   }),
   mcpTool({
     operation: "quote.update",
@@ -23,7 +23,7 @@ export const quoteMcpTools = [
   mcpTool({
     operation: "quote.send",
     summary: ({ input }) =>
-      `Send quote ${text({ value: input.id })}, freezing the ticket's priced lines`,
+      `Send quote ${text({ value: input.id })}, freezing the order's priced lines`,
   }),
   mcpTool({
     operation: "quote.accept",

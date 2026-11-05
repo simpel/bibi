@@ -7,18 +7,18 @@ export type OrganizationPagerProps = { cursor: string | undefined; nextCursor: s
 
 /** Cursor paging of the organizations list: back to the first page, or on to the next. */
 export async function OrganizationPager({ cursor, nextCursor }: OrganizationPagerProps) {
-  const t = await getTranslations("admin.billing.organizations");
+  const t = await getTranslations("admin.organizations");
   if (!cursor && !nextCursor) return null;
   return (
     <div className="flex justify-end gap-2">
       {cursor ? (
         <Button asChild variant="outline" size="sm">
-          <Link href={ROUTES.mothershipBilling}>{t("first")}</Link>
+          <Link href={ROUTES.mothershipOrganizations}>{t("first")}</Link>
         </Button>
       ) : null}
       {nextCursor ? (
         <Button asChild variant="outline" size="sm">
-          <Link href={{ pathname: ROUTES.mothershipBilling, query: { cursor: nextCursor } }}>
+          <Link href={{ pathname: ROUTES.mothershipOrganizations, query: { cursor: nextCursor } }}>
             {t("next")}
           </Link>
         </Button>

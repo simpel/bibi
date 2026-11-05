@@ -4,14 +4,14 @@ import { errorCode, unwrap } from "./helpers";
 import { addLine, addOnSetup, END, START } from "./line-add-on-helpers";
 import { choose, optionsSetup, picks } from "./line-options-helpers";
 import { addTestLines } from "./quote-helpers";
-import { createTestTicket } from "./ticket-helpers";
+import { createTestOrder } from "./order-helpers";
 
 const HOUR = 3_600_000;
 
 describe("add-ons: line.create with parentLineId (ADR 0088)", () => {
   it("is an ADD_ON with the parent's type and period by default", async () => {
-    const { context, ticket, parent, coffee } = await addOnSetup();
-    const input = { context, ticketId: ticket.id, parentLineId: parent.id, itemId: coffee.id };
+    const { context, order, parent, coffee } = await addOnSetup();
+    const input = { context, orderId: order.id, parentLineId: parent.id, itemId: coffee.id };
     const addOn = unwrap({ result: await addLine(input) });
     expect(addOn).toMatchObject({ role: "ADD_ON", parentLineId: parent.id, priceEffect: null });
     expect(addOn).toMatchObject({
@@ -23,7 +23,7 @@ describe("add-ons: line.create with parentLineId (ADR 0088)", () => {
   });
 
   it("takes its own type and period when given, and untimed from an untimed parent", async () => {
-    const { context, ticket, parent, lineType } = await addOnSetup();
+    const { context, order, parent, lineType } = await addOnSetup();
     const other = unwrap({
       result: await execute({
         operation: createEntityType,
@@ -32,11 +32,11 @@ describe("add-ons: line.create with parentLineId (ADR 0088)", () => {
       }),
     });
     const morning = { startsAt: START, endsAt: new Date(START.getTime() + HOUR) };
-    const base = { context, ticketId: ticket.id, parentLineId: parent.id };
+    const base = { context, orderId: order.id, parentLineId: parent.id };
     const own = unwrap({ result: await addLine({ ...base, entityTypeId: other.id, ...morning }) });
     expect(own).toMatchObject({ entityTypeId: other.id, ...morning });
     const [untimed] = await addTestLines({
-      ...{ context, ticketId: ticket.id, lineTypeId: lineType.id },
+      ...{ context, orderId: order.id, lineTypeId: lineType.id },
       lines: [{ itemId: parent.itemId ?? "", name: "Fee" }],
     });
     const parentLineId = untimed?.id ?? "";
@@ -44,9 +44,9 @@ describe("add-ons: line.create with parentLineId (ADR 0088)", () => {
     expect(free).toMatchObject({ startsAt: null, endsAt: null, itemId: null });
   });
 
-  it("goes only under a top-level line of the same ticket, one level", async () => {
-    const { context, ticket, parent } = await addOnSetup();
-    const base = { context, ticketId: ticket.id };
+  it("goes only under a top-level line of the same order, one level", async () => {
+    const { context, order, parent } = await addOnSetup();
+    const base = { context, orderId: order.id };
     const addOn = unwrap({ result: await addLine({ ...base, parentLineId: parent.id }) });
     const nested = await addLine({ ...base, parentLineId: addOn.id });
     expect(errorCode({ result: nested })).toBe("VALIDATION");
@@ -57,7 +57,7 @@ describe("add-ons: line.create with parentLineId (ADR 0088)", () => {
         options: picks({ ids: [options.technician.id] }),
       }),
     });
-    const under = { context: options.context, ticketId: options.ticket.id };
+    const under = { context: options.context, orderId: options.order.id };
     const onOption = await addLine({ ...under, parentLineId: items[0]?.id ?? "" });
     expect(errorCode({ result: onOption })).toBe("VALIDATION");
     const missing = await addLine({ ...base, parentLineId: "nope" });
@@ -65,27 +65,27 @@ describe("add-ons: line.create with parentLineId (ADR 0088)", () => {
     expect(errorCode({ result: await addLine({ ...base }) })).toBe("VALIDATION");
   });
 
-  it("refuses a parent on another ticket", async () => {
+  it("refuses a parent on another order", async () => {
     const one = await addOnSetup();
-    const { context, ticket } = one;
+    const { context, order } = one;
     const other = await addOnSetup();
-    // Another organization's line is NOT_FOUND; one of the same org on another ticket VALIDATION.
-    const foreign = await addLine({ context, ticketId: ticket.id, parentLineId: other.parent.id });
+    // Another organization's line is NOT_FOUND; one of the same org on another order VALIDATION.
+    const foreign = await addLine({ context, orderId: order.id, parentLineId: other.parent.id });
     expect(errorCode({ result: foreign })).toBe("NOT_FOUND");
-    const elsewhere = await createTestTicket({
+    const elsewhere = await createTestOrder({
       ...{ context, entityTypeId: one.type.id, customerId: one.customer.id },
     });
     const [second] = await addTestLines({
-      ...{ context, ticketId: elsewhere.id, lineTypeId: one.lineType.id },
+      ...{ context, orderId: elsewhere.id, lineTypeId: one.lineType.id },
       lines: [{ itemId: one.coffee.id }],
     });
-    const crossed = await addLine({ context, ticketId: ticket.id, parentLineId: second?.id ?? "" });
+    const crossed = await addLine({ context, orderId: order.id, parentLineId: second?.id ?? "" });
     expect(errorCode({ result: crossed })).toBe("VALIDATION");
   });
 
   it("moves with its parent and is removed with it", async () => {
-    const { context, ticket, parent } = await addOnSetup();
-    const base = { context, ticketId: ticket.id, parentLineId: parent.id };
+    const { context, order, parent } = await addOnSetup();
+    const base = { context, orderId: order.id, parentLineId: parent.id };
     const timed = unwrap({ result: await addLine(base) });
     const later = {
       startsAt: new Date(START.getTime() + HOUR),
@@ -106,8 +106,8 @@ describe("add-ons: line.create with parentLineId (ADR 0088)", () => {
   });
 
   it("lets a line with only add-ons change its item, not one with options", async () => {
-    const { context, ticket, parent, coffee } = await addOnSetup();
-    unwrap({ result: await addLine({ context, ticketId: ticket.id, parentLineId: parent.id }) });
+    const { context, order, parent, coffee } = await addOnSetup();
+    unwrap({ result: await addLine({ context, orderId: order.id, parentLineId: parent.id }) });
     const input = { id: parent.id, itemId: coffee.id };
     const changed = await execute({ operation: updateLine, input, context });
     expect(changed.ok).toBe(true);

@@ -1,44 +1,52 @@
+import { PlusIcon } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 import { cn } from "../../lib/cn";
 import { Button } from "../button/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip/tooltip";
 
 export type DataTableRowActionProps = {
-  /** The visible text on wide tables, and always the accessible name and tooltip. */
+  /** The accessible name and tooltip. Never shown as inline text in table buttons. */
   label: string;
-  icon: ComponentType<SVGProps<SVGSVGElement>>;
+  icon?: ComponentType<SVGProps<SVGSVGElement>>;
   onClick: () => void;
-  /** The icon alone at every width, for actions whose icon is unmistakable (download, copy). */
+  /** Kept for backwards compatibility; row action buttons are now always icon-only with tooltips. */
   iconOnly?: boolean;
   destructive?: boolean;
   disabled?: boolean;
 };
 
 /**
- * One primary row action, drawn only by `DataTableRowActions`. A narrow table shows the icon, a
- * wide one icon and label, unless `iconOnly`. The label is always the accessible name and tooltip.
+ * Checks if an action is a create / new action to default to the plus icon.
+ */
+function isCreateAction({ label }: { label: string }): boolean {
+  return /\b(new|create|add|ny|skapa|lägg till)\b/i.test(label);
+}
+
+/**
+ * One primary row action, drawn only by `DataTableRowActions`.
+ * Always an icon-only button with a shadcn tooltip across all tables; labels are never displayed inline.
  */
 export function DataTableRowAction({
   label,
-  icon: Icon,
+  icon,
   onClick,
-  iconOnly = false,
   destructive = false,
   disabled,
 }: DataTableRowActionProps) {
+  const Icon = icon ?? (isCreateAction({ label }) ? PlusIcon : PlusIcon);
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
           variant="outline"
-          size="sm"
+          size="icon"
           aria-label={label}
           disabled={disabled}
           onClick={onClick}
-          className={cn("px-2", !iconOnly && "@2xl:px-3", destructive && "text-destructive")}
+          className={cn("size-8 shrink-0", destructive && "text-destructive")}
         >
-          <Icon aria-hidden />
-          {iconOnly ? null : <span className="hidden @2xl:inline">{label}</span>}
+          <Icon aria-hidden className="size-4" />
         </Button>
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>

@@ -38,24 +38,24 @@ export async function download({ context, id }: Ctx & { id: string }) {
 }
 
 /**
- * A sent invoice of 5 600 kr (12 % VAT) on a ticket of an organization with an org number,
+ * A sent invoice of 5 600 kr (12 % VAT) on an order of an organization with an org number,
  * optionally after a deposit of that amount was paid (and deducted).
  */
 export async function sentInvoice({ deposit }: { deposit?: number } = {}) {
   const setup = await moneySetup();
-  const { context, ticket } = setup;
+  const { context, order } = setup;
   const profile = { legalName: "Gården AB", orgNumber: "556000-0000" };
   unwrap({
     result: await execute({ operation: updateOrganizationProfile, input: profile, context }),
   });
   if (deposit) {
-    const input = { ticketId: ticket.id, description: "Advance", amountMinor: deposit };
+    const input = { orderId: order.id, description: "Advance", amountMinor: deposit };
     const paid = unwrap({ result: await execute({ operation: requestDeposit, input, context }) });
     await markSucceeded({ context, paymentId: paid.id });
   }
-  await makeInvoiceable({ context, statusId: ticket.statusId });
+  await makeInvoiceable({ context, statusId: order.statusId });
   const draft = unwrap({
-    result: await execute({ operation: createInvoice, input: { ticketId: ticket.id }, context }),
+    result: await execute({ operation: createInvoice, input: { orderId: order.id }, context }),
   });
   unwrap({ result: await execute({ operation: sendInvoice, input: { id: draft.id }, context }) });
   return { ...setup, invoice: draft };

@@ -2,11 +2,11 @@ import { z } from "zod";
 import type { FollowUpInput } from "../../operations/types";
 import { mainAssigneeId } from "../assignment/load-assignment";
 import { notify } from "./notify";
-import { ticketFacts, ticketPeople } from "./ticket-people";
+import { orderFacts, orderPeople } from "./order-people";
 
 type AnyFollowUp = FollowUpInput<unknown, unknown>;
 
-const TicketOutput = z.object({ id: z.string(), statusId: z.string().optional() });
+const OrderOutput = z.object({ id: z.string(), statusId: z.string().optional() });
 
 const AssignmentOutput = z.object({
   subjectType: z.string(),
@@ -16,76 +16,76 @@ const AssignmentOutput = z.object({
 });
 
 /**
- * `assignment.assign`: the new assignee of a ticket (or of a responsibility on it). Clearing a
+ * `assignment.assign`: the new assignee of an order (or of a responsibility on it). Clearing a
  * responsibility's choice falls back to its default assignee, who was not just assigned.
  */
 export async function notifyAssigned({ output, context }: AnyFollowUp) {
   const parsed = AssignmentOutput.safeParse(output);
-  if (!parsed.success || parsed.data.subjectType !== "TICKET") return;
+  if (!parsed.success || parsed.data.subjectType !== "ORDER") return;
   if (parsed.data.assigneeSource !== "EXPLICIT") return;
-  const { subjectId: ticketId, assigneeId } = parsed.data;
-  const facts = await ticketFacts({ context, ticketId });
+  const { subjectId: orderId, assigneeId } = parsed.data;
+  const facts = await orderFacts({ context, orderId });
   if (!facts) return;
-  await notify({ context, kind: "ASSIGNED", userIds: [assigneeId], ticketId, data: facts });
+  await notify({ context, kind: "ASSIGNED", userIds: [assigneeId], orderId, data: facts });
 }
 
 /**
- * `ticket.create|createFromTemplate`: the main assignee the ticket was created with, read from the
- * stored assignment. A repeated create (the same `intakeKey` returns the first ticket) tells
+ * `order.create|createFromTemplate`: the main assignee the order was created with, read from the
+ * stored assignment. A repeated create (the same `intakeKey` returns the first order) tells
  * nobody twice.
  */
 export async function notifyCreatedAssignee({ output, context }: AnyFollowUp) {
-  const parsed = TicketOutput.safeParse(output);
+  const parsed = OrderOutput.safeParse(output);
   if (!parsed.success) return;
-  const ticketId = parsed.data.id;
+  const orderId = parsed.data.id;
   const [assigneeId, told] = await Promise.all([
-    mainAssigneeId({ context, subjectType: "TICKET", subjectId: ticketId }),
-    context.db.notification.count({ where: { ticketId, kind: "ASSIGNED" } }),
+    mainAssigneeId({ context, subjectType: "ORDER", subjectId: orderId }),
+    context.db.notification.count({ where: { orderId, kind: "ASSIGNED" } }),
   ]);
-  const facts = assigneeId && told === 0 ? await ticketFacts({ context, ticketId }) : null;
+  const facts = assigneeId && told === 0 ? await orderFacts({ context, orderId }) : null;
   if (!facts) return;
-  await notify({ context, kind: "ASSIGNED", userIds: [assigneeId], ticketId, data: facts });
+  await notify({ context, kind: "ASSIGNED", userIds: [assigneeId], orderId, data: facts });
 }
 
-const WorkOrderOutput = z.object({
+const RunSheetOutput = z.object({
   id: z.string(),
-  ticketId: z.string(),
+  orderId: z.string(),
   version: z.number(),
   recipients: z.array(z.object({ userId: z.string() })),
 });
 
-/** `workOrder.send`: the stored recipients of the sent version (ADR 0055). */
-export async function notifyWorkOrderSent({ output, context }: AnyFollowUp) {
-  const parsed = WorkOrderOutput.safeParse(output);
+/** `runSheet.send`: the stored recipients of the sent version (ADR 0055). */
+export async function notifyRunSheetSent({ output, context }: AnyFollowUp) {
+  const parsed = RunSheetOutput.safeParse(output);
   if (!parsed.success) return;
-  const { id: workOrderId, ticketId, version, recipients } = parsed.data;
+  const { id: runSheetId, orderId, version, recipients } = parsed.data;
   const [facts, row] = await Promise.all([
-    ticketFacts({ context, ticketId }),
-    context.db.workOrder.findFirst({
-      where: { id: workOrderId },
-      select: { workOrderDefinition: { select: { name: true } } },
+    orderFacts({ context, orderId }),
+    context.db.runSheet.findFirst({
+      where: { id: runSheetId },
+      select: { runSheetDefinition: { select: { name: true } } },
     }),
   ]);
   if (!facts) return;
   const data = {
     ...facts,
-    workOrderVersion: version,
-    workOrderName: row?.workOrderDefinition.name,
+    runSheetVersion: version,
+    runSheetName: row?.runSheetDefinition.name,
   };
   const userIds = recipients.map((recipient) => recipient.userId);
-  await notify({ context, kind: "WORK_ORDER_SENT", userIds, ticketId, workOrderId, data });
+  await notify({ context, kind: "RUN_SHEET_SENT", userIds, orderId, runSheetId, data });
 }
 
-/** `ticket.changeStatus`: everyone on the ticket, with the move as it was recorded (ADR 0054). */
+/** `order.changeStatus`: everyone on the order, with the move as it was recorded (ADR 0054). */
 export async function notifyStatusChanged({ output, context }: AnyFollowUp) {
-  const parsed = TicketOutput.safeParse(output);
+  const parsed = OrderOutput.safeParse(output);
   if (!parsed.success) return;
-  const ticketId = parsed.data.id;
+  const orderId = parsed.data.id;
   const [facts, change] = await Promise.all([
-    ticketFacts({ context, ticketId }),
+    orderFacts({ context, orderId }),
     // The move this command made, not a later one that committed right after it.
-    context.db.ticketStatusChange.findFirst({
-      where: { ticketId, ...(parsed.data.statusId ? { toStatusId: parsed.data.statusId } : {}) },
+    context.db.orderStatusChange.findFirst({
+      where: { orderId, ...(parsed.data.statusId ? { toStatusId: parsed.data.statusId } : {}) },
       orderBy: { seq: "desc" },
       select: { fromStatus: { select: { name: true } }, toStatus: { select: { name: true } } },
     }),
@@ -96,24 +96,24 @@ export async function notifyStatusChanged({ output, context }: AnyFollowUp) {
     fromStatus: change.fromStatus?.name ?? null,
     toStatus: change.toStatus.name,
   };
-  const userIds = await ticketPeople({ context, ticketId });
-  await notify({ context, kind: "TICKET_STATUS_CHANGED", userIds, ticketId, data });
+  const userIds = await orderPeople({ context, orderId });
+  await notify({ context, kind: "ORDER_STATUS_CHANGED", userIds, orderId, data });
 }
 
 const PaymentOutput = z.object({
   paymentId: z.string(),
-  ticketId: z.string(),
+  orderId: z.string(),
   status: z.string(),
   changed: z.boolean(),
 });
 
-/** `payment.applySignal`: a payment that just succeeded, to everyone on its ticket. */
+/** `payment.applySignal`: a payment that just succeeded, to everyone on its order. */
 export async function notifyPaymentReceived({ output, context }: AnyFollowUp) {
   const parsed = PaymentOutput.safeParse(output);
   if (!parsed.success || !parsed.data.changed || parsed.data.status !== "SUCCEEDED") return;
-  const { paymentId, ticketId } = parsed.data;
+  const { paymentId, orderId } = parsed.data;
   const [facts, payment] = await Promise.all([
-    ticketFacts({ context, ticketId }),
+    orderFacts({ context, orderId }),
     context.db.payment.findFirst({
       where: { id: paymentId },
       select: { amountMinor: true, currency: true },
@@ -121,6 +121,6 @@ export async function notifyPaymentReceived({ output, context }: AnyFollowUp) {
   ]);
   if (!facts || !payment) return;
   const data = { ...facts, ...payment };
-  const userIds = await ticketPeople({ context, ticketId });
-  await notify({ context, kind: "PAYMENT_RECEIVED", userIds, ticketId, paymentId, data });
+  const userIds = await orderPeople({ context, orderId });
+  await notify({ context, kind: "PAYMENT_RECEIVED", userIds, orderId, paymentId, data });
 }

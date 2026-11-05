@@ -1,13 +1,13 @@
 import type { InvoiceProvider } from "../../features/payment-account/settings-schema";
 import type { FixedRole } from "../../permissions/fixed-roles";
 import type { PermissionOverride } from "../../permissions/overrides";
-import type { TicketStatusTemplate } from "../../templates/ticket-statuses/ticket-status-template";
+import type { OrderStatusTemplate } from "../../templates/order-statuses/order-status-template";
 import type { DisplayFormats } from "../../time/display-formats";
 import type { DemoConfig } from "./config-types";
 import type { DemoCustomer } from "./customer-types";
 import type { DemoDensity } from "./density-types";
-import type { DemoTicketTemplate } from "./template-types";
-import type { DemoTicket } from "./ticket-types";
+import type { DemoOrderTemplate } from "./template-types";
+import type { DemoOrder } from "./order-types";
 
 /** One demo staff member with their preset and optional overrides (ADR 0034, 0050). */
 export type DemoUser = {
@@ -29,8 +29,8 @@ export type DemoResponsibility = {
   followers?: readonly string[];
 };
 
-/** A work order definition (ADR 0092) by name: item types, counted lists and its responsibility. */
-export type DemoWorkOrderDefinition = {
+/** A run sheet definition (ADR 0092) by name: item types, counted lists and its responsibility. */
+export type DemoRunSheetDefinition = {
   name: string;
   types: readonly string[];
   lists: readonly string[];
@@ -41,7 +41,7 @@ export type DemoWorkOrderDefinition = {
  * One cell of the status grid (ADR 0044) by name: entering `status` moves lines of item type
  * `type` to `state`. Cells that are not listed keep the state.
  */
-export type DemoGridCell = { ticketStatus: string; type: string; state: string };
+export type DemoGridCell = { orderStatus: string; type: string; state: string };
 
 /**
  * An organization's pipeline (ADR 0043, 0044): its statuses with flags and transitions (the shape of
@@ -55,14 +55,14 @@ export type DemoBoard = { name: string; phases: readonly DemoBoardPhase[] };
 
 /**
  * The statuses, the grid and the boards beyond the default "Pipeline" board that
- * `ticketStatus.create` keeps (one phase per status).
+ * `orderStatus.create` keeps (one phase per status).
  */
 export type DemoPipeline = {
-  statuses: TicketStatusTemplate;
+  statuses: OrderStatusTemplate;
   cells: readonly DemoGridCell[];
   boards?: readonly DemoBoard[];
   /**
-   * Statuses that only allow some moves (ADR 0076), by name; every other status lets a ticket
+   * Statuses that only allow some moves (ADR 0076), by name; every other status lets an order
    * move to any status. The gates are the template's `gatesIn`, from any status.
    */
   restrictedMoves?: readonly { from: string; to: readonly string[] }[];
@@ -82,25 +82,25 @@ export type DemoStaffLink = {
 export type DemoOrg = {
   slug: string;
   name: string;
-  /** The organization's IANA zone (ADR 0064): ticket-level times and the venue default. */
+  /** The organization's IANA zone (ADR 0064): order-level times and the venue default. */
   timeZone: string;
   users: readonly DemoUser[];
   config: DemoConfig;
   /** Slice 2: what each person answers for, with covered item types and default people. */
   responsibilities: readonly DemoResponsibility[];
-  /** Slice 2: work order definitions, made before the tickets so their commands generate versions. */
-  workOrders: readonly DemoWorkOrderDefinition[];
+  /** Slice 2: run sheet definitions, made before the orders so their commands generate versions. */
+  runSheets: readonly DemoRunSheetDefinition[];
   /** Slice 4: customers with their contact persons. */
   customers: readonly DemoCustomer[];
   /** Slice 3: member profiles with their staff item links (ADR 0068); none when left out. */
   staff?: readonly DemoStaffLink[];
-  /** Slice 5: the statuses and the status grid, set before the tickets so their lines follow it. */
+  /** Slice 5: the statuses and the status grid, set before the orders so their lines follow it. */
   pipeline: DemoPipeline;
-  /** Slice 5: predefined tickets (ADR 0043), created after the pipeline, before the tickets. */
-  templates: readonly DemoTicketTemplate[];
-  /** Slice 5: tickets with their assignee and followers, the generated ones (#488) last. */
-  tickets: readonly DemoTicket[];
-  /** How the generated tickets fill the calendar (#488), for the density check. */
+  /** Slice 5: predefined orders (ADR 0043), created after the pipeline, before the orders. */
+  templates: readonly DemoOrderTemplate[];
+  /** Slice 5: orders with their assignee and followers, the generated ones (#488) last. */
+  orders: readonly DemoOrder[];
+  /** How the generated orders fill the calendar (#488), for the density check. */
   density?: DemoDensity;
   /** ADR 0077: the org number, revenue accounts per item type (by name) and one SIE export. */
   finance?: DemoFinance;

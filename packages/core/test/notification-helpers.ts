@@ -10,7 +10,7 @@ import { addTestMemberWithUser } from "./org-helpers";
 
 type Context = { context: ExecuteContext };
 
-/** A member with the `member` preset (ADR 0050), so they may read tickets. Returns the user id. */
+/** A member with the `member` preset (ADR 0050), so they may read orders. Returns the user id. */
 export async function readingMember({ context, name }: Context & { name: string }) {
   return (await addTestMemberWithUser({ context, role: "member", name })).userId;
 }

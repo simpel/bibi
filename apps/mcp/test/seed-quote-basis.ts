@@ -1,11 +1,11 @@
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { expect } from "vitest";
 import { call } from "./helpers";
-import { seedTicket } from "./seed-ticket";
+import { seedOrder } from "./seed-order";
 
-/** An open ticket with a priced line in the client's organization. */
+/** An open order with a priced line in the client's organization. */
 export async function seedQuoteBasis({ client }: { client: Client }) {
-  const ticket = await seedTicket({ client });
+  const order = await seedOrder({ client });
   const itemType = await call({
     client,
     name: "entityType_create",
@@ -22,14 +22,14 @@ export async function seedQuoteBasis({ client }: { client: Client }) {
     },
   });
   expect(item.isError, JSON.stringify(item.data)).toBe(false);
-  const lineTypeId = await addLine({ client, ticketId: ticket.id, itemId: item.data.id });
-  return { ticketId: ticket.id, itemId: item.data.id as string, lineTypeId };
+  const lineTypeId = await addLine({ client, orderId: order.id, itemId: item.data.id });
+  return { orderId: order.id, itemId: item.data.id as string, lineTypeId };
 }
 
-type AddLineInput = { client: Client; ticketId: string; itemId: string };
+type AddLineInput = { client: Client; orderId: string; itemId: string };
 
-/** A line type and one priced line of the item on the ticket; returns the line type's id. */
-async function addLine({ client, ticketId, itemId }: AddLineInput): Promise<string> {
+/** A line type and one priced line of the item on the order; returns the line type's id. */
+async function addLine({ client, orderId, itemId }: AddLineInput): Promise<string> {
   const lineType = await call({
     client,
     name: "entityType_create",
@@ -39,7 +39,7 @@ async function addLine({ client, ticketId, itemId }: AddLineInput): Promise<stri
     client,
     name: "line_create",
     args: {
-      ticketId,
+      orderId,
       entityTypeId: lineType.data.id,
       itemId,
       name: "Secret lunch",

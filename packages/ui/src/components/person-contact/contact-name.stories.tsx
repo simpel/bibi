@@ -38,7 +38,7 @@ export const LongEmail: Story = {
   args: {
     contact: {
       name: "Erik Lund",
-      description: "Ticket assignee",
+      description: "Order assignee",
       phone: "+46 70 100 00 02",
       email: "erik.lund@lindholmen-demo.bibi.test",
     },

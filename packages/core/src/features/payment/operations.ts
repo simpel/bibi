@@ -7,7 +7,7 @@ import { hasPermission } from "../../operations/permission";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
-import { TicketBalanceInputSchema, TicketBalanceSchema } from "./balance-schema";
+import { OrderBalanceInputSchema, OrderBalanceSchema } from "./balance-schema";
 import { createPayment } from "./create-operation";
 import { getPublicPaymentOperation } from "./public-operation";
 import { PublicTokenSchema } from "./public-token";
@@ -18,21 +18,21 @@ import {
   PaymentSchema,
   type PublicPaymentDto,
 } from "./schema";
-import { ticketBalance } from "./ticket-balance";
+import { orderBalance } from "./order-balance";
 import { toPaymentDto } from "./to-payment-dto";
 
 export const listPayments = defineOperation({
   name: "payment.list",
   kind: "query",
   description:
-    "Payments requested for a ticket, newest first: method (CARD or INVOICE), status, amount " +
+    "Payments requested for an order, newest first: method (CARD or INVOICE), status, amount " +
     "in minor units, currency and the customer's payment link.",
   input: PaymentListInputSchema,
   output: PaymentListOutputSchema,
   permission: "payment:read",
-  handler: async ({ input: { ticketId, limit, cursor }, context }) => {
+  handler: async ({ input: { orderId, limit, cursor }, context }) => {
     const rows = await context.db.payment.findMany({
-      where: { ticketId },
+      where: { orderId },
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       ...pageArgs({ limit, cursor }),
     });
@@ -56,25 +56,25 @@ export const getPayment = defineOperation({
   },
 });
 
-export const getTicketBalance = defineOperation({
+export const getOrderBalance = defineOperation({
   name: "payment.balance",
   kind: "query",
   description:
-    "What a ticket owes, derived and never stored (ADR 0057): billed (SENT invoices once " +
+    "What an order owes, derived and never stored (ADR 0057): billed (SENT invoices once " +
     "invoiced, else the ACCEPTED quote) minus SUCCEEDED payments less refunds, and each " +
     "receivable (quote, deposit, invoice) with its amount, paid, open and progress (OPEN, " +
     "PARTLY_PAID, PAID, OVERPAID). Quotes are left out for a caller who may not read them.",
-  input: TicketBalanceInputSchema,
-  output: TicketBalanceSchema,
+  input: OrderBalanceInputSchema,
+  output: OrderBalanceSchema,
   permission: "payment:read",
-  handler: async ({ input: { ticketId }, context }) => {
-    const ticket = await context.db.ticket.count({ where: { id: ticketId } });
-    if (ticket === 0) return notFound({ entity: "Ticket" });
+  handler: async ({ input: { orderId }, context }) => {
+    const order = await context.db.order.count({ where: { id: orderId } });
+    if (order === 0) return notFound({ entity: "Order" });
     const withQuotes = hasPermission({
       permissions: context.permissions,
       permission: "quote:read",
     });
-    return ok({ value: await ticketBalance({ context, ticketId, withQuotes }) });
+    return ok({ value: await orderBalance({ context, orderId, withQuotes }) });
   },
 });
 
@@ -109,4 +109,4 @@ export async function getPublicPayment({
 }
 
 /** Payments requested from customers, charged on the venue's connected account (ADR 0028, 0029). */
-export const paymentOperations = [listPayments, getPayment, createPayment, getTicketBalance];
+export const paymentOperations = [listPayments, getPayment, createPayment, getOrderBalance];

@@ -18,28 +18,28 @@ export type StatusTilesInput = {
   trendOf: (input: { statusId: string }) => Trend;
 };
 
-/** Open tickets per open status now, with their value (ADR 0079) and trend (ADR 0086). */
+/** Open orders per open status now, with their value (ADR 0079) and trend (ADR 0086). */
 export async function statusTiles({ context, trendOf }: StatusTilesInput): Promise<StatusTile[]> {
-  const [statuses, tickets] = await Promise.all([
-    context.db.ticketStatus.findMany({
+  const [statuses, orders] = await Promise.all([
+    context.db.orderStatus.findMany({
       where: { status: "ACTIVE", closes: false },
       orderBy: { position: "asc" },
       select: { id: true, name: true, color: true },
     }),
-    context.db.ticket.findMany({
-      where: { status: "ACTIVE", ticketStatus: { closes: false } },
+    context.db.order.findMany({
+      where: { status: "ACTIVE", orderStatus: { closes: false } },
       select: { id: true, statusId: true },
     }),
   ]);
-  const valuesOf = await cardValues({ context, ticketIds: tickets.map((ticket) => ticket.id) });
+  const valuesOf = await cardValues({ context, orderIds: orders.map((order) => order.id) });
   return statuses.map(({ id, name, color }) => {
-    const own = tickets.filter((ticket) => ticket.statusId === id);
-    const values = own.map(({ id: ticketId }) => valuesOf({ ticketId }));
+    const own = orders.filter((order) => order.statusId === id);
+    const values = own.map(({ id: orderId }) => valuesOf({ orderId }));
     return {
       statusId: id,
       name,
       color,
-      tickets: own.length,
+      orders: own.length,
       // As on the board: the estimate counts only where there is no accepted quote (ADR 0074).
       estimatedValueMinor: sum({
         values: values.map((value) =>

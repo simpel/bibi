@@ -20,14 +20,14 @@ export const suggestDepositAmount = defineOperation({
   name: "deposit.suggest",
   kind: "query",
   description:
-    "What the organization's deposit rule asks of a ticket (ADR 0090): a percentage of its " +
+    "What the organization's deposit rule asks of an order (ADR 0090): a percentage of its " +
     "total incl. VAT (PERCENT), the whole total when it is below the minimum (FULL, paid in " +
     "full up front), or nothing when there is no rule (NONE). deposit.request uses it when no " +
     "amount is given.",
   input: DepositSuggestInputSchema,
   output: DepositSuggestionSchema,
   permission: "payment:read",
-  handler: ({ input, context }) => suggestDeposit({ context, ticketId: input.ticketId }),
+  handler: ({ input, context }) => suggestDeposit({ context, orderId: input.orderId }),
 });
 
 type AmountInput = {
@@ -35,14 +35,14 @@ type AmountInput = {
   input: DepositRequestInput;
 };
 
-/** The given amount, else the rule's; a ticket with neither is a VALIDATION error on the amount. */
+/** The given amount, else the rule's; an order with neither is a VALIDATION error on the amount. */
 async function requestedAmount({ context, input }: AmountInput): Promise<Result<number>> {
   if (input.amountMinor !== undefined) return ok({ value: input.amountMinor });
-  const suggestion = await suggestDeposit({ context, ticketId: input.ticketId });
+  const suggestion = await suggestDeposit({ context, orderId: input.orderId });
   if (!suggestion.ok) return suggestion;
   const amount = suggestion.value.amountMinor;
   if (amount !== null && amount >= 100) return ok({ value: amount });
-  const message = "Give an amount: the deposit rule asks for nothing on this ticket";
+  const message = "Give an amount: the deposit rule asks for nothing on this order";
   return invalid({ message, issues: [{ path: "amountMinor", message }] });
 }
 
@@ -50,7 +50,7 @@ export const requestDeposit = defineOperation({
   name: "deposit.request",
   kind: "command",
   description:
-    "Ask the ticket's customer for a deposit in one step (ADR 0090): creates a SENT deposit " +
+    "Ask the order's customer for a deposit in one step (ADR 0090): creates a SENT deposit " +
     "request and a CARD payment against it, and returns the payment with its /pay link " +
     "(paymentUrl) to send to the customer. The amount defaults to the organization's deposit " +
     "rule (deposit.suggest). The customer pays the organization's own Stripe account, so it " +
@@ -59,7 +59,7 @@ export const requestDeposit = defineOperation({
   output: PaymentSchema,
   permission: "payment:write",
   handler: async ({ input, context }) => {
-    const target = await loadChargeTarget({ context, ticketId: input.ticketId, method: "CARD" });
+    const target = await loadChargeTarget({ context, orderId: input.orderId, method: "CARD" });
     if (!target.ok) return err({ error: target.error });
     const amount = await requestedAmount({ context, input });
     if (!amount.ok) return amount;
@@ -67,12 +67,12 @@ export const requestDeposit = defineOperation({
     const row = await context.db.deposit.create({
       data: {
         organizationId: context.organizationId,
-        ticketId: input.ticketId,
+        orderId: input.orderId,
         description: input.description,
         amountMinor: amount.value,
         vatRows: await depositVatRows({
           context,
-          ticketId: input.ticketId,
+          orderId: input.orderId,
           amountMinor: amount.value,
         }),
         dueDate: input.dueDate ?? null,

@@ -1,15 +1,15 @@
 import { z } from "zod";
-import { PlanLineIssueSchema } from "../ticket/plan/issue-schema";
+import { PlanLineIssueSchema } from "../order/plan/issue-schema";
 
 export const LineIssuesInputSchema = z.object({
-  ticketId: z.string().min(1).describe("Id of the ticket (ticket.list) whose lines to check"),
+  orderId: z.string().min(1).describe("Id of the order (order.list) whose lines to check"),
 });
 
 export const LineIssueSchema = PlanLineIssueSchema.extend({
   otherLineId: z
     .string()
     .nullable()
-    .describe("Set for SELF_OVERLAP: the other line of the same ticket (line.get); null otherwise"),
+    .describe("Set for SELF_OVERLAP: the other line of the same order (line.get); null otherwise"),
 });
 
 export const LineWithIssuesSchema = z.object({
@@ -26,7 +26,7 @@ export const LineIssuesOutputSchema = z.object({
     ),
   lines: z
     .array(LineWithIssuesSchema)
-    .describe("The ticket's active lines that have issues, in time order; empty when none has"),
+    .describe("The order's active lines that have issues, in time order; empty when none has"),
 });
 
 export type LineIssuesInput = z.infer<typeof LineIssuesInputSchema>;

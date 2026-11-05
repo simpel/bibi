@@ -23,17 +23,17 @@ export const AI_FEATURES = [
     requires: { tags: [], dimensions: 1536 },
   },
   {
-    id: "ticket.intakeDraft",
+    id: "order.intakeDraft",
     modelType: "language",
     requiresReindex: false,
     // Reads a request into a draft with structured output (ADR 0084).
     requires: { tags: [], dimensions: null },
   },
   {
-    id: "ticket.title",
+    id: "order.title",
     modelType: "language",
     requiresReindex: false,
-    // Names a new ticket in a few words with structured output: the smallest model will do.
+    // Names a new order in a few words with structured output: the smallest model will do.
     requires: { tags: [], dimensions: null },
   },
 ] as const;

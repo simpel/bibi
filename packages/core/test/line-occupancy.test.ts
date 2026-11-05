@@ -6,8 +6,8 @@ import { hours } from "./occupancy-helpers";
 
 describe("line occupancy (ADR 0022)", () => {
   it("holds the item HARD (default state) plus SETUP changeover time", async () => {
-    const { context, ticket, type, room, setup } = await programSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
+    const { context, order, type, room, setup } = await programSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({
       result: await createTestLine({ ...base, from: 10, to: 12, setupId: setup.id }),
     });
@@ -19,8 +19,8 @@ describe("line occupancy (ADR 0022)", () => {
   });
 
   it("refuses an overlap with CONFLICT, including the changeover time", async () => {
-    const { context, ticket, type, room, setup } = await programSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
+    const { context, order, type, room, setup } = await programSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     unwrap({ result: await createTestLine({ ...base, from: 10, to: 12 }) });
     expect(errorCode({ result: await createTestLine({ ...base, from: 11, to: 13 }) })).toBe(
       "CONFLICT",
@@ -29,13 +29,13 @@ describe("line occupancy (ADR 0022)", () => {
     expect(errorCode({ result: await createTestLine({ ...base, from: 12, to: 14 }) })).toBeNull();
     const clash = await createTestLine({ ...base, from: 14, to: 15, setupId: setup.id });
     expect(errorCode({ result: clash })).toBe("CONFLICT");
-    const count = await context.db.line.count({ where: { ticketId: ticket.id } });
+    const count = await context.db.line.count({ where: { orderId: order.id } });
     expect(count).toBe(2);
   });
 
   it("moves the occupancy on update and releases it on archive", async () => {
-    const { context, ticket, type, room, setup } = await programSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
+    const { context, order, type, room, setup } = await programSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({
       result: await createTestLine({ ...base, from: 10, to: 12, setupId: setup.id }),
     });
@@ -59,8 +59,8 @@ describe("line occupancy (ADR 0022)", () => {
   });
 
   it("releases the item when the line is archived", async () => {
-    const { context, ticket, type, room } = await programSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
+    const { context, order, type, room } = await programSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({ result: await createTestLine({ ...base, from: 10, to: 12 }) });
     const input = { id: item.id };
     unwrap({ result: await execute({ operation: archiveLine, input, context }) });

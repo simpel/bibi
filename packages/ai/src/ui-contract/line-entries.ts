@@ -29,7 +29,7 @@ const lineCard = uiEntry({
   toProps: ({ value }) => ({ line: value }),
 });
 
-/** Tool → component for a ticket's run schedule and its line states (ADR 0022, 0044). */
+/** Tool → component for an order's run schedule and its line states (ADR 0022, 0044). */
 export const LINE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   line_list: lineTable,
   line_get: lineCard,
@@ -50,8 +50,8 @@ export const LINE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
     toProps: ({ value }) => ({ items: value.items, nextCursor: null }),
   }),
   line_followStatus: lineCard,
-  // The lines `ticket.expireHolds` moved to their expiry state (ADR 0044).
-  ticket_expireHolds: uiEntry({
+  // The lines `order.expireHolds` moved to their expiry state (ADR 0044).
+  order_expireHolds: uiEntry({
     component: "line-table",
     schema: z.object({ items: z.array(LineWireSchema) }),
     toProps: ({ value }) => ({ items: value.items, nextCursor: null }),

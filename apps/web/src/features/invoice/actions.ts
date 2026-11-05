@@ -5,13 +5,13 @@ import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
 
-export type CreateInvoiceActionInput = { ticketId: string };
+export type CreateInvoiceActionInput = { orderId: string };
 export type InvoiceIdActionInput = { id: string };
 
 export async function createInvoiceAction({
-  ticketId,
+  orderId,
 }: CreateInvoiceActionInput): Promise<ActionResult<InvoiceDto>> {
-  const result = await runOperation({ operation: createInvoice, input: { ticketId } });
+  const result = await runOperation({ operation: createInvoice, input: { orderId } });
   return toActionResult({ result });
 }
 

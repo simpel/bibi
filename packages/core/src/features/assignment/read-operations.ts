@@ -15,14 +15,14 @@ export const listAssignments = defineOperation({
   name: "assignment.list",
   kind: "query",
   description:
-    "List who answers for a ticket or an item and who follows it: the main " +
-    "assignment (responsibilityId null) first, then one per responsibility on a ticket " +
+    "List who answers for an order or an item and who follows it: the main " +
+    "assignment (responsibilityId null) first, then one per responsibility on an order " +
     "(ADR 0055). Only explicit choices are stored: the responsibilities that apply come from the " +
-    "ticket's lines, and a responsibility's default assignee and followers apply unless chosen " +
+    "order's lines, and a responsibility's default assignee and followers apply unless chosen " +
     "otherwise. `assigneeSource` and each follower's `source` say EXPLICIT or DEFAULT.",
   input: AssignmentListInputSchema,
   output: AssignmentListOutputSchema,
-  permission: "ticket:read",
+  permission: "order:read",
   handler: async ({ input, context }) => {
     const subject = await checkSubject({ context, ...input });
     if (!subject.ok) return subject;
@@ -36,10 +36,10 @@ export const listMyAssignments = defineOperation({
   description:
     "List the signed-in member's assignments, newest first: ASSIGNED (what they answer for) or " +
     "FOLLOWING (what they follow), including what their responsibilities' defaults give them on " +
-    "tickets (ADR 0055). Each row names its subject (subjectType, subjectId).",
+    "orders (ADR 0055). Each row names its subject (subjectType, subjectId).",
   input: AssignmentListMineInputSchema,
   output: AssignmentListMineOutputSchema,
-  permission: "ticket:read",
+  permission: "order:read",
   handler: async ({ input: { kind, subjectType, ...pageInput }, context }) => {
     const userId = context.actor.userId;
     if (!userId) return invalid({ message: "assignment.listMine needs a signed-in member" });

@@ -1,4 +1,4 @@
-import type { TicketStatusDto } from "@bibi/core/schemas";
+import type { OrderStatusDto } from "@bibi/core/schemas";
 import type { KanbanCustomizeSlots, KanbanPhaseData, KanbanStatusMove } from "@bibi/ui";
 import type { BoardCard } from "@/features/pipeline/lib/kanban-model";
 import type { BoardAccess } from "@/features/pipeline/load-pipeline-data";
@@ -11,7 +11,7 @@ import { StatusChipMenu } from "./status-chip-menu";
 export type CustomizeSlotsInput = {
   boardId: string;
   phases: readonly KanbanPhaseData[];
-  statuses: readonly TicketStatusDto[];
+  statuses: readonly OrderStatusDto[];
   cards: readonly BoardCard[];
   access: BoardAccess;
   onReorder: (input: { ids: string[] }) => void;
@@ -39,9 +39,9 @@ export function customizeSlots({
       <PhaseHeader {...{ boardId, phase, order, access, onReorder }} />
     ),
     renderChipMenu: ({ status, phaseId }) => {
-      const ticketStatus = statuses.find((candidate) => candidate.id === status.id);
-      return ticketStatus ? (
-        <StatusChipMenu {...{ ticketStatus, phaseId, phases, statuses, access, onMove }} />
+      const orderStatus = statuses.find((candidate) => candidate.id === status.id);
+      return orderStatus ? (
+        <StatusChipMenu {...{ orderStatus, phaseId, phases, statuses, access, onMove }} />
       ) : null;
     },
     renderAddColumn: ({ position }) => (

@@ -55,9 +55,28 @@ export async function changeLineStateAction({
   });
 }
 
+export type BatchChangeLineStateActionInput = { lineIds: string[]; stateId: string };
+
+/** Overrides multiple lines' state (ADR 0044). */
+export async function batchChangeLineStateAction({
+  lineIds,
+  stateId,
+}: BatchChangeLineStateActionInput): Promise<ActionResult<{ count: number }>> {
+  const results = await Promise.all(
+    lineIds.map((lineId) =>
+      runOperation({ operation: changeLineState, input: { lineId, stateId } }),
+    ),
+  );
+  const failure = results.find((result) => !result.ok);
+  if (failure && !failure.ok) {
+    return toActionResult({ result: failure });
+  }
+  return { ok: true, value: { count: lineIds.length } };
+}
+
 export type FollowLineStatusActionInput = { lineId: string };
 
-/** Lets an overridden line follow the ticket's status again (ADR 0044). */
+/** Lets an overridden line follow the order's status again (ADR 0044). */
 export async function followLineStatusAction({
   lineId,
 }: FollowLineStatusActionInput): Promise<ActionResult<LineDto>> {

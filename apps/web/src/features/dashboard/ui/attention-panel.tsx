@@ -2,7 +2,7 @@ import type { DateTimeFormat, NumberFormat } from "@bibi/core/schemas";
 import { Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { attentionRows } from "../lib/attention-rows";
-import { ticketLabel } from "../lib/ticket-label";
+import { orderLabel } from "../lib/order-label";
 import { AttentionRow } from "./attention-row";
 import type { DashboardWireish } from "./dashboard-wireish";
 
@@ -12,19 +12,19 @@ export type AttentionPanelProps = {
   numbers: NumberFormat;
 };
 
-/** What staff should act on (ADR 0080): overdue invoices, expiring holds and unsent work orders. */
+/** What staff should act on (ADR 0080): overdue invoices, expiring holds and unsent run sheets. */
 export function AttentionPanel({ summary, dates, numbers }: AttentionPanelProps) {
   const t = useTranslations("dashboard");
   const { attention, currency, timeZone } = summary;
   const rows = attentionRows({
     attention,
     texts: {
-      ticket: (row) =>
-        ticketLabel({
+      order: (row) =>
+        orderLabel({
           ...{ reference: row.reference, title: row.title, customerName: row.customerName ?? null },
-          label: (values) => t("ticket", values),
-          withCustomer: (values) => t("ticketCustomer", values),
-          titleWithCustomer: (values) => t("ticketTitleCustomer", values),
+          label: (values) => t("order", values),
+          withCustomer: (values) => t("orderCustomer", values),
+          titleWithCustomer: (values) => t("orderTitleCustomer", values),
         }),
       date: (value) => dates.date({ instant: new Date(value), timeZone }),
       money: (minor) => numbers.money({ minor, currency }),

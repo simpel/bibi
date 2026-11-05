@@ -60,10 +60,10 @@ describe("the deposit rule (ADR 0090)", () => {
     expect(errorCode({ result: refused })).toBe("FORBIDDEN");
   });
 
-  it("suggests from the ticket's priced lines and requests a deposit with a /pay link", async () => {
-    const { context, ticket, provider } = await moneySetup();
-    const ticketId = ticket.id;
-    const ask = () => execute({ operation: suggestDepositAmount, input: { ticketId }, context });
+  it("suggests from the order's priced lines and requests a deposit with a /pay link", async () => {
+    const { context, order, provider } = await moneySetup();
+    const orderId = order.id;
+    const ask = () => execute({ operation: suggestDepositAmount, input: { orderId }, context });
     expect(unwrap({ result: await ask() })).toEqual({
       totalInclVatMinor: 560_000,
       basis: "NONE",
@@ -73,7 +73,7 @@ describe("the deposit rule (ADR 0090)", () => {
     const description = "Advance";
     const refused = await execute({
       operation: requestDeposit,
-      input: { ticketId, description },
+      input: { orderId, description },
       context,
     });
     expect(errorCode({ result: refused })).toBe("VALIDATION");
@@ -82,7 +82,7 @@ describe("the deposit rule (ADR 0090)", () => {
     const payment = unwrap({
       result: await execute({
         operation: requestDeposit,
-        input: { ticketId, description },
+        input: { orderId, description },
         context,
       }),
     });
@@ -92,12 +92,12 @@ describe("the deposit rule (ADR 0090)", () => {
     expect(provider.charges).toHaveLength(1);
   });
 
-  it("hides another organization's ticket", async () => {
-    const { ticket } = await moneySetup();
+  it("hides another organization's order", async () => {
+    const { order } = await moneySetup();
     const other = await testContext({ role: "admin" });
     const result = await execute({
       operation: suggestDepositAmount,
-      input: { ticketId: ticket.id },
+      input: { orderId: order.id },
       context: other,
     });
     expect(errorCode({ result })).toBe("NOT_FOUND");
@@ -106,17 +106,17 @@ describe("the deposit rule (ADR 0090)", () => {
 
 describe("disconnecting Stripe (ADR 0090)", () => {
   it("stops payment links until the same account is connected again", async () => {
-    const { context, ticket } = await moneySetup();
-    const ticketId = ticket.id;
+    const { context, order } = await moneySetup();
+    const orderId = order.id;
     const account = unwrap({
       result: await execute({ operation: disconnectPaymentAccount, input: {}, context }),
     });
     expect(account.status).toBe("DISCONNECTED");
     const suggestion = unwrap({
-      result: await execute({ operation: suggestDepositAmount, input: { ticketId }, context }),
+      result: await execute({ operation: suggestDepositAmount, input: { orderId }, context }),
     });
     expect(suggestion.paymentLinksAvailable).toBe(false);
-    const input = { ticketId, description: "Advance", amountMinor: 10_000 };
+    const input = { orderId, description: "Advance", amountMinor: 10_000 };
     const refused = await execute({ operation: requestDeposit, input, context });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
     const again = unwrap({

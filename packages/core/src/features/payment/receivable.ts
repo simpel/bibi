@@ -3,7 +3,7 @@ import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
 import { invoiceDueMinor } from "../invoice/to-invoice-dto";
-import { checkReadable } from "../ticket/ticket-rules";
+import { checkReadable } from "../order/order-rules";
 import type { PaymentCreateInput } from "./schema";
 import type { ReceivableRef } from "./settlement";
 
@@ -12,7 +12,7 @@ type Context = Pick<OperationContext, "db" | "permissions">;
 /** A receivable a payment can be requested against, with its fixed amount. */
 export type Receivable = {
   ref: ReceivableRef;
-  ticketId: string;
+  orderId: string;
   amountMinor: number;
   currency: string;
   /** What the customer sees on the charge unless the request gives its own text. */
@@ -26,17 +26,17 @@ type FindInput = { context: Context; id: string };
 async function findQuote({ context, id }: FindInput): Promise<Result<Receivable>> {
   const readable = checkReadable({ context, permission: "quote:read", path: "quoteId" });
   if (!readable.ok) return readable;
-  const quote = await context.db.quote.findFirst({ where: { id }, include: { ticket: true } });
+  const quote = await context.db.quote.findFirst({ where: { id }, include: { order: true } });
   if (!quote) return notFound({ entity: "Quote" });
   if (quote.quoteStatus !== "SENT" && quote.quoteStatus !== "ACCEPTED") {
     return conflict({ message: `A ${quote.quoteStatus} quote cannot be paid` });
   }
-  const { ticketId, totalInclVatMinor: amountMinor, version } = quote;
-  const description = `Ticket #${quote.ticket.reference}, quote v${version}`;
+  const { orderId, totalInclVatMinor: amountMinor, version } = quote;
+  const description = `Order #${quote.order.reference}, quote v${version}`;
   return ok({
     value: {
       ref: { ...NONE, quoteId: id },
-      ticketId,
+      orderId,
       amountMinor,
       currency: DEFAULT_CURRENCY,
       description,
@@ -49,9 +49,9 @@ async function findDeposit({ context, id }: FindInput): Promise<Result<Receivabl
   if (!deposit) return notFound({ entity: "Deposit" });
   if (deposit.status !== "SENT")
     return conflict({ message: `A ${deposit.status} deposit cannot be paid` });
-  const { ticketId, amountMinor, currency, description } = deposit;
+  const { orderId, amountMinor, currency, description } = deposit;
   return ok({
-    value: { ref: { ...NONE, depositId: id }, ticketId, amountMinor, currency, description },
+    value: { ref: { ...NONE, depositId: id }, orderId, amountMinor, currency, description },
   });
 }
 
@@ -63,11 +63,11 @@ async function findInvoice({ context, id }: FindInput): Promise<Result<Receivabl
   if (!invoice) return notFound({ entity: "Invoice" });
   if (invoice.status !== "SENT")
     return conflict({ message: `A ${invoice.status} invoice cannot be paid` });
-  const { ticketId, currency, number } = invoice;
+  const { orderId, currency, number } = invoice;
   const amountMinor = invoiceDueMinor({ invoice, deductions: invoice.deductions });
   const description = `Invoice #${number}`;
   return ok({
-    value: { ref: { ...NONE, invoiceId: id }, ticketId, amountMinor, currency, description },
+    value: { ref: { ...NONE, invoiceId: id }, orderId, amountMinor, currency, description },
   });
 }
 

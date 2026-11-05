@@ -1,28 +1,28 @@
 import {
   createPayment,
   getPayment,
-  getTicketBalance,
+  getOrderBalance,
   listPayments,
   type PaymentDto,
   PaymentSchema,
   type ReceivableSettlement,
   ReceivableSettlementSchema,
-  type TicketBalanceDto,
-  TicketBalanceSchema,
+  type OrderBalanceDto,
+  OrderBalanceSchema,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { type Page, pageType } from "../../schema/page";
 import { runOperation } from "../../schema/run-operation";
-import { TicketRef } from "../ticket/graphql";
+import { OrderRef } from "../order/graphql";
 
 export const PaymentRef = objectFromSchema<PaymentDto>({
   name: "Payment",
   schema: PaymentSchema,
   omit: ["organizationId"],
   description:
-    "A payment requested from a ticket's customer (card checkout or Stripe invoice), charged " +
+    "A payment requested from an order's customer (card checkout or Stripe invoice), charged " +
     "directly on the organization's Stripe account.",
 });
 const PaymentPageRef = pageType({ name: "PaymentPage", item: PaymentRef });
@@ -37,14 +37,14 @@ const ReceivableSettlementRef = objectFromSchema<ReceivableSettlement>({
   description: "A quote, deposit or invoice with what is paid against it (derived, ADR 0057).",
 });
 
-const TicketBalanceRef = objectFromSchema<TicketBalanceDto>({
-  name: "TicketBalance",
-  schema: TicketBalanceSchema,
+const OrderBalanceRef = objectFromSchema<OrderBalanceDto>({
+  name: "OrderBalance",
+  schema: OrderBalanceSchema,
   omit: ["receivables"],
-  description: "What a ticket owes, derived from its receivables and payments (ADR 0057).",
+  description: "What an order owes, derived from its receivables and payments (ADR 0057).",
 });
 
-builder.objectField(TicketBalanceRef, "receivables", (t) =>
+builder.objectField(OrderBalanceRef, "receivables", (t) =>
   t.field({
     type: [ReceivableSettlementRef],
     description: "Each receivable with its amount, paid, open and progress.",
@@ -52,16 +52,16 @@ builder.objectField(TicketBalanceRef, "receivables", (t) =>
   }),
 );
 
-fieldFromOperation({ operation: getTicketBalance, type: TicketBalanceRef, name: "ticketBalance" });
+fieldFromOperation({ operation: getOrderBalance, type: OrderBalanceRef, name: "orderBalance" });
 
 // Graph edge. Goes through `payment.list`, so its permission applies here too.
-builder.objectField(TicketRef, "payments", (t) =>
+builder.objectField(OrderRef, "payments", (t) =>
   t.field({
     type: [PaymentRef],
-    description: "Payments requested for the ticket, newest first.",
+    description: "Payments requested for the order, newest first.",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
-    resolve: async (ticket, { limit }, ctx) => {
-      const input = { ticketId: ticket.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) };
+    resolve: async (order, { limit }, ctx) => {
+      const input = { orderId: order.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) };
       const page = (await runOperation({
         operation: listPayments,
         input,

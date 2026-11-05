@@ -4,7 +4,7 @@
  */
 /**
  * The actions (ADR 0050): `read` sees the feature, `write` creates and changes it (including
- * sending, exporting and moving a ticket's status), `delete` archives it. Bibi never hard-deletes;
+ * sending, exporting and moving an order's status), `delete` archives it. Bibi never hard-deletes;
  * `delete` is the archive action. `submit` (ADR 0085, `inbox` only) hands a message in from
  * outside without seeing the feature, so unlike `write` and `delete` it does not imply `read`.
  */
@@ -28,14 +28,14 @@ const all = ["read", "write", "delete"] as const;
 const noDelete = ["read", "write"] as const;
 
 export const FEATURE_SPECS = {
-  ticket: { group: "bookings", actions: all },
+  order: { group: "bookings", actions: all },
   // Inbound messages of every channel (ADR 0085): read and unread are `write`, delete archives.
   inbox: { group: "bookings", actions: ["read", "write", "delete", "submit"] },
   program: { group: "bookings", actions: all },
   customer: { group: "selling", actions: all },
   quote: { group: "selling", actions: all },
   payment: { group: "selling", actions: noDelete },
-  workOrder: { group: "selling", actions: noDelete },
+  runSheet: { group: "selling", actions: noDelete },
   finance: { group: "selling", actions: noDelete },
   item: { group: "catalog", actions: all },
   venue: { group: "catalog", actions: all },
@@ -71,7 +71,7 @@ export const LOCKED_FEATURES: readonly Feature[] = [
 ];
 
 /**
- * Shared vocabulary (ADR 0050, feature scope): every screen shows these as labels (a ticket's
+ * Shared vocabulary (ADR 0050, feature scope): every screen shows these as labels (an order's
  * type and status, a colleague's name), so `read` on them is always granted and cannot be denied.
  * Changing them stays permissioned.
  */

@@ -3,7 +3,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { invalid } from "../../shared/errors";
 import { nowOf } from "../../time/now";
-import { checkReadable } from "../ticket/ticket-rules";
+import { checkReadable } from "../order/order-rules";
 import { archiveMessage } from "./archive-message";
 import { attachMessage } from "./attach-message";
 import { callerSender } from "./caller-sender";
@@ -17,24 +17,24 @@ import {
 import { setRead } from "./set-read";
 
 export const attachInboundMessage = defineOperation({
-  name: "inboundMessage.attachToTicket",
+  name: "inboundMessage.attachToOrder",
   kind: "command",
   description:
-    "Attach a message from the inbox to an active ticket (needs ticket:write). A message is " +
-    "attached once: one that already has a ticket is refused with CONFLICT and never moved.",
+    "Attach a message from the inbox to an active order (needs order:write). A message is " +
+    "attached once: one that already has an order is refused with CONFLICT and never moved.",
   input: InboundMessageAttachInputSchema,
   output: InboundMessageSchema,
   untrustedOutput: true,
   permission: "inbox:write",
   entityType: "inboundMessage",
-  handler: async ({ input: { id, ticketId }, context }) => {
-    const access = checkReadable({ context, permission: "ticket:write", path: "ticketId" });
+  handler: async ({ input: { id, orderId }, context }) => {
+    const access = checkReadable({ context, permission: "order:write", path: "orderId" });
     if (!access.ok) return access;
-    if ((await context.db.ticket.count({ where: { id: ticketId } })) === 0) {
-      const message = "Unknown ticket";
-      return invalid({ message, issues: [{ path: "ticketId", message }] });
+    if ((await context.db.order.count({ where: { id: orderId } })) === 0) {
+      const message = "Unknown order";
+      return invalid({ message, issues: [{ path: "orderId", message }] });
     }
-    return attachMessage({ context, id, ticketId });
+    return attachMessage({ context, id, orderId });
   },
 });
 
@@ -69,7 +69,7 @@ export const deleteInboundMessage = defineOperation({
   kind: "command",
   description:
     "Delete a message from the inbox (spam, a newsletter, nothing to book). It is archived, " +
-    "not erased, and no longer listed. Only messages without a ticket: one attached to a ticket " +
+    "not erased, and no longer listed. Only messages without an order: one attached to an order " +
     "is refused with CONFLICT.",
   input: InboundMessageIdInputSchema,
   output: InboundMessageSchema,
@@ -82,7 +82,7 @@ export const deleteInboundMessage = defineOperation({
 /**
  * The API channel (ADR 0085 decision 4): an outside system or assistant hands a request in. It is
  * stored as an `API` message from the caller, never as mail, and lands in the inbox; it creates
- * no ticket. Not for Bibi's own assistant (`aiAllowed: false`): it drafts from messages, it does
+ * no order. Not for Bibi's own assistant (`aiAllowed: false`): it drafts from messages, it does
  * not invent them.
  */
 export const submitInboundMessage = defineOperation({
@@ -92,7 +92,7 @@ export const submitInboundMessage = defineOperation({
     "Hand a request in to the organization's inbox through its API endpoint " +
     "(inboundEndpoint.list, channel API), e.g. from a partner system: a subject, the request " +
     "as text and optional structured `formFields`. It is stored as an API message from the " +
-    "caller and creates no ticket; staff create the ticket from it. Needs inbox:submit.",
+    "caller and creates no order; staff create the order from it. Needs inbox:submit.",
   input: InboundMessageSubmitInputSchema,
   output: InboundMessageSchema,
   untrustedOutput: true,
@@ -112,7 +112,7 @@ export const submitInboundMessage = defineOperation({
         id,
         channel: "API",
         endpointId,
-        ticketId: null,
+        orderId: null,
         ...(await callerSender({ context })),
         fromPhone: null,
         subject: subject ?? null,

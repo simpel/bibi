@@ -32,7 +32,7 @@ export function RequirementTargetFields({ form, data, typeOf }: RequirementTarge
         name="lineId"
         label={t("fields.line")}
         options={data.lines}
-        noneLabel={t("wholeTicket")}
+        noneLabel={t("wholeOrder")}
       />
       <OptionSelectField
         control={form.control}

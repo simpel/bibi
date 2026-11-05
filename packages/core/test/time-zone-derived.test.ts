@@ -26,12 +26,12 @@ const withoutVenueRead = ({ organizationId }: { organizationId: string }) =>
 
 describe("derived time zones on items and lines (ADR 0064)", () => {
   it("gives the item's and line's zone to a caller who may not read venues", async () => {
-    const { context, ticket, type, room } = await programSetup();
+    const { context, order, type, room } = await programSetup();
     const input = { name: "Brygghuset", timeZone: NEW_YORK };
     const venue = unwrap({ result: await execute({ operation: createVenue, input, context }) });
     const moved = { id: room.id, venueId: venue.id };
     unwrap({ result: await execute({ operation: updateItem, input: moved, context }) });
-    const line = { context, ticketId: ticket.id, entityTypeId: type.id };
+    const line = { context, orderId: order.id, entityTypeId: type.id };
     unwrap({ result: await createTestLine({ ...line, from: 8, to: 10, itemId: room.id }) });
     unwrap({ result: await createTestLine({ ...line, from: 11, to: 12 }) });
     const zone = { timeZone: "Europe/Helsinki" };
@@ -49,7 +49,7 @@ describe("derived time zones on items and lines (ADR 0064)", () => {
     const lines = unwrap({
       result: await execute({
         operation: listLines,
-        input: { ticketId: ticket.id, limit: 10 },
+        input: { orderId: order.id, limit: 10 },
         context: caller,
       }),
     });

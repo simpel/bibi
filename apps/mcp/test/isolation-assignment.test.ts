@@ -3,9 +3,9 @@ import { call, connect, testContext } from "./helpers";
 import { ASSIGNMENTS_FIELD, gqlRequest } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 import { seedOrgMember } from "./seed-org-member";
-import { seedTicket } from "./seed-ticket";
+import { seedOrder } from "./seed-order";
 
-/** Two organizations; A has a ticket with a main assignee and a follower (ADR 0034). */
+/** Two organizations; A has an order with a main assignee and a follower (ADR 0034). */
 async function setup() {
   const contextA = testContext();
   const contextB = testContext();
@@ -13,8 +13,8 @@ async function setup() {
   const b = await connect({ context: contextB });
   const memberA = await seedOrgMember({ context: contextA });
   const memberB = await seedOrgMember({ context: contextB });
-  const { id } = await seedTicket({ client: a });
-  const subject = { subjectType: "TICKET", subjectId: id };
+  const { id } = await seedOrder({ client: a });
+  const subject = { subjectType: "ORDER", subjectId: id };
   const assigned = await call({
     client: a,
     name: "assignment_assign",

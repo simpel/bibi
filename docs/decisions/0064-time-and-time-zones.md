@@ -5,27 +5,27 @@
 - **Related:** 0042 (date helpers stay in core), 0051 (single source of truth), 0052 (the line is the booking), 0053 (holds are a projection), 0059 (buffers, working hours), 0061 (user working hours)
 
 ## Context
-- The calendar, tickets and working hours all depend on time, and the app has no single rule for it.
+- The calendar, orders and working hours all depend on time, and the app has no single rule for it.
 - Checked in code (2026-10-22):
   - The zone is a constant in four places: `DEFAULT_TIME_ZONE` (`packages/i18n/src/time-zone.ts`), `SCHEDULE_TIME_ZONE` (worker), the demo seed and the calendar page. `Organization` and `Venue` have no zone column.
   - `calendar-layout.ts` builds a fixed 24 hour columns per day, which cannot be right on the two DST days (23 and 25 hours). Not yet confirmed by a test.
   - `Venue.openingHours` is a free-text string. `UserWorkingHours` stores minutes after midnight "in the organization's time zone", which does not exist as data.
-  - All times are `DateTime` (instants). `Ticket.holdsUntil` and `desired*` are instants too. Relative times ("3 days ago") are formatted ad hoc with `useFormatter` in about ten components, with no tooltip.
+  - All times are `DateTime` (instants). `Order.holdsUntil` and `desired*` are instants too. Relative times ("3 days ago") are formatted ad hoc with `useFormatter` in about ten components, with no tooltip.
 - Venues may one day be in other zones (Norway, Finland). That is not built now, but nothing we build now may make it expensive.
 
 ## Decision
 
 ### What is stored
 1. **Every stored time is an instant** (`timestamptz`). There are no date-only columns and no stored wall-clock times, except in hours patterns (rule 10). `holdsUntil` can be "13:00 on 14 Nov", so it stays an instant.
-2. A **plain date** exists only as a code-level key (`PlainDate`, `plain-date.ts`): a period in a URL path, and the date of an exception in an hours pattern. It is never a column, except that exception date (rule 10). Query strings are a last resort, so the calendar's `?view=` and `?date=` move into the path: `/calendar/{from}/{to}`, two plain dates, both inclusive (a week is `/calendar/2026-11-09/2026-11-15`). Core turns them into `[start of from, start of to + 1 day)` in the zone. The view is derived from the range, never stored in the URL: 1 day is the day view, 7 days the week view, a whole calendar month the month view, anything else a list. Bare `/calendar` redirects on the server to today's range in the user's preferred view (ADR 0039). An invalid date redirects to today, `from` after `to` is swapped and a span over the cap (62 days) is cut. Optional filters (venue, type, state, phase, ticket) stay as query strings.
+2. A **plain date** exists only as a code-level key (`PlainDate`, `plain-date.ts`): a period in a URL path, and the date of an exception in an hours pattern. It is never a column, except that exception date (rule 10). Query strings are a last resort, so the calendar's `?view=` and `?date=` move into the path: `/calendar/{from}/{to}`, two plain dates, both inclusive (a week is `/calendar/2026-11-09/2026-11-15`). Core turns them into `[start of from, start of to + 1 day)` in the zone. The view is derived from the range, never stored in the URL: 1 day is the day view, 7 days the week view, a whole calendar month the month view, anything else a list. Bare `/calendar` redirects on the server to today's range in the user's preferred view (ADR 0039). An invalid date redirects to today, `from` after `to` is swapped and a span over the cap (62 days) is cut. Optional filters (venue, type, state, phase, order) stay as query strings.
 
 ### Zones
 3. `OrganizationProfile.timeZone` (owned, IANA name, required; `Organization` belongs to Better Auth, the profile is ours and exists from creation, ADR 0061) and `Venue.timeZone` (owned, nullable, `null` = inherit, ADR 0051). Core exposes one resolver, `effectiveTimeZone`, and nothing else reads a zone. The four constants are removed.
 3a. The zone is chosen when the organization is created: `/welcome/new` (ADR 0061) gets a searchable dropdown of IANA zones after name and slug, defaulting to the user's current zone (from the browser, fallback `Europe/Stockholm`). It is editable later in organization settings, and a venue can override it.
-4. Which zone applies: lines, occupancy and the calendar use the **venue's**; ticket-level fields (`holdsUntil`, `desired*`) and anything without a venue use the **organization's**. A zone change affects display and later entry only. It never moves a stored instant.
+4. Which zone applies: lines, occupancy and the calendar use the **venue's**; order-level fields (`holdsUntil`, `desired*`) and anything without a venue use the **organization's**. A zone change affects display and later entry only. It never moves a stored instant.
 
 ### Entry and display
-5. Forms take local wall-clock time and convert once at the edge, in the zone from 4. A template time ("10:00") is resolved when the ticket is created, in the venue's zone.
+5. Forms take local wall-clock time and convert once at the edge, in the zone from 4. A template time ("10:00") is resolved when the order is created, in the venue's zone.
 6. A local time that does not exist (spring gap) moves forward to the first valid time. An ambiguous one (autumn) takes the earlier offset.
 7. A day-only entry fills in **23:59**. Clients hold events outside working hours, so the default does not follow opening hours.
 8. A **day** is midnight to the next midnight in the zone and can be 23 or 25 hours. Calendar columns are derived from instants, never a fixed 24. A block that crosses midnight is one block, clipped per day.
@@ -66,6 +66,6 @@
 - **Hours as a hard constraint.** Special events outside hours are normal here.
 
 ## Addendum 2026-11-01 – the context clock
-- Operations that stamp a fact with the current instant read it with `nowOf({ context })` (`packages/core/src/time/now.ts`): `OperationContext.now` when set, else real time. Today: invoice and deposit moves (`sentAt`, `voidedAt`), `payment.applySignal` (`paidAt`), the `PaymentRefund` row and `recordStatusChange` (`TicketStatusChange.changedAt`, ADR 0079).
+- Operations that stamp a fact with the current instant read it with `nowOf({ context })` (`packages/core/src/time/now.ts`): `OperationContext.now` when set, else real time. Today: invoice and deposit moves (`sentAt`, `voidedAt`), `payment.applySignal` (`paidAt`), the `PaymentRefund` row and `recordStatusChange` (`OrderStatusChange.changedAt`, ADR 0079).
 - Only internal callers set it (the demo seed, tests), so history is written by the same operations at its own date instead of rewriting owned columns afterwards (ADR 0051). No adapter passes it: a request cannot choose its time.
 - Rejected: updating `sentAt`/`paidAt`/`refundedAt` in the seed after the fact, which writes owned facts outside their operation.

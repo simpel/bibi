@@ -1,9 +1,9 @@
 import { useTranslations } from "next-intl";
 
-export type ReviewListsProps = { book: string[]; sell: string[] };
+export type ReviewListsProps = { spaces: string[]; food: string[]; extras: string[] };
 
-/** The chosen types, in two short lists. */
-export function ReviewLists({ book, sell }: ReviewListsProps) {
+/** The chosen types, in three short lists. */
+export function ReviewLists({ spaces, food, extras }: ReviewListsProps) {
   const t = useTranslations("welcome.setup.review");
   const list = ({ title, names }: { title: string; names: string[] }) => (
     <div className="grid gap-2 rounded-lg border p-4">
@@ -22,9 +22,10 @@ export function ReviewLists({ book, sell }: ReviewListsProps) {
     </div>
   );
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      {list({ title: t("book"), names: book })}
-      {list({ title: t("sell"), names: sell })}
+    <div className="grid gap-4 sm:grid-cols-3">
+      {list({ title: t("spaces"), names: spaces })}
+      {list({ title: t("food"), names: food })}
+      {list({ title: t("extras"), names: extras })}
     </div>
   );
 }

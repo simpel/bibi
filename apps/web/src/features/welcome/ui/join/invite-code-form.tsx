@@ -12,11 +12,22 @@ import { useZodMessages } from "@/lib/use-zod-messages";
 import { redeemInviteCodeAction } from "../../join-actions";
 import { JOIN_PATHS } from "../../lib/join-paths";
 
+export type InviteCodeFormProps = {
+  code?: string;
+  buttonVariant?: "default" | "secondary" | "outline" | "ghost" | "link";
+  buttonText?: string;
+};
+
 /** `/welcome/join`: the code from an invitation mail (ADR 0078), prefilled from its link. */
-export function InviteCodeForm({ code }: { code: string }) {
+export function InviteCodeForm({
+  code = "",
+  buttonVariant = "default",
+  buttonText,
+}: InviteCodeFormProps = {}) {
   const t = useTranslations("welcome.join");
   const router = useRouter();
   const form = useForm<InviteCodeInput>({
+    mode: "onBlur",
     resolver: zodResolver(InviteCodeInputSchema, useZodMessages()),
     defaultValues: { code },
   });
@@ -31,8 +42,8 @@ export function InviteCodeForm({ code }: { code: string }) {
       <form onSubmit={submit} noValidate className="grid gap-4">
         <TextField form={form} name="code" label={t("code")} required />
         <p className="text-sm text-muted-foreground">{t("codeHint")}</p>
-        <Button type="submit" disabled={pending}>
-          {t("useCode")}
+        <Button type="submit" variant={buttonVariant} className="w-full" disabled={pending}>
+          {buttonText ?? t("useCode")}
         </Button>
       </form>
     </Form>

@@ -21,7 +21,7 @@
 2. The names are **capability**, **Bundle** and **Customisations**, and the code keys change with them, end to end: `behaviour` becomes `capability` everywhere (the `ItemBehaviour` enum becomes `ItemCapability`, `EntityType.behaviours` becomes `capabilities`, the constants, files, UI components and API fields follow), `COMPOSABLE` becomes `BUNDLE`, `CHOICES` becomes `CUSTOMISATIONS`, `ItemComponent` becomes `ItemPart` (field `components` becomes `parts`), and `ItemChoiceGroup` becomes `ItemCustomisationGroup` (`choiceGroupId` becomes `customisationGroupId`, `choiceGroups` becomes `customisationGroups`). One change covers the Prisma enum, tables and columns, core schemas and operations, GraphQL, REST and OpenAPI, MCP tools, web, i18n keys and strings, system skills, templates, the demo seed, tests and docs. No aliases, no deprecated names, no data migration: the seed is updated and one migration renames in place. "Package" in user-facing strings, in the Conference venue template's type name and in the customer "Save as package" flow becomes "Bundle".
 
 ### Bundles and customisations
-3. A bundle expands onto a ticket as one **bundle line** plus **part lines** linked by `Line.parentLineId` (owned). Part lines get their times at expansion from the component's offset and duration (defaults), are editable per event, and move with the bundle line by the same delta in one operation.
+3. A bundle expands onto an order as one **bundle line** plus **part lines** linked by `Line.parentLineId` (owned). Part lines get their times at expansion from the component's offset and duration (defaults), are editable per event, and move with the bundle line by the same delta in one operation.
 4. The bundle line carries the price (ex VAT). Part lines show their effective price (line, else price list, else item) but do not count in the total (`inTotal`). Comparisons between the two are read-only UI. No cost price, no margin, no stored comparison.
 5. **VAT:** the bundle price is allocated across the parts in proportion to effective price times quantity, with largest-remainder rounding so the parts sum exactly. Each part uses its own VAT rate. A quote or invoice freezes one row per rate. One core function computes it.
 6. **Customisations work on any item**, not only bundles. An option is an item with a price effect (included, extra, replaces). The rule that `CHOICES` needs `COMPOSABLE` is dropped. A chosen option's needs are mandatory, a group with minimum 0 can be skipped, and opting out is choosing another option, not a waiver.
@@ -43,7 +43,7 @@
 16. Working hours are **soft**. They decide who is offered, prepicked and counted as free. Staff can pick someone off-schedule, which gives a warning. The database enforces nothing about them. The no-double-booking exclusion constraint stays hard.
 
 ### Permissions
-17. No new features. Type sections and defaults need `configuration:write`. Demands, an item's minutes and working hours need `item:write`. Allocating needs `program:write` plus `item:read`. Absence is `occupancy.*` (feature `ticket`). The **manager preset gains `item:write`** (not `item:delete`).
+17. No new features. Type sections and defaults need `configuration:write`. Demands, an item's minutes and working hours need `item:write`. Allocating needs `program:write` plus `item:read`. Absence is `occupancy.*` (feature `order`). The **manager preset gains `item:write`** (not `item:delete`).
 
 ### Data classes (ADR 0051)
 | Data | Class |

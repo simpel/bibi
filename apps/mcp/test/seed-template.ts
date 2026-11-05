@@ -5,14 +5,14 @@ import { seedProgram } from "./seed-program";
 
 export type SeedTemplateInput = { client: Client };
 
-/** A predefined ticket built from the organization's own seeded ticket, item and types. */
+/** A predefined order built from the organization's own seeded order, item and types. */
 export async function seedTemplate({ client }: SeedTemplateInput) {
   const seed = await seedProgram({ client });
-  const ticket = (await call({ client, name: "ticket_get", args: { id: seed.ticketId } })).data;
+  const order = (await call({ client, name: "order_get", args: { id: seed.orderId } })).data;
   const args = {
     name: "Secret template",
-    entityTypeId: ticket.entityTypeId,
-    statusId: ticket.statusId,
+    entityTypeId: order.entityTypeId,
+    statusId: order.statusId,
     lines: [
       {
         entityTypeId: seed.programTypeId,
@@ -23,7 +23,7 @@ export async function seedTemplate({ client }: SeedTemplateInput) {
       },
     ],
   };
-  const made = await call({ client, name: "ticketTemplate_create", args });
+  const made = await call({ client, name: "orderTemplate_create", args });
   expect(made.isError, JSON.stringify(made.data)).toBe(false);
-  return { ...seed, ...ticket, args, id: made.data.id as string, customerId: ticket.customerId };
+  return { ...seed, ...order, args, id: made.data.id as string, customerId: order.customerId };
 }

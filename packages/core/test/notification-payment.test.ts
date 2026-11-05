@@ -18,10 +18,10 @@ afterEach(() => {
 });
 
 describe("payment notifications (ADR 0094)", () => {
-  it("tells the ticket's assignee once when a payment succeeds", async () => {
-    const { context, account, payment, ticketId } = await pendingPayment({ coordinated: true });
+  it("tells the order's assignee once when a payment succeeds", async () => {
+    const { context, account, payment, orderId } = await pendingPayment({ coordinated: true });
     const main = await context.db.assignment.findFirstOrThrow({
-      where: { recordId: ticketId, responsibilityId: null },
+      where: { recordId: orderId, responsibilityId: null },
     });
     const assigneeId = main.assigneeId ?? "";
     await makeReaders({ context, userIds: [assigneeId] });
@@ -59,6 +59,6 @@ describe("payment notifications (ADR 0094)", () => {
     });
     const data = unwrap({ result: list }).items[0]?.data;
     expect(data?.amountMinor).toBeUndefined();
-    expect(data?.ticketReference).toBe(items[0]?.data.ticketReference);
+    expect(data?.orderReference).toBe(items[0]?.data.orderReference);
   });
 });

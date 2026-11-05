@@ -29,9 +29,23 @@ export type SystemLogEntry = z.infer<typeof SystemLogSchema>;
 
 const optionalText = z.string().trim().min(1).max(200).optional();
 
+export const SYSTEM_LOG_LIST_SORTS = [
+  "time",
+  "level",
+  "event",
+  "operation",
+  "surface",
+  "status",
+  "duration",
+] as const;
+
+export type SystemLogListSort = (typeof SYSTEM_LOG_LIST_SORTS)[number];
+
 export const SystemLogListInputSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(50),
+  sort: z.enum(SYSTEM_LOG_LIST_SORTS).default("time"),
+  direction: z.enum(["asc", "desc"]).default("desc"),
   /** Minimum level: `warn` returns warn, error and fatal. */
   level: LogLevelSchema.optional(),
   /** Case-insensitive match on event, message or operation. */

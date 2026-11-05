@@ -12,7 +12,7 @@ type DocsHomeProps = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: DocsHomeProps) {
   const { locale } = await params;
   const text = await loadDocText({ locale, key: "home" });
-  return { title: `${text.title} · Bibi`, description: text.lead };
+  return { title: text.title, description: text.lead };
 }
 
 /** Docs start page: one card per audience (staff guide, developers, reference). */

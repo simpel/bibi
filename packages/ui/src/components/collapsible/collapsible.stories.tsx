@@ -18,7 +18,7 @@ export const Default: Story = {
       </CollapsibleTrigger>
       <CollapsibleContent className="grid gap-1 px-3 text-sm">
         <span>Calendar</span>
-        <span>Tickets</span>
+        <span>Orders</span>
       </CollapsibleContent>
     </Collapsible>
   ),

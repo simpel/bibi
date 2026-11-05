@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-  archiveTicketStatus,
+  archiveOrderStatus,
   createBoardPhase,
-  createTicketStatus,
+  createOrderStatus,
   type ExecuteContext,
   execute,
   listBoards,
@@ -10,7 +10,7 @@ import {
   pipelineBoard,
 } from "../src/index";
 import { unwrap } from "./helpers";
-import { createTestTicket, ticketSetup } from "./ticket-helpers";
+import { createTestOrder, orderSetup } from "./order-helpers";
 
 async function defaultBoard({ context }: { context: ExecuteContext }) {
   const page = unwrap({ result: await execute({ operation: listBoards, input: {}, context }) });
@@ -25,9 +25,9 @@ async function view({ context, boardId }: { context: ExecuteContext; boardId?: s
 }
 
 describe("pipeline.board on boards (ADR 0067)", () => {
-  it("shows a phase with two statuses as one column and counts unmapped tickets", async () => {
-    const { context, type, customer } = await ticketSetup();
-    const ticket = await createTestTicket({
+  it("shows a phase with two statuses as one column and counts unmapped orders", async () => {
+    const { context, type, customer } = await orderSetup();
+    const order = await createTestOrder({
       context,
       entityTypeId: type.id,
       customerId: customer.id,
@@ -40,8 +40,8 @@ describe("pipeline.board on boards (ADR 0067)", () => {
     const open = unwrap({ result: await execute({ operation: createBoardPhase, input, context }) });
     const grouped = await view({ context, boardId: board.id });
     expect(grouped.columns[0]?.statuses.map((s) => s.title)).toEqual(["Lead", "Confirmed"]);
-    expect(grouped.cards[0]).toMatchObject({ columnId: open.id, statusId: ticket.statusId });
-    const off = { boardId: board.id, statusId: ticket.statusId, phaseId: null };
+    expect(grouped.cards[0]).toMatchObject({ columnId: open.id, statusId: order.statusId });
+    const off = { boardId: board.id, statusId: order.statusId, phaseId: null };
     unwrap({ result: await execute({ operation: moveBoardPhaseStatus, input: off, context }) });
     const hidden = await view({ context });
     expect(hidden.cards).toHaveLength(0);
@@ -49,14 +49,14 @@ describe("pipeline.board on boards (ADR 0067)", () => {
   });
 
   it("places a new status in a given phase, or on no column of the board", async () => {
-    const { context } = await ticketSetup();
+    const { context } = await orderSetup();
     const board = await defaultBoard({ context });
     const lead = board.phases[0];
     if (!lead) throw new Error("Missing phases");
     const inPhase = { name: "Site visit", color: "#0ea5e9", phaseId: lead.id };
-    unwrap({ result: await execute({ operation: createTicketStatus, input: inPhase, context }) });
+    unwrap({ result: await execute({ operation: createOrderStatus, input: inPhase, context }) });
     const off = { name: "Quote sent", color: "#f59e0b" };
-    unwrap({ result: await execute({ operation: createTicketStatus, input: off, context }) });
+    unwrap({ result: await execute({ operation: createOrderStatus, input: off, context }) });
     const after = await view({ context });
     expect(after.columns.map((c) => c.title)).toEqual(["Lead", "Confirmed", "Completed", "Lost"]);
     expect(after.columns.flatMap((c) => c.statuses.map((s) => s.title))).not.toContain(
@@ -66,16 +66,16 @@ describe("pipeline.board on boards (ADR 0067)", () => {
   });
 
   it("drops an archived status from the board and archives the phase it leaves empty", async () => {
-    const { context } = await ticketSetup();
+    const { context } = await orderSetup();
     const created = unwrap({
       result: await execute({
-        operation: createTicketStatus,
+        operation: createOrderStatus,
         input: { name: "Spare", color: "#a855f7" },
         context,
       }),
     });
     unwrap({
-      result: await execute({ operation: archiveTicketStatus, input: { id: created.id }, context }),
+      result: await execute({ operation: archiveOrderStatus, input: { id: created.id }, context }),
     });
     const board = await defaultBoard({ context });
     expect(board.phases.map((p) => p.name)).not.toContain("Spare");

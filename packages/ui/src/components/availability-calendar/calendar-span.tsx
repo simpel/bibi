@@ -60,7 +60,7 @@ export type CalendarSpanProps = {
   card?: ReactNode;
   /** The line open beside the calendar: an ink ring. Nothing else is ever faded. */
   selected?: boolean;
-  /** Opens the line's ticket. Mouse click or Enter; a touch tap shows the hover card first. */
+  /** Opens the line's order. Mouse click or Enter; a touch tap shows the hover card first. */
   onSelect?: () => void;
 };
 
@@ -88,6 +88,7 @@ export function CalendarSpan({ line, audience, window, axis, ...props }: Calenda
         return (
           <CalendarHoverCard
             key={segment.kind}
+            asChild
             {...{ line, audience, card: props.card, disabled: props.selected }}
           >
             <div

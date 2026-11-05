@@ -24,6 +24,35 @@ services:
       - "1025:1025"
       - "8025:8025"
 
+  # S3-compatible stand-in for Hetzner Object Storage (ADR 0063). API on 9100, console on 9101.
+  # Pinned: the last community image MinIO published.
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: bibi
+      MINIO_ROOT_PASSWORD: bibi-minio-dev
+    ports:
+      - "9100:9000"
+      - "9101:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Creates the private `bibi-files` bucket once MinIO is up, then exits.
+  minio-init:
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
+    depends_on:
+      minio: { condition: service_healthy }
+    entrypoint: >
+      sh -c "mc alias set local http://minio:9000 bibi bibi-minio-dev &&
+             mc mb --ignore-existing local/bibi-files &&
+             mc anonymous set none local/bibi-files"
+
   web:
     profiles: ["app"]
     build:
@@ -36,13 +65,12 @@ services:
       SMTP_URL: smtp://mailpit:1025
       MCP_URL: http://mcp:3331
       WEB_PORT: "3330"
-      STORAGE_DISK_DIR: /app/.storage
-    volumes:
-      - storage-data:/app/.storage
+      S3_ENDPOINT: http://minio:9000
     ports:
       - "3330:3330"
     depends_on:
       postgres: { condition: service_healthy }
+      minio-init: { condition: service_completed_successfully }
 
   mcp:
     profiles: ["app"]
@@ -54,10 +82,12 @@ services:
     environment:
       DATABASE_URL: postgresql://bibi:bibi@postgres:5432/bibi
       WEB_URL: http://web:3330
+      S3_ENDPOINT: http://minio:9000
     ports:
       - "3331:3331"
     depends_on:
       postgres: { condition: service_healthy }
+      minio-init: { condition: service_completed_successfully }
 
   worker:
     profiles: ["app"]
@@ -76,4 +106,4 @@ services:
 
 volumes:
   postgres-data:
-  storage-data:
+  minio-data:

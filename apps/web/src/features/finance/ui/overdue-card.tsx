@@ -1,6 +1,6 @@
 import type { DateTimeFormat, FinanceOverviewDto, NumberFormat } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
-import { ticketName } from "@/lib/ticket-label";
+import { orderName } from "@/lib/order-label";
 import { overdueRows } from "../lib/table-rows";
 import { FinanceSection } from "./finance-section";
 import { OverdueTable } from "./overdue-table";
@@ -26,13 +26,13 @@ export function OverdueCard({ overview, dates, numbers }: OverdueCardProps) {
           numbers,
           labels: {
             invoice: (values) => t("overdue.invoiceNumber", values),
-            ticket: ({ reference, title }) =>
-              ticketName({
+            order: ({ reference, title }) =>
+              orderName({
                 title,
                 fallback:
                   reference === null
-                    ? t("overdue.ticket")
-                    : t("overdue.ticketReference", { reference }),
+                    ? t("overdue.order")
+                    : t("overdue.orderReference", { reference }),
               }),
           },
         })}

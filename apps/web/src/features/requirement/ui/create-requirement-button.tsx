@@ -7,9 +7,9 @@ import { useState } from "react";
 import { RequirementDialog } from "./requirement-dialog";
 import type { RequirementFormData } from "./requirement-form-data";
 
-export type CreateRequirementButtonProps = { data: RequirementFormData; ticketId: string };
+export type CreateRequirementButtonProps = { data: RequirementFormData; orderId: string };
 
-/** Opens the requirement dialog for the ticket on the page. */
+/** Opens the requirement dialog for the order on the page. */
 export function CreateRequirementButton(props: CreateRequirementButtonProps) {
   const t = useTranslations("requirement");
   const [open, setOpen] = useState(false);

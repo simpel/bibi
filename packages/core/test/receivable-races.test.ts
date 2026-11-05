@@ -17,10 +17,10 @@ afterEach(() => {
 });
 
 describe("receivables under concurrency (ADR 0057)", () => {
-  it("lets only one of two concurrent invoices of a ticket through", async () => {
-    const { context, ticket } = await moneySetup();
-    await makeInvoiceable({ context, statusId: ticket.statusId });
-    const input = { ticketId: ticket.id };
+  it("lets only one of two concurrent invoices of an order through", async () => {
+    const { context, order } = await moneySetup();
+    await makeInvoiceable({ context, statusId: order.statusId });
+    const input = { orderId: order.id };
     const results = await Promise.all([
       execute({ operation: createInvoice, input, context }),
       execute({ operation: createInvoice, input, context }),
@@ -40,11 +40,11 @@ describe("receivables under concurrency (ADR 0057)", () => {
   });
 
   it("refuses a payment row that settles no receivable in the database", async () => {
-    const { context, depositId, ticketId } = await paymentSetup();
+    const { context, depositId, orderId } = await paymentSetup();
     const insert = context.db.payment.create({
       data: {
         organizationId: context.organizationId,
-        ticketId,
+        orderId,
         method: "CARD",
         amountMinor: 100,
         providerAccountId: "acct_x",

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const LineAmountsInputSchema = z.object({
-  ticketId: z.string().min(1).describe("Id of the ticket (ticket.list) whose lines to price"),
+  orderId: z.string().min(1).describe("Id of the order (order.list) whose lines to price"),
 });
 
 export const LineAmountSchema = z.object({
@@ -14,7 +14,7 @@ export const LineAmountSchema = z.object({
   inTotal: z
     .boolean()
     .describe(
-      "Whether it counts in the ticket's total (ADR 0052, 0059, 0082, 0088): false for a " +
+      "Whether it counts in the order's total (ADR 0052, 0059, 0082, 0088): false for a " +
         "bundle's part, an INCLUDED option, a parent covered by its REPLACES options and an " +
         "unchosen alternative with its options and add-ons",
     ),
@@ -23,7 +23,7 @@ export const LineAmountSchema = z.object({
 export const LineAmountsOutputSchema = z.object({
   lines: z
     .array(LineAmountSchema)
-    .describe("Every priced active line of the ticket, in time order; unpriced lines are left out"),
+    .describe("Every priced active line of the order, in time order; unpriced lines are left out"),
   totalExclVatMinor: z.number().int().describe("The sum of the lines that count, excl. VAT"),
   totalInclVatMinor: z.number().int().describe("The same with VAT"),
   totalIsFrom: z

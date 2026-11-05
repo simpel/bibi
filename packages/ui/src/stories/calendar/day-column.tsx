@@ -1,10 +1,10 @@
-import { ticketLines } from "../../components/availability-calendar/calendar-people";
+import { orderLines } from "../../components/availability-calendar/calendar-people";
 import { CalendarSpan } from "../../components/availability-calendar/calendar-span";
 import { axisWindow } from "../../components/availability-calendar/calendar-time";
 import type {
   CalendarAudience,
   CalendarLine,
-  CalendarTicket,
+  CalendarOrder,
   CalendarWindow,
 } from "../../components/availability-calendar/calendar-types";
 import { DateLeaf } from "../../components/availability-calendar/date-leaf";
@@ -15,7 +15,7 @@ import { type GuestStop, guestPath } from "../../components/availability-calenda
 import { HOUR_REM, HourGutter, HourRules } from "../../components/availability-calendar/time-axis";
 
 export type DayColumnProps = {
-  ticket: CalendarTicket;
+  order: CalendarOrder;
   audience: CalendarAudience;
   locale?: string;
 };
@@ -69,18 +69,18 @@ function DayBlock({ line, size }: DayBlockProps) {
   );
 }
 
-/** One ticket's day, hour by hour, one column per item type. For phones and run sheets. */
-export function DayColumn({ ticket, audience, locale }: DayColumnProps) {
-  const lines = ticketLines({ ticket, audience });
+/** One order's day, hour by hour, one column per item type. For phones and run sheets. */
+export function DayColumn({ order, audience, locale }: DayColumnProps) {
+  const lines = orderLines({ order, audience });
   const frame = lines.find((line) => lines.some((other) => other.parentId === line.id));
   const parts = lines.filter((line) => line !== frame);
   const window = axisWindow({ lines: parts, audience });
   return (
     <div className="rounded-xl border bg-card p-5 shadow-xs">
       <div className="mb-5 flex items-center gap-3">
-        <DateLeaf date={ticket.date} locale={locale} />
+        <DateLeaf date={order.date} locale={locale} />
         <h3 className="font-serif text-xl font-light text-black dark:text-white">
-          {ticket.purpose}
+          {order.purpose}
         </h3>
       </div>
       <DayBody frame={frame} parts={parts} audience={audience} window={window} />

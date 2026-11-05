@@ -1,5 +1,5 @@
 import { defineOperation } from "../../operations/define-operation";
-import { checkReadable } from "../ticket/ticket-rules";
+import { checkReadable } from "../order/order-rules";
 import { poolFreeUnits } from "./pool-free-units";
 import { PoolFreeUnitsInputSchema, PoolFreeUnitsOutputSchema } from "./pool-schema";
 
@@ -17,7 +17,7 @@ export const freeUnits = defineOperation({
   output: PoolFreeUnitsOutputSchema,
   permission: "item:read",
   handler: async ({ input, context }) => {
-    const readable = checkReadable({ context, permission: "ticket:read", path: "startsAt" });
+    const readable = checkReadable({ context, permission: "order:read", path: "startsAt" });
     if (!readable.ok) return readable;
     return poolFreeUnits({ context, input });
   },

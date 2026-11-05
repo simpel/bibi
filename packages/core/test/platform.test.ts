@@ -88,6 +88,15 @@ describe("platform operations (ADR 0015)", () => {
     });
     expect(page).toMatchObject({ total: 2, pageCount: 2, page: 2, pageSize: 1 });
     expect(page.items.map((item) => item.event)).toEqual(["b.rejected"]);
+
+    const byQuery = unwrap({
+      result: await executePlatform({
+        operation: ops.listSystemLogs,
+        input: { requestId, q: "type:error" },
+        context: admin,
+      }),
+    });
+    expect(byQuery.items.map((item) => item.event)).toEqual(["c.failed"]);
   });
 
   it("only accepts a catalog model of the feature's type, and audits the change", async () => {

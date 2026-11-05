@@ -8,7 +8,7 @@ export type ArchivePreviewCardViewProps = GenerativeProps<"archive-preview-card"
 
 /** What archiving a status or state would do: the rows that move and the blockers. */
 export function ArchivePreviewCardView({ preview, toolName }: ArchivePreviewCardViewProps) {
-  const unit = toolName?.startsWith("itemState") ? "lines" : "tickets";
+  const unit = toolName?.startsWith("itemState") ? "lines" : "orders";
   return (
     <Card data-slot="archive-preview-card" className="p-4 shadow-none">
       <ArchivePreviewPanel preview={preview} unit={unit} />

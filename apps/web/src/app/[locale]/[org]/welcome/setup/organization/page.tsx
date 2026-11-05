@@ -6,10 +6,21 @@ import { OrganizationForm } from "@/features/welcome/ui/setup/organization-form"
 import { organizationDefaults } from "@/features/welcome/ui/setup/organization-schema";
 import { welcomeProgress } from "@/features/welcome/ui/welcome-progress";
 import { WelcomeStepFrame } from "@/features/welcome/ui/welcome-step-frame";
+import { pageTitle } from "@/lib/page-metadata";
 import { requireReadySession } from "@/server/guard";
 import { runOperation } from "@/server/run-operation";
 
 type OrganizationStepProps = { params: Promise<{ locale: string; org: string }> };
+
+export async function generateMetadata({ params }: OrganizationStepProps) {
+  const { locale, org } = await params;
+  return pageTitle({
+    locale,
+    namespace: "welcome",
+    key: "setup.organization.title",
+    values: { organization: org },
+  });
+}
 
 /** Legal, contact and address data; optionally the first venue at the same address. */
 export default async function OrganizationStep({ params }: OrganizationStepProps) {

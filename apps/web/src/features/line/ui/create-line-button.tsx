@@ -9,11 +9,11 @@ import type { ProgramFormData } from "./program-form-data";
 
 export type CreateLineButtonProps = {
   data: ProgramFormData;
-  ticketId: string;
+  orderId: string;
   startsAt: Date;
 };
 
-/** Opens the line dialog for the ticket on the page. */
+/** Opens the line dialog for the order on the page. */
 export function CreateLineButton(props: CreateLineButtonProps) {
   const t = useTranslations("line");
   const [open, setOpen] = useState(false);

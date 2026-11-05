@@ -2,14 +2,14 @@ import { createLine, createSetup, type ExecuteContext, execute, updateItem } fro
 import { createTypeWithField } from "./customer-helpers";
 import { unwrap } from "./helpers";
 import { createBookableItem, hours } from "./occupancy-helpers";
-import { createTestTicket, ticketSetup } from "./ticket-helpers";
+import { createTestOrder, orderSetup } from "./order-helpers";
 
-/** A ticket, a line type with one TEXT field and a bookable room with a setup. */
+/** An order, a line type with one TEXT field and a bookable room with a setup. */
 export async function programSetup() {
-  const { context, type: ticketType, customer } = await ticketSetup();
-  const ticket = await createTestTicket({
+  const { context, type: orderType, customer } = await orderSetup();
+  const order = await createTestOrder({
     context,
-    entityTypeId: ticketType.id,
+    entityTypeId: orderType.id,
     customerId: customer.id,
   });
   const { type, key } = await createTypeWithField({
@@ -32,12 +32,12 @@ export async function programSetup() {
       context,
     }),
   });
-  return { context, ticket, type, key, room, setup };
+  return { context, order, type, key, room, setup };
 }
 
 export type CreateTestLineInput = {
   context: ExecuteContext;
-  ticketId: string;
+  orderId: string;
   entityTypeId: string;
   from: number;
   to: number;

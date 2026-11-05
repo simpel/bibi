@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { gridRows, isOn, isOverridden, setCell, toOverrides } from "./permission-grid";
 
-const preset = { item: ["read"], ticket: ["read", "write"], member: ["read"] } as const;
-const base = ["item:read", "ticket:read", "ticket:write", "member:read"];
+const preset = { item: ["read"], order: ["read", "write"], member: ["read"] } as const;
+const base = ["item:read", "order:read", "order:write", "member:read"];
 
 describe("permission grid", () => {
   it("lists every feature once, grouped", () => {
@@ -18,21 +18,21 @@ describe("permission grid", () => {
   it("allows an extra action and denies a removed one", () => {
     const granted = setCell({
       granted: setCell({ granted: base, feature: "item", action: "write", on: true }),
-      feature: "ticket",
+      feature: "order",
       action: "write",
       on: false,
     });
     expect(toOverrides({ granted, preset })).toEqual([
-      { feature: "ticket", action: "write", effect: "deny" },
+      { feature: "order", action: "write", effect: "deny" },
       { feature: "item", action: "write", effect: "allow" },
     ]);
   });
 
   it("turns view off for the whole feature and back on with any action", () => {
-    const off = setCell({ granted: base, feature: "ticket", action: "read", on: false });
-    expect(isOn({ granted: off, feature: "ticket", action: "write" })).toBe(false);
-    const on = setCell({ granted: off, feature: "ticket", action: "write", on: true });
-    expect(isOn({ granted: on, feature: "ticket", action: "read" })).toBe(true);
+    const off = setCell({ granted: base, feature: "order", action: "read", on: false });
+    expect(isOn({ granted: off, feature: "order", action: "write" })).toBe(false);
+    const on = setCell({ granted: off, feature: "order", action: "write", on: true });
+    expect(isOn({ granted: on, feature: "order", action: "read" })).toBe(true);
   });
 
   it("never marks a locked cell as overridden", () => {

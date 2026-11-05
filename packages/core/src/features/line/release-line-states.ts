@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { applyLineState } from "./line-state";
-import { linesOfTicket } from "./lines-of-ticket";
+import { linesOfOrder } from "./lines-of-order";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -19,25 +19,25 @@ async function releasedStates({ context, entityTypeIds }: Db & { entityTypeIds: 
 
 export type ReleaseLineStatesInput = {
   context: OperationContext;
-  ticketId: string;
-  /** Only these lines of the ticket (e.g. the options not chosen, ADR 0052). */
+  orderId: string;
+  /** Only these lines of the order (e.g. the options not chosen, ADR 0052). */
   lineIds?: readonly string[];
   /** Mark the moved lines as overridden, so status moves skip them (an explicit release). */
   overridden?: boolean;
 };
 
 /**
- * Moves every line of the ticket that is not yet in a released state to its item type's released
+ * Moves every line of the order that is not yet in a released state to its item type's released
  * state (ADR 0044), audited per line. A type without a released state keeps the line's state; it holds
- * nothing anyway once the ticket is in a closing status (ADR 0053).
+ * nothing anyway once the order is in a closing status (ADR 0053).
  */
 export async function releaseLineStates({
   context,
-  ticketId,
+  orderId,
   lineIds,
   overridden,
 }: ReleaseLineStatesInput): Promise<Result<true>> {
-  const lines = await linesOfTicket({ context, ticketId, lineIds });
+  const lines = await linesOfOrder({ context, orderId, lineIds });
   const entityTypeIds = [...new Set(lines.map((typed) => typed.entityTypeId))];
   const released = await releasedStates({ context, entityTypeIds });
   for (const { line, entityTypeId } of lines) {

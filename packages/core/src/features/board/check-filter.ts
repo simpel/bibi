@@ -9,14 +9,14 @@ export type CheckFilterInput = {
   assigneeId: string | null | undefined;
 };
 
-/** A board filter names an active ticket type and a member of the organization, when set. */
+/** A board filter names an active order type and a member of the organization, when set. */
 export async function checkBoardFilter({
   context,
   entityTypeId,
   assigneeId,
 }: CheckFilterInput): Promise<Result<true>> {
   if (entityTypeId) {
-    const type = await loadTypeOfBase({ context, entityTypeId, base: "TICKET" });
+    const type = await loadTypeOfBase({ context, entityTypeId, base: "ORDER" });
     if (!type.ok) return type;
   }
   const members = await checkMembers({ context, userIds: { assigneeId } });

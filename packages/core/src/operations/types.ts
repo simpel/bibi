@@ -88,12 +88,12 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
    */
   external?(args: ExternalInput<z.infer<I>, z.output<O>>): Promise<Result<z.input<O>>>;
   /**
-   * `external` only enriches the committed record (e.g. a generated ticket title) and nothing
+   * `external` only enriches the committed record (e.g. a generated order title) and nothing
    * depends on it: a nested run skips it instead of refusing the operation.
    */
   externalOptional?: boolean;
   /**
-   * Internal work that follows a committed command, e.g. regenerating a ticket's work orders
+   * Internal work that follows a committed command, e.g. regenerating an order's run sheets
    * (ADR 0092). `execute` runs it after `external`; a failure is logged and never undoes the
    * command. Previews, dry runs and nested runs never reach it.
    */

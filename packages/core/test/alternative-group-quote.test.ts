@@ -14,20 +14,20 @@ import { addTestLines, createTestQuote, quoteSetup } from "./quote-helpers";
 /** Lunch (5 000 kr) or coffee (800 kr) as alternatives, plus a 300 kr room fee, on a DRAFT. */
 async function draftWithMeal() {
   const setup = await quoteSetup();
-  const { context, ticket, lineType, lunch, coffee } = setup;
+  const { context, order, lineType, lunch, coffee } = setup;
   const lines = [
     { itemId: lunch.id },
     { itemId: coffee.id, name: "Coffee", quantity: 20 },
     { itemId: coffee.id, name: "Room fee", quantity: 1, unitPriceMinor: 30_000 },
   ];
   const [lunchLine, coffeeLine, feeLine] = await addTestLines({
-    ...{ context, ticketId: ticket.id, lineTypeId: lineType.id, lines },
+    ...{ context, orderId: order.id, lineTypeId: lineType.id, lines },
   });
   const lineIds = [lunchLine?.id ?? "", coffeeLine?.id ?? ""];
   const group = unwrap({
-    result: await groupLines({ context, ticketId: ticket.id, lineIds, name: "Meal" }),
+    result: await groupLines({ context, orderId: order.id, lineIds, name: "Meal" }),
   });
-  const draft = await createTestQuote({ context, ticketId: ticket.id });
+  const draft = await createTestQuote({ context, orderId: order.id });
   return { ...setup, draft, group, lunchLine, coffeeLine, feeLine };
 }
 

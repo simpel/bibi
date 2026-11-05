@@ -39,7 +39,7 @@ function Needs({ gates }: NeedsProps) {
   return <>{t("needs", { list })}</>;
 }
 
-/** Dropping on a column with several statuses: pick the status the ticket moves to (ADR 0076). */
+/** Dropping on a column with several statuses: pick the status the order moves to (ADR 0076). */
 export function MoveStatusPickerDialog({ pick, onPick, onCancel }: MoveStatusPickerDialogProps) {
   const t = useTranslations("pipeline.picker");
   const common = useTranslations("common");

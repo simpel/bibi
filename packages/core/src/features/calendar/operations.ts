@@ -13,29 +13,29 @@ export const calendarRange = defineOperation({
   description:
     "What is on the calendar between two days (both inclusive, at most 62): every occupancy of " +
     "a bookable item (holds, setup and teardown time, maintenance, internal use) joined with its " +
-    "line, ticket, item state and ticket status. The days are in the venue's time zone when " +
+    "line, order, item state and order status. The days are in the venue's time zone when " +
     "venueId is given, else the organization's. Blocks name their item by id (item.get or " +
     "item.list resolve it); the line's name and held-since are null without program:read, the " +
     "state's name and colour without pipeline:read. A view read model (ADR 0071): each line " +
     "block carries details (customer and client contact with customer:read; quantity, value " +
     "excl. VAT, note, the line's assignee and allocated staff with program:read; headcount and " +
-    "the ticket's assignee always), so one call answers what the calendar shows. values gives " +
+    "the order's assignee always), so one call answers what the calendar shows. values gives " +
     "each item's day in money excl. VAT: booked (hard holds), prebooked (soft holds) and still " +
     "open (free time within its hours at its hourly price).",
   input: CalendarRangeInputSchema,
   output: CalendarRangeSchema,
-  permission: "ticket:read",
+  permission: "order:read",
   // A view read model (ADR 0071): other features' fields are gated by their read in load-details.
   entityType: "occupancy",
   handler: async ({ input, context }) => {
     const range = await resolveRange({ context, input });
     if (!range.ok) return range;
-    if (input.ticketId) {
-      const ticket = await context.db.ticket.findFirst({
-        where: { id: input.ticketId },
+    if (input.orderId) {
+      const order = await context.db.order.findFirst({
+        where: { id: input.orderId },
         select: { id: true },
       });
-      if (!ticket) return notFound({ entity: "Ticket" });
+      if (!order) return notFound({ entity: "Order" });
     }
     const { from, to, timeZone } = range.value;
     const blocks = await loadBlocks({ context, filters: input, from, to });

@@ -10,7 +10,7 @@ import { useLineForm } from "./use-line-form";
 
 export type LineFormProps = {
   data: ProgramFormData;
-  ticketId: string;
+  orderId: string;
   startsAt: Date;
   line?: LineDto | undefined;
   /** Create mode: the line the new one is an add-on of (ADR 0088). */

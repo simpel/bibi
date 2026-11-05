@@ -3,11 +3,17 @@ import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { ResponsibilityList } from "@/features/responsibility/ui/responsibility-list";
 import { readCursor } from "@/lib/page-cursor";
+import { pageTitle } from "@/lib/page-metadata";
 
 type ResponsibilitiesPageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ cursor?: string | string[] }>;
 };
+
+export async function generateMetadata({ params }: ResponsibilitiesPageProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "nav", key: "responsibilities" });
+}
 
 export default async function ResponsibilitiesPage({
   params,

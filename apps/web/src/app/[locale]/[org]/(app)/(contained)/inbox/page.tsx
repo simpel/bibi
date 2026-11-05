@@ -6,11 +6,17 @@ import {
   readInboxParams,
 } from "@/features/inbound-message/lib/inbox-params";
 import { InboxList } from "@/features/inbound-message/ui/inbox-list";
+import { pageTitle } from "@/lib/page-metadata";
 
 type InboxPageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<InboxSearchParams>;
 };
+
+export async function generateMetadata({ params }: InboxPageProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "nav", key: "inbox" });
+}
 
 export default async function InboxPage({ params, searchParams }: InboxPageProps) {
   const locale = resolveLocale({ value: (await params).locale });

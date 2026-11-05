@@ -30,7 +30,7 @@ export type EffectiveTimeZoneInput = {
 
 /**
  * THE zone resolver (ADR 0064 decisions 3 and 4): the venue's own zone, else the organization's,
- * else the fallback. Lines, occupancy and the calendar pass their venue; ticket-level times and
+ * else the fallback. Lines, occupancy and the calendar pass their venue; order-level times and
  * anything without a venue pass only the organization.
  */
 export function effectiveTimeZone({ venue, organization }: EffectiveTimeZoneInput): string {

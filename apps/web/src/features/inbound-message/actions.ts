@@ -11,7 +11,7 @@ import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
 
-export type AttachMessageActionInput = { input: { id: string; ticketId: string } };
+export type AttachMessageActionInput = { input: { id: string; orderId: string } };
 export type MessageIdActionInput = { id: string };
 
 export async function attachMessageAction({

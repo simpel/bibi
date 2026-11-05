@@ -7,19 +7,19 @@ import { toInboundMessageDto } from "./to-inbound-message-dto";
 export type AttachMessageInput = {
   context: OperationContext;
   id: string;
-  ticketId: string;
-  /** The input field naming the message; set when it is a reference (`ticket.create`). */
+  orderId: string;
+  /** The input field naming the message; set when it is a reference (`order.create`). */
   path?: string;
 };
 
 /**
- * Sets a message's ticket, once (ADR 0085 decision 5). The update only matches a message without
- * a ticket, so of two concurrent attaches one gets `CONFLICT`. The ticket is checked by the caller.
+ * Sets a message's order, once (ADR 0085 decision 5). The update only matches a message without
+ * an order, so of two concurrent attaches one gets `CONFLICT`. The order is checked by the caller.
  */
 export async function attachMessage({
   context,
   id,
-  ticketId,
+  orderId,
   path,
 }: AttachMessageInput): Promise<Result<InboundMessageDto>> {
   const before = await context.db.inboundMessage.findFirst({ where: { id } });
@@ -27,21 +27,21 @@ export async function attachMessage({
     if (!path) return notFound({ entity: "Message" });
     return invalid({ message: "Unknown message", issues: [{ path, message: "Unknown message" }] });
   }
-  const message = "The message is already attached to a ticket";
+  const message = "The message is already attached to an order";
   const issues = [{ path: path ?? "id", message }];
-  if (before.ticketId) return conflict({ message, issues });
+  if (before.orderId) return conflict({ message, issues });
   const updated = await context.db.inboundMessage.updateMany({
-    where: { id, ticketId: null },
-    data: { ticketId },
+    where: { id, orderId: null },
+    data: { orderId },
   });
   if (updated.count === 0) return conflict({ message, issues });
-  const row = { ...before, ticketId };
+  const row = { ...before, orderId };
   context.recordChange({
-    operation: "inboundMessage.attachToTicket",
+    operation: "inboundMessage.attachToOrder",
     entityType: "inboundMessage",
     entityId: id,
-    before: { id, ticketId: null },
-    after: { id, ticketId },
+    before: { id, orderId: null },
+    after: { id, orderId },
   });
   return ok({ value: toInboundMessageDto({ row }) });
 }

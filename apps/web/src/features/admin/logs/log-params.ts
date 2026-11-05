@@ -1,9 +1,21 @@
 import { SystemLogListInputSchema, type SystemLogListQuery } from "@bibi/core/schemas";
 
+/** Rows per page under the log table; the first is the default. */
+export const LOG_PAGE_SIZES = [25, 50, 100];
+
 /** URL search params of `/admin/logs`; the URL is the single source of the view state. */
 export type LogSearchParams = Record<string, string | string[] | undefined>;
 
-export const LOG_PARAM_KEYS = ["page", "pageSize", "level", "q", "requestId", "surface"] as const;
+export const LOG_PARAM_KEYS = [
+  "page",
+  "pageSize",
+  "sort",
+  "dir",
+  "level",
+  "q",
+  "requestId",
+  "surface",
+] as const;
 
 export type LogParamKey = (typeof LOG_PARAM_KEYS)[number];
 
@@ -16,9 +28,13 @@ export type ParseLogParamsInput = { params: LogSearchParams };
 
 /** Invalid values fall back to defaults instead of erroring (hand-edited URLs). */
 export function parseLogParams({ params }: ParseLogParamsInput): ParsedLogParams {
-  const raw = Object.fromEntries(
-    LOG_PARAM_KEYS.map((key) => [key, first({ value: params[key] })]).filter(([, v]) => v),
-  );
+  const dir = first({ value: params.dir ?? params.direction });
+  const raw = {
+    ...Object.fromEntries(
+      LOG_PARAM_KEYS.map((key) => [key, first({ value: params[key] })]).filter(([, v]) => v),
+    ),
+    ...(dir ? { direction: dir === "asc" ? "asc" : "desc" } : {}),
+  };
   const parsed = SystemLogListInputSchema.safeParse(raw);
   const query = parsed.success ? parsed.data : SystemLogListInputSchema.parse({});
   return { query, selected: first({ value: params.log }) ?? null };
@@ -26,7 +42,7 @@ export function parseLogParams({ params }: ParseLogParamsInput): ParsedLogParams
 
 export type LogHrefInput = {
   current: URLSearchParams;
-  patch: Partial<Record<LogParamKey | "log", string | null>>;
+  patch: Partial<Record<LogParamKey | "direction" | "log", string | null>>;
 };
 
 /** `?…` for the patched state; filter changes go back to page 1. */

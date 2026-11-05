@@ -14,7 +14,7 @@ export type FieldFormProps = {
   /** Present = edit mode, absent = create mode. */
   field?: FieldDefinitionDto | undefined;
   vocabularies: VocabularyChoice[];
-  /** Types a LINK field can point to (item, customer, contact and ticket types). */
+  /** Types a LINK field can point to (item, customer, contact and order types). */
   linkTypes: VocabularyChoice[];
   onDone: () => void;
 };

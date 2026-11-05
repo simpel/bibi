@@ -48,7 +48,7 @@ async function checkParts({ context, line }: LineInput): Promise<string[]> {
  * charges the bundle line only, with one VAT row per rate that sums exactly.
  */
 export async function checkDemoBundles({ context, org }: CheckDemoBundlesInput) {
-  const expected = org.tickets.flatMap((ticket) => ticket.bundles ?? []).length;
+  const expected = org.orders.flatMap((order) => order.bundles ?? []).length;
   const lines = await context.db.line.findMany({
     // Option lines (a price effect, ADR 0059) hang under their line too; they are not parts.
     where: { partLines: { some: { status: "ACTIVE", role: "PART" } } },

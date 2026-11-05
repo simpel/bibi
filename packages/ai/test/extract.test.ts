@@ -21,7 +21,7 @@ const answering = ({ text }: { text: string }) =>
   });
 
 const input = {
-  feature: "ticket.intakeDraft" as const,
+  feature: "order.intakeDraft" as const,
   instructions: "Read it.",
   prompt: JSON.stringify({ request: { text: "x" } }),
   schema: z.object({ name: z.string() }),

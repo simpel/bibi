@@ -24,7 +24,7 @@ export const ItemStateRef = objectFromSchema<ItemStateDto>({
   omit: ["organizationId"],
   description:
     "Item state – one of the organization's own states for lines of an item type, with its " +
-    "flags (initial, hold NONE/SOFT/HARD, inWorkOrders, released, expires). `transitionsTo` lists " +
+    "flags (initial, hold NONE/SOFT/HARD, inRunSheets, released, expires). `transitionsTo` lists " +
     "the states a line may move to.",
 });
 const ItemStatePageRef = pageType({ name: "ItemStatePage", item: ItemStateRef });

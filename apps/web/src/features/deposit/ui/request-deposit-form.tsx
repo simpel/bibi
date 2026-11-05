@@ -6,18 +6,18 @@ import type { DepositSuggestionView } from "./request-deposit-button";
 import { useRequestDepositForm } from "./use-request-deposit-form";
 
 export type RequestDepositFormProps = {
-  ticketId: string;
+  orderId: string;
   suggestion: DepositSuggestionView;
   onDone: () => void;
 };
 
 /** Amount (prefilled from the deposit rule) and text of the deposit to request. */
-export function RequestDepositForm({ ticketId, suggestion, onDone }: RequestDepositFormProps) {
+export function RequestDepositForm({ orderId, suggestion, onDone }: RequestDepositFormProps) {
   const t = useTranslations("deposit.request");
   const common = useTranslations("common");
   const { basis, defaultAmount, total } = suggestion;
   const { form, submit, pending, paymentUrl } = useRequestDepositForm({
-    ticketId,
+    orderId,
     defaultAmount,
     amountRequired: basis === "NONE",
   });

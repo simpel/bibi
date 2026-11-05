@@ -1,17 +1,17 @@
-import { lineStateReconciliation, ticketStatusReconciliation } from "./history-reconcile";
+import { lineStateReconciliation, orderStatusReconciliation } from "./history-reconcile";
 import { lineHoldsReconciliation } from "./line-holds-reconcile";
 import { type ReconcileContext, runReconciliations } from "./reconcile";
 import { recordReconciliation } from "./record-reconciliation";
 import { paymentRefundReconciliation } from "./refund-reconcile";
-import { workOrderCurrentReconciliation } from "./work-order-current-reconcile";
+import { runSheetCurrentReconciliation } from "./run-sheet-current-reconcile";
 
 export const RECONCILIATIONS = [
   lineHoldsReconciliation,
   recordReconciliation,
-  ticketStatusReconciliation,
+  orderStatusReconciliation,
   lineStateReconciliation,
   paymentRefundReconciliation,
-  workOrderCurrentReconciliation,
+  runSheetCurrentReconciliation,
 ];
 
 /** Runs every registered projection check (ADR 0051); also called from Vitest. */

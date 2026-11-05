@@ -10,9 +10,9 @@ async function seedGrid({ client }: { client: Client }) {
   const entityTypeId: string = item.data.entityTypeId;
   const states = await call({ client, name: "itemState_list", args: { entityTypeId } });
   const stateId: string = states.data.items[0].id;
-  const statuses = await call({ client, name: "ticketStatus_list", args: {} });
-  const ticketStatus = statuses.data.items.find((row: { closes: boolean }) => !row.closes);
-  const args = { statusId: ticketStatus.id, entityTypeId, stateId };
+  const statuses = await call({ client, name: "orderStatus_list", args: {} });
+  const orderStatus = statuses.data.items.find((row: { closes: boolean }) => !row.closes);
+  const args = { statusId: orderStatus.id, entityTypeId, stateId };
   const cell = await call({ client, name: "statusGrid_setCell", args });
   expect(cell.isError, JSON.stringify(cell.data)).toBe(false);
   return { ...seed, ...args };

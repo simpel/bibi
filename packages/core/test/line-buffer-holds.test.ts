@@ -22,10 +22,10 @@ const reconcile = ({ context }: { context: ExecuteContext }) =>
 
 describe("buffers block like the hold they belong to (ADR 0059)", () => {
   it("a hard teardown blocks the next hard booking; soft buffers block nothing", async () => {
-    const { context, ticket, type, room } = await programSetup();
+    const { context, order, type, room } = await programSetup();
     const itemInput = { id: room.id, teardownMinutes: 30 };
     unwrap({ result: await execute({ operation: updateItem, input: itemInput, context }) });
-    const input = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
+    const input = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const first = unwrap({ result: await createTestLine({ ...input, from: 10, to: 12 }) });
     const clash = await createTestLine({ ...input, from: 12, to: 13 });
     expect(errorCode({ result: clash })).toBe("CONFLICT");
@@ -48,8 +48,8 @@ describe("buffers block like the hold they belong to (ADR 0059)", () => {
   });
 
   it("refuses a type's longer buffer that would make hard holds collide", async () => {
-    const { context, ticket, type, room } = await programSetup();
-    const input = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
+    const { context, order, type, room } = await programSetup();
+    const input = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const first = unwrap({ result: await createTestLine({ ...input, from: 10, to: 12 }) });
     const second = unwrap({ result: await createTestLine({ ...input, from: 13, to: 14 }) });
     const longer = { id: room.entityTypeId, setupMinutes: 90 };
@@ -71,11 +71,11 @@ describe("buffers block like the hold they belong to (ADR 0059)", () => {
   });
 
   it("names the hard hold a line's teardown would collide with before moving it", async () => {
-    const { context, ticket, type, room } = await programSetup();
+    const { context, order, type, room } = await programSetup();
     const { booked } = await roomStates({ context, entityTypeId: room.entityTypeId });
     const typeInput = { id: room.entityTypeId, teardownMinutes: 30 };
     unwrap({ result: await execute({ operation: updateEntityType, input: typeInput, context }) });
-    const input = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
+    const input = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const first = unwrap({ result: await createTestLine({ ...input, from: 10, to: 12 }) });
     const second = unwrap({ result: await createTestLine({ ...input, from: 12, to: 13 }) });
     // A soft teardown blocks nothing, so the second line can be booked hard.
@@ -84,7 +84,7 @@ describe("buffers block like the hold they belong to (ADR 0059)", () => {
     expect(errorCode({ result: refused })).toBe("CONFLICT");
     const issues = refused.ok ? [] : refused.error.issues;
     expect(issues.map((issue) => issue.path)).toEqual([`lines.${first.id}`]);
-    expect(issues[0]?.message).toContain("booked by ticket");
+    expect(issues[0]?.message).toContain("booked by order");
     expect(await rowsOf({ context, lineId: first.id })).toEqual([
       "HOLD:SOFT 10:00",
       "TEARDOWN:SOFT 12:00",

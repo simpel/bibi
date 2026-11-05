@@ -1,0 +1,96 @@
+// Order statuses per organization (ADR 0043): the organization's own statuses, in its own order.
+// Behaviour comes from a few generic status flags; move rules are gates on transitions (ADR 0067).
+
+/// A check on a transition, from a code-owned catalogue (ADR 0067 §5). Gates read facts, never store them.
+enum TransitionGate {
+  /// The move needs a reason.
+  REASON
+  /// The order needs its main assignee (ADR 0034).
+  ASSIGNEE
+  /// The order needs an accepted quote (ADR 0054).
+  ACCEPTED_QUOTE
+}
+
+/// Quote event that moves a order into a status (ADR 0043). At most one active status per event.
+enum StatusEvent {
+  QUOTE_SENT
+  QUOTE_ACCEPTED
+}
+
+/// Order status – an organization's own status, e.g. Lead, Quote sent or Lost. Exactly one active
+/// status is the default `entry` (the first by `position`), and at least one is `closes`.
+/// Trigger (ADR 0053): changing `closes` re-derives the holds of the lines that have not ended
+/// on orders in the status (`sync_line_occupancy.sql`).
+model OrderStatus {
+  id              String                   @id @default(cuid(2))
+  organizationId  String
+  name            String
+  color           String
+  position        Int                      @default(0)
+  /// New orders start here.
+  entry           Boolean                  @default(false)
+  /// No move leaves this status; entering it releases every line.
+  closes          Boolean                  @default(false)
+  /// Invoices can be created in this status.
+  invoiceable     Boolean                  @default(false)
+  /// Free movement by default (ADR 0076): false = a order may move from here to any status.
+  /// True = only to the statuses in `transitionsFrom`.
+  restrictsNext   Boolean                  @default(false)
+  /// Entered by this quote event instead of by hand; at most one active status per event.
+  event           StatusEvent?
+  status          RecordStatus             @default(ACTIVE)
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+  createdBy       String?
+  transitionsFrom OrderStatusTransition[] @relation("TransitionFrom")
+  transitionsTo   OrderStatusTransition[] @relation("TransitionTo")
+  gatesInto       OrderStatusGate[]       @relation("GateTo")
+  gatesFrom       OrderStatusGate[]       @relation("GateFrom")
+  orders         Order[]
+  stateRules      StatusStateRule[]
+  templates       OrderTemplate[]
+  changesFrom     OrderStatusChange[]     @relation("StatusChangeFrom")
+  changesTo       OrderStatusChange[]     @relation("StatusChangeTo")
+  boardPhases     BoardPhaseStatus[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status, position])
+}
+
+/// Order status transition – an allowed move from one status to another (from → to). Only read
+/// while the `from` status `restrictsNext` (ADR 0076); replaced as a set per `from` status by
+/// `orderStatus.setTransitions`, and empty while the status is free.
+model OrderStatusTransition {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  fromStatusId   String
+  toStatusId     String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  fromStatus     OrderStatus @relation("TransitionFrom", fields: [fromStatusId, organizationId], references: [id, organizationId])
+  toStatus       OrderStatus @relation("TransitionTo", fields: [toStatusId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([fromStatusId, toStatusId])
+  @@index([organizationId, fromStatusId])
+}
+
+/// Order status gate (ADR 0067 §5, 0076) – one check a move into `toStatusId` must pass. A null
+/// `fromStatusId` means from any status; a set one adds to it for that source only. Owned: `key`.
+/// Replaced per target by `orderStatus.setGates` (hard delete, audited on the target status).
+model OrderStatusGate {
+  id             String         @id @default(cuid(2))
+  organizationId String
+  toStatusId     String
+  fromStatusId   String?
+  key            TransitionGate
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  createdBy      String?
+  toStatus       OrderStatus   @relation("GateTo", fields: [toStatusId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  fromStatus     OrderStatus?  @relation("GateFrom", fields: [fromStatusId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  // Unique on (toStatusId, fromStatusId, key), NULLS NOT DISTINCT: added in the migration, which Prisma cannot express.
+  @@index([organizationId, toStatusId])
+}

@@ -33,8 +33,8 @@ export type ToInvoiceDtosInput = Db & { rows: readonly InvoiceRow[] };
 
 /** Invoices with their frozen lines and what is paid against each (one payment query). */
 export async function toInvoiceDtos({ context, rows }: ToInvoiceDtosInput): Promise<InvoiceDto[]> {
-  const ticketIds = [...new Set(rows.map((row) => row.ticketId))];
-  const paid = await paidByReceivable({ context, ticketIds });
+  const orderIds = [...new Set(rows.map((row) => row.orderId))];
+  const paid = await paidByReceivable({ context, orderIds });
   return rows.map(({ lines, deductions, ...row }) => {
     const amountDueMinor = invoiceDueMinor({ invoice: row, deductions });
     return {

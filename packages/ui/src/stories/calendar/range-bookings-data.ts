@@ -13,11 +13,11 @@ function noise({ seed }: { seed: string }): number {
   return ((hash >>> 0) % 10_000) / 10_000;
 }
 
-/** Another day's ticket number, so a ticket never spans two days in the story. */
-function renumber({ ticket, offset }: { ticket: string | null; offset: number }) {
-  const number = Number(ticket?.replace(/\D/g, ""));
-  if (!ticket || Number.isNaN(number)) return ticket;
-  return `Ticket ${((((offset * 60 + number) % 9000) + 9000) % 9000) + 1000}`;
+/** Another day's order number, so an order never spans two days in the story. */
+function renumber({ order, offset }: { order: string | null; offset: number }) {
+  const number = Number(order?.replace(/\D/g, ""));
+  if (!order || Number.isNaN(number)) return order;
+  return `Order ${((((offset * 60 + number) % 9000) + 9000) % 9000) + 1000}`;
 }
 
 /** One day made from the template: weekdays fairly full, weekends mostly free. */
@@ -32,7 +32,7 @@ function dayOf({ date, template }: { date: string; template: readonly AssetBooki
       ...booking,
       id: `${booking.id}@${date}`,
       date,
-      ticket: renumber({ ticket: booking.ticket, offset }),
+      order: renumber({ order: booking.order, offset }),
     }));
 }
 

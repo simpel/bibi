@@ -7,49 +7,49 @@ type Context = Pick<OperationContext, "db" | "permissions">;
 
 type Input = { context: Context; period: { start: Date; end: Date } };
 
-/** Active lines of open tickets starting inside the range, soonest first. */
+/** Active lines of open orders starting inside the range, soonest first. */
 const loadStarting = ({ context, period }: Input) =>
   context.db.line.findMany({
     where: {
       status: "ACTIVE",
       startsAt: { gte: period.start, lt: period.end },
-      ticket: { status: "ACTIVE", ticketStatus: { closes: false } },
+      order: { status: "ACTIVE", orderStatus: { closes: false } },
     },
     orderBy: [{ startsAt: "asc" }, { id: "asc" }],
     select: {
-      ticketId: true,
+      orderId: true,
       startsAt: true,
-      ticket: {
+      order: {
         select: {
           reference: true,
           title: true,
           customer: { select: { name: true } },
-          ticketStatus: { select: { name: true } },
+          orderStatus: { select: { name: true } },
         },
       },
     },
   });
 
-/** Open tickets with lines starting inside the range, by their first start (ADR 0080, 0086). */
+/** Open orders with lines starting inside the range, by their first start (ADR 0080, 0086). */
 export async function scheduled({ context, period }: Input): Promise<Scheduled[]> {
   const lines = await loadStarting({ context, period });
-  const byTicket = new Map<string, Scheduled>();
-  for (const { ticketId, startsAt, ticket } of lines) {
-    const seen = byTicket.get(ticketId);
+  const byOrder = new Map<string, Scheduled>();
+  for (const { orderId, startsAt, order } of lines) {
+    const seen = byOrder.get(orderId);
     if (seen) {
       seen.lines += 1;
       continue;
     }
-    if (!startsAt || byTicket.size >= SCHEDULED_LIMIT) continue;
-    byTicket.set(ticketId, {
-      ticketId,
-      reference: ticket.reference,
-      title: ticket.title,
-      customerName: visibleTo({ context, feature: "customer", value: ticket.customer.name }),
-      statusName: ticket.ticketStatus.name,
+    if (!startsAt || byOrder.size >= SCHEDULED_LIMIT) continue;
+    byOrder.set(orderId, {
+      orderId,
+      reference: order.reference,
+      title: order.title,
+      customerName: visibleTo({ context, feature: "customer", value: order.customer.name }),
+      statusName: order.orderStatus.name,
       startsAt,
       lines: 1,
     });
   }
-  return [...byTicket.values()];
+  return [...byOrder.values()];
 }

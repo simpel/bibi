@@ -39,7 +39,7 @@ export const applyPaymentSignal = defineOperation({
     });
     if (!before) return notFound({ entity: "Payment" });
     const next = nextPaymentState({ payment: before, signal: input, now: nowOf({ context }) });
-    const base = { paymentId: before.id, ticketId: before.ticketId };
+    const base = { paymentId: before.id, orderId: before.orderId };
     if (!next) return ok({ value: { ...base, status: before.status, changed: false } });
     const row = await context.db.payment.update({ where: { id: before.id }, data: next });
     await recordRefund({ context, before, after: row });

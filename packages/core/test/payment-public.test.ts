@@ -59,11 +59,11 @@ describe("public payment page lookup", () => {
       "expiresAt",
       "lines",
       "method",
+      "orderReference",
       "organizationName",
       "paidAt",
       "paymentUrl",
       "status",
-      "ticketReference",
       "totals",
     ]);
   });

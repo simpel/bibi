@@ -5,9 +5,9 @@ import type { Trend } from "../../trend/trend-schema";
 
 type Context = Pick<OperationContext, "db">;
 
-type Change = { ticketId: string; toStatusId: string; changedAt: Date };
+type Change = { orderId: string; toStatusId: string; changedAt: Date };
 
-/** Tickets per status at each instant (ascending), replaying the status history once. */
+/** Orders per status at each instant (ascending), replaying the status history once. */
 function countsAt({
   changes,
   instants,
@@ -21,7 +21,7 @@ function countsAt({
   for (const instant of instants) {
     while (next < changes.length && (changes[next]?.changedAt.getTime() ?? Infinity) <= instant) {
       const change = changes[next] as Change;
-      statusOf.set(change.ticketId, change.toStatusId);
+      statusOf.set(change.orderId, change.toStatusId);
       next += 1;
     }
     const counts = new Map<string, number>();
@@ -34,8 +34,8 @@ function countsAt({
 export type StatusTrendsInput = { context: Context; buckets: readonly Bucket[]; now: Date };
 
 /**
- * Open tickets per status at each bucket's end (ADR 0086), rebuilt from `TicketStatusChange`
- * (ADR 0054) for the tickets that are active today. Returns the trend of one status.
+ * Open orders per status at each bucket's end (ADR 0086), rebuilt from `OrderStatusChange`
+ * (ADR 0054) for the orders that are active today. Returns the trend of one status.
  */
 export async function statusTrends({
   context,
@@ -43,10 +43,10 @@ export async function statusTrends({
   now,
 }: StatusTrendsInput): Promise<(input: { statusId: string }) => Trend> {
   const last = buckets.at(-1)?.end ?? now;
-  const changes = await context.db.ticketStatusChange.findMany({
-    where: { changedAt: { lte: last < now ? last : now }, ticket: { status: "ACTIVE" } },
+  const changes = await context.db.orderStatusChange.findMany({
+    where: { changedAt: { lte: last < now ? last : now }, order: { status: "ACTIVE" } },
     orderBy: [{ changedAt: "asc" }, { seq: "asc" }],
-    select: { ticketId: true, toStatusId: true, changedAt: true },
+    select: { orderId: true, toStatusId: true, changedAt: true },
   });
   const instants = [
     ...buckets.flatMap((bucket) => [bucket.start.getTime(), bucket.end.getTime()]),

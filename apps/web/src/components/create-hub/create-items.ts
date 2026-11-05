@@ -22,15 +22,15 @@ import type { CreateItem } from "./create-item-types";
  * Everything a member can create, one card each on `/new`. A thing with a step-by-step page
  * links to `/new/<thing>`; the others open their list with the create dialog (`?create=1`)
  * until they get their own page. Quotes, occupancies, options and lines are created
- * from the ticket or item they belong to, so they are not listed.
+ * from the order or item they belong to, so they are not listed.
  */
 export const CREATE_ITEMS: readonly CreateItem[] = [
   {
-    key: "ticket",
+    key: "order",
     group: "work",
-    href: ROUTES.ticketNew,
+    href: ROUTES.orderNew,
     icon: CalendarCheckIcon,
-    permission: "ticket:write",
+    permission: "order:write",
   },
   {
     key: "customer",
@@ -90,14 +90,14 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
     permission: "responsibility:write",
   },
   {
-    key: "workOrder",
+    key: "runSheet",
     group: "settings",
-    href: ROUTES.workOrderNew,
+    href: ROUTES.runSheetNew,
     icon: ClipboardListIcon,
     permission: "template:write",
   },
   {
-    key: "ticketStatus",
+    key: "orderStatus",
     group: "settings",
     href: ROUTES.settingsPipeline,
     icon: CircleDotIcon,

@@ -1,10 +1,10 @@
 import type { OperationContext } from "../../operations/types";
-import { evaluateLine } from "../ticket/plan/evaluate-line";
-import { loadAvailability } from "../ticket/plan/load-availability";
-import { blockedPeriod } from "../ticket/plan/occupancy-rows";
-import { loadPlanSources, type PlanSources } from "../ticket/plan/plan-sources";
-import type { Period, PlannedLine } from "../ticket/plan/planned-line";
-import type { StartState } from "../ticket/plan/start-states";
+import { evaluateLine } from "../order/plan/evaluate-line";
+import { loadAvailability } from "../order/plan/load-availability";
+import { blockedPeriod } from "../order/plan/occupancy-rows";
+import { loadPlanSources, type PlanSources } from "../order/plan/plan-sources";
+import type { Period, PlannedLine } from "../order/plan/planned-line";
+import type { StartState } from "../order/plan/start-states";
 import type { LineIssue } from "./issues-schema";
 import type { LineDto } from "./schema";
 
@@ -41,9 +41,9 @@ const withState = ({ sources, state }: WithStateInput): PlanSources => ({
 });
 
 /**
- * The planning checks (ADR 0081) on a saved ticket's lines, each judged in its own state. The
- * ticket's own holds, buffers and allocations are left out of the occupancy, so a line never
- * clashes with itself or its ticket; two of its lines on one item meet as SELF_OVERLAP.
+ * The planning checks (ADR 0081) on a saved order's lines, each judged in its own state. The
+ * order's own holds, buffers and allocations are left out of the occupancy, so a line never
+ * clashes with itself or its order; two of its lines on one item meet as SELF_OVERLAP.
  */
 export async function savedLineIssues({
   context,

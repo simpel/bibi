@@ -16,7 +16,7 @@ function holdStyle({ line }: { line: PipelinePreviewLine }) {
 }
 
 /**
- * A mini calendar of the simulated ticket (ADR 0044): one row per item type, one slot per status,
+ * A mini calendar of the simulated order (ADR 0044): one row per item type, one slot per status,
  * each slot drawn as the line's hold in its state's color, like the calendar draws occupancy.
  */
 export function MiniCalendar({ steps }: MiniCalendarProps) {
@@ -31,10 +31,10 @@ export function MiniCalendar({ steps }: MiniCalendarProps) {
           {steps.map((step) => {
             const line = step.lines[row];
             if (!line) return null;
-            const label = t("slot", { status: step.ticketStatus, state: line.state ?? "-" });
+            const label = t("slot", { status: step.orderStatus, state: line.state ?? "-" });
             return (
               <span
-                key={step.ticketStatus}
+                key={step.orderStatus}
                 title={label}
                 aria-label={label}
                 role="img"

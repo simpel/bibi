@@ -1,6 +1,7 @@
 import { createAiSettingOperations, listAiFeatures } from "./ai-settings/operations";
 import type { ListCompatibleModels } from "./ai-settings/schema";
 import { getBillingConfig, updateBillingConfig } from "./billing/config-operations";
+import { getBillingFinancials } from "./billing/financials-operations";
 import {
   listBillingOrganizations,
   updateBillingOrganization,
@@ -23,6 +24,7 @@ export function createPlatformOperations({ listCompatibleModels }: CreatePlatfor
     updateAiFeature,
     getBillingConfig,
     updateBillingConfig,
+    getBillingFinancials,
     listBillingOrganizations,
     updateBillingOrganization,
   } as const;

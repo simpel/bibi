@@ -18,33 +18,33 @@ const BLOCK_SELECT = {
     select: {
       id: true,
       name: true,
-      ticketId: true,
+      orderId: true,
       stateId: true,
       createdAt: true,
       ...LATEST_STATE_CHANGE,
-      ticket: { select: { reference: true, title: true, statusId: true, holdsUntil: true } },
+      order: { select: { reference: true, title: true, statusId: true, holdsUntil: true } },
       state: { select: { name: true, color: true, expires: true } },
     },
   },
 } satisfies Prisma.OccupancySelect;
 
 type BlockRow = Prisma.OccupancyGetPayload<{ select: typeof BLOCK_SELECT }>;
-type Visible = { program: boolean; pipeline: boolean; ticket: boolean };
+type Visible = { program: boolean; pipeline: boolean; order: boolean };
 type Filters = Omit<CalendarRangeInput, "from" | "to">;
 type BareBlock = Omit<CalendarBlockDto, "details">;
 
 /** The line filters; a manual block has no line, so any of them hides it. */
-function lineWhere({ ticketId, stateId, statusId }: Filters): Prisma.LineWhereInput | undefined {
-  if (!ticketId && !stateId && !statusId) return undefined;
+function lineWhere({ orderId, stateId, statusId }: Filters): Prisma.LineWhereInput | undefined {
+  if (!orderId && !stateId && !statusId) return undefined;
   return {
-    ...(ticketId ? { ticketId } : {}),
+    ...(orderId ? { orderId } : {}),
     ...(stateId ? { stateId } : {}),
-    ...(statusId ? { ticket: { statusId } } : {}),
+    ...(statusId ? { order: { statusId } } : {}),
   };
 }
 
 /**
- * One occupancy as a block (ADR 0053): a line's hold and its buffers carry the line's ticket and
+ * One occupancy as a block (ADR 0053): a line's hold and its buffers carry the line's order and
  * state; held since and expiry belong to the soft hold itself, not its buffers.
  */
 function toBlock({ row, visible }: { row: BlockRow; visible: Visible }): BareBlock {
@@ -60,9 +60,9 @@ function toBlock({ row, visible }: { row: BlockRow; visible: Visible }): BareBlo
     startsAt: row.startsAt,
     endsAt: row.endsAt,
     lineId: line?.id ?? null,
-    ticketId: line?.ticketId ?? null,
-    reference: line?.ticket.reference ?? null,
-    ticketTitle: visible.ticket ? (line?.ticket.title ?? null) : null,
+    orderId: line?.orderId ?? null,
+    reference: line?.order.reference ?? null,
+    orderTitle: visible.order ? (line?.order.title ?? null) : null,
     title: line ? (visible.program ? line.name : null) : row.note,
     soft,
     allocated: row.allocationId !== null,
@@ -70,8 +70,8 @@ function toBlock({ row, visible }: { row: BlockRow; visible: Visible }): BareBlo
     stateId: line?.stateId ?? null,
     stateName: state?.name ?? null,
     stateColor: state?.color ?? null,
-    statusId: line?.ticket.statusId ?? null,
-    expiresAt: softHold && line?.state?.expires ? line.ticket.holdsUntil : null,
+    statusId: line?.order.statusId ?? null,
+    expiresAt: softHold && line?.state?.expires ? line.order.holdsUntil : null,
   };
 }
 
@@ -107,7 +107,7 @@ export async function loadBlocks({
   const visible = {
     program: canView({ context, feature: "program" }),
     pipeline: canView({ context, feature: "pipeline" }),
-    ticket: canView({ context, feature: "ticket" }),
+    order: canView({ context, feature: "order" }),
   };
   const blocks = rows.map((row) => toBlock({ row, visible }));
   const detailsOf = await loadDetails({ context, blocks });

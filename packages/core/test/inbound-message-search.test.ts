@@ -13,7 +13,7 @@ describe("searching the inbox (ADR 0085)", () => {
       });
       return page.items.map((item) => item.id);
     };
-    expect(await search({ q: "YOUR TICKET" })).toEqual([message.id]);
+    expect(await search({ q: "YOUR ORDER" })).toEqual([message.id]);
     expect(await search({ q: "guest@example" })).toEqual([message.id]);
     expect(await search({ q: "nothing like it" })).toEqual([]);
   });

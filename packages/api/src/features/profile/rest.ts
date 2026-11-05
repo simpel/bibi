@@ -4,6 +4,7 @@ import { restRoute } from "../../rest-route";
 export const profileRoutes = [
   restRoute({ operation: "profile.get", method: "GET", path: "/profile" }),
   restRoute({ operation: "profile.update", method: "PUT", path: "/profile" }),
+  restRoute({ operation: "profile.setLocale", method: "PUT", path: "/profile/locale" }),
   restRoute({ operation: "workingHours.get", method: "GET", path: "/working-hours" }),
   restRoute({ operation: "workingHours.set", method: "PUT", path: "/working-hours" }),
 ];

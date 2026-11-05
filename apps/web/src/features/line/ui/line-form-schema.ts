@@ -17,7 +17,7 @@ export type LineFormOutput = z.infer<typeof LineCreateInputSchema>;
 const picked = ({ value }: { value: string }) => (value === NONE || value === "" ? null : value);
 
 export type LineSchemaInput = {
-  ticketId: string;
+  orderId: string;
   type: EntityTypeDto | undefined;
   vocabularies: VocabularyDto[];
   /** The items' and the organization's zones (ADR 0064). */
@@ -30,7 +30,7 @@ export type LineSchemaInput = {
  * Core's line schema with `fields` checked against the type; the server checks again. The times
  * are read in the chosen item's zone (ADR 0064).
  */
-export function lineFormSchema({ ticketId, type, vocabularies, zones, line }: LineSchemaInput) {
+export function lineFormSchema({ orderId, type, vocabularies, zones, line }: LineSchemaInput) {
   const specs = specsOf({ type, vocabularies });
   return formSchema({
     schema: LineCreateInputSchema.extend({ fields: buildFieldsSchema({ specs }) }),
@@ -40,7 +40,7 @@ export function lineFormSchema({ ticketId, type, vocabularies, zones, line }: Li
       const instant = ({ value }: { value: string }) =>
         fromLocalInputValue({ value, timeZone }) ?? null;
       return {
-        ticketId,
+        orderId,
         entityTypeId: values.entityTypeId,
         name: values.name,
         // Both empty = an untimed line (ADR 0052).
@@ -66,9 +66,9 @@ export type LineUpdateArgs = {
   type: EntityTypeDto | undefined;
 };
 
-/** Create-shaped values → `line.update` input (ticket and type are fixed). */
+/** Create-shaped values → `line.update` input (order and type are fixed). */
 export function toLineUpdate({ line, values, type }: LineUpdateArgs): LineUpdateInput {
-  const { ticketId: _b, entityTypeId: _t, fields, ...rest } = values;
+  const { orderId: _b, entityTypeId: _t, fields, ...rest } = values;
   return {
     id: line.id,
     ...rest,

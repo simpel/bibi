@@ -1,44 +1,44 @@
-import { ticketBalance } from "../../features/payment/ticket-balance";
+import { orderBalance } from "../../features/payment/order-balance";
 import type { ExecuteContext } from "../../operations/context";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoPaymentsInput = { context: ExecuteContext; org: DemoOrg };
 
-/** SUCCEEDED payments against quotes minus refunds per ticket, summed straight from the rows. */
-async function succeededByTicket({ context }: Pick<CheckDemoPaymentsInput, "context">) {
+/** SUCCEEDED payments against quotes minus refunds per order, summed straight from the rows. */
+async function succeededByOrder({ context }: Pick<CheckDemoPaymentsInput, "context">) {
   const rows = await context.db.payment.findMany({
     where: { status: { in: ["SUCCEEDED", "REFUNDED"] }, quoteId: { not: null } },
-    select: { ticketId: true, amountMinor: true, refundedMinor: true },
+    select: { orderId: true, amountMinor: true, refundedMinor: true },
   });
   const paid = new Map<string, number>();
   for (const row of rows) {
-    paid.set(row.ticketId, (paid.get(row.ticketId) ?? 0) + row.amountMinor - row.refundedMinor);
+    paid.set(row.orderId, (paid.get(row.orderId) ?? 0) + row.amountMinor - row.refundedMinor);
   }
   return paid;
 }
 
 /**
- * ADR 0057: every ticket with an accepted quote owes that quote's total minus its SUCCEEDED
- * payments, as derived by `payment.balance`; the demo's money (`ticket.money`) is there: one
+ * ADR 0057: every order with an accepted quote owes that quote's total minus its SUCCEEDED
+ * payments, as derived by `payment.balance`; the demo's money (`order.money`) is there: one
  * SENT deposit request and one SUCCEEDED payment per spec. Returns failure messages.
  */
 export async function checkDemoPayments({ context, org }: CheckDemoPaymentsInput) {
   const failures: string[] = [];
-  const paid = await succeededByTicket({ context });
-  // A ticket invoiced (ADR 0077) is billed from its invoices instead (`checkDemoFinance`).
+  const paid = await succeededByOrder({ context });
+  // An order invoiced (ADR 0077) is billed from its invoices instead (`checkDemoFinance`).
   const accepted = await context.db.quote.findMany({
-    where: { quoteStatus: "ACCEPTED", ticket: { invoices: { none: { status: "SENT" } } } },
+    where: { quoteStatus: "ACCEPTED", order: { invoices: { none: { status: "SENT" } } } },
   });
   for (const quote of accepted) {
-    const balance = await ticketBalance({ context, ticketId: quote.ticketId, withQuotes: true });
-    const expected = quote.totalInclVatMinor - (paid.get(quote.ticketId) ?? 0);
+    const balance = await orderBalance({ context, orderId: quote.orderId, withQuotes: true });
+    const expected = quote.totalInclVatMinor - (paid.get(quote.orderId) ?? 0);
     if (balance.billedFrom !== "QUOTE" || balance.balanceMinor !== expected) {
       failures.push(
-        `${org.slug}: ticket ${quote.ticketId} balance ${balance.balanceMinor}, expected ${expected}`,
+        `${org.slug}: order ${quote.orderId} balance ${balance.balanceMinor}, expected ${expected}`,
       );
     }
   }
-  const money = org.tickets.flatMap((ticket) => (ticket.money ? [ticket.money] : []));
+  const money = org.orders.flatMap((order) => (order.money ? [order.money] : []));
   const deposits = await context.db.deposit.count({ where: { status: "SENT" } });
   const wanted = money.filter((m) => m.deposit).length;
   if (deposits !== wanted)

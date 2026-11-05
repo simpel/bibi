@@ -1,7 +1,7 @@
-/// Assignment (ADR 0034) – who answers for a subject (a ticket or an item). A subject
-/// has one main assignment (`responsibilityId` null) and, for tickets, one per responsibility.
+/// Assignment (ADR 0034) – who answers for a subject (a order or an item). A subject
+/// has one main assignment (`responsibilityId` null) and, for orders, one per responsibility.
 /// `recordId` is the subject's `Record` (ADR 0056): the composite foreign key keeps it in the
-/// organization; core checks that its base is a ticket or an item. `assigneeId` is a member (user id); it is null
+/// organization; core checks that its base is a order or an item. `assigneeId` is a member (user id); it is null
 /// when the subject only has followers so far.
 model Assignment {
   id               String               @id @default(cuid(2))

@@ -13,7 +13,7 @@ export type ItemListProps = {
   cursor?: string | undefined;
 };
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 100;
 
 /** Item catalog page body: loads the page of items and the form data, then renders the catalog. */
 export async function ItemList({ locale, typeId, cursor }: ItemListProps) {

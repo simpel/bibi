@@ -11,7 +11,7 @@ export type ArchiveLineDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-/** Remove confirmation; the ticket page then reloads without the line. */
+/** Remove confirmation; the order page then reloads without the line. */
 export function ArchiveLineDialog({ line, open, onOpenChange }: ArchiveLineDialogProps) {
   const t = useTranslations("line");
   const common = useTranslations("common");

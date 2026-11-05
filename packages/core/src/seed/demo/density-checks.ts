@@ -1,7 +1,7 @@
 import type { ExecuteContext } from "../../operations/context";
 import { addDays } from "../../time/plain-date";
 import { fromZonedParts, toZonedParts } from "../../time/zoned-time";
-import { minBlocksOn } from "./density-tickets";
+import { minBlocksOn } from "./density-orders";
 import type { DemoDensity } from "./density-types";
 import type { DemoOrg } from "./types";
 

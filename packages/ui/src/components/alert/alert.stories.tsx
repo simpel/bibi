@@ -23,7 +23,7 @@ export const Default: Story = {
   ),
 };
 
-/** A hard clash: another ticket holds the room. */
+/** A hard clash: another order holds the room. */
 export const Destructive: Story = {
   args: { variant: "destructive" },
   render: (args) => (

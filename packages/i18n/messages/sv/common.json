@@ -1,0 +1,404 @@
+{
+  "common": {
+    "hidden": "Dold",
+    "appName": "Bibi",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "delete": "Ta bort",
+    "edit": "Redigera",
+    "create": "Skapa",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "confirm": "Bekräfta",
+    "close": "Stäng",
+    "loading": "Laddar...",
+    "search": "Sök",
+    "actions": "Åtgärder",
+    "table": {
+      "sortAscending": "Sortera stigande",
+      "sortDescending": "Sortera fallande",
+      "clearSort": "Ta bort sortering",
+      "dragColumn": "Flytta kolumnen {column}",
+      "dragInstructions": "Tryck på mellanslag för att lyfta kolumnen, flytta den med piltangenterna och tryck på mellanslag för att släppa den.",
+      "columnPickedUp": "Lyfte kolumnen {column}",
+      "columnMoved": "Kolumnen {column} står på plats {position} av {total}",
+      "columnDropped": "Släppte kolumnen {column} på plats {position} av {total}",
+      "selectAll": "Markera alla rader på sidan",
+      "selectRow": "Markera raden",
+      "selected": "{count} markerade",
+      "orderSaved": "Kolumnordningen sparades",
+      "rowsPerPage": "Rader per sida",
+      "pageOf": "Sida {page} av {pageCount}",
+      "firstPage": "Första sidan",
+      "previousPage": "Föregående sida",
+      "nextPage": "Nästa sida",
+      "lastPage": "Sista sidan"
+    },
+    "yes": "Ja",
+    "no": "Nej",
+    "name": "Namn",
+    "description": "Beskrivning",
+    "status": "Status",
+    "language": "Språk",
+    "theme": "Tema",
+    "lightMode": "Ljust läge",
+    "darkMode": "Mörkt läge",
+    "system": "Systemets tema",
+    "archive": "Arkivera",
+    "retry": "Försök igen",
+    "previous": "Föregående",
+    "firstPage": "Första sidan",
+    "nextPage": "Nästa sida",
+    "active": "Aktiv",
+    "archived": "Arkiverad",
+    "or": "eller",
+    "optional": "valfritt",
+    "skipToContent": "Hoppa till innehållet",
+    "saving": "Sparar…",
+    "searching": "Söker…",
+    "archiving": "Arkiverar…",
+    "sending": "Skickar…",
+    "removing": "Tar bort…",
+    "select": "Välj…",
+    "noOptions": "Inga alternativ.",
+    "noMatches": "Inga träffar.",
+    "datePicker": {
+      "placeholder": "Välj datum",
+      "chooseDate": "Välj ett datum",
+      "rangePlaceholder": "Välj period",
+      "clear": "Rensa datum",
+      "presets": {
+        "last7Days": "Senaste 7 dagarna",
+        "last30Days": "Senaste 30 dagarna",
+        "thisMonth": "Den här månaden",
+        "last3Months": "Senaste 3 månaderna",
+        "last6Months": "Senaste 6 månaderna",
+        "last12Months": "Senaste 12 månaderna",
+        "next7Days": "Kommande 7 dagarna",
+        "next14Days": "Kommande 14 dagarna",
+        "next28Days": "Kommande 28 dagarna",
+        "next30Days": "Kommande 30 dagarna",
+        "next3Months": "Kommande 3 månaderna",
+        "next6Months": "Kommande 6 månaderna",
+        "next12Months": "Kommande 12 månaderna"
+      }
+    },
+    "markRead": "Markera som läst",
+    "markUnread": "Markera som oläst",
+    "readFilter": {
+      "label": "Visa",
+      "all": "Alla",
+      "unread": "Olästa",
+      "read": "Lästa"
+    },
+    "deleting": "Tar bort…",
+    "open": "Öppna"
+  },
+  "errors": {
+    "generic": "Något gick fel. Försök igen.",
+    "notFound": "Vi hittade inte det du letade efter.",
+    "unauthorized": "Du behöver logga in.",
+    "forbidden": "Du har inte behörighet att göra detta.",
+    "validation": "Kontrollera de markerade fälten.",
+    "required": "Fältet är obligatoriskt.",
+    "conflict": "Detta krockar med befintlig information.",
+    "network": "Det gick inte att nå servern.",
+    "invalidCredentials": "Fel e-postadress eller lösenord.",
+    "emailTaken": "Det finns redan ett konto med den e-postadressen.",
+    "passwordTooShort": "Lösenordet är för kort.",
+    "invalidCode": "Koden är ogiltig eller har gått ut.",
+    "tooManyRequests": "För många försök. Vänta en stund och försök igen.",
+    "invalidEmail": "Ange en giltig e-postadress.",
+    "invalidNumber": "Ange ett giltigt tal.",
+    "tooLong": "Texten är för lång.",
+    "tooShort": "Värdet är för litet.",
+    "tooBig": "Värdet är för stort.",
+    "invalid": "Värdet är ogiltigt.",
+    "invitationInvalid": "Inbjudan är ogiltig eller har gått ut.",
+    "loadFailed": "Vi kunde inte hämta det här just nu",
+    "oauthQueryMissing": "Begäran saknar information. Starta om från programmet som bad om åtkomst.",
+    "textTooShort": "Texten är för kort.",
+    "approvalUsed": "Förslaget har redan använts.",
+    "approvalExpired": "Förslaget har gått ut eller kan inte godkännas. Be assistenten föreslå på nytt.",
+    "unavailable": "Funktionen är inte tillgänglig just nu. En administratör behöver konfigurera den.",
+    "slugUnavailable": "Den adressen togs precis. Använd förslaget eller välj en annan.",
+    "validationUnmapped": "Kunde inte spara: {message}"
+  },
+  "nav": {
+    "billing": "Fakturering",
+    "dashboard": "Data",
+    "pipeline": "Pipeline",
+    "venues": "Anläggningar",
+    "items": "Artiklar",
+    "customers": "Kunder",
+    "types": "Typer",
+    "lists": "Listor",
+    "setups": "Uppställningar",
+    "responsibilities": "Ansvar",
+    "runSheets": "Körscheman",
+    "calendar": "Kalender",
+    "forecast": "Prognos",
+    "financials": "Ekonomiskt resultat",
+    "workload": "Beläggning",
+    "orders": "Bokningar",
+    "inbox": "Inkorg",
+    "inboxOpen": "{count, plural, one {# öppet meddelande} other {# öppna meddelanden}}",
+    "skills": "Färdigheter",
+    "settings": "Inställningar",
+    "openMenu": "Öppna meny",
+    "commandBar": "Kommandofält",
+    "members": "Medlemmar",
+    "payments": "Betalningar",
+    "accounting": "Bokföring",
+    "organization": "Organisation",
+    "orderStatuses": "Bokningsstatusar",
+    "priceLists": "Prislistor",
+    "assistant": "Assistent",
+    "profile": "Profil",
+    "quotes": "Offerter",
+    "breadcrumb": "Brödsmula",
+    "new": "Skapa",
+    "edit": "Redigera",
+    "detail": "Detaljer",
+    "newChat": "Skapa chatt",
+    "newOrder": "Skapa bokning",
+    "newOrderOptions": "Fler sätt att skapa en bokning",
+    "newOrderFromMessage": "Från ett meddelande",
+    "recent": "Senaste",
+    "chats": "Chattar",
+    "showMore": "Visa fler",
+    "platformAdmin": "Mothership",
+    "admin": "Administration",
+    "groups": {
+      "primary": "Översikt",
+      "work": "Arbete",
+      "catalog": "Katalog",
+      "admin": "Administration"
+    },
+    "integrations": "Integrationer",
+    "itemStates": "Artikelstatusar",
+    "orderTemplates": "Mallar",
+    "apiKeys": "API-nycklar",
+    "permissions": "Behörigheter",
+    "notifications": "Notiser",
+    "organizations": "Organisationer",
+    "logs": "Systemloggar",
+    "aiModels": "AI-modeller",
+    "docs": "Dokumentation"
+  },
+  "shell": {
+    "mainNavigation": "Huvudnavigering",
+    "userMenu": "Användarmeny",
+    "signedInAs": "Inloggad som",
+    "organization": "Organisation",
+    "noOrganization": "Ingen organisation",
+    "noOtherOrganizations": "Inga andra organisationer",
+    "switchedOrganization": "Du arbetar nu i {name}.",
+    "languageSv": "Svenska",
+    "languageEn": "English",
+    "themeLight": "Ljust",
+    "themeDark": "Mörkt",
+    "themeSystem": "System",
+    "adminNavigation": "Administration",
+    "mySkills": "Mina färdigheter",
+    "profile": "Profil",
+    "platformAdminTitle": "Mothership",
+    "platformAdminDescription": "Systemlogg och AI-modeller för hela plattformen.",
+    "platformAdminOpen": "Öppna mothership"
+  },
+  "commandBar": {
+    "title": "Kommandofält",
+    "description": "Navigera eller kör en snabbåtgärd.",
+    "placeholder": "Sök eller skriv ett kommando...",
+    "empty": "Inga kommandon hittades.",
+    "navigate": "Navigera",
+    "actions": "Åtgärder",
+    "venuesGroup": "Anläggningar",
+    "goToVenues": "Gå till anläggningar",
+    "createVenue": "Skapa anläggning",
+    "openVenue": "Öppna {name}",
+    "goToItems": "Gå till artiklar",
+    "createItem": "Skapa artikel",
+    "assistant": "Assistent",
+    "askAssistant": "Fråga assistenten: ”{query}”",
+    "openAssistant": "Öppna assistenten"
+  },
+  "search": {
+    "placeholder": "Sök anläggningar, artiklar och mer...",
+    "noResults": "Inga träffar för \"{query}\".",
+    "results": "{count, plural, one {# träff} other {# träffar}}",
+    "searching": "Söker...",
+    "label": "Semantisk sökning",
+    "hint": "Sök efter innehåll och betydelse, inte bara exakta ord.",
+    "clear": "Rensa sökningen",
+    "entity": {
+      "venue": "Anläggning",
+      "item": "Artikel",
+      "customer": "Kund",
+      "contact": "Kontaktperson"
+    },
+    "error": "Sökningen misslyckades."
+  },
+  "wizard": {
+    "progress": "Steg",
+    "steps": {
+      "type": "Typ",
+      "details": "Uppgifter",
+      "fields": "Typens fält"
+    },
+    "descriptions": {
+      "type": "Välj typ. Typen avgör vilka egna fält som finns.",
+      "details": "Fyll i uppgifterna.",
+      "fields": "Fyll i typens fält."
+    }
+  },
+  "createHub": {
+    "title": "Skapa",
+    "description": "Allt du kan skapa. Välj något för att börja.",
+    "groups": {
+      "work": "Arbete",
+      "catalog": "Katalog",
+      "settings": "Inställningar"
+    },
+    "items": {
+      "order": {
+        "title": "Bokning",
+        "description": "En kundförfrågan, från första kontakt till genomfört event."
+      },
+      "customer": {
+        "title": "Kund",
+        "description": "Ett företag eller en person du bokar åt."
+      },
+      "item": {
+        "title": "Artikel",
+        "description": "Något du säljer eller bokar, som ett rum, en rätt eller utrustning."
+      },
+      "venue": {
+        "title": "Anläggning",
+        "description": "En plats där event sker."
+      },
+      "priceList": {
+        "title": "Prislista",
+        "description": "Priser som går före artiklarnas priser."
+      },
+      "skill": {
+        "title": "Skill",
+        "description": "Återanvändbart beteende för assistenten."
+      },
+      "type": {
+        "title": "Typ",
+        "description": "En sorts artikel, bokning eller kund och dess fält."
+      },
+      "list": {
+        "title": "Lista",
+        "description": "En värdelista, till exempel allergener eller utrustning."
+      },
+      "setup": {
+        "title": "Upplägg",
+        "description": "En rumsuppställning som teater eller styrelserum."
+      },
+      "responsibility": {
+        "title": "Ansvar",
+        "description": "Vad någon svarar för, och vem det går till som standard."
+      },
+      "runSheet": {
+        "title": "Körschema",
+        "description": "Ett underlag som kökskörschemat, och vem som får det."
+      },
+      "orderStatus": {
+        "title": "Bokningsstatus",
+        "description": "Ett steg som en bokning går igenom."
+      },
+      "member": {
+        "title": "Medlem",
+        "description": "Bjud in någon till din organisation."
+      }
+    }
+  },
+  "archivePreview": {
+    "loading": "Kontrollerar vad som skulle ändras…",
+    "movingOrders": "{count, plural, =0 {Inga bokningar flyttas.} one {# bokning flyttas till målet.} other {# bokningar flyttas till målet.}}",
+    "movingLines": "{count, plural, =0 {Inga rader flyttas.} one {# rad flyttas till målet.} other {# rader flyttas till målet.}}",
+    "cells": "{count, plural, =0 {Inga rutnätsceller påverkas.} one {# rutnätscell flyttas eller töms.} other {# rutnätsceller flyttas eller töms.}}",
+    "targetRequired": "Välj ett mål. Rader använder fortfarande detta.",
+    "blockedTitle": "Det går inte att arkivera ännu",
+    "blockedDescription": "Inget ändras förrän alla hinder är lösta."
+  },
+  "buffers": {
+    "legend": "Ställtid och nedplock",
+    "setupMinutes": "Ställtid före (minuter)",
+    "teardownMinutes": "Nedplock efter (minuter)",
+    "inherits": {
+      "none": "Standard för typens artiklar, hålls runt varje bokning av en bokningsbar artikel. Tomt = ingen.",
+      "type": "Hålls runt varje bokning av en bokningsbar artikel. Tomt = artikeltypens.",
+      "item": "Hålls runt bokningen. Tomt = artikelns, annars dess typs. Uppställningens ställtid är minsta ställtid."
+    },
+    "inEffect": "Gäller nu: {setup} min ställtid, {teardown} min nedplock."
+  },
+  "timeZone": {
+    "placeholder": "Välj tidszon",
+    "search": "Sök tidszon",
+    "empty": "Ingen tidszon hittades"
+  },
+  "country": {
+    "placeholder": "Välj land",
+    "search": "Sök land…",
+    "empty": "Inget land hittades"
+  },
+  "phone": {
+    "searchCountry": "Sök land eller riktnummer…",
+    "selectCountry": "Välj land"
+  },
+  "dev": {
+    "inviteCodes": "Dev: väntande inbjudningskoder för den här adressen",
+    "services": "Tjänster",
+    "devUsers": "Dev-användare",
+    "switchUser": "Byt dev-användare",
+    "switching": "Byter användare…",
+    "switched": "Inloggad som {name}.",
+    "sendNotification": "Skicka en testnotis till mig",
+    "reseed": "Återskapa databasen",
+    "reseeding": "Återskapar databasen…",
+    "reseeded": "Databasen är återskapad.",
+    "searchUsers": "Sök användare…",
+    "noUsers": "Inga användare hittades.",
+    "allUsers": "Alla användare ({count})",
+    "currentUser": "Inloggad",
+    "switchTo": "Byt till {name}",
+    "resetOnboarding": "Återställ välkomstuppsättning",
+    "resettingOnboarding": "Återställer välkomstuppsättning…",
+    "onboardingReset": "Välkomstuppsättningen återställd för {name}s organisation. De ser den på nästa sida.",
+    "platformAdmin": "Superadmin",
+    "sendInboxMessage": "Skicka ett testmeddelande till inkorgen",
+    "sendFailed": "Kunde inte skicka: {message}",
+    "logOut": "Logga ut"
+  },
+  "site": {
+    "brand": "Bibi",
+    "metaTitle": "Bibi – appen för organisationens dagliga verksamhet",
+    "metaDescription": "Bibi är en app som hjälper organisationer att hantera sin dagliga verksamhet: bokningar, lokaler, mat och dryck, aktiviteter och betalningar på ett ställe.",
+    "heading": "Appen som hjälper din organisation med den dagliga verksamheten",
+    "lead": "Bibi hjälper organisationer att hantera sin dagliga verksamhet, från första kundförfrågan till genomfört event. Bokningar, lokaler, mat och dryck, aktiviteter och betalningar finns på ett ställe, och kunden betalar via en länk.",
+    "login": "Logga in",
+    "signUp": "Kom igång",
+    "footer": "© Bibi",
+    "features": {
+      "orders": {
+        "title": "Mallar",
+        "body": "Skapa en bokning för ett mindre möte utan offert. Kunden betalar med kort eller mot faktura via en länk, och behöver aldrig använda appen."
+      },
+      "needs": {
+        "title": "Behov som antal",
+        "body": "Allergener och andra behov räknas som antal mot era egna listor och sammanställs automatiskt. Inga personuppgifter om gäster."
+      },
+      "runSheets": {
+        "title": "Körscheman som når rätt",
+        "body": "Versionerade körscheman, till exempel kökskörschema, skickas till rätt ansvarig och kan exporteras som json, pdf och csv."
+      },
+      "setup": {
+        "title": "Er egen uppsättning",
+        "body": "Ni bestämmer själva typer, fält, listor, statusar och ansvar. Åtkomst styrs av roller som ni finjusterar per person."
+      }
+    }
+  }
+}

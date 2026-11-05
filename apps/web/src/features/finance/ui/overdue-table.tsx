@@ -7,7 +7,7 @@ import { useOverdueColumns } from "./use-overdue-columns";
 
 export type OverdueTableProps = { rows: OverdueRow[] };
 
-/** The most overdue invoices, each linking to its ticket. */
+/** The most overdue invoices, each linking to its order. */
 export function OverdueTable({ rows }: OverdueTableProps) {
   const t = useTranslations("finance.overdue");
   return (

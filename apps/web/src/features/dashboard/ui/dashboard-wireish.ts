@@ -8,10 +8,10 @@ type Attention = DashboardSummary["attention"];
  * page and the assistant's card share the panels.
  */
 export type DashboardWireish = Omit<DashboardSummary, "attention" | "scheduled"> & {
-  attention: Omit<Attention, "expiringHolds" | "unsentWorkOrders"> & {
+  attention: Omit<Attention, "expiringHolds" | "unsentRunSheets"> & {
     expiringHolds: Dated<Attention["expiringHolds"][number], "holdsUntil">[];
-    unsentWorkOrders:
-      | Dated<NonNullable<Attention["unsentWorkOrders"]>[number], "startsAt">[]
+    unsentRunSheets:
+      | Dated<NonNullable<Attention["unsentRunSheets"]>[number], "startsAt">[]
       | null;
   };
   scheduled: Dated<DashboardSummary["scheduled"][number], "startsAt">[];

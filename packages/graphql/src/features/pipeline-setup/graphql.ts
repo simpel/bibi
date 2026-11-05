@@ -25,7 +25,7 @@ import { fieldFromOperation, mutationFromOperation } from "../../schema/from-ope
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { ItemStateRef } from "../item-state/graphql";
 import { StatusGridRef } from "../status-grid/graphql";
-import { TicketStatusRef } from "../ticket-status/graphql";
+import { OrderStatusRef } from "../order-status/graphql";
 
 const ProblemRef = objectFromSchema<PipelineProblem>({
   name: "PipelineProblem",
@@ -36,14 +36,14 @@ const ProblemRef = objectFromSchema<PipelineProblem>({
 const LineRef = objectFromSchema<PipelinePreviewLine>({
   name: "PipelinePreviewLine",
   schema: PipelinePreviewLineSchema,
-  description: "One line of the simulated ticket in one status: its state and hold.",
+  description: "One line of the simulated order in one status: its state and hold.",
 });
 
 const StepRef = objectFromSchema<PipelinePreviewStep>({
   name: "PipelinePreviewStep",
   schema: PipelinePreviewStepSchema,
   omit: ["lines"],
-  description: "The simulated ticket after entering one status.",
+  description: "The simulated order after entering one status.",
 });
 builder.objectFields(StepRef, (t) => ({
   lines: t.field({ type: [LineRef], resolve: (step) => step.lines }),
@@ -66,7 +66,7 @@ const ActivateRef = builder.objectRef<PipelineActivateOutput>("PipelineActivatio
 ActivateRef.implement({
   description: "The pipeline as activated: statuses, the set-up types' states and the grid.",
   fields: (t) => ({
-    statuses: t.field({ type: [TicketStatusRef], resolve: (result) => result.statuses as never }),
+    statuses: t.field({ type: [OrderStatusRef], resolve: (result) => result.statuses as never }),
     states: t.field({ type: [ItemStateRef], resolve: (result) => result.states as never }),
     grid: t.field({ type: StatusGridRef, resolve: (result) => result.grid }),
   }),
@@ -98,7 +98,7 @@ builder.objectFields(TypeDraftRef, (t) => ({
 const StatusDraftRef = objectFromSchema<PipelineStatusDraft>({
   name: "PipelineStatusDraft",
   schema: PipelineStatusDraftSchema,
-  description: "One ticket status in a pipeline setup draft.",
+  description: "One order status in a pipeline setup draft.",
 });
 
 const CellDraftRef = objectFromSchema<PipelineCellDraft>({

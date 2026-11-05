@@ -3,6 +3,7 @@ export type LineStateOption = {
   id: string;
   name: string;
   color: string;
+  entityTypeId: string;
   /** Ids of the states a line may move to from this one. */
   transitionsTo: string[];
 };

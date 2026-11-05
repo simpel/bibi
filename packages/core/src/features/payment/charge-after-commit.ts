@@ -11,15 +11,15 @@ export type ChargeAfterCommitInput = ExternalInput<PaymentCreateInput, PaymentDt
 
 type PreparedCharge = { target: ChargeTarget; description: string };
 
-/** The ticket, customer and account again, and the text the customer sees on the charge. */
+/** The order, customer and account again, and the text the customer sees on the charge. */
 async function prepare({
   input,
   context,
 }: ChargeAfterCommitInput): Promise<Result<PreparedCharge>> {
   const receivable = await loadReceivable({ context, input });
   if (!receivable.ok) return receivable;
-  const { ticketId, description } = receivable.value;
-  const target = await loadChargeTarget({ context, ticketId, method: input.method });
+  const { orderId, description } = receivable.value;
+  const target = await loadChargeTarget({ context, orderId, method: input.method });
   if (!target.ok) return target;
   return ok({ value: { target: target.value, description: input.description ?? description } });
 }

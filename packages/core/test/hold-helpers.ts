@@ -3,7 +3,7 @@ import { createTestCustomer, createTypeWithField } from "./customer-helpers";
 import { unwrap } from "./helpers";
 import { addState } from "./item-state-helpers";
 import { hours } from "./occupancy-helpers";
-import { createTestTicket } from "./ticket-helpers";
+import { createTestOrder } from "./order-helpers";
 
 type Ctx = { context: ExecuteContext };
 
@@ -15,8 +15,8 @@ export type HoldLineInput = Ctx & {
   to: number;
 };
 
-/** The organization's ticket or line type for hold tests, created once. */
-async function typeOf({ context, base }: Ctx & { base: "TICKET" | "LINE" }) {
+/** The organization's order or line type for hold tests, created once. */
+async function typeOf({ context, base }: Ctx & { base: "ORDER" | "LINE" }) {
   const name = `Hold ${base.toLowerCase()}`;
   const found = await context.db.entityType.findFirst({ where: { base, name } });
   return found ?? (await createTypeWithField({ context, base, name })).type;
@@ -37,22 +37,22 @@ async function initialWithHold({ context, entityTypeId, hold }: Ctx & HoldKindOf
 type HoldKindOf = { entityTypeId: string; hold: HoldLineInput["hold"] };
 
 /**
- * A line of a fresh ticket on the item for `[from, to)` on 1 November 2037, in a state of the
+ * A line of a fresh order on the item for `[from, to)` on 1 November 2037, in a state of the
  * given hold; its `HOLD` follows by trigger (ADR 0053). Needs a provisioned organization
- * (`ticketSetup`). Returns the `line.create` result.
+ * (`orderSetup`). Returns the `line.create` result.
  */
 export async function createHoldLine({ context, itemId, hold, from, to }: HoldLineInput) {
   const item = await context.db.item.findFirstOrThrow({ where: { id: itemId } });
   await initialWithHold({ context, entityTypeId: item.entityTypeId, hold });
-  const ticketType = await typeOf({ context, base: "TICKET" });
+  const orderType = await typeOf({ context, base: "ORDER" });
   const lineType = await typeOf({ context, base: "LINE" });
   const customer = await createTestCustomer({ context, name: `Hold ${hold} ${from}-${to}` });
-  const ticket = await createTestTicket({
+  const order = await createTestOrder({
     context,
-    entityTypeId: ticketType.id,
+    entityTypeId: orderType.id,
     customerId: customer.id,
   });
-  const input = { ticketId: ticket.id, entityTypeId: lineType.id, itemId, name: "Hold" };
+  const input = { orderId: order.id, entityTypeId: lineType.id, itemId, name: "Hold" };
   return execute({ operation: createLine, input: { ...input, ...hours({ from, to }) }, context });
 }
 

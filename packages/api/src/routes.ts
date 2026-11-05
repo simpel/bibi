@@ -45,16 +45,16 @@ import { responsibilityRoutes } from "./features/responsibility/rest";
 import { setupRoutes } from "./features/setup/rest";
 import { skillRoutes } from "./features/skill/rest";
 import { statusGridRoutes } from "./features/status-grid/rest";
-import { ticketRoutes } from "./features/ticket/rest";
-import { ticketDraftRoutes } from "./features/ticket-draft/rest";
-import { ticketStatusRoutes } from "./features/ticket-status/rest";
-import { ticketTemplateRoutes } from "./features/ticket-template/rest";
+import { orderRoutes } from "./features/order/rest";
+import { orderDraftRoutes } from "./features/order-draft/rest";
+import { orderStatusRoutes } from "./features/order-status/rest";
+import { orderTemplateRoutes } from "./features/order-template/rest";
 import { userPreferenceRoutes } from "./features/user-preference/rest";
 import { userSettingsRoutes } from "./features/user-settings/rest";
 import { venueRoutes } from "./features/venue/rest";
 import { vocabularyRoutes } from "./features/vocabulary/rest";
-import { workOrderRoutes } from "./features/work-order/rest";
-import { workOrderDefinitionRoutes } from "./features/work-order-definition/rest";
+import { runSheetRoutes } from "./features/run-sheet/rest";
+import { runSheetDefinitionRoutes } from "./features/run-sheet-definition/rest";
 import type { RestRoute } from "./rest-route";
 import { searchRoutes } from "./search-rest";
 
@@ -92,8 +92,8 @@ const moneyRoutes = [
 /** The organization's profile and its members' profiles (ADR 0061, 0068). */
 const organizationAndMemberProfileRoutes = [...organizationProfileRoutes, ...memberProfileRoutes];
 
-/** Customers and the ticket draft read from a message (ADR 0081, 0084). */
-const intakeRoutes = [...customerRoutes, ...ticketDraftRoutes];
+/** Customers and the order draft read from a message (ADR 0081, 0084). */
+const intakeRoutes = [...customerRoutes, ...orderDraftRoutes];
 
 /** Every declared REST route; add a feature's routes here when it gets a `rest.ts`. */
 export function listRestRoutes(): RestRoute[] {
@@ -105,7 +105,7 @@ export function listRestRoutes(): RestRoute[] {
     ...setupRoutes,
     ...responsibilityRoutes,
     ...assignmentRoutes,
-    ...workOrderDefinitionRoutes,
+    ...runSheetDefinitionRoutes,
     ...configurationRoutes,
     ...itemRoutes,
     ...itemDemandRoutes,
@@ -113,14 +113,14 @@ export function listRestRoutes(): RestRoute[] {
     ...priceListRoutes,
     ...contactRoutes,
     ...occupancyRoutes,
-    ...ticketStatusRoutes,
-    ...ticketTemplateRoutes,
+    ...orderStatusRoutes,
+    ...orderTemplateRoutes,
     ...itemStateRoutes,
     ...gridAndSetupRoutes,
-    ...ticketRoutes,
+    ...orderRoutes,
     ...lineAndGroupRoutes,
     ...requirementRoutes,
-    ...workOrderRoutes,
+    ...runSheetRoutes,
     ...boardRoutes,
     ...quoteRoutes,
     ...inboundMessageRoutes,

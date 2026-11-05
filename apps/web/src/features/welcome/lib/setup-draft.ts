@@ -1,7 +1,13 @@
-import type { SetupPreset, SetupPresetKey } from "@bibi/core/setup-presets";
+import type { SetupCategory, SetupPreset, SetupPresetKey } from "@bibi/core/setup-presets";
 
-/** One type on the bookable or sellable step; `key` is set for the kind's own types. */
-export type TypeChoice = { key: string | null; name: string; bookable: boolean; checked: boolean };
+/** One type on the spaces, food or extras step; `key` is set for the kind's own types. */
+export type TypeChoice = {
+  key: string | null;
+  name: string;
+  category: SetupCategory;
+  bookable: boolean;
+  checked: boolean;
+};
 
 /** What the setup steps collect before review (ADR 0061); nothing is saved until Activate. */
 export type SetupDraft = { kind: SetupPresetKey | null; types: TypeChoice[] };
@@ -14,13 +20,14 @@ export type DraftFromKindInput = {
   label: (type: { key: string; name: string }) => string;
 };
 
-/** Picking a kind prefills both type steps with its types, all ticked. */
+/** Picking a kind prefills the type steps with its types; any type can be removed or added. */
 export function draftFromKind({ preset, label }: DraftFromKindInput): SetupDraft {
   return {
     kind: preset.key as SetupPresetKey,
     types: preset.itemTypes.map((type) => ({
       key: type.key,
       name: label(type),
+      category: type.category,
       bookable: type.bookable,
       checked: true,
     })),

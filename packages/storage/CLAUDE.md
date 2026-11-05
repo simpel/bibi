@@ -16,7 +16,7 @@ File storage behind one interface (ADR 0063). The only package that talks to S3 
 
 ## Adapters
 - `disk` (default): files under `STORAGE_DISK_DIR` (default `./.storage` from the repo root, git-ignored), content type in a `<key>.meta.json` sidecar. Compose mounts a volume for the web service.
-- `s3`: any S3-compatible service (Hetzner Object Storage), path-style. Needs `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` and usually `S3_ENDPOINT`; `STORAGE_DRIVER=s3` without them fails env validation.
+- `s3`: any S3-compatible service (Hetzner Object Storage), path-style. Needs `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY` and usually `S3_ENDPOINT`; `STORAGE_DRIVER=s3` without them fails env validation.
 - Chosen by `STORAGE_DRIVER` in `@bibi/config`.
 
 ## Tests

@@ -2,8 +2,8 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 
-/** What can be assigned (ADR 0034): a ticket or an item (package or catalog item). */
-export const ASSIGNMENT_SUBJECT_TYPES = ["TICKET", "ITEM"] as const;
+/** What can be assigned (ADR 0034): an order or an item (package or catalog item). */
+export const ASSIGNMENT_SUBJECT_TYPES = ["ORDER", "ITEM"] as const;
 export const AssignmentSubjectTypeSchema = z.enum(ASSIGNMENT_SUBJECT_TYPES);
 
 /** `assignment.listMine`: what the member answers for, or what they follow. */
@@ -48,8 +48,8 @@ export const AssignmentSchema = z.object({
 });
 
 const SubjectShape = {
-  subjectType: AssignmentSubjectTypeSchema.describe("What is assigned: TICKET or ITEM"),
-  subjectId: z.string().min(1).describe("Id of the ticket or item"),
+  subjectType: AssignmentSubjectTypeSchema.describe("What is assigned: ORDER or ITEM"),
+  subjectId: z.string().min(1).describe("Id of the order or item"),
 };
 
 const ResponsibilityIdSchema = z
@@ -57,7 +57,7 @@ const ResponsibilityIdSchema = z
   .min(1)
   .nullish()
   .describe(
-    "Id of a responsibility (responsibility.list) for that part of a ticket; omitted or null " +
+    "Id of a responsibility (responsibility.list) for that part of an order; omitted or null " +
       "= the main assignment",
   );
 

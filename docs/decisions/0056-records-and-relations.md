@@ -5,7 +5,7 @@
 - **Related:** 0006 (database conventions), 0021 (configurable items), 0034, 0051, 0053, 0055
 
 ## Context
-- Seven tables carry an org-defined type and `fields` JSON: `Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `ProgramItem`, `Requirement`. Every rule about types and fields ("refuse while records have a value", `LINK` targets, search) has to query all seven. Today it loads every row into memory (`field-usage.ts`). That does not scale past a few thousand tickets.
+- Seven tables carry an org-defined type and `fields` JSON: `Item`, `Customer`, `Contact`, `Order`, `OrderTemplate`, `ProgramItem`, `Requirement`. Every rule about types and fields ("refuse while records have a value", `LINK` targets, search) has to query all seven. Today it loads every row into memory (`field-usage.ts`). That does not scale past a few thousand orders.
 - References without a foreign key:
   - `LINK` and `CHOICE` / `MULTI_CHOICE` field values: ids inside JSON,
   - `Responsibility.entityTypeIds`, `defaultFollowerIds`; `SheetDefinition.entityTypeIds`, `fieldIds`, `vocabularyIds`, `roleId`: `String[]` id lists,
@@ -13,7 +13,7 @@
 - Every "cannot archive while in use" rule re-implements a foreign key by hand.
 
 ## Decision
-1. **A `Record` supertable** (class-table inheritance): `id`, `organizationId`, `entityTypeId`, `base`, `fields` (JSONB), `status`, timestamps. Each of the seven tables (`Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `Line`, `Requirement`) shares its primary key with a `Record` row (`id` is both PK and FK, composite with `organizationId`).
+1. **A `Record` supertable** (class-table inheritance): `id`, `organizationId`, `entityTypeId`, `base`, `fields` (JSONB), `status`, timestamps. Each of the seven tables (`Item`, `Customer`, `Contact`, `Order`, `OrderTemplate`, `Line`, `Requirement`) shares its primary key with a `Record` row (`id` is both PK and FK, composite with `organizationId`).
 2. **Field values:**
    - Scalars and choices (`TEXT`, `NUMBER`, `BOOLEAN`, `DATE`, `CHOICE`, `MULTI_CHOICE`) stay in `Record.fields`, with a GIN index (`jsonb_ops`: it serves both `?` and `@>`; `jsonb_path_ops` serves only `@>`). Choice values are vocabulary value ids, validated by core on write. Since values are archived and never deleted, an id cannot dangle. "In use" checks are one indexed query (`fields ? key`, `fields @> {key: [id]}`).
    - Links move to `RecordLink`: `recordId`, `fieldId`, `targetRecordId`, all composite foreign keys. A link field with several targets is several rows. "Cannot archive a record while a link points to it" is an indexed `EXISTS`.

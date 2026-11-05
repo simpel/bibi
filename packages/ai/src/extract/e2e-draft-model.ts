@@ -1,4 +1,4 @@
-// E2E ONLY. A deterministic model for `ticketDraft.fromMessage` (ADR 0084): imported dynamically
+// E2E ONLY. A deterministic model for `orderDraft.fromMessage` (ADR 0084): imported dynamically
 // by the apps when `E2E_MOCK_MODEL` is on outside production. Never use it elsewhere.
 import { MockLanguageModelV4 } from "ai/test";
 

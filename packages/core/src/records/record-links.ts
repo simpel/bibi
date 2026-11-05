@@ -12,7 +12,7 @@ export const RECORD_LINKS_SELECT = {
   },
 } satisfies Prisma.RecordSelect;
 
-/** `include` on an extending row (`Item`, `Ticket`, …) that loads its record's links. */
+/** `include` on an extending row (`Item`, `Order`, …) that loads its record's links. */
 export const RECORD_LINKS_INCLUDE = { select: RECORD_LINKS_SELECT } as const;
 
 export type StoredLink = { targetRecordId: string; field: { key: string } };

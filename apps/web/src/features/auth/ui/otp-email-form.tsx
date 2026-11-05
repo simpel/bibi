@@ -4,7 +4,7 @@ import { Button, Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
-import { TextField } from "@/components/form/text-field";
+import { EmailField } from "@/components/form/email-field";
 import { authClient } from "@/lib/auth-client";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { EmailSchema, type EmailValues } from "./auth-schemas";
@@ -18,6 +18,7 @@ export function OtpEmailForm({ onSent }: OtpEmailFormProps) {
   const common = useTranslations("common");
   const messages = useZodMessages();
   const form = useForm<EmailValues>({
+    mode: "onBlur",
     resolver: zodResolver(EmailSchema, messages),
     defaultValues: { email: "" },
   });
@@ -32,14 +33,7 @@ export function OtpEmailForm({ onSent }: OtpEmailFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} noValidate className="grid gap-4">
-        <TextField
-          form={form}
-          name="email"
-          label={t("email")}
-          type="email"
-          autoComplete="email"
-          required
-        />
+        <EmailField form={form} name="email" label={t("email")} required />
         <Button type="submit" disabled={pending}>
           {t("sendCode")}
         </Button>

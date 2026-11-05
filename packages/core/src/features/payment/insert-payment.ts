@@ -17,7 +17,7 @@ type AmountInput = {
 
 /** The requested amount: the open balance by default, lower for a partial payment, never higher. */
 async function chargeAmount({ context, receivable, input }: AmountInput): Promise<Result<number>> {
-  const paid = await paidByReceivable({ context, ticketIds: [receivable.ticketId] });
+  const paid = await paidByReceivable({ context, orderIds: [receivable.orderId] });
   const id = receivable.ref.quoteId ?? receivable.ref.depositId ?? receivable.ref.invoiceId ?? "";
   const { openMinor } = settlementOf({ paid, id, amountMinor: receivable.amountMinor });
   if (openMinor <= 0) return conflict({ message: "Nothing is left to pay on it" });
@@ -45,8 +45,8 @@ export async function insertPayment({
 }: InsertPaymentInput): Promise<Result<PaymentDto>> {
   const receivable = await loadReceivable({ context, input });
   if (!receivable.ok) return receivable;
-  const { ticketId, ref, currency } = receivable.value;
-  const target = await loadChargeTarget({ context, ticketId, method: input.method });
+  const { orderId, ref, currency } = receivable.value;
+  const target = await loadChargeTarget({ context, orderId, method: input.method });
   if (!target.ok) return err({ error: target.error });
   const claimed = await claimReceivable({ context, ref });
   if (!claimed.ok) return claimed;
@@ -58,7 +58,7 @@ export async function insertPayment({
       ...ref,
       publicToken: newPublicToken(),
       organizationId: context.organizationId,
-      ticketId,
+      orderId,
       method: input.method,
       amountMinor: amount.value,
       currency,

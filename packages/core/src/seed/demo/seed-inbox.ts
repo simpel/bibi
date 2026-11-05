@@ -38,10 +38,10 @@ const mail = ({ slug, key, from, subject, text, hoursAgo }: MailInput) =>
 
 type SeedInboxInput = { context: ExecuteContext; org: DemoOrg };
 
-type Endpoints = { emailId: string | null; ticketId: string | null; slug: string };
+type Endpoints = { emailId: string | null; orderId: string | null; slug: string };
 
-/** A booking request mailed to the organization address, and a reply on the first ticket. */
-const mails = ({ emailId, ticketId, slug }: Endpoints) => [
+/** A booking request mailed to the organization address, and a reply on the first order. */
+const mails = ({ emailId, orderId, slug }: Endpoints) => [
   {
     ...mail({
       ...{ slug, key: "tasting", hoursAgo: 5, from: "Linnea Kvist <linnea.kvist@kvarnby.test>" },
@@ -50,7 +50,7 @@ const mails = ({ emailId, ticketId, slug }: Endpoints) => [
       text: "Hi! A wine tasting for 14 people on Friday 21 November, around 3 pm. Two of us are vegan. Best, Linnea",
     }),
     endpointId: emailId,
-    ticketId: null,
+    orderId: null,
   },
   {
     ...mail({
@@ -59,7 +59,7 @@ const mails = ({ emailId, ticketId, slug }: Endpoints) => [
       text: "Thanks! We will be two more, and one guest is vegetarian.",
     }),
     endpointId: null,
-    ticketId,
+    orderId,
   },
 ];
 
@@ -71,17 +71,17 @@ const PARTNER_REQUEST = {
 
 /**
  * The inbox (ADR 0085, `docs/demo-seed.md`): a booking request mailed to the organization address,
- * a customer reply on the first ticket, and a request a partner system handed in over the API.
+ * a customer reply on the first order, and a request a partner system handed in over the API.
  * The partner request is read, so the inbox shows both its unread and its read table.
  */
 export async function seedDemoInbox({ context, org }: SeedInboxInput): Promise<Result<true>> {
-  const [endpoints, ticket] = await Promise.all([
+  const [endpoints, order] = await Promise.all([
     context.db.inboundEndpoint.findMany({}),
-    context.db.ticket.findFirst({ orderBy: { reference: "asc" } }),
+    context.db.order.findFirst({ orderBy: { reference: "asc" } }),
   ]);
   const emailId = endpoints.find((endpoint) => endpoint.channel === "EMAIL")?.id ?? null;
   const api = endpoints.find((endpoint) => endpoint.channel === "API");
-  for (const input of mails({ emailId, ticketId: ticket?.id ?? null, slug: org.slug })) {
+  for (const input of mails({ emailId, orderId: order?.id ?? null, slug: org.slug })) {
     const stored = await execute({ operation: receiveInboundMessage, input, context });
     if (!stored.ok) return stored;
   }

@@ -6,26 +6,26 @@ import {
 import { call } from "./helpers";
 
 describe("customer_archive approval (#134)", () => {
-  it("says how many tickets will be archived and archives them once approved", async () => {
+  it("says how many orders will be archived and archives them once approved", async () => {
     const { user, assistant } = await setup();
-    const id = await seedCustomer({ client: user, tickets: 3 });
+    const id = await seedCustomer({ client: user, orders: 3 });
     const blocked = await call({ client: user, name: "customer_archive", args: { id } });
-    expect(blocked.data).toMatchObject({ code: "CONFLICT", issues: [{ path: "archiveTickets" }] });
+    expect(blocked.data).toMatchObject({ code: "CONFLICT", issues: [{ path: "archiveOrders" }] });
     const proposal = await call({
       client: assistant,
       name: "customer_archive",
-      args: { id, archiveTickets: true },
+      args: { id, archiveOrders: true },
     });
     expect(proposal.data).toMatchObject({
       status: "approval_required",
-      summary: 'Archive customer "Kvarnby Design AB" and its 3 tickets',
+      summary: 'Archive customer "Kvarnby Design AB" and its 3 orders',
     });
     const confirmed = await call({
       client: user,
       name: "approval_confirm",
       args: { approvalToken: proposal.data.approvalToken },
     });
-    expect(confirmed.data).toMatchObject({ id, status: "ARCHIVED", ticketCount: 0 });
-    expect((await call({ client: user, name: "ticket_list" })).data.items).toEqual([]);
+    expect(confirmed.data).toMatchObject({ id, status: "ARCHIVED", orderCount: 0 });
+    expect((await call({ client: user, name: "order_list" })).data.items).toEqual([]);
   });
 });

@@ -6,7 +6,7 @@ export const ArchivePreviewSchema = z.object({
   archivable: z
     .boolean()
     .describe("False when blockers would refuse the archive (nothing changes)"),
-  moving: z.number().int().describe("Tickets (status) or lines (state) that move to the target"),
+  moving: z.number().int().describe("Orders (status) or lines (state) that move to the target"),
   cells: z.number().int().describe("Status grid cells cleared or moved with the archive"),
   targetRequired: z.boolean().describe("The archive needs a target because rows use it"),
   blockers: z.array(z.string()).describe("Why the archive would be refused, one per blocker"),

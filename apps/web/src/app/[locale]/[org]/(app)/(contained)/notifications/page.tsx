@@ -6,11 +6,17 @@ import {
   readNotificationListParams,
 } from "@/features/notification/lib/list-params";
 import { NotificationList } from "@/features/notification/ui/notification-list";
+import { pageTitle } from "@/lib/page-metadata";
 
 type NotificationsPageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<NotificationSearchParams>;
 };
+
+export async function generateMetadata({ params }: NotificationsPageProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "nav", key: "notifications" });
+}
 
 export default async function NotificationsPage({ params, searchParams }: NotificationsPageProps) {
   const locale = resolveLocale({ value: (await params).locale });

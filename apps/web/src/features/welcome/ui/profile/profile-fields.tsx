@@ -3,6 +3,7 @@
 import type { ProfileUpdateInput } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import { PhoneField } from "@/components/form/phone-field";
 import { TextField } from "@/components/form/text-field";
 
 export type ProfileFieldsProps = { form: UseFormReturn<ProfileUpdateInput> };
@@ -28,14 +29,7 @@ export function ProfileFields({ form }: ProfileFieldsProps) {
           required
         />
       </div>
-      <TextField
-        form={form}
-        name="phone"
-        type="tel"
-        label={t("phone")}
-        autoComplete="tel"
-        required
-      />
+      <PhoneField form={form} name="phone" label={t("phone")} autoComplete="tel" required />
     </>
   );
 }

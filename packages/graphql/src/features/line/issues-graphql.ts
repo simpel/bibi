@@ -33,7 +33,7 @@ const LineIssuesRef = objectFromSchema<LineIssues>({
   name: "LineIssues",
   schema: LineIssuesOutputSchema,
   omit: ["lines"],
-  description: "A saved ticket's lines with issues; nothing is written.",
+  description: "A saved order's lines with issues; nothing is written.",
 });
 builder.objectField(LineIssuesRef, "lines", (t) =>
   t.field({ type: [LineWithIssuesRef], resolve: (issues) => issues.lines }),

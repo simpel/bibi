@@ -9,7 +9,7 @@ import {
 import { addDays, MAX_CALENDAR_DAYS, parseIsoDate, toIsoDate } from "@bibi/core/schemas";
 import type { AssetBooking, CalendarDayValue } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
-import { ticketRoute } from "@/lib/routes";
+import { orderRoute } from "@/lib/routes";
 import { runOperation } from "@/server/run-operation";
 import { loadOrganizationTimeZone } from "@/server/time-zones";
 import { toAssetBookings } from "./to-asset-bookings";
@@ -89,8 +89,8 @@ export async function loadBookings({ range }: { range: DayRange }): Promise<Resu
       ink: "var(--primary-foreground)",
       hold: "hard",
     },
-    via: { LINE: t("viaLine"), TICKET: t("viaTicket") },
-    ticketHref: ({ ticketId }) => ticketRoute({ id: ticketId }),
+    via: { LINE: t("viaLine"), ORDER: t("viaOrder") },
+    orderHref: ({ orderId }) => orderRoute({ id: orderId }),
   });
   return ok({ value: { bookings, values: blocks.value.values } });
 }

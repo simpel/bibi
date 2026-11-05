@@ -5,9 +5,9 @@ import type { BoardDto, BoardPhaseDto } from "./schema";
 /** Prisma `include` for a phase's active statuses, in status order. */
 export const WITH_STATUSES = {
   statuses: {
-    where: { ticketStatus: { status: "ACTIVE" } },
+    where: { orderStatus: { status: "ACTIVE" } },
     select: { statusId: true },
-    orderBy: [{ ticketStatus: { position: "asc" } }, { statusId: "asc" }],
+    orderBy: [{ orderStatus: { position: "asc" } }, { statusId: "asc" }],
   },
 } satisfies Prisma.BoardPhaseInclude;
 

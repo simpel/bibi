@@ -27,7 +27,7 @@ function phaseSums({ cards }: { cards: readonly PipelineCard[] }): Sums {
 }
 
 /**
- * The agreed value and the estimate of the other tickets, excl. VAT, exact to the öre. Both
+ * The agreed value and the estimate of the other orders, excl. VAT, exact to the öre. Both
  * animate when a moved card refreshes the board.
  */
 export function PhaseValue({ cards, currency, size }: PhaseValueProps) {

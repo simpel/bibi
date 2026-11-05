@@ -10,6 +10,11 @@ export const profileMcpTools = [
     summary: ({ input }) =>
       `Save your profile as ${text({ value: input.firstName })} ${text({ value: input.lastName })}`,
   }),
+  mcpTool({
+    operation: "profile.setLocale",
+    idempotent: true,
+    summary: ({ input }) => `Set language to ${text({ value: input.locale })}`,
+  }),
   mcpTool({ operation: "workingHours.get" }),
   mcpTool({
     operation: "workingHours.set",

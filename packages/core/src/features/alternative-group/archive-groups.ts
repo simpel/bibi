@@ -1,17 +1,17 @@
 import type { OperationContext } from "../../operations/types";
 import { toGroupDtos } from "./to-group-dto";
 
-export type ArchiveGroupsOfTicketInput = { context: OperationContext; ticketId: string };
+export type ArchiveGroupsOfOrderInput = { context: OperationContext; orderId: string };
 
 /**
- * Archives the ticket's alternative groups with the ticket (one audit row each). Their options
- * are archived with the ticket's lines and keep `alternativeGroupId` as history.
+ * Archives the order's alternative groups with the order (one audit row each). Their options
+ * are archived with the order's lines and keep `alternativeGroupId` as history.
  */
-export async function archiveGroupsOfTicket({
+export async function archiveGroupsOfOrder({
   context,
-  ticketId,
-}: ArchiveGroupsOfTicketInput): Promise<void> {
-  const rows = await context.db.alternativeGroup.findMany({ where: { ticketId } });
+  orderId,
+}: ArchiveGroupsOfOrderInput): Promise<void> {
+  const rows = await context.db.alternativeGroup.findMany({ where: { orderId } });
   const groups = await toGroupDtos({ context, rows });
   for (const before of groups) {
     const row = await context.db.alternativeGroup.update({

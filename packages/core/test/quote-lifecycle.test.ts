@@ -5,17 +5,17 @@ import {
   execute,
   expireQuote,
   getQuote,
-  getTicket,
+  getOrder,
   sendQuote,
   updateQuote,
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { addTestLines, createTestQuote, draftQuote as draft, quoteSetup } from "./quote-helpers";
-import { createTestTicket, moveToStatus } from "./ticket-helpers";
+import { createTestOrder, moveToStatus } from "./order-helpers";
 
 describe("quote.send (ADR 0022)", () => {
-  it("needs lines and a future validity, then sends without moving the ticket", async () => {
-    const { context, ticket, quote, type, customer } = await draft();
+  it("needs lines and a future validity, then sends without moving the order", async () => {
+    const { context, order, quote, type, customer } = await draft();
     const { id } = quote;
     const past = new Date(Date.now() - 1000);
     unwrap({
@@ -23,12 +23,12 @@ describe("quote.send (ADR 0022)", () => {
     });
     const expired = await execute({ operation: sendQuote, input: { id }, context });
     expect(errorCode({ result: expired })).toBe("VALIDATION");
-    const bare = await createTestTicket({
+    const bare = await createTestOrder({
       context,
       entityTypeId: type.id,
       customerId: customer.id,
     });
-    const empty = await createTestQuote({ context, ticketId: bare.id });
+    const empty = await createTestQuote({ context, orderId: bare.id });
     expect(empty.totalInclVatMinor).toBe(0);
     const noLines = await execute({ operation: sendQuote, input: { id: empty.id }, context });
     expect(errorCode({ result: noLines })).toBe("VALIDATION");
@@ -41,28 +41,28 @@ describe("quote.send (ADR 0022)", () => {
     });
     expect(sent).toMatchObject({ quoteStatus: "SENT" });
     const after = unwrap({
-      result: await execute({ operation: getTicket, input: { id: ticket.id }, context }),
+      result: await execute({ operation: getOrder, input: { id: order.id }, context }),
     });
-    expect(after.statusId).toBe(ticket.statusId);
+    expect(after.statusId).toBe(order.statusId);
     const twice = await execute({ operation: sendQuote, input: { id }, context });
     expect(errorCode({ result: twice })).toBe("CONFLICT");
     const edit = await execute({ operation: updateQuote, input: { id, terms: "x" }, context });
     expect(errorCode({ result: edit })).toBe("CONFLICT");
-    const audit = await getDb().auditLog.findMany({ where: { entityId: ticket.id } });
+    const audit = await getDb().auditLog.findMany({ where: { entityId: order.id } });
     expect(audit.find((row) => row.operation === "quote.send")).toBeUndefined();
   });
 
-  it("refuses a ticket in a closing status and rolls everything back", async () => {
+  it("refuses an order in a closing status and rolls everything back", async () => {
     const { context, type, customer, lunch, lineType } = await quoteSetup();
-    const fresh = await createTestTicket({
+    const fresh = await createTestOrder({
       context,
       entityTypeId: type.id,
       customerId: customer.id,
     });
     const lines = [{ itemId: lunch.id, quantity: 1 }];
-    await addTestLines({ context, ticketId: fresh.id, lineTypeId: lineType.id, lines });
-    const quote = await createTestQuote({ context, ticketId: fresh.id });
-    const lost = { context, ticketId: fresh.id, name: "Lost", reason: "Price" };
+    await addTestLines({ context, orderId: fresh.id, lineTypeId: lineType.id, lines });
+    const quote = await createTestQuote({ context, orderId: fresh.id });
+    const lost = { context, orderId: fresh.id, name: "Lost", reason: "Price" };
     unwrap({ result: await moveToStatus(lost) });
     const sent = await execute({ operation: sendQuote, input: { id: quote.id }, context });
     expect(errorCode({ result: sent })).toBe("CONFLICT");

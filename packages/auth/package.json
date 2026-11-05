@@ -24,6 +24,7 @@
     "@bibi/config": "workspace:*",
     "@bibi/core": "workspace:*",
     "@bibi/db": "workspace:*",
+    "@bibi/i18n": "workspace:*",
     "@bibi/logger": "workspace:*",
     "@bibi/mail": "workspace:*",
     "@paralleldrive/cuid2": "3.3.0",

@@ -15,21 +15,22 @@ export const ROUTES = {
   typeNew: "/new/type",
   venueNew: "/new/venue",
   customerNew: "/new/customer",
-  workOrderNew: "/new/work-order",
+  runSheetNew: "/new/run-sheet",
   responsibilityNew: "/new/responsibility",
   priceListNew: "/new/price-list",
-  ticketStatusNew: "/new/ticket-status",
+  orderStatusNew: "/new/order-status",
   itemStateNew: "/new/item-state",
-  ticketTemplateNew: "/new/ticket-template",
-  ticketNew: "/new/ticket",
+  orderTemplateNew: "/new/order-template",
+  orderNew: "/new/order",
   depositNew: "/new/deposit",
   customers: "/customers",
   notifications: "/notifications",
-  tickets: "/tickets",
-  workOrders: "/work-orders",
+  orders: "/orders",
+  runSheets: "/run-sheets",
   calendar: "/calendar",
   financials: "/data/financials", // one of the dashboards (ADR 0086)
   workload: "/data/workload",
+  forecast: "/data/forecast",
   quotes: "/quotes",
   settings: "/settings",
   settingsOrganization: "/settings/organization",
@@ -37,13 +38,13 @@ export const ROUTES = {
   settingsLists: "/settings/lists",
   settingsSetups: "/settings/setups",
   settingsResponsibilities: "/settings/responsibilities",
-  settingsWorkOrders: "/settings/work-orders",
+  settingsRunSheets: "/settings/run-sheets",
   settingsPriceLists: "/settings/price-lists",
   settingsPipeline: "/settings/pipeline",
   /** The welcome flow (ADR 0061); under an organization it is `/:org/welcome`. */
   welcome: "/welcome",
   settingsItemStates: "/settings/item-states",
-  settingsTicketTemplates: "/settings/ticket-templates",
+  settingsOrderTemplates: "/settings/order-templates",
   settingsMembers: "/admin/members",
   settingsPayments: "/settings/payments",
   settingsBilling: "/settings/billing",
@@ -54,9 +55,10 @@ export const ROUTES = {
   adminMembers: "/admin/members",
   adminApiKeys: "/admin/api-keys",
   mothership: "/mothership",
+  mothershipOrganizations: "/mothership/organizations",
+  mothershipBilling: "/mothership/billing",
   mothershipLogs: "/mothership/logs",
   mothershipAiModels: "/mothership/ai-models",
-  mothershipBilling: "/mothership/billing",
   adminLogs: "/mothership/logs",
   adminAiModels: "/mothership/ai-models",
 } as const;
@@ -69,7 +71,7 @@ export function itemRoute({ id }: ItemRouteInput): string {
 
 export type ListItemRouteInput = { list: string; id: string };
 
-/** Detail path of a record under a list page, e.g. `/settings/work-orders/<id>`. */
+/** Detail path of a record under a list page, e.g. `/settings/run-sheets/<id>`. */
 export function listItemRoute({ list, id }: ListItemRouteInput): string {
   return `${list}/${encodeURIComponent(id)}`;
 }
@@ -92,15 +94,15 @@ export function customerRoute({ id }: IdRouteInput): string {
   return `${ROUTES.customers}/${encodeURIComponent(id)}`;
 }
 
-export function ticketRoute({ id }: IdRouteInput): string {
-  return `${ROUTES.tickets}/${encodeURIComponent(id)}`;
+export function orderRoute({ id }: IdRouteInput): string {
+  return `${ROUTES.orders}/${encodeURIComponent(id)}`;
 }
 
-export type DepositNewRouteInput = { ticketId: string };
+export type DepositNewRouteInput = { orderId: string };
 
-/** `/new/deposit?ticket=<id>`: a deposit request on that ticket. */
-export function depositNewRoute({ ticketId }: DepositNewRouteInput): string {
-  return `${ROUTES.depositNew}?ticket=${encodeURIComponent(ticketId)}`;
+/** `/new/deposit?order=<id>`: a deposit request on that order. */
+export function depositNewRoute({ orderId }: DepositNewRouteInput): string {
+  return `${ROUTES.depositNew}?order=${encodeURIComponent(orderId)}`;
 }
 
 export function quoteRoute({ id }: IdRouteInput): string {

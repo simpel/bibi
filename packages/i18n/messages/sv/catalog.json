@@ -1,0 +1,623 @@
+{
+  "venue": {
+    "singular": "Anläggning",
+    "plural": "Anläggningar",
+    "create": "Skapa anläggning",
+    "edit": "Redigera anläggning",
+    "delete": "Ta bort anläggning",
+    "deleteConfirm": "Vill du ta bort anläggningen {name}?",
+    "empty": "Inga anläggningar ännu.",
+    "created": "Anläggningen har skapats.",
+    "updated": "Anläggningen har uppdaterats.",
+    "fields": {
+      "name": "Namn",
+      "description": "Beskrivning",
+      "address": "Adress",
+      "postalCode": "Postnummer",
+      "city": "Ort",
+      "website": "Webbplats",
+      "streetAddress": "Gatuadress",
+      "country": "Land (ISO-kod)",
+      "contactEmail": "Kontakt, e-post",
+      "contactPhone": "Kontakt, telefon",
+      "openingHours": "Notering om öppettider",
+      "timeZone": "Tidszon",
+      "timeZoneInherit": "Organisationens zon ({zone})",
+      "defaultVatRatePercent": "Moms (%)"
+    },
+    "listDescription": "Byggnader och platser med artiklar att boka.",
+    "emptyDescription": "Skapa din första anläggning för att komma igång.",
+    "archive": "Arkivera anläggning",
+    "archiveConfirm": "Vill du arkivera {name}?",
+    "archived": "Anläggningen har arkiverats.",
+    "notFound": "Anläggningen finns inte eller är arkiverad.",
+    "createDescription": "Fyll i uppgifter om anläggningen. Du kan lägga till artiklar efteråt.",
+    "editDescription": "Ändra uppgifterna för anläggningen.",
+    "columns": {
+      "name": "Namn",
+      "city": "Ort",
+      "contact": "Kontakt",
+      "status": "Status"
+    },
+    "itemsEmpty": "Inga artiklar på den här anläggningen ännu.",
+    "wizard": {
+      "progress": "Steg",
+      "steps": {
+        "identity": "Namn",
+        "address": "Adress",
+        "contact": "Kontakt och moms"
+      },
+      "descriptions": {
+        "identity": "Namnge anläggningen.",
+        "address": "Var anläggningen ligger.",
+        "contact": "Hur man når anläggningen, när den har öppet och standardmoms."
+      }
+    },
+    "hours": {
+      "title": "Öppettider",
+      "description": "Används för att varna när en bokning ligger utanför öppettiderna. Blockerar aldrig en bokning.",
+      "empty": "Inga öppettider angivna. Bokningar kontrolleras inte mot öppettider."
+    }
+  },
+  "item": {
+    "singular": "Artikel",
+    "plural": "Artiklar",
+    "listDescription": "Det ni säljer och bokar, t.ex. rum, rätter och utrustning. Typen bestämmer vilka fält en artikel har.",
+    "create": "Skapa artikel",
+    "edit": "Redigera artikel",
+    "createDescription": "Välj typ och fyll i uppgifterna.",
+    "editDescription": "Ändra uppgifterna för artikeln.",
+    "archive": "Arkivera artikel",
+    "archiveConfirm": "Vill du arkivera artikeln {name}?",
+    "archived": "Artikeln har arkiverats.",
+    "created": "Artikeln har skapats.",
+    "updated": "Artikeln har uppdaterats.",
+    "empty": "Inga artiklar ännu.",
+    "emptyDescription": "Skapa en artikeltyp under Typer och lägg sedan till artiklar.",
+    "noTypes": "Det finns inga artikeltyper ännu. Skapa en typ först.",
+    "goToTypes": "Gå till typer",
+    "filterLabel": "Filtrera på typ",
+    "allTypes": "Alla typer",
+    "saving": "Sparar artikel…",
+    "archiving": "Arkiverar artikel…",
+    "select": "Välj…",
+    "search": "Sök…",
+    "noOptions": "Inga alternativ.",
+    "saveBundle": "Spara som paket",
+    "saveBundleDescription": "Välj pakettyp och delar. Paketet visas bara för den här kunden; katalogen påverkas inte.",
+    "bundleSaved": "Paketet har sparats.",
+    "bundles": "Paket",
+    "bundlesEmpty": "Kunden har inga paket ännu.",
+    "bundlesNoTypes": "Det finns ingen artikeltyp med förmågan Paket ännu. Skapa en under Typer först.",
+    "bundleFor": "Paket för {customer}",
+    "fields": {
+      "type": "Typ",
+      "name": "Namn",
+      "description": "Beskrivning",
+      "venue": "Anläggning",
+      "noVenue": "Ingen anläggning",
+      "price": "Pris (kr)",
+      "priceUnit": "Prisenhet",
+      "vatRatePercent": "Moms (%)",
+      "defaultDurationMinutes": "Standardlängd (minuter)"
+    },
+    "sections": {
+      "price": "Pris",
+      "bookable": "Bokning",
+      "setups": "Uppställningar",
+      "parts": "Delar",
+      "customisations": "Anpassningar"
+    },
+    "setupsHint": "Kapacitet, max antal personer, per uppställning. Lämna tomt för uppställningar som inte används.",
+    "noSetups": "Det finns inga uppställningar. Skapa dem under Uppställningar.",
+    "priceUnits": {
+      "PER_PERSON": "per person",
+      "PER_UNIT": "per enhet",
+      "PER_HOUR": "per timme",
+      "FLAT": "fast pris"
+    },
+    "columns": {
+      "name": "Namn",
+      "type": "Typ",
+      "venue": "Anläggning",
+      "price": "Pris"
+    },
+    "priceValue": "{amount} {unit}",
+    "durationValue": "{minutes} min",
+    "capacityValue": "{name}: {capacity}",
+    "parts": {
+      "hint": "Artiklarna som ingår, med antal och tid räknat från starten.",
+      "none": "Inga delar ännu.",
+      "add": "Lägg till del",
+      "remove": "Ta bort del",
+      "part": "Del",
+      "quantity": "Antal",
+      "offsetMinutes": "Börjar efter (minuter)",
+      "durationMinutes": "Längd (minuter)",
+      "required": "Obligatorisk"
+    },
+    "partValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (valfri)}}",
+    "customisationGroups": {
+      "hint": "Grupper av andra artiklar att välja mellan, med hur många som ska väljas och vad ett tillval gör med priset.",
+      "none": "Inga anpassningsgrupper ännu.",
+      "add": "Lägg till anpassningsgrupp",
+      "remove": "Ta bort anpassningsgrupp",
+      "name": "Namn",
+      "minPick": "Välj minst",
+      "maxPick": "Välj högst",
+      "options": "Alternativ",
+      "noOptions": "Inga tillval ännu.",
+      "addOption": "Lägg till tillval",
+      "removeOption": "Ta bort tillval",
+      "option": "Artikel",
+      "priceEffect": "Prispåverkan",
+      "split": "Fördela mellan gästerna"
+    },
+    "customisationGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
+    "resolution": {
+      "title": "Innehåll",
+      "contains": "Innehåller",
+      "mayContain": "Kan innehålla",
+      "none": "Inget",
+      "via": "{name} (via {items})",
+      "parts": "Delar",
+      "part": "{quantity} × {name}",
+      "optional": "valfri",
+      "option": "alternativ i {group}"
+    },
+    "wizard": {
+      "progress": "Steg",
+      "steps": {
+        "type": "Typ",
+        "details": "Uppgifter",
+        "setup": "Pris och upplägg"
+      },
+      "descriptions": {
+        "type": "Välj artikeltyp. Typen avgör vilka fält artikeln har.",
+        "details": "Namnge artikeln och fyll i typens fält.",
+        "setup": "Ange pris, bokning, upplägg och innehåll."
+      }
+    },
+    "hours": {
+      "title": "Arbetstider",
+      "description": "När den här resursen är tillgänglig, till exempel en person eller ett rum. Blockerar aldrig en bokning.",
+      "followsVenue": "Inga egna tider: resursen följer lokalens öppettider.",
+      "followHint": "Stäng av alla dagar och ta bort alla undantag för att följa lokalens öppettider igen."
+    }
+  },
+  "itemState": {
+    "flags": {
+      "initial": "Startläge",
+      "inRunSheets": "Med i körschema",
+      "released": "Släppt",
+      "expires": "Förfaller"
+    },
+    "holds": {
+      "NONE": "Ingen reservation",
+      "SOFT": "Preliminär reservation",
+      "HARD": "Fast reservation"
+    },
+    "singular": "Status",
+    "plural": "Artikelstatusar",
+    "listDescription": "De statusar en rad kan ha, per artikeltyp. Flaggorna styr vad systemet gör; inget annat om en status är fast. Varje typ behöver en startstatus.",
+    "create": "Skapa status",
+    "edit": "Redigera status",
+    "createDescription": "Lägg till en status för {type}: namnge den, välj färg och bestäm vad den gör.",
+    "editDescription": "Byt namn, färg eller vad statusen gör.",
+    "archive": "Arkivera status",
+    "archiveConfirm": "Vill du arkivera statusen {name}? Rader i den, rutnätsceller och utgångsstatusen flyttas till den status du väljer.",
+    "archiveInitialConfirm": "{name} är startstatus. Gör en annan status till startstatus innan du arkiverar den. Rader i den flyttas till den status du väljer.",
+    "archived": "Statusen har arkiverats.",
+    "created": "Statusen har skapats.",
+    "updated": "Statusen har uppdaterats.",
+    "empty": "Inga statusar ännu.",
+    "noTypes": "Inga artikeltyper ännu.",
+    "noTypesDescription": "Skapa först en artikeltyp. Dess statusar ställs in här.",
+    "saving": "Sparar status…",
+    "archiving": "Arkiverar status…",
+    "editTransitions": "Redigera övergångar",
+    "transitionsDescription": "Välj vilka statusar en rad i {name} får flyttas till.",
+    "releasedTransitions": "{name} är en släppt status: den är slutgiltig och inget lämnar den.",
+    "transitionsSaved": "Övergångarna har sparats.",
+    "noTransitions": "Inga",
+    "noTargets": "Det finns inga andra statusar att flytta till.",
+    "noTarget": "Inga rader att flytta",
+    "moveUp": "Flytta upp",
+    "moveDown": "Flytta ner",
+    "reordering": "Sparar ordning…",
+    "reordered": "Ordningen har sparats.",
+    "fields": {
+      "name": "Namn",
+      "color": "Färg",
+      "hold": "Vad den gör med artikeln",
+      "transitions": "Får flyttas till",
+      "targetState": "Flytta dess rader till"
+    },
+    "columns": {
+      "name": "Namn",
+      "flags": "Gör",
+      "transitions": "Får flyttas till"
+    },
+    "flagChoices": {
+      "initial": "Nya rader börjar här",
+      "inRunSheets": "Rader tas med i körschema",
+      "released": "Slutgiltig: reservationen släpps och inget lämnar den",
+      "expires": "Går över till utgångsstatusen när bokningens reservationsdatum passerat"
+    }
+  },
+  "itemDemand": {
+    "plural": "Behov",
+    "create": "Lägg till behov",
+    "edit": "Redigera behov",
+    "archive": "Ta bort behov",
+    "archiving": "Tar bort…",
+    "archived": "Behovet togs bort",
+    "archiveConfirm": "Ta bort behovet av {name}?",
+    "created": "Behovet lades till",
+    "updated": "Behovet sparades",
+    "formDescription": "Vad den här posten behöver ur en pool varje gång den bokas.",
+    "lists": {
+      "resources": "Resurser",
+      "staffing": "Bemanning"
+    },
+    "empty": {
+      "resources": "Ingen utrustning behövs.",
+      "staffing": "Ingen personal behövs."
+    },
+    "mandatory": "Obligatoriskt",
+    "optional": "Valfritt",
+    "columns": {
+      "target": "Pool",
+      "required": "Behov",
+      "quantity": "Antal",
+      "windows": "Tider"
+    },
+    "fields": {
+      "pool": "Pool",
+      "quantity": "Antal per bokning",
+      "required": "Obligatoriskt (bokningen nekas om ingen enhet är ledig)",
+      "windows": "Hålls under"
+    },
+    "windows": {
+      "SETUP": "Iordningställande",
+      "BOOKING": "Bokning",
+      "TEARDOWN": "Avveckling"
+    }
+  },
+  "setup": {
+    "singular": "Uppställning",
+    "plural": "Uppställningar",
+    "listDescription": "Hur ett rum kan ställas upp, t.ex. Bio, U-bord eller Mingel, och hur lång ställtid det kräver.",
+    "create": "Skapa uppställning",
+    "edit": "Redigera uppställning",
+    "createDescription": "Namnge uppställningen och ange ställtid.",
+    "editDescription": "Ändra namn och ställtid.",
+    "archive": "Arkivera uppställning",
+    "archiveConfirm": "Vill du arkivera uppställningen {name}?",
+    "archived": "Uppställningen har arkiverats.",
+    "created": "Uppställningen har skapats.",
+    "updated": "Uppställningen har uppdaterats.",
+    "empty": "Inga uppställningar ännu.",
+    "emptyDescription": "Skapa uppställningar som Bio, U-bord och Mingel.",
+    "saving": "Sparar uppställning…",
+    "archiving": "Arkiverar uppställning…",
+    "changeoverValue": "{minutes} min",
+    "fields": {
+      "name": "Namn",
+      "changeoverMinutes": "Ställtid (minuter)"
+    },
+    "columns": {
+      "name": "Namn",
+      "changeover": "Ställtid"
+    }
+  },
+  "entityType": {
+    "singular": "Typ",
+    "plural": "Typer",
+    "listDescription": "Typerna bestämmer vilka fält och förmågor artiklar, kunder och bokningar har i er organisation.",
+    "create": "Skapa typ",
+    "edit": "Redigera typ",
+    "createDescription": "Välj vad typen gäller och namnge den.",
+    "editDescription": "Ändra namn och förmågor.",
+    "archive": "Arkivera typ",
+    "archiveConfirm": "Vill du arkivera typen {name}? Det går inte så länge den används.",
+    "archived": "Typen har arkiverats.",
+    "created": "Typen har skapats.",
+    "updated": "Typen har uppdaterats.",
+    "empty": "Inga typer ännu.",
+    "emptyDescription": "Skapa en typ, t.ex. Konferensrum eller Rätt, och lägg till dess fält.",
+    "saving": "Sparar typ…",
+    "archiving": "Arkiverar typ…",
+    "importTemplate": "Importera mall Konferensgård",
+    "importing": "Importerar mall…",
+    "imported": "{created, plural, one {# typ} other {# typer}} skapades, {skipped} fanns redan.",
+    "fieldCount": "{count, plural, one {# fält} other {# fält}}",
+    "noCapabilities": "Inga förmågor",
+    "capabilitiesHeading": "Förmågor",
+    "fieldsHeading": "Fält",
+    "fields": {
+      "base": "Gäller",
+      "name": "Namn",
+      "sections": "Avsnitt",
+      "resourceKind": "Utrustning eller person"
+    },
+    "resourceKinds": {
+      "EQUIPMENT": "Utrustning",
+      "PERSON": "Person"
+    },
+    "columns": {
+      "name": "Namn",
+      "capabilities": "Förmågor",
+      "fields": "Fält"
+    },
+    "bases": {
+      "ITEM": "Artiklar",
+      "CUSTOMER": "Kunder",
+      "CONTACT": "Kontaktpersoner",
+      "ORDER": "Bokningar",
+      "REQUIREMENT": "Behov",
+      "LINE": "Programpunkter"
+    },
+    "capabilities": {
+      "PRICED": "Prissatt",
+      "BUNDLE": "Paket",
+      "CUSTOMISATIONS": "Anpassningar",
+      "BOOKABLE": "Bokningsbar",
+      "SETUPS": "Uppställningar"
+    },
+    "wizard": {
+      "progress": "Steg",
+      "steps": {
+        "base": "Namn",
+        "capabilities": "Förmågor"
+      },
+      "descriptions": {
+        "base": "Välj vad typen är till för och namnge den.",
+        "capabilities": "Välj vad artiklar av typen kan göra. Fälten lägger du till härnäst."
+      }
+    },
+    "sectionsHint": "Slå på de delar som artiklar av den här typen behöver. Ett avsnitt kan inte stängas av så länge artiklar har data för det.",
+    "needs": "Kräver {section}.",
+    "sections": {
+      "PRICED": {
+        "title": "Pris",
+        "description": "Artiklar har pris, prisenhet och moms."
+      },
+      "BOOKABLE": {
+        "title": "Tillgänglighet",
+        "description": "Artiklar upptar tid och har en standardlängd. Ange standardtid för iordningställande och återställning här."
+      },
+      "SETUPS": {
+        "title": "Rumsuppställningar",
+        "description": "Varje artikel har uppställningar med en kapacitet per uppställning."
+      },
+      "BUNDLE": {
+        "title": "Paket",
+        "description": "En artikel innehåller andra artiklar."
+      },
+      "CUSTOMISATIONS": {
+        "title": "Anpassningar",
+        "description": "Grupper av alternativ som kunden kan välja mellan."
+      }
+    }
+  },
+  "fieldDefinition": {
+    "singular": "Fält",
+    "plural": "Fält",
+    "create": "Lägg till fält",
+    "edit": "Redigera fält",
+    "createDescription": "Fältet visas på alla poster av typen.",
+    "editDescription": "Ändra fältet. Värdetyp kan inte ändras när det finns värden.",
+    "archive": "Arkivera fält",
+    "archiveConfirm": "Vill du arkivera fältet {name}?",
+    "archived": "Fältet har arkiverats.",
+    "created": "Fältet har lagts till.",
+    "updated": "Fältet har uppdaterats.",
+    "empty": "Inga fält ännu.",
+    "saving": "Sparar fält…",
+    "archiving": "Arkiverar fält…",
+    "reordering": "Flyttar fält…",
+    "moveUp": "Flytta upp",
+    "moveDown": "Flytta ned",
+    "selectList": "Välj lista",
+    "noLists": "Det finns inga listor. Skapa en under Listor.",
+    "selectLinkType": "Välj en typ",
+    "listSource": "Lista: {name}",
+    "linkSource": "Länkar till: {name}",
+    "optionsSource": "{count, plural, one {# alternativ} other {# alternativ}}",
+    "fields": {
+      "name": "Namn",
+      "kind": "Värdetyp",
+      "required": "Obligatoriskt",
+      "source": "Alternativen kommer från",
+      "vocabulary": "Lista",
+      "options": "Alternativ (ett per rad)",
+      "linkType": "Länkar till"
+    },
+    "sources": {
+      "list": "En lista",
+      "options": "Egna alternativ"
+    },
+    "columns": {
+      "name": "Namn",
+      "kind": "Värdetyp",
+      "required": "Obligatoriskt",
+      "source": "Alternativ"
+    },
+    "kinds": {
+      "TEXT": "Text",
+      "NUMBER": "Tal",
+      "BOOLEAN": "Ja/nej",
+      "DATE": "Datum",
+      "CHOICE": "Val",
+      "MULTI_CHOICE": "Flerval",
+      "LINK": "Länk till en post"
+    }
+  },
+  "vocabulary": {
+    "singular": "Lista",
+    "plural": "Listor",
+    "listDescription": "Egna ordlistor, t.ex. allergener eller dresscode, som fält och behov pekar på.",
+    "create": "Skapa lista",
+    "edit": "Byt namn",
+    "createDescription": "Namnge listan och lägg gärna till de första värdena.",
+    "editDescription": "Ändra namnet på listan.",
+    "archive": "Arkivera lista",
+    "archiveConfirm": "Vill du arkivera listan {name}? Det går inte så länge ett fält använder den.",
+    "archived": "Listan har arkiverats.",
+    "created": "Listan har skapats.",
+    "updated": "Listan har uppdaterats.",
+    "empty": "Inga listor ännu.",
+    "emptyDescription": "Skapa en lista eller importera EU:s 14 allergener.",
+    "saving": "Sparar lista…",
+    "archiving": "Arkiverar lista…",
+    "importTemplate": "Importera EU:s 14 allergener",
+    "importing": "Importerar lista…",
+    "imported": "Listan {name} har skapats.",
+    "valueCount": "{count, plural, one {# värde} other {# värden}}",
+    "fields": {
+      "name": "Namn",
+      "values": "Värden (ett per rad)"
+    },
+    "columns": {
+      "name": "Namn",
+      "values": "Värden"
+    },
+    "value": {
+      "heading": "Listvärden",
+      "add": "Lägg till värde",
+      "edit": "Byt namn på värde",
+      "archive": "Arkivera värde",
+      "archiveConfirm": "Vill du arkivera värdet {name}?",
+      "archived": "Värdet har arkiverats.",
+      "created": "Värdet har lagts till.",
+      "updated": "Värdet har uppdaterats.",
+      "empty": "Inga värden ännu.",
+      "name": "Värde",
+      "saving": "Sparar värde…",
+      "archiving": "Arkiverar värde…"
+    }
+  },
+  "alternativeGroup": {
+    "plural": "Alternativ",
+    "description": "Rader som kunden väljer en av, t.ex. Rum A eller Rum B. Offerten räknar det billigaste som ett från-pris tills ett är valt.",
+    "empty": "Inga alternativ på det här bokningen.",
+    "create": "Gruppera som alternativ",
+    "createDescription": "Välj två eller fler rader som kunden väljer mellan. Varje rad behåller sitt eget läge och sin reservation.",
+    "rename": "Byt namn",
+    "archive": "Lös upp",
+    "archiveConfirm": "Lösa upp ”{name}”? Alternativen blir vanliga rader och behåller sina lägen.",
+    "archived": "Alternativen löstes upp.",
+    "created": "Alternativen skapades.",
+    "updated": "Alternativen bytte namn.",
+    "choose": "Välj alternativ",
+    "chooseDone": "Alternativet valdes och de andra släpptes.",
+    "chosen": "Valt: {name}",
+    "open": "Inte valt",
+    "fields": {
+      "name": "Namn",
+      "lineIds": "Alternativ"
+    },
+    "columns": {
+      "name": "Namn",
+      "options": "Alternativ",
+      "status": "Status"
+    }
+  },
+  "requirement": {
+    "singular": "Behov",
+    "plural": "Behov",
+    "create": "Lägg till behov",
+    "edit": "Redigera behov",
+    "createDescription": "Räkna hur många som behöver ett värde från en av era listor, t.ex. Gluten × 3. På en programpunkt ersätter antalet bokningens för det värdet. Bara antal, aldrig namn.",
+    "editDescription": "Ändra antalet eller typens fält.",
+    "archive": "Ta bort behov",
+    "archiveConfirm": "Vill du ta bort antalet för \"{name}\"?",
+    "archived": "Behovet har tagits bort.",
+    "created": "Behovet har lagts till.",
+    "updated": "Behovet har uppdaterats.",
+    "taken": "Det finns redan ett antal för det här värdet här. Redigera det i stället.",
+    "empty": "Bokningen har inga behov än.",
+    "wholeOrder": "Hela bokningen",
+    "fields": {
+      "type": "Typ",
+      "line": "Gäller",
+      "value": "Listvärde",
+      "quantity": "Antal"
+    },
+    "columns": {
+      "value": "Listvärde",
+      "where": "Gäller",
+      "quantity": "Antal",
+      "type": "Typ"
+    }
+  },
+  "priceList": {
+    "singular": "Prislista",
+    "plural": "Prislistor",
+    "listDescription": "Kundpriser: en generell rabatt eller avtalade priser per artikel, eventuellt för en kund och en period.",
+    "create": "Skapa prislista",
+    "edit": "Redigera prislista",
+    "createDescription": "Namnge prislistan, välj kund och ange antingen en generell rabatt eller, efteråt, artikelpriser.",
+    "editDescription": "Ändra namn, kund, giltighet eller generell rabatt.",
+    "archive": "Arkivera prislista",
+    "archiveConfirm": "Vill du arkivera prislistan {name}? Nya orderrader använder då inte längre dess priser.",
+    "archived": "Prislistan har arkiverats.",
+    "created": "Prislistan har skapats.",
+    "updated": "Prislistan har uppdaterats.",
+    "empty": "Inga prislistor ännu.",
+    "emptyDescription": "Skapa en prislista för ett ramavtal, t.ex. 15 % rabatt för en kund.",
+    "noCustomer": "Alla kunder (generell)",
+    "discountHint": "En prislista har antingen en generell rabatt eller artikelpriser, aldrig båda. Lämna rabatten tom för att ange artikelpriser.",
+    "fields": {
+      "name": "Namn",
+      "customer": "Kund",
+      "validFrom": "Giltig från",
+      "validTo": "Giltig till",
+      "discountPercent": "Generell rabatt (%)"
+    },
+    "columns": {
+      "name": "Namn",
+      "customer": "Kund",
+      "validity": "Giltighet",
+      "pricing": "Prissättning"
+    },
+    "validity": {
+      "always": "Gäller alltid",
+      "from": "Från {from}",
+      "to": "Till och med {to}",
+      "range": "{from} – {to}"
+    },
+    "pricing": {
+      "discount": "{percent} % rabatt",
+      "items": "{count, plural, =0 {Inga artikelpriser} one {# artikelpris} other {# artikelpriser}}"
+    },
+    "items": {
+      "edit": "Artikelpriser",
+      "title": "Artikelpriser – {name}",
+      "description": "Avtalade priser per artikel. När du sparar ersätts hela uppsättningen.",
+      "none": "Inga artikelpriser ännu.",
+      "item": "Artikel",
+      "price": "Pris (kr)",
+      "add": "Lägg till artikel",
+      "remove": "Ta bort artikel",
+      "saved": "Artikelpriserna har sparats."
+    },
+    "wizard": {
+      "progress": "Steg",
+      "steps": {
+        "identity": "Namn",
+        "terms": "Villkor"
+      },
+      "descriptions": {
+        "identity": "Namnge prislistan och välj kunden den gäller, om någon.",
+        "terms": "Ange när den gäller och en generell rabatt."
+      }
+    }
+  },
+  "priceEffect": {
+    "INCLUDED": "Ingår",
+    "EXTRA": "Tillägg",
+    "REPLACES": "Ersätter"
+  }
+}

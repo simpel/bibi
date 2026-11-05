@@ -1,5 +1,5 @@
 import { createEntityType } from "../../features/entity-type/write-operations";
-import { createTicket } from "../../features/ticket/write-operations";
+import { createOrder } from "../../features/order/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { runNested } from "../../operations/run-nested";
 import type { OperationContext } from "../../operations/types";
@@ -17,11 +17,11 @@ class CheckDone extends Error {
   }
 }
 
-/** A line type, a ticket with a contact, an item with a split group (its groups) and a value. */
+/** A line type, an order with a contact, an item with a split group (its groups) and a value. */
 async function loadRefs({ context }: Ctx) {
-  const [lineType, ticket, split, value] = await Promise.all([
+  const [lineType, order, split, value] = await Promise.all([
     context.db.entityType.findFirst({ where: { base: "LINE" }, orderBy: { createdAt: "asc" } }),
-    context.db.ticket.findFirst({
+    context.db.order.findFirst({
       where: { contactId: { not: null } },
       orderBy: { reference: "asc" },
     }),
@@ -33,7 +33,7 @@ async function loadRefs({ context }: Ctx) {
     orderBy: { position: "asc" },
     include: { options: { where: { item: { status: "ACTIVE" } }, orderBy: { position: "asc" } } },
   });
-  return { lineType, ticket, itemId: split?.itemId ?? null, groups, value };
+  return { lineType, order, itemId: split?.itemId ?? null, groups, value };
 }
 
 type Refs = Awaited<ReturnType<typeof loadRefs>>;
@@ -64,32 +64,32 @@ function lineOf({ refs, needTypeId }: { refs: Refs; needTypeId: string }) {
   };
 }
 
-/** Creates the ticket twice with one intake key and returns what differs from the expectation. */
+/** Creates the order twice with one intake key and returns what differs from the expectation. */
 async function exercise({ context }: Ctx): Promise<string[]> {
   const refs = await loadRefs({ context });
-  if (!refs.lineType || !refs.ticket?.contactId) return ["no line type or ticket with a contact"];
+  if (!refs.lineType || !refs.order?.contactId) return ["no line type or order with a contact"];
   const need = await runNested({
     operation: createEntityType,
     input: { base: "REQUIREMENT", name: "Intake check need" },
     context,
   });
   if (!need.ok) return [`requirement type: ${need.error.message}`];
-  const { entityTypeId, customerId, contactId } = refs.ticket;
+  const { entityTypeId, customerId, contactId } = refs.order;
   const line = lineOf({ refs, needTypeId: need.value.id });
   const input = { entityTypeId, customerId, contactId, intakeKey: "seed-intake", lines: [line] };
-  const first = await runNested({ operation: createTicket, input, context });
-  if (!first.ok) return [`ticket.create failed: ${first.error.message}`];
-  const again = await runNested({ operation: createTicket, input, context });
+  const first = await runNested({ operation: createOrder, input, context });
+  if (!first.ok) return [`order.create failed: ${first.error.message}`];
+  const again = await runNested({ operation: createOrder, input, context });
   const failures =
-    again.ok && again.value.id === first.value.id ? [] : ["the repeat made a second ticket"];
-  const ticketId = first.value.id;
-  const [tickets, lines, needs] = await Promise.all([
-    context.db.ticket.count({ where: { intakeKey: "seed-intake" } }),
-    context.db.line.count({ where: { ticketId } }),
-    context.db.requirement.count({ where: { ticketId } }),
+    again.ok && again.value.id === first.value.id ? [] : ["the repeat made a second order"];
+  const orderId = first.value.id;
+  const [orders, lines, needs] = await Promise.all([
+    context.db.order.count({ where: { intakeKey: "seed-intake" } }),
+    context.db.line.count({ where: { orderId } }),
+    context.db.requirement.count({ where: { orderId } }),
   ]);
-  const expected = { tickets: 1, lines: 1 + line.options.length, needs: line.requirements.length };
-  const actual = { tickets, lines, needs };
+  const expected = { orders: 1, lines: 1 + line.options.length, needs: line.requirements.length };
+  const actual = { orders, lines, needs };
   if (JSON.stringify(actual) !== JSON.stringify(expected)) {
     failures.push(`made ${JSON.stringify(actual)}, expected ${JSON.stringify(expected)}`);
   }
@@ -99,8 +99,8 @@ async function exercise({ context }: Ctx): Promise<string[]> {
 export type CheckDemoIntakeCreateInput = { context: ExecuteContext; org: DemoOrg };
 
 /**
- * ADR 0081 decision 9 and 11: `ticket.create` makes a ticket with a dinner line, its split
- * options and a need in one command, and the same `intakeKey` again returns that ticket. Runs in
+ * ADR 0081 decision 9 and 11: `order.create` makes an order with a dinner line, its split
+ * options and a need in one command, and the same `intakeKey` again returns that order. Runs in
  * a transaction that is rolled back, so the demo data is unchanged. Returns failure messages.
  */
 export async function checkDemoIntakeCreate({ context, org }: CheckDemoIntakeCreateInput) {

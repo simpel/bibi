@@ -8,7 +8,7 @@ export type InboundEmailListProps = {
   dates: DateTimeFormat;
 };
 
-/** Received mails, newest first; shared by the ticket page and the assistant's tool card. */
+/** Received mails, newest first; shared by the order page and the assistant's tool card. */
 export function InboundEmailList({ emails, dates }: InboundEmailListProps) {
   const t = useTranslations("inboundEmail");
   if (emails.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;

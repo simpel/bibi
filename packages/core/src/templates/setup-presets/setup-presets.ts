@@ -3,6 +3,9 @@ import { VENUE_KIND_PRESETS } from "./venue-kinds";
 /** The status and grid template a preset starts from (ADR 0045, 0061). */
 export type SetupPresetStatuses = "conference-estate" | "default";
 
+/** Category in the 3-step setup flow: Spaces & Rooms, Food & Beverage, Equipment & Extras */
+export type SetupCategory = "spaces" | "food" | "extras";
+
 export type SetupPresetType = {
   /** Stable id of the type within presets; the web app labels it `welcome.types.<key>`. */
   key: string;
@@ -10,11 +13,13 @@ export type SetupPresetType = {
   name: string;
   /** Held in time so it can never be double booked, e.g. a room. */
   bookable: boolean;
+  /** Which setup step this type belongs to. */
+  category: SetupCategory;
 };
 
 /**
  * A starting point for a new organization's first setup (ADR 0061): the item types to create, and
- * which status template the ticket pipeline starts from. Everything can be changed in the setup.
+ * which status template the order pipeline starts from. Everything can be changed in the setup.
  * Domain words live only in this data (`venue-kinds.ts`).
  */
 export type SetupPreset = {

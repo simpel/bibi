@@ -24,7 +24,7 @@ export type LineFormValues = BufferFormValues & {
 export type LineDefaultsInput = {
   type: EntityTypeDto | undefined;
   line?: LineDto | undefined;
-  /** Where a new line starts: the ticket's start. */
+  /** Where a new line starts: the order's start. */
   startsAt: Date;
   /** A new add-on's parent (ADR 0088): its period, or untimed like it. */
   parent?: LineDto | undefined;

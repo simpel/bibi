@@ -1,5 +1,5 @@
 import { execute, listInboundEmails } from "@bibi/core";
-import { ticketInboundAddress } from "@bibi/core/inbound-address";
+import { orderInboundAddress } from "@bibi/core/inbound-address";
 import { describe, expect, it } from "vitest";
 import {
   createInboundWebhookHandler,
@@ -7,7 +7,7 @@ import {
   type ResendTransport,
   signSvixPayload,
 } from "../src/index";
-import { ticketFixture } from "./ticket-fixture";
+import { orderFixture } from "./order-fixture";
 
 const domain = "in.bibi.test";
 const secret = `whsec_${Buffer.from("inbound-test-secret").toString("base64")}`;
@@ -23,7 +23,7 @@ const resendApi =
       to: [to],
       cc: [],
       received_for: [to],
-      subject: "Re: your ticket",
+      subject: "Re: your order",
       text: "We will be 40 guests.",
       html: "<p>We will be 40 guests.</p>",
       message_id: "<111@example.test>",
@@ -66,36 +66,36 @@ const handlerFor = ({ to }: { to: string }) =>
   });
 
 describe("inbound webhook", () => {
-  it("saves a signed reply on the ticket its address names", async () => {
-    const { context, ticketId } = await ticketFixture();
-    const to = ticketInboundAddress({ ticketId, domain });
-    const response = await handlerFor({ to })(signedRequest({ to, emailId: `email_${ticketId}` }));
+  it("saves a signed reply on the order its address names", async () => {
+    const { context, orderId } = await orderFixture();
+    const to = orderInboundAddress({ orderId, domain });
+    const response = await handlerFor({ to })(signedRequest({ to, emailId: `email_${orderId}` }));
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ status: "stored" });
-    const result = await execute({ operation: listInboundEmails, input: { ticketId }, context });
+    const result = await execute({ operation: listInboundEmails, input: { orderId }, context });
     const items = result.ok ? result.value.items : [];
     expect(items).toHaveLength(1);
     expect(items[0]).toMatchObject({
       organizationId: context.organizationId,
-      ticketId,
+      orderId,
       text: "We will be 40 guests.",
       attachments: [{ id: "att_1", filename: "menu.pdf" }],
     });
   });
 
   it("rejects an invalid signature and stores nothing", async () => {
-    const { context, ticketId } = await ticketFixture();
-    const to = ticketInboundAddress({ ticketId, domain });
+    const { context, orderId } = await orderFixture();
+    const to = orderInboundAddress({ orderId, domain });
     const forged = `whsec_${Buffer.from("forged").toString("base64")}`;
-    const request = signedRequest({ to, emailId: `email_${ticketId}`, signWith: forged });
+    const request = signedRequest({ to, emailId: `email_${orderId}`, signWith: forged });
     const response = await handlerFor({ to })(request);
     expect(response.status).toBe(401);
-    const result = await execute({ operation: listInboundEmails, input: { ticketId }, context });
+    const result = await execute({ operation: listInboundEmails, input: { orderId }, context });
     expect(result.ok && result.value.items).toEqual([]);
   });
 
   it("acknowledges mail to an unknown address without storing it", async () => {
-    const to = `ticket-unknown@${domain}`;
+    const to = `order-unknown@${domain}`;
     const response = await handlerFor({ to })(signedRequest({ to, emailId: "email_unknown" }));
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ status: "unmatched" });

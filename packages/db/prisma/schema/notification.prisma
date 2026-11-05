@@ -1,8 +1,8 @@
 /// What happened that a member is told about (ADR 0094): a closed list, a new kind is a code change.
 enum NotificationKind {
   ASSIGNED
-  WORK_ORDER_SENT
-  TICKET_STATUS_CHANGED
+  RUN_SHEET_SENT
+  ORDER_STATUS_CHANGED
   PAYMENT_RECEIVED
 }
 
@@ -21,16 +21,16 @@ model Notification {
   kind            NotificationKind
   /// Who caused it; null for the system (e.g. a payment the provider reported).
   actorUserId     String?
-  ticketId        String?
-  workOrderId     String?
+  orderId        String?
+  runSheetId     String?
   paymentId       String?
   data            Json             @default("{}")
   readAt          DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   createdBy       String?
-  ticket          Ticket?          @relation(fields: [ticketId, organizationId], references: [id, organizationId])
-  workOrder       WorkOrder?       @relation(fields: [workOrderId, organizationId], references: [id, organizationId])
+  order          Order?          @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  runSheet       RunSheet?       @relation(fields: [runSheetId, organizationId], references: [id, organizationId])
   payment         Payment?         @relation(fields: [paymentId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])

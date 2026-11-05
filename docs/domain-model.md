@@ -4,11 +4,11 @@ Entities for a booking system for conferences + food & drink. Phasing: **MVP**, 
 
 Interactive view: [artifacts/domain-model.html](artifacts/domain-model.html).
 
-The model is configurable (see [ADR 0021](decisions/0021-configurable-items.md)). The code contains no domain words such as dish, allergen, room or kitchen order. Each organization sets up its own types, fields, vocabularies, setups, ticket statuses, item states, work orders and responsibilities. The code only owns generic capabilities and flags.
+The model is configurable (see [ADR 0021](decisions/0021-configurable-items.md)). The code contains no domain words such as dish, allergen, room or kitchen order. Each organization sets up its own types, fields, vocabularies, setups, order statuses, item states, run sheets and responsibilities. The code only owns generic capabilities and flags.
 
 ## Core flow
 
-Ticket (moves through the organization's statuses) → Lines with states (prebooked → booked …) → Quote → Signing (later) → Requirements → Work orders → Delivery → Invoice → Fortnox / Visma
+Order (moves through the organization's statuses) → Lines with states (prebooked → booked …) → Quote → Signing (later) → Requirements → Run sheets → Delivery → Invoice → Fortnox / Visma
 
 ## Target model: single source of truth (ADR 0051–0057)
 
@@ -16,21 +16,21 @@ Ticket (moves through the organization's statuses) → Lines with states (preboo
 
 | Kind | Meaning | Examples in the target model |
 |---|---|---|
-| Owned | The fact itself, in one place | `Line` price overrides, `TicketStatusChange`, `TicketEstimate`, manual `Occupancy` blocks, explicit `Assignment` |
+| Owned | The fact itself, in one place | `Line` price overrides, `OrderStatusChange`, `OrderEstimate`, manual `Occupancy` blocks, explicit `Assignment` |
 | Derived | Computed on read, never stored | a draft quote, balances, which responsibilities apply, effective price and VAT |
-| Projection | Stored for a constraint or index, written only by the database | line holds and allocation holds in `Occupancy` (ADR 0053, 0059), `Ticket.statusId` and `Line.stateId` (ADR 0054) |
-| Snapshot | Frozen copy at a moment that matters | sent quote lines, invoices, sent work orders and their recipients |
+| Projection | Stored for a constraint or index, written only by the database | line holds and allocation holds in `Occupancy` (ADR 0053, 0059), `Order.statusId` and `Line.stateId` (ADR 0054) |
+| Snapshot | Frozen copy at a moment that matters | sent quote lines, invoices, sent run sheets and their recipients |
 
-**Ownership line.** Once the ticket for an entity lands, its section gets one line right under the heading, in this format (a projection names its reconciliation check in `packages/core/src/seed/demo/reconcile-checks.ts`):
+**Ownership line.** Once the order for an entity lands, its section gets one line right under the heading, in this format (a projection names its reconciliation check in `packages/core/src/seed/demo/reconcile-checks.ts`):
 
 > **Ownership:** owned `name`, `startsAt`; derived `effectiveVatPercent`; projection `holdKind` (check `line-holds`); snapshot `unitPrice` (from the item, taken at send).
 
 What changes:
-- **The line is the booking** ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). `Line` (formerly the program item, renamed in the first slice) may be untimed and carries price, discount and VAT overrides (`null` = inherit). Lines can form an `AlternativeGroup` (fourth slice, done). A draft quote is a live view of the lines; `quote.send` snapshots them as `OrderLine` with `lineId`; an accepted quote shows how the ticket's lines differ from it (third slice, done). `Ticket.quantity` is gone; lines inherit the headcount (second slice, done).
+- **The line is the booking** ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). `Line` (formerly the program item, renamed in the first slice) may be untimed and carries price, discount and VAT overrides (`null` = inherit). Lines can form an `AlternativeGroup` (fourth slice, done). A draft quote is a live view of the lines; `quote.send` snapshots them as `OrderLine` with `lineId`; an accepted quote shows how the order's lines differ from it (third slice, done). `Order.quantity` is gone; lines inherit the headcount (second slice, done).
 - **Holds are a projection** ([ADR 0053](decisions/0053-holds-are-a-projection.md)), written by triggers through `sync_line_occupancy`. Only lines that have not ended are re-derived.
-- **History is owned data** ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md), done): `TicketStatusChange` and `LineStateChange`, append-only. `Ticket.statusId` and `Line.stateId` are projections, set by the trigger on insert (`domain_history.sql`); `statusChangedAt`, `statusReason` and `heldAt` are gone and read from the newest change. Transitions may require facts (the `ACCEPTED_QUOTE` gate, ADR 0067) but never store them; a status that contradicts a fact is a derived warning (`ticket.statusHistory`).
+- **History is owned data** ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md), done): `OrderStatusChange` and `LineStateChange`, append-only. `Order.statusId` and `Line.stateId` are projections, set by the trigger on insert (`domain_history.sql`); `statusChangedAt`, `statusReason` and `heldAt` are gone and read from the newest change. Transitions may require facts (the `ACCEPTED_QUOTE` gate, ADR 0067) but never store them; a status that contradicts a fact is a derived warning (`order.statusHistory`).
 - **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
-- **One `Record` table** ([ADR 0056](decisions/0056-records-and-relations.md)) for every entity with a type and fields, with `fields` JSON behind a GIN index. *Done:* `Record` (`id`, `entityTypeId`, `base`, `fields`, `status`) is the supertable of `Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `Line` and `Requirement`, which share its id (composite foreign key with `organizationId`); core writes both rows in one transaction (`packages/core/src/records/`). `base` is the entity base, or `TICKET_TEMPLATE` for a predefined ticket. *Done:* `LINK` values are `RecordLink` rows (`recordId`, `fieldId`, `targetRecordId`, `position`; composite foreign keys, several rows for several targets), never ids in `fields` JSON; core merges them into `fields` on read. Id lists are join tables. *Target:* polymorphic pairs point at `Record`.
+- **One `Record` table** ([ADR 0056](decisions/0056-records-and-relations.md)) for every entity with a type and fields, with `fields` JSON behind a GIN index. *Done:* `Record` (`id`, `entityTypeId`, `base`, `fields`, `status`) is the supertable of `Item`, `Customer`, `Contact`, `Order`, `OrderTemplate`, `Line` and `Requirement`, which share its id (composite foreign key with `organizationId`); core writes both rows in one transaction (`packages/core/src/records/`). `base` is the entity base, or `ORDER_TEMPLATE` for a predefined order. *Done:* `LINK` values are `RecordLink` rows (`recordId`, `fieldId`, `targetRecordId`, `position`; composite foreign keys, several rows for several targets), never ids in `fields` JSON; core merges them into `fields` on read. Id lists are join tables. *Target:* polymorphic pairs point at `Record`.
 - **Money is derived** ([ADR 0057](decisions/0057-money-balance-is-derived.md)): a payment settles one receivable (sent quote, deposit or invoice); no balance is stored. External calls run after commit (ADR 0058).
 - **Capabilities, demands and buffers** ([ADR 0059](decisions/0059-capabilities-demands-and-buffers.md), accepted, partly built): the keys are renamed end to end (`capabilities`, `BUNDLE`, `CUSTOMISATIONS`, `ItemPart`, `ItemCustomisationGroup`); customisations work on any item, each option an item with a price effect (`ItemCustomisationOption`, `line.chooseOptions`); setup and teardown minutes on type, item and line are built (soft and hard buffers, `TEARDOWN`, the larger-of rule); the pool target selector is built as a derived read, `item.freeUnits` (a specific item, or an item type plus required list values; free units in name order, the first is the prepick); the type editor shows one section per capability with a plain-language switch (Pricing, Availability, Room layouts, Bundle, Customisations; sections for Resources and Staffing land with their slices); item types are Equipment or Person (`resourceKind`), items ask pools for units (`ItemDemand`, `itemDemand.*`) and lines get them as `LineAllocation` rows (prepicked, `lineAllocation.*`), held for the demand's windows by the line holds trigger, with the chained pool check (an AV unit needs a free technician); line reads carry derived `warnings` (an id and a kind, `UNFILLED_OPTIONAL_DEMAND` for an open slot of an optional demand; nothing stored, shown as a badge on the program line); still to come are the allocation UI (#384), working hours, and `item:write` for managers.
 
@@ -39,35 +39,35 @@ What changes:
 ```mermaid
 erDiagram
   Customer ||--o{ Contact : "has"
-  Customer ||--o{ Ticket : "sends"
-  Contact ||--o{ Ticket : "is contact for"
+  Customer ||--o{ Order : "sends"
+  Contact ||--o{ Order : "is contact for"
   Customer }o--o| PriceList : "uses"
   PriceList ||--o{ PriceListItem : "contains"
   PriceListItem }o--o| Item : "refers to"
-  Ticket ||--o{ Quote : "is answered by"
+  Order ||--o{ Quote : "is answered by"
   Quote |o--o{ Quote : "is revised as"
   Quote ||--o{ OrderLine : "contains"
-  Ticket ||--o{ Line : "has lines"
-  Ticket ||--o{ AlternativeGroup : "has"
+  Order ||--o{ Line : "has lines"
+  Order ||--o{ AlternativeGroup : "has"
   AlternativeGroup ||--o{ Line : "groups"
-  Ticket ||--o{ Requirement : "has"
+  Order ||--o{ Requirement : "has"
   Line ||--o{ Requirement : "adjusts"
   Requirement }o--|| VocabularyValue : "refers to"
-  Ticket }o--|| CancellationTerms : "follows"
-  Ticket ||--o{ Deposit : "requires"
-  Ticket ||--o{ Invoice : "is invoiced via"
-  Ticket ||--o{ WorkOrder : "produces"
-  Ticket ||--o{ Assignment : "is assigned via"
+  Order }o--|| CancellationTerms : "follows"
+  Order ||--o{ Deposit : "requires"
+  Order ||--o{ Invoice : "is invoiced via"
+  Order ||--o{ RunSheet : "produces"
+  Order ||--o{ Assignment : "is assigned via"
   Item ||--o{ Assignment : "is assigned via"
   Responsibility ||--o{ Assignment : "scopes"
   Assignment ||--o{ AssignmentFollower : "has"
   User ||--o{ Assignment : "answers for"
   User ||--o{ AssignmentFollower : "follows"
   Customer ||--o{ Item : "owns bundles"
-  Ticket ||--o{ InboundEmail : "receives replies as (legacy)"
-  Ticket |o--o{ InboundMessage : "is created from or receives"
+  Order ||--o{ InboundEmail : "receives replies as (legacy)"
+  Order |o--o{ InboundMessage : "is created from or receives"
   InboundEndpoint ||--o{ InboundMessage : "receives"
-  Ticket ||--o{ Payment : "is paid with"
+  Order ||--o{ Payment : "is paid with"
   EntityType ||--o{ FieldDefinition : "has"
   EntityType ||--o{ Item : "classifies"
   Vocabulary ||--o{ VocabularyValue : "has"
@@ -94,8 +94,8 @@ erDiagram
   Setup ||--o{ ItemSetup : "is used in"
   Item }o--o{ VocabularyValue : "is tagged with"
   OrderLine }o--|| Item : "refers to"
-  WorkOrderDefinition ||--o{ WorkOrder : "produces version"
-  WorkOrderDefinition }o--|| Responsibility : "goes to"
+  RunSheetDefinition ||--o{ RunSheet : "produces version"
+  RunSheetDefinition }o--|| Responsibility : "goes to"
   Responsibility }o--o{ EntityType : "covers"
   User ||--o{ Invitation : "invites"
   User ||--o{ UserPreference : "saves"
@@ -121,34 +121,34 @@ erDiagram
   PaymentRefund |o--o{ AccountingExportEntry : "is exported as"
   EntityType |o--o| RevenueAccount : "maps revenue via"
   Item |o--o| RevenueAccount : "maps revenue via"
-  Ticket }o--|| TicketStatus : "is in"
-  TicketStatus ||--o{ TicketStatusTransition : "from"
-  TicketStatus ||--o{ TicketStatusTransition : "to"
-  TicketStatus ||--o{ TicketStatusGate : "is guarded by"
+  Order }o--|| OrderStatus : "is in"
+  OrderStatus ||--o{ OrderStatusTransition : "from"
+  OrderStatus ||--o{ OrderStatusTransition : "to"
+  OrderStatus ||--o{ OrderStatusGate : "is guarded by"
   Board ||--o{ BoardPhase : "has"
   BoardPhase ||--o{ BoardPhaseStatus : "shows"
-  TicketStatus ||--o{ BoardPhaseStatus : "is shown in"
+  OrderStatus ||--o{ BoardPhaseStatus : "is shown in"
   EntityType |o--o{ Board : "filters"
   EntityType ||--o{ ItemState : "has"
   ItemState ||--o{ ItemStateTransition : "from"
   ItemState ||--o{ ItemStateTransition : "to"
   Line }o--|| ItemState : "is in"
-  TicketStatus ||--o{ StatusStateRule : "sets"
+  OrderStatus ||--o{ StatusStateRule : "sets"
   EntityType ||--o{ StatusStateRule : "is set by"
   ItemState ||--o{ StatusStateRule : "is the result of"
-  TicketTemplate }o--|| TicketStatus : "starts in"
-  TicketTemplate ||--o{ Line : "prepares lines like"
+  OrderTemplate }o--|| OrderStatus : "starts in"
+  OrderTemplate ||--o{ Line : "prepares lines like"
 ```
 
 ## Configuration
 
 *MVP* · What the organization sets up itself. Everything is data per organization and is created through regular operations ([ADR 0021](decisions/0021-configurable-items.md)).
 
-A new organization starts with the fixed access roles (`member`, `manager`, `admin`; [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)) and no responsibilities. Nothing else is preinstalled, except the default ticket statuses, item states and grid so that tickets work right away (ADR 0044). Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists, setups, and types with capabilities and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
+A new organization starts with the fixed access roles (`member`, `manager`, `admin`; [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)) and no responsibilities. Nothing else is preinstalled, except the default order statuses, item states and grid so that orders work right away (ADR 0044). Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists, setups, and types with capabilities and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
 
 ### EntityType (`EntityType`)
 
-*MVP* · The organization's own type for a base entity: item, customer, contact, ticket, requirement or line.
+*MVP* · The organization's own type for a base entity: item, customer, contact, order, requirement or line.
 
 > **Done (ADR 0059):** customisations no longer need a bundle (`CUSTOMISATIONS` stands alone; only `SETUPS` requires `BOOKABLE`).
 
@@ -157,13 +157,13 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 > **Done (ADR 0059):** item types have nullable `setupMinutes` and `teardownMinutes` (owned): the default buffers of their items, null = none (`VALIDATION` on other bases). Changing them re-derives the holds of lines that have not ended (by trigger; a collision is `CONFLICT`).
 
 **Attributes**
-- base entity (`ITEM | CUSTOMER | CONTACT | TICKET | REQUIREMENT | LINE`)
+- base entity (`ITEM | CUSTOMER | CONTACT | ORDER | REQUIREMENT | LINE`)
 - name (e.g. Conference room, Dish, Boat, Bundle, Company, Conference) — unique per base entity
 - capabilities (`ITEM` only): `PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE`, `SETUPS` — `SETUPS` requires `BOOKABLE` (otherwise `VALIDATION`)
 
 **Relations**
 - `1:N` has → FieldDefinition
-- `1:N` classifies → Item (and customer, ticket, etc.)
+- `1:N` classifies → Item (and customer, order, etc.)
 
 > Archiving is denied (`CONFLICT`) as long as active items of the type exist. A capability cannot be turned off as long as any active item of the type has data for it (`CONFLICT`).
 
@@ -179,7 +179,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - field type (`TEXT | NUMBER | BOOLEAN | DATE | CHOICE | MULTI_CHOICE | LINK`)
 - required
 - vocabulary OR own options (`options`) for choice/multi-choice — exactly one source
-- target type (`linkTypeId`) for LINK — an item, customer, contact or ticket type; the value is the id of an active record of that type in the same organization
+- target type (`linkTypeId`) for LINK — an item, customer, contact or order type; the value is the id of an active record of that type in the same organization
 - order (`position`)
 
 **Relations**
@@ -232,11 +232,11 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > Replaced as a set by `item.create/update` (`setups`).
 
-### WorkOrderDefinition (`WorkOrderDefinition`)
+### RunSheetDefinition (`RunSheetDefinition`)
 
-*MVP* · What a work order looks like, e.g. "Kitchen order" or "Brewing order".
+*MVP* · What a run sheet looks like, e.g. "Kitchen order" or "Brewing order".
 
-> Stored (ADR 0056) as join rows with composite foreign keys (`WorkOrderDefinitionEntityType`, `WorkOrderDefinitionField`, `WorkOrderDefinitionVocabulary`, in the given order) and `responsibilityId` with a foreign key; the API keeps the id lists. Archiving an included type, field or list, or the receiving responsibility, is refused (`CONFLICT`, naming the work orders) while an active definition uses it.
+> Stored (ADR 0056) as join rows with composite foreign keys (`RunSheetDefinitionEntityType`, `RunSheetDefinitionField`, `RunSheetDefinitionVocabulary`, in the given order) and `responsibilityId` with a foreign key; the API keeps the id lists. Archiving an included type, field or list, or the receiving responsibility, is refused (`CONFLICT`, naming the run sheets) while an active definition uses it.
 
 **Attributes**
 - name (unique)
@@ -248,47 +248,47 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Relations**
 - `N:1` goes to → Responsibility
 - `N:M` includes → EntityType, FieldDefinition, Vocabulary
-- `1:N` produces → Work order
+- `1:N` produces → Run sheet
 
-> Operations: `workOrderDefinition.*` under the resource `configuration`. Core checks that every id is an active row of the organization (`VALIDATION`). Archiving a type, field, vocabulary or responsibility that an active work order definition uses is refused with `CONFLICT` (ADR 0026, ADR 0034).
+> Operations: `runSheetDefinition.*` under the resource `configuration`. Core checks that every id is an active row of the organization (`VALIDATION`). Archiving a type, field, vocabulary or responsibility that an active run sheet definition uses is refused with `CONFLICT` (ADR 0026, ADR 0034).
 
-### TicketStatus (`TicketStatus`) with flags, Allowed next and gates
+### OrderStatus (`OrderStatus`) with flags, Allowed next and gates
 
-*MVP* · The organization's own pipeline column for a ticket ([ADR 0043](decisions/0043-ticket-and-configurable-statuses.md)). Nothing about statuses is fixed in code: not their number, names or order.
+*MVP* · The organization's own pipeline column for an order ([ADR 0043](decisions/0043-order-and-configurable-statuses.md)). Nothing about statuses is fixed in code: not their number, names or order.
 
 **Attributes**
 - name (unique among the organization's active statuses), color, order (`position`)
-- flags: `entry` (new tickets start here, exactly one default), `closes` (nothing leaves it; all lines are released on entry), `invoiceable` (only after the last line has ended), `event` (`QUOTE_SENT` / `QUOTE_ACCEPTED`, at most one status per event; such a status is entered by the quote event, not by hand)
-- `restrictsNext` (default false): false means a ticket may move from this status to any status (except out of a `closes` status, and into a status with an `event`); true means only to the rows of `TicketStatusTransition` (from → to). A free status keeps no transition rows ([ADR 0076](decisions/0076-free-status-movement-and-admin-only-flow.md))
-- gates into this status (`TicketStatusGate`: `REASON`, `ASSIGNEE`, `ACCEPTED_QUOTE`, each from a specific status or from any status; a gate guards a fact, the record owns it, [ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md), [ADR 0067](decisions/0067-ticket-statuses-boards-and-gates.md))
-- archived (a status that holds tickets is archived only with a chosen target status)
+- flags: `entry` (new orders start here, exactly one default), `closes` (nothing leaves it; all lines are released on entry), `invoiceable` (only after the last line has ended), `event` (`QUOTE_SENT` / `QUOTE_ACCEPTED`, at most one status per event; such a status is entered by the quote event, not by hand)
+- `restrictsNext` (default false): false means an order may move from this status to any status (except out of a `closes` status, and into a status with an `event`); true means only to the rows of `OrderStatusTransition` (from → to). A free status keeps no transition rows ([ADR 0076](decisions/0076-free-status-movement-and-admin-only-flow.md))
+- gates into this status (`OrderStatusGate`: `REASON`, `ASSIGNEE`, `ACCEPTED_QUOTE`, each from a specific status or from any status; a gate guards a fact, the record owns it, [ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md), [ADR 0067](decisions/0067-order-statuses-boards-and-gates.md))
+- archived (a status that holds orders is archived only with a chosen target status)
 
 **Relations**
-- `1:N` Ticket is in this
-- `1:N` is from/to in → TicketStatusChange
-- `1:N` is from/to in → Transition (`TicketStatusTransition`, from → to; only while `restrictsNext`)
-- `1:N` is the target of → Gate (`TicketStatusGate`, optional source status)
+- `1:N` Order is in this
+- `1:N` is from/to in → OrderStatusChange
+- `1:N` is from/to in → Transition (`OrderStatusTransition`, from → to; only while `restrictsNext`)
+- `1:N` is the target of → Gate (`OrderStatusGate`, optional source status)
 - `1:N` sets states in → StatusStateRule
 
 > Minimum configuration, checked on every change (`CONFLICT`): one `entry` and one `closes` status. Movement is free by default. Reports group by flag, never by status name.
 
-> Operations (`pipeline:write|delete` to change, `pipeline:read` to read; `pipeline:write` is the admin-only flow, boards use `board:*`): `ticketStatus.list|get|create|update|archive|reorder|setTransitions|setGates|importTemplate`. `setTransitions({ id, allowedNext: "ANY" | "ONLY_THESE", toStatusIds })` sets `restrictsNext` and the targets; `setGates({ id, gates })` replaces all gates into the status. `list|get` return `restrictsNext`, `transitionsTo` (effective targets), `transitionGates` (effective per target) and `gatesInto` (raw, by source). Settings page `/settings/pipeline`; first-time setup is the assistant onboarding at `/onboarding` ([ADR 0045](decisions/0045-soft-landing-onboarding.md), building on [ADR 0044](decisions/0044-line-states-and-the-status-grid.md)).
+> Operations (`pipeline:write|delete` to change, `pipeline:read` to read; `pipeline:write` is the admin-only flow, boards use `board:*`): `orderStatus.list|get|create|update|archive|reorder|setTransitions|setGates|importTemplate`. `setTransitions({ id, allowedNext: "ANY" | "ONLY_THESE", toStatusIds })` sets `restrictsNext` and the targets; `setGates({ id, gates })` replaces all gates into the status. `list|get` return `restrictsNext`, `transitionsTo` (effective targets), `transitionGates` (effective per target) and `gatesInto` (raw, by source). Settings page `/settings/pipeline`; first-time setup is the assistant onboarding at `/onboarding` ([ADR 0045](decisions/0045-soft-landing-onboarding.md), building on [ADR 0044](decisions/0044-line-states-and-the-status-grid.md)).
 
 ### Board (`Board`), BoardPhase (`BoardPhase`) and BoardPhaseStatus (`BoardPhaseStatus`)
 
-*MVP* · A board is a saved view of the organization's tickets; its phases are its columns and group ticket statuses ([ADR 0067](decisions/0067-ticket-statuses-boards-and-gates.md), spec `docs/specs/boards.md`). A board owns no ticket data.
+*MVP* · A board is a saved view of the organization's orders; its phases are its columns and group order statuses ([ADR 0067](decisions/0067-order-statuses-boards-and-gates.md), spec `docs/specs/boards.md`). A board owns no order data.
 
 **Attributes**
-- Board: name, order (`position`; the first active board is the default), optional filter on ticket type (`entityTypeId`) and main assignee (`assigneeId`), archived
+- Board: name, order (`position`; the first active board is the default), optional filter on order type (`entityTypeId`) and main assignee (`assigneeId`), archived
 - BoardPhase: name, order within its board, archived (no colour: only statuses are colour-coded)
 - BoardPhaseStatus: a join row, one status in one phase; unique per board and status, so a status is in at most one phase per board and a status in none is not on that board
 
 **Relations**
 - `1:N` Board has → BoardPhase
-- `1:N` BoardPhase shows → BoardPhaseStatus; `N:1` BoardPhaseStatus is → TicketStatus
+- `1:N` BoardPhase shows → BoardPhaseStatus; `N:1` BoardPhaseStatus is → OrderStatus
 - `N:1` Board filters → EntityType (optional)
 
-> Every organization has at least one board; `ticketStatus.create` takes only a name and a colour (flags are set with `ticketStatus.update`) and leaves a new status on no board until it is moved onto one, unless given a `phaseId`; a template import gives each imported status its own phase on the default board. Archiving a status removes it from every board and archives a phase it leaves empty; archiving a phase or a board never changes tickets or statuses. The last board cannot be archived (`CONFLICT`).
+> Every organization has at least one board; `orderStatus.create` takes only a name and a colour (flags are set with `orderStatus.update`) and leaves a new status on no board until it is moved onto one, unless given a `phaseId`; a template import gives each imported status its own phase on the default board. Archiving a status removes it from every board and archives a phase it leaves empty; archiving a phase or a board never changes orders or statuses. The last board cannot be archived (`CONFLICT`).
 
 > Operations (`pipeline:read` to read, `pipeline:write|delete` to change): `board.list|get|create|update|reorder|archive`, `boardPhase.create|update|archive|reorder|moveStatus`; `pipeline.board` reads one board's columns and cards. Web: the customize mode of `/pipeline`.
 
@@ -299,7 +299,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Attributes**
 - type (`entityTypeId`, an item type), name, color, order
 - initial (exactly one initial state per type; every type has at least one state)
-- flags: `hold` (`NONE` / `SOFT` / `HARD`, only for `BOOKABLE` types), `inWorkOrders`, `released` (final, drops the hold), `expires` (lines in this state fall to the type's `expiryStateId` when the ticket's `holdsUntil` passes)
+- flags: `hold` (`NONE` / `SOFT` / `HARD`, only for `BOOKABLE` types), `inRunSheets`, `released` (final, drops the hold), `expires` (lines in this state fall to the type's `expiryStateId` when the order's `holdsUntil` passes)
 
 **Relations**
 - `N:1` EntityType has this
@@ -308,37 +308,37 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` is from/to in → Transition (`ItemStateTransition`)
 - `1:N` is the result of → StatusStateRule
 
-> A new item type starts with one initial state, "Active" (`HARD` for a `BOOKABLE` type, in work orders), which the organization renames or replaces. A state in use is archived only with a chosen target state of the same type; the type's expiry state follows it. Changing `hold` or `released` re-derives the holds of every line in the state that has not ended (by trigger, ADR 0053), all or nothing. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by held since (the newest `LineStateChange`) and staff decide who gets the item; `HARD` blocks the item. Operations (`pipeline:read|write|delete`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
+> A new item type starts with one initial state, "Active" (`HARD` for a `BOOKABLE` type, in run sheets), which the organization renames or replaces. A state in use is archived only with a chosen target state of the same type; the type's expiry state follows it. Changing `hold` or `released` re-derives the holds of every line in the state that has not ended (by trigger, ADR 0053), all or nothing. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by held since (the newest `LineStateChange`) and staff decide who gets the item; `HARD` blocks the item. Operations (`pipeline:read|write|delete`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
 
 ### StatusStateRule (`StatusStateRule`) – the status grid
 
-*MVP* · One cell of the grid statuses × item types: when a ticket enters the status, its lines of that type move to the state ([ADR 0044](decisions/0044-line-states-and-the-status-grid.md)).
+*MVP* · One cell of the grid statuses × item types: when an order enters the status, its lines of that type move to the state ([ADR 0044](decisions/0044-line-states-and-the-status-grid.md)).
 
 **Attributes**
 - status (`statusId`), item type (`entityTypeId`), state (`stateId`, of that type)
 
 **Relations**
-- `N:1` TicketStatus sets this; `N:1` EntityType is set by this; `N:1` ItemState is the result
+- `N:1` OrderStatus sets this; `N:1` EntityType is set by this; `N:1` ItemState is the result
 
-> Cells are optional: no cell means "keep the state". A new line gets the cell for the ticket's current status, else the type's initial state. Closing statuses ignore the grid and release every line. Entering a status is atomic: any blocker (a hard-hold collision, a disallowed state transition, a missing assignee) refuses the move and lists every blocking line. A line set by hand (`stateOverridden`) is skipped by status moves until `line.followStatus`. A status move never changes `holdsUntil`. Closing statuses have no cells (`setCell` refuses them). Archiving a state moves its cells to the target state (or clears them); archiving a status clears its cells. Operations (`pipeline:read|write`): `statusGrid.get` (the set cells with names, optionally of one status) and `statusGrid.setCell({ statusId, entityTypeId, stateId | null })` (null clears the cell), audited per cell; `statusGrid.importTemplate({ template })` (`default`, `conference-estate`) fills the empty cells by state name and keeps cells that are set. The first setup (the welcome flow at `/:org/welcome/setup`, ADR 0061, started from a venue kind in `@bibi/core/setup-presets`) works on a draft by name (item types with their states, statuses in order, grid cells): `pipelineSetup.presetDraft({ key })` (`pipeline:read`, no writes) returns a whole draft from a preset, keeping the organization's active item types by id (only for a caller with `configuration:read`) and adding the preset's missing ones; `pipelineSetup.preview` (`pipeline:read`, no writes) lists the configuration problems (errors: no or several entry statuses, no closing status, a type without exactly one initial state, contradicting flags, unknown cells, a line the grid cannot move; warning: a state nothing can leave) and steps a simulated ticket with one line per type through every status; `pipelineSetup.activate` (`pipeline:write`, plus the edit permission on every part it changes) refuses a draft with errors and otherwise runs the normal `entityType.*`, `itemState.*`, `ticketStatus.*` and `statusGrid.setCell` commands in one transaction, all audited under `pipelineSetup.activate`: states and statuses are matched by name, the types' other states and the other statuses are archived (lines move to the initial state, tickets to the entry status), and the default transitions are set.
+> Cells are optional: no cell means "keep the state". A new line gets the cell for the order's current status, else the type's initial state. Closing statuses ignore the grid and release every line. Entering a status is atomic: any blocker (a hard-hold collision, a disallowed state transition, a missing assignee) refuses the move and lists every blocking line. A line set by hand (`stateOverridden`) is skipped by status moves until `line.followStatus`. A status move never changes `holdsUntil`. Closing statuses have no cells (`setCell` refuses them). Archiving a state moves its cells to the target state (or clears them); archiving a status clears its cells. Operations (`pipeline:read|write`): `statusGrid.get` (the set cells with names, optionally of one status) and `statusGrid.setCell({ statusId, entityTypeId, stateId | null })` (null clears the cell), audited per cell; `statusGrid.importTemplate({ template })` (`default`, `conference-estate`) fills the empty cells by state name and keeps cells that are set. The first setup (the welcome flow at `/:org/welcome/setup`, ADR 0061, started from a venue kind in `@bibi/core/setup-presets`) works on a draft by name (item types with their states, statuses in order, grid cells): `pipelineSetup.presetDraft({ key })` (`pipeline:read`, no writes) returns a whole draft from a preset, keeping the organization's active item types by id (only for a caller with `configuration:read`) and adding the preset's missing ones; `pipelineSetup.preview` (`pipeline:read`, no writes) lists the configuration problems (errors: no or several entry statuses, no closing status, a type without exactly one initial state, contradicting flags, unknown cells, a line the grid cannot move; warning: a state nothing can leave) and steps a simulated order with one line per type through every status; `pipelineSetup.activate` (`pipeline:write`, plus the edit permission on every part it changes) refuses a draft with errors and otherwise runs the normal `entityType.*`, `itemState.*`, `orderStatus.*` and `statusGrid.setCell` commands in one transaction, all audited under `pipelineSetup.activate`: states and statuses are matched by name, the types' other states and the other statuses are archived (lines move to the initial state, orders to the entry status), and the default transitions are set.
 
-### TicketTemplate (`TicketTemplate`) – predefined ticket
+### OrderTemplate (`OrderTemplate`) – predefined order
 
-*MVP* · A ticket the organization has prepared, so a small repeatable request is created in one step ([ADR 0043](decisions/0043-ticket-and-configurable-statuses.md)).
+*MVP* · An order the organization has prepared, so a small repeatable request is created in one step ([ADR 0043](decisions/0043-order-and-configurable-statuses.md)).
 
-> **Done ([ADR 0081](decisions/0081-ticket-intake.md)):** called "package" in the UI; owned guest range `minGuests`, `maxGuests` (optional, 1–100000, a lower limit above the upper is `VALIDATION` on `minGuests`). **Target:** the intake groups packages by availability and range and never uses the package's start status (it starts in the entry status); `ticket.createFromTemplate` keeps it.
+> **Done ([ADR 0081](decisions/0081-order-intake.md)):** called "package" in the UI; owned guest range `minGuests`, `maxGuests` (optional, 1–100000, a lower limit above the upper is `VALIDATION` on `minGuests`). **Target:** the intake groups packages by availability and range and never uses the package's start status (it starts in the entry status); `order.createFromTemplate` keeps it.
 
 **Attributes**
-- name (unique among the organization's active templates), ticket type, start status (`statusId`), default own-field values
+- name (unique among the organization's active templates), order type, start status (`statusId`), default own-field values
 - guest range (`minGuests`, `maxGuests`, optional; the package is made for that many guests, ADR 0081)
-- lines (`TicketTemplateLine`, replaced as a set): line type (base `LINE`), name, optional general item and setup, offset and duration in minutes from the ticket start, quantity (null = the ticket's headcount, ADR 0052)
-- default choices (`TicketTemplateLineOption`, owned, ADR 0089): per template line the option items to preselect (foreign key to `Item`, never an option id, since groups get new ids when replaced), replaced with the lines, removed with their line; at most each normal group's maxPick, none in a split group (`VALIDATION` at `lines.<i>.options`). Reads add a derived `stale` for a default that no longer fits the item; a stale default is ignored by the intake and `ticket.createFromTemplate`, and dropped on the next save.
+- lines (`OrderTemplateLine`, replaced as a set): line type (base `LINE`), name, optional general item and setup, offset and duration in minutes from the order start, quantity (null = the order's headcount, ADR 0052)
+- default choices (`OrderTemplateLineOption`, owned, ADR 0089): per template line the option items to preselect (foreign key to `Item`, never an option id, since groups get new ids when replaced), replaced with the lines, removed with their line; at most each normal group's maxPick, none in a split group (`VALIDATION` at `lines.<i>.options`). Reads add a derived `stale` for a default that no longer fits the item; a stale default is ignored by the intake and `order.createFromTemplate`, and dropped on the next save.
 - status (active / archived)
 
 **Relations**
-- `N:1` TicketType (EntityType), `N:1` TicketStatus; `N:M` Item through its lines
+- `N:1` OrderType (EntityType), `N:1` OrderStatus; `N:M` Item through its lines
 
-> Operations (`template:write|delete` to change, `template:read` to read): `ticketTemplate.list|get|create|update|archive` and `ticket.createFromTemplate({ templateId, customerId, startsAt, headcount, assigneeId? })` (`ticket:write`; the caller also needs `template:read` and `customer:read`). The start status cannot be closing, the name is unique among the active templates, and an item, a status or a type that an active template uses cannot be archived. The ticket gets its estimated headcount from `headcount` and a desired period from `startsAt` to the end of the last line; the assignee is required when the start status requires one. The new ticket's lines get their states from the grid for the template's status; a hard-hold collision refuses the whole creation and lists the blocking lines.
+> Operations (`template:write|delete` to change, `template:read` to read): `orderTemplate.list|get|create|update|archive` and `order.createFromTemplate({ templateId, customerId, startsAt, headcount, assigneeId? })` (`order:write`; the caller also needs `template:read` and `customer:read`). The start status cannot be closing, the name is unique among the active templates, and an item, a status or a type that an active template uses cannot be archived. The order gets its estimated headcount from `headcount` and a desired period from `startsAt` to the end of the last line; the assignee is required when the start status requires one. The new order's lines get their states from the grid for the template's status; a hard-hold collision refuses the whole creation and lists the blocking lines.
 
 ### Responsibility (`Responsibility`)
 
@@ -356,30 +356,30 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Relations**
 - `N:M` covers → EntityType
 - `1:N` scopes → Assignment
-- `1:N` receives → WorkOrderDefinition, Work order
-- `1:N` WorkOrderDefinition goes to this
+- `1:N` receives → RunSheetDefinition, Run sheet
+- `1:N` RunSheetDefinition goes to this
 
-> Operations: `responsibility.list|get|create|update|archive` under the resource `configuration` (`responsibility:write|delete`, held by `admin`, to change). The covered types and people are stored as id lists and checked by core: every covered type must be an active item type of the organization and the default assignee and followers must be members (`VALIDATION`); the assignee is not repeated among the followers. Names are unique among active responsibilities (`CONFLICT`). Settings page: `/settings/responsibilities`. The "Conference venue" template ships Sales (Bundle), Coordinator (Conference room, Equipment) and Head of kitchen (Dish, Drink, Meal) as optional data; `configuration.importTemplate` makes the importing member their default assignee and creates none when the caller is not a member (e.g. SYSTEM). Archiving is refused with `CONFLICT` while an active work order definition uses the responsibility, once work orders go to a responsibility.
+> Operations: `responsibility.list|get|create|update|archive` under the resource `configuration` (`responsibility:write|delete`, held by `admin`, to change). The covered types and people are stored as id lists and checked by core: every covered type must be an active item type of the organization and the default assignee and followers must be members (`VALIDATION`); the assignee is not repeated among the followers. Names are unique among active responsibilities (`CONFLICT`). Settings page: `/settings/responsibilities`. The "Conference venue" template ships Sales (Bundle), Coordinator (Conference room, Equipment) and Head of kitchen (Dish, Drink, Meal) as optional data; `configuration.importTemplate` makes the importing member their default assignee and creates none when the caller is not a member (e.g. SYSTEM). Archiving is refused with `CONFLICT` while an active run sheet definition uses the responsibility, once run sheets go to a responsibility.
 
 ### Assignment (`Assignment`)
 
 *MVP* · [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md). Says who answers for a subject: one assignee plus followers.
 
-> **Derived (ADR 0055):** a row means someone chose it, written only by `assignment.assign|follow|unfollow`. Which responsibilities apply to a ticket comes from its active lines' item types (never stored; nothing is created or archived when lines change). The assignee is the explicit one, else the responsibility's default assignee. Followers are the default followers plus explicit follows (`effect` `FOLLOW`) minus explicit unfollows (`effect` `UNFOLLOW`). `assignment.list` and `listMine` return the derived result with `assigneeSource` and each follower's `source` (`EXPLICIT` or `DEFAULT`); a slot with nothing stored has `id` null. Columns: `assigneeId` and `AssignmentFollower` are owned (a choice); the rest is derived on read.
+> **Derived (ADR 0055):** a row means someone chose it, written only by `assignment.assign|follow|unfollow`. Which responsibilities apply to an order comes from its active lines' item types (never stored; nothing is created or archived when lines change). The assignee is the explicit one, else the responsibility's default assignee. Followers are the default followers plus explicit follows (`effect` `FOLLOW`) minus explicit unfollows (`effect` `UNFOLLOW`). `assignment.list` and `listMine` return the derived result with `assigneeSource` and each follower's `source` (`EXPLICIT` or `DEFAULT`); a slot with nothing stored has `id` null. Columns: `assigneeId` and `AssignmentFollower` are owned (a choice); the rest is derived on read.
 
 **Attributes**
-- subject (`recordId`, a composite foreign key to the subject's `Record`, ADR 0056; core checks that its base is `TICKET` or `ITEM`. The API keeps `subjectType` / `subjectId`, read from the record)
+- subject (`recordId`, a composite foreign key to the subject's `Record`, ADR 0056; core checks that its base is `ORDER` or `ITEM`. The API keeps `subjectType` / `subjectId`, read from the record)
 - responsibility (`responsibilityId`, optional; none = the subject's main assignment)
 - assignee (`assigneeId`, one member; null while the subject only has followers, or for a responsibility: no explicit choice, so its default applies)
-- followers (`AssignmentFollower`: a member's explicit follow or unfollow with `effect`; need-to-know: they see the subject under "Following" and are included where the assignee is, e.g. work orders)
+- followers (`AssignmentFollower`: a member's explicit follow or unfollow with `effect`; need-to-know: they see the subject under "Following" and are included where the assignee is, e.g. run sheets)
 
 **Relations**
-- `N:1` Ticket or Item is answered for by this
+- `N:1` Order or Item is answered for by this
 - `N:0..1` is scoped by → Responsibility
 - `N:1` User is the assignee
 - `1:N` has → AssignmentFollower
 
-> Unique on (record, responsibility); a partial index keeps the main assignment unique per record. `assignment.listMine` and the `ticket.list` filters also cover what a member gets from the defaults of the responsibilities that apply to a ticket, unless the ticket has an explicit assignee or the member's explicit unfollow for it; they are computed over the lines and measured before any projection is added. Operations (resource `assignment`, written by `member` and up), all audited, AI needs approval, on every surface: `assignment.assign` (null removes the explicit choice: the main assignee is then empty, a responsibility falls back to its default), `assignment.follow`, `assignment.unfollow`, `assignment.list({ subjectType, subjectId })` and `assignment.listMine({ kind: ASSIGNED | FOLLOWING })`. Assignee and followers must be members (`VALIDATION`); a subject of another organization is `NOT_FOUND`. `ticket.list` filters by `assigneeId` and `followerId`; the web list shows All, Assigned to me and Following. `ticket.create` and `ticket.createFromTemplate` take an optional `assigneeId`, which defaults to the creating member.
+> Unique on (record, responsibility); a partial index keeps the main assignment unique per record. `assignment.listMine` and the `order.list` filters also cover what a member gets from the defaults of the responsibilities that apply to an order, unless the order has an explicit assignee or the member's explicit unfollow for it; they are computed over the lines and measured before any projection is added. Operations (resource `assignment`, written by `member` and up), all audited, AI needs approval, on every surface: `assignment.assign` (null removes the explicit choice: the main assignee is then empty, a responsibility falls back to its default), `assignment.follow`, `assignment.unfollow`, `assignment.list({ subjectType, subjectId })` and `assignment.listMine({ kind: ASSIGNED | FOLLOWING })`. Assignee and followers must be members (`VALIDATION`); a subject of another organization is `NOT_FOUND`. `order.list` filters by `assigneeId` and `followerId`; the web list shows All, Assigned to me and Following. `order.create` and `order.createFromTemplate` take an optional `assigneeId`, which defaults to the creating member.
 
 ## Sales & customer
 
@@ -395,11 +395,11 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - price lists (`PriceList.customerId`; archiving the customer is denied while it has an active price list)
 - payment terms in days (`paymentTermsDays`, null = the organization's default)
 - credit limit (`creditLimitMinor` in minor units, null = no limit set)
-- ticket count (`ticketCount`, derived: the customer's tickets that are not archived)
+- order count (`orderCount`, derived: the customer's orders that are not archived)
 
 **Relations**
 - `1:N` has → Contact
-- `1:N` sends → Ticket
+- `1:N` sends → Order
 - `N:0..1` uses → PriceList
 - - `1:N` owns bundles → Item (customer-specific items, "Save as bundle")
 
@@ -407,7 +407,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · Orderer, invoice recipient or organizer at a customer.
 
-> **Done ([ADR 0081](decisions/0081-ticket-intake.md)):** `customer.create` can create the first contact in the same command (`contact`: name and email required; the contact type defaults to the organization's only one), through the same insert as `contact.create`, with its own audit row; a refused contact rolls the customer back. `customer.findSimilar({ name?, email? })` (`customer:read`) suggests at most 5 active customers, each with its `reasons`: `NAME` (names equal, or one a whole-word part of the other, after folding case and punctuation and stripping legal forms such as AB, KB, ek. för., Ltd, GmbH at either end) and `EMAIL_DOMAIN` (an active contact on the email's domain, never a public one). `customer.list` with `recent` (needs `ticket:read`) orders customers by their latest active ticket's creation, newest first, and leaves out customers without one.
+> **Done ([ADR 0081](decisions/0081-order-intake.md)):** `customer.create` can create the first contact in the same command (`contact`: name and email required; the contact type defaults to the organization's only one), through the same insert as `contact.create`, with its own audit row; a refused contact rolls the customer back. `customer.findSimilar({ name?, email? })` (`customer:read`) suggests at most 5 active customers, each with its `reasons`: `NAME` (names equal, or one a whole-word part of the other, after folding case and punctuation and stripping legal forms such as AB, KB, ek. för., Ltd, GmbH at either end) and `EMAIL_DOMAIN` (an active contact on the email's domain, never a public one). `customer.list` with `recent` (needs `order:read`) orders customers by their latest active order's creation, newest first, and leaves out customers without one.
 
 **Attributes**
 - type (base `CONTACT`) and custom fields (`fields` as JSON), e.g. the person's role (orderer / invoice recipient) as a choice field
@@ -418,103 +418,103 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 **Relations**
 - `N:1` Customer (organization) has this
-- `1:N` is contact for → Ticket
+- `1:N` is contact for → Order
 
-> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts or active price lists (`CONFLICT`; archive the price lists first), and a contact can only be created at an active customer. Every ticket of the customer that is not archived also blocks archiving it, whatever its status, closing statuses included (`CONFLICT` naming the number of tickets, issue path `archiveTickets`). With `archiveTickets: true` (needs `ticket:write` as well) `customer.archive` archives those tickets and the customer in one transaction, with one audit row per ticket plus the customer; the approval text names the number of tickets. That number is bound to the input as `expectedTicketCount`: for an assistant proposal the MCP server reads it from the database before signing (replacing any value the assistant sent, and refusing the proposal if the customer cannot be read), and the web dialog sends the count it shows. Unless exactly that many tickets are archived, `customer.archive` is refused with `CONFLICT` (issue path `expectedTicketCount`) and nothing is archived (#144). Archiving a ticket this way goes through one shared `archiveTicket`: its lines are archived and the occupancy they hold is released, so no room stays blocked. The customer's own bundles (items with its `customerId`) are archived with it (needs `item:write`). `item.archive` and `setup.archive` are refused (`CONFLICT`) while an active line uses them.
+> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts or active price lists (`CONFLICT`; archive the price lists first), and a contact can only be created at an active customer. Every order of the customer that is not archived also blocks archiving it, whatever its status, closing statuses included (`CONFLICT` naming the number of orders, issue path `archiveOrders`). With `archiveOrders: true` (needs `order:write` as well) `customer.archive` archives those orders and the customer in one transaction, with one audit row per order plus the customer; the approval text names the number of orders. That number is bound to the input as `expectedOrderCount`: for an assistant proposal the MCP server reads it from the database before signing (replacing any value the assistant sent, and refusing the proposal if the customer cannot be read), and the web dialog sends the count it shows. Unless exactly that many orders are archived, `customer.archive` is refused with `CONFLICT` (issue path `expectedOrderCount`) and nothing is archived (#144). Archiving an order this way goes through one shared `archiveOrder`: its lines are archived and the occupancy they hold is released, so no room stays blocked. The customer's own bundles (items with its `customerId`) are archived with it (needs `item:write`). `item.archive` and `setup.archive` are refused (`CONFLICT`) while an active line uses them.
 
-### Ticket ★
+### Order ★
 
-*MVP* · One customer request from first contact to the delivered event ([ADR 0043](decisions/0043-ticket-and-configurable-statuses.md)). It lives in the organization's statuses and never turns into another record. Lines, quotes, requirements, work orders, payments and mail attach to it.
+*MVP* · One customer request from first contact to the delivered event ([ADR 0043](decisions/0043-order-and-configurable-statuses.md)). It lives in the organization's statuses and never turns into another record. Lines, quotes, requirements, run sheets, payments and mail attach to it.
 
-> **Done ([ADR 0081](decisions/0081-ticket-intake.md)):** the contact is required for every new ticket (`ticket.create`, `ticket.createFromTemplate`) and `ticket.update` cannot clear it (null is `VALIDATION`); owned booking-level `note` (≤ 4000, null clears). Query `ticket.previewLines` (`ticket:read`) plans packages (`templateIds`) or draft `lines` for a customer, requested period and headcount without writing anything: per line the effective times, quantity, price and discount, the state it would start in (the entry status's grid cell, else the type's initial state) and its issues (`HARD_CLASH` with the blocker's ticket reference, period and `refusesCreate`, `SOFT_OVERLAP`, `SELF_OVERLAP`, `SETUP_CAPACITY`, `POOL_SHORT`, `OUTSIDE_HOURS`); per entry its group (`AVAILABLE`, `CLASHES`, `OUTSIDE_RANGE`), `GUESTS_OUTSIDE_RANGE`, `PAST_REQUESTED_END` and `firstFreeStart`. Availability needs `item:read` (else `availabilityHidden`). `ticket.create` creates the ticket and its `lines[]` in one command, all or nothing, starting in the entry status: each line takes the `line.create` details plus `note`, `options[{ itemId, quantity? }]` (as `line.chooseOptions`, ADR 0082) and `requirements[]` (as a line-level `requirement.create`); `templateId` is provenance only (the first status change gets trigger `TEMPLATE`, the template's fields and lines are not applied). Each part needs its own permission (`program:write` for lines and needs, `item:read` for items and options, `template:read` for the template), and every referenced id must be in the organization (`VALIDATION` at `lines.<i>.<field>`). Inside the transaction the lines are planned again against the start status: a line whose hard start state clashes is `CONFLICT` at `lines.<index>` naming the blocking ticket; a soft overlap, or a hard clash of a soft line, is prebooked, and the holds trigger stays the last guard (also `CONFLICT` at `lines.<index>`). `intakeKey` makes it idempotent: the same key returns the first ticket and creates nothing (a concurrent duplicate waits on a lock of the customer row and then finds it). `ticket.createFromTemplate` is a thin wrapper on the same path with the template's start status and planned lines (`features/ticket/plan/`). **Target:** `ticket.create` takes `inboundMessageId` ([ADR 0085](decisions/0085-inbound-messages-from-any-channel.md)). Spec: `docs/specs/ticket-intake.md`.
+> **Done ([ADR 0081](decisions/0081-order-intake.md)):** the contact is required for every new order (`order.create`, `order.createFromTemplate`) and `order.update` cannot clear it (null is `VALIDATION`); owned booking-level `note` (≤ 4000, null clears). Query `order.previewLines` (`order:read`) plans packages (`templateIds`) or draft `lines` for a customer, requested period and headcount without writing anything: per line the effective times, quantity, price and discount, the state it would start in (the entry status's grid cell, else the type's initial state) and its issues (`HARD_CLASH` with the blocker's order reference, period and `refusesCreate`, `SOFT_OVERLAP`, `SELF_OVERLAP`, `SETUP_CAPACITY`, `POOL_SHORT`, `OUTSIDE_HOURS`); per entry its group (`AVAILABLE`, `CLASHES`, `OUTSIDE_RANGE`), `GUESTS_OUTSIDE_RANGE`, `PAST_REQUESTED_END` and `firstFreeStart`. Availability needs `item:read` (else `availabilityHidden`). `order.create` creates the order and its `lines[]` in one command, all or nothing, starting in the entry status: each line takes the `line.create` details plus `note`, `options[{ itemId, quantity? }]` (as `line.chooseOptions`, ADR 0082) and `requirements[]` (as a line-level `requirement.create`); `templateId` is provenance only (the first status change gets trigger `TEMPLATE`, the template's fields and lines are not applied). Each part needs its own permission (`program:write` for lines and needs, `item:read` for items and options, `template:read` for the template), and every referenced id must be in the organization (`VALIDATION` at `lines.<i>.<field>`). Inside the transaction the lines are planned again against the start status: a line whose hard start state clashes is `CONFLICT` at `lines.<index>` naming the blocking order; a soft overlap, or a hard clash of a soft line, is prebooked, and the holds trigger stays the last guard (also `CONFLICT` at `lines.<index>`). `intakeKey` makes it idempotent: the same key returns the first order and creates nothing (a concurrent duplicate waits on a lock of the customer row and then finds it). `order.createFromTemplate` is a thin wrapper on the same path with the template's start status and planned lines (`features/order/plan/`). **Target:** `order.create` takes `inboundMessageId` ([ADR 0085](decisions/0085-inbound-messages-from-any-channel.md)). Spec: `docs/specs/order-intake.md`.
 
-> **Ownership (ADR 0054, done):** projection `statusId` (from the newest `TicketStatusChange`, by trigger; check `ticket statuses`); derived `statusChangedAt` and `statusReason` (read from the newest change, not stored).
+> **Ownership (ADR 0054, done):** projection `statusId` (from the newest `OrderStatusChange`, by trigger; check `order statuses`); derived `statusChangedAt` and `statusReason` (read from the newest change, not stored).
 
 **Attributes**
 - reference number (`reference`, sequential per organization)
-- type (the organization's own, base `TICKET`) and custom fields
-- customer and contact person (the contact must work at the customer; required for new tickets and never cleared, ADR 0081; older tickets may have none)
+- type (the organization's own, base `ORDER`) and custom fields
+- customer and contact person (the contact must work at the customer; required for new orders and never cleared, ADR 0081; older orders may have none)
 - booking note (`note`, optional, ≤ 4000 characters): notes for the whole booking (ADR 0081)
-- intake key (`intakeKey`, optional, owned, 1–100 characters, unique per organization): the client key of the `ticket.create` that made the ticket, so a repeated submit returns it (ADR 0081). Not on the ticket DTO: it belongs to the create call, not to the booking.
+- intake key (`intakeKey`, optional, owned, 1–100 characters, unique per organization): the client key of the `order.create` that made the order, so a repeated submit returns it (ADR 0081). Not on the order DTO: it belongs to the create call, not to the booking.
 - desired period (`desiredStartsAt`, `desiredEndsAt`, optional) – what the customer asked for; each line has its own time
-- holds until (`holdsUntil`, optional): one date for the whole ticket ("we hold this until 28 Feb"). When it passes, every line in an `expires` state falls to its type's expiry state; other lines and the status are unchanged ([ADR 0044](decisions/0044-line-states-and-the-status-grid.md))
-- estimated and guaranteed headcount (`estimatedHeadcount`, `guaranteedHeadcount`): the ticket's one headcount; a line without its own quantity counts the guaranteed one if set, else the estimate ([ADR 0052](decisions/0052-the-line-is-the-booking.md)); budget (`budgetMinor`, minor units)
-- estimated value (`estimatedValueMinor`, excl. VAT, minor units): read from the newest `TicketEstimate`, not stored on the ticket ([ADR 0074](decisions/0074-ticket-value-estimates.md)). The agreed value is the accepted quote's total
-- status (`statusId`, projected from the status history), when it entered the status (`statusChangedAt`) and the reason of the last status change (`statusReason`, required by moves into a status with a `REASON` gate), both read from the newest `TicketStatusChange`
+- holds until (`holdsUntil`, optional): one date for the whole order ("we hold this until 28 Feb"). When it passes, every line in an `expires` state falls to its type's expiry state; other lines and the status are unchanged ([ADR 0044](decisions/0044-line-states-and-the-status-grid.md))
+- estimated and guaranteed headcount (`estimatedHeadcount`, `guaranteedHeadcount`): the order's one headcount; a line without its own quantity counts the guaranteed one if set, else the estimate ([ADR 0052](decisions/0052-the-line-is-the-booking.md)); budget (`budgetMinor`, minor units)
+- estimated value (`estimatedValueMinor`, excl. VAT, minor units): read from the newest `OrderEstimate`, not stored on the order ([ADR 0074](decisions/0074-order-value-estimates.md)). The agreed value is the accepted quote's total
+- status (`statusId`, projected from the status history), when it entered the status (`statusChangedAt`) and the reason of the last status change (`statusReason`, required by moves into a status with a `REASON` gate), both read from the newest `OrderStatusChange`
 - main assignment and responsibility assignments (see Assignment; the main assignee is required by moves into a status with an `ASSIGNEE` gate)
-- inbound address (`inboundAddress`, derived: `ticket-<id>@<MAIL_INBOUND_DOMAIN>`, null when inbound mail is not configured)
+- inbound address (`inboundAddress`, derived: `order-<id>@<MAIL_INBOUND_DOMAIN>`, null when inbound mail is not configured)
 - channel (form, email, phone, Venuu) – *later*
 
 **Relations**
 - `N:1` Customer (organization) sends this
 - `N:1` Contact is contact for this
-- `N:1` is in → TicketStatus
-- `1:N` has → TicketStatusChange (its status history)
-- `1:N` has → TicketEstimate (its value estimates)
-- `1:N` has → Quote, Line, Requirement, Work order, Payment, Deposit, Invoice
+- `N:1` is in → OrderStatus
+- `1:N` has → OrderStatusChange (its status history)
+- `1:N` has → OrderEstimate (its value estimates)
+- `1:N` has → Quote, Line, Requirement, Run sheet, Payment, Deposit, Invoice
 - `1:N` InboundEmail is a reply on this (legacy)
 - `1:N` InboundMessage is attached to this (set once)
 - `1:N` is answered for by → Assignment
 - `N:1` follows → CancellationTerms
 - `0..1:N` Communication & log concerns this
 
-> ★ A pipeline the organization draws itself, with line states that follow it. Status changes only through `ticket.changeStatus({ ticketId, statusId, reason? })`, never through `update`; `quote.send` and `quote.accept` move the ticket into the status with the matching `event`; payments and invoices never move a ticket.
+> ★ A pipeline the organization draws itself, with line states that follow it. Status changes only through `order.changeStatus({ orderId, statusId, reason? })`, never through `update`; `quote.send` and `quote.accept` move the order into the status with the matching `event`; payments and invoices never move an order.
 
-> Operations (`ticket:write` to change, `ticket:read` to read): `ticket.list|get|create|createFromTemplate|previewLines|update|changeStatus|export|expireHolds|statusHistory|estimateHistory`. `ticket.expireHolds` runs every 15 minutes in the worker (and by hand from the ticket list): lines in an `expires` state on tickets whose `holdsUntil` has passed move to their type's expiry state, each audited. `create` gives the next reference number and puts the ticket in the default `entry` status; `createFromTemplate` creates it in the predefined ticket's status with its lines in one step (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `ticket.export` gives json, pdf or csv ([ADR 0024](decisions/0024-ticket-export-instead-of-partner.md)); today it gives a versioned json document with the ticket and its status, the full schema and csv follow (#63). Every change is audited. Status history comes from `TicketStatusChange`, never from `AuditLog`: `ticket.statusHistory({ ticketId })` (`ticket:read`) lists it oldest first with the derived `warnings` (an accepted quote while the ticket is in an open status before the acceptance status, shown only to callers with `quote:read`), on the ticket page and in the assistant. `ticket.estimateHistory({ ticketId })` (`ticket:read`) lists the value estimates oldest first (ADR 0074). A ticket has an owned `title` (≤ 120, null clears), given on `create`, `createFromTemplate` or `update`; when a create gives none, its `external` step (after the commit, ADR 0058) asks the small model of AI feature `ticket.title` for one from the customer, type, headcount, line names and note, best effort (no model or a misfit answer leaves it null). Lists, boards and the calendar show the title as the ticket's label; the reference number shows on the ticket page and work order. The title is free text and may hold personal data, so the public payment page, payment provider descriptions and accounting exports (SIE) keep the reference only.
+> Operations (`order:write` to change, `order:read` to read): `order.list|get|create|createFromTemplate|previewLines|update|changeStatus|export|expireHolds|statusHistory|estimateHistory`. `order.expireHolds` runs every 15 minutes in the worker (and by hand from the order list): lines in an `expires` state on orders whose `holdsUntil` has passed move to their type's expiry state, each audited. `create` gives the next reference number and puts the order in the default `entry` status; `createFromTemplate` creates it in the predefined order's status with its lines in one step (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `order.export` gives json, pdf or csv ([ADR 0024](decisions/0024-order-export-instead-of-partner.md)); today it gives a versioned json document with the order and its status, the full schema and csv follow (#63). Every change is audited. Status history comes from `OrderStatusChange`, never from `AuditLog`: `order.statusHistory({ orderId })` (`order:read`) lists it oldest first with the derived `warnings` (an accepted quote while the order is in an open status before the acceptance status, shown only to callers with `quote:read`), on the order page and in the assistant. `order.estimateHistory({ orderId })` (`order:read`) lists the value estimates oldest first (ADR 0074). An order has an owned `title` (≤ 120, null clears), given on `create`, `createFromTemplate` or `update`; when a create gives none, its `external` step (after the commit, ADR 0058) asks the small model of AI feature `order.title` for one from the customer, type, headcount, line names and note, best effort (no model or a misfit answer leaves it null). Lists, boards and the calendar show the title as the order's label; the reference number shows on the order page and run sheet. The title is free text and may hold personal data, so the public payment page, payment provider descriptions and accounting exports (SIE) keep the reference only.
 
-### TicketEstimate (`TicketEstimate`) – value estimates
+### OrderEstimate (`OrderEstimate`) – value estimates
 
-*MVP* · One estimate of a ticket's value excl. VAT ([ADR 0074](decisions/0074-ticket-value-estimates.md)). Append-only, owned by core. The newest row is the current estimate, and `Ticket` has no column for it. The first row against the accepted quote's total shows how far off the first estimate was. Written by `ticket.create` and `ticket.update` (`estimatedValueMinor`) only when the value changes. Read with `ticket.estimateHistory`.
+*MVP* · One estimate of an order's value excl. VAT ([ADR 0074](decisions/0074-order-value-estimates.md)). Append-only, owned by core. The newest row is the current estimate, and `Order` has no column for it. The first row against the accepted quote's total shows how far off the first estimate was. Written by `order.create` and `order.update` (`estimatedValueMinor`) only when the value changes. Read with `order.estimateHistory`.
 
 **Attributes**
-- ticket, value (`valueMinor`, minor units; null clears the estimate)
+- order, value (`valueMinor`, minor units; null clears the estimate)
 - changed at, changed by (user id, null for the system), insertion order (`seq`)
 
 **Relations**
-- `N:1` Ticket has this
+- `N:1` Order has this
 
-### TicketStatusChange (`TicketStatusChange`) – status history
+### OrderStatusChange (`OrderStatusChange`) – status history
 
-*MVP* · One entry of a ticket's status history ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)). Append-only, owned by core; no feature reads status history from `AuditLog`, so pseudonymising the audit log never changes it.
+*MVP* · One entry of an order's status history ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)). Append-only, owned by core; no feature reads status history from `AuditLog`, so pseudonymising the audit log never changes it.
 
 **Attributes**
-- ticket, from status (`fromStatusId`, null for the first entry), to status (`toStatusId`)
+- order, from status (`fromStatusId`, null for the first entry), to status (`toStatusId`)
 - reason (free text; covered by the organization's data retention, not by audit pseudonymisation)
 - trigger (`MANUAL`, `QUOTE_EVENT`, `TEMPLATE`, `SYSTEM`), changed at, changed by (user id, null for the system), insertion order (`seq`)
 
 **Relations**
-- `N:1` Ticket has this
-- `N:0..1` is from → TicketStatus; `N:1` is to → TicketStatus
+- `N:1` Order has this
+- `N:0..1` is from → OrderStatus; `N:1` is to → OrderStatus
 
-> Inserting a row sets `Ticket.statusId` by trigger (`packages/db/sql/domain_history.sql`), which in turn re-derives the ticket's holds (ADR 0053) in the same transaction. A row written against a status the ticket has already left fails (`CONFLICT`); any other write of `statusId` is refused by the database. Every ticket has a first entry from its creation (`MANUAL`, or `TEMPLATE` from a predefined ticket). Checked by the `ticket statuses` reconciliation.
+> Inserting a row sets `Order.statusId` by trigger (`packages/db/sql/domain_history.sql`), which in turn re-derives the order's holds (ADR 0053) in the same transaction. A row written against a status the order has already left fails (`CONFLICT`); any other write of `statusId` is refused by the database. Every order has a first entry from its creation (`MANUAL`, or `TEMPLATE` from a predefined order). Checked by the `order statuses` reconciliation.
 
 ### Quote ★
 
-*MVP* · A versioned proposal with lines and terms. Fixed state machine; `quote.send` and `quote.accept` fire status events on the ticket (ADR 0043).
+*MVP* · A versioned proposal with lines and terms. Fixed state machine; `quote.send` and `quote.accept` fire status events on the order (ADR 0043).
 
-> **ADR 0052:** a `DRAFT` stores no lines; it is a live view of the ticket's priced lines (lines with an effective unit price) with derived totals. `quote.send` freezes them as `OrderLine` rows and stores the totals; a sent quote never changes. Change markers pair by `lineId`. An `ACCEPTED` quote carries `differsFromTicket` and the differences (`ticketChanges`, `ticketRemovedLines`): the ticket's lines now against the accepted snapshot, derived and never stored (GraphQL also gives `Ticket.differsFromAcceptedQuote`). Target (ADR 0054) still open.
+> **ADR 0052:** a `DRAFT` stores no lines; it is a live view of the order's priced lines (lines with an effective unit price) with derived totals. `quote.send` freezes them as `OrderLine` rows and stores the totals; a sent quote never changes. Change markers pair by `lineId`. An `ACCEPTED` quote carries `differsFromOrder` and the differences (`orderChanges`, `orderRemovedLines`): the order's lines now against the accepted snapshot, derived and never stored (GraphQL also gives `Order.differsFromAcceptedQuote`). Target (ADR 0054) still open.
 
 **Attributes**
-- version number (`version`, 1 for the ticket's first quote, then +1) and the version it was made from (`previousId`)
+- version number (`version`, 1 for the order's first quote, then +1) and the version it was made from (`previousId`)
 - valid until (`validUntil`, required to send)
 - status (`quoteStatus`): `DRAFT → SENT → ACCEPTED`, `DECLINED` or `EXPIRED`; only a `DRAFT` can be edited
-- lines (a `DRAFT`: the ticket's priced lines, live; sent: the frozen order lines)
+- lines (a `DRAFT`: the order's priced lines, live; sent: the frozen order lines)
 - total excl. and incl. VAT (`totalExclVatMinor`, `totalInclVatMinor`, the sums of the lines that count; stored when sent). Of an alternative group only the chosen option counts, or until then the cheapest; `totalIsFrom` (derived from the lines) then marks the totals as "from" prices (ADR 0052)
-- differs from the ticket (`differsFromTicket`, `ACCEPTED` only, derived) with the changed and removed lines
+- differs from the order (`differsFromOrder`, `ACCEPTED` only, derived) with the changed and removed lines
 - terms text
-- assignment (the ticket's; the quote has none of its own)
+- assignment (the order's; the quote has none of its own)
 - statusChangedAt
 - acceptedBy, acceptedAt, acceptanceMethod (`MANUAL` now, later `BANKID` and `LINK`) – set by `quote.accept`
 
 **Relations**
-- `N:1` Ticket is answered by this
+- `N:1` Order is answered by this
 - `N:0..1` is a new version of → Quote
 - fires on accept → the `QUOTE_ACCEPTED` status event (no second record is created)
 - `1:N` contains → OrderLine
 
-> ★ Versions with change markers against the previous one: each line is `ADDED`, `CHANGED` (with the changed properties) or `UNCHANGED`, paired with the previous version's lines by the ticket line they price (`lineId`), and the lines the version dropped are listed as removed. `quote.update` changes validity and terms only; prices and quantities are changed on the lines (`line.update`). `quote.accept` stores the acceptance and fires the `QUOTE_ACCEPTED` status event. A quote can also be built directly from items, and "Save as bundle" then creates a customer-specific item.
+> ★ Versions with change markers against the previous one: each line is `ADDED`, `CHANGED` (with the changed properties) or `UNCHANGED`, paired with the previous version's lines by the order line they price (`lineId`), and the lines the version dropped are listed as removed. `quote.update` changes validity and terms only; prices and quantities are changed on the lines (`line.update`). `quote.accept` stores the acceptance and fires the `QUOTE_ACCEPTED` status event. A quote can also be built directly from items, and "Save as bundle" then creates a customer-specific item.
 
-> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open ticket that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the ticket moves into the status with the `QUOTE_SENT` event, and older `SENT` versions expire), `quote.accept` (from `SENT`; stores `acceptedBy`, `acceptedAt` and `acceptanceMethod` `MANUAL`, creates no other record; `chosenLineIds` records the customer's pick per alternative group first, as `alternativeGroup.choose` does; the ticket moves into the status with the `QUOTE_ACCEPTED` event), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`. A quote event moves the ticket as the acting user (`ticket:write` is needed), only when the organization has an active status with that `event` and allows the move from the ticket's status; a blocked move (reason, assignee, line collision) fails the send or accept without any change. A status with an `event` cannot be entered by `ticket.changeStatus` or as the target of a status archive. Archiving a status clears its `event`; importing a template never takes an event from a status that has it.
+> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open order that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the order moves into the status with the `QUOTE_SENT` event, and older `SENT` versions expire), `quote.accept` (from `SENT`; stores `acceptedBy`, `acceptedAt` and `acceptanceMethod` `MANUAL`, creates no other record; `chosenLineIds` records the customer's pick per alternative group first, as `alternativeGroup.choose` does; the order moves into the status with the `QUOTE_ACCEPTED` event), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`. A quote event moves the order as the acting user (`order:write` is needed), only when the organization has an active status with that `event` and allows the move from the order's status; a blocked move (reason, assignee, line collision) fails the send or accept without any change. A status with an `event` cannot be entered by `order.changeStatus` or as the target of a status archive. Archiving a status clears its `event`; importing a template never takes an event from a status that has it.
 
 ### Agreement & signing
 
@@ -532,25 +532,25 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 ## Lines & program
 
-### Line (the ticket's line)
+### Line (the order's line)
 
-*MVP* · A line on a ticket: a room, a meal, an activity or a break, with its own time and state ([ADR 0044](decisions/0044-line-states-and-the-status-grid.md)). Created, among other cases, when a composite item is added to the ticket.
+*MVP* · A line on an order: a room, a meal, an activity or a break, with its own time and state ([ADR 0044](decisions/0044-line-states-and-the-status-grid.md)). Created, among other cases, when a composite item is added to the order.
 
 > **Done (ADR 0059):** `LineAllocation` rows (which unit of a pool the line got). Derived: `warnings` on every line read (`{ id, kind }`, feature scope: names come from `lineAllocation.get`, `itemDemand.get`).
 
-> **Done (ADR 0059):** `parentLineId` (owned, set only by `line.expandBundle`) links a part line to its bundle line. `line.expandBundle` adds a `BUNDLE` item as one bundle line that carries the price plus one part line per part that is not a customisation option: a part starts at the bundle's start plus its `offsetMinutes` and lasts its `durationMinutes`, else to the bundle's end (an untimed bundle has untimed parts); its quantity is the part's quantity per bundle, and a part of one per bundle counts the headcount like its bundle line. Times and quantities are defaults that `line.update` can change per event. Moving a bundle line moves its timed parts by the same delta in one operation; removing it removes them; a bundle line with parts keeps its item. Part lines show their own effective prices but never count in the totals; a quote splits the bundle price's VAT per rate across them (`allocateBundleVat`). Work orders include part lines (in states with `inWorkOrders`) and leave out their bundle line.
+> **Done (ADR 0059):** `parentLineId` (owned, set only by `line.expandBundle`) links a part line to its bundle line. `line.expandBundle` adds a `BUNDLE` item as one bundle line that carries the price plus one part line per part that is not a customisation option: a part starts at the bundle's start plus its `offsetMinutes` and lasts its `durationMinutes`, else to the bundle's end (an untimed bundle has untimed parts); its quantity is the part's quantity per bundle, and a part of one per bundle counts the headcount like its bundle line. Times and quantities are defaults that `line.update` can change per event. Moving a bundle line moves its timed parts by the same delta in one operation; removing it removes them; a bundle line with parts keeps its item. Part lines show their own effective prices but never count in the totals; a quote splits the bundle price's VAT per rate across them (`allocateBundleVat`). Run sheets include part lines (in states with `inRunSheets`) and leave out their bundle line.
 
 > **Done (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` overrides (owned, null = the item's, else its type's). Derived on every read: `effectiveSetupMinutes` (the inherited minutes or the setup's changeover time, whichever is larger, never the sum) and `effectiveTeardownMinutes`, each with its source (`LINE`, `ITEM`, `TYPE`, or `SETUP` when the changeover wins; null = no buffer).
 
 > **Done (ADR 0064):** derived on every read, `timeZone`: the zone its times show and are entered in (its item's venue zone, else the organization's), so no caller needs `venue:read` for it.
 
-> **Done (ADR 0059):** `line.chooseOptions` replaces the customisation options chosen on a line whose item has groups. Each chosen option becomes an option line under it (`parentLineId` = the line; same ticket, type, fields, time and quantity as the line; its own item and name; `priceEffect` snapshot). A dropped option's line is archived. Each group needs between its `minPick` and `maxPick` options (`VALIDATION`); a group with `minPick` 0 can be skipped, and opting out is choosing another option. An option is chosen once per line while active (partial unique index). A line with part or option lines keeps its item; moving a timed line moves its timed part and option lines by the same delta and archiving it archives them, at every level. Quote derivation: `INCLUDED` never counts, `EXTRA` counts at its own price, `REPLACES` counts and its parent line does not; an option of an unchosen alternative (ADR 0052) is left out with it. Option lines are not bundle parts (no VAT split). The order line has no price effect field of its own; an option line is snapshotted like any line (`parentLineId`, `inTotal`).
+> **Done (ADR 0059):** `line.chooseOptions` replaces the customisation options chosen on a line whose item has groups. Each chosen option becomes an option line under it (`parentLineId` = the line; same order, type, fields, time and quantity as the line; its own item and name; `priceEffect` snapshot). A dropped option's line is archived. Each group needs between its `minPick` and `maxPick` options (`VALIDATION`); a group with `minPick` 0 can be skipped, and opting out is choosing another option. An option is chosen once per line while active (partial unique index). A line with part or option lines keeps its item; moving a timed line moves its timed part and option lines by the same delta and archiving it archives them, at every level. Quote derivation: `INCLUDED` never counts, `EXTRA` counts at its own price, `REPLACES` counts and its parent line does not; an option of an unchosen alternative (ADR 0052) is left out with it. Option lines are not bundle parts (no VAT split). The order line has no price effect field of its own; an option line is snapshotted like any line (`parentLineId`, `inTotal`).
 
-> **Done ([ADR 0082](decisions/0082-option-quantities.md)):** an option line's `quantity` is null in a normal group, so its effective quantity is its parent line's (source `PARENT_LINE`); in a split group it is the option's own (1 or more). `line.chooseOptions` takes `options: [{ itemId, quantity? }]`: a quantity is required for an option of a split group and refused for any other (`VALIDATION`); a kept option takes the new quantity. `line.update` refuses a new quantity on an option line whose group is not split. A split group whose option quantities do not add up to the parent's effective quantity gives the parent the derived warning `OPTION_SPLIT_MISMATCH` (`id` = the group, `sum`, `expected`), never stored or refused. Quotes: `EXTRA` counts the option line's effective quantity; `REPLACES` counts the option line, and its parent counts only the quantity no `REPLACES` option covers (at least 0; covered in full it does not count, as before), and that remainder is what the quote and invoice snapshot. Work orders list option lines with their own quantities.
+> **Done ([ADR 0082](decisions/0082-option-quantities.md)):** an option line's `quantity` is null in a normal group, so its effective quantity is its parent line's (source `PARENT_LINE`); in a split group it is the option's own (1 or more). `line.chooseOptions` takes `options: [{ itemId, quantity? }]`: a quantity is required for an option of a split group and refused for any other (`VALIDATION`); a kept option takes the new quantity. `line.update` refuses a new quantity on an option line whose group is not split. A split group whose option quantities do not add up to the parent's effective quantity gives the parent the derived warning `OPTION_SPLIT_MISMATCH` (`id` = the group, `sum`, `expected`), never stored or refused. Quotes: `EXTRA` counts the option line's effective quantity; `REPLACES` counts the option line, and its parent counts only the quantity no `REPLACES` option covers (at least 0; covered in full it does not count, as before), and that remainder is what the quote and invoice snapshot. Run sheets list option lines with their own quantities.
 
-> **Done ([ADR 0089](decisions/0089-package-choices-step.md)):** a group with no pick is open: `line.chooseOptions` and `ticket.create` check minPick and maxPick only for a group with a pick, and a required group (`minPick` 1 or more) with no option line gives the active top-level line the derived warning `UNCHOSEN_REQUIRED_GROUP` (`id` = the group), never stored. The intake asks such lines in a Choices step between package and review; what is left for later is an open question with Decide later.
+> **Done ([ADR 0089](decisions/0089-package-choices-step.md)):** a group with no pick is open: `line.chooseOptions` and `order.create` check minPick and maxPick only for a group with a pick, and a required group (`minPick` 1 or more) with no option line gives the active top-level line the derived warning `UNCHOSEN_REQUIRED_GROUP` (`id` = the group), never stored. The intake asks such lines in a Choices step between package and review; what is left for later is an open question with Decide later.
 
-> **Done ([ADR 0088](decisions/0088-add-on-sublines.md), core):** every sub-line says what it is in `role` (`PART`, `OPTION`, `ADD_ON`; null exactly when `parentLineId` is null, a check constraint; `priceEffect` only on `OPTION`; the "option once per line" index filters on `OPTION`). An **add-on** is a line made by `line.create` with `parentLineId`: any item or free text, under a top-level line of the same ticket (one level: never under a part, option or add-on line; another organization's line is `NOT_FOUND`, other cases `VALIDATION`). Its type defaults to the parent's; without a time it copies the parent's period (an untimed parent gives an untimed add-on). It holds, gets its state and is priced like any line: price line → price list → item, quantity its own else the parent's (`PARENT_LINE`), its own VAT, and never the parent's discount. It always counts in the totals unless its parent is an unchosen alternative; it is not in a bundle's VAT split and not covered by `REPLACES`. It moves (timed) and is archived with its parent; a line with only add-ons may change its item; an add-on is never an alternative option itself and never changes parent. `line.chooseOptions` still refuses more than `maxPick`, pointing to add-ons; the max is always a hard limit (decision 5 amended: no `allowExtras`, the choice controls never take more). The intake takes `addOns` on draft lines (slice 3). Where they show (slice 4): the ticket page's program nests each add-on under its line with an "Add-on" badge and its own time, quantity and price, and a top-level line's menu has **Add add-on** (the line dialog with the parent's type and period, both changeable). Quotes and invoices list every sub-line right after its parent (`position` follows the parent, ADR 0052 snapshot) and indent it, an add-on marked from `OrderLine.role`; totals keep their shape. On a work order an add-on row carries `parentKey` = its parent's row when the parent is on the work order (and follows it), else it stands alone; either way `addOnTo` names the parent. The payment page lists the paid quote's or invoice's frozen lines the same way, with its totals.
+> **Done ([ADR 0088](decisions/0088-add-on-sublines.md), core):** every sub-line says what it is in `role` (`PART`, `OPTION`, `ADD_ON`; null exactly when `parentLineId` is null, a check constraint; `priceEffect` only on `OPTION`; the "option once per line" index filters on `OPTION`). An **add-on** is a line made by `line.create` with `parentLineId`: any item or free text, under a top-level line of the same order (one level: never under a part, option or add-on line; another organization's line is `NOT_FOUND`, other cases `VALIDATION`). Its type defaults to the parent's; without a time it copies the parent's period (an untimed parent gives an untimed add-on). It holds, gets its state and is priced like any line: price line → price list → item, quantity its own else the parent's (`PARENT_LINE`), its own VAT, and never the parent's discount. It always counts in the totals unless its parent is an unchosen alternative; it is not in a bundle's VAT split and not covered by `REPLACES`. It moves (timed) and is archived with its parent; a line with only add-ons may change its item; an add-on is never an alternative option itself and never changes parent. `line.chooseOptions` still refuses more than `maxPick`, pointing to add-ons; the max is always a hard limit (decision 5 amended: no `allowExtras`, the choice controls never take more). The intake takes `addOns` on draft lines (slice 3). Where they show (slice 4): the order page's program nests each add-on under its line with an "Add-on" badge and its own time, quantity and price, and a top-level line's menu has **Add add-on** (the line dialog with the parent's type and period, both changeable). Quotes and invoices list every sub-line right after its parent (`position` follows the parent, ADR 0052 snapshot) and indent it, an add-on marked from `OrderLine.role`; totals keep their shape. On a run sheet an add-on row carries `parentKey` = its parent's row when the parent is on the run sheet (and follows it), else it stands alone; either way `addOnTo` names the parent. The payment page lists the paid quote's or invoice's frozen lines the same way, with its totals.
 
 > **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`, `alternativeGroupId`, `parentLineId`, `role` (set once at insert); snapshot `priceEffect` (set by `line.chooseOptions`, never changed); derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
 
@@ -562,10 +562,10 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - item (`itemId`, optional; any active item, e.g. a venue space or a dish; only a `BOOKABLE` item on a timed line is held)
 - setup (`setupId`, optional; one of the item's setups, requires the item)
 - buffers (`setupMinutes`, `teardownMinutes`; null = the item's, else its type's; ADR 0059)
-- quantity (`quantity`; null = the ticket's headcount, guaranteed if set, else estimated; on an option line null = its parent's, and set only in a split group, ADR 0082)
-- commercial overrides (`unitPriceMinor`, `discountPercent`, `vatRatePercent`; null = inherit). Derived on every read, never stored: the unit price is the line's own, else the customer's price list valid on the line's day (else the ticket's desired start, else today; the newest start wins) with an agreed price for the item, else the item's price; the discount is the line's own, else that price list's general discount on the item's price, else 0; VAT is the line's own, else the item's, else the item's venue default. Each effective value comes with its source (`LINE` = own, anything else = inherited), so a changed price list or headcount shows on the line at once
+- quantity (`quantity`; null = the order's headcount, guaranteed if set, else estimated; on an option line null = its parent's, and set only in a split group, ADR 0082)
+- commercial overrides (`unitPriceMinor`, `discountPercent`, `vatRatePercent`; null = inherit). Derived on every read, never stored: the unit price is the line's own, else the customer's price list valid on the line's day (else the order's desired start, else today; the newest start wins) with an agreed price for the item, else the item's price; the discount is the line's own, else that price list's general discount on the item's price, else 0; VAT is the line's own, else the item's, else the item's venue default. Each effective value comes with its source (`LINE` = own, anything else = inherited), so a changed price list or headcount shows on the line at once
 - state (`stateId`, an `ItemState` of the item's type; null for a line without an item), `stateOverridden` (set by hand, skipped by status moves)
-- held since (`heldAt`, derived: when the line entered its current state, its newest `LineStateChange`; shown oldest first where soft holds overlap, no queue or rank); the line has no expiry of its own, see Ticket `holdsUntil`
+- held since (`heldAt`, derived: when the line entered its current state, its newest `LineStateChange`; shown oldest first where soft holds overlap, no queue or rank); the line has no expiry of its own, see Order `holdsUntil`
 - alternative group (`alternativeGroupId`, optional): the line is one option of an `AlternativeGroup`
 - parent line (`parentLineId`, optional): the line is a part line of that bundle line (`line.expandBundle`), an option line of that line (`line.chooseOptions`; ADR 0059) or an add-on under it (`line.create`; ADR 0088)
 - role (`role`, owned, ADR 0088): `PART | OPTION | ADD_ON` on a sub-line, null on a top-level line
@@ -573,7 +573,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - internal note
 
 **Relations**
-- `N:1` Ticket has this
+- `N:1` Order has this
 - `N:1` is in → ItemState
 - `1:N` has → LineStateChange (its state history)
 - `N:0..1` is held in → Item (bookable)
@@ -586,49 +586,49 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` requires → Task
 - `1:N` AccessCode opens for this
 
-> Operations (resource `line`): `line.list|get|create|update|archive`, `line.chooseOptions({ lineId, options: [{ itemId, quantity? }] })` (permission `program:write`, plus `item:read` since the options are items; web, GraphQL, REST `POST /lines/{lineId}/options`, MCP) and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followStatus({ lineId })` (clears the override and applies the current status's grid cell). A new line starts in the grid cell of the ticket's status for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `ticket.changeStatus` moves the lines that are not overridden to the target status's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A closing status moves every line to its type's released state. Who answers for a line comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both with the line's `lineId`, written by trigger, ADR 0053). An overlap with a hard hold, setup time or block is refused (`CONFLICT`, issue `lines.<id>`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change (clearing both times releases it); `archive` releases it; a ticket that is archived or enters a closing status holds nothing. Every change is audited. Every line read on every surface carries the effective quantity, price, discount and VAT with their sources. A second option of an alternative group going into a hard-hold state (by `line.changeState`, `line.update` or a status move) is `CONFLICT`.
+> Operations (resource `line`): `line.list|get|create|update|archive`, `line.chooseOptions({ lineId, options: [{ itemId, quantity? }] })` (permission `program:write`, plus `item:read` since the options are items; web, GraphQL, REST `POST /lines/{lineId}/options`, MCP) and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followStatus({ lineId })` (clears the override and applies the current status's grid cell). A new line starts in the grid cell of the order's status for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `order.changeStatus` moves the lines that are not overridden to the target status's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A closing status moves every line to its type's released state. Who answers for a line comes from the order's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both with the line's `lineId`, written by trigger, ADR 0053). An overlap with a hard hold, setup time or block is refused (`CONFLICT`, issue `lines.<id>`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change (clearing both times releases it); `archive` releases it; an order that is archived or enters a closing status holds nothing. Every change is audited. Every line read on every surface carries the effective quantity, price, discount and VAT with their sources. A second option of an alternative group going into a hard-hold state (by `line.changeState`, `line.update` or a status move) is `CONFLICT`.
 
-> State history ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)): `LineStateChange` (line, from state, to state (null when the line lost its item), trigger `MANUAL` / `STATUS` / `EXPIRY` / `SYSTEM`, changed at, changed by, `seq`), append-only. Inserting a row sets `Line.stateId` by trigger (`domain_history.sql`), which re-derives the line's hold; a stale row fails with `CONFLICT` and any other write of `stateId` is refused by the database. A new line with a state gets a first row (`SYSTEM`); `line.changeState` writes `MANUAL`, status moves, closing releases and `line.followStatus` `STATUS`, `ticket.expireHolds` `EXPIRY`.
+> State history ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)): `LineStateChange` (line, from state, to state (null when the line lost its item), trigger `MANUAL` / `STATUS` / `EXPIRY` / `SYSTEM`, changed at, changed by, `seq`), append-only. Inserting a row sets `Line.stateId` by trigger (`domain_history.sql`), which re-derives the line's hold; a stale row fails with `CONFLICT` and any other write of `stateId` is refused by the database. A new line with a state gets a first row (`SYSTEM`); `line.changeState` writes `MANUAL`, status moves, closing releases and `line.followStatus` `STATUS`, `order.expireHolds` `EXPIRY`.
 
 ### AlternativeGroup (`AlternativeGroup`)
 
-*MVP* · Lines of one ticket the customer picks exactly one of, e.g. "Room A or Room B" ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). Same idea as `ItemCustomisationGroup`, applied to a ticket's lines.
+*MVP* · Lines of one order the customer picks exactly one of, e.g. "Room A or Room B" ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). Same idea as `ItemCustomisationGroup`, applied to an order's lines.
 
-> **Ownership:** owned `ticketId`, `name`, `chosenLineId` (set once by the choice); the options are owned by the lines (`Line.alternativeGroupId`); `optionLineIds` is derived.
+> **Ownership:** owned `orderId`, `name`, `chosenLineId` (set once by the choice); the options are owned by the lines (`Line.alternativeGroupId`); `optionLineIds` is derived.
 
 **Attributes**
-- ticket (`ticketId`)
+- order (`orderId`)
 - name
 - options (`optionLineIds`, derived: the active lines with this `alternativeGroupId`, in time order)
 - chosen option (`chosenLineId`, null until chosen)
 - archived (`status`)
 
 **Relations**
-- `N:1` Ticket has this
+- `N:1` Order has this
 - `1:N` groups → Line
 - `0..1:1` chosen → Line
 - `1:N` OrderLine snapshots this
 
-> Operations (feature `program`: `program:read` to read, `program:write` to change): `alternativeGroup.list|get`, `alternativeGroup.create` (two or more active lines of the ticket, none in another group), `alternativeGroup.update` (name; the options replace the set until one is chosen), `alternativeGroup.archive` (dissolve: the options become ordinary lines and keep their states) and `alternativeGroup.choose({ id, lineId })`. Soft holds on every option are the normal case; at most one option may be in a hard-hold state (`VALIDATION` when grouping, `CONFLICT` on a state change or status move; the group row is locked so two options cannot go hard at once). Choosing happens once (`CONFLICT` after that) and moves every other option to its item type's released state in the same transaction (overridden, so status moves skip it), which releases its hold by trigger (ADR 0053). `quote.accept` with `chosenLineIds` does the same per open group. Archiving the ticket archives its groups. Every change is audited on the group.
+> Operations (feature `program`: `program:read` to read, `program:write` to change): `alternativeGroup.list|get`, `alternativeGroup.create` (two or more active lines of the order, none in another group), `alternativeGroup.update` (name; the options replace the set until one is chosen), `alternativeGroup.archive` (dissolve: the options become ordinary lines and keep their states) and `alternativeGroup.choose({ id, lineId })`. Soft holds on every option are the normal case; at most one option may be in a hard-hold state (`VALIDATION` when grouping, `CONFLICT` on a state change or status move; the group row is locked so two options cannot go hard at once). Choosing happens once (`CONFLICT` after that) and moves every other option to its item type's released state in the same transaction (overridden, so status moves skip it), which releases its hold by trigger (ADR 0053). `quote.accept` with `chosenLineIds` does the same per open group. Archiving the order archives its groups. Every change is audited on the group.
 
 ### Requirement ★ (`Requirement`)
 
-*MVP* · A count per vocabulary value on a ticket or a line, e.g. Gluten × 3 or Wheelchair × 2. Never tied to a person. There is no personal data about individual guests ([ADR 0021](decisions/0021-configurable-items.md)).
+*MVP* · A count per vocabulary value on an order or a line, e.g. Gluten × 3 or Wheelchair × 2. Never tied to a person. There is no personal data about individual guests ([ADR 0021](decisions/0021-configurable-items.md)).
 
 **Attributes**
-- ticket (`ticketId`) and optionally one of its lines (`lineId`; null = the whole ticket)
+- order (`orderId`) and optionally one of its lines (`lineId`; null = the whole order)
 - vocabulary value (`vocabularyValueId`; an active value of an active list in the organization)
 - count (`quantity`, 0 or more; 0 on a line means "none here")
 - type (the organization's own, base `REQUIREMENT`) and custom fields (e.g. severity); a requirement type's LINK fields never point to a customer or contact type
 
 **Relations**
-- `N:1` Ticket has this
+- `N:1` Order has this
 - `N:0..1` Line adjusts with this
 - `N:1` refers to → VocabularyValue
 
-> Operations (resource `requirement`): `requirement.list|get|create|update|archive` ([ADR 0021](decisions/0021-configurable-items.md)). One active count per vocabulary value and level (the ticket, or one line); a second is refused (`CONFLICT`). `update` changes only the count and fields. The line must belong to the ticket (`VALIDATION`). A vocabulary value, or a whole vocabulary, cannot be archived while a requirement counts it (`CONFLICT`). Every change is audited.
+> Operations (resource `requirement`): `requirement.list|get|create|update|archive` ([ADR 0021](decisions/0021-configurable-items.md)). One active count per vocabulary value and level (the order, or one line); a second is refused (`CONFLICT`). `update` changes only the count and fields. The line must belong to the order (`VALIDATION`). A vocabulary value, or a whole vocabulary, cannot be archived while a requirement counts it (`CONFLICT`). Every change is audited.
 
-> ★ A row on the line replaces the ticket's count there, value by value; the core helper `effectiveRequirements` (`resolveEffective`) computes the effective count per line. Matching: the requirement is compared with the items on the ticket that are tagged with the same vocabulary value. A hit on a required part without an alternative is flagged and blocks the work order. `item.resolve` computes inherited tags and is the only place for that.
+> ★ A row on the line replaces the order's count there, value by value; the core helper `effectiveRequirements` (`resolveEffective`) computes the effective count per line. Matching: the requirement is compared with the items on the order that are tagged with the same vocabulary value. A hit on a required part without an alternative is flagged and blocks the run sheet. `item.resolve` computes inherited tags and is the only place for that.
 
 ### CancellationTerms
 
@@ -641,7 +641,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - applies to customer or venue
 
 **Relations**
-- `1:N` Ticket follows this
+- `1:N` Order follows this
 
 ## Spaces & resources
 
@@ -700,7 +700,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:1` Line reserves this
 - `N:1` Item has this
 
-> ★ Active rows of all types except soft ones (soft holds and their buffers) may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`. `HOLD`, `SETUP` and `TEARDOWN` are written only by database triggers (ADR 0053), in the same transaction as the change to the line, its state, setup, item, item type, ticket or status: a line holds while it and its ticket are active, the ticket's status is not closing, it is timed, its item's type is `BOOKABLE` and its state holds and is not released. A hold of either kind gets a `SETUP` right before and a `TEARDOWN` right after, of its own kind, when their effective minutes are above zero (ADR 0059): setup is the line's, else the item's, else the type's `setupMinutes`, or the setup's changeover time (`changeoverMinutes`) when that is larger; teardown is the line's, else the item's, else the type's `teardownMinutes`. A held line also holds the unit of each active, filled `LineAllocation` of an active demand whose unit's type is `BOOKABLE`, for the demand's non-empty windows, with the line's kind; the unit's own buffers do not apply. Filling, changing or removing an allocation re-derives its line; changing a demand's windows or archiving it re-derives its lines. Changing a state's `hold`/`released`, a setup's changeover time, an item's or a type's buffer minutes, a type's capabilities or a status's `closes` re-derives only lines that have not ended (the past calendar is frozen); an overlap refuses the change with `CONFLICT` and one issue per line (`lines.<id>`). Application code never writes line holds (a test enforces it).
+> ★ Active rows of all types except soft ones (soft holds and their buffers) may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`. `HOLD`, `SETUP` and `TEARDOWN` are written only by database triggers (ADR 0053), in the same transaction as the change to the line, its state, setup, item, item type, order or status: a line holds while it and its order are active, the order's status is not closing, it is timed, its item's type is `BOOKABLE` and its state holds and is not released. A hold of either kind gets a `SETUP` right before and a `TEARDOWN` right after, of its own kind, when their effective minutes are above zero (ADR 0059): setup is the line's, else the item's, else the type's `setupMinutes`, or the setup's changeover time (`changeoverMinutes`) when that is larger; teardown is the line's, else the item's, else the type's `teardownMinutes`. A held line also holds the unit of each active, filled `LineAllocation` of an active demand whose unit's type is `BOOKABLE`, for the demand's non-empty windows, with the line's kind; the unit's own buffers do not apply. Filling, changing or removing an allocation re-derives its line; changing a demand's windows or archiving it re-derives its lines. Changing a state's `hold`/`released`, a setup's changeover time, an item's or a type's buffer minutes, a type's capabilities or a status's `closes` re-derives only lines that have not ended (the past calendar is frozen); an overlap refuses the change with `CONFLICT` and one issue per line (`lines.<id>`). Application code never writes line holds (a test enforces it).
 
 ## Items
 
@@ -746,13 +746,13 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` OrderLine refers to this
 - `1:N` PriceListItem refers to this
 
-> Room = item with `BOOKABLE` + `SETUPS` (often also `PRICED`). A capability cannot be turned off on the type as long as any active item of the type has data for it (`CONFLICT`). Free units of a pool (`item.freeUnits`, derived on read, nothing stored): a target is one bookable item or a bookable item type plus list values every unit carries; a unit is free when no hard hold, buffer or manual block overlaps the window (soft holds do not count); units come in name order and the first is the prepick. Demands store the same target (`ItemDemand`); the prepick of an allocation also needs the unit's own mandatory demands to be met (the chained check). Inherited tags (`item.resolve`, the only place they are computed): the item and required parts at every level give "contains"; optional parts and customisation-group options give "may contain" per alternative. An option in a group that must pick all of its options has no alternative and counts as required. On expansion onto a ticket: core creates lines, occupancy and order lines, which copy name, price, VAT and tags (snapshot).
+> Room = item with `BOOKABLE` + `SETUPS` (often also `PRICED`). A capability cannot be turned off on the type as long as any active item of the type has data for it (`CONFLICT`). Free units of a pool (`item.freeUnits`, derived on read, nothing stored): a target is one bookable item or a bookable item type plus list values every unit carries; a unit is free when no hard hold, buffer or manual block overlaps the window (soft holds do not count); units come in name order and the first is the prepick. Demands store the same target (`ItemDemand`); the prepick of an allocation also needs the unit's own mandatory demands to be met (the chained check). Inherited tags (`item.resolve`, the only place they are computed): the item and required parts at every level give "contains"; optional parts and customisation-group options give "may contain" per alternative. An option in a group that must pick all of its options has no alternative and counts as required. On expansion onto an order: core creates lines, occupancy and order lines, which copy name, price, VAT and tags (snapshot).
 
 ### ItemPart (`ItemPart`)
 
 *MVP* · A part of a bundle.
 
-> **Done (ADR 0059):** parts expand onto a ticket as part lines linked by `Line.parentLineId` (`line.expandBundle`); `offsetMinutes` and `durationMinutes` are defaults that an event's lines can change.
+> **Done (ADR 0059):** parts expand onto an order as part lines linked by `Line.parentLineId` (`line.expandBundle`); `offsetMinutes` and `durationMinutes` are defaults that an event's lines can change.
 
 **Attributes**
 - parent item
@@ -851,31 +851,31 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > Core keeps a line's allocations in step whenever the line is added, changed or removed, and when a demand changes: one slot per `quantity` of each active demand of the line's item, then of each allocated unit (at most 3 levels), depth first. An empty slot of a timed line gets the prepick: the first free unit in pool order (no hard hold, buffer or block in the demand's windows; soft holds do not take a unit) whose own mandatory demands its pools can meet (the chained check: an AV unit needs a free technician). A mandatory demand is met only when a unit is allocated: with none, the change is `CONFLICT` naming the pool and windows (`lines.<id>.demands.<id>`); an optional one stays empty. A unit fills at most one active slot per line (a partial unique index). `lineAllocation.list|get` (feature `program`, only ids) and `lineAllocation.assign` (`program:write` plus `item:read`, ADR 0059 decision 17) choose another unit or empty an optional slot; a unit not of the target, already on the line, not free or whose own demands cannot be met is refused. The old unit's chained allocations go and the new unit's come.
 
-### Work order ★ (`WorkOrder`)
+### Run sheet ★ (`RunSheet`)
 
-*MVP* · A compilation for a responsibility, e.g. kitchen order, brewing order or guide brief. Created from a work order definition.
+*MVP* · A compilation for a responsibility, e.g. kitchen order, brewing order or guide brief. Created from a run sheet definition.
 
 **Attributes**
-- ticket
-- work order definition
-- version (1, 2, 3, … per ticket and work order definition)
-- current (projection, ADR 0051): true on the newest version of its ticket and definition; written only by core `createVersion`, which takes it from the previous version in the same transaction; reconciliation check `work-order-current`
-- content: a snapshot of the ticket's rows (`TICKET`, `ITEM`, `REQUIREMENT`) as the definition includes them: the ticket itself, the lines that use an item of an included type with the included fields, and the counts of the included lists (never names); an add-on line's row (ADR 0088) follows its parent's row with `parentKey` set when the parent is on the work order, else stands alone, and `addOnTo` names the parent either way
+- order
+- run sheet definition
+- version (1, 2, 3, … per order and run sheet definition)
+- current (projection, ADR 0051): true on the newest version of its order and definition; written only by core `createVersion`, which takes it from the previous version in the same transaction; reconciliation check `run-sheet-current`
+- content: a snapshot of the order's rows (`ORDER`, `ITEM`, `REQUIREMENT`) as the definition includes them: the order itself, the lines that use an item of an included type with the included fields, and the counts of the included lists (never names); an add-on line's row (ADR 0088) follows its parent's row with `parentKey` set when the parent is on the run sheet, else stands alone, and `addOnTo` names the parent either way
 - changes (★): the rows added, changed or removed since the last sent version (`baseVersion`)
-- receiving responsibility (a copy of the definition's responsibility at generation; the work order goes to that responsibility's assignee and followers on the ticket)
+- receiving responsibility (a copy of the definition's responsibility at generation; the run sheet goes to that responsibility's assignee and followers on the order)
 - sent (`sentAt`, `sentBy`)
-- recipients (`WorkOrderRecipient`, snapshot): the responsibility's derived assignee and followers on the ticket when the version was sent (ADR 0055, 0051); written once by `workOrder.send`, which needs `ticket:read`; later changes of defaults or choices do not rewrite it
-- matches: the counts that hit the ticket's items (lines whose item is of an included type): the count, the list value, the line, the carrying items and `CONTAINS` (carried by the item or a mandatory part) or `MAY_CONTAIN` (only optional parts or choice options)
+- recipients (`RunSheetRecipient`, snapshot): the responsibility's derived assignee and followers on the order when the version was sent (ADR 0055, 0051); written once by `runSheet.send`, which needs `order:read`; later changes of defaults or choices do not rewrite it
+- matches: the counts that hit the order's items (lines whose item is of an included type): the count, the list value, the line, the carrying items and `CONTAINS` (carried by the item or a mandatory part) or `MAY_CONTAIN` (only optional parts or choice options)
 - blocked (yes/no): true when a match is `CONTAINS`
 
 **Relations**
-- `N:1` Ticket produces this
-- `N:1` WorkOrderDefinition produces this version
+- `N:1` Order produces this
+- `N:1` RunSheetDefinition produces this version
 - `N:1` goes to → Responsibility
 
-> Operations (resource `workOrder`): `workOrder.list|get|generate|send`. `workOrder.generate` snapshots the ticket for a definition; a changed ticket gives the next version with the changed rows marked ★ against the last *sent* version, an unchanged ticket returns the latest version. `workOrder.send` marks a version as sent: only from the `CONFIRMED` status (`CONFLICT` otherwise), only the latest version, and a version once. A `blocked` work order is refused with `CONFLICT`. A version is never edited or removed. The core function `diffContent` is the only place the markers are computed; `matchRequirements` (over `item.resolve`) is the only place matches are computed. A change in matches gives a new version. **Regenerates on change (ADR 0092):** after `ticket.create|createFromTemplate|update|changeStatus`, `line.create|update|archive|changeState|chooseOptions|expandBundle|followStatus` and `requirement.create|update|archive` commit, core runs `workOrder.generate` as the system for every active definition that already has a version for the ticket or includes the item type of one of its lines in an `inWorkOrders` state (the operation's `followUp`); an unchanged work order keeps its latest version. Changes to items, fields or definitions do not regenerate. `workOrder.list` searches GitHub style (`q`; the positive `involves:`, `assignee:` and `follower:` filters are alternatives of each other, as on the ticket list, the rest all must hold): `involves:me` (assignee or follower of the work order's responsibility on its ticket, stored or by default, ADR 0055), `assignee:`, `follower:`, `definition:`, `responsibility:`, `is:current|sent|unsent|blocked|open|closed` and the ticket's `status:`, `type:`, `customer:`, `contact:`, `when:`, `created:`, `guests:`; `from`/`to` window the ticket's period; `page` gives `total`. Web (ADR 0092, decision 8): the sidebar's **Work orders** opens one page (`/work-orders`): a table searched like tickets, unfiltered by default and listing only each work order's latest version (the Assigned to me and Following toggles narrow it); each version has its own page in the app shell, `/work-orders/{id}`, the full view of that version, with a Current / Not the current version badge and links to every version.
+> Operations (resource `runSheet`): `runSheet.list|get|generate|send`. `runSheet.generate` snapshots the order for a definition; a changed order gives the next version with the changed rows marked ★ against the last *sent* version, an unchanged order returns the latest version. `runSheet.send` marks a version as sent: only from the `CONFIRMED` status (`CONFLICT` otherwise), only the latest version, and a version once. A `blocked` run sheet is refused with `CONFLICT`. A version is never edited or removed. The core function `diffContent` is the only place the markers are computed; `matchRequirements` (over `item.resolve`) is the only place matches are computed. A change in matches gives a new version. **Regenerates on change (ADR 0092):** after `order.create|createFromTemplate|update|changeStatus`, `line.create|update|archive|changeState|chooseOptions|expandBundle|followStatus` and `requirement.create|update|archive` commit, core runs `runSheet.generate` as the system for every active definition that already has a version for the order or includes the item type of one of its lines in an `inRunSheets` state (the operation's `followUp`); an unchanged run sheet keeps its latest version. Changes to items, fields or definitions do not regenerate. `runSheet.list` searches GitHub style (`q`; the positive `involves:`, `assignee:` and `follower:` filters are alternatives of each other, as on the order list, the rest all must hold): `involves:me` (assignee or follower of the run sheet's responsibility on its order, stored or by default, ADR 0055), `assignee:`, `follower:`, `definition:`, `responsibility:`, `is:current|sent|unsent|blocked|open|closed` and the order's `status:`, `type:`, `customer:`, `contact:`, `when:`, `created:`, `guests:`; `from`/`to` window the order's period; `page` gives `total`. Web (ADR 0092, decision 8): the sidebar's **Run sheets** opens one page (`/run-sheets`): a table searched like orders, unfiltered by default and listing only each run sheet's latest version (the Assigned to me and Following toggles narrow it); each version has its own page in the app shell, `/run-sheets/{id}`, the full view of that version, with a Current / Not the current version badge and links to every version.
 
-> ★ Versioned, with changes marked since the last dispatch. Cannot be sent in the `TENTATIVE` status. `workOrder.export` gives a single work order as json, pdf or csv, always with the latest version and the version number. This is how a work order is handed to someone outside the system.
+> ★ Versioned, with changes marked since the last dispatch. Cannot be sent in the `TENTATIVE` status. `runSheet.export` gives a single run sheet as json, pdf or csv, always with the latest version and the version number. This is how a run sheet is handed to someone outside the system.
 
 ## Finance
 
@@ -948,19 +948,19 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Attributes**
 - description, amount (fixed, set once), currency, due date
-- VAT per rate of the amount (`vatRows`, snapshot at create): the ticket's live priced lines scaled to the amount; empty = no VAT (no priced lines, or created before [ADR 0093](decisions/0093-vat-on-advance-payments.md))
+- VAT per rate of the amount (`vatRows`, snapshot at create): the order's live priced lines scaled to the amount; empty = no VAT (no priced lines, or created before [ADR 0093](decisions/0093-vat-on-advance-payments.md))
 - status: `DRAFT → SENT → VOID` (a DRAFT may be voided too; VOID is final)
 
 **Relations**
-- `N:1` Ticket requires this
+- `N:1` Order requires this
 - `1:N` is paid with → Payment
 - `N:1` Invoice offsets this – *later*
 
-> Operations (`payment:read` to read, `payment:write` to change): `deposit.list` (per ticket, newest first), `deposit.get`, `deposit.create({ ticketId, description, amountMinor, dueDate? })` (a DRAFT; the ticket must be chargeable: not in a `closes` status unless it is `invoiceable`), `deposit.send` (DRAFT → SENT; only a SENT deposit can be paid) and `deposit.void` (refused with `CONFLICT` while a payment against it is PENDING or anything paid has not been refunded). Every move claims the row on its current status, so a concurrent move or payment request gets `CONFLICT` instead of a lost update. On every surface; web on the ticket page (create at `/new/deposit?ticket=<id>`).
+> Operations (`payment:read` to read, `payment:write` to change): `deposit.list` (per order, newest first), `deposit.get`, `deposit.create({ orderId, description, amountMinor, dueDate? })` (a DRAFT; the order must be chargeable: not in a `closes` status unless it is `invoiceable`), `deposit.send` (DRAFT → SENT; only a SENT deposit can be paid) and `deposit.void` (refused with `CONFLICT` while a payment against it is PENDING or anything paid has not been refunded). Every move claims the row on its current status, so a concurrent move or payment request gets `CONFLICT` instead of a lost update. On every surface; web on the order page (create at `/new/deposit?order=<id>`).
 
 ### Payment ★ (`Payment`)
 
-*MVP* · A payment requested from the ticket's customer: a card checkout or a Stripe invoice ([ADR 0028](decisions/0028-payments-with-stripe.md), [ADR 0029](decisions/0029-invoicing-via-stripe.md)). Every payment is a direct charge on the organization's connected account (`PaymentAccount`), so the venue is the merchant and Bibi never holds its funds.
+*MVP* · A payment requested from the order's customer: a card checkout or a Stripe invoice ([ADR 0028](decisions/0028-payments-with-stripe.md), [ADR 0029](decisions/0029-invoicing-via-stripe.md)). Every payment is a direct charge on the organization's connected account (`PaymentAccount`), so the venue is the merchant and Bibi never holds its funds.
 
 > **Ownership:** owned `method`, `amountMinor`, `currency`, `applicationFeeMinor` (agreed at charge time) and the receivable it settles; mirror of Stripe `status`, `paidAt`, `refundedMinor`, `providerReference`, `paymentUrl` (written only by `payment.applySignal` and the after-commit charge).
 
@@ -968,8 +968,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - method: `CARD` (hosted checkout link) or `INVOICE` (Stripe invoice emailed to the customer, or a payment booked on a Fortnox invoice); Swish comes later through Stripe
 - status: `PENDING`, `SUCCEEDED`, `FAILED`, `CANCELLED` or `REFUNDED`
 - amount and currency (`amountMinor` in minor units, ISO 4217)
-- provider (`InvoiceProvider`): `STRIPE` (a charge Bibi requested) or `FORTNOX` (booked on an invoice raised there, mirrored by `invoice.sync`, [ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)); `providerAccountId` (the connected account) is null for Fortnox
-- application fee (`applicationFeeMinor`, null = none; from `STRIPE_APPLICATION_FEE_BPS`), shown on each payment on the ticket page
+- provider (`InvoiceProvider`): `STRIPE` (a charge Bibi requested) or `FORTNOX` (booked on an invoice raised there, mirrored by `invoice.sync`, [ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)); `providerAccountId` (the connected account) is null for Fortnox
+- application fee (`applicationFeeMinor`, null = none; from `STRIPE_APPLICATION_FEE_BPS`), shown on each payment on the order page
 - the receivable it settles: exactly one of `quoteId`, `depositId`, `invoiceId` (check constraint)
 - PSP reference (`providerReference`: the Checkout Session or Invoice id, unique; for Fortnox `fortnox:<organizationId>:<payment number>`; null until the provider has it)
 - payment link (`paymentUrl`) and, for a checkout, when it expires
@@ -978,20 +978,20 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - refunded so far (`refundedMinor`, the Stripe mirror); each refund is also a `PaymentRefund` row (amount, total after it, `refundedAt`; append-only, written only by `payment.applySignal`, ADR 0077), and the `payment refunds` reconciliation checks that they sum to `refundedMinor`
 
 **Relations**
-- `N:1` Ticket is paid with this
+- `N:1` Order is paid with this
 - `N:1` Quote is paid with this (a SENT or ACCEPTED one)
 - `N:1` Deposit is paid with this
 - `N:1` Invoice is settled with this
 
-> Operations: `payment.list` (per ticket, newest first) and `payment.get` (permission `payment:read`), and `payment.create({ quoteId | depositId | invoiceId, method, amountMinor?, description? })` (`payment:write`), on every surface (GraphQL also as `Ticket.payments`; web on the ticket page). `create` takes exactly one receivable (`VALIDATION` otherwise): a SENT or ACCEPTED quote (needs `quote:read`), a SENT deposit or a SENT invoice (`CONFLICT` otherwise); the ticket and currency are the receivable's. The amount defaults to the receivable's open balance and may be lower (partial payment), never higher (`VALIDATION`); nothing open is `CONFLICT`. A deposit or invoice row is claimed for the transaction, so a concurrent void waits and then sees the new payment. `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), a ticket that is not in a `closes` status unless that status is `invoiceable`, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The row is inserted `PENDING` first and Stripe is called only after the commit (`external`, [ADR 0058](decisions/0058-external-effects-after-commit.md)), so an AI proposal never charges; a refused charge leaves the row `FAILED`. The status is updated by the Stripe webhook `POST /api/webhooks/stripe` (signature verified with `STRIPE_WEBHOOK_SECRET`), which runs the SYSTEM-only `payment.applySignal` (no user, AI or API surface): `paid` -> `SUCCEEDED` (a payment never moves a ticket's status), expired -> `CANCELLED`, failed checkout -> `FAILED`, refunds update `refundedMinor` (`REFUNDED` when full). A payment never moves backwards. Events are deduplicated on the Stripe event id in the platform table `StripeWebhookEvent`. The customer's payment page `/pay/<token>` (no sign-in) is read through the SYSTEM-only `payment.getPublic`, which has no adapters and returns no personal data (organization name, ticket reference, amount, status, pay link, and the frozen lines and totals of the quote or invoice it settles); an unknown or malformed token is `NOT_FOUND`.
+> Operations: `payment.list` (per order, newest first) and `payment.get` (permission `payment:read`), and `payment.create({ quoteId | depositId | invoiceId, method, amountMinor?, description? })` (`payment:write`), on every surface (GraphQL also as `Order.payments`; web on the order page). `create` takes exactly one receivable (`VALIDATION` otherwise): a SENT or ACCEPTED quote (needs `quote:read`), a SENT deposit or a SENT invoice (`CONFLICT` otherwise); the order and currency are the receivable's. The amount defaults to the receivable's open balance and may be lower (partial payment), never higher (`VALIDATION`); nothing open is `CONFLICT`. A deposit or invoice row is claimed for the transaction, so a concurrent void waits and then sees the new payment. `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), an order that is not in a `closes` status unless that status is `invoiceable`, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The row is inserted `PENDING` first and Stripe is called only after the commit (`external`, [ADR 0058](decisions/0058-external-effects-after-commit.md)), so an AI proposal never charges; a refused charge leaves the row `FAILED`. The status is updated by the Stripe webhook `POST /api/webhooks/stripe` (signature verified with `STRIPE_WEBHOOK_SECRET`), which runs the SYSTEM-only `payment.applySignal` (no user, AI or API surface): `paid` -> `SUCCEEDED` (a payment never moves an order's status), expired -> `CANCELLED`, failed checkout -> `FAILED`, refunds update `refundedMinor` (`REFUNDED` when full). A payment never moves backwards. Events are deduplicated on the Stripe event id in the platform table `StripeWebhookEvent`. The customer's payment page `/pay/<token>` (no sign-in) is read through the SYSTEM-only `payment.getPublic`, which has no adapters and returns no personal data (organization name, order reference, amount, status, pay link, and the frozen lines and totals of the quote or invoice it settles); an unknown or malformed token is `NOT_FOUND`.
 
-> **Balance (ADR 0057):** `payment.balance({ ticketId })` (`payment:read`) derives what the ticket owes in `packages/core/src/features/payment/settlement.ts` and `ticket-balance.ts`, the one module that computes money: paid per receivable = SUCCEEDED and REFUNDED payments minus `refundedMinor`; progress `OPEN`, `PARTLY_PAID`, `PAID` or `OVERPAID`; billed = the SENT invoices once invoiced, else the ACCEPTED quote; balance = billed minus everything paid on the ticket. Quotes are left out for a caller without `quote:read`. Nothing is stored. GraphQL `ticketBalance`, REST `GET /tickets/{ticketId}/balance`.
+> **Balance (ADR 0057):** `payment.balance({ orderId })` (`payment:read`) derives what the order owes in `packages/core/src/features/payment/settlement.ts` and `order-balance.ts`, the one module that computes money: paid per receivable = SUCCEEDED and REFUNDED payments minus `refundedMinor`; progress `OPEN`, `PARTLY_PAID`, `PAID` or `OVERPAID`; billed = the SENT invoices once invoiced, else the ACCEPTED quote; balance = billed minus everything paid on the order. Quotes are left out for a caller without `quote:read`. Nothing is stored. GraphQL `orderBalance`, REST `GET /orders/{orderId}/balance`.
 
-> ★ Swish and card directly in the ticket. Lega shows no online payment.
+> ★ Swish and card directly in the order. Lega shows no online payment.
 
 ### Invoice (`Invoice`)
 
-*MVP* · The invoice after delivery: a snapshot of the ticket's priced lines, like a sent quote ([ADR 0052](decisions/0052-the-line-is-the-booking.md), [ADR 0057](decisions/0057-money-balance-is-derived.md)). A ticket can be invoiced only in a status with the `invoiceable` flag.
+*MVP* · The invoice after delivery: a snapshot of the order's priced lines, like a sent quote ([ADR 0052](decisions/0052-the-line-is-the-booking.md), [ADR 0057](decisions/0057-money-balance-is-derived.md)). An order can be invoiced only in a status with the `invoiceable` flag.
 
 > **Ownership:** owned `number` (per organization, highest + 1), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); `provider` (set by send, ADR 0090) and the mirror `providerReference`; snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments).
 
@@ -999,23 +999,23 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - invoice number, due date (given, else after the customer's payment terms, default 30 days)
 - status: `DRAFT → SENT → VOID` (VOID is final)
 - totals of the frozen lines
-- deducted deposits (`InvoiceDeposit`, snapshot at create) and the amount due: total incl. VAT minus them, which payments settle ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md))
+- deducted deposits (`InvoiceDeposit`, snapshot at create) and the amount due: total incl. VAT minus them, which payments settle ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md))
 - provider (`InvoiceProvider`, owned): where the invoice was raised when it was sent; null = in Bibi only
 - Fortnox document number (`providerReference`, a mirror; null until raised there)
 - export status (Fortnox / Visma) – *later*
 - e-invoice – *later*
 
 **Relations**
-- `N:1` Ticket is invoiced via this
+- `N:1` Order is invoiced via this
 - `1:N` is settled with → Payment
 - `1:N` invoices → OrderLine
 - `1:N` deducts → InvoiceDeposit → Deposit
 
-> Operations (`payment:read` to read, `payment:write` to change): `invoice.list` (per ticket, newest first), `invoice.get`, `invoice.create({ ticketId, dueDate? })` (needs `program:read`, since it copies the lines; an `invoiceable` status; at least one priced line with quantity and VAT; and no other invoice of the ticket that is not VOID, held by a partial unique index so a concurrent second create is `CONFLICT`), `invoice.send` and `invoice.void` (as for a deposit; voiding lets the ticket be invoiced again). On every surface; web on the ticket page. `invoice.send` raises the invoice in Fortnox after the commit when `provider` is FORTNOX; `invoice.sync` (`payment:write`) raises it again if that failed and mirrors the payments booked on it ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)).
+> Operations (`payment:read` to read, `payment:write` to change): `invoice.list` (per order, newest first), `invoice.get`, `invoice.create({ orderId, dueDate? })` (needs `program:read`, since it copies the lines; an `invoiceable` status; at least one priced line with quantity and VAT; and no other invoice of the order that is not VOID, held by a partial unique index so a concurrent second create is `CONFLICT`), `invoice.send` and `invoice.void` (as for a deposit; voiding lets the order be invoiced again). On every surface; web on the order page. `invoice.send` raises the invoice in Fortnox after the commit when `provider` is FORTNOX; `invoice.sync` (`payment:write`) raises it again if that failed and mirrors the payments booked on it ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)).
 
 ### InvoiceDeposit (`InvoiceDeposit`)
 
-*MVP* · A paid deposit a final invoice deducts ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)). Written by `invoice.create` for every deposit of the ticket that is not VOID and has something paid, at what is paid on it then; a deposit paid later is not deducted (void and recreate the invoice). Revenue and VAT stay the invoice lines'; the SIE export moves exactly these amounts from customer advances to receivables and reverses the VAT reported when the deposit was paid, split by the deposit's `vatRows` (ADR 0077, 0093).
+*MVP* · A paid deposit a final invoice deducts ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)). Written by `invoice.create` for every deposit of the order that is not VOID and has something paid, at what is paid on it then; a deposit paid later is not deducted (void and recreate the invoice). Revenue and VAT stay the invoice lines'; the SIE export moves exactly these amounts from customer advances to receivables and reverses the VAT reported when the deposit was paid, split by the deposit's `vatRows` (ADR 0077, 0093).
 
 > **Ownership:** snapshot every column, never changed afterwards.
 
@@ -1113,7 +1113,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - invoiced excl. VAT per month (sent invoices, by send date)
 - received per month (settled payments by paid date, minus refunds by refund date)
 - outstanding and overdue today, aging (not due, 1 to 30, 31 to 60, more than 60 days overdue) and the most overdue invoices
-- won and lost tickets per month: a ticket's outcome month is when it entered a closing status; won = it has an accepted quote or a sent invoice ([ADR 0079](decisions/0079-dashboard-summary-and-utilisation.md), moved here by [ADR 0080](decisions/0080-dashboard-ahead-financials-behind.md))
+- won and lost orders per month: an order's outcome month is when it entered a closing status; won = it has an accepted quote or a sent invoice ([ADR 0079](decisions/0079-dashboard-summary-and-utilisation.md), moved here by [ADR 0080](decisions/0080-dashboard-ahead-financials-behind.md))
 - revenue per item type and VAT per rate
 
 - trends of invoiced and received (sums) and outstanding and overdue (rebuilt at each bucket's end from invoices, payments and refunds), each with the previous range of equal length ([ADR 0086](decisions/0086-one-dashboard-with-tabs-and-trend-cards.md))
@@ -1122,11 +1122,11 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### Dashboard (`dashboard.summary`)
 
-*MVP* · The Workload tab of the dashboard for a range, as a read model ([ADR 0086](decisions/0086-one-dashboard-with-tabs-and-trend-cards.md)): open tickets and their value per open status now with the count's trend over the range (replayed from `TicketStatusChange`), what needs attention now (holds expiring within 7 days, unsent work orders for tickets in the next 28 days, overdue invoices), tickets scheduled in the range, utilisation per bookable item type over the range and accepted quotes not invoiced per event month in the range. Nothing is stored. Spec: `docs/specs/dashboard.md`.
+*MVP* · The Workload tab of the dashboard for a range, as a read model ([ADR 0086](decisions/0086-one-dashboard-with-tabs-and-trend-cards.md)): open orders and their value per open status now with the count's trend over the range (replayed from `OrderStatusChange`), what needs attention now (holds expiring within 7 days, unsent run sheets for orders in the next 28 days, overdue invoices), orders scheduled in the range, utilisation per bookable item type over the range and accepted quotes not invoiced per event month in the range. Nothing is stored. Spec: `docs/specs/dashboard.md`.
 
 > **Ownership:** derived throughout.
 
-> Operation: `dashboard.summary({ from, to })` (`ticket:read`; at most 24 months). Unsent work orders need `workOrder:read`, overdue `finance:read` and `payment:read`, utilisation `item:read`, booked ahead `quote:read`, customer names `customer:read`; a part the caller may not read is null. Web: the Workload dashboard, `/data/{dashboard}/{from}/{to}`.
+> Operation: `dashboard.summary({ from, to })` (`order:read`; at most 24 months). Unsent run sheets need `runSheet:read`, overdue `finance:read` and `payment:read`, utilisation `item:read`, booked ahead `quote:read`, customer names `customer:read`; a part the caller may not read is null. Web: the Workload dashboard, `/data/{dashboard}/{from}/{to}`.
 
 ## Operations & system
 
@@ -1152,10 +1152,10 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 | Preset | Can |
 |---|---|
 | `member` | view every feature except `audit`, `assistant` and `apiKey`; change only their own conversations, personal skills and connections (`self`, always on) |
-| `manager` | everything a member can, plus every action on bookings and selling: `ticket`, `program` (lines), `customer`, `quote`, `payment`, `workOrder`, `finance` (ADR 0077; members do not see it) |
+| `manager` | everything a member can, plus every action on bookings and selling: `order`, `program` (lines), `customer`, `quote`, `payment`, `runSheet`, `finance` (ADR 0077; members do not see it) |
 | `admin` | every action on every feature: also catalog, setup (configuration, pipeline, templates, responsibilities), members, API keys, the payment account, audit and the assistant's organization data. The organization always keeps at least one admin |
 
-> Permissions (ADR 0050) are `<feature>:<action>`. Features are defined once in `FEATURE_SPECS` (core) and grouped as bookings (`ticket`, `program`), selling (`customer`, `quote`, `payment`, `workOrder`), catalog (`item`, `venue`, `priceList`), setup (`configuration`, `pipeline`, `template`, `responsibility`) and organization (`member`, `apiKey`, `paymentAccount`, `audit`, `assistant`). Actions are `read`, `write` and `delete`: `write` covers creating, changing, sending, exporting and moving a ticket's status, `delete` archives, and both imply `read`. `self` (own conversations, skills, preferences, settings, connected apps) and search are always on.
+> Permissions (ADR 0050) are `<feature>:<action>`. Features are defined once in `FEATURE_SPECS` (core) and grouped as bookings (`order`, `program`), selling (`customer`, `quote`, `payment`, `runSheet`), catalog (`item`, `venue`, `priceList`), setup (`configuration`, `pipeline`, `template`, `responsibility`) and organization (`member`, `apiKey`, `paymentAccount`, `audit`, `assistant`). Actions are `read`, `write` and `delete`: `write` covers creating, changing, sending, exporting and moving an order's status, `delete` archives, and both imply `read`. `self` (own conversations, skills, preferences, settings, connected apps) and search are always on.
 
 > The presets are constants in `packages/core` (`PRESET_PERMISSIONS`), not configurable per organization. Core does not look up permissions per role; it compares role ranks for anti-escalation (nobody gives a role above their own or changes or removes a member above them, the last admin stays). `packages/auth` resolves preset plus overrides to `permissions` once per call (`applyOverrides`). `member.assignRole` takes one of the fixed roles. Invitations and API keys can carry any fixed role up to the caller's own. The assistant only sees the commands the user may run.
 
@@ -1167,17 +1167,17 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Attributes**
 - recipient (owned): the member it is for; every read and write is filtered on the caller, so another member's notification is `NOT_FOUND`
-- kind (owned): `ASSIGNED`, `WORK_ORDER_SENT`, `TICKET_STATUS_CHANGED`, `PAYMENT_RECEIVED`
+- kind (owned): `ASSIGNED`, `RUN_SHEET_SENT`, `ORDER_STATUS_CHANGED`, `PAYMENT_RECEIVED`
 - actor (owned): who caused it; null for the system
-- ticket, work order, payment (owned, foreign keys)
-- data (snapshot, ADR 0051): the ticket's number and title, the old and new status, the work order and version, the amount and currency at the time
+- order, run sheet, payment (owned, foreign keys)
+- data (snapshot, ADR 0051): the order's number and title, the old and new status, the run sheet and version, the amount and currency at the time
 - read (`readAt`, owned by the recipient): the lifecycle; rows are never deleted
 
 **Relations**
 - `N:1` is told to → User
-- `N:0..1` is about → Ticket, Work order, Payment
+- `N:0..1` is about → Order, Run sheet, Payment
 
-> Written only by core's `notify`, in the `followUp` of `assignment.assign` (the new assignee), `workOrder.send` (the stored recipients), `ticket.changeStatus` and `payment.applySignal` when a payment succeeds (everyone on the ticket: the main assignee and followers and every responsibility's, stored or by default, ADR 0055). It skips the actor, members who turned the kind off, and members who cannot read the ticket (and the work order or payment the snapshot copies). A trigger (`notify_notification.sql`) sends `pg_notify('notification', …)` on insert and on a change of `readAt`; the web app's `/api/notifications/stream` pushes the unread count over Server-Sent Events. Operations (`self:*`): `notification.list` (search on the ticket, `kind`, `read`, sort, numbered pages), `notification.unreadCount`, `notification.markRead|markUnread|markAllRead`. Web: the bell in the top bar (red dot, the latest eight) and `/notifications`.
+> Written only by core's `notify`, in the `followUp` of `assignment.assign` (the new assignee), `runSheet.send` (the stored recipients), `order.changeStatus` and `payment.applySignal` when a payment succeeds (everyone on the order: the main assignee and followers and every responsibility's, stored or by default, ADR 0055). It skips the actor, members who turned the kind off, and members who cannot read the order (and the run sheet or payment the snapshot copies). A trigger (`notify_notification.sql`) sends `pg_notify('notification', …)` on insert and on a change of `readAt`; the web app's `/api/notifications/stream` pushes the unread count over Server-Sent Events. Operations (`self:*`): `notification.list` (search on the order, `kind`, `read`, sort, numbered pages), `notification.unreadCount`, `notification.markRead|markUnread|markAllRead`. Web: the bell in the top bar (red dot, the latest eight) and `/notifications`.
 
 ### NotificationPreference (`NotificationPreference`)
 
@@ -1341,7 +1341,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - legalName, orgNumber
 - streetAddress, postalCode, city, country (default `SE`)
 - website, contactEmail, contactPhone
-- timeZone (owned, IANA name, required; existing rows backfilled `Europe/Stockholm`; ADR 0064): the zone of ticket-level times and the default of every venue, read only through `effectiveTimeZone`. Editable in `/settings/organization`.
+- timeZone (owned, IANA name, required; existing rows backfilled `Europe/Stockholm`; ADR 0064): the zone of order-level times and the default of every venue, read only through `effectiveTimeZone`. Editable in `/settings/organization`.
 - emailDomain (owned, lowercase, optional; [ADR 0078](decisions/0078-domain-join.md)): the work email domain whose verified users are offered to join as members. Never typed in: taken from the creator's verified email at creation, and from the admin who turns domain join on (their own domain replaces the stored one). Public mail providers never count.
 - domainJoin (owned, default on; ADR 0078): the admin's switch. It takes effect only while emailDomain is set.
 
@@ -1380,11 +1380,11 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### InboundMessage (`InboundMessage`)
 
-*MVP* · A message that arrived through a channel ([ADR 0085](decisions/0085-inbound-messages-from-any-channel.md), replaces ADR 0083): a mail to the organization's address or a ticket's address, or an API submission. WEB_FORM and SMS are designed, not built. Content columns are append-only by rule; only `ticketId`, the team's shared read state and the archive status change. Stored only through the SYSTEM-only `inboundMessage.receive` (idempotent per channel and `externalId`) or `inboundMessage.submit`.
+*MVP* · A message that arrived through a channel ([ADR 0085](decisions/0085-inbound-messages-from-any-channel.md), replaces ADR 0083): a mail to the organization's address or an order's address, or an API submission. WEB_FORM and SMS are designed, not built. Content columns are append-only by rule; only `orderId`, the team's shared read state and the archive status change. Stored only through the SYSTEM-only `inboundMessage.receive` (idempotent per channel and `externalId`) or `inboundMessage.submit`.
 
 **Attributes**
 - channel (`InboundChannel`: EMAIL, WEB_FORM, SMS, API)
-- endpoint (null for a reply on a ticket's own address and for backfilled mail)
+- endpoint (null for a reply on an order's own address and for backfilled mail)
 - sender name, email and phone (all optional)
 - subject, text (required, empty when a mail had only HTML)
 - form fields (JSON, for a form or API submission)
@@ -1397,33 +1397,33 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Relations**
 - `N:1` arrived through → InboundEndpoint
-- `N:0..1` is attached to → Ticket (set once; a message with no ticket is in the inbox)
+- `N:0..1` is attached to → Order (set once; a message with no order is in the inbox)
 
-> Operations: `inboundMessage.list` (`inbox:read`; by ticket, which also needs `ticket:read`, or the inbox: no ticket; `read` filter, channel filter), `inboundMessage.get`, `inboundMessage.attachToTicket` (`inbox:write` + `ticket:write`, once, CONFLICT if attached), `inboundMessage.markRead` and `markUnread` (`inbox:write`, shared by the team, opening a message marks it read), `inboundMessage.delete` (`inbox:delete`, archives, CONFLICT for attached messages) and `inboundMessage.submit` (`inbox:submit`; the endpoint must be the organization's active API endpoint; stored as channel API with the caller as sender, no ticket, AI not allowed), on every surface (GraphQL also as `Ticket.inboundMessages`). `ticket.create` takes `inboundMessageId` (needs `inbox:read`) and attaches the message in the same transaction. `inboundMessage.receive` is SYSTEM only and has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received message. [ADR 0084](decisions/0084-ticket-draft-from-a-message.md): `ticketDraft.fromMessage` reads a draft from any message and writes nothing.
+> Operations: `inboundMessage.list` (`inbox:read`; by order, which also needs `order:read`, or the inbox: no order; `read` filter, channel filter), `inboundMessage.get`, `inboundMessage.attachToOrder` (`inbox:write` + `order:write`, once, CONFLICT if attached), `inboundMessage.markRead` and `markUnread` (`inbox:write`, shared by the team, opening a message marks it read), `inboundMessage.delete` (`inbox:delete`, archives, CONFLICT for attached messages) and `inboundMessage.submit` (`inbox:submit`; the endpoint must be the organization's active API endpoint; stored as channel API with the caller as sender, no order, AI not allowed), on every surface (GraphQL also as `Order.inboundMessages`). `order.create` takes `inboundMessageId` (needs `inbox:read`) and attaches the message in the same transaction. `inboundMessage.receive` is SYSTEM only and has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received message. [ADR 0084](decisions/0084-order-draft-from-a-message.md): `orderDraft.fromMessage` reads a draft from any message and writes nothing.
 
 ### InboundEndpoint (`InboundEndpoint`)
 
-*MVP* · Where messages come in: organization configuration ([ADR 0085](decisions/0085-inbound-messages-from-any-channel.md)). Every organization gets an EMAIL and an API endpoint at provisioning (`inboundEndpoint.provision`, SYSTEM only). Organization slugs starting with `ticket-` are reserved.
+*MVP* · Where messages come in: organization configuration ([ADR 0085](decisions/0085-inbound-messages-from-any-channel.md)). Every organization gets an EMAIL and an API endpoint at provisioning (`inboundEndpoint.provision`, SYSTEM only). Organization slugs starting with `order-` are reserved.
 
 **Attributes**
 - channel (`InboundChannel`)
 - address (EMAIL: the local part only, the full address `<local>@MAIL_INBOUND_DOMAIN` is derived in code; null for the API endpoint; unique per channel across organizations)
 - name
 - active
-- default ticket type, default package (optional)
+- default order type, default package (optional)
 - status (soft delete)
 
 **Relations**
 - `1:N` receives → InboundMessage
 
-> Operations: `inboundEndpoint.list` (`configuration:read`), on every surface. The mail adapter (`deliverInboundEmail`) routes `ticket-<id>@<domain>` to that ticket first, else an organization EMAIL endpoint address to that organization's inbox with no ticket; any other address is dropped (`mail.unmatched`).
+> Operations: `inboundEndpoint.list` (`configuration:read`), on every surface. The mail adapter (`deliverInboundEmail`) routes `order-<id>@<domain>` to that order first, else an organization EMAIL endpoint address to that organization's inbox with no order; any other address is dropped (`mail.unmatched`).
 
 ### InboundEmail (`InboundEmail`) — legacy
 
-*MVP, legacy* · The pre-ADR 0085 store of a mail received on a ticket's own address, `ticket-<ticketId>@<MAIL_INBOUND_DOMAIN>` ([ADR 0012](decisions/0012-email-provider.md)). Kept only for the expand phase and dropped in the contract release: a mail stored on a ticket is also written here with the same id as its `InboundMessage`, and the migration backfilled every old row into `InboundMessage`. `inboundEmail.list|get` are deprecated aliases that read EMAIL messages on a ticket (permission `ticket:read`). New code uses `InboundMessage`.
+*MVP, legacy* · The pre-ADR 0085 store of a mail received on an order's own address, `order-<orderId>@<MAIL_INBOUND_DOMAIN>` ([ADR 0012](decisions/0012-email-provider.md)). Kept only for the expand phase and dropped in the contract release: a mail stored on an order is also written here with the same id as its `InboundMessage`, and the migration backfilled every old row into `InboundMessage`. `inboundEmail.list|get` are deprecated aliases that read EMAIL messages on an order (permission `order:read`). New code uses `InboundMessage`.
 
 **Relations**
-- `N:1` is a reply on → Ticket
+- `N:1` is a reply on → Order
 
 ### BillingAccount (`BillingAccount`)
 
@@ -1450,33 +1450,33 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Attributes**
 - Stripe account id (unique; empty from the committed row until the Stripe call after the commit stored it, ADR 0058)
 - status: onboarding, active or restricted (mirrors the card payments capability; shown as not connected when there is no row)
-- disconnected at (owned, [ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)): an admin disconnected Stripe; reads as disconnected and nothing is charged until it is connected again (the same Stripe account)
+- disconnected at (owned, [ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)): an admin disconnected Stripe; reads as disconnected and nothing is charged until it is connected again (the same Stripe account)
 
 > Operations: `paymentAccount.get` (permission `paymentAccount:read`), `paymentAccount.startOnboarding` (`paymentAccount:write`) and `paymentAccount.sync` (`paymentAccount:write`, refreshes the status from Stripe) and `paymentAccount.disconnect` (`paymentAccount:write`), on every surface. The webhook also refreshes the status on `account.updated` through the SYSTEM-only `paymentAccount.applySignal`, which reads the status back from Stripe instead of trusting the payload. The web app offers them under Settings, Integrations. The platform account id and secret key come from `@bibi/config` (`STRIPE_PLATFORM_ACCOUNT_ID`, `STRIPE_SECRET_KEY`).
 
 ### PaymentSettings (`PaymentSettings`)
 
-*MVP* · How the organization takes ticket money ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)): the deposit rule and the invoice provider. One row per organization, created by the first save; until then there is no deposit rule and the connected provider is used.
+*MVP* · How the organization takes order money ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)): the deposit rule and the invoice provider. One row per organization, created by the first save; until then there is no deposit rule and the connected provider is used.
 
 > **Ownership:** owned every column; nothing derived.
 
 **Attributes**
-- deposit percent: 1 to 100 of the ticket's total incl. VAT (empty = no deposits)
-- deposit minimum in minor units: a ticket whose total incl. VAT is below it is paid in full up front (empty = no minimum)
+- deposit percent: 1 to 100 of the order's total incl. VAT (empty = no deposits)
+- deposit minimum in minor units: an order whose total incl. VAT is below it is paid in full up front (empty = no minimum)
 - invoice provider (`InvoiceProvider`; empty = whichever is connected)
 
 **Relations**
 - `1:1` Organization has one (`organizationId`, unique)
 
-> Operations: `paymentSettings.get` (permission `paymentAccount:read`) and `paymentSettings.update` (`paymentAccount:write`), on every surface. `deposit.suggest` applies the rule to a ticket's priced lines, and `deposit.request` uses it when no amount is given. The web app holds them under Settings, Payments.
+> Operations: `paymentSettings.get` (permission `paymentAccount:read`) and `paymentSettings.update` (`paymentAccount:write`), on every surface. `deposit.suggest` applies the rule to an order's priced lines, and `deposit.request` uses it when no amount is given. The web app holds them under Settings, Payments.
 
 ### InvoiceProvider (`InvoiceProvider`)
 
-*MVP* · An enum: the system an organization raises its invoices in ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)). Values: `STRIPE` (Stripe Invoicing on the organization's account) and `FORTNOX` (its Fortnox company, connected under Settings, Integrations, [ADR 0087](decisions/0087-fortnox-connection.md)). Set on `PaymentSettings`; when both providers are connected, the admin picks.
+*MVP* · An enum: the system an organization raises its invoices in ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)). Values: `STRIPE` (Stripe Invoicing on the organization's account) and `FORTNOX` (its Fortnox company, connected under Settings, Integrations, [ADR 0087](decisions/0087-fortnox-connection.md)). Set on `PaymentSettings`; when both providers are connected, the admin picks.
 
 ### IntegrationConnection (`IntegrationConnection`)
 
-*MVP* · The organization's connection to an outside system ([ADR 0087](decisions/0087-fortnox-connection.md)), one per provider; Fortnox is the only provider so far. No row means "not connected". An admin starts it with `integration.connect`, approves at Fortnox (a Fortnox system administrator, service account) and the browser callback finishes it. Invoices are raised in Fortnox through this connection ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)).
+*MVP* · The organization's connection to an outside system ([ADR 0087](decisions/0087-fortnox-connection.md)), one per provider; Fortnox is the only provider so far. No row means "not connected". An admin starts it with `integration.connect`, approves at Fortnox (a Fortnox system administrator, service account) and the browser callback finishes it. Invoices are raised in Fortnox through this connection ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)).
 
 **Attributes**
 - provider (Fortnox)
@@ -1493,7 +1493,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### FortnoxTopicOffset (`FortnoxTopicOffset`)
 
-*MVP* · Platform data. Where the worker's Fortnox Topics stream stopped, one row per topic; Fortnox replays up to 14 days, so a restart resumes from here ([ADR 0090](decisions/0090-ticket-money-through-the-venues-own-providers.md)).
+*MVP* · Platform data. Where the worker's Fortnox Topics stream stopped, one row per topic; Fortnox replays up to 14 days, so a restart resumes from here ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)).
 
 > **Ownership:** owned; written by the worker after each event (`saveFortnoxOffset`) and read at worker start (`loadFortnoxOffsets`). No organization: the stream is shared by every organization.
 
@@ -1504,17 +1504,17 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### Communication & log
 
-*Status 2* · Email, notes and change history. Status and line-state history come from `TicketStatusChange` and `LineStateChange` (ADR 0054), never from `AuditLog`.
+*Status 2* · Email, notes and change history. Status and line-state history come from `OrderStatusChange` and `LineStateChange` (ADR 0054), never from `AuditLog`.
 
 **Attributes**
 - channel
 - direction (in / out)
 - subject
-- linked ticket
+- linked order
 - change log
 
 **Relations**
-- `N:0..1` concerns → Ticket
+- `N:0..1` concerns → Order
 
 ### AuditLog
 
@@ -1557,7 +1557,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 *MVP* · Platform data. Which model each AI function uses, chosen by a superadmin. No default models: without a choice the function does not work.
 
 **Attributes**
-- AI function (`assistant.chat`, `search.embedding`, `ticket.intakeDraft` ([ADR 0084](decisions/0084-ticket-draft-from-a-message.md)))
+- AI function (`assistant.chat`, `search.embedding`, `order.intakeDraft` ([ADR 0084](decisions/0084-order-draft-from-a-message.md)))
 - model (from Vercel AI Gateway, must be possible for the function)
 - changed by, changed
 
@@ -1611,20 +1611,20 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | LineAllocation | Allokering |
 | Customer | Kund |
 | Contact | Kontaktperson |
-| Ticket | Ärende |
-| TicketStatus | Fas |
-| TicketStatusTransition | Fasövergång |
-| TicketStatusGate | Fasvillkor |
+| Order | Ärende |
+| OrderStatus | Fas |
+| OrderStatusTransition | Fasövergång |
+| OrderStatusGate | Fasvillkor |
 | ItemState | Radstatus |
 | ItemStateTransition | Radövergång |
 | StatusStateRule | Fasregel |
-| TicketTemplate | Färdigt ärende |
+| OrderTemplate | Färdigt ärende |
 | Quote | Offert |
 | Agreement | Avtal |
 | Line | Programpunkt |
 | Requirement | Behov |
-| WorkOrder | Order |
-| WorkOrderDefinition | Orderdefinition |
+| RunSheet | Order |
+| RunSheetDefinition | Orderdefinition |
 | Occupancy | Beläggning |
 | Sign | Skylt |
 | AccessCode | Passerkod |

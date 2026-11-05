@@ -6,13 +6,30 @@ describe("parseLogParams", () => {
     const { query, selected } = parseLogParams({
       params: { page: "3", level: "warn", q: "venue", log: "log_1", ignored: "x" },
     });
-    expect(query).toMatchObject({ page: 3, pageSize: 50, level: "warn", q: "venue" });
+    expect(query).toMatchObject({
+      page: 3,
+      pageSize: 50,
+      sort: "time",
+      direction: "desc",
+      level: "warn",
+      q: "venue",
+    });
     expect(selected).toBe("log_1");
   });
 
+  it("reads custom sort and direction", () => {
+    const { query } = parseLogParams({
+      params: { sort: "duration", dir: "asc" },
+    });
+    expect(query).toMatchObject({
+      sort: "duration",
+      direction: "asc",
+    });
+  });
+
   it("falls back to defaults on invalid values", () => {
-    const { query } = parseLogParams({ params: { page: "-2", level: "loud" } });
-    expect(query).toMatchObject({ page: 1, pageSize: 50 });
+    const { query } = parseLogParams({ params: { page: "-2", level: "loud", sort: "invalid" } });
+    expect(query).toMatchObject({ page: 1, pageSize: 50, sort: "time", direction: "desc" });
     expect(query.level).toBeUndefined();
   });
 });

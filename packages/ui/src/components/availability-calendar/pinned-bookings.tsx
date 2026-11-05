@@ -12,7 +12,7 @@ export type PinnedBookingsProps = {
   children: ReactNode;
   labels: CalendarLabels;
   formatDate: FormatDate;
-  /** Opens a pinned booking's ticket, from wherever the tray is. */
+  /** Opens a pinned booking's order, from wherever the tray is. */
   onOpen?: ((booking: AssetBooking) => void) | undefined;
   /** Session storage key, e.g. per organization; pins then survive a reload. */
   storageKey?: string | undefined;

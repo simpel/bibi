@@ -5,20 +5,20 @@ export const InvoiceProviderSchema = z
   .enum(["STRIPE", "FORTNOX"])
   .describe("STRIPE: Stripe Invoicing on the organization's account. FORTNOX: its Fortnox company");
 
-/** How the organization takes ticket money (ADR 0090): the deposit rule and the invoice provider. */
+/** How the organization takes order money (ADR 0090): the deposit rule and the invoice provider. */
 export const PaymentSettingsSchema = z.object({
   id: z.string().nullable().describe("Null until the settings are first saved"),
   depositPercent: z
     .number()
     .int()
     .nullable()
-    .describe("Share of the ticket's total incl. VAT asked as a deposit, 1–100; null = no rule"),
+    .describe("Share of the order's total incl. VAT asked as a deposit, 1–100; null = no rule"),
   depositMinimumMinor: z
     .number()
     .int()
     .nullable()
     .describe(
-      "Minor units: a ticket whose total incl. VAT is below this is paid in full up front " +
+      "Minor units: an order whose total incl. VAT is below this is paid in full up front " +
         "instead of by deposit; null = no minimum",
     ),
   invoiceProvider: InvoiceProviderSchema.nullable().describe(

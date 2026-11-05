@@ -4,7 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import { loadItemState } from "../item-state/load-item-state";
 import { cellsOfStatus } from "../status-grid/load-grid";
-import { regenerateForLine } from "../work-order/regenerate";
+import { regenerateForLine } from "../run-sheet/regenerate";
 import { lineMoveBlockers } from "./line-move-check";
 import { applyLineState, itemTypeOf } from "./line-state";
 import { LineFollowStatusInputSchema, type LineRecord, LineSchema } from "./schema";
@@ -20,14 +20,14 @@ type Db = { context: Pick<OperationContext, "db"> };
 async function cellStateOf({ context, line }: Db & { line: LineRecord }) {
   const entityTypeId = await itemTypeOf({ context, itemId: line.itemId });
   if (!entityTypeId) return null;
-  const ticket = await context.db.ticket.findFirst({
-    where: { id: line.ticketId },
-    select: { ticketStatus: { select: { id: true, closes: true } } },
+  const order = await context.db.order.findFirst({
+    where: { id: line.orderId },
+    select: { orderStatus: { select: { id: true, closes: true } } },
   });
-  if (!ticket || ticket.ticketStatus.closes) return null;
+  if (!order || order.orderStatus.closes) return null;
   const cells = await cellsOfStatus({
     context,
-    statusId: ticket.ticketStatus.id,
+    statusId: order.orderStatus.id,
     entityTypeIds: [entityTypeId],
   });
   return cells.get(entityTypeId) ?? null;

@@ -2,8 +2,8 @@ import type { CalendarDetails } from "@bibi/core/schemas";
 import type { AssetBooking, CalendarPerson } from "@bibi/ui";
 import { fileUrl } from "@/lib/file-url";
 
-/** Why the contact is the one to call: the line's own assignee, or the ticket's. */
-export type ContactVia = { LINE: string; TICKET: string };
+/** Why the contact is the one to call: the line's own assignee, or the order's. */
+export type ContactVia = { LINE: string; ORDER: string };
 
 type Details = Pick<
   AssetBooking,
@@ -58,7 +58,7 @@ export function bookingDetailsOf({
           contact: {
             person: personOf({ contact }),
             via: via[contact.via],
-            ...(contact.via === "TICKET" ? { inherited: true } : {}),
+            ...(contact.via === "ORDER" ? { inherited: true } : {}),
           },
         }
       : {}),

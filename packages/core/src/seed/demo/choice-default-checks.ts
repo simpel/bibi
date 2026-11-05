@@ -11,7 +11,7 @@ type Ctx = { context: ExecuteContext };
 async function templateFailures({ context, org }: CheckDemoChoiceDefaultsInput) {
   const failures: string[] = [];
   for (const line of org.templates.flatMap((template) => template.lines)) {
-    const rows = await context.db.ticketTemplateLineOption.findMany({
+    const rows = await context.db.orderTemplateLineOption.findMany({
       where: { templateLine: { name: line.name } },
       select: { item: { select: { name: true } } },
       orderBy: { position: "asc" },
@@ -26,7 +26,7 @@ async function templateFailures({ context, org }: CheckDemoChoiceDefaultsInput) 
 /** A line made from a package with a default has it as its option line (createFromTemplate). */
 async function appliedFailures({ context, org }: CheckDemoChoiceDefaultsInput) {
   const failures: string[] = [];
-  const used = new Set(org.tickets.flatMap((ticket) => (ticket.template ? [ticket.template] : [])));
+  const used = new Set(org.orders.flatMap((order) => (order.template ? [order.template] : [])));
   const lines = org.templates
     .filter((template) => used.has(template.name))
     .flatMap((template) => template.lines.filter((line) => (line.options ?? []).length > 0));
@@ -52,7 +52,7 @@ async function openFailures({ context }: Ctx) {
 }
 
 /**
- * ADR 0089: the packages' default choices are stored as the data files say, a ticket made from
+ * ADR 0089: the packages' default choices are stored as the data files say, an order made from
  * such a package chose them, and a line left with its snack open warns. Returns failures.
  */
 export async function checkDemoChoiceDefaults({ context, org }: CheckDemoChoiceDefaultsInput) {

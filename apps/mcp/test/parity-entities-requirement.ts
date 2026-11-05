@@ -19,7 +19,7 @@ export const requirement = (): ParityEntity => ({
       mcp,
       name: "requirement_create",
       args: {
-        ticketId: made.ticket.id,
+        orderId: made.order.id,
         lineId: made.line.id,
         entityTypeId: type.id,
         vocabularyValueId: made.vocabularyValue.id,

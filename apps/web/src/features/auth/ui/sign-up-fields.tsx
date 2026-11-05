@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import { EmailField } from "@/components/form/email-field";
 import { TextField } from "@/components/form/text-field";
 import type { SignUpValues } from "./auth-schemas";
 
@@ -12,14 +13,7 @@ export function SignUpFields({ form }: SignUpFieldsProps) {
   return (
     <>
       <TextField form={form} name="name" label={t("name")} autoComplete="name" required />
-      <TextField
-        form={form}
-        name="email"
-        label={t("email")}
-        type="email"
-        autoComplete="email"
-        required
-      />
+      <EmailField form={form} name="email" label={t("email")} required />
       <TextField
         form={form}
         name="password"

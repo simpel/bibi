@@ -9,8 +9,8 @@ import { Link } from "@/lib/navigation";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
-import { AttachedTicket } from "./attached-ticket";
-import { loadTicketOptions } from "./load-ticket-options";
+import { AttachedOrder } from "./attached-order";
+import { loadOrderOptions } from "./load-order-options";
 import { MessageActions } from "./message-actions";
 import { MessageView, receivedText } from "./message-view";
 import { openMessage } from "./open-message";
@@ -27,7 +27,7 @@ const BackLink = ({ label }: { label: string }) => (
 
 export type MessageDetailProps = { locale: Locale; id: string };
 
-/** One inbound message, marked read on open: its content, and what to do with it while it has no ticket. */
+/** One inbound message, marked read on open: its content, and what to do with it while it has no order. */
 export async function MessageDetail({ locale, id }: MessageDetailProps) {
   const [t, common, dates, abilities] = await Promise.all([
     getTranslations("inbox"),
@@ -39,9 +39,9 @@ export async function MessageDetail({ locale, id }: MessageDetailProps) {
   const result = await openMessage({ id, canWrite });
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const message = result.value;
-  const canCreateTicket = can({ abilities, permission: "ticket:write" });
+  const canCreateOrder = can({ abilities, permission: "order:write" });
   const canDelete = can({ abilities, permission: "inbox:delete" });
-  const tickets = !message.ticketId && canCreateTicket && canWrite ? await loadTicketOptions() : [];
+  const orders = !message.orderId && canCreateOrder && canWrite ? await loadOrderOptions() : [];
   const title = message.subject ?? t("noSubject");
   return (
     <div className="grid gap-6">
@@ -50,18 +50,18 @@ export async function MessageDetail({ locale, id }: MessageDetailProps) {
       <PageHeader
         title={title}
         actions={
-          message.ticketId ? undefined : (
+          message.orderId ? undefined : (
             <MessageActions
               message={{ id, subject: message.subject, read: message.readAt !== null }}
               canWrite={canWrite}
               canDelete={canDelete}
-              canCreateTicket={canCreateTicket}
-              tickets={tickets}
+              canCreateOrder={canCreateOrder}
+              orders={orders}
             />
           )
         }
       />
-      {message.ticketId ? <AttachedTicket ticketId={message.ticketId} /> : null}
+      {message.orderId ? <AttachedOrder orderId={message.orderId} /> : null}
       <MessageView message={message} received={receivedText({ message, dates })} />
     </div>
   );

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 import { CalendarLegend } from "../../components/availability-calendar/calendar-legend";
 import { ASSETS, BOOKINGS } from "./availability-data";
-import { AvailabilityWithTicket } from "./availability-with-ticket";
+import { AvailabilityWithOrder } from "./availability-with-order";
 import { BUSY_ASSETS } from "./busy-assets-data";
 import { BUSY_BOOKINGS } from "./busy-bookings-data";
 import { LiveCalendar } from "./live-calendar";
@@ -36,7 +36,7 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * The worst case: 26 assets in three groups, 07–23, turnovers and three clashes (red notch).
- * Point at empty time to add; click a booking to open its ticket. Ctrl-scroll or pinch to zoom;
+ * Point at empty time to add; click a booking to open its order. Ctrl-scroll or pinch to zoom;
  * scroll sideways forever, other days load as you reach them.
  */
 export const WorstCase: Story = {};
@@ -79,9 +79,9 @@ export const ManyGroups: Story = {
   },
 };
 
-/** The overview and its detail: click a booking and its ticket's Program opens beside it. */
-export const OpenATicket: Story = {
-  render: (args) => <AvailabilityWithTicket assets={args.assets} template={args.template} />,
+/** The overview and its detail: click a booking and its order's Program opens beside it. */
+export const OpenAnOrder: Story = {
+  render: (args) => <AvailabilityWithOrder assets={args.assets} template={args.template} />,
 };
 
 const phone: Story["decorators"] = [

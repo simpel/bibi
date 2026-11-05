@@ -3,7 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 import { loadStatesOfType } from "../item-state/load-item-state";
 import { loadGrid } from "../status-grid/load-grid";
-import { loadAllTicketStatuses } from "../ticket-status/load-ticket-status";
+import { loadAllOrderStatuses } from "../order-status/load-order-status";
 import { activateGrid } from "./activate-grid";
 import { activateType, type SetUpType } from "./activate-states";
 import { finishStatuses, upsertStatuses } from "./activate-statuses";
@@ -59,7 +59,7 @@ export async function activatePipeline({
   }
   return ok({
     value: {
-      statuses: await loadAllTicketStatuses({ context }),
+      statuses: await loadAllOrderStatuses({ context }),
       states: states.flat(),
       grid: await loadGrid({ context }),
     },

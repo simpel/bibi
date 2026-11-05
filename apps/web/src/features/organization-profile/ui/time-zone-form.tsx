@@ -19,7 +19,7 @@ type TimeZoneFormValues = { timeZone: string };
 export type TimeZoneFormProps = { timeZone: string; canEdit: boolean };
 
 /**
- * The organization's zone (ADR 0064): ticket-level times and every venue without its own zone.
+ * The organization's zone (ADR 0064): order-level times and every venue without its own zone.
  * Changing it changes how times show and are entered; no stored time moves.
  */
 export function TimeZoneForm({ timeZone, canEdit }: TimeZoneFormProps) {

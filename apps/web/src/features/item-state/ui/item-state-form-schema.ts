@@ -8,7 +8,7 @@ export type ItemStateFormValues = {
   color: string;
   initial: boolean;
   hold: HoldKind;
-  inWorkOrders: boolean;
+  inRunSheets: boolean;
   released: boolean;
   expires: boolean;
 };
@@ -33,7 +33,7 @@ export function itemStateFormDefaults({
     color: state?.color ?? "#64748b",
     initial: state?.initial ?? false,
     hold: state?.hold ?? "NONE",
-    inWorkOrders: state?.inWorkOrders ?? false,
+    inRunSheets: state?.inRunSheets ?? false,
     released: state?.released ?? false,
     expires: state?.expires ?? false,
   };

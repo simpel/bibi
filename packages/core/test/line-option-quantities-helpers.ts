@@ -31,11 +31,11 @@ async function createTypes({ context }: Ctx) {
  * ADR 0082: the quote setup plus a dinner at 500 kr (25 %) with two split groups: "Main course"
  * (1 or 2 of "Fish" 100 kr EXTRA and "Vegetarian" 50 kr EXTRA) and "Menu" (0 or 1: "Vegan menu"
  * 600 kr REPLACES), and a normal group "Coffee" (0 or 1: "Espresso" 20 kr EXTRA). One dinner line
- * for 14 on the ticket.
+ * for 14 on the order.
  */
 export async function splitSetup() {
   const setup = await quoteSetup();
-  const { context, ticket, lineType } = setup;
+  const { context, order, lineType } = setup;
   const { dish, menu } = await createTypes({ context });
   const priced = { entityTypeId: dish.id, priceUnit: "PER_PERSON" as const, vatRatePercent: 25 };
   const fish = await make({ context, ...priced, name: "Fish", priceMinor: 10_000 });
@@ -66,7 +66,7 @@ export async function splitSetup() {
   });
   const lines = [{ itemId: dinner.id, name: "Dinner", quantity: 14 }];
   const [line] = await addTestLines({
-    ...{ context, ticketId: ticket.id, lineTypeId: lineType.id, lines },
+    ...{ context, orderId: order.id, lineTypeId: lineType.id, lines },
   });
   return { ...setup, dinner, fish, veg, vegan, espresso, lineId: line?.id ?? "" };
 }

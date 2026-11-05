@@ -11,7 +11,7 @@ import { STORY_DAY } from "./story-dates";
 
 export type BusyRow = {
   a: string;
-  /** Ticket number, or none for an internal block. */
+  /** Order number, or none for an internal block. */
   t?: number;
   c?: string;
   n: string;
@@ -24,10 +24,10 @@ export type BusyRow = {
   no?: string;
 };
 
-/** Who owns each ticket: Erik sells, Johan coordinates the rest. */
-const ERIK_TICKETS = new Set([19, 21, 25, 41, 43, 44, 47]);
+/** Who owns each order: Erik sells, Johan coordinates the rest. */
+const ERIK_ORDERS = new Set([19, 21, 25, 41, 43, 44, 47]);
 
-/** Guests per ticket on the busy day. */
+/** Guests per order on the busy day. */
 const HEADCOUNT: Record<number, number> = {
   18: 24,
   19: 120,
@@ -54,9 +54,9 @@ export const storyValue = ({ start, end }: { start: string; end: string }): Mone
   return { amount: Math.round((hours * 1200) / 100) * 100, currency: "SEK" };
 };
 
-const contactOf = ({ ticket }: { ticket?: number }) =>
-  ticket
-    ? { person: ERIK_TICKETS.has(ticket) ? PEOPLE.erik : PEOPLE.johan, via: "Ticket assignee" }
+const contactOf = ({ order }: { order?: number }) =>
+  order
+    ? { person: ERIK_ORDERS.has(order) ? PEOPLE.erik : PEOPLE.johan, via: "Order assignee" }
     : undefined;
 
 export const C = {
@@ -87,12 +87,12 @@ export const toBookings = ({ rows, prefix }: { rows: readonly BusyRow[]; prefix:
       quantity: 1,
       assetId: row.a,
       date: STORY_DAY,
-      ticket: row.t ? `Ticket ${row.t}` : null,
+      order: row.t ? `Order ${row.t}` : null,
       customer: row.c ?? null,
       client: row.c ? CLIENT_CONTACTS[row.c] : undefined,
       value: row.t ? storyValue({ start: row.s, end: row.e }) : undefined,
       headcount: row.t ? HEADCOUNT[row.t] : undefined,
-      contact: contactOf({ ticket: row.t }),
+      contact: contactOf({ order: row.t }),
       notes: row.no,
     }),
   );

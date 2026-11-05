@@ -11,17 +11,17 @@ type CellInput = { context: ExecuteContext; cell: DemoGridCell };
 
 /** Status, item type and state ids of one cell, or the first name the data gets wrong. */
 async function resolveCell({ context, cell }: CellInput) {
-  const ticketStatus = await context.db.ticketStatus.findFirst({
-    where: { name: cell.ticketStatus },
+  const orderStatus = await context.db.orderStatus.findFirst({
+    where: { name: cell.orderStatus },
   });
-  if (!ticketStatus) return missing({ what: `ticket status ${cell.ticketStatus}` });
+  if (!orderStatus) return missing({ what: `order status ${cell.orderStatus}` });
   const type = await context.db.entityType.findFirst({ where: { name: cell.type, base: "ITEM" } });
   if (!type) return missing({ what: `item type ${cell.type}` });
   const state = await context.db.itemState.findFirst({
     where: { name: cell.state, entityTypeId: type.id },
   });
   if (!state) return missing({ what: `state ${cell.state} of ${cell.type}` });
-  return ok({ value: { statusId: ticketStatus.id, entityTypeId: type.id, stateId: state.id } });
+  return ok({ value: { statusId: orderStatus.id, entityTypeId: type.id, stateId: state.id } });
 }
 
 /** The status grid (ADR 0044) via `statusGrid.setCell` as SYSTEM, before any line is created. */

@@ -8,7 +8,7 @@ export type PaymentLinksProviderProps = { available: boolean; children: ReactNod
 
 /**
  * Whether the organization's own Stripe account is active (ADR 0090), read once on the server
- * for the ticket's payments; every payment-link button under it is dimmed when it is not.
+ * for the order's payments; every payment-link button under it is dimmed when it is not.
  */
 export function PaymentLinksProvider({ available, children }: PaymentLinksProviderProps) {
   return <PaymentLinksContext value={available}>{children}</PaymentLinksContext>;

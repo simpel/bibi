@@ -4,7 +4,7 @@ import {
   chooseLineOptions,
   createLine,
   expandLineBundle,
-  expireTicketHolds,
+  expireOrderHolds,
   followLineStatus,
   getLine,
   type LineDto,
@@ -20,14 +20,14 @@ import { requirePermission } from "../../schema/require-permission";
 import { runOperation } from "../../schema/run-operation";
 import { EntityTypeRef } from "../entity-type/graphql";
 import { SetupRef } from "../setup/graphql";
-import { TicketRef } from "../ticket/graphql";
+import { OrderRef } from "../order/graphql";
 
 export const LineRef = objectFromSchema<LineDto>({
   name: "Line",
   schema: LineSchema,
   omit: ["organizationId"],
   description:
-    "Line – a row in a ticket's run schedule: type and fields, time, the " +
+    "Line – a row in an order's run schedule: type and fields, time, the " +
     "item and setup it uses, its state (ADR 0044), quantity, price overrides and a note, and " +
     "the effective quantity, unit price, discount and VAT with their sources (ADR 0052), and the " +
     "effective setup and teardown minutes with theirs (ADR 0059).",
@@ -60,14 +60,14 @@ ChooseOptionsRef.implement({
 });
 mutationFromOperation({ operation: chooseLineOptions, type: ChooseOptionsRef });
 
-const ExpireHoldsRef = builder.objectRef<{ items: LineDto[] }>("TicketExpireHoldsResult");
+const ExpireHoldsRef = builder.objectRef<{ items: LineDto[] }>("OrderExpireHoldsResult");
 ExpireHoldsRef.implement({
-  description: "The lines `ticket.expireHolds` moved to their type's expiry state.",
+  description: "The lines `order.expireHolds` moved to their type's expiry state.",
   fields: (t) => ({
     items: t.field({ type: [LineRef], resolve: (result) => result.items }),
   }),
 });
-mutationFromOperation({ operation: expireTicketHolds, type: ExpireHoldsRef });
+mutationFromOperation({ operation: expireOrderHolds, type: ExpireHoldsRef });
 
 builder.objectField(LineRef, "entityType", (t) =>
   t.field({
@@ -93,16 +93,16 @@ builder.objectField(LineRef, "setup", (t) =>
   }),
 );
 
-// Graph edge. It lives here so that ticket/graphql.ts does not need to import this file.
-builder.objectField(TicketRef, "lines", (t) =>
+// Graph edge. It lives here so that order/graphql.ts does not need to import this file.
+builder.objectField(OrderRef, "lines", (t) =>
   t.field({
     type: [LineRef],
-    description: "The ticket's run schedule, earliest first.",
+    description: "The order's run schedule, earliest first.",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
-    resolve: async (ticket, { limit }, ctx) => {
+    resolve: async (order, { limit }, ctx) => {
       const page = (await runOperation({
         operation: listLines,
-        input: { ticketId: ticket.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) },
+        input: { orderId: order.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) },
         ctx,
       })) as { items: LineDto[] };
       return page.items;

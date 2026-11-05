@@ -9,17 +9,17 @@ import type { OptionLine } from "./option-line";
 import { useAlternativeGroupForm } from "./use-alternative-group-form";
 
 export type AlternativeGroupFormProps = {
-  ticketId: string;
+  orderId: string;
   lines: OptionLine[];
   onDone: () => void;
 };
 
-/** Create form: a name and two or more of the ticket's lines as the options. */
-export function AlternativeGroupForm({ ticketId, lines, onDone }: AlternativeGroupFormProps) {
+/** Create form: a name and two or more of the order's lines as the options. */
+export function AlternativeGroupForm({ orderId, lines, onDone }: AlternativeGroupFormProps) {
   const t = useTranslations("alternativeGroup");
   const common = useTranslations("common");
   const router = useRouter();
-  const form = useAlternativeGroupForm({ ticketId });
+  const form = useAlternativeGroupForm({ orderId });
   const { submit, pending } = useFormAction({
     form,
     action: ({ values }) => createAlternativeGroupAction({ input: values }),

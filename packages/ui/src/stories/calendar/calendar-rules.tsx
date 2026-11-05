@@ -47,7 +47,7 @@ export function CalendarRules() {
         <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
           Five components, one set of marks, one way to show people. Choose by the question the
           reader is asking, then set the audience. The marks, buffers and axis rules are shared, so
-          a booking reads the same on the ticket, in the main calendar and on the customer's payment
+          a booking reads the same on the order, in the main calendar and on the customer's payment
           page.
         </p>
       </div>

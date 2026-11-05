@@ -19,15 +19,15 @@ export const addLine = ({ context, name = "Extra", ...input }: AddLineInput) =>
   execute({ operation: createLine, input: { name, ...input }, context });
 
 /**
- * The quote setup (a ticket for 20, lunch 250 kr and coffee 40 kr at 12 %) plus a timed lunch
+ * The quote setup (an order for 20, lunch 250 kr and coffee 40 kr at 12 %) plus a timed lunch
  * line for 10 people on 2 November 2037, 09–12, as the parent of add-ons.
  */
 export async function addOnSetup() {
   const setup = await quoteSetup();
-  const { context, ticket, lineType, lunch } = setup;
+  const { context, order, lineType, lunch } = setup;
   const parent = unwrap({
     result: await addLine({
-      ...{ context, ticketId: ticket.id, entityTypeId: lineType.id, name: "Lunch" },
+      ...{ context, orderId: order.id, entityTypeId: lineType.id, name: "Lunch" },
       ...{ itemId: lunch.id, quantity: 10, startsAt: START, endsAt: END },
     }),
   });

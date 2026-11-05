@@ -3,7 +3,7 @@
 - **Date:** 2026-11-02
 - **Status:** Accepted (approved by the user on 2026-11-02); decision 5 amended on 2026-11-02 (below)
 - **Amends:** 0059 (a sub-line was a part or an option line, told apart by `priceEffect`), 0082 (picks above a group's `maxPick` were refused)
-- **Related:** 0052 (the line is the booking, snapshots), 0051 (single source of truth), 0053 (holds are a projection), 0043 and 0044 (states per status), 0081 (ticket intake), 0003 (parity), 0021 (configurable items)
+- **Related:** 0052 (the line is the booking, snapshots), 0051 (single source of truth), 0053 (holds are a projection), 0043 and 0044 (states per status), 0081 (order intake), 0003 (parity), 0021 (configurable items)
 
 ## Context
 - The demo item "Afternoon break" has a customisation group "Snack": choose exactly 1 of Carrot cake, Oat ball and Fresh fruit. A customer who wants all three gets a refusal from `line.chooseOptions` ("Snack: choose 1 of its options"). Staff have to add two free-standing lines, which the run sheet and the quote show as unrelated to the break.
@@ -46,17 +46,17 @@
     - Archived or removed: its add-ons are archived with it (`archiveParts`), and in the intake draft they are removed with it.
     - An add-on is never moved to another parent; remove it and add it again.
 11. **Operations and parity (ADR 0003).** No new command for writing:
-    - `line.create` takes an optional `parentLineId`. With it the line is an add-on: the ticket must be the parent's, the line type defaults to the parent's (so it lands on the parent's sheets) and staff may choose another (a projector on a room goes to the AV sheet), time defaults as in decision 8. Permission `program:write`, as today.
+    - `line.create` takes an optional `parentLineId`. With it the line is an add-on: the order must be the parent's, the line type defaults to the parent's (so it lands on the parent's sheets) and staff may choose another (a projector on a room goes to the AV sheet), time defaults as in decision 8. Permission `program:write`, as today.
     - `line.update` and `line.archive` work on add-ons unchanged; `parentLineId` and `role` are not updatable.
     - `line.chooseOptions` keeps its input; only the refusal text changes.
-    - `ticket.create` draft lines (ADR 0081) get `addOns[]`: `{ itemId?, name?, quantity?, unitPriceMinor?, discountPercent?, startsAt?, endsAt?, note? }`, written in the same transaction; errors at `lines.<i>.addOns.<j>`.
-    - `ticket.previewLines` takes the same `addOns` and returns them priced, with their issues, under each line.
+    - `order.create` draft lines (ADR 0081) get `addOns[]`: `{ itemId?, name?, quantity?, unitPriceMinor?, discountPercent?, startsAt?, endsAt?, note? }`, written in the same transaction; errors at `lines.<i>.addOns.<j>`.
+    - `order.previewLines` takes the same `addOns` and returns them priced, with their issues, under each line.
     - Reads: line DTOs (GraphQL, REST, MCP) carry `role`; `OrderLine` carries `role`. Approval labels for `line.create` name the parent when set.
 12. **Where add-ons show.** Nested under the parent with their own unit price and cost:
     - the intake review table, counted in the total;
-    - the ticket page's program;
+    - the order page's program;
     - quotes, invoices and the payment page, as indented rows under the parent line;
-    - sheets such as the kitchen order: an add-on row carries `parentKey` = the parent's row when the parent is on the sheet, else it stands alone named with its parent. Add-on items' tags are matched against the ticket's Requirements as any line's are.
+    - sheets such as the kitchen order: an add-on row carries `parentKey` = the parent's row when the parent is on the sheet, else it stands alone named with its parent. Add-on items' tags are matched against the order's Requirements as any line's are.
 
 ## Data classes (ADR 0051)
 | Data | Class |
@@ -72,13 +72,13 @@
 - The line dialog lists add-ons below the groups: extra picks from a group plus "Add an item" with item search. The client pick rule (`group-pick-rule.ts`) stops raising an open question for picks above the max; they are add-ons instead.
 - Quote, invoice and payment page templates render indented rows; their totals do not change shape.
 - `docs/domain-model.md` and `docs/artifacts/domain-model.html` describe add-ons and `role`.
-- Demo seed: one ticket's Afternoon break with Carrot cake as the pick and Oat ball and Fresh fruit as add-ons; a projector add-on for the morning on a meeting room line; a sent quote showing both. `docs/demo-seed.md` and the seed checks follow.
+- Demo seed: one order's Afternoon break with Carrot cake as the pick and Oat ball and Fresh fruit as add-ons; a projector add-on for the morning on a meeting room line; a sent quote showing both. `docs/demo-seed.md` and the seed checks follow.
 
 ### Slices
 1. `LineRole`, backfill, checks; core reads `role` everywhere. No behaviour change.
 2. Core add-ons: `line.create` with `parentLineId`, the parent rules (decisions 4, 10), pricing and quote derivation, `OrderLine.role`, adapters and parity tests.
-3. Intake: `addOns` on `ticket.create` and `ticket.previewLines`; line dialog extra picks and "Add an item"; nested rows and total in review.
-4. Ticket page program, quote, invoice and payment page rendering, sheets; demo seed and docs.
+3. Intake: `addOns` on `order.create` and `order.previewLines`; line dialog extra picks and "Add an item"; nested rows and total in review.
+4. Order page program, quote, invoice and payment page rendering, sheets; demo seed and docs.
 
 ## Settled with the user (2026-11-02)
 - ~~A group can forbid extras (`allowExtras`, default on), decision 5.~~ Amended: the max is always a hard limit, `allowExtras` is dropped (migration `drop_allow_extras`).

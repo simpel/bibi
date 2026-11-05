@@ -51,7 +51,7 @@ const AgingRef = builder.objectRef<FinanceAging>("FinanceAging").implement({
 const OutcomeRef = objectFromSchema<OutcomeMonth>({
   name: "FinanceOutcomeMonth",
   schema: OutcomeMonthSchema,
-  description: "Tickets won and lost in one month.",
+  description: "Orders won and lost in one month.",
 });
 const RevenueRef = objectFromSchema<RevenueByType>({
   name: "RevenueByType",

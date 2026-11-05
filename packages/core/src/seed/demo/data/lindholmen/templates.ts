@@ -1,12 +1,12 @@
-import type { DemoTicketTemplate } from "../../template-types";
+import type { DemoOrderTemplate } from "../../template-types";
 
 /**
- * Lindholmen's predefined tickets (`docs/demo-seed.md`, Predefined tickets): a small meeting
+ * Lindholmen's predefined orders (`docs/demo-seed.md`, Predefined orders): a small meeting
  * (room and coffee), an afternoon break and a wine tasting (a room, a drink and equipment that needs a
  * technician from the pool). Both start in Confirmed, so the grid books the room
- * and orders the food when a ticket is made from them (ADR 0044). Each has a guest range (ADR 0081).
+ * and orders the food when an order is made from them (ADR 0044). Each has a guest range (ADR 0081).
  */
-export const lindholmenTemplates: readonly DemoTicketTemplate[] = [
+export const lindholmenTemplates: readonly DemoOrderTemplate[] = [
   {
     ...{ name: "Small meeting", type: "Conference", status: "Confirmed" },
     ...{ minGuests: 2, maxGuests: 6 },

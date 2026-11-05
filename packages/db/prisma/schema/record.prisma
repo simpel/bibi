@@ -1,17 +1,17 @@
-/// Which table a `Record` row extends. The entity bases plus `TICKET_TEMPLATE`: a predefined
-/// ticket shares the `TICKET` type with tickets but lives in its own table.
+/// Which table a `Record` row extends. The entity bases plus `ORDER_TEMPLATE`: a predefined
+/// order shares the `ORDER` type with orders but lives in its own table.
 enum RecordBase {
   ITEM
   CUSTOMER
   CONTACT
-  TICKET
-  TICKET_TEMPLATE
+  ORDER
+  ORDER_TEMPLATE
   LINE
   REQUIREMENT
 }
 
 /// Record – the supertable of every entity with an org-defined type and fields (ADR 0056,
-/// class-table inheritance). `Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `Line` and
+/// class-table inheritance). `Item`, `Customer`, `Contact`, `Order`, `OrderTemplate`, `Line` and
 /// `Requirement` share its primary key (composite with `organizationId`). Core writes both rows
 /// in one transaction (`packages/core/src/records/`). Field rules ("in use", "linked from") are
 /// one indexed query on `fields` here instead of a scan of seven tables.
@@ -31,8 +31,8 @@ model Record {
   item           Item?
   customer       Customer?
   contact        Contact?
-  ticket         Ticket?
-  ticketTemplate TicketTemplate?
+  order         Order?
+  orderTemplate OrderTemplate?
   line           Line?
   requirement    Requirement?
   /// This record's `LINK` field values (ADR 0056).

@@ -22,12 +22,12 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPip
 
 /**
  * The checks in `docs/demo-seed.md` that slices 1–5 can verify: the member count, everyone has their documented role, the configuration and items (`checkDemoConfig`), the responsibilities' id lists (`checkDemoResponsibilities`), that a refused field archive lists its records (`checkDemoRecords`), the pipeline (`checkDemoPipeline`: statuses,
- * states and grid cells), the predefined tickets and the tickets made from them
- * (`checkDemoTemplates`) and the tickets per status (`checkDemoTickets`), the tickets' assignees and followers
+ * states and grid cells), the predefined orders and the orders made from them
+ * (`checkDemoTemplates`) and the orders per status (`checkDemoOrders`), the orders' assignees and followers
  * (`checkDemoAssignments`), that removing a populated status or state with a target is allowed
- * (`checkDemoArchive`, run before the grid checks move tickets), the lines' soft holds and their expiry (`checkDemoHolds`), the alternative groups' holds before and after the customer's pick (`checkDemoAlternatives`, ADR 0052), the status
- * quote events that moved the tickets (`checkDemoQuoteEvents`), that a status requiring an
- * accepted quote refuses a ticket without one (`checkDemoFactGuards`, ADR 0054), the status
+ * (`checkDemoArchive`, run before the grid checks move orders), the lines' soft holds and their expiry (`checkDemoHolds`), the alternative groups' holds before and after the customer's pick (`checkDemoAlternatives`, ADR 0052), the status
+ * quote events that moved the orders (`checkDemoQuoteEvents`), that a status requiring an
+ * accepted quote refuses an order without one (`checkDemoFactGuards`, ADR 0054), the status
  * moves the grid drives (`checkDemoGrid`), every line's effective price and inherited quantity
  * (`checkDemoPrices`, ADR 0052), the expanded bundles' part lines and per-rate VAT
  * (`checkDemoBundles`, ADR 0059), every line's setup and teardown buffers (`checkDemoBuffers`, ADR

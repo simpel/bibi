@@ -1,4 +1,4 @@
-import { densityTickets } from "../../density-tickets";
+import { densityOrders } from "../../density-orders";
 import type { DemoOrg } from "../../types";
 import { usedAssetDays } from "../../used-asset-days";
 import { saltholmenHours } from "../demo-hours";
@@ -8,13 +8,13 @@ import { vingaledenDensity } from "./density";
 import { vingaledenPipeline } from "./pipeline";
 import { vingaledenResponsibilities } from "./responsibilities";
 import { vingaledenTemplates } from "./templates";
-import { vingaledenTickets } from "./tickets";
+import { vingaledenOrders } from "./orders";
 import { vingaledenTours } from "./tours";
-import { vingaledenWorkOrders } from "./work-orders";
+import { vingaledenRunSheets } from "./run-sheets";
 
 const items = [...vingaledenBoats, ...vingaledenTours];
 const reserved = usedAssetDays({
-  tickets: vingaledenTickets,
+  orders: vingaledenOrders,
   templates: vingaledenTemplates,
   items,
 });
@@ -45,14 +45,14 @@ export const vingaleden: DemoOrg = {
     },
     venueHours: saltholmenHours,
     items,
-    // Check 2: no allergen list at all. Its work orders (slice 6) will not include food either.
+    // Check 2: no allergen list at all. Its run sheets (slice 6) will not include food either.
     checks: { absentLists: ["Allergens"] },
   },
   responsibilities: vingaledenResponsibilities,
-  workOrders: vingaledenWorkOrders,
+  runSheets: vingaledenRunSheets,
   customers: vingaledenCustomers,
   pipeline: vingaledenPipeline,
   templates: vingaledenTemplates,
-  tickets: [...vingaledenTickets, ...densityTickets({ density: vingaledenDensity, reserved })],
+  orders: [...vingaledenOrders, ...densityOrders({ density: vingaledenDensity, reserved })],
   density: vingaledenDensity,
 };

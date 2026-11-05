@@ -36,7 +36,7 @@ export const sendInvoice = defineOperation({
   name: "invoice.send",
   kind: "command",
   description:
-    "Mark a DRAFT invoice as SENT to the customer; it becomes what the ticket owes. It is " +
+    "Mark a DRAFT invoice as SENT to the customer; it becomes what the order owes. It is " +
     "raised where the payment settings say (ADR 0090): in the venue's Fortnox (created, booked " +
     "and emailed there; payments are mirrored back), or kept in Bibi for payments requested " +
     "through Stripe (payment.create). Any other starting status is a CONFLICT.",
@@ -63,7 +63,7 @@ export const voidInvoice = defineOperation({
   name: "invoice.void",
   kind: "command",
   description:
-    "Void a DRAFT or SENT invoice: it is no longer owed and the ticket can be invoiced again. " +
+    "Void a DRAFT or SENT invoice: it is no longer owed and the order can be invoiced again. " +
     "Refused (CONFLICT) while a payment against it is PENDING or anything paid against it has " +
     "not been refunded.",
   input: InvoiceIdInputSchema,

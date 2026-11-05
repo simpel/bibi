@@ -3,8 +3,8 @@ import { createId } from "@paralleldrive/cuid2";
 import { createPayment, createStripeWebhookHandler, execute } from "../src/index";
 import { unwrap } from "./helpers";
 import { paymentSetup, sentDeposit } from "./payment-helpers";
-import { createTestTicket, memberUser } from "./ticket-helpers";
-import { statusByName } from "./ticket-status-helpers";
+import { createTestOrder, memberUser } from "./order-helpers";
+import { statusByName } from "./order-status-helpers";
 
 export const SECRET = "whsec_test_secret";
 
@@ -48,7 +48,7 @@ export async function postEvent({ event, secret = SECRET, header }: PostInput) {
   return { status: response.status, body: (await response.json()) as { status?: string } };
 }
 
-/** A paid-for-able card payment on a ticket whose Lead status may move to Confirmed. */
+/** A paid-for-able card payment on an order whose Lead status may move to Confirmed. */
 export async function webhookSetup() {
   const setup = await paymentSetup();
   const { context } = setup;
@@ -58,23 +58,23 @@ export async function webhookSetup() {
 
 type SetupInput = { coordinated: boolean };
 
-/** A pending card payment; `coordinated` decides whether the ticket may be confirmed. */
+/** A pending card payment; `coordinated` decides whether the order may be confirmed. */
 export async function pendingPayment({ coordinated }: SetupInput) {
   const setup = await webhookSetup();
   const { context } = setup;
-  const ticketId = coordinated
+  const orderId = coordinated
     ? (
-        await createTestTicket({
+        await createTestOrder({
           context,
           entityTypeId: (
-            await context.db.ticket.findUniqueOrThrow({ where: { id: setup.ticketId } })
+            await context.db.order.findUniqueOrThrow({ where: { id: setup.orderId } })
           ).entityTypeId,
           customerId: setup.customerId,
           assigneeId: await memberUser({ context, name: "Coordinator" }),
         })
       ).id
-    : setup.ticketId;
-  const depositId = coordinated ? (await sentDeposit({ context, ticketId })).id : setup.depositId;
+    : setup.orderId;
+  const depositId = coordinated ? (await sentDeposit({ context, orderId })).id : setup.depositId;
   const payment = unwrap({
     result: await execute({
       operation: createPayment,
@@ -85,7 +85,7 @@ export async function pendingPayment({ coordinated }: SetupInput) {
   const account = setup.account.stripeAccountId ?? "";
   // Executed, so Stripe has already been asked and the reference is set (ADR 0058).
   const reference = payment.providerReference ?? "";
-  return { ...setup, ticketId, payment: { ...payment, providerReference: reference }, account };
+  return { ...setup, orderId, payment: { ...payment, providerReference: reference }, account };
 }
 
 export const paidEvent = ({ account, reference }: { account: string; reference: string }) =>

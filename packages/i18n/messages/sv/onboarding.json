@@ -1,0 +1,382 @@
+{
+  "welcome": {
+    "stepOf": "Steg {step} av {total}",
+    "back": "Tillbaka",
+    "continue": "Fortsätt",
+    "skipForNow": "Hoppa över just nu",
+    "saved": "Sparat",
+    "skipped": "Uppsättningen hoppades över. Du kan göra klart den senare under Inställningar.",
+    "activated": "{organization} är uppsatt",
+    "logoAlt": "Bibi",
+    "start": {
+      "title": "Välkommen till Bibi",
+      "description": "Gå med i ditt team eller sätt upp Bibi för din anläggning.",
+      "yourOrganizations": "Dina organisationer",
+      "open": "Öppna",
+      "invitations": "Inbjudningar",
+      "invitedAs": "Inbjuden som {role}",
+      "accept": "Acceptera",
+      "accepting": "Går med i {organization}…",
+      "noInvitations": "Inga inbjudningar för {email}. Be din admin att bjuda in den här e-postadressen.",
+      "createTitle": "Skapa en ny organisation",
+      "createDescription": "Sätt upp Bibi för din anläggning.",
+      "create": "Skapa organisation",
+      "haveCode": "Har du en inbjudningskod?",
+      "invitedTitle": "{inviter} har bjudit in dig till {organization}",
+      "invitedTitleNoInviter": "Du har blivit inbjuden till {organization}"
+    },
+    "join": {
+      "held": "Alla platser i {organization} är tagna, så en admin behöver godkänna din. Du får en inbjudan via e-post när de har gjort det.",
+      "offerTitle": "Gå med i {organization}",
+      "offerDescription": "Dina kollegor på {domain} använder Bibi i {organization}.",
+      "joinOrganization": "Gå med i {organization}",
+      "different": "Gå med i en annan organisation",
+      "createInstead": "Skapa en ny organisation i stället",
+      "join": "Gå med",
+      "joining": "Går med i {organization}…",
+      "joined": "Du är nu med i {organization}.",
+      "codeTitle": "Gå med i en annan organisation",
+      "codeDescription": "Skriv in koden från din inbjudan.",
+      "code": "Inbjudningskod",
+      "codeHint": "Koden fungerar bara för e-postadressen som inbjudan skickades till.",
+      "useCode": "Gå med",
+      "checkingCode": "Kontrollerar koden…",
+      "codeAccepted": "Du är nu med i organisationen.",
+      "listTitle": "Dina organisationer",
+      "listDescription": "Gå med i organisationerna du jobbar i och välj sedan den som Bibi öppnar först.",
+      "member": "Du är medlem",
+      "isMember": "Med",
+      "byDomain": "Öppen för alla på {domain}",
+      "invited": "Du är inbjuden",
+      "nothing": "Det finns inget att gå med i än. Be din admin om en inbjudan.",
+      "primary": "Primär organisation",
+      "primaryHint": "Bibi öppnar den här organisationen när du loggar in.",
+      "continue": "Fortsätt till {organization}",
+      "finishing": "Öppnar…",
+      "finished": "{organization} är din primära organisation."
+    },
+    "new": {
+      "title": "Namnge din organisation",
+      "description": "Det blir också adressen ditt team använder.",
+      "name": "Namn",
+      "slug": "Adress",
+      "slugPrefix": "heybibi.se/",
+      "timeZone": "Tidszon",
+      "submit": "Skapa",
+      "creating": "Skapar {organization}…",
+      "slugChecking": "Kontrollerar heybibi.se/{slug}…",
+      "slugFree": "heybibi.se/{slug} är din",
+      "slugTaken": "/{slug} är upptagen. Vi valde /{suggestion}. Använd den eller ändra.",
+      "slugReserved": "/{slug} är reserverad. Använd /{suggestion} eller ändra.",
+      "slugInvalid": "Använd 3–40 bokstäver, siffror eller bindestreck",
+      "useSuggestion": "Använd /{suggestion}"
+    },
+    "profile": {
+      "title": "Om dig",
+      "description": "Ditt team ser det här på bokningar och tilldelningar.",
+      "firstName": "Förnamn",
+      "lastName": "Efternamn",
+      "phone": "Telefon",
+      "avatar": "Foto",
+      "avatarHint": "PNG, JPEG eller WebP, högst 2 MB. Valfritt.",
+      "uploadAvatar": "Ladda upp foto",
+      "changeAvatar": "Byt foto",
+      "removeAvatar": "Ta bort",
+      "uploading": "Laddar upp…",
+      "avatarTooLarge": "Fotot är större än 2 MB",
+      "avatarWrongType": "Använd en PNG-, JPEG- eller WebP-bild"
+    },
+    "hours": {
+      "title": "Dina arbetstider",
+      "description": "Visar när du är tillgänglig. Du kan ändra dem senare i din profil."
+    },
+    "setup": {
+      "organization": {
+        "title": "Om {organization}",
+        "description": "Visas på offerter och fakturor.",
+        "legalName": "Juridiskt namn",
+        "orgNumber": "Organisationsnummer",
+        "streetAddress": "Gatuadress",
+        "postalCode": "Postnummer",
+        "city": "Ort",
+        "country": "Land",
+        "website": "Webbplats",
+        "contactEmail": "E-post",
+        "contactPhone": "Telefon",
+        "alsoVenue": "Den här adressen är också vår första anläggning"
+      },
+      "kind": {
+        "title": "Vilken sorts plats driver ni?",
+        "description": "Vi fyller i vad ni bokar och säljer. Du kan ändra allt.",
+        "startEmpty": "Börja tomt i stället"
+      },
+      "spaces": {
+        "title": "Lokaler & rum",
+        "description": "Mötesrum, salar och ytor som kan reserveras.",
+        "later": "Du kan lägga till, byta namn på eller ta bort lokaler när som helst under Inställningar → Typer.",
+        "placeholder": "Lägg till en lokal (t.ex. Styrelserum, Stora salen)…"
+      },
+      "food": {
+        "title": "Mat & dryck",
+        "description": "Måltider, fika, dryck och cateringpaket.",
+        "later": "Du kan lägga till fler senare, till exempel när du bygger din meny.",
+        "placeholder": "Lägg till mat eller dryck (t.ex. Lunchbuffé, Vinpaket)…"
+      },
+      "extras": {
+        "title": "Utrustning & tillval",
+        "description": "AV-teknik, extra möblemang och utrustning.",
+        "later": "Du kan lägga till fler senare under Inställningar → Typer.",
+        "placeholder": "Lägg till utrustning eller tillval (t.ex. Trådlös mikrofon, Projektor)…"
+      },
+      "bookable": {
+        "title": "Lokaler & rum",
+        "description": "Mötesrum, salar och ytor som kan reserveras.",
+        "later": "Du kan lägga till, byta namn på eller ta bort dessa när som helst under Inställningar → Typer.",
+        "placeholder": "Lägg till lokal…"
+      },
+      "sellable": {
+        "title": "Mat & dryck",
+        "description": "Måltider, fika, dryck och cateringpaket.",
+        "later": "Du kan lägga till fler senare, till exempel när du bygger din meny.",
+        "placeholder": "Lägg till artikel…"
+      },
+      "customBadge": "Egen",
+      "remove": "Ta bort",
+      "review": {
+        "title": "Så här ser er uppsättning ut",
+        "description": "En startpunkt. Inget sparas förrän du aktiverar.",
+        "spaces": "Lokaler & rum",
+        "food": "Mat & dryck",
+        "extras": "Utrustning & tillval",
+        "book": "Lokaler & rum",
+        "sell": "Mat & dryck",
+        "path": "Hur en förfrågan går vidare",
+        "none": "Inget än",
+        "activate": "Aktivera",
+        "activating": "Sätter upp {organization}…"
+      }
+    },
+    "done": {
+      "title": "Allt är klart",
+      "readyDescription": "{organization} är redo.",
+      "pendingTitle": "Nästan klart",
+      "pendingDescription": "Din admin håller fortfarande på att sätta upp {organization}. Du kan titta runt så länge.",
+      "goToBoard": "Gå till tavlan"
+    },
+    "kinds": {
+      "conference-estate": {
+        "name": "Konferensgård",
+        "example": "Mötesrum, dagkonferenser, lunch"
+      },
+      "manor-house": {
+        "name": "Herrgård",
+        "example": "Bröllop, middagar, några stora salar"
+      },
+      "experience-centre": {
+        "name": "Upplevelsecenter",
+        "example": "Hallar, guidade turer, grupper och mat"
+      },
+      "museum": {
+        "name": "Museum",
+        "example": "Guidade visningar, eventytor, kafé"
+      },
+      "restaurant": {
+        "name": "Restaurang med privata rum",
+        "example": "Privata rum, menyer, dryck"
+      },
+      "event-hall": {
+        "name": "Event- och kongresshall",
+        "example": "Stora hallar, utställarmontrar, catering"
+      },
+      "arena-hospitality": {
+        "name": "Arena och hospitality",
+        "example": "Loger och matchpaket"
+      },
+      "theatre": {
+        "name": "Teater och konserthus",
+        "example": "Foajéer, middag före föreställning, uthyrning"
+      },
+      "meeting-space": {
+        "name": "Mötesplats",
+        "example": "Bokningsbara rum, fika, utrustning"
+      },
+      "empty": {
+        "name": "Börja tomt",
+        "example": "Sätt upp allt själv"
+      }
+    },
+    "types": {
+      "conferenceRoom": "Konferensrum",
+      "breakoutRoom": "Grupprum",
+      "equipment": "Utrustning",
+      "coffeeBreak": "Fika",
+      "lunch": "Lunch",
+      "dinner": "Middag",
+      "drink": "Dryck",
+      "activity": "Aktivitet",
+      "banquetHall": "Bankettsal",
+      "meetingRoom": "Mötesrum",
+      "garden": "Trädgård",
+      "dinnerMenu": "Middagsmeny",
+      "drinkPackage": "Dryckespaket",
+      "hall": "Hall",
+      "guide": "Guide",
+      "tour": "Tur",
+      "workshop": "Workshop",
+      "meal": "Måltid",
+      "eventSpace": "Eventyta",
+      "guidedTour": "Guidad visning",
+      "privateRoom": "Privat rum",
+      "setMenu": "Meny",
+      "dish": "Rätt",
+      "winePackage": "Vinpaket",
+      "exhibitionStand": "Utställarmonter",
+      "catering": "Catering",
+      "lodge": "Loge",
+      "lounge": "Lounge",
+      "matchDayPackage": "Matchpaket",
+      "foyer": "Foajé",
+      "rehearsalRoom": "Repetitionsrum",
+      "preShowDinner": "Middag före föreställning",
+      "intervalPackage": "Pauspaket"
+    }
+  },
+  "administration": {
+    "title": "Administration",
+    "description": "Hantera organisationens medlemmar, API-nycklar och inställningar.",
+    "members": {
+      "title": "Medlemmar",
+      "description": "Hantera personal, roller, inbjudningar och detaljerade behörigheter.",
+      "action": "Hantera medlemmar"
+    },
+    "apiKeys": {
+      "title": "API-nycklar",
+      "description": "Skapa och hantera nycklar för externa integrationer och REST API:et.",
+      "action": "Hantera API-nycklar"
+    },
+    "settings": {
+      "title": "Inställningar",
+      "description": "Konfigurera artikeltyper, artikelstatusar, bokningsmallar, prislistor och pipeline.",
+      "action": "Öppna inställningar"
+    }
+  },
+  "settingsHub": {
+    "title": "Inställningar",
+    "description": "Hur er organisation är uppsatt. Ändringar här påverkar alla.",
+    "items": {
+      "billing": "Er Bibi-plan, era platser och platsförfrågningar.",
+      "organization": "Organisationens tidszon, som varje anläggning utan egen zon använder.",
+      "types": "Vilka sorters artiklar ni erbjuder och vilka fält de har.",
+      "lists": "Era egna värdelistor, till exempel allergener eller utrustning.",
+      "setups": "Möblering som teater, klassrum eller styrelserum.",
+      "responsibilities": "Vad någon svarar för, till exempel kökschef, och vem det går till som standard.",
+      "runSheets": "Körschemadefinitioner, till exempel kökskörschemat, och vem som får dem.",
+      "priceLists": "Priser per kundgrupp eller säsong.",
+      "orderStatuses": "De bokningsstatusar en bokning går igenom.",
+      "members": "Vem som har åtkomst och med vilken roll.",
+      "payments": "Förskottsregel och fakturaleverantör för betalningar.",
+      "accounting": "Konton, moms och räkenskapsår för bokföringsexporten.",
+      "skills": "Återanvändbara instruktioner för assistenten.",
+      "integrations": "Anslut Stripe och Fortnox och hantera API-nycklar för andra system.",
+      "itemStates": "De statusar en rad kan ha, per artikeltyp.",
+      "orderTemplates": "Färdiga bokningar som personalen skapar en bokning från i ett steg."
+    }
+  },
+  "organizationSettings": {
+    "title": "Organisation",
+    "description": "Inställningar som gäller hela organisationen.",
+    "timeZone": "Tidszon",
+    "timeZoneHint": "Bokningens tider och varje anläggning utan egen zon använder den här zonen. En ändring påverkar hur tider visas och skrivs in; sparade tider ändras inte.",
+    "saved": "Tidszonen har sparats.",
+    "domainJoin": {
+      "label": "Kollegor kan gå med via e-postdomän",
+      "hint": "Den som loggar in med en verifierad @{domain}-adress erbjuds att gå med som medlem. Den du tar bort erbjuds det inte igen.",
+      "noDomain": "Ingen e-postdomän än. Slå på det här när du är inloggad med en verifierad jobbadress så används dess domän.",
+      "turnedOn": "Kollegor med er e-postdomän erbjuds nu att gå med när de loggar in.",
+      "turnedOff": "Kollegor behöver nu en inbjudan för att ansluta."
+    }
+  },
+  "hours": {
+    "off": "Ledig",
+    "lunch": "Lunch {start}–{end}",
+    "change": "Ändra",
+    "done": "Klar",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "saving": "Sparar…",
+    "saved": "Tiderna är sparade",
+    "workday": "Arbetar",
+    "start": "Start",
+    "end": "Slut",
+    "breakStart": "Rast från",
+    "breakEnd": "Rast till",
+    "exceptions": "Undantag",
+    "noExceptions": "Inga undantag. Lägg till en dag som avviker från veckan, till exempel en helgdag.",
+    "addException": "Lägg till undantag",
+    "removeException": "Ta bort",
+    "exceptionDate": "Datum",
+    "exceptionNote": "Notering",
+    "closedAllDay": "Stängt hela dagen",
+    "closed": "Stängt",
+    "day": {
+      "0": "Måndag",
+      "1": "Tisdag",
+      "2": "Onsdag",
+      "3": "Torsdag",
+      "4": "Fredag",
+      "5": "Lördag",
+      "6": "Söndag"
+    },
+    "exceptionsHelp": "Enbart datumundantag utan veckodagar betyder att alla andra dagar är stängda."
+  },
+  "pipelineSetup": {
+    "preview": {
+      "ready": "Klart att aktivera.",
+      "notReady": "Rätta felen nedan innan ni aktiverar.",
+      "severity": {
+        "error": "Fel",
+        "warning": "Varning"
+      },
+      "problems": {
+        "NO_ENTRY_STATUS": "Ingen bokningsstatus där nya bokningar börjar",
+        "MANY_ENTRY_STATUSES": "Mer än en bokningsstatus där nya bokningar börjar",
+        "NO_CLOSING_STATUS": "Ingen bokningsstatus som avslutar bokningen",
+        "INVALID_STATUS_FLAGS": "En bokningsstatus kan inte både starta och avsluta en bokning",
+        "DUPLICATE_NAME": "Samma namn används två gånger",
+        "NO_INITIAL_STATE": "En artikeltyp saknar status som nya rader börjar i",
+        "MANY_INITIAL_STATES": "En artikeltyp har mer än en status som nya rader börjar i",
+        "INVALID_STATE_FLAGS": "Valen för en status motsäger varandra eller typen",
+        "UNKNOWN_EXPIRY_STATE": "Förfallostatusen är inte en av typens statusar",
+        "UNKNOWN_CELL": "En ruta i rutnätet anger en bokningsstatus, typ eller en status som inte finns",
+        "CLOSING_CELL": "En bokningsstatus som avslutar bokningen kan inte ha rutor i rutnätet",
+        "STATE_CANNOT_LEAVE": "Rader i den här statusen kan aldrig gå vidare",
+        "LINE_BLOCKED": "En rad kan inte flyttas till statusen som rutnätet anger"
+      },
+      "calendar": "Hållningar under bokningens liv",
+      "slot": "{status}: {state}",
+      "legend": "Fylld: hård hållning. Randig: mjuk hållning. Kontur: ingen hållning.",
+      "status": "Bokningsstatus",
+      "empty": "Inga bokningsstatusar.",
+      "released": "Släppt",
+      "holds": {
+        "NONE": "Ingen hållning",
+        "SOFT": "Mjuk hållning",
+        "HARD": "Hård hållning"
+      },
+      "blocked": "Kan inte flyttas som rutnätet anger"
+    }
+  },
+  "statusGrid": {
+    "title": "Rutnätet",
+    "description": "Vad som händer med varje artikeltyps rader när en bokning går in i en bokningsstatus. Välj en status, eller behåll för att lämna raderna som de är.",
+    "status": "Bokningsstatus",
+    "keep": "Behåll",
+    "closes": "Släpper alla rader",
+    "empty": "Inga bokningsstatusar ännu.",
+    "saving": "Sparar cell…",
+    "saved": "Cellen har sparats.",
+    "cellLabel": "{status}: {type}",
+    "cellSets": "När en bokning går in i {status} flyttas rader av {type} till {state}.",
+    "cellKeeps": "Rader av {type} behåller sin status."
+  }
+}

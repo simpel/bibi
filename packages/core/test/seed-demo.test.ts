@@ -6,7 +6,7 @@ import { vingaleden } from "../src/seed/demo/data/vingaleden/vingaleden";
 import { seedDemo } from "../src/seed/demo/seed-demo";
 import { LINDHOLMEN_LINE_STATES } from "./seed-demo-lines";
 
-/** Lindholmen's hand-written tickets; the generated ones come after them (#488). */
+/** Lindholmen's hand-written orders; the generated ones come after them (#488). */
 const FIXTURES = 18;
 
 /** Same data as the real demo, under unique slugs so parallel runs and dev data never clash. */
@@ -88,29 +88,29 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 180_000 }, () => {
       "Karin Wallin",
     ]);
     expect(nordkust?.priceLists.map((list) => Number(list.discountPercent))).toEqual([15]);
-    expect(await db.ticketStatus.count({ where: { organizationId: lind?.organizationId } })).toBe(
+    expect(await db.orderStatus.count({ where: { organizationId: lind?.organizationId } })).toBe(
       8,
     );
-    const tickets = await db.ticket.findMany({
+    const orders = await db.order.findMany({
       where: { organizationId: lind?.organizationId },
       orderBy: { reference: "asc" },
     });
     // L1–L15 and the leads F2, F3 and F6 with their room lines (ADR 0044, 0052, 0059), then the
-    // generated tickets that fill the calendar (#488), seeded last.
-    expect(tickets).toHaveLength(lindholmen.tickets.length);
-    expect(tickets.filter((ticket) => ticket.reference > FIXTURES).length).toBeGreaterThan(20);
+    // generated orders that fill the calendar (#488), seeded last.
+    expect(orders).toHaveLength(lindholmen.orders.length);
+    expect(orders.filter((order) => order.reference > FIXTURES).length).toBeGreaterThan(20);
     const johan = await db.member.findFirst({
       where: { organizationId: lind?.organizationId, user: { name: "Johan Ek" } },
     });
-    expect(tickets[0]).toMatchObject({ reference: 1, estimatedHeadcount: 40 });
+    expect(orders[0]).toMatchObject({ reference: 1, estimatedHeadcount: 40 });
     const main = await db.assignment.findFirst({
-      where: { recordId: tickets[0]?.id, responsibilityId: null },
+      where: { recordId: orders[0]?.id, responsibilityId: null },
       include: { followers: true },
     });
     expect(main?.assigneeId).toBe(johan?.userId);
     expect(main?.followers).toHaveLength(1);
     const lines = await db.line.findMany({
-      where: { organizationId: lind?.organizationId, ticket: { reference: { lte: FIXTURES } } },
+      where: { organizationId: lind?.organizationId, order: { reference: { lte: FIXTURES } } },
       include: { state: true },
       orderBy: [{ name: "asc" }, { state: { name: "asc" } }],
     });

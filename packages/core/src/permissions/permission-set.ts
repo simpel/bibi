@@ -8,13 +8,13 @@ import {
   type PermissionAction,
 } from "./features";
 
-/** What a caller may do: `{ ticket: ["read", "write"], item: ["read"] }` (ADR 0050). */
+/** What a caller may do: `{ order: ["read", "write"], item: ["read"] }` (ADR 0050). */
 export type PermissionSet = Partial<Record<string, readonly PermissionAction[]>>;
 
 export const PermissionSetSchema = z
   .partialRecord(z.enum(FEATURES), z.array(z.enum(PERMISSION_ACTIONS)).max(4))
   .describe(
-    'Actions per feature, e.g. { "ticket": ["read", "write"] }. Write and delete imply read.',
+    'Actions per feature, e.g. { "order": ["read", "write"] }. Write and delete imply read.',
   );
 
 export type NormalizePermissionsInput = { permissions: PermissionSet };

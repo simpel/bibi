@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ticketInboundAddress } from "../src/features/inbound-email/address";
+import { orderInboundAddress } from "../src/features/inbound-email/address";
 import {
   attachInboundMessage,
   countOpenInboundMessages,
@@ -13,7 +13,7 @@ import {
 } from "../src/index";
 import { errorCode, peer, unwrap } from "./helpers";
 import { INBOX_DOMAIN, inboxSetup, mailTo, withPermissions } from "./inbound-message-helpers";
-import { createTestTicket } from "./ticket-helpers";
+import { createTestOrder } from "./order-helpers";
 
 const inboxIds = async ({ context, read }: { context: ExecuteContext; read?: boolean }) => {
   const input = read === undefined ? {} : { read };
@@ -24,46 +24,46 @@ const inboxIds = async ({ context, read }: { context: ExecuteContext; read?: boo
 };
 
 describe("the EMAIL channel into the inbox (ADR 0085)", () => {
-  it("stores mail to the organization address in its inbox, without a ticket", async () => {
+  it("stores mail to the organization address in its inbox, without an order", async () => {
     const { context, email, address } = await inboxSetup();
     const message = await mailTo({ recipients: [address] });
     expect(message).toMatchObject({
       organizationId: context.organizationId,
       channel: "EMAIL",
       endpointId: email.id,
-      ticketId: null,
+      orderId: null,
       fromName: "Guest",
       fromEmail: "guest@example.test",
       text: "We will be 40 guests.",
     });
     expect(await inboxIds({ context: context })).toEqual([message.id]);
     const got = await execute({ operation: getInboundMessage, input: { id: message.id }, context });
-    expect(unwrap({ result: got }).subject).toBe("Re: your ticket");
+    expect(unwrap({ result: got }).subject).toBe("Re: your order");
   });
 
-  it("stores a reply on the ticket when the ticket address is among the recipients", async () => {
+  it("stores a reply on the order when the order address is among the recipients", async () => {
     const { context, type, customer, address } = await inboxSetup();
-    const ticket = await createTestTicket({
+    const order = await createTestOrder({
       context,
       entityTypeId: type.id,
       customerId: customer.id,
     });
-    const reply = ticketInboundAddress({ ticketId: ticket.id, domain: INBOX_DOMAIN });
+    const reply = orderInboundAddress({ orderId: order.id, domain: INBOX_DOMAIN });
     const message = await mailTo({ recipients: [address, reply] });
-    expect(message.ticketId).toBe(ticket.id);
+    expect(message.orderId).toBe(order.id);
     expect(await inboxIds({ context: context })).toEqual([]);
-    const input = { ticketId: ticket.id };
+    const input = { orderId: order.id };
     const page = unwrap({
       result: await execute({ operation: listInboundMessages, input, context }),
     });
     expect(page.items.map((item) => item.id)).toEqual([message.id]);
   });
 
-  it("needs ticket:read to list a ticket's messages", async () => {
+  it("needs order:read to list an order's messages", async () => {
     const { context } = await inboxSetup();
     const result = await execute({
       operation: listInboundMessages,
-      input: { ticketId: "any" },
+      input: { orderId: "any" },
       context: withPermissions({ of: context, permissions: { inbox: ["read"] } }),
     });
     expect(errorCode({ result })).toBe("VALIDATION");
@@ -102,23 +102,23 @@ describe("handling the inbox", () => {
     expect(errorCode({ result: got })).toBe("NOT_FOUND");
   });
 
-  it("attaches a message to a ticket once", async () => {
+  it("attaches a message to an order once", async () => {
     const { context, type, customer, address } = await inboxSetup();
-    const ticket = await createTestTicket({
+    const order = await createTestOrder({
       context,
       entityTypeId: type.id,
       customerId: customer.id,
     });
-    const other = await createTestTicket({
+    const other = await createTestOrder({
       context,
       entityTypeId: type.id,
       customerId: customer.id,
     });
     const message = await mailTo({ recipients: [address] });
-    const attach = ({ ticketId }: { ticketId: string }) =>
-      execute({ operation: attachInboundMessage, input: { id: message.id, ticketId }, context });
-    expect(unwrap({ result: await attach({ ticketId: ticket.id }) }).ticketId).toBe(ticket.id);
-    expect(errorCode({ result: await attach({ ticketId: other.id }) })).toBe("CONFLICT");
+    const attach = ({ orderId }: { orderId: string }) =>
+      execute({ operation: attachInboundMessage, input: { id: message.id, orderId }, context });
+    expect(unwrap({ result: await attach({ orderId: order.id }) }).orderId).toBe(order.id);
+    expect(errorCode({ result: await attach({ orderId: other.id }) })).toBe("CONFLICT");
     const removed = await execute({
       operation: deleteInboundMessage,
       input: { id: message.id },
@@ -127,10 +127,10 @@ describe("handling the inbox", () => {
     expect(errorCode({ result: removed })).toBe("CONFLICT");
   });
 
-  it("needs ticket:write to attach, and refuses unknown tickets", async () => {
+  it("needs order:write to attach, and refuses unknown orders", async () => {
     const { context, address } = await inboxSetup();
     const message = await mailTo({ recipients: [address] });
-    const input = { id: message.id, ticketId: "nope" };
+    const input = { id: message.id, orderId: "nope" };
     const member = peer({ of: context, access: "read" });
     const denied = await execute({ operation: attachInboundMessage, input, context: member });
     expect(errorCode({ result: denied })).toBe("VALIDATION");

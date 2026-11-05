@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PhoneSchema } from "../../shared/phone";
+import { WebsiteSchema } from "../../shared/website";
 import { TimeZoneSchema } from "../../time/time-zone";
 
 /** Where the organization is in its first setup (ADR 0061). */
@@ -24,7 +25,7 @@ export const OrganizationProfileSchema = z.object({
   contactPhone: z.string().nullable(),
   timeZone: z
     .string()
-    .describe("IANA zone of ticket-level times and the default of every venue (ADR 0064)"),
+    .describe("IANA zone of order-level times and the default of every venue (ADR 0064)"),
   emailDomain: z
     .string()
     .nullable()
@@ -45,7 +46,7 @@ export const OrganizationProfileUpdateInputSchema = z.object({
   postalCode: text({ max: 20 }),
   city: text({ max: 100 }),
   country: z.string().length(2).toUpperCase().optional().describe("ISO 3166-1 alpha-2"),
-  website: z.url().max(300).nullish().describe("Website, e.g. https://example.se"),
+  website: WebsiteSchema.nullish(),
   contactEmail: z.email().max(200).nullish(),
   contactPhone: PhoneSchema.nullish(),
   timeZone: TimeZoneSchema.optional().describe(

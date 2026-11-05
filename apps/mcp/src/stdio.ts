@@ -1,9 +1,10 @@
 import { createAppExtract } from "@bibi/ai/extract";
 import { resolveExecuteContext } from "@bibi/auth";
 import { getEnv } from "@bibi/config";
-import { setExtract } from "@bibi/core";
+import { setExtract, setFileStore } from "@bibi/core";
 import { createSystemLogSink } from "@bibi/db";
 import { getLogger, initLogger, installProcessHandlers } from "@bibi/logger";
+import { getStorage } from "@bibi/storage";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { embed } from "./embed";
 import { createMcpServer } from "./server/create-mcp-server";
@@ -15,8 +16,9 @@ initLogger({
   sinks: [createSystemLogSink({ retentionDays: getEnv().SYSTEM_LOG_RETENTION_DAYS })],
 });
 installProcessHandlers({ exitOnUncaught: true });
-// `ticketDraft.fromMessage` reads text through this port (ADR 0084).
+// `orderDraft.fromMessage` reads text through this port (ADR 0084).
 setExtract({ extract: createAppExtract() });
+setFileStore({ store: getStorage() });
 
 async function main(): Promise<void> {
   const apiKey = getEnv().BIBI_API_KEY;

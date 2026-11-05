@@ -24,7 +24,7 @@ async function loadForFortnox({ context, invoiceId }: RaiseInFortnoxInput) {
         include: { item: { select: { entityTypeId: true } } },
       },
       deductions: { include: { deposit: { select: { description: true, vatRows: true } } } },
-      ticket: { select: { reference: true, customer: { select: { name: true, email: true } } } },
+      order: { select: { reference: true, customer: { select: { name: true, email: true } } } },
     },
   });
 }
@@ -49,7 +49,7 @@ export async function raiseInFortnox({
   const timeZone = zoneOf({ venue: null });
   if (!token.ok) return err({ error: token.error });
   const gateway = getFortnoxInvoicingGateway();
-  const { customer, reference } = invoice.ticket;
+  const { customer, reference } = invoice.order;
   const customerNumber = await gateway.findOrCreateCustomer({
     accessToken: token.value,
     ...customer,
@@ -63,7 +63,7 @@ export async function raiseInFortnox({
     invoiceDate: day({ instant: invoice.sentAt ?? new Date(), timeZone }),
     dueDate: invoice.dueDate ? day({ instant: invoice.dueDate, timeZone }) : null,
     currency: invoice.currency,
-    yourOrderNumber: `Ticket #${reference}, invoice #${invoice.number}`,
+    yourOrderNumber: `Order #${reference}, invoice #${invoice.number}`,
     rows: fortnoxRows({ ...invoice, accountOf, advancesAccount: settings.advancesAccount }),
   });
   if (!raised.ok) return raised;

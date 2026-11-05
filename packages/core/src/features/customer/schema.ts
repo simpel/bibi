@@ -18,13 +18,13 @@ export const CustomerSchema = z.object({
   paymentTermsDays: z.number().int().nullable(),
   creditLimitMinor: z.number().int().nullable(),
   fields: FieldValuesSchema,
-  ticketCount: z
+  orderCount: z
     .number()
     .int()
     .nullable()
     .describe(
-      "Number of the customer's tickets that are not archived; each blocks archiving it. " +
-        "Null when the caller may not view tickets",
+      "Number of the customer's orders that are not archived; each blocks archiving it. " +
+        "Null when the caller may not view orders",
     ),
   status: RecordStatusSchema,
   createdAt: z.date(),
@@ -92,21 +92,21 @@ export const CustomerIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const CustomerArchiveInputSchema = z.object({
   id: z.string().min(1),
-  archiveTickets: z
+  archiveOrders: z
     .boolean()
     .default(false)
     .describe(
-      "Also archive all of the customer's tickets that are not archived, in every status. " +
-        "Without it, any such ticket blocks archiving the customer.",
+      "Also archive all of the customer's orders that are not archived, in every status. " +
+        "Without it, any such order blocks archiving the customer.",
     ),
-  expectedTicketCount: z
+  expectedOrderCount: z
     .number()
     .int()
     .min(0)
     .optional()
     .describe(
-      "With archiveTickets: the number of not archived tickets the caller saw. Unless exactly " +
-        "that many tickets are archived, the archive is refused with CONFLICT. In an assistant " +
+      "With archiveOrders: the number of not archived orders the caller saw. Unless exactly " +
+        "that many orders are archived, the archive is refused with CONFLICT. In an assistant " +
         "proposal the server sets it to the current count; a value sent by the assistant is replaced.",
     ),
 });
@@ -116,15 +116,15 @@ export const CustomerListInputSchema = z.object({
     .array(z.string().min(1))
     .max(100)
     .optional()
-    .describe("Only these customers (e.g. to name the customers of tickets on a board)"),
+    .describe("Only these customers (e.g. to name the customers of orders on a board)"),
   entityTypeId: z.string().optional().describe("Only customers of this type"),
   query: z.string().trim().max(200).optional().describe("Only customers whose name contains this"),
   recent: z
     .boolean()
     .optional()
     .describe(
-      "Order by each customer's latest ticket, newest first; customers without a ticket are " +
-        "left out. Needs ticket:read",
+      "Order by each customer's latest order, newest first; customers without an order are " +
+        "left out. Needs order:read",
     ),
   ...PageInputShape,
 });

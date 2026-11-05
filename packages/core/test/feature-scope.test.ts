@@ -45,12 +45,12 @@ const PREFIX_FEATURE: Readonly<Record<string, string>> = {
   pricelist: "priceList",
   program: "program",
   programitem: "program",
-  ticket: "ticket",
-  workOrder: "workOrder",
+  order: "order",
+  runSheet: "runSheet",
 };
 
 const FOREIGN_KEY =
-  /^(customer|contact|item|venue|quote|payment|priceList|programItem|program|ticket|workOrder)(Name|Email|Phone|Address|Total|Price|Amount)/i;
+  /^(customer|contact|item|venue|quote|payment|priceList|programItem|program|order|runSheet)(Name|Email|Phone|Address|Total|Price|Amount)/i;
 
 /**
  * `<operation entity>:<key>` pairs that look like another feature's data but are not, or are
@@ -61,12 +61,12 @@ const OUTPUT_EXCEPTIONS: Readonly<Record<string, string>> = {
   "venue:contactPhone": "the venue's own contact details, not a customer contact",
   "organizationProfile:contactEmail": "the organization's own contact details (ADR 0061)",
   "organizationProfile:contactPhone": "the organization's own contact details (ADR 0061)",
-  "workOrder:itemName": "work order rows are a snapshot copied with item:read at generate time",
-  "workOrder:programItemName":
-    "work order rows are a snapshot copied with program:read at generate time",
+  "runSheet:itemName": "run sheet rows are a snapshot copied with item:read at generate time",
+  "runSheet:programItemName":
+    "run sheet rows are a snapshot copied with program:read at generate time",
   "dashboard:customerName": "a view read model (ADR 0071, 0080), null without customer:read",
-  "notification:workOrderName":
-    "a snapshot copied for a recipient who may read work orders (ADR 0094)",
+  "notification:runSheetName":
+    "a snapshot copied for a recipient who may read run sheets (ADR 0094)",
 };
 
 describe("feature scope guard (ADR 0050)", () => {

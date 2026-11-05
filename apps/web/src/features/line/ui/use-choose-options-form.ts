@@ -20,7 +20,7 @@ export type UseChooseOptionsFormInput = ChooseOptionsDefaultsInput & {
   onDone: () => void;
 };
 
-/** The form state of `line.chooseOptions`; the ticket page reloads with the option lines. */
+/** The form state of `line.chooseOptions`; the order page reloads with the option lines. */
 export function useChooseOptionsForm({ lineId, onDone, ...defaults }: UseChooseOptionsFormInput) {
   const t = useTranslations("line");
   const common = useTranslations("common");

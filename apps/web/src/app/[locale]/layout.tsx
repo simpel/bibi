@@ -9,6 +9,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
 import { DevUserSwitcherSlot } from "@/features/dev/ui/dev-user-switcher-slot";
+import { pickSurfaceMessages, ROOT_NAMESPACES } from "@/i18n/surface-messages";
 import { DisplayFormatsProvider } from "@/lib/time/display-formats-provider";
 import { loadDisplayFormats } from "@/server/display-formats";
 import "../globals.css";
@@ -50,7 +51,10 @@ export async function generateMetadata({
   });
   const appName = t("appName");
   return {
-    title: appName,
+    title: {
+      default: appName,
+      template: `%s · ${appName}`,
+    },
     metadataBase: new URL(getEnv().BETTER_AUTH_URL),
     openGraph: { siteName: appName, title: appName, type: "website", locale },
     twitter: { card: "summary_large_image", title: appName },
@@ -68,7 +72,9 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       suppressHydrationWarning
     >
       <body>
-        <NextIntlClientProvider>
+        <NextIntlClientProvider
+          messages={pickSurfaceMessages({ locale, namespaces: ROOT_NAMESPACES })}
+        >
           <DisplayFormatsProvider formats={await loadDisplayFormats()}>
             <Providers>{children}</Providers>
             <DevUserSwitcherSlot />

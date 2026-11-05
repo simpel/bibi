@@ -5,14 +5,14 @@ import { seedQuoteBasis } from "./seed-quote-basis";
 const VALID_UNTIL = "2099-12-01T00:00:00.000Z";
 
 describe("cross-organization isolation: quotes", () => {
-  it("hides one organization's quotes, ticket and items from another across tools and graph", async () => {
+  it("hides one organization's quotes, order and items from another across tools and graph", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
     const secret = await seedQuoteBasis({ client: a });
     const quote = await call({
       client: a,
       name: "quote_create",
-      args: { ticketId: secret.ticketId, validUntil: VALID_UNTIL },
+      args: { orderId: secret.orderId, validUntil: VALID_UNTIL },
     });
     expect(quote.isError, JSON.stringify(quote.data)).toBe(false);
     const id = quote.data.id;
@@ -24,7 +24,7 @@ describe("cross-organization isolation: quotes", () => {
       ["quote_accept", { id }],
       ["quote_decline", { id }],
       ["quote_expire", { id }],
-      ["quote_create", { ticketId: secret.ticketId }],
+      ["quote_create", { orderId: secret.orderId }],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");
     }
@@ -33,7 +33,7 @@ describe("cross-organization isolation: quotes", () => {
       client: b,
       name: "line_create",
       args: {
-        ticketId: own.ticketId,
+        orderId: own.orderId,
         entityTypeId: own.lineTypeId,
         itemId: secret.itemId,
         name: "Stolen lunch",

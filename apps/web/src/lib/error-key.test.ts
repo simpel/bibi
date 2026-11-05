@@ -1,5 +1,5 @@
 import { APP_ERROR_CODES } from "@bibi/core";
-import messages from "@bibi/i18n/messages/sv.json";
+import { svMessages as messages } from "@bibi/i18n";
 import { describe, expect, it } from "vitest";
 import { errorKeyForCode } from "./error-key";
 

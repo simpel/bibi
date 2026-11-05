@@ -23,7 +23,7 @@ const row = ({ id, on, value, quantity }: RowInput) => ({
 });
 
 describe("effective requirement counts (ADR 0021)", () => {
-  it("replaces the ticket's count value by value with the line's own row", () => {
+  it("replaces the order's count value by value with the line's own row", () => {
     const requirements = [
       row({ id: "r1", on: null, value: "gluten", quantity: 3 }),
       row({ id: "r2", on: null, value: "lactose", quantity: 1 }),
@@ -36,14 +36,14 @@ describe("effective requirement counts (ADR 0021)", () => {
     });
     expect(morning?.counts).toEqual([
       { vocabularyValueId: "gluten", quantity: 5, requirementId: "r3", level: "LINE" },
-      { vocabularyValueId: "lactose", quantity: 1, requirementId: "r2", level: "TICKET" },
+      { vocabularyValueId: "lactose", quantity: 1, requirementId: "r2", level: "ORDER" },
     ]);
     expect(lunch?.counts.map(({ quantity }) => quantity)).toEqual([3, 0]);
   });
 
-  it("computes it per line of a ticket, and archiving restores the ticket's", async () => {
-    const { context, ticket, morning, lunch, type, gluten } = await requirementSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id };
+  it("computes it per line of an order, and archiving restores the order's", async () => {
+    const { context, order, morning, lunch, type, gluten } = await requirementSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id };
     unwrap({ result: await addRequirement({ ...base, vocabularyValueId: gluten, quantity: 3 }) });
     const own = unwrap({
       result: await addRequirement({
@@ -54,7 +54,7 @@ describe("effective requirement counts (ADR 0021)", () => {
       }),
     });
     const quantities = async () =>
-      (await effectiveRequirements({ context, ticketId: ticket.id })).map((item) => [
+      (await effectiveRequirements({ context, orderId: order.id })).map((item) => [
         item.lineId,
         item.counts.map(({ quantity }) => quantity),
       ]);
@@ -70,8 +70,8 @@ describe("effective requirement counts (ADR 0021)", () => {
   });
 
   it("blocks archiving a list or value a requirement counts", async () => {
-    const { context, ticket, type, list, gluten } = await requirementSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id };
+    const { context, order, type, list, gluten } = await requirementSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id };
     unwrap({ result: await addRequirement({ ...base, vocabularyValueId: gluten, quantity: 3 }) });
     const value = await execute({
       operation: archiveVocabularyValue,

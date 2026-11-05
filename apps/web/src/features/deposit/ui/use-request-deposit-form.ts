@@ -16,7 +16,7 @@ export type RequestDepositFormValues = { amountMinor: string; description: strin
 export type RequestDepositFormOutput = z.infer<typeof DepositRequestInputSchema>;
 
 export type UseRequestDepositFormInput = {
-  ticketId: string;
+  orderId: string;
   /** Kronor text prefilled from `deposit.suggest`; empty when there is no deposit rule. */
   defaultAmount: string;
   /** No rule to fall back on: the amount must be typed. */
@@ -25,7 +25,7 @@ export type UseRequestDepositFormInput = {
 
 /** Form state of "Request deposit": runs `deposit.request` and keeps the payment link it returns. */
 export function useRequestDepositForm({
-  ticketId,
+  orderId,
   defaultAmount,
   amountRequired,
 }: UseRequestDepositFormInput) {
@@ -36,7 +36,7 @@ export function useRequestDepositForm({
   const schema = formSchema({
     schema: DepositRequestInputSchema,
     toInput: ({ values }: { values: RequestDepositFormValues }) => ({
-      ticketId,
+      orderId,
       description: values.description,
       amountMinor: minorOrNull({ value: values.amountMinor }) ?? (amountRequired ? 0 : undefined),
     }),

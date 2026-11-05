@@ -32,7 +32,18 @@ export function ReviewStep({ organization }: { organization: string }) {
       },
       onSuccess: () => router.push(welcomePath({ step: "done" }), { org }),
     });
-  const back = draft.kind === "empty" ? "setup/kind" : "setup/sellable";
+  const back = draft.kind === "empty" ? "setup/kind" : "setup/extras";
+  const categoryOf = ({ type }: { type: (typeof draft.types)[number] }) =>
+    type.category ?? (type.bookable ? "spaces" : "food");
+  const spaces = draft.types
+    .filter((type) => categoryOf({ type }) === "spaces" && type.checked)
+    .map((type) => type.name);
+  const food = draft.types
+    .filter((type) => categoryOf({ type }) === "food" && type.checked)
+    .map((type) => type.name);
+  const extras = draft.types
+    .filter((type) => categoryOf({ type }) === "extras" && type.checked)
+    .map((type) => type.name);
   return (
     <form
       className="grid gap-4"
@@ -41,10 +52,7 @@ export function ReviewStep({ organization }: { organization: string }) {
         activate();
       }}
     >
-      <ReviewLists
-        book={types.filter((type) => type.bookable).map((type) => type.name)}
-        sell={types.filter((type) => !type.bookable).map((type) => type.name)}
-      />
+      <ReviewLists spaces={spaces} food={food} extras={extras} />
       <ReviewPath statuses={pipeline.statuses} />
       <WelcomeStepActions
         back={{ href: welcomePath({ step: back }), org }}

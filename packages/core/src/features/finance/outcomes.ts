@@ -11,35 +11,35 @@ export type OutcomesInput = {
   customerId?: string | undefined;
 };
 
-/** Changes into a closing status in the period, oldest first; one customer's tickets if given. */
+/** Changes into a closing status in the period, oldest first; one customer's orders if given. */
 const loadClosings = ({ context, period, customerId }: OutcomesInput) =>
-  context.db.ticketStatusChange.findMany({
+  context.db.orderStatusChange.findMany({
     where: {
       changedAt: { gte: period.start, lt: period.end },
       toStatus: { closes: true },
-      ...(customerId ? { ticket: { customerId } } : {}),
+      ...(customerId ? { order: { customerId } } : {}),
     },
     orderBy: { seq: "asc" },
-    select: { ticketId: true, changedAt: true },
+    select: { orderId: true, changedAt: true },
   });
 
-/** The tickets of `ticketIds` that are won: they have an accepted quote or a sent invoice. */
-async function wonTickets({ context, ticketIds }: { context: Context; ticketIds: string[] }) {
+/** The orders of `orderIds` that are won: they have an accepted quote or a sent invoice. */
+async function wonOrders({ context, orderIds }: { context: Context; orderIds: string[] }) {
   const [accepted, invoiced] = await Promise.all([
     context.db.quote.findMany({
-      where: { ticketId: { in: ticketIds }, quoteStatus: "ACCEPTED" },
-      select: { ticketId: true },
+      where: { orderId: { in: orderIds }, quoteStatus: "ACCEPTED" },
+      select: { orderId: true },
     }),
     context.db.invoice.findMany({
-      where: { ticketId: { in: ticketIds }, status: "SENT" },
-      select: { ticketId: true },
+      where: { orderId: { in: orderIds }, status: "SENT" },
+      select: { orderId: true },
     }),
   ]);
-  return new Set([...accepted, ...invoiced].map((row) => row.ticketId));
+  return new Set([...accepted, ...invoiced].map((row) => row.orderId));
 }
 
 /**
- * Won and lost tickets per month (ADR 0079, on Financials since ADR 0080). A ticket enters a
+ * Won and lost orders per month (ADR 0079, on Financials since ADR 0080). An order enters a
  * closing status once (nothing leaves one, ADR 0054), in the month of that change; it is won when
  * it has an accepted quote or a sent invoice.
  */
@@ -49,27 +49,27 @@ export async function outcomes({
   customerId,
 }: OutcomesInput): Promise<OutcomeMonth[]> {
   const changes = await loadClosings({ context, period, customerId });
-  const ticketIds = [...new Set(changes.map((change) => change.ticketId))];
+  const orderIds = [...new Set(changes.map((change) => change.orderId))];
   const [won, valuesOf] = await Promise.all([
-    wonTickets({ context, ticketIds }),
-    cardValues({ context, ticketIds }),
+    wonOrders({ context, orderIds }),
+    cardValues({ context, orderIds }),
   ]);
   const rows = new Map<string, OutcomeMonth>(
     period.months.map((month) => [
       month,
-      { month, wonTickets: 0, wonValueMinor: 0, lostTickets: 0, lostValueMinor: 0 },
+      { month, wonOrders: 0, wonValueMinor: 0, lostOrders: 0, lostValueMinor: 0 },
     ]),
   );
-  for (const ticketId of ticketIds) {
-    const closed = changes.find((change) => change.ticketId === ticketId);
+  for (const orderId of orderIds) {
+    const closed = changes.find((change) => change.orderId === orderId);
     const row = closed && rows.get(period.monthOf({ instant: closed.changedAt }));
     if (!row) continue;
-    const { estimatedValueMinor, confirmedValueMinor } = valuesOf({ ticketId });
-    if (won.has(ticketId)) {
-      row.wonTickets += 1;
+    const { estimatedValueMinor, confirmedValueMinor } = valuesOf({ orderId });
+    if (won.has(orderId)) {
+      row.wonOrders += 1;
       row.wonValueMinor += confirmedValueMinor ?? estimatedValueMinor ?? 0;
     } else {
-      row.lostTickets += 1;
+      row.lostOrders += 1;
       row.lostValueMinor += estimatedValueMinor ?? 0;
     }
   }

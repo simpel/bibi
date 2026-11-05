@@ -15,7 +15,7 @@ export const lineMcpTools = [
   mcpTool({
     operation: "line.create",
     summary: ({ input }) =>
-      `Add "${text({ value: input.name })}" to ticket ${text({ value: input.ticketId })} ` +
+      `Add "${text({ value: input.name })}" to order ${text({ value: input.orderId })} ` +
       (input.startsAt && input.endsAt
         ? `from ${text({ value: input.startsAt })} to ${text({ value: input.endsAt })}`
         : "without a time"),
@@ -23,7 +23,7 @@ export const lineMcpTools = [
   mcpTool({
     operation: "line.expandBundle",
     summary: ({ input }) =>
-      `Add bundle ${text({ value: input.itemId })} to ticket ${text({ value: input.ticketId })} ` +
+      `Add bundle ${text({ value: input.itemId })} to order ${text({ value: input.orderId })} ` +
       "as a bundle line with its part lines" +
       (input.startsAt ? ` from ${text({ value: input.startsAt })}` : ", without a time"),
   }),
@@ -60,6 +60,6 @@ export const lineMcpTools = [
     operation: "line.followStatus",
     idempotent: true,
     summary: ({ input }) =>
-      `Let line ${text({ value: input.lineId })} follow the ticket's status again`,
+      `Let line ${text({ value: input.lineId })} follow the order's status again`,
   }),
 ];

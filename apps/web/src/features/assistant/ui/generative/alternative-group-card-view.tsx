@@ -3,12 +3,12 @@
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
-import { ticketRoute } from "@/lib/routes";
+import { orderRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 
 export type AlternativeGroupCardViewProps = GenerativeProps<"alternative-group-card">;
 
-/** One alternative group (ADR 0052): how many options, whether one is chosen, and its ticket. */
+/** One alternative group (ADR 0052): how many options, whether one is chosen, and its order. */
 export function AlternativeGroupCardView({ group }: AlternativeGroupCardViewProps) {
   const t = useTranslations("assistant.ui.alternativeGroup");
   return (
@@ -22,8 +22,8 @@ export function AlternativeGroupCardView({ group }: AlternativeGroupCardViewProp
       <CardContent className="grid gap-1 p-4 pt-0 text-sm text-muted-foreground">
         <p>{t("options", { count: group.optionLineIds.length })}</p>
         {group.status === "ARCHIVED" ? <p>{t("archived")}</p> : null}
-        <Link href={ticketRoute({ id: group.ticketId })} className="text-primary hover:underline">
-          {t("openTicket")}
+        <Link href={orderRoute({ id: group.orderId })} className="text-primary hover:underline">
+          {t("openOrder")}
         </Link>
       </CardContent>
     </Card>

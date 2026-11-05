@@ -16,9 +16,9 @@ export const listBoards = defineOperation({
   name: "board.list",
   kind: "query",
   description:
-    "List the organization's boards (saved views of tickets, ADR 0067) in order; the first is the " +
-    "default. Each board has its filter (ticket type, assignee) and its phases (columns) left to " +
-    "right, each with the ticket status ids it shows. A status in no phase is not on that board.",
+    "List the organization's boards (saved views of orders, ADR 0067) in order; the first is the " +
+    "default. Each board has its filter (order type, assignee) and its phases (columns) left to " +
+    "right, each with the order status ids it shows. A status in no phase is not on that board.",
   input: BoardListInputSchema,
   output: BoardListOutputSchema,
   permission: "board:read",
@@ -28,7 +28,7 @@ export const listBoards = defineOperation({
 export const getBoard = defineOperation({
   name: "board.get",
   kind: "query",
-  description: "Get one board by id, with its filter and its phases and their ticket status ids.",
+  description: "Get one board by id, with its filter and its phases and their order status ids.",
   input: BoardIdInputSchema,
   output: BoardSchema,
   permission: "board:read",
@@ -39,8 +39,8 @@ export const createBoard = defineOperation({
   name: "board.create",
   kind: "command",
   description:
-    "Create a board: a saved view of tickets with an optional filter (ticket type, main " +
-    "assignee). It is placed last and starts with one phase (column) per active ticket status, " +
+    "Create a board: a saved view of orders with an optional filter (order type, main " +
+    "assignee). It is placed last and starts with one phase (column) per active order status, " +
     "open statuses first; group them with boardPhase.create, boardPhase.moveStatus and " +
     "boardPhase.archive.",
   input: BoardCreateInputSchema,
@@ -77,7 +77,7 @@ export const archiveBoard = defineOperation({
   name: "board.archive",
   kind: "command",
   description:
-    "Archive a board and its phases (boards are never deleted). Tickets and statuses are " +
+    "Archive a board and its phases (boards are never deleted). Orders and statuses are " +
     "unchanged: a board is only a view. The organization's last board cannot be archived (CONFLICT).",
   input: BoardIdInputSchema,
   output: BoardSchema,

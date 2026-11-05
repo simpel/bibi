@@ -11,7 +11,7 @@ export type InboundEndpointRef = { endpointId: string; organizationId: string };
 
 /**
  * The organization inbox a received mail was sent to (ADR 0085 decision 2): the first recipient
- * that is an active EMAIL endpoint's `<local part>@<domain>`. Like `resolveInboundTicket`, the one
+ * that is an active EMAIL endpoint's `<local part>@<domain>`. Like `resolveInboundOrder`, the one
  * cross-organization lookup of the flow: it only reads the id pair that pins the rest.
  */
 export async function resolveInboundEndpoint({

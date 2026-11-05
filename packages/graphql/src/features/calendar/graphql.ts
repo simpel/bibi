@@ -14,7 +14,7 @@ const CalendarBlockRef = objectFromSchema<CalendarBlockDto>({
   name: "CalendarBlock",
   schema: CalendarBlockSchema,
   description:
-    "One block on the calendar: an occupancy of an item joined with its line and ticket.",
+    "One block on the calendar: an occupancy of an item joined with its line and order.",
 });
 
 const CalendarDayValueRef = objectFromSchema<CalendarDayValue>({

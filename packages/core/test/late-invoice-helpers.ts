@@ -7,10 +7,10 @@ const DAY_MS = 86_400_000;
 /** A sent, half-paid invoice of 5 600 kr incl. 12 % VAT, due 40 days ago, 1 000 kr refunded. */
 export async function halfPaidLateInvoice() {
   const setup = await moneySetup();
-  const { context, ticket } = setup;
-  await makeInvoiceable({ context, statusId: ticket.statusId });
+  const { context, order } = setup;
+  await makeInvoiceable({ context, statusId: order.statusId });
   const draft = unwrap({
-    result: await execute({ operation: createInvoice, input: { ticketId: ticket.id }, context }),
+    result: await execute({ operation: createInvoice, input: { orderId: order.id }, context }),
   });
   const input = { id: draft.id };
   unwrap({ result: await execute({ operation: sendInvoice, input, context }) });

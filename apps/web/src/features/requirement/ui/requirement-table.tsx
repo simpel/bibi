@@ -13,7 +13,7 @@ export type RequirementTableProps = {
   access: RowAccess;
 };
 
-/** The ticket's counts: list value, where it applies, the requirement type and how many. */
+/** The order's counts: list value, where it applies, the requirement type and how many. */
 export function RequirementTable({ requirements, data, access }: RequirementTableProps) {
   const t = useTranslations("requirement");
   const columns = useRequirementColumns({ data, access });

@@ -13,14 +13,14 @@ import { useMessageActions } from "./use-message-actions";
 
 export type MessageActionsProps = InboxAbilities & {
   message: { id: string; subject: string | null; read: boolean };
-  tickets: readonly NamedOption[];
+  orders: readonly NamedOption[];
 };
 
 /**
- * What staff do with an inbox message (ADR 0085): a new ticket or attach it to one, and in the
+ * What staff do with an inbox message (ADR 0085): a new order or attach it to one, and in the
  * more menu mark it unread (or read) for the team or delete it.
  */
-export function MessageActions({ message, tickets, ...abilities }: MessageActionsProps) {
+export function MessageActions({ message, orders, ...abilities }: MessageActionsProps) {
   const common = useTranslations("common");
   const router = useRouter();
   const [attaching, setAttaching] = useState(false);
@@ -38,7 +38,7 @@ export function MessageActions({ message, tickets, ...abilities }: MessageAction
       ) : null}
       <AttachDialog
         messageId={message.id}
-        tickets={tickets}
+        orders={orders}
         open={attaching}
         onOpenChange={setAttaching}
       />

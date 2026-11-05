@@ -10,12 +10,12 @@ import {
   type BoardUpdateInput,
   createBoard,
   createBoardPhase,
-  createTicketStatus,
+  createOrderStatus,
   moveBoardPhaseStatus,
   reorderBoardPhases,
   reorderBoards,
-  type TicketStatusCreateInput,
-  type TicketStatusDto,
+  type OrderStatusCreateInput,
+  type OrderStatusDto,
   updateBoard,
   updateBoardPhase,
 } from "@bibi/core";
@@ -76,7 +76,7 @@ export async function updateBoardPhaseAction({
   return toActionResult({ result: await runOperation({ operation: updateBoardPhase, input }) });
 }
 
-/** `boardPhase.archive`: the column goes, its statuses leave the board; tickets are untouched. */
+/** `boardPhase.archive`: the column goes, its statuses leave the board; orders are untouched. */
 export async function archiveBoardPhaseAction({
   id,
 }: IdActionInput): Promise<ActionResult<BoardPhaseDto>> {
@@ -104,11 +104,11 @@ export async function moveBoardPhaseStatusAction({
   return toActionResult({ result: await runOperation({ operation: moveBoardPhaseStatus, input }) });
 }
 
-/** `ticketStatus.create` from customize mode (on no column until dragged onto one, ADR 0076). */
+/** `orderStatus.create` from customize mode (on no column until dragged onto one, ADR 0076). */
 export async function createStatusOnBoardAction({
   input,
 }: {
-  input: TicketStatusCreateInput;
-}): Promise<ActionResult<TicketStatusDto>> {
-  return toActionResult({ result: await runOperation({ operation: createTicketStatus, input }) });
+  input: OrderStatusCreateInput;
+}): Promise<ActionResult<OrderStatusDto>> {
+  return toActionResult({ result: await runOperation({ operation: createOrderStatus, input }) });
 }

@@ -4,8 +4,8 @@ import { plainDayText } from "@/lib/time/plain-day";
 export type OverdueRow = {
   invoiceId: string;
   invoiceLabel: string;
-  ticketId: string;
-  ticketLabel: string;
+  orderId: string;
+  orderLabel: string;
   dueDateText: string;
   /** `YYYY-MM-DD`, sorts as a date. */
   dueDate: string;
@@ -16,7 +16,7 @@ export type OverdueRow = {
 
 export type OverdueLabels = {
   invoice: (values: { number: number }) => string;
-  ticket: (values: { reference: number | null; title: string | null }) => string;
+  order: (values: { reference: number | null; title: string | null }) => string;
 };
 
 export type OverdueRowsInput = {
@@ -42,8 +42,8 @@ export function overdueRows({
     return {
       invoiceId: row.invoiceId,
       invoiceLabel: labels.invoice({ number: row.number }),
-      ticketId: row.ticketId,
-      ticketLabel: labels.ticket({ reference: row.ticketReference, title: row.ticketTitle }),
+      orderId: row.orderId,
+      orderLabel: labels.order({ reference: row.orderReference, title: row.orderTitle }),
       dueDateText: plainDayText({ day: dueDate, timeZone, dates }),
       dueDate,
       daysOverdue: row.daysOverdue,

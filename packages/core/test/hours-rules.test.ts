@@ -5,11 +5,11 @@ import { createHoldLine } from "./hold-helpers";
 import { OFFICE_DAYS, runItemHours, runVenueHours, warningsOf } from "./hours-helpers";
 import { createTestItem } from "./item-helpers";
 import { createBookableItem } from "./occupancy-helpers";
-import { ticketSetup } from "./ticket-helpers";
+import { orderSetup } from "./order-helpers";
 
 /** A venue with an item and a soft line on Sunday 1 November 2037, 09–11 UTC. */
 async function lineSetup() {
-  const setup = await ticketSetup();
+  const setup = await orderSetup();
   const { context } = setup;
   const input = { name: "Quay", timeZone: "Europe/Stockholm" };
   const venue = unwrap({ result: await execute({ operation: createVenue, input, context }) });

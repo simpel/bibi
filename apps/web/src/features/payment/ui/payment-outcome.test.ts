@@ -4,7 +4,7 @@ import { paymentOutcome } from "./payment-outcome";
 
 const base: PublicPaymentDto = {
   organizationName: "Venue",
-  ticketReference: 1,
+  orderReference: 1,
   method: "CARD",
   status: "PENDING",
   amountMinor: 10_000,

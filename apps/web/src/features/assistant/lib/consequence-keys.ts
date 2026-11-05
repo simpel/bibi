@@ -1,7 +1,7 @@
 /** Consequences with a text in `assistant.approval.consequences.items` (ADR 0049). */
 export const CONSEQUENCE_KEYS = [
   "priceKeptOnQuotes",
-  "ticketsMove",
+  "ordersMove",
   "linesMove",
   "gridCellsCleared",
 ] as const;

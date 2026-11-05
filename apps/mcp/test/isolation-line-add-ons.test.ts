@@ -12,7 +12,7 @@ describe("cross-organization isolation: add-ons (ADR 0088)", () => {
     const created = await call({
       client: b,
       name: "line_create",
-      args: { ticketId: own.ticketId, parentLineId, name: "Intruder add-on" },
+      args: { orderId: own.orderId, parentLineId, name: "Intruder add-on" },
     });
     expect(created.data.code).toBe("NOT_FOUND");
 
@@ -21,7 +21,7 @@ describe("cross-organization isolation: add-ons (ADR 0088)", () => {
     const addOn = await call({
       client: b,
       name: "line_create",
-      args: { ticketId: own.ticketId, parentLineId: own.lineId, name: "Projector" },
+      args: { orderId: own.orderId, parentLineId: own.lineId, name: "Projector" },
     });
     expect(addOn.data.role).toBe("ADD_ON");
     expect(addOn.data.parentLineId).toBe(own.lineId);

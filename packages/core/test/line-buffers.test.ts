@@ -21,7 +21,7 @@ const rowsOf = async ({ context, lineId }: { context: ExecuteContext; lineId: st
 
 describe("setup and teardown buffers (ADR 0059)", () => {
   it("inherits line → item → type and takes the larger of setup and changeover", async () => {
-    const { context, ticket, type, room, setup } = await programSetup();
+    const { context, order, type, room, setup } = await programSetup();
     const typeInput = { id: room.entityTypeId, setupMinutes: 30, teardownMinutes: 20 };
     unwrap({ result: await execute({ operation: updateEntityType, input: typeInput, context }) });
     const item = unwrap({
@@ -35,7 +35,7 @@ describe("setup and teardown buffers (ADR 0059)", () => {
     unwrap({ result: await execute({ operation: updateItem, input: itemInput, context }) });
     const line = unwrap({
       result: await createTestLine({
-        ...{ context, ticketId: ticket.id, entityTypeId: type.id, from: 10, to: 12 },
+        ...{ context, orderId: order.id, entityTypeId: type.id, from: 10, to: 12 },
         ...{ itemId: room.id, setupId: setup.id },
       }),
     });
@@ -68,8 +68,8 @@ describe("setup and teardown buffers (ADR 0059)", () => {
   });
 
   it("re-derives holds when an item's or a type's minutes change", async () => {
-    const { context, ticket, type, room } = await programSetup();
-    const input = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
+    const { context, order, type, room } = await programSetup();
+    const input = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const line = unwrap({ result: await createTestLine({ ...input, from: 10, to: 12 }) });
     expect(await rowsOf({ context, lineId: line.id })).toEqual(["HOLD:HARD 10:00-12:00"]);
     const typeInput = { id: room.entityTypeId, teardownMinutes: 30 };

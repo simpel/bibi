@@ -16,8 +16,8 @@ import { createTestQuote } from "./quote-helpers";
 
 async function expanded() {
   const setup = await bundleSetup();
-  const { context, ticket, lineType, bundle } = setup;
-  const base = { context, ticketId: ticket.id, entityTypeId: lineType.id, itemId: bundle.id };
+  const { context, order, lineType, bundle } = setup;
+  const base = { context, orderId: order.id, entityTypeId: lineType.id, itemId: bundle.id };
   const { items } = unwrap({ result: await expand(base) });
   return { ...setup, base, items };
 }
@@ -42,8 +42,8 @@ describe("line.expandBundle (ADR 0059)", () => {
   });
 
   it("prices the bundle line with VAT per rate; the parts sum exactly and do not count", async () => {
-    const { context, ticket, items } = await expanded();
-    const draft = await createTestQuote({ context, ticketId: ticket.id });
+    const { context, order, items } = await expanded();
+    const draft = await createTestQuote({ context, orderId: order.id });
     const [bundleLine, ...parts] = draft.lines;
     expect(bundleLine).toMatchObject({ lineId: items[0]?.id, inTotal: true, vatMinor: 264_930 });
     expect(bundleLine?.vatRows).toEqual([
@@ -98,7 +98,7 @@ describe("line.expandBundle (ADR 0059)", () => {
   it("refuses an item that is not a bundle and a caller who may not read items", async () => {
     const { context, base, lunch } = await bundleSetup().then((setup) => ({
       ...setup,
-      base: { ticketId: setup.ticket.id, entityTypeId: setup.lineType.id, itemId: setup.bundle.id },
+      base: { orderId: setup.order.id, entityTypeId: setup.lineType.id, itemId: setup.bundle.id },
     }));
     expect(errorCode({ result: await expand({ context, ...base, itemId: lunch.id }) })).toBe(
       "VALIDATION",
@@ -113,12 +113,12 @@ describe("line.expandBundle (ADR 0059)", () => {
   });
 
   it("refuses a part without a duration that would start after the bundle ends", async () => {
-    const { context, ticket, lineType, bundle, room } = await bundleSetup();
+    const { context, order, lineType, bundle, room } = await bundleSetup();
     const parts = [{ itemId: room.id, offsetMinutes: 120 }];
     unwrap({
       result: await execute({ operation: updateItem, input: { id: bundle.id, parts }, context }),
     });
-    const base = { context, ticketId: ticket.id, entityTypeId: lineType.id, itemId: bundle.id };
+    const base = { context, orderId: order.id, entityTypeId: lineType.id, itemId: bundle.id };
     const short = await expand({ ...base, ...hours({ from: 9, to: 10 }) });
     expect(errorCode({ result: short })).toBe("VALIDATION");
   });

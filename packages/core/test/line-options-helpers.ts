@@ -26,11 +26,11 @@ const make = async ({ context, ...input }: Ctx & ItemCreateInput) =>
 /**
  * The quote setup plus a room at 1 000 kr (flat, 25 %) with two groups: "Installation" (pick 1:
  * "Our technician" 500 kr EXTRA, "Self-install" INCLUDED) and "Furniture" (pick 0 or 1:
- * "Lounge" 1 500 kr REPLACES). One line for the room on the ticket, quantity 1.
+ * "Lounge" 1 500 kr REPLACES). One line for the room on the order, quantity 1.
  */
 export async function optionsSetup() {
   const setup = await quoteSetup();
-  const { context, ticket, lineType } = setup;
+  const { context, order, lineType } = setup;
   const service = await createType({ context, customisations: false });
   const priced = { entityTypeId: service.id, priceUnit: "FLAT" as const, vatRatePercent: 25 };
   const technician = await make({ context, ...priced, name: "Our technician", priceMinor: 50_000 });
@@ -57,7 +57,7 @@ export async function optionsSetup() {
   const lines = [{ itemId: room.id, name: "Hönö", quantity: 1 }];
   const [line] = await addTestLines({
     context,
-    ticketId: ticket.id,
+    orderId: order.id,
     lineTypeId: lineType.id,
     lines,
   });

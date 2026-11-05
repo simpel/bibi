@@ -6,7 +6,7 @@ describe("accessSection (ADR 0050)", () => {
   it("tells the assistant what a manager may do per feature and what they cannot see", () => {
     const text = accessSection({ roles: ["manager"], permissions: PRESET_PERMISSIONS.manager });
     expect(text).toContain('Preset: "manager"');
-    expect(text).toContain("  - ticket: read, write, delete");
+    expect(text).toContain("  - order: read, write, delete");
     expect(text).toContain("  - item: read, write; not delete");
     expect(text).toMatch(/Cannot see: .*audit/);
   });

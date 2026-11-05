@@ -33,14 +33,14 @@ async function optionLinesOf({ context, lineId }: { context: Context; lineId: st
 type AddInput = { context: Context; line: LineRecord; option: ChosenLineOption };
 
 /**
- * One option line under the line: same ticket, type, fields and time. Its quantity is the
+ * One option line under the line: same order, type, fields and time. Its quantity is the
  * option's in a split group, else null: the parent's (ADR 0082).
  */
 const addOptionLine = ({ context, line, option }: AddInput) =>
   insertLine({
     context,
     input: {
-      ...{ ticketId: line.ticketId, entityTypeId: line.entityTypeId, fields: line.fields },
+      ...{ orderId: line.orderId, entityTypeId: line.entityTypeId, fields: line.fields },
       ...{ name: option.name, itemId: option.itemId, priceEffect: option.priceEffect },
       ...{ startsAt: line.startsAt, endsAt: line.endsAt, quantity: option.quantity },
       ...{ parentLineId: line.id, role: "OPTION" },

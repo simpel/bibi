@@ -1,4 +1,4 @@
-/// Line – a row in a ticket's run schedule (ADR 0022), e.g. a meeting, a break or lunch.
+/// Line – a row in a order's run schedule (ADR 0022), e.g. a meeting, a break or lunch.
 /// Its type (base `LINE`) decides its own fields. A line with an item has a state of the
 /// item's type (ADR 0044). With a bookable item in a `SOFT` or `HARD` state it holds a `HOLD`
 /// occupancy for `[startsAt, endsAt)` of the state's kind, plus a `SETUP` buffer right before
@@ -6,14 +6,14 @@
 /// is the larger of the inherited `setupMinutes` and the setup's changeover time). All have
 /// `lineId` set and follow the row. A database trigger writes them (ADR 0053,
 /// `packages/db/sql/sync_line_occupancy.sql`) on insert and on every change of item, setup,
-/// buffer minutes, time, state, ticket or status; application code never does. An untimed line
+/// buffer minutes, time, state, order or status; application code never does. An untimed line
 /// (no `startsAt`/`endsAt`, e.g. a fee) never holds and is not drawn on the calendar (ADR 0052).
 /// The price columns are overrides: null = inherit (price list, then item; VAT: item, then venue).
 /// `alternativeGroupId` (owned) makes the line one option of an `AlternativeGroup` (ADR 0052).
 model Line {
   id                 String             @id
   organizationId     String
-  ticketId           String
+  orderId           String
   entityTypeId       String
   name               String
   /// Both set or both null (untimed).
@@ -26,7 +26,7 @@ model Line {
   /// Buffers before and after, in minutes (ADR 0059, owned); null = the item's, else its type's.
   setupMinutes       Int?
   teardownMinutes    Int?
-  /// How many; null = the ticket's headcount (guaranteed if set, else estimated). On an option line
+  /// How many; null = the order's headcount (guaranteed if set, else estimated). On an option line
   /// null = its parent line's quantity; core allows a quantity there only when the option's group
   /// is split (ADR 0082).
   quantity           Int?
@@ -63,7 +63,7 @@ model Line {
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
   createdBy          String?
-  ticket             Ticket             @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  order             Order             @relation(fields: [orderId, organizationId], references: [id, organizationId])
   entityType         EntityType         @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   item               Item?              @relation(fields: [itemId, organizationId], references: [id, organizationId])
   setup              Setup?             @relation(fields: [setupId, organizationId], references: [id, organizationId])
@@ -84,7 +84,7 @@ model Line {
   record             Record             @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
-  @@index([organizationId, ticketId, startsAt])
+  @@index([organizationId, orderId, startsAt])
   @@index([organizationId, entityTypeId])
   @@index([organizationId, stateId])
   @@index([organizationId, alternativeGroupId])

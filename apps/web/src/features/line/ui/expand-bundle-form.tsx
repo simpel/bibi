@@ -8,17 +8,17 @@ import { useExpandBundleForm } from "./use-expand-bundle-form";
 
 export type ExpandBundleFormProps = {
   data: ProgramFormData;
-  ticketId: string;
+  orderId: string;
   startsAt: Date;
   onDone: () => void;
 };
 
 /** The bundle, the line type, its name, time and quantity: `line.expandBundle` (ADR 0059). */
-export function ExpandBundleForm({ data, ticketId, startsAt, onDone }: ExpandBundleFormProps) {
+export function ExpandBundleForm({ data, orderId, startsAt, onDone }: ExpandBundleFormProps) {
   const t = useTranslations("line");
   const common = useTranslations("common");
   const { form, submit, pending } = useExpandBundleForm({
-    ...{ ticketId, startsAt, onDone, zones: data },
+    ...{ orderId, startsAt, onDone, zones: data },
     entityTypeId: data.types[0]?.id ?? "",
     itemId: data.bundles[0]?.id ?? "",
   });

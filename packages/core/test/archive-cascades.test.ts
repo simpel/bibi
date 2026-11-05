@@ -16,8 +16,8 @@ import { addRequirement, requirementSetup } from "./requirement-helpers";
 
 describe("archive cascades keep requirements consistent (#215)", () => {
   it("archives a line's requirements with the line, one audit row each", async () => {
-    const { context, ticket, morning, type, gluten, lactose } = await requirementSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id };
+    const { context, order, morning, type, gluten, lactose } = await requirementSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id };
     const own = unwrap({
       result: await addRequirement({
         ...base,
@@ -26,22 +26,22 @@ describe("archive cascades keep requirements consistent (#215)", () => {
         quantity: 1,
       }),
     });
-    const onTicket = unwrap({
+    const onOrder = unwrap({
       result: await addRequirement({ ...base, vocabularyValueId: lactose, quantity: 2 }),
     });
     const input = { id: morning.id };
     unwrap({ result: await execute({ operation: archiveLine, input, context }) });
-    const left = await context.db.requirement.findMany({ where: { ticketId: ticket.id } });
-    expect(left.map((row) => row.id)).toEqual([onTicket.id]);
+    const left = await context.db.requirement.findMany({ where: { orderId: order.id } });
+    expect(left.map((row) => row.id)).toEqual([onOrder.id]);
     const audit = await context.db.auditLog.findMany({
       where: { operation: "line.archive", entityType: "requirement", entityId: own.id },
     });
     expect(audit).toHaveLength(1);
   });
 
-  it("archives the ticket's requirements when the customer cascade archives the ticket", async () => {
-    const { context, ticket, morning, type, gluten } = await requirementSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id };
+  it("archives the order's requirements when the customer cascade archives the order", async () => {
+    const { context, order, morning, type, gluten } = await requirementSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id };
     unwrap({ result: await addRequirement({ ...base, vocabularyValueId: gluten, quantity: 1 }) });
     unwrap({
       result: await addRequirement({
@@ -51,18 +51,18 @@ describe("archive cascades keep requirements consistent (#215)", () => {
         quantity: 1,
       }),
     });
-    await archiveContactsOf({ customerId: ticket.customerId });
-    const input = { id: ticket.customerId, archiveTickets: true };
+    await archiveContactsOf({ customerId: order.customerId });
+    const input = { id: order.customerId, archiveOrders: true };
     unwrap({ result: await execute({ operation: archiveCustomer, input, context }) });
     const archived = await context.db.requirement.findMany({
-      where: { ticketId: ticket.id, status: "ARCHIVED" },
+      where: { orderId: order.id, status: "ARCHIVED" },
     });
     expect(archived).toHaveLength(2);
-    const active = await context.db.requirement.findMany({ where: { ticketId: ticket.id } });
+    const active = await context.db.requirement.findMany({ where: { orderId: order.id } });
     expect(active).toHaveLength(0);
     const listed = await execute({
       operation: listRequirements,
-      input: { ticketId: ticket.id },
+      input: { orderId: order.id },
       context,
     });
     expect(unwrap({ result: listed }).items).toHaveLength(0);
@@ -83,8 +83,8 @@ describe("item.archive and occupancy (#213)", () => {
 
 describe("customer.archive and the customer's bundles (#224)", () => {
   it("refuses while an active line uses a bundle and archives nothing", async () => {
-    const { context, ticket, room, type } = await programSetup();
-    const base = { context, ticketId: ticket.id, entityTypeId: type.id };
+    const { context, order, room, type } = await programSetup();
+    const base = { context, orderId: order.id, entityTypeId: type.id };
     unwrap({ result: await createTestLine({ ...base, from: 9, to: 10, itemId: room.id }) });
     const other = await createTestCustomer({ context, name: "Other" });
     // A bundle of another customer, left on a line before it was reassigned.

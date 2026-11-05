@@ -5,14 +5,19 @@ import {
   listCustomers,
   listEntityTypes,
   listItems,
-  listTickets,
+  listOrders,
   type Result,
 } from "@bibi/core";
+import { cache } from "react";
 import type { LinkTarget, LinkTargets } from "@/components/typed-fields/typed-form-data";
-import { ticketName } from "@/lib/ticket-label";
+import { orderName } from "@/lib/order-label";
 import { runOperation } from "./run-operation";
 
 const LIMIT = 100;
+
+const loadAllEntityTypesCached = cache(async () => {
+  return runOperation({ operation: listEntityTypes, input: { limit: LIMIT } });
+});
 
 type TargetsInput = { base: EntityTypeDto["base"]; entityTypeId: string };
 
@@ -30,12 +35,12 @@ async function targetsOf({ base, entityTypeId }: TargetsInput): Promise<LinkTarg
     return named({ result: await runOperation({ operation: listCustomers, input }) });
   if (base === "CONTACT")
     return named({ result: await runOperation({ operation: listContacts, input }) });
-  if (base !== "TICKET") return [];
-  const result = await runOperation({ operation: listTickets, input });
+  if (base !== "ORDER") return [];
+  const result = await runOperation({ operation: listOrders, input });
   const rows = result.ok ? result.value.items : [];
   return rows.map(({ id, title, reference }) => ({
     value: id,
-    label: ticketName({ title, fallback: `#${reference}` }),
+    label: orderName({ title, fallback: `#${reference}` }),
   }));
 }
 
@@ -49,7 +54,7 @@ export async function loadLinkTargets({ types }: LoadLinkTargetsInput): Promise<
     ),
   );
   if (ids.size === 0) return {};
-  const all = await runOperation({ operation: listEntityTypes, input: { limit: LIMIT } });
+  const all = await loadAllEntityTypesCached();
   const targets = (all.ok ? all.value.items : []).filter(({ id }) => ids.has(id));
   const entries = await Promise.all(
     targets.map(async ({ id, base }) => [id, await targetsOf({ base, entityTypeId: id })] as const),

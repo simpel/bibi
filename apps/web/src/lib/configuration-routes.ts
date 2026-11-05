@@ -27,9 +27,9 @@ export function responsibilitiesRoute(): string {
   return ROUTES.settingsResponsibilities;
 }
 
-/** `/settings/work-orders`: the organization's work order definitions (no detail page). */
-export function workOrderDefinitionsRoute(): string {
-  return ROUTES.settingsWorkOrders;
+/** `/settings/run-sheets`: the organization's run sheet definitions (no detail page). */
+export function runSheetDefinitionsRoute(): string {
+  return ROUTES.settingsRunSheets;
 }
 
 /** `/settings/price-lists`: the organization's price lists (no detail page). */
@@ -37,7 +37,7 @@ export function priceListsRoute(): string {
   return ROUTES.settingsPriceLists;
 }
 
-/** `/settings/pipeline`: the organization's ticket statuses (no detail page). */
-export function ticketStatusesRoute(): string {
+/** `/settings/pipeline`: the organization's order statuses (no detail page). */
+export function orderStatusesRoute(): string {
   return ROUTES.settingsPipeline;
 }

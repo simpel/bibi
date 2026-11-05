@@ -48,7 +48,7 @@ export type QuoteDialogProps = Omit<QuoteFormProps, "onDone"> & {
   onOpenChange: (open: boolean) => void;
 };
 
-/** Create a quote for a ticket, or edit a draft: validity and terms (the lines are the ticket's). */
+/** Create a quote for an order, or edit a draft: validity and terms (the lines are the order's). */
 export function QuoteDialog({ open, onOpenChange, ...props }: QuoteDialogProps) {
   const t = useTranslations("quote");
   return (

@@ -3,11 +3,17 @@ import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { CustomerList } from "@/features/customer/ui/customer-list";
 import { readCursor } from "@/lib/page-cursor";
+import { pageTitle } from "@/lib/page-metadata";
 
 type CustomersPageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ cursor?: string | string[] }>;
 };
+
+export async function generateMetadata({ params }: CustomersPageProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "nav", key: "customers" });
+}
 
 export default async function CustomersPage({ params, searchParams }: CustomersPageProps) {
   const locale = resolveLocale({ value: (await params).locale });

@@ -13,7 +13,7 @@ function series({ values, unit }: { values: number[]; unit: string }): StatPoint
 
 const money = series({ values: [8200, 9100, 8700, 11200, 10400, 12900, 12400], unit: "kr" });
 const overdue = series({ values: [1, 1, 2, 2, 3, 3, 4], unit: "invoices" });
-const flat = series({ values: [5, 5, 5, 5, 5, 5, 5], unit: "tickets" });
+const flat = series({ values: [5, 5, 5, 5, 5, 5, 5], unit: "orders" });
 
 const meta = {
   title: "Components/StatCard",
@@ -47,7 +47,7 @@ export const OverdueUpBad: Story = {
 
 export const CountFlat: Story = {
   args: {
-    label: "Open tickets",
+    label: "Open orders",
     value: "5",
     series: flat,
     trend: { direction: "flat", tone: "neutral", text: "0 %" },
@@ -76,7 +76,7 @@ export const Grid: Story = {
         trend={{ direction: "up", tone: "bad", text: "+33 %" }}
       />
       <StatCard
-        label="Open tickets"
+        label="Open orders"
         value="5"
         series={flat}
         trend={{ direction: "flat", tone: "neutral", text: "0 %" }}

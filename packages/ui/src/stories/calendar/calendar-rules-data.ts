@@ -31,11 +31,11 @@ export const PRINCIPLES: readonly { title: string; body: string }[] = [
   },
   {
     title: "Overview first, detail on click",
-    body: "Availability is the overview: one question, what is free. Blocks say who (the customer) and when; no guests, headcounts or people marks, and nothing ever fades. Clicking a booking opens its ticket's Program (lanes) beside it, with the booking ringed behind. Empty time is the add button: point to see a dashed slot, click to book. Where two lines on one asset take the same time, buffers included, the shared stretch gets a red ground behind both bookings, notched on top; red means that and nothing else. Design for the worst case: dozens of assets in the organization's own groups, filtered by chips and search, with hours and names pinned.",
+    body: "Availability is the overview: one question, what is free. Blocks say who (the customer) and when; no guests, headcounts or people marks, and nothing ever fades. Clicking a booking opens its order's Program (lanes) beside it, with the booking ringed behind. Empty time is the add button: point to see a dashed slot, click to book. Where two lines on one asset take the same time, buffers included, the shared stretch gets a red ground behind both bookings, notched on top; red means that and nothing else. Design for the worst case: dozens of assets in the organization's own groups, filtered by chips and search, with hours and names pinned.",
   },
   {
     title: "Phones are first-class",
-    body: "Staff on the move check the day on a phone. Every component works at 375px: lanes stack the name above a full-width track, the day column is the phone view of one ticket, availability pins asset names and hours and scrolls both ways, with group chips that scroll on their own. Details open on tap, since touch has no hover.",
+    body: "Staff on the move check the day on a phone. Every component works at 375px: lanes stack the name above a full-width track, the day column is the phone view of one order, availability pins asset names and hours and scrolls both ways, with group chips that scroll on their own. Details open on tap, since touch has no hover.",
   },
   {
     title: "The axis fits the day",
@@ -43,7 +43,7 @@ export const PRINCIPLES: readonly { title: string; body: string }[] = [
   },
   {
     title: "Staff see who to call; customers see no one",
-    body: "Internally every line has exactly one contact: its assignee, a responsibility's holder (Head of kitchen) or, failing both, the ticket's assignee, marked \"from ticket\". The contact shows with name, why them and the number; staff who work the line show as name and role. Externally calendars show no people: the point of contact belongs to the page around the calendar, not to its lines.",
+    body: "Internally every line has exactly one contact: its assignee, a responsibility's holder (Head of kitchen) or, failing both, the order's assignee, marked \"from order\". The contact shows with name, why them and the number; staff who work the line show as name and role. Externally calendars show no people: the point of contact belongs to the page around the calendar, not to its lines.",
   },
   {
     title: "A bundle frames, its parts are scheduled",
@@ -62,19 +62,19 @@ export const USAGE: readonly UsageRow[] = [
   {
     component: "Date leaf",
     question: "When is it?",
-    internal: "sm: ticket header, ticket lists, pipeline cards",
+    internal: "sm: order header, order lists, pipeline cards",
     external: "md with year: payment page, quote PDF, confirmation email",
   },
   {
     component: "Agenda",
     question: "What happens, in order?",
-    internal: "Ticket summary with contacts; state and buffers in the hover card",
+    internal: "Order summary with contacts; state and buffers in the hover card",
     external: "Payment page and quote: the customer's program",
   },
   {
     component: "Lanes",
-    question: "How do this ticket's lines overlap?",
-    internal: "Ticket Program section; stacks on phones",
+    question: "How do this order's lines overlap?",
+    internal: "Order Program section; stacks on phones",
     external: "Quote for multi-room or multi-part days only",
   },
   {
@@ -87,7 +87,7 @@ export const USAGE: readonly UsageRow[] = [
     component: "Availability",
     question: "What is free, and what is taken, across everything we book?",
     internal:
-      "The main calendar and the overview: assets in the organization's groups, filter and search, click empty time to add, click a booking to open its ticket's Program",
+      "The main calendar and the overview: assets in the organization's groups, filter and search, click empty time to add, click a booking to open its order's Program",
     external: "Never: it shows other customers",
   },
 ];

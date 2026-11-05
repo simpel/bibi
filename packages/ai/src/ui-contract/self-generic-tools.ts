@@ -20,6 +20,8 @@ export const SELF_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   profile_get: "the profile is edited in the welcome flow and on /profile (#418), not a tool card",
   profile_update:
     "the profile is edited in the welcome flow and on /profile (#418), not a tool card",
+  profile_setLocale:
+    "the UI and email language is switched via the header menu and on /profile; JSON",
   accountingExport_list: "the export history is on the Financials page; shown as JSON",
   accountingSettings_get: "accounting settings are edited on /settings/accounting (ADR 0077); JSON",
   accountingSettings_update:

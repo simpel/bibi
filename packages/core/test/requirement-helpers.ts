@@ -10,12 +10,12 @@ import { unwrap } from "./helpers";
 import { createTestLine, programSetup } from "./line-helpers";
 
 /**
- * A ticket with two lines (09–10 and 12–13), a requirement type with one TEXT field and
+ * An order with two lines (09–10 and 12–13), a requirement type with one TEXT field and
  * the list Allergens with Gluten and Lactose.
  */
 export async function requirementSetup() {
-  const { context, ticket, type: programType } = await programSetup();
-  const base = { context, ticketId: ticket.id, entityTypeId: programType.id };
+  const { context, order, type: programType } = await programSetup();
+  const base = { context, orderId: order.id, entityTypeId: programType.id };
   const morning = unwrap({ result: await createTestLine({ ...base, from: 9, to: 10 }) });
   const lunch = unwrap({ result: await createTestLine({ ...base, from: 12, to: 13 }) });
   const { type, key } = await createTypeWithField({
@@ -31,7 +31,7 @@ export async function requirementSetup() {
     }),
   });
   const [gluten, lactose] = list.values.map((value) => value.id) as [string, string];
-  return { context, ticket, morning, lunch, type, key, list, gluten, lactose };
+  return { context, order, morning, lunch, type, key, list, gluten, lactose };
 }
 
 export type AddRequirementInput = { context: ExecuteContext } & RequirementCreateInput;

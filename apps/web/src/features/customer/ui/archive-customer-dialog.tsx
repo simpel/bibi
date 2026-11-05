@@ -9,7 +9,7 @@ export type ArchiveCustomerDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-/** Archive confirmation; with tickets, the form below asks to archive them too (#134). */
+/** Archive confirmation; with orders, the form below asks to archive them too (#134). */
 export function ArchiveCustomerDialog({
   customer,
   open,

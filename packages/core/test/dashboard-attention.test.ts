@@ -1,49 +1,49 @@
 import { describe, expect, it } from "vitest";
-import { type ExecuteContext, execute, generateWorkOrder, sendWorkOrder } from "../src/index";
+import { type ExecuteContext, execute, generateRunSheet, sendRunSheet } from "../src/index";
 import { calendarSetup } from "./calendar-range-helpers";
 import { AT_SETUP_DAY, summary, summaryAt } from "./dashboard-helpers";
 import { unwrap } from "./helpers";
 import { halfPaidLateInvoice } from "./late-invoice-helpers";
-import { workOrderSetup } from "./work-order-helpers";
+import { runSheetSetup } from "./run-sheet-helpers";
 
 const DAY_MS = 86_400_000;
 
-type HoldsInput = { context: ExecuteContext; ticketId: string; stateId: string; days: number };
+type HoldsInput = { context: ExecuteContext; orderId: string; stateId: string; days: number };
 
-/** Makes the line's state expire and the ticket's holds run out `days` after the clock. */
-async function expireIn({ context, ticketId, stateId, days }: HoldsInput) {
+/** Makes the line's state expire and the order's holds run out `days` after the clock. */
+async function expireIn({ context, orderId, stateId, days }: HoldsInput) {
   await context.db.itemState.update({ where: { id: stateId }, data: { expires: true } });
   const holdsUntil = new Date(AT_SETUP_DAY.getTime() + days * DAY_MS);
-  await context.db.ticket.update({ where: { id: ticketId }, data: { holdsUntil } });
+  await context.db.order.update({ where: { id: orderId }, data: { holdsUntil } });
 }
 
 describe("dashboard.summary attention (ADR 0080)", () => {
   it("lists holds expiring within 7 days and leaves later ones out", async () => {
     const { context, line } = await calendarSetup();
     const stateId = line.stateId ?? "";
-    await expireIn({ context, ticketId: line.ticketId, stateId, days: 3 });
+    await expireIn({ context, orderId: line.orderId, stateId, days: 3 });
     const soon = unwrap({ result: await summaryAt({ context }) }).attention.expiringHolds;
-    expect(soon).toEqual([expect.objectContaining({ ticketId: line.ticketId, lines: 1 })]);
-    await expireIn({ context, ticketId: line.ticketId, stateId, days: 10 });
+    expect(soon).toEqual([expect.objectContaining({ orderId: line.orderId, lines: 1 })]);
+    await expireIn({ context, orderId: line.orderId, stateId, days: 10 });
     const later = unwrap({ result: await summaryAt({ context }) }).attention.expiringHolds;
     expect(later).toEqual([]);
   });
 
-  it("lists the newest work order version until it is sent", async () => {
-    const setup = await workOrderSetup();
-    const { context, ticket, definition } = setup;
-    const input = { ticketId: ticket.id, workOrderDefinitionId: definition.id };
-    const workOrder = unwrap({
-      result: await execute({ operation: generateWorkOrder, input, context }),
+  it("lists the newest run sheet version until it is sent", async () => {
+    const setup = await runSheetSetup();
+    const { context, order, definition } = setup;
+    const input = { orderId: order.id, runSheetDefinitionId: definition.id };
+    const runSheet = unwrap({
+      result: await execute({ operation: generateRunSheet, input, context }),
     });
-    const before = unwrap({ result: await summaryAt({ context }) }).attention.unsentWorkOrders;
+    const before = unwrap({ result: await summaryAt({ context }) }).attention.unsentRunSheets;
     expect(before).toEqual([
-      expect.objectContaining({ workOrderId: workOrder.id, name: "Kitchen order", version: 1 }),
+      expect.objectContaining({ runSheetId: runSheet.id, name: "Kitchen order", version: 1 }),
     ]);
     unwrap({
-      result: await execute({ operation: sendWorkOrder, input: { id: workOrder.id }, context }),
+      result: await execute({ operation: sendRunSheet, input: { id: runSheet.id }, context }),
     });
-    const after = unwrap({ result: await summaryAt({ context }) }).attention.unsentWorkOrders;
+    const after = unwrap({ result: await summaryAt({ context }) }).attention.unsentRunSheets;
     expect(after).toEqual([]);
   });
 

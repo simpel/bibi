@@ -1,4 +1,4 @@
-import type { PipelineBoard, TicketStatusDto } from "@bibi/core/schemas";
+import type { PipelineBoard, OrderStatusDto } from "@bibi/core/schemas";
 import type { KanbanPhaseData, KanbanStatusChipData } from "@bibi/ui";
 
 /** The board's columns for customize mode: each phase with its status ids in status order. */
@@ -12,11 +12,11 @@ export function customizePhases({ board }: { board: PipelineBoard }): KanbanPhas
 
 export type CustomizeChipsInput = {
   board: PipelineBoard;
-  statuses: readonly TicketStatusDto[];
+  statuses: readonly OrderStatusDto[];
 };
 
 /**
- * Every active status as a chip. A status on this board shows how many of its tickets the board
+ * Every active status as a chip. A status on this board shows how many of its orders the board
  * holds (closing statuses only count recent ones, as the board does); one off the board shows none.
  */
 export function customizeChips({ board, statuses }: CustomizeChipsInput): KanbanStatusChipData[] {

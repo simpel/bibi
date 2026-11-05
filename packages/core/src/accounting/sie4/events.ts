@@ -12,7 +12,7 @@ export type Settles =
   | ({ kind: "DEPOSIT" } & DepositVat)
   | { kind: "QUOTE"; parts: readonly RevenuePart[] };
 
-type Base = { date: string; ticketReference: number };
+type Base = { date: string; orderReference: number };
 
 /** An invoice sent, or voided after it was exported (a reversal). */
 export type InvoiceEvent = Base & {

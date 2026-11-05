@@ -35,7 +35,7 @@ export function payPath({ returnTo }: PayPathInput): string {
 
 export type OrgRelativePathInput = { pathname: string; search: string };
 
-/** `/sv/acme/tickets/1` + `?tab=x` → `/tickets/1?tab=x`; null outside `/:locale/:org`. */
+/** `/sv/acme/orders/1` + `?tab=x` → `/orders/1?tab=x`; null outside `/:locale/:org`. */
 export function orgRelativePath({ pathname, search }: OrgRelativePathInput): string | null {
   const [, locale, slug, ...rest] = pathname.split("/");
   if (!locale || !slug) return null;

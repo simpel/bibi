@@ -31,7 +31,7 @@ function SlotFacts({ slot, assets }: { slot: AssetBooking; assets: SlotSheetProp
   const hold = slot.state.hold === "none" ? null : t(slot.state.hold === "hard" ? "hard" : "soft");
   return (
     <dl className="grid divide-y px-4">
-      <Fact label={t("ticket")}>{slot.ticket}</Fact>
+      <Fact label={t("order")}>{slot.order}</Fact>
       <Fact label={t("customer")}>{slot.customer}</Fact>
       <Fact label={t("state")}>{slot.state.name}</Fact>
       <Fact label={t("line")}>{slot.name}</Fact>
@@ -64,7 +64,7 @@ function useEscapeFirst({ open, onClose }: { open: boolean; onClose: () => void 
 
 /**
  * One booking of the read-only calendar in a side panel INSIDE the surrounding dialog (not a
- * page-wide sheet): its ticket, customer, state, line, resource, period, quantity and hold. The
+ * page-wide sheet): its order, customer, state, line, resource, period, quantity and hold. The
  * dim overlay covers only the dialog; a click on it (or Escape) closes the panel, a click outside
  * the dialog closes the dialog. Fields the caller may not read are left out; nothing navigates.
  */
@@ -82,12 +82,12 @@ export function SlotSheet({ slot, assets, onClose }: SlotSheetProps) {
         onClick={onClose}
       />
       <aside
-        aria-label={slot.ticket ?? slot.name ?? t("title")}
+        aria-label={slot.order ?? slot.name ?? t("title")}
         className="absolute inset-y-0 right-0 z-30 flex w-full flex-col overflow-y-auto border-l bg-background shadow-lg sm:max-w-md"
       >
         <div className="flex items-start justify-between gap-2 p-4">
           <div className="grid gap-1">
-            <h3 className="font-serif text-lg">{slot.ticket ?? slot.name ?? t("title")}</h3>
+            <h3 className="font-serif text-lg">{slot.order ?? slot.name ?? t("title")}</h3>
             <p className="text-sm text-muted-foreground">{t("description")}</p>
           </div>
           <Button

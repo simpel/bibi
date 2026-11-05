@@ -1,4 +1,4 @@
-import { TICKET_QUERY_TOKEN } from "@bibi/core/schemas";
+import { ORDER_QUERY_TOKEN } from "@bibi/core/schemas";
 import { type QueryVocabulary, qualifierOf } from "./query-vocabulary";
 
 /** A stretch of the search: plain text, a known qualifier (`-status:`) or its value (`Lead`). */
@@ -13,7 +13,7 @@ export type QueryPartsInput = { text: string; vocabulary: QueryVocabulary };
 export function queryParts({ text, vocabulary }: QueryPartsInput): QueryPart[] {
   const parts: QueryPart[] = [];
   let at = 0;
-  for (const match of text.matchAll(TICKET_QUERY_TOKEN)) {
+  for (const match of text.matchAll(ORDER_QUERY_TOKEN)) {
     const [whole, minus = "", word, value = ""] = match;
     if (!word || !qualifierOf({ word, vocabulary })) continue;
     const start = match.index ?? 0;

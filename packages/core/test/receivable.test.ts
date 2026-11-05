@@ -5,7 +5,7 @@ import {
   type ExecuteContext,
   execute,
   getDeposit,
-  getTicketBalance,
+  getOrderBalance,
   sendDeposit,
   setPaymentProvider,
   setStripeConnectGateway,
@@ -55,8 +55,8 @@ describe("a deposit request is a receivable payments settle (ADR 0057)", () => {
   });
 
   it("charges only a SENT deposit and names exactly one receivable", async () => {
-    const { context, ticketId, depositId } = await paymentSetup();
-    const input = { ticketId, description: "Advance", amountMinor: 50_000 };
+    const { context, orderId, depositId } = await paymentSetup();
+    const input = { orderId, description: "Advance", amountMinor: 50_000 };
     const draft = unwrap({ result: await execute({ operation: createDeposit, input, context }) });
     expect(draft).toMatchObject({ status: "DRAFT", progress: "OPEN" });
     expect(errorCode({ result: await pay({ context, depositId: draft.id }) })).toBe("CONFLICT");
@@ -83,7 +83,7 @@ describe("a deposit request is a receivable payments settle (ADR 0057)", () => {
   });
 
   it("keeps deposits and balances per organization", async () => {
-    const { context, ticketId, depositId } = await paymentSetup();
+    const { context, orderId, depositId } = await paymentSetup();
     const stranger = testContext();
     const get = await execute({
       operation: getDeposit,
@@ -91,7 +91,7 @@ describe("a deposit request is a receivable payments settle (ADR 0057)", () => {
       context: stranger,
     });
     expect(errorCode({ result: get })).toBe("NOT_FOUND");
-    const input = { ticketId, description: "Theirs", amountMinor: 50_000 };
+    const input = { orderId, description: "Theirs", amountMinor: 50_000 };
     const create = await execute({ operation: createDeposit, input, context: stranger });
     expect(errorCode({ result: create })).toBe("NOT_FOUND");
     const sent = await execute({
@@ -102,8 +102,8 @@ describe("a deposit request is a receivable payments settle (ADR 0057)", () => {
     expect(errorCode({ result: sent })).toBe("NOT_FOUND");
     expect(errorCode({ result: await pay({ context: stranger, depositId }) })).toBe("NOT_FOUND");
     const balance = await execute({
-      operation: getTicketBalance,
-      input: { ticketId },
+      operation: getOrderBalance,
+      input: { orderId },
       context: stranger,
     });
     expect(errorCode({ result: balance })).toBe("NOT_FOUND");

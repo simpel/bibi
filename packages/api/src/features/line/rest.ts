@@ -5,18 +5,18 @@ export const lineRoutes = [
   restRoute({
     operation: "line.list",
     method: "GET",
-    path: "/tickets/{ticketId}/lines",
-    operationId: "lineListByTicket",
+    path: "/orders/{orderId}/lines",
+    operationId: "lineListByOrder",
   }),
   restRoute({
     operation: "line.amounts",
     method: "GET",
-    path: "/tickets/{ticketId}/line-amounts",
+    path: "/orders/{orderId}/line-amounts",
   }),
   restRoute({
     operation: "line.issues",
     method: "GET",
-    path: "/tickets/{ticketId}/line-issues",
+    path: "/orders/{orderId}/line-issues",
   }),
   restRoute({ operation: "line.get", method: "GET", path: "/lines/{id}" }),
   restRoute({ operation: "line.create", method: "POST", path: "/lines" }),

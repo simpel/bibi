@@ -3,8 +3,8 @@ import { ItemCapabilitiesSchema } from "../entity-type/capability-kinds";
 import { HoldKindSchema } from "../item-state/hold-kind";
 import { ItemStateSchema } from "../item-state/schema";
 import { StatusGridSchema } from "../status-grid/schema";
-import { TransitionGateSchema } from "../ticket-status/gate-schema";
-import { ColorSchema, TicketStatusSchema } from "../ticket-status/schema";
+import { TransitionGateSchema } from "../order-status/gate-schema";
+import { ColorSchema, OrderStatusSchema } from "../order-status/schema";
 
 const name = ({ max, example }: { max: number; example: string }) =>
   z.string().trim().min(1).max(max).describe(example);
@@ -15,7 +15,7 @@ export const PipelineStateDraftSchema = z.object({
   color: ColorSchema,
   initial: z.boolean().optional().describe("New lines start here; exactly one per type"),
   hold: HoldKindSchema.optional().describe("NONE, SOFT or HARD; SOFT and HARD only if bookable"),
-  inWorkOrders: z.boolean().optional().describe("Lines in this state are included in work orders"),
+  inRunSheets: z.boolean().optional().describe("Lines in this state are included in run sheets"),
   released: z.boolean().optional().describe("Final state: the hold is dropped"),
   expires: z.boolean().optional().describe("Falls to the expiry state when holdsUntil passes"),
 });
@@ -39,23 +39,23 @@ export const PipelineTypeDraftSchema = z.object({
     .describe("Name of the state lines in an expiring state fall to; null for none"),
 });
 
-/** One ticket status in the draft (ADR 0043); flags default to off, gates to none. */
+/** One order status in the draft (ADR 0043); flags default to off, gates to none. */
 export const PipelineStatusDraftSchema = z.object({
   name: name({ max: 64, example: "Status name, e.g. Lead, Quote sent or Lost" }),
   color: ColorSchema,
-  entry: z.boolean().optional().describe("New tickets start here; exactly one status"),
-  closes: z.boolean().optional().describe("Ends the ticket; entering it releases every line"),
+  entry: z.boolean().optional().describe("New orders start here; exactly one status"),
+  closes: z.boolean().optional().describe("Ends the order; entering it releases every line"),
   gatesIn: z
     .array(TransitionGateSchema)
     .optional()
     .describe("Gates on every move into this status (ADR 0067), e.g. REASON for Lost"),
   invoiceable: z.boolean().optional().describe("Invoices can be created in this status"),
-  event: TicketStatusSchema.shape.event.optional(),
+  event: OrderStatusSchema.shape.event.optional(),
 });
 
 /** One grid cell by name: entering `status` moves the lines of `type` to `state`. */
 export const PipelineCellDraftSchema = z.object({
-  ticketStatus: z.string().min(1).describe("Name of a non-closing status of the draft"),
+  orderStatus: z.string().min(1).describe("Name of a non-closing status of the draft"),
   type: z.string().min(1).describe("Name of an item type of the draft"),
   state: z.string().min(1).describe("Name of a state of that type"),
 });
@@ -95,12 +95,12 @@ export const PipelineProblemSchema = z.object({
   code: z.enum(PIPELINE_PROBLEM_CODES),
   severity: z.enum(["error", "warning"]),
   message: z.string(),
-  ticketStatus: z.string().nullable(),
+  orderStatus: z.string().nullable(),
   type: z.string().nullable(),
   state: z.string().nullable(),
 });
 
-/** One line of the simulated ticket in one status. */
+/** One line of the simulated order in one status. */
 export const PipelinePreviewLineSchema = z.object({
   type: z.string(),
   /** The line's state; null when the type has no usable state. */
@@ -114,9 +114,9 @@ export const PipelinePreviewLineSchema = z.object({
   blocked: z.string().nullable(),
 });
 
-/** The simulated ticket after entering one status. */
+/** The simulated order after entering one status. */
 export const PipelinePreviewStepSchema = z.object({
-  ticketStatus: z.string(),
+  orderStatus: z.string(),
   color: z.string(),
   closes: z.boolean(),
   lines: z.array(PipelinePreviewLineSchema),
@@ -131,7 +131,7 @@ export const PipelinePreviewSchema = z.object({
 });
 
 export const PipelineActivateOutputSchema = z.object({
-  statuses: z.array(TicketStatusSchema),
+  statuses: z.array(OrderStatusSchema),
   states: z.array(ItemStateSchema),
   grid: StatusGridSchema,
 });

@@ -13,7 +13,7 @@ import {
   type SetupPresetStatuses,
 } from "../../templates/setup-presets/setup-presets";
 import { getStatusGridTemplate } from "../../templates/status-grid/status-grid-templates";
-import { getTicketStatusTemplate } from "../../templates/ticket-statuses/ticket-status-templates";
+import { getOrderStatusTemplate } from "../../templates/order-statuses/order-status-templates";
 import type {
   PipelineCellDraft,
   PipelineSetupDraft,
@@ -31,7 +31,7 @@ export const PIPELINE_TEMPLATE_KEYS = ["conference-estate", "default"] as const;
 export type PipelineTemplateKey = (typeof PIPELINE_TEMPLATE_KEYS)[number];
 
 const SINGLE: readonly ItemStateTemplateState[] = [
-  { name: "Active", color: "#64748b", holdIfBookable: "HARD", flags: { inWorkOrders: true } },
+  { name: "Active", color: "#64748b", holdIfBookable: "HARD", flags: { inRunSheets: true } },
 ];
 
 export type StatesFromTemplateInput = { template: StateTemplateChoice; bookable: boolean };
@@ -46,7 +46,7 @@ export function statesFromTemplate({ template, bookable }: StatesFromTemplateInp
       color: state.color,
       initial: index === 0,
       hold: bookable ? (state.holdIfBookable ?? "NONE") : "NONE",
-      inWorkOrders: state.flags?.inWorkOrders ?? false,
+      inRunSheets: state.flags?.inRunSheets ?? false,
       released: state.flags?.released ?? false,
       expires: state.flags?.expires ?? false,
     }),
@@ -60,7 +60,7 @@ export const defaultStateTemplate = ({ bookable }: { bookable: boolean }): State
 
 /** The template's statuses with every flag and gate spelled out. */
 export function statusesFromTemplate({ template }: { template: PipelineTemplateKey }) {
-  return getTicketStatusTemplate({ key: template }).statuses.map(
+  return getOrderStatusTemplate({ key: template }).statuses.map(
     (status): Required<PipelineStatusDraft> => ({
       name: status.name,
       color: status.color,
@@ -91,7 +91,7 @@ export function cellsFromTemplate({ template, statuses, itemTypes }: CellsFromTe
       itemTypes.flatMap((type): PipelineCellDraft[] => {
         const names = new Set(type.states.map((state) => state.name));
         const match = cells.find((cell) => cell.status === status.name && names.has(cell.state));
-        return match ? [{ ticketStatus: status.name, type: type.name, state: match.state }] : [];
+        return match ? [{ orderStatus: status.name, type: type.name, state: match.state }] : [];
       }),
     );
 }

@@ -11,7 +11,7 @@ import {
 } from "@bibi/ui";
 import { ExternalLinkIcon, MailIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { inboxMessageRoute, ticketFromMessageRoute } from "@/lib/inbox-routes";
+import { inboxMessageRoute, orderFromMessageRoute } from "@/lib/inbox-routes";
 import { Link } from "@/lib/navigation";
 import type { InboxRow } from "./inbox-row";
 import type { InboxAbilities } from "./inbox-row-actions";
@@ -27,18 +27,18 @@ export type MessageSheetProps = InboxAbilities & {
 
 type ActionsProps = Omit<MessageSheetProps, "row" | "onClose"> & { row: InboxRow };
 
-/** New ticket from it, its full page, mark unread and delete. */
+/** New order from it, its full page, mark unread and delete. */
 function MessageSheetActions(props: ActionsProps) {
   const { row, canWrite, canDelete, onMarkUnread, onDelete } = props;
   const t = useTranslations("inbox");
   const common = useTranslations("common");
   return (
     <SheetFooter>
-      {props.canCreateTicket ? (
+      {props.canCreateOrder ? (
         <Button asChild>
-          <Link href={ticketFromMessageRoute({ id: row.id })}>
+          <Link href={orderFromMessageRoute({ id: row.id })}>
             <PlusIcon />
-            {t("newTicket")}
+            {t("newOrder")}
           </Link>
         </Button>
       ) : null}
@@ -66,7 +66,7 @@ function MessageSheetActions(props: ActionsProps) {
 
 /**
  * One inbox message in a side sheet (ADR 0085): its subject over the message drawn the way its
- * channel looks (who and when show there, once), with a new ticket, the full page (to attach
+ * channel looks (who and when show there, once), with a new order, the full page (to attach
  * it), mark unread and delete.
  */
 export function MessageSheet({ row, onClose, ...actions }: MessageSheetProps) {

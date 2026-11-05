@@ -13,14 +13,14 @@ import { objectFromSchema } from "../../schema/object-from-schema";
 import { requirePermission } from "../../schema/require-permission";
 import { EntityTypeRef } from "../entity-type/graphql";
 import { ItemStateRef } from "../item-state/graphql";
-import { TicketStatusRef } from "../ticket-status/graphql";
+import { OrderStatusRef } from "../order-status/graphql";
 
 export const StatusGridCellRef = objectFromSchema<StatusGridCellDto>({
   name: "StatusGridCell",
   schema: StatusGridCellSchema,
   omit: ["organizationId"],
   description:
-    "One set cell of the status grid (ADR 0044): entering the status moves the ticket's lines of " +
+    "One set cell of the status grid (ADR 0044): entering the status moves the order's lines of " +
     "the item type to the state. A missing cell means the lines keep their state.",
 });
 
@@ -49,12 +49,12 @@ mutationFromOperation({ operation: setStatusGridCell, type: StatusGridRef });
 mutationFromOperation({ operation: importStatusGridTemplate, type: StatusGridImportRef });
 
 builder.objectFields(StatusGridCellRef, (t) => ({
-  ticketStatus: t.field({
-    type: TicketStatusRef,
+  orderStatus: t.field({
+    type: OrderStatusRef,
     description: "The status the cell applies to.",
     resolve: (cell, _args, ctx) => {
       requirePermission({ ctx, permission: "pipeline:read" });
-      return ctx.loaders.ticketStatus.load({ id: cell.statusId }) as never;
+      return ctx.loaders.orderStatus.load({ id: cell.statusId }) as never;
     },
   }),
   entityType: t.field({

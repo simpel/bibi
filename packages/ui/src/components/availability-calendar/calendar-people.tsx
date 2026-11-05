@@ -10,10 +10,10 @@ import type {
   CalendarContact,
   CalendarLine,
   CalendarPerson,
-  CalendarTicket,
+  CalendarOrder,
 } from "./calendar-types";
 
-/** Every line gets exactly one contact: its own, else the ticket's (marked inherited). */
+/** Every line gets exactly one contact: its own, else the order's (marked inherited). */
 export function withContacts({
   lines,
   fallback,
@@ -27,17 +27,17 @@ export function withContacts({
   }));
 }
 
-/** A ticket's lines as the audience may see them, each with its contact resolved. */
-export function ticketLines({
-  ticket,
+/** An order's lines as the audience may see them, each with its contact resolved. */
+export function orderLines({
+  order,
   audience,
 }: {
-  ticket: CalendarTicket;
+  order: CalendarOrder;
   audience: CalendarAudience;
 }): CalendarLine[] {
   return withContacts({
-    lines: visibleLines({ lines: ticket.lines, audience }),
-    fallback: ticket.contact,
+    lines: visibleLines({ lines: order.lines, audience }),
+    fallback: order.contact,
   });
 }
 
@@ -61,7 +61,7 @@ export function PersonAvatar({ person, size = "sm", className }: PersonAvatarPro
 
 export type LineContactProps = {
   contact: CalendarContact;
-  /** Why them ("from ticket" if inherited). Off where only name and number fit. */
+  /** Why them ("from order" if inherited). Off where only name and number fit. */
   why?: boolean;
 };
 
@@ -73,7 +73,7 @@ export function LineContact({ contact, why = true }: LineContactProps) {
     <PersonContact
       size="compact"
       name={person.name}
-      description={why ? (inherited ? labels.fromTicket({ via }) : via) : undefined}
+      description={why ? (inherited ? labels.fromOrder({ via }) : via) : undefined}
       phone={person.phone}
       photoUrl={person.photoUrl}
     />

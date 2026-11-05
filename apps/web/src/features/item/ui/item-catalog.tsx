@@ -1,7 +1,6 @@
 import type { ItemDto } from "@bibi/core";
 import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
-import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
 import { PageHeader } from "@/components/states/page-header";
 import { Link } from "@/lib/navigation";
@@ -33,28 +32,22 @@ export async function ItemCatalog(props: ItemCatalogProps) {
   return (
     <div className="grid gap-6">
       <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
-      <ItemTypeFilter types={data.types} typeId={typeId} />
-      {page.items.length === 0 && !cursor ? (
+      {page.items.length === 0 && !cursor && !typeId ? (
         <EmptyState
           title={t("empty")}
           description={noTypes ? t("noTypes") : t("emptyDescription")}
           action={noTypes ? toTypes : create}
         />
       ) : (
-        <>
-          <ItemTable
-            items={page.items}
-            types={data.types}
-            venues={data.venues}
-            venuesHidden={data.venuesHidden}
-          />
-          <CursorPagination
-            pathname={ROUTES.items}
-            cursor={cursor}
-            nextCursor={page.nextCursor}
-            query={typeId ? { type: typeId } : {}}
-          />
-        </>
+        <ItemTable
+          items={page.items}
+          types={data.types}
+          venues={data.venues}
+          venuesHidden={data.venuesHidden}
+          canEdit={canCreate}
+          withControls
+          filterBar={<ItemTypeFilter types={data.types} typeId={typeId} />}
+        />
       )}
     </div>
   );

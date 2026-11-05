@@ -3,9 +3,9 @@ import { allocateBundleVat } from "./bundle-vat";
 import type { DerivedLine } from "./derive-lines";
 
 export type ApplyBundlesInput = {
-  /** The tickets' priced lines as order lines. */
+  /** The orders' priced lines as order lines. */
   derived: readonly DerivedLine[];
-  /** Every active line of the same tickets, priced or not: the parts weigh in by value. */
+  /** Every active line of the same orders, priced or not: the parts weigh in by value. */
   lines: readonly LineDto[];
 };
 

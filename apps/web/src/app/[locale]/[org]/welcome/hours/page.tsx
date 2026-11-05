@@ -6,8 +6,14 @@ import { loadStepState } from "@/features/welcome/load-step-state";
 import { HoursForm } from "@/features/welcome/ui/hours/hours-form";
 import { welcomeProgress } from "@/features/welcome/ui/welcome-progress";
 import { WelcomeStepFrame } from "@/features/welcome/ui/welcome-step-frame";
+import { pageTitle } from "@/lib/page-metadata";
 
 type HoursStepProps = { params: Promise<{ locale: string; org: string }> };
+
+export async function generateMetadata({ params }: HoursStepProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "welcome", key: "hours.title" });
+}
 
 /** Working hours: Monday–Friday 08–17 with lunch 12–13 unless the user saved others. */
 export default async function HoursStep({ params }: HoursStepProps) {

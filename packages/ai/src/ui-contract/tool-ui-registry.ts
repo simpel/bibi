@@ -28,14 +28,14 @@ import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
 import { SELF_GENERIC_UI_TOOLS } from "./self-generic-tools";
 import { SKILL_UI_ENTRIES } from "./skill-entries";
 import { STATUS_GRID_UI_ENTRIES } from "./status-grid-entries";
-import { TICKET_UI_ENTRIES } from "./ticket-entries";
-import { TICKET_STATUS_UI_ENTRIES } from "./ticket-status-entries";
-import { TICKET_TEMPLATE_UI_ENTRIES } from "./ticket-template-entries";
+import { ORDER_UI_ENTRIES } from "./order-entries";
+import { ORDER_STATUS_UI_ENTRIES } from "./order-status-entries";
+import { ORDER_TEMPLATE_UI_ENTRIES } from "./order-template-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 import { SearchWireSchema, VenueListWireSchema, VenueWireSchema } from "./wire-schemas";
-import { WORK_ORDER_DEFINITION_UI_ENTRIES } from "./work-order-definition-entries";
-import { WORK_ORDER_UI_ENTRIES } from "./work-order-entries";
+import { RUN_SHEET_DEFINITION_UI_ENTRIES } from "./run-sheet-definition-entries";
+import { RUN_SHEET_UI_ENTRIES } from "./run-sheet-entries";
 
 const venueTable = uiEntry({
   component: "venue-table",
@@ -63,11 +63,11 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...CUSTOMER_UI_ENTRIES,
   ...OCCUPANCY_UI_ENTRIES,
   ...PRICE_LIST_UI_ENTRIES,
-  ...TICKET_STATUS_UI_ENTRIES,
-  ...TICKET_TEMPLATE_UI_ENTRIES,
+  ...ORDER_STATUS_UI_ENTRIES,
+  ...ORDER_TEMPLATE_UI_ENTRIES,
   ...ITEM_STATE_UI_ENTRIES,
   ...STATUS_GRID_UI_ENTRIES,
-  ...TICKET_UI_ENTRIES,
+  ...ORDER_UI_ENTRIES,
   ...LINE_UI_ENTRIES,
   ...ALTERNATIVE_GROUP_UI_ENTRIES,
   ...ASSIGNMENT_UI_ENTRIES,
@@ -81,8 +81,8 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...PAYMENT_UI_ENTRIES,
   ...RECEIVABLE_UI_ENTRIES,
   ...RESPONSIBILITY_UI_ENTRIES,
-  ...WORK_ORDER_DEFINITION_UI_ENTRIES,
-  ...WORK_ORDER_UI_ENTRIES,
+  ...RUN_SHEET_DEFINITION_UI_ENTRIES,
+  ...RUN_SHEET_UI_ENTRIES,
   ...ACCESS_UI_ENTRIES,
   ...MEMBER_PROFILE_UI_ENTRIES,
   ...PERMISSION_UI_ENTRIES,

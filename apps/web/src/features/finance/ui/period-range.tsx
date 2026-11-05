@@ -1,7 +1,7 @@
 "use client";
 
 import type { PlainDate } from "@bibi/core/schemas";
-import { useDashboardsNavigate } from "@/features/dashboard/ui/dashboards-pending";
+import { useRouter } from "@/lib/navigation";
 import { periodHref } from "../lib/finance-href";
 import type { Period } from "../lib/finance-period";
 import { FinancePeriodButton } from "./finance-period-button";
@@ -12,16 +12,18 @@ export type PeriodRangeProps = {
   /** The page whose period is in the path, e.g. `/financials`. */
   base: string;
   customerId?: string | undefined;
+  direction?: "historical" | "forward" | "all";
 };
 
 /** The period as one button: its dates, with presets and a calendar to change it. */
-export function PeriodRange({ period, today, base, customerId }: PeriodRangeProps) {
-  const { navigate } = useDashboardsNavigate();
+export function PeriodRange({ period, today, base, customerId, direction = "all" }: PeriodRangeProps) {
+  const router = useRouter();
   return (
     <FinancePeriodButton
       period={period}
       today={today}
-      onChange={(next) => navigate({ href: periodHref({ ...next, base, customerId }) })}
+      direction={direction}
+      onChange={(next) => router.push(periodHref({ ...next, base, customerId }))}
     />
   );
 }

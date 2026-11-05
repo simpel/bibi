@@ -22,8 +22,8 @@ describe("Stripe webhook", () => {
     expect([bad.status, missing.status]).toEqual([401, 401]);
   });
 
-  it("marks the payment paid and never moves the ticket's status", async () => {
-    const { context, account, payment, ticketId } = await pendingPayment({ coordinated: true });
+  it("marks the payment paid and never moves the order's status", async () => {
+    const { context, account, payment, orderId } = await pendingPayment({ coordinated: true });
     const posted = await postEvent({
       event: paidEvent({ account, reference: payment.providerReference }),
     });
@@ -31,11 +31,11 @@ describe("Stripe webhook", () => {
     const row = await context.db.payment.findUniqueOrThrow({ where: { id: payment.id } });
     expect(row.status).toBe("SUCCEEDED");
     expect(row.paidAt).toBeInstanceOf(Date);
-    const ticket = await context.db.ticket.findUniqueOrThrow({
-      where: { id: ticketId },
-      include: { ticketStatus: true },
+    const order = await context.db.order.findUniqueOrThrow({
+      where: { id: orderId },
+      include: { orderStatus: true },
     });
-    expect(ticket.ticketStatus.entry).toBe(true);
+    expect(order.orderStatus.entry).toBe(true);
     const audit = await context.db.auditLog.findMany({
       where: { operation: "payment.applySignal" },
     });

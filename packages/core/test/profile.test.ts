@@ -21,6 +21,7 @@ describe("profile (ADR 0061)", () => {
       phone: null,
       avatarKey: null,
       complete: false,
+      locale: "sv",
     });
   });
 

@@ -3,11 +3,17 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { safeReturnTo } from "@/features/billing/lib/return-to";
 import { FinishPayment } from "@/features/billing/ui/finish-payment";
 import { WelcomeStepFrame } from "@/features/welcome/ui/welcome-step-frame";
+import { pageTitle } from "@/lib/page-metadata";
 
 type PayDonePageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ returnTo?: string | string[] }>;
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "billing.done", key: "title" });
+}
 
 /** Stripe Checkout's success URL: syncs the subscription, then opens `returnTo`. */
 export default async function PayDonePage({ params, searchParams }: PayDonePageProps) {

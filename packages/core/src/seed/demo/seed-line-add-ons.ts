@@ -3,14 +3,14 @@ import { createLine } from "../../features/line/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { missing } from "./seed-fields";
-import type { DemoAddOn } from "./ticket-types";
+import type { DemoAddOn } from "./order-types";
 
 export type SeedLineAddOnsInput = {
   context: ExecuteContext;
-  ticketId: string;
+  orderId: string;
   lineId: string;
   addOns: readonly DemoAddOn[] | undefined;
-  /** Local time `HH:MM` on the ticket's day → instant. */
+  /** Local time `HH:MM` on the order's day → instant. */
   at: (input: { time: string }) => Date;
 };
 
@@ -20,7 +20,7 @@ export type SeedLineAddOnsInput = {
  */
 export async function seedLineAddOns({
   context,
-  ticketId,
+  orderId,
   lineId,
   addOns,
   at,
@@ -32,7 +32,7 @@ export async function seedLineAddOns({
     });
     if (!item) return missing({ what: `add-on item ${addOn.item}` });
     const input = {
-      ...{ ticketId, parentLineId: lineId, itemId: item.id, name: addOn.name },
+      ...{ orderId, parentLineId: lineId, itemId: item.id, name: addOn.name },
       ...(addOn.from && addOn.to
         ? { startsAt: at({ time: addOn.from }), endsAt: at({ time: addOn.to }) }
         : {}),

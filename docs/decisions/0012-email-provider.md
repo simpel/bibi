@@ -34,6 +34,6 @@
 - Resend operates an EU region, and we accept it for production. Use the EU region and sign Resend's data processing agreement before the first production send. The open GDPR item above is closed.
 
 ## Addendum 2026-10-15: inbound mail implemented (#71)
-- The address per ticket is `ticket-<ticketId>@<MAIL_INBOUND_DOMAIN>` (originally `booking-<id>`; ADR 0043). Ids are random cuid2 strings, so one address does not reveal another's and the id alone resolves the organization. Unknown or archived tickets are dropped and logged (`mail.unmatched`) with HTTP 200 so the provider does not retry.
+- The address per order is `order-<orderId>@<MAIL_INBOUND_DOMAIN>` (originally `booking-<id>`; ADR 0043). Ids are random cuid2 strings, so one address does not reveal another's and the id alone resolves the organization. Unknown or archived orders are dropped and logged (`mail.unmatched`) with HTTP 200 so the provider does not retry.
 - `POST /api/webhooks/resend` verifies the Svix signature, fetches the body from Resend and runs the SYSTEM-only command `inboundEmail.receive` in the resolved organization (the one cross-organization lookup). It is a parity exception (ADR 0003): no user or AI may fabricate a received mail. `InboundEmail` is append-only and unique per `(organizationId, providerEmailId)`, so a redelivery is stored once. HTML bodies are stored but never rendered.
 - Flow details and the test setup are in `packages/mail/CLAUDE.md`; DNS for the inbound subdomain is in `docs/runbooks/inbound-email.md`.

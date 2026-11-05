@@ -4,7 +4,7 @@ import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
 import { useNumberFormat } from "@/lib/number/use-number-format";
-import { ticketRoute } from "@/lib/routes";
+import { orderRoute } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { GenerativeProps } from "./generative-props";
 import { fieldLines } from "./item-facts";
@@ -16,7 +16,7 @@ export type LineCardViewProps = GenerativeProps<"line-card">;
 export function LineCardView({ line }: LineCardViewProps) {
   const t = useTranslations("assistant.ui.line");
   const format = useDateTimeFormat();
-  const href = ticketRoute({ id: line.ticketId });
+  const href = orderRoute({ id: line.orderId });
   const { money } = useNumberFormat();
   const { effectiveQuantity: quantity, effectiveUnitPriceMinor: price } = line;
   return (
@@ -34,7 +34,7 @@ export function LineCardView({ line }: LineCardViewProps) {
           <p key={text}>{text}</p>
         ))}
         <Link href={href} className="text-primary hover:underline">
-          {t("openTicket")}
+          {t("openOrder")}
         </Link>
       </CardContent>
     </Card>

@@ -12,7 +12,7 @@ import {
 } from "../src/index";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
 import { paymentSetup, sentDeposit } from "./payment-helpers";
-import { createTestTicket, ticketSetup } from "./ticket-helpers";
+import { createTestOrder, orderSetup } from "./order-helpers";
 
 afterEach(() => {
   setPaymentProvider({ provider: undefined });
@@ -29,10 +29,10 @@ const create = ({ context, depositId, method = "CARD" }: CreateInput) =>
 
 describe("payment", () => {
   it("creates a card checkout as a direct charge on the connected account", async () => {
-    const { context, ticketId, depositId, account, provider } = await paymentSetup();
+    const { context, orderId, depositId, account, provider } = await paymentSetup();
     const payment = unwrap({ result: await create({ context, depositId }) });
     expect(payment).toMatchObject({
-      ticketId,
+      orderId,
       depositId,
       quoteId: null,
       invoiceId: null,
@@ -49,7 +49,7 @@ describe("payment", () => {
       kind: "checkout",
       connectedAccountId: account.stripeAccountId,
       idempotencyKey: `bibi-payment-${payment.id}`,
-      metadata: { paymentId: payment.id, ticketId },
+      metadata: { paymentId: payment.id, orderId },
     });
     const { publicToken } = await getDb().payment.findUniqueOrThrow({ where: { id: payment.id } });
     expect(provider.charges[0]).toHaveProperty(
@@ -63,12 +63,12 @@ describe("payment", () => {
     expect(JSON.stringify(payment)).not.toContain(publicToken);
   });
 
-  it("lists and gets payments of a ticket", async () => {
-    const { context, ticketId, depositId } = await paymentSetup();
+  it("lists and gets payments of an order", async () => {
+    const { context, orderId, depositId } = await paymentSetup();
     const first = unwrap({ result: await create({ context, depositId }) });
     const second = unwrap({ result: await create({ context, depositId }) });
     const page = unwrap({
-      result: await execute({ operation: listPayments, input: { ticketId }, context }),
+      result: await execute({ operation: listPayments, input: { orderId }, context }),
     });
     expect(page.items.map(({ id }) => id).sort()).toEqual([first.id, second.id].sort());
     const read = unwrap({
@@ -94,19 +94,19 @@ describe("payment", () => {
   });
 
   it("refuses to charge before the payment account is active", async () => {
-    const { context, type, customer } = await ticketSetup();
-    const ticket = await createTestTicket({
+    const { context, type, customer } = await orderSetup();
+    const order = await createTestOrder({
       context,
       entityTypeId: type.id,
       customerId: customer.id,
     });
-    const { id: depositId } = await sentDeposit({ context, ticketId: ticket.id });
+    const { id: depositId } = await sentDeposit({ context, orderId: order.id });
     const result = await create({ context, depositId });
     expect(errorCode({ result })).toBe("CONFLICT");
   });
 
   it("keeps payments per organization and needs payment:write to create", async () => {
-    const { context, ticketId, depositId } = await paymentSetup();
+    const { context, orderId, depositId } = await paymentSetup();
     const payment = unwrap({ result: await create({ context, depositId }) });
     const stranger = testContext();
     const read = await execute({
@@ -116,7 +116,7 @@ describe("payment", () => {
     });
     expect(errorCode({ result: read })).toBe("NOT_FOUND");
     const page = unwrap({
-      result: await execute({ operation: listPayments, input: { ticketId }, context: stranger }),
+      result: await execute({ operation: listPayments, input: { orderId }, context: stranger }),
     });
     expect(page.items).toEqual([]);
     expect(errorCode({ result: await create({ context: stranger, depositId }) })).toBe("NOT_FOUND");

@@ -5,7 +5,7 @@ import { toCanonicalQuery } from "./lib/query-canonical";
 import type { QueryVocabulary } from "./lib/query-vocabulary";
 
 export type PeopleQuickFiltersProps = {
-  /** The list page the toggles link to, e.g. `ROUTES.tickets`. */
+  /** The list page the toggles link to, e.g. `ROUTES.orders`. */
   pathname: string;
   /** The search in effect: the URL's, else none. */
   q: string | undefined;
@@ -48,7 +48,7 @@ function hrefFor({ pathname, q, next, vocabulary }: HrefInput) {
 }
 
 /**
- * All, Assigned to me and Following on every list with people filters (tickets, work orders). The last two are independent toggles (both on is two filters,
+ * All, Assigned to me and Following on every list with people filters (orders, run sheets). The last two are independent toggles (both on is two filters,
  * assignee or follower); All switches both off. A toggle is lit whichever language the search
  * was typed in.
  */

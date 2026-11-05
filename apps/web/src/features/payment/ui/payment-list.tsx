@@ -10,7 +10,7 @@ export type PaymentListProps = {
   numbers: NumberFormat;
 };
 
-/** Requested payments, newest first; shared by the ticket page and the assistant's tool card. */
+/** Requested payments, newest first; shared by the order page and the assistant's tool card. */
 export function PaymentList({ payments, dates, numbers }: PaymentListProps) {
   const t = useTranslations("payment");
   if (payments.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;

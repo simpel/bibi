@@ -57,11 +57,11 @@ describe("calendar.range values", () => {
 
   it("leaves the open value out under a line filter, the lines' without program:read", async () => {
     const { context, line } = await pricedSetup();
-    const filtered = await range({ context, input: { ...DAY, ticketId: line.ticketId } });
+    const filtered = await range({ context, input: { ...DAY, orderId: line.orderId } });
     expect(filtered.values[0]?.openMinor).toBeNull();
     const reader = testContext({
       organizationId: context.organizationId,
-      permissions: { ticket: ["read"], item: ["read"] },
+      permissions: { order: ["read"], item: ["read"] },
     });
     const { values } = await range({ context: reader, input: DAY });
     expect(values[0]).toMatchObject({

@@ -54,7 +54,7 @@ export const conferenceVenueTypes: readonly ConfigurationTemplateType[] = [
     name: "Public sector",
     fields: [orgNumber, { name: "Peppol ID", kind: "TEXT" }],
   },
-  { base: "TICKET", name: "Conference", fields: [{ name: "Purpose", kind: "TEXT" }] },
+  { base: "ORDER", name: "Conference", fields: [{ name: "Purpose", kind: "TEXT" }] },
   { base: "LINE", name: "Meeting" },
   { base: "LINE", name: "Break" },
   { base: "LINE", name: "Meal" },

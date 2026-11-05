@@ -7,7 +7,7 @@ export const createPayment = defineOperation({
   name: "payment.create",
   kind: "command",
   description:
-    "Request a payment from the ticket's customer against one receivable (ADR 0057): a SENT " +
+    "Request a payment from the order's customer against one receivable (ADR 0057): a SENT " +
     "or ACCEPTED quote (quoteId), a SENT deposit request (depositId) or a SENT invoice " +
     "(invoiceId). The amount defaults to its open balance and may be lower for a partial " +
     "payment. Charged directly on the organization's Stripe account. CARD returns a hosted " +

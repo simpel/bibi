@@ -25,7 +25,7 @@ export const paymentAccountEntity: ParityEntity = {
   },
 };
 
-/** How ticket money is taken (ADR 0090): the deposit rule and the invoice provider. */
+/** How order money is taken (ADR 0090): the deposit rule and the invoice provider. */
 export const paymentSettingsEntity: ParityEntity = {
   name: "paymentSettings",
   create: ({ mcp }) =>
@@ -42,17 +42,17 @@ export const paymentSettingsEntity: ParityEntity = {
   },
 };
 
-/** A SENT deposit request (ADR 0057) on the ticket made earlier. */
+/** A SENT deposit request (ADR 0057) on the order made earlier. */
 export const depositEntity = (): ParityEntity => ({
   ...byId({ name: "deposit", field: "deposit", list: "deposits", createTool: "", args: {} }),
   create: async ({ mcp, made }) => {
-    const args = { ticketId: made.ticket.id, description: "Parity advance", amountMinor: 100_000 };
+    const args = { orderId: made.order.id, description: "Parity advance", amountMinor: 100_000 };
     const draft = await tool({ mcp, name: "deposit_create", args });
     return tool({ mcp, name: "deposit_send", args: { id: draft.id } });
   },
 });
 
-/** An invoice of the ticket's priced lines (ADR 0052), once its status is invoiceable. */
+/** An invoice of the order's priced lines (ADR 0052), once its status is invoiceable. */
 export const invoiceEntity = (): ParityEntity => ({
   ...byId({
     name: "invoice",
@@ -63,9 +63,9 @@ export const invoiceEntity = (): ParityEntity => ({
     nested: { lines: `{ ${LINE} }` },
   }),
   create: async ({ mcp, made }) => {
-    const ticketStatus = { id: made.ticket.statusId, invoiceable: true };
-    await tool({ mcp, name: "ticketStatus_update", args: ticketStatus });
-    return tool({ mcp, name: "invoice_create", args: { ticketId: made.ticket.id } });
+    const orderStatus = { id: made.order.statusId, invoiceable: true };
+    await tool({ mcp, name: "orderStatus_update", args: orderStatus });
+    return tool({ mcp, name: "invoice_create", args: { orderId: made.order.id } });
   },
 });
 

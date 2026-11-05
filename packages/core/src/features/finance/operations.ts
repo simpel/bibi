@@ -26,7 +26,7 @@ const sum = ({ values }: { values: readonly number[] }) => values.reduce((a, b) 
 
 /**
  * The organization's money for a period (ADR 0077): invoiced, received, outstanding, aging,
- * revenue per item type, VAT per rate and won and lost tickets (ADR 0080). A view read model
+ * revenue per item type, VAT per rate and won and lost orders (ADR 0080). A view read model
  * (ADR 0071): invoices and payments need `payment:read`, outcomes `quote:read`; nothing is stored.
  */
 export const financeOverview = defineOperation({
@@ -34,7 +34,7 @@ export const financeOverview = defineOperation({
   kind: "query",
   description:
     "The organization's money for a period: invoiced and received per month, open and overdue invoices, revenue per item type, VAT per rate, " +
-    "and tickets won (closed with an accepted quote or a sent invoice) and lost per month. Accepted quotes not invoiced yet are in dashboard.summary.",
+    "and orders won (closed with an accepted quote or a sent invoice) and lost per month. Accepted quotes not invoiced yet are in dashboard.summary.",
   input: FinanceOverviewInputSchema,
   output: FinanceOverviewSchema,
   permission: "finance:read",
@@ -68,9 +68,9 @@ export const financeOverview = defineOperation({
       : null;
     const months = monthly({ ...period, invoiced, cash });
     const referenceOf = ({ reference }: { reference: number }) =>
-      visibleTo({ context, feature: "ticket", value: reference });
+      visibleTo({ context, feature: "order", value: reference });
     const titleOf = ({ title }: { title: string | null }) =>
-      visibleTo({ context, feature: "ticket", value: title });
+      visibleTo({ context, feature: "order", value: title });
     const late = aging({ open, now, referenceOf, titleOf });
     const overdueMinor = late.overdue1to30Minor + late.overdue31to60Minor + late.overdue61PlusMinor;
     const gate = <T>({ value }: { value: T }) => visibleTo({ context, feature: "payment", value });

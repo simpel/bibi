@@ -34,8 +34,8 @@ export const moveBoardPhaseStatusHandler = async ({
 }: HandlerInput<z.infer<typeof BoardPhaseMoveStatusInputSchema>>) => {
   const before = await loadBoard({ context, id: boardId });
   if (!before) return notFound({ entity: "Board" });
-  if (!(await context.db.ticketStatus.findFirst({ where: { id: statusId } }))) {
-    return problem({ path: "statusId", message: "Unknown or archived ticket status" });
+  if (!(await context.db.orderStatus.findFirst({ where: { id: statusId } }))) {
+    return problem({ path: "statusId", message: "Unknown or archived order status" });
   }
   if (phaseId === null) {
     await context.db.boardPhaseStatus.deleteMany({ where: { boardId, statusId } });

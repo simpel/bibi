@@ -9,7 +9,7 @@ import { LineRoleSchema } from "./line-role";
 export const LineRecordSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  ticketId: z.string(),
+  orderId: z.string(),
   entityTypeId: z.string(),
   name: z.string(),
   /** Null on an untimed line (a fee), which never holds and is not on the calendar. */
@@ -19,7 +19,7 @@ export const LineRecordSchema = z.object({
   setupId: z.string().nullable(),
   /** Own buffers around the booking (ADR 0059); null = the item's, else its type's. */
   ...BufferMinutesShape,
-  /** Null = the ticket's headcount. */
+  /** Null = the order's headcount. */
   quantity: z.number().int().nullable(),
   /** Overrides; null = inherit (see the effective values). */
   unitPriceMinor: z.number().int().nullable(),

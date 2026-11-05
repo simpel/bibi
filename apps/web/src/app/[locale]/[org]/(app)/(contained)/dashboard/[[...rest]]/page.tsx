@@ -1,11 +1,17 @@
 import { resolveLocale } from "@bibi/i18n";
 import { redirect } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
+import { pageTitle } from "@/lib/page-metadata";
 
 type OldDashboardRouteProps = {
   params: Promise<{ locale: string; org: string; rest?: string[] }>;
   searchParams: Promise<{ customer?: string | string[] }>;
 };
+
+export async function generateMetadata({ params }: OldDashboardRouteProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "nav", key: "dashboard" });
+}
 
 /** The old `/dashboard/...` paths: the same dashboard and range under `/data` (ADR 0086). */
 export default async function OldDashboardRoute({ params, searchParams }: OldDashboardRouteProps) {

@@ -17,7 +17,7 @@ export const previewPipelineSetup = defineOperation({
   description:
     "Preview a whole pipeline setup without saving anything (ADR 0044): item types with their " +
     "states, statuses in order and grid cells, all by name. Returns the configuration problems " +
-    "(errors block activation, warnings do not) and a simulated ticket with one line per item " +
+    "(errors block activation, warnings do not) and a simulated order with one line per item " +
     "type stepped through every open status and into each closing status, with each line's " +
     "state and hold. Use it to propose a full setup from a description of the organization.",
   input: PipelineSetupDraftSchema,
@@ -38,9 +38,9 @@ export const activatePipelineSetup = defineOperation({
     "Save a pipeline setup (the same draft as pipelineSetup.preview, which must have no " +
     "errors) as one audited batch through the normal operations: new item types are created, " +
     "states and statuses are created or updated by name, the item types' other states and the " +
-    "other statuses are archived (their lines and tickets move to the initial state and the entry " +
+    "other statuses are archived (their lines and orders move to the initial state and the entry " +
     "status), and the order, default transitions and grid cells are set. All or nothing. Needs " +
-    "configuration, itemState, ticketStatus and statusGrid admin.",
+    "configuration, itemState, orderStatus and statusGrid admin.",
   input: PipelineSetupDraftSchema,
   output: PipelineActivateOutputSchema,
   permission: "pipeline:write",

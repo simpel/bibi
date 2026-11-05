@@ -1,5 +1,5 @@
 import { getOrganizationProfile } from "../../features/organization-profile/operations";
-import { listTicketStatuses } from "../../features/ticket-status/read-operations";
+import { listOrderStatuses } from "../../features/order-status/read-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoOrg } from "./types";
@@ -22,7 +22,7 @@ export async function checkDemoSetupNeed({
   if (profile.value.setupStatus !== expected) {
     return [`${org.slug}: setup is ${profile.value.setupStatus}, expected ${expected}`];
   }
-  const statuses = await execute({ operation: listTicketStatuses, input: { limit: 1 }, context });
+  const statuses = await execute({ operation: listOrderStatuses, input: { limit: 1 }, context });
   if (!statuses.ok) return [`${org.slug}: could not read statuses`];
   const needsSetup = statuses.value.items.length === 0;
   if (needsSetup !== skipPipeline) {

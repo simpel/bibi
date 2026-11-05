@@ -59,7 +59,7 @@ function MoveDialogs({ pending, onClose, onPick, onReason }: MoveDialogsProps) {
 }
 
 /**
- * Runs `ticket.changeStatus` behind a drop (ADR 0076). One allowed status moves at once, several
+ * Runs `order.changeStatus` behind a drop (ADR 0076). One allowed status moves at once, several
  * open a picker, none refuses. A move with a REASON gate asks for the reason first; a refused move
  * opens a dialog that lists every blocker instead of dropping the card.
  */

@@ -1,4 +1,4 @@
-import type { TicketStatus } from "@bibi/db";
+import type { OrderStatus } from "@bibi/db";
 import type { BoardDto } from "../board/schema";
 import type { LoadedCard } from "./load-cards";
 import type { PipelineBoard, PipelineColumn } from "./schema";
@@ -8,11 +8,11 @@ export type BoardLayout = Omit<PipelineBoard, "unmappedCount" | "currency">;
 
 export type BoardColumnsInput = {
   board: BoardDto;
-  statuses: readonly TicketStatus[];
+  statuses: readonly OrderStatus[];
   cards: readonly LoadedCard[];
 };
 
-const toStatus = ({ row }: { row: TicketStatus }) => ({
+const toStatus = ({ row }: { row: OrderStatus }) => ({
   id: row.id,
   title: row.name,
   color: row.color,

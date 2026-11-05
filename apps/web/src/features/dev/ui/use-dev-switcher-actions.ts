@@ -3,16 +3,19 @@
 import type { DevUser } from "@bibi/auth";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 import { useRouter } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import { reseedDevDatabaseAction, resetDevOnboardingAction, switchDevUserAction } from "../actions";
 
-/** Menu open state plus the switch, reset onboarding and reseed actions; each closes the menu first. */
+/** Menu open state plus the switch, reset onboarding, reseed and log out actions; each closes the menu first. */
 export function useDevSwitcherActions() {
   const t = useTranslations("dev");
   const router = useRouter();
   const { run, pending } = useToastAction();
   const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const locale = useLocale();
   const refresh = () => router.refresh();
   // The other user's active organization decides the slug: reload from the locale root.
@@ -42,5 +45,24 @@ export function useDevSwitcherActions() {
       messages: { pending: t("reseeding"), success: t("reseeded") },
       onSuccess: refresh,
     });
-  return { open, setOpen, pending, switchTo, resetOnboarding, reseed };
+  const signOut = async () => {
+    setOpen(false);
+    setSigningOut(true);
+    try {
+      await authClient.signOut();
+      router.replace(ROUTES.login);
+      router.refresh();
+    } finally {
+      setSigningOut(false);
+    }
+  };
+  return {
+    open,
+    setOpen,
+    pending: pending || signingOut,
+    switchTo,
+    resetOnboarding,
+    reseed,
+    signOut,
+  };
 }

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { Link } from "@/lib/navigation";
-import { ticketRoute } from "@/lib/routes";
+import { orderRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 
@@ -23,7 +23,7 @@ function useRequirementColumns(): ColumnDef<Row>[] {
         accessorFn: (requirement) => requirement.quantity,
         cell: ({ row }) => (
           <Link
-            href={ticketRoute({ id: row.original.ticketId })}
+            href={orderRoute({ id: row.original.orderId })}
             className="font-medium hover:underline"
           >
             {row.original.quantity}
@@ -33,14 +33,14 @@ function useRequirementColumns(): ColumnDef<Row>[] {
       {
         id: "where",
         header: t("columns.where"),
-        accessorFn: (requirement) => (requirement.lineId ? t("onLine") : t("onTicket")),
+        accessorFn: (requirement) => (requirement.lineId ? t("onLine") : t("onOrder")),
       },
     ],
     [t],
   );
 }
 
-/** A page of requirements; each row links to its ticket's page. */
+/** A page of requirements; each row links to its order's page. */
 export function RequirementTableView({ items, nextCursor }: RequirementTableViewProps) {
   const t = useTranslations("assistant.ui.requirement");
   const columns = useRequirementColumns();

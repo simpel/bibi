@@ -1,15 +1,39 @@
 import type { SetupPreset } from "./setup-presets";
 
-const book = ({ key, name }: { key: string; name: string }) => ({ key, name, bookable: true });
-const sell = ({ key, name }: { key: string; name: string }) => ({ key, name, bookable: false });
+const space = ({ key, name }: { key: string; name: string }) => ({
+  key,
+  name,
+  bookable: true,
+  category: "spaces" as const,
+});
+const food = ({ key, name }: { key: string; name: string }) => ({
+  key,
+  name,
+  bookable: false,
+  category: "food" as const,
+});
+const extra = ({
+  key,
+  name,
+  bookable = false,
+}: {
+  key: string;
+  name: string;
+  bookable?: boolean;
+}) => ({
+  key,
+  name,
+  bookable,
+  category: "extras" as const,
+});
 
-const coffeeBreak = sell({ key: "coffeeBreak", name: "Coffee break" });
-const drink = sell({ key: "drink", name: "Drink" });
-const meal = sell({ key: "meal", name: "Meal" });
-const meetingRoom = book({ key: "meetingRoom", name: "Meeting room" });
-const equipment = book({ key: "equipment", name: "Equipment" });
-const guide = book({ key: "guide", name: "Guide" });
-const hall = book({ key: "hall", name: "Hall" });
+const coffeeBreak = food({ key: "coffeeBreak", name: "Coffee break" });
+const drink = food({ key: "drink", name: "Drink" });
+const meal = food({ key: "meal", name: "Meal" });
+const meetingRoom = space({ key: "meetingRoom", name: "Meeting room" });
+const equipment = extra({ key: "equipment", name: "Equipment", bookable: true });
+const guide = extra({ key: "guide", name: "Guide", bookable: true });
+const hall = space({ key: "hall", name: "Hall" });
 
 /**
  * The venue kinds of the welcome flow (ADR 0061, `docs/specs/welcome.md`). `key` names the
@@ -19,26 +43,26 @@ export const VENUE_KIND_PRESETS = {
   "conference-estate": {
     statuses: "conference-estate",
     itemTypes: [
-      book({ key: "conferenceRoom", name: "Conference room" }),
-      book({ key: "breakoutRoom", name: "Breakout room" }),
+      space({ key: "conferenceRoom", name: "Conference room" }),
+      space({ key: "breakoutRoom", name: "Breakout room" }),
       equipment,
       coffeeBreak,
-      sell({ key: "lunch", name: "Lunch" }),
-      sell({ key: "dinner", name: "Dinner" }),
+      food({ key: "lunch", name: "Lunch" }),
+      food({ key: "dinner", name: "Dinner" }),
       drink,
-      sell({ key: "activity", name: "Activity" }),
+      extra({ key: "activity", name: "Activity" }),
     ],
   },
   "manor-house": {
     statuses: "conference-estate",
     itemTypes: [
-      book({ key: "banquetHall", name: "Banquet hall" }),
+      space({ key: "banquetHall", name: "Banquet hall" }),
       meetingRoom,
-      book({ key: "garden", name: "Garden" }),
-      sell({ key: "dinnerMenu", name: "Dinner menu" }),
-      sell({ key: "drinkPackage", name: "Drink package" }),
+      space({ key: "garden", name: "Garden" }),
+      food({ key: "dinnerMenu", name: "Dinner menu" }),
+      food({ key: "drinkPackage", name: "Drink package" }),
       coffeeBreak,
-      sell({ key: "activity", name: "Activity" }),
+      extra({ key: "activity", name: "Activity" }),
     ],
   },
   "experience-centre": {
@@ -46,8 +70,8 @@ export const VENUE_KIND_PRESETS = {
     itemTypes: [
       hall,
       guide,
-      sell({ key: "tour", name: "Tour" }),
-      sell({ key: "workshop", name: "Workshop" }),
+      extra({ key: "tour", name: "Tour" }),
+      extra({ key: "workshop", name: "Workshop" }),
       meal,
       drink,
     ],
@@ -55,9 +79,9 @@ export const VENUE_KIND_PRESETS = {
   museum: {
     statuses: "default",
     itemTypes: [
-      book({ key: "eventSpace", name: "Event space" }),
+      space({ key: "eventSpace", name: "Event space" }),
       guide,
-      sell({ key: "guidedTour", name: "Guided tour" }),
+      extra({ key: "guidedTour", name: "Guided tour" }),
       coffeeBreak,
       meal,
     ],
@@ -65,11 +89,11 @@ export const VENUE_KIND_PRESETS = {
   restaurant: {
     statuses: "default",
     itemTypes: [
-      book({ key: "privateRoom", name: "Private room" }),
-      sell({ key: "setMenu", name: "Set menu" }),
-      sell({ key: "dish", name: "Dish" }),
+      space({ key: "privateRoom", name: "Private room" }),
+      food({ key: "setMenu", name: "Set menu" }),
+      food({ key: "dish", name: "Dish" }),
       drink,
-      sell({ key: "winePackage", name: "Wine package" }),
+      food({ key: "winePackage", name: "Wine package" }),
     ],
   },
   "event-hall": {
@@ -77,9 +101,9 @@ export const VENUE_KIND_PRESETS = {
     itemTypes: [
       hall,
       meetingRoom,
-      book({ key: "exhibitionStand", name: "Exhibition stand" }),
+      space({ key: "exhibitionStand", name: "Exhibition stand" }),
       equipment,
-      sell({ key: "catering", name: "Catering" }),
+      food({ key: "catering", name: "Catering" }),
       coffeeBreak,
       drink,
     ],
@@ -87,9 +111,9 @@ export const VENUE_KIND_PRESETS = {
   "arena-hospitality": {
     statuses: "default",
     itemTypes: [
-      book({ key: "lodge", name: "Lodge" }),
-      book({ key: "lounge", name: "Lounge" }),
-      sell({ key: "matchDayPackage", name: "Match-day package" }),
+      space({ key: "lodge", name: "Lodge" }),
+      space({ key: "lounge", name: "Lounge" }),
+      food({ key: "matchDayPackage", name: "Match-day package" }),
       meal,
       drink,
     ],
@@ -97,16 +121,16 @@ export const VENUE_KIND_PRESETS = {
   theatre: {
     statuses: "default",
     itemTypes: [
-      book({ key: "foyer", name: "Foyer" }),
-      book({ key: "rehearsalRoom", name: "Rehearsal room" }),
-      sell({ key: "preShowDinner", name: "Pre-show dinner" }),
+      space({ key: "foyer", name: "Foyer" }),
+      space({ key: "rehearsalRoom", name: "Rehearsal room" }),
+      food({ key: "preShowDinner", name: "Pre-show dinner" }),
       drink,
-      sell({ key: "intervalPackage", name: "Interval package" }),
+      food({ key: "intervalPackage", name: "Interval package" }),
     ],
   },
   "meeting-space": {
     statuses: "default",
-    itemTypes: [meetingRoom, equipment, coffeeBreak, sell({ key: "lunch", name: "Lunch" })],
+    itemTypes: [meetingRoom, equipment, coffeeBreak, food({ key: "lunch", name: "Lunch" })],
   },
   empty: { statuses: "default", itemTypes: [] },
 } as const satisfies Record<string, Omit<SetupPreset, "key">>;

@@ -27,11 +27,11 @@ async function lineAt({
   to: number;
   past?: boolean;
 }) {
-  const { context, ticket, type, room } = setup;
+  const { context, order, type, room } = setup;
   const period = hours({ from, to });
   const shift = past ? Date.UTC(2037, 10, 1) - Date.UTC(2020, 0, 1) : 0;
   const input = {
-    ...{ ticketId: ticket.id, entityTypeId: type.id, itemId: room.id, setupId: setup.setup.id },
+    ...{ orderId: order.id, entityTypeId: type.id, itemId: room.id, setupId: setup.setup.id },
     name: past ? "Past" : "Future",
     startsAt: new Date(period.startsAt.getTime() - shift),
     endsAt: new Date(period.endsAt.getTime() - shift),
@@ -110,8 +110,8 @@ describe("line holds are a trigger-written projection (ADR 0053)", () => {
 
   it("lets only one of two concurrent bookings of the same slot through", async () => {
     const setup = await programSetup();
-    const { context, ticket, type, room } = setup;
-    const input = { ticketId: ticket.id, entityTypeId: type.id, itemId: room.id, name: "Race" };
+    const { context, order, type, room } = setup;
+    const input = { orderId: order.id, entityTypeId: type.id, itemId: room.id, name: "Race" };
     const attempts = [1, 2].map(() =>
       execute({
         operation: createLine,

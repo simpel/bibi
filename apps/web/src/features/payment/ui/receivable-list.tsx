@@ -4,7 +4,7 @@ import type {
   InvoiceDto,
   NumberFormat,
   ReceivableSettlement,
-  TicketBalanceDto,
+  OrderBalanceDto,
 } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { DepositEntry } from "./deposit-entry";
@@ -75,13 +75,13 @@ function InvoiceRow({ invoice, canWrite, ...formats }: InvoiceRowProps) {
 }
 
 export type ReceivableListProps = {
-  balance: TicketBalanceDto;
+  balance: OrderBalanceDto;
   deposits: readonly DepositDto[];
   invoices: readonly InvoiceDto[];
   canWrite: boolean;
 } & Formats;
 
-/** The ticket's receivables (ADR 0057): sent quotes, deposit requests and invoices. */
+/** The order's receivables (ADR 0057): sent quotes, deposit requests and invoices. */
 export function ReceivableList(props: ReceivableListProps) {
   const { balance, deposits, invoices, canWrite, dates, numbers } = props;
   const formats = { dates, numbers };

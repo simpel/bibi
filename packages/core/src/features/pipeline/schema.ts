@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const PipelineStatusSchema = z.object({
-  id: z.string().describe("The ticket status id"),
+  id: z.string().describe("The order status id"),
   title: z.string().describe("The status name"),
   color: z.string().describe("The status colour"),
   closed: z.boolean().describe("A closing status"),
@@ -13,19 +13,19 @@ export const PipelineColumnSchema = z.object({
   closed: z.boolean().describe("Every status of the phase closes; shown as a closed lane"),
   statuses: z
     .array(PipelineStatusSchema)
-    .describe("The ticket statuses in this column, in status order: one drop zone each"),
+    .describe("The order statuses in this column, in status order: one drop zone each"),
 });
 
 export const PipelineCardSchema = z.object({
-  id: z.string().describe("Ticket id"),
-  columnId: z.string().describe("The board phase (column) the ticket shows in"),
-  statusId: z.string().describe("The ticket's status id"),
-  reference: z.number().int().describe("Ticket reference number"),
-  title: z.string().nullable().describe("The ticket's title; null until it has one"),
+  id: z.string().describe("Order id"),
+  columnId: z.string().describe("The board phase (column) the order shows in"),
+  statusId: z.string().describe("The order's status id"),
+  reference: z.number().int().describe("Order reference number"),
+  title: z.string().nullable().describe("The order's title; null until it has one"),
   typeName: z.string(),
   customerId: z
     .string()
-    .describe("The ticket's customer id; resolve its name with customer.get or customer.list"),
+    .describe("The order's customer id; resolve its name with customer.get or customer.list"),
   startsAt: z.date().nullable().describe("Desired start"),
   endsAt: z.date().nullable().describe("Desired end"),
   quantity: z
@@ -33,7 +33,7 @@ export const PipelineCardSchema = z.object({
     .int()
     .nullable()
     .describe("Guaranteed or estimated headcount, else the requested quantity"),
-  statusChangedAt: z.date().describe("When the ticket entered its status (time in status)"),
+  statusChangedAt: z.date().describe("When the order entered its status (time in status)"),
   assigneeId: z.string().nullable().describe("Main assignee (user id)"),
   heldLines: z
     .number()
@@ -50,8 +50,8 @@ export const PipelineCardSchema = z.object({
     .int()
     .nullable()
     .describe(
-      "Estimated value excl. VAT in minor units of `currency`: the ticket's own estimate " +
-        "(ticket.estimateHistory), else what its priced lines total (only with program:read)",
+      "Estimated value excl. VAT in minor units of `currency`: the order's own estimate " +
+        "(order.estimateHistory), else what its priced lines total (only with program:read)",
     ),
   confirmedValueMinor: z
     .number()
@@ -68,18 +68,18 @@ export const PipelineBoardInputSchema = z.object({
   assigneeId: z
     .string()
     .optional()
-    .describe("Only tickets this user is assigned to; replaces the board's own filter"),
+    .describe("Only orders this user is assigned to; replaces the board's own filter"),
   entityTypeId: z
     .string()
     .optional()
-    .describe("Only tickets of this type; replaces the board's own filter"),
+    .describe("Only orders of this type; replaces the board's own filter"),
   closedWithinDays: z
     .number()
     .int()
     .min(1)
     .max(365)
     .default(30)
-    .describe("Show tickets in closing statuses that moved there within this many days"),
+    .describe("Show orders in closing statuses that moved there within this many days"),
 });
 
 export const PipelineBoardSchema = z.object({
@@ -91,7 +91,7 @@ export const PipelineBoardSchema = z.object({
   unmappedCount: z
     .number()
     .int()
-    .describe("Matching tickets whose status is in no phase of this board, so not shown"),
+    .describe("Matching orders whose status is in no phase of this board, so not shown"),
 });
 
 export type PipelineStatus = z.infer<typeof PipelineStatusSchema>;

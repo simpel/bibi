@@ -28,9 +28,9 @@ export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
 
 /**
  * The slug is also the organization's inbox address (`<slug>@MAIL_INBOUND_DOMAIN`, ADR 0083,
- * 0085), so it may never look like a ticket's reply address (`ticket-<id>@`).
+ * 0085), so it may never look like an order's reply address (`order-<id>@`).
  */
-export const RESERVED_SLUG_PREFIXES: readonly string[] = ["ticket-"];
+export const RESERVED_SLUG_PREFIXES: readonly string[] = ["order-"];
 
 export type IsReservedSlugInput = { slug: string };
 

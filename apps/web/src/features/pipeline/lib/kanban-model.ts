@@ -4,7 +4,7 @@ import { dropTargets } from "./move-rules";
 
 /** A board card as the kanban shows it. */
 export type BoardCard = Omit<PipelineCard, "title"> & {
-  /** The ticket's title; an untitled ticket goes by its customer, else its reference. */
+  /** The order's title; an untitled order goes by its customer, else its reference. */
   title: string;
   /** Null when the caller may not view customers (ADR 0050): then none is shown. */
   customerName: string | null;
@@ -22,7 +22,7 @@ export type KanbanCardsInput = {
   customerNames: Readonly<Record<string, string>>;
 };
 
-/** The cards, titled by the ticket's title (else customer or reference) in their status zone. */
+/** The cards, titled by the order's title (else customer or reference) in their status zone. */
 export function kanbanCards({ board, customerNames }: KanbanCardsInput): BoardCard[] {
   return board.cards.map((card) => {
     const column = board.columns.find((c) => c.id === card.columnId);

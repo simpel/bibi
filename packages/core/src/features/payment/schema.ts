@@ -16,7 +16,7 @@ export const PaymentStatusSchema = z.enum([
 export const PaymentSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  ticketId: z.string(),
+  orderId: z.string(),
   quoteId: z.string().nullable().describe("The sent quote this payment settles, if any"),
   depositId: z.string().nullable().describe("The deposit request this payment settles, if any"),
   invoiceId: z.string().nullable().describe("The invoice this payment settles, if any"),
@@ -47,7 +47,7 @@ export const PaymentSchema = z.object({
 
 export const PaymentListInputSchema = z.object({
   ...PageInputShape,
-  ticketId: z.string().min(1).describe("Id of the ticket whose payments to list"),
+  orderId: z.string().min(1).describe("Id of the order whose payments to list"),
 });
 
 export const PaymentListOutputSchema = z.object({
@@ -102,10 +102,10 @@ export const PublicPaymentInputSchema = z.object({
   token: PublicTokenSchema.describe("Token from the public payment page URL"),
 });
 
-/** What the customer sees on the public page: no customer or ticket details (ADR 0028). */
+/** What the customer sees on the public page: no customer or order details (ADR 0028). */
 export const PublicPaymentSchema = z.object({
   organizationName: z.string(),
-  ticketReference: z.number().int(),
+  orderReference: z.number().int(),
   method: PaymentMethodSchema,
   /** `EXPIRED` is derived: still `PENDING` but past `expiresAt`. */
   status: z.enum([...PaymentStatusSchema.options, "EXPIRED"]),

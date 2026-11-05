@@ -4,14 +4,19 @@ export type UiExempt = { operation: string; reason: string };
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
   {
-    operation: "ticket.export",
+    operation: "profile.setLocale",
     reason:
-      "The ticket page leaves out an export button to keep its header to the daily work; the export serves the API and the assistant.",
+      "Language switching is handled via route locale prefix (/sv, /en); profile.setLocale serves background sync and API clients.",
   },
   {
-    operation: "ticket.createFromTemplate",
+    operation: "order.export",
     reason:
-      "The intake on /new/ticket reviews a package's lines and creates them with ticket.create and templateId (ADR 0081); createFromTemplate serves the API and the assistant.",
+      "The order page leaves out an export button to keep its header to the daily work; the export serves the API and the assistant.",
+  },
+  {
+    operation: "order.createFromTemplate",
+    reason:
+      "The intake on /new/order reviews a package's lines and creates them with order.create and templateId (ADR 0081); createFromTemplate serves the API and the assistant.",
   },
   {
     operation: "itemDemand.get",
@@ -31,7 +36,7 @@ export const UI_EXEMPT: readonly UiExempt[] = [
   {
     operation: "assignment.listMine",
     reason:
-      "The My work page (#253) shows it; until then the ticket list filters by Assigned to me and Following with its own list operation.",
+      "The My work page (#253) shows it; until then the order list filters by Assigned to me and Following with its own list operation.",
   },
   {
     operation: "occupancy.get",
@@ -41,17 +46,17 @@ export const UI_EXEMPT: readonly UiExempt[] = [
   {
     operation: "line.get",
     reason:
-      "A line has no page of its own: the ticket page lists the run schedule with line.list and edits it inline.",
+      "A line has no page of its own: the order page lists the run schedule with line.list and edits it inline.",
   },
   {
     operation: "alternativeGroup.get",
     reason:
-      "An alternative group has no page of its own: the ticket page lists them with alternativeGroup.list and chooses inline.",
+      "An alternative group has no page of its own: the order page lists them with alternativeGroup.list and chooses inline.",
   },
   {
     operation: "requirement.get",
     reason:
-      "A requirement has no page of its own: the ticket page lists its counts with requirement.list and edits them inline.",
+      "A requirement has no page of its own: the order page lists its counts with requirement.list and edits them inline.",
   },
   {
     operation: "contact.get",
@@ -65,7 +70,7 @@ export const UI_EXEMPT: readonly UiExempt[] = [
   {
     operation: "inboundEmail.list",
     reason:
-      "Deprecated alias (ADR 0085): the ticket page lists every channel with inboundMessage.list",
+      "Deprecated alias (ADR 0085): the order page lists every channel with inboundMessage.list",
   },
   {
     operation: "inboundMessage.submit",
@@ -75,16 +80,16 @@ export const UI_EXEMPT: readonly UiExempt[] = [
   {
     operation: "payment.get",
     reason:
-      "The ticket page shows every payment in full from payment.list; one payment has no page",
+      "The order page shows every payment in full from payment.list; one payment has no page",
   },
   {
     operation: "deposit.get",
     reason:
-      "The ticket page shows every deposit request in full from deposit.list; one has no page",
+      "The order page shows every deposit request in full from deposit.list; one has no page",
   },
   {
     operation: "invoice.get",
-    reason: "The ticket page shows every invoice from invoice.list; one invoice has no page yet",
+    reason: "The order page shows every invoice from invoice.list; one invoice has no page yet",
   },
   {
     operation: "auditLog.get",
@@ -99,5 +104,10 @@ export const UI_EXEMPT: readonly UiExempt[] = [
     operation: "userPreference.set",
     reason:
       "No page of its own: UI that remembers a choice (e.g. table column order) saves it with saveUserPreference",
+  },
+  {
+    operation: "order.expireHolds",
+    reason:
+      "Expired holds are swept automatically by the background worker every 15 minutes (ADR 0027, 0044); the operation serves the worker and assistant without needing a manual button on the order list.",
   },
 ];

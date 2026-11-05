@@ -27,7 +27,7 @@ describe("SYSTEM skills", () => {
         "find-available-space",
         "intake-from-message",
         "propose-configuration",
-        "summarize-ticket-risks",
+        "summarize-order-risks",
       ]),
     );
   });

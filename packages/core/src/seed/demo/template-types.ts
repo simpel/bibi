@@ -1,6 +1,6 @@
 /**
- * A line of a predefined ticket (ADR 0043) in the demo data: an item by name, an optional setup
- * by name, minutes from the ticket's start, a quantity (none: the ticket's headcount, ADR 0052)
+ * A line of a predefined order (ADR 0043) in the demo data: an item by name, an optional setup
+ * by name, minutes from the order's start, a quantity (none: the order's headcount, ADR 0052)
  * and the choices it preselects, by option item name (ADR 0089).
  */
 export type DemoTemplateLine = {
@@ -14,10 +14,10 @@ export type DemoTemplateLine = {
 };
 
 /**
- * A predefined ticket (slice 5 of ADR 0025, `docs/demo-seed.md`): the ticket type and the status
- * tickets start in by name, and its lines. Created before the tickets that use it.
+ * A predefined order (slice 5 of ADR 0025, `docs/demo-seed.md`): the order type and the status
+ * orders start in by name, and its lines. Created before the orders that use it.
  */
-export type DemoTicketTemplate = {
+export type DemoOrderTemplate = {
   name: string;
   type: string;
   status: string;

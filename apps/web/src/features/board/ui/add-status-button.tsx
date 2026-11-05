@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { AddStatusForm } from "./add-status-form";
 import { FormPopover } from "./form-popover";
 
-/** "+ Add status" in the unphased column (`ticketStatus.create`). */
+/** "+ Add status" in the unphased column (`orderStatus.create`). */
 export function AddStatusButton() {
   const t = useTranslations("boardPhase");
   return (

@@ -4,7 +4,7 @@ import { uiEntry } from "./ui-entry";
 /** The preview of archiving a status or state as tool results carry it (it has no dates). */
 export type ArchivePreviewWire = ArchivePreview;
 
-/** Shared by `ticketStatus_archivePreview` and `itemState_archivePreview`. */
+/** Shared by `orderStatus_archivePreview` and `itemState_archivePreview`. */
 export const archivePreviewEntry = uiEntry({
   component: "archive-preview-card",
   schema: ArchivePreviewSchema,

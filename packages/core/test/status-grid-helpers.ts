@@ -11,8 +11,8 @@ import { createTestItem } from "./item-helpers";
 import { addState, roomStates } from "./item-state-helpers";
 import { createTestLine } from "./line-helpers";
 import { createBookableItem } from "./occupancy-helpers";
-import { createTestTicket, memberUser, ticketSetup } from "./ticket-helpers";
-import { statusByName } from "./ticket-status-helpers";
+import { createTestOrder, memberUser, orderSetup } from "./order-helpers";
+import { statusByName } from "./order-status-helpers";
 
 type Ctx = { context: ExecuteContext };
 
@@ -33,16 +33,16 @@ async function foodSetup({ context }: Ctx) {
 
 /**
  * The default statuses (Lead, Confirmed, Completed, Lost), a line type, a room with the bookable
- * states (Prebooked, Booked, Released) and a dish with the food states. `newTicket` makes a
- * ticket in Lead, assigned unless told otherwise.
+ * states (Prebooked, Booked, Released) and a dish with the food states. `newOrder` makes a
+ * order in Lead, assigned unless told otherwise.
  */
 export async function gridSetup() {
-  const { context, type: ticketType, customer } = await ticketSetup();
+  const { context, type: orderType, customer } = await orderSetup();
   const assigneeId = await memberUser({ context, name: "Johan Ek" });
-  const newTicket = ({ assigned = true }: { assigned?: boolean } = {}) =>
-    createTestTicket({
+  const newOrder = ({ assigned = true }: { assigned?: boolean } = {}) =>
+    createTestOrder({
       context,
-      entityTypeId: ticketType.id,
+      entityTypeId: orderType.id,
       customerId: customer.id,
       ...(assigned ? { assigneeId } : {}),
     });
@@ -54,30 +54,30 @@ export async function gridSetup() {
   const room = await createBookableItem({ context });
   const roomState = await roomStates({ context, entityTypeId: room.entityTypeId });
   const food = await foodSetup({ context });
-  return { context, newTicket, lineType, room, roomState, food };
+  return { context, newOrder, lineType, room, roomState, food };
 }
 
 export type GridSetup = Awaited<ReturnType<typeof gridSetup>>;
 
 export type SetCellInput = Ctx & {
-  ticketStatus: string;
+  orderStatus: string;
   entityTypeId: string;
   stateId: string | null;
 };
 
 /** `statusGrid.setCell` on the named status; returns the result. */
-export async function setCell({ context, ticketStatus, entityTypeId, stateId }: SetCellInput) {
-  const { id: statusId } = await statusByName({ context, name: ticketStatus });
+export async function setCell({ context, orderStatus, entityTypeId, stateId }: SetCellInput) {
+  const { id: statusId } = await statusByName({ context, name: orderStatus });
   const input = { statusId, entityTypeId, stateId };
   return execute({ operation: setStatusGridCell, input, context });
 }
 
-export type AddLineInput = { setup: GridSetup; ticketId: string; itemId: string; from?: number };
+export type AddLineInput = { setup: GridSetup; orderId: string; itemId: string; from?: number };
 
 /** A line on the item from `from` (default 9) for two hours on 1 November 2037. */
-export async function addLine({ setup, ticketId, itemId, from = 9 }: AddLineInput) {
+export async function addLine({ setup, orderId, itemId, from = 9 }: AddLineInput) {
   const { context, lineType } = setup;
-  const input = { context, ticketId, entityTypeId: lineType.id, itemId, from, to: from + 2 };
+  const input = { context, orderId, entityTypeId: lineType.id, itemId, from, to: from + 2 };
   return unwrap({ result: await createTestLine(input) });
 }
 

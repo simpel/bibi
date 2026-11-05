@@ -11,9 +11,9 @@ export type RecentCustomersInput = Ctx & {
   input: Pick<CustomerListInput, "limit" | "cursor">;
 };
 
-/** The cursor customer's position: its latest ticket's creation. */
+/** The cursor customer's position: its latest order's creation. */
 async function cursorAt({ context, cursor }: Ctx & { cursor: string }) {
-  const latest = await context.db.ticket.aggregate({
+  const latest = await context.db.order.aggregate({
     where: { customerId: cursor },
     _max: { createdAt: true },
   });
@@ -30,13 +30,13 @@ async function afterCursor({ context, cursor }: Ctx & { cursor: string | undefin
       { createdAt: { _max: { lt: at } } },
       { AND: [{ createdAt: { _max: { equals: at } } }, { customerId: { lt: cursor } }] },
     ],
-  } satisfies Prisma.TicketScalarWhereWithAggregatesInput;
+  } satisfies Prisma.OrderScalarWhereWithAggregatesInput;
 }
 
 /**
- * Customers ordered by their latest active ticket's creation, newest first (ADR 0081: the
- * intake's "recent customers"). Customers without an active ticket are left out. One grouped
- * query over tickets picks the page, one query loads those customers: no per-customer reads.
+ * Customers ordered by their latest active order's creation, newest first (ADR 0081: the
+ * intake's "recent customers"). Customers without an active order are left out. One grouped
+ * query over orders picks the page, one query loads those customers: no per-customer reads.
  */
 export async function recentCustomers({
   context,
@@ -44,7 +44,7 @@ export async function recentCustomers({
   input,
 }: RecentCustomersInput): Promise<CustomerRow[]> {
   const having = await afterCursor({ context, cursor: input.cursor });
-  const groups = await context.db.ticket.groupBy({
+  const groups = await context.db.order.groupBy({
     by: ["customerId"],
     where: { customer: { ...where, status: "ACTIVE" } },
     _max: { createdAt: true },

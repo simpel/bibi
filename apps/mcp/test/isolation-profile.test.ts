@@ -33,6 +33,12 @@ describe("profile, working hours and file isolation (ADR 0061, 0063)", () => {
     });
     const otherOrg = await connect({ context: testContext() });
     await call({ client: a, name: "profile_update", args: NAMES });
+    const setLocale = await call({
+      client: a,
+      name: "profile_setLocale",
+      args: { locale: "sv" },
+    });
+    expect(setLocale.isError).toBe(false);
     const set = await call({
       client: a,
       name: "workingHours_set",

@@ -24,7 +24,7 @@ export type PartLinePlan = {
 
 export type PlanPartsInput = {
   bundle: { startsAt: Date | null; endsAt: Date | null; quantity: number | null };
-  /** The ticket's headcount in effect (guaranteed, else estimated), for parts of several each. */
+  /** The order's headcount in effect (guaranteed, else estimated), for parts of several each. */
   headcount: number | null;
   parts: readonly BundlePartDefaults[];
 };

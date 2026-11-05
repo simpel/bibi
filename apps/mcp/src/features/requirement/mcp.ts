@@ -10,7 +10,7 @@ export const requirementMcpTools = [
       `${text({ value: input.vocabularyValueId })} on ` +
       (input.lineId
         ? `line ${text({ value: input.lineId })}`
-        : `ticket ${text({ value: input.ticketId })}`),
+        : `order ${text({ value: input.orderId })}`),
   }),
   mcpTool({
     operation: "requirement.update",

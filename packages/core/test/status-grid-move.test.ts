@@ -3,7 +3,7 @@ import { unwrap } from "./helpers";
 import { toState } from "./item-state-helpers";
 import { activeOccupancies } from "./line-helpers";
 import { addLine, type GridSetup, gridSetup, lineNow, setCell } from "./status-grid-helpers";
-import { moveToStatus } from "./ticket-helpers";
+import { moveToStatus } from "./order-helpers";
 
 type RoomState = "prebooked" | "booked" | "released";
 type DishState = "estimated" | "ordered" | "locked";
@@ -77,28 +77,28 @@ type ArrangeInput = { setup: GridSetup; test: Case };
 
 async function arrange({ setup, test }: ArrangeInput) {
   const { context, room, roomState, food } = setup;
-  const ticket = await setup.newTicket();
-  const roomLine = await addLine({ setup, ticketId: ticket.id, itemId: room.id });
-  const dishLine = await addLine({ setup, ticketId: ticket.id, itemId: food.dish.id });
+  const order = await setup.newOrder();
+  const roomLine = await addLine({ setup, orderId: order.id, itemId: room.id });
+  const dishLine = await addLine({ setup, orderId: order.id, itemId: food.dish.id });
   const cells = [
     { entityTypeId: room.entityTypeId, stateId: test.roomCell && roomState[test.roomCell].id },
     { entityTypeId: food.type.id, stateId: test.dishCell && food[test.dishCell].id },
   ];
   for (const cell of cells)
-    unwrap({ result: await setCell({ context, ticketStatus: "Confirmed", ...cell }) });
+    unwrap({ result: await setCell({ context, orderStatus: "Confirmed", ...cell }) });
   if (test.dishOverride) {
     const stateId = food[test.dishOverride].id;
     unwrap({ result: await toState({ context, lineId: dishLine.id, stateId }) });
   }
-  return { ticket, roomLine, dishLine };
+  return { order, roomLine, dishLine };
 }
 
-describe("ticket.changeStatus moves lines by the status grid (ADR 0044)", () => {
+describe("order.changeStatus moves lines by the status grid (ADR 0044)", () => {
   it.each(CASES)("$name", async (test) => {
     const setup = await gridSetup();
     const { context, roomState, food } = setup;
-    const { ticket, roomLine, dishLine } = await arrange({ setup, test });
-    unwrap({ result: await moveToStatus({ context, ticketId: ticket.id, name: "Confirmed" }) });
+    const { order, roomLine, dishLine } = await arrange({ setup, test });
+    unwrap({ result: await moveToStatus({ context, orderId: order.id, name: "Confirmed" }) });
     const room = await lineNow({ context, lineId: roomLine.id });
     const dish = await lineNow({ context, lineId: dishLine.id });
     expect(room.stateId).toBe(roomState[test.room].id);
@@ -111,18 +111,18 @@ describe("ticket.changeStatus moves lines by the status grid (ADR 0044)", () => 
   it("leaves holdsUntil alone and audits each moved line", async () => {
     const setup = await gridSetup();
     const { context, room, roomState } = setup;
-    const ticket = await setup.newTicket();
+    const order = await setup.newOrder();
     const holdsUntil = new Date(Date.UTC(2037, 9, 30));
-    await context.db.ticket.update({ where: { id: ticket.id }, data: { holdsUntil } });
-    const line = await addLine({ setup, ticketId: ticket.id, itemId: room.id });
+    await context.db.order.update({ where: { id: order.id }, data: { holdsUntil } });
+    const line = await addLine({ setup, orderId: order.id, itemId: room.id });
     const cell = { entityTypeId: room.entityTypeId, stateId: roomState.booked.id };
-    unwrap({ result: await setCell({ context, ticketStatus: "Confirmed", ...cell }) });
+    unwrap({ result: await setCell({ context, orderStatus: "Confirmed", ...cell }) });
     const moved = unwrap({
-      result: await moveToStatus({ context, ticketId: ticket.id, name: "Confirmed" }),
+      result: await moveToStatus({ context, orderId: order.id, name: "Confirmed" }),
     });
     expect(moved.holdsUntil).toEqual(holdsUntil);
     const audit = await context.db.auditLog.findFirstOrThrow({
-      where: { entityId: line.id, operation: "ticket.changeStatus" },
+      where: { entityId: line.id, operation: "order.changeStatus" },
     });
     expect(audit.after).toMatchObject({ stateId: roomState.booked.id });
   });

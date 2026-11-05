@@ -8,13 +8,13 @@ type Db = { context: Pick<OperationContext, "db"> };
  * (closing statuses release every line, ADR 0044).
  */
 const ACTIVE_CELL = {
-  ticketStatus: { status: "ACTIVE", closes: false },
+  orderStatus: { status: "ACTIVE", closes: false },
   entityType: { status: "ACTIVE" },
   state: { status: "ACTIVE" },
 } as const;
 
 const NAMES = {
-  ticketStatus: { select: { name: true } },
+  orderStatus: { select: { name: true } },
   entityType: { select: { name: true } },
   state: { select: { name: true, color: true } },
 } as const;
@@ -26,15 +26,15 @@ export async function loadGrid({ context, statusId }: LoadGridInput): Promise<St
   const rows = await context.db.statusStateRule.findMany({
     where: { ...ACTIVE_CELL, ...(statusId ? { statusId } : {}) },
     orderBy: [
-      { ticketStatus: { position: "asc" } },
+      { orderStatus: { position: "asc" } },
       { entityType: { name: "asc" } },
       { id: "asc" },
     ],
     include: NAMES,
   });
-  const cells = rows.map(({ ticketStatus, entityType, state, ...cell }) => ({
+  const cells = rows.map(({ orderStatus, entityType, state, ...cell }) => ({
     ...cell,
-    statusName: ticketStatus.name,
+    statusName: orderStatus.name,
     entityTypeName: entityType.name,
     stateName: state.name,
     stateColor: state.color,
@@ -58,21 +58,21 @@ export async function cellsOfStatus({
   return new Map(cells.map((cell) => [cell.entityTypeId, cell.stateId]));
 }
 
-export type CellOfTicketInput = Db & { ticketId: string; entityTypeId: string };
+export type CellOfOrderInput = Db & { orderId: string; entityTypeId: string };
 
 /**
- * The state the cell of the ticket's current status gives a line of the item type, or null when
- * the cell is empty ("keep") or the ticket is unknown.
+ * The state the cell of the order's current status gives a line of the item type, or null when
+ * the cell is empty ("keep") or the order is unknown.
  */
-export async function cellOfTicket({ context, ticketId, entityTypeId }: CellOfTicketInput) {
-  const ticket = await context.db.ticket.findFirst({
-    where: { id: ticketId },
+export async function cellOfOrder({ context, orderId, entityTypeId }: CellOfOrderInput) {
+  const order = await context.db.order.findFirst({
+    where: { id: orderId },
     select: { statusId: true },
   });
-  if (!ticket) return null;
+  if (!order) return null;
   const cells = await cellsOfStatus({
     context,
-    statusId: ticket.statusId,
+    statusId: order.statusId,
     entityTypeIds: [entityTypeId],
   });
   return cells.get(entityTypeId) ?? null;

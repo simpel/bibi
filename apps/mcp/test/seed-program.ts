@@ -1,12 +1,12 @@
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { expect } from "vitest";
 import { call } from "./helpers";
-import { seedTicket } from "./seed-ticket";
+import { seedOrder } from "./seed-order";
 
 export type SeedProgramInput = { client: Client };
 
 export type SeededProgram = {
-  ticketId: string;
+  orderId: string;
   itemId: string;
   lineId: string;
   programTypeId: string;
@@ -14,8 +14,8 @@ export type SeededProgram = {
   valueId: string;
 };
 
-const START = "2026-11-03T09:00:00.000Z";
-const END = "2026-11-03T11:00:00.000Z";
+const START = "2037-11-03T09:00:00.000Z";
+const END = "2037-11-03T11:00:00.000Z";
 
 async function ok({ client, name, args }: { client: Client; name: string; args: object }) {
   const result = await call({ client, name, args: args as Record<string, unknown> });
@@ -27,9 +27,9 @@ async function type({ client, ...args }: { client: Client; base: string; name: s
   return ok({ client, name: "entityType_create", args });
 }
 
-/** A ticket with a bookable item, a line, and a list value to count requirements of. */
+/** An order with a bookable item, a line, and a list value to count requirements of. */
 export async function seedProgram({ client }: SeedProgramInput): Promise<SeededProgram> {
-  const { id: ticketId } = await seedTicket({ client });
+  const { id: orderId } = await seedOrder({ client });
   const roomType = await ok({
     client,
     name: "entityType_create",
@@ -46,7 +46,7 @@ export async function seedProgram({ client }: SeedProgramInput): Promise<SeededP
     client,
     name: "line_create",
     args: {
-      ticketId,
+      orderId,
       entityTypeId: programType.id,
       name: "Hidden session",
       startsAt: START,
@@ -60,7 +60,7 @@ export async function seedProgram({ client }: SeedProgramInput): Promise<SeededP
     args: { name: "Secret allergens", values: ["Gluten"] },
   });
   return {
-    ticketId,
+    orderId,
     itemId: item.id,
     lineId: line.id,
     programTypeId: programType.id,

@@ -4,7 +4,7 @@
  */
 export type FieldRef = { key: string; values?: ReadonlyMap<string, string>; linkTypeId?: string };
 
-/** A type (item, customer, contact, ticket) as the seed refers to it: id plus field name → field. */
+/** A type (item, customer, contact, order) as the seed refers to it: id plus field name → field. */
 export type TypeRef = { id: string; fields: ReadonlyMap<string, FieldRef> };
 
 /** Names → ids created during the seed, so data files can refer to rows by name. */
@@ -14,5 +14,5 @@ export type DemoRefs = {
   itemTypes: Map<string, TypeRef>;
   customerTypes: Map<string, TypeRef>;
   contactTypes: Map<string, TypeRef>;
-  ticketTypes: Map<string, TypeRef>;
+  orderTypes: Map<string, TypeRef>;
 };

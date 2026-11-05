@@ -1,5 +1,10 @@
+import { ChevronRightIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
+import { AppLink } from "../app-link/app-link";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../collapsible/collapsible";
+import { CursorHoverCard } from "../cursor-hover/cursor-hover-card";
+import { CursorHoverDetails } from "../cursor-hover/cursor-hover-details";
 import { DaySnapshotLabel } from "./day-snapshot-label";
 import { type DaySnapshotBlock, type LanedBlock, laneBlocks } from "./day-snapshot-lanes";
 import { daySnapshotBlockVariants } from "./day-snapshot-variants";
@@ -12,6 +17,7 @@ export type DaySnapshotTone = DaySnapshotBlock["tone"];
 export type DaySnapshotRow = {
   id: string;
   label: string;
+  group?: string;
   href?: string;
   blocks: DaySnapshotBlock[];
 };
@@ -39,19 +45,34 @@ const share = ({ minute, startMinute, endMinute }: Span & { minute: number }) =>
 function Bar({ block, ...span }: Span & { block: LanedBlock }) {
   const left = share({ minute: block.start, ...span });
   const width = Math.max(share({ minute: block.end, ...span }) - left, 0.005);
-  return (
-    <div
-      data-slot="day-snapshot-block"
-      title={block.label}
-      className={daySnapshotBlockVariants({ tone: block.tone })}
-      style={{
-        left: `${left * 100}%`,
-        width: `${width * 100}%`,
-        top: `${PAD + block.lane * LANE}rem`,
-      }}
-    >
+  const details = block.details ?? { title: block.label };
+  const style = {
+    left: `${left * 100}%`,
+    width: `${width * 100}%`,
+    top: `${PAD + block.lane * LANE}rem`,
+  };
+  const className = cn(
+    daySnapshotBlockVariants({ tone: block.tone }),
+    "cursor-pointer select-none no-underline hover:no-underline hover:opacity-90 transition-opacity",
+  );
+
+  const element = block.href ? (
+    <AppLink href={block.href} data-slot="day-snapshot-block" className={className} style={style}>
+      {block.label}
+    </AppLink>
+  ) : (
+    <div data-slot="day-snapshot-block" className={className} style={style}>
       {block.label}
     </div>
+  );
+
+  return (
+    <CursorHoverCard
+      content={<CursorHoverDetails id={block.id} href={block.href} {...details} />}
+      asChild
+    >
+      {element}
+    </CursorHoverCard>
   );
 }
 
@@ -99,8 +120,9 @@ function Row({ row, ...span }: Span & { row: DaySnapshotRow }) {
 
 /**
  * One day at a glance: an hour axis and a row per resource with its bookings as bars; bars that
- * overlap go on lanes of their own, and a label too long for its bar ends in an ellipsis (the
- * full text is its tooltip). Purely presentational: the caller places the bars and names them.
+ * overlap go on lanes of their own, and a label too long for its bar ends in an ellipsis.
+ * Hovering any bar shows its full details in a floating cursor hovercard. Rows can be grouped
+ * into collapsible sections with chevrons.
  */
 export function DaySnapshot({
   rows,
@@ -111,20 +133,45 @@ export function DaySnapshot({
   ...props
 }: DaySnapshotProps) {
   const span = { startMinute, endMinute };
+  const hasGroups = rows.some((row) => Boolean(row.group));
+  const groups = hasGroups ? [...new Set(rows.map((row) => row.group ?? ""))] : [];
+
   return (
     <div
       data-slot="day-snapshot"
       // Calendar UI always sits on the card surface (white), wherever it is placed.
-      className={cn("grid min-w-0 gap-1 rounded-xl border bg-card p-3 text-sm sm:p-4", className)}
+      className={cn("grid min-w-0 gap-2 rounded-xl border bg-card p-3 text-sm sm:p-4", className)}
       {...props}
     >
       <div className={COLUMNS}>
         <span />
         <Axis {...span} hourLabel={hourLabel} />
       </div>
-      {rows.map((row) => (
-        <Row key={row.id} row={row} {...span} />
-      ))}
+      {hasGroups
+        ? groups.map((group) => {
+            const members = rows.filter((r) => (r.group ?? "") === group);
+            if (!group) {
+              return members.map((row) => <Row key={row.id} row={row} {...span} />);
+            }
+            return (
+              <Collapsible key={group} defaultOpen className="grid gap-1">
+                <div className={COLUMNS}>
+                  <CollapsibleTrigger className="group flex items-center gap-1.5 py-1 text-xs font-semibold text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
+                    <ChevronRightIcon className="size-3.5 transition-transform group-data-[state=open]:rotate-90" />
+                    <span>{group}</span>
+                    <span className="tabular-nums opacity-75">· {members.length}</span>
+                  </CollapsibleTrigger>
+                  <div />
+                </div>
+                <CollapsibleContent className="grid gap-1">
+                  {members.map((row) => (
+                    <Row key={row.id} row={row} {...span} />
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          })
+        : rows.map((row) => <Row key={row.id} row={row} {...span} />)}
     </div>
   );
 }

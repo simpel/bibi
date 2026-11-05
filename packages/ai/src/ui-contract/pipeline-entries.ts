@@ -24,7 +24,7 @@ const pipelineBoard = uiEntry({
   toProps: ({ value }) => ({ board: value }),
 });
 
-/** Tool → component for the ticket pipeline (ADR 0041, 0043). */
+/** Tool → component for the order pipeline (ADR 0041, 0043). */
 export const PIPELINE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   pipeline_board: pipelineBoard,
   ...CALENDAR_UI_ENTRIES,

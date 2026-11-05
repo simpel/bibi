@@ -19,7 +19,7 @@ export const notificationEntity: ParityEntity = {
         organizationId: context.organizationId,
         recipientUserId: context.actor.userId ?? "",
         kind: "ASSIGNED",
-        data: { ticketReference: 7, ticketTitle: "Parity" },
+        data: { orderReference: 7, orderTitle: "Parity" },
       },
     });
     return byId({

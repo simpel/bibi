@@ -8,14 +8,14 @@ import { seedDemoBundleLines } from "./seed-bundle-lines";
 import { missing } from "./seed-fields";
 import { seedLineAddOns } from "./seed-line-add-ons";
 import { seedLineOptions } from "./seed-line-options";
-import type { DemoLine, DemoTicket } from "./ticket-types";
+import type { DemoLine, DemoOrder } from "./order-types";
 
 export type SeedLinesInput = {
   context: ExecuteContext;
-  ticketId: string;
+  orderId: string;
   /** Its `bundles` (ADR 0059), its `lines`, then its `alternatives` (ADR 0052). */
-  ticket: Pick<DemoTicket, "bundles" | "lines" | "alternatives">;
-  /** Local time `HH:MM` on the ticket's day → instant. */
+  order: Pick<DemoOrder, "bundles" | "lines" | "alternatives">;
+  /** Local time `HH:MM` on the order's day → instant. */
   at: (input: { time: string }) => Date;
 };
 
@@ -38,7 +38,7 @@ async function overrideState({ context, line, lineId, item }: OverrideInput) {
 }
 
 /**
- * The ticket's lines (ADR 0044) via `line.create` as SYSTEM, in the organization's line
+ * The order's lines (ADR 0044) via `line.create` as SYSTEM, in the organization's line
  * type: each starts in the entry status's cell of the status grid (else its type's initial state), so a room
  * line is a soft hold, and a line with `state` is then overridden to it. A line without times is
  * untimed and holds nothing; its own quantity and price are set only when the data gives them.
@@ -48,13 +48,13 @@ async function overrideState({ context, line, lineId, item }: OverrideInput) {
  */
 export async function seedDemoLines({
   context,
-  ticketId,
-  ticket,
+  orderId,
+  order,
   at,
 }: SeedLinesInput): Promise<Result<true>> {
-  const bundles = await seedDemoBundleLines({ context, ticketId, ticket, at });
+  const bundles = await seedDemoBundleLines({ context, orderId, order, at });
   if (!bundles.ok) return bundles;
-  const lines = ticket.lines ?? [];
+  const lines = order.lines ?? [];
   if (lines.length === 0) return ok({ value: true });
   const type = await context.db.entityType.findFirst({ where: { base: "LINE" } });
   if (!type) return missing({ what: "a line type (base LINE)" });
@@ -62,7 +62,7 @@ export async function seedDemoLines({
     const item = await context.db.item.findFirst({ where: { name: line.item } });
     if (!item) return missing({ what: `item ${line.item}` });
     const input = {
-      ...{ ticketId, entityTypeId: type.id, itemId: item.id, name: line.name },
+      ...{ orderId, entityTypeId: type.id, itemId: item.id, name: line.name },
       ...(line.from && line.to
         ? { startsAt: at({ time: line.from }), endsAt: at({ time: line.to }) }
         : {}),
@@ -77,9 +77,9 @@ export async function seedDemoLines({
     const lineId = created.value.id;
     const chosen = await seedLineOptions({ context, lineId, options: line.options });
     if (!chosen.ok) return chosen;
-    const added = await seedLineAddOns({ context, ticketId, lineId, addOns: line.addOns, at });
+    const added = await seedLineAddOns({ context, orderId, lineId, addOns: line.addOns, at });
     if (!added.ok) return added;
   }
-  const alternatives = ticket.alternatives ?? [];
-  return seedDemoAlternatives({ context, ticketId, alternatives });
+  const alternatives = order.alternatives ?? [];
+  return seedDemoAlternatives({ context, orderId, alternatives });
 }

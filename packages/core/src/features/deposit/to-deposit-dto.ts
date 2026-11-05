@@ -10,8 +10,8 @@ export type ToDepositDtosInput = Db & { rows: readonly Deposit[] };
 
 /** Deposits with what is paid against each derived from their payments (one query). */
 export async function toDepositDtos({ context, rows }: ToDepositDtosInput): Promise<DepositDto[]> {
-  const ticketIds = [...new Set(rows.map((row) => row.ticketId))];
-  const paid = await paidByReceivable({ context, ticketIds });
+  const orderIds = [...new Set(rows.map((row) => row.orderId))];
+  const paid = await paidByReceivable({ context, orderIds });
   return rows.map((row) => ({
     ...row,
     vatRows: asVatRows({ value: row.vatRows }),

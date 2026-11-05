@@ -6,13 +6,13 @@ import {
   grantAll,
   setPaymentProvider,
   setStripeConnectGateway,
-  updateTicket,
+  updateOrder,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { halfPaidLateInvoice } from "./late-invoice-helpers";
 import { moneySetup, sentTestQuote } from "./receivable-helpers";
-import { createTestTicket, placeInStatus } from "./ticket-helpers";
-import { statuses } from "./ticket-status-helpers";
+import { createTestOrder, placeInStatus } from "./order-helpers";
+import { statuses } from "./order-status-helpers";
 
 afterEach(() => {
   setPaymentProvider({ provider: undefined });
@@ -54,28 +54,28 @@ describe("finance.overview derives the organization's money (ADR 0077)", () => {
     expect(trends?.received.previous).toBe(0);
   });
 
-  it("splits closed tickets into won (accepted quote) and lost, by month and value", async () => {
-    const { context, ticket, customer } = await moneySetup();
+  it("splits closed orders into won (accepted quote) and lost, by month and value", async () => {
+    const { context, order, customer } = await moneySetup();
     const closing = (await statuses({ context })).find((status) => status.closes);
     if (!closing) throw new Error("No closing status");
-    await sentTestQuote({ context, ticketId: ticket.id, accept: true });
-    const entityTypeId = ticket.entityTypeId;
-    const lost = await createTestTicket({ context, entityTypeId, customerId: customer.id });
+    await sentTestQuote({ context, orderId: order.id, accept: true });
+    const entityTypeId = order.entityTypeId;
+    const lost = await createTestOrder({ context, entityTypeId, customerId: customer.id });
     const estimate = { id: lost.id, estimatedValueMinor: 300_000 };
-    unwrap({ result: await execute({ operation: updateTicket, input: estimate, context }) });
-    const current = await context.db.ticket.findFirstOrThrow({ where: { id: ticket.id } });
-    await placeInStatus({ ticket: current, statusId: closing.id });
-    await placeInStatus({ ticket: lost, statusId: closing.id });
+    unwrap({ result: await execute({ operation: updateOrder, input: estimate, context }) });
+    const current = await context.db.order.findFirstOrThrow({ where: { id: order.id } });
+    await placeInStatus({ order: current, statusId: closing.id });
+    await placeInStatus({ order: lost, statusId: closing.id });
     const { outcomes } = unwrap({ result: await overview({ context }) });
     const total = ({
       key,
     }: {
-      key: "wonTickets" | "wonValueMinor" | "lostTickets" | "lostValueMinor";
+      key: "wonOrders" | "wonValueMinor" | "lostOrders" | "lostValueMinor";
     }) => (outcomes ?? []).reduce((sum, row) => sum + row[key], 0);
     expect(outcomes).toHaveLength(12);
     expect([
-      total({ key: "wonTickets" }),
-      total({ key: "lostTickets" }),
+      total({ key: "wonOrders" }),
+      total({ key: "lostOrders" }),
       total({ key: "lostValueMinor" }),
     ]).toEqual([1, 1, 300_000]);
     expect(total({ key: "wonValueMinor" })).toBeGreaterThan(0);

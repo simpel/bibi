@@ -1,0 +1,627 @@
+{
+  "pipeline": {
+    "title": "Pipeline",
+    "phaseValue": {
+      "confirmedLabel": "Agreed",
+      "estimatedLabel": "Estimated",
+      "confirmed": "Agreed value excl. VAT (accepted quotes)",
+      "estimated": "Estimated value excl. VAT of the orders without an accepted quote"
+    },
+    "clash": "Time clash",
+    "noDate": "No date",
+    "quantity": "{count, plural, one {# person} other {# people}}",
+    "moved": "Moved to {column}.",
+    "noMoves": "This order cannot move to {column}.",
+    "picker": {
+      "title": "Move to {column}",
+      "description": "Pick the status in this column to move the order to.",
+      "needs": "Needs {list}",
+      "noRequirements": "No requirements",
+      "gate": {
+        "REASON": "a reason",
+        "ASSIGNEE": "a main assignee",
+        "ACCEPTED_QUOTE": "an accepted quote"
+      }
+    },
+    "kanban": {
+      "dragInstructions": "Press space to lift the card, the arrow keys to move it between lanes and space to drop it.",
+      "emptyColumn": "Nothing here",
+      "pickedUp": "Picked up {card}.",
+      "movedOver": "{card} is over {column}.",
+      "dropped": "{card} dropped in {column}.",
+      "cancelled": "Moving {card} was cancelled."
+    },
+    "moving": "Moving…",
+    "inStatus": "In status <time></time>",
+    "heldLines": "{count, plural, one {# line held} other {# lines held}}",
+    "bookedLines": "{count, plural, one {# line booked} other {# lines booked}}",
+    "reason": {
+      "title": "Move to {column}",
+      "description": "This status needs a reason.",
+      "label": "Reason",
+      "confirm": "Move"
+    },
+    "blockers": {
+      "title": "Cannot move to {column}",
+      "description": "Fix these first, then try again.",
+      "close": "Close"
+    }
+  },
+  "board": {
+    "switcher": "Board: {name}",
+    "switcherLabel": "Switch board",
+    "default": "Default",
+    "configure": "Configure",
+    "done": "Done",
+    "rename": "Rename board",
+    "create": "Create board",
+    "makeDefault": "Make default board",
+    "archive": "Archive board",
+    "archiveConfirm": "Archive the board {name}? Its columns go with it. Orders and statuses stay.",
+    "fields": {
+      "name": "Name"
+    },
+    "saving": "Saving…",
+    "archiving": "Archiving…",
+    "created": "Board created.",
+    "updated": "Board saved.",
+    "archived": "Board archived.",
+    "madeDefault": "Default board changed.",
+    "unmapped": "{count, plural, one {# order is} other {# orders are}} in a status that is not on this board.",
+    "unmappedLink": "Customize the board",
+    "customize": {
+      "dragInstructions": "Press space to lift a column or status, the arrow keys to move it and space to drop it.",
+      "unphased": "Not on this board",
+      "unphasedEmpty": "Every status is on this board",
+      "emptyPhase": "Drag a status here",
+      "phaseHandle": "Move column {phase}",
+      "count": "{count, plural, one {# order} other {# orders}}",
+      "pickedUp": "Picked up {item}.",
+      "movedOver": "{item} is over {target}.",
+      "dropped": "{item} dropped in {target}.",
+      "cancelled": "Moving {item} was cancelled."
+    }
+  },
+  "boardPhase": {
+    "addColumn": "Add column",
+    "addColumnHere": "Add a column here",
+    "edit": "Edit column",
+    "actions": "Actions for column {name}",
+    "moveLeft": "Move left",
+    "moveRight": "Move right",
+    "remove": "Remove column",
+    "removeConfirm": "Remove the column {name}? Its statuses move to \"Not on this board\". No order changes.",
+    "fields": {
+      "name": "Name"
+    },
+    "saving": "Saving…",
+    "removing": "Removing…",
+    "created": "Column added.",
+    "updated": "Column saved.",
+    "removed": "Column removed.",
+    "reordered": "Column order saved.",
+    "statusMoved": "Status moved.",
+    "addStatus": "Add status",
+    "statusActions": "Actions for {name}",
+    "moveTo": "Move to"
+  },
+  "orderStatus": {
+    "singular": "Status",
+    "plural": "Statuses",
+    "listDescription": "Your own statuses for orders, in board order. The flags decide what the system does; nothing else about a status is fixed. You need one entry status and at least one status that ends the order.",
+    "create": "Create status",
+    "edit": "Edit status",
+    "createDescription": "Name the status, pick a color and choose what it does.",
+    "editDescription": "Rename, recolor or change what the status does.",
+    "archive": "Archive status",
+    "archiveConfirm": "Do you want to archive the status {name}? Its transitions are removed. Orders in it move to the status you choose.",
+    "archived": "The status has been archived.",
+    "created": "The status has been created.",
+    "updated": "The status has been updated.",
+    "empty": "No statuses yet.",
+    "emptyDescription": "Import the template to get started.",
+    "saving": "Saving status…",
+    "archiving": "Archiving status…",
+    "importTemplate": "Import conference estate template",
+    "importing": "Importing statuses…",
+    "imported": "{created} statuses created, {skipped} already existed.",
+    "noTransitions": "None",
+    "anyStatus": "Any status",
+    "noTarget": "No order to move",
+    "moveUp": "Move left",
+    "moveDown": "Move right",
+    "reordering": "Saving order…",
+    "reordered": "The order has been saved.",
+    "fields": {
+      "name": "Name",
+      "color": "Color",
+      "targetStatus": "Move its orders to",
+      "reason": "Reason for the moved orders"
+    },
+    "columns": {
+      "name": "Name",
+      "flags": "Does",
+      "transitions": "May move to",
+      "order": "Order"
+    },
+    "flow": {
+      "title": "Flow",
+      "description": "Where orders may move and what a move needs. Everyone moves orders by these rules on the boards; only you change them here.",
+      "saving": "Saving…",
+      "movesSaved": "The moves have been saved.",
+      "gatesSaved": "The requirements have been saved.",
+      "closing": "This status ends the order, so orders in it cannot move on.",
+      "movesOut": "Moves out of {name}",
+      "movesIn": "Moves into {name}",
+      "movesAny": "Orders in {name} can move to any status",
+      "movesOnly": "Orders in {name} can only move to the statuses below",
+      "onlyTheseLegend": "The statuses orders in {name} can move to",
+      "canMoveTo": "Orders in {name} can move to {target}",
+      "requirementsIntro": "What an order needs to move into {name}:",
+      "requires": {
+        "REASON": "Moving to {name} requires a reason",
+        "ASSIGNEE": "Moving to {name} requires a main assignee",
+        "ACCEPTED_QUOTE": "Moving to {name} requires an accepted quote"
+      },
+      "scopeLabel": "Which moves to {name} this applies to",
+      "fromAny": "From any status",
+      "fromSpecific": "Only from specific statuses",
+      "fromStatus": "From {name}"
+    },
+    "flags": {
+      "entry": "New orders start here",
+      "closes": "Ends the order",
+      "invoiceable": "Can be invoiced",
+      "event": "Entered by a quote event",
+      "noEvent": "No event (entered by hand)",
+      "events": {
+        "QUOTE_SENT": "When a quote is sent",
+        "QUOTE_ACCEPTED": "When a quote is accepted"
+      }
+    }
+  },
+  "calendar": {
+    "levels": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "custom": "Custom"
+    },
+    "range": "Range",
+    "earlier": "Earlier",
+    "today": "Today",
+    "later": "Later",
+    "jumpInTime": "Jump in time",
+    "search": "Search",
+    "searchPlaceholder": "Search items, customers, orders",
+    "searchLabel": "Search items, customers and orders",
+    "assetGroups": "Item groups",
+    "allAssets": "All items",
+    "groupCount": "{count, plural, one {# group} other {# groups}}",
+    "searchGroups": "Search groups",
+    "noGroupMatch": "No group matches.",
+    "noMatch": "Nothing matches “{query}”.",
+    "noMatchIn": "Nothing matches “{query}” in {groups}.",
+    "addBooking": "Add a booking on {asset}",
+    "clash": "Clash {from}–{to}",
+    "free": "free",
+    "bookedShare": "{percent}% booked, {count, plural, one {# booking} other {# bookings}}",
+    "dayCell": "{asset}, {day}: {booked}",
+    "dayCellClash": "{asset}, {day}: {booked}, clash",
+    "openDay": "{label}. Open the day",
+    "client": "Client",
+    "internal": "Internal",
+    "blocked": "Blocked",
+    "notSold": "not sold",
+    "booked": "Booked",
+    "guests": "{count, plural, one {# guest} other {# guests}}",
+    "exclVat": "{amount} excl. VAT",
+    "value": {
+      "booked": "Booked",
+      "prebooked": "Prebooked",
+      "open": "Still open",
+      "note": "Excl. VAT. Still open is free time within opening hours at each room's hourly price.",
+      "rate": "{percent}% booked"
+    },
+    "open": "Open {order}",
+    "pin": "Pin {name} to compare",
+    "unpin": "Unpin {name}",
+    "pinned": "Pinned bookings",
+    "pinCard": {
+      "when": "When",
+      "where": "Where",
+      "state": "State",
+      "guests": "Guests",
+      "value": "Value",
+      "exclVat": "excl. VAT",
+      "seeOrder": "See order",
+      "minimize": "Minimize {name}",
+      "expand": "Expand {name}"
+    },
+    "openLine": "Open line",
+    "notes": "Notes",
+    "staff": "Staff",
+    "fromOrder": "{via}, from order",
+    "holds": {
+      "hard": "hard hold, blocks",
+      "soft": "soft hold, may overlap",
+      "none": "no hold"
+    },
+    "buffers": "Setup / teardown",
+    "buffersText": "space taken, not sold",
+    "capacity": "{count, plural, one {# person} other {# people}}",
+    "bookPrompt": "Book {space} on {date} at {time}.",
+    "loadFailed": "Some days could not be loaded. Scroll again to retry.",
+    "noSpaces": "Nothing bookable yet",
+    "noSpacesDescription": "Items whose type is bookable show up here as rows.",
+    "goToItems": "Go to items",
+    "viaLine": "Line assignee",
+    "viaOrder": "Order assignee",
+    "guestsHere": "Guests here",
+    "guestsHereCount": "{count, plural, one {# guest} other {# guests}} here",
+    "guestsAt": "Guests: {place}",
+    "lineCount": "{count, plural, one {# line} other {# lines}}",
+    "unscheduled": "Not scheduled",
+    "slot": {
+      "title": "Booking",
+      "description": "What is booked in this slot.",
+      "order": "Order",
+      "customer": "Customer",
+      "state": "State",
+      "line": "Line",
+      "resource": "Resource",
+      "period": "When",
+      "quantity": "Quantity",
+      "hold": "Hold",
+      "hard": "Hard (blocks)",
+      "soft": "Soft (prebooked)"
+    }
+  },
+  "runSheet": {
+    "singular": "Run sheet",
+    "plural": "Run sheets",
+    "empty": "No run sheets are defined yet. Define them under Settings.",
+    "noVersion": "No version has been generated yet.",
+    "nothingIncluded": "The order has nothing that this run sheet includes yet.",
+    "generate": "Generate version",
+    "generating": "Generating run sheet…",
+    "generated": "Run sheet version {version} is ready.",
+    "send": "Send",
+    "sent": "The run sheet has been sent.",
+    "publish": "Publish",
+    "published": "The run sheet has been published.",
+    "reopen": "Reopen",
+    "reopened": "Run sheet reopened.",
+    "markAsDone": "Mark as done",
+    "fulfilled": "Run sheet marked as done.",
+    "fulfilledAt": "Done {when}",
+    "publishedAt": "Published {when}",
+    "history": {
+      "title": "History",
+      "empty": "No history yet",
+      "changesSummary": "{count, plural, one {# change} other {# changes}}",
+      "events": {
+        "created": "Run sheet created",
+        "revised": "Revision generated",
+        "published": "Published to team",
+        "fulfilled": "Marked as done"
+      }
+    },
+    "columns": {
+      "publishedAt": "Published"
+    },
+    "status": {
+      "draft": "Draft",
+      "blocked": "Blocked",
+      "pending": "Pending",
+      "revision_pending": "Revision pending",
+      "fulfilled": "Done",
+      "published": "Published",
+      "sent": "Published",
+      "notSent": "Draft"
+    },
+    "version": "Version {version}",
+    "notSent": "Not sent",
+    "sentAt": "Sent {when}",
+    "changes": "{count, plural, =0 {No changes} one {# change} other {# changes}} since version {version}",
+    "order": "Order {reference}",
+    "headcount": "{count, plural, one {# guest} other {# guests}}",
+    "onOrder": "Whole order",
+    "onLine": "One line",
+    "change": {
+      "ADDED": "Added since the last sent version",
+      "CHANGED": "Changed since the last sent version",
+      "REMOVED": "Removed since the last sent version"
+    },
+    "blocked": "Blocked: cannot be sent",
+    "matches": {
+      "CONTAINS": "Contains",
+      "MAY_CONTAIN": "May contain",
+      "line": "{count, plural, one {# guest} other {# guests}}: {name} in {item} ({carriers})"
+    },
+    "addOn": "Add-on",
+    "addOnTo": "{name} (add-on to {parent})",
+    "document": {
+      "open": "Open",
+      "back": "← Back to the order",
+      "tasks": "What to deliver",
+      "needs": "Needs",
+      "noTasks": "Nothing to deliver on this run sheet yet.",
+      "noNeeds": "No needs counted.",
+      "columns": {
+        "when": "When",
+        "name": "What",
+        "item": "Item",
+        "quantity": "Quantity",
+        "need": "Need",
+        "count": "Count",
+        "appliesTo": "Applies to"
+      }
+    },
+    "currentVersion": "Current version",
+    "notCurrentVersion": "Not the current version",
+    "goToCurrent": "Open the current version",
+    "versions": "Versions",
+    "versionCreated": "Version {version} · {when}",
+    "query": {
+      "keys": {
+        "involves": "involves",
+        "definition": "definition",
+        "responsibility": "responsibility"
+      },
+      "values": {
+        "current": "current",
+        "sent": "sent",
+        "unsent": "unsent",
+        "blocked": "blocked"
+      },
+      "labels": {
+        "involves": "Involves",
+        "definition": "Run sheet",
+        "responsibility": "Responsibility",
+        "is": "Version state"
+      },
+      "hints": {
+        "involves": "assignee or follower on the order: me or a name",
+        "definition": "the run sheet's name",
+        "responsibility": "the responsibility's name",
+        "is": "current, sent, unsent, blocked, open or closed"
+      },
+      "rows": {
+        "excludeInvolves": "Exclude involved"
+      }
+    },
+    "list": {
+      "description": "Every run sheet version, newest first.",
+      "empty": "No run sheets yet",
+      "emptyDescription": "Run sheets appear here when they are generated from an order.",
+      "noMatches": "No run sheets match.",
+      "total": "{count, plural, one {# run sheet} other {# run sheets}}",
+      "search": "Search or filter, e.g. involves:me is:current",
+      "searchSubmit": "Search",
+      "columns": {
+        "order": "Order",
+        "runSheet": "Run sheet",
+        "responsibility": "Responsibility",
+        "when": "When",
+        "version": "Version",
+        "status": "Status",
+        "publishedAt": "Published",
+        "sentAt": "Sent"
+      },
+      "status": {
+        "draft": "Draft",
+        "blocked": "Blocked",
+        "pending": "Pending",
+        "revision_pending": "Revision pending",
+        "fulfilled": "Done",
+        "published": "Published",
+        "sent": "Published",
+        "notSent": "Draft"
+      }
+    }
+  },
+  "runSheetDefinition": {
+    "singular": "Run sheet",
+    "plural": "Run sheets",
+    "listDescription": "Your own run sheets, e.g. Kitchen order or Brewing order: which item types, fields and lists' requirements each includes, and which responsibility it goes to.",
+    "create": "Create run sheet",
+    "edit": "Edit run sheet",
+    "createDescription": "Name the run sheet, choose what it includes and who receives it.",
+    "editDescription": "Change the name, what the run sheet includes or who receives it.",
+    "archive": "Archive run sheet",
+    "archiveConfirm": "Do you want to archive the run sheet {name}?",
+    "archived": "The run sheet has been archived.",
+    "created": "The run sheet has been created.",
+    "updated": "The run sheet has been updated.",
+    "empty": "No run sheets yet.",
+    "emptyDescription": "Create run sheets such as Kitchen order or Brewing order.",
+    "saving": "Saving run sheet…",
+    "archiving": "Archiving run sheet…",
+    "selectResponsibility": "Choose a responsibility",
+    "fields": {
+      "name": "Name",
+      "entityTypeIds": "Item types",
+      "fieldIds": "Fields",
+      "vocabularyIds": "Lists",
+      "responsibilityId": "Receiving responsibility"
+    },
+    "hints": {
+      "entityTypeIds": "Items of these types appear on the run sheet.",
+      "fieldIds": "Fields shown for each item.",
+      "vocabularyIds": "Requirements from these lists are counted on the run sheet."
+    },
+    "none": {
+      "entityTypeIds": "There are no item types. Create them under Types.",
+      "fieldIds": "Choose item types with fields first.",
+      "vocabularyIds": "There are no lists. Create them under Lists."
+    },
+    "columns": {
+      "name": "Name",
+      "types": "Item types",
+      "lists": "Lists",
+      "responsibility": "Receiving responsibility"
+    },
+    "wizard": {
+      "progress": "Steps",
+      "steps": {
+        "name": "Name",
+        "content": "Content",
+        "receiver": "Receiver"
+      },
+      "descriptions": {
+        "name": "Name the run sheet, e.g. Kitchen order.",
+        "content": "Pick the item types, their fields and the lists the run sheet is compiled from.",
+        "receiver": "Pick the responsibility that receives the run sheet."
+      }
+    }
+  },
+  "inbox": {
+    "title": "Inbox",
+    "description": "Requests that came in by email, form or API and have no order yet.",
+    "address": "Forward your booking mail to <code>{address}</code> and it shows up here.",
+    "noAddress": "No inbox address is configured yet, so mail cannot reach the inbox.",
+    "configureAddress": "Set up in settings",
+    "open": "Open",
+    "empty": "No messages.",
+    "columns": {
+      "subject": "Subject",
+      "sender": "From",
+      "channel": "Channel",
+      "received": "Received"
+    },
+    "channels": {
+      "EMAIL": "Email",
+      "WEB_FORM": "Web form",
+      "SMS": "SMS",
+      "API": "API"
+    },
+    "noSubject": "(no subject)",
+    "noBody": "(no text)",
+    "unknownSender": "Unknown sender",
+    "unnamedAttachment": "Unnamed attachment",
+    "newOrder": "Create order from this message",
+    "attachTitle": "Attach to an order",
+    "attachDescription": "The message is added to the order's messages. A message is attached once.",
+    "order": "Order",
+    "attach": "Attach",
+    "attached": "Message attached",
+    "attachedTo": "This message is attached to an order. Open the order",
+    "attachedToOrder": "This message is attached to <order></order>.",
+    "orderTitle": "Messages",
+    "replyAddress": "Customers reply to <code>{address}</code>; their mail and other messages for the order show up here.",
+    "noReplyAddress": "No inbound address is configured, so replies cannot reach this order yet.",
+    "fieldsTitle": "What the sender filled in",
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "markedRead": "{count, plural, one {Marked as read} other {# marked as read}}",
+    "markedUnread": "{count, plural, one {Marked as unread} other {# marked as unread}}",
+    "deleting": "Deleting message…",
+    "deleted": "{count, plural, one {Message deleted} other {# messages deleted}}",
+    "deleteConfirm": "Delete “{subject}”? It leaves the inbox for everyone in the team.",
+    "arrivedTitle": "New message in the inbox",
+    "arrivedOpen": "Open",
+    "sheet": {
+      "openPage": "Open full page"
+    },
+    "unread": "Unread",
+    "deleteTitle": "Delete {count, plural, one {message} other {# messages}}",
+    "deleteConfirmMany": "The {count} messages leave the inbox for everyone in the team.",
+    "search": "Search by subject or sender",
+    "searchSubmit": "Search",
+    "searching": "Searching…",
+    "filter": {
+      "channel": "Channel",
+      "allChannels": "All channels"
+    },
+    "form": {
+      "message": "Message"
+    },
+    "api": {
+      "via": "Sent through the API"
+    }
+  },
+  "inboundEmail": {
+    "title": "Received email",
+    "address": "Customers reply to <code>{address}</code> and their mail shows up here.",
+    "noAddress": "No inbound address is configured, so replies cannot reach this order yet.",
+    "empty": "No email received yet.",
+    "noSubject": "(no subject)",
+    "noBody": "(no text)",
+    "htmlOnly": "This email has only an HTML version, which is not shown.",
+    "unnamedAttachment": "Unnamed attachment"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "What concerns you: orders you are assigned to, run sheets sent to you, and status changes and payments on orders you answer for or follow.",
+    "bell": "Notifications",
+    "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}",
+    "latest": "Latest notifications",
+    "seeAll": "See all notifications",
+    "listChanged": "The list has changed since you opened it.",
+    "showLatest": "Show latest",
+    "open": "Open",
+    "markAllRead": "Mark all as read",
+    "markedAllRead": "All notifications marked as read",
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "markedRead": "{count, plural, one {# notification marked as read} other {# notifications marked as read}}",
+    "markedUnread": "{count, plural, one {# notification marked as unread} other {# notifications marked as unread}}",
+    "nothingNew": "You're all caught up",
+    "noMatches": "No notifications match",
+    "listTotal": "{count, plural, one {# notification} other {# notifications}}",
+    "unread": "Unread",
+    "read": "Read",
+    "filter": {
+      "kind": "Kind",
+      "allKinds": "All kinds"
+    },
+    "search": "Search by order title or number",
+    "searchSubmit": "Search",
+    "searching": "Searching…",
+    "columns": {
+      "message": "Notification",
+      "kind": "Kind",
+      "order": "Order",
+      "created": "When",
+      "actor": "By"
+    },
+    "kinds": {
+      "ASSIGNED": "Assigned",
+      "RUN_SHEET_SENT": "Run sheet",
+      "ORDER_STATUS_CHANGED": "Status change",
+      "PAYMENT_RECEIVED": "Payment"
+    },
+    "messages": {
+      "ASSIGNED": "{actor} assigned you to #{reference}",
+      "RUN_SHEET_SENT": "{actor} sent you {runSheet} v{version} for #{reference}",
+      "ORDER_STATUS_CHANGED": "#{reference} moved from {from} to {to}",
+      "PAYMENT_RECEIVED": "{amount} received on #{reference}"
+    },
+    "someone": "Someone",
+    "aRunSheet": "a run sheet",
+    "noStatus": "no status",
+    "untitled": "Untitled order",
+    "preferences": {
+      "ASSIGNED": "When I am made assignee of an order",
+      "RUN_SHEET_SENT": "When a run sheet is sent to me",
+      "ORDER_STATUS_CHANGED": "When an order I answer for or follow changes status",
+      "PAYMENT_RECEIVED": "When a payment is received on an order I answer for or follow",
+      "turnedOn": "Notifications turned on",
+      "turnedOff": "Notifications turned off"
+    },
+    "arrivedTitle": "New notification",
+    "arrivedOpen": "Show",
+    "sheet": {
+      "runSheet": "Run sheet",
+      "openOrder": "Open order",
+      "openRunSheet": "Open run sheet",
+      "title": "Notification"
+    },
+    "empty": "No notifications yet",
+    "emptyDescription": "You are told here when you are assigned an order, sent a run sheet, or when an order you answer for or follow changes status or gets paid.",
+    "deleteTitle": "Delete {count, plural, one {notification} other {# notifications}}",
+    "deleteConfirm": "{count, plural, one {The notification is} other {The notifications are}} deleted for good. This only affects your own notifications.",
+    "deleted": "{count, plural, one {Notification deleted} other {# notifications deleted}}"
+  }
+}

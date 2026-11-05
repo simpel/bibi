@@ -11,7 +11,7 @@ export type CreateRecordInput<T> = {
   fields?: unknown;
   /** The record's `LINK` values, written as `RecordLink` rows (ADR 0056). */
   links?: readonly LinkValue[];
-  /** Writes the extending row (`Item`, `Ticket`, …) with the supertable row's `id`. */
+  /** Writes the extending row (`Item`, `Order`, …) with the supertable row's `id`. */
   insert: (input: { id: string }) => Promise<T>;
 };
 

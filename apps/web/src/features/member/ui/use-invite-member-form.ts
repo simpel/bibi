@@ -17,6 +17,7 @@ export function useInviteMemberForm({ onDone }: UseInviteMemberFormInput) {
   const common = useTranslations("common");
   const router = useRouter();
   const form = useForm<InviteMemberValues>({
+    mode: "onBlur",
     resolver: zodResolver(MemberInviteInputSchema, useZodMessages()),
     defaultValues: { email: "", role: "manager" },
   });

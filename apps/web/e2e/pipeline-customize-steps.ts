@@ -19,7 +19,7 @@ export async function api({
 const entityType = ({ page, base, name }: PageInput & { base: string; name: string }) =>
   api({ page, method: "post", path: "/entity-types", data: { base, name } });
 
-/** A customer and a contact person who works there (a ticket needs one, ADR 0081). */
+/** A customer and a contact person who works there (an order needs one, ADR 0081). */
 async function createCustomerWithContact({ page }: PageInput) {
   const customerType = await entityType({ page, base: "CUSTOMER", name: "Company" });
   const contactType = await entityType({ page, base: "CONTACT", name: "Person" });
@@ -39,21 +39,21 @@ async function createCustomerWithContact({ page }: PageInput) {
 }
 
 /**
- * A customer, a contact there and a ticket assigned to the signed-in user (Completed requires a
- * main assignee); it starts in the entry status, Lead. Returns the ticket id.
+ * A customer, a contact there and an order assigned to the signed-in user (Completed requires a
+ * main assignee); it starts in the entry status, Lead. Returns the order id.
  */
-export async function createTicket({ page }: PageInput): Promise<string> {
+export async function createOrder({ page }: PageInput): Promise<string> {
   const members = await api({ page, method: "get", path: "/members" });
   const assigneeId = (members.items as { userId: string }[])[0]?.userId;
-  const ticketType = await entityType({ page, base: "TICKET", name: "Conference" });
+  const orderType = await entityType({ page, base: "ORDER", name: "Conference" });
   const people = await createCustomerWithContact({ page });
-  const ticket = await api({
+  const order = await api({
     page,
     method: "post",
-    path: "/tickets",
-    data: { entityTypeId: ticketType.id, ...people, assigneeId },
+    path: "/orders",
+    data: { entityTypeId: orderType.id, ...people, assigneeId },
   });
-  return ticket.id;
+  return order.id;
 }
 
 /** The back of a column in customize mode. */
@@ -121,11 +121,11 @@ export async function addStatus({
   // click until the popover is open.
   await expect(async () => {
     if (await form.isVisible()) return;
-    await scope.getByRole("button", { name: "Lägg till ärendestatus" }).click();
+    await scope.getByRole("button", { name: "Lägg till bokningsstatus" }).click();
     await expect(form.getByLabel("Namn")).toBeVisible({ timeout: 3_000 });
   }).toPass({ timeout: 20_000 });
   await form.getByLabel("Namn").fill(name);
   await form.getByRole("button", { name: "Spara" }).click();
-  await expect(page.getByText("Ärendestatusen har skapats.").first()).toBeVisible();
+  await expect(page.getByText("Bokningsstatusen har skapats.").first()).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveCount(0);
 }

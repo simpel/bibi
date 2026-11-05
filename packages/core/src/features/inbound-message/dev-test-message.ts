@@ -64,7 +64,7 @@ export async function sendTestInboxMessage({
       receivedAt: new Date(),
     },
   });
-  const input = { ...mail, endpointId: endpoint.id, ticketId: null };
+  const input = { ...mail, endpointId: endpoint.id, orderId: null };
   const stored = await execute({ operation: receiveInboundMessage, input, context });
   return stored.ok ? ok({ value: { id: stored.value.id } }) : stored;
 }

@@ -7,7 +7,7 @@ export type LoadRequirementDataInput = { lines: LineDto[] };
 
 /**
  * Requirement types and lists (own fields and the values to count, one page each) and the
- * ticket's lines a count can apply to.
+ * order's lines a count can apply to.
  */
 export async function loadRequirementData({
   lines,

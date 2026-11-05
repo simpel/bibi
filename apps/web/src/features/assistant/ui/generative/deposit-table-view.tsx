@@ -8,7 +8,7 @@ import { MoreHint } from "./more-hint";
 
 export type DepositTableViewProps = GenerativeProps<"deposit-table">;
 
-/** A page of a ticket's deposit requests, newest first. */
+/** A page of an order's deposit requests, newest first. */
 export function DepositTableView({ items, nextCursor }: DepositTableViewProps) {
   const numbers = useNumberFormat();
   return (

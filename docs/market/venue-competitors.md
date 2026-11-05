@@ -53,7 +53,7 @@ Segment: venues that sell conferences with coffee breaks, food and rooms (e.g. W
 **Others to know about:** Bookvisit (Göteborg, hotel booking engine), Venuu (marketplace SE/FI/DK, possible lead channel), Timetomeet (Göteborg, marketplace + booking engine), Event Logic (DK), Anolla, Boka.se.
 
 ## World of Volvo
-- System not publicly known (contact form, Teamtailor for recruitment, Tickster for tickets).
+- System not publicly known (contact form, Teamtailor for recruitment, Tickster for orders).
 - The food is supplied by Götaplatsgruppen (Ceno), which "cooks all the food" for the conferences.
 - Packages SEK 590–1,016 per person. Up to ≈1,100 people, 7 conference rooms.
 

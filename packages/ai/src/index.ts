@@ -77,7 +77,7 @@ export type { ItemStateWire } from "./ui-contract/item-state-entries";
 export type { LineWire } from "./ui-contract/line-entries";
 export type { MemberProfileWire } from "./ui-contract/member-profile-entries";
 export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
-export type { PaymentWire, TicketBalanceWire } from "./ui-contract/payment-entries";
+export type { PaymentWire, OrderBalanceWire } from "./ui-contract/payment-entries";
 export type { PermissionProfileWire } from "./ui-contract/permission-entries";
 export type { PipelineBoardWire } from "./ui-contract/pipeline-entries";
 export type {
@@ -91,9 +91,9 @@ export type { RequirementWire } from "./ui-contract/requirement-entries";
 export { type ResolveToolUiInput, resolveToolUi } from "./ui-contract/resolve-tool-ui";
 export type { ResponsibilityWire } from "./ui-contract/responsibility-entries";
 export type { StatusGridCellWire } from "./ui-contract/status-grid-entries";
-export type { TicketWire } from "./ui-contract/ticket-entries";
-export type { TicketStatusWire } from "./ui-contract/ticket-status-entries";
-export type { TicketTemplateWire } from "./ui-contract/ticket-template-entries";
+export type { OrderWire } from "./ui-contract/order-entries";
+export type { OrderStatusWire } from "./ui-contract/order-status-entries";
+export type { OrderTemplateWire } from "./ui-contract/order-template-entries";
 export { GENERIC_UI_TOOLS, TOOL_UI_REGISTRY } from "./ui-contract/tool-ui-registry";
 export type {
   ToolUi,
@@ -118,5 +118,5 @@ export type {
   VenueWire,
   VocabularyWire,
 } from "./ui-contract/wire-schemas";
-export type { WorkOrderDefinitionWire } from "./ui-contract/work-order-definition-entries";
-export type { WorkOrderWire } from "./ui-contract/work-order-entries";
+export type { RunSheetDefinitionWire } from "./ui-contract/run-sheet-definition-entries";
+export type { RunSheetWire } from "./ui-contract/run-sheet-entries";

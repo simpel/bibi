@@ -12,10 +12,10 @@ const PERIOD_DAYS = 182;
 
 /**
  * ADR 0080, 0086: the Workload tab has something to show from the start of this month to four
- * weeks ahead: every open status has tickets, a value and a trend against the month's start,
- * holds expire soon, an organization with invoices has overdue ones, tickets are scheduled, some
- * type is utilised and accepted quotes wait to be invoiced. The seed generates no work orders yet, so
- * unsent work orders are only required to be readable (not null).
+ * weeks ahead: every open status has orders, a value and a trend against the month's start,
+ * holds expire soon, an organization with invoices has overdue ones, orders are scheduled, some
+ * type is utilised and accepted quotes wait to be invoiced. The seed generates no run sheets yet, so
+ * unsent run sheets are only required to be readable (not null).
  */
 async function checkAhead({ context, org }: CheckDemoDashboardInput): Promise<string[]> {
   const today = toZonedParts({ instant: new Date(), timeZone: org.timeZone }).date;
@@ -28,8 +28,8 @@ async function checkAhead({ context, org }: CheckDemoDashboardInput): Promise<st
   const { statuses, attention, scheduled, utilisation, bookedAhead } = result.value;
   const failures: string[] = [];
   for (const tile of statuses) {
-    if (tile.tickets === 0 || !(tile.estimatedValueMinor || tile.confirmedValueMinor)) {
-      failures.push(`${org.slug}: dashboard status ${tile.name} has no tickets or value`);
+    if (tile.orders === 0 || !(tile.estimatedValueMinor || tile.confirmedValueMinor)) {
+      failures.push(`${org.slug}: dashboard status ${tile.name} has no orders or value`);
     }
     if (tile.trend.series.length === 0 || tile.trend.previous === null) {
       failures.push(`${org.slug}: dashboard status ${tile.name} has no trend`);
@@ -38,9 +38,9 @@ async function checkAhead({ context, org }: CheckDemoDashboardInput): Promise<st
   const empty = ({ what }: { what: string }) =>
     failures.push(`${org.slug}: dashboard shows no ${what}`);
   if (attention.expiringHolds.length === 0) empty({ what: "expiring holds" });
-  if (attention.unsentWorkOrders === null) empty({ what: "unsent work orders list" });
+  if (attention.unsentRunSheets === null) empty({ what: "unsent run sheets list" });
   if (org.finance && !attention.overdue?.invoices) empty({ what: "overdue invoices" });
-  if (scheduled.length === 0) empty({ what: "tickets scheduled" });
+  if (scheduled.length === 0) empty({ what: "orders scheduled" });
   if (!(utilisation ?? []).some((row) => (row.rate ?? 0) > 0))
     empty({ what: "utilisation above 0" });
   if ((bookedAhead ?? []).length === 0) empty({ what: "value booked ahead" });
@@ -48,7 +48,7 @@ async function checkAhead({ context, org }: CheckDemoDashboardInput): Promise<st
 }
 
 /**
- * ADR 0079, 0080: won and lost tickets on Financials for the last six months spread over several
+ * ADR 0079, 0080: won and lost orders on Financials for the last six months spread over several
  * months (past closings run at their own day through the context clock, ADR 0064).
  */
 async function checkOutcomes({ context, org }: CheckDemoDashboardInput): Promise<string[]> {
@@ -65,17 +65,17 @@ async function checkOutcomes({ context, org }: CheckDemoDashboardInput): Promise
   if (org.finance && !(trends?.invoiced.current && trends.received.current)) {
     failures.push(`${org.slug}: no invoiced or received trend over the last six months`);
   }
-  const monthsWith = ({ key }: { key: "wonTickets" | "lostTickets" }) =>
+  const monthsWith = ({ key }: { key: "wonOrders" | "lostOrders" }) =>
     outcomes.filter((month) => month[key] > 0).length;
-  const wantedWon = org.tickets.filter(
-    (ticket) => ticket.won && ticket.status === "Completed",
+  const wantedWon = org.orders.filter(
+    (order) => order.won && order.status === "Completed",
   ).length;
-  const won = outcomes.reduce((sum, month) => sum + month.wonTickets, 0);
-  if (won < wantedWon) failures.push(`${org.slug}: ${won} won tickets, expected ${wantedWon}+`);
-  if (monthsWith({ key: "wonTickets" }) < 2)
-    failures.push(`${org.slug}: won tickets in under 2 months`);
-  if (monthsWith({ key: "lostTickets" }) < 2)
-    failures.push(`${org.slug}: lost tickets in under 2 months`);
+  const won = outcomes.reduce((sum, month) => sum + month.wonOrders, 0);
+  if (won < wantedWon) failures.push(`${org.slug}: ${won} won orders, expected ${wantedWon}+`);
+  if (monthsWith({ key: "wonOrders" }) < 2)
+    failures.push(`${org.slug}: won orders in under 2 months`);
+  if (monthsWith({ key: "lostOrders" }) < 2)
+    failures.push(`${org.slug}: lost orders in under 2 months`);
   return failures;
 }
 

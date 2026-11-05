@@ -56,19 +56,19 @@ import { SetupTableView } from "./setup-table-view";
 import { SkillCardView } from "./skill-card-view";
 import { SkillTableView } from "./skill-table-view";
 import { StatusGridTableView } from "./status-grid-table-view";
-import { TICKET_COMPONENTS } from "./ticket-components";
-import { TicketStatusCardView } from "./ticket-status-card-view";
-import { TicketStatusTableView } from "./ticket-status-table-view";
-import { TicketTemplateCardView } from "./ticket-template-card-view";
-import { TicketTemplateTableView } from "./ticket-template-table-view";
+import { ORDER_COMPONENTS } from "./order-components";
+import { OrderStatusCardView } from "./order-status-card-view";
+import { OrderStatusTableView } from "./order-status-table-view";
+import { OrderTemplateCardView } from "./order-template-card-view";
+import { OrderTemplateTableView } from "./order-template-table-view";
 import { VenueCardView } from "./venue-card-view";
 import { VenueTableView } from "./venue-table-view";
 import { VocabularyCardView } from "./vocabulary-card-view";
 import { VocabularyTableView } from "./vocabulary-table-view";
-import { WorkOrderCardView } from "./work-order-card-view";
-import { WorkOrderDefinitionCardView } from "./work-order-definition-card-view";
-import { WorkOrderDefinitionTableView } from "./work-order-definition-table-view";
-import { WorkOrderTableView } from "./work-order-table-view";
+import { RunSheetCardView } from "./run-sheet-card-view";
+import { RunSheetDefinitionCardView } from "./run-sheet-definition-card-view";
+import { RunSheetDefinitionTableView } from "./run-sheet-definition-table-view";
+import { RunSheetTableView } from "./run-sheet-table-view";
 
 /**
  * One React component per generative-UI key of `@bibi/ai/ui` (`UI_COMPONENTS`). The mapped type
@@ -89,11 +89,11 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "occupancy-card": OccupancyCardView,
   "price-list-table": PriceListTableView,
   "price-list-card": PriceListCardView,
-  "ticket-status-table": TicketStatusTableView,
-  "ticket-status-card": TicketStatusCardView,
+  "order-status-table": OrderStatusTableView,
+  "order-status-card": OrderStatusCardView,
   "archive-preview-card": ArchivePreviewCardView,
-  "ticket-template-table": TicketTemplateTableView,
-  "ticket-template-card": TicketTemplateCardView,
+  "order-template-table": OrderTemplateTableView,
+  "order-template-card": OrderTemplateCardView,
   "item-state-table": ItemStateTableView,
   "item-state-card": ItemStateCardView,
   "status-grid-table": StatusGridTableView,
@@ -107,7 +107,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "requirement-table": RequirementTableView,
   "requirement-card": RequirementCardView,
   ...BOARD_COMPONENTS,
-  ...TICKET_COMPONENTS,
+  ...ORDER_COMPONENTS,
   "quote-card": QuoteCardView,
   "quote-table": QuoteTableView,
   ...INBOUND_COMPONENTS,
@@ -126,10 +126,10 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "responsibility-card": ResponsibilityCardView,
   "assignment-table": AssignmentTableView,
   "assignment-card": AssignmentCardView,
-  "work-order-definition-table": WorkOrderDefinitionTableView,
-  "work-order-definition-card": WorkOrderDefinitionCardView,
-  "work-order-table": WorkOrderTableView,
-  "work-order-card": WorkOrderCardView,
+  "run-sheet-definition-table": RunSheetDefinitionTableView,
+  "run-sheet-definition-card": RunSheetDefinitionCardView,
+  "run-sheet-table": RunSheetTableView,
+  "run-sheet-card": RunSheetCardView,
   "member-table": MemberTableView,
   "member-card": MemberCardView,
   "member-profile-card": MemberProfileCardView,

@@ -29,12 +29,12 @@ export type CalendarPerson = {
 
 /**
  * Who to reach about a line, and why them (ADR 0034): the line's assignee, a responsibility's
- * holder ("Head of kitchen") or, when the line has none, the ticket's assignee.
+ * holder ("Head of kitchen") or, when the line has none, the order's assignee.
  */
 export type CalendarContact = {
   person: CalendarPerson;
   via: string;
-  /** Set when the line has no contact of its own and shows the ticket's. */
+  /** Set when the line has no contact of its own and shows the order's. */
   inherited?: boolean;
 };
 
@@ -56,29 +56,29 @@ export type CalendarLine = {
   parentId?: string;
   /** Staff and equipment allocations: never on customer documents (ADR 0059). */
   internalOnly?: boolean;
-  /** The one person to reach about this line; falls back to the ticket's contact. */
+  /** The one person to reach about this line; falls back to the order's contact. */
   contact?: CalendarContact;
   /** People allocated to work the line (ADR 0059): their time is taken. */
   staff?: readonly CalendarPerson[];
   /**
-   * The ticket's guests attend this line: it is a place to find them. Staff and equipment lines
+   * The order's guests attend this line: it is a place to find them. Staff and equipment lines
    * never are, and a bundle only frames its parts. Where lines overlap, the shortest one wins.
    */
   guests?: boolean;
   /** Notes for staff. Never shown to the customer. */
   notes?: string;
-  /** Where "Open line" goes: the line on its ticket. Staff only. */
+  /** Where "Open line" goes: the line on its order. Staff only. */
   href?: string;
 };
 
-export type CalendarTicket = {
+export type CalendarOrder = {
   reference: string;
   customer: string;
   purpose: string;
   /** Plain date key "YYYY-MM-DD" (ADR 0064: never a column, only a code-level key). */
   date: string;
   headcount: number;
-  /** The ticket's assignee: every line without its own contact falls back to this. */
+  /** The order's assignee: every line without its own contact falls back to this. */
   contact: CalendarContact;
   lines: readonly CalendarLine[];
 };
@@ -99,19 +99,21 @@ export type CalendarAsset = {
   href?: string;
 };
 
-/** A line placed on an asset, with the ticket and customer it belongs to (none for a block). */
+/** A line placed on an asset, with the order and customer it belongs to (none for a block). */
 export type AssetBooking = CalendarLine & {
   assetId: string;
-  /** The line and ticket behind it, to load the ticket's other lines; none for a manual block. */
+  assetName?: string | undefined;
+  /** The line and order behind it, to load the order's other lines; none for a manual block. */
   lineId?: string;
-  ticketId?: string;
+  orderId?: string;
   /** The day it is on, "YYYY-MM-DD" in the venue's zone (ADR 0064: a code-level key only). */
   date: string;
-  ticket: string | null;
+  order: string | null;
+  reference?: string | null;
   customer: string | null;
-  /** The ticket's guest count, when it has guests. */
+  /** The order's guest count, when it has guests. */
   headcount?: number;
-  /** The customer's own contact for the ticket: who to call on their side. */
+  /** The customer's own contact for the order: who to call on their side. */
   client?: ClientContact;
   /** What the booking is worth: its line total, excl. VAT. */
   value?: Money;

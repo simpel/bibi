@@ -19,5 +19,7 @@ export async function requirePlatformAdmin({ locale }: RequirePlatformAdminInput
   }
   const session = (state as Exclude<typeof state, { status: "anonymous" }>).session;
   if (!(await isPlatformAdmin({ userId: session.user.id }))) notFound();
-  return session;
+  const organizationId =
+    state.status === "ready" ? state.organizationId : (session.session.activeOrganizationId ?? "");
+  return { session, organizationId };
 }

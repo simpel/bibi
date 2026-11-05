@@ -1,7 +1,7 @@
 import type { CustomerDto, EntityTypeDto } from "@bibi/core";
-import type { ColumnDef } from "@bibi/ui";
+import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { type ReactNode, useMemo } from "react";
 import { Link } from "@/lib/navigation";
 import { customerRoute } from "@/lib/routes";
 
@@ -13,11 +13,16 @@ export type CustomerRow = Pick<
 export type UseCustomerColumnsInput = {
   /** Omit to leave out the type column (assistant card). */
   types?: EntityTypeDto[];
+  renderActions?: ((row: CustomerRow) => ReactNode) | undefined;
 };
 
 /** Columns of the customer table, shared by the list page and the assistant card. */
-export function useCustomerColumns({ types }: UseCustomerColumnsInput): ColumnDef<CustomerRow>[] {
+export function useCustomerColumns({
+  types,
+  renderActions,
+}: UseCustomerColumnsInput): ColumnDef<CustomerRow>[] {
   const t = useTranslations("customer.columns");
+  const common = useTranslations("common");
   return useMemo<ColumnDef<CustomerRow>[]>(() => {
     const typeName = ({ id }: { id: string }) => types?.find((type) => type.id === id)?.name ?? "–";
     const typeColumn: ColumnDef<CustomerRow>[] = types
@@ -40,6 +45,9 @@ export function useCustomerColumns({ types }: UseCustomerColumnsInput): ColumnDe
       ...typeColumn,
       { id: "city", header: t("city"), accessorFn: (c) => c.invoiceCity ?? "–" },
       { id: "email", header: t("email"), accessorFn: (c) => c.email ?? "–" },
+      ...(renderActions
+        ? [actionsColumn<CustomerRow>({ label: common("actions"), cell: renderActions })]
+        : []),
     ];
-  }, [t, types]);
+  }, [t, common, types, renderActions]);
 }

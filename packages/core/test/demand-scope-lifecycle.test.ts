@@ -17,7 +17,7 @@ type Setup = Awaited<ReturnType<typeof avSetup>>;
 const bookAv = ({ setup, unit }: { setup: Setup; unit: number }) =>
   createTestLine({
     context: setup.context,
-    ticketId: setup.ticket.id,
+    orderId: setup.order.id,
     entityTypeId: setup.type.id,
     itemId: setup.av.ids[unit],
     from: 10,

@@ -8,9 +8,7 @@
     "./routing": "./src/routing.ts",
     "./request": "./src/request.ts",
     "./navigation": "./src/navigation.ts",
-    "./check-messages": "./src/check-messages.ts",
-    "./messages/sv.json": "./messages/sv.json",
-    "./messages/en.json": "./messages/en.json"
+    "./check-messages": "./src/check-messages.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

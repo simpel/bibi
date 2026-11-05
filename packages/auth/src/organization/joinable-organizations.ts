@@ -1,12 +1,21 @@
 import { type DomainOffer, domainOffers } from "@bibi/core/domain-join";
 import { type Db, getDb } from "@bibi/db";
 
-export type JoinableInvitation = { id: string; organizationId: string; name: string; role: string };
+export type JoinableInvitation = {
+  id: string;
+  organizationId: string;
+  name: string;
+  role: string;
+  inviterName?: string | null;
+  inviterImage?: string | null;
+  logo?: string | null;
+};
 export type JoinedOrganization = {
   organizationId: string;
   name: string;
   slug: string;
   primary: boolean;
+  logo?: string | null;
 };
 
 export type JoinableOrganizations = {
@@ -38,7 +47,8 @@ export async function loadJoinableOrganizations({
         id: true,
         organizationId: true,
         role: true,
-        organization: { select: { name: true } },
+        organization: { select: { name: true, logo: true } },
+        user: { select: { name: true, email: true, image: true } },
       },
       orderBy: { createdAt: "asc" },
     }),
@@ -47,18 +57,28 @@ export async function loadJoinableOrganizations({
       select: {
         organizationId: true,
         primary: true,
-        organization: { select: { name: true, slug: true } },
+        organization: { select: { name: true, slug: true, logo: true } },
       },
       orderBy: { createdAt: "asc" },
     }),
   ]);
   return {
     offers,
-    invitations: invitations.map(({ id, organizationId, role, organization }) => ({
-      ...{ id, organizationId, name: organization.name, role: role ?? "member" },
+    invitations: invitations.map(({ id, organizationId, role, organization, user }) => ({
+      id,
+      organizationId,
+      name: organization.name,
+      logo: organization.logo,
+      role: role ?? "member",
+      inviterName: user?.name || user?.email || null,
+      inviterImage: user?.image || null,
     })),
     memberships: members.map(({ organizationId, primary, organization }) => ({
-      ...{ organizationId, primary, name: organization.name, slug: organization.slug },
+      organizationId,
+      primary,
+      name: organization.name,
+      slug: organization.slug,
+      logo: organization.logo,
     })),
   };
 }

@@ -32,6 +32,7 @@ export function OrganizationForm({ org, name, defaults, canCreateVenue }: Organi
   const common = useTranslations("common");
   const router = useRouter();
   const form = useForm<OrganizationStepValues, unknown, OrganizationStepOutput>({
+    mode: "onBlur",
     resolver: zodResolver(OrganizationStepSchema, useZodMessages()),
     defaultValues: defaults,
   });

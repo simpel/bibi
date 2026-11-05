@@ -4,17 +4,17 @@ import { SquareArrowOutUpRightIcon } from "lucide-react";
 import { Button } from "../button/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../sheet/sheet";
 import { useCalendarLabels } from "./calendar-labels";
-import type { CalendarTicket } from "./calendar-types";
-import { TicketLanes } from "./ticket-lanes";
+import type { CalendarOrder } from "./calendar-types";
+import { OrderLanes } from "./order-lanes";
 
 export type BookingSheetProps = {
-  /** The booking's ticket; `null` closes the sheet. */
-  ticket: CalendarTicket | null;
+  /** The booking's order; `null` closes the sheet. */
+  order: CalendarOrder | null;
   locale: string;
   onClose: () => void;
-  /** Leaves the calendar for the ticket itself. */
-  onOpenTicket?: () => void;
-  /** The ticket's lines with no time yet, e.g. a lunch still to be placed. */
+  /** Leaves the calendar for the order itself. */
+  onOpenOrder?: () => void;
+  /** The order's lines with no time yet, e.g. a lunch still to be placed. */
   unscheduled?: readonly { id: string; name: string; quantity: number | null }[];
 };
 
@@ -40,14 +40,14 @@ function Unscheduled({ lines }: { lines: NonNullable<BookingSheetProps["unschedu
 }
 
 /**
- * Overview to detail: a booking's ticket, its lines that day on one hour axis, beside the
+ * Overview to detail: a booking's order, its lines that day on one hour axis, beside the
  * calendar. Closing returns to the same place; the booking stays ringed behind it.
  */
 export function BookingSheet(props: BookingSheetProps) {
-  const { ticket, locale, onClose, onOpenTicket, unscheduled = [] } = props;
+  const { order, locale, onClose, onOpenOrder, unscheduled = [] } = props;
   const labels = useCalendarLabels();
   return (
-    <Sheet open={Boolean(ticket)} onOpenChange={(next) => (next ? null : onClose())}>
+    <Sheet open={Boolean(order)} onOpenChange={(next) => (next ? null : onClose())}>
       <SheetContent
         className="w-full overflow-y-auto sm:max-w-3xl"
         // Focus the sheet, not its first block: a focused block would pop its hover card.
@@ -57,17 +57,17 @@ export function BookingSheet(props: BookingSheetProps) {
         }}
       >
         <SheetHeader>
-          <SheetTitle>{ticket?.reference}</SheetTitle>
-          <SheetDescription>{ticket?.customer}</SheetDescription>
-          {onOpenTicket && ticket ? (
-            <Button size="sm" variant="outline" className="w-fit" onClick={onOpenTicket}>
+          <SheetTitle>{order?.reference}</SheetTitle>
+          <SheetDescription>{order?.customer}</SheetDescription>
+          {onOpenOrder && order ? (
+            <Button size="sm" variant="outline" className="w-fit" onClick={onOpenOrder}>
               <SquareArrowOutUpRightIcon aria-hidden />
-              {labels.open({ ticket: ticket.reference })}
+              {labels.open({ order: order.reference })}
             </Button>
           ) : null}
         </SheetHeader>
         <div className="px-4 pb-6">
-          {ticket ? <TicketLanes ticket={ticket} audience="internal" locale={locale} /> : null}
+          {order ? <OrderLanes order={order} audience="internal" locale={locale} /> : null}
           <Unscheduled lines={unscheduled} />
         </div>
       </SheetContent>

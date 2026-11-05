@@ -12,9 +12,9 @@ export const listNotifications = defineOperation({
   kind: "query",
   description:
     "List the caller's own notifications (ADR 0094), newest first by default: being made " +
-    "assignee, a work order sent to them, a status change or a received payment on a ticket " +
+    "assignee, a run sheet sent to them, a status change or a received payment on an order " +
     "they answer for or follow. `read` narrows to unread or read ones, `kind` to one kind, `q` " +
-    "searches the ticket's title or reference. Never returns anyone else's.",
+    "searches the order's title or reference. Never returns anyone else's.",
   input: NotificationListInputSchema,
   output: NotificationListOutputSchema,
   permission: "self:read",

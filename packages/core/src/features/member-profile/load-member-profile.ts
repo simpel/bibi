@@ -2,7 +2,7 @@ import type { Prisma } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
-import { checkReadable } from "../ticket/ticket-rules";
+import { checkReadable } from "../order/order-rules";
 import type { MemberProfileDto } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db" | "organizationId"> };

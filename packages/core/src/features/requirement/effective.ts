@@ -7,8 +7,8 @@ export type EffectiveCount = {
   vocabularyValueId: string;
   quantity: number;
   requirementId: string;
-  /** `LINE` when the line's own row replaced the ticket's count. */
-  level: "TICKET" | "LINE";
+  /** `LINE` when the line's own row replaced the order's count. */
+  level: "ORDER" | "LINE";
 };
 
 export type EffectiveForLine = { lineId: string; counts: EffectiveCount[] };
@@ -19,7 +19,7 @@ const toCount = ({ row }: { row: Counted }): EffectiveCount => ({
   vocabularyValueId: row.vocabularyValueId,
   quantity: row.quantity,
   requirementId: row.id,
-  level: row.lineId ? "LINE" : "TICKET",
+  level: row.lineId ? "LINE" : "ORDER",
 });
 
 export type ResolveEffectiveInput = {
@@ -28,18 +28,18 @@ export type ResolveEffectiveInput = {
 };
 
 /**
- * The effective count per list value for each line (ADR 0021): the ticket's count,
+ * The effective count per list value for each line (ADR 0021): the order's count,
  * replaced value by value by the line's own row. A line row of 0 says "none
- * here" and still replaces the ticket's count. Pure, so work orders and tests can reuse it.
+ * here" and still replaces the order's count. Pure, so run sheets and tests can reuse it.
  */
 export function resolveEffective({
   lineIds,
   requirements,
 }: ResolveEffectiveInput): EffectiveForLine[] {
-  const ticket = requirements.filter((row) => !row.lineId);
+  const order = requirements.filter((row) => !row.lineId);
   return lineIds.map((lineId) => {
     const byValue = new Map<string, EffectiveCount>();
-    for (const row of ticket) byValue.set(row.vocabularyValueId, toCount({ row }));
+    for (const row of order) byValue.set(row.vocabularyValueId, toCount({ row }));
     for (const row of requirements) {
       if (row.lineId === lineId) byValue.set(row.vocabularyValueId, toCount({ row }));
     }
@@ -49,21 +49,21 @@ export function resolveEffective({
 
 export type EffectiveRequirementsInput = {
   context: Pick<OperationContext, "db">;
-  ticketId: string;
+  orderId: string;
 };
 
-/** `resolveEffective` for every active line of the ticket, earliest first. */
+/** `resolveEffective` for every active line of the order, earliest first. */
 export async function effectiveRequirements({
   context,
-  ticketId,
+  orderId,
 }: EffectiveRequirementsInput): Promise<EffectiveForLine[]> {
   const lines = await context.db.line.findMany({
-    where: { ticketId },
+    where: { orderId },
     orderBy: [{ startsAt: "asc" }, { id: "asc" }],
     select: { id: true },
   });
   const rows = await context.db.requirement.findMany({
-    where: { ticketId },
+    where: { orderId },
     include: REQUIREMENT_INCLUDE,
   });
   return resolveEffective({

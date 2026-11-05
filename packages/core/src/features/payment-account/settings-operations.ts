@@ -12,8 +12,8 @@ export const getPaymentSettings = defineOperation({
   entityType: "paymentSettings",
   kind: "query",
   description:
-    "Read how the organization takes ticket money (ADR 0090): the deposit rule (depositPercent " +
-    "of the ticket's total incl. VAT; a ticket below depositMinimumMinor is paid in full up " +
+    "Read how the organization takes order money (ADR 0090): the deposit rule (depositPercent " +
+    "of the order's total incl. VAT; an order below depositMinimumMinor is paid in full up " +
     "front) and the invoice provider used when both Stripe and Fortnox are connected.",
   input: PaymentSettingsGetInputSchema,
   output: PaymentSettingsSchema,

@@ -1,12 +1,12 @@
-import { densityTickets } from "../../density-tickets";
+import { densityOrders } from "../../density-orders";
 import type { DemoOrg } from "../../types";
 import { usedAssetDays } from "../../used-asset-days";
 import { lindholmenHours } from "../demo-hours";
 import { lindholmenActivities } from "./activities";
-import { lindholmenAlternativeTickets } from "./alternative-tickets";
-import { lindholmenBundleTickets } from "./bundle-tickets";
+import { lindholmenAlternativeOrders } from "./alternative-orders";
+import { lindholmenBundleOrders } from "./bundle-orders";
 import { conferenceDayBundle, lindholmenBundles } from "./bundles";
-import { lindholmenClosedTickets } from "./closed-tickets";
+import { lindholmenClosedOrders } from "./closed-orders";
 import { lindholmenLists } from "./config";
 import { lindholmenCustomers } from "./customers";
 import { lindholmenDensity } from "./density";
@@ -18,18 +18,18 @@ import { lindholmenResponsibilities } from "./responsibilities";
 import { lindholmenRooms } from "./rooms";
 import { lindholmenStaff, lindholmenStaffTypes } from "./staff";
 import { lindholmenTemplates } from "./templates";
-import { lindholmenTickets } from "./tickets";
+import { lindholmenOrders } from "./orders";
 import { lindholmenTypes } from "./types";
-import { lindholmenWorkOrders } from "./work-orders";
-import { lindholmenYearTickets } from "./year-tickets";
+import { lindholmenRunSheets } from "./run-sheets";
+import { lindholmenYearOrders } from "./year-orders";
 
 const fixtures = [
-  ...lindholmenTickets,
-  ...lindholmenAlternativeTickets,
-  ...lindholmenBundleTickets,
+  ...lindholmenOrders,
+  ...lindholmenAlternativeOrders,
+  ...lindholmenBundleOrders,
   // Last, so the fixtures (L1–L15, F2, F3, F6) keep their reference numbers.
-  ...lindholmenClosedTickets,
-  ...lindholmenYearTickets,
+  ...lindholmenClosedOrders,
+  ...lindholmenYearOrders,
 ];
 // Parts come after the items they contain.
 const items = [
@@ -41,7 +41,7 @@ const items = [
   ...lindholmenBundles,
   conferenceDayBundle,
 ];
-const reserved = usedAssetDays({ tickets: fixtures, templates: lindholmenTemplates, items });
+const reserved = usedAssetDays({ orders: fixtures, templates: lindholmenTemplates, items });
 
 /**
  * Lindholmen Experience Center (`docs/demo-seed.md`): fixed roles (ADR 0034). Johan configures,
@@ -95,12 +95,12 @@ export const lindholmen: DemoOrg = {
     checks: { listSizes: { Allergens: 14 } },
   },
   responsibilities: lindholmenResponsibilities,
-  workOrders: lindholmenWorkOrders,
+  runSheets: lindholmenRunSheets,
   staff: lindholmenStaff,
   customers: lindholmenCustomers,
   pipeline: lindholmenPipeline,
   templates: lindholmenTemplates,
-  tickets: [...fixtures, ...densityTickets({ density: lindholmenDensity, reserved })],
+  orders: [...fixtures, ...densityOrders({ density: lindholmenDensity, reserved })],
   density: lindholmenDensity,
   finance: {
     orgNumber: "556677-8899",
@@ -111,7 +111,7 @@ export const lindholmen: DemoOrg = {
       { type: "Drink", account: "3052" },
     ],
   },
-  // ADR 0090: a 30 % deposit, tickets under 10 000 kr paid in full; Stripe raises the invoices.
+  // ADR 0090: a 30 % deposit, orders under 10 000 kr paid in full; Stripe raises the invoices.
   paymentSettings: {
     depositPercent: 30,
     depositMinimumMinor: 1_000_000,

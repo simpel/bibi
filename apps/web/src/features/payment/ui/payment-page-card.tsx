@@ -35,7 +35,7 @@ export function PaymentPageCard({ payment, returning = false, numbers }: Payment
   const t = useTranslations("payment.public");
   const { money } = numbers;
   const outcome = paymentOutcome({ payment, returning });
-  const values = { organization: payment.organizationName, reference: payment.ticketReference };
+  const values = { organization: payment.organizationName, reference: payment.orderReference };
   const amount = money({ minor: payment.amountMinor, currency: payment.currency });
   const showAmount = outcome !== "expired" && outcome !== "unavailable";
   return (

@@ -6,7 +6,7 @@ import { estateDraft, roomType } from "./pipeline-setup-helpers";
 const codes = ({ rows }: { rows: readonly { code: string }[] }) => rows.map((row) => row.code);
 
 describe("pipelineSetup.preview (ADR 0044)", () => {
-  it("steps a simulated ticket through every status without writing", async () => {
+  it("steps a simulated order through every status without writing", async () => {
     const context = testContext();
     const room = await roomType({ context });
     const input = estateDraft({ roomTypeId: room.id });
@@ -15,11 +15,11 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
     });
     expect(preview.ready).toBe(true);
     expect(preview.problems).toEqual([]);
-    const at = ({ ticketStatus }: { ticketStatus: string }) =>
+    const at = ({ orderStatus }: { orderStatus: string }) =>
       preview.steps
-        .find((step) => step.ticketStatus === ticketStatus)
+        .find((step) => step.orderStatus === orderStatus)
         ?.lines.map((line) => line.state);
-    expect(preview.steps.map((step) => step.ticketStatus)).toEqual([
+    expect(preview.steps.map((step) => step.orderStatus)).toEqual([
       "New",
       "Site visit",
       "Quote sent",
@@ -29,13 +29,13 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
       "Lost",
       "Cancelled",
     ]);
-    expect(at({ ticketStatus: "New" })).toEqual(["Prebooked", "Estimated"]);
-    expect(at({ ticketStatus: "Confirmed" })).toEqual(["Booked", "Ordered"]);
-    expect(at({ ticketStatus: "Final count locked" })).toEqual(["Booked", "Locked"]);
-    expect(at({ ticketStatus: "Lost" })).toEqual(["Released", "Released"]);
+    expect(at({ orderStatus: "New" })).toEqual(["Prebooked", "Estimated"]);
+    expect(at({ orderStatus: "Confirmed" })).toEqual(["Booked", "Ordered"]);
+    expect(at({ orderStatus: "Final count locked" })).toEqual(["Booked", "Locked"]);
+    expect(at({ orderStatus: "Lost" })).toEqual(["Released", "Released"]);
     const holds = preview.steps.map((step) => step.lines[0]?.hold);
     expect(holds.slice(0, 5)).toEqual(["SOFT", "SOFT", "SOFT", "HARD", "HARD"]);
-    expect(await context.db.ticketStatus.count()).toBe(0);
+    expect(await context.db.orderStatus.count()).toBe(0);
   });
 
   it("lists the configuration problems", async () => {
@@ -45,8 +45,8 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
     if (!room || !dish) throw new Error("draft");
     const input = {
       ...draft,
-      statuses: draft.statuses.map((ticketStatus) => ({
-        ...ticketStatus,
+      statuses: draft.statuses.map((orderStatus) => ({
+        ...orderStatus,
         entry: false,
         closes: false,
       })),
@@ -54,7 +54,7 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
         { ...room, states: room.states.map((state) => ({ ...state, initial: false })) },
         { ...dish, states: dish.states.filter((state) => !state.released) },
       ],
-      cells: [...draft.cells, { ticketStatus: "New", type: "Boat", state: "Afloat" }],
+      cells: [...draft.cells, { orderStatus: "New", type: "Boat", state: "Afloat" }],
     };
     const preview = unwrap({
       result: await execute({ operation: previewPipelineSetup, input, context }),
@@ -78,7 +78,7 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
     const draft = estateDraft();
     const cells = [
       ...draft.cells,
-      { ticketStatus: "Final count locked", type: "Room", state: "Prebooked" },
+      { orderStatus: "Final count locked", type: "Room", state: "Prebooked" },
     ];
     const preview = unwrap({
       result: await execute({
@@ -90,11 +90,11 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
     expect(preview.problems).toEqual([
       expect.objectContaining({
         code: "LINE_BLOCKED",
-        ticketStatus: "Final count locked",
+        orderStatus: "Final count locked",
         type: "Room",
       }),
     ]);
-    const step = preview.steps.find((row) => row.ticketStatus === "Final count locked");
+    const step = preview.steps.find((row) => row.orderStatus === "Final count locked");
     expect(step?.lines[0]).toMatchObject({ state: "Booked", blocked: expect.any(String) });
   });
 

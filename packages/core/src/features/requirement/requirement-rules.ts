@@ -1,26 +1,26 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid } from "../../shared/errors";
-import { checkTicket } from "../line/line-rules";
+import { checkOrder } from "../line/line-rules";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-export type CheckLevelInput = Db & { ticketId: string; lineId: string | null };
+export type CheckLevelInput = Db & { orderId: string; lineId: string | null };
 
 /**
- * Where a requirement applies: an active ticket of the organization, optionally one of that
- * ticket's active lines. A line of another ticket is a `VALIDATION` issue.
+ * Where a requirement applies: an active order of the organization, optionally one of that
+ * order's active lines. A line of another order is a `VALIDATION` issue.
  */
 export async function checkLevel({
   context,
-  ticketId,
+  orderId,
   lineId,
 }: CheckLevelInput): Promise<Result<boolean>> {
-  const ticket = await checkTicket({ context, ticketId });
-  if (!ticket.ok || !lineId) return ticket;
-  const found = await context.db.line.count({ where: { id: lineId, ticketId } });
+  const order = await checkOrder({ context, orderId });
+  if (!order.ok || !lineId) return order;
+  const found = await context.db.line.count({ where: { id: lineId, orderId } });
   if (found > 0) return ok({ value: true });
-  const message = "Not a line of the ticket";
+  const message = "Not a line of the order";
   return invalid({ message, issues: [{ path: "lineId", message }] });
 }
 
@@ -47,15 +47,15 @@ export type CheckFreeInput = CheckLevelInput & { vocabularyValueId: string };
 /** One active count per list value and level; a second one is a `CONFLICT` (update it instead). */
 export async function checkFree({
   context,
-  ticketId,
+  orderId,
   lineId,
   vocabularyValueId,
 }: CheckFreeInput): Promise<Result<true>> {
   const taken = await context.db.requirement.count({
-    where: { ticketId, lineId, vocabularyValueId },
+    where: { orderId, lineId, vocabularyValueId },
   });
   if (taken === 0) return ok({ value: true });
-  const where = lineId ? "The line" : "The ticket";
+  const where = lineId ? "The line" : "The order";
   const message = `${where} already has a count for the value; update it instead`;
   return conflict({ message, issues: [{ path: "vocabularyValueId", message }] });
 }

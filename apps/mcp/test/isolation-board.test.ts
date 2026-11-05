@@ -7,7 +7,7 @@ describe("cross-organization isolation: boards and phases", () => {
   it("hides one organization's boards and phases and refuses its ids in another's", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
-    const status = await call({ client: a, name: "ticketStatus_create", args: STATUS });
+    const status = await call({ client: a, name: "orderStatus_create", args: STATUS });
     const board = await call({ client: a, name: "board_create", args: { name: "Secret board" } });
     expect(board.isError, JSON.stringify(board.data)).toBe(false);
     const phase = await call({

@@ -3,7 +3,7 @@ import { FieldValuesSchema } from "../field-definition/field-values-schema";
 import { LineSchema } from "./schema";
 
 export const LineExpandBundleInputSchema = z.object({
-  ticketId: z.string().min(1).describe("Id of the ticket (ticket.list)"),
+  orderId: z.string().min(1).describe("Id of the order (order.list)"),
   entityTypeId: z
     .string()
     .min(1)
@@ -27,7 +27,7 @@ export const LineExpandBundleInputSchema = z.object({
     .min(0)
     .max(100_000)
     .nullish()
-    .describe("How many bundles; null = the ticket's headcount (the parts follow it)"),
+    .describe("How many bundles; null = the order's headcount (the parts follow it)"),
   fields: FieldValuesSchema.optional().describe(
     "Values of the line type's own fields, by field key, for every line created",
   ),

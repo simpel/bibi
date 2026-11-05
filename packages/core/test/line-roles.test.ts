@@ -7,8 +7,8 @@ import { choose, optionsSetup, picks } from "./line-options-helpers";
 describe("line roles (ADR 0088)", () => {
   it("marks parts PART and chosen options OPTION; top-level lines have none", async () => {
     const setup = await bundleSetup();
-    const { context, ticket, lineType, bundle } = setup;
-    const base = { context, ticketId: ticket.id, entityTypeId: lineType.id, itemId: bundle.id };
+    const { context, order, lineType, bundle } = setup;
+    const base = { context, orderId: order.id, entityTypeId: lineType.id, itemId: bundle.id };
     const { items } = unwrap({ result: await expand(base) });
     expect(items.map((line) => line.role)).toEqual([null, "PART", "PART", "PART"]);
     const options = await optionsSetup();
@@ -22,9 +22,9 @@ describe("line roles (ADR 0088)", () => {
   });
 
   it("keeps role and parent consistent in the database", async () => {
-    const { context, ticket, parent } = await addOnSetup();
+    const { context, order, parent } = await addOnSetup();
     const addOn = unwrap({
-      result: await addLine({ context, ticketId: ticket.id, parentLineId: parent.id }),
+      result: await addLine({ context, orderId: order.id, parentLineId: parent.id }),
     });
     const orphan = context.db.line.update({ where: { id: addOn.id }, data: { role: null } });
     await expect(orphan).rejects.toThrow();

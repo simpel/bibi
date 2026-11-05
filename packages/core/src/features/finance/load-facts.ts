@@ -8,8 +8,8 @@ type Db = { context: Pick<OperationContext, "db"> } & Scope;
 
 export type FactsInput = Db & { period: Pick<FinancePeriod, "start" | "end"> };
 
-/** The ticket filter that narrows a fact to one customer; empty for the whole organization. */
-const ticketOf = ({ customerId }: Scope) => (customerId ? { ticket: { customerId } } : {});
+/** The order filter that narrows a fact to one customer; empty for the whole organization. */
+const orderOf = ({ customerId }: Scope) => (customerId ? { order: { customerId } } : {});
 
 const LINE_SELECT = {
   totalExclVatMinor: true,
@@ -23,7 +23,7 @@ export function loadInvoicedInPeriod({ context, period, customerId }: FactsInput
     where: {
       status: "SENT",
       sentAt: { gte: period.start, lt: period.end },
-      ...ticketOf({ customerId }),
+      ...orderOf({ customerId }),
     },
     select: {
       sentAt: true,
@@ -43,12 +43,12 @@ export async function loadCashInPeriod({ context, period, customerId }: FactsInp
       where: {
         status: { in: ["SUCCEEDED", "REFUNDED"] },
         paidAt: when,
-        ...ticketOf({ customerId }),
+        ...orderOf({ customerId }),
       },
       select: { paidAt: true, amountMinor: true },
     }),
     context.db.paymentRefund.findMany({
-      where: { refundedAt: when, payment: ticketOf({ customerId }) },
+      where: { refundedAt: when, payment: orderOf({ customerId }) },
       select: { refundedAt: true, amountMinor: true },
     }),
   ]);
@@ -60,15 +60,15 @@ export type CashInPeriod = Awaited<ReturnType<typeof loadCashInPeriod>>;
 /** Every SENT invoice with what is still open on it, today. */
 export async function loadOpenInvoices({ context, customerId }: Db) {
   const invoices = await context.db.invoice.findMany({
-    where: { status: "SENT", ...ticketOf({ customerId }) },
+    where: { status: "SENT", ...orderOf({ customerId }) },
     select: {
       id: true,
       number: true,
-      ticketId: true,
+      orderId: true,
       dueDate: true,
       totalInclVatMinor: true,
       deductions: { select: { amountMinor: true } },
-      ticket: { select: { reference: true, title: true } },
+      order: { select: { reference: true, title: true } },
     },
   });
   const paid = await paidForInvoices({ context, invoiceIds: invoices.map((row) => row.id) });

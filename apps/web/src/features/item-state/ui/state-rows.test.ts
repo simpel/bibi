@@ -11,7 +11,7 @@ const state = ({ over }: { over: Partial<ItemStateDto> }): ItemStateDto => ({
   position: 0,
   initial: false,
   hold: "NONE",
-  inWorkOrders: false,
+  inRunSheets: false,
   released: false,
   expires: false,
   transitionsTo: [],

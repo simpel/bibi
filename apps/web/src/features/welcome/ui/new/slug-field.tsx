@@ -14,7 +14,7 @@ export type SlugFieldProps = {
   onTake: ({ value }: { value: string }) => void;
 };
 
-/** `bibi.se/<slug>` with the live check under it (ADR 0062). */
+/** `heybibi.se/<slug>` with the live check under it (ADR 0062). */
 export function SlugField({ form, check, onTake }: SlugFieldProps) {
   const t = useTranslations("welcome.new");
   return (

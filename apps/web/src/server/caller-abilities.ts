@@ -1,5 +1,4 @@
 import "server-only";
-import { resolveExecuteContext } from "@bibi/auth";
 import {
   type Feature,
   type FixedRole,
@@ -7,9 +6,9 @@ import {
   type Permission,
   type PermissionSet,
 } from "@bibi/core";
-import { headers } from "next/headers";
 import { cache } from "react";
 import { canPermission, type RowAccess } from "@/lib/can";
+import { getRequestContext } from "./request-context";
 
 export type CallerAbilities = {
   /** The caller's effective permissions (ADR 0050). */
@@ -33,7 +32,7 @@ const NONE: CallerAbilities = {
  * Cached per request: a page, its layout and its tabs resolve the session once.
  */
 export const getCallerAbilities = cache(async (): Promise<CallerAbilities> => {
-  const context = await resolveExecuteContext({ headers: await headers() });
+  const context = await getRequestContext();
   if (!context.ok) return NONE;
   const { permissions, roles, actor } = context.value;
   return {

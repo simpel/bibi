@@ -22,7 +22,7 @@ export function StatusGridTable({ statuses, types, cells, canEdit }: StatusGridT
       tableId="status-grid.edit"
       columns={columns}
       data={rows}
-      getRowId={(row) => row.ticketStatus.id}
+      getRowId={(row) => row.orderStatus.id}
       emptyText={t("empty")}
     />
   );

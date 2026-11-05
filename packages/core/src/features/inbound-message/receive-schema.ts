@@ -17,11 +17,11 @@ export const EmailDetailsSchema = z.object({
 
 const ReceiveShape = {
   endpointId: z.string().min(1).nullable().describe("The endpoint it came in on"),
-  ticketId: z
+  orderId: z
     .string()
     .min(1)
     .nullable()
-    .describe("Reply hint: the ticket a reply route (a ticket address) names"),
+    .describe("Reply hint: the order a reply route (an order address) names"),
   fromName: z.string().max(500).nullable(),
   fromEmail: z.string().max(1000).nullable(),
   fromPhone: z.string().max(100).nullable(),

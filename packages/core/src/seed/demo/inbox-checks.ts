@@ -3,7 +3,7 @@ import type { DemoOrg } from "./types";
 
 /**
  * The inbox (ADR 0085): both endpoints, the mailed request unread and the API request read in
- * the inbox, and the reply stored on its ticket with the old table's copy (expand phase).
+ * the inbox, and the reply stored on its order with the old table's copy (expand phase).
  */
 export async function checkDemoInbox({
   context,
@@ -14,8 +14,8 @@ export async function checkDemoInbox({
 }): Promise<string[]> {
   const [endpoints, open, attached] = await Promise.all([
     context.db.inboundEndpoint.findMany({ select: { channel: true, address: true } }),
-    context.db.inboundMessage.findMany({ where: { ticketId: null } }),
-    context.db.inboundMessage.findMany({ where: { ticketId: { not: null } } }),
+    context.db.inboundMessage.findMany({ where: { orderId: null } }),
+    context.db.inboundMessage.findMany({ where: { orderId: { not: null } } }),
   ]);
   const failures: string[] = [];
   const email = endpoints.find((endpoint) => endpoint.channel === "EMAIL");
@@ -34,7 +34,7 @@ export async function checkDemoInbox({
   const reply = attached[0];
   const legacy = reply ? await context.db.inboundEmail.count({ where: { id: reply.id } }) : 0;
   if (attached.length !== 1 || legacy !== 1) {
-    failures.push(`${org.slug}: expected one reply on a ticket, also in InboundEmail`);
+    failures.push(`${org.slug}: expected one reply on an order, also in InboundEmail`);
   }
   return failures;
 }

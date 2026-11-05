@@ -35,7 +35,7 @@ async function demandUse({ context, ids, what }: DemandUseInput): Promise<Result
 
 /**
  * CONFLICT while an active line, an active manual block (maintenance or internal occupancy) or a
- * predefined ticket line uses one of the items (#213, #224), or it is allocated or demanded
+ * predefined order line uses one of the items (#213, #224), or it is allocated or demanded
  * (ADR 0059). Line holds follow their lines by
  * trigger, so only manual blocks are checked on their own. The one guard for `item.archive` and
  * the `customer.archive` bundle cascade.
@@ -52,15 +52,15 @@ export async function checkItemsUnused({ context, items }: ItemsInUseInput): Pro
   const blocks = await context.db.occupancy.count({ where: { ...where, lineId: null } });
   if (blocks > 0) {
     const message = `${what} has ${blocks} active occupancy blocks`;
-    return inUseConflict({ context, feature: "ticket", message });
+    return inUseConflict({ context, feature: "order", message });
   }
   const demanded = await demandUse({ context, ids, what });
   if (!demanded.ok) return demanded;
-  const templated = await context.db.ticketTemplateLine.count({
+  const templated = await context.db.orderTemplateLine.count({
     where: { ...where, template: { status: "ACTIVE" } },
   });
   if (templated > 0) {
-    const message = `${what} is used by ${templated} predefined ticket lines`;
+    const message = `${what} is used by ${templated} predefined order lines`;
     return inUseConflict({ context, feature: "template", message });
   }
   return ok({ value: true });

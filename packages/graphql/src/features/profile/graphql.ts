@@ -3,6 +3,7 @@ import {
   getWorkingHours,
   type ProfileDto,
   ProfileSchema,
+  setProfileLocale,
   setWorkingHours,
   updateProfile,
   type WorkingDay,
@@ -34,5 +35,6 @@ export const WorkingHoursRef = builder.objectRef<WorkingHoursDto>("WorkingHours"
 
 fieldFromOperation({ operation: getProfile, type: ProfileRef, name: "profile" });
 mutationFromOperation({ operation: updateProfile, type: ProfileRef });
+mutationFromOperation({ operation: setProfileLocale, type: ProfileRef });
 fieldFromOperation({ operation: getWorkingHours, type: WorkingHoursRef, name: "workingHours" });
 mutationFromOperation({ operation: setWorkingHours, type: WorkingHoursRef });

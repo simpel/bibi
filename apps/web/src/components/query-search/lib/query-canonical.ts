@@ -1,4 +1,4 @@
-import { TICKET_QUERY_PIECE, TICKET_QUERY_TOKEN } from "@bibi/core/schemas";
+import { ORDER_QUERY_PIECE, ORDER_QUERY_TOKEN } from "@bibi/core/schemas";
 import { fixedValuesOf, fold, type QueryVocabulary, qualifierOf } from "./query-vocabulary";
 
 type CanonicalInput = { q: string; vocabulary: QueryVocabulary };
@@ -25,10 +25,10 @@ function canonicalValue({
  * canonical English ones (`ansvarig:jag` → `assignee:me`); names and free text stay as typed.
  */
 export function toCanonicalQuery({ q, vocabulary }: CanonicalInput): string {
-  return q.replace(TICKET_QUERY_TOKEN, (whole, minus = "", word, value = "") => {
+  return q.replace(ORDER_QUERY_TOKEN, (whole, minus = "", word, value = "") => {
     const key = qualifierOf({ word, vocabulary });
     if (!key) return whole;
-    const values = (value as string).replace(TICKET_QUERY_PIECE, (piece, quoted) =>
+    const values = (value as string).replace(ORDER_QUERY_PIECE, (piece, quoted) =>
       quoted === undefined ? canonicalValue({ key, piece, vocabulary }) : piece,
     );
     return `${minus}${key}:${values}`;

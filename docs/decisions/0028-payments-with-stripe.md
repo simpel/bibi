@@ -6,8 +6,8 @@
 - **Spec:** `docs/specs/payments.md`
 
 ## Context
-- A ticket created from a ticket template is paid by the customer through a payment link, or against invoice (ADR 0022, 0043). The customer only sees the payment page and never uses the app.
-- A payment attaches to the ticket and records its own status. Payments do not move the ticket between phases.
+- An order created from an order template is paid by the customer through a payment link, or against invoice (ADR 0022, 0043). The customer only sees the payment page and never uses the app.
+- A payment attaches to the order and records its own status. Payments do not move the order between phases.
 - No provider was chosen (issue #16).
 
 ## Decision

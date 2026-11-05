@@ -18,14 +18,14 @@ export const listInvoices = defineOperation({
   name: "invoice.list",
   kind: "query",
   description:
-    "Invoices of a ticket, newest first: number, frozen lines and totals, due date, status " +
+    "Invoices of an order, newest first: number, frozen lines and totals, due date, status " +
     "(DRAFT, SENT, VOID) and what is paid against each (paidMinor, openMinor, progress).",
   input: InvoiceListInputSchema,
   output: InvoiceListOutputSchema,
   permission: "payment:read",
-  handler: async ({ input: { ticketId, limit, cursor }, context }) => {
+  handler: async ({ input: { orderId, limit, cursor }, context }) => {
     const rows = await context.db.invoice.findMany({
-      where: { ticketId },
+      where: { orderId },
       include: INVOICE_INCLUDE,
       orderBy: [{ number: "desc" }, { id: "desc" }],
       ...pageArgs({ limit, cursor }),
@@ -51,7 +51,7 @@ export const getInvoice = defineOperation({
 
 export { createInvoice, sendInvoice, syncInvoice, voidInvoice };
 
-/** Invoices: frozen snapshots of the ticket's lines that payments settle (ADR 0052, 0057). */
+/** Invoices: frozen snapshots of the order's lines that payments settle (ADR 0052, 0057). */
 export const invoiceOperations = [
   listInvoices,
   getInvoice,

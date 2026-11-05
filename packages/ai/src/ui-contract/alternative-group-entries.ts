@@ -26,7 +26,7 @@ const groupCard = uiEntry({
   toProps: ({ value }) => ({ group: value }),
 });
 
-/** Tool → component for a ticket's alternative groups (ADR 0052). */
+/** Tool → component for an order's alternative groups (ADR 0052). */
 export const ALTERNATIVE_GROUP_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   alternativeGroup_list: groupTable,
   alternativeGroup_get: groupCard,

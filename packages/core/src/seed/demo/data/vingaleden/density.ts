@@ -13,14 +13,14 @@ const per = { assignee: "Per Vinga", followers: ["Stina Holm"] };
 
 /**
  * Saltholmen's busy weeks (#488): two or three boat trips every day (the harbor is open all week),
- * morning, afternoon and evening, each on its own boat with a skipper on board. A ticket carries
+ * morning, afternoon and evening, each on its own boat with a skipper on board. An order carries
  * up to two trips. Near trips are Confirmed or Weather OK (hard holds) with the odd weather hold;
  * further out they are requests, weather holds or confirmed.
  */
 export const vingaledenDensity: DemoDensity = {
   prefix: "T",
   timeZone: "Europe/Stockholm",
-  ...{ fromDay: -7, toDay: 30, perTicket: 2, rotateSlots: false },
+  ...{ fromDay: -7, toDay: 30, perOrder: 2, rotateSlots: false },
   perWeekday: [
     [2, 3],
     [2, 3],

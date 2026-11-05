@@ -25,14 +25,14 @@ export const listAlternativeGroups = defineOperation({
   name: "alternativeGroup.list",
   kind: "query",
   description:
-    "List alternative groups (lines of a ticket the customer picks one of, ADR 0052), oldest " +
-    "first, with their options and the chosen one. Filter by ticket.",
+    "List alternative groups (lines of an order the customer picks one of, ADR 0052), oldest " +
+    "first, with their options and the chosen one. Filter by order.",
   input: AlternativeGroupListInputSchema,
   output: AlternativeGroupListOutputSchema,
   permission: "program:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.alternativeGroup.findMany({
-      where: input.ticketId ? { ticketId: input.ticketId } : {},
+      where: input.orderId ? { orderId: input.orderId } : {},
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
       ...pageArgs(input),
     });
@@ -59,7 +59,7 @@ export const createAlternativeGroup = defineOperation({
   name: "alternativeGroup.create",
   kind: "command",
   description:
-    "Make two or more lines of a ticket alternatives the customer picks one of (ADR 0052), " +
+    "Make two or more lines of an order alternatives the customer picks one of (ADR 0052), " +
     "e.g. Room A or Room B. The quote shows each option's price and counts the cheapest as a " +
     `"from" price until one is chosen (alternativeGroup.choose). ${OPTIONS_NOTE}`,
   input: AlternativeGroupCreateInputSchema,
@@ -96,7 +96,7 @@ export const chooseAlternative = defineOperation({
   description:
     "Record which option of an alternative group the customer picked (ADR 0052). The other " +
     "options move to their item type's released state in the same change, which releases their " +
-    "holds; they stay on the ticket as history. A group is chosen once (CONFLICT after that). " +
+    "holds; they stay on the order as history. A group is chosen once (CONFLICT after that). " +
     "quote.accept can do the same with chosenLineIds.",
   input: AlternativeGroupChooseInputSchema,
   ...Group,

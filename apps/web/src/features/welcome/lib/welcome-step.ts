@@ -4,8 +4,9 @@ export const WELCOME_STEPS = [
   "hours",
   "setup/organization",
   "setup/kind",
-  "setup/bookable",
-  "setup/sellable",
+  "setup/spaces",
+  "setup/food",
+  "setup/extras",
   "setup/review",
   "done",
 ] as const;

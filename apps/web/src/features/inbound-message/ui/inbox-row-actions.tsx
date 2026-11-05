@@ -1,10 +1,15 @@
 "use client";
 
-import { ContextMenuItem, ContextMenuSeparator } from "@bibi/ui";
+import {
+  ContextMenuItem,
+  ContextMenuSeparator,
+  DataTableRowActions,
+  DropdownMenuItem,
+} from "@bibi/ui";
 import { MailCheckIcon, MailIcon, PanelRightOpenIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ticketFromMessageRoute } from "@/lib/inbox-routes";
-import { Link } from "@/lib/navigation";
+import { orderFromMessageRoute } from "@/lib/inbox-routes";
+import { Link, useRouter } from "@/lib/navigation";
 import type { InboxRow } from "./inbox-row";
 
 export type InboxAbilities = {
@@ -12,8 +17,8 @@ export type InboxAbilities = {
   canWrite: boolean;
   /** `inbox:delete`. */
   canDelete: boolean;
-  /** `ticket:write`: the message can become a ticket. */
-  canCreateTicket: boolean;
+  /** `order:write`: the message can become an order. */
+  canCreateOrder: boolean;
 };
 
 type OnRow = (input: { row: InboxRow }) => void;
@@ -25,7 +30,46 @@ export type InboxRowHandlers = {
   onDelete?: OnRow;
 };
 
-export type InboxRowMenuProps = InboxRowHandlers & { row: InboxRow; canCreateTicket: boolean };
+export type InboxRowMenuProps = InboxRowHandlers & { row: InboxRow; canCreateOrder: boolean };
+
+/** Row actions in the right-hand `actionsColumn` of the inbox table. */
+export function InboxRowActions({
+  row,
+  onSelect,
+  onToggleRead,
+  onDelete,
+  canCreateOrder,
+}: InboxRowMenuProps) {
+  const t = useTranslations("inbox");
+  const common = useTranslations("common");
+  const router = useRouter();
+  const primary = canCreateOrder
+    ? [
+        {
+          label: t("newOrder"),
+          icon: PlusIcon,
+          onClick: () => router.push(orderFromMessageRoute({ id: row.id })),
+        },
+      ]
+    : [{ label: common("open"), icon: PanelRightOpenIcon, onClick: () => onSelect({ row }) }];
+  return (
+    <DataTableRowActions label={common("actions")} primary={primary}>
+      {canCreateOrder ? (
+        <DropdownMenuItem onSelect={() => onSelect({ row })}>{common("open")}</DropdownMenuItem>
+      ) : null}
+      {onToggleRead ? (
+        <DropdownMenuItem onSelect={() => onToggleRead({ row })}>
+          {row.read ? common("markUnread") : common("markRead")}
+        </DropdownMenuItem>
+      ) : null}
+      {onDelete ? (
+        <DropdownMenuItem destructive onSelect={() => onDelete({ row })}>
+          {common("delete")}
+        </DropdownMenuItem>
+      ) : null}
+    </DataTableRowActions>
+  );
+}
 
 /** A row's right-click menu, the same as a notification's: open, mark read or unread, delete. */
 export function InboxRowMenu({
@@ -33,7 +77,7 @@ export function InboxRowMenu({
   onSelect,
   onToggleRead,
   onDelete,
-  canCreateTicket,
+  canCreateOrder,
 }: InboxRowMenuProps) {
   const t = useTranslations("inbox");
   const common = useTranslations("common");
@@ -43,11 +87,11 @@ export function InboxRowMenu({
         <PanelRightOpenIcon />
         {common("open")}
       </ContextMenuItem>
-      {canCreateTicket ? (
+      {canCreateOrder ? (
         <ContextMenuItem asChild>
-          <Link href={ticketFromMessageRoute({ id: row.id })}>
+          <Link href={orderFromMessageRoute({ id: row.id })}>
             <PlusIcon />
-            {t("newTicket")}
+            {t("newOrder")}
           </Link>
         </ContextMenuItem>
       ) : null}

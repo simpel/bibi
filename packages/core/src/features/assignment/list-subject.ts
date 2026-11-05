@@ -12,7 +12,7 @@ export type ListSubjectInput = {
 
 /**
  * The assignments of one subject, derived (ADR 0055): its stored main assignment first, then one
- * per responsibility that applies to a ticket (from its lines) or that someone chose explicitly.
+ * per responsibility that applies to an order (from its lines) or that someone chose explicitly.
  */
 export async function listSubjectAssignments({
   context,
@@ -24,8 +24,8 @@ export async function listSubjectAssignments({
     include: ASSIGNMENT_INCLUDE,
   });
   const applicable =
-    subjectType === "TICKET"
-      ? ((await applicableResponsibilityIds({ context, ticketIds: [subjectId] })).get(subjectId) ??
+    subjectType === "ORDER"
+      ? ((await applicableResponsibilityIds({ context, orderIds: [subjectId] })).get(subjectId) ??
         new Set<string>())
       : new Set<string>();
   const ids = new Set([...applicable, ...rows.flatMap((r) => r.responsibilityId ?? [])]);

@@ -3,27 +3,27 @@ import { expandLineBundle } from "../../features/line/expand-operation";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { missing } from "./seed-fields";
-import type { DemoTicket } from "./ticket-types";
+import type { DemoOrder } from "./order-types";
 
 export type SeedBundleLinesInput = {
   context: ExecuteContext;
-  ticketId: string;
-  ticket: Pick<DemoTicket, "bundles">;
-  /** Local time `HH:MM` on the ticket's day → instant. */
+  orderId: string;
+  order: Pick<DemoOrder, "bundles">;
+  /** Local time `HH:MM` on the order's day → instant. */
   at: (input: { time: string }) => Date;
 };
 
 /**
- * ADR 0059: each of the ticket's bundles through `line.expandBundle` as SYSTEM, in the
+ * ADR 0059: each of the order's bundles through `line.expandBundle` as SYSTEM, in the
  * organization's line type: one bundle line and its part lines, each in its entry status's cell.
  */
 export async function seedDemoBundleLines({
   context,
-  ticketId,
-  ticket,
+  orderId,
+  order,
   at,
 }: SeedBundleLinesInput): Promise<Result<true>> {
-  const bundles = ticket.bundles ?? [];
+  const bundles = order.bundles ?? [];
   if (bundles.length === 0) return ok({ value: true });
   const type = await context.db.entityType.findFirst({ where: { base: "LINE" } });
   if (!type) return missing({ what: "a line type (base LINE)" });
@@ -31,7 +31,7 @@ export async function seedDemoBundleLines({
     const item = await context.db.item.findFirst({ where: { name: bundle.item } });
     if (!item) return missing({ what: `bundle ${bundle.item}` });
     const input = {
-      ...{ ticketId, entityTypeId: type.id, itemId: item.id },
+      ...{ orderId, entityTypeId: type.id, itemId: item.id },
       ...{ startsAt: at({ time: bundle.from }), endsAt: at({ time: bundle.to }) },
     };
     const expanded = await execute({ operation: expandLineBundle, input, context });

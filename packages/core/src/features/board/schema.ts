@@ -2,7 +2,7 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 
-/** A column of a board (ADR 0067): a name and the ticket statuses it shows; only statuses have a colour. */
+/** A column of a board (ADR 0067): a name and the order statuses it shows; only statuses have a colour. */
 export const BoardPhaseSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
@@ -10,7 +10,7 @@ export const BoardPhaseSchema = z.object({
   name: z.string(),
   /** Order among the board's phases (left to right). */
   position: z.number().int(),
-  /** Ids of the ticket statuses in this phase, in status order. */
+  /** Ids of the order statuses in this phase, in status order. */
   statusIds: z.array(z.string()),
   status: RecordStatusSchema,
   createdAt: z.date(),
@@ -37,7 +37,7 @@ export const BoardPhaseCreateInputSchema = z.object({
   statusIds: z
     .array(z.string().min(1))
     .default([])
-    .describe("Ticket statuses to show here; each leaves the phase it was in on this board"),
+    .describe("Order statuses to show here; each leaves the phase it was in on this board"),
 });
 
 export const BoardPhaseUpdateInputSchema = z.object({
@@ -54,7 +54,7 @@ export const BoardPhaseReorderInputSchema = z.object({
 
 export const BoardPhaseMoveStatusInputSchema = z.object({
   boardId: z.string().min(1),
-  statusId: z.string().min(1).describe("The ticket status to move"),
+  statusId: z.string().min(1).describe("The order status to move"),
   phaseId: z
     .string()
     .min(1)
@@ -65,18 +65,18 @@ export const BoardPhaseMoveStatusInputSchema = z.object({
 export type BoardPhaseDto = z.infer<typeof BoardPhaseSchema>;
 export type BoardPhaseCreateInput = z.infer<typeof BoardPhaseCreateInputSchema>;
 
-/** A saved view of tickets (ADR 0067): a name, a filter and its phases (columns). */
+/** A saved view of orders (ADR 0067): a name, a filter and its phases (columns). */
 export const BoardSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   name: z.string(),
   /** Order among the organization's boards; the first is the default. */
   position: z.number().int(),
-  entityTypeId: z.string().nullable().describe("Only tickets of this type; null for every type"),
+  entityTypeId: z.string().nullable().describe("Only orders of this type; null for every type"),
   assigneeId: z
     .string()
     .nullable()
-    .describe("Only tickets this member (user id) is the main assignee of; null for everyone"),
+    .describe("Only orders this member (user id) is the main assignee of; null for everyone"),
   /** The board's active phases in order, each with its statuses. */
   phases: z.array(BoardPhaseSchema),
   status: RecordStatusSchema,
@@ -93,7 +93,7 @@ const NameSchema = z
   .describe("Board name as staff see it, e.g. Sales or Ops");
 
 const FilterShape = {
-  entityTypeId: z.string().min(1).nullable().optional().describe("Ticket type filter; null clears"),
+  entityTypeId: z.string().min(1).nullable().optional().describe("Order type filter; null clears"),
   assigneeId: z.string().min(1).nullable().optional().describe("Assignee filter; null clears"),
 };
 

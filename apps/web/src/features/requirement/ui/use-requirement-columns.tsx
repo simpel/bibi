@@ -26,7 +26,7 @@ export function useRequirementColumns({ data, access }: UseRequirementColumnsInp
         id: "where",
         header: t("columns.where"),
         accessorFn: (row) =>
-          row.lineId ? nameOf({ options: data.lines, id: row.lineId }) : t("wholeTicket"),
+          row.lineId ? nameOf({ options: data.lines, id: row.lineId }) : t("wholeOrder"),
       },
       {
         id: "type",
