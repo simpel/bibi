@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.0](https://github.com/simpel/bibi/compare/@bibi/auth-v0.2.0...@bibi/auth-v0.3.0) (2026-11-05)
+
+
+### Features
+
+* drop the one-time code sign-in, magic link is the default tab ([88d2930](https://github.com/simpel/bibi/commit/88d29303159b97e12c83e5e5f5b1fb841a0961ee))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/i18n bumped to 1.1.0
+    * @bibi/mail bumped to 0.3.0
+
 ## [0.2.0](https://github.com/simpel/bibi/compare/@bibi/auth-v0.1.0...@bibi/auth-v0.2.0) (2026-11-05)
 
 
