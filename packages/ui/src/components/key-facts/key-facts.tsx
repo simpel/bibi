@@ -4,6 +4,8 @@ import { cn } from "../../lib/cn";
 
 export type KeyFact = {
   label: string;
+  /** A tiny line above the value, e.g. the weekday and date over a time. */
+  preheader?: string | undefined;
   value: ReactNode;
   /** Gives way first when the row is too wide: the value is cut short instead of wrapping. */
   truncate?: boolean;
@@ -42,14 +44,21 @@ export type KeyFactsProps = VariantProps<typeof keyFactsVariants> & {
  * open a card underline on hover.
  */
 export function KeyFacts({ facts, size, className }: KeyFactsProps) {
+  // One fact with a preheader leaves a line above every value, so the values share a baseline.
+  const aligned = facts.some((fact) => fact.preheader);
   return (
     <dl data-slot="key-facts" className={cn(keyFactsVariants({ size }), className)}>
-      {facts.map(({ label, value, truncate, title }) => (
+      {facts.map(({ label, preheader, value, truncate, title }) => (
         <div key={label} className={cn("grid gap-1", truncate && "min-w-0 shrink-[999]")}>
           <dt className={cn("text-muted-foreground", size === "sm" ? "text-[10px]" : "text-xs")}>
             {label}
           </dt>
           <dd title={title} className={cn(valueVariants({ size }), truncate && "truncate")}>
+            {aligned ? (
+              <span className="block min-h-3 font-sans text-[10px] text-muted-foreground leading-3">
+                {preheader}
+              </span>
+            ) : null}
             {value}
           </dd>
         </div>

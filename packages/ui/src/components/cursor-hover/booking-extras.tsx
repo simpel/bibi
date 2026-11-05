@@ -12,14 +12,23 @@ export type BookingStatsInput = BookingExtrasInput & {
   /** Adds quantity, time and the booked thing to the value. */
   detailed: boolean;
   time?: string | undefined;
+  /** The day, a tiny line above the time. */
+  date?: string | undefined;
   resource?: string | undefined;
 };
 
 /** The booking's figures as tiny stats: what it is worth and, when detailed, what, when, where. */
-export function BookingStats({ booking, labels, detailed, time, resource }: BookingStatsInput) {
+export function BookingStats({
+  booking,
+  labels,
+  detailed,
+  time,
+  date,
+  resource,
+}: BookingStatsInput) {
   const { pinCard } = labels;
   const hasValue = Boolean(booking.value);
-  const hasMore = detailed && Boolean(time || resource || booking.quantity > 1);
+  const hasMore = detailed && Boolean(time || resource || booking.headcount);
   if (!hasValue && !hasMore) return null;
   const facts: KeyFact[] = [];
   if (booking.value) {
@@ -29,10 +38,10 @@ export function BookingStats({ booking, labels, detailed, time, resource }: Book
       title: pinCard.exclVat,
     });
   }
-  if (detailed && booking.quantity > 1) {
-    facts.push({ label: pinCard.quantity, value: booking.quantity });
+  if (detailed && booking.headcount) {
+    facts.push({ label: pinCard.guests, value: booking.headcount });
   }
-  if (detailed && time) facts.push({ label: pinCard.when, value: time });
+  if (detailed && time) facts.push({ label: pinCard.when, preheader: date, value: time });
   if (detailed && resource) {
     facts.push({ label: pinCard.where, value: resource, truncate: true, title: resource });
   }

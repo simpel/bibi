@@ -73,7 +73,9 @@ function deriveSubtitle({
   customer,
   displayTitle,
   labels,
+  detailed,
 }: {
+  detailed: boolean;
   booking?: AssetBooking;
   customer?: string | null;
   displayTitle: string;
@@ -83,12 +85,14 @@ function deriveSubtitle({
     if (!booking.order) {
       return labels ? `${labels.blocked}, ${labels.notSold}` : "Blocked, not sold";
     }
-    const guests = booking.headcount
-      ? labels
-        ? labels.guests({ count: booking.headcount })
-        : `${booking.headcount} guests`
-      : "";
-    // With labels the value is its own block (`BookingValue`), so only guests stay here.
+    // Detailed cards show the guests as a stat, so not twice.
+    const guests =
+      booking.headcount && !detailed
+        ? labels
+          ? labels.guests({ count: booking.headcount })
+          : `${booking.headcount} guests`
+        : "";
+    // With labels the value is its own block (`BookingStats`), so only guests stay here.
     const amount =
       booking.value && !labels
         ? `${booking.value.currency} ${booking.value.amount.toFixed(2)}`
@@ -175,7 +179,9 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
 
   // Customer & subtitle
   const customer = props.customer ?? booking?.customer ?? undefined;
-  const sub = props.subtitle ?? deriveSubtitle({ booking, customer, displayTitle, labels });
+  const sub =
+    props.subtitle ??
+    deriveSubtitle({ booking, customer, displayTitle, labels, detailed: Boolean(props.detailed) });
 
   // Navigation
   const href = props.href ?? booking?.href ?? line?.href;
@@ -239,7 +245,7 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
   return (
     <OrderView
       bare
-      eyebrow={dateStr}
+      eyebrow={props.detailed && booking && labels ? undefined : dateStr}
       title={<TitleLink href={href} onOpen={onOpen} title={displayTitle} />}
       reference={orderRef}
       subtitle={sub}
@@ -253,6 +259,7 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
             labels={labels}
             detailed={Boolean(props.detailed)}
             time={time}
+            date={dateStr}
             resource={resource}
           />
         ) : undefined
