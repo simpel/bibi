@@ -104,7 +104,11 @@ describe("entity read parity: core -> GraphQL, REST, MCP return equal data", () 
     ).toEqual(coreEntityTypes());
   });
 
-  it("reads every created entity identically through all surfaces", async () => {
+  // Creates and reads every entity through four surfaces: ~15 s alone, past 30 s in CI where
+  // every package's tests share one Postgres.
+  it("reads every created entity identically through all surfaces", {
+    timeout: 120_000,
+  }, async () => {
     const context = testContext();
     const mcp = await connect({ context });
     const made: Record<string, Json> = { memberSeed: await seedOrgMember({ context }) };

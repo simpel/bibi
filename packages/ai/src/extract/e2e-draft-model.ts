@@ -9,7 +9,8 @@ const evidence = ({ quote, guessed = false }: { quote: string; guessed?: boolean
 
 /**
  * The draft it always returns, written for the E2E request "A wine tasting for 14 people on
- * Friday 21 November, around 3 pm. Two of us are vegan." The end time is guessed.
+ * Friday 21 November, around 3 pm. Two of us are vegan." The end time is guessed, and it
+ * suggests the E2E organization's "Tasting package" (`apps/web/e2e/intake-fixtures.ts`).
  */
 export const E2E_DRAFT = {
   senderName: null,
@@ -27,7 +28,7 @@ export const E2E_DRAFT = {
   end: { asWritten: "", time: "17:00", ...evidence({ quote: "", guessed: true }) },
   headcount: { value: 14, ...evidence({ quote: "14 people" }) },
   wish: { value: "A wine tasting", ...evidence({ quote: "A wine tasting" }) },
-  packageName: null,
+  packageName: { value: "Tasting package", ...evidence({ quote: "A wine tasting" }) },
   needs: [],
   notes: null,
 };
