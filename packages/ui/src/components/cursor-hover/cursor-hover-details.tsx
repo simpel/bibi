@@ -16,7 +16,7 @@ import type {
 import { type PinnedBooking, usePins } from "../availability-calendar/pins-context";
 import { Badge } from "../badge/badge";
 import { OrderView, type OrderViewFact, type OrderViewMetaRow } from "../order-view/order-view";
-import { BookingValue, bookingFacts } from "./booking-extras";
+import { BookingStats, bookingFacts } from "./booking-extras";
 import { cleanTitle } from "./clean-title";
 import { PinAction, VisitAction } from "./hover-actions";
 import { contactFacts } from "./hover-contacts";
@@ -227,9 +227,11 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
   if (props.detailed && booking && labels) facts.push(...bookingFacts({ booking, labels }));
   facts.push(...(props.extraFacts ?? []));
 
+  // The detailed card shows time and place as stats instead.
   const meta: OrderViewMetaRow[] = [];
-  if (time) meta.push({ key: "time", icon: ClockIcon, text: time });
-  if (resource) {
+  const asRows = !(props.detailed && booking && labels);
+  if (asRows && time) meta.push({ key: "time", icon: ClockIcon, text: time });
+  if (asRows && resource) {
     const place = group ? `${resource} (${group})` : resource;
     meta.push({ key: "place", icon: MapPinIcon, text: place });
   }
@@ -244,7 +246,17 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
       status={state ?? null}
       meta={meta}
       notes={notes}
-      highlight={booking && labels ? <BookingValue booking={booking} labels={labels} /> : undefined}
+      highlight={
+        booking && labels ? (
+          <BookingStats
+            booking={booking}
+            labels={labels}
+            detailed={Boolean(props.detailed)}
+            time={time}
+            resource={resource}
+          />
+        ) : undefined
+      }
       facts={facts}
       warnings={
         warnings?.length

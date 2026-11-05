@@ -7,7 +7,7 @@ import { viewOrderAction } from "@/features/order/actions";
 import { type OrderFactsSource, useOrderViewFacts } from "@/features/order/ui/use-order-view-facts";
 
 /** The facts a pinned card adds from its order; the order's own and the client's are on the card. */
-const SHOWN = new Set(["assignee", "followers", "lines", "total", "balance", "issues"]);
+const SHOWN = new Set(["assignee", "total", "balance", "issues"]);
 
 const NO_ORDER: OrderFactsSource = {
   desiredStartsAt: null,

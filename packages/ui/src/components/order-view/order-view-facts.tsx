@@ -24,14 +24,14 @@ export function OrderViewFacts({ facts, hidden, bare, className }: OrderViewFact
       className={cn(
         "grid gap-x-4 gap-y-1 text-sm",
         bare
-          ? "grid-cols-[3.75rem_1fr] items-baseline gap-x-3 gap-y-1.5 text-xs"
+          ? "grid-cols-[auto_1fr] items-baseline gap-x-4 gap-y-1.5 text-xs"
           : "grid-cols-[auto_1fr]",
         className,
       )}
     >
       {facts.map(({ key, label, value, tone }) => (
         <div key={key} className="contents">
-          <dt className="text-muted-foreground">{label}</dt>
+          <dt className="whitespace-nowrap text-muted-foreground">{label}</dt>
           <dd
             className={cn(
               "min-w-0",

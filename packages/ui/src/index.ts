@@ -92,6 +92,7 @@ export * from "./components/kanban/kanban-flip";
 export type * from "./components/kanban/kanban-types";
 export { Label, type LabelProps } from "./components/label/label";
 export * from "./components/loading/loading";
+export * from "./components/mini-stat/mini-stat";
 export * from "./components/money-totals/money-total-figure";
 export * from "./components/money-totals/money-totals";
 export * from "./components/money-totals/money-totals-variants";

@@ -1,5 +1,5 @@
 import type { OrderViewDto } from "@bibi/core";
-import type { OrderViewFact } from "@bibi/ui";
+import { ContactName, type OrderViewFact } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useNumberFormat } from "@/lib/number/use-number-format";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
@@ -32,7 +32,15 @@ export function useOrderViewFacts({ order }: { order: OrderFactsSource }): Order
     { key: "contact", label: t("contact"), value: contactLine({ contact: order.contact }) },
     { key: "when", label: t("when"), value: desiredPeriod({ order, format }) },
     { key: "guests", label: t("guests"), value: String(order.guestCount ?? "–") },
-    { key: "assignee", label: t("assignee"), value: order.assignee?.name ?? t("nobody") },
+    {
+      key: "assignee",
+      label: t("assignee"),
+      value: order.assignee ? (
+        <ContactName contact={{ id: order.assignee.userId, name: order.assignee.name }} />
+      ) : (
+        t("nobody")
+      ),
+    },
     ...(order.followers.length > 0
       ? [
           {
