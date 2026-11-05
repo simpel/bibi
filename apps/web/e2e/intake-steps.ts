@@ -8,7 +8,8 @@ export async function pickCustomer({
   search,
   name,
 }: PageInput & { search: string; name: string }) {
-  await page.getByPlaceholder("Search customers by name").fill(search);
+  // While the page streams in, React keeps a hidden copy of the step before swapping it in.
+  await page.getByPlaceholder("Search customers by name").filter({ visible: true }).fill(search);
   // Wait for the result itself: "+ New customer" also contains the typed text.
   await page.getByRole("option", { name, exact: true }).click();
   await expectStep({ page, step: "when" });
