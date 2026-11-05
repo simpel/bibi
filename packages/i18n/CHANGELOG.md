@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/i18n-v1.0.0...@bibi/i18n-v1.1.0) (2026-11-05)
+
+
+### Features
+
+* drop the one-time code sign-in, magic link is the default tab ([88d2930](https://github.com/simpel/bibi/commit/88d29303159b97e12c83e5e5f5b1fb841a0961ee))
+* public front page at /:locale for everyone, redesigned as a SaaS landing page ([c9d86af](https://github.com/simpel/bibi/commit/c9d86afbdb37649e7d5a91e9825c755c2f9cb996))
+
 ## [1.0.0](https://github.com/simpel/bibi/compare/@bibi/i18n-v0.1.0...@bibi/i18n-v1.0.0) (2026-11-05)
 
 
