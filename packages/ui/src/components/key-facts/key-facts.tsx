@@ -30,7 +30,7 @@ export const keyFactsVariants = cva("flex", {
 const valueVariants = cva(
   "font-serif tracking-tight [&_a]:underline-offset-4 [&_a:hover]:underline",
   {
-    variants: { size: { lg: "font-normal text-2xl", sm: "font-light text-base leading-tight" } },
+    variants: { size: { lg: "font-light text-2xl", sm: "font-light text-base leading-tight" } },
     defaultVariants: { size: "lg" },
   },
 );
@@ -62,7 +62,14 @@ export function KeyFacts({ facts, size, className }: KeyFactsProps) {
           </dt>
           <dd title={title} className={cn(valueVariants({ size }), truncate && "truncate")}>
             {aligned ? (
-              <span className="block min-h-3 font-sans text-[10px] text-muted-foreground leading-3">
+              <span
+                className={cn(
+                  "block font-sans leading-4",
+                  size === "sm"
+                    ? "min-h-3 text-[10px] text-muted-foreground"
+                    : "min-h-4 font-medium text-foreground/80 text-xs",
+                )}
+              >
                 {preheader}
               </span>
             ) : null}
