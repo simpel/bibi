@@ -23,9 +23,10 @@ export async function AlternativeGroupSection({ locale, order }: AlternativeGrou
   const lineWrite = can({ abilities, permission: "program:write" });
   if (!groups.ok && groups.error.code === "FORBIDDEN") return null;
   if (!groups.ok) {
-    return <ErrorState errorKey={handleLoadError({ error: groups.error, locale })} />;
+    return <ErrorState inline errorKey={handleLoadError({ error: groups.error, locale })} />;
   }
-  if (!lines.ok) return <ErrorState errorKey={handleLoadError({ error: lines.error, locale })} />;
+  if (!lines.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: lines.error, locale })} />;
   const options: OptionLine[] = lines.value.items.map(({ id, name, alternativeGroupId }) => ({
     ...{ id, name, alternativeGroupId },
   }));

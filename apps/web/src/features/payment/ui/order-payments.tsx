@@ -79,7 +79,8 @@ export async function OrderPayments({ locale, orderId, canRequest }: OrderPaymen
     runOperation({ operation: suggestDepositAmount, input: { orderId } }),
   ]);
   if (!result.ok && result.error.code === "FORBIDDEN") return null;
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+  if (!result.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   const { balance, deposits, invoices, payments } = result.value;
   const available = !suggestion.ok || suggestion.value.paymentLinksAvailable;
   return (

@@ -18,7 +18,8 @@ export async function MemberWork({ locale, memberId }: MemberWorkProps) {
   const abilities = await getCallerAbilities();
   const canWrite = can({ abilities, permission: "item:write" });
   const work = await loadMemberWork({ memberId, withOptions: canWrite });
-  if (!work.ok) return <ErrorState errorKey={handleLoadError({ error: work.error, locale })} />;
+  if (!work.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: work.error, locale })} />;
   const { profile, positions, options } = work.value;
   const none = t("none");
   const facts = [

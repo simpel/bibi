@@ -25,7 +25,7 @@ export async function ForecastTab({ locale, period, today, customerId }: Forecas
   ]);
 
   if (!result.ok) {
-    return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   }
 
   const { forwardSummary, projectedMonthly } = result.value;

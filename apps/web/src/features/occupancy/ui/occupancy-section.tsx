@@ -30,7 +30,7 @@ export async function OccupancySection({ locale, itemId, timeZone }: OccupancySe
   };
   if (!occupancies.ok && occupancies.error.code === "FORBIDDEN") return null;
   if (!occupancies.ok) {
-    return <ErrorState errorKey={handleLoadError({ error: occupancies.error, locale })} />;
+    return <ErrorState inline errorKey={handleLoadError({ error: occupancies.error, locale })} />;
   }
   return (
     <section className="grid gap-4">

@@ -28,8 +28,10 @@ export async function VenueItemsSection({ locale, venueId, cursor }: VenueItemsS
       input: { venueId, limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
     }),
   ]);
-  if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+  if (!data.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: data.error, locale })} />;
+  if (!result.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   const { items, nextCursor } = result.value;
   if (items.length === 0 && !cursor) return <EmptyState title={t("itemsEmpty")} />;
   return (

@@ -2,16 +2,24 @@ import { CloudOff } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ErrorKey } from "@/lib/error-key";
 import { RetryButton } from "./retry-button";
+import { ViewportCenter } from "./viewport-center";
 
-export type ErrorStateProps = { errorKey: ErrorKey };
+export type ErrorStateProps = {
+  errorKey: ErrorKey;
+  /**
+   * A section of a page that otherwise loaded (a card, a tab, a streamed section): the error stays
+   * in its place. Without it the error is the page's and is centred on the viewport.
+   */
+  inline?: boolean;
+};
 
-/** Calm, centred block shown in place of content when a server-side load fails. */
-export async function ErrorState({ errorKey }: ErrorStateProps) {
+/** Calm block shown in place of content when a server-side load fails. */
+export async function ErrorState({ errorKey, inline = false }: ErrorStateProps) {
   const t = await getTranslations("errors");
-  return (
+  const body = (
     <div
       role="alert"
-      className="flex min-h-[50vh] flex-1 flex-col items-center justify-center gap-4 px-6 py-12 text-center"
+      className="flex flex-col items-center justify-center gap-4 px-6 py-12 text-center"
     >
       <div className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
         <CloudOff aria-hidden className="size-5" />
@@ -23,4 +31,5 @@ export async function ErrorState({ errorKey }: ErrorStateProps) {
       <RetryButton />
     </div>
   );
+  return inline ? body : <ViewportCenter>{body}</ViewportCenter>;
 }

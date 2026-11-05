@@ -23,7 +23,7 @@ export async function RunSheetSection({ locale, order }: RunSheetSectionProps) {
   for (const result of [definitions, runSheets]) {
     if (!result.ok && result.error.code === "FORBIDDEN") return null;
     if (!result.ok)
-      return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+      return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   }
   if (!definitions.ok || !runSheets.ok) return null;
   return (

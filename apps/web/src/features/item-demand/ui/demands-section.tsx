@@ -11,7 +11,8 @@ export type DemandsSectionProps = { locale: Locale; itemId: string };
 export async function DemandsSection({ locale, itemId }: DemandsSectionProps) {
   const [abilities, lists] = await Promise.all([getCallerAbilities(), loadDemandLists({ itemId })]);
   if (!lists.ok && lists.error.code === "FORBIDDEN") return null;
-  if (!lists.ok) return <ErrorState errorKey={handleLoadError({ error: lists.error, locale })} />;
+  if (!lists.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: lists.error, locale })} />;
   const canEdit = can({ abilities, permission: "item:write" });
   const { rows, pools } = lists.value;
   return (

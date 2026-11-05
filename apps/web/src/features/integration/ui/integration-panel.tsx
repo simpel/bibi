@@ -28,7 +28,7 @@ export async function IntegrationPanel({ locale, outcome }: IntegrationPanelProp
     return (
       <div className="grid gap-6">
         {header}
-        <ErrorState errorKey={errorKey} />
+        <ErrorState inline errorKey={errorKey} />
       </div>
     );
   }

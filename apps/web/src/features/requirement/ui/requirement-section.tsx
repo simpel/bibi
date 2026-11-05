@@ -30,11 +30,12 @@ export async function RequirementSection({ locale, order }: RequirementSectionPr
   for (const result of [requirements, lines]) {
     if (!result.ok && result.error.code === "FORBIDDEN") return null;
     if (!result.ok)
-      return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+      return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   }
   if (!requirements.ok || !lines.ok) return null;
   const data = await loadRequirementData({ lines: lines.value.items });
-  if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
+  if (!data.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: data.error, locale })} />;
   const rows = requirements.value.items;
   return (
     <section className="grid grid-cols-1 gap-4">

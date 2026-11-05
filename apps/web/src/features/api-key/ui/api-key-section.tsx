@@ -32,7 +32,7 @@ export async function ApiKeySection({ locale }: ApiKeySectionProps) {
         ) : null}
       </header>
       {!keys.ok ? (
-        <ErrorState errorKey={handleLoadError({ error: keys.error, locale })} />
+        <ErrorState inline errorKey={handleLoadError({ error: keys.error, locale })} />
       ) : keys.value.items.length === 0 ? (
         <EmptyState title={t("empty")} />
       ) : (

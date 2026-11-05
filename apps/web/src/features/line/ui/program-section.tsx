@@ -60,9 +60,10 @@ export async function ProgramSection({ locale, order }: ProgramSectionProps) {
   ]);
   if (!lines.ok && lines.error.code === "FORBIDDEN") return null;
   if (!lines.ok) {
-    return <ErrorState errorKey={handleLoadError({ error: lines.error, locale })} />;
+    return <ErrorState inline errorKey={handleLoadError({ error: lines.error, locale })} />;
   }
-  if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
+  if (!data.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: data.error, locale })} />;
   const items = nestedLines({ lines: lines.value.items });
   const start = {
     data: data.value,

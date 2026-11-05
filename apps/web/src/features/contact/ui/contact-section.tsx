@@ -24,9 +24,10 @@ export async function ContactSection({ locale, customerId }: ContactSectionProps
     canRemove: can({ abilities, permission: "customer:delete" }),
   };
   if (!contacts.ok) {
-    return <ErrorState errorKey={handleLoadError({ error: contacts.error, locale })} />;
+    return <ErrorState inline errorKey={handleLoadError({ error: contacts.error, locale })} />;
   }
-  if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
+  if (!data.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: data.error, locale })} />;
   const noTypes = data.value.types.length === 0;
   return (
     <section className="grid gap-4">

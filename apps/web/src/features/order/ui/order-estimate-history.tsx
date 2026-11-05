@@ -21,7 +21,8 @@ export async function OrderEstimateHistory({ locale, orderId }: OrderEstimateHis
     getNumberFormat(),
   ]);
   const result = await runOperation({ operation: orderEstimateHistory, input: { orderId } });
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+  if (!result.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
     <section data-slot="order-estimate-history" className="grid grid-cols-1 gap-3">
       <h2 className="text-xl">{t("title")}</h2>

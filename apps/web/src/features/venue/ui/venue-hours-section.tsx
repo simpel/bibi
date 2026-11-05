@@ -16,7 +16,8 @@ export async function VenueHoursSection({ locale, venueId }: VenueHoursSectionPr
     runOperation({ operation: getVenueHours, input: { venueId } }),
     getCallerAbilities(),
   ]);
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+  if (!result.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
     <section className="grid gap-3">
       <div className="grid gap-1">

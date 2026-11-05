@@ -39,9 +39,9 @@ export async function FinancialsTab({ locale, period, today, customerId }: Finan
   ]);
   const abilities = await abilitiesPending;
   if (!overview.ok)
-    return <ErrorState errorKey={handleLoadError({ error: overview.error, locale })} />;
+    return <ErrorState inline errorKey={handleLoadError({ error: overview.error, locale })} />;
   if (!exports.ok)
-    return <ErrorState errorKey={handleLoadError({ error: exports.error, locale })} />;
+    return <ErrorState inline errorKey={handleLoadError({ error: exports.error, locale })} />;
   return (
     <FinancialsView
       {...{ today, dates, numbers, customerId }}

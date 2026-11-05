@@ -18,7 +18,7 @@ export async function InvitationList({ locale }: InvitationListProps) {
     input: { limit: PAGE_SIZE },
   });
   const body = !invitations.ok ? (
-    <ErrorState errorKey={handleLoadError({ error: invitations.error, locale })} />
+    <ErrorState inline errorKey={handleLoadError({ error: invitations.error, locale })} />
   ) : invitations.value.items.length === 0 ? (
     <p className="text-sm text-muted-foreground">{t("noInvitations")}</p>
   ) : (

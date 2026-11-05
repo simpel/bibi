@@ -13,7 +13,7 @@ export async function ItemResolutionSection({ locale, itemId }: ItemResolutionSe
   const t = await getTranslations("item.resolution");
   const resolution = await runOperation({ operation: resolveItem, input: { id: itemId } });
   if (!resolution.ok) {
-    return <ErrorState errorKey={handleLoadError({ error: resolution.error, locale })} />;
+    return <ErrorState inline errorKey={handleLoadError({ error: resolution.error, locale })} />;
   }
   return (
     <section className="grid gap-4">

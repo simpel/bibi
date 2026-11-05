@@ -42,7 +42,8 @@ export async function InboxSection({ locale, params, dates, abilities }: InboxSe
     ...(channel ? { channel } : {}),
   };
   const result = await runOperation({ operation: listInboundMessages, input });
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+  if (!result.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
     <InboxTable
       rows={result.value.items.map((message) => toRow({ message, dates }))}

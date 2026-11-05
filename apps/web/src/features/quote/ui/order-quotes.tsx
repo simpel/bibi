@@ -28,7 +28,7 @@ export async function OrderQuotes({ locale, order, statuses }: OrderQuotesProps)
   ]);
   if (!quotes.ok) {
     if (quotes.error.code === "FORBIDDEN") return null;
-    return <ErrorState errorKey={handleLoadError({ error: quotes.error, locale })} />;
+    return <ErrorState inline errorKey={handleLoadError({ error: quotes.error, locale })} />;
   }
   const items = quotes.value.items;
   const open = !statuses.find(({ id }) => id === order.statusId)?.closes;

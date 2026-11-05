@@ -27,7 +27,8 @@ export async function OrderMessages({ locale, orderId, address }: OrderMessagesP
     runOperation({ operation: listInboundMessages, input: { orderId, limit: LIMIT } }),
   ]);
   if (!result.ok && ["FORBIDDEN", "VALIDATION"].includes(result.error.code)) return null;
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+  if (!result.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
     <section data-slot="order-messages" className="grid grid-cols-1 gap-3">
       <h2 className="text-xl">{t("orderTitle")}</h2>

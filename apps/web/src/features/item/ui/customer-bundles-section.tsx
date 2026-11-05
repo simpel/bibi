@@ -32,9 +32,10 @@ async function BundlesBody({
     loadItemFormData({ customerId }),
   ]);
   if (!bundles.ok) {
-    return <ErrorState errorKey={handleLoadError({ error: bundles.error, locale })} />;
+    return <ErrorState inline errorKey={handleLoadError({ error: bundles.error, locale })} />;
   }
-  if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
+  if (!data.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: data.error, locale })} />;
   const types = data.value.types.filter((type) => type.capabilities.includes("BUNDLE"));
   const { items } = bundles.value;
   return (

@@ -11,7 +11,8 @@ type OrderDataSectionProps = { locale: Locale; order: OrderDto };
 /** The order's type, money and own fields; streams in with the types and lists it needs. */
 export async function OrderDetailsSection({ locale, order }: OrderDataSectionProps) {
   const data = await loadOrderData();
-  if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
+  if (!data.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: data.error, locale })} />;
   return <OrderDetails order={order} data={data.value} />;
 }
 

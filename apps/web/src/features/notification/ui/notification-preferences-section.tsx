@@ -26,7 +26,7 @@ export async function NotificationPreferencesSection({
         {preferences.ok ? (
           <NotificationPreferences preferences={preferences.value.items} />
         ) : (
-          <ErrorState errorKey={handleLoadError({ error: preferences.error, locale })} />
+          <ErrorState inline errorKey={handleLoadError({ error: preferences.error, locale })} />
         )}
       </CardContent>
     </Card>

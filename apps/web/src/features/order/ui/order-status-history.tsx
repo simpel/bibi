@@ -21,7 +21,8 @@ export async function OrderStatusHistory({ locale, orderId, statuses }: OrderSta
     getDateTimeFormat(),
   ]);
   const result = await runOperation({ operation: orderStatusHistory, input: { orderId } });
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+  if (!result.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   const statusNames = new Map(statuses.map((orderStatus) => [orderStatus.id, orderStatus.name]));
   return (
     <section data-slot="order-status-history" className="grid grid-cols-1 gap-3">

@@ -78,7 +78,8 @@ export async function AssignmentSection({ locale, subject, members }: Assignment
   ]);
   const { userId } = abilities;
   if (!result.ok && result.error.code === "FORBIDDEN") return null;
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+  if (!result.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   const main = result.value.items.find((assignment) => assignment.responsibilityId === null);
   const assigneeId = main?.assigneeId ?? null;
   const followerIds = main?.followers.map((follower) => follower.userId) ?? [];

@@ -23,7 +23,8 @@ export async function WorkloadTab({ locale, period }: WorkloadTabProps) {
     getDateTimeFormat(),
     runOperation({ operation: dashboardSummary, input: period }),
   ]);
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+  if (!result.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   const summary = result.value;
   return (
     <div data-slot="workload" className="grid gap-6">

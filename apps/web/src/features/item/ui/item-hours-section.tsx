@@ -13,7 +13,8 @@ export type ItemHoursSectionProps = { locale: Locale; itemId: string };
 export async function ItemHoursSection({ locale, itemId }: ItemHoursSectionProps) {
   const t = await getTranslations("item.hours");
   const result = await runOperation({ operation: getItemHours, input: { itemId } });
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+  if (!result.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   const abilities = await getCallerAbilities();
   return (
     <section className="grid gap-3">

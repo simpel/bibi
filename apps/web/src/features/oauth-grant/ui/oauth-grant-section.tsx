@@ -31,7 +31,7 @@ export async function OauthGrantSection({ locale, id }: OauthGrantSectionProps) 
       </CardHeader>
       <CardContent>
         {!grants.ok ? (
-          <ErrorState errorKey={handleLoadError({ error: grants.error, locale })} />
+          <ErrorState inline errorKey={handleLoadError({ error: grants.error, locale })} />
         ) : grants.value.items.length === 0 ? (
           <EmptyState title={t("empty")} />
         ) : (

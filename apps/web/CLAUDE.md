@@ -83,6 +83,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 ## Page loading (ADR 0097)
 - A light page (at most five operations) renders in one pass, with no `Suspense`.
 - A heavy page renders its header and key facts first. Wrap every section that loads its own data in `DeferredSection` (`components/states/deferred-section.tsx`); a section fed by props stays unwrapped. Content that is usually empty (issue alerts) uses `<Suspense fallback={null}>`. One boundary per section, never per row, never a one-off skeleton.
+- Whole-page states sit in the middle of the viewport, whatever the page: `RouteLoading` and a page-level `ErrorState` render through `ViewportCenter` (`components/states/viewport-center.tsx`). An error inside a section, card or tab passes `inline` and stays in place.
 - Every route group has a `loading.tsx` that renders only `RouteLoading` (`components/states/route-loading.tsx`: the `Loading` wordmark from `@bibi/ui`, centred). Never a page-shaped skeleton or another spinner in a `loading.tsx`.
 - A record read by both `generateMetadata` and the page goes through a `cache()` loader (`features/<x>/load-<x>.ts`, like `load-order.ts`). Never run the same read twice in one request.
 - Organization config is read once per request through shared cached loaders (`server/load-entity-types.ts`) and filtered in memory. No cross-request cache: it would skip `execute`'s permission check and log.

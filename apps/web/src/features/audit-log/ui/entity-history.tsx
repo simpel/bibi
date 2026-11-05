@@ -16,6 +16,7 @@ export async function EntityHistory({ locale, entityType, entityId }: EntityHist
     runOperation({ operation: listAuditLogs, input: { entityType, entityId, limit: LIMIT } }),
     getDateTimeFormat(),
   ]);
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
+  if (!result.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   return <AuditEntryList entries={result.value.items} dates={dates} />;
 }
