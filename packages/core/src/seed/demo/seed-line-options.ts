@@ -3,8 +3,8 @@ import { chooseLineOptions } from "../../features/line/operations";
 import { updateLine } from "../../features/line/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { missing } from "./seed-fields";
 import type { DemoLineOption } from "./order-types";
+import { missing } from "./seed-fields";
 
 export type SeedLineOptionsInput = {
   context: ExecuteContext;

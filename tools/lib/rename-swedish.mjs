@@ -39,11 +39,20 @@ export const SWEDISH_WORK_ORDER_PAIRS = [
 
   // Underlag (used for work orders in common.json / operations.json)
   { pattern: /"title":\s*"Underlag"/g, replacement: '"title": "Körschema"' },
-  { pattern: /"title":\s*"Underlag som går rätt"/g, replacement: '"title": "Körscheman som når rätt"' },
+  {
+    pattern: /"title":\s*"Underlag som går rätt"/g,
+    replacement: '"title": "Körscheman som når rätt"',
+  },
   { pattern: /Ett underlag som köksordern/g, replacement: "Ett körschema som kökskörschemat" },
   { pattern: /ett underlag som köksordern/g, replacement: "ett körschema som kökskörschemat" },
-  { pattern: /Versionerade underlag, till exempel köksorder/g, replacement: "Versionerade körscheman, till exempel kökskörschema" },
-  { pattern: /versionerade underlag, till exempel köksorder/g, replacement: "versionerade körscheman, till exempel kökskörschema" },
+  {
+    pattern: /Versionerade underlag, till exempel köksorder/g,
+    replacement: "Versionerade körscheman, till exempel kökskörschema",
+  },
+  {
+    pattern: /versionerade underlag, till exempel köksorder/g,
+    replacement: "versionerade körscheman, till exempel kökskörschema",
+  },
 
   // JSON UI keys in Swedish
   { pattern: /"singular":\s*"Order"/g, replacement: '"singular": "Körschema"' },

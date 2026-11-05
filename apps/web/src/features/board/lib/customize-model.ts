@@ -1,4 +1,4 @@
-import type { PipelineBoard, OrderStatusDto } from "@bibi/core/schemas";
+import type { OrderStatusDto, PipelineBoard } from "@bibi/core/schemas";
 import type { KanbanPhaseData, KanbanStatusChipData } from "@bibi/ui";
 
 /** The board's columns for customize mode: each phase with its status ids in status order. */

@@ -5,12 +5,12 @@ import { saltholmenHours } from "../demo-hours";
 import { vingaledenBoats, vingaledenConfig } from "./config";
 import { vingaledenCustomers } from "./customers";
 import { vingaledenDensity } from "./density";
+import { vingaledenOrders } from "./orders";
 import { vingaledenPipeline } from "./pipeline";
 import { vingaledenResponsibilities } from "./responsibilities";
-import { vingaledenTemplates } from "./templates";
-import { vingaledenOrders } from "./orders";
-import { vingaledenTours } from "./tours";
 import { vingaledenRunSheets } from "./run-sheets";
+import { vingaledenTemplates } from "./templates";
+import { vingaledenTours } from "./tours";
 
 const items = [...vingaledenBoats, ...vingaledenTours];
 const reserved = usedAssetDays({

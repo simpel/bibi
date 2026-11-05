@@ -5,12 +5,12 @@ import { invalid, notFound } from "../../shared/errors";
 import { freshDefaults } from "../order-template/line-defaults";
 import { toOrderTemplateDto, WITH_LINES } from "../order-template/load-order-template";
 import { type DraftSlot, draftRows, loadAddOnItemNames } from "./draft-rows";
+import { checkReadable } from "./order-rules";
 import { type GuestRange, lastEnd } from "./plan/plan-groups";
 import { planTemplateLines } from "./plan/plan-template-lines";
 import type { PlannedLine } from "./plan/planned-line";
 import { checkDraftLines } from "./preview-draft-checks";
 import type { OrderPreviewLinesInput } from "./preview-lines-schema";
-import { checkReadable } from "./order-rules";
 
 type Ctx = { context: OperationContext };
 

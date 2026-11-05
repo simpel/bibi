@@ -107,13 +107,7 @@ export type EffectiveOfInput = {
 };
 
 /** All effective values of one line, flat as the line DTO carries them. */
-export function effectiveOf({
-  line,
-  order,
-  parent,
-  item,
-  terms,
-}: EffectiveOfInput): LineEffective {
+export function effectiveOf({ line, order, parent, item, terms }: EffectiveOfInput): LineEffective {
   const amount = effectiveQuantity({ quantity: line.quantity, order, parent });
   const { price, discount } = effectivePrice({ line, item, terms });
   const vat = effectiveVat({ line, item });

@@ -13,6 +13,9 @@ import { LINE_UI_ENTRIES } from "./line-entries";
 import { MEMBER_PROFILE_UI_ENTRIES } from "./member-profile-entries";
 import { NOTIFICATION_UI_ENTRIES } from "./notification-entries";
 import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
+import { ORDER_UI_ENTRIES } from "./order-entries";
+import { ORDER_STATUS_UI_ENTRIES } from "./order-status-entries";
+import { ORDER_TEMPLATE_UI_ENTRIES } from "./order-template-entries";
 import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
 import { PERMISSION_UI_ENTRIES } from "./permission-entries";
@@ -25,17 +28,14 @@ import { READ_GENERIC_UI_TOOLS } from "./read-generic-tools";
 import { RECEIVABLE_UI_ENTRIES } from "./receivable-entries";
 import { REQUIREMENT_UI_ENTRIES } from "./requirement-entries";
 import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
+import { RUN_SHEET_DEFINITION_UI_ENTRIES } from "./run-sheet-definition-entries";
+import { RUN_SHEET_UI_ENTRIES } from "./run-sheet-entries";
 import { SELF_GENERIC_UI_TOOLS } from "./self-generic-tools";
 import { SKILL_UI_ENTRIES } from "./skill-entries";
 import { STATUS_GRID_UI_ENTRIES } from "./status-grid-entries";
-import { ORDER_UI_ENTRIES } from "./order-entries";
-import { ORDER_STATUS_UI_ENTRIES } from "./order-status-entries";
-import { ORDER_TEMPLATE_UI_ENTRIES } from "./order-template-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 import { SearchWireSchema, VenueListWireSchema, VenueWireSchema } from "./wire-schemas";
-import { RUN_SHEET_DEFINITION_UI_ENTRIES } from "./run-sheet-definition-entries";
-import { RUN_SHEET_UI_ENTRIES } from "./run-sheet-entries";
 
 const venueTable = uiEntry({
   component: "venue-table",

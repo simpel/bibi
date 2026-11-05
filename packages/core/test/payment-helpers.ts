@@ -10,8 +10,8 @@ import {
   syncPaymentAccount,
 } from "../src/index";
 import { unwrap } from "./helpers";
-import { installFakeGateway } from "./payment-account-helpers";
 import { createTestOrder, orderSetup } from "./order-helpers";
+import { installFakeGateway } from "./payment-account-helpers";
 
 export type ActivateInput = { context: ExecuteContext };
 
@@ -26,11 +26,7 @@ export async function activatePaymentAccount({ context }: ActivateInput) {
 export type SentDepositInput = { context: ExecuteContext; orderId: string; amountMinor?: number };
 
 /** A SENT deposit request on the order that payments can be requested against (ADR 0057). */
-export async function sentDeposit({
-  context,
-  orderId,
-  amountMinor = 1_000_000,
-}: SentDepositInput) {
+export async function sentDeposit({ context, orderId, amountMinor = 1_000_000 }: SentDepositInput) {
   const input = { orderId, description: "Advance", amountMinor };
   const draft = unwrap({ result: await execute({ operation: createDeposit, input, context }) });
   const sent = await execute({ operation: sendDeposit, input: { id: draft.id }, context });

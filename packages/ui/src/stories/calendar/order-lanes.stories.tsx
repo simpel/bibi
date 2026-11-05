@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { CalendarLegend } from "../../components/availability-calendar/calendar-legend";
 import { OrderLanes } from "../../components/availability-calendar/order-lanes";
 import { ORDER_18 } from "./calendar-data";
-import { STATES } from "./states-data";
 import { ORDER_SMALL } from "./order-small-data";
+import { STATES } from "./states-data";
 
 const meta = {
   title: "Calendar/Lanes",

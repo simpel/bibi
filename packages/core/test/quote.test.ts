@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { execute, getQuote, listQuotes, updateItem, updateLine, updateQuote } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
+import { createTestOrder, moveToStatus } from "./order-helpers";
 import { testOrg } from "./org-helpers";
 import { addTestLines, createTestQuote, quoteSetup } from "./quote-helpers";
-import { createTestOrder, moveToStatus } from "./order-helpers";
 
 describe("quote.create (ADR 0022, 0052)", () => {
   it("shows the order's priced lines live, sums the totals and stores no lines", async () => {
@@ -93,9 +93,7 @@ describe("quote.create (ADR 0022, 0052)", () => {
       result: await execute({ operation: listQuotes, input: {}, context: outsider }),
     });
     expect(list.items).toEqual([]);
-    const forged = await createTestQuote({ context: outsider, orderId: order.id }).catch(
-      (e) => e,
-    );
+    const forged = await createTestQuote({ context: outsider, orderId: order.id }).catch((e) => e);
     expect(forged.code).toBe("NOT_FOUND");
   });
 });

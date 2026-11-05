@@ -1,6 +1,6 @@
 import "server-only";
 import { getStatusGrid, listOrderStatuses, type Result } from "@bibi/core";
-import type { StatusGridCellDto, OrderStatusDto } from "@bibi/core/schemas";
+import type { OrderStatusDto, StatusGridCellDto } from "@bibi/core/schemas";
 import { loadItemStateData, type TypeStates } from "@/features/item-state/load-item-state-data";
 import { runOperation } from "@/server/run-operation";
 

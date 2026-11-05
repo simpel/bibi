@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { PRESET_PERMISSIONS } from "../src/index";
 import { errorCode, testContext } from "./helpers";
 import { hours } from "./occupancy-helpers";
-import { bookRoom, draftLine, previewSetup, runPreview } from "./preview-helpers";
 import { makeTemplate } from "./order-template-helpers";
+import { bookRoom, draftLine, previewSetup, runPreview } from "./preview-helpers";
 
 const PERIOD = { ...hours({ from: 9, to: 13 }), headcount: 8 };
 

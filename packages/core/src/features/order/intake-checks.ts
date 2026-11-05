@@ -2,8 +2,8 @@ import { ok, type Result } from "../../errors/result";
 import type { Permission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid } from "../../shared/errors";
-import type { OrderCreateInput } from "./schema";
 import { checkReadable } from "./order-rules";
+import type { OrderCreateInput } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 

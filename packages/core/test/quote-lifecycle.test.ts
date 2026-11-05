@@ -4,14 +4,14 @@ import {
   declineQuote,
   execute,
   expireQuote,
-  getQuote,
   getOrder,
+  getQuote,
   sendQuote,
   updateQuote,
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { addTestLines, createTestQuote, draftQuote as draft, quoteSetup } from "./quote-helpers";
 import { createTestOrder, moveToStatus } from "./order-helpers";
+import { addTestLines, createTestQuote, draftQuote as draft, quoteSetup } from "./quote-helpers";
 
 describe("quote.send (ADR 0022)", () => {
   it("needs lines and a future validity, then sends without moving the order", async () => {

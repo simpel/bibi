@@ -5,8 +5,8 @@ import { createExecuteContext } from "../../operations/context";
 import { grantAll } from "../../permissions/permission-set";
 import { notFound } from "../../shared/errors";
 import { notify } from "./notify";
-import type { NotificationData, NotificationKind } from "./schema";
 import { orderFacts } from "./order-people";
+import type { NotificationData, NotificationKind } from "./schema";
 
 export type SendTestNotificationInput = { organizationId: string; userId: string };
 

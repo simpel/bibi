@@ -3,12 +3,12 @@ import { changeLineState } from "../../features/line/change-state-operation";
 import { createLine } from "../../features/line/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import type { DemoLine, DemoOrder } from "./order-types";
 import { seedDemoAlternatives } from "./seed-alternatives";
 import { seedDemoBundleLines } from "./seed-bundle-lines";
 import { missing } from "./seed-fields";
 import { seedLineAddOns } from "./seed-line-add-ons";
 import { seedLineOptions } from "./seed-line-options";
-import type { DemoLine, DemoOrder } from "./order-types";
 
 export type SeedLinesInput = {
   context: ExecuteContext;

@@ -6,8 +6,8 @@ import {
   type OrderTemplateLineInput,
 } from "../src/index";
 import { unwrap } from "./helpers";
-import { type GridSetup, gridSetup, setCell } from "./status-grid-helpers";
 import { statusByName } from "./order-status-helpers";
+import { type GridSetup, gridSetup, setCell } from "./status-grid-helpers";
 
 type Ctx = { context: ExecuteContext };
 

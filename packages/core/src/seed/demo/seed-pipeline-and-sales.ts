@@ -5,8 +5,8 @@ import { seedDemoInbox } from "./seed-inbox";
 import type { DemoCatalog } from "./seed-items";
 import { seedDemoPaymentSettings } from "./seed-payment-settings";
 import { seedDemoPipeline } from "./seed-pipeline";
-import { seedDemoSales } from "./seed-sales";
 import { seedDemoRunSheets } from "./seed-run-sheets";
+import { seedDemoSales } from "./seed-sales";
 import type { DemoOrg } from "./types";
 import type { DemoUserIds } from "./users";
 

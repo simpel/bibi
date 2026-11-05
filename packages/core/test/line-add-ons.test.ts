@@ -3,8 +3,8 @@ import { archiveLine, createEntityType, execute, getLine, updateLine } from "../
 import { errorCode, unwrap } from "./helpers";
 import { addLine, addOnSetup, END, START } from "./line-add-on-helpers";
 import { choose, optionsSetup, picks } from "./line-options-helpers";
-import { addTestLines } from "./quote-helpers";
 import { createTestOrder } from "./order-helpers";
+import { addTestLines } from "./quote-helpers";
 
 const HOUR = 3_600_000;
 

@@ -1,9 +1,4 @@
-import type {
-  AssetBooking,
-  CalendarAsset,
-  CalendarContact,
-  CalendarOrder,
-} from "./calendar-types";
+import type { AssetBooking, CalendarAsset, CalendarContact, CalendarOrder } from "./calendar-types";
 
 export type OrderOfBookingInput = {
   booking: AssetBooking;

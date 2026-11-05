@@ -58,7 +58,10 @@ export function presetPeriod({ today, preset }: PresetPeriodInput): Period {
     return span({ from, to: today });
   }
   if ("forwardMonths" in preset) {
-    const to = addDays({ date: addMonths({ date: today, months: preset.forwardMonths }), days: -1 });
+    const to = addDays({
+      date: addMonths({ date: today, months: preset.forwardMonths }),
+      days: -1,
+    });
     return span({ from: today, to });
   }
   return preset.days < 0

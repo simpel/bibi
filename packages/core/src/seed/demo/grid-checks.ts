@@ -1,10 +1,10 @@
 import type { OrderStatus } from "@bibi/db";
-import { acceptQuote } from "../../features/quote/lifecycle-operations";
 import { changeOrderStatus } from "../../features/order/change-status-operation";
+import { acceptQuote } from "../../features/quote/lifecycle-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { createSentQuote } from "./seed-order-quote";
 import type { DemoOrder } from "./order-types";
+import { createSentQuote } from "./seed-order-quote";
 import type { DemoOrg } from "./types";
 
 type Ctx = { context: ExecuteContext };
@@ -35,9 +35,7 @@ function moveFailures({ org, order, before, after }: ExpectInput): string[] {
     const was = before.find((row) => row.name === line.name);
     const now = after.find((row) => row.name === line.name);
     const type = was?.item?.entityType.name;
-    const cell = org.pipeline.cells.find(
-      (row) => row.orderStatus === move.to && row.type === type,
-    );
+    const cell = org.pipeline.cells.find((row) => row.orderStatus === move.to && row.type === type);
     const expected =
       move.blocked || line.state ? was?.state?.name : (cell?.state ?? was?.state?.name);
     if (now?.state?.name === expected && now?.stateOverridden === Boolean(line.state)) return [];

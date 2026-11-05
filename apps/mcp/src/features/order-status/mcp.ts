@@ -46,8 +46,7 @@ export const orderStatusMcpTools = [
   mcpTool({
     operation: "orderStatus.setGates",
     idempotent: true,
-    summary: ({ input }) =>
-      `Set the gates on moves into order status ${text({ value: input.id })}`,
+    summary: ({ input }) => `Set the gates on moves into order status ${text({ value: input.id })}`,
   }),
   mcpTool({
     operation: "orderStatus.importTemplate",

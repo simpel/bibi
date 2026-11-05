@@ -44,7 +44,10 @@ export function DocsShell({ children }: DocsShellProps) {
             <div className="flex-1 min-w-0">
               <Breadcrumb />
             </div>
-            <Link href={ROUTES.login} className="text-sm text-muted-foreground hover:text-foreground">
+            <Link
+              href={ROUTES.login}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
               {t("signIn")}
             </Link>
           </header>

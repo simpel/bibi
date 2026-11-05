@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { errorCode, unwrap } from "./helpers";
-import { bookRoom } from "./preview-helpers";
-import { setCell } from "./status-grid-helpers";
 import {
   type CreateSetup,
   createSetup,
   createWith,
   linesOf,
-  roomLine,
   orderCount,
+  roomLine,
 } from "./order-create-helpers";
+import { bookRoom } from "./preview-helpers";
+import { setCell } from "./status-grid-helpers";
 
 /** The entry status (Lead) starts room lines Booked: a hard start state (ADR 0081 decision 8). */
 async function hardEntry({ setup }: { setup: CreateSetup }) {
@@ -39,9 +39,7 @@ describe("order.create: the re-check inside the transaction (ADR 0081 decision 1
     const result = await createWith({ setup, input: { lines } });
     expect(errorCode({ result })).toBe("CONFLICT");
     expect(pathsOf({ result })).toEqual(["lines.1"]);
-    expect(result.ok ? "" : result.error.issues[0]?.message).toContain(
-      `order #${other.reference}`,
-    );
+    expect(result.ok ? "" : result.error.issues[0]?.message).toContain(`order #${other.reference}`);
     expect(await orderCount({ context: setup.context })).toBe(before);
   });
 

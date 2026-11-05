@@ -1,7 +1,7 @@
 import { resolveLocale } from "@bibi/i18n";
 import { redirect } from "@/lib/navigation";
-import { ROUTES } from "@/lib/routes";
 import { pageTitle } from "@/lib/page-metadata";
+import { ROUTES } from "@/lib/routes";
 
 type OldDashboardRouteProps = {
   params: Promise<{ locale: string; org: string; rest?: string[] }>;

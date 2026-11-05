@@ -12,7 +12,11 @@ test("WORK_ORDER_PAIRS replaces PascalCase models and definitions", () => {
     type Match = WorkOrderMatch;
   `;
   const { output } = replacePairs({ text: input, pairs: WORK_ORDER_PAIRS });
-  assert.ok(output.includes('import type { RunSheet, RunSheetDefinition, RunSheetRecipient } from "@bibi/db";'));
+  assert.ok(
+    output.includes(
+      'import type { RunSheet, RunSheetDefinition, RunSheetRecipient } from "@bibi/db";',
+    ),
+  );
   assert.ok(output.includes('const status: RunSheetStatus = "DRAFT";'));
   assert.ok(output.includes("type Change = RunSheetChange;"));
   assert.ok(output.includes("type Match = RunSheetMatch;"));
@@ -88,5 +92,7 @@ test("SWEDISH_WORK_ORDER_PAIRS replaces Swedish definitions", () => {
     text: input,
     pairs: [...SWEDISH_WORK_ORDER_PAIRS, ...WORK_ORDER_PAIRS],
   });
-  assert.ok(output.includes("Körschemadefinitioner, till exempel kökskörschemat, och vem som får dem."));
+  assert.ok(
+    output.includes("Körschemadefinitioner, till exempel kökskörschemat, och vem som får dem."),
+  );
 });

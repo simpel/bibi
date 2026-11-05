@@ -21,8 +21,14 @@ export const WORK_ORDER_PAIRS = [
   // 1. Definition join tables
   { pattern: /WorkOrderDefinitionEntityType/g, replacement: "RunSheetDefinitionEntityType" },
   { pattern: /workOrderDefinitionEntityType/g, replacement: "runSheetDefinitionEntityType" },
-  { pattern: /work-order-definition-entity-type/g, replacement: "run-sheet-definition-entity-type" },
-  { pattern: /work_order_definition_entity_type/g, replacement: "run_sheet_definition_entity_type" },
+  {
+    pattern: /work-order-definition-entity-type/g,
+    replacement: "run-sheet-definition-entity-type",
+  },
+  {
+    pattern: /work_order_definition_entity_type/g,
+    replacement: "run_sheet_definition_entity_type",
+  },
 
   { pattern: /WorkOrderDefinitionField/g, replacement: "RunSheetDefinitionField" },
   { pattern: /workOrderDefinitionField/g, replacement: "runSheetDefinitionField" },

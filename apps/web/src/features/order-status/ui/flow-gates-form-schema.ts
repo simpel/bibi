@@ -1,7 +1,7 @@
 import {
-  type StatusGates,
   type OrderStatusDto,
   OrderStatusSetGatesInputSchema,
+  type StatusGates,
   TRANSITION_GATES,
   type TransitionGate,
 } from "@bibi/core/schemas";

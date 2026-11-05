@@ -1,4 +1,4 @@
-import type { StatusEvent, OrderStatusDto, OrderStatusUpdateInput } from "@bibi/core/schemas";
+import type { OrderStatusDto, OrderStatusUpdateInput, StatusEvent } from "@bibi/core/schemas";
 import { OrderStatusUpdateInputSchema } from "@bibi/core/schemas";
 import { NONE } from "@/components/form/option-select-field";
 import { formSchema } from "@/lib/form-schema";

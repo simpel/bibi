@@ -76,8 +76,11 @@ export type { ItemResolutionWire } from "./ui-contract/item-resolution-entries";
 export type { ItemStateWire } from "./ui-contract/item-state-entries";
 export type { LineWire } from "./ui-contract/line-entries";
 export type { MemberProfileWire } from "./ui-contract/member-profile-entries";
+export type { OrderWire } from "./ui-contract/order-entries";
+export type { OrderStatusWire } from "./ui-contract/order-status-entries";
+export type { OrderTemplateWire } from "./ui-contract/order-template-entries";
 export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
-export type { PaymentWire, OrderBalanceWire } from "./ui-contract/payment-entries";
+export type { OrderBalanceWire, PaymentWire } from "./ui-contract/payment-entries";
 export type { PermissionProfileWire } from "./ui-contract/permission-entries";
 export type { PipelineBoardWire } from "./ui-contract/pipeline-entries";
 export type {
@@ -90,10 +93,9 @@ export type { DepositWire, InvoiceWire } from "./ui-contract/receivable-entries"
 export type { RequirementWire } from "./ui-contract/requirement-entries";
 export { type ResolveToolUiInput, resolveToolUi } from "./ui-contract/resolve-tool-ui";
 export type { ResponsibilityWire } from "./ui-contract/responsibility-entries";
+export type { RunSheetDefinitionWire } from "./ui-contract/run-sheet-definition-entries";
+export type { RunSheetWire } from "./ui-contract/run-sheet-entries";
 export type { StatusGridCellWire } from "./ui-contract/status-grid-entries";
-export type { OrderWire } from "./ui-contract/order-entries";
-export type { OrderStatusWire } from "./ui-contract/order-status-entries";
-export type { OrderTemplateWire } from "./ui-contract/order-template-entries";
 export { GENERIC_UI_TOOLS, TOOL_UI_REGISTRY } from "./ui-contract/tool-ui-registry";
 export type {
   ToolUi,
@@ -118,5 +120,3 @@ export type {
   VenueWire,
   VocabularyWire,
 } from "./ui-contract/wire-schemas";
-export type { RunSheetDefinitionWire } from "./ui-contract/run-sheet-definition-entries";
-export type { RunSheetWire } from "./ui-contract/run-sheet-entries";

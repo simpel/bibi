@@ -90,6 +90,7 @@ function Demo() {
 const meta = {
   title: "Components/Kanban/Customize",
   component: Demo,
+  parameters: { layout: "padded" },
 } satisfies Meta<typeof Demo>;
 
 export default meta;

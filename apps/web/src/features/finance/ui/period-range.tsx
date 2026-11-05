@@ -16,7 +16,13 @@ export type PeriodRangeProps = {
 };
 
 /** The period as one button: its dates, with presets and a calendar to change it. */
-export function PeriodRange({ period, today, base, customerId, direction = "all" }: PeriodRangeProps) {
+export function PeriodRange({
+  period,
+  today,
+  base,
+  customerId,
+  direction = "all",
+}: PeriodRangeProps) {
   const router = useRouter();
   return (
     <FinancePeriodButton

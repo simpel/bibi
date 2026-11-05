@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { unwrap } from "./helpers";
 import { toState } from "./item-state-helpers";
 import { activeOccupancies } from "./line-helpers";
-import { addLine, type GridSetup, gridSetup, lineNow, setCell } from "./status-grid-helpers";
 import { moveToStatus } from "./order-helpers";
+import { addLine, type GridSetup, gridSetup, lineNow, setCell } from "./status-grid-helpers";
 
 type RoomState = "prebooked" | "booked" | "released";
 type DishState = "estimated" | "ordered" | "locked";

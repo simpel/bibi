@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { type ExecuteContext, execute, pipelineBoard } from "../src/index";
 import { unwrap } from "./helpers";
-import { testOrg } from "./org-helpers";
 import { createTestOrder, memberUser, moveToStatus, orderSetup } from "./order-helpers";
+import { testOrg } from "./org-helpers";
 
 type BoardInput = { context: ExecuteContext; input?: Record<string, unknown> };
 

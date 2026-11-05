@@ -36,8 +36,7 @@ export function renderSeatRequestEmail({
       locale === "en"
         ? `A seat is waiting for your approval in ${organization}`
         : `En användarplats väntar på ditt godkännande i ${organization}`,
-    heading:
-      locale === "en" ? "Seat approval needed" : "Ny användarplats behöver godkännas",
+    heading: locale === "en" ? "Seat approval needed" : "Ny användarplats behöver godkännas",
     greeting: locale === "en" ? "Hi {name}," : "Hej {name},",
     greetingDefault: locale === "en" ? "Hi," : "Hej,",
     bodyRequested:
@@ -86,12 +85,7 @@ ${renderFallbackLink({ url, label: fallbackText })}
     preheader: description,
   });
 
-  const text = [
-    greeting,
-    description,
-    `${copy.note}\n${url}`,
-    "— Bibi",
-  ].join("\n\n");
+  const text = [greeting, description, `${copy.note}\n${url}`, "— Bibi"].join("\n\n");
 
   return {
     subject,

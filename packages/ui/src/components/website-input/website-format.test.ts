@@ -4,7 +4,9 @@ import { isValidWebsiteUrl, normalizeWebsiteUrl } from "./website-format";
 describe("normalizeWebsiteUrl", () => {
   it("prepends https:// when protocol is missing", () => {
     expect(normalizeWebsiteUrl({ value: "example.se" })).toBe("https://example.se");
-    expect(normalizeWebsiteUrl({ value: "www.worldofvolvo.com" })).toBe("https://www.worldofvolvo.com");
+    expect(normalizeWebsiteUrl({ value: "www.worldofvolvo.com" })).toBe(
+      "https://www.worldofvolvo.com",
+    );
   });
 
   it("preserves http:// and https://", () => {

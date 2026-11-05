@@ -63,11 +63,7 @@ export const CalendarDetailsSchema = z.object({
   client: ClientSchema.nullable().describe(
     "The order's contact person; null without customer:read",
   ),
-  headcount: z
-    .number()
-    .int()
-    .nullable()
-    .describe("The order's guaranteed, else estimated, guests"),
+  headcount: z.number().int().nullable().describe("The order's guaranteed, else estimated, guests"),
   quantity: z.number().int().nullable().describe("The line's effective quantity; program:read"),
   valueMinor: z
     .number()

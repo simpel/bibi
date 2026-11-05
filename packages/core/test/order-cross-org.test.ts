@@ -9,7 +9,6 @@ import {
 } from "../src/index";
 import { createTestCustomer } from "./customer-helpers";
 import { unwrap } from "./helpers";
-import { testOrg } from "./org-helpers";
 import {
   contactAt,
   createTestContact,
@@ -17,6 +16,7 @@ import {
   memberUser,
   orderSetup,
 } from "./order-helpers";
+import { testOrg } from "./org-helpers";
 
 type PathsInput = {
   context: ExecuteContext;

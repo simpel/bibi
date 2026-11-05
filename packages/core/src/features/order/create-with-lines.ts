@@ -5,9 +5,9 @@ import type { CreateDraftLine } from "./draft-line-schema";
 import { draftRows, loadAddOnItemNames } from "./draft-rows";
 import { insertDraftLine } from "./insert-draft-line";
 import { insertOrder } from "./insert-order";
+import { entryStatusId } from "./order-defaults";
 import { hardCollisions } from "./plan/hard-collisions";
 import type { OrderCreateInput, OrderDto } from "./schema";
-import { entryStatusId } from "./order-defaults";
 
 export type CreateWithLinesInput = {
   context: OperationContext;

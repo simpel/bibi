@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { createOrderTemplate, execute } from "../src/index";
 import { unwrap } from "./helpers";
 import { hours } from "./occupancy-helpers";
-import { bookRoom, type PreviewSetup, preview, previewSetup } from "./preview-helpers";
 import { roomAndDish } from "./order-template-helpers";
+import { bookRoom, type PreviewSetup, preview, previewSetup } from "./preview-helpers";
 
 /** A package of the room (09–11 from a 09 start) and coffee for 2–12 guests. */
 async function rangedPackage({

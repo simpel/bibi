@@ -2,10 +2,10 @@ import { ok } from "../../errors/result";
 import { changeOrderStatus } from "../../features/order/change-status-operation";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import type { DemoOrder } from "./order-types";
 import { atDay } from "./seed-clock";
 import { missing } from "./seed-fields";
 import { seedOrderQuote } from "./seed-order-quote";
-import type { DemoOrder } from "./order-types";
 
 export type MoveStatusInput = {
   context: ExecuteContext;

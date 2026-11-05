@@ -3,14 +3,14 @@ import { describe, expect, it } from "vitest";
 import {
   acceptQuote,
   execute,
+  orderStatusHistory,
   sendQuote,
   setOrderStatusGates,
-  orderStatusHistory,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
-import { draftQuote } from "./quote-helpers";
 import { moveToStatus } from "./order-helpers";
 import { statusByName } from "./order-status-helpers";
+import { draftQuote } from "./quote-helpers";
 
 type Ctx = Awaited<ReturnType<typeof draftQuote>>["context"];
 

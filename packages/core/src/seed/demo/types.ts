@@ -6,8 +6,8 @@ import type { DisplayFormats } from "../../time/display-formats";
 import type { DemoConfig } from "./config-types";
 import type { DemoCustomer } from "./customer-types";
 import type { DemoDensity } from "./density-types";
-import type { DemoOrderTemplate } from "./template-types";
 import type { DemoOrder } from "./order-types";
+import type { DemoOrderTemplate } from "./template-types";
 
 /** One demo staff member with their preset and optional overrides (ADR 0034, 0050). */
 export type DemoUser = {

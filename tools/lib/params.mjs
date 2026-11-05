@@ -25,6 +25,8 @@ const SKIP_NAMES = new Set([
   "new",
   "super",
   "function",
+  // `async (x) =>` on its own line is an inline arrow (e.g. a `cache()` callback), not a method.
+  "async",
 ]);
 const HTTP_VERBS = new Set(["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]);
 const BODY_AFTER = /^\s*(?::[^{;]*)?\{/;

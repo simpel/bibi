@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { errorCode, unwrap } from "./helpers";
-import { requirementSetup } from "./requirement-helpers";
-import { linesOf, runCreate, orderCount } from "./order-create-helpers";
+import { linesOf, orderCount, runCreate } from "./order-create-helpers";
 import { partyOf } from "./order-helpers";
+import { requirementSetup } from "./requirement-helpers";
 
 type Setup = Awaited<ReturnType<typeof requirementSetup>>;
 

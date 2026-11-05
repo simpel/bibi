@@ -6,8 +6,8 @@ import { demoTimeZones } from "./demo-time-zones";
 import { seedDemoCustomers } from "./seed-customers";
 import type { DemoCatalog } from "./seed-items";
 import { activateDemoPayments } from "./seed-money";
-import { seedDemoTemplates } from "./seed-templates";
 import { seedDemoOrders } from "./seed-orders";
+import { seedDemoTemplates } from "./seed-templates";
 import type { DemoOrg } from "./types";
 import type { DemoUserIds } from "./users";
 

@@ -8,11 +8,10 @@ vi.mock("@/server/run-operation", () => ({
 }));
 
 vi.mock("next-intl/server", () => ({
-  getTranslations: async () => {
-    const t = (key: string) => key;
-    t.rich = (_key: string, values: { address: string }) => `Forward mail to ${values.address}`;
-    return t;
-  },
+  getTranslations: async () =>
+    Object.assign((key: string) => key, {
+      rich: (_key: string, values: { address: string }) => `Forward mail to ${values.address}`,
+    }),
 }));
 
 const { InboxAddress } = await import("./inbox-address");

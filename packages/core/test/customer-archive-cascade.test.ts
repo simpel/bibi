@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { archiveCustomer, type ExecuteContext, execute, getOrder, grantAll } from "../src/index";
 import { archiveContactsOf } from "./contact-archive-helpers";
 import { errorCode, testContext, unwrap } from "./helpers";
-import { createTestOrder, placeInStatus, orderSetup } from "./order-helpers";
+import { createTestOrder, orderSetup, placeInStatus } from "./order-helpers";
 import { statuses } from "./order-status-helpers";
 
 type OrdersInput = { context: ExecuteContext; entityTypeId: string; customerId: string };

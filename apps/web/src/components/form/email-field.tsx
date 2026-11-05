@@ -1,4 +1,11 @@
-import { EmailInput, FormControl, FormController, FormItem, FormLabel, FormMessage } from "@bibi/ui";
+import {
+  EmailInput,
+  FormControl,
+  FormController,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@bibi/ui";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 export type EmailFieldProps<V extends FieldValues, O> = {

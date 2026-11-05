@@ -8,12 +8,12 @@ import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
 import { integrationEntities } from "./parity-entities-integration";
 import { itemStateEntities } from "./parity-entities-item-state";
+import { orderEntities } from "./parity-entities-order";
 import { moneyEntities } from "./parity-entities-payment";
 import { alternativeGroupEntity, quoteEntity } from "./parity-entities-quote";
-import { orderEntities } from "./parity-entities-order";
+import { runSheet } from "./parity-entities-run-sheet";
 import { selfEntities } from "./parity-entities-user-settings";
 import { welcomeEntities } from "./parity-entities-welcome";
-import { runSheet } from "./parity-entities-run-sheet";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 

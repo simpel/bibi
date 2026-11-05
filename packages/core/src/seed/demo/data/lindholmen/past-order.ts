@@ -42,13 +42,7 @@ type PastInput = Pick<
  * A Completed past event, invoiced two days later with 30 days to pay (`dueAfter` overrides):
  * paid on `paidDay` when set, otherwise open.
  */
-export const past = ({
-  day,
-  paidDay,
-  refund,
-  dueAfter = 30,
-  ...order
-}: PastInput): DemoOrder => ({
+export const past = ({ day, paidDay, refund, dueAfter = 30, ...order }: PastInput): DemoOrder => ({
   ...order,
   day,
   from: "09:00",

@@ -1,8 +1,8 @@
 import type { ExecuteContext } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { call, connect, type Json, testContext } from "./helpers";
-import { seedResponsibility } from "./seed-responsibility";
 import { seedOrder } from "./seed-order";
+import { seedResponsibility } from "./seed-responsibility";
 
 type Client = Awaited<ReturnType<typeof connect>>;
 type SeedInput = { client: Client; context: ExecuteContext };
@@ -68,9 +68,7 @@ describe("cross-organization isolation: run sheets and run sheet definitions", (
     });
     expect(borrowed.data.code).toBe("VALIDATION");
     const runSheets = await call({ client: b, name: "runSheet_list" });
-    expect(runSheets.data.items.map((item: { id: string }) => item.id)).toEqual([
-      mine.runSheet.id,
-    ]);
+    expect(runSheets.data.items.map((item: { id: string }) => item.id)).toEqual([mine.runSheet.id]);
     const filtered = await call({
       client: b,
       name: "runSheet_list",

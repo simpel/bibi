@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { errorCode, unwrap } from "./helpers";
 import { hours } from "./occupancy-helpers";
+import { createSetup, createWith, linesOf, orderCount, roomLine } from "./order-create-helpers";
 import { bookRoom } from "./preview-helpers";
 import { setCell } from "./status-grid-helpers";
-import { createSetup, createWith, linesOf, roomLine, orderCount } from "./order-create-helpers";
 
 describe("order.create: add-ons under draft lines (ADR 0088)", () => {
   it("writes add-ons as ADD_ON lines under their line, with the line's type and period", async () => {

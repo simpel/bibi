@@ -1,13 +1,13 @@
 import type { Db } from "@bibi/db";
 import { ok, type Result } from "../errors/result";
 import { provisionEndpoints } from "../features/inbound-message/provision-endpoints";
+import { importOrderStatusTemplate } from "../features/order-status/import-template-operation";
 import {
   setOrganizationSetupStatus,
   updateOrganizationProfile,
 } from "../features/organization-profile/operations";
 import type { SetupStatus } from "../features/organization-profile/schema";
 import { importStatusGridTemplate } from "../features/status-grid/operations";
-import { importOrderStatusTemplate } from "../features/order-status/import-template-operation";
 import { createExecuteContext } from "../operations/context";
 import { execute } from "../operations/execute";
 import { grantAll } from "../permissions/permission-set";

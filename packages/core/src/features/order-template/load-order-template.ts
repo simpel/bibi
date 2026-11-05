@@ -1,4 +1,4 @@
-import type { Prisma, OrderTemplate, OrderTemplateLine } from "@bibi/db";
+import type { OrderTemplate, OrderTemplateLine, Prisma } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { WITH_RECORD_LINKS, type WithRecordLinks, withLinks } from "../../records/record-links";
 import { lineDefaults } from "./line-defaults";

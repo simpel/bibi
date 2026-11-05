@@ -2,8 +2,8 @@ import { ok, type Result } from "../../errors/result";
 import { createAlternativeGroup } from "../../features/alternative-group/operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { missing } from "./seed-fields";
 import type { DemoAlternative } from "./order-types";
+import { missing } from "./seed-fields";
 
 type Ctx = { context: ExecuteContext; orderId: string };
 

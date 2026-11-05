@@ -1,4 +1,4 @@
-import type { PipelineBoard, OrderStatusDto } from "@bibi/core/schemas";
+import type { OrderStatusDto, PipelineBoard } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { customizeChips, customizePhases, moveInLayout, reorderLayout } from "./customize-model";
 

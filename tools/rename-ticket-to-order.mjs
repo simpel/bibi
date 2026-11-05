@@ -41,7 +41,9 @@ export function parseArgs({ argv = process.argv.slice(2) }) {
     else if (arg === "--root") flags.root = resolve(argv[++i]);
     else if (arg === "--keep") flags.keep.push(argv[++i]);
     else if (arg === "--help" || arg === "-h") {
-      console.log("Usage: node tools/rename-ticket-to-order.mjs [--write] [--verify] [--allow-dirty]");
+      console.log(
+        "Usage: node tools/rename-ticket-to-order.mjs [--write] [--verify] [--allow-dirty]",
+      );
       process.exit(0);
     }
   }
@@ -61,9 +63,7 @@ export function runTicketCodemod({ root = ROOT, write = false, keep = DEFAULT_KE
 
     const originalText = buffer.toString("utf8");
     const isSwedish = relPath.includes("/sv/") || relPath.endsWith(".sv.json");
-    const pairs = isSwedish
-      ? [...SWEDISH_TICKET_PAIRS, ...TICKET_PAIRS]
-      : TICKET_PAIRS;
+    const pairs = isSwedish ? [...SWEDISH_TICKET_PAIRS, ...TICKET_PAIRS] : TICKET_PAIRS;
 
     const { output, count, changed } = replacePairs({ text: originalText, pairs });
     if (!changed) continue;
@@ -136,7 +136,9 @@ async function main() {
   console.log(`Running Ticket -> Order codemod (${flags.write ? "WRITE MODE" : "DRY RUN"})...`);
   const result = runTicketCodemod({ root: flags.root, write: flags.write, keep: flags.keep });
 
-  console.log(`\nModified ${result.modifiedFiles.length} file(s) with ${result.totalReplacements} total replacement(s).`);
+  console.log(
+    `\nModified ${result.modifiedFiles.length} file(s) with ${result.totalReplacements} total replacement(s).`,
+  );
   console.log(`Renamed ${result.renamedPaths.length} path(s).`);
 
   if (!flags.write) {

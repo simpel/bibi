@@ -10,9 +10,7 @@ type Attention = DashboardSummary["attention"];
 export type DashboardWireish = Omit<DashboardSummary, "attention" | "scheduled"> & {
   attention: Omit<Attention, "expiringHolds" | "unsentRunSheets"> & {
     expiringHolds: Dated<Attention["expiringHolds"][number], "holdsUntil">[];
-    unsentRunSheets:
-      | Dated<NonNullable<Attention["unsentRunSheets"]>[number], "startsAt">[]
-      | null;
+    unsentRunSheets: Dated<NonNullable<Attention["unsentRunSheets"]>[number], "startsAt">[] | null;
   };
   scheduled: Dated<DashboardSummary["scheduled"][number], "startsAt">[];
 };

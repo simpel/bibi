@@ -6,8 +6,8 @@ import { addDays } from "../../time/plain-date";
 import { fromZonedParts, toZonedParts } from "../../time/zoned-time";
 import type { DemoTimeZones } from "./demo-time-zones";
 import { demoTitle } from "./demo-title";
-import { createDemoOrderFromTemplate } from "./seed-order-from-template";
 import type { DemoOrder } from "./order-types";
+import { createDemoOrderFromTemplate } from "./seed-order-from-template";
 
 type AtInput = { now: Date; day: number; time: string; timeZone: string };
 

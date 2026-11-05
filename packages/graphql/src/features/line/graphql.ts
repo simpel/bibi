@@ -19,8 +19,8 @@ import { pageType } from "../../schema/page";
 import { requirePermission } from "../../schema/require-permission";
 import { runOperation } from "../../schema/run-operation";
 import { EntityTypeRef } from "../entity-type/graphql";
-import { SetupRef } from "../setup/graphql";
 import { OrderRef } from "../order/graphql";
+import { SetupRef } from "../setup/graphql";
 
 export const LineRef = objectFromSchema<LineDto>({
   name: "Line",

@@ -9,9 +9,9 @@ import {
 } from "../src/index";
 import { assignTo, followAs, orderSubject } from "./assignment-helpers";
 import { errorCode, unwrap } from "./helpers";
-import { testOrg } from "./org-helpers";
 import { contactAt, createTestOrder, memberUser, orderSetup } from "./order-helpers";
 import { statusByName } from "./order-status-helpers";
+import { testOrg } from "./org-helpers";
 
 async function setup() {
   const { context, type, customer } = await orderSetup();

@@ -79,13 +79,11 @@ export const UI_EXEMPT: readonly UiExempt[] = [
   },
   {
     operation: "payment.get",
-    reason:
-      "The order page shows every payment in full from payment.list; one payment has no page",
+    reason: "The order page shows every payment in full from payment.list; one payment has no page",
   },
   {
     operation: "deposit.get",
-    reason:
-      "The order page shows every deposit request in full from deposit.list; one has no page",
+    reason: "The order page shows every deposit request in full from deposit.list; one has no page",
   },
   {
     operation: "invoice.get",

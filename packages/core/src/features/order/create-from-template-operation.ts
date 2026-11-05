@@ -11,9 +11,9 @@ import { regenerateForOrder } from "../run-sheet/regenerate";
 import type { OrderCreateFromTemplateInput } from "./create-from-template-schema";
 import { OrderCreateFromTemplateInputSchema } from "./create-from-template-schema";
 import { createWithLines } from "./create-with-lines";
+import { checkReadable } from "./order-rules";
 import { planTemplateLines } from "./plan/plan-template-lines";
 import { type OrderDto, OrderSchema } from "./schema";
-import { checkReadable } from "./order-rules";
 import { titleAfterCreate } from "./title/generate-title";
 
 type CreateInput = {

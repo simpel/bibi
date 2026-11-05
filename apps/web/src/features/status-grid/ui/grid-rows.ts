@@ -1,4 +1,4 @@
-import type { StatusGridCellDto, OrderStatusDto } from "@bibi/core/schemas";
+import type { OrderStatusDto, StatusGridCellDto } from "@bibi/core/schemas";
 
 /** One table row: a status and the state each item type's cell sets (null = keep). */
 export type GridRow = { orderStatus: OrderStatusDto; cells: Record<string, string | null> };

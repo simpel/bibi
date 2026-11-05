@@ -1,4 +1,4 @@
-import type { Prisma, OrderStatus } from "@bibi/db";
+import type { OrderStatus, Prisma } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { StatusGates, TransitionGate } from "./gate-schema";
 import type { OrderStatusDto } from "./schema";

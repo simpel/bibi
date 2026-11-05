@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   execute,
-  importStatusGridTemplate,
   importOrderStatusTemplate,
+  importStatusGridTemplate,
   provisionOrganization,
 } from "../src/index";
 import { FALLBACK_TIME_ZONE } from "../src/time/time-zone";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
-import { addLine, gridSetup, lineNow, setCell } from "./status-grid-helpers";
 import { moveToStatus } from "./order-helpers";
+import { addLine, gridSetup, lineNow, setCell } from "./status-grid-helpers";
 
 const estate = { template: "conference-estate" } as const;
 

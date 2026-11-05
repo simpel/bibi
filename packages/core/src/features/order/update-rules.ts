@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import type { OrderDto, OrderUpdateInput } from "./schema";
 import { checkContact, checkCustomer, checkDesiredPeriod, checkReadable } from "./order-rules";
+import type { OrderDto, OrderUpdateInput } from "./schema";
 
 export type CheckOrderDetailsInput = {
   context: Pick<OperationContext, "db" | "permissions">;

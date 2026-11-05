@@ -17,9 +17,7 @@ describe("organization defaults (ADR 0043)", () => {
       "Lost",
     ]);
     expect(
-      statuses
-        .filter((orderStatus) => orderStatus.entry)
-        .map((orderStatus) => orderStatus.name),
+      statuses.filter((orderStatus) => orderStatus.entry).map((orderStatus) => orderStatus.name),
     ).toEqual(["Lead"]);
     expect(statuses.filter((orderStatus) => orderStatus.closes)).toHaveLength(2);
     expect(new Set(statuses.map((orderStatus) => orderStatus.createdBy))).toEqual(

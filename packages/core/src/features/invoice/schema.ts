@@ -64,10 +64,7 @@ export const InvoiceListOutputSchema = z.object({
 export const InvoiceIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const InvoiceCreateInputSchema = z.object({
-  orderId: z
-    .string()
-    .min(1)
-    .describe("Id of the order to invoice; its status must be invoiceable"),
+  orderId: z.string().min(1).describe("Id of the order to invoice; its status must be invoiceable"),
   dueDate: z.coerce
     .date()
     .nullish()

@@ -1,7 +1,7 @@
 import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import type { OperationContext } from "../../operations/types";
 import { invoiceDueMinor } from "../invoice/to-invoice-dto";
-import type { ReceivableKind, ReceivableSettlement, OrderBalanceDto } from "./balance-schema";
+import type { OrderBalanceDto, ReceivableKind, ReceivableSettlement } from "./balance-schema";
 import { paidByReceivable, settlementOf } from "./settlement";
 
 type Db = { context: Pick<OperationContext, "db"> };

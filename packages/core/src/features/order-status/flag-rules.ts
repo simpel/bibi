@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid } from "../../shared/errors";
-import type { StatusEvent, OrderStatusDto, OrderStatusFlags } from "./schema";
+import type { OrderStatusDto, OrderStatusFlags, StatusEvent } from "./schema";
 
 export type CheckFlagsInput = { flags: Partial<OrderStatusFlags> };
 

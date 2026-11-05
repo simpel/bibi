@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createFieldDefinition, execute } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { draftLine, preview, previewSetup } from "./preview-helpers";
 import {
   type CreateSetup,
   createSetup,
@@ -9,6 +8,7 @@ import {
   linesOf,
   orderCount,
 } from "./order-create-helpers";
+import { draftLine, preview, previewSetup } from "./preview-helpers";
 
 /** A required TEXT field on the setup's line type. */
 async function requiredField({ setup }: { setup: Pick<CreateSetup, "context" | "lineType"> }) {

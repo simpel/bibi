@@ -8,14 +8,7 @@ describe("safeReturnTo", () => {
   });
 
   it("falls back to / for full URLs, protocol-relative paths and junk", () => {
-    for (const value of [
-      "https://evil.example",
-      "//evil.example",
-      "/\\evil",
-      "orders",
-      "",
-      null,
-    ]) {
+    for (const value of ["https://evil.example", "//evil.example", "/\\evil", "orders", "", null]) {
       expect(safeReturnTo({ value })).toBe("/");
     }
     expect(safeReturnTo({ value: undefined })).toBe("/");

@@ -48,11 +48,7 @@ export function ClientDataTable<TRow, TValue = unknown>({
       >
         {toolbarChildren}
       </TableFilterBar>
-      <PersistedDataTable
-        {...tableProps}
-        data={view.rows}
-        pagination={view.pagination}
-      />
+      <PersistedDataTable {...tableProps} data={view.rows} pagination={view.pagination} />
     </div>
   );
 }

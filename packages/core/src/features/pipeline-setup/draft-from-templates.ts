@@ -7,13 +7,13 @@ import {
   type ItemStateTemplateKey,
   type ItemStateTemplateState,
 } from "../../templates/item-states/item-state-templates";
+import { getOrderStatusTemplate } from "../../templates/order-statuses/order-status-templates";
 import {
   getSetupPreset,
   type SetupPresetKey,
   type SetupPresetStatuses,
 } from "../../templates/setup-presets/setup-presets";
 import { getStatusGridTemplate } from "../../templates/status-grid/status-grid-templates";
-import { getOrderStatusTemplate } from "../../templates/order-statuses/order-status-templates";
 import type {
   PipelineCellDraft,
   PipelineSetupDraft,

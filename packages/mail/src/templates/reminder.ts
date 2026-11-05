@@ -34,10 +34,7 @@ export function renderReminderEmail({
       locale === "en"
         ? "Your team is waiting to get back into Bibi"
         : "Ditt team väntar på att komma tillbaka in i Bibi",
-    heading:
-      locale === "en"
-        ? "Keep your team up and running"
-        : "Håll igång teamet i Bibi",
+    heading: locale === "en" ? "Keep your team up and running" : "Håll igång teamet i Bibi",
     greeting: locale === "en" ? "Hi {name}," : "Hej {name},",
     greetingDefault: locale === "en" ? "Hi," : "Hej,",
     body:
@@ -55,9 +52,7 @@ export function renderReminderEmail({
   const greeting = adminName?.trim()
     ? copy.greeting.replace("{name}", adminName.trim())
     : copy.greetingDefault;
-  const description = copy.body
-    .replace("{who}", who)
-    .replace("{organization}", organization);
+  const description = copy.body.replace("{who}", who).replace("{organization}", organization);
 
   const fallbackText =
     locale === "en"
@@ -79,12 +74,7 @@ ${renderFallbackLink({ url, label: fallbackText })}
     preheader: description,
   });
 
-  const text = [
-    greeting,
-    description,
-    `${copy.note}\n${url}`,
-    "— Bibi",
-  ].join("\n\n");
+  const text = [greeting, description, `${copy.note}\n${url}`, "— Bibi"].join("\n\n");
 
   return {
     subject,

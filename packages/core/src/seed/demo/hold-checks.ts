@@ -2,8 +2,8 @@ import { expireOrderHolds } from "../../features/order/expire-holds-operation";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { lineHoldsReconciliation } from "./line-holds-reconcile";
-import { runReconciliations } from "./reconcile";
 import type { DemoLine, DemoOrder } from "./order-types";
+import { runReconciliations } from "./reconcile";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoHoldsInput = { context: ExecuteContext; org: DemoOrg };

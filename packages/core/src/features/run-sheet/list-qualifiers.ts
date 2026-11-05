@@ -45,9 +45,7 @@ const OWN: Record<"definition" | "responsibility" | "is", OwnMatch> = {
   is: ({ value, context }) => {
     const state = value.toLowerCase();
     const onOrder = state === "open" || state === "closed";
-    return onOrder && !canView({ context, feature: "pipeline" })
-      ? NOTHING
-      : (IS[state] ?? NOTHING);
+    return onOrder && !canView({ context, feature: "pipeline" }) ? NOTHING : (IS[state] ?? NOTHING);
   },
 };
 

@@ -10,9 +10,9 @@ import {
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { halfPaidLateInvoice } from "./late-invoice-helpers";
-import { moneySetup, sentTestQuote } from "./receivable-helpers";
 import { createTestOrder, placeInStatus } from "./order-helpers";
 import { statuses } from "./order-status-helpers";
+import { moneySetup, sentTestQuote } from "./receivable-helpers";
 
 afterEach(() => {
   setPaymentProvider({ provider: undefined });

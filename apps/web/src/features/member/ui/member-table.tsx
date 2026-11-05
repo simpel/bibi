@@ -73,6 +73,8 @@ export function MemberTable({ members, roles, caller, access }: MemberTableProps
     linkNames: true,
     renderRole: (member) =>
       access.canEdit && manageable(member) ? (
+        // biome-ignore lint/a11y/noStaticElementInteractions: only keeps the row click from firing; the controls inside handle the keyboard
+        // biome-ignore lint/a11y/useKeyWithClickEvents: same wrapper, no action of its own
         <div onClick={(event) => event.stopPropagation()}>
           <MemberRoleForm member={member} roles={roles} />
         </div>

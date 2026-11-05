@@ -1,7 +1,7 @@
 import { resolveLocale } from "@bibi/i18n";
 import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
-import { readOrderListParams, type OrderSearchParams } from "@/features/order/lib/list-params";
+import { type OrderSearchParams, readOrderListParams } from "@/features/order/lib/list-params";
 import { OrderList } from "@/features/order/ui/order-list";
 import { pageTitle } from "@/lib/page-metadata";
 

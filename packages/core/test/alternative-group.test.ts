@@ -11,8 +11,8 @@ import { archiveContactsOf } from "./contact-archive-helpers";
 import { errorCode, peer, unwrap } from "./helpers";
 import { toState } from "./item-state-helpers";
 import { activeOccupancies } from "./line-helpers";
-import { addLine, lineNow, setCell } from "./status-grid-helpers";
 import { moveToStatus } from "./order-helpers";
+import { addLine, lineNow, setCell } from "./status-grid-helpers";
 
 describe("alternative groups (ADR 0052)", () => {
   it("groups two soft-held lines as options and lists them", async () => {

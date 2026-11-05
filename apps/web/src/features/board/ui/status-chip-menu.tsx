@@ -9,9 +9,9 @@ import {
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { BoardAccess } from "@/features/pipeline/load-pipeline-data";
 import { ArchiveOrderStatusDialog } from "@/features/order-status/ui/archive-order-status-dialog";
 import { EditOrderStatusItem } from "@/features/order-status/ui/edit-order-status-item";
+import type { BoardAccess } from "@/features/pipeline/load-pipeline-data";
 
 export type StatusChipMenuProps = {
   orderStatus: OrderStatusDto;

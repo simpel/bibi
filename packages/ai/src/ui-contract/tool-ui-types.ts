@@ -14,8 +14,11 @@ import type { ItemStateWire } from "./item-state-entries";
 import type { LineWire } from "./line-entries";
 import type { MemberProfileWire } from "./member-profile-entries";
 import type { NotificationUiProps } from "./notification-entries";
+import type { OrderToolUiProps } from "./order-entries";
+import type { OrderStatusWire } from "./order-status-entries";
+import type { OrderTemplateWire } from "./order-template-entries";
 import type { IntegrationWire, PaymentAccountWire } from "./payment-account-entries";
-import type { PaymentWire, OrderBalanceWire } from "./payment-entries";
+import type { OrderBalanceWire, PaymentWire } from "./payment-entries";
 import type { PermissionProfileWire } from "./permission-entries";
 import type { PipelineBoardWire } from "./pipeline-entries";
 import type { PipelinePreviewWire, PipelineSetupDraftWire } from "./pipeline-setup-entries";
@@ -24,11 +27,10 @@ import type { QuoteWire } from "./quote-entries";
 import type { DepositWire, InvoiceWire } from "./receivable-entries";
 import type { RequirementWire } from "./requirement-entries";
 import type { ResponsibilityWire } from "./responsibility-entries";
+import type { RunSheetDefinitionWire } from "./run-sheet-definition-entries";
+import type { RunSheetWire } from "./run-sheet-entries";
 import type { SkillUiProps } from "./skill-entries";
 import type { StatusGridCellWire } from "./status-grid-entries";
-import type { OrderToolUiProps } from "./order-entries";
-import type { OrderStatusWire } from "./order-status-entries";
-import type { OrderTemplateWire } from "./order-template-entries";
 import type {
   AuditLogWire,
   ContactWire,
@@ -44,8 +46,6 @@ import type {
   VenueWire,
   VocabularyWire,
 } from "./wire-schemas";
-import type { RunSheetDefinitionWire } from "./run-sheet-definition-entries";
-import type { RunSheetWire } from "./run-sheet-entries";
 
 /**
  * Generative-UI contract: component key → props. The web maps each key to an `@bibi/ui`

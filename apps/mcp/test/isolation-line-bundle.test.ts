@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
-import { seedProgram } from "./seed-program";
 import { seedOrder } from "./seed-order";
+import { seedProgram } from "./seed-program";
 
 const times = { startsAt: "2037-11-03T12:00:00.000Z", endsAt: "2037-11-03T16:00:00.000Z" };
 

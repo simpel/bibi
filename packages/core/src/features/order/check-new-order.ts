@@ -4,8 +4,8 @@ import { checkNewAssignee } from "../assignment/assign-on-create";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
 import type { CheckedFields } from "../field-definition/split-links";
-import type { OrderCreateInput } from "./schema";
 import { checkContact, checkCustomer, checkDesiredPeriod, checkReadable } from "./order-rules";
+import type { OrderCreateInput } from "./schema";
 
 export type CheckNewOrderInput = {
   context: Pick<OperationContext, "db" | "permissions">;

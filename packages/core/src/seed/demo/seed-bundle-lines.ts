@@ -2,8 +2,8 @@ import { ok, type Result } from "../../errors/result";
 import { expandLineBundle } from "../../features/line/expand-operation";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { missing } from "./seed-fields";
 import type { DemoOrder } from "./order-types";
+import { missing } from "./seed-fields";
 
 export type SeedBundleLinesInput = {
   context: ExecuteContext;

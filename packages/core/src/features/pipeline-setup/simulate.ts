@@ -78,10 +78,7 @@ function release({
 }
 
 /** The first lines: each type's cell for the entry status or its initial (else first) state. */
-function start({
-  orderStatus,
-  ...walk
-}: Walk & { orderStatus: PipelineStatusDraft | undefined }) {
+function start({ orderStatus, ...walk }: Walk & { orderStatus: PipelineStatusDraft | undefined }) {
   return walk.draft.itemTypes.map((type) => {
     const initial = type.states.find((row) => row.initial) ?? type.states[0];
     const state = (orderStatus && cellState({ ...walk, orderStatus, type })) || initial;

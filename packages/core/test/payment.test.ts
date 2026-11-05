@@ -11,8 +11,8 @@ import {
   updateCustomer,
 } from "../src/index";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
-import { paymentSetup, sentDeposit } from "./payment-helpers";
 import { createTestOrder, orderSetup } from "./order-helpers";
+import { paymentSetup, sentDeposit } from "./payment-helpers";
 
 afterEach(() => {
   setPaymentProvider({ provider: undefined });

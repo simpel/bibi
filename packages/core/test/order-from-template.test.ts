@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { createOrderFromTemplate, execute } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { toState } from "./item-state-helpers";
-import { addLine } from "./status-grid-helpers";
 import { memberUser, partyOf } from "./order-helpers";
 import { makeTemplate, templateSetup } from "./order-template-helpers";
+import { addLine } from "./status-grid-helpers";
 
 const startsAt = new Date(Date.UTC(2037, 10, 1, 9));
 

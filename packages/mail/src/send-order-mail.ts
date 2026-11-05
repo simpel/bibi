@@ -1,4 +1,4 @@
-import type { Result, OrderDto } from "@bibi/core";
+import type { OrderDto, Result } from "@bibi/core";
 import type { MailMessage, SentMail } from "./schema";
 import { sendMail } from "./send-mail";
 

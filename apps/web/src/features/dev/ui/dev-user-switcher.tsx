@@ -93,11 +93,7 @@ export function DevUserSwitcher({ users, admins, services, currentUserId }: DevU
             onResetOnboarding={resetOnboarding}
           />
           <DropdownMenuSeparator />
-          <DevToolItems
-            signedIn={currentUserId !== null}
-            reseed={reseed}
-            signOut={signOut}
-          />
+          <DevToolItems signedIn={currentUserId !== null} reseed={reseed} signOut={signOut} />
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

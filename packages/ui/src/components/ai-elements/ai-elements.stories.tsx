@@ -26,8 +26,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Chat: Story = {
+  parameters: { layout: "fullscreen" },
   render: () => (
-    <div className="flex h-96 flex-col rounded-lg border">
+    <div className="flex h-screen flex-col">
       <Conversation>
         <ConversationContent>
           <Message from="user">

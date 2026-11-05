@@ -12,8 +12,6 @@ const TEMPLATES: Record<OrderStatusTemplateKey, OrderStatusTemplate> = {
 
 export type GetOrderStatusTemplateInput = { key: OrderStatusTemplateKey };
 
-export function getOrderStatusTemplate({
-  key,
-}: GetOrderStatusTemplateInput): OrderStatusTemplate {
+export function getOrderStatusTemplate({ key }: GetOrderStatusTemplateInput): OrderStatusTemplate {
   return TEMPLATES[key];
 }

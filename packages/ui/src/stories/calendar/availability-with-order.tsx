@@ -7,8 +7,8 @@ import type {
   AssetBooking,
   CalendarAsset,
 } from "../../components/availability-calendar/calendar-types";
-import { STORY_CALENDAR } from "./story-labels";
 import { orderOf } from "./order-of";
+import { STORY_CALENDAR } from "./story-labels";
 import { useStoryBookings } from "./use-story-bookings";
 
 export type AvailabilityWithOrderProps = {

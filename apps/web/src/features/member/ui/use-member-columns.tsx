@@ -33,6 +33,8 @@ export function useMemberColumns<TRow extends MemberRow>({
       header: t("name"),
       accessorFn: (m) => m.name,
       cell: ({ row: { original } }) => (
+        // biome-ignore lint/a11y/noStaticElementInteractions: only keeps the row click from firing; the controls inside handle the keyboard
+        // biome-ignore lint/a11y/useKeyWithClickEvents: same wrapper, no action of its own
         <div onClick={(event) => event.stopPropagation()}>
           <ContactName
             contact={original}

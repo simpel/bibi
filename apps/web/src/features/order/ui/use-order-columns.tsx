@@ -61,6 +61,8 @@ const assigneeColumn = ({ t, members }: AssigneeInput): Column => ({
     const member = members.find(({ id }) => id === row.original.assigneeId);
     if (!member) return "–";
     return (
+      // biome-ignore lint/a11y/noStaticElementInteractions: only keeps the row click from firing; the controls inside handle the keyboard
+      // biome-ignore lint/a11y/useKeyWithClickEvents: same wrapper, no action of its own
       <span className="flex items-center gap-2" onClick={(event) => event.stopPropagation()}>
         <Avatar size="sm" name={member.name} photoUrl={null} />
         <ContactName contact={member} />

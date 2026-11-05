@@ -4,6 +4,7 @@ import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoRefs } from "./demo-refs";
 import type { DemoTimeZones } from "./demo-time-zones";
+import type { DemoOrder } from "./order-types";
 import { missing, resolveDemoFields } from "./seed-fields";
 import { seedDemoLines } from "./seed-lines";
 import { seedOrderMoney } from "./seed-money";
@@ -11,7 +12,6 @@ import { seedOrderChoices } from "./seed-order-choices";
 import { at, createOne } from "./seed-order-create";
 import { loadParty } from "./seed-order-party";
 import { moveStatus } from "./seed-order-status";
-import type { DemoOrder } from "./order-types";
 import type { DemoUserIds } from "./users";
 
 export type SeedOrdersInput = {

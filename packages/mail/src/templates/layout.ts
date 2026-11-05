@@ -36,7 +36,9 @@ export function renderEmailLayout({
   const webUrl = env.WEB_URL.replace(/\/+$/, "");
   const logoUrl = `${webUrl}/wordmark.png`;
   const homeUrl = `${webUrl}/${locale}`;
-  const catalog = getCatalog({ locale }) as unknown as { email?: { common?: Record<string, string> } };
+  const catalog = getCatalog({ locale }) as unknown as {
+    email?: { common?: Record<string, string> };
+  };
   const common = catalog.email?.common ?? {};
   const automatedNotice =
     common.automatedNotice ??

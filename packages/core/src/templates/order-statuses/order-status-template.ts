@@ -1,5 +1,5 @@
 import type { TransitionGate } from "../../features/order-status/gate-schema";
-import type { StatusEvent, OrderStatusFlags } from "../../features/order-status/schema";
+import type { OrderStatusFlags, StatusEvent } from "../../features/order-status/schema";
 
 export type OrderStatusTemplateStatus = {
   name: string;

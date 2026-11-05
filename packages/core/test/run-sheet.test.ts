@@ -7,13 +7,13 @@ import {
   getRunSheet,
   listRunSheets,
   publishRunSheet,
+  type RunSheetDto,
   sendRunSheet,
   unfulfillRunSheet,
-  type RunSheetDto,
 } from "../src/index";
 import { errorCode, peer, unwrap } from "./helpers";
 import { moveToStatus } from "./order-helpers";
-import { confirmOrder, setCount, runSheetSetup } from "./run-sheet-helpers";
+import { confirmOrder, runSheetSetup, setCount } from "./run-sheet-helpers";
 
 type SetupResult = Awaited<ReturnType<typeof runSheetSetup>>;
 

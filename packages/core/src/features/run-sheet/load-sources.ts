@@ -2,8 +2,8 @@ import type { Order } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid, notFound } from "../../shared/errors";
-import type { RunSheetDefinitionDto } from "../run-sheet-definition/schema";
 import { findRunSheetDefinition } from "../run-sheet-definition/run-sheet-definition-rows";
+import type { RunSheetDefinitionDto } from "../run-sheet-definition/schema";
 
 export type Sources = { order: Order; definition: RunSheetDefinitionDto };
 export type LoadSourcesInput = {

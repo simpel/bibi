@@ -18,8 +18,7 @@ async function clashFailures({ context, org }: Ctx): Promise<string[]> {
       select: { startsAt: true, endsAt: true, order: { select: { customerId: true } } },
     }),
   ]);
-  if (!order || !template || !row?.startsAt || !row.endsAt)
-    return ["no order from Small meeting"];
+  if (!order || !template || !row?.startsAt || !row.endsAt) return ["no order from Small meeting"];
   const input = {
     ...{ customerId: row.order.customerId, startsAt: row.startsAt, endsAt: row.endsAt },
     ...{ headcount: order.headcount ?? 4, templateIds: [template.id] },

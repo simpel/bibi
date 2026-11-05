@@ -4,10 +4,10 @@ import {
   listBoards,
   listCustomers,
   listOrderStatuses,
+  type OrderStatusDto,
   type PipelineBoard,
   pipelineBoard,
   type Result,
-  type OrderStatusDto,
 } from "@bibi/core";
 import type { TransitionGate } from "@bibi/core/schemas";
 import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";

@@ -5,9 +5,9 @@ import { toJson } from "../../shared/to-json";
 import { assignOnCreate } from "../assignment/assign-on-create";
 import { checkNewOrder } from "./check-new-order";
 import { recordEstimate } from "./estimate-history";
+import { entryStatusId, nextReference } from "./order-defaults";
 import type { OrderCreateInput, OrderDto } from "./schema";
 import { recordStatusChange } from "./status-history";
-import { entryStatusId, nextReference } from "./order-defaults";
 import { loadOrder, ORDER_INCLUDE, toOrderDto } from "./to-order-dto";
 
 export type InsertOrderInput = {

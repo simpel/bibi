@@ -103,8 +103,6 @@ describe("gates on moves into a status (ADR 0067 §5, 0076)", () => {
     unwrap({ result: await execute({ operation: archiveOrderStatus, input: archive, context }) });
     const after = await statusByName({ context, name: "Lead" });
     expect(after).toMatchObject({ restrictsNext: true, transitionsTo: [] });
-    expect(await context.db.orderStatusGate.count({ where: { toStatusId: completed.id } })).toBe(
-      0,
-    );
+    expect(await context.db.orderStatusGate.count({ where: { toStatusId: completed.id } })).toBe(0);
   });
 });

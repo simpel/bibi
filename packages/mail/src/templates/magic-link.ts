@@ -8,10 +8,7 @@ import {
 } from "./layout";
 import type { MagicLinkEmailInput, RenderedEmail } from "./types";
 
-export function renderMagicLinkEmail({
-  url,
-  locale = "sv",
-}: MagicLinkEmailInput): RenderedEmail {
+export function renderMagicLinkEmail({ url, locale = "sv" }: MagicLinkEmailInput): RenderedEmail {
   const catalog = getCatalog({ locale }) as unknown as {
     email?: {
       magicLink?: {

@@ -10,9 +10,9 @@ import { errorCode, unwrap } from "./helpers";
 import { insertHold } from "./hold-helpers";
 import { activeOccupancies } from "./line-helpers";
 import { createBookableItem, hours } from "./occupancy-helpers";
-import { testOrg } from "./org-helpers";
 import { createTestOrder, memberUser, moveToStatus, orderSetup } from "./order-helpers";
 import { statusByName } from "./order-status-helpers";
+import { testOrg } from "./org-helpers";
 
 async function leadSetup({ assigned = false }: { assigned?: boolean } = {}) {
   const setup = await orderSetup();
@@ -35,9 +35,7 @@ describe("order.changeStatus (ADR 0043)", () => {
     });
     const confirmed = await statusByName({ context, name: "Confirmed" });
     expect(moved).toMatchObject({ statusId: confirmed.id, statusReason: null });
-    expect(moved.statusChangedAt.getTime()).toBeGreaterThanOrEqual(
-      order.statusChangedAt.getTime(),
-    );
+    expect(moved.statusChangedAt.getTime()).toBeGreaterThanOrEqual(order.statusChangedAt.getTime());
     const audit = await context.db.auditLog.findFirstOrThrow({
       where: { entityId: order.id, operation: "order.changeStatus" },
     });

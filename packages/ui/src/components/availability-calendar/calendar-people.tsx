@@ -9,8 +9,8 @@ import type {
   CalendarAudience,
   CalendarContact,
   CalendarLine,
-  CalendarPerson,
   CalendarOrder,
+  CalendarPerson,
 } from "./calendar-types";
 
 /** Every line gets exactly one contact: its own, else the order's (marked inherited). */

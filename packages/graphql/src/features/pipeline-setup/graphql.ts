@@ -24,8 +24,8 @@ import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { ItemStateRef } from "../item-state/graphql";
-import { StatusGridRef } from "../status-grid/graphql";
 import { OrderStatusRef } from "../order-status/graphql";
+import { StatusGridRef } from "../status-grid/graphql";
 
 const ProblemRef = objectFromSchema<PipelineProblem>({
   name: "PipelineProblem",

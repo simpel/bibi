@@ -10,8 +10,7 @@ type Viewer = { context: Pick<OperationContext, "permissions"> };
  * run sheet's `runSheet:read` and the amount `payment:read`, checked on every read.
  */
 function visibleData({ data, context }: Viewer & { data: NotificationData }): NotificationData {
-  const { orderReference, orderTitle, fromStatus, toStatus, runSheetName, runSheetVersion } =
-    data;
+  const { orderReference, orderTitle, fromStatus, toStatus, runSheetName, runSheetVersion } = data;
   const { amountMinor, currency, actorName } = data;
   return {
     ...(actorName !== undefined ? { actorName } : {}),

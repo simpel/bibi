@@ -67,9 +67,7 @@ async function checkOutcomes({ context, org }: CheckDemoDashboardInput): Promise
   }
   const monthsWith = ({ key }: { key: "wonOrders" | "lostOrders" }) =>
     outcomes.filter((month) => month[key] > 0).length;
-  const wantedWon = org.orders.filter(
-    (order) => order.won && order.status === "Completed",
-  ).length;
+  const wantedWon = org.orders.filter((order) => order.won && order.status === "Completed").length;
   const won = outcomes.reduce((sum, month) => sum + month.wonOrders, 0);
   if (won < wantedWon) failures.push(`${org.slug}: ${won} won orders, expected ${wantedWon}+`);
   if (monthsWith({ key: "wonOrders" }) < 2)

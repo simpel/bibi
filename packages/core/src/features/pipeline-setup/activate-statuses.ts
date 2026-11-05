@@ -39,9 +39,7 @@ export async function upsertStatuses({
   statuses,
 }: StatusesInput): Promise<Result<Map<string, string>>> {
   const existing = await loadAllOrderStatuses({ context });
-  const ordered = [...statuses].sort(
-    (a, b) => rank({ orderStatus: a }) - rank({ orderStatus: b }),
-  );
+  const ordered = [...statuses].sort((a, b) => rank({ orderStatus: a }) - rank({ orderStatus: b }));
   const ids = new Map<string, string>();
   for (const orderStatus of ordered) {
     const found = existing.find((row) => row.name === orderStatus.name);

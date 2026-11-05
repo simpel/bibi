@@ -1,4 +1,4 @@
-import { PaymentSchema, OrderBalanceSchema } from "@bibi/core/schemas";
+import { OrderBalanceSchema, PaymentSchema } from "@bibi/core/schemas";
 import { z } from "zod";
 import { DASHBOARD_UI_ENTRIES } from "./dashboard-entries";
 import { FINANCE_UI_ENTRIES } from "./finance-entries";

@@ -6,8 +6,8 @@ import { createPayment } from "../../features/payment/create-operation";
 import type { PaymentSignal } from "../../features/payment/webhook-schema";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { atDay as at } from "./seed-clock";
 import type { DemoOrder } from "./order-types";
+import { atDay as at } from "./seed-clock";
 
 const DAY_MS = 86_400_000;
 

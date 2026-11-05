@@ -10,8 +10,8 @@ import {
 } from "../src/index";
 import { createTypeWithField } from "./customer-helpers";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
-import { addRequirement, requirementSetup } from "./requirement-helpers";
 import { createTestOrder } from "./order-helpers";
+import { addRequirement, requirementSetup } from "./requirement-helpers";
 
 describe("requirement (ADR 0021)", () => {
   it("registers counts on the order and on a line, with own fields", async () => {

@@ -1,14 +1,7 @@
 import { getEnv } from "@bibi/config";
 import { describe, expect, it } from "vitest";
 import { orderReplyAddress } from "../src/features/inbound-email/address";
-import {
-  createOrder,
-  execute,
-  exportOrder,
-  getOrder,
-  listOrders,
-  updateOrder,
-} from "../src/index";
+import { createOrder, execute, exportOrder, getOrder, listOrders, updateOrder } from "../src/index";
 import { createTestCustomer } from "./customer-helpers";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { createTestContact, createTestOrder, orderSetup } from "./order-helpers";

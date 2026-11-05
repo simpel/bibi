@@ -1,6 +1,6 @@
 import type { AppErrorIssue } from "../../errors/app-error";
 import type { TransitionGate } from "../order-status/gate-schema";
-import type { StatusEvent, OrderStatusFlags } from "../order-status/schema";
+import type { OrderStatusFlags, StatusEvent } from "../order-status/schema";
 
 type Status = Pick<OrderStatusFlags, "closes"> & {
   name: string;

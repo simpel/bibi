@@ -5,9 +5,9 @@ import { sendQuote } from "../../features/quote/send-operation";
 import { createQuote } from "../../features/quote/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import type { DemoOrder } from "./order-types";
 import { chosenLineIds } from "./seed-alternatives";
 import { missing } from "./seed-fields";
-import type { DemoOrder } from "./order-types";
 
 type QuoteInput = { context: ExecuteContext; order: DemoOrder; orderId: string; now?: Date };
 

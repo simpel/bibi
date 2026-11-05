@@ -25,11 +25,7 @@ export type LoadGridInput = Db & { statusId?: string | undefined };
 export async function loadGrid({ context, statusId }: LoadGridInput): Promise<StatusGridDto> {
   const rows = await context.db.statusStateRule.findMany({
     where: { ...ACTIVE_CELL, ...(statusId ? { statusId } : {}) },
-    orderBy: [
-      { orderStatus: { position: "asc" } },
-      { entityType: { name: "asc" } },
-      { id: "asc" },
-    ],
+    orderBy: [{ orderStatus: { position: "asc" } }, { entityType: { name: "asc" } }, { id: "asc" }],
     include: NAMES,
   });
   const cells = rows.map(({ orderStatus, entityType, state, ...cell }) => ({

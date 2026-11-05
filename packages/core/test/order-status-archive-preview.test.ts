@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createOrderStatus, execute, previewArchiveOrderStatus } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { createTestOrder, placeInStatus, orderSetup } from "./order-helpers";
+import { createTestOrder, orderSetup, placeInStatus } from "./order-helpers";
 import { statusByName } from "./order-status-helpers";
 
 describe("orderStatus.archivePreview (ADR 0043)", () => {

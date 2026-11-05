@@ -47,8 +47,9 @@ export const InButtons: Story = {
 export const Large: Story = { args: { size: "2xl" } };
 
 export const FullPage: Story = {
+  parameters: { layout: "fullscreen" },
   render: (args) => (
-    <div className="flex h-96 items-center justify-center rounded-lg border">
+    <div className="flex h-screen items-center justify-center">
       <Loading {...args} />
     </div>
   ),

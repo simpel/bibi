@@ -3,9 +3,9 @@ import { archiveItemState, archiveOrderStatus, execute, getStatusGrid } from "..
 import { errorCode, unwrap } from "./helpers";
 import { toState } from "./item-state-helpers";
 import { activeOccupancies } from "./line-helpers";
-import { addLine, follow, gridSetup, lineNow, setCell } from "./status-grid-helpers";
 import { moveToStatus } from "./order-helpers";
 import { statusByName } from "./order-status-helpers";
+import { addLine, follow, gridSetup, lineNow, setCell } from "./status-grid-helpers";
 
 describe("statusGrid.get and statusGrid.setCell (ADR 0044)", () => {
   it("sets, replaces and clears a cell and lists only set cells", async () => {

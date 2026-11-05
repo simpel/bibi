@@ -6,8 +6,8 @@ import { TablePreferencesProvider } from "@/components/data-table/table-preferen
 import { AdminShell } from "@/features/admin/ui/admin-shell";
 import { loadUserPreferences } from "@/features/user-preference/load";
 import { MOTHERSHIP_NAMESPACES, pickSurfaceMessages } from "@/i18n/surface-messages";
-import { TABLE_COLUMNS_PREFIX } from "@/lib/table-preferences";
 import { pageTitle } from "@/lib/page-metadata";
+import { TABLE_COLUMNS_PREFIX } from "@/lib/table-preferences";
 import { requirePlatformAdmin } from "@/server/platform-guard";
 
 type AdminLayoutProps = { children: ReactNode; params: Promise<{ locale: string }> };

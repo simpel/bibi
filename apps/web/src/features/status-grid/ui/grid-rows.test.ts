@@ -1,4 +1,4 @@
-import type { StatusGridCellDto, OrderStatusDto } from "@bibi/core/schemas";
+import type { OrderStatusDto, StatusGridCellDto } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { toGridRows } from "./grid-rows";
 

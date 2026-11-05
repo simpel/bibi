@@ -16,11 +16,7 @@ export type StatusBadgeProps = {
  */
 export function StatusBadge({ label, color, className }: StatusBadgeProps) {
   return (
-    <Badge
-      data-slot="status-badge"
-      variant="secondary"
-      className={cn("gap-1.5", className)}
-    >
+    <Badge data-slot="status-badge" variant="secondary" className={cn("gap-1.5", className)}>
       <ColorSwatch color={color ?? "var(--muted-foreground)"} />
       {label}
     </Badge>
@@ -83,9 +79,7 @@ export function dateColumn<TData>({
     header,
     ...(enableSorting !== undefined ? { enableSorting } : {}),
     ...(getSortValue ? { accessorFn: getSortValue } : {}),
-    cell: ({ row }) => (
-      <span className="whitespace-nowrap tabular-nums">{cell(row.original)}</span>
-    ),
+    cell: ({ row }) => <span className="whitespace-nowrap tabular-nums">{cell(row.original)}</span>,
   };
 }
 
@@ -111,8 +105,7 @@ export function numberColumn<TData>({
 }: NumberColumnInput<TData>): ColumnDef<TData> {
   return {
     id,
-    header:
-      align === "right" ? () => <div className="text-right">{header}</div> : header,
+    header: align === "right" ? () => <div className="text-right">{header}</div> : header,
     ...(enableSorting !== undefined ? { enableSorting } : {}),
     accessorFn: getValue,
     cell: ({ row }) => (
@@ -153,13 +146,5 @@ export function createTableColumns<TData>({
   numbers = [],
   actions = [],
 }: TableColumnZones<TData>): ColumnDef<TData>[] {
-  return [
-    ...select,
-    ...primary,
-    ...relations,
-    ...status,
-    ...dates,
-    ...numbers,
-    ...actions,
-  ];
+  return [...select, ...primary, ...relations, ...status, ...dates, ...numbers, ...actions];
 }

@@ -1,10 +1,5 @@
 import { getCatalog } from "@bibi/i18n";
-import {
-  renderCodeBlock,
-  renderEmailLayout,
-  renderHeading,
-  renderParagraph,
-} from "./layout";
+import { renderCodeBlock, renderEmailLayout, renderHeading, renderParagraph } from "./layout";
 import type { OtpEmailInput, RenderedEmail } from "./types";
 
 export function renderOtpEmail({ otp, locale = "sv" }: OtpEmailInput): RenderedEmail {

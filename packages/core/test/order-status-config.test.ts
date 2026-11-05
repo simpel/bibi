@@ -66,9 +66,9 @@ describe("order status order, transitions and templates (ADR 0043)", () => {
     const free = unwrap({ result: await set({ input: { id: lead.id, allowedNext: "ANY" } }) });
     expect(free).toMatchObject({ restrictsNext: false });
     expect(free.transitionsTo).toHaveLength(3);
-    expect(
-      await context.db.orderStatusTransition.count({ where: { fromStatusId: lead.id } }),
-    ).toBe(0);
+    expect(await context.db.orderStatusTransition.count({ where: { fromStatusId: lead.id } })).toBe(
+      0,
+    );
   });
 
   it("imports a template next to existing statuses, keeps the entry status, idempotently", async () => {

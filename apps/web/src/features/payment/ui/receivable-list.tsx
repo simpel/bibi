@@ -3,8 +3,8 @@ import type {
   DepositDto,
   InvoiceDto,
   NumberFormat,
-  ReceivableSettlement,
   OrderBalanceDto,
+  ReceivableSettlement,
 } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { DepositEntry } from "./deposit-entry";

@@ -216,12 +216,8 @@ export const getBillingFinancials = definePlatformOperation({
       ? parseBalanceAmounts({ items: balanceRes.value.available })
       : [];
     const pending = balanceRes.ok ? parseBalanceAmounts({ items: balanceRes.value.pending }) : [];
-    const recentTransactions = txnsRes.ok
-      ? parseTransactions({ items: txnsRes.value.data })
-      : [];
-    const recentInvoices = invoicesRes.ok
-      ? parseInvoices({ items: invoicesRes.value.data })
-      : [];
+    const recentTransactions = txnsRes.ok ? parseTransactions({ items: txnsRes.value.data }) : [];
+    const recentInvoices = invoicesRes.ok ? parseInvoices({ items: invoicesRes.value.data }) : [];
     const livemode = balanceRes.ok
       ? Boolean(balanceRes.value.livemode ?? row.livemode)
       : row.livemode;

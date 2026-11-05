@@ -10,8 +10,8 @@ import {
   updateOrder,
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { addTestLines, createTestQuote, quoteSetup } from "./quote-helpers";
 import { createTestOrder } from "./order-helpers";
+import { addTestLines, createTestQuote, quoteSetup } from "./quote-helpers";
 
 async function sentQuote() {
   const setup = await quoteSetup();

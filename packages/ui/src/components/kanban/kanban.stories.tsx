@@ -82,7 +82,11 @@ function Demo() {
   );
 }
 
-const meta = { title: "Components/Kanban", component: Demo } satisfies Meta<typeof Demo>;
+const meta = {
+  title: "Components/Kanban",
+  component: Demo,
+  parameters: { layout: "padded" },
+} satisfies Meta<typeof Demo>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

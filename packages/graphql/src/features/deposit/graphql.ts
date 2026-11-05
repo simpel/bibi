@@ -16,8 +16,8 @@ import { fieldFromOperation, mutationFromOperation } from "../../schema/from-ope
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { type Page, pageType } from "../../schema/page";
 import { runOperation } from "../../schema/run-operation";
-import { PaymentRef } from "../payment/graphql";
 import { OrderRef } from "../order/graphql";
+import { PaymentRef } from "../payment/graphql";
 
 export const DepositRef = objectFromSchema<DepositDto>({
   name: "Deposit",

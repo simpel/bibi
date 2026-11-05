@@ -2,9 +2,9 @@ import { createHmac } from "node:crypto";
 import { createId } from "@paralleldrive/cuid2";
 import { createPayment, createStripeWebhookHandler, execute } from "../src/index";
 import { unwrap } from "./helpers";
-import { paymentSetup, sentDeposit } from "./payment-helpers";
 import { createTestOrder, memberUser } from "./order-helpers";
 import { statusByName } from "./order-status-helpers";
+import { paymentSetup, sentDeposit } from "./payment-helpers";
 
 export const SECRET = "whsec_test_secret";
 

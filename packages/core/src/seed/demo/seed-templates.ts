@@ -5,7 +5,7 @@ import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoRefs } from "./demo-refs";
 import { missing } from "./seed-fields";
-import type { DemoTemplateLine, DemoOrderTemplate } from "./template-types";
+import type { DemoOrderTemplate, DemoTemplateLine } from "./template-types";
 
 export type SeedTemplatesInput = {
   context: ExecuteContext;

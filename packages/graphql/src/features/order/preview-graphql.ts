@@ -1,4 +1,6 @@
 import {
+  type OrderPreviewLines,
+  OrderPreviewLinesOutputSchema,
   type PlanIssue,
   PlanIssueSchema,
   type PlanLineIssue,
@@ -8,8 +10,6 @@ import {
   type PreviewLine,
   PreviewLineSchema,
   previewOrderLines,
-  type OrderPreviewLines,
-  OrderPreviewLinesOutputSchema,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation } from "../../schema/from-operation";

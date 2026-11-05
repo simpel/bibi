@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 import { ASSIGNMENTS_FIELD, gqlRequest } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
-import { seedOrgMember } from "./seed-org-member";
 import { seedOrder } from "./seed-order";
+import { seedOrgMember } from "./seed-org-member";
 
 /** Two organizations; A has an order with a main assignee and a follower (ADR 0034). */
 async function setup() {

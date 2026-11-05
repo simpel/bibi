@@ -3,8 +3,8 @@
 import { SCHEDULE_KINDS } from "@bibi/core/schemas";
 import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { OptionSelectField } from "@/components/form/option-select-field";
 import { EmailField } from "@/components/form/email-field";
+import { OptionSelectField } from "@/components/form/option-select-field";
 import { PhoneField } from "@/components/form/phone-field";
 import { TextField } from "@/components/form/text-field";
 import type { StaffOption } from "../load-member-work";

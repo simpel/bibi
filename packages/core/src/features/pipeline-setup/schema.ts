@@ -2,9 +2,9 @@ import { z } from "zod";
 import { ItemCapabilitiesSchema } from "../entity-type/capability-kinds";
 import { HoldKindSchema } from "../item-state/hold-kind";
 import { ItemStateSchema } from "../item-state/schema";
-import { StatusGridSchema } from "../status-grid/schema";
 import { TransitionGateSchema } from "../order-status/gate-schema";
 import { ColorSchema, OrderStatusSchema } from "../order-status/schema";
+import { StatusGridSchema } from "../status-grid/schema";
 
 const name = ({ max, example }: { max: number; example: string }) =>
   z.string().trim().min(1).max(max).describe(example);

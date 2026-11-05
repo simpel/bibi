@@ -42,9 +42,7 @@ export async function checkDemoQuoteEvents({
   if (statuses.length === 0 && quotes !== wonQuotes)
     failures.push(`${org.slug}: ${quotes} quotes, expected ${wonQuotes}`);
   const names = new Set(statuses.map((orderStatus) => orderStatus.name));
-  const expected = org.orders.filter(
-    (row) => row.status && names.has(row.status) && !row.template,
-  );
+  const expected = org.orders.filter((row) => row.status && names.has(row.status) && !row.template);
   if (orders.length !== expected.length) {
     failures.push(
       `${org.slug}: ${orders.length} orders by quote event, expected ${expected.length}`,

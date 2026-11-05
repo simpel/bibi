@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { activatePipelineSetup, execute, previewPipelineSetup } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
-import { estateDraft, roomType } from "./pipeline-setup-helpers";
 import { provisionedContext, statuses } from "./order-status-helpers";
+import { estateDraft, roomType } from "./pipeline-setup-helpers";
 
 describe("pipelineSetup.activate (ADR 0044)", () => {
   it("creates the previewed pipeline as one audited batch", async () => {

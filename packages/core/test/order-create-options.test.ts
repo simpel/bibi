@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { errorCode, unwrap } from "./helpers";
 import { splitSetup } from "./line-option-quantities-helpers";
-import { linesOf, runCreate, orderCount } from "./order-create-helpers";
+import { linesOf, orderCount, runCreate } from "./order-create-helpers";
 import { partyOf } from "./order-helpers";
 
 type Setup = Awaited<ReturnType<typeof splitSetup>>;

@@ -4,8 +4,8 @@ import { effectiveQuantity } from "../line/effective-values";
 import { inheritsParentQuantity } from "../line/line-role";
 import { nestUnderParents } from "../line/nest-lines";
 import type { RunSheetDefinitionDto } from "../run-sheet-definition/schema";
-import type { RunSheetRow } from "./schema";
 import { runSheetLinesWhere } from "./run-sheet-lines";
+import type { RunSheetRow } from "./schema";
 
 const HEADCOUNT = { estimatedHeadcount: true, guaranteedHeadcount: true } as const;
 

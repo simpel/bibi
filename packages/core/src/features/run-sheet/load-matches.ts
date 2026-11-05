@@ -3,8 +3,8 @@ import { resolveItemTags } from "../item/resolve-item";
 import { effectiveRequirements } from "../requirement/effective";
 import type { RunSheetDefinitionDto } from "../run-sheet-definition/schema";
 import { type MatchedLine, matchRequirements } from "./match-requirements";
-import type { RunSheetMatch } from "./schema";
 import { runSheetLinesWhere } from "./run-sheet-lines";
+import type { RunSheetMatch } from "./schema";
 
 export type LoadMatchesInput = {
   context: Pick<OperationContext, "db">;

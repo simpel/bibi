@@ -5,10 +5,10 @@ import { type PlaceNewStatusInput, placeNewStatus } from "../board/status-placem
 import { checkFlagCombination, handOverEntry, handOverEvent } from "./flag-rules";
 import { loadOrderStatus } from "./load-order-status";
 import type {
-  StatusEvent,
   OrderStatusCreateInput,
   OrderStatusDto,
   OrderStatusFlags,
+  StatusEvent,
 } from "./schema";
 
 /** A create's fields plus the flags and event a template import sets in the same step. */

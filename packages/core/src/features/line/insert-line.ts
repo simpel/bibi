@@ -7,7 +7,7 @@ import { validateFields } from "../field-definition/field-values";
 import type { PriceEffect } from "../item/customisation-group-schema";
 import { syncAllocations } from "../line-allocation/sync-allocations";
 import type { LineRole } from "./line-role";
-import { checkLinePeriod, checkPlace, checkOrder } from "./line-rules";
+import { checkLinePeriod, checkOrder, checkPlace } from "./line-rules";
 import { initialStateOf } from "./line-state";
 import type { LineCreateInput, LineRecord } from "./schema";
 import { recordFirstState } from "./state-history";

@@ -3,10 +3,7 @@ import {
   setOrderStatusGates,
   setOrderStatusTransitions,
 } from "../../features/order-status/order-operations";
-import {
-  createOrderStatus,
-  updateOrderStatus,
-} from "../../features/order-status/write-operations";
+import { createOrderStatus, updateOrderStatus } from "../../features/order-status/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { seedDemoBoards } from "./seed-boards";

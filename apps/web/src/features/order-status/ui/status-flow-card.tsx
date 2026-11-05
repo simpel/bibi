@@ -21,11 +21,7 @@ export function StatusFlowCard({ orderStatus, statuses }: StatusFlowCardProps) {
         {orderStatus.name}
       </h3>
       <section className="grid gap-2" aria-label={t("movesOut", { name: orderStatus.name })}>
-        <FlowMovesForm
-          key={movesKey({ orderStatus })}
-          orderStatus={orderStatus}
-          targets={others}
-        />
+        <FlowMovesForm key={movesKey({ orderStatus })} orderStatus={orderStatus} targets={others} />
       </section>
       <section className="grid gap-2" aria-label={t("movesIn", { name: orderStatus.name })}>
         <FlowGatesForm

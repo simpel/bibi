@@ -2,8 +2,8 @@ import { CalendarHoverCard } from "../../components/availability-calendar/calend
 import { dotStyle } from "../../components/availability-calendar/calendar-marks";
 import {
   LineContact,
-  StaffList,
   orderLines,
+  StaffList,
 } from "../../components/availability-calendar/calendar-people";
 import { durationLabel, toMinutes } from "../../components/availability-calendar/calendar-time";
 import type {

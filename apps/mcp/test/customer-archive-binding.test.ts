@@ -1,10 +1,6 @@
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { describe, expect, it } from "vitest";
-import {
-  addArchiveOrder,
-  seedArchiveCustomer,
-  setupArchiveClients,
-} from "./customer-archive-seed";
+import { addArchiveOrder, seedArchiveCustomer, setupArchiveClients } from "./customer-archive-seed";
 import { call } from "./helpers";
 
 type ProposeInput = { assistant: Client; args: Record<string, unknown> };

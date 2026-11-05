@@ -5,10 +5,7 @@ import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
 import { cleanEmail, isAllowedEmailKey } from "./email-format";
 
-export type EmailInputProps = Omit<
-  ComponentProps<"input">,
-  "value" | "onChange" | "type"
-> & {
+export type EmailInputProps = Omit<ComponentProps<"input">, "value" | "onChange" | "type"> & {
   value: string;
   onValueChange: (value: string) => void;
 };

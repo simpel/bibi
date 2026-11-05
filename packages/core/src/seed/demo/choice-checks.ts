@@ -50,10 +50,7 @@ export async function checkDemoChoices({ context, org }: CheckDemoChoicesInput):
   const rows = await context.db.responsibility.findMany({ select: { id: true, name: true } });
   const responsibilityName = new Map(rows.map((row) => [row.id, row.name]));
   const stored = await context.db.assignment.count({ where: { responsibilityId: { not: null } } });
-  const expectedStored = org.orders.reduce(
-    (sum, order) => sum + (order.choices?.length ?? 0),
-    0,
-  );
+  const expectedStored = org.orders.reduce((sum, order) => sum + (order.choices?.length ?? 0), 0);
   const failures =
     stored === expectedStored
       ? []

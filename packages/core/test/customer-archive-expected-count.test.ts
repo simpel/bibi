@@ -28,9 +28,7 @@ describe("customer.archive expectedOrderCount (#144)", () => {
     });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
     if (refused.ok) throw new Error("expected a conflict");
-    expect(refused.error.issues).toEqual([
-      expect.objectContaining({ path: "expectedOrderCount" }),
-    ]);
+    expect(refused.error.issues).toEqual([expect.objectContaining({ path: "expectedOrderCount" })]);
     expect(await activeOrders({ customerId: customer.id })).toBe(3);
   });
 

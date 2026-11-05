@@ -69,9 +69,7 @@ describe("DELETE /customers/{id} with orders (#134)", () => {
     expect((await call({ path: `/customers/${id}`, org })).json.orderCount).toBe(1);
     const blocked = await call({ method: "DELETE", path: `/customers/${id}`, org });
     expect(blocked.status).toBe(409);
-    expect(blocked.json.error.issues).toEqual([
-      expect.objectContaining({ path: "archiveOrders" }),
-    ]);
+    expect(blocked.json.error.issues).toEqual([expect.objectContaining({ path: "archiveOrders" })]);
     const path = `/customers/${id}?archiveOrders=true`;
     const archived = await call({ method: "DELETE", path, org });
     expect(archived.status).toBe(200);

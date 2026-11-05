@@ -76,10 +76,7 @@ export async function countOrders({ context, ...query }: LoadCardsInput) {
   return context.db.order.count({ where: await orderWhere({ context, ...query }) });
 }
 
-export async function loadOrderCards({
-  context,
-  ...query
-}: LoadCardsInput): Promise<LoadedCard[]> {
+export async function loadOrderCards({ context, ...query }: LoadCardsInput): Promise<LoadedCard[]> {
   const rows = await context.db.order.findMany({
     where: await orderWhere({ context, ...query }),
     include: { entityType: { select: { name: true } }, ...LATEST_STATUS_CHANGE },

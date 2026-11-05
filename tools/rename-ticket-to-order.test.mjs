@@ -12,7 +12,11 @@ test("TICKET_PAIRS replaces PascalCase models, statuses and templates", () => {
     const est: TicketEstimate = row;
   `;
   const { output } = replacePairs({ text: input, pairs: TICKET_PAIRS });
-  assert.ok(output.includes('import type { Order, OrderStatus, OrderTemplate, OrderDraft } from "@bibi/db";'));
+  assert.ok(
+    output.includes(
+      'import type { Order, OrderStatus, OrderTemplate, OrderDraft } from "@bibi/db";',
+    ),
+  );
   assert.ok(output.includes("const statusChange: OrderStatusChange = row;"));
   assert.ok(output.includes("const gate: OrderStatusGate = row;"));
   assert.ok(output.includes("const est: OrderEstimate = row;"));

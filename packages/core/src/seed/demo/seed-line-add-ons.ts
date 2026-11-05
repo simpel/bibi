@@ -2,8 +2,8 @@ import { ok, type Result } from "../../errors/result";
 import { createLine } from "../../features/line/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { missing } from "./seed-fields";
 import type { DemoAddOn } from "./order-types";
+import { missing } from "./seed-fields";
 
 export type SeedLineAddOnsInput = {
   context: ExecuteContext;

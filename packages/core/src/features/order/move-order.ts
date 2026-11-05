@@ -1,4 +1,4 @@
-import type { StatusChangeTrigger, OrderStatus } from "@bibi/db";
+import type { OrderStatus, StatusChangeTrigger } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";

@@ -1,6 +1,6 @@
 import type { DemoItem } from "./config-types";
-import type { DemoOrderTemplate } from "./template-types";
 import type { DemoOrder } from "./order-types";
+import type { DemoOrderTemplate } from "./template-types";
 
 export type UsedAssetDaysInput = {
   orders: readonly DemoOrder[];

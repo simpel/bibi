@@ -4,7 +4,7 @@ import { runSheetCurrentReconciliation } from "../src/seed/demo/run-sheet-curren
 import { assignTo, followAs } from "./assignment-helpers";
 import { testContext, unwrap } from "./helpers";
 import { memberUser } from "./order-helpers";
-import { type SetupResult, setCount, runSheetSetup } from "./run-sheet-helpers";
+import { runSheetSetup, type SetupResult, setCount } from "./run-sheet-helpers";
 
 type Context = SetupResult["context"];
 

@@ -1,15 +1,11 @@
-import { ROUTES, orderRoute } from "@/lib/routes";
+import { orderRoute, ROUTES } from "@/lib/routes";
 import type { DashboardWireish } from "../ui/dashboard-wireish";
 
 export type AttentionRow = { key: string; href: string; title: string; detail: string };
 
 export type AttentionTexts = {
   /** "Title · Customer" (or "#12 · Customer" without a title) for an order row. */
-  order: (row: {
-    reference: number;
-    title: string | null;
-    customerName?: string | null;
-  }) => string;
+  order: (row: { reference: number; title: string | null; customerName?: string | null }) => string;
   /** An instant as a date in the organization's zone. */
   date: (value: Date | string) => string;
   money: (minor: number) => string;
