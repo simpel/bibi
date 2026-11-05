@@ -6,7 +6,10 @@ import type { PinnedBookingsProps } from "./pinned-bookings";
 import { PinnedCard } from "./pinned-card";
 import type { PinnedBooking } from "./pins-context";
 
-export type PinnedTrayProps = Pick<PinnedBookingsProps, "formatDate" | "onOpen"> & {
+export type PinnedTrayProps = Pick<
+  PinnedBookingsProps,
+  "formatDate" | "onOpen" | "useExtraFacts"
+> & {
   pins: readonly PinnedBooking[];
   onClose: (input: { booking: PinnedBooking }) => void;
 };

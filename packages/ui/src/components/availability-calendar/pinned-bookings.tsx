@@ -1,12 +1,15 @@
 "use client";
 
 import { type ReactNode, useMemo } from "react";
+import type { OrderViewFact } from "../order-view/order-view";
 import type { FormatDate } from "./calendar-dates";
 import { type CalendarLabels, CalendarLabelsProvider } from "./calendar-labels";
 import type { AssetBooking } from "./calendar-types";
 import { PinnedTray } from "./pinned-tray";
-import { type PinsApi, PinsContext } from "./pins-context";
+import { type PinnedBooking, type PinsApi, PinsContext } from "./pins-context";
 import { useStoredPins } from "./use-stored-pins";
+
+export type UseExtraFactsInput = { booking: PinnedBooking; enabled: boolean };
 
 export type PinnedBookingsProps = {
   children: ReactNode;
@@ -14,6 +17,11 @@ export type PinnedBookingsProps = {
   formatDate: FormatDate;
   /** Opens a pinned booking's order, from wherever the tray is. */
   onOpen?: ((booking: AssetBooking) => void) | undefined;
+  /**
+   * A hook the expanded card calls for facts the calendar does not hold, e.g. the order's
+   * totals. It runs in every card on every render, so keep its identity stable.
+   */
+  useExtraFacts?: ((input: UseExtraFactsInput) => readonly OrderViewFact[] | undefined) | undefined;
   /** Session storage key, e.g. per organization; pins then survive a reload. */
   storageKey?: string | undefined;
 };

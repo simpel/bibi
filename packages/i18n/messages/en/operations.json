@@ -234,6 +234,9 @@
       "guests": "Guests",
       "value": "Value",
       "exclVat": "excl. VAT",
+      "quantity": "Quantity",
+      "hold": "Hold",
+      "minutes": "{count} min",
       "seeOrder": "See order",
       "minimize": "Minimize {name}",
       "expand": "Expand {name}"

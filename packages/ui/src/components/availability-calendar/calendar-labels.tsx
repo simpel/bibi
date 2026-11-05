@@ -78,6 +78,9 @@ export type CalendarLabels = {
     guests: string;
     value: string;
     exclVat: string;
+    quantity: string;
+    hold: string;
+    minutes: (input: { count: number }) => string;
     seeOrder: string;
     minimize: (input: { name: string }) => string;
     expand: (input: { name: string }) => string;

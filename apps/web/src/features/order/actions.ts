@@ -9,8 +9,10 @@ import {
   type OrderPreviewLines,
   type OrderPreviewLinesInput,
   type OrderUpdateInput,
+  type OrderViewDto,
   previewOrderLines,
   updateOrder,
+  viewOrder,
 } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
@@ -45,4 +47,12 @@ export async function previewOrderLinesAction({
   input,
 }: PreviewOrderLinesActionInput): Promise<ActionResult<OrderPreviewLines>> {
   return toActionResult({ result: await runOperation({ operation: previewOrderLines, input }) });
+}
+
+export type ViewOrderActionInput = { id: string };
+
+export async function viewOrderAction({
+  id,
+}: ViewOrderActionInput): Promise<ActionResult<OrderViewDto>> {
+  return toActionResult({ result: await runOperation({ operation: viewOrder, input: { id } }) });
 }

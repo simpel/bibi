@@ -20,6 +20,8 @@ export type OrderViewProps = {
   subtitle?: ReactNode;
   /** The order's status; `null` hides the badge (no pipeline access). */
   status: OrderViewStatus | null;
+  /** A prominent block under the header, e.g. what the booking is worth. */
+  highlight?: ReactNode;
   /** Icon rows under the header, e.g. time and place. In `bare` the badge sits on the first row. */
   meta?: readonly OrderViewMetaRow[];
   facts?: readonly OrderViewFact[];
@@ -64,10 +66,11 @@ function Header({ title, reference, eyebrow, subtitle, bare }: OrderViewProps) {
 }
 
 function Body(props: OrderViewProps) {
-  const { meta, facts, hidden = "–", notes, warnings, bare, status } = props;
+  const { highlight, meta, facts, hidden = "–", notes, warnings, bare, status } = props;
   const divided = bare ? "border-t border-border/60 pt-2" : "";
   return (
     <>
+      {highlight}
       {meta?.length ? <OrderViewMeta rows={meta} status={bare ? status : null} /> : null}
       {notes ? (
         <p className="border-t border-border/60 pt-1.5 text-muted-foreground italic leading-relaxed">

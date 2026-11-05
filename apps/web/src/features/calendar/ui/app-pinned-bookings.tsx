@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { useRouter } from "@/lib/navigation";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { useCalendarText } from "./use-calendar-text";
+import { usePinnedOrderFacts } from "./use-pinned-order-facts";
 
 export type AppPinnedBookingsProps = { organizationId: string; children: ReactNode };
 
@@ -21,6 +22,7 @@ export function AppPinnedBookings({ organizationId, children }: AppPinnedBooking
       key={organizationId}
       labels={labels}
       formatDate={format.date}
+      useExtraFacts={usePinnedOrderFacts}
       storageKey={`bibi:pinned-bookings:${organizationId}`}
       onOpen={(booking) => {
         if (booking.orderId) router.push(`/orders/${booking.orderId}`);

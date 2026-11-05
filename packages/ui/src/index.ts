@@ -14,7 +14,10 @@ export * from "./components/availability-calendar/calendar-legend";
 export type * from "./components/availability-calendar/calendar-types";
 export type { CalendarDayValue } from "./components/availability-calendar/day-value";
 export * from "./components/availability-calendar/order-of-booking";
-export { PinnedBookings } from "./components/availability-calendar/pinned-bookings";
+export {
+  PinnedBookings,
+  type UseExtraFactsInput,
+} from "./components/availability-calendar/pinned-bookings";
 export * from "./components/avatar/avatar";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge/badge";
 export * from "./components/bar-charts/bar-charts";

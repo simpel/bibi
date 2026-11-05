@@ -10,7 +10,7 @@ import type { PinnedBookingsProps } from "./pinned-bookings";
 import { PinnedValue } from "./pinned-facts";
 import type { PinnedBooking } from "./pins-context";
 
-export type PinnedCardProps = Pick<PinnedBookingsProps, "formatDate"> & {
+export type PinnedCardProps = Pick<PinnedBookingsProps, "formatDate" | "useExtraFacts"> & {
   booking: PinnedBooking;
   minimized: boolean;
   onMinimize: () => void;
@@ -91,7 +91,8 @@ function MinimizedHeader(props: PinnedCardProps) {
  * Minimized, it keeps only the client and value; expanded, it shows the full unified card.
  */
 export function PinnedCard(props: PinnedCardProps) {
-  const { booking, minimized, onOpen, formatDate } = props;
+  const { booking, minimized, onOpen, formatDate, useExtraFacts } = props;
+  const extraFacts = useExtraFacts?.({ booking, enabled: !minimized });
   const dateStr = formatDay({ date: booking.date, format: formatDate, year: true });
 
   return (
@@ -108,6 +109,8 @@ export function PinnedCard(props: PinnedCardProps) {
           booking={booking}
           date={dateStr}
           onOpen={onOpen}
+          detailed
+          extraFacts={extraFacts}
           headerActions={<Controls {...props} />}
         />
       )}
