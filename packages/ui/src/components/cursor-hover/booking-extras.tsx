@@ -8,10 +8,26 @@ import type { OrderViewFact } from "../order-view/order-view";
 
 export type BookingExtrasInput = { booking: AssetBooking; labels: CalendarLabels };
 
+/** Every plain-text fact opens the order; a person's name keeps its own contact card. */
+export function openable({
+  facts,
+  onOpen,
+}: {
+  facts: readonly OrderViewFact[];
+  onOpen?: (() => void) | undefined;
+}): OrderViewFact[] {
+  if (!onOpen) return [...facts];
+  return facts.map((fact) =>
+    typeof fact.value === "string" ? { ...fact, onSelect: onOpen } : fact,
+  );
+}
+
 export type BookingStatsInput = BookingExtrasInput & {
   /** Adds quantity, time and the booked thing to the value. */
   detailed: boolean;
   time?: string | undefined;
+  /** Makes every stat open the booking's order. */
+  onOpen?: (() => void) | undefined;
   /** The day, a tiny line above the time. */
   date?: string | undefined;
   resource?: string | undefined;
@@ -25,6 +41,7 @@ export function BookingStats({
   time,
   date,
   resource,
+  onOpen,
 }: BookingStatsInput) {
   const { pinCard } = labels;
   const hasValue = Boolean(booking.value);
@@ -36,14 +53,22 @@ export function BookingStats({
       label: pinCard.value,
       value: <PinnedValue booking={booking} />,
       title: pinCard.exclVat,
+      onSelect: onOpen,
     });
   }
   if (detailed && booking.headcount) {
-    facts.push({ label: pinCard.guests, value: booking.headcount });
+    facts.push({ label: pinCard.guests, value: booking.headcount, onSelect: onOpen });
   }
-  if (detailed && time) facts.push({ label: pinCard.when, preheader: date, value: time });
+  if (detailed && time)
+    facts.push({ label: pinCard.when, preheader: date, value: time, onSelect: onOpen });
   if (detailed && resource) {
-    facts.push({ label: pinCard.where, value: resource, truncate: true, title: resource });
+    facts.push({
+      label: pinCard.where,
+      value: resource,
+      truncate: true,
+      title: resource,
+      onSelect: onOpen,
+    });
   }
   return <KeyFacts size="sm" facts={facts} className="border-y border-border/60 py-2" />;
 }

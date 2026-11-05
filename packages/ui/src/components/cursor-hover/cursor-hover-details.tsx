@@ -16,7 +16,7 @@ import type {
 import { type PinnedBooking, usePins } from "../availability-calendar/pins-context";
 import { Badge } from "../badge/badge";
 import { OrderView, type OrderViewFact, type OrderViewMetaRow } from "../order-view/order-view";
-import { BookingStats, bookingFacts } from "./booking-extras";
+import { BookingStats, bookingFacts, openable } from "./booking-extras";
 import { cleanTitle } from "./clean-title";
 import { PinAction, VisitAction } from "./hover-actions";
 import { contactFacts } from "./hover-contacts";
@@ -232,6 +232,7 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
   const facts: OrderViewFact[] = booking ? contactFacts({ booking, labels }) : [];
   if (props.detailed && booking && labels) facts.push(...bookingFacts({ booking, labels }));
   facts.push(...(props.extraFacts ?? []));
+  const shownFacts = props.detailed ? openable({ facts, onOpen }) : facts;
 
   // The detailed card shows time and place as stats instead.
   const meta: OrderViewMetaRow[] = [];
@@ -260,11 +261,12 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
             detailed={Boolean(props.detailed)}
             time={time}
             date={dateStr}
+            onOpen={props.detailed ? onOpen : undefined}
             resource={resource}
           />
         ) : undefined
       }
-      facts={facts}
+      facts={shownFacts}
       warnings={
         warnings?.length
           ? warnings.map((warning) => (

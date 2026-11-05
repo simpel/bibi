@@ -9,6 +9,8 @@ export type OrderViewFact = {
   value: ReactNode | null;
   /** Draws attention to the value, e.g. open issues or an unpaid balance. */
   tone?: "default" | "warning";
+  /** Makes the value a button, e.g. to open the order. */
+  onSelect?: (() => void) | undefined;
 };
 
 export type OrderViewFactsProps = {
@@ -29,7 +31,7 @@ export function OrderViewFacts({ facts, hidden, bare, className }: OrderViewFact
         className,
       )}
     >
-      {facts.map(({ key, label, value, tone }) => (
+      {facts.map(({ key, label, value, tone, onSelect }) => (
         <div key={key} className="contents">
           <dt className="whitespace-nowrap text-muted-foreground">{label}</dt>
           <dd
@@ -40,7 +42,17 @@ export function OrderViewFacts({ facts, hidden, bare, className }: OrderViewFact
               tone === "warning" && value !== null && "font-medium text-destructive",
             )}
           >
-            {value ?? hidden}
+            {onSelect && value !== null ? (
+              <button
+                type="button"
+                onClick={onSelect}
+                className="text-left underline-offset-4 outline-none hover:underline focus-visible:underline"
+              >
+                {value}
+              </button>
+            ) : (
+              (value ?? hidden)
+            )}
           </dd>
         </div>
       ))}

@@ -9,6 +9,8 @@ export type KeyFact = {
   value: ReactNode;
   /** Gives way first when the row is too wide: the value is cut short instead of wrapping. */
   truncate?: boolean;
+  /** Makes the value a button, e.g. to open what it belongs to. */
+  onSelect?: (() => void) | undefined;
   /** The full text of a truncated value. */
   title?: string | undefined;
 };
@@ -41,16 +43,21 @@ export type KeyFactsProps = VariantProps<typeof keyFactsVariants> & {
 /**
  * The primary facts in one row, in the stat cards' type without their frame: each as wide as its
  * value, which may wrap; a truncating fact (the customer) gives way first. Links and names that
- * open a card underline on hover.
+ * open a card underline on hover. The label sits under its value.
  */
 export function KeyFacts({ facts, size, className }: KeyFactsProps) {
   // One fact with a preheader leaves a line above every value, so the values share a baseline.
   const aligned = facts.some((fact) => fact.preheader);
   return (
     <dl data-slot="key-facts" className={cn(keyFactsVariants({ size }), className)}>
-      {facts.map(({ label, preheader, value, truncate, title }) => (
+      {facts.map(({ label, preheader, value, truncate, title, onSelect }) => (
         <div key={label} className={cn("grid gap-1", truncate && "min-w-0 shrink-[999]")}>
-          <dt className={cn("text-muted-foreground", size === "sm" ? "text-[10px]" : "text-xs")}>
+          <dt
+            className={cn(
+              "order-last text-muted-foreground",
+              size === "sm" ? "text-[10px]" : "text-xs",
+            )}
+          >
             {label}
           </dt>
           <dd title={title} className={cn(valueVariants({ size }), truncate && "truncate")}>
@@ -59,7 +66,17 @@ export function KeyFacts({ facts, size, className }: KeyFactsProps) {
                 {preheader}
               </span>
             ) : null}
-            {value}
+            {onSelect ? (
+              <button
+                type="button"
+                onClick={onSelect}
+                className="max-w-full truncate text-left underline-offset-4 outline-none hover:underline focus-visible:underline"
+              >
+                {value}
+              </button>
+            ) : (
+              value
+            )}
           </dd>
         </div>
       ))}
