@@ -25,8 +25,8 @@ test("flow A: a package for a seeded customer, review and Create", async ({ page
 
   await pickCustomer({ page, search: "Kvarnby", name: CUSTOMER });
   await fillWhen({ page, from: "10:00", to: "14:00", guests: 12 });
-  await expect(page.getByRole("button", { name: new RegExp(PACKAGE) })).toBeVisible();
-  await expect(page.getByText(/^Available .* for 12$/)).toBeVisible();
+  const packageCard = page.getByRole("button", { name: new RegExp(PACKAGE) });
+  await expect(packageCard.getByText("✓ Available")).toBeVisible();
   await pickPackage({ page, name: PACKAGE });
 
   await expect(page.getByRole("heading", { name: "Review the booking" })).toBeVisible();
@@ -60,9 +60,10 @@ test("flow B: a custom booking for a new customer that looks like an existing on
   await page.getByLabel(/^Customer name/).fill("KVARNBY DESIGN");
   await page.getByLabel(/^Contact name/).fill("Per Lind");
   await page.getByLabel(/^Contact email/).fill("per.lind@kvarnby-design.test");
-  await page.getByRole("button", { name: "Create customer" }).click();
+  // The title row's Create customer stays beside the form; the form's own button creates.
+  await page.locator("form").getByRole("button", { name: "Create customer" }).click();
   await expect(page.getByText(/looks like Kvarnby Design AB/)).toBeVisible();
-  await page.getByRole("button", { name: "No, it is a new customer" }).click();
+  await page.getByRole("button", { name: "No, create new customer" }).click();
   // Created with its contact: step 2 opens at once.
   await expectStep({ page, step: "when" });
 
@@ -93,7 +94,8 @@ test("flow C: from an inbox message, read by the assistant, checked and created"
   const { endpointId } = await setUpIntake({ page });
   const { subject } = await submitRequest({ page, endpointId });
   await gotoApp({ page, path: "/inbox", locale: "en" });
-  await page.getByRole("link", { name: subject }).click();
+  // The subject opens the message in a sheet, whose footer starts the order.
+  await page.getByRole("button", { name: subject }).click();
   await page.getByRole("link", { name: "Create order from this message" }).click();
   await expect(page).toHaveURL(/\/new\/order\/message\?fromMessage=/);
   await readRequest({ page });

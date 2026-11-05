@@ -26,7 +26,6 @@ test("sign up, create org, venue, type and item, search, switch locale, archive"
   const item = "Grand salon";
   await addItem({
     page,
-    type: "Conference room",
     name: item,
     numberField: "Max guests",
     value: "40",
@@ -37,8 +36,11 @@ test("sign up, create org, venue, type and item, search, switch locale, archive"
   await expect(page.getByRole("link", { name: item })).toBeVisible();
 
   await page.getByRole("link", { name: "Tillbaka" }).click();
-  await page.getByRole("searchbox", { name: "Semantisk sökning" }).fill("Solvik");
-  await expect(page.getByText("1 träff").or(page.getByText(/\d+ träffar/))).toBeVisible();
+  // The list's search filters the table through the URL (`?q=`).
+  await page.getByRole("combobox", { name: "Sök" }).fill("Solvik");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/[?&]q=Solvik/);
+  await expect(page.getByRole("link", { name: VENUE })).toBeVisible();
 
   await page.getByRole("button", { name: "Användarmeny" }).click();
   await page.getByRole("menuitem", { name: "Språk" }).click();

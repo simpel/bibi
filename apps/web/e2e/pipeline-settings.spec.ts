@@ -22,7 +22,7 @@ async function createStatus({
   await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline$/, { timeout: 15_000 });
   await expect(page.getByRole("cell", { name }).first()).toBeVisible();
   if (!flag) return;
-  await rowAction({ page, row: name, item: "Redigera bokningsstatus" });
+  await editStatus({ page, row: name });
   await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline\/[^/]+\/update$/);
   await page.getByRole("checkbox", { name: flag }).click();
   await page.getByRole("button", { name: "Spara" }).click();
@@ -45,6 +45,14 @@ async function rowAction({
   await page.getByRole("menuitem", { name: item }).click();
 }
 
+/** Edit is the status row's own icon button, beside its menu. */
+async function editStatus({ page, row }: { page: import("@playwright/test").Page; row: string }) {
+  await page
+    .getByRole("row", { name: new RegExp(`^${row}`) })
+    .getByRole("button", { name: "Redigera bokningsstatus" })
+    .click();
+}
+
 test("an admin edits statuses and the grid on step pages", async ({ page }) => {
   await signUpWithOrganization({ page, name: "Pipeline AB" });
   await createItemType({ page, name: "Conference room", numberField: "Max guests" });
@@ -54,7 +62,7 @@ test("an admin edits statuses and the grid on step pages", async ({ page }) => {
   await createStatus({ page, name: "Booked" });
   await createStatus({ page, name: "Spare" });
 
-  await rowAction({ page, row: "Booked", item: "Redigera bokningsstatus" });
+  await editStatus({ page, row: "Booked" });
   await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline\/[^/]+\/update$/);
   await page.getByLabel("Namn").fill("Reserved");
   await page.getByRole("button", { name: "Spara" }).click();

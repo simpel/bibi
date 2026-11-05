@@ -77,19 +77,19 @@ export async function createItemType({
   await expect(page.getByRole("cell", { name: numberField })).toBeVisible();
 }
 
-/** Creates an item of a type (with its number field) at a venue, from the catalog. */
+/**
+ * Creates an item of the organization's only item type (with its number field) at a venue, from
+ * the catalog. With one type the wizard leaves out the type select and takes that type.
+ */
 export async function addItem({
   page,
-  type,
   name,
   numberField,
   value,
   venue,
-}: PageInput & { type: string; name: string; numberField: string; value: string; venue: string }) {
+}: PageInput & { name: string; numberField: string; value: string; venue: string }) {
   await gotoApp({ page, path: "/items" });
   await page.getByRole("link", { name: "Skapa artikel" }).first().click();
-  await page.getByLabel("Typ", { exact: true }).click();
-  await page.getByRole("option", { name: type }).click();
   await page.getByRole("button", { name: "Nästa" }).click();
   await page.getByLabel("Namn").fill(name);
   await page.getByLabel(numberField).fill(value);
