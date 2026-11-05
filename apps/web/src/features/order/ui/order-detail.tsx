@@ -92,10 +92,13 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
       />
       <div className="grid grid-cols-1 gap-4">
         {can({ abilities, permission: "program:read" }) ? (
-          // No skeleton: most orders have no issues, so a placeholder would flash and vanish.
-          <Suspense fallback={null}>
-            <OrderIssues orderId={id} />
-          </Suspense>
+          // Hidden while empty, so a streamed-in alert gets space below it and none otherwise.
+          <div className="empty:hidden [&:not(:empty)]:mb-4">
+            {/* No skeleton: most orders have no issues, so a placeholder would flash and vanish. */}
+            <Suspense fallback={null}>
+              <OrderIssues orderId={id} />
+            </Suspense>
+          </div>
         ) : null}
         <PageHeader {...heading({ order: order.value, label, short })} actions={actions} />
         <OrderKeyFacts order={order.value} data={names} />
