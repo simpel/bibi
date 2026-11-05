@@ -1,7 +1,7 @@
 "use client";
 
+import { CalendarHoverDetails } from "../cursor-hover/cursor-hover-details";
 import { AddSlot } from "./add-slot";
-import { BookingDetails } from "./booking-details";
 import { useCalendarLabels } from "./calendar-labels";
 import { CalendarSpan } from "./calendar-span";
 import { percentIn, toMinutes } from "./calendar-time";
@@ -81,7 +81,7 @@ function BookingCard({
   const itemBooking = { ...booking, assetName: booking.assetName ?? asset.name };
   if (!clashes.length) {
     return (
-      <BookingDetails
+      <CalendarHoverDetails
         booking={itemBooking}
         onOpen={onOpen ? () => onOpen(itemBooking) : undefined}
       />

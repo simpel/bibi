@@ -15,10 +15,10 @@ import type {
 } from "../availability-calendar/calendar-types";
 import { type PinnedBooking, usePins } from "../availability-calendar/pins-context";
 import { Badge } from "../badge/badge";
-import { StatusBadge } from "../data-table/data-table-column-helpers";
+import { OrderView, type OrderViewMetaRow } from "../order-view/order-view";
 import { cleanTitle } from "./clean-title";
 import { PinAction, VisitAction } from "./hover-actions";
-import { BookingContacts } from "./hover-contacts";
+import { contactFacts } from "./hover-contacts";
 
 export type CalendarHoverDetailsProps = {
   /** Full AssetBooking when available (availability calendar, timeline). */
@@ -43,13 +43,9 @@ export type CalendarHoverDetailsProps = {
   onOpen?: () => void;
   notes?: string;
   warnings?: string[];
-  contacts?: ReactNode;
   footer?: ReactNode;
   headerActions?: ReactNode;
 };
-
-export type CursorHoverDetailsProps = CalendarHoverDetailsProps;
-export type BookingDetailsProps = CalendarHoverDetailsProps;
 
 function formatDateHeader({ dateStr }: { dateStr?: string }): string | undefined {
   if (!dateStr) return undefined;
@@ -100,6 +96,33 @@ function deriveSubtitle({
     return customer;
   }
   return undefined;
+}
+
+const titleLinkClass =
+  "text-left underline-offset-2 outline-none hover:underline focus-visible:underline";
+
+type TitleLinkProps = {
+  title: string;
+  href?: string | undefined;
+  onOpen?: (() => void) | undefined;
+};
+
+function TitleLink({ title, href, onOpen }: TitleLinkProps) {
+  if (onOpen) {
+    return (
+      <button type="button" onClick={onOpen} className={titleLinkClass}>
+        {title}
+      </button>
+    );
+  }
+  if (href) {
+    return (
+      <AppLink href={href} className={titleLinkClass}>
+        {title}
+      </AppLink>
+    );
+  }
+  return <>{title}</>;
 }
 
 /**
@@ -183,128 +206,48 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
   const pins = usePins();
   const hasPin = Boolean(pins && pinBooking);
   const hasVisit = Boolean(onOpen || href);
-  const hasActions = Boolean(props.headerActions || hasPin || hasVisit);
-  const rightPad = props.headerActions ? "pr-24" : hasActions ? "pr-16" : "";
 
-  const titleContent = (
-    <>
-      <span>{displayTitle}</span>
-      {orderRef ? (
-        <span className="ml-1.5 font-normal text-muted-foreground tabular-nums">{orderRef}</span>
-      ) : null}
-    </>
-  );
+  const actions =
+    props.headerActions ??
+    (hasPin || hasVisit ? (
+      <>
+        {hasPin && pinBooking ? (
+          <PinAction booking={pinBooking} name={customer ?? rawTitle} />
+        ) : null}
+        {hasVisit ? <VisitAction href={href} onOpen={onOpen} title={rawOrder ?? rawTitle} /> : null}
+      </>
+    ) : undefined);
+
+  const meta: OrderViewMetaRow[] = [];
+  if (time) meta.push({ key: "time", icon: ClockIcon, text: time });
+  if (resource) {
+    const place = group ? `${resource} (${group})` : resource;
+    meta.push({ key: "place", icon: MapPinIcon, text: place });
+  }
 
   return (
-    <div className="grid gap-2 text-xs">
-      {/* Header section with top-right action buttons */}
-      <div className="relative min-h-[1.75rem]">
-        <div className={rightPad}>
-          {dateStr ? (
-            <p className="text-[11px] font-medium text-muted-foreground mb-0.5">{dateStr}</p>
-          ) : null}
-
-          {onOpen ? (
-            <button
-              type="button"
-              onClick={onOpen}
-              className="text-left font-semibold text-sm leading-snug text-foreground underline-offset-2 outline-none hover:underline focus-visible:underline break-words"
-            >
-              {titleContent}
-            </button>
-          ) : href ? (
-            <AppLink
-              href={href}
-              className="block text-left font-semibold text-sm leading-snug text-foreground underline-offset-2 outline-none hover:underline focus-visible:underline break-words"
-            >
-              {titleContent}
-            </AppLink>
-          ) : (
-            <h3 className="font-semibold text-sm leading-snug text-foreground break-words">
-              {titleContent}
-            </h3>
-          )}
-
-          {sub ? (
-            <p className="text-xs text-muted-foreground tabular-nums mt-0.5 break-words">{sub}</p>
-          ) : null}
-        </div>
-
-        {props.headerActions ? (
-          <div className="absolute top-0 right-0 flex items-center gap-1">
-            {props.headerActions}
-          </div>
-        ) : hasActions ? (
-          <div className="absolute top-0 right-0 flex items-center gap-1">
-            {hasPin && pinBooking ? (
-              <PinAction booking={pinBooking} name={customer ?? rawTitle} />
-            ) : null}
-            {hasVisit ? (
-              <VisitAction href={href} onOpen={onOpen} title={rawOrder ?? rawTitle} />
-            ) : null}
-          </div>
-        ) : null}
-      </div>
-
-      {/* Time & State row */}
-      {time || state ? (
-        <div className="flex items-center justify-between gap-2 text-muted-foreground">
-          {time ? (
-            <div className="flex items-center gap-1.5 tabular-nums">
-              <ClockIcon className="size-3.5 shrink-0 opacity-70" />
-              <span>{time}</span>
-            </div>
-          ) : (
-            <span />
-          )}
-          {state ? <StatusBadge label={state.name} color={state.color} /> : null}
-        </div>
-      ) : null}
-
-      {/* Resource / Place row */}
-      {resource ? (
-        <div className="flex items-center gap-1.5 text-muted-foreground">
-          <MapPinIcon className="size-3.5 shrink-0 opacity-70" />
-          <span>
-            {resource}
-            {group ? <span className="opacity-75"> ({group})</span> : null}
-          </span>
-        </div>
-      ) : null}
-
-      {/* Staff Notes */}
-      {notes ? (
-        <p className="border-t border-border/60 pt-1.5 italic text-muted-foreground leading-relaxed">
-          {notes}
-        </p>
-      ) : null}
-
-      {/* Contacts */}
-      {props.contacts ? (
-        <div className="border-t border-border/60 pt-2">{props.contacts}</div>
-      ) : booking ? (
-        <BookingContacts booking={booking} labels={labels} />
-      ) : null}
-
-      {/* Warnings */}
-      {warnings && warnings.length > 0 ? (
-        <div className="flex flex-wrap gap-1 pt-1">
-          {warnings.map((warning) => (
-            <Badge key={warning} variant="warning" className="text-[10px]">
-              <TriangleAlertIcon className="mr-1 size-3" />
-              {warning}
-            </Badge>
-          ))}
-        </div>
-      ) : null}
-
-      {/* Footer */}
-      {footer ? <div className="border-t border-border/60 pt-1.5">{footer}</div> : null}
-    </div>
+    <OrderView
+      bare
+      eyebrow={dateStr}
+      title={<TitleLink href={href} onOpen={onOpen} title={displayTitle} />}
+      reference={orderRef}
+      subtitle={sub}
+      status={state ?? null}
+      meta={meta}
+      notes={notes}
+      facts={booking ? contactFacts({ booking, labels }) : undefined}
+      warnings={
+        warnings?.length
+          ? warnings.map((warning) => (
+              <Badge key={warning} variant="warning" className="text-[10px]">
+                <TriangleAlertIcon className="mr-1 size-3" />
+                {warning}
+              </Badge>
+            ))
+          : undefined
+      }
+      footer={footer}
+      headerActions={actions}
+    />
   );
 }
-
-// Aliases for unified consumption across all views
-export const CursorHoverDetails = CalendarHoverDetails;
-export const BookingDetails = CalendarHoverDetails;
-export const CalendarItemHover = CalendarHoverDetails;

@@ -1,4 +1,4 @@
-import type { CursorHoverDetailsProps } from "../cursor-hover/cursor-hover-details";
+import type { CalendarHoverDetailsProps } from "../cursor-hover/cursor-hover-details";
 
 /** One bar on a row, in minutes from the day's midnight (past 1440 is the next day). */
 export type DaySnapshotBlock = {
@@ -8,7 +8,7 @@ export type DaySnapshotBlock = {
   label: string;
   tone: "hard" | "soft" | "draft" | "clash" | "own";
   href?: string;
-  details?: CursorHoverDetailsProps;
+  details?: CalendarHoverDetailsProps;
 };
 
 export type LanedBlock = DaySnapshotBlock & { lane: number };

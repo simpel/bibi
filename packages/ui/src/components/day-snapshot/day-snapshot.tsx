@@ -4,7 +4,7 @@ import { cn } from "../../lib/cn";
 import { AppLink } from "../app-link/app-link";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../collapsible/collapsible";
 import { CursorHoverCard } from "../cursor-hover/cursor-hover-card";
-import { CursorHoverDetails } from "../cursor-hover/cursor-hover-details";
+import { CalendarHoverDetails } from "../cursor-hover/cursor-hover-details";
 import { DaySnapshotLabel } from "./day-snapshot-label";
 import { type DaySnapshotBlock, type LanedBlock, laneBlocks } from "./day-snapshot-lanes";
 import { daySnapshotBlockVariants } from "./day-snapshot-variants";
@@ -68,7 +68,7 @@ function Bar({ block, ...span }: Span & { block: LanedBlock }) {
 
   return (
     <CursorHoverCard
-      content={<CursorHoverDetails id={block.id} href={block.href} {...details} />}
+      content={<CalendarHoverDetails id={block.id} href={block.href} {...details} />}
       asChild
     >
       {element}

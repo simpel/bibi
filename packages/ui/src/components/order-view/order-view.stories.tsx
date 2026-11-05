@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ClockIcon, MapPinIcon } from "lucide-react";
 import { OrderView } from "./order-view";
 
 const meta = {
@@ -39,5 +40,26 @@ export const Restricted: Story = {
       { key: "total", label: "Total excl. VAT", value: null },
       { key: "balance", label: "Open balance", value: null },
     ],
+  },
+};
+
+/** The calendar's hover and pinned card: no chrome, date above, time and place rows, badge on the first row. */
+export const Bare: Story = {
+  args: {
+    bare: true,
+    eyebrow: "Thu, 5 Nov 2026",
+    title: "Design sprint",
+    reference: "#48",
+    subtitle: "16 guests · 11 200,00 kr excl. VAT",
+    status: { name: "Booked", color: "#16a34a" },
+    meta: [
+      { key: "time", icon: ClockIcon, text: "13:00–17:00" },
+      { key: "place", icon: MapPinIcon, text: "Donsö" },
+    ],
+    facts: [
+      { key: "client", label: "Client", value: "Linnea Kvist" },
+      { key: "internal", label: "Internal", value: "Erik Lund" },
+    ],
+    footer: undefined,
   },
 };

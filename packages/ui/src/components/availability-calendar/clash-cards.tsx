@@ -1,7 +1,7 @@
 "use client";
 
 import { TriangleAlertIcon } from "lucide-react";
-import { BookingDetails } from "./booking-details";
+import { CalendarHoverDetails } from "../cursor-hover/cursor-hover-details";
 import { useCalendarLabels } from "./calendar-labels";
 import { toMinutes } from "./calendar-time";
 import type { AssetBooking, CalendarWindow } from "./calendar-types";
@@ -45,7 +45,7 @@ export function ClashCards({ bookings, stretch, onOpen }: ClashCardsProps) {
       </p>
       <div className="grid gap-3 divide-y *:pb-3 *:last:pb-0">
         {inOrder({ bookings }).map((booking) => (
-          <BookingDetails
+          <CalendarHoverDetails
             key={booking.id}
             booking={booking}
             onOpen={onOpen ? () => onOpen(booking) : undefined}
