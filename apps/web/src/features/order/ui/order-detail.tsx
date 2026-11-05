@@ -91,13 +91,13 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
         }
       />
       <div className="grid grid-cols-1 gap-4">
-        <PageHeader {...heading({ order: order.value, label, short })} actions={actions} />
         {can({ abilities, permission: "program:read" }) ? (
           // No skeleton: most orders have no issues, so a placeholder would flash and vanish.
           <Suspense fallback={null}>
             <OrderIssues orderId={id} />
           </Suspense>
         ) : null}
+        <PageHeader {...heading({ order: order.value, label, short })} actions={actions} />
         <OrderKeyFacts order={order.value} data={names} />
       </div>
       <OrderSections
