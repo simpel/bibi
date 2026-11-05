@@ -1,17 +1,18 @@
-import { getCustomer } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { CrumbName } from "@/components/shell/crumb-name";
+import { DeferredSection } from "@/components/states/deferred-section";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { Link } from "@/lib/navigation";
-import { ROUTES } from "@/lib/routes";
+import { customerRoute, ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
-import { runOperation } from "@/server/run-operation";
 import { ContactSection } from "../../contact/ui/contact-section";
 import { CustomerBundlesSection } from "../../item/ui/customer-bundles-section";
+import { loadCustomer } from "../load-customer";
 import { CustomerActions } from "./customer-actions";
 import { CustomerFacts } from "./customer-facts";
 
@@ -22,7 +23,7 @@ export async function CustomerDetail({ locale, id }: CustomerDetailProps) {
   const common = await getTranslations("common");
   const abilities = await getCallerAbilities();
   const [customer, data] = await Promise.all([
-    runOperation({ operation: getCustomer, input: { id } }),
+    loadCustomer({ id }),
     loadTypedFormData({ base: "CUSTOMER" }),
   ]);
   if (!customer.ok) {
@@ -38,6 +39,7 @@ export async function CustomerDetail({ locale, id }: CustomerDetailProps) {
     ) : undefined;
   return (
     <div className="grid gap-6">
+      <CrumbName href={customerRoute({ id })} name={customer.value.name} />
       <Link
         href={ROUTES.customers}
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
@@ -52,8 +54,12 @@ export async function CustomerDetail({ locale, id }: CustomerDetailProps) {
         vocabularies={data.value.vocabularies}
         links={data.value.links}
       />
-      <ContactSection locale={locale} customerId={customer.value.id} />
-      <CustomerBundlesSection locale={locale} customerId={customer.value.id} />
+      <DeferredSection>
+        <ContactSection locale={locale} customerId={customer.value.id} />
+      </DeferredSection>
+      <DeferredSection>
+        <CustomerBundlesSection locale={locale} customerId={customer.value.id} />
+      </DeferredSection>
     </div>
   );
 }

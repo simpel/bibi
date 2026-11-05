@@ -1,5 +1,5 @@
 import "server-only";
-import { billingMailHook, invitationMailHook, resolveExecuteContext } from "@bibi/auth";
+import { billingMailHook, invitationMailHook } from "@bibi/auth";
 import {
   createIndexingHook,
   type ExecuteContext,
@@ -8,10 +8,11 @@ import {
   type Result,
 } from "@bibi/core";
 import { runWithLogContext } from "@bibi/logger";
-import { headers } from "next/headers";
 import type { z } from "zod";
 import { embed } from "./embed";
+import { countOperation } from "./operation-budget";
 import { ensureOperations } from "./operations";
+import { getRequestContext } from "./request-context";
 import { webLogContext } from "./request-log-context";
 
 export type RunOperationInput<I extends z.ZodType, O extends z.ZodType> = {
@@ -39,9 +40,8 @@ export async function runOperation<I extends z.ZodType, O extends z.ZodType>({
   return runWithLogContext({
     context: logContext,
     fn: async () => {
-      const context: Result<ExecuteContext> = await resolveExecuteContext({
-        headers: await headers(),
-      });
+      countOperation({ name: operation.name });
+      const context: Result<ExecuteContext> = await getRequestContext();
       if (!context.ok) return context;
       return execute({ operation, input, context: context.value, afterCommit });
     },

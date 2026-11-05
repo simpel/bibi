@@ -20,47 +20,57 @@ function missingOf({ wanted, covered }: { wanted: DayRange; covered: DayRange | 
   return missing;
 }
 
+type Loaded = { bookings: AssetBooking[]; values: CalendarDayValue[] };
+
 /**
  * The bookings and day values of every day the timeline has loaded: the page's first days, then each new edge
- * as it scrolls, once. A failed load leaves its days to the next attempt.
+ * as it scrolls, once. A failed load leaves its days to the next attempt. The first days stream in
+ * after the grid has painted (ADR 0097): `seed` adds them, or marks the load failed with `null`;
+ * a caller that already has them passes `initial`.
  */
-export function useLoadedBookings({
-  initial,
-  range,
-}: {
-  initial: { bookings: AssetBooking[]; values: CalendarDayValue[] };
-  range: DayRange;
-}) {
-  const [bookings, setBookings] = useState(initial.bookings);
-  const [values, setValues] = useState(initial.values);
+export function useLoadedBookings({ range, initial }: { range: DayRange; initial?: Loaded }) {
+  const [bookings, setBookings] = useState<AssetBooking[]>(initial?.bookings ?? []);
+  const [values, setValues] = useState<CalendarDayValue[]>(initial?.values ?? []);
   const [failed, setFailed] = useState(false);
   const covered = useRef<DayRange | null>(range);
-  const onRangeChange = useCallback((wanted: DayRange) => {
-    const before = covered.current;
-    const missing = missingOf({ wanted, covered: before });
-    if (missing.length === 0) return;
-    covered.current = before
-      ? {
-          from: wanted.from < before.from ? wanted.from : before.from,
-          to: wanted.to > before.to ? wanted.to : before.to,
-        }
-      : wanted;
-    for (const days of missing) {
-      loadCalendarBookingsAction(days).then((result) => {
-        if (!result.ok) {
-          covered.current = before;
-          setFailed(true);
-          return;
-        }
-        setFailed(false);
-        const loaded = result.value;
-        setValues((current) => [...current, ...loaded.values]);
-        setBookings((current) => {
-          const ids = new Set(current.map((booking) => booking.id));
-          return [...current, ...loaded.bookings.filter((booking) => !ids.has(booking.id))];
-        });
-      });
-    }
+  const add = useCallback((loaded: Loaded) => {
+    setValues((current) => [...current, ...loaded.values]);
+    setBookings((current) => {
+      const ids = new Set(current.map((booking) => booking.id));
+      return [...current, ...loaded.bookings.filter((booking) => !ids.has(booking.id))];
+    });
   }, []);
-  return { bookings, values, failed, onRangeChange };
+  const seed = useCallback(
+    (loaded: Loaded | null) => {
+      if (loaded) add(loaded);
+      else setFailed(true);
+    },
+    [add],
+  );
+  const onRangeChange = useCallback(
+    (wanted: DayRange) => {
+      const before = covered.current;
+      const missing = missingOf({ wanted, covered: before });
+      if (missing.length === 0) return;
+      covered.current = before
+        ? {
+            from: wanted.from < before.from ? wanted.from : before.from,
+            to: wanted.to > before.to ? wanted.to : before.to,
+          }
+        : wanted;
+      for (const days of missing) {
+        loadCalendarBookingsAction(days).then((result) => {
+          if (!result.ok) {
+            covered.current = before;
+            setFailed(true);
+            return;
+          }
+          setFailed(false);
+          add(result.value);
+        });
+      }
+    },
+    [add],
+  );
+  return { bookings, values, failed, onRangeChange, seed };
 }

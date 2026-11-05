@@ -38,21 +38,22 @@ async function NoAssets() {
  */
 export async function CalendarPage({ locale, from, to }: CalendarPageProps) {
   const range = { from, to };
-  const [assets, bookings, today, openingHours] = await Promise.all([
+  // The bookings stream onto the painted grid (ADR 0097): they are the slowest read.
+  const load = loadBookings({ range })
+    .then((result) => (result.ok ? result.value : null))
+    .catch(() => null);
+  const [assets, today, openingHours] = await Promise.all([
     loadCalendarAssets(),
-    loadBookings({ range }),
     calendarToday(),
     loadOpeningHours(),
   ]);
-  const failed = !assets.ok ? assets : !bookings.ok ? bookings : null;
-  if (failed) {
+  if (!assets.ok) {
     return (
       <div className="p-4 sm:p-6">
-        <ErrorState errorKey={handleLoadError({ error: failed.error, locale })} />
+        <ErrorState errorKey={handleLoadError({ error: assets.error, locale })} />
       </div>
     );
   }
-  if (!assets.ok || !bookings.ok) return null;
   if (assets.value.length === 0) {
     return (
       <div className="p-4 sm:p-6">
@@ -60,12 +61,5 @@ export async function CalendarPage({ locale, from, to }: CalendarPageProps) {
       </div>
     );
   }
-  return (
-    <CalendarView
-      {...{ range, today, openingHours }}
-      assets={assets.value}
-      bookings={bookings.value.bookings}
-      values={bookings.value.values}
-    />
-  );
+  return <CalendarView {...{ range, today, openingHours }} assets={assets.value} load={load} />;
 }

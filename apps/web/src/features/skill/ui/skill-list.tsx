@@ -16,8 +16,7 @@ export type SkillListProps = { locale: Locale; filters: SkillFilters };
 
 /** Skills page body: filters (scope, status, text or semantic query), table, pagination. */
 export async function SkillList({ locale, filters }: SkillListProps) {
-  const t = await getTranslations("skills");
-  const result = await loadSkills({ filters });
+  const [t, result] = await Promise.all([getTranslations("skills"), loadSkills({ filters })]);
   const header = (
     <PageHeader
       title={t("title")}

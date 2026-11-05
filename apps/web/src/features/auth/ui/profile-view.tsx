@@ -47,8 +47,10 @@ const NO_FORMATS = {
  * connected apps, with an in-page nav.
  */
 export async function ProfileView({ name, email, locale }: ProfileViewProps) {
-  const t = await getTranslations("profile");
-  const settings = await runOperation({ operation: getUserSettings, input: {} });
+  const [t, settings] = await Promise.all([
+    getTranslations("profile"),
+    runOperation({ operation: getUserSettings, input: {} }),
+  ]);
   return (
     <div className="grid max-w-4xl grid-cols-[minmax(0,1fr)] gap-6 md:grid-cols-[10rem_minmax(0,1fr)] md:items-start">
       <div className="md:col-span-2">

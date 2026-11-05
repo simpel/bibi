@@ -7,7 +7,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - Page width (ADR 0038): `[org]/(app)/(contained)/` pages are `SimplePage` or several `PageSection`s, each with a `PageContainer` as first child (`@bibi/ui`; the layout adds none); `(app)/(canvas)/` pages (`/`, `/calendar`) are full width and own their gutter and scrolling. A new page goes into one of the two groups; `AppShell` adds no container.
 - `settings/*` is for admins only (ADR 0034): `settings/layout.tsx` shows a forbidden state and the sidebar hides the entry. Pages, navigation, the settings hub and the assistant follow the caller's effective permissions: a feature whose `view` is denied is hidden, not just disabled (`server/caller-abilities.ts`). Detail pages name their breadcrumb crumb with `CrumbName`.
 - API routes: `api/auth/[...all]` (Better Auth), `api/graphql`, `api/v1/[...path]` (REST), `api/chat`, `api/assistant/approval`, `api/webhooks/resend`, `api/webhooks/stripe` and `api/webhooks/stripe-billing`, plus the `.well-known/oauth-*` discovery routes forwarded to Better Auth. Chat and approval routes set `runtime = "nodejs"`, `dynamic = "force-dynamic"` and `maxDuration`. New HTTP entry points are wrapped in `withRequestLogging`.
-- `/pipeline` shows one board (`?board=<id>`, default the first, ADR 0067). A card dropped on a column with several statuses opens a picker of the statuses it may move to there (one allowed status moves at once, none refuses; ADR 0076). `?mode=customize` (only with `board:write`) flips the columns to their settings (`features/board/`); every change there saves at once. Creating, editing or archiving a status shows there only with `pipeline:write`/`pipeline:delete`; movement rules (Allowed next, gates) are edited only in the admin flow editor on `/settings/pipeline` (`features/ticket-status/ui/flow-*`), never on a board.
+- `/pipeline` shows one board (`?board=<id>`, default the first, ADR 0067). A card dropped on a column with several statuses opens a picker of the statuses it may move to there (one allowed status moves at once, none refuses; ADR 0076). `?mode=customize` (only with `board:write`) flips the columns to their settings (`features/board/`); every change there saves at once. Creating, editing or archiving a status shows there only with `pipeline:write`/`pipeline:delete`; movement rules (Allowed next, gates) are edited only in the admin flow editor on `/settings/pipeline` (`features/order-status/ui/flow-*`), never on a board.
 - `src/features/<entity>/ui/` = components per entity; `actions.ts` next to `ui/` = server actions. `features/web-surfaces.ts` lists which operations have UI (`UI_EXEMPT` in `ui-exempt.ts` lists operations deliberately without UI, with a reason).
 - `src/components/` = app-level (`shell/`, `form/`, `data-table/`, `states/`, `confirm-dialog`). `src/server/` = server code only. `src/lib/` = pure helpers, tested with Vitest.
 - `src/proxy.ts` first applies host routing (ADR 0073: the apex serves the public site under `(site)/site`, other hosts redirect; no-op without `PUBLIC_URL`), then next-intl routing (Next 16's name for middleware, Node runtime), then it makes the URL's organization active for members (`server/sync-active-organization.ts`). It also sets `x-bibi-path` (the path below `/:org`) so the `(app)` layout can send an unpaid organization to `/:org/billing/pay?returnTo=…` (ADR 0095). `src/i18n/request.config.ts` is `*.config.ts` to allow a default export.
@@ -24,14 +24,19 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 2. `src/features/<entity>/actions.ts` and `ui/` (list = server component, form = client). Copy `venue/ui` and `item/ui`.
 3. Page: `(contained)/<route>/page.tsx` (thin), nav in the right group of `components/shell/nav-items.ts` (configuration pages go to `settings-items.ts`, ADR 0036).
 4. Add the operations to `WEB_SURFACES` (or `UI_EXEMPT`).
-5. Text in `packages/i18n/messages/sv.json` and `en.json` (key parity is tested).
+5. Text in `packages/i18n/messages/sv/<bundle>.json` and `en/<bundle>.json` (key parity is tested).
 
 ## i18n
 - All text via `useTranslations` / `getTranslations`; no hardcoded strings or colors. Links, router, `usePathname` and `redirect` from `@/lib/navigation`, never `next/link`, `next/navigation`'s router or `@bibi/i18n/navigation` directly. Why: ADR 0062.
 - App routes live under `app/[locale]/[org]/` (the organization slug). The wrapper prefixes scoped paths with the current slug and `usePathname` returns the path without it; server `redirect` needs `org` passed. A new top-level route outside `[org]` goes into `RESERVED_SLUGS` (`@bibi/auth`), or `lib/reserved-slugs.test.ts` fails.
 - Query strings are a last resort: a date or period goes in the path (the calendar is `/calendar/{from}/{to}`, inclusive plain dates; the view is derived from the range), only optional filters stay a query. Why: ADR 0064.
 - Server components and layouts call `setRequestLocale(locale)`; convert `locale` with `resolveLocale`.
-- `sv.json` is the source of truth for typed keys. Dynamic keys must be unions (see `ErrorKey`).
+- `sv` (`packages/i18n/messages/sv/*.json`) is the source of truth for typed keys. Dynamic keys must be unions (see `ErrorKey`). Client messages are scoped per route surface (`src/i18n/surface-messages.ts`).
+- **UI Copy & Action Verb Taxonomy:**
+  - Action-first pattern: `[Action Verb] + [Noun]` (e.g. `Create order`, `Delete venue`). Never use adjective shorthand (`New order`).
+  - **Create over New:** For anything that creates an entity or resource, always use **Create** (sv: *Skapa*) and never *New* (sv: *Ny*). Applies to button labels, tooltips, action menus, page titles, empty-state CTAs, and breadcrumbs.
+  - Controlled vocabulary: `Create` (not New/Add/Make), `Add` (attaching existing records or line items), `Edit` (not Change/Modify/Update), `Delete` (permanent destruction), `Remove` (detaching without destroying), `Save` (persisting forms, not Submit/Done).
+  - Modal confirm buttons repeat the action verb (`Create venue`, `Delete role`), never generic `OK` or `Submit`. Cancel action is always `Cancel` (sv: `Avbryt`). Empty state CTA is always `Create [entity]`.
 
 ## Forms (all input in the UI)
 - Every form is a shadcn form: `Form`, `FormController` (shadcn's `FormField`), `FormItem`, `FormLabel`, `FormControl` and `FormMessage` from `@bibi/ui`, with react-hook-form and `zodResolver` with localised messages (`useZodMessages`). The schema comes from core (`@bibi/core/schemas`, via `formSchema({ schema, toInput })` when needed), never a hand-written duplicate.
@@ -53,11 +58,21 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - `ErrorBanner`, `useActionSubmit` and `useAuthSubmit` are removed. Do not reintroduce equivalent patterns.
 
 ## Tables (ADR 0040)
-- Every table is a shadcn TanStack table, rendered with `PersistedDataTable` (`components/data-table/`, on `DataTable` in `@bibi/ui`) with a stable `tableId`. Columns live in a `use-<entity>-columns` hook; the assistant's card has its own hook and `tableId` with the same cells. Never a raw `<table>`, never the `Table*` primitives directly, never another table library. Only exception: the calendar grid.
-- All columns are sortable. Default order: multiselect checkbox (only if bulk editing helps), main title, descriptive columns in the organization's order, status, dates and times, numbers and amounts, row actions (far right).
+- Every table is a shadcn TanStack table, rendered with `ClientDataTable` (for client-filtered/paginated tables) or `PersistedDataTable` (`components/data-table/`, on `DataTable` in `@bibi/ui`) with a stable `tableId`. Build column arrays with `createTableColumns` (`@bibi/ui`) so the 7 zones are concatenated in canonical order automatically, and use `statusColumn`, `dateColumn`, `numberColumn` and `actionsColumn` from `@bibi/ui`. Extract a `use-<entity>-columns` hook only when columns are shared between a page table and an assistant card; otherwise keep columns in the table file. Never a raw `<table>`, never the `Table*` primitives directly, never another table library. Only exception: the calendar grid.
+- All columns are sortable. Standard left-to-right order (enforced by `createTableColumns({ select, primary, relations, status, dates, numbers, actions })`):
+  1. `select`: Optional multiselect checkbox (`selectable`, pinned left).
+  2. `primary`: Main title, name or identifier (semi-bold, accessible `<Link>`).
+  3. `relations`: Descriptive columns & relations in the organization's order (type, venue, customer, category, assignee).
+  4. `status`: Operational status or state (built with `statusColumn` or `<StatusBadge label={...} color={...} />` from `@bibi/ui`, which renders `<Badge variant="secondary" className="gap-1.5"><ColorSwatch color={...} />{label}</Badge>`; never a lone dot without text, never a competing outline or solid badge variant, and always placed before dates/times and numbers).
+  5. `dates`: Dates and times (`dateColumn`; when, receivedAt, publishedAt, createdAt; left-aligned under the column header).
+  6. `numbers`: Numbers, headcount and amounts (`numberColumn`).
+  7. `actions`: Row actions (`actionsColumn`, pinned right).
 - Users reorder columns by drag and drop (always on); the checkbox and row actions stay pinned. The order is saved per user and per table as a server-side user preference, not in `localStorage`.
-- Row actions are the last column (`actionsColumn`), always sticky to the right edge of the visible area, so they stay in reach when the table scrolls sideways. `DataTable` does this; never add actions in another column.
-- Row actions are always one `DataTableRowActions`: clear actions in `primary` (buttons with icon and label on wide tables), the rest as menu items with text labels. Below the `@2xl` container width every action folds into the menu, except a lone primary action, which stays a button with its icon alone. `iconOnly` keeps the label out at every width, only for an unmistakable icon (download, copy); the label stays the accessible name and tooltip. Why: ADR 0040.
+- Search & filter: every list page provides search and filtering via `QuerySearch` (`components/query-search/query-search.tsx`) or `TableFilterBar` + `useClientTableView` (`components/data-table/`), with autocomplete qualifier suggestions (`key:value`, e.g. `status:...`, `assignee:...`, `type:...`, `role:...`, `channel:...`, `city:...`). Quick filter pills sit to the left of `QuerySearch` (`ml-auto`). Query state syncs to URL `?q=...`.
+- Row click & navigation: `onRowClick` on `PersistedDataTable` navigates to the record's primary detail page (or opens its slide-over sheet for activity rows). Title cells keep a `<Link>` for new-tab and keyboard accessibility. Interactive sub-elements (checkboxes, tags, sub-links, action buttons) stop event propagation.
+- Row actions & context menu: row actions are the last column (`actionsColumn`), always sticky to the right edge. Handled by `DataTableRowActions`: primary actions as buttons on wide tables, folding into an overflow menu below `@2xl`. Every action in `actionsColumn` must also be mirrored in the right-click menu (`rowMenu` on `PersistedDataTable`).
+- Multiselect & bulk actions: enable `selectable={true}` whenever batch actions exist. Selected rows activate `DataTableToolbar` above the table with selection count and `bulkActions` buttons. Changing pages or search clears selection.
+- Pagination & sorting: all list pages use `PersistedDataTable`'s integrated `DataTablePagination` with standard page sizes (`[25, 50, 100]`), page counts, and server-side sorting (`manualSorting` syncing `sort` and `dir` to the URL). External pagination controls (e.g. `CursorPagination`) are retired.
 - Activity tables (notifications, the inbox) keep read and unread in one table so marks never move rows: unread white with a dot, read grey (`rowClassName`), a small context line over the title, and a quick action in place of the time on hover. Opening an item that changes state (read on open) shows the title as `Shimmer` while the server action runs. Why: ADR 0040.
 
 ## `"use client"`
@@ -65,9 +80,19 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - Never add `"use client"` to make a hook work. What a page renders on the server is prepared on the server: dates and amounts come from `getDateTimeFormat()` / `getNumberFormat()` and go down as props (`dates`, `numbers`); a component shared with an assistant card takes them as props and the card passes its hook's. `pnpm check:structure` flags client-only hooks reachable from a page through server files (`tools/lib/server-render-rules.mjs`).
 - A table inside a card runs edge to edge: `flush` on the table (`FinanceSection flush` for the card), the card's heading and text keep their padding. Never a bordered table in a card (no box in a box). Why: ADR 0086.
 
+## Page loading (ADR 0097)
+- A light page (at most five operations) renders in one pass, with no `Suspense`.
+- A heavy page renders its header and key facts first. Wrap every section that loads its own data in `DeferredSection` (`components/states/deferred-section.tsx`); a section fed by props stays unwrapped. Content that is usually empty (issue alerts) uses `<Suspense fallback={null}>`. One boundary per section, never per row, never a one-off skeleton.
+- Every route group has a `loading.tsx` that renders only `RouteLoading` (`components/states/route-loading.tsx`: the `Loading` wordmark from `@bibi/ui`, centred). Never a page-shaped skeleton or another spinner in a `loading.tsx`.
+- A record read by both `generateMetadata` and the page goes through a `cache()` loader (`features/<x>/load-<x>.ts`, like `load-order.ts`). Never run the same read twice in one request.
+- Organization config is read once per request through shared cached loaders (`server/load-entity-types.ts`) and filtered in memory. No cross-request cache: it would skip `execute`'s permission check and log.
+- Independent reads go in one `Promise.all`; await in sequence only when a read needs the previous result.
+- A screen whose first paint needs several features reads a view read model (ADR 0071) instead of joining owner operations in the page, unless the view computes more than the first paint shows: then read just what the header needs (the order page reads its own customer and contact by id; `order.view` serves the assistant).
+- Budget: at most five operations before first paint. In development, a request over 25 operations logs `web.request.op_budget` (`server/operation-budget.ts`); fix the page, never raise the budget.
+
 ## Effects
 - Data a page needs is read on the server (`runOperation` in the server component) and passed down as props. When an input needs new data, change the URL (path or filter) so the server renders again. Never fetch in `useEffect`.
-- A client island that needs server data later gets a promise from its server parent and unwraps it with `use()` inside `Suspense`.
+- A client island that needs server data later gets a promise from its server parent and unwraps it with `use()` inside `Suspense` (see "Page loading").
 - Input the user is still changing (a typeahead, a live check, a preview) is answered by `useLiveQuery` (`lib/use-live-query.ts`), the one effect that fetches. Never write another.
 - Values derived from props or state are computed during render, never copied into state by an effect. Reset state on a prop change with `key`.
 - A reaction to a user action goes in the event handler or the server action, not in an effect that watches state.
@@ -78,7 +103,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - A row holds cards of one kind: charts with charts, tables full width. Charts and tables never share a row.
 - A date range is the one range picker (`PeriodRange`); no previous or next buttons.
 - Switching between whole views of one page (the dashboards) is a `ViewSwitcher` (`@bibi/ui`) in the header, not `Tabs`; `Tabs` are for parts of a view.
-- A page whose tabs or range are in the path keeps its header (title, picker, tabs) in a layout above those segments, reading them with `useParams`. A tab or range change is one transition: the current content stays, dimmed and `aria-busy`, until the next is ready, and figures count from their last values (`MoneyNumberFlow` `memoryKey` in a `FlowMemory`). No `loading.tsx` there: it would blank the content. See `features/dashboard/ui/dashboards-shell.tsx`, `dashboards-pending.tsx`.
+- A page whose tabs or range are in the path keeps its header (title, picker, tabs) in a layout above those segments, reading them with `useParams`. Switching tabs or ranges navigates directly between URLs with standard Next.js navigation (`Link`, `router.push`), with no custom transition provider. See `features/dashboard/ui/dashboards-shell.tsx`.
 
 ## The assistant (ADR 0007, 0008)
 - `features/assistant/`: `AssistantProvider` in the shell holds ONE `useChat` for the home page and ⌘K. The assistant exists only on `/` (ADR 0035); `ask` and `prefill` start a conversation and navigate there.
@@ -91,7 +116,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - Granting: `pnpm --filter @bibi/auth grant-superadmin <email>`.
 
 ## Webhooks
-- `POST /api/webhooks/resend`: inbound mail, stored as an EMAIL `InboundMessage` via `inboundMessage.receive`: on the ticket for `ticket-<id>@<domain>`, in the organization's inbox for its address (ADR 0012, 0085, `packages/mail`).
+- `POST /api/webhooks/resend`: inbound mail, stored as an EMAIL `InboundMessage` via `inboundMessage.receive`: on the order for `order-<id>@<domain>`, in the organization's inbox for its address (ADR 0012, 0085, `packages/mail`).
 - `POST /api/webhooks/stripe`: signed with `STRIPE_WEBHOOK_SECRET`; runs the SYSTEM-only `payment.applySignal` and `paymentAccount.applySignal` (ADR 0028).
 - `POST /api/webhooks/stripe-billing`: Bibi's own subscription, signed with the secret stored in `/mothership/billing` (never env); runs the SYSTEM-only `billing.applySignal` (ADR 0095).
 

@@ -9,8 +9,7 @@ export type DemandsSectionProps = { locale: Locale; itemId: string };
 
 /** What the item needs: the Resources and Staffing lists (ADR 0059), edited with `item:write`. */
 export async function DemandsSection({ locale, itemId }: DemandsSectionProps) {
-  const abilities = await getCallerAbilities();
-  const lists = await loadDemandLists({ itemId });
+  const [abilities, lists] = await Promise.all([getCallerAbilities(), loadDemandLists({ itemId })]);
   if (!lists.ok && lists.error.code === "FORBIDDEN") return null;
   if (!lists.ok) return <ErrorState errorKey={handleLoadError({ error: lists.error, locale })} />;
   const canEdit = can({ abilities, permission: "item:write" });

@@ -22,7 +22,7 @@ const CUSTOMER_LIMIT = 100;
 
 /** The Financials tab (ADR 0077, 0086): its stat cards, charts, tables and the SIE export. */
 export async function FinancialsTab({ locale, period, today, customerId }: FinancialsTabProps) {
-  const abilities = await getCallerAbilities();
+  const abilitiesPending = getCallerAbilities();
   const [numbers, dates, overview, customers, exports] = await Promise.all([
     getNumberFormat(),
     getDateTimeFormat(),
@@ -30,11 +30,14 @@ export async function FinancialsTab({ locale, period, today, customerId }: Finan
       operation: financeOverview,
       input: { ...period, ...(customerId ? { customerId } : {}) },
     }),
-    can({ abilities, permission: "customer:read" })
-      ? runOperation({ operation: listCustomers, input: { limit: CUSTOMER_LIMIT } })
-      : null,
+    abilitiesPending.then((abilities) =>
+      can({ abilities, permission: "customer:read" })
+        ? runOperation({ operation: listCustomers, input: { limit: CUSTOMER_LIMIT } })
+        : null,
+    ),
     loadExportData(),
   ]);
+  const abilities = await abilitiesPending;
   if (!overview.ok)
     return <ErrorState errorKey={handleLoadError({ error: overview.error, locale })} />;
   if (!exports.ok)

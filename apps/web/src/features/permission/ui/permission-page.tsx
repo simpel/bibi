@@ -35,13 +35,14 @@ export type PermissionPageProps = { locale: Locale; subjectType: SubjectType; su
  * the features × actions grid of one member or API key (ADR 0050). Admins only; all auto-saves.
  */
 export async function PermissionPage({ locale, subjectType, subjectId }: PermissionPageProps) {
-  const t = await getTranslations("permissions");
-  const abilities = await getCallerAbilities();
+  const [t, abilities] = await Promise.all([getTranslations("permissions"), getCallerAbilities()]);
   if (!can({ abilities, permission: "member:write" })) return <ErrorState errorKey="forbidden" />;
   const subject = { subjectType, subjectId };
-  const name = await findSubjectName(subject);
+  const [name, profile] = await Promise.all([
+    findSubjectName(subject),
+    runOperation({ operation: getPermissions, input: subject }),
+  ]);
   if (name === null) notFound();
-  const profile = await runOperation({ operation: getPermissions, input: subject });
   if (!profile.ok) {
     return <ErrorState errorKey={handleLoadError({ error: profile.error, locale })} />;
   }

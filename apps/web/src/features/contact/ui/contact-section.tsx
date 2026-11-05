@@ -13,16 +13,16 @@ export type ContactSectionProps = { locale: Locale; customerId: string };
 
 /** The customer's contact persons: a table with edit and archive, and a create button. */
 export async function ContactSection({ locale, customerId }: ContactSectionProps) {
-  const t = await getTranslations("contact");
-  const abilities = await getCallerAbilities();
+  const [t, abilities, contacts, data] = await Promise.all([
+    getTranslations("contact"),
+    getCallerAbilities(),
+    runOperation({ operation: listContacts, input: { customerId, limit: 100 } }),
+    loadTypedFormData({ base: "CONTACT" }),
+  ]);
   const access = {
     canEdit: can({ abilities, permission: "customer:write" }),
     canRemove: can({ abilities, permission: "customer:delete" }),
   };
-  const [contacts, data] = await Promise.all([
-    runOperation({ operation: listContacts, input: { customerId, limit: 100 } }),
-    loadTypedFormData({ base: "CONTACT" }),
-  ]);
   if (!contacts.ok) {
     return <ErrorState errorKey={handleLoadError({ error: contacts.error, locale })} />;
   }

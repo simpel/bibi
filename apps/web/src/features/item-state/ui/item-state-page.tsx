@@ -1,6 +1,7 @@
 import { getEntityType, getItemState } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
+import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
 import { FormPageShell } from "@/components/wizard/form-page-shell";
 import { ROUTES } from "@/lib/routes";
@@ -16,11 +17,12 @@ export type ItemStatePageProps = {
 
 /** `/new/item-state` and `/settings/item-states/[id]/update`: the form on a page of its own. */
 export async function ItemStatePage({ locale, mode }: ItemStatePageProps) {
-  const t = await getTranslations("itemState");
-  const state =
+  const [t, state] = await Promise.all([
+    getTranslations("itemState"),
     "update" in mode
-      ? await runOperation({ operation: getItemState, input: { id: mode.update } })
-      : undefined;
+      ? runOperation({ operation: getItemState, input: { id: mode.update } })
+      : undefined,
+  ]);
   if (state && !state.ok)
     return <ErrorState errorKey={handleLoadError({ error: state.error, locale })} />;
   const typeId = state?.ok ? state.value.entityTypeId : "create" in mode ? mode.create : "";
@@ -28,17 +30,22 @@ export async function ItemStatePage({ locale, mode }: ItemStatePageProps) {
   if (!type.ok) return <ErrorState errorKey={handleLoadError({ error: type.error, locale })} />;
   const editing = state?.ok ? state.value : undefined;
   return (
-    <FormPageShell
-      backHref={ROUTES.settingsItemStates}
-      title={editing ? t("edit") : t("create")}
-      description={
-        editing ? t("editDescription") : t("createDescription", { type: type.value.name })
-      }
-    >
-      <ItemStateForm
-        type={{ id: type.value.id, bookable: type.value.capabilities.includes("BOOKABLE") }}
-        state={editing}
-      />
-    </FormPageShell>
+    <>
+      {editing && "update" in mode ? (
+        <CrumbName href={`/settings/item-states/${mode.update}/update`} name={editing.name} />
+      ) : null}
+      <FormPageShell
+        backHref={ROUTES.settingsItemStates}
+        title={editing ? t("edit") : t("create")}
+        description={
+          editing ? t("editDescription") : t("createDescription", { type: type.value.name })
+        }
+      >
+        <ItemStateForm
+          type={{ id: type.value.id, bookable: type.value.capabilities.includes("BOOKABLE") }}
+          state={editing}
+        />
+      </FormPageShell>
+    </>
   );
 }

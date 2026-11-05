@@ -6,11 +6,11 @@
 - Main competitor: Lega Online (Multinet Interactive AB). See `docs/market/`.
 
 ## Differentiators (drive prioritisation)
-- Predefined tickets for smaller meetings: staff create a ticket with its lines in one step without a quote, and the customer pays via a Swish or card link or by invoice. Bibi is an internal tool for staff. Guests and customers never use the app; they only see the payment page.
-- Needs as counts against the organization's own lists (e.g. the EU's 14 allergens as an importable template), matched against items and compiled into work orders. No personal data about guests.
-- Versioned work orders (e.g. kitchen order) sent to a responsibility (e.g. head of kitchen), plus export (json, pdf, csv) for handover outside the system.
+- Predefined orders for smaller meetings: staff create a order with its lines in one step without a quote, and the customer pays via a Swish or card link or by invoice. Bibi is an internal tool for staff. Guests and customers never use the app; they only see the payment page.
+- Needs as counts against the organization's own lists (e.g. the EU's 14 allergens as an importable template), matched against items and compiled into run sheets. No personal data about guests.
+- Versioned run sheets (e.g. kitchen order) sent to a responsibility (e.g. head of kitchen), plus export (json, pdf, csv) for handover outside the system.
 - Configurable domain: each organization sets up its own types, fields, lists, statuses and responsibilities (ADR 0021, 0034). Access uses three fixed roles as presets (member, manager, admin) of `<feature>:<action>` permissions, which admins fine-tune per member or API key with allow/deny overrides (ADR 0034, 0050).
-- A ticket moves through the organization's own statuses, and each line (room, food, activity) has a state per status set in a grid: soft holds with a held-since date and one expiry date per ticket, hard holds that block (ADR 0043, 0044). A ticket may move to any status unless a status restricts its next move; gates sit on the target status, and the flow is admin-only (`pipeline:write`) while boards use `board:*` (ADR 0076).
+- A order moves through the organization's own statuses, and each line (room, food, activity) has a state per status set in a grid: soft holds with a held-since date and one expiry date per order, hard holds that block (ADR 0043, 0044). A order may move to any status unless a status restricts its next move; gates sit on the target status, and the flow is admin-only (`pipeline:write`) while boards use `board:*` (ADR 0076).
 - Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing (Swish, Visma and Peppol deferred, ADR 0028 and 0029). Accounting systems are reached through the SIE 4I export (ADR 0077); an organization can connect Fortnox (OAuth only so far, ADR 0087).
 - Bibi's own prices are published and venues can sign up without talking to sales: 9 990 SEK a month excl. VAT (yearly 10 % off), 10 seats included, extra seats 49 SEK a month, 14 days free, then the app waits for payment (ADR 0095).
 
@@ -19,9 +19,16 @@
 
 ## Language
 - **English everywhere.** Code, comments, test names, log and error messages, docs, ADRs, CLAUDE.md/AGENTS.md, skills, AI prompts, commit messages, issues and PRs are written in English.
-- **Swedish only in translations:** `packages/i18n/messages/sv.json`. The only other exception is test input that specifically exercises Swedish text (e.g. handling of Swedish characters).
+- **Swedish only in translations:** `packages/i18n/messages/sv/*.json`. The only other exception is test input that specifically exercises Swedish text (e.g. handling of Swedish characters).
 - UI text always goes through next-intl, in both sv and en.
 - File and directory names are in English.
+- **Action verb taxonomy (controlled vocabulary).** For anything that creates an entity or resource, always use the active verb **Create** (Swedish: *Skapa*), never *New* (Swedish: *Ny*) or *Make*. Follow `[Action Verb] + [Noun]` (e.g. `Create order`, `Create venue`, `Create chat`).
+  - **Create** (*Skapa*): Bringing a new entity into existence (not New, Add, Make, Generate).
+  - **Add** (*Lägg till*): Attaching an existing entity or child record to a list/container (e.g. `Add member`, `Add line`).
+  - **Edit** (*Redigera*/*Ändra*): Modifying an existing record (not Change, Modify, Update).
+  - **Delete** (*Ta bort*/*Radera*): Permanently destroying a record (not Remove, Trash).
+  - **Remove** (*Ta bort*/*Koppla bort*): Detaching without destroying the underlying record.
+  - **Save** (*Spara*): Confirming/persisting form changes (not Submit, Done, Apply).
 - See `docs/decisions/0009-language-in-code-and-ui.md`.
 
 ## Conventions
@@ -53,15 +60,16 @@
   - Searchable entities implement `Embeddable`.
   - Reusable AI behaviour lives as skills (System / Organization / Personal), not as ad hoc prompts.
   - See `docs/decisions/0007-ai-first-ux.md` and `docs/decisions/0008-semantic-search-and-skills.md`.
-- **Configurable domain.** No domain words in code. The organization defines types, fields, lists, ticket statuses, item states and responsibilities as data. Every ticket and item has one assignee plus followers (ADR 0034). Code owns only generic capabilities (`PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE`, `SETUPS`) and flags on statuses and states (ADR 0043, 0044). Templates are optional data. See `docs/decisions/0021-configurable-items.md`.
+- **Configurable domain.** No domain words in code. The organization defines types, fields, lists, order statuses, item states and responsibilities as data. Every order and item has one assignee plus followers (ADR 0034). Code owns only generic capabilities (`PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE`, `SETUPS`) and flags on statuses and states (ADR 0043, 0044). Templates are optional data. See `docs/decisions/0021-configurable-items.md`.
 - **Capabilities, demands, buffers and database triggers** (ADR 0059, 0053): `packages/core/CLAUDE.md`, `packages/db/CLAUDE.md`.
 - **Permissions and feature scope** (ADR 0050, 0071): `<feature>:<action>` with fixed role presets and per-member overrides; an owner operation returns only its own feature's data, a view read model joins others' with each field gated by that feature's `read`. Details in `packages/core/CLAUDE.md`.
 - **Single source of truth.** Every column is owned, derived, a projection or a snapshot (ADR 0051). A fact lives in one place; defaults are inherited (`null` = inherit), never copied; references are foreign keys, never id lists or ids in JSON (ADR 0056). Projections are written only by the database or one named function and have a reconciliation check. Triggers that write projections are listed in `packages/db/CLAUDE.md`. The line is the booking and quotes and invoices are snapshots of lines (ADR 0052). Balances are derived (ADR 0057). Domain history never comes from `AuditLog`.
 - **Time (ADR 0064, accepted, partly built).** Every stored time is an instant; a plain date is only a code-level key, never a column. A zone is read only through `effectiveTimeZone` (`packages/core/src/time/time-zone.ts`: venue, else `OrganizationProfile.timeZone`), never from a constant or the browser; the web app gets it from `server/time-zones.ts` (next-intl's request config carries the organization's). Convert at the edges (forms, display). Hours are advisory: scheduling outside them is allowed and warns. Show relative time only with `RelativeTime` (always with an exact-time tooltip).
+- **Fast pages (ADR 0097).** Light pages render in one pass; heavy pages paint the header first and stream sections; one read per request, independent reads in parallel, a view read model per heavy screen. Rules in `apps/web/CLAUDE.md` "Page loading".
 - **Everything is logged.** Core `execute` writes one system log row per operation (succeeded, rejected or failed). Every entry point opens a request context with `requestId` and `surface`, which also end up on `AuditLog`. See `docs/decisions/0014-system-logging.md`.
 
 ## Code rules
-- Max 150 lines per file and max 40 lines per function. One idea per file.
+- Aim for ~150 lines per file and ~40 lines per function as a guideline (not a hard CI check). Keep one cohesive idea per file; do not split a cohesive component or table column definition into tiny helper hooks just to hit a line count.
 - Named exports only. `default` is used only for Next.js page, layout and route.
 - No barrel files except the package's `src/index.ts`.
 - Functions take ONE typed object parameter, e.g. `fn({ a, b }: FnInput)`. No positional parameters.
@@ -121,7 +129,7 @@
 - `pnpm --filter @bibi/core cleanup:test-orgs`: opt-in dry run listing organizations left by old test runs in the dev database; `-- --yes` deletes them. Organizations with a real member are kept.
 - `pnpm lint`: Biome check.
 - `node tools/ci/verify.mjs [--all | --light | --only <id>]`: the checks CI runs (lint, structure, typecheck, migrate, test, build), defined once in `tools/ci/checks.json`; by default scoped to the files you changed (`build` only when apps or shared packages changed).
-- `pnpm check:structure`: checks file size, function size, exports, barrel files and feature files.
+- `pnpm check:structure`: checks exports, barrel files, parameter objects, time/number rules, server render boundaries and feature files.
 - `pnpm typecheck`: TypeScript for all packages.
 - `pnpm test`: Vitest and the parity test.
 - `pnpm --filter @bibi/web test:e2e`: Playwright with a scripted model (`E2E_MOCK_MODEL`), see `apps/web/CLAUDE.md`.

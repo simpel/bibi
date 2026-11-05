@@ -10,7 +10,7 @@ The parity core: every capability is defined **once** as an operation and then e
   - Commands call `context.recordChange({ entityId, before, after })` for the audit row.
 - Always run via `execute({ operation, input, context, afterCommit? })`: Zod validation → permission → handler → output validation → AuditLog (commands, same transaction) → `afterCommit` hooks.
 - Calls to the outside world (a payment provider, mail to a customer) go in the operation's `external({ input, output, context })`, never in `handler`: `execute` runs it only after the commit, and a change preview, dry run or nested run never does. A failure leaves the record in a failure state and is returned. Why: ADR 0058.
-- Internal work that follows a committed command on every surface (a ticket change regenerates its work orders) goes in the operation's `followUp`, never in an `afterCommit` hook a surface passes: `execute` runs it after `external`, logs a failure (`operation.followUpFailed`) and never undoes the command. Why: ADR 0092.
+- Internal work that follows a committed command on every surface (an order change regenerates its run sheets) goes in the operation's `followUp`, never in an `afterCommit` hook a surface passes: `execute` runs it after `external`, logs a failure (`operation.followUpFailed`) and never undoes the command. Why: ADR 0092.
 - `execute` logs exactly one line per call: `operation.completed|rejected|failed`. Failed `afterCommit` hooks are logged as `operation.afterCommitFailed`; the indexing hook never throws and logs `search.index_failed`, so the command result is unchanged (ADR 0030, 0014).
 - `context.db` is `scopedDb`: org scoping cannot be bypassed. Build the context with `createExecuteContext({ organizationId, actor, roles, permissions })`. `permissions` is resolved by `packages/auth`; `roles` are names for display only.
 - AI actor: commands require human approval by default (`approval: true`, `requiresApproval`). `aiAllowed: false` means the AI actor may never run the operation (`authorize` refuses it, also after approval; MCP hides the tool). `Actor.approvedBy` is set only by the approval flow. Conversation bookkeeping uses `approval: false`.
@@ -42,6 +42,7 @@ The parity core: every capability is defined **once** as an operation and then e
 - Inputs that reference another feature's id are checked with `checkReadable(<feature>:read)`. Errors never describe records the caller cannot view.
 - Snapshots copied from another feature need its `read` at copy time. Audit, search text and approval previews only show what the caller may view.
 - If an owner operation needs another feature's data in its output, the scope is wrong: fix the scope, or answer the screen with a view read model.
+- A heavy screen (its first paint needs several features) gets a view read model, so the page and the assistant each answer it in one call (`order.view`, `calendar.range`). Why: ADR 0097.
 
 ## Configurable domain (ADR 0021, 0026, 0059)
 - No domain words in code. Base entities and capabilities: `features/entity-type/capability-kinds.ts`. Field kinds: `features/field-definition/field-kinds.ts`.
@@ -56,7 +57,7 @@ The parity core: every capability is defined **once** as an operation and then e
 ## Assignments and responsibilities (ADR 0034, 0055, 0056)
 - Assignment rows store only explicit choices. Applicable responsibilities, default assignees and default followers are derived on read (`deriveAssignment`). Never create or archive rows when lines change.
 - Rows reference the subject's `Record` (`recordId`, composite FK) while the API keeps `subjectType`/`subjectId`.
-- Id lists on responsibilities and work order definitions are join rows: read and write them through the `*-rows.ts` helpers, never as JSON.
+- Id lists on responsibilities and run sheet definitions are join rows: read and write them through the `*-rows.ts` helpers, never as JSON.
 
 ## Integrations (ADR 0087)
 - A Fortnox access token comes only from `getFortnoxAccessToken` (`features/integration/fortnox/access-token.ts`), called in `external`, never in a handler: a refresh rotates the refresh token and a rollback would lose it. Tokens are sealed with `sealSecret` (`crypto/secret-box.ts`) and never appear in an output, log or audit row.
@@ -81,9 +82,9 @@ The parity core: every capability is defined **once** as an operation and then e
 - `search` filters each hit through `load({ ids, db, viewer })`, so archived rows and things the user may not see are removed. `load` without `viewer` is for the indexer.
 
 ## Boards (ADR 0067)
-- A status carries no move rules except gates into it (`TicketStatusGate`, optional source status, ADR 0067 §5, ADR 0076). Movement is free unless the status has `restrictsNext`; then only its `TicketStatusTransition` rows count. The move rule is read in `loadMoveRule` and checked only in `moveTicket` (`statusBlockers`). Write transitions through `replaceTransitions` and gates through `replaceGates` only (no nested writes: the scoped client refuses them).
+- A status carries no move rules except gates into it (`OrderStatusGate`, optional source status, ADR 0067 §5, ADR 0076). Movement is free unless the status has `restrictsNext`; then only its `OrderStatusTransition` rows count. The move rule is read in `loadMoveRule` and checked only in `moveOrder` (`statusBlockers`). Write transitions through `replaceTransitions` and gates through `replaceGates` only (no nested writes: the scoped client refuses them).
 - `pipeline:write|delete` is the admin-only flow (statuses, flags, order, Allowed next, gates, item states, the grid, pipeline setup) and stays out of the manager and member presets. Boards and phases (`board.*`, `boardPhase.*`) use the `board` feature (`board:*`; manager in full, member `read`). Never put view setup on `pipeline:*` or a flow operation on `board:*` (ADR 0076).
-- A status is in at most one phase per board; only the `board`, `boardPhase` and `ticketStatus` (create, archive) operations place or unplace one; never write `BoardPhaseStatus` from another feature. Archiving a phase or board never touches tickets or statuses. A `pipeline.board` card's `columnId` is a phase id, never a status id.
+- A status is in at most one phase per board; only the `board`, `boardPhase` and `orderStatus` (create, archive) operations place or unplace one; never write `BoardPhaseStatus` from another feature. Archiving a phase or board never touches orders or statuses. A `pipeline.board` card's `columnId` is a phase id, never a status id.
 
 ## Demo data
 - `seedDemo()` in `src/seed/demo/`, CLI `seed:demo`; the spec is `docs/demo-seed.md`. Everything goes through `execute` as SYSTEM, except the Better Auth rows. Checks are in `checks.ts` and `config-checks.ts`; the board layout of an organization is data in `data/<org>/boards.ts`.

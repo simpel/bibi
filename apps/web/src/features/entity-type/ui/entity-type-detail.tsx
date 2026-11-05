@@ -1,16 +1,16 @@
-import { getEntityType } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { Badge } from "@bibi/ui";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { loadEntityType } from "@/features/entity-type/load-entity-type";
 import { FieldSection } from "@/features/field-definition/ui/field-section";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
-import { runOperation } from "@/server/run-operation";
 import { ArchiveEntityTypeButton } from "./archive-entity-type-button";
 import { EntityTypeForm } from "./entity-type-form";
 
@@ -18,10 +18,12 @@ export type EntityTypeDetailProps = { locale: Locale; id: string };
 
 /** Type detail page: rename, capabilities (one form, saved together), fields and archive. */
 export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
-  const t = await getTranslations("entityType");
-  const common = await getTranslations("common");
-  const abilities = await getCallerAbilities();
-  const result = await runOperation({ operation: getEntityType, input: { id } });
+  const [t, common, abilities, result] = await Promise.all([
+    getTranslations("entityType"),
+    getTranslations("common"),
+    getCallerAbilities(),
+    loadEntityType({ id }),
+  ]);
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const entityType = result.value;
   const archive = can({ abilities, permission: "configuration:delete" }) ? (
@@ -29,6 +31,7 @@ export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
   ) : undefined;
   return (
     <div className="grid gap-8">
+      <CrumbName href={`/settings/types/${id}`} name={entityType.name} />
       <div className="grid gap-4">
         <Link
           href={ROUTES.settingsTypes}

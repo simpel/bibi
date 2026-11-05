@@ -1,0 +1,931 @@
+{
+  "assistant": {
+    "title": "Assistant",
+    "placeholder": "Ask something or request help...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "newConversation": "Create conversation",
+    "approval": {
+      "title": "Confirm change",
+      "description": "The assistant wants to make the following change.",
+      "approve": "Confirm",
+      "reject": "Cancel",
+      "approving": "Confirming...",
+      "approved": "Confirmed",
+      "rejected": "Cancelled",
+      "expired": "The proposal has expired",
+      "expiresIn": "Valid for {time}",
+      "approvedToast": "The action was carried out.",
+      "fields": {
+        "id": "Id",
+        "name": "Name",
+        "description": "Description",
+        "streetAddress": "Street address",
+        "postalCode": "Postal code",
+        "city": "City",
+        "country": "Country",
+        "contactEmail": "Contact email",
+        "contactPhone": "Contact phone",
+        "openingHours": "Opening hours note",
+        "defaultVatRatePercent": "VAT (%)",
+        "venueId": "Venue (id)",
+        "entityTypeId": "Type (id)",
+        "base": "Base",
+        "dateFormat": "Date format",
+        "clockFormat": "Clock format",
+        "numberFormat": "Number format",
+        "moneyFormat": "Money format",
+        "capabilities": "Capabilities",
+        "fields": "Fields",
+        "priceMinor": "Price (minor units)",
+        "priceUnit": "Price unit",
+        "vatRatePercent": "VAT (%)",
+        "defaultDurationMinutes": "Default duration (min)",
+        "setups": "Setups",
+        "changeoverMinutes": "Changeover (min)",
+        "setupMinutes": "Setup (min)",
+        "teardownMinutes": "Teardown (min)",
+        "entityTypeIds": "Item types (ids)",
+        "fieldIds": "Fields (ids)",
+        "vocabularyIds": "Lists (ids)",
+        "responsibilityId": "Receiving responsibility (id)",
+        "key": "Key",
+        "kind": "Field kind",
+        "required": "Required",
+        "vocabularyId": "List (id)",
+        "options": "Options",
+        "position": "Position",
+        "values": "List values",
+        "template": "Template",
+        "slug": "Slug",
+        "instructions": "Instructions",
+        "allowedTools": "Allowed tools",
+        "resources": "Resources",
+        "scope": "Scope",
+        "markdown": "SKILL.md",
+        "title": "Title",
+        "value": "Value",
+        "parts": "Parts",
+        "customisationGroups": "Customisation groups",
+        "customerId": "Customer (id)",
+        "email": "Email",
+        "phone": "Phone",
+        "invoiceStreetAddress": "Invoice street address",
+        "invoicePostalCode": "Invoice postal code",
+        "invoiceCity": "Invoice city",
+        "invoiceCountry": "Invoice country",
+        "paymentTermsDays": "Payment terms (days)",
+        "creditLimitMinor": "Credit limit (minor units)",
+        "archiveOrders": "Also archive orders",
+        "contactId": "Contact person (id)",
+        "contact": "First contact person",
+        "desiredStartsAt": "Desired start",
+        "desiredEndsAt": "Desired end",
+        "quantity": "Quantity",
+        "estimatedHeadcount": "Estimated headcount",
+        "guaranteedHeadcount": "Guaranteed headcount",
+        "headcount": "Headcount",
+        "unitPriceMinor": "Unit price (minor units)",
+        "discountPercent": "Discount (%)",
+        "budgetMinor": "Budget (minor units)",
+        "estimatedValueMinor": "Estimated value (minor units)",
+        "orderId": "Order (id)",
+        "inboundMessageId": "Inbox message",
+        "parentLineId": "Add-on to",
+        "statusId": "Status (id)",
+        "reason": "Reason",
+        "color": "Color",
+        "entry": "New orders start here",
+        "closes": "Ends the order",
+        "gates": "Gates on the moves",
+        "invoiceable": "Can be invoiced",
+        "event": "Quote event",
+        "targetStatusId": "Move orders to (status id)",
+        "toStatusIds": "May move to (status ids)",
+        "allowedNext": "Allowed next (any status or only these)",
+        "ids": "Order (ids)",
+        "initial": "New lines start here",
+        "hold": "Hold",
+        "inRunSheets": "In run sheets",
+        "released": "Released (final)",
+        "expires": "Expires",
+        "targetStateId": "Move lines to (state id)",
+        "toStateIds": "May move to (state ids)",
+        "lineId": "Line (id)",
+        "lineIds": "Options (line ids)",
+        "chosenLineIds": "Chosen options (line ids)",
+        "stateId": "State (id)",
+        "holdsUntil": "Hold until",
+        "expiryStateId": "Expiry state (id)",
+        "templateId": "Package (id)",
+        "lines": "Lines",
+        "startsAt": "Starts",
+        "itemTypes": "Item types",
+        "statuses": "Statuses",
+        "cells": "Grid cells",
+        "itemId": "Item",
+        "targetItemId": "Specific item",
+        "tagValueIds": "Required list values",
+        "windows": "Windows",
+        "unitId": "Unit",
+        "resourceKind": "Equipment or person",
+        "amountMinor": "Amount (öre)",
+        "dueDate": "Due date",
+        "method": "Method",
+        "quoteId": "Quote",
+        "depositId": "Deposit request",
+        "invoiceId": "Invoice",
+        "capacity": "Capacity",
+        "setupId": "Setup",
+        "status": "Status",
+        "price": "Price",
+        "memberId": "Member",
+        "scheduleKind": "Schedule kind",
+        "itemIds": "Staff items",
+        "days": "Days",
+        "exceptions": "Exceptions",
+        "enabled": "On",
+        "boardId": "Board",
+        "phaseId": "Column",
+        "statusIds": "Statuses",
+        "assigneeId": "Assignee",
+        "receivableAccount": "Receivables account",
+        "clearingAccount": "Payment clearing account",
+        "advancesAccount": "Customer advances account",
+        "feesAccount": "Payment fees account",
+        "roundingAccount": "Rounding account",
+        "revenueAccount": "Default revenue account",
+        "vat25Account": "Output VAT 25 % account",
+        "vat12Account": "Output VAT 12 % account",
+        "vat6Account": "Output VAT 6 % account",
+        "fiscalYearStartMonth": "First month of the fiscal year",
+        "depositPercent": "Deposit (percent)",
+        "depositMinimumMinor": "Minimum for a deposit (minor units)",
+        "autoAssignSeats": "Add seats automatically",
+        "extraSeats": "Extra seats",
+        "invoiceProvider": "Invoice provider",
+        "revenueAccounts": "Revenue accounts per item type or item"
+      },
+      "operations": {
+        "venue_create": "Create venue",
+        "venue_update": "Update venue",
+        "venue_archive": "Archive venue",
+        "item_create": "Create item",
+        "item_update": "Update item",
+        "item_archive": "Archive item",
+        "customer_create": "Create customer",
+        "customer_update": "Update customer",
+        "customer_archive": "Archive customer",
+        "contact_create": "Add contact person",
+        "contact_update": "Update contact person",
+        "contact_archive": "Archive contact person",
+        "order_create": "Create order",
+        "order_update": "Update order",
+        "order_changeStatus": "Change order status",
+        "orderStatus_create": "Create status",
+        "orderStatus_update": "Update status",
+        "orderStatus_archive": "Archive status",
+        "orderStatus_reorder": "Reorder statuses",
+        "orderStatus_setTransitions": "Set where orders in a status can move",
+        "orderStatus_setGates": "Set what moves into a status require",
+        "orderStatus_importTemplate": "Import status template",
+        "entityType_create": "Create type",
+        "entityType_update": "Update type",
+        "entityType_archive": "Archive type",
+        "fieldDefinition_create": "Create field",
+        "fieldDefinition_update": "Update field",
+        "fieldDefinition_archive": "Archive field",
+        "vocabulary_create": "Create list",
+        "vocabulary_update": "Update list",
+        "vocabulary_archive": "Archive list",
+        "vocabulary_importTemplate": "Import list template",
+        "vocabulary_addValue": "Add list value",
+        "vocabulary_updateValue": "Update list value",
+        "vocabulary_archiveValue": "Archive list value",
+        "setup_create": "Create setup",
+        "setup_update": "Update setup",
+        "setup_archive": "Archive setup",
+        "responsibility_create": "Create responsibility",
+        "responsibility_update": "Update responsibility",
+        "responsibility_archive": "Archive responsibility",
+        "runSheetDefinition_create": "Create run sheet",
+        "runSheetDefinition_update": "Update run sheet",
+        "runSheetDefinition_archive": "Archive run sheet",
+        "configuration_importTemplate": "Import configuration template",
+        "skill_create": "Create skill",
+        "skill_update": "Update skill",
+        "skill_publish": "Publish skill",
+        "skill_archive": "Archive skill",
+        "skill_share": "Share skill",
+        "skill_import": "Import skill",
+        "conversation_archive": "Archive conversation",
+        "userSettings_update": "Change date and clock format",
+        "assignment_assign": "Change assignee",
+        "assignment_follow": "Follow",
+        "assignment_unfollow": "Unfollow",
+        "itemState_create": "Create item state",
+        "itemState_update": "Update item state",
+        "itemState_archive": "Archive item state",
+        "itemState_reorder": "Reorder item states",
+        "itemState_setTransitions": "Set state transitions",
+        "statusGrid_importTemplate": "Import status grid template",
+        "statusGrid_setCell": "Set status grid cell",
+        "line_create": "Add line",
+        "line_update": "Update line",
+        "line_archive": "Remove line",
+        "inboundMessage_attachToOrder": "Attach message to order",
+        "line_changeState": "Change line state",
+        "line_expandBundle": "Add bundle with its parts",
+        "line_chooseOptions": "Choose line options",
+        "itemDemand_create": "Add demand to item",
+        "itemDemand_update": "Change item demand",
+        "itemDemand_archive": "Remove item demand",
+        "lineAllocation_assign": "Choose unit for line",
+        "line_followStatus": "Let line follow the status",
+        "alternativeGroup_create": "Create alternatives",
+        "alternativeGroup_update": "Change alternatives",
+        "alternativeGroup_archive": "Dissolve alternatives",
+        "alternativeGroup_choose": "Choose an alternative",
+        "order_expireHolds": "Expire overdue holds",
+        "order_createFromTemplate": "Create order from a package",
+        "orderTemplate_create": "Create package",
+        "orderTemplate_update": "Update package",
+        "orderTemplate_archive": "Archive package",
+        "pipelineSetup_activate": "Set up the pipeline",
+        "deposit_create": "Create deposit request",
+        "deposit_send": "Mark deposit request as sent",
+        "deposit_void": "Void deposit request",
+        "invoice_create": "Create invoice",
+        "invoice_send": "Mark invoice as sent",
+        "invoice_sync": "Refresh invoice from Fortnox",
+        "invoice_void": "Void invoice",
+        "payment_create": "Request payment",
+        "memberProfile_update": "Change a member's schedule kind",
+        "memberProfile_setItems": "Link staff items to a member",
+        "venueHours_set": "Set opening hours",
+        "itemHours_set": "Set working hours",
+        "organizationProfile_setDomainJoin": "Turn domain join on or off",
+        "board_create": "Create board",
+        "board_update": "Update board",
+        "board_reorder": "Reorder boards",
+        "board_archive": "Archive board",
+        "boardPhase_create": "Add board column",
+        "boardPhase_update": "Update board column",
+        "boardPhase_archive": "Remove board column",
+        "boardPhase_reorder": "Reorder board columns",
+        "boardPhase_moveStatus": "Move status between board columns",
+        "accountingSettings_update": "Change accounting settings",
+        "paymentSettings_update": "Change payment settings",
+        "billing_update": "Change seat settings",
+        "billing_approveSeat": "Approve a seat",
+        "billing_rejectSeat": "Decline a seat",
+        "billing_remindAdmins": "Remind the admins to pay",
+        "deposit_request": "Request deposit with payment link",
+        "accountingExport_create": "Create SIE export",
+        "inboundMessage_markRead": "Mark message as read",
+        "inboundMessage_markUnread": "Mark message as unread",
+        "inboundMessage_delete": "Delete message",
+        "notification_delete": "Delete notifications"
+      },
+      "setup": {
+        "title": "Create my first version",
+        "request": "Nothing is saved until you approve. You can change all of it later by asking the assistant, or in Settings and Pipeline.",
+        "archiveNote": "If you already have statuses or states that are not in this version, they are archived, not deleted.",
+        "accepted": "Your first version is saved. Opening your board.",
+        "rejected": "Not saved. Tell the assistant what to change.",
+        "approve": "Create my first version",
+        "creating": "Creating...",
+        "change": "Change something",
+        "changeMessage": "I want to change something."
+      },
+      "needsAdmin": "Needs admin",
+      "changes": {
+        "record": "Record",
+        "field": "Field",
+        "before": "Before",
+        "after": "After",
+        "empty": "–",
+        "none": "Nothing changes."
+      },
+      "consequences": {
+        "title": "What this affects",
+        "understand": "I understand what this affects",
+        "other": "This change has other effects.",
+        "items": {
+          "priceKeptOnQuotes": "{lines, plural, one {# line} other {# lines}} on {quotes, plural, one {# quote} other {# quotes}} keep the old price. The new price applies to lines added later.",
+          "ordersMove": "{count, plural, one {# order moves} other {# orders move}} to {target}.",
+          "linesMove": "{count, plural, one {# line moves} other {# lines move}} to {target}.",
+          "gridCellsCleared": "{count, plural, one {# grid cell is} other {# grid cells are}} cleared."
+        }
+      }
+    },
+    "description": "Chat with the assistant about venues, items and skills.",
+    "stop": "Stop",
+    "emptyTitle": "What can I help you with?",
+    "emptyDescription": "I can search, show and propose changes. Changes always need your approval.",
+    "loadingConversation": "Loading the conversation...",
+    "skills": {
+      "label": "Skills",
+      "search": "Search skills...",
+      "empty": "No skills found.",
+      "failed": "Could not load the skills.",
+      "use": "Use the skill \"{name}\":"
+    },
+    "suggestions": {
+      "listVenues": "Show all venues",
+      "createVenue": "Create a venue called Test Hall",
+      "findItems": "Find bookable items that fit 50 people",
+      "listSkills": "Which skills are available?"
+    },
+    "history": {
+      "title": "Earlier conversations",
+      "new": "Create conversation",
+      "empty": "No conversations yet.",
+      "rename": "Rename",
+      "renameLabel": "Conversation name",
+      "archive": "Archive conversation",
+      "archiveConfirm": "Archive “{title}”?",
+      "archived": "The conversation was archived.",
+      "renamed": "Conversation renamed."
+    },
+    "tool": {
+      "running": "Running {tool}..."
+    },
+    "ui": {
+      "billing": {
+        "singular": "Bibi subscription",
+        "trialEndsAt": "The free trial ends {date}.",
+        "seats": "{used} of {total} seats in use, {held} waiting",
+        "open": "Open billing"
+      },
+      "open": "Open",
+      "openVenue": "Open the venue",
+      "more": "There are more results. Ask the assistant to show more.",
+      "noHits": "No results.",
+      "item": {
+        "singular": "Item",
+        "empty": "No items found.",
+        "open": "Open the item",
+        "columns": {
+          "name": "Name",
+          "price": "Price",
+          "setups": "Setups"
+        },
+        "priceUnit": {
+          "PER_PERSON": "per person",
+          "PER_UNIT": "per unit",
+          "PER_HOUR": "per hour",
+          "FLAT": "flat rate"
+        },
+        "duration": "{minutes} min",
+        "setupsCount": "{count, plural, one {# setup} other {# setups}}",
+        "partsCount": "{count, plural, one {# part} other {# parts}}",
+        "customisationGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
+        "sections": {
+          "price": "Price",
+          "bookable": "Booking",
+          "setups": "Setups",
+          "parts": "Parts",
+          "customisations": "Customisations"
+        }
+      },
+      "customer": {
+        "singular": "Customer",
+        "empty": "No customers found.",
+        "open": "Open the customer",
+        "columns": {
+          "name": "Name",
+          "city": "City",
+          "email": "Email"
+        },
+        "terms": "Payment terms {days} days"
+      },
+      "contact": {
+        "singular": "Contact person",
+        "empty": "No contact persons found.",
+        "openCustomer": "Open the customer",
+        "columns": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone"
+        }
+      },
+      "order": {
+        "singular": "Order",
+        "empty": "No orders found.",
+        "open": "Open the order",
+        "reference": "Order {reference}",
+        "headcount": "{count, plural, one {# guest} other {# guests}}",
+        "columns": {
+          "title": "Title",
+          "when": "Desired dates",
+          "headcount": "Headcount"
+        },
+        "view": {
+          "customer": "Customer",
+          "contact": "Contact",
+          "when": "When",
+          "guests": "Guests",
+          "assignee": "Assigned to",
+          "followers": "Following",
+          "lines": "Lines",
+          "total": "Total excl. VAT",
+          "totalFrom": "From {amount}",
+          "balance": "Open balance",
+          "issues": "Issues",
+          "hidden": "–",
+          "nobody": "Nobody"
+        }
+      },
+      "paymentAccount": {
+        "singular": "Payout account",
+        "onboardingLink": "Continue on Stripe",
+        "open": "Open payment settings"
+      },
+      "integration": {
+        "singular": "Integrations",
+        "unavailable": "Not available on this server",
+        "company": "{company} ({number})",
+        "open": "Open integrations"
+      },
+      "calendar": {
+        "title": "Calendar, {period}",
+        "empty": "No blocks in this period.",
+        "more": "+{count} more",
+        "open": "Open the calendar",
+        "softHold": "Soft hold"
+      },
+      "pipeline": {
+        "title": "Pipeline",
+        "empty": "No orders yet.",
+        "open": "Open the pipeline"
+      },
+      "quote": {
+        "title": "Quote, version {version}",
+        "empty": "No quotes found.",
+        "open": "Open the quote",
+        "validUntil": "Valid until {date}",
+        "noValidity": "No validity date yet",
+        "columns": {
+          "version": "Quote",
+          "validUntil": "Valid until",
+          "total": "Total incl. VAT",
+          "status": "Status"
+        }
+      },
+      "occupancy": {
+        "singular": "Occupancy",
+        "released": "Released",
+        "empty": "No occupancy found.",
+        "openItem": "Open the item",
+        "columns": {
+          "type": "Type",
+          "period": "Period",
+          "note": "Note"
+        }
+      },
+      "line": {
+        "singular": "Line",
+        "empty": "No lines found.",
+        "quantity": "{count} taking part",
+        "archived": "Removed from the program",
+        "openOrder": "Open the order",
+        "columns": {
+          "name": "Name",
+          "when": "When",
+          "quantity": "Quantity"
+        },
+        "untimed": "No time",
+        "unitPrice": "Unit price {price}"
+      },
+      "alternativeGroup": {
+        "empty": "No alternatives found.",
+        "chosen": "Chosen",
+        "open": "Not chosen",
+        "options": "{count, plural, one {# option} other {# options}}",
+        "archived": "Dissolved",
+        "openOrder": "Open the order",
+        "columns": {
+          "name": "Name",
+          "status": "Status",
+          "options": "Options"
+        }
+      },
+      "requirement": {
+        "singular": "Requirement",
+        "empty": "No requirements found.",
+        "quantity": "Count: {count}",
+        "onOrder": "Applies to the whole order",
+        "onLine": "Applies to one line",
+        "archived": "Removed",
+        "openOrder": "Open the order",
+        "columns": {
+          "quantity": "Count",
+          "where": "Applies to"
+        }
+      },
+      "runSheet": {
+        "singular": "Run sheet",
+        "empty": "No run sheets found.",
+        "version": "Version {version}",
+        "notSent": "Not sent",
+        "openOrder": "Open the order",
+        "columns": {
+          "version": "Version",
+          "changes": "Changes",
+          "sent": "Sent"
+        }
+      },
+      "entityType": {
+        "empty": "No types found.",
+        "open": "Open the type",
+        "noFields": "The type has no fields.",
+        "columns": {
+          "name": "Name",
+          "base": "Base",
+          "capabilities": "Capabilities",
+          "fields": "Fields"
+        },
+        "base": {
+          "ITEM": "Item",
+          "CUSTOMER": "Customer",
+          "CONTACT": "Contact",
+          "ORDER": "Order",
+          "REQUIREMENT": "Requirement",
+          "LINE": "Line"
+        },
+        "capability": {
+          "PRICED": "Priced",
+          "BUNDLE": "Bundle",
+          "CUSTOMISATIONS": "Customisations",
+          "BOOKABLE": "Bookable",
+          "SETUPS": "Setups"
+        }
+      },
+      "field": {
+        "empty": "No fields found.",
+        "required": "Required",
+        "yes": "Yes",
+        "key": "Key: {key}",
+        "openList": "Open the list",
+        "openType": "Open the type",
+        "columns": {
+          "name": "Name",
+          "kind": "Field kind",
+          "required": "Required"
+        },
+        "kind": {
+          "TEXT": "Text",
+          "NUMBER": "Number",
+          "BOOLEAN": "Yes/no",
+          "DATE": "Date",
+          "CHOICE": "Choice",
+          "MULTI_CHOICE": "Multiple choice",
+          "LINK": "Link to a record"
+        }
+      },
+      "vocabulary": {
+        "empty": "No lists found.",
+        "open": "Open the list",
+        "valuesCount": "{count, plural, one {# value} other {# values}}",
+        "columns": {
+          "name": "Name",
+          "values": "List values"
+        }
+      },
+      "setup": {
+        "singular": "Setup",
+        "empty": "No setups found.",
+        "open": "Open setups",
+        "changeover": "Changeover {minutes} min",
+        "columns": {
+          "name": "Name",
+          "changeover": "Changeover"
+        }
+      },
+      "priceList": {
+        "singular": "Price list",
+        "archived": "Archived",
+        "empty": "No price lists found.",
+        "open": "Open price lists",
+        "columns": {
+          "name": "Name",
+          "validity": "Validity",
+          "pricing": "Pricing"
+        }
+      },
+      "responsibility": {
+        "singular": "Responsibility",
+        "archived": "Archived",
+        "empty": "No responsibilities found.",
+        "open": "Open responsibilities",
+        "covers": "{types, plural, one {# item type} other {# item types}}, {followers, plural, =0 {no followers} one {# follower} other {# followers}}",
+        "columns": {
+          "name": "Name",
+          "covers": "Covers"
+        }
+      },
+      "runSheetDefinition": {
+        "singular": "Run sheet",
+        "archived": "Archived",
+        "empty": "No run sheets found.",
+        "open": "Open run sheets",
+        "contents": "{types, plural, one {# item type} other {# item types}}, {fields, plural, one {# field} other {# fields}}, {lists, plural, one {# list} other {# lists}}",
+        "columns": {
+          "name": "Name",
+          "contents": "Includes"
+        }
+      },
+      "orderStatus": {
+        "singular": "Status",
+        "empty": "No statuses found.",
+        "open": "Open the statuses",
+        "archived": "Archived",
+        "transitions": "{count, plural, =0 {No transitions} one {# transition} other {# transitions}}",
+        "columns": {
+          "name": "Name",
+          "flags": "Does",
+          "transitions": "Transitions"
+        }
+      },
+      "itemState": {
+        "singular": "State",
+        "empty": "No states found.",
+        "openType": "Open the item type",
+        "archived": "Archived",
+        "transitions": "{count, plural, =0 {No transitions} one {# transition} other {# transitions}}",
+        "columns": {
+          "name": "Name",
+          "flags": "Does",
+          "transitions": "Transitions"
+        }
+      },
+      "statusGrid": {
+        "empty": "No grid cells are set: lines keep their state on status moves.",
+        "columns": {
+          "status": "Status",
+          "type": "Item type",
+          "state": "Lines move to"
+        }
+      },
+      "assignment": {
+        "subject": {
+          "ORDER": "Order",
+          "ITEM": "Item"
+        },
+        "main": "Main",
+        "responsibility": "Responsibility",
+        "assigned": "Someone is assigned",
+        "unassigned": "No one assigned yet",
+        "followers": "{count, plural, =0 {No followers} one {# follower} other {# followers}}",
+        "empty": "No assignments.",
+        "columns": {
+          "subject": "Subject",
+          "assignee": "Assignee",
+          "followers": "Followers"
+        }
+      },
+      "orderTemplate": {
+        "singular": "Package",
+        "empty": "No packages found.",
+        "open": "Open the packages",
+        "archived": "Archived",
+        "lines": "{count, plural, =0 {No lines} one {# line} other {# lines}}",
+        "columns": {
+          "name": "Name",
+          "lines": "Lines"
+        }
+      },
+      "pipelineDraft": {
+        "title": "A first version",
+        "sell": "What you sell",
+        "moves": "How a request moves",
+        "ends": "Ends as: {statuses}",
+        "nothingYet": "Nothing yet"
+      },
+      "memberProfile": {
+        "singular": "Member work",
+        "noItems": "No staff items",
+        "open": "Open member"
+      },
+      "hours": {
+        "title": "Hours",
+        "empty": "No hours set.",
+        "exceptions": "Exceptions",
+        "zone": "Time zone {zone}"
+      },
+      "board": {
+        "title": "Board {name}",
+        "boards": "Boards",
+        "default": "Default",
+        "columns": "{count, plural, one {# column} other {# columns}}",
+        "statuses": "{count, plural, one {# status} other {# statuses}}",
+        "empty": "No boards.",
+        "open": "Open the board",
+        "archived": "Archived",
+        "column": "Column {name}"
+      }
+    },
+    "questionnaire": {
+      "answer": "Answer",
+      "otherLabel": "Another answer",
+      "otherPlaceholder": "Or write your own answer…"
+    }
+  },
+  "skills": {
+    "title": "Skills",
+    "singular": "Skill",
+    "create": "Create skill",
+    "import": "Import",
+    "export": "Export",
+    "share": "Share with organization",
+    "publish": "Publish",
+    "scope": {
+      "system": "System",
+      "organization": "Organization",
+      "personal": "Personal",
+      "label": "Scope",
+      "hint": "Only you can see personal skills. Organization skills need an admin."
+    },
+    "instructions": "Instructions",
+    "allowedTools": "Allowed tools",
+    "listDescription": "Reusable instructions the assistant loads when needed.",
+    "empty": "No skills found.",
+    "emptyDescription": "Create a skill or import a SKILL.md.",
+    "createDescription": "Describe when the skill applies and what the assistant should do.",
+    "edit": "Edit skill",
+    "created": "The skill was created.",
+    "updated": "The skill was updated.",
+    "published": "The skill is published.",
+    "shared": "The skill was shared as a draft in the organization.",
+    "archive": "Archive skill",
+    "archived": "The skill was archived.",
+    "archiveConfirm": "Archive {name}?",
+    "exported": "SKILL.md was downloaded.",
+    "imported": "The skill was imported as a draft.",
+    "importTitle": "Import skill",
+    "importDescription": "Paste or upload a SKILL.md. The content is treated as data and becomes a draft.",
+    "importFile": "File (SKILL.md)",
+    "importMarkdown": "SKILL.md content",
+    "version": "Version {version}",
+    "noToolLimits": "No limits: every tool you have yourself is allowed.",
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "columns": {
+      "name": "Name",
+      "scope": "Scope",
+      "version": "Version"
+    },
+    "filters": {
+      "placeholder": "Search skills...",
+      "query": "Search query",
+      "scope": "Scope",
+      "status": "Status",
+      "allScopes": "All scopes",
+      "allStatuses": "All statuses",
+      "semantic": "Search by meaning",
+      "apply": "Search"
+    },
+    "fields": {
+      "name": "Name",
+      "slug": "Slug (optional)",
+      "description": "When should it be used?",
+      "instructions": "Instructions (markdown)",
+      "allowedTools": "Allowed tools (one per line or comma separated)",
+      "resources": "Resources",
+      "resourcesHint": "Small named text files, such as checklists or templates.",
+      "resourceName": "Resource name",
+      "resourceContent": "Content",
+      "addResource": "Add resource",
+      "removeResource": "Remove resource"
+    },
+    "sections": {
+      "instructions": "Instructions",
+      "allowedTools": "Allowed tools",
+      "resources": "Resources"
+    }
+  },
+  "integration": {
+    "title": "Integrations",
+    "description": "Connect Bibi to the systems your organization already uses.",
+    "status": {
+      "NOT_CONNECTED": "Not connected",
+      "PENDING": "Waiting for approval",
+      "CONNECTED": "Connected",
+      "EXPIRED": "Needs reconnecting",
+      "DISCONNECTED": "Disconnected"
+    },
+    "fortnox": {
+      "name": "Fortnox",
+      "description": "Connect your organization's Fortnox company. Invoices can be raised in Fortnox, and payments booked there are mirrored back to Bibi.",
+      "hint": {
+        "NOT_CONNECTED": "Connect Fortnox to link your accounting system. You are sent to Fortnox to approve the connection.",
+        "PENDING": "The connection was started but not approved. Connect again to finish it.",
+        "CONNECTED": "Fortnox is connected. Invoices are raised in Fortnox when Settings → Payments says so; payments booked there are mirrored back.",
+        "EXPIRED": "Fortnox no longer accepts the connection. Reconnect to restore it.",
+        "DISCONNECTED": "Fortnox was disconnected. Connect again to restore it."
+      },
+      "notConfigured": "Fortnox is not available yet: Bibi has no Fortnox app credentials on this server.",
+      "reconnectNote": "Organizations connected before invoicing was added must reconnect once to grant invoicing.",
+      "adminNote": "A Fortnox system administrator must approve the connection. If you are not one, ask them to approve when Fortnox asks.",
+      "company": "Company",
+      "organizationNumber": "Organization number",
+      "connectedAt": "Connected",
+      "connect": "Connect Fortnox",
+      "reconnect": "Reconnect",
+      "connecting": "Preparing the Fortnox connection…",
+      "redirecting": "Opening Fortnox…",
+      "disconnect": "Disconnect",
+      "disconnectConfirm": "Disconnect Fortnox? Bibi forgets the connection and revokes its access at Fortnox. You can connect again later.",
+      "disconnecting": "Disconnecting Fortnox…",
+      "disconnected": "Fortnox has been disconnected."
+    },
+    "notice": {
+      "connected": "Fortnox is connected.",
+      "denied": "The connection was not approved at Fortnox, so nothing was connected.",
+      "expired": "The approval took too long or came from somewhere else. Start the connection again.",
+      "failed": "Fortnox could not be connected. Try again in a moment."
+    },
+    "apiKeysCard": {
+      "title": "API keys",
+      "description": "Keys that let other systems use Bibi's REST API on behalf of the organization.",
+      "open": "Manage API keys"
+    },
+    "apiKeys": {
+      "title": "API keys",
+      "description": "Keys for the REST API. A key belongs to the organization and acts with its own preset and permissions, so it keeps working when the person who created it leaves. Only admins manage keys.",
+      "empty": "No API keys.",
+      "create": "Create API key",
+      "createDescription": "The key acts with the preset you choose: member, manager or admin. Fine-tune its permissions afterwards.",
+      "creating": "Creating API key…",
+      "created": "The API key has been created.",
+      "secretTitle": "Copy your API key",
+      "secretDescription": "This is the only time the key is shown.",
+      "secretOnce": "Store the key somewhere safe now. Bibi only keeps a fingerprint of it and cannot show it again.",
+      "copy": "Copy key",
+      "copied": "The key has been copied.",
+      "copyFailed": "The key could not be copied. Select it and copy it by hand.",
+      "revoke": "Revoke",
+      "revokeConfirm": "Revoke the key \"{name}\"? Systems that use it lose access at once.",
+      "revoking": "Revoking API key…",
+      "revoked": "The API key has been revoked.",
+      "never": "Never",
+      "fields": {
+        "name": "Name",
+        "role": "Role",
+        "rolePlaceholder": "Choose a role",
+        "expires": "Expires"
+      },
+      "expiry": {
+        "30": "In 30 days",
+        "90": "In 90 days",
+        "365": "In a year",
+        "never": "Never"
+      },
+      "columns": {
+        "name": "Name",
+        "key": "Key",
+        "role": "Role",
+        "expires": "Expires",
+        "lastUsed": "Last used",
+        "createdBy": "Created by"
+      },
+      "edit": "Edit API key",
+      "editDescription": "Rename the key or change its preset. Its permission overrides stay.",
+      "updated": "The API key has been updated.",
+      "permissions": "Permissions",
+      "unknownCreator": "Former member"
+    },
+    "oauthGrants": {
+      "title": "Connected apps",
+      "description": "Apps such as AI clients that you have given access to Bibi in this organization. Only you see your own.",
+      "empty": "You have not connected any apps.",
+      "revoke": "Disconnect",
+      "revokeConfirm": "Disconnect \"{name}\"? It loses access at once and has to ask for access again.",
+      "revoking": "Disconnecting…",
+      "revoked": "The app has been disconnected.",
+      "columns": {
+        "client": "App",
+        "scopes": "Access",
+        "connected": "Connected"
+      },
+      "add": "Add connection",
+      "mcp": {
+        "name": "MCP",
+        "dialogTitle": "Connect over MCP",
+        "description": "Let an AI app such as Claude use Bibi as you.",
+        "urlLabel": "MCP address",
+        "copy": "Copy address",
+        "copied": "Address copied.",
+        "copyFailed": "Could not copy. Select the text and copy it by hand.",
+        "copyPrompt": "Copy prompt",
+        "promptCopied": "Prompt copied. Paste it into your AI app.",
+        "local": "Only reachable from this computer.",
+        "prompt": "Help me connect {name} to you as an MCP connector, so you can work in {name} for me. Explain each step in plain language and wait for me between steps.\n\nName: {name}\nAddress: {url}\n\nWhen I connect, {name} asks me to sign in and choose Allow."
+      }
+    }
+  }
+}

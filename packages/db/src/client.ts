@@ -11,6 +11,11 @@ export type CreateDbInput = {
 
 /** Creates an unscoped Prisma client. Prefer `scopedDb` for anything tenant-related. */
 export function createDb({ connectionString }: CreateDbInput = {}): Db {
-  const adapter = new PrismaPg({ connectionString: connectionString ?? getEnv().DATABASE_URL });
+  const env = getEnv();
+  // Pool size per process (ADR 0097); fewer queries per page, not a bigger pool, is the fix.
+  const adapter = new PrismaPg({
+    connectionString: connectionString ?? env.DATABASE_URL,
+    max: env.DATABASE_POOL_MAX,
+  });
   return new PrismaClient({ adapter });
 }

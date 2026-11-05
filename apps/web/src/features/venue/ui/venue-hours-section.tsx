@@ -11,10 +11,12 @@ export type VenueHoursSectionProps = { locale: Locale; venueId: string };
 
 /** Opening hours of a venue: the weekly pattern and dated exceptions (ADR 0064 rule 10). */
 export async function VenueHoursSection({ locale, venueId }: VenueHoursSectionProps) {
-  const t = await getTranslations("venue.hours");
-  const result = await runOperation({ operation: getVenueHours, input: { venueId } });
+  const [t, result, abilities] = await Promise.all([
+    getTranslations("venue.hours"),
+    runOperation({ operation: getVenueHours, input: { venueId } }),
+    getCallerAbilities(),
+  ]);
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
-  const abilities = await getCallerAbilities();
   return (
     <section className="grid gap-3">
       <div className="grid gap-1">

@@ -1,7 +1,8 @@
-import { listLines, listRequirements, type TicketDto } from "@bibi/core";
+import { listRequirements, type OrderDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
+import { loadOrderLines } from "@/features/line/load-order-lines";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -9,24 +10,23 @@ import { loadRequirementData } from "../load-requirement-data";
 import { CreateRequirementButton } from "./create-requirement-button";
 import { RequirementTable } from "./requirement-table";
 
-export type RequirementSectionProps = { locale: Locale; ticket: TicketDto };
+export type RequirementSectionProps = { locale: Locale; order: OrderDto };
 
 /**
- * The ticket's requirements (ADR 0021): counts against list values for the whole ticket or a
- * line, where they replace the ticket's count. Counts only, never people.
+ * The order's requirements (ADR 0021): counts against list values for the whole order or a
+ * line, where they replace the order's count. Counts only, never people.
  */
-export async function RequirementSection({ locale, ticket }: RequirementSectionProps) {
-  const t = await getTranslations("requirement");
-  const abilities = await getCallerAbilities();
+export async function RequirementSection({ locale, order }: RequirementSectionProps) {
+  const [t, abilities, requirements, lines] = await Promise.all([
+    getTranslations("requirement"),
+    getCallerAbilities(),
+    runOperation({ operation: listRequirements, input: { orderId: order.id, limit: 100 } }),
+    loadOrderLines({ orderId: order.id }),
+  ]);
   const access = {
     canEdit: can({ abilities, permission: "program:write" }),
     canRemove: can({ abilities, permission: "program:delete" }),
   };
-  const input = { ticketId: ticket.id, limit: 100 };
-  const [requirements, lines] = await Promise.all([
-    runOperation({ operation: listRequirements, input }),
-    runOperation({ operation: listLines, input }),
-  ]);
   for (const result of [requirements, lines]) {
     if (!result.ok && result.error.code === "FORBIDDEN") return null;
     if (!result.ok)
@@ -41,7 +41,7 @@ export async function RequirementSection({ locale, ticket }: RequirementSectionP
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl">{t("plural")}</h2>
         {can({ abilities, permission: "program:write" }) ? (
-          <CreateRequirementButton data={data.value} ticketId={ticket.id} />
+          <CreateRequirementButton data={data.value} orderId={order.id} />
         ) : null}
       </div>
       {rows.length === 0 ? (

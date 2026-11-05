@@ -3,12 +3,12 @@ import {
   getItemDemand,
   getLine,
   type ItemDemandDto,
-  listEntityTypes,
-  listItems,
   listLineAllocations,
   freeUnits as poolFreeUnits,
   type Result,
 } from "@bibi/core";
+import { loadEntityTypesOf } from "@/server/load-entity-types";
+import { loadPickerItems } from "@/server/load-items-for-pickers";
 import { runOperation } from "@/server/run-operation";
 import { loadUnitMembers } from "./load-unit-members";
 import type { AllocationSlot, AllocationView, UnitOption } from "./ui/allocation-types";
@@ -105,8 +105,8 @@ export async function loadLineAllocations({
   if (!startsAt || !endsAt) return { ok: true, value: null };
   const [allocations, items, types] = await Promise.all([
     runOperation({ operation: listLineAllocations, input: { lineId, limit: LIMIT } }),
-    runOperation({ operation: listItems, input: { limit: LIMIT } }),
-    runOperation({ operation: listEntityTypes, input: { base: "ITEM", limit: LIMIT } }),
+    loadPickerItems(),
+    loadEntityTypesOf({ base: "ITEM" }),
   ]);
   if (!allocations.ok) return allocations;
   if (!items.ok) return items;

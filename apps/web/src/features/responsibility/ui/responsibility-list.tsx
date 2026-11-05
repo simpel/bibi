@@ -64,9 +64,11 @@ async function ResponsibilityPage({ page, cursor, create, access }: Responsibili
 
 /** Responsibilities page body: header with create, table, cursor pagination. */
 export async function ResponsibilityList({ locale, cursor }: ResponsibilityListProps) {
-  const t = await getTranslations("responsibility");
-  const abilities = await getCallerAbilities();
-  const result = await loadPage({ cursor });
+  const [t, abilities, result] = await Promise.all([
+    getTranslations("responsibility"),
+    getCallerAbilities(),
+    loadPage({ cursor }),
+  ]);
   const options = result.ok ? result.value.options : undefined;
   const create =
     can({ abilities, permission: "responsibility:write" }) && options ? (

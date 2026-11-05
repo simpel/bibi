@@ -1,11 +1,9 @@
 import { listVocabularies } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
-import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
-import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -28,17 +26,19 @@ async function VocabularyListHeader({ canCreate }: VocabularyListHeaderProps) {
 
 export type VocabularyListProps = { locale: Locale; cursor?: string | undefined };
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 100;
 const CREATE = "configuration:write";
 
 /** Lists page body: header with create and the allergen template import, table, pagination. */
 export async function VocabularyList({ locale, cursor }: VocabularyListProps) {
-  const t = await getTranslations("vocabulary");
-  const abilities = await getCallerAbilities();
-  const result = await runOperation({
-    operation: listVocabularies,
-    input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
-  });
+  const [t, abilities, result] = await Promise.all([
+    getTranslations("vocabulary"),
+    getCallerAbilities(),
+    runOperation({
+      operation: listVocabularies,
+      input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
+    }),
+  ]);
   const header = <VocabularyListHeader canCreate={can({ abilities, permission: CREATE })} />;
   if (!result.ok) {
     const errorKey = handleLoadError({ error: result.error, locale });
@@ -49,24 +49,17 @@ export async function VocabularyList({ locale, cursor }: VocabularyListProps) {
       </div>
     );
   }
-  const { items, nextCursor } = result.value;
+  const { items } = result.value;
   return (
     <div className="grid gap-6">
       {header}
       {items.length === 0 && !cursor ? (
         <EmptyState title={t("empty")} description={t("emptyDescription")} />
       ) : (
-        <>
-          <VocabularyTable
-            vocabularies={items}
-            access={rowAccess({ abilities, feature: "configuration" })}
-          />
-          <CursorPagination
-            pathname={ROUTES.settingsLists}
-            cursor={cursor}
-            nextCursor={nextCursor}
-          />
-        </>
+        <VocabularyTable
+          vocabularies={items}
+          access={rowAccess({ abilities, feature: "configuration" })}
+        />
       )}
     </div>
   );

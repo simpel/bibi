@@ -13,11 +13,13 @@ export type OrganizationSettingsProps = { locale: Locale };
 
 /** `/settings/organization`: the organization's time zone (ADR 0064) and domain join (ADR 0078). */
 export async function OrganizationSettings({ locale }: OrganizationSettingsProps) {
-  const t = await getTranslations("organizationSettings");
-  const abilities = await getCallerAbilities();
+  const [t, abilities, profile] = await Promise.all([
+    getTranslations("organizationSettings"),
+    getCallerAbilities(),
+    runOperation({ operation: getOrganizationProfile, input: {} }),
+  ]);
   const canEdit = can({ abilities, permission: "configuration:write" });
   const canManageMembers = can({ abilities, permission: "member:write" });
-  const profile = await runOperation({ operation: getOrganizationProfile, input: {} });
   return (
     <div className="grid gap-6">
       <PageHeader title={t("title")} description={t("description")} />

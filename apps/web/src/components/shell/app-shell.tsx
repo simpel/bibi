@@ -11,7 +11,7 @@ export type AppShellProps = {
   organizationId: string;
   user: ShellUser;
   access: ShellAccess;
-  counts: ShellCounts;
+  counts: Promise<ShellCounts>;
   children: ReactNode;
 };
 
@@ -22,11 +22,7 @@ export type AppShellProps = {
 export function AppShell({ organizationId, user, access, counts, children }: AppShellProps) {
   return (
     <AssistantProvider>
-      <NotificationLiveProvider
-        organizationId={organizationId}
-        unread={counts.unread}
-        inboxOpen={counts.inboxOpen}
-      >
+      <NotificationLiveProvider organizationId={organizationId} counts={counts}>
         <CrumbNamesProvider>
           <SidebarProvider>
             <AppSidebar organizationId={organizationId} user={user} access={access} />

@@ -1,4 +1,4 @@
-import { lineAmounts, listLines, type TicketDto } from "@bibi/core";
+import { lineAmounts, type OrderDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
@@ -6,15 +6,16 @@ import { AlternativeGroupSection } from "@/features/alternative-group/ui/alterna
 import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { loadOrderLines } from "../load-order-lines";
 import { loadProgramData } from "../load-program-data";
 import { nestedLines } from "../nested-lines";
 import { CreateLineButton } from "./create-line-button";
 import { ExpandBundleButton } from "./expand-bundle-button";
+import { OrderDay } from "./order-day";
 import type { ProgramAccess } from "./program-row-actions";
 import { ProgramTable } from "./program-table";
-import { TicketDay } from "./ticket-day";
 
-export type ProgramSectionProps = { locale: Locale; ticket: TicketDto };
+export type ProgramSectionProps = { locale: Locale; order: OrderDto };
 
 /** Editing a line and changing its state are `program:write`, removing it `program:delete`. */
 function programAccess({ abilities }: { abilities: CallerAbilities }): ProgramAccess {
@@ -46,16 +47,16 @@ function ProgramHeader({ title, canEdit, start }: ProgramHeaderProps) {
 }
 
 /**
- * The ticket's run schedule (ADR 0022): its days in the calendar, the lines in time order with
+ * The order's run schedule (ADR 0022): its days in the calendar, the lines in time order with
  * their amounts and the total, edited inline, then its alternatives.
  */
-export async function ProgramSection({ locale, ticket }: ProgramSectionProps) {
+export async function ProgramSection({ locale, order }: ProgramSectionProps) {
   const t = await getTranslations("line");
   const access = programAccess({ abilities: await getCallerAbilities() });
   const [lines, data, amounts] = await Promise.all([
-    runOperation({ operation: listLines, input: { ticketId: ticket.id, limit: 100 } }),
+    loadOrderLines({ orderId: order.id }),
     loadProgramData(),
-    runOperation({ operation: lineAmounts, input: { ticketId: ticket.id } }),
+    runOperation({ operation: lineAmounts, input: { orderId: order.id } }),
   ]);
   if (!lines.ok && lines.error.code === "FORBIDDEN") return null;
   if (!lines.ok) {
@@ -65,14 +66,19 @@ export async function ProgramSection({ locale, ticket }: ProgramSectionProps) {
   const items = nestedLines({ lines: lines.value.items });
   const start = {
     data: data.value,
-    ticketId: ticket.id,
-    startsAt: ticket.desiredStartsAt ?? new Date(),
+    orderId: order.id,
+    startsAt: order.desiredStartsAt ?? new Date(),
   };
   return (
     <>
       <section className="grid grid-cols-1 gap-4">
         <ProgramHeader title={t("plural")} canEdit={access.canEdit} start={start} />
-        <TicketDay ticketId={ticket.id} lines={items} data={data.value} />
+        <OrderDay
+          orderId={order.id}
+          orderReference={order.reference}
+          lines={items}
+          data={data.value}
+        />
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("empty")}</p>
         ) : (
@@ -84,7 +90,7 @@ export async function ProgramSection({ locale, ticket }: ProgramSectionProps) {
           />
         )}
       </section>
-      <AlternativeGroupSection locale={locale} ticket={ticket} />
+      <AlternativeGroupSection locale={locale} order={order} />
     </>
   );
 }

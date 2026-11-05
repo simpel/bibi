@@ -19,12 +19,14 @@ const CREATE = "configuration:write";
 
 /** Setups page body: header with create, table, cursor pagination. */
 export async function SetupList({ locale, cursor }: SetupListProps) {
-  const t = await getTranslations("setup");
-  const abilities = await getCallerAbilities();
-  const result = await runOperation({
-    operation: listSetups,
-    input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
-  });
+  const [t, abilities, result] = await Promise.all([
+    getTranslations("setup"),
+    getCallerAbilities(),
+    runOperation({
+      operation: listSetups,
+      input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
+    }),
+  ]);
   const create = can({ abilities, permission: CREATE }) ? <CreateSetupButton /> : undefined;
   const header = (
     <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />

@@ -9,11 +9,13 @@ import {
   type HoursDto,
   type HoursException,
   HoursExceptionSchema,
+  listVenueHours,
   listVenues,
   setItemHours,
   setVenueHours,
   updateVenue,
   type VenueDto,
+  type VenueHoursList,
   VenueSchema,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
@@ -58,6 +60,22 @@ export const HoursRef = builder.objectRef<HoursDto>("Hours").implement({
 });
 
 fieldFromOperation({ operation: getVenueHours, type: HoursRef, name: "venueHours" });
+
+type VenueHoursEntry = VenueHoursList["items"][number];
+const VenueHoursEntryRef = builder.objectRef<VenueHoursEntry>("VenueHoursEntry").implement({
+  description: "One venue's opening hours.",
+  fields: (t) => ({
+    venueId: t.exposeID("venueId"),
+    hours: t.field({ type: HoursRef, resolve: (entry) => entry.hours }),
+  }),
+});
+const VenueHoursListRef = builder.objectRef<VenueHoursList>("VenueHoursList").implement({
+  description: "Several venues' opening hours, in the order asked for (ADR 0097).",
+  fields: (t) => ({
+    items: t.field({ type: [VenueHoursEntryRef], resolve: (list) => list.items }),
+  }),
+});
+fieldFromOperation({ operation: listVenueHours, type: VenueHoursListRef, name: "venueHoursList" });
 mutationFromOperation({ operation: setVenueHours, type: HoursRef });
 fieldFromOperation({ operation: getItemHours, type: HoursRef, name: "itemHours" });
 mutationFromOperation({ operation: setItemHours, type: HoursRef });

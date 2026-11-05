@@ -19,25 +19,56 @@ const SPAN = {
 
 export type LoadHoursInput = Db & { owner: HoursOwner; timeZone: string };
 
-/** The owner's pattern: days by weekday, exceptions by date, with the zone they are read in. */
-export async function loadHours({ context, owner, timeZone }: LoadHoursInput): Promise<HoursDto> {
-  const [days, rows] = await Promise.all([
+type Where = HoursOwner | { venueId: { in: string[] } };
+
+/** The owners' day and exception rows in two queries, sorted for `toHoursDto`. */
+function loadHourRows({ context, where }: Db & { where: Where }) {
+  return Promise.all([
     context.db.hoursDay.findMany({
-      where: owner,
+      where,
       orderBy: { weekday: "asc" },
-      select: { weekday: true, ...SPAN },
+      select: { weekday: true, venueId: true, ...SPAN },
     }),
     context.db.hoursException.findMany({
-      where: owner,
+      where,
       orderBy: { date: "asc" },
-      select: { date: true, note: true, ...SPAN },
+      select: { date: true, note: true, venueId: true, ...SPAN },
     }),
   ]);
-  const exceptions = rows.map(({ date, ...row }) => ({
-    date: fromDateColumn({ value: date }),
-    ...row,
-  }));
-  return { days, exceptions, timeZone };
+}
+
+type HourRows = Awaited<ReturnType<typeof loadHourRows>>;
+
+/** One owner's rows as its pattern, read in `timeZone`. */
+function toHoursDto({ rows: [days, exceptions], timeZone }: { rows: HourRows; timeZone: string }) {
+  return {
+    days: days.map(({ venueId: _venue, ...day }) => day),
+    exceptions: exceptions.map(({ date, venueId: _venue, ...row }) => ({
+      date: fromDateColumn({ value: date }),
+      ...row,
+    })),
+    timeZone,
+  } satisfies HoursDto;
+}
+
+/** The owner's pattern: days by weekday, exceptions by date, with the zone they are read in. */
+export async function loadHours({ context, owner, timeZone }: LoadHoursInput): Promise<HoursDto> {
+  return toHoursDto({ rows: await loadHourRows({ context, where: owner }), timeZone });
+}
+
+export type LoadVenuesHoursInput = Db & { venues: { venueId: string; timeZone: string }[] };
+
+/** Several venues' patterns in two queries, in the order given (ADR 0097: one read per page). */
+export async function loadVenuesHours({ context, venues }: LoadVenuesHoursInput) {
+  const venueIds = venues.map((venue) => venue.venueId);
+  const [days, exceptions] = await loadHourRows({ context, where: { venueId: { in: venueIds } } });
+  return venues.map(({ venueId, timeZone }) => {
+    const rows: HourRows = [
+      days.filter((day) => day.venueId === venueId),
+      exceptions.filter((row) => row.venueId === venueId),
+    ];
+    return { venueId, hours: toHoursDto({ rows, timeZone }) };
+  });
 }
 
 export type ReplaceHoursInput = LoadHoursInput & { pattern: HoursPattern };

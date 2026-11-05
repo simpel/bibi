@@ -1,10 +1,12 @@
 import "server-only";
-import { type ItemDto, listEntityTypes, listItems, listVenues, ok, type Result } from "@bibi/core";
+import { type ItemDto, listItems, ok, type Result } from "@bibi/core";
 import type { CalendarAsset } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { fileUrl } from "@/lib/file-url";
 import { itemRoute } from "@/lib/routes";
 import { listAll } from "@/server/list-all";
+import { loadEntityTypesOf } from "@/server/load-entity-types";
+import { loadVenues } from "@/server/load-venues";
 import { loadUnitPeople, type UnitPerson } from "../line-allocation/load-unit-members";
 import { orEmpty } from "./or-empty";
 
@@ -63,8 +65,8 @@ function toAssets({ items, types, venues, people, t }: ToAssetsInput): CalendarA
 export async function loadCalendarAssets(): Promise<Result<CalendarAsset[]>> {
   const [items, types, venues, t] = await Promise.all([
     listAll({ operation: listItems, input: { capability: "BOOKABLE" } }),
-    listAll({ operation: listEntityTypes, input: { base: "ITEM" } }),
-    listAll({ operation: listVenues, input: {} }).then((result) => orEmpty({ result })),
+    loadEntityTypesOf({ base: "ITEM" }),
+    loadVenues().then((result) => orEmpty({ result })),
     getTranslations("calendar"),
   ]);
   if (!items.ok) return items;
@@ -72,7 +74,7 @@ export async function loadCalendarAssets(): Promise<Result<CalendarAsset[]>> {
   if (!venues.ok) return venues;
   // Only items of a person type can stand for a member (ADR 0059, 0068).
   const personTypes = new Set(
-    types.value.flatMap((type) => (type.resourceKind === "PERSON" ? [type.id] : [])),
+    types.value.items.flatMap((type) => (type.resourceKind === "PERSON" ? [type.id] : [])),
   );
   const staff = items.value.filter((item) => personTypes.has(item.entityTypeId));
   const people = await loadUnitPeople({ unitIds: staff.map((item) => item.id) });
@@ -80,7 +82,7 @@ export async function loadCalendarAssets(): Promise<Result<CalendarAsset[]>> {
   return ok({
     value: toAssets({
       items: items.value,
-      types: new Map(types.value.map(byId)),
+      types: new Map(types.value.items.map(byId)),
       venues: new Map(venues.value.map(byId)),
       people,
       t,

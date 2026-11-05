@@ -7,6 +7,8 @@ export const BOOKING_SURFACES: readonly WebSurface[] = [
   // One hours editor on the venue and item pages.
   { operation: "venueHours.get", route: "/venues/[id]" },
   { operation: "venueHours.set", route: "/venues/[id]" },
+  // The calendar reads every venue's hours in one call (ADR 0097).
+  { operation: "venue.hoursList", route: "/calendar" },
   { operation: "itemHours.get", route: "/items/[id]" },
   { operation: "itemHours.set", route: "/items/[id]" },
 ];

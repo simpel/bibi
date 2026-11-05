@@ -3,7 +3,7 @@ import { LINE_INCLUDE, toLineRecord } from "../line/to-line-record";
 import { withEffective } from "../line/with-effective";
 
 type Db = { context: Pick<OperationContext, "db" | "permissions"> };
-export type DetailIds = { lineIds: string[]; ticketIds: string[] };
+export type DetailIds = { lineIds: string[]; orderIds: string[] };
 
 /** The lines with their effective quantity and price (ADR 0052), by id. */
 async function loadLines({ context, lineIds }: Db & Pick<DetailIds, "lineIds">) {
@@ -15,9 +15,9 @@ async function loadLines({ context, lineIds }: Db & Pick<DetailIds, "lineIds">) 
   return new Map(lines.map((line) => [line.id, line]));
 }
 
-function loadTickets({ context, ticketIds }: Db & Pick<DetailIds, "ticketIds">) {
-  return context.db.ticket.findMany({
-    where: { id: { in: ticketIds } },
+function loadOrders({ context, orderIds }: Db & Pick<DetailIds, "orderIds">) {
+  return context.db.order.findMany({
+    where: { id: { in: orderIds } },
     select: {
       ...{ id: true, estimatedHeadcount: true, guaranteedHeadcount: true },
       customer: { select: { name: true } },
@@ -27,7 +27,7 @@ function loadTickets({ context, ticketIds }: Db & Pick<DetailIds, "ticketIds">) 
 }
 
 /** Members by user id, with how colleagues here reach them: their member profile (ADR 0072). */
-async function loadColleagues({ context, userIds }: Db & { userIds: string[] }) {
+export async function loadColleagues({ context, userIds }: Db & { userIds: string[] }) {
   const members = await context.db.member.findMany({
     where: { userId: { in: userIds } },
     select: {
@@ -48,11 +48,11 @@ async function loadColleagues({ context, userIds }: Db & { userIds: string[] }) 
   );
 }
 
-/** The main assignees of the lines and tickets (ADR 0055: stored choices only), with names. */
-async function loadAssignees({ context, lineIds, ticketIds }: Db & DetailIds) {
+/** The main assignees of the lines and orders (ADR 0055: stored choices only), with names. */
+async function loadAssignees({ context, lineIds, orderIds }: Db & DetailIds) {
   const rows = await context.db.assignment.findMany({
     where: {
-      recordId: { in: [...lineIds, ...ticketIds] },
+      recordId: { in: [...lineIds, ...orderIds] },
       responsibilityId: null,
       status: "ACTIVE",
       assigneeId: { not: null },
@@ -94,14 +94,14 @@ function loadStaff({ context, lineIds }: Db & Pick<DetailIds, "lineIds">) {
 }
 
 /** Everything the blocks' details need, in a fixed number of queries for any number of blocks. */
-export async function loadDetailSources({ context, lineIds, ticketIds }: Db & DetailIds) {
-  const [lines, tickets, assignees, staff] = await Promise.all([
+export async function loadDetailSources({ context, lineIds, orderIds }: Db & DetailIds) {
+  const [lines, orders, assignees, staff] = await Promise.all([
     loadLines({ context, lineIds }),
-    loadTickets({ context, ticketIds }),
-    loadAssignees({ context, lineIds, ticketIds }),
+    loadOrders({ context, orderIds }),
+    loadAssignees({ context, lineIds, orderIds }),
     loadStaff({ context, lineIds }),
   ]);
-  return { lines, tickets: new Map(tickets.map((t) => [t.id, t])), assignees, staff };
+  return { lines, orders: new Map(orders.map((t) => [t.id, t])), assignees, staff };
 }
 
 export type DetailSources = Awaited<ReturnType<typeof loadDetailSources>>;

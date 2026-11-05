@@ -11,8 +11,10 @@ export type ResponsibilityCreateProps = { locale: Locale };
 
 /** `/new/responsibility`: the step-by-step create page. */
 export async function ResponsibilityCreate({ locale }: ResponsibilityCreateProps) {
-  const t = await getTranslations("responsibility");
-  const options = await loadResponsibilityOptions();
+  const [t, options] = await Promise.all([
+    getTranslations("responsibility"),
+    loadResponsibilityOptions(),
+  ]);
   if (!options.ok)
     return <ErrorState errorKey={handleLoadError({ error: options.error, locale })} />;
   return (

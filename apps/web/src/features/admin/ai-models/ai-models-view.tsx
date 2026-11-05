@@ -6,18 +6,23 @@ import { handleLoadError } from "@/server/load-error";
 import { platformOperations } from "@/server/platform-operations";
 import { runPlatformOperation } from "@/server/run-platform-operation";
 import { AiFeatureTable } from "./ai-feature-table";
+import { AiModelFilters } from "./ai-model-filters";
+import { type AiModelSearchParams, parseAiModelParams } from "./ai-model-params";
 import type { AiFeatureRow } from "./model-options";
 
-export type AiModelsViewProps = { locale: Locale };
+export type AiModelsViewProps = { locale: Locale; params: AiModelSearchParams };
 
 /**
  * `/admin/ai-models`: one table row per AI feature with only its *possible* models (ADR 0015).
  * A catalog outage leaves the current choices visible and the pickers disabled.
  */
-export async function AiModelsView({ locale }: AiModelsViewProps) {
-  const t = await getTranslations("admin.aiModels");
+export async function AiModelsView({ locale, params }: AiModelsViewProps) {
+  const view = parseAiModelParams({ params });
   const ops = platformOperations();
-  const features = await runPlatformOperation({ operation: ops.listAiFeatures, input: {} });
+  const [t, features] = await Promise.all([
+    getTranslations("admin.aiModels"),
+    runPlatformOperation({ operation: ops.listAiFeatures, input: {} }),
+  ]);
   const header = <PageHeader title={t("title")} description={t("description")} />;
   if (!features.ok) {
     const errorKey = handleLoadError({ error: features.error, locale });
@@ -47,7 +52,8 @@ export async function AiModelsView({ locale }: AiModelsViewProps) {
       ) : (
         <p className="text-sm text-muted-foreground">{t("possibleHint")}</p>
       )}
-      <AiFeatureTable rows={rows} />
+      <AiModelFilters q={view.q} />
+      <AiFeatureTable rows={rows} view={view} />
     </div>
   );
 }

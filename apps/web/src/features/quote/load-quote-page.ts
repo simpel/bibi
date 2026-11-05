@@ -7,6 +7,7 @@ import {
   type QuoteDto,
   type Result,
 } from "@bibi/core";
+import { cache } from "react";
 import type { PersonOption } from "@/components/people/person-name";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { runOperation } from "@/server/run-operation";
@@ -15,27 +16,29 @@ import type { QuoteAbilities } from "./ui/quote-actions";
 
 export type QuotePageData = {
   quote: QuoteDto;
-  /** Every version of the ticket's quote, newest first. */
+  /** Every version of the order's quote, newest first. */
   versions: QuoteDto[];
-  /** The ticket's salesperson: a quote has no owner of its own (ADR 0034). */
+  /** The order's salesperson: a quote has no owner of its own (ADR 0034). */
   ownerId: string | null;
   /** With their email, for the sales owner's contact card. */
   members: PersonOption[];
   can: QuoteAbilities;
 };
 
-/** The quote, its sibling versions and the ticket's salesperson. */
-export async function loadQuotePage({ id }: { id: string }): Promise<Result<QuotePageData>> {
-  const loaded = await runOperation({ operation: getQuote, input: { id } });
+const loadQuotePageCached = cache(async (id: string): Promise<Result<QuotePageData>> => {
+  // The member list does not depend on the quote, so it runs beside it.
+  const [loaded, members] = await Promise.all([
+    runOperation({ operation: getQuote, input: { id } }),
+    runOperation({ operation: listMembers, input: { limit: 100 } }),
+  ]);
   if (!loaded.ok) return loaded;
   const quote = loaded.value;
-  const [versions, assignments, members, abilities] = await Promise.all([
-    runOperation({ operation: listQuotes, input: { ticketId: quote.ticketId, limit: 100 } }),
+  const [versions, assignments, abilities] = await Promise.all([
+    runOperation({ operation: listQuotes, input: { orderId: quote.orderId, limit: 100 } }),
     runOperation({
       operation: listAssignments,
-      input: { subjectType: "TICKET", subjectId: quote.ticketId },
+      input: { subjectType: "ORDER", subjectId: quote.orderId },
     }),
-    runOperation({ operation: listMembers, input: { limit: 100 } }),
     getCallerAbilities(),
   ]);
   const siblings = versions.ok ? versions.value.items : [quote];
@@ -59,4 +62,9 @@ export async function loadQuotePage({ id }: { id: string }): Promise<Result<Quot
       }),
     },
   };
+});
+
+/** The quote, its sibling versions and the order's salesperson, read once per request. */
+export function loadQuotePage({ id }: { id: string }): Promise<Result<QuotePageData>> {
+  return loadQuotePageCached(id);
 }

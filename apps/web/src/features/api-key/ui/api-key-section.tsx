@@ -14,9 +14,11 @@ export type ApiKeySectionProps = { locale: Locale };
 
 /** The organization's REST API keys: create (a preset up to the caller's), edit and revoke. */
 export async function ApiKeySection({ locale }: ApiKeySectionProps) {
-  const t = await getTranslations("integration.apiKeys");
-  const abilities = await getCallerAbilities();
-  const keys = await runOperation({ operation: listApiKeys, input: { limit: 100 } });
+  const [t, abilities, keys] = await Promise.all([
+    getTranslations("integration.apiKeys"),
+    getCallerAbilities(),
+    runOperation({ operation: listApiKeys, input: { limit: 100 } }),
+  ]);
   const roles = assignableRoles({ caller: abilities.role });
   return (
     <section className="grid gap-4">

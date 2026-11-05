@@ -1,15 +1,15 @@
-import { getVocabulary } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { CrumbName } from "@/components/shell/crumb-name";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { loadVocabulary } from "@/features/vocabulary/load-vocabulary";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
-import { runOperation } from "@/server/run-operation";
 import { AddValueButton } from "./add-value-button";
 import { ValueTable } from "./value-table";
 import { VocabularyRowActions } from "./vocabulary-row-actions";
@@ -18,11 +18,13 @@ export type VocabularyDetailProps = { locale: Locale; id: string };
 
 /** List detail page: rename/archive the list and manage its values. */
 export async function VocabularyDetail({ locale, id }: VocabularyDetailProps) {
-  const t = await getTranslations("vocabulary");
-  const common = await getTranslations("common");
-  const abilities = await getCallerAbilities();
+  const [t, common, abilities, result] = await Promise.all([
+    getTranslations("vocabulary"),
+    getTranslations("common"),
+    getCallerAbilities(),
+    loadVocabulary({ id }),
+  ]);
   const access = rowAccess({ abilities, feature: "configuration" });
-  const result = await runOperation({ operation: getVocabulary, input: { id } });
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const vocabulary = result.value;
   const actions = (
@@ -37,6 +39,7 @@ export async function VocabularyDetail({ locale, id }: VocabularyDetailProps) {
   );
   return (
     <div className="grid gap-6">
+      <CrumbName href={`/settings/lists/${id}`} name={vocabulary.name} />
       <Link
         href={ROUTES.settingsLists}
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"

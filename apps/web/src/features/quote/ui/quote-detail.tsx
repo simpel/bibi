@@ -3,11 +3,12 @@ import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";
 import { PersonName } from "@/components/people/person-name";
+import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { FactList } from "@/components/typed-fields/fact-list";
 import { Link } from "@/lib/navigation";
-import { ticketRoute } from "@/lib/routes";
+import { orderRoute, quoteRoute } from "@/lib/routes";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { getNumberFormat } from "@/server/number-format";
@@ -24,7 +25,7 @@ export type QuoteDetailProps = { locale: Locale; id: string };
 
 /**
  * Quote page body, for review and send (ADR 0052): status, validity, terms, the lines with change
- * markers (a DRAFT's are the ticket's lines, edited there), totals, how the ticket differs from an
+ * markers (a DRAFT's are the order's lines, edited there), totals, how the order differs from an
  * accepted quote, and the versions.
  */
 type QuoteFactsInput = Pick<QuotePageData, "quote" | "ownerId" | "members"> & {
@@ -50,20 +51,24 @@ function quoteFacts({ quote, ownerId, members, t, format }: QuoteFactsInput) {
 }
 
 export async function QuoteDetail({ locale, id }: QuoteDetailProps) {
-  const t = await getTranslations("quote");
-  const [format, numbers] = await Promise.all([getDateTimeFormat(), getNumberFormat()]);
-  const page = await loadQuotePage({ id });
+  const [t, format, numbers, page] = await Promise.all([
+    getTranslations("quote"),
+    getDateTimeFormat(),
+    getNumberFormat(),
+    loadQuotePage({ id }),
+  ]);
   if (!page.ok) return <ErrorState errorKey={handleLoadError({ error: page.error, locale })} />;
   const { quote, versions, ownerId, members, can } = page.value;
   const facts = quoteFacts({ quote, ownerId, members, t, format });
   return (
     <div className="grid gap-6">
+      <CrumbName href={quoteRoute({ id })} name={t("title", { version: quote.version })} />
       <Link
-        href={ticketRoute({ id: quote.ticketId })}
+        href={orderRoute({ id: quote.orderId })}
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeftIcon className="size-4" />
-        {t("backToTicket")}
+        {t("backToOrder")}
       </Link>
       <PageHeader
         title={t("title", { version: quote.version })}

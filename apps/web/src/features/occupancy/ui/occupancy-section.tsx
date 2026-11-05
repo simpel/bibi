@@ -16,16 +16,18 @@ export type OccupancySectionProps = { locale: Locale; itemId: string; timeZone: 
  * and are entered in the item's zone.
  */
 export async function OccupancySection({ locale, itemId, timeZone }: OccupancySectionProps) {
-  const t = await getTranslations("occupancy");
-  const abilities = await getCallerAbilities();
+  const [t, abilities, occupancies] = await Promise.all([
+    getTranslations("occupancy"),
+    getCallerAbilities(),
+    runOperation({
+      operation: listOccupancies,
+      input: { itemId, from: new Date(), limit: 100 },
+    }),
+  ]);
   const access = {
-    canEdit: can({ abilities, permission: "ticket:write" }),
-    canRemove: can({ abilities, permission: "ticket:delete" }),
+    canEdit: can({ abilities, permission: "order:write" }),
+    canRemove: can({ abilities, permission: "order:delete" }),
   };
-  const occupancies = await runOperation({
-    operation: listOccupancies,
-    input: { itemId, from: new Date(), limit: 100 },
-  });
   if (!occupancies.ok && occupancies.error.code === "FORBIDDEN") return null;
   if (!occupancies.ok) {
     return <ErrorState errorKey={handleLoadError({ error: occupancies.error, locale })} />;
@@ -34,7 +36,7 @@ export async function OccupancySection({ locale, itemId, timeZone }: OccupancySe
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl">{t("plural")}</h2>
-        {can({ abilities, permission: "ticket:write" }) ? (
+        {can({ abilities, permission: "order:write" }) ? (
           <CreateOccupancyButton itemId={itemId} timeZone={timeZone} />
         ) : null}
       </div>

@@ -14,8 +14,10 @@ export type StripeCardProps = { canEdit: boolean };
  * venue directly into it, Bibi never holds the money. Renders nothing if the account can't load.
  */
 export async function StripeCard({ canEdit }: StripeCardProps) {
-  const t = await getTranslations("paymentAccount");
-  const account = await runOperation({ operation: getPaymentAccount, input: {} });
+  const [t, account] = await Promise.all([
+    getTranslations("paymentAccount"),
+    runOperation({ operation: getPaymentAccount, input: {} }),
+  ]);
   if (!account.ok) return null;
   const { status } = account.value;
   // Disconnected resumes the same account, so it connects like a first time.

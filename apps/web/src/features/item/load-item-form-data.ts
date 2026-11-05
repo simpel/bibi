@@ -1,6 +1,7 @@
 import "server-only";
 import type { Result } from "@bibi/core";
-import { listEntityTypes, listItems, listSetups, listVenues, listVocabularies } from "@bibi/core";
+import { listItems, listSetups, listVenues, listVocabularies } from "@bibi/core";
+import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { loadLinkTargets } from "@/server/load-link-targets";
 import { runOperation } from "@/server/run-operation";
 import type { ItemFormData } from "./ui/item-form-data";
@@ -20,7 +21,7 @@ export async function loadItemFormData({
   customerId,
 }: LoadItemFormDataInput = {}): Promise<Result<ItemFormData>> {
   const [types, vocabularies, setups, venues, parts] = await Promise.all([
-    runOperation({ operation: listEntityTypes, input: { base: "ITEM", limit: LIMIT } }),
+    loadEntityTypesOf({ base: "ITEM" }),
     runOperation({ operation: listVocabularies, input: { limit: LIMIT } }),
     runOperation({ operation: listSetups, input: { limit: LIMIT } }),
     runOperation({ operation: listVenues, input: { limit: LIMIT } }),

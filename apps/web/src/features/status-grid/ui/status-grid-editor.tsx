@@ -10,9 +10,11 @@ export type StatusGridEditorProps = { locale: Locale };
 
 /** The grid editor under the statuses on `/settings/pipeline` (ADR 0044). */
 export async function StatusGridEditor({ locale }: StatusGridEditorProps) {
-  const t = await getTranslations("statusGrid");
-  const abilities = await getCallerAbilities();
-  const data = await loadGridData();
+  const [t, abilities, data] = await Promise.all([
+    getTranslations("statusGrid"),
+    getCallerAbilities(),
+    loadGridData(),
+  ]);
   if (!data.ok) {
     return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   }

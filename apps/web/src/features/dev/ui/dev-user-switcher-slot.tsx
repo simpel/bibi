@@ -10,8 +10,11 @@ import { DevUserSwitcher } from "./dev-user-switcher";
  */
 export async function DevUserSwitcherSlot() {
   if (!isDevEnvironment()) return null;
-  const [users, admins] = await Promise.all([listDevUsers(), listDevPlatformAdmins()]);
-  const session = await getAuth().api.getSession({ headers: await headers() });
+  const [users, admins, session] = await Promise.all([
+    listDevUsers(),
+    listDevPlatformAdmins(),
+    getAuth().api.getSession({ headers: await headers() }),
+  ]);
   const { WEB_URL, MCP_URL, STORYBOOK_URL } = getEnv();
   const services = devServices({ webUrl: WEB_URL, mcpUrl: MCP_URL, storybookUrl: STORYBOOK_URL });
   return (

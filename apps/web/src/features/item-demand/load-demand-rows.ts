@@ -1,12 +1,7 @@
 import "server-only";
-import {
-  type EntityTypeDto,
-  type ItemDemandDto,
-  listEntityTypes,
-  listItemDemands,
-  listItems,
-  type Result,
-} from "@bibi/core";
+import { type EntityTypeDto, type ItemDemandDto, listItemDemands, type Result } from "@bibi/core";
+import { loadEntityTypesOf } from "@/server/load-entity-types";
+import { loadPickerItems } from "@/server/load-items-for-pickers";
 import { runOperation } from "@/server/run-operation";
 import type { DemandListKind, DemandRow, PoolOption } from "./ui/demand-types";
 
@@ -42,8 +37,8 @@ export async function loadDemandLists({
 }): Promise<Result<DemandLists>> {
   const [demands, types, items] = await Promise.all([
     runOperation({ operation: listItemDemands, input: { itemId, limit: LIMIT } }),
-    runOperation({ operation: listEntityTypes, input: { base: "ITEM", limit: LIMIT } }),
-    runOperation({ operation: listItems, input: { limit: LIMIT } }),
+    loadEntityTypesOf({ base: "ITEM" }),
+    loadPickerItems(),
   ]);
   if (!demands.ok) return demands;
   if (!types.ok) return types;

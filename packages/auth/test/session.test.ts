@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveExecuteContext } from "../src/index";
+import { requireSession, resolveExecuteContext } from "../src/index";
 import { codeOf, createOrg, signIn, signUp, withHeaders } from "./helpers";
 
 describe("resolveExecuteContext – session cookie", () => {
@@ -46,5 +46,22 @@ describe("resolveExecuteContext – session cookie", () => {
       extra: { "x-bibi-actor": "ai", "x-bibi-conversation-id": "conv_1" },
     });
     expect(codeOf({ result: await resolveExecuteContext({ headers }) })).toBe("FORBIDDEN");
+  });
+
+  it("resolves the same context from a session the caller already looked up", async () => {
+    const user = await signUp();
+    await createOrg({ headers: user.headers });
+    const session = await requireSession({ headers: user.headers });
+    if (!session.ok) throw session.error;
+    const fromCookie = await resolveExecuteContext({ headers: user.headers });
+    const fromSession = await resolveExecuteContext({
+      headers: user.headers,
+      session: session.value,
+    });
+    if (!fromCookie.ok || !fromSession.ok) throw new Error("expected both to resolve");
+    expect(fromSession.value.organizationId).toBe(fromCookie.value.organizationId);
+    expect(fromSession.value.roles).toEqual(fromCookie.value.roles);
+    expect(fromSession.value.permissions).toEqual(fromCookie.value.permissions);
+    expect(fromSession.value.actor).toEqual(fromCookie.value.actor);
   });
 });

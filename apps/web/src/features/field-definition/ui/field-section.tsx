@@ -1,8 +1,9 @@
-import { type EntityTypeDto, listEntityTypes, listVocabularies } from "@bibi/core";
+import { type EntityTypeDto, listVocabularies } from "@bibi/core";
 import { isLinkableBase } from "@bibi/core/schemas";
 import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/states/empty-state";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
+import { loadEntityTypes } from "@/server/load-entity-types";
 import { runOperation } from "@/server/run-operation";
 import { AddFieldButton } from "./add-field-button";
 import { FieldTable } from "./field-table";
@@ -11,11 +12,13 @@ export type FieldSectionProps = { entityType: EntityTypeDto };
 
 /** Fields of one type: add, edit, archive and reorder (`configuration:*`). */
 export async function FieldSection({ entityType }: FieldSectionProps) {
-  const t = await getTranslations("fieldDefinition");
-  const abilities = await getCallerAbilities();
-  const lists = await runOperation({ operation: listVocabularies, input: { limit: 100 } });
+  const [t, abilities, lists, types] = await Promise.all([
+    getTranslations("fieldDefinition"),
+    getCallerAbilities(),
+    runOperation({ operation: listVocabularies, input: { limit: 100 } }),
+    loadEntityTypes(),
+  ]);
   const vocabularies = lists.ok ? lists.value.items.map(({ id, name }) => ({ id, name })) : [];
-  const types = await runOperation({ operation: listEntityTypes, input: { limit: 100 } });
   const linkTypes = (types.ok ? types.value.items : [])
     .filter(({ base }) => isLinkableBase({ base }))
     .map(({ id, name }) => ({ id, name }));

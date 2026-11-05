@@ -1,9 +1,9 @@
-import { getMember } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { Button } from "@bibi/ui";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
+import { DeferredSection } from "@/components/states/deferred-section";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { FactList } from "@/components/typed-fields/fact-list";
@@ -13,7 +13,7 @@ import { memberPermissionsRoute, memberRoute, ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
-import { runOperation } from "@/server/run-operation";
+import { loadMember } from "@/server/load-member";
 
 export type MemberDetailProps = { locale: Locale; id: string };
 
@@ -24,7 +24,7 @@ export async function MemberDetail({ locale, id }: MemberDetailProps) {
   const common = await getTranslations("common");
   const format = await getDateTimeFormat();
   const abilities = await getCallerAbilities();
-  const member = await runOperation({ operation: getMember, input: { id } });
+  const member = await loadMember({ id });
   if (!member.ok) return <ErrorState errorKey={handleLoadError({ error: member.error, locale })} />;
   const { name, email, role: preset, createdAt } = member.value;
   const facts = [
@@ -49,7 +49,9 @@ export async function MemberDetail({ locale, id }: MemberDetailProps) {
       </Link>
       <PageHeader title={name} description={t("detailDescription")} actions={permissions} />
       <FactList facts={facts} />
-      <MemberWork locale={locale} memberId={id} />
+      <DeferredSection>
+        <MemberWork locale={locale} memberId={id} />
+      </DeferredSection>
     </div>
   );
 }

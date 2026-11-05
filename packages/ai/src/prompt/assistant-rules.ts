@@ -14,6 +14,9 @@ export function assistantRules({ locale }: AssistantRulesInput): string[] {
     "Use the tools for facts about the user's data; never invent ids, names or numbers.",
     "For reads prefer `search` (free text, any entity) and the list/get tools; use " +
       "`graphql_query` (read-only) for questions they cannot answer, after `graphql_schema`.",
+    "For the state of one order (e.g. 'what is the status of order #72', who has it, what is " +
+      "open) call `order_view` once: status, customer, people, line totals, issues and balance " +
+      "in one result. Find its id with `order_list` (`q` = the reference) first if needed.",
     "Changes (create, update, archive, publish, ...) are never executed by you. A tool result " +
       'with `status: "approval_required"` is only a PROPOSAL: the user sees an approval card and ' +
       "must click Approve. Never say or imply that such an action is done; say what you proposed " +

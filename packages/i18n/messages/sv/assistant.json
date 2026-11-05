@@ -1,0 +1,931 @@
+{
+  "assistant": {
+    "title": "Assistent",
+    "placeholder": "Fråga något eller be om hjälp...",
+    "send": "Skicka",
+    "thinking": "Tänker...",
+    "newConversation": "Skapa konversation",
+    "approval": {
+      "title": "Bekräfta ändring",
+      "description": "Assistenten vill utföra följande ändring.",
+      "approve": "Bekräfta",
+      "reject": "Avbryt",
+      "approving": "Bekräftar...",
+      "approved": "Bekräftad",
+      "rejected": "Avbruten",
+      "expired": "Förslaget har gått ut",
+      "expiresIn": "Gäller i {time}",
+      "approvedToast": "Åtgärden är utförd.",
+      "fields": {
+        "id": "Id",
+        "name": "Namn",
+        "description": "Beskrivning",
+        "streetAddress": "Gatuadress",
+        "postalCode": "Postnummer",
+        "city": "Ort",
+        "country": "Land",
+        "contactEmail": "Kontakt, e-post",
+        "contactPhone": "Kontakt, telefon",
+        "openingHours": "Notering om öppettider",
+        "defaultVatRatePercent": "Moms (%)",
+        "venueId": "Anläggning (id)",
+        "entityTypeId": "Typ (id)",
+        "base": "Bas",
+        "dateFormat": "Datumformat",
+        "clockFormat": "Klockformat",
+        "numberFormat": "Talformat",
+        "moneyFormat": "Beloppsformat",
+        "capabilities": "Förmågor",
+        "fields": "Fält",
+        "priceMinor": "Pris (öre)",
+        "priceUnit": "Prisenhet",
+        "vatRatePercent": "Moms (%)",
+        "defaultDurationMinutes": "Standardlängd (min)",
+        "setups": "Uppställningar",
+        "changeoverMinutes": "Ställtid (min)",
+        "setupMinutes": "Ställtid (min)",
+        "teardownMinutes": "Nedplock (min)",
+        "entityTypeIds": "Artikeltyper (id)",
+        "fieldIds": "Fält (id)",
+        "vocabularyIds": "Listor (id)",
+        "responsibilityId": "Mottagande ansvar (id)",
+        "key": "Nyckel",
+        "kind": "Fälttyp",
+        "required": "Obligatoriskt",
+        "vocabularyId": "Lista (id)",
+        "options": "Alternativ",
+        "position": "Position",
+        "values": "Listvärden",
+        "template": "Mall",
+        "slug": "Id-namn",
+        "instructions": "Instruktioner",
+        "allowedTools": "Tillåtna verktyg",
+        "resources": "Resurser",
+        "scope": "Omfattning",
+        "markdown": "SKILL.md",
+        "title": "Titel",
+        "value": "Värde",
+        "parts": "Delar",
+        "customisationGroups": "Anpassningsgrupper",
+        "customerId": "Kund (id)",
+        "email": "E-post",
+        "phone": "Telefon",
+        "invoiceStreetAddress": "Fakturaadress (gata)",
+        "invoicePostalCode": "Fakturapostnummer",
+        "invoiceCity": "Fakturaort",
+        "invoiceCountry": "Fakturaland",
+        "paymentTermsDays": "Betalningsvillkor (dagar)",
+        "creditLimitMinor": "Kreditgräns (ören)",
+        "archiveOrders": "Arkivera även bokningar",
+        "contactId": "Kontaktperson (id)",
+        "contact": "Första kontaktperson",
+        "desiredStartsAt": "Önskad start",
+        "desiredEndsAt": "Önskat slut",
+        "quantity": "Antal",
+        "estimatedHeadcount": "Beräknat antal",
+        "guaranteedHeadcount": "Garanterat antal",
+        "headcount": "Antal gäster",
+        "unitPriceMinor": "Styckpris (öre)",
+        "discountPercent": "Rabatt (%)",
+        "budgetMinor": "Budget (ören)",
+        "estimatedValueMinor": "Uppskattat värde (ören)",
+        "orderId": "Bokning (id)",
+        "inboundMessageId": "Meddelande i inkorgen",
+        "parentLineId": "Tillägg till",
+        "statusId": "Bokningsstatus (id)",
+        "reason": "Anledning",
+        "color": "Färg",
+        "entry": "Nya bokningar startar här",
+        "closes": "Avslutar bokningen",
+        "gates": "Villkor för flytten",
+        "invoiceable": "Kan faktureras",
+        "event": "Offerthändelse",
+        "targetStatusId": "Flytta bokningar till (bokningsstatus-id)",
+        "toStatusIds": "Får gå till (bokningsstatus-id:n)",
+        "allowedNext": "Tillåtet nästa steg (vilken som helst eller bara dessa)",
+        "ids": "Ordning (id:n)",
+        "initial": "Nya rader startar här",
+        "hold": "Reservation",
+        "inRunSheets": "Med i körschema",
+        "released": "Släppt (slutläge)",
+        "expires": "Förfaller",
+        "targetStateId": "Flytta rader till (läges-id)",
+        "toStateIds": "Får gå till (läges-id:n)",
+        "lineId": "Rad (id)",
+        "lineIds": "Alternativ (rad-id)",
+        "chosenLineIds": "Valda alternativ (rad-id)",
+        "stateId": "Läge (id)",
+        "holdsUntil": "Håll till",
+        "expiryStateId": "Utgångsläge (id)",
+        "templateId": "Mall (id)",
+        "lines": "Rader",
+        "startsAt": "Startar",
+        "itemTypes": "Artikeltyper",
+        "statuses": "Bokningsstatusar",
+        "cells": "Rutor i rutnätet",
+        "itemId": "Artikel",
+        "targetItemId": "Specifik artikel",
+        "tagValueIds": "Krävda listvärden",
+        "windows": "Tidsfönster",
+        "unitId": "Enhet",
+        "resourceKind": "Utrustning eller person",
+        "amountMinor": "Belopp (öre)",
+        "dueDate": "Förfallodag",
+        "method": "Betalsätt",
+        "quoteId": "Offert",
+        "depositId": "Förskott",
+        "invoiceId": "Faktura",
+        "capacity": "Kapacitet",
+        "setupId": "Uppställning",
+        "status": "Status",
+        "price": "Pris",
+        "memberId": "Medlem",
+        "scheduleKind": "Schematyp",
+        "itemIds": "Personalresurser",
+        "days": "Dagar",
+        "exceptions": "Undantag",
+        "enabled": "På",
+        "boardId": "Tavla",
+        "phaseId": "Kolumn",
+        "statusIds": "Bokningsstatusar",
+        "assigneeId": "Ansvarig",
+        "receivableAccount": "Konto för kundfordringar",
+        "clearingAccount": "Konto för betalningar på väg",
+        "advancesAccount": "Konto för förskott från kunder",
+        "feesAccount": "Konto för betalavgifter",
+        "roundingAccount": "Konto för öresavrundning",
+        "revenueAccount": "Standardkonto för intäkter",
+        "vat25Account": "Konto för utgående moms 25 %",
+        "vat12Account": "Konto för utgående moms 12 %",
+        "vat6Account": "Konto för utgående moms 6 %",
+        "fiscalYearStartMonth": "Räkenskapsårets första månad",
+        "depositPercent": "Förskott (procent)",
+        "depositMinimumMinor": "Lägsta belopp för förskott (ören)",
+        "autoAssignSeats": "Lägg till platser automatiskt",
+        "extraSeats": "Extra platser",
+        "invoiceProvider": "Fakturaleverantör",
+        "revenueAccounts": "Intäktskonton per artikeltyp eller artikel"
+      },
+      "operations": {
+        "venue_create": "Skapa anläggning",
+        "venue_update": "Ändra anläggning",
+        "venue_archive": "Arkivera anläggning",
+        "item_create": "Skapa artikel",
+        "item_update": "Ändra artikel",
+        "item_archive": "Arkivera artikel",
+        "customer_create": "Skapa kund",
+        "customer_update": "Uppdatera kund",
+        "customer_archive": "Arkivera kund",
+        "contact_create": "Lägg till kontaktperson",
+        "contact_update": "Uppdatera kontaktperson",
+        "contact_archive": "Arkivera kontaktperson",
+        "order_create": "Skapa bokning",
+        "order_update": "Uppdatera bokning",
+        "order_changeStatus": "Byt bokningsstatus på bokning",
+        "orderStatus_create": "Skapa bokningsstatus",
+        "orderStatus_update": "Uppdatera bokningsstatus",
+        "orderStatus_archive": "Arkivera bokningsstatus",
+        "orderStatus_reorder": "Ändra ordning på bokningsstatusar",
+        "orderStatus_setTransitions": "Ange vart bokningar i en bokningsstatus får flyttas",
+        "orderStatus_setGates": "Ange vad flyttar till en bokningsstatus kräver",
+        "orderStatus_importTemplate": "Importera statusmall",
+        "entityType_create": "Skapa typ",
+        "entityType_update": "Ändra typ",
+        "entityType_archive": "Arkivera typ",
+        "fieldDefinition_create": "Skapa fält",
+        "fieldDefinition_update": "Ändra fält",
+        "fieldDefinition_archive": "Arkivera fält",
+        "vocabulary_create": "Skapa lista",
+        "vocabulary_update": "Ändra lista",
+        "vocabulary_archive": "Arkivera lista",
+        "vocabulary_importTemplate": "Importera listmall",
+        "vocabulary_addValue": "Lägg till listvärde",
+        "vocabulary_updateValue": "Ändra listvärde",
+        "vocabulary_archiveValue": "Arkivera listvärde",
+        "setup_create": "Skapa uppställning",
+        "setup_update": "Ändra uppställning",
+        "setup_archive": "Arkivera uppställning",
+        "responsibility_create": "Skapa ansvar",
+        "responsibility_update": "Uppdatera ansvar",
+        "responsibility_archive": "Arkivera ansvar",
+        "runSheetDefinition_create": "Skapa körschema",
+        "runSheetDefinition_update": "Uppdatera körschema",
+        "runSheetDefinition_archive": "Arkivera körschema",
+        "configuration_importTemplate": "Importera konfigurationsmall",
+        "skill_create": "Skapa färdighet",
+        "skill_update": "Ändra färdighet",
+        "skill_publish": "Publicera färdighet",
+        "skill_archive": "Arkivera färdighet",
+        "skill_share": "Dela färdighet",
+        "skill_import": "Importera färdighet",
+        "conversation_archive": "Arkivera konversation",
+        "userSettings_update": "Ändra datum- och klockformat",
+        "assignment_assign": "Byt ansvarig",
+        "assignment_follow": "Följ",
+        "assignment_unfollow": "Sluta följa",
+        "itemState_create": "Skapa läge",
+        "itemState_update": "Uppdatera läge",
+        "itemState_archive": "Arkivera läge",
+        "itemState_reorder": "Ändra ordning på lägen",
+        "itemState_setTransitions": "Ange lägesövergångar",
+        "statusGrid_importTemplate": "Importera statusrutnätsmall",
+        "statusGrid_setCell": "Ange cell i statusrutnätet",
+        "line_create": "Lägg till rad",
+        "line_update": "Uppdatera rad",
+        "line_archive": "Ta bort rad",
+        "inboundMessage_attachToOrder": "Koppla meddelande till bokning",
+        "line_changeState": "Byt läge på rad",
+        "line_expandBundle": "Lägg till paket med delar",
+        "line_chooseOptions": "Välj tillval för rad",
+        "itemDemand_create": "Lägg till resursbehov på artikel",
+        "itemDemand_update": "Ändra resursbehov",
+        "itemDemand_archive": "Ta bort resursbehov",
+        "lineAllocation_assign": "Välj enhet för rad",
+        "line_followStatus": "Låt raden följa bokningsstatusen",
+        "alternativeGroup_create": "Skapa alternativ",
+        "alternativeGroup_update": "Ändra alternativ",
+        "alternativeGroup_archive": "Lös upp alternativ",
+        "alternativeGroup_choose": "Välj ett alternativ",
+        "order_expireHolds": "Släpp förfallna reservationer",
+        "order_createFromTemplate": "Skapa bokning från mall",
+        "orderTemplate_create": "Skapa mall",
+        "orderTemplate_update": "Uppdatera mall",
+        "orderTemplate_archive": "Arkivera mall",
+        "pipelineSetup_activate": "Sätt upp pipelinen",
+        "deposit_create": "Skapa förskott",
+        "deposit_send": "Markera förskott som skickat",
+        "deposit_void": "Makulera förskott",
+        "invoice_create": "Skapa faktura",
+        "invoice_send": "Markera faktura som skickad",
+        "invoice_sync": "Uppdatera faktura från Fortnox",
+        "invoice_void": "Makulera faktura",
+        "payment_create": "Begär betalning",
+        "memberProfile_update": "Ändra medlemmens schematyp",
+        "memberProfile_setItems": "Koppla personalresurser till medlem",
+        "venueHours_set": "Ange öppettider",
+        "itemHours_set": "Ange arbetstider",
+        "organizationProfile_setDomainJoin": "Slå på eller av anslutning via e-postdomän",
+        "board_create": "Skapa tavla",
+        "board_update": "Ändra tavla",
+        "board_reorder": "Ändra ordning på tavlor",
+        "board_archive": "Arkivera tavla",
+        "boardPhase_create": "Lägg till kolumn på tavla",
+        "boardPhase_update": "Ändra kolumn på tavla",
+        "boardPhase_archive": "Ta bort kolumn från tavla",
+        "boardPhase_reorder": "Ändra ordning på kolumner",
+        "boardPhase_moveStatus": "Flytta bokningsstatus mellan kolumner",
+        "accountingSettings_update": "Ändra bokföringsinställningar",
+        "paymentSettings_update": "Ändra betalningsinställningar",
+        "billing_update": "Ändra platsinställningar",
+        "billing_approveSeat": "Godkänn en plats",
+        "billing_rejectSeat": "Avböj en plats",
+        "billing_remindAdmins": "Påminn admins om betalning",
+        "deposit_request": "Begär förskott med betallänk",
+        "accountingExport_create": "Skapa SIE-export",
+        "inboundMessage_markRead": "Markera meddelande som läst",
+        "inboundMessage_markUnread": "Markera meddelande som oläst",
+        "inboundMessage_delete": "Ta bort meddelande",
+        "notification_delete": "Ta bort notiser"
+      },
+      "setup": {
+        "title": "Skapa min första version",
+        "request": "Inget sparas förrän du godkänner. Du kan ändra allt senare genom att fråga assistenten, eller i Inställningar och Pipeline.",
+        "archiveNote": "Om du redan har bokningsstatusar eller tillstånd som inte finns i den här versionen arkiveras de, de tas inte bort.",
+        "accepted": "Din första version är sparad. Öppnar din tavla.",
+        "rejected": "Inte sparat. Berätta för assistenten vad som ska ändras.",
+        "approve": "Skapa min första version",
+        "creating": "Skapar...",
+        "change": "Ändra något",
+        "changeMessage": "Jag vill ändra något."
+      },
+      "needsAdmin": "Kräver admin",
+      "changes": {
+        "record": "Post",
+        "field": "Fält",
+        "before": "Före",
+        "after": "Efter",
+        "empty": "–",
+        "none": "Inget ändras."
+      },
+      "consequences": {
+        "title": "Vad det här påverkar",
+        "understand": "Jag förstår vad det här påverkar",
+        "other": "Ändringen påverkar även annat.",
+        "items": {
+          "priceKeptOnQuotes": "{lines, plural, one {# rad} other {# rader}} i {quotes, plural, one {# offert} other {# offerter}} behåller det gamla priset. Det nya priset gäller rader som läggs till senare.",
+          "ordersMove": "{count, plural, one {# bokning flyttas} other {# bokningar flyttas}} till {target}.",
+          "linesMove": "{count, plural, one {# rad flyttas} other {# rader flyttas}} till {target}.",
+          "gridCellsCleared": "{count, plural, one {# cell i rutnätet} other {# celler i rutnätet}} töms."
+        }
+      }
+    },
+    "description": "Chatta med assistenten om anläggningar, artiklar och färdigheter.",
+    "stop": "Stoppa",
+    "emptyTitle": "Vad kan jag hjälpa dig med?",
+    "emptyDescription": "Jag kan söka, visa och föreslå ändringar. Ändringar kräver alltid ditt godkännande.",
+    "loadingConversation": "Laddar konversationen...",
+    "skills": {
+      "label": "Färdigheter",
+      "search": "Sök färdigheter...",
+      "empty": "Inga färdigheter hittades.",
+      "failed": "Kunde inte hämta färdigheterna.",
+      "use": "Använd färdigheten \"{name}\":"
+    },
+    "suggestions": {
+      "listVenues": "Visa alla anläggningar",
+      "createVenue": "Skapa en anläggning som heter Testsalen",
+      "findItems": "Sök efter bokningsbara artiklar med plats för 50 personer",
+      "listSkills": "Vilka färdigheter finns?"
+    },
+    "history": {
+      "title": "Tidigare konversationer",
+      "new": "Skapa konversation",
+      "empty": "Inga konversationer ännu.",
+      "rename": "Byt namn",
+      "renameLabel": "Konversationens namn",
+      "archive": "Arkivera konversation",
+      "archiveConfirm": "Vill du arkivera ”{title}”?",
+      "archived": "Konversationen har arkiverats.",
+      "renamed": "Konversationen har bytt namn."
+    },
+    "tool": {
+      "running": "Kör {tool}..."
+    },
+    "ui": {
+      "billing": {
+        "singular": "Bibi-abonnemang",
+        "trialEndsAt": "Provperioden slutar {date}.",
+        "seats": "{used} av {total} platser används, {held} väntar",
+        "open": "Öppna faktureringen"
+      },
+      "open": "Öppna",
+      "openVenue": "Öppna anläggningen",
+      "more": "Det finns fler resultat. Be assistenten visa fler.",
+      "noHits": "Inga träffar.",
+      "item": {
+        "singular": "Artikel",
+        "empty": "Inga artiklar hittades.",
+        "open": "Öppna artikeln",
+        "columns": {
+          "name": "Namn",
+          "price": "Pris",
+          "setups": "Uppställningar"
+        },
+        "priceUnit": {
+          "PER_PERSON": "per person",
+          "PER_UNIT": "per enhet",
+          "PER_HOUR": "per timme",
+          "FLAT": "fast pris"
+        },
+        "duration": "{minutes} min",
+        "setupsCount": "{count, plural, one {# uppställning} other {# uppställningar}}",
+        "partsCount": "{count, plural, one {# del} other {# delar}}",
+        "customisationGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
+        "sections": {
+          "price": "Pris",
+          "bookable": "Bokning",
+          "setups": "Uppställningar",
+          "parts": "Delar",
+          "customisations": "Anpassningar"
+        }
+      },
+      "customer": {
+        "singular": "Kund",
+        "empty": "Inga kunder hittades.",
+        "open": "Öppna kunden",
+        "columns": {
+          "name": "Namn",
+          "city": "Ort",
+          "email": "E-post"
+        },
+        "terms": "Betalningsvillkor {days} dagar"
+      },
+      "contact": {
+        "singular": "Kontaktperson",
+        "empty": "Inga kontaktpersoner hittades.",
+        "openCustomer": "Öppna kunden",
+        "columns": {
+          "name": "Namn",
+          "email": "E-post",
+          "phone": "Telefon"
+        }
+      },
+      "order": {
+        "singular": "Bokning",
+        "empty": "Inga bokningar hittades.",
+        "open": "Öppna bokningen",
+        "reference": "Bokning {reference}",
+        "headcount": "{count, plural, one {# gäst} other {# gäster}}",
+        "columns": {
+          "title": "Titel",
+          "when": "Önskade datum",
+          "headcount": "Antal"
+        },
+        "view": {
+          "customer": "Kund",
+          "contact": "Kontakt",
+          "when": "När",
+          "guests": "Gäster",
+          "assignee": "Ansvarig",
+          "followers": "Följer",
+          "lines": "Rader",
+          "total": "Totalt exkl. moms",
+          "totalFrom": "Från {amount}",
+          "balance": "Att betala",
+          "issues": "Problem",
+          "hidden": "–",
+          "nobody": "Ingen"
+        }
+      },
+      "paymentAccount": {
+        "singular": "Utbetalningskonto",
+        "onboardingLink": "Fortsätt hos Stripe",
+        "open": "Öppna betalningsinställningar"
+      },
+      "integration": {
+        "singular": "Integrationer",
+        "unavailable": "Inte tillgängligt på den här servern",
+        "company": "{company} ({number})",
+        "open": "Öppna integrationer"
+      },
+      "calendar": {
+        "title": "Kalender, {period}",
+        "empty": "Inga block under perioden.",
+        "more": "+{count} till",
+        "open": "Öppna kalendern",
+        "softHold": "Mjuk reservation"
+      },
+      "pipeline": {
+        "title": "Pipeline",
+        "empty": "Inga bokningar än.",
+        "open": "Öppna pipelinen"
+      },
+      "quote": {
+        "title": "Offert, version {version}",
+        "empty": "Inga offerter hittades.",
+        "open": "Öppna offerten",
+        "validUntil": "Giltig till {date}",
+        "noValidity": "Inget giltighetsdatum ännu",
+        "columns": {
+          "version": "Offert",
+          "validUntil": "Giltig till",
+          "total": "Summa inkl. moms",
+          "status": "Status"
+        }
+      },
+      "occupancy": {
+        "singular": "Beläggning",
+        "released": "Släppt",
+        "empty": "Ingen beläggning hittades.",
+        "openItem": "Öppna artikeln",
+        "columns": {
+          "type": "Typ",
+          "period": "Period",
+          "note": "Anteckning"
+        }
+      },
+      "line": {
+        "singular": "Programpunkt",
+        "empty": "Inga programpunkter hittades.",
+        "quantity": "{count} deltar",
+        "archived": "Borttagen från programmet",
+        "openOrder": "Öppna bokningen",
+        "columns": {
+          "name": "Namn",
+          "when": "När",
+          "quantity": "Antal"
+        },
+        "untimed": "Ingen tid",
+        "unitPrice": "Styckpris {price}"
+      },
+      "alternativeGroup": {
+        "empty": "Inga alternativ hittades.",
+        "chosen": "Valt",
+        "open": "Inte valt",
+        "options": "{count, plural, one {# alternativ} other {# alternativ}}",
+        "archived": "Upplöst",
+        "openOrder": "Öppna bokningen",
+        "columns": {
+          "name": "Namn",
+          "status": "Status",
+          "options": "Alternativ"
+        }
+      },
+      "requirement": {
+        "singular": "Behov",
+        "empty": "Inga behov hittades.",
+        "quantity": "Antal: {count}",
+        "onOrder": "Gäller hela bokningen",
+        "onLine": "Gäller en programpunkt",
+        "archived": "Borttaget",
+        "openOrder": "Öppna bokningen",
+        "columns": {
+          "quantity": "Antal",
+          "where": "Gäller"
+        }
+      },
+      "runSheet": {
+        "singular": "Körschema",
+        "empty": "Inga körscheman hittades.",
+        "version": "Version {version}",
+        "notSent": "Inte skickad",
+        "openOrder": "Öppna bokningen",
+        "columns": {
+          "version": "Version",
+          "changes": "Ändringar",
+          "sent": "Skickad"
+        }
+      },
+      "entityType": {
+        "empty": "Inga typer hittades.",
+        "open": "Öppna typen",
+        "noFields": "Typen har inga fält.",
+        "columns": {
+          "name": "Namn",
+          "base": "Bas",
+          "capabilities": "Förmågor",
+          "fields": "Fält"
+        },
+        "base": {
+          "ITEM": "Artikel",
+          "CUSTOMER": "Kund",
+          "CONTACT": "Kontakt",
+          "ORDER": "Bokning",
+          "REQUIREMENT": "Behov",
+          "LINE": "Programpunkt"
+        },
+        "capability": {
+          "PRICED": "Prissatt",
+          "BUNDLE": "Paket",
+          "CUSTOMISATIONS": "Anpassningar",
+          "BOOKABLE": "Bokningsbar",
+          "SETUPS": "Uppställningar"
+        }
+      },
+      "field": {
+        "empty": "Inga fält hittades.",
+        "required": "Obligatoriskt",
+        "yes": "Ja",
+        "key": "Nyckel: {key}",
+        "openList": "Öppna listan",
+        "openType": "Öppna typen",
+        "columns": {
+          "name": "Namn",
+          "kind": "Fälttyp",
+          "required": "Obligatoriskt"
+        },
+        "kind": {
+          "TEXT": "Text",
+          "NUMBER": "Tal",
+          "BOOLEAN": "Ja/nej",
+          "DATE": "Datum",
+          "CHOICE": "Val",
+          "MULTI_CHOICE": "Flerval",
+          "LINK": "Länk till en post"
+        }
+      },
+      "vocabulary": {
+        "empty": "Inga listor hittades.",
+        "open": "Öppna listan",
+        "valuesCount": "{count, plural, one {# värde} other {# värden}}",
+        "columns": {
+          "name": "Namn",
+          "values": "Listvärden"
+        }
+      },
+      "setup": {
+        "singular": "Uppställning",
+        "empty": "Inga uppställningar hittades.",
+        "open": "Öppna uppställningar",
+        "changeover": "Ställtid {minutes} min",
+        "columns": {
+          "name": "Namn",
+          "changeover": "Ställtid"
+        }
+      },
+      "priceList": {
+        "singular": "Prislista",
+        "archived": "Arkiverad",
+        "empty": "Inga prislistor hittades.",
+        "open": "Öppna prislistor",
+        "columns": {
+          "name": "Namn",
+          "validity": "Giltighet",
+          "pricing": "Prissättning"
+        }
+      },
+      "responsibility": {
+        "singular": "Ansvar",
+        "archived": "Arkiverad",
+        "empty": "Inga ansvar hittades.",
+        "open": "Öppna ansvar",
+        "covers": "{types, plural, one {# artikeltyp} other {# artikeltyper}}, {followers, plural, =0 {inga följare} one {# följare} other {# följare}}",
+        "columns": {
+          "name": "Namn",
+          "covers": "Täcker"
+        }
+      },
+      "runSheetDefinition": {
+        "singular": "Körschema",
+        "archived": "Arkiverat",
+        "empty": "Inga körscheman hittades.",
+        "open": "Öppna order",
+        "contents": "{types, plural, one {# artikeltyp} other {# artikeltyper}}, {fields, plural, one {# fält} other {# fält}}, {lists, plural, one {# lista} other {# listor}}",
+        "columns": {
+          "name": "Namn",
+          "contents": "Tar med"
+        }
+      },
+      "orderStatus": {
+        "singular": "Bokningsstatus",
+        "empty": "Inga bokningsstatusar hittades.",
+        "open": "Öppna bokningsstatusarna",
+        "archived": "Arkiverad",
+        "transitions": "{count, plural, =0 {Inga övergångar} one {# övergång} other {# övergångar}}",
+        "columns": {
+          "name": "Namn",
+          "flags": "Gör",
+          "transitions": "Övergångar"
+        }
+      },
+      "itemState": {
+        "singular": "Läge",
+        "empty": "Inga lägen hittades.",
+        "openType": "Öppna typen",
+        "archived": "Arkiverat",
+        "transitions": "{count, plural, =0 {Inga övergångar} one {# övergång} other {# övergångar}}",
+        "columns": {
+          "name": "Namn",
+          "flags": "Gör",
+          "transitions": "Övergångar"
+        }
+      },
+      "statusGrid": {
+        "empty": "Inga celler är satta: raderna behåller sitt läge när bokningsstatusen byts.",
+        "columns": {
+          "status": "Bokningsstatus",
+          "type": "Artikeltyp",
+          "state": "Raderna flyttas till"
+        }
+      },
+      "assignment": {
+        "subject": {
+          "ORDER": "Bokning",
+          "ITEM": "Artikel"
+        },
+        "main": "Huvudansvarig",
+        "responsibility": "Ansvar",
+        "assigned": "Har en ansvarig",
+        "unassigned": "Ingen ansvarig ännu",
+        "followers": "{count, plural, =0 {Inga följare} one {# följare} other {# följare}}",
+        "empty": "Inga tilldelningar.",
+        "columns": {
+          "subject": "Gäller",
+          "assignee": "Ansvarig",
+          "followers": "Följare"
+        }
+      },
+      "orderTemplate": {
+        "singular": "Mall",
+        "empty": "Inga mallar hittades.",
+        "open": "Öppna mallarna",
+        "archived": "Arkiverat",
+        "lines": "{count, plural, =0 {Inga rader} one {# rad} other {# rader}}",
+        "columns": {
+          "name": "Namn",
+          "lines": "Rader"
+        }
+      },
+      "pipelineDraft": {
+        "title": "En första version",
+        "sell": "Det ni säljer",
+        "moves": "Så rör sig en förfrågan",
+        "ends": "Slutar som: {statuses}",
+        "nothingYet": "Inget ännu"
+      },
+      "memberProfile": {
+        "singular": "Medlemmens arbete",
+        "noItems": "Inga personalresurser",
+        "open": "Öppna medlem"
+      },
+      "hours": {
+        "title": "Tider",
+        "empty": "Inga tider angivna.",
+        "exceptions": "Undantag",
+        "zone": "Tidszon {zone}"
+      },
+      "board": {
+        "title": "Tavla {name}",
+        "boards": "Tavlor",
+        "default": "Standard",
+        "columns": "{count, plural, one {# kolumn} other {# kolumner}}",
+        "statuses": "{count, plural, one {# bokningsstatus} other {# bokningsstatusar}}",
+        "empty": "Inga tavlor.",
+        "open": "Öppna tavlan",
+        "archived": "Arkiverad",
+        "column": "Kolumn {name}"
+      }
+    },
+    "questionnaire": {
+      "answer": "Svara",
+      "otherLabel": "Annat svar",
+      "otherPlaceholder": "Eller skriv ett eget svar…"
+    }
+  },
+  "skills": {
+    "title": "Färdigheter",
+    "singular": "Färdighet",
+    "create": "Skapa färdighet",
+    "import": "Importera",
+    "export": "Exportera",
+    "share": "Dela med organisationen",
+    "publish": "Publicera",
+    "scope": {
+      "system": "System",
+      "organization": "Organisation",
+      "personal": "Personlig",
+      "label": "Omfattning",
+      "hint": "Personliga färdigheter ser bara du. Organisationens kräver administratör."
+    },
+    "instructions": "Instruktioner",
+    "allowedTools": "Tillåtna verktyg",
+    "listDescription": "Återanvändbara instruktioner som assistenten laddar vid behov.",
+    "empty": "Inga färdigheter hittades.",
+    "emptyDescription": "Skapa en färdighet eller importera en SKILL.md.",
+    "createDescription": "Beskriv när färdigheten ska användas och vad assistenten ska göra.",
+    "edit": "Redigera färdighet",
+    "created": "Färdigheten har skapats.",
+    "updated": "Färdigheten har uppdaterats.",
+    "published": "Färdigheten är publicerad.",
+    "shared": "Färdigheten har delats som utkast i organisationen.",
+    "archive": "Arkivera färdighet",
+    "archived": "Färdigheten har arkiverats.",
+    "archiveConfirm": "Vill du arkivera {name}?",
+    "exported": "SKILL.md har laddats ner.",
+    "imported": "Färdigheten har importerats som utkast.",
+    "importTitle": "Importera färdighet",
+    "importDescription": "Klistra in eller ladda upp en SKILL.md. Innehållet behandlas som data och blir ett utkast.",
+    "importFile": "Fil (SKILL.md)",
+    "importMarkdown": "SKILL.md-innehåll",
+    "version": "Version {version}",
+    "noToolLimits": "Inga begränsningar: alla verktyg du själv har är tillåtna.",
+    "status": {
+      "draft": "Utkast",
+      "published": "Publicerad",
+      "archived": "Arkiverad"
+    },
+    "columns": {
+      "name": "Namn",
+      "scope": "Omfattning",
+      "version": "Version"
+    },
+    "filters": {
+      "placeholder": "Sök färdigheter...",
+      "query": "Sökfråga",
+      "scope": "Omfattning",
+      "status": "Status",
+      "allScopes": "Alla omfattningar",
+      "allStatuses": "Alla statusar",
+      "semantic": "Sök efter betydelse",
+      "apply": "Sök"
+    },
+    "fields": {
+      "name": "Namn",
+      "slug": "Id-namn (valfritt)",
+      "description": "När ska den användas?",
+      "instructions": "Instruktioner (markdown)",
+      "allowedTools": "Tillåtna verktyg (ett per rad eller kommaseparerade)",
+      "resources": "Resurser",
+      "resourcesHint": "Små namngivna textfiler, till exempel checklistor eller mallar.",
+      "resourceName": "Resursens namn",
+      "resourceContent": "Innehåll",
+      "addResource": "Lägg till resurs",
+      "removeResource": "Ta bort resurs"
+    },
+    "sections": {
+      "instructions": "Instruktioner",
+      "allowedTools": "Tillåtna verktyg",
+      "resources": "Resurser"
+    }
+  },
+  "integration": {
+    "title": "Integrationer",
+    "description": "Koppla Bibi till de system som organisationen redan använder.",
+    "status": {
+      "NOT_CONNECTED": "Inte ansluten",
+      "PENDING": "Väntar på godkännande",
+      "CONNECTED": "Ansluten",
+      "EXPIRED": "Behöver anslutas igen",
+      "DISCONNECTED": "Frånkopplad"
+    },
+    "fortnox": {
+      "name": "Fortnox",
+      "description": "Anslut organisationens Fortnox-företag. Fakturor kan skapas i Fortnox, och betalningar som bokförs där speglas tillbaka till Bibi.",
+      "hint": {
+        "NOT_CONNECTED": "Anslut Fortnox för att koppla ihop ditt bokföringssystem. Du skickas till Fortnox för att godkänna anslutningen.",
+        "PENDING": "Anslutningen är påbörjad men inte godkänd. Anslut igen för att slutföra den.",
+        "CONNECTED": "Fortnox är anslutet. Fakturor skapas i Fortnox när Inställningar → Betalningar säger det, och betalningar som bokförs där speglas tillbaka.",
+        "EXPIRED": "Fortnox godtar inte längre anslutningen. Anslut igen för att återställa den.",
+        "DISCONNECTED": "Fortnox har kopplats från. Anslut igen för att återställa anslutningen."
+      },
+      "notConfigured": "Fortnox är inte tillgängligt än: Bibi saknar inloggningsuppgifter till Fortnox-appen på den här servern.",
+      "reconnectNote": "Organisationer som anslöts innan fakturering lades till måste ansluta om en gång för att ge behörighet för fakturering.",
+      "adminNote": "En systemadministratör i Fortnox måste godkänna anslutningen. Är du inte det ber du en sådan person godkänna när Fortnox frågar.",
+      "company": "Företag",
+      "organizationNumber": "Organisationsnummer",
+      "connectedAt": "Ansluten",
+      "connect": "Anslut Fortnox",
+      "reconnect": "Anslut igen",
+      "connecting": "Förbereder anslutningen till Fortnox…",
+      "redirecting": "Öppnar Fortnox…",
+      "disconnect": "Koppla från",
+      "disconnectConfirm": "Koppla från Fortnox? Bibi glömmer anslutningen och återkallar åtkomsten hos Fortnox. Du kan ansluta igen senare.",
+      "disconnecting": "Kopplar från Fortnox…",
+      "disconnected": "Fortnox har kopplats från."
+    },
+    "notice": {
+      "connected": "Fortnox är anslutet.",
+      "denied": "Anslutningen godkändes inte hos Fortnox, så ingenting anslöts.",
+      "expired": "Godkännandet tog för lång tid eller kom från ett annat håll. Starta anslutningen igen.",
+      "failed": "Det gick inte att ansluta Fortnox. Försök igen om en stund."
+    },
+    "apiKeysCard": {
+      "title": "API-nycklar",
+      "description": "Nycklar som låter andra system använda Bibis REST-API för organisationens räkning.",
+      "open": "Hantera API-nycklar"
+    },
+    "apiKeys": {
+      "title": "API-nycklar",
+      "description": "Nycklar för REST-API:t. En nyckel tillhör organisationen och agerar med sitt eget förval och sina egna behörigheter, så den fortsätter fungera när personen som skapade den slutar. Bara administratörer hanterar nycklar.",
+      "empty": "Inga API-nycklar.",
+      "create": "Skapa API-nyckel",
+      "createDescription": "Nyckeln agerar med det förval du väljer: medlem, bokningsansvarig eller administratör. Finjustera behörigheterna efteråt.",
+      "creating": "Skapar API-nyckel…",
+      "created": "API-nyckeln har skapats.",
+      "secretTitle": "Kopiera din API-nyckel",
+      "secretDescription": "Det här är enda gången nyckeln visas.",
+      "secretOnce": "Spara nyckeln på ett säkert ställe nu. Bibi sparar bara ett fingeravtryck av den och kan inte visa den igen.",
+      "copy": "Kopiera nyckeln",
+      "copied": "Nyckeln har kopierats.",
+      "copyFailed": "Nyckeln kunde inte kopieras. Markera den och kopiera den för hand.",
+      "revoke": "Återkalla",
+      "revokeConfirm": "Återkalla nyckeln \"{name}\"? System som använder den förlorar åtkomsten direkt.",
+      "revoking": "Återkallar API-nyckel…",
+      "revoked": "API-nyckeln har återkallats.",
+      "never": "Aldrig",
+      "fields": {
+        "name": "Namn",
+        "role": "Roll",
+        "rolePlaceholder": "Välj en roll",
+        "expires": "Upphör"
+      },
+      "expiry": {
+        "30": "Om 30 dagar",
+        "90": "Om 90 dagar",
+        "365": "Om ett år",
+        "never": "Aldrig"
+      },
+      "columns": {
+        "name": "Namn",
+        "key": "Nyckel",
+        "role": "Roll",
+        "expires": "Upphör",
+        "lastUsed": "Senast använd",
+        "createdBy": "Skapad av"
+      },
+      "edit": "Redigera API-nyckel",
+      "editDescription": "Byt namn på nyckeln eller ändra dess förval. Dess behörighetsundantag finns kvar.",
+      "updated": "API-nyckeln har uppdaterats.",
+      "permissions": "Behörigheter",
+      "unknownCreator": "Tidigare medlem"
+    },
+    "oauthGrants": {
+      "title": "Anslutna appar",
+      "description": "Appar, till exempel AI-klienter, som du har gett åtkomst till Bibi i den här organisationen. Bara du ser dina egna.",
+      "empty": "Du har inte anslutit några appar.",
+      "revoke": "Koppla från",
+      "revokeConfirm": "Koppla från \"{name}\"? Appen förlorar åtkomsten direkt och måste be om åtkomst igen.",
+      "revoking": "Kopplar från…",
+      "revoked": "Appen har kopplats från.",
+      "columns": {
+        "client": "App",
+        "scopes": "Åtkomst",
+        "connected": "Ansluten"
+      },
+      "add": "Lägg till koppling",
+      "mcp": {
+        "name": "MCP",
+        "dialogTitle": "Anslut via MCP",
+        "description": "Låt en AI-app som Claude använda Bibi som du.",
+        "urlLabel": "MCP-adress",
+        "copy": "Kopiera adressen",
+        "copied": "Adressen har kopierats.",
+        "copyFailed": "Det gick inte att kopiera. Markera texten och kopiera den för hand.",
+        "copyPrompt": "Kopiera prompt",
+        "promptCopied": "Prompten har kopierats. Klistra in den i din AI-app.",
+        "local": "Nås bara från den här datorn.",
+        "prompt": "Hjälp mig att koppla {name} till dig som en MCP-koppling, så att du kan arbeta i {name} åt mig. Förklara varje steg på enkel svenska och vänta på mig mellan stegen.\n\nNamn: {name}\nAdress: {url}\n\nNär jag ansluter ber {name} mig logga in och välja Tillåt."
+      }
+    }
+  }
+}

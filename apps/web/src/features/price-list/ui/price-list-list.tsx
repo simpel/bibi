@@ -37,9 +37,11 @@ const createAction = ({ abilities }: { abilities: CallerAbilities }) =>
 
 /** Price lists page body (ADR 0023): header with create, table, cursor pagination. */
 export async function PriceListList({ locale, cursor }: PriceListListProps) {
-  const t = await getTranslations("priceList");
-  const abilities = await getCallerAbilities();
-  const [result, data] = await load({ cursor });
+  const [t, abilities, [result, data]] = await Promise.all([
+    getTranslations("priceList"),
+    getCallerAbilities(),
+    load({ cursor }),
+  ]);
   const create = createAction({ abilities });
   const header = (
     <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />

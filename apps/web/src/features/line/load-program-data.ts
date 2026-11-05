@@ -1,5 +1,6 @@
 import "server-only";
 import { listItemStates, listItems, listSetups, type Result } from "@bibi/core";
+import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
 import { runOperation } from "@/server/run-operation";
 import { loadOrganizationTimeZone } from "@/server/time-zones";
@@ -16,11 +17,12 @@ const LIMIT = 100;
 async function loadStates(): Promise<LineStateOption[]> {
   const states = await runOperation({ operation: listItemStates, input: { limit: LIMIT } });
   if (!states.ok) return [];
-  return states.value.items.map(({ id, name, color, transitionsTo }) => ({
+  return states.value.items.map(({ id, name, color, transitionsTo, entityTypeId }) => ({
     id,
     name,
     color,
     transitionsTo,
+    entityTypeId,
   }));
 }
 
@@ -30,28 +32,35 @@ async function loadStates(): Promise<LineStateOption[]> {
  * `item:read` the items are hidden (ADR 0050 feature scope), not an error.
  */
 export async function loadProgramData(): Promise<Result<ProgramFormData>> {
-  const [typed, items, bundles, setups, states, customisable, timeZone] = await Promise.all([
-    loadTypedFormData({ base: "LINE" }),
-    runOperation({ operation: listItems, input: { capability: "BOOKABLE", limit: LIMIT } }),
-    runOperation({ operation: listItems, input: { capability: "BUNDLE", limit: LIMIT } }),
-    runOperation({ operation: listSetups, input: { limit: LIMIT } }),
-    loadStates(),
-    loadCustomisableItems(),
-    loadOrganizationTimeZone(),
-  ]);
+  const [typed, items, bundles, setups, states, customisable, timeZone, itemTypes] =
+    await Promise.all([
+      loadTypedFormData({ base: "LINE" }),
+      runOperation({ operation: listItems, input: { capability: "BOOKABLE", limit: LIMIT } }),
+      runOperation({ operation: listItems, input: { capability: "BUNDLE", limit: LIMIT } }),
+      runOperation({ operation: listSetups, input: { limit: LIMIT } }),
+      loadStates(),
+      loadCustomisableItems(),
+      loadOrganizationTimeZone(),
+      loadEntityTypesOf({ base: "ITEM" }),
+    ]);
   if (!typed.ok) return typed;
   if (!items.ok && items.error.code !== "FORBIDDEN") return items;
   if (!setups.ok) return setups;
+  const typeMap = new Map(
+    itemTypes.ok ? itemTypes.value.items.map(({ id, name }) => [id, name]) : [],
+  );
   return {
     ok: true,
     value: {
       ...typed.value,
       items: items.ok
-        ? items.value.items.map(({ id, name, setups: own, timeZone: zone, ...price }) => ({
-            ...{ id, name, timeZone: zone },
-            ...{ priceMinor: price.priceMinor, priceUnit: price.priceUnit },
-            setupIds: own.map(({ setupId }) => setupId),
-          }))
+        ? items.value.items.map(
+            ({ id, name, setups: own, timeZone: zone, entityTypeId, ...price }) => ({
+              ...{ id, name, timeZone: zone, entityTypeId, typeName: typeMap.get(entityTypeId) },
+              ...{ priceMinor: price.priceMinor, priceUnit: price.priceUnit },
+              setupIds: own.map(({ setupId }) => setupId),
+            }),
+          )
         : [],
       itemsHidden: !items.ok,
       bundles: bundles.ok

@@ -1,17 +1,18 @@
-import { getItem } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { CrumbName } from "@/components/shell/crumb-name";
+import { DeferredSection } from "@/components/states/deferred-section";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { WithHistory } from "@/features/audit-log/ui/with-history";
 import { Link } from "@/lib/navigation";
-import { ROUTES } from "@/lib/routes";
+import { itemRoute, ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
-import { runOperation } from "@/server/run-operation";
 import { DemandsSection } from "../../item-demand/ui/demands-section";
 import { OccupancySection } from "../../occupancy/ui/occupancy-section";
+import { loadItem } from "../load-item";
 import { loadItemFormData } from "../load-item-form-data";
 import { BundleOwner } from "./bundle-owner";
 import { ItemActions } from "./item-actions";
@@ -26,7 +27,7 @@ export type ItemDetailProps = { locale: Locale; id: string };
 export async function ItemDetail({ locale, id }: ItemDetailProps) {
   const common = await getTranslations("common");
   const abilities = await getCallerAbilities();
-  const item = await runOperation({ operation: getItem, input: { id } });
+  const item = await loadItem({ id });
   if (!item.ok) return <ErrorState errorKey={handleLoadError({ error: item.error, locale })} />;
   const data = await loadItemFormData({ customerId: item.value.customerId });
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
@@ -34,6 +35,7 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
   const actions = <ItemActions item={item.value} abilities={abilities} />;
   return (
     <div className="grid gap-6">
+      <CrumbName href={itemRoute({ id })} name={item.value.name} />
       <Link
         href={ROUTES.items}
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
@@ -51,13 +53,24 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         <ItemFacts item={item.value} type={type} data={data.value} />
         <ItemCapabilities item={item.value} data={data.value} />
         {type?.capabilities.includes("BUNDLE") ? (
-          <ItemResolutionSection locale={locale} itemId={item.value.id} />
+          <DeferredSection>
+            <ItemResolutionSection locale={locale} itemId={item.value.id} />
+          </DeferredSection>
         ) : null}
-        <ItemHoursSection locale={locale} itemId={item.value.id} />
-        <DemandsSection locale={locale} itemId={item.value.id} />
-        {type?.capabilities.includes("BOOKABLE") &&
-        can({ abilities, permission: "ticket:read" }) ? (
-          <OccupancySection locale={locale} itemId={item.value.id} timeZone={item.value.timeZone} />
+        <DeferredSection>
+          <ItemHoursSection locale={locale} itemId={item.value.id} />
+        </DeferredSection>
+        <DeferredSection>
+          <DemandsSection locale={locale} itemId={item.value.id} />
+        </DeferredSection>
+        {type?.capabilities.includes("BOOKABLE") && can({ abilities, permission: "order:read" }) ? (
+          <DeferredSection>
+            <OccupancySection
+              locale={locale}
+              itemId={item.value.id}
+              timeZone={item.value.timeZone}
+            />
+          </DeferredSection>
         ) : null}
       </WithHistory>
     </div>

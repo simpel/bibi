@@ -1,10 +1,10 @@
-import { getAccountingSettings, listEntityTypes } from "@bibi/core";
+import { getAccountingSettings } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
-import { listAll } from "@/server/list-all";
+import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { accountRows } from "../lib/account-rows";
@@ -16,18 +16,18 @@ export type AccountingSettingsProps = { locale: Locale };
 
 /** `/settings/accounting`: the accounts the SIE export books to (ADR 0077 decision 4). */
 export async function AccountingSettings({ locale }: AccountingSettingsProps) {
-  const t = await getTranslations("finance.accounting");
-  const abilities = await getCallerAbilities();
-  const [settingsResult, itemTypes] = await Promise.all([
+  const [t, abilities, settingsResult, itemTypes] = await Promise.all([
+    getTranslations("finance.accounting"),
+    getCallerAbilities(),
     runOperation({ operation: getAccountingSettings, input: {} }),
-    listAll({ operation: listEntityTypes, input: { base: "ITEM" } }),
+    loadEntityTypesOf({ base: "ITEM" }),
   ]);
   if (!settingsResult.ok)
     return <ErrorState errorKey={handleLoadError({ error: settingsResult.error, locale })} />;
   if (!itemTypes.ok)
     return <ErrorState errorKey={handleLoadError({ error: itemTypes.error, locale })} />;
   const settings = settingsResult.value;
-  const types = itemTypes.value.map(({ id, name }) => ({ id, name }));
+  const types = itemTypes.value.items.map(({ id, name }) => ({ id, name }));
   const canEdit = can({ abilities, permission: "finance:write" });
   return (
     <div className="grid gap-8">

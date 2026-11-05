@@ -35,4 +35,63 @@ describe("buildCrumbs", () => {
       { href: "/calendar", labelKey: "calendar" },
     ]);
   });
+
+  it("shows data with its tab for dashboards while omitting the period", () => {
+    expect(buildCrumbs({ pathname: "/data" })).toEqual([{ href: "/data", labelKey: "dashboard" }]);
+    expect(buildCrumbs({ pathname: "/data/forecast" })).toEqual([
+      { href: "/data", labelKey: "dashboard" },
+      { href: "/data/forecast", labelKey: "forecast" },
+    ]);
+    expect(buildCrumbs({ pathname: "/data/forecast/2026-11-04/2026-12-04" })).toEqual([
+      { href: "/data", labelKey: "dashboard" },
+      { href: "/data/forecast", labelKey: "forecast" },
+    ]);
+    expect(buildCrumbs({ pathname: "/data/financials/2026-10-01/2026-10-31" })).toEqual([
+      { href: "/data", labelKey: "dashboard" },
+      { href: "/data/financials", labelKey: "financials" },
+    ]);
+    expect(buildCrumbs({ pathname: "/data/workload/2026-10-01/2026-10-31" })).toEqual([
+      { href: "/data", labelKey: "dashboard" },
+      { href: "/data/workload", labelKey: "workload" },
+    ]);
+  });
+
+  it("handles notifications correctly", () => {
+    expect(buildCrumbs({ pathname: "/notifications" })).toEqual([
+      { href: "/notifications", labelKey: "notifications" },
+    ]);
+  });
+
+  it("points quotes crumbs to orders", () => {
+    expect(buildCrumbs({ pathname: "/quotes/q-1" })).toEqual([
+      { href: "/orders", labelKey: "orders" },
+      { href: "/quotes/q-1", labelKey: "quotes" },
+    ]);
+  });
+
+  it("skips non-existent detail crumbs for settings update pages", () => {
+    expect(buildCrumbs({ pathname: "/settings/price-lists/abc/update" })).toEqual([
+      { href: "/settings", labelKey: "settings" },
+      { href: "/settings/price-lists", labelKey: "priceLists" },
+      { href: "/settings/price-lists/abc/update", labelKey: "edit" },
+    ]);
+  });
+
+  it("builds crumbs for public documentation pages without dead intermediate links", () => {
+    expect(buildCrumbs({ pathname: "/docs" })).toEqual([{ href: "/docs", labelKey: "docs" }]);
+    expect(buildCrumbs({ pathname: "/docs/reference/mcp" })).toEqual([
+      { href: "/docs", labelKey: "docs" },
+      { href: "/docs/reference/mcp", labelKey: "detail" },
+    ]);
+  });
+
+  it("builds crumbs for platform admin mothership pages", () => {
+    expect(buildCrumbs({ pathname: "/mothership" })).toEqual([
+      { href: "/mothership", labelKey: "platformAdmin" },
+    ]);
+    expect(buildCrumbs({ pathname: "/mothership/billing" })).toEqual([
+      { href: "/mothership", labelKey: "platformAdmin" },
+      { href: "/mothership/billing", labelKey: "billing" },
+    ]);
+  });
 });

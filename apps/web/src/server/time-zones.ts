@@ -1,6 +1,7 @@
 import "server-only";
-import { effectiveTimeZone, getOrganizationProfile, listItems } from "@bibi/core";
+import { effectiveTimeZone, listItems } from "@bibi/core";
 import { cache } from "react";
+import { loadOrganizationProfile } from "./load-organization-profile";
 import { runOperation } from "./run-operation";
 
 /** Not signed in, or no active organization (`resolveExecuteContext`): nothing org-owned shows. */
@@ -14,7 +15,7 @@ const NO_ORGANIZATION = new Set(["UNAUTHENTICATED", "FORBIDDEN"]);
  * entered in a guessed zone.
  */
 export const loadOrganizationTimeZone = cache(async (): Promise<string> => {
-  const profile = await runOperation({ operation: getOrganizationProfile, input: {} });
+  const profile = await loadOrganizationProfile();
   if (profile.ok) return effectiveTimeZone({ organization: profile.value });
   if (NO_ORGANIZATION.has(profile.error.code)) return effectiveTimeZone({});
   throw profile.error;

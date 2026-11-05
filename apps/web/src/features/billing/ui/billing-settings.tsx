@@ -15,8 +15,8 @@ export type BillingSettingsProps = { locale: Locale };
 
 /** `/settings/billing` (ADR 0095): the plan, the seats and the invitations waiting for one. */
 export async function BillingSettings({ locale }: BillingSettingsProps) {
-  const t = await getTranslations("billing");
-  const [billing, requests, abilities] = await Promise.all([
+  const [t, billing, requests, abilities] = await Promise.all([
+    getTranslations("billing"),
     runOperation({ operation: getBilling, input: {} }),
     runOperation({ operation: listSeatRequests, input: {} }),
     getCallerAbilities(),

@@ -1,10 +1,15 @@
 import { z } from "zod";
 
-const S3_REQUIRED = ["S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"] as const;
+const S3_REQUIRED = ["S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY"] as const;
 
 const envSchema = z
   .object({
     DATABASE_URL: z.string().url(),
+    /**
+     * Connections in this process's `pg` pool (ADR 0097). The sum over web, MCP and worker, plus
+     * the notification `LISTEN` connection, stays below Postgres `max_connections`.
+     */
+    DATABASE_POOL_MAX: z.coerce.number().int().min(1).max(100).default(10),
     BETTER_AUTH_SECRET: z.string().min(32),
     BETTER_AUTH_URL: z.string().url(),
     SMTP_URL: z.string().default("smtp://localhost:1025"),
@@ -19,15 +24,15 @@ const envSchema = z
     S3_ENDPOINT: z.string().url().optional(),
     S3_REGION: z.string().optional(),
     S3_BUCKET: z.string().optional(),
-    S3_ACCESS_KEY_ID: z.string().optional(),
-    S3_SECRET_ACCESS_KEY: z.string().optional(),
+    S3_ACCESS_KEY: z.string().optional(),
+    S3_SECRET_KEY: z.string().optional(),
     /** Resend API key; required when MAIL_PROVIDER=resend. Empty counts as unset. */
     RESEND_API_KEY: z.string().optional(),
     /** Signing secret (`whsec_...`) of the Resend inbound webhook; inbound mail is refused without it. */
     RESEND_WEBHOOK_SECRET: z.string().optional(),
     /**
-     * Inbound subdomain for ticket reply addresses (`ticket-<id>@<domain>`, ADR 0012), e.g.
-     * `in.bibi.se`. Unset: no reply address is shown and the inbound webhook answers 503.
+     * Inbound subdomain for order reply addresses (`order-<id>@<domain>`, ADR 0012), e.g.
+     * `in.heybibi.se`. Unset: no reply address is shown and the inbound webhook answers 503.
      */
     MAIL_INBOUND_DOMAIN: z
       .string()

@@ -1,7 +1,12 @@
 import { ok } from "../../errors/result";
-import { VenueHoursGetInputSchema, VenueHoursSetInputSchema } from "../../hours/owner-schema";
+import {
+  VenueHoursGetInputSchema,
+  VenueHoursListInputSchema,
+  VenueHoursListSchema,
+  VenueHoursSetInputSchema,
+} from "../../hours/owner-schema";
 import { HoursSchema } from "../../hours/schema";
-import { loadHours, replaceHours } from "../../hours/store";
+import { loadHours, loadVenuesHours, replaceHours } from "../../hours/store";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
@@ -36,6 +41,43 @@ export const getVenueHours = defineOperation({
   },
 });
 
+/** The active venues among `venueIds` with their effective zones, in the order given. */
+async function venueZones({
+  context,
+  venueIds,
+}: {
+  context: ZoneInput["context"];
+  venueIds: string[];
+}) {
+  const ids = [...new Set(venueIds)];
+  const [venues, zoneOf] = await Promise.all([
+    context.db.venue.findMany({ where: { id: { in: ids } }, select: { id: true, timeZone: true } }),
+    loadZoneOfVenue({ context }),
+  ]);
+  const found = new Map(venues.map((venue) => [venue.id, venue]));
+  return ids.flatMap((venueId) => {
+    const venue = found.get(venueId);
+    return venue ? [{ venueId, timeZone: zoneOf({ venue }) }] : [];
+  });
+}
+
+export const listVenueHours = defineOperation({
+  name: "venue.hoursList",
+  kind: "query",
+  description:
+    "Read the opening hours of several venues at once (at most 100), each as venueHours.get " +
+    "returns them: a weekly pattern plus dated exceptions, in the venue's zone. Unknown or " +
+    "archived ids are left out, like other id filters; an empty list means none was found.",
+  input: VenueHoursListInputSchema,
+  output: VenueHoursListSchema,
+  permission: "venue:read",
+  entityType: "venue",
+  handler: async ({ input: { venueIds }, context }) => {
+    const venues = await venueZones({ context, venueIds });
+    return ok({ value: { items: await loadVenuesHours({ context, venues }) } });
+  },
+});
+
 export const setVenueHours = defineOperation({
   name: "venueHours.set",
   kind: "command",
@@ -59,4 +101,4 @@ export const setVenueHours = defineOperation({
 });
 
 /** Venue opening hours (ADR 0064 rule 10). */
-export const venueHoursOperations = [getVenueHours, setVenueHours];
+export const venueHoursOperations = [getVenueHours, listVenueHours, setVenueHours];

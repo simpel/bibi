@@ -1,10 +1,6 @@
-import {
-  getInboundMessage,
-  type InboundMessageDto,
-  markInboundMessageRead,
-  type Result,
-} from "@bibi/core";
+import { type InboundMessageDto, markInboundMessageRead, type Result } from "@bibi/core";
 import { runOperation } from "@/server/run-operation";
+import { loadInboundMessage } from "../load-inbound-message";
 
 export type OpenMessageInput = { id: string; canWrite: boolean };
 
@@ -16,7 +12,7 @@ export async function openMessage({
   id,
   canWrite,
 }: OpenMessageInput): Promise<Result<InboundMessageDto>> {
-  const result = await runOperation({ operation: getInboundMessage, input: { id } });
+  const result = await loadInboundMessage({ id });
   if (!result.ok || result.value.readAt !== null || !canWrite) return result;
   const marked = await runOperation({ operation: markInboundMessageRead, input: { id } });
   return marked.ok ? marked : result;

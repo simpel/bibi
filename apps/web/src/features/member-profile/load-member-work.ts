@@ -2,11 +2,11 @@ import "server-only";
 import {
   type EntityTypeDto,
   getMemberProfile,
-  listEntityTypes,
   listItems,
   type MemberProfileDto,
   type Result,
 } from "@bibi/core";
+import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { runOperation } from "@/server/run-operation";
 
 const LIMIT = 100;
@@ -48,12 +48,11 @@ export async function loadMemberWork({
   memberId,
   withOptions,
 }: LoadMemberWorkInput): Promise<Result<MemberWorkView>> {
-  const profile = await runOperation({ operation: getMemberProfile, input: { memberId } });
+  const [profile, types] = await Promise.all([
+    runOperation({ operation: getMemberProfile, input: { memberId } }),
+    loadEntityTypesOf({ base: "ITEM" }),
+  ]);
   if (!profile.ok) return profile;
-  const types = await runOperation({
-    operation: listEntityTypes,
-    input: { base: "ITEM", limit: LIMIT },
-  });
   const known = types.ok ? types.value.items : [];
   const names = new Map(known.map(({ id, name }) => [id, name]));
   const positions = [

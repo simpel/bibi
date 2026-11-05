@@ -7,8 +7,10 @@ export type PlanProductsProps = { config: BillingConfigDto };
 
 /** What Bibi sells (ADR 0095), excluding VAT, and whether each price is in Stripe yet. */
 export async function PlanProducts({ config }: PlanProductsProps) {
-  const t = await getTranslations("admin.billing.products");
-  const numbers = await getNumberFormat();
+  const [t, numbers] = await Promise.all([
+    getTranslations("admin.billing.products"),
+    getNumberFormat(),
+  ]);
   return (
     <section className="grid gap-3">
       <div className="grid gap-1">

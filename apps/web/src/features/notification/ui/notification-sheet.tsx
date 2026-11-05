@@ -13,10 +13,10 @@ import {
   StatCard,
   StatCards,
 } from "@bibi/ui";
-import { ClipboardListIcon, MailIcon, TicketIcon, Trash2Icon } from "lucide-react";
+import { CalendarIcon, ClipboardListIcon, MailIcon, Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
-import { listItemRoute, ROUTES, ticketRoute } from "@/lib/routes";
+import { listItemRoute, orderRoute, ROUTES } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { useNotificationText } from "./use-notification-text";
 
@@ -72,23 +72,23 @@ type ActionsProps = Omit<NotificationSheetProps, "notification" | "onClose"> & {
 function NotificationActions({ notification, onMarkUnread, onDelete }: ActionsProps) {
   const t = useTranslations("notifications");
   const common = useTranslations("common");
-  const { ticket } = useNotificationText()({ notification });
-  const { ticketId, workOrderId, data } = notification;
+  const { order } = useNotificationText()({ notification });
+  const { orderId, runSheetId, data } = notification;
   return (
     <SheetFooter>
-      {ticketId ? (
+      {orderId ? (
         <Button asChild>
-          <Link href={ticketRoute({ id: ticketId })}>
-            <TicketIcon />
-            <span className="truncate">{ticket}</span>
+          <Link href={orderRoute({ id: orderId })}>
+            <CalendarIcon />
+            <span className="truncate">{order}</span>
           </Link>
         </Button>
       ) : null}
-      {workOrderId ? (
+      {runSheetId ? (
         <Button asChild variant="outline">
-          <Link href={listItemRoute({ list: ROUTES.workOrders, id: workOrderId })}>
+          <Link href={listItemRoute({ list: ROUTES.runSheets, id: runSheetId })}>
             <ClipboardListIcon />
-            <span className="truncate">{data.workOrderName ?? t("aWorkOrder")}</span>
+            <span className="truncate">{data.runSheetName ?? t("aRunSheet")}</span>
           </Link>
         </Button>
       ) : null}
@@ -110,7 +110,7 @@ function NotificationActions({ notification, onMarkUnread, onDelete }: ActionsPr
 
 /**
  * One notification in a side sheet (ADR 0094): what happened first and largest (who did it and
- * the sentence), its kind and when as stat cards, and the ticket or work order it is about as the
+ * the sentence), its kind and when as stat cards, and the order or run sheet it is about as the
  * buttons that open them. Nothing shows twice. Opening it marked it read; the sheet can mark it unread or delete it.
  */
 export function NotificationSheet({ notification, onClose, ...actions }: NotificationSheetProps) {

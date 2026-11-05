@@ -12,11 +12,13 @@ export type ItemStateListProps = { locale: Locale };
 
 /** `/settings/item-states`: the states of every item type. */
 export async function ItemStateList({ locale }: ItemStateListProps) {
-  const t = await getTranslations("itemState");
-  const abilities = await getCallerAbilities();
+  const [t, abilities, data] = await Promise.all([
+    getTranslations("itemState"),
+    getCallerAbilities(),
+    loadItemStateData(),
+  ]);
   const canCreate = can({ abilities, permission: "pipeline:write" });
   const access = rowAccess({ abilities, feature: "pipeline" });
-  const data = await loadItemStateData();
   const header = <PageHeader title={t("plural")} description={t("listDescription")} />;
   if (!data.ok) {
     const errorKey = handleLoadError({ error: data.error, locale });

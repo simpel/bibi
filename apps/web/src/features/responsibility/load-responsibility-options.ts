@@ -1,5 +1,6 @@
 import "server-only";
-import { listEntityTypes, listMembers, type Result } from "@bibi/core";
+import { listMembers, type Result } from "@bibi/core";
+import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { runOperation } from "@/server/run-operation";
 import type { ResponsibilityOptions } from "./ui/responsibility-options";
 
@@ -8,7 +9,7 @@ const LIMIT = 100;
 /** What a responsibility can cover (item types) and who can answer for it (members, by user id). */
 export async function loadResponsibilityOptions(): Promise<Result<ResponsibilityOptions>> {
   const [types, members] = await Promise.all([
-    runOperation({ operation: listEntityTypes, input: { base: "ITEM", limit: LIMIT } }),
+    loadEntityTypesOf({ base: "ITEM" }),
     runOperation({ operation: listMembers, input: { limit: LIMIT } }),
   ]);
   if (!types.ok) return types;

@@ -1,5 +1,6 @@
 import { isPlatformAdmin } from "@bibi/auth";
 import { resolveLocale } from "@bibi/i18n";
+import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { TablePreferencesProvider } from "@/components/data-table/table-preferences-provider";
@@ -11,6 +12,7 @@ import { loadLiveCounts } from "@/features/notification/load-live-counts";
 import { loadUserPreferences } from "@/features/user-preference/load";
 import { welcomePath } from "@/features/welcome/lib/welcome-step";
 import { mustWelcomeFirst } from "@/features/welcome/load-welcome-gate";
+import { APP_NAMESPACES, pickSurfaceMessages } from "@/i18n/surface-messages";
 import { redirect } from "@/lib/navigation";
 import { TABLE_COLUMNS_PREFIX } from "@/lib/table-preferences";
 import { getCallerAbilities } from "@/server/caller-abilities";
@@ -27,35 +29,37 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   const { session, organizationId, organizationSlug } = await requireReadySession({ locale });
+  const [welcomeFirst, payHref] = await Promise.all([mustWelcomeFirst(), billingGateRedirect()]);
   // An open profile step or a pending setup the member can do comes first (ADR 0061).
-  if (await mustWelcomeFirst()) redirect({ href: welcomePath(), locale, org: organizationSlug });
+  if (welcomeFirst) redirect({ href: welcomePath(), locale, org: organizationSlug });
   // After the trial, an unpaid organization sees only the payment page (ADR 0095 §5).
-  const payHref = await billingGateRedirect();
   if (payHref) redirect({ href: payHref, locale, org: organizationSlug });
   const { id, name, email } = session.user;
   // Only decide which sidebar links show (ADR 0036); `/settings/*` and `/admin` check again.
-  const [platformAdmin, abilities, preferences, canDraftFromMessage, counts] = await Promise.all([
+  const counts = loadLiveCounts().catch(() => ({ unread: 0, inboxOpen: null }));
+  const [platformAdmin, abilities, preferences, canDraftFromMessage] = await Promise.all([
     isPlatformAdmin({ userId: id }),
     getCallerAbilities(),
     loadUserPreferences({ prefix: TABLE_COLUMNS_PREFIX }),
     hasDraftModel(),
-    loadLiveCounts(),
   ]);
   return (
-    <TablePreferencesProvider preferences={preferences}>
-      <AppShell
-        organizationId={organizationId}
-        user={{ name, email }}
-        counts={counts}
-        access={{
-          canConfigure: canOpenSettings({ permissions: abilities.permissions }),
-          canDraftFromMessage,
-          platformAdmin,
-          permissions: abilities.permissions,
-        }}
-      >
-        <AppPinnedBookings organizationId={organizationId}>{children}</AppPinnedBookings>
-      </AppShell>
-    </TablePreferencesProvider>
+    <NextIntlClientProvider messages={pickSurfaceMessages({ locale, namespaces: APP_NAMESPACES })}>
+      <TablePreferencesProvider preferences={preferences}>
+        <AppShell
+          organizationId={organizationId}
+          user={{ name, email }}
+          counts={counts}
+          access={{
+            canConfigure: canOpenSettings({ permissions: abilities.permissions }),
+            canDraftFromMessage,
+            platformAdmin,
+            permissions: abilities.permissions,
+          }}
+        >
+          <AppPinnedBookings organizationId={organizationId}>{children}</AppPinnedBookings>
+        </AppShell>
+      </TablePreferencesProvider>
+    </NextIntlClientProvider>
   );
 }

@@ -6,8 +6,7 @@ import { PriceListWizard } from "./price-list-wizard";
 
 /** `/new/price-list`: the step-by-step create page. */
 export async function PriceListCreate() {
-  const t = await getTranslations("priceList");
-  const data = await loadPriceListFormData();
+  const [t, data] = await Promise.all([getTranslations("priceList"), loadPriceListFormData()]);
   return (
     <FormPageShell
       backHref={ROUTES.settingsPriceLists}

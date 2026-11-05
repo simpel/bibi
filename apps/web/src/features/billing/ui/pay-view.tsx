@@ -14,8 +14,10 @@ export type PayViewProps = { locale: Locale; org: string; returnTo: string };
 
 /** Picks the plan for the organization with the prices from billing.get (admins only). */
 async function AdminPay({ locale, returnTo }: Omit<PayViewProps, "org">) {
-  const t = await getTranslations("billing.pay");
-  const billing = await runOperation({ operation: getBilling, input: {} });
+  const [t, billing] = await Promise.all([
+    getTranslations("billing.pay"),
+    runOperation({ operation: getBilling, input: {} }),
+  ]);
   if (!billing.ok)
     return <ErrorState errorKey={handleLoadError({ error: billing.error, locale })} />;
   const { prices, seats } = billing.value;
@@ -34,8 +36,10 @@ async function AdminPay({ locale, returnTo }: Omit<PayViewProps, "org">) {
  * else can only remind them. An open organization goes straight back to `returnTo`.
  */
 export async function PayView({ locale, org, returnTo }: PayViewProps) {
-  const t = await getTranslations("billing.pay");
-  const access = await runOperation({ operation: getBillingAccess, input: {} });
+  const [t, access] = await Promise.all([
+    getTranslations("billing.pay"),
+    runOperation({ operation: getBillingAccess, input: {} }),
+  ]);
   if (!access.ok) return <ErrorState errorKey={handleLoadError({ error: access.error, locale })} />;
   if (access.value.open) redirect({ href: returnTo, locale, org });
   if (access.value.canPay) return <AdminPay locale={locale} returnTo={returnTo} />;

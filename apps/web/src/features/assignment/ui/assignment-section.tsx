@@ -71,10 +71,12 @@ async function assignmentFacts({ items, members, followers, t }: FactsInput) {
 
 /** Who answers for the subject and who follows it (ADR 0034), with assign and follow. */
 export async function AssignmentSection({ locale, subject, members }: AssignmentSectionProps) {
-  const t = await getTranslations("assignment");
-  const abilities = await getCallerAbilities();
+  const [t, abilities, result] = await Promise.all([
+    getTranslations("assignment"),
+    getCallerAbilities(),
+    runOperation({ operation: listAssignments, input: subject }),
+  ]);
   const { userId } = abilities;
-  const result = await runOperation({ operation: listAssignments, input: subject });
   if (!result.ok && result.error.code === "FORBIDDEN") return null;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const main = result.value.items.find((assignment) => assignment.responsibilityId === null);
@@ -89,7 +91,7 @@ export async function AssignmentSection({ locale, subject, members }: Assignment
     <section className="grid gap-3">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-xl">{t("title")}</h2>
-        {can({ abilities, permission: "ticket:write" }) ? (
+        {can({ abilities, permission: "order:write" }) ? (
           <AssignmentActions
             subject={subject}
             assigneeId={assigneeId}

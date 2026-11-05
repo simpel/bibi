@@ -25,9 +25,11 @@ function Fact({ label, value }: FactProps) {
 
 /** The plan and its state: trial end, interval, next payment, and the way to pay or manage. */
 export async function PlanCard({ billing, texts, canEdit }: PlanCardProps) {
-  const t = await getTranslations("billing.settings");
-  const intervals = await getTranslations("billing.interval");
-  const dates = await getDateTimeFormat();
+  const [t, intervals, dates] = await Promise.all([
+    getTranslations("billing.settings"),
+    getTranslations("billing.interval"),
+    getDateTimeFormat(),
+  ]);
   const { access, interval, currentPeriodEnd, cancelAtPeriodEnd } = billing;
   const subscribed = isSubscribed({ subscriptionStatus: billing.subscriptionStatus });
   const periodEnd = currentPeriodEnd ? dates.date({ instant: currentPeriodEnd }) : t("none");

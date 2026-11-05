@@ -10,8 +10,7 @@ export type PlanTexts = { plans: PlanOption[]; seats: string; seatPrice: string 
 
 /** Both plans and the seat line, formatted on the server in the user's money format. */
 export async function planTexts({ prices, includedSeats }: PlanTextsInput): Promise<PlanTexts> {
-  const t = await getTranslations("billing.plans");
-  const numbers = await getNumberFormat();
+  const [t, numbers] = await Promise.all([getTranslations("billing.plans"), getNumberFormat()]);
   const { currency, baseMonthlyMinor, baseYearlyMinor, seatMonthlyMinor } = prices;
   const money = ({ minor }: { minor: number }) => numbers.money({ minor, currency });
   const saving = money({ minor: Math.max(0, baseMonthlyMinor * 12 - baseYearlyMinor) });

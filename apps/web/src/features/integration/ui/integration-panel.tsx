@@ -16,9 +16,12 @@ export type IntegrationPanelProps = { locale: Locale; outcome: IntegrationOutcom
 
 /** Settings → Integrations (ADR 0087, 0090): Stripe, Fortnox and the way to API keys. */
 export async function IntegrationPanel({ locale, outcome }: IntegrationPanelProps) {
-  const t = await getTranslations("integration");
-  const abilities = await getCallerAbilities();
-  const list = await runOperation({ operation: listIntegrations, input: {} });
+  const [t, abilities, list, dates] = await Promise.all([
+    getTranslations("integration"),
+    getCallerAbilities(),
+    runOperation({ operation: listIntegrations, input: {} }),
+    getDateTimeFormat(),
+  ]);
   const header = <PageHeader title={t("title")} description={t("description")} />;
   if (!list.ok) {
     const errorKey = handleLoadError({ error: list.error, locale });
@@ -30,7 +33,6 @@ export async function IntegrationPanel({ locale, outcome }: IntegrationPanelProp
     );
   }
   const fortnox = list.value.items.find((item) => item.provider === "FORTNOX");
-  const dates = await getDateTimeFormat();
   const connectedOn = fortnox?.connectedAt ? dates.date({ instant: fortnox.connectedAt }) : null;
   return (
     <div className="grid gap-6">

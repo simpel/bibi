@@ -3,29 +3,31 @@ import { describe, expect, it } from "vitest";
 import { chosenTypes, draftFromKind } from "./setup-draft";
 
 describe("setup draft (ADR 0061)", () => {
-  it("prefills the kind's types in the user's language, all ticked", () => {
+  it("prefills the kind's types in the user's language", () => {
     const draft = draftFromKind({
       preset: getSetupPreset({ key: "restaurant" }),
       label: ({ key }) => `sv:${key}`,
     });
     expect(draft.kind).toBe("restaurant");
-    expect(draft.types.map((type) => [type.name, type.bookable, type.checked])).toEqual([
-      ["sv:privateRoom", true, true],
-      ["sv:setMenu", false, true],
-      ["sv:dish", false, true],
-      ["sv:drink", false, true],
-      ["sv:winePackage", false, true],
+    expect(
+      draft.types.map((type) => [type.name, type.category, type.bookable, type.checked]),
+    ).toEqual([
+      ["sv:privateRoom", "spaces", true, true],
+      ["sv:setMenu", "food", false, true],
+      ["sv:dish", "food", false, true],
+      ["sv:drink", "food", false, true],
+      ["sv:winePackage", "food", false, true],
     ]);
   });
 
-  it("keeps only ticked, named types", () => {
+  it("keeps only non-empty named types", () => {
     const draft = draftFromKind({
       preset: getSetupPreset({ key: "museum" }),
       label: (t) => t.name,
     });
-    draft.types[0] = { ...draft.types[0], checked: false } as (typeof draft.types)[number];
-    draft.types.push({ key: null, name: "  ", bookable: false, checked: true });
+    draft.types.push({ key: null, name: "  ", category: "food", bookable: false, checked: true });
     expect(chosenTypes({ draft }).map((type) => type.name)).toEqual([
+      "Event space",
       "Guide",
       "Guided tour",
       "Coffee break",

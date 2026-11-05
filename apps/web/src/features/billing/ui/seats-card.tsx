@@ -9,8 +9,7 @@ export type SeatsCardProps = { billing: BillingDto; seatPrice: string; canEdit: 
 
 /** Included, extra, used and waiting seats, how new ones are added, and the extra seats. */
 export async function SeatsCard({ billing, seatPrice, canEdit }: SeatsCardProps) {
-  const t = await getTranslations("billing.settings");
-  const numbers = await getNumberFormat();
+  const [t, numbers] = await Promise.all([getTranslations("billing.settings"), getNumberFormat()]);
   const { included, extra, used, held } = billing.seats;
   const figures = [
     { key: "included", value: included },

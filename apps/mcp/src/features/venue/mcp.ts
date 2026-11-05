@@ -22,6 +22,7 @@ export const venueMcpTools = [
     summary: ({ input }) => `Archive venue ${text({ value: input.id })} and all its items`,
   }),
   mcpTool({ operation: "venueHours.get" }),
+  mcpTool({ operation: "venue.hoursList" }),
   mcpTool({
     operation: "venueHours.set",
     idempotent: true,

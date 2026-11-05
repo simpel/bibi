@@ -16,8 +16,10 @@ export type OauthGrantSectionProps = { locale: Locale; id?: string };
  * every role may see and disconnect their own (`self:write` is personal, ADR 0034).
  */
 export async function OauthGrantSection({ locale, id }: OauthGrantSectionProps) {
-  const t = await getTranslations("integration.oauthGrants");
-  const grants = await runOperation({ operation: listOauthGrants, input: {} });
+  const [t, grants] = await Promise.all([
+    getTranslations("integration.oauthGrants"),
+    runOperation({ operation: listOauthGrants, input: {} }),
+  ]);
   return (
     <Card id={id} className="scroll-mt-6">
       <CardHeader>

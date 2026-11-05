@@ -19,10 +19,16 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { Link } from "@/lib/navigation";
+import { pageTitle } from "@/lib/page-metadata";
 import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 
 type AdminPageProps = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: AdminPageProps) {
+  const { locale } = await params;
+  return pageTitle({ locale, namespace: "admin", key: "title" });
+}
 
 type AdminHubCardProps = {
   icon: LucideIcon;
@@ -62,8 +68,10 @@ function AdminHubCard({ icon: Icon, href, title, description, action }: AdminHub
 export default async function AdminPage({ params }: AdminPageProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
-  const t = await getTranslations("administration");
-  const abilities = await getCallerAbilities();
+  const [t, abilities] = await Promise.all([
+    getTranslations("administration"),
+    getCallerAbilities(),
+  ]);
 
   const cards = [
     { key: "members", permission: "member:read", icon: UsersIcon, href: ROUTES.adminMembers },

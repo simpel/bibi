@@ -11,19 +11,20 @@ import {
   type CalendarWindow,
 } from "@bibi/ui";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useMemo, useState } from "react";
+import { Suspense, use, useCallback, useEffect, useMemo, useState } from "react";
 import { useAssistant } from "@/features/assistant/state/assistant-context";
-import { TicketSheet } from "@/features/ticket/sheet/ui/ticket-sheet";
+import { OrderSheet } from "@/features/order/sheet/ui/order-sheet";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { useCalendarText } from "./use-calendar-text";
 import { useLoadedBookings } from "./use-loaded-bookings";
 
 export type CalendarViewProps = {
   assets: CalendarAsset[];
-  /** The bookings of `range`, loaded with the page. */
-  bookings: AssetBooking[];
-  /** What each item's days of `range` are worth. */
-  values: CalendarDayValue[];
+  /**
+   * The bookings of `range` and what each item's days are worth, streamed after the grid paints
+   * (ADR 0097); `null` when the load failed.
+   */
+  load: Promise<CalendarLoad | null>;
   /** The path's days, shown first. */
   range: { from: string; to: string };
   today: string;
@@ -36,7 +37,7 @@ function legendOf({ bookings }: { bookings: readonly AssetBooking[] }) {
   const states = new Map<string, CalendarState>();
   let blocked: CalendarState | undefined;
   for (const booking of bookings) {
-    if (!booking.ticket) blocked = booking.state;
+    if (!booking.order) blocked = booking.state;
     else states.set(`${booking.state.name}:${booking.state.color}`, booking.state);
   }
   return { states: [...states.values()], blocked };
@@ -54,26 +55,43 @@ function CalendarFooter({ bookings, failed }: { bookings: AssetBooking[]; failed
   );
 }
 
+type CalendarLoad = { bookings: AssetBooking[]; values: CalendarDayValue[] };
+
+type SeedBookingsProps = {
+  load: Promise<CalendarLoad | null>;
+  seed: (loaded: CalendarLoad | null) => void;
+};
+
+/** Hands the streamed first days to the timeline once they arrive. Renders nothing. */
+function SeedBookings({ load, seed }: SeedBookingsProps) {
+  const loaded = use(load);
+  // Syncs the server's streamed promise into the timeline's state, once per page load.
+  useEffect(() => seed(loaded), [loaded, seed]);
+  return null;
+}
+
 /** The path follows the days on screen, so a link or reload opens the same place. */
 function keepInPath({ from, to }: { from: string; to: string }) {
   const path = window.location.pathname.replace(/\/calendar(\/[^/]+\/[^/]+)?$/, "/calendar");
   window.history.replaceState(window.history.state, "", `${path}/${from}/${to}`);
 }
 
-/** The availability calendar on the page: loads days as it scrolls, opens tickets, books. */
+/** The availability calendar on the page: loads days as it scrolls, opens orders, books. */
 export function CalendarView(props: CalendarViewProps) {
-  const { assets, bookings: initial, range, today, openingHours } = props;
+  const { assets, load, range, today, openingHours } = props;
   const t = useTranslations("calendar");
   const labels = useCalendarText();
   const locale = useLocale();
   const format = useDateTimeFormat();
   const { prefill } = useAssistant();
-  const loaded = useLoadedBookings({ initial: { bookings: initial, values: props.values }, range });
-  const { bookings, values, failed, onRangeChange } = loaded;
+  const { bookings, values, failed, onRangeChange, seed } = useLoadedBookings({ range });
   const onShownChange = useCallback(keepInPath, []);
   const [open, setOpen] = useState<AssetBooking | null>(null);
   return (
     <CalendarLabelsProvider labels={labels}>
+      <Suspense fallback={null}>
+        <SeedBookings load={load} seed={seed} />
+      </Suspense>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-card">
         <AvailabilityCalendar
           {...{ assets, bookings, values, today, locale, labels, onRangeChange, onShownChange }}
@@ -84,11 +102,11 @@ export function CalendarView(props: CalendarViewProps) {
           {...(openingHours ? { openingHours } : {})}
           selectedId={open?.id}
           onOpen={setOpen}
-          onAdd={({ asset, date, start }) =>
-            prefill({ text: t("bookPrompt", { space: asset.name, date, time: start }) })
+          onAdd={({ asset, date, start, end }) =>
+            prefill({ text: t("bookPrompt", { space: asset.name, date, time: `${start}–${end}` }) })
           }
         />
-        <TicketSheet ticketId={open?.ticketId ?? null} onClose={() => setOpen(null)} />
+        <OrderSheet orderId={open?.orderId ?? null} onClose={() => setOpen(null)} />
         <CalendarFooter bookings={bookings} failed={failed} />
       </div>
     </CalendarLabelsProvider>

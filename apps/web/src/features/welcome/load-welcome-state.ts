@@ -1,6 +1,5 @@
 import "server-only";
 import {
-  getOrganizationProfile,
   getProfile,
   getWorkingHours,
   type OrganizationProfileDto,
@@ -8,7 +7,9 @@ import {
   type Result,
   type WorkingHoursDto,
 } from "@bibi/core";
+import { cache } from "react";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
+import { loadOrganizationProfile } from "@/server/load-organization-profile";
 import { runOperation } from "@/server/run-operation";
 import { nextWelcomeStep, type WelcomeStep } from "./lib/welcome-step";
 
@@ -23,11 +24,11 @@ export type WelcomeState = {
 };
 
 /** Everything the welcome router and its pages decide on, read through core (ADR 0010). */
-export async function loadWelcomeState(): Promise<Result<WelcomeState>> {
+export const loadWelcomeState = cache(async (): Promise<Result<WelcomeState>> => {
   const [profile, hours, organization, abilities] = await Promise.all([
     runOperation({ operation: getProfile, input: {} }),
     runOperation({ operation: getWorkingHours, input: {} }),
-    runOperation({ operation: getOrganizationProfile, input: {} }),
+    loadOrganizationProfile(),
     getCallerAbilities(),
   ]);
   if (!profile.ok) return profile;
@@ -43,4 +44,4 @@ export async function loadWelcomeState(): Promise<Result<WelcomeState>> {
   });
   const value = { profile: profile.value, hours: hours.value, organization: organization.value };
   return { ok: true, value: { ...value, canSetup, next } };
-}
+});

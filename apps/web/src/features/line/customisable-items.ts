@@ -1,9 +1,7 @@
 import "server-only";
-import { type ItemDto, listItems } from "@bibi/core";
-import { runOperation } from "@/server/run-operation";
+import type { ItemDto } from "@bibi/core";
+import { loadPickerItems } from "@/server/load-items-for-pickers";
 import type { CustomisableItem } from "./ui/program-form-data";
-
-const LIMIT = 100;
 
 type ToCustomisableInput = { item: ItemDto; names: ReadonlyMap<string, string> };
 
@@ -25,7 +23,7 @@ function toCustomisable({ item, names }: ToCustomisableInput): CustomisableItem 
  * page). A caller who may not read items gets none: the lines show without the option picker.
  */
 export async function loadCustomisableItems(): Promise<CustomisableItem[]> {
-  const items = await runOperation({ operation: listItems, input: { limit: LIMIT } });
+  const items = await loadPickerItems();
   if (!items.ok) return [];
   const names = new Map(items.value.items.map(({ id, name }) => [id, name]));
   return items.value.items
