@@ -108,7 +108,7 @@ function StateBadgeTrigger({
 
 /**
  * The line's state as a unified badge (`StatusBadge`).
- * Clicking opens a dropdown to switch to another state of its item type, with instant feedback.
+ * Clicking opens a dropdown to switch to a state its current state allows, with instant feedback.
  */
 export function LineStateCell({
   line,
@@ -129,10 +129,10 @@ export function LineStateCell({
       />
     );
   }
-  const available = data.states.filter(
-    (s) => !line.entityTypeId || s.entityTypeId === line.entityTypeId,
+  // The current state and the states its item type lets it move to (ADR 0044).
+  const statesToShow = data.states.filter(
+    (s) => s.id === state.id || state.transitionsTo.includes(s.id),
   );
-  const statesToShow = available.length > 0 ? available : data.states;
   return (
     <DropdownMenu>
       <StateBadgeTrigger state={state} pending={pending} />
