@@ -17,7 +17,7 @@ export const daySnapshotBlockVariants = cva(
         own: "border border-primary bg-primary/15 text-foreground",
         /** A line that should have a time and has none: striped at 45° across the whole row. */
         missing:
-          "border border-warning-foreground/40 text-warning-foreground bg-[repeating-linear-gradient(45deg,transparent_0_6px,color-mix(in_oklab,currentColor_18%,transparent)_6px_12px)]",
+          "border border-warning bg-warning/10 text-warning-foreground bg-[repeating-linear-gradient(45deg,transparent_0_6px,var(--warning)_6px_12px)]",
       },
     },
     defaultVariants: { tone: "draft" },
