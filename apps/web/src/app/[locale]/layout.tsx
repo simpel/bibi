@@ -68,7 +68,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   return (
     <html
       lang={locale}
-      className={`${sans.variable} ${serif.variable} ${cherryBombOne.variable}`}
+      className={`${sans.variable} ${serif.variable} ${cherryBombOne.variable} motion-safe:scroll-smooth`}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body>

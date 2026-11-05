@@ -1,36 +1,28 @@
-import { Button, PageContainer, Wordmark } from "@bibi/ui";
+import { PageContainer } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { SiteAudience } from "./site-audience";
+import { SiteCta } from "./site-cta";
 import { SiteFeatures } from "./site-features";
+import { SiteHeader } from "./site-header";
+import { SiteHero } from "./site-hero";
+import { SiteIntegrations } from "./site-integrations";
+import { SiteSteps } from "./site-steps";
 
 type SitePageProps = { locale: string; appUrl: string };
 
-/** The public front page. Log in and sign up leave for the app host, which owns the session. */
+/** The public front page, for everyone. It reads the session only to pick the buttons. */
 export async function SitePage({ locale, appUrl }: SitePageProps) {
   const t = await getTranslations("site");
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b">
-        <PageContainer className="flex items-center justify-between py-4">
-          <Wordmark size="md" aria-label={t("brand")} />
-          <Button asChild variant="ghost">
-            <a href={`${appUrl}/${locale}/login`}>{t("login")}</a>
-          </Button>
-        </PageContainer>
-      </header>
+      <SiteHeader locale={locale} appUrl={appUrl} />
       <main>
-        <PageContainer className="flex flex-col items-start gap-6 py-20">
-          <h1 className="max-w-3xl text-4xl tracking-tight sm:text-5xl">{t("heading")}</h1>
-          <p className="max-w-2xl text-lg text-muted-foreground">{t("lead")}</p>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg">
-              <a href={`${appUrl}/${locale}/sign-up`}>{t("signUp")}</a>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <a href={`${appUrl}/${locale}/login`}>{t("login")}</a>
-            </Button>
-          </div>
-        </PageContainer>
+        <SiteHero locale={locale} appUrl={appUrl} />
+        <SiteAudience />
+        <SiteSteps />
         <SiteFeatures />
+        <SiteIntegrations />
+        <SiteCta locale={locale} appUrl={appUrl} />
       </main>
       <footer className="border-t py-6 text-sm text-muted-foreground">
         <PageContainer>{t("footer")}</PageContainer>

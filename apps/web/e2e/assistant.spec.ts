@@ -42,7 +42,7 @@ test("a proposed venue needs approval: nothing is created until the user approve
   await expect(page.locator(PANEL)).toHaveCount(0);
 
   // The decision is stored: reopening the conversation shows the card as approved, not pending.
-  await page.goto("/");
+  await gotoApp({ page, path: "/" });
   const panel = page.locator(PANEL);
   await page
     .getByRole("navigation", { name: "Assistent" })
@@ -129,7 +129,7 @@ test("English strings, and the assistant only lives on the start page", async ({
   await signUpWithOrganization({ page, name: "English AB" });
   await gotoApp({ page, path: "/venues", locale: "en" });
   await expect(page.locator(PANEL)).toHaveCount(0);
-  await page.goto("/en");
+  await gotoApp({ page, path: "/", locale: "en" });
   const panel = page.locator(PANEL);
   await expect(panel.getByText("What can I help you with?")).toBeVisible();
   await expect(panel.getByRole("button", { name: "Show all venues" })).toBeVisible();

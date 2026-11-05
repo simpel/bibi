@@ -374,31 +374,155 @@
     "logOut": "Log out"
   },
   "site": {
+    "heading": "Every meeting, meal and event. One order.",
+    "lead": "Bibi is the booking system for venues without a hotel system. Create an order in one step, let the customer pay through a link, and send the kitchen a run sheet that is always up to date.",
+    "signUp": "Start free trial",
+    "seeHow": "See how it works",
+    "nav": {
+      "features": "Features",
+      "how": "How it works",
+      "integrations": "Integrations"
+    },
+    "hero": {
+      "badge": "Bookings, food and drink for venues"
+    },
+    "audience": {
+      "label": "Built for venues without a hotel system",
+      "items": {
+        "experience": "Experience centres",
+        "museum": "Museums",
+        "estate": "Conference estates",
+        "manor": "Manor houses",
+        "restaurant": "Restaurants with private rooms"
+      }
+    },
+    "steps": {
+      "eyebrow": "How it works",
+      "title": "From first request to finished event in three steps",
+      "create": {
+        "title": "Create the order",
+        "body": "Staff add rooms, food and activities in one step. No quote for smaller meetings."
+      },
+      "pay": {
+        "title": "The customer pays",
+        "body": "A link for card payment, or an invoice. The customer never needs to use the app."
+      },
+      "serve": {
+        "title": "The kitchen knows",
+        "body": "Needs are counted, run sheets reach the person responsible, and every change makes a new version."
+      }
+    },
+    "features": {
+      "eyebrow": "Features",
+      "title": "Everything a venue needs, nothing it does not",
+      "orders": {
+        "eyebrow": "Predefined orders",
+        "title": "Create an order in one step",
+        "body": "Pick a predefined order for a smaller meeting and Bibi fills in the rooms, food and activities. No quote, no back and forth. The customer pays by card or on invoice through a link."
+      },
+      "needs": {
+        "eyebrow": "Needs as counts",
+        "title": "Allergens counted, guests never tracked",
+        "body": "Count needs against your own lists, such as the 14 EU allergens. Bibi matches them to items and compiles them for the kitchen. No personal data about guests."
+      },
+      "runSheets": {
+        "eyebrow": "Run sheets",
+        "title": "Run sheets that reach the right person",
+        "body": "Versioned run sheets, such as the kitchen order, go to the person responsible. Export them as pdf, csv or json when you need to hand over outside the system."
+      },
+      "holds": {
+        "eyebrow": "Holds and statuses",
+        "title": "Know what is held, and until when",
+        "body": "Soft holds carry a held-since date and an expiry. Hard holds block the room. Every order moves through the statuses you define."
+      },
+      "setup": {
+        "eyebrow": "Your own setup",
+        "title": "Bibi adapts to your venue",
+        "body": "You decide the types, fields, lists, statuses and responsibilities. Access follows three roles that you fine-tune per person."
+      },
+      "assistant": {
+        "eyebrow": "Assistant",
+        "title": "Ask. Review. Approve.",
+        "body": "The assistant works inside Bibi as you. It proposes a change, and nothing happens until you confirm. Every change is logged."
+      }
+    },
+    "integrations": {
+      "eyebrow": "Integrations",
+      "title": "Fits the tools you already use",
+      "stripe": "Card payments and invoices",
+      "fortnox": "Accounting",
+      "sie": "SIE 4I export for any accounting system"
+    },
+    "cta": {
+      "title": "Run your venue from one place",
+      "body": "Set up your venue in minutes, then invite your team."
+    },
+    "mockup": {
+      "order": {
+        "title": "Kickoff, Northwind",
+        "status": "Confirmed",
+        "room": "The Salon, 09:00–16:00",
+        "lunch": "Lunch, fish soup",
+        "activity": "Guided tour",
+        "guests": "24 guests",
+        "total": "Total",
+        "amount": "31 200 kr",
+        "payment": "Payment link",
+        "paid": "Paid"
+      },
+      "needs": {
+        "title": "Needs for Friday",
+        "gluten": "Gluten",
+        "lactose": "Lactose",
+        "nuts": "Nuts",
+        "vegan": "Vegan",
+        "matched": "Matched to the lunch menu"
+      },
+      "runSheet": {
+        "title": "Kitchen order",
+        "version": "Version 3",
+        "sentTo": "Sent to Head of kitchen",
+        "line1": "12:00 Fish soup, 24 portions",
+        "line2": "3 gluten free, 2 lactose free",
+        "line3": "Dessert at 13:30"
+      },
+      "holds": {
+        "title": "Lines on this order",
+        "room": "The Salon",
+        "lunch": "Lunch",
+        "tour": "Tour",
+        "hard": "Hard hold",
+        "soft": "Soft hold, until 14 Nov",
+        "none": "Not held"
+      },
+      "setup": {
+        "types": "Types",
+        "type1": "Room",
+        "type2": "Dish",
+        "type3": "Activity",
+        "roles": "Roles",
+        "role1": "Member",
+        "role2": "Manager",
+        "role3": "Admin",
+        "statuses": "Statuses",
+        "status1": "Inquiry",
+        "status2": "Held",
+        "status3": "Confirmed"
+      },
+      "assistant": {
+        "user": "Create a lunch for 24 on Friday in the Salon",
+        "reply": "I can create this order. Review it before I do.",
+        "card": "Create order",
+        "detail": "Lunch, 24 guests, Friday, the Salon",
+        "approve": "Approve",
+        "decline": "Decline"
+      }
+    },
     "brand": "Bibi",
     "metaTitle": "Bibi – the app for your organisation's daily operation",
     "metaDescription": "Bibi is an app that helps organisations handle their daily operation: bookings, rooms, food and drink, activities and payments in one place.",
-    "heading": "The app that helps your organisation run its daily operation",
-    "lead": "Bibi helps organisations handle their daily operation, from the first customer request to the finished event. Bookings, rooms, food and drink, activities and payments live in one place, and the customer pays through a link.",
     "login": "Log in",
-    "signUp": "Get started",
-    "footer": "© Bibi",
-    "features": {
-      "orders": {
-        "title": "Packages",
-        "body": "Create an order for a smaller meeting without a quote. The customer pays by card or on invoice through a link and never has to use the app."
-      },
-      "needs": {
-        "title": "Needs as counts",
-        "body": "Allergens and other needs are counted against your own lists and compiled automatically. No personal data about guests."
-      },
-      "runSheets": {
-        "title": "Run sheets that reach the right person",
-        "body": "Versioned run sheets, such as the kitchen order, go to the person responsible and can be exported as json, pdf and csv."
-      },
-      "setup": {
-        "title": "Your own setup",
-        "body": "You decide the types, fields, lists, statuses and responsibilities. Access follows roles that you fine-tune per person."
-      }
-    }
+    "toApp": "To the app",
+    "footer": "© Bibi"
   }
 }

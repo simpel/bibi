@@ -28,3 +28,7 @@
 ## Consequences
 - Coolify serves four more names on the `web` service (`heybibi.se`, `www.heybibi.se`, `heybibi.tech`, `www.heybibi.tech`) and issues a certificate for each, which the redirects need.
 - A new public page is a new route under `(site)/site/` that the apex rewrite (or a new rule) can reach. Anything under the apex that is not listed redirects to the app.
+
+## Addendum 2026-11-06
+- `/`, `/sv` and `/en` render the public front page on every host, including the app host. They never redirect to sign-in or the organization home.
+- The header reads the session only to choose its buttons: signed in shows "To the app" (the active organization's home, or `/welcome` without one); signed out shows log in and sign up. The apex has no session cookie, so it always shows the signed-out buttons.

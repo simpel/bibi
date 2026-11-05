@@ -374,31 +374,155 @@
     "logOut": "Logga ut"
   },
   "site": {
+    "heading": "Varje möte, måltid och event. En bokning.",
+    "lead": "Bibi är bokningssystemet för verksamheter utan hotellsystem. Skapa en bokning i ett steg, låt kunden betala via en länk och skicka köket ett körschema som alltid är aktuellt.",
+    "signUp": "Testa gratis",
+    "seeHow": "Se hur det fungerar",
+    "nav": {
+      "features": "Funktioner",
+      "how": "Så fungerar det",
+      "integrations": "Integrationer"
+    },
+    "hero": {
+      "badge": "Bokningar, mat och dryck för verksamheter"
+    },
+    "audience": {
+      "label": "Byggt för verksamheter utan hotellsystem",
+      "items": {
+        "experience": "Upplevelsecenter",
+        "museum": "Museer",
+        "estate": "Konferensgårdar",
+        "manor": "Herrgårdar",
+        "restaurant": "Restauranger med privata rum"
+      }
+    },
+    "steps": {
+      "eyebrow": "Så fungerar det",
+      "title": "Från första förfrågan till genomfört event i tre steg",
+      "create": {
+        "title": "Skapa bokningen",
+        "body": "Personalen lägger till lokaler, mat och aktiviteter i ett steg. Ingen offert för mindre möten."
+      },
+      "pay": {
+        "title": "Kunden betalar",
+        "body": "En länk för kortbetalning, eller en faktura. Kunden behöver aldrig använda appen."
+      },
+      "serve": {
+        "title": "Köket vet",
+        "body": "Behov räknas, körscheman når den ansvariga och varje ändring blir en ny version."
+      }
+    },
+    "features": {
+      "eyebrow": "Funktioner",
+      "title": "Allt en verksamhet behöver, inget den inte gör",
+      "orders": {
+        "eyebrow": "Färdiga bokningar",
+        "title": "Skapa en bokning i ett steg",
+        "body": "Välj en färdig bokning för ett mindre möte så fyller Bibi i lokaler, mat och aktiviteter. Ingen offert, inga turer fram och tillbaka. Kunden betalar med kort eller mot faktura via en länk."
+      },
+      "needs": {
+        "eyebrow": "Behov som antal",
+        "title": "Allergener räknas, gäster spåras aldrig",
+        "body": "Räkna behov mot era egna listor, till exempel EU:s 14 allergener. Bibi matchar dem mot artiklar och sammanställer dem åt köket. Inga personuppgifter om gäster."
+      },
+      "runSheets": {
+        "eyebrow": "Körscheman",
+        "title": "Körscheman som når rätt person",
+        "body": "Versionerade körscheman, till exempel köksordern, går till den ansvariga. Exportera som pdf, csv eller json när du behöver lämna över utanför systemet."
+      },
+      "holds": {
+        "eyebrow": "Reservationer och statusar",
+        "title": "Se vad som är reserverat, och till när",
+        "body": "Mjuka reservationer har ett datum för när de lades och ett utgångsdatum. Hårda reservationer blockerar lokalen. Varje bokning går genom de statusar ni själva definierar."
+      },
+      "setup": {
+        "eyebrow": "Er egen uppsättning",
+        "title": "Bibi anpassar sig efter er verksamhet",
+        "body": "Ni bestämmer typer, fält, listor, statusar och ansvar. Behörigheter följer tre roller som ni finjusterar per person."
+      },
+      "assistant": {
+        "eyebrow": "Assistent",
+        "title": "Fråga. Granska. Godkänn.",
+        "body": "Assistenten arbetar i Bibi som du. Den föreslår en ändring, och inget händer förrän du bekräftar. Varje ändring loggas."
+      }
+    },
+    "integrations": {
+      "eyebrow": "Integrationer",
+      "title": "Passar de verktyg ni redan använder",
+      "stripe": "Kortbetalningar och fakturor",
+      "fortnox": "Bokföring",
+      "sie": "SIE 4I-export till valfritt bokföringssystem"
+    },
+    "cta": {
+      "title": "Styr hela verksamheten från ett ställe",
+      "body": "Sätt upp er verksamhet på några minuter och bjud sedan in teamet."
+    },
+    "mockup": {
+      "order": {
+        "title": "Kickoff, Northwind",
+        "status": "Bekräftad",
+        "room": "Salongen, 09:00–16:00",
+        "lunch": "Lunch, fisksoppa",
+        "activity": "Guidad tur",
+        "guests": "24 gäster",
+        "total": "Totalt",
+        "amount": "31 200 kr",
+        "payment": "Betallänk",
+        "paid": "Betald"
+      },
+      "needs": {
+        "title": "Behov för fredag",
+        "gluten": "Gluten",
+        "lactose": "Laktos",
+        "nuts": "Nötter",
+        "vegan": "Vegan",
+        "matched": "Matchat mot lunchmenyn"
+      },
+      "runSheet": {
+        "title": "Köksorder",
+        "version": "Version 3",
+        "sentTo": "Skickad till Kökschef",
+        "line1": "12:00 Fisksoppa, 24 portioner",
+        "line2": "3 glutenfria, 2 laktosfria",
+        "line3": "Dessert 13:30"
+      },
+      "holds": {
+        "title": "Rader på bokningen",
+        "room": "Salongen",
+        "lunch": "Lunch",
+        "tour": "Tur",
+        "hard": "Hård reservation",
+        "soft": "Mjuk reservation, till 14 nov",
+        "none": "Ej reserverad"
+      },
+      "setup": {
+        "types": "Typer",
+        "type1": "Lokal",
+        "type2": "Rätt",
+        "type3": "Aktivitet",
+        "roles": "Roller",
+        "role1": "Medlem",
+        "role2": "Chef",
+        "role3": "Admin",
+        "statuses": "Statusar",
+        "status1": "Förfrågan",
+        "status2": "Reserverad",
+        "status3": "Bekräftad"
+      },
+      "assistant": {
+        "user": "Skapa en lunch för 24 på fredag i Salongen",
+        "reply": "Jag kan skapa den här bokningen. Granska den innan jag gör det.",
+        "card": "Skapa bokning",
+        "detail": "Lunch, 24 gäster, fredag, Salongen",
+        "approve": "Godkänn",
+        "decline": "Avslå"
+      }
+    },
     "brand": "Bibi",
     "metaTitle": "Bibi – appen för organisationens dagliga verksamhet",
     "metaDescription": "Bibi är en app som hjälper organisationer att hantera sin dagliga verksamhet: bokningar, lokaler, mat och dryck, aktiviteter och betalningar på ett ställe.",
-    "heading": "Appen som hjälper din organisation med den dagliga verksamheten",
-    "lead": "Bibi hjälper organisationer att hantera sin dagliga verksamhet, från första kundförfrågan till genomfört event. Bokningar, lokaler, mat och dryck, aktiviteter och betalningar finns på ett ställe, och kunden betalar via en länk.",
     "login": "Logga in",
-    "signUp": "Kom igång",
-    "footer": "© Bibi",
-    "features": {
-      "orders": {
-        "title": "Mallar",
-        "body": "Skapa en bokning för ett mindre möte utan offert. Kunden betalar med kort eller mot faktura via en länk, och behöver aldrig använda appen."
-      },
-      "needs": {
-        "title": "Behov som antal",
-        "body": "Allergener och andra behov räknas som antal mot era egna listor och sammanställs automatiskt. Inga personuppgifter om gäster."
-      },
-      "runSheets": {
-        "title": "Körscheman som når rätt",
-        "body": "Versionerade körscheman, till exempel kökskörschema, skickas till rätt ansvarig och kan exporteras som json, pdf och csv."
-      },
-      "setup": {
-        "title": "Er egen uppsättning",
-        "body": "Ni bestämmer själva typer, fält, listor, statusar och ansvar. Åtkomst styrs av roller som ni finjusterar per person."
-      }
-    }
+    "toApp": "Till appen",
+    "footer": "© Bibi"
   }
 }

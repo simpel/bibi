@@ -14,8 +14,8 @@ export type PageInput = { page: Page };
 /** Sign up with email + password; a new user has no organization, so we land on /welcome. */
 export async function signUp({ page, credentials }: PageInput & { credentials: Credentials }) {
   await page.goto("/");
-  await expect(page).toHaveURL(/\/sv\/login/);
-  await page.getByRole("link", { name: "Skapa konto" }).click();
+  await page.getByRole("link", { name: "Kom igång" }).first().click();
+  await expect(page).toHaveURL(/\/sv\/sign-up/);
   await page.getByLabel("Namn").fill(credentials.name);
   await page.getByLabel("E-post").fill(credentials.email);
   await page.getByLabel("Lösenord").fill(credentials.password);
@@ -113,7 +113,7 @@ export async function signUpWithOrganization({ page, name }: PageInput & { name:
 
 /** Opens the assistant, which lives on the start page. */
 export async function openAssistant({ page }: PageInput) {
-  await page.goto("/");
+  await gotoApp({ page, path: "/" });
   await expect(page.locator(PANEL)).toBeVisible();
 }
 

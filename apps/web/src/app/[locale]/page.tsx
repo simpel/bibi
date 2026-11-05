@@ -1,13 +1,7 @@
-import { resolveLocale } from "@bibi/i18n";
-import { redirect } from "@/lib/navigation";
-import { ROUTES } from "@/lib/routes";
-import { requireReadySession } from "@/server/guard";
+import SiteRoute, { generateMetadata as siteMetadata } from "./(site)/site/page";
 
-type LocaleRootPageProps = { params: Promise<{ locale: string }> };
+export const dynamic = "force-dynamic";
+export const generateMetadata = siteMetadata;
 
-/** `/:locale` has no organization in it: open the active organization's home (ADR 0062). */
-export default async function LocaleRootPage({ params }: LocaleRootPageProps) {
-  const locale = resolveLocale({ value: (await params).locale });
-  const { organizationSlug } = await requireReadySession({ locale });
-  redirect({ href: ROUTES.home, locale, org: organizationSlug });
-}
+/** `/:locale` is the public front page for everyone, signed in or not (ADR 0073). It never redirects. */
+export default SiteRoute;

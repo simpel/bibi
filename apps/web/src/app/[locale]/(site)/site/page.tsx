@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: SiteRouteProps): Promise<Meta
   };
 }
 
-/** The public front page (ADR 0073): the apex rewrites `/`, `/sv` and `/en` here. No session is read. */
+/** The public front page (ADR 0073): `/`, `/sv` and `/en` render it on every host, never a redirect. */
 export default async function SiteRoute({ params }: SiteRouteProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);

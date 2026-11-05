@@ -3,7 +3,7 @@
 Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `@bibi/ui`. The surface for venue staff. See ADR 0003, 0005, 0007, 0009 and 0010.
 
 ## Structure
-- `src/app/[locale]/`: `(auth)` = sign-in flows, `[org]/(app)` = protected shell under the organization slug (ADR 0062). `/` is the assistant (ADR 0035), `/settings` the settings hub. `page.tsx`/`layout.tsx`/`route.ts` are thin: they read params and render a feature.
+- `src/app/[locale]/`: `(auth)` = sign-in flows, `[org]/(app)` = protected shell under the organization slug (ADR 0062). `/:locale` is the public front page for everyone, never a redirect (ADR 0073); the assistant is the organization home `/:org` (ADR 0035), `/settings` the settings hub. `page.tsx`/`layout.tsx`/`route.ts` are thin: they read params and render a feature.
 - Page width (ADR 0038): `[org]/(app)/(contained)/` pages are `SimplePage` or several `PageSection`s, each with a `PageContainer` as first child (`@bibi/ui`; the layout adds none); `(app)/(canvas)/` pages (`/`, `/calendar`) are full width and own their gutter and scrolling. A new page goes into one of the two groups; `AppShell` adds no container.
 - `settings/*` is for admins only (ADR 0034): `settings/layout.tsx` shows a forbidden state and the sidebar hides the entry. Pages, navigation, the settings hub and the assistant follow the caller's effective permissions: a feature whose `view` is denied is hidden, not just disabled (`server/caller-abilities.ts`). Detail pages name their breadcrumb crumb with `CrumbName`.
 - API routes: `api/auth/[...all]` (Better Auth), `api/graphql`, `api/v1/[...path]` (REST), `api/chat`, `api/assistant/approval`, `api/webhooks/resend`, `api/webhooks/stripe` and `api/webhooks/stripe-billing`, plus the `.well-known/oauth-*` discovery routes forwarded to Better Auth. Chat and approval routes set `runtime = "nodejs"`, `dynamic = "force-dynamic"` and `maxDuration`. New HTTP entry points are wrapped in `withRequestLogging`.
@@ -128,5 +128,5 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 ## Pitfalls
 - `loading.tsx`/`error.tsx`/`not-found.tsx` need `// biome-ignore lint/style/noDefaultExport` (see `[locale]/error.tsx`).
 - Auth pages opened by OAuth (`sig` in the query) must not redirect signed-in users.
-- A magic link during an ongoing OAuth flow does not return to authorize (not verified). Password and OTP continue the flow.
+- A magic link during an ongoing OAuth flow does not return to authorize (not verified). Password continues the flow.
 - The web font for `--font-serif` is not loaded yet; the system serif is used until the Claude Design export exists.
