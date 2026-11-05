@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   renderInvitationEmail,
   renderMagicLinkEmail,
-  renderOtpEmail,
   renderPasswordResetEmail,
   renderReminderEmail,
   renderSeatRequestEmail,
@@ -32,22 +31,6 @@ describe("Email templates design and typography", () => {
     expect(en.subject).toBe("Sign in to Bibi");
     expect(en.text).toContain("Click the button below to sign in to Bibi");
     expect(en.html).toContain("Sign in to Bibi");
-  });
-
-  it("renders OTP email with styled tabular code block", () => {
-    const sv = renderOtpEmail({ otp: "482910", locale: "sv" });
-    expect(sv.subject).toBe("Din inloggningskod för Bibi");
-    expect(sv.text).toContain("482910");
-    expect(sv.subject).not.toContain("482910");
-    expect(sv.html).toContain("#f5f3f0"); // Code card background
-    expect(sv.html).toContain("#e5e3de"); // Subtle border
-    expect(sv.html).toContain("letter-spacing: 0.22em"); // Tracked tabular characters
-    expect(sv.html).toContain("482910");
-    expect(sv.html).toContain("Giltig i 10 minuter");
-
-    const en = renderOtpEmail({ otp: "482910", locale: "en" });
-    expect(en.subject).toBe("Your Bibi sign-in code");
-    expect(en.html).toContain("Valid for 10 minutes");
   });
 
   it("renders Password Reset email", () => {

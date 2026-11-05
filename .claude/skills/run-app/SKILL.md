@@ -61,27 +61,24 @@ Check: `curl -sL -o /dev/null -w '%{http_code} %{url_effective}\n' localhost:333
 
 ## 6. Sign in and screenshot
 
-The login page's "Dev users" switcher did nothing when driven with Playwright. Use the one-time code through the auth API instead (the code is in Mailpit):
+The login page's "Dev users" switcher did nothing when driven with Playwright. Use a magic link through the auth API instead (the link is in Mailpit):
 
 ```bash
-curl -s -X POST localhost:3330/api/auth/email-otp/send-verification-otp -H 'Content-Type: application/json' -H 'Origin: http://localhost:3330' -d '{"email":"anna.berg@lindholmen-demo.bibi.test","type":"sign-in"}'
-CODE=$(curl -s localhost:8025/api/v1/message/latest | python3 -c "import sys,json,re;print(re.search(r'\b\d{6}\b',json.load(sys.stdin)['Text']).group())")
+curl -s -X POST localhost:3330/api/auth/sign-in/magic-link -H 'Content-Type: application/json' -H 'Origin: http://localhost:3330' -d '{"email":"anna.berg@lindholmen-demo.bibi.test"}'
+LINK=$(curl -s localhost:8025/api/v1/message/latest | python3 -c "import sys,json,re;print(re.search(r'https?://\\S+token=\\S+',json.load(sys.stdin)['Text']).group())")
 ```
 
-In a Playwright script (`NODE_PATH=$(npm root -g) node script.js`, never install Playwright), post the code in the browser context so the session cookie is kept, then open pages:
+In a Playwright script (`NODE_PATH=$(npm root -g) node script.js`, never install Playwright), open the link in the browser context so the session cookie is kept, then open pages:
 
 ```js
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-await ctx.request.post('http://localhost:3330/api/auth/sign-in/email-otp', {
-  headers: { Origin: 'http://localhost:3330' },
-  data: { email: 'anna.berg@lindholmen-demo.bibi.test', otp: CODE },
-});
+await ctx.request.get(LINK, { headers: { Origin: 'http://localhost:3330' } });
 const page = await ctx.newPage();
 await page.goto('http://localhost:3330/en/lindholmen-demo/orders', { waitUntil: 'networkidle' });
 await page.screenshot({ path: 'orders.png' });
 ```
 
-Pages that exist: `/en/lindholmen-demo/` (assistant), `orders`, `pipeline`, `calendar`. Codes expire, so request a fresh one per sign-in. Look at the screenshots before reporting.
+Pages that exist: `/en/lindholmen-demo/` (assistant), `orders`, `pipeline`, `calendar`. Links expire after 15 minutes, so request a fresh one per sign-in. Look at the screenshots before reporting.
 
 ## Not covered
 

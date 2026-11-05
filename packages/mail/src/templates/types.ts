@@ -11,11 +11,6 @@ export type MagicLinkEmailInput = {
   locale?: Locale;
 };
 
-export type OtpEmailInput = {
-  otp: string;
-  locale?: Locale;
-};
-
 export type PasswordResetEmailInput = {
   url: string;
   locale?: Locale;

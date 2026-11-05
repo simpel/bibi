@@ -22,7 +22,7 @@ describe("authErrorKey", () => {
   });
 
   it("only returns keys that exist in errors.*", () => {
-    const codes = ["INVALID_OTP", "PASSWORD_TOO_SHORT", "INVITATION_NOT_FOUND", "OTP_EXPIRED"];
+    const codes = ["INVALID_TOKEN", "PASSWORD_TOO_SHORT", "INVITATION_NOT_FOUND"];
     for (const code of codes) {
       expect(Object.keys(messages.errors)).toContain(authErrorKey({ error: { code } }));
     }

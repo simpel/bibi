@@ -167,7 +167,7 @@ export type RenderCodeBlockInput = {
   caption?: string;
 };
 
-/** Clear design language for invite codes & one-time codes (tracked numerals in clean container). */
+/** Clear design language for invite codes (tracked numerals in clean container). */
 export function renderCodeBlock({ code, label, caption }: RenderCodeBlockInput): string {
   return `
 <table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#f5f3f0" style="margin: 24px 0; background-color: #f5f3f0; border: 1px solid #e5e3de; border-radius: 8px;">

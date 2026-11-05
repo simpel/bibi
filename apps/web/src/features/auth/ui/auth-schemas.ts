@@ -8,7 +8,6 @@ export const SignUpSchema = z.object({
   password: z.string().min(10).max(128),
 });
 export const EmailSchema = z.object({ email: z.email() });
-export const OtpSchema = z.object({ code: z.string().trim().min(6).max(6) });
 export const OrganizationNameSchema = z.object({ name: z.string().trim().min(2).max(100) });
 export const ProfileNameSchema = z.object({ name: z.string().trim().min(1).max(100) });
 export const ChangePasswordSchema = z.object({
@@ -19,7 +18,6 @@ export const ChangePasswordSchema = z.object({
 export type SignInValues = z.infer<typeof SignInSchema>;
 export type SignUpValues = z.infer<typeof SignUpSchema>;
 export type EmailValues = z.infer<typeof EmailSchema>;
-export type OtpValues = z.infer<typeof OtpSchema>;
 export type OrganizationNameValues = z.infer<typeof OrganizationNameSchema>;
 export type ProfileNameValues = z.infer<typeof ProfileNameSchema>;
 export type ChangePasswordValues = z.infer<typeof ChangePasswordSchema>;

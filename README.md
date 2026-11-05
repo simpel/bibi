@@ -25,7 +25,7 @@ pnpm dev                                      # web on :3330 and the MCP server 
 ```
 
 - Web: <http://localhost:3330> (create an account, create an organization, open the assistant with `⌘J` / `Ctrl+J`).
-- Mailpit (sign-in emails, magic links and one-time codes): <http://localhost:8025>.
+- Mailpit (sign-in emails and magic links): <http://localhost:8025>.
 - MCP server: `http://localhost:3331/mcp` (see `apps/mcp/CLAUDE.md`).
 - The assistant needs both `WEB_OAUTH_CLIENT_ID` (web and MCP read the same `.env`) and `AI_GATEWAY_API_KEY`. Without the key the rest of the app works, and semantic search uses a deterministic placeholder (outside production only). AI models (chat and embeddings) are selected via `/admin/ai-models` by a platform admin (see [ADR 0015](docs/decisions/0015-platform-admin.md)), not via env. Rerun `provision:oauth` if `WEB_URL` changes; the script is idempotent.
 

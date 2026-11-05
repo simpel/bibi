@@ -1,9 +1,9 @@
-import { renderMagicLinkEmail, renderOtpEmail } from "@bibi/mail";
-import { emailOTP, magicLink } from "better-auth/plugins";
+import { renderMagicLinkEmail } from "@bibi/mail";
+import { magicLink } from "better-auth/plugins";
 import { sendAuthMail } from "../mail";
 import { resolveUserLocale } from "../user-locale";
 
-/** Passwordless sign-in: magic link and one-time code by mail (ADR 0005). */
+/** Passwordless sign-in: magic link by mail (ADR 0005). */
 export function emailLoginPlugins() {
   return [
     magicLink({
@@ -14,20 +14,6 @@ export function emailLoginPlugins() {
         await sendAuthMail({
           to: email,
           kind: "auth.magic-link",
-          subject: rendered.subject,
-          text: rendered.text,
-          html: rendered.html,
-        });
-      },
-    }),
-    emailOTP({
-      expiresIn: 60 * 10,
-      sendVerificationOTP: async ({ email, otp }) => {
-        const locale = await resolveUserLocale({ email });
-        const rendered = renderOtpEmail({ otp, locale });
-        await sendAuthMail({
-          to: email,
-          kind: "auth.sign-in-code",
           subject: rendered.subject,
           text: rendered.text,
           html: rendered.html,

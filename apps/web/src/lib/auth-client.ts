@@ -2,5 +2,5 @@
 
 import { createAuthClient } from "@bibi/auth/client";
 
-/** Browser Better Auth client (organization, magic link, OTP, OAuth consent plugins). */
+/** Browser Better Auth client (organization, magic link, OAuth consent plugins). */
 export const authClient = createAuthClient({});

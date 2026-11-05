@@ -1,6 +1,6 @@
 import { apiKeyClient } from "@better-auth/api-key/client";
 import { oauthProviderClient } from "@better-auth/oauth-provider/client";
-import { emailOTPClient, magicLinkClient, organizationClient } from "better-auth/client/plugins";
+import { magicLinkClient, organizationClient } from "better-auth/client/plugins";
 import { createAuthClient as createBetterAuthClient } from "better-auth/react";
 
 export type CreateAuthClientInput = {
@@ -17,13 +17,7 @@ export function createAuthClient({ baseURL }: CreateAuthClientInput = {}) {
   return createBetterAuthClient({
     ...(baseURL ? { baseURL } : {}),
     basePath: "/api/auth",
-    plugins: [
-      organizationClient(),
-      apiKeyClient(),
-      magicLinkClient(),
-      emailOTPClient(),
-      oauthProviderClient(),
-    ],
+    plugins: [organizationClient(), apiKeyClient(), magicLinkClient(), oauthProviderClient()],
   });
 }
 

@@ -53,7 +53,6 @@ export { type CreateSmtpProviderInput, createSmtpProvider } from "./smtp/create-
 export * from "./templates/invitation";
 export * from "./templates/layout";
 export * from "./templates/magic-link";
-export * from "./templates/otp";
 export * from "./templates/password-reset";
 export * from "./templates/reminder";
 export * from "./templates/seat-request";

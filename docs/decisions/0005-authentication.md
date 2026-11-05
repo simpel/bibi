@@ -8,7 +8,7 @@ Bibi has several kinds of clients: staff in the web UI, REST integrations from o
 
 ## Decision
 - Better Auth is the authentication solution.
-- Web (staff only): email and password, plus magic link or one-time code (OTP). Guests and customers see only the payment page, never the booking system UI.
+- Web (staff only): email and password, plus magic link (the default tab). The one-time code (OTP) was dropped 2026-11-06: it duplicated the magic link and added a second code path to secure and translate. Guests and customers see only the payment page, never the booking system UI.
 - REST: API keys (Better Auth API key plugin), bound to an organization.
 - MCP: OAuth through the Better Auth OAuth plugin. The client gets a token that represents the signed-in user. No separate service-account path.
 - The AI assistant in the web app uses the same MCP surface with the user's token. It gets no higher permissions than the user.

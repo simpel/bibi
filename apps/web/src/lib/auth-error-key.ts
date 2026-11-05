@@ -22,8 +22,6 @@ const KEY_BY_CODE: Record<string, AuthErrorKey> = {
   USER_ALREADY_EXISTS: "emailTaken",
   USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL: "emailTaken",
   PASSWORD_TOO_SHORT: "passwordTooShort",
-  INVALID_OTP: "invalidCode",
-  OTP_EXPIRED: "invalidCode",
   TOO_MANY_ATTEMPTS: "tooManyRequests",
   INVALID_TOKEN: "invalidCode",
   INVITATION_NOT_FOUND: "invitationInvalid",
