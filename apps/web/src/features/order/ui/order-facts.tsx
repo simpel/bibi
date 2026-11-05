@@ -1,4 +1,5 @@
 import type { OrderDto } from "@bibi/core";
+import { KeyFacts } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";
 import { PersonName } from "@/components/people/person-name";
@@ -10,7 +11,6 @@ import { getDateTimeFormat } from "@/server/date-time-format";
 import { getNumberFormat } from "@/server/number-format";
 import type { OrderNames } from "../load-order-names";
 import { desiredPeriod } from "./desired-period";
-import { KeyFactRow } from "./key-fact-row";
 import type { OrderFormData } from "./order-form-data";
 
 export type OrderFactsProps = { order: OrderDto; data: OrderFormData };
@@ -45,7 +45,7 @@ export async function OrderKeyFacts({ order, data }: OrderKeyFactsProps) {
   const guaranteed = order.guaranteedHeadcount;
   const { customerId, contactId } = order;
   const customer = nameOf({ options: data.customers, id: customerId, hidden });
-  const facts = [
+  const facts: (Fact & { truncate?: boolean })[] = [
     {
       label: t("customer"),
       value: customer,
@@ -69,7 +69,12 @@ export async function OrderKeyFacts({ order, data }: OrderKeyFactsProps) {
     { label: t("estimatedHeadcount"), value: count({ value: order.estimatedHeadcount }) },
     { label: t("guaranteedHeadcount"), value: count({ value: guaranteed }) },
   ];
-  return <KeyFactRow facts={filled({ facts })} />;
+  const shown = filled({ facts }).map(({ label, value, node, truncate }) => ({
+    label,
+    value: node ?? value,
+    ...(truncate ? { truncate, title: value } : {}),
+  }));
+  return <KeyFacts facts={shown} />;
 }
 
 /**

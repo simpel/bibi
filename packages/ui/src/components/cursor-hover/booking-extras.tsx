@@ -3,7 +3,7 @@
 import type { CalendarLabels } from "../availability-calendar/calendar-labels";
 import type { AssetBooking } from "../availability-calendar/calendar-types";
 import { PinnedValue } from "../availability-calendar/pinned-facts";
-import { MiniStat, MiniStatRow } from "../mini-stat/mini-stat";
+import { type KeyFact, KeyFacts } from "../key-facts/key-facts";
 import type { OrderViewFact } from "../order-view/order-view";
 
 export type BookingExtrasInput = { booking: AssetBooking; labels: CalendarLabels };
@@ -21,24 +21,22 @@ export function BookingStats({ booking, labels, detailed, time, resource }: Book
   const hasValue = Boolean(booking.value);
   const hasMore = detailed && Boolean(time || resource || booking.quantity > 1);
   if (!hasValue && !hasMore) return null;
-  return (
-    <MiniStatRow>
-      {booking.value ? (
-        <MiniStat
-          label={pinCard.value}
-          title={pinCard.exclVat}
-          value={<PinnedValue booking={booking} />}
-        />
-      ) : null}
-      {detailed && booking.quantity > 1 ? (
-        <MiniStat label={pinCard.quantity} value={booking.quantity} />
-      ) : null}
-      {detailed && time ? <MiniStat label={pinCard.when} value={time} /> : null}
-      {detailed && resource ? (
-        <MiniStat label={pinCard.where} value={resource} title={resource} />
-      ) : null}
-    </MiniStatRow>
-  );
+  const facts: KeyFact[] = [];
+  if (booking.value) {
+    facts.push({
+      label: pinCard.value,
+      value: <PinnedValue booking={booking} />,
+      title: pinCard.exclVat,
+    });
+  }
+  if (detailed && booking.quantity > 1) {
+    facts.push({ label: pinCard.quantity, value: booking.quantity });
+  }
+  if (detailed && time) facts.push({ label: pinCard.when, value: time });
+  if (detailed && resource) {
+    facts.push({ label: pinCard.where, value: resource, truncate: true, title: resource });
+  }
+  return <KeyFacts size="sm" facts={facts} className="border-y border-border/60 py-2" />;
 }
 
 /** The booking's buffers, for the expanded pinned card. */
