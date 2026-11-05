@@ -18,3 +18,21 @@ export function desiredPeriod({ order, format }: DesiredPeriodInput): string {
   const one = start ?? end;
   return one ? format.dateTime({ instant: one }) : "–";
 }
+
+export type DesiredWhen = { preheader?: string; value: string };
+
+/**
+ * The desired dates for `KeyFacts`: on one day, the weekday and date go above the times. A
+ * range over several days, or no dates, stays one line like `desiredPeriod`.
+ */
+export function desiredWhen({ order, format }: DesiredPeriodInput): DesiredWhen {
+  const start = toDate({ value: order.desiredStartsAt });
+  const end = toDate({ value: order.desiredEndsAt });
+  const day = (instant: Date) => format.date({ instant, weekday: "short", year: true });
+  if (start && end && day(start) === day(end)) {
+    return { preheader: day(start), value: format.timeRange({ start, end }) };
+  }
+  const one = start && !end ? start : end && !start ? end : null;
+  if (one) return { preheader: day(one), value: format.time({ instant: one }) };
+  return { value: desiredPeriod({ order, format }) };
+}

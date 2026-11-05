@@ -10,7 +10,7 @@ import { customerRoute } from "@/lib/routes";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { getNumberFormat } from "@/server/number-format";
 import type { OrderNames } from "../load-order-names";
-import { desiredPeriod } from "./desired-period";
+import { desiredWhen } from "./desired-period";
 import type { OrderFormData } from "./order-form-data";
 
 export type OrderFactsProps = { order: OrderDto; data: OrderFormData };
@@ -45,7 +45,8 @@ export async function OrderKeyFacts({ order, data }: OrderKeyFactsProps) {
   const guaranteed = order.guaranteedHeadcount;
   const { customerId, contactId } = order;
   const customer = nameOf({ options: data.customers, id: customerId, hidden });
-  const facts: (Fact & { truncate?: boolean })[] = [
+  const when = desiredWhen({ order, format });
+  const facts: (Fact & { truncate?: boolean; preheader?: string })[] = [
     {
       label: t("customer"),
       value: customer,
@@ -65,13 +66,14 @@ export async function OrderKeyFacts({ order, data }: OrderKeyFactsProps) {
         />
       ),
     },
-    { label: t("when"), value: desiredPeriod({ order, format }) },
+    { label: t("when"), ...when },
     { label: t("estimatedHeadcount"), value: count({ value: order.estimatedHeadcount }) },
     { label: t("guaranteedHeadcount"), value: count({ value: guaranteed }) },
   ];
-  const shown = filled({ facts }).map(({ label, value, node, truncate }) => ({
+  const shown = filled({ facts }).map(({ label, value, node, truncate, preheader }) => ({
     label,
     value: node ?? value,
+    ...(preheader ? { preheader } : {}),
     ...(truncate ? { truncate, title: value } : {}),
   }));
   return <KeyFacts facts={shown} />;
