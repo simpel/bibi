@@ -744,7 +744,7 @@
     "totalExclVat": "{amount} excl. VAT",
     "notInTotal": "Not in the total",
     "day": {
-      "title": "The day in the calendar, {date}",
+      "title": "{date}",
       "booking": "#{reference} {customer}",
       "bookingNoCustomer": "#{reference}",
       "blocked": "Blocked",

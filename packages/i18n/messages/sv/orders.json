@@ -744,7 +744,7 @@
     "totalExclVat": "{amount} exkl. moms",
     "notInTotal": "Ingår inte i totalen",
     "day": {
-      "title": "Dagen i kalendern, {date}",
+      "title": "{date}",
       "booking": "#{reference} {customer}",
       "bookingNoCustomer": "#{reference}",
       "blocked": "Blockerad",
