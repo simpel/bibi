@@ -10,4 +10,5 @@ export const ORDER_NAMES = [
   "order.previewLines",
   "order.statusHistory",
   "order.update",
+  "order.view",
 ] as const;

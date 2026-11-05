@@ -16,22 +16,23 @@ describe("member operations (ADR 0034)", () => {
   it("lists members with their fixed role and filters on it", async () => {
     const context = await testOrg();
     await addTestMember({ context, role: "admin", name: "Anna" });
-    await addTestMember({ context, role: "manager", name: "Ali" });
+    await addTestMember({ context, role: "manager", name: "Ali Berg" });
     await addTestMember({ context, role: "Sales,Kitchen", name: "Erik" });
     const all = unwrap({ result: await execute({ operation: listMembers, input: {}, context }) });
     expect(all.items.map((member) => [member.name, member.role])).toEqual([
       ["Anna", "admin"],
-      ["Ali", "manager"],
+      ["Ali Berg", "manager"],
       ["Erik", null],
     ]);
     const members = unwrap({
       result: await execute({ operation: listMembers, input: { role: "manager" }, context }),
     });
-    expect(members.items.map((member) => member.name)).toEqual(["Ali"]);
+    expect(members.items.map((member) => member.name)).toEqual(["Ali Berg"]);
+    // Across the space, so the random user id in every email can never match.
     const found = unwrap({
-      result: await execute({ operation: listMembers, input: { query: "AL" }, context }),
+      result: await execute({ operation: listMembers, input: { query: "I B" }, context }),
     });
-    expect(found.items.map((member) => member.name)).toEqual(["Ali"]);
+    expect(found.items.map((member) => member.name)).toEqual(["Ali Berg"]);
   });
 
   it("reads one member and hides another organization's member", async () => {

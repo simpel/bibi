@@ -127,6 +127,7 @@ const NAMES = [
   "venue.archive",
   "venue.create",
   "venue.get",
+  "venue.hoursList",
   "venue.list",
   "venue.update",
   "vocabulary.addValue",
