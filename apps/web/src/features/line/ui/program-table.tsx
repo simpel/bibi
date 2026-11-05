@@ -24,6 +24,8 @@ export type ProgramTableProps = {
   access: ProgramAccess;
   /** The lines' amounts and the order's total (`line.amounts`); null when it failed to load. */
   amounts: LineAmounts | null;
+  /** Drawn inside a shared card: no border or rounding of its own. */
+  flush?: boolean;
 };
 
 /**
@@ -31,7 +33,7 @@ export type ProgramTableProps = {
  * Selection · State dropdown with pulse · Name (clickable) · Where · Time (hours) · Quantity · Total Amount.
  * Single Pen action button and full right-click context menu with Edit first.
  */
-export function ProgramTable({ lines, data, access, amounts }: ProgramTableProps) {
+export function ProgramTable({ lines, data, access, amounts, flush }: ProgramTableProps) {
   const t = useTranslations("line");
   const common = useTranslations("common");
   const errors = useTranslations("errors");
@@ -149,6 +151,7 @@ export function ProgramTable({ lines, data, access, amounts }: ProgramTableProps
     <>
       <PersistedDataTable
         tableId="line.list"
+        flush={flush}
         columns={columns}
         data={linesState}
         getRowId={(item) => item.id}

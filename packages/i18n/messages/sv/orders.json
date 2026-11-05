@@ -750,6 +750,7 @@
       "blocked": "Blockerad",
       "nextDay": "{hour} +1",
       "otherLines": "Övriga rader",
+      "missingTime": "Tid saknas",
       "untimed": "Ingen tid: {lines}"
     }
   },

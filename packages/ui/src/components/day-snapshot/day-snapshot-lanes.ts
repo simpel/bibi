@@ -6,7 +6,7 @@ export type DaySnapshotBlock = {
   start: number;
   end: number;
   label: string;
-  tone: "hard" | "soft" | "draft" | "clash" | "own";
+  tone: "hard" | "soft" | "draft" | "clash" | "own" | "missing";
   href?: string;
   details?: CalendarHoverDetailsProps;
 };

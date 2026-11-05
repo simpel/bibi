@@ -9,6 +9,8 @@ export type OrderDayProps = {
   customerName?: string | null;
   lines: LineDto[];
   data: ProgramFormData;
+  /** Drawn inside a card shared with the table below, without its own border. */
+  joined?: boolean;
 };
 
 /**
@@ -21,7 +23,8 @@ export async function OrderDay({
   customerName,
   lines,
   data,
+  joined,
 }: OrderDayProps) {
   const days = await loadOrderDays({ orderId, orderReference, customerName, lines, data });
-  return <OrderDayList {...days} />;
+  return <OrderDayList {...days} joined={joined} />;
 }

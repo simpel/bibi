@@ -29,13 +29,15 @@ export type OrderDayInput = {
   timeFormatter?: (span: { start: Date; end: Date; timeZone?: string }) => string;
   blockLabel: (input: { block: CalendarBlockDto }) => string;
   otherLabel: string;
+  /** Text of the striped bar of a line that should have a time; set on one day only. */
+  missingLabel?: string;
 };
 
 export type OrderDay = {
   startMinute: number;
   endMinute: number;
   rows: DaySnapshotRow[];
-  /** The order's lines without a time: they have no place on the day, so they are listed. */
+  /** Lines without a time or an item (a fee): they have no place on the day, so they are listed. */
   untimed: string[];
 };
 
@@ -121,6 +123,33 @@ function itemRows({ input, own }: { input: OrderDayInput; own: OwnBar[] }): DayS
   });
 }
 
+/** A line with an item but no time should have one: a row striped across the whole day. */
+function missingRows({ input }: { input: OrderDayInput }): DaySnapshotRow[] {
+  const { missingLabel, itemNames } = input;
+  if (missingLabel === undefined) return [];
+  return input.lines
+    .filter(({ itemId, startsAt, endsAt }) => (!startsAt || !endsAt) && itemId)
+    .map((line) => ({
+      id: `missing-${line.id}`,
+      label: line.name,
+      blocks: [
+        {
+          id: `line-${line.id}`,
+          label: missingLabel,
+          tone: "missing",
+          href: orderRoute({ id: input.orderId }),
+          start: 0,
+          end: 2 * 24 * 60,
+          details: {
+            id: `line-${line.id}`,
+            title: line.name,
+            resource: itemNames.get(line.itemId ?? ""),
+          },
+        },
+      ],
+    }));
+}
+
 /**
  * A saved order's day (the order page): everything booked that day, the other orders' dimmed
  * and this order's lines solid, its items first; lines without a bookable item in one row and
@@ -184,7 +213,12 @@ export function orderDayOf({ ...input }: OrderDayInput): OrderDay {
   return {
     startMinute: Math.floor(Math.min(DAY_START, ...own.map(({ start }) => start)) / 60) * 60,
     endMinute: Math.ceil(Math.max(DAY_END, ...own.map(({ end }) => end)) / 60) * 60,
-    rows: loose.length > 0 ? [...rows, other] : rows,
-    untimed: input.lines.filter((line) => !line.startsAt || !line.endsAt).map(({ name }) => name),
+    rows: [...(loose.length > 0 ? [...rows, other] : rows), ...missingRows({ input })],
+    untimed: input.lines
+      .filter(
+        (line) =>
+          (!line.startsAt || !line.endsAt) && (!line.itemId || input.missingLabel === undefined),
+      )
+      .map(({ name }) => name),
   };
 }

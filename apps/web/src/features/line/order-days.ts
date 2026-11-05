@@ -80,7 +80,7 @@ export async function loadOrderDays({
   const timeFormatter = ({ start, end, timeZone }: { start: Date; end: Date; timeZone?: string }) =>
     format.timeRange({ start, end, timeZone });
   let untimed: string[] = [];
-  const snapshots = days.map((day) => {
+  const snapshots = days.map((day, index) => {
     const midnight = fromZonedParts({
       ...{ date: parseIsoDate({ value: day }), time: { hour: 0, minute: 0, second: 0 } },
       timeZone,
@@ -102,8 +102,9 @@ export async function loadOrderDays({
         blockLabel,
       },
       otherLabel: t("otherLines"),
+      ...(index === 0 ? { missingLabel: t("missingTime") } : {}),
     });
-    untimed = loose;
+    if (index === 0) untimed = loose;
     return { day, date, ...snapshot };
   });
   return { days: snapshots, untimed };

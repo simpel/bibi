@@ -750,6 +750,7 @@
       "blocked": "Blocked",
       "nextDay": "{hour} +1",
       "otherLines": "Other lines",
+      "missingTime": "No time yet",
       "untimed": "No time: {lines}"
     }
   },

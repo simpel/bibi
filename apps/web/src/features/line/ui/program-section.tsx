@@ -74,22 +74,26 @@ export async function ProgramSection({ locale, order }: ProgramSectionProps) {
     <>
       <section className="grid grid-cols-1 gap-4">
         <ProgramHeader title={t("plural")} canEdit={access.canEdit} start={start} />
-        <OrderDay
-          orderId={order.id}
-          orderReference={order.reference}
-          lines={items}
-          data={data.value}
-        />
-        {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("empty")}</p>
-        ) : (
-          <ProgramTable
+        <div className="overflow-hidden rounded-xl border bg-card">
+          <OrderDay
+            orderId={order.id}
+            orderReference={order.reference}
             lines={items}
             data={data.value}
-            access={access}
-            amounts={amounts.ok ? amounts.value : null}
+            joined
           />
-        )}
+          {items.length === 0 ? (
+            <p className="border-t p-4 text-sm text-muted-foreground">{t("empty")}</p>
+          ) : (
+            <ProgramTable
+              lines={items}
+              data={data.value}
+              access={access}
+              amounts={amounts.ok ? amounts.value : null}
+              flush
+            />
+          )}
+        </div>
       </section>
       <AlternativeGroupSection locale={locale} order={order} />
     </>
