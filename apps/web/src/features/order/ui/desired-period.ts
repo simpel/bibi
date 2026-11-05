@@ -28,11 +28,12 @@ export type DesiredWhen = { preheader?: string; value: string };
 export function desiredWhen({ order, format }: DesiredPeriodInput): DesiredWhen {
   const start = toDate({ value: order.desiredStartsAt });
   const end = toDate({ value: order.desiredEndsAt });
-  const day = (instant: Date) => format.date({ instant, weekday: "short", year: true });
-  if (start && end && day(start) === day(end)) {
-    return { preheader: day(start), value: format.timeRange({ start, end }) };
+  const day = ({ instant }: { instant: Date }) =>
+    format.date({ instant, weekday: "short", year: true });
+  if (start && end && day({ instant: start }) === day({ instant: end })) {
+    return { preheader: day({ instant: start }), value: format.timeRange({ start, end }) };
   }
   const one = start && !end ? start : end && !start ? end : null;
-  if (one) return { preheader: day(one), value: format.time({ instant: one }) };
+  if (one) return { preheader: day({ instant: one }), value: format.time({ instant: one }) };
   return { value: desiredPeriod({ order, format }) };
 }
