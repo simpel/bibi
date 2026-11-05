@@ -28,9 +28,9 @@ export const keyFactsVariants = cva("flex", {
 });
 
 const valueVariants = cva(
-  "font-serif font-light tracking-tight [&_a]:underline-offset-4 [&_a:hover]:underline",
+  "font-serif tracking-tight [&_a]:underline-offset-4 [&_a:hover]:underline",
   {
-    variants: { size: { lg: "text-2xl", sm: "text-base leading-tight" } },
+    variants: { size: { lg: "font-normal text-2xl", sm: "font-light text-base leading-tight" } },
     defaultVariants: { size: "lg" },
   },
 );
