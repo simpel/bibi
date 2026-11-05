@@ -1,20 +1,23 @@
 import type { ExecuteContext } from "../../operations/context";
 import type { DemoLine } from "./order-types";
+import { seededOrderLines } from "./seeded-order-lines";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoOptionQuantitiesInput = { context: ExecuteContext; org: DemoOrg };
 
-type LineInput = { context: ExecuteContext; line: DemoLine };
+type LineInput = { context: ExecuteContext; line: DemoLine; orderId: string | undefined };
 
 /**
  * One seeded line with split options: each option line has its own quantity, and every quote of
  * its order that was sent froze each of them with that quantity (ADR 0082).
  */
-async function checkLine({ context, line }: LineInput): Promise<string[]> {
-  const parent = await context.db.line.findFirst({
-    where: { name: line.name, item: { name: line.item } },
-    select: { id: true, orderId: true },
-  });
+async function checkLine({ context, line, orderId }: LineInput): Promise<string[]> {
+  const parent = orderId
+    ? await context.db.line.findFirst({
+        where: { orderId, name: line.name, item: { name: line.item } },
+        select: { id: true, orderId: true },
+      })
+    : null;
   if (!parent) return [`line ${line.name} is missing`];
   const failures: string[] = [];
   const sent = await context.db.quote.findMany({
@@ -53,10 +56,11 @@ export async function checkDemoOptionQuantities({
   context,
   org,
 }: CheckDemoOptionQuantitiesInput): Promise<string[]> {
-  const lines = org.orders
-    .flatMap((order) => order.lines ?? [])
-    .filter((line) => line.options?.some((option) => option.quantity !== undefined));
+  const lines = await seededOrderLines({
+    ...{ context, org },
+    where: ({ line }) => line.options?.some((option) => option.quantity !== undefined) ?? false,
+  });
   const failures: string[] = [];
-  for (const line of lines) failures.push(...(await checkLine({ context, line })));
+  for (const seeded of lines) failures.push(...(await checkLine({ context, ...seeded })));
   return failures.map((failure) => `${org.slug}: ${failure}`);
 }

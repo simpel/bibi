@@ -1,5 +1,6 @@
 import type { ExecuteContext } from "../../operations/context";
 import type { DemoLine } from "./order-types";
+import { seededOrderLines } from "./seeded-order-lines";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoAddOnsInput = { context: ExecuteContext; org: DemoOrg };
@@ -76,15 +77,18 @@ async function checkQuotes({ context, line, parent }: Db & { line: DemoLine; par
  * Returns failures.
  */
 export async function checkDemoAddOns({ context, org }: CheckDemoAddOnsInput): Promise<string[]> {
-  const lines = org.orders
-    .flatMap((order) => order.lines ?? [])
-    .filter((line) => (line.addOns ?? []).length > 0);
+  const lines = await seededOrderLines({
+    ...{ context, org },
+    where: ({ line }) => (line.addOns ?? []).length > 0,
+  });
   const failures: string[] = [];
-  for (const line of lines) {
-    const parent = await context.db.line.findFirst({
-      where: { name: line.name, item: { name: line.item }, role: null },
-      select: { id: true, orderId: true, startsAt: true },
-    });
+  for (const { line, orderId } of lines) {
+    const parent = orderId
+      ? await context.db.line.findFirst({
+          where: { orderId, name: line.name, item: { name: line.item }, role: null },
+          select: { id: true, orderId: true, startsAt: true },
+        })
+      : null;
     const found = parent
       ? [
           ...(await checkRoles({ context, line, parent })),
