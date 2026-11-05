@@ -18,7 +18,7 @@ export const keyFactsVariants = cva("flex", {
     size: {
       /** The page's primary facts under the title. */
       lg: "gap-x-10",
-      /** The same facts in a card or popover. */
+      /** The same facts in a card or popover, labels under the values. */
       sm: "flex-wrap gap-x-5 gap-y-1.5",
     },
   },
@@ -50,7 +50,12 @@ export function KeyFacts({ facts, size, className }: KeyFactsProps) {
     <dl data-slot="key-facts" className={cn(keyFactsVariants({ size }), className)}>
       {facts.map(({ label, preheader, value, truncate, title }) => (
         <div key={label} className={cn("grid gap-1", truncate && "min-w-0 shrink-[999]")}>
-          <dt className={cn("text-muted-foreground", size === "sm" ? "text-[10px]" : "text-xs")}>
+          <dt
+            className={cn(
+              "text-muted-foreground",
+              size === "sm" ? "order-last text-[10px]" : "text-xs",
+            )}
+          >
             {label}
           </dt>
           <dd title={title} className={cn(valueVariants({ size }), truncate && "truncate")}>
