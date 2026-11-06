@@ -4,24 +4,24 @@
 - **Status:** Accepted
 
 ## Context
-Bibi must expose the same functionality in web, GraphQL, REST and MCP, and the AI assistant must use the same surfaces. That requires a shared codebase with shared packages. The tech stack has been open in CLAUDE.md.
+- Bibi exposes the same functionality in web, GraphQL, REST and MCP, and the AI assistant uses the same surfaces.
+- That needs one codebase with shared packages, so logic is never duplicated between apps.
 
 ## Decision
-- Monorepo with pnpm workspaces and Turborepo.
-- TypeScript in strict mode everywhere.
-- Web: Next.js (App Router).
-- Database: Prisma against Postgres with pgvector.
-- Lint and format: Biome.
-- Tests: Vitest for the service layer (against a real Postgres), Playwright for e2e and Storybook for `packages/ui`.
-- Styling: Tailwind v4 with CSS-first tokens, cva and shadcn primitives.
-- i18n: next-intl (sv and en).
-- Operations: Docker Compose for local development and `turbo prune`-based Dockerfiles for apps.
+1. A monorepo with pnpm workspaces and Turborepo, TypeScript in strict mode everywhere.
+2. Next.js (App Router) for the web app.
+3. Prisma against Postgres with pgvector.
+4. Tailwind v4 with CSS-first tokens, next-intl for sv and en, Biome for lint and format.
+5. Vitest runs the service layer against a real Postgres; Playwright covers e2e.
+6. Docker Compose locally and `turbo prune` Dockerfiles for apps.
 
-The package layout is described in CLAUDE.md under "Package layout".
+The package layout lives in CLAUDE.md.
+
+## Rejected
+- Separate repositories per app: shared logic would need publishing and version juggling.
+- Mocked databases in service tests: they hide migration, trigger and constraint behaviour.
 
 ## Consequences
-- Shared logic lives in `packages/*` and is imported by both apps, so no logic is duplicated between web and MCP.
-- Turborepo controls build order and cache. Tasks such as `build`, `typecheck` and `test` depend on `^build`.
-- The requirement for Node 22+ and pnpm 10 applies to all developers and CI.
-- Prisma requires generation before typecheck. Generated code lives in `packages/db/src/generated` and is excluded from lint and the structure check.
-- We commit to Next.js App Router and Prisma. Replacing either requires a new ADR.
+- Shared logic lives in `packages/*` and both web and MCP import it.
+- We commit to Next.js App Router and Prisma. Replacing either needs a new ADR.
+- Prisma must generate its client before typecheck; generated code is excluded from lint and the structure check.

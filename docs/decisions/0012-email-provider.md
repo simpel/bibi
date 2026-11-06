@@ -4,36 +4,26 @@
 - **Status:** Accepted
 
 ## Context
-- Bibi needs to send email (confirmations, options, sheets) and receive email (replies linked to a booking).
-- Running our own mail server was rejected: port 25 is blocked at many VPS providers, and IP reputation and deliverability to Gmail and Microsoft are a risk for the product.
-- Hosting is one or more of our own VPSs (see the upcoming hosting ADR). The mail server should not be part of it.
+- Bibi sends email (confirmations, sheets) and receives replies that must link to an order.
+- Our own mail server is a risk: port 25 is blocked at many VPS providers, and IP reputation and deliverability to Gmail and Microsoft are fragile.
+- Hosting should stay as small as app plus database.
 
 ## Decision
-- **Resend** for both outgoing and incoming email.
-  - Free during development and pilot (3,000 emails/month, 100/day).
-  - Pro (20 USD/month, 50,000 emails) in production.
-- **Outgoing:** via API (alternatively SMTP).
-- **Incoming:** `email.received` webhook, signed with Svix. The payload contains metadata only. Body and attachments are fetched through Resend's API. The webhook verifies the signature (Zod at the boundary) and runs as a core operation per ADR 0003.
-- **Address per booking** on a dedicated inbound subdomain, so replies can be linked to the right `organizationId` and booking.
-- **`MailProvider` interface** in its own package with `send` and `parseInbound`. An adapter is chosen via env in `@bibi/config`. Mailpit is used in dev through the same interface.
-- **Fallback:** Amazon SES (cheapest) behind the same interface if price or EU requirements justify a switch.
+1. Resend handles outgoing and incoming mail, using its EU region under its data processing agreement.
+2. Outgoing goes through the API. Incoming arrives as a Svix-signed `email.received` webhook with metadata only; the body is fetched through Resend's API.
+3. Each order has its own address `order-<orderId>@<inbound domain>`. Ids are random cuid2, so one address does not reveal another and the id alone resolves the organization. Unknown or archived orders are dropped and logged with HTTP 200 so the provider does not retry.
+4. The webhook runs the SYSTEM-only command `inboundEmail.receive`. This is a parity exception (ADR 0003): no user or AI may fabricate a received mail. `InboundEmail` is append-only and unique per organization and provider id, so a redelivery is stored once.
+5. A `MailProvider` interface (`send`, `parseInbound`) hides the provider. The adapter is chosen via `@bibi/config`; Mailpit is the dev adapter.
+6. Amazon SES is the fallback behind the same interface.
 
-## Alternatives considered
-- Mailgun: inbound routes with push, but more expensive per email.
-- Postmark: best reputation, but US-based and inbound not confirmed.
-- Amazon SES: cheapest, but inbound must be built by us (S3/SNS).
-- Own mail server (Stalwart, Mailcow): rejected, see Context.
+## Rejected
+- Own mail server (Stalwart, Mailcow): see Context.
+- Mailgun: more expensive per email.
+- Postmark: US-based, inbound not confirmed.
+- Amazon SES as first choice: cheapest, but we would build inbound ourselves.
 
 ## Consequences
-- No mail server to operate. Hosting needs only app and database.
-- SPF, DKIM and DMARC are set up on our own domain following Resend's guide.
-- **Open, must be resolved before production:** Resend's EU region and data processing agreement (GDPR) are not confirmed.
+- No mail server to operate.
+- SPF, DKIM and DMARC are set up on our domain.
 - Changing provider means writing an adapter, not a rewrite.
-
-## Addendum 2026-10-15
-- Resend operates an EU region, and we accept it for production. Use the EU region and sign Resend's data processing agreement before the first production send. The open GDPR item above is closed.
-
-## Addendum 2026-10-15: inbound mail implemented (#71)
-- The address per order is `order-<orderId>@<MAIL_INBOUND_DOMAIN>` (originally `booking-<id>`; ADR 0043). Ids are random cuid2 strings, so one address does not reveal another's and the id alone resolves the organization. Unknown or archived orders are dropped and logged (`mail.unmatched`) with HTTP 200 so the provider does not retry.
-- `POST /api/webhooks/resend` verifies the Svix signature, fetches the body from Resend and runs the SYSTEM-only command `inboundEmail.receive` in the resolved organization (the one cross-organization lookup). It is a parity exception (ADR 0003): no user or AI may fabricate a received mail. `InboundEmail` is append-only and unique per `(organizationId, providerEmailId)`, so a redelivery is stored once. HTML bodies are stored but never rendered.
-- Flow details and the test setup are in `packages/mail/CLAUDE.md`; DNS for the inbound subdomain is in `docs/runbooks/inbound-email.md`.
+- HTML bodies of inbound mail are stored but never rendered.

@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Implement a piece of work in bibi and commit it straight to main, alone or with parallel subagents for larger work. Use for any feature, bugfix, tech debt, test, docs or codemod request. Accepted ADRs are the basis for new implementations. Why: ADR 0070, ADR 0075.
+description: Implement a piece of work in bibi and commit it straight to main, alone or with parallel subagents for larger work. Use for any feature, bugfix, tech debt, test, docs or codemod request. Specs describe behaviour; ADRs gate only costly-to-reverse decisions. Why: ADR 0070, ADR 0075.
 ---
 
 # Implement
@@ -16,8 +16,8 @@ Every run works in its own worktree with its own environment: a fresh `.env`, da
 - From here on, run every command inside the worktree (`cd ../bibi-worktrees/<name>`), and give every subagent that path as its only place to work.
 
 ## 2. Understand before you build
-- Find the accepted ADR and the `docs/specs/` file that govern the area, and read the `CLAUDE.md` of every package you will touch. The ADR is the basis: build what it decides.
-- Major architectural work (a decision with a rejected alternative or a costly reversal) needs an ADR first: write it as Proposed (`docs/decisions/NNNN-title.md`, next free number) and ask the user to accept it before you build.
+- Find the `docs/specs/` file and any accepted ADR that govern the area, and read the `CLAUDE.md` of every package you will touch. Build what they say; update the spec when behaviour changes.
+- Only a decision that is costly to reverse (schema, auth, money, tenancy, parity, infrastructure) with a real rejected alternative needs an ADR first: one page, Proposed (`docs/decisions/NNNN-title.md`, next free number), accepted by the user before you build. Features need none.
 - If the work contradicts an ADR, or needs a human decision (an open question, a Proposed ADR, unclear scope), stop and ask. Never guess a rule.
 - Reuse first: search for an existing helper, schema or pattern before writing one. Extract shared code at the second duplicate.
 

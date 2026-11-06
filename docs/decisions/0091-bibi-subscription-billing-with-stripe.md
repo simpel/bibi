@@ -1,27 +1,27 @@
 # 0091 – Bibi's own subscription billing with Stripe
 
 - **Date:** 2026-11-02
-- **Status:** Accepted (approved by the user on 2026-11-02); amended by [0095](0095-subscription-plan-seats-and-trial-gate.md): config in the superadmin UI, the decided plan, seats and the trial gate
-- **Related:** 0028 (Connect, a separate flow), 0090, 0015 (platform operations), 0058, 0013 (hosting)
+- **Status:** Accepted; amended by [0095](0095-subscription-plan-seats-and-trial-gate.md) (config in the superadmin UI, the plan, seats and the trial gate)
+- **Related:** 0028 (Connect, a separate flow), 0090, 0015, 0058, 0013
 
 ## Context
-- Venues pay Bibi for the service. Prices are meant to be published and venues sign up without talking to sales, but the pricing model (per venue, room or order) is not decided.
-- Stripe already holds Bibi's platform account for Connect (ADR 0028). Order money never touches it (ADR 0090); only Bibi's own fees do.
+- Venues pay Bibi for the service. Stripe already holds Bibi's platform account for Connect (ADR 0028).
+- Order money never touches it (ADR 0090); only Bibi's own fees do.
+- The pricing model was not decided when this was written.
 
 ## Decision
-1. **Stripe Billing on Bibi's platform account,** never on a venue's connected account.
-2. **One Stripe customer per organization,** created on first checkout. Org-scoped `BillingAccount` row: `stripeCustomerId`, `stripeSubscriptionId`, and `status`, `currentPeriodEnd`, `cancelAtPeriodEnd` mirrored from Stripe (snapshots written only by the webhook operation).
-3. **Checkout and Customer Portal.** `billing.startCheckout` returns a Stripe Checkout URL in subscription mode for the plan in `STRIPE_BILLING_PRICE_ID`, a placeholder until pricing is decided. `billing.openPortal` returns a Customer Portal URL for card, invoices and cancelling. Both call Stripe after commit (ADR 0058).
-4. **Its own webhook,** `POST /api/webhooks/stripe-billing`, signed with `STRIPE_BILLING_WEBHOOK_SECRET`, separate from the Connect webhook. It handles `checkout.session.completed` and `customer.subscription.created|updated|deleted` through a SYSTEM-only `billing.applySignal`, deduplicated on the event id like ADR 0028.
-5. **Settings → Billing,** admin only, new permission feature `billing` (`read`, `write`), locked like `paymentAccount`. `billing.get|startCheckout|openPortal` on web, GraphQL, REST and MCP (ADR 0003); `startCheckout` and `openPortal` are `aiAllowed: false`.
-6. **No access gating yet.** A missing or lapsed subscription only shows on the Billing page. Gating waits for the pricing decision.
+1. Stripe Billing on Bibi's platform account, never on a venue's connected account.
+2. One Stripe customer per organization, created on first checkout. A `BillingAccount` row holds the Stripe ids and mirrors status, period end and cancel flag as snapshots, written only by the webhook operation.
+3. Checkout and Customer Portal. `billing.startCheckout` and `billing.openPortal` return Stripe URLs and call Stripe after commit (ADR 0058).
+4. Its own webhook, separate from the Connect webhook, with its own signing secret. A SYSTEM-only `billing.applySignal` applies events, deduplicated on the event id.
+5. Billing is admin only, a permission feature `billing` locked like `paymentAccount`. `startCheckout` and `openPortal` are `aiAllowed: false`.
+6. No access gating yet. Gating came with the plan in ADR 0095.
+
+## Rejected
+- Payment Links for the subscription. No link to the organization without ids in the URL, and no portal.
+- One webhook for Connect and billing. Different sources and secrets; a platform event could be applied to a venue's payments.
+- Gate the app on the subscription now. Nothing to gate against until pricing was decided.
 
 ## Consequences
-- Config: `STRIPE_BILLING_PRICE_ID` and `STRIPE_BILLING_WEBHOOK_SECRET`. Unset, Billing shows as not available and the operations return `UNAVAILABLE`.
-- Stripe Dashboard, by hand: a product and price, the Customer Portal configuration and the webhook endpoint.
-- Seed: no subscription (it would need real Stripe); tests use a fake billing gateway.
-
-## Alternatives rejected
-- **Payment Links for the subscription.** No link to the organization without passing ids in the URL, and no portal.
-- **One webhook for Connect and billing.** Different event sources and secrets; mixing them risks applying a platform event to a venue's payments.
-- **Gate the app on the subscription now.** Nothing to gate against until pricing is decided.
+- Billing is unavailable until its Stripe config is set.
+- The seed has no subscription; tests use a fake billing gateway.

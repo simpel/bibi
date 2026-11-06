@@ -5,23 +5,22 @@
 - **Related:** 0028 (payments with Stripe), 0029 (invoicing via Stripe), 0051, 0052
 
 ## Context
-- `payment.create` takes a free `amountMinor`. A payment is linked to the order only, not to a quote, deposit or invoice. Nothing says what it pays for.
-- `Deposit` and `Invoice` are modelled with their own `status` and amounts but are not built. Built as modelled, each would hold a status that duplicates the sum of its payments.
-- `Payment.refundedMinor` and `status` mirror Stripe. That is correct (Stripe owns them) as long as only the signal path writes them.
+- A payment took a free amount and was linked to the order only, so nothing said what it paid for.
+- Deposits and invoices were modelled with their own status and amounts. Built as modelled, each would hold a status duplicating the sum of its payments.
+- Stripe owns payment status and refunds. That mirror is correct as long as one path writes it.
 
 ## Decision
-1. **Receivables are snapshots.** A sent quote (ADR 0052), a deposit request and an invoice are frozen documents. Each has a fixed amount, set once.
-2. **Payments settle a receivable.** `Payment` gets exactly one of `quoteId`, `depositId` or `invoiceId` as a foreign key. A payment for "something else" is a deposit request with its own description.
-3. **Nothing stores a balance.** These are all derived:
-   - paid = sum of `SUCCEEDED` payments minus refunds, per receivable,
-   - receivable status (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`),
-   - the order's balance = accepted quote (or invoices once invoiced) minus settled deposits and payments.
-   `Deposit.status` and `Invoice.status` keep only owned lifecycle facts (`DRAFT`, `SENT`, `VOID`). Payment progress is derived.
-4. **Stripe owns payment facts.** `Payment.status`, `paidAt` and `refundedMinor` are a mirror written only by `payment.applySignal` (as today). An invoice raised in Stripe is owned by Stripe too, and our `Invoice` row mirrors its number and status.
-5. **External calls happen after commit.** A payment row is inserted as `PENDING` first. The provider call runs after the transaction commits, with the row id as idempotency key, and never runs during a preview or dry run. Fixed in the payment-preview session; this ADR records the rule for all external effects (mail, Stripe, later Fortnox).
-6. The application fee is stored per payment (owned, it was agreed at charge time) and shown to the venue on each payment and in the published price list.
+1. Receivables are snapshots. A sent quote (ADR 0052), a deposit request and an invoice are frozen documents with a fixed amount.
+2. A payment settles exactly one receivable: a quote, a deposit or an invoice. A payment for something else is a deposit request with its own description.
+3. Nothing stores a balance. Paid per receivable, receivable status (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`) and the order balance are derived. Deposit and invoice status keep only owned lifecycle facts (`DRAFT`, `SENT`, `VOID`).
+4. Stripe owns payment facts. Status, paid time and refunded amount are a mirror written only by `payment.applySignal`. An invoice raised in Stripe is owned by Stripe, and our row mirrors its number and status.
+5. External calls run after commit (ADR 0058).
+6. The application fee is stored per payment, because it was agreed at charge time.
+
+## Rejected
+- Stored balances or receivable statuses: they duplicate the sum of payments and drift.
+- A free-amount payment tied only to the order: it settles nothing.
 
 ## Consequences
-- `payment.create` takes a receivable id instead of a free amount (the amount defaults to the open balance and may be lower for partial payment).
-- Reports on revenue and outstanding money are queries, not stored counters.
-- ADR 0028 and 0029 get addenda when this is accepted.
+- `payment.create` takes a receivable id. The amount defaults to the open balance and may be lower for a partial payment.
+- Revenue and outstanding-money reports are queries, not counters.

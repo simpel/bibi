@@ -2,30 +2,22 @@
 
 - **Date:** 2026-10-15
 - **Status:** Accepted
+- **Related:** 0028, 0052, 0057, 0077 (SIE export), 0087 (Fortnox connection)
 
 ## Context
-- Customers can pay against invoice (ADR 0022). The domain model has `Invoice` with an export status (Fortnox / Visma) and e-invoice (issue #17).
-- Fortnox, Visma and Peppol are stated differentiators, but each needs per-organization OAuth, secret storage and certification work.
+- Customers can pay against invoice. Fortnox, Visma and Peppol are stated differentiators, but each needs per-organization OAuth, secret storage and certification work.
+- The first release needs one invoicing path.
 
 ## Decision
-- **Invoices attach to the order** and can be created only in a phase with the `invoiceable` flag (ADR 0043).
-- **Invoices are issued through Stripe** (Stripe Invoicing, on the venue's connected account, see ADR 0028), behind the same `PaymentProvider` interface as ADR 0028. One provider, one webhook path.
-- **Fortnox, Visma and Peppol are deferred.** They return as accounting adapters behind an interface once a venue needs them.
+1. Invoices attach to the order and can be created only in a phase with the `invoiceable` flag.
+2. Invoices are issued through Stripe Invoicing on the venue's connected account, behind the same `PaymentProvider` interface as ADR 0028. One provider, one webhook path.
+3. Fortnox, Visma and Peppol are deferred and return as accounting adapters when a venue needs them.
+4. An invoice snapshots the order's lines when issued and is never edited. Its status holds only its own lifecycle. Payment progress is derived (ADR 0052, 0057).
+
+## Rejected
+- Building Fortnox, Visma and Peppol adapters first: too much per-organization integration work before any venue is live.
 
 ## Consequences
-- Fewer integrations for the first release.
-- **Gap to verify before the first venue:** whether Stripe Invoicing satisfies Swedish invoice requirements and e-invoicing (Peppol) demands from public-sector customers such as museums. If not, the Peppol route (via Fortnox/Visma or an access point) becomes a blocking follow-up.
-- `CLAUDE.md` still lists Fortnox, Visma and Peppol as differentiators. Revisit the wording when the gap is checked.
-
-## Addendum 2026-10-19 – invoices are snapshots (ADR 0052, 0057)
-- An invoice snapshots the order's lines at invoicing, like a sent quote, and is never edited afterwards.
-- `Invoice.status` and `Deposit.status` keep only their own lifecycle (`DRAFT`, `SENT`, `VOID`). Payment progress is derived from the payments that settle them.
-- An invoice raised in Stripe is owned by Stripe; our row mirrors its number and status.
-
-## Addendum 2026-11-01 – financials (ADR 0077)
-- The SIE 4I file ([ADR 0077](0077-financials-and-sie-export.md)) is how invoices and payments reach an accounting program. One file covers Fortnox, Visma and other Swedish systems, so the deferred accounting integration is covered by it until a direct one is needed.
-- Fortnox and Visma stay deferred. A direct adapter can later post the same vouchers, behind the same export.
-- Invoicing stays on Stripe. The dates the export needs (`sentAt`, `voidedAt`) and refunds are Bibi's own rows, not Stripe's.
-
-## Addendum 2026-11-02 – Fortnox connection (ADR 0087)
-- An organization can now connect its Fortnox company ([ADR 0087](0087-fortnox-connection.md)). Only the OAuth connection is built; invoices still go through Stripe and accounting through the SIE file until a Fortnox adapter is decided.
+- Accounting reaches Fortnox, Visma and others through the SIE 4I file (ADR 0077). A Fortnox OAuth connection exists but posts nothing (ADR 0087).
+- An invoice raised in Stripe is owned by Stripe. Our row mirrors its number and status. Sent and void dates and refunds are Bibi's own rows.
+- Gap to verify before the first venue: whether Stripe Invoicing meets Swedish invoice rules and Peppol demands from public-sector customers such as museums. If not, a Peppol route becomes a blocking follow-up.

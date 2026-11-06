@@ -6,22 +6,25 @@
 - **Spec:** `docs/specs/payments.md`
 
 ## Context
-- An order created from an order template is paid by the customer through a payment link, or against invoice (ADR 0022, 0043). The customer only sees the payment page and never uses the app.
-- A payment attaches to the order and records its own status. Payments do not move the order between phases.
-- No provider was chosen (issue #16).
+- A customer pays an order through a payment link or against invoice. The customer only sees the payment page and never uses the app.
+- A payment attaches to the order and has its own status. It never moves the order between phases.
+- Money is costly to reverse: the provider, the account model and who carries loss risk are hard to change once venues are onboarded.
 
 ## Decision
-- **Stripe** is the provider. Cards first; Swish through Stripe may be enabled later without a new provider.
-- **Swish Handel direct is deferred.** It needs per-venue onboarding with a bank and is not required for the first venues.
-- **Stripe Connect, one connected account per organization.** Venues get paid directly; Bibi never holds venue funds and can take an application fee later. Accounts v2, not the legacy account types.
-- **Direct charges** on the connected account, so the venue is the merchant and Stripe carries the loss risk. Rejected: destination charges, which put negative-balance liability on Bibi. Never mix both.
-- **A public payment page** outside login, addressed by an unguessable token, shows the amount and a Stripe-hosted checkout.
-- **A signed webhook** runs a SYSTEM-only core operation, deduplicated on the Stripe event id; no surface can mark a payment paid.
-- **A `PaymentProvider` interface** keeps the adapter replaceable (like `MailProvider`, ADR 0012). Invoices (ADR 0029) use the same Connect model.
+1. Stripe is the provider. Cards first. Swish through Stripe can be enabled later without a new provider.
+2. Swish Handel direct is deferred. It needs per-venue bank onboarding.
+3. Stripe Connect with one connected account per organization (Accounts v2). Venues are paid directly and Bibi never holds venue funds.
+4. Direct charges on the connected account, so the venue is the merchant and carries the loss risk. Never mix with destination charges.
+5. A public payment page, addressed by an unguessable token, shows the amount and a Stripe-hosted checkout.
+6. A signed webhook runs a SYSTEM-only core operation, deduplicated on the Stripe event id. No surface can mark a payment paid.
+7. A `PaymentProvider` interface keeps the adapter replaceable, like `MailProvider` (ADR 0012).
+
+## Rejected
+- Destination charges: they put negative-balance liability on Bibi.
+- Swish Handel direct: too much onboarding for the first venues.
+- Legacy Stripe account types: Accounts v2 is the supported model.
 
 ## Consequences
-- Swish for customers is out of the first release; update the `CLAUDE.md` differentiators when it is added.
-- To confirm: the application fee (the open pricing question), Stripe's EU data handling, and the exact Accounts v2 responsibilities for fees and losses.
-
-## Addenda
-- 2026-10-19: a payment settles one receivable and balances are derived (ADR 0051, 0057). Stripe calls happen after commit (ADR 0058).
+- Swish for customers is out of the first release.
+- A payment settles one receivable and balances are derived (ADR 0057). Stripe calls happen after commit (ADR 0058).
+- Still to confirm: the application fee, Stripe's EU data handling and the Accounts v2 fee and loss responsibilities.

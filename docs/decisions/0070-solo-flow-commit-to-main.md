@@ -1,36 +1,25 @@
 # 0070 – Solo flow: two skills, commits straight to main
 
 - **Date:** 2026-10-24
-- **Status:** Accepted
+- **Status:** Accepted, superseded in part by 0075
 - **Supersedes:** 0065 (pull requests only, workload gate) and 0066 (the order loop)
-- **Related:** 0060 (versioning from Conventional Commits)
+- **Related:** 0060 (versioning from Conventional Commits), 0075
 
 ## Context
-- Bibi has one developer. The machinery built for autonomous agents cost more attention than it saved:
-  - the `work-backlog` workflow, then the order loop with parallel slots,
-  - parking branches, a pull request per order, and a ruleset that required one.
-- The loop worked, but every order became a PR to review and merge by hand. Parked branches needed recovery. Two slots made each other's tests time out. Board cards needed fixing by hand.
-- Work-specific guidance was spread over 18 skills. Most of it repeated the package `CLAUDE.md` files.
+- Bibi has one developer. The machinery built for autonomous agents (backlog workflow, order loop, parked branches, a PR per order) cost more attention than it saved.
+- Every order became a PR to review and merge by hand, parked branches needed recovery, and parallel slots broke each other's tests.
+- Guidance was spread over 18 skills that mostly repeated the package `CLAUDE.md` files.
 
 ## Decision
-1. **Two skills.**
-   - `new-order` creates an order.
-   - `implement-order` builds one order in its own worktree (`pnpm wt:new order-<N>`, own `.env`, database and ports), runs the CI checks locally (`node tools/ci/verify.mjs`), makes one commit `<type>: <summary>` with `Closes #N` and pushes it to `main`.
-   - The rules the other skills held (operations, migrations, tenancy, seed) are kept in short form in `implement-order` and in the package `CLAUDE.md` files.
-2. **No pull requests for order work.**
-   - `main` has no branch protection. The local checks are the gate, and CI still runs on every push to `main`.
-   - A red `main` is fixed before the next order.
-   - release-please keeps its release PR (ADR 0060).
-3. **Removed:**
-   - `tools/loop/`,
-   - the backlog scripts for shipping, parking, locks, CI polling and metrics,
-   - the skills `work-orders`, `triage-parked`, `new-feature`, `new-entity`, `new-core-operation`, `db-migration`, `fix-bug`, `refactor`, `add-tests`, `write-docs`, `codemod`, `add-adr`, `i18n-strings`, `new-ui-component`, `parity-check`, `structure-fix` and `tenancy-review`.
-   - `tools/backlog/order.mjs` and `select.mjs` stay.
-
-## Consequences
-- A bad commit reaches `main` before CI has seen it. The local checks are the same as CI's, so this happens only when a test is flaky or depends on the environment.
-- Each run has its own worktree and environment, so runs never share a database or ports and the main checkout stays free for the user. Runs meet only at the push: the rebase onto `origin/main` and a rerun of the checks.
-- Commits on `main` are one per order, so release-please keeps one changelog entry per order.
+1. Two skills: one creates an order, one builds it in its own worktree with its own database and ports, runs the CI checks locally, makes one conventional commit and pushes it to `main`. The rules the other skills held live in short form in that skill and the package `CLAUDE.md` files.
+2. No pull requests for order work. `main` has no branch protection. Local checks are the gate and CI still runs on every push. A red `main` is fixed before the next order. release-please keeps its release PR (ADR 0060).
+3. The loop, the shipping, parking and metrics scripts and the other skills are removed.
 
 ## Rejected
-- **Keep the loop and simplify it.** Each simplification still left a pull request per order, which is the part that cost the most attention.
+- Keeping the loop and simplifying it: each version still left a PR per order, which cost the most attention.
+
+## Consequences
+- A bad commit can reach `main` before CI sees it. The local checks equal CI's, so this happens only with flaky or environment-dependent tests.
+- Runs meet only at the push, by rebasing onto `origin/main` and rerunning the checks.
+- One commit per order gives release-please one changelog entry per order.
+- ADR 0075 later removed the ticket step.

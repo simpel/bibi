@@ -2,29 +2,20 @@
 
 - **Date:** 2026-10-17
 - **Status:** Accepted
-- **Related:** 0035 (chat-first navigation), 0036 (sidebar information architecture), 0038 (page width tiers), 0040 (data tables), 0043 (order and phases), 0044 (line states)
+- **Related:** 0035, 0036, 0038, 0040, 0043, 0044, 0077, 0079
 
 ## Context
-- Staff move between three kinds of work: asking the assistant, moving orders forward, and checking the current state of the business.
+- Staff move between three kinds of work: asking the assistant, moving orders forward, and checking the state of the business.
 
 ## Decision
-- The app has three primary views, linked at the top of the sidebar:
-  1. **Assistant** at `/` (ADR 0035).
-  2. **Pipeline** at `/pipeline`: one kanban board of orders. The columns are the organization's own order phases in position order (ADR 0043), with terminal phases in a collapsed Closed lane. A card shows the order's customer, type, period, headcount, assignee, time in phase and how many lines are held, booked or blocked.
-  3. **Dashboard** at `/dashboard`: the current state (counts by phase flag, upcoming orders, items that need attention). Revenue is deferred until orders have a price source; the panel is reserved.
-- Both new pages are full width (`(canvas)`, ADR 0038).
-- Dragging a card calls `order.changePhase`. A refused move opens a dialog listing its blocking lines (ADR 0044). Phases with a quote event or a required reason are not dropped directly: the matching command or reason dialog opens instead.
-- Board and dashboard data come from core operations (`pipeline.board`, `dashboard.summary`) exposed on web, GraphQL, REST and MCP (ADR 0003), with generative UI cards for the assistant.
-- Counts and filters group by phase flag, never by phase name (ADR 0021).
+1. The app has three primary views at the top of the sidebar: Assistant at `/`, Pipeline at `/pipeline` and Dashboard at `/dashboard`. Pipeline and dashboard are full-width canvas pages.
+2. The pipeline is one kanban board of orders. Its columns are the organization's own phases, with terminal phases in a collapsed lane. Dragging calls `order.changePhase`, and a refused move lists its blockers.
+3. Board and dashboard data come from core operations (`pipeline.board`, `dashboard.summary`) on all four surfaces, with generative UI cards.
+4. Counts and filters group by phase flag, never by phase name (ADR 0021).
+
+## Rejected
+- Showing money on the dashboard at first. Financials (ADR 0077) took it, and the dashboard later got a panel gated by `finance:read` (ADR 0079).
 
 ## Consequences
-- The sidebar gets a `primary` group in `nav-items.ts`, between the assistant zone and Work (ADR 0036).
-- `@bibi/ui` has a kanban component (on the `@dnd-kit` packages already used by data tables) and a chart component.
-- Revenue reporting needs its own decision (payments, accepted quotes or order totals) before the dashboard shows money.
-
-## Addendum 2026-11-01 – financials (ADR 0077)
-- Money stays off the dashboard. Invoiced, received, outstanding and overdue figures live on Financials (`/financials/{from}/{to}`), behind their own permission `finance:read`.
-- The revenue question is answered in [ADR 0077](0077-financials-and-sie-export.md): invoices count by send date, payments by paid date, refunds by refund date. Nothing is stored; the figures are derived on read.
-
-## Addendum 2026-11-01 – dashboard summary (ADR 0079)
-- The dashboard now shows money: a panel fed by `finance.overview`, visible only with `finance:read`. This reverses the previous addendum. Its other panels (pipeline value per status, won and lost history, utilisation per item type) come from `dashboard.summary` ([ADR 0079](0079-dashboard-summary-and-utilisation.md)).
+- The sidebar has a `primary` group between the assistant zone and Work.
+- Revenue figures are derived on read from invoices, payments and refunds, and nothing is stored (ADR 0077).

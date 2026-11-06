@@ -5,30 +5,20 @@
 - **Related:** 0015 (superadmin), 0034 (fixed access roles), 0035 (chat-first navigation)
 
 ## Context
-- The sidebar listed every entity and every configuration page in one flat list of 16 links, in the order they were built.
-- Configuration (types, lists, phases, price lists, members, payments) is used by a few admins a few times a month. It pushed daily work down the list.
-- The user menu, theme, language and organization switcher were spread over the top bar and the top of the sidebar.
+- The sidebar was a flat list of 16 links in build order. Configuration, used by a few admins a few times a month, pushed daily work down.
+- User menu, theme, language and organization switcher were scattered.
 
 ## Decision
-The sidebar has three zones, ordered by how often staff use them.
+1. Three zones, ordered by how often staff use them: Assistant at the top, Work and Catalog in the middle, and Settings, Superadmin and the user menu at the bottom.
+2. Catalog (items, venues) is operational data, so it stays out of Settings.
+3. Settings is one link to a hub of every configuration page, shown only to members who may change configuration. The pages enforce their own permissions; hiding the link is navigation only.
+4. Theme, language, organization switching and personal skills live in the user menu.
+5. Payments and invoices get no entry of their own. The one exception is Financials, shown to callers with `finance:read` (ADR 0077).
+6. Menu entries are data, grouped by zone. A new entity adds its entry to the right group.
 
-1. **Assistant** (top): the home link (ADR 0035), "New chat" and the latest conversations.
-2. **Work and Catalog** (middle):
-   - **Work:** Orders, Customers. Later, in this order at the top of the group: My work (assigned and following, ADR 0034), Calendar, Sheets.
-   - **Catalog:** Items, Venues. Read often and changed rarely, but they are operational data, not configuration, so they stay out of Settings.
-3. **Bottom-left zone:**
-   - **Settings:** one link to the `/settings` hub, which lists every configuration page (types, lists, setups, sheet definitions, price lists, order phases, item states, members, payments, skills). Shown only to members who can change configuration (`configuration:write`, admins by default; ADR 0050). The pages enforce their own permissions; hiding the link is navigation only.
-   - **Superadmin:** link to `/admin`, shown only to superadmins (ADR 0015).
-   - **User menu:** avatar and name. It opens: theme (light, dark, system), language (sv, en), organization (switch or create), my skills, sign out. A profile page is added when one exists.
-- The top bar keeps the mobile menu button, a breadcrumb and the command bar (⌘K); the assistant toggle is gone (ADR 0035 addendum).
-- Payments and invoices get no menu entry of their own: they are reached from the order and from Settings → Payments.
-- Menu entries are data (`nav-items.ts`), grouped by zone. A new entity adds its entry to the right group, not to the end of a flat list.
-
-## Addendum 2026-11-01 – financials (ADR 0077)
-- Financials is a `primary` menu entry (`/financials`), shown to callers with `finance:read`: managers and admins by default, members not. It is the one exception to "no menu entry for money".
-- It holds the money overview and the SIE export. The account mapping is under Settings → Accounting. Payments and invoices still get no entry of their own.
+## Rejected
+- A flat list ordered by build time.
 
 ## Consequences
-- Skills move out of the main menu: organization skills are under Settings and personal skills under the user menu. Both open `/skills`.
-- The shell decides whether to show Settings from `configurationWrite` in the web app's `getCallerAbilities`, the same check that hides create buttons today. Only two booleans reach the client.
-- Theme and language move into the user menu. E2E steps that clicked the top-bar "Theme" and "Language" buttons open the user menu first.
+- Organization skills move under Settings and personal skills under the user menu.
+- The shell shows Settings from a single ability boolean, the same check that hides create buttons.

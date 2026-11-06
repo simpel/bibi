@@ -6,17 +6,19 @@
 - **Spec:** `docs/specs/assignments-and-responsibilities.md`
 
 ## Context
-- ADR 0034 planned one stored `Assignment` per responsibility that covers an order's lines, copied from the responsibility's defaults, created when a covered line appears and archived when the last one goes.
-- That copies two facts (which responsibilities apply, and their defaults) and keeps them in sync in application code. Changing a default assignee did not reach existing orders, and adding a covered type created no assignments on open orders.
+- ADR 0034 planned one stored assignment per responsibility covering an order's lines, copied from defaults and kept in sync by application code.
+- That copies two facts. A changed default did not reach existing orders, and a newly covered type created no assignments on open orders.
 
 ## Decision
-- **Which responsibilities apply is derived** from the order's active lines' item types. No rows are created or archived when lines change.
-- **Who answers is derived with inheritance** (ADR 0051): an explicit `Assignment` row, else the responsibility's default assignee. Followers are the defaults plus explicit follows minus explicit unfollows (`AssignmentFollower.effect`).
-- **Rows mean "someone chose this"** and are written only by `assign`, `follow` and `unfollow`. Reads return the derived result with its `source`.
-- **A sent sheet snapshots its recipients** at send time.
-- Rejected: syncing stored assignments from lines and responsibilities.
+1. Which responsibilities apply is derived from the order's active lines' item types. No rows are created or archived when lines change.
+2. Who answers is derived with inheritance (ADR 0051): an explicit assignment, else the responsibility's default assignee. Followers are defaults plus explicit follows minus explicit unfollows.
+3. A row means someone chose it. Only `assign`, `follow` and `unfollow` write rows. Reads return the derived result with its source.
+4. A sent sheet snapshots its recipients at send time.
+
+## Rejected
+- Syncing stored assignments from lines and responsibilities: it needs a job to repair drift.
 
 ## Consequences
-- Nothing to sync and no job to fix stale assignments; the plan in #250 is replaced.
-- `listMine` queries explicit rows plus orders whose derived responsibilities default to the caller. It needs an index on line item types per order (ADR 0056) and is measured before adding a projection.
+- Nothing to sync. The earlier plan in #250 is replaced.
+- `listMine` combines explicit rows with orders whose derived responsibilities default to the caller. Measure before adding a projection.
 - `requiresAssignee` checks the derived main assignee.

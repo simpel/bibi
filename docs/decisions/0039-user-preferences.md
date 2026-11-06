@@ -5,26 +5,22 @@
 - **Related:** 0003 (parity), 0004 (multi-tenancy), 0006 (database conventions), 0014 (system logging), 0034 (fixed access roles)
 
 ## Context
-- The web app needs to remember per-user UI choices on the server, first the column order of data tables, so a choice follows the user between browsers and devices.
-- Every table so far is org-scoped and every permission is granted by the member's role. A UI preference is neither: it belongs to one person, not to the organization, and no role should be able to withhold it.
-- The `execute` pipeline (validation, permission, audit, system log) only runs with an organization on the context. A user without an active organization (for example a superadmin who belongs to none) has no context at all.
+- The web app must remember per-user UI choices on the server, first the column order of data tables, so they follow the user across devices.
+- Every table so far is organization-scoped and every permission comes from a role. A UI preference belongs to one person, and no role should withhold it.
+- The `execute` pipeline needs an organization on the context.
 
 ## Decision
-- **Generic key/value store per user.** `UserPreference(userId, key, value Json)`, unique on `(userId, key)`. No domain words: keys are namespaced by the UI that owns them, e.g. `table.columns.<tableId>` = an array of column ids.
-  - Key: `^[a-z0-9][a-z0-9._-]*$`, at most 200 characters. Value: any JSON value, at most 10 KB as JSON (UTF-8).
-- **User-scoped, not org-scoped.** The table has no `organizationId`, so a preference follows the user across organizations. It is listed as a new kind of exception to ADR 0006: `USER_SCOPED_MODELS` in `packages/db/src/scoped/models.ts` (part of `UNSCOPED_MODELS`).
-  - It is still reached only through `scopedDb`: for a user-scoped model the client ANDs `userId = actorId` into every `where`, forces it on every create and upsert, strips it from updates and refuses the system actor. A handler cannot read or write another user's rows even if it asks for them.
-  - No `status` (an upsert replaces the value; there is no delete yet), no `createdBy` (the owner is `userId`).
-- **Operations**, on every surface (ADR 0003):
-  - `userPreference.list({ prefix? })` → `{ items: { id, key, value, updatedAt }[] }`: the caller's own rows only.
-  - `userPreference.set({ key, value })` → the saved row (upsert). A command: audited, and approval is required when the AI actor calls it.
-  - REST `GET /user-preferences?prefix=` and `PUT /user-preferences/{key}`; GraphQL `userPreferences(prefix:)` and `userPreferenceSet(input:)`; MCP `userPreference_list` and `userPreference_set`.
-- **Permission `self:read|write`.** `self` is a pseudo-feature (`SELF_FEATURE`), not in `FEATURES`: no role grants or withholds it, and `hasPermission` grants it to every caller with an execute context (not to API keys). Ownership is enforced by the data layer, not by roles (ADR 0050).
-- **Audit and logging** follow the normal pipeline: one `AuditLog` row per `set` (entity type `userPreference`, before/after) in the organization the change was made from, and one system log line per call.
-- **Web:** `features/user-preference/` loads and saves preferences; both operations are in `UI_EXEMPT` because they have no page of their own.
+1. A generic key/value store per user, `UserPreference(userId, key, value Json)`, unique on `(userId, key)`. Keys are namespaced by the UI that owns them. Values are opaque to core and capped at 10 KB.
+2. It is user-scoped, with no `organizationId`, as a new kind of exception to ADR 0006 (`USER_SCOPED_MODELS`). `scopedDb` still pins every query to the acting user and refuses the system actor, so a handler cannot touch another user's rows.
+3. `userPreference.list` and `userPreference.set` exist on every surface (ADR 0003). `set` is audited and needs approval from the AI actor.
+4. Permission `self:read|write` is a pseudo-feature granted to every caller with an execute context, never to API keys. Ownership is enforced by the data layer, not by roles (ADR 0050).
+
+## Rejected
+- Storing preferences in browser storage: does not follow the user across devices.
+- Organization-scoped rows: a preference should follow the user across organizations.
 
 ## Consequences
-- Org admins who read the audit log of their organization see the preference changes made there (UI choices only; no business data belongs in a preference).
-- Preferences need an active organization on the session, like every other operation. A superadmin on `/admin` gets them when their session has an active organization; one who belongs to no organization gets `{}` and cannot save. A user-only execute context is left for later if that becomes a need.
-- A new user-scoped table needs a `userId` column and an entry in `USER_SCOPED_MODELS`; `packages/db/test/user-scope.test.ts` checks both.
-- Values are opaque to core: each UI validates what it reads back and falls back to its default when the value does not fit (e.g. a stored column that no longer exists).
+- Preferences need an active organization on the session. A superadmin with none gets `{}` and cannot save.
+- Organization admins reading the audit log see preference changes made there. No business data belongs in a preference.
+- A new user-scoped table needs a `userId` column and a `USER_SCOPED_MODELS` entry, checked by a test.
+- Each UI validates what it reads back and falls back to its default.

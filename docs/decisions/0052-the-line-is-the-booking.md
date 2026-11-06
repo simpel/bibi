@@ -5,36 +5,26 @@
 - **Related:** 0051 (single source of truth), 0023 (customer pricing), 0043, 0044
 
 ## Context
-- What a customer has booked exists twice:
-  - `ProgramItem` (line): item, time, setup, quantity, state, hold.
-  - `OrderLine` on a quote: item, quantity, price, VAT, tags. Its link to the line is marked "later".
-- Expanding an item onto an order creates both, and from then on they change independently. A line can be moved, removed or doubled without the quote noticing, and a quote line can be priced for something that is not booked.
-- Quantity exists three times: `Order.quantity`, `Order.estimatedHeadcount` and the line's `quantity` (copied from the order by templates with `PER_HEADCOUNT`).
+- What a customer has booked existed twice: as a program line and as a quote line. After expansion they changed independently, so a quote could price something that was not booked.
+- Quantity existed three times on the order and its lines.
+- Quotes, sheets and invoices need one list to read, or they disagree.
 
 ## Decision
-1. **The line (`ProgramItem`) is the only record of what is booked and sold.** Every priced thing on an order is a line, also things without time or hold (a parking fee, a flat delivery charge). A line without an item is allowed for unpriced program points (a break).
-2. **Commercial terms live on the line as overrides.** `unitPriceMinor`, `discountPercent` and `vatRatePercent` are `null` = inherit. The effective price is derived: line override → the customer's valid price list → the item's price. The effective VAT is derived: line override → item → venue default.
-3. **The quote is a snapshot of lines.**
-   - A `DRAFT` quote stores no lines. It is a live, derived view of the order's priced lines.
-   - `quote.send` freezes the snapshot: one `OrderLine` per priced line with `programItemId`, the effective price, VAT, tags and totals at that moment. A sent quote is never edited.
-   - `Quote.totalExclVatMinor` / `totalInclVatMinor` are part of the frozen snapshot. A draft's totals are derived.
-   - Change markers (`ADDED`, `CHANGED`, `UNCHANGED`, removed) pair snapshot lines by `programItemId`, not by item and order.
-   - "Differs from the accepted quote" is derived: the current lines compared with the accepted snapshot. It is shown on the order, never stored.
-4. **Packages expand into lines only.** Choosing options and components creates lines. No quote lines are created directly.
-5. **One headcount.** `Order.quantity` is removed. The order owns `estimatedHeadcount` and `guaranteedHeadcount` (a later, binding figure). A line's `quantity` is `null` = inherit the order's current headcount (guaranteed if set, else estimated). `OrderTemplateLine.quantityBasis = PER_HEADCOUNT` becomes `quantity = null`.
-6. **Invoices are snapshots too** (ADR 0057). They snapshot the lines at invoicing, the same way a quote does.
-7. **Untimed lines are allowed.** `startsAt` / `endsAt` are optional. A line holds an item only when the item is `BOOKABLE` and the line has a time. An untimed line (a fee, a delivery charge) never holds anything and is not drawn on the calendar.
-8. **Alternatives are line groups.** Lines on an order can form an `AlternativeGroup` (pick exactly one), e.g. "Room A or Room B". The snapshot shows the group with each option's price; the quote total counts the group's cheapest option as "from" until one is chosen. Choosing (by staff, or by `quote.accept` with the chosen option) moves the other options to their type's released state, which releases their holds (ADR 0053). Same idea as `ItemChoiceGroup`, applied to an order's lines.
-9. **`ProgramItem` is renamed `Line`** (model, operations `line.*`, GraphQL, REST, MCP, i18n). The existing `line.changeState` / `line.followPhase` already use the name.
+1. The line is the only record of what is booked and sold. Every priced thing on an order is a line, including untimed ones such as a fee. A line without an item is allowed for unpriced program points.
+2. Commercial terms live on the line as overrides. `null` means inherit: line, then the customer's price list, then the item (VAT: line, item, venue default).
+3. The quote is a snapshot of lines. A draft quote stores no lines and is a derived view. Sending freezes one quote line per priced line, linked by `programItemId`, with price, VAT and totals at that moment. A sent quote is never edited. Change markers and "differs from the accepted quote" are derived, never stored.
+4. Packages expand into lines only. No quote lines are created directly.
+5. One headcount. The order owns an estimated and a guaranteed headcount. A line quantity of `null` inherits the order's current headcount.
+6. Invoices are snapshots of lines too (ADR 0057).
+7. Untimed lines never hold anything. A line holds an item only when the item is `BOOKABLE` and the line has a time.
+8. Alternatives are line groups (pick exactly one). Choosing moves the other options to their released state. A hard hold on more than one option of a group is refused.
+9. `ProgramItem` is renamed `Line`.
+
+## Rejected
+- Keeping quote lines as an independently edited copy: they drift from what is booked.
 
 ## Consequences
-- `quote.update` no longer takes lines. Price and quantity changes are line operations (`programItem.update`) on every surface (parity, ADR 0003).
-- `OrderLine` gets `programItemId` (required) and loses its independent editing path. It may be renamed `QuoteLine` in the same change.
-- Sheets, quotes and invoices now read one list of lines, so they cannot disagree about what is booked.
-- Demo seed: quotes are created by adding lines, then sending. `docs/demo-seed.md` and the seed checks change.
-- `Line` (today `ProgramItem`) grows three nullable price columns and nullable times. The rename is one large mechanical change with no data to migrate.
-- `AlternativeGroup` is new: `orderId`, `name`, `chosenLineId` (null until chosen). A line has `alternativeGroupId`. Choosing is a command (`alternativeGroup.choose`) on every surface.
-- Soft holds on every option of a group are the normal case (the customer has not chosen). A hard hold on more than one option of a group is refused.
-
-## Addendum 2026-10-20 – bundle lines
-- A bundle expands into one priced bundle line plus part lines linked by `parentLineId` that do not count in the total. Bundle VAT is allocated across the parts and frozen as one row per rate on quotes and invoices (ADR 0059).
+- Price and quantity changes are line operations on every surface. `quote.update` no longer takes lines.
+- Sheets, quotes and invoices read one list of lines.
+- A bundle expands into one priced bundle line plus part lines that do not count in the total. Bundle VAT is frozen as one row per rate (ADR 0059).
+- The rename was one large mechanical change with no data to migrate.

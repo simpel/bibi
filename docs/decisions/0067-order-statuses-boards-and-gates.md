@@ -2,58 +2,36 @@
 
 - **Date:** 2026-10-24
 - **Status:** Accepted
-- **Related:** 0043 (supersedes), 0044 and 0054 (phase parts superseded, addenda on acceptance), 0021, 0034, 0045, 0051, 0052, 0053, 0057, 0076 (amends §4 to §6 and §8)
+- **Related:** 0043 (supersedes), 0044 and 0054 (phase parts superseded), 0021, 0034, 0045, 0051, 0052, 0053, 0057, 0076 (amends §4 to §6 and §8)
 - **Spec:** `docs/specs/orders-statuses-and-states.md`
 
 ## Context
-Checked 2026-10-24 against the code in this worktree:
-- `OrderPhase` (`packages/db/prisma/schema/order-phase.prisma`) is already a stored status. It has transitions (`OrderPhaseTransition`), append-only history (`OrderPhaseChange`, ADR 0054), `Order.phaseId` as a projection, and one flag set that mixes three jobs: pipeline position (`entry`, `terminal`), guards (`requiresReason`, `requiresAssignee`, `requiresAcceptedQuote`) and behaviour (`invoiceable`, `event`).
-- The grid `PhaseStateRule` (phases x item types) and `OrderTemplate.startPhase` also point at it.
-- The word "phase" is used for the status itself, so there is nowhere to put a second, coarser level. The target scenario (Lindholmen at 50 users and 100 orders on calendar and boards) needs several views of the same orders (Sales, Ops, Billing), each with few columns, while the finer status stays one per order.
-- Guards are flags on the destination status. They cannot express "needs an invoice sent", "deposit at least 30 percent" or "all lines hard-held", and they apply on every path into the status. `requiresPaidDeposit` is listed as not built in the spec.
-- Impact: 77 non-test files in `packages` and `apps` reference `OrderPhase`, `phaseId` or the grid, about 32 of them in `packages/core`. The DB function `packages/db/sql/sync_line_occupancy.sql` reads `OrderPhase.terminal` (lines 5, 68 to 75, trigger on `OrderPhase` at 218 to 294).
-- No database holds data worth keeping (ADR 0043), so no backfill is needed.
+- `OrderPhase` was already a stored status, but one flag set mixed pipeline position, guards and behaviour. The word "phase" named the status itself, so there was no room for a second, coarser level.
+- The target venue needs several views of the same orders (Sales, Ops, Billing), each with few columns, while the finer status stays one per order.
+- Guards were flags on the destination status. They cannot take parameters ("deposit at least 30 percent") or express "an invoice was sent", and they apply on every path into the status.
+- Many files in core and apps read the phase, and the hold trigger reads its terminal flag. No data needed a backfill.
 
 ## Decision
-1. **An order has one stored status, like a Jira issue.** `OrderPhase` is renamed `OrderStatus`, with `OrderStatusTransition`, `OrderStatusChange` and `Order.statusId` (a projection, ADR 0054 unchanged). The set is admin-defined; the default set is To do, In progress, Done.
-2. **One code-owned flag stays: `closes`** (replaces `terminal`). Entering a closing status releases every line's hold. No move leaves it. At least one closing status and one `entry` status must exist.
-3. **Boards are saved views.** A `Board` has a name, a saved filter over orders (type, assignee, field values, status) and an order. An organization has any number of boards. Boards own no order data.
-4. **A phase is a column of one board.** `BoardPhase` has a board, name, color and position. `BoardPhaseStatus` maps a status to exactly one phase per board (unique on board and status). A status not mapped on a board does not show there. Moving a card to a column with several statuses shows one drop zone per status, limited to allowed transitions. Dropping sets the status, through the one move command.
-5. **Gates replace guard flags.** A gate is a check on a transition (from to), chosen from a code-owned catalogue and stored as data (`OrderStatusTransitionGate`: transition, gate key, parameters). The catalogue: `reason`, `assignee`, `acceptedQuote`, `invoiceSent`, `invoicePaid`, `depositPaid` (minimum percent), `allLinesHardHeld`, `staffAllocated`. `requiresReason`, `requiresAssignee` and `requiresAcceptedQuote` are removed and become gates on the transitions that used them. Gates read facts and never store them (ADR 0054).
-6. **A refused move names the order, the target status and every failing gate.** `order.changeStatus` (renamed from `changePhase`) stays the only command, atomic, `CONFLICT` with all blockers. Quote events still move an order through the `event` flag on a status.
-7. **Unchanged:** line states (`ItemState`, transitions, `LineStateChange`) and the grid, now keyed by status (`StatusStateRule`). "Billed" stays derived from invoices and payments (ADR 0057), not a status. Payments and invoices never move an order.
-8. **Surfaces and permissions.** New operations `board.*`, `boardPhase.*` and `orderStatusGate.*` on web, GraphQL, REST and MCP (parity, ADR 0003). No new permission feature (ADR 0050): statuses, boards, phases and gates are pipeline setup, so they use `pipeline:read`, `pipeline:write` and `pipeline:delete` like today's phase operations. A card move needs `order:write` plus passing gates, like `order.changePhase` today. Seed: demo organizations get the default statuses and one board per audience.
+1. An order has one stored status, like a Jira issue. `OrderPhase` becomes `OrderStatus`, with its transitions, an append-only change history and `Order.statusId` as a projection (ADR 0054). The set is admin-defined.
+2. One code-owned flag stays: `closes` (was `terminal`). Entering a closing status releases every line's hold, and no move leaves it. At least one closing and one `entry` status must exist.
+3. Boards are saved views: a name, a saved filter over orders and an order. An organization has any number. Boards own no order data.
+4. A phase is a column of one board. A status maps to exactly one phase per board, and a status not mapped on a board does not show there. Dropping a card sets the status through the one move command.
+5. Gates replace guard flags. A gate is a check on a transition, chosen from a code-owned catalogue and stored as data with parameters. Catalogue: `reason`, `assignee`, `acceptedQuote`, `invoiceSent`, `invoicePaid`, `depositPaid`, `allLinesHardHeld`, `staffAllocated`. Gates read facts and never store them (ADR 0054).
+6. A refused move names the order, the target status and every failing gate. `order.changeStatus` stays the only command, atomic, `CONFLICT` with all blockers. Quote events still move an order through the `event` flag.
+7. Unchanged: line states and the grid (now keyed by status). "Billed" stays derived (ADR 0057). Payments and invoices never move an order.
+8. Statuses, boards, phases and gates are pipeline setup and use the `pipeline:*` permissions on every surface. A card move needs `order:write` plus passing gates.
 
-| New or changed column | Class (ADR 0051) |
-|---|---|
-| `OrderStatus.name, color, position, closes, entry, invoiceable, event` | owned |
-| `Order.statusId` | projection of `OrderStatusChange` (trigger) |
-| `Board.name, filter, position` | owned |
-| `BoardPhase.name, color, position` | owned |
-| `BoardPhaseStatus.statusId` | owned, foreign key (ADR 0056) |
-| `OrderStatusTransitionGate.key, params` | owned |
+## Rejected
+- A column defined by a query over facts with no stored status: staff need human decisions no fact captures (parked, waiting, lost), and moves need a stored subject.
+- Flags on the destination status: no parameters, no per-source rules, and the catalogue grows with every guard.
+- One fixed pipeline with phases as the only level: no per-audience boards.
+- A status belonging to one phase globally: Sales and Billing group the same statuses differently.
 
 ## Consequences
-- Renames for the codemod order (one Renames table, lands first): `OrderPhase` to `OrderStatus`; `OrderPhaseTransition` to `OrderStatusTransition`; `OrderPhaseChange` to `OrderStatusChange`; `Order.phaseId` to `statusId`; `PhaseStateRule` to `StatusStateRule` (`phaseId` to `statusId`); `OrderTemplate.startPhase` to `startStatus`; `PhaseEvent` to `StatusEvent`; operations `orderPhase.*` to `orderStatus.*`, `order.changePhase` and `order.phaseHistory` to `changeStatus` and `statusHistory`, `phaseGrid.*` to `statusGrid.*`; flag `terminal` to `closes`; i18n keys, `pipelineSetup` and the `phase` grid UI text. The word "phase" is then free for board columns.
-- Database: `sync_line_occupancy.sql` reads `OrderStatus.closes` and its trigger moves to `OrderStatus`; the reconciliation check and `packages/db/CLAUDE.md` trigger list follow.
-- Cost: about 32 core files read the phase, 77 files overall, plus the board UI, the onboarding path (ADR 0045) and the setup preview.
-- On acceptance these must change (not in this PR): `packages/core/CLAUDE.md` (status and gate rules, `changeStatus`), `packages/db/CLAUDE.md` (trigger and projection list), `apps/web/CLAUDE.md` (board and drop-zone rules), root `CLAUDE.md` (differentiator and configurable-domain lines that say "phases"), `docs/specs/orders-statuses-and-states.md` (split into statuses, boards and gates; "Not built yet: `requiresPaidDeposit`" becomes the `depositPaid` gate), a new `docs/specs/boards.md`, `docs/domain-model.md` and `docs/artifacts/domain-model.html` together. ADR 0043 is marked Superseded by 0067; ADR 0044 and 0054 get dated addenda pointing here.
-- Follow-up orders in dependency order: codemod (renames), schema and trigger, core operations and gates, boards UI, seed and onboarding.
+- The rename lands first as one codemod. The word "phase" is then free for board columns.
+- `sync_line_occupancy` reads `OrderStatus.closes` and its trigger moves with it.
+- Follow-up order: schema and trigger, core operations and gates, boards UI, seed and onboarding.
 
-## Alternatives rejected
-- **A column defined by a pure query over facts, with no stored status.** One source of truth and no drift between status and facts. Rejected: staff need a human decision that no fact captures (parked, waiting for customer, lost), transitions and the move history need a stored subject, drag and drop needs something to set, and every board would re-implement the same derived rules.
-- **Keep flags on the destination status.** Cheapest. Rejected: a flag cannot take parameters (deposit percent), cannot differ by source status, and the catalogue of flags grows with every new guard.
-- **One fixed pipeline with phases as the only level.** What exists today. Rejected: it gives no per-audience boards and forces one column set on 50 users.
-- **Phases own statuses (a status belongs to one phase globally).** Rejected: Sales and Billing need to group the same statuses differently, so the mapping must be per board.
-
-## Addendum 2026-10-30: the first gates (#447)
-- Built: `OrderStatusTransitionGate` (transition, `key`) with the gates `REASON`, `ASSIGNEE` and `ACCEPTED_QUOTE`, which replace the three `requires*` flags. The migration gave every transition into a flagged status the matching gate. `params` and the other gates of §5 come with #493.
-- One write path instead of `orderStatusGate.*` operations (§8): `orderStatus.setTransitions` takes `gates` with the targets, so a status's moves and their gates are replaced as one set and audited on the status. Omitting `gates` keeps the gates of the targets that stay, so callers that only change targets cannot drop gates by accident.
-- `orderStatus.list` keeps `transitionsTo` and adds `transitionGates`, rather than replacing `transitionsTo`: every move rule in the web app reads it unchanged.
-- A gate runs only on a move. Creating an order in a status and removing its main assignee are no longer refused.
-- Confirmed on 2026-10-30 against rules on board columns: the same move must pass or fail the same way on every board, on the order page, for quote events and through the API, as in Jira's workflows.
-
-## Addendum 2026-11-01: free movement and a board permission (ADR 0076)
-- §4: drop zones per status are replaced by one drop target per column. Dropping on a phase with several statuses opens a picker of the statuses the order may move to.
-- §5: gates are on the target status with an optional source status (`OrderStatusGate`, replaces `OrderStatusTransitionGate`). Transitions apply only while the status has `restrictsNext`; otherwise an order may move to any status.
-- §8: boards and phases use a new permission feature `board`; `pipeline:write` is the admin-only flow.
+## Addenda
+- 2026-10-30: the first gates (`REASON`, `ASSIGNEE`, `ACCEPTED_QUOTE`) replaced the three `requires*` flags and are set through one write path with the status's transitions. A gate runs only on a move. The same move must pass or fail the same way on every board, the order page, quote events and the API.
+- 2026-11-01 (ADR 0076): §4 drop zones become one drop target per column with a status picker. §5 gates sit on the target status with an optional source status, and transitions apply only while a status has `restrictsNext`. §8 boards use a new `board` permission feature and `pipeline:write` is the admin-only flow.

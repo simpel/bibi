@@ -2,19 +2,20 @@
 
 - **Date:** 2026-10-15
 - **Status:** Accepted
+- **Related:** 0008, 0027
 
 ## Context
-- ADR 0008 says embeddings are computed asynchronously, idempotently and failure-safe. In practice `createIndexingHook` runs after commit, in-process.
-- An embedding error reaches the catch in `execute`, so a command that already committed is reported as failed (issue #11).
-- Indexing is idempotent via `contentHash`, and a reindex CLI exists.
-- ADR 0027 provides pg-boss, so a queue is possible.
+- ADR 0008 says embeddings are asynchronous, idempotent and failure-safe. In practice the indexing hook runs after commit, in-process.
+- An embedding error reached the catch in `execute`, so a command that had already committed was reported as failed.
+- Indexing is idempotent through a content hash, and a reindex command exists. pg-boss (ADR 0027) would allow a queue.
 
 ## Decision
-- **Keep indexing in-process.** Move it to a pg-boss job only if volume or latency requires it.
-- **The hook is failure-safe:** an embedding error never changes the result of a committed command. It is logged as `search.index_failed` and the row is picked up by reindex.
-- Test: the command succeeds when the embedder throws, and reindex indexes the row afterwards.
+1. Keep indexing in-process after commit. Move it to a pg-boss job only if volume or latency requires it.
+2. The hook is failure-safe: an embedding error never changes the result of a committed command. It is logged as `search.index_failed` and reindex repairs the row, for failed updates as well as creates.
+
+## Rejected
+- A queue now: no volume or latency need yet, and it adds a moving part.
 
 ## Consequences
-- ADR 0008 is updated: "asynchronous" means after commit and non-blocking for the outcome, not a queue.
-- The upgrade path is a pg-boss job calling the same indexing function. No contract changes.
-- Implemented in #11: `createIndexingHook` catches indexing errors and logs `search.index_failed`. Reindex (`reindexAll`) indexes entities whose row is missing or whose content hash is out of date, so a failed update is repaired too, not only a failed create.
+- "Asynchronous" in ADR 0008 means after commit and non-blocking for the outcome, not a queue.
+- The upgrade path is a pg-boss job calling the same indexing function, with no contract change.

@@ -1,31 +1,27 @@
 # 0079 – Dashboard summary, won/lost outcomes and utilisation
 
 - **Date:** 2026-11-01
-- **Status:** Accepted (scope and choices approved by the user on 2026-11-01); decisions 5 and 6 superseded by ADR 0080
-- **Related:** 0041 (three views, amends), 0077 (financials, amends), 0071 (view read models), 0054 (domain history), 0053 (holds), 0064 (time), 0074 (estimates), 0021 (configurable domain)
+- **Status:** Accepted; decisions 5 and 6 superseded by ADR 0080
+- **Related:** 0041 (three views, amends), 0077 (financials), 0071 (view read models), 0064 (time), 0021 (configurable domain)
 
 ## Context
-- The dashboard (ADR 0041) shows open and closed counts and one badge per board column. ADR 0041 names a `dashboard.summary` operation that was never built.
-- Staff want the pipeline in value, a history of won and lost orders and how loaded their rooms and staff are. ADR 0077 put money on Financials only.
-- A status has no won or lost marker; `closes` is the only terminal flag, and "Lost" is just an organization's own name for a closing status (ADR 0021).
+- The dashboard showed open and closed counts and one badge per board column. ADR 0041 named a `dashboard.summary` operation that was never built.
+- Staff want the pipeline in value, won and lost history and how loaded rooms and staff are.
+- A status has no won or lost marker. `closes` is the only terminal flag, and "Lost" is just an organization's own name for a closing status.
 
 ## Decision
-1. **One view read model, `dashboard.summary({ from, to })`**, on web, GraphQL, REST and MCP (ADR 0003, 0071). Permission `order:read`; every part from another feature is `null` without that feature's `read`. Nothing is stored; everything is derived on read.
-2. **Pipeline by status.** One row per open order status (statuses with `closes = false`, in position order): order count, confirmed value (accepted quotes) and estimated value of the orders without an accepted quote, excl. VAT, as on the board (`cardValues`, ADR 0074). Grouped by status id and flags, never by name.
-3. **Won and lost by proxy.** An order enters a closing status once (nothing leaves one, ADR 0054); the month of that `OrderStatusChange` is its outcome month. **Won** = the order has an accepted quote or a sent invoice (an event can be invoiced without a quote, ADR 0077), **lost** = it has neither. Value: the accepted quote's total, else the order's estimate (a sent invoice without a quote counts at its estimate or lines). No schema change. A real outcome flag on `OrderStatus` stays an option if the proxy proves too coarse.
-4. **Utilisation per item type.** For each bookable item type (capability `BOOKABLE`), over the period: `bookedMinutes` = hold time (`Occupancy`, ACTIVE, any type) inside the open hours of its active items, merged per item so overlapping holds count once; `openMinutes` = the items' open hours (own hours, else the venue's, else the office day the calendar uses); `rate = bookedMinutes / openMinutes`, `null` when nothing is open. Needs `item:read`. Staff load (open orders per assignee) is out of scope.
-5. **Money panel.** The dashboard may show money (amends the rejections in ADR 0041 and 0077). It is not a new operation: the page calls `finance.overview` for the same period and shows the panel only when the caller has `finance:read`.
-6. **Period** is in the path (`/dashboard/{from}/{to}`, ADR 0064), at most 24 months, default the last 6 months; it drives won/lost, utilisation and money. The pipeline tiles are always "now".
+1. One view read model, `dashboard.summary`, on every surface. It needs `order:read`; each part from another feature is `null` without that feature's `read`. Everything is derived on read.
+2. Pipeline by status: per open status, order count, confirmed value (accepted quotes) and estimated value of the rest, excl. VAT. Grouped by status id and flags, never by name.
+3. Won and lost by proxy. The month an order enters a closing status is its outcome month. Won means it has an accepted quote or a sent invoice, lost means neither. No schema change.
+4. Utilisation per bookable item type: booked minutes (holds inside open hours, merged so overlaps count once) over open minutes.
+5. Money panel on the dashboard. Superseded by ADR 0080.
+6. Period in the path. Superseded by ADR 0080.
+
+## Rejected
+- A `WON | LOST` flag on `OrderStatus` now. It needs a migration of every organization's statuses, and the quote proxy answers the same question. It stays an option if the proxy proves too coarse.
+- Money inside `dashboard.summary`. It would duplicate `finance.overview` and its gate.
+- Staff load as the allocation rate. Staff are items of a type, so utilisation covers them.
 
 ## Consequences
-- `dashboard.summary` and its web, GraphQL, REST and MCP surfaces; chart components in `@bibi/ui`; demo seed gets closed orders in several months.
-- Utilisation counts holds on the item itself; units allocated through a pool (ADR 0059) are counted through their own holds.
-
-## Alternatives rejected
-- **A `WON | LOST` flag on `OrderStatus` now.** Rejected for now: needs an ADR and migration of every organization's statuses, and the quote proxy answers the same question.
-- **Money inside `dashboard.summary`.** Rejected: it would duplicate `finance.overview` and its `finance:read` gate.
-- **Staff load as the allocation rate.** Rejected for the first version: utilisation answers "how full are we" for rooms and staff alike, since staff are items of a type (ADR 0059).
-
-## Addendum 2026-11-01 – the dashboard looks ahead (ADR 0080)
-- Decisions 5 and 6 are superseded: the dashboard has no period and no money panel. It shows today and the next 28 days (`/dashboard`; the old path redirects), and its only money figure is the overdue count and total in "Needs attention".
-- Won and lost (decision 3) moved to `finance.overview` and Financials, unchanged in definition. Utilisation (decision 4) now covers the 28-day horizon.
+- Won and lost moved to `finance.overview`; utilisation now covers a look-ahead window (ADR 0080, 0086).
+- Candidate to merge into a spec: `docs/specs/dashboard.md`.

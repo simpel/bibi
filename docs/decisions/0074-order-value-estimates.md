@@ -2,23 +2,25 @@
 
 - **Date:** 2026-11-01
 - **Status:** Accepted
-- **Related:** 0022 (quotes), 0051 (single source of truth), 0052 (the line is the booking), 0054 (domain history), 0067 (boards), 0071 (view read models)
+- **Related:** 0022 (quotes), 0051, 0052, 0054 (domain history), 0067 (boards), 0071 (view read models)
 
 ## Context
-- The pipeline board should show what each phase is worth, so staff can see the money in each stage and watch it move when an order moves.
-- An order's value changes over time. An inquiry gets a first guess before it has any lines. Staff re-estimate it as they talk to the customer. At the end there is an agreed price.
-- One phase can hold orders with an agreed price and orders without one, for example a board phase that groups "Quote sent" and "Confirmed". The board has to show both kinds of value.
-- Later we want to report how far the first estimate was from the agreed price, to see whether the estimates are off. That needs every estimate kept, not just the latest one.
-- The priced lines already give a value: what a draft quote of them would total (ADR 0052). But a fresh inquiry has no lines, and staff often know the rough size of a deal before they plan any of it.
+- The pipeline board should show what each phase is worth, and the figure should move when an order moves.
+- An order's value changes: a first guess on an inquiry, re-estimates, then an agreed price. A phase can hold orders with and without an agreed price.
+- We want to report how far the first estimate was from the agreed price, so every estimate must be kept.
+- Priced lines already give a draft total (ADR 0052), but a fresh inquiry has no lines.
 
 ## Decision
-1. **The estimate is owned history.** `OrderEstimate` is an append-only table (one row per change: `valueMinor`, `changedAt`, `changedBy`). The newest row is the current estimate; `null` clears it. `order.create` and `order.update` take `estimatedValueMinor` and append a row only when the value changes. `order.estimateHistory` lists the rows oldest first.
-2. **No projection column.** Unlike the status (ADR 0054), nothing filters or joins on the estimate, so `Order` gets no column and no trigger. Reads take the newest row (`OrderDto.estimatedValueMinor`). Rejected: a `Order.estimatedValueMinor` column with a trigger. It adds a projection to reconcile and buys nothing.
-3. **The agreed value is the accepted quote's total.** The board's `confirmedValueMinor` is the frozen `totalExclVatMinor` of the order's accepted quote (ADR 0022, 0052). Rejected: a manual "agreed value" field. The quote is already the agreed price, and a second field could disagree with it.
-4. **The board's estimate falls back to the lines.** A `pipeline.board` card's `estimatedValueMinor` is the order's own estimate, else its priced lines' draft total. The lines belong to the program, so the fallback needs `program:read`. The confirmed value needs `quote:read` (ADR 0071).
-5. **A phase shows two sums.** One is the confirmed value of its orders with an accepted quote. The other is the estimate of the rest. Both are excl. VAT, in whole currency units, and they animate when a moved card refreshes the board.
+1. The estimate is owned history: an append-only `OrderEstimate` table with value, time and author. The newest row is the current estimate, and `null` clears it. A row is appended only when the value changes.
+2. No projection column. Nothing filters or joins on the estimate, so `Order` gets no column and no trigger. Reads take the newest row.
+3. The agreed value is the accepted quote's frozen total excl. VAT. There is no manual agreed-value field.
+4. A board card's estimate is the order's own estimate, else its priced lines' draft total. The fallback needs `program:read` and the confirmed value needs `quote:read` (ADR 0071).
+5. A phase shows two sums: the confirmed value of orders with an accepted quote, and the estimate of the rest.
+
+## Rejected
+- An estimate column with a trigger: a projection to reconcile that buys nothing.
+- A manual agreed-value field: it could disagree with the accepted quote.
 
 ## Consequences
-- The deviation report is plain SQL: each order's first `OrderEstimate` against its accepted quote's total. It is not built yet.
-- `OrderEstimate` is a domain history model in `packages/db` (org-scoped, append-only).
-- The demo seed gives L3, F2 and F3 estimates. L3 is re-estimated once, and its accepted quote differs from both estimates. `checkDemoEstimates` checks that the histories match the data.
+- The deviation report is plain SQL on the first estimate against the accepted quote. Not built yet.
+- The demo seed gives some orders estimates, including one re-estimate, and a seed check verifies the histories.

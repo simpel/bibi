@@ -4,39 +4,23 @@
 - **Status:** Accepted
 
 ## Context
-- Several decisions require jobs outside a request:
-  - `order.expireHolds` moves lines in an `expires` state to their type's expiry state when the order's `holdsUntil` date has passed (ADR 0044).
-  - Embeddings must be computed asynchronously (ADR 0008, issue #11).
-  - Outgoing email needs retries (ADR 0012).
-- ADR 0013 leaves the choice open: a cron container or a job queue in Postgres. The requirements are one server, no extra infrastructure and configuration in git.
-- Alternatives:
-  - **Coolify scheduled task**: cron only. Gives neither queue nor retries, the configuration lives in Coolify's database and it cannot be run locally.
-  - **Graphile Worker**: comparable queue in Postgres, but a smaller ecosystem.
-  - **pg-boss**: queue and cron in Postgres. Retries, singleton keys and a cron lock mean a schedule is run by only one instance.
+- Some work must run outside a request: expiring holds when an order's hold date passes (ADR 0044), pseudonymising the audit log (ADR 0032), and possibly indexing and mail retries.
+- Constraints from ADR 0013: one server, no extra infrastructure, configuration in git.
 
 ## Decision
-- **Library:** pg-boss against the same Postgres as the app. It uses its own schema (`pgboss`) that pg-boss migrates itself, outside Prisma.
-- **Process:** a new app `apps/worker` that runs as its own service from the same Docker image as web and mcp (ADR 0013), and locally via `pnpm dev`. The web app and MCP only put jobs on the queue (`send`) and never run them.
-- **Job = core operation:** each job calls a core operation through `execute`. No business logic lives in the worker.
-  - The job runs in `runWithLogContext` with `surface: "system"` and a `requestId` per job (ADR 0014).
-  - The actor is SYSTEM. Audit writes `actorType = SYSTEM`.
-- **Tenancy:** a scheduled job iterates the organizations and runs the operation once per organization with an org-scoped context (ADR 0004). A failure in one organization does not stop the others. It is logged as error with `organizationId`.
-- **Job definitions in git:** queues, cron expressions and retry settings are defined in code in `apps/worker`. No schedules are set in Coolify's UI.
-- **Schedules (time zone Europe/Stockholm):**
+1. pg-boss against the same Postgres, in its own `pgboss` schema that it migrates itself, outside Prisma.
+2. A separate app, `apps/worker`, runs as its own service from the same image. Web and MCP only enqueue; they never run jobs.
+3. A job is a core operation called through `execute` as SYSTEM, in a log context with `surface: "system"`. No business logic lives in the worker.
+4. A scheduled job runs the operation once per organization with an org-scoped context (ADR 0004). A failure in one organization does not stop the others.
+5. Queues, cron expressions and retries are defined in code, never in Coolify.
+6. Jobs must be idempotent.
 
-  | Job | Schedule |
-  |---|---|
-  | `order.expireHolds` | every 15 minutes |
-  | Embeddings | queued on change |
-  | Outgoing email with retries | queued on send |
-- **Idempotency:** jobs must tolerate being run again. `order.expireHolds` touches only lines that are still in an `expires` state.
-- **Configuration:** `DATABASE_URL` is read through `@bibi/config` as in the other apps. No new secrets.
+## Rejected
+- Coolify scheduled tasks: cron only, no queue or retries, configuration outside git, cannot run locally.
+- Graphile Worker: comparable queue, smaller ecosystem.
 
 ## Consequences
-- One more container in `docker-compose.prod.yml`, but no new infrastructure (no Redis).
-- The `pgboss` schema lives outside Prisma. The migration check and the backup (`pg_dump`) must include it.
-- Manual execution remains: `order.expireHolds` is an ordinary operation that can also be called from web, GraphQL, REST and MCP (ADR 0003).
-- Resolves the open question about a scheduler in ADR 0013 and in `CLAUDE.md`.
-
-## Addendum 2026-10-20
-- Built so far: `order.expireHolds` and `system.pseudonymiseAuditLog` (ADR 0032). Embedding and outgoing-mail queues are not built: indexing stays in-process (ADR 0030) and mail is sent after commit. Current rules for adding a job are in `apps/worker/CLAUDE.md`.
+- One more container, no Redis.
+- The `pgboss` schema must be included in the migration check and in `pg_dump`.
+- A job's operation also exists on every surface (ADR 0003), so it can be run manually.
+- Built so far: hold expiry and audit pseudonymisation. Indexing stays in-process (ADR 0030) and mail is sent after commit. Rules for adding a job: `apps/worker/CLAUDE.md`.

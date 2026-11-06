@@ -32,7 +32,7 @@
 - See `docs/decisions/0009-language-in-code-and-ui.md`.
 
 ## Conventions
-- **Rules live in the nearest `CLAUDE.md`** (root only for what crosses packages), written as short imperatives, never as catalogs the code already shows. **ADRs** (`docs/decisions/NNNN-title.md`) record why: a decision with a rejected alternative or a costly reversal. A rule links its reason in one line (`Why: ADR NNNN`). Behaviour specs go in `docs/specs/` (entities in `docs/domain-model.md`), not in an ADR.
+- **Rules live in the nearest `CLAUDE.md`** (root only for what crosses packages), written as short imperatives, never as catalogs the code already shows. **ADRs** (`docs/decisions/NNNN-title.md`) record why, and only for a decision that is costly to reverse (schema, auth, money, tenancy, parity, infrastructure) and had a real rejected alternative. Everything else is a spec in `docs/specs/` (entities in `docs/domain-model.md`) or nothing, when the code shows it. An ADR fits on one page: Context, Decision, Rejected, Consequences; no UI copy, step flows, field lists or file catalogs. A small change edits the spec, not a new ADR. A rule links its reason in one line (`Why: ADR NNNN`).
 - **Versioning (ADR 0060).** Every app and package has its own semver, from Conventional Commits by path (`feat:` minor, `fix:` patch, `!` major). Commit titles are `<type>: <summary>`. release-please opens a release PR that bumps each changed `package.json` and its `CHANGELOG.md`; merging it creates the `@bibi/<name>-vX.Y.Z` tags and GitHub releases. Never edit versions or changelogs by hand.
 
 ## Tech stack
@@ -110,7 +110,7 @@
 
 ## Work flow
 - Not all work needs an issue. Build it with the `implement` skill, which commits straight to `main` (no pull requests, ADR 0070, 0075).
-- **ADRs are the basis for new implementations.** Build what the accepted ADR decides. Major architectural moves get an ADR first (Proposed, accepted by the user before building).
+- **Build from the spec; ADRs only gate costly-to-reverse moves.** A feature needs no ADR. A decision that meets the ADR bar gets a one-page ADR first (Proposed, accepted by the user before building).
 - Work that adds or changes data or behaviour updates the demo seed and is not done until `seed:demo` runs from an empty database with green checks. Run `seed:demo` once at the end of a batch, not after each small change, and skip it when nothing touches data or behaviour.
 - **No browser checks.** Do not open the browser, take screenshots or start a preview to verify UI changes; the user checks visually. Verify with `node tools/ci/verify.mjs` (scoped to changed files), typecheck, lint and tests. Use the browser only when asked, or to debug a runtime error you cannot find from code (console and network reads, not screenshots).
 - Batch UI changes: make several edits, let the user review them in one pass, then fix from their notes.

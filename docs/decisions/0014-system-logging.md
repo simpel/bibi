@@ -4,38 +4,25 @@
 - **Status:** Accepted
 
 ## Context
-- `AuditLog` (ADR 0006) logs successful mutations in the database. It is the business trail: who changed what.
-- Everything else was invisible: queries, denied and invalid calls, internal errors, sign-ins, emails, AI runs and afterCommit failures (which were swallowed silently). Debugging relied on scattered `console.*`.
-- A call often passes through several surfaces (web chat → AI → MCP → core). Without a common ID the chain cannot be followed.
-- Bibi does not store health data per guest, only aggregates (for example 13 guests, of which 3 with allergies). Logs must still not become a leak of personal data such as names and emails.
+- `AuditLog` (ADR 0006) is the business trail of successful mutations. Everything else was invisible: denied calls, errors, sign-ins, mail, AI runs and swallowed after-commit failures.
+- One call passes through several surfaces (chat, AI, MCP, core). Without a shared id the chain cannot be followed.
+- Logs must not leak personal data.
 
 ## Decision
-- **Two layers, different purposes.**
-  - `AuditLog` (database): successful mutations, in the same transaction as the change. Unchanged, but the row gets `requestId` and `surface`.
-  - System log (stdout, JSON): **every** operation and every system event. Collected by the operations environment (ADR 0013).
-- **Package `@bibi/logger`** (pino). The only way to log. `console.*` is forbidden in app code (Biome `noConsole`).
-- **Events, not sentences.** Every line has a stable `event` (`<area>.<event>`, for example `operation.completed`, `http.request`, `auth.request`, `mail.sent`). Fields are structured, so the log can be queried.
-- **Request context via `AsyncLocalStorage`.** Every entry point (web, GraphQL, REST, MCP, chat, CLI) opens a context with `requestId` and `surface`. After authentication, `organizationId`, `userId` and `actorType` are added. All lines within the call get the fields automatically.
-- **Correlation.** An incoming `x-request-id` is reused if valid, otherwise a new one is created. The response sends it back. The assistant passes it on to MCP, so the whole AI chain shares the ID.
-- **Core logs every `execute`.** One line per call regardless of outcome:
-  - `operation.completed` (info): success.
-  - `operation.rejected` (warn): validation, permission, not found, conflict.
-  - `operation.failed` (error): internal error, with cause and stack.
-  - `operation.afterCommitFailed` (error): an after-commit hook threw. Search indexing catches its own errors and logs `search.index_failed` instead (ADR 0030).
-  - Fields: operation, kind, entityType, outcome, error code, `durationMs` and actor.
-- **No payload in the log.** Input and output are never logged. That belongs in `AuditLog`, which is org-scoped and permission-controlled. As an extra safeguard, known secret fields (password, token, cookie, API key) are redacted. Email addresses are logged only as the domain.
-- **Level and format via `@bibi/config`.** `LOG_LEVEL` (default `info`, `silent` in test). `LOG_FORMAT` `json` or `pretty` (default `pretty` in development).
-- **Process errors.** Next `onRequestError` and Node `uncaughtException`/`unhandledRejection` are logged as `process.*`/`http.unhandledError`.
+1. Two layers with different purposes. `AuditLog` (database, same transaction) records successful mutations. The system log (JSON on stdout) records every operation and system event.
+2. `@bibi/logger` (pino) is the only way to log. `console.*` is forbidden.
+3. Lines are events, not sentences. Each has a stable `event` named `<area>.<event>` and structured fields.
+4. Every entry point opens a request context with `requestId` and `surface` (`AsyncLocalStorage`). Organization, user and actor type are added after authentication. An incoming valid `x-request-id` is reused and passed down to MCP so the whole AI chain shares it.
+5. Core `execute` logs one line per call: completed, rejected (validation, permission, not found, conflict), failed, or after-commit failed.
+6. Input and output are never logged; that belongs in `AuditLog`, which is permission-controlled. Known secret fields are redacted and emails are logged only as a masked form.
+7. The log is also stored in Postgres for the superadmin view with retention (ADR 0015). `AuditLog` is readable through `auditLog.list|get` (`audit:read`).
 
-## Addendum 2026-10-14
-- The system log is also stored in Postgres (`SystemLog`) for the superadmin's view, with retention through `SYSTEM_LOG_RETENTION_DAYS`. See ADR 0015.
-
-## Addendum 2026-10-15
-- `AuditLog` is read through the core operations `auditLog.list|get` (permission `audit:read`), exposed on GraphQL, REST, MCP and as the history tab on venue and item pages. Filters: entity, actor, conversation, `requestId` and time range.
+## Rejected
+- Logging payloads for easier debugging: the log would become a leak of personal data outside org scoping.
+- Scattered `console.*`: no structure, no correlation.
 
 ## Consequences
-- A new entry point must use `withRequestLogging` (HTTP) or `runWithLogContext`. Otherwise `surface` becomes `system` and `requestId` is missing. The tests in each adapter catch this.
-- Queries are logged at info level. Volume is controlled with `LOG_LEVEL` and retention in the operations log layer.
-- `AuditLog` and the system log are linked with `requestId`.
-- **Open:**
-  - Log destination in operations (Loki, Better Stack, Axiom) and retention. Decided together with ADR 0013.
+- A new entry point must use `withRequestLogging` or `runWithLogContext`, or `surface` becomes `system` and `requestId` is missing. Adapter tests catch this.
+- Queries are logged at info level; volume is controlled with `LOG_LEVEL` and retention.
+- `AuditLog` and the system log join on `requestId`.
+- Open: an external log destination (ADR 0013).

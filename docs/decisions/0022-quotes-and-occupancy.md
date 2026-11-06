@@ -2,29 +2,26 @@
 
 - **Date:** 2026-10-14
 - **Status:** Accepted
-- **Related:** 0021 (configurable items), 0027 (job scheduler), 0034 (assignments), 0043 (order and phases), 0044 (line states)
+- **Related:** 0021, 0027, 0034, 0043, 0044, 0052, 0053, 0054
 
 ## Context
-- An order (ADR 0043) is quoted, its rooms and resources are reserved, and the customer accepts. Quotes must be reviewable, versioned and never edited after they are sent. Reserved resources must never be double-booked.
+- An order (ADR 0043) is quoted, its rooms and resources are reserved and the customer accepts.
+- Sent quotes must be reviewable and never edited. Reserved resources must never be double-booked.
 
 ## Decision
+1. A quote belongs to an order and is versioned. Its state machine is fixed and lives in core: `DRAFT`, `SENT`, then `ACCEPTED`, `DECLINED` or `EXPIRED`. Only a draft is editable; a changed quote is a new version.
+2. Transitions are their own commands (`quote.send|accept|decline|expire`). Status is never set through `update`, and a disallowed transition gives `CONFLICT`.
+3. Send and accept fire the quote events of ADR 0043. Accept records who, when and by which method, and creates nothing else. A sent quote past its validity expires by job (ADR 0027).
+4. A draft quote is a live view of the order's lines and send freezes a snapshot (ADR 0052).
+5. Occupancy is a time block on a bookable item: hold, setup, maintenance or internal. A hold is derived from a line's state, soft or hard (ADR 0044).
+6. Active blocks except soft holds must not overlap on one item. Postgres enforces this with an exclusion constraint, mapped to `CONFLICT`.
 
-### Quotes
-- A quote (`Quote`) belongs to an order and is versioned. The state machine is fixed and lives in core (`features/quote/transitions.ts`): `DRAFT → SENT → ACCEPTED`, `DECLINED` or `EXPIRED`. Only a `DRAFT` can be edited; a changed quote is a new version.
-- Transitions are their own commands: `quote.send`, `quote.accept`, `quote.decline`, `quote.expire`. Status can never be set through `update`. A disallowed transition gives `CONFLICT`.
-- `quote.send` and `quote.accept` fire the quote events of ADR 0043, which move the order into the organization's phase for that event, if it has one.
-- `quote.accept` stores `acceptedBy`, `acceptedAt` and `acceptanceMethod` (`MANUAL` now, later `BANKID` and `LINK`). It creates no other record.
-- A quote uses the order's assignment (ADR 0034). Signing is postponed.
-- A `SENT` quote past `validUntil` expires automatically (job, ADR 0027).
-
-### Occupancy
-- Occupancy (`Occupancy`) is a time block on a `BOOKABLE` item (ADR 0021) with the types `HOLD`, `SETUP`, `MAINTENANCE` and `INTERNAL`. A `HOLD` is derived from a line's state and is `SOFT` or `HARD` (ADR 0044); the other types are manual or follow their source.
-- All active rows except soft holds must not overlap on one item. This is enforced with an exclusion constraint in Postgres (`btree_gist`) and mapped to `CONFLICT`.
-- Setup time is added as `SETUP` right before the start, based on the setup's changeover time (`Setup`, ADR 0021).
+## Rejected
+- Editing a sent quote in place: the customer's accepted terms would change silently.
+- Checking overlap in application code: it races under concurrent writes.
+- E-signing in the first version: postponed.
 
 ## Consequences
-- The quote state machine is tested as a table: every allowed and every disallowed transition.
-- AI can propose quote commands but not perform them without approval (ADR 0007).
-
-## Addenda
-- 2026-10-19: a `DRAFT` quote is a live view of the order's lines and `quote.send` freezes a snapshot (ADR 0052). Line holds are a database projection (ADR 0053). History comes from history tables, not `AuditLog` (ADR 0054).
+- The state machine is tested as a table of allowed and disallowed transitions.
+- The assistant may propose quote commands but not run them without approval (ADR 0007).
+- Line holds are a database projection (ADR 0053); history comes from history tables, not `AuditLog` (ADR 0054).

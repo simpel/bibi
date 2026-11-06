@@ -2,28 +2,28 @@
 
 - **Date:** 2026-10-19
 - **Status:** Accepted, feature scope amended by 0071 (view read models)
-- **Related:** 0034 (fixed access roles, superseded in part), 0048 (access levels, superseded), 0005 (API keys, amended), 0015 (superadmin), 0003 (parity), 0007 (AI-first UX)
+- **Related:** 0034, 0048 (superseded), 0005 (API keys, amended), 0015, 0003, 0007
 - **Spec:** `docs/specs/permissions.md`
 
 ## Context
-- ADR 0034 and 0048 gave each member one fixed role and nothing else. Real venues need finer control: one member may also edit items, one manager must not see payments.
-- Permissions were per resource with `read < write < admin`, which does not match how staff think ("can Tina handle quotes?") and cannot hide a part of the app.
-- API keys were tied to the user who created them and capped by that user's role, so a key died when that person left.
+- One fixed role per member (ADR 0034, 0048) was too coarse. One member may also edit items, and one manager must not see payments.
+- Per-resource levels did not match how staff think and could not hide a part of the app.
+- API keys were tied to their creator and capped by that user's role, so a key died when the person left.
 
 ## Decision
-- **A permission is `<feature>:<action>`**, with features the parts of the app staff recognise and actions `read`, `write`, `delete` (archive). Rejected: keeping resources with levels.
-- **`member`, `manager` and `admin` become presets**: constant permission sets in code. Every member and API key has exactly one preset.
-- **Admins fine-tune with overrides** (`allow` or `deny` per permission), stored as differences only so a preset change reaches everyone on it. Effective = preset + allow − deny.
-- **Admin-only lock**: every action but `read` on `member`, `apiKey` and `paymentAccount` comes only from the `admin` preset, so one toggle can never make someone an admin.
-- **Feature scope**: an operation returns only data of its own feature; another feature's record is an id resolved through its owner. Denying `read` hides a feature everywhere. If one feature needs another's data in its output, the scope is wrong. Shared vocabulary (types, phases, lists, colleagues' names) is always visible.
-- **API keys belong to the organization**, with their own preset and overrides; they survive their creator leaving. Only admins manage them; a key and the AI actor never create keys.
-- The superadmin platform role is unchanged (ADR 0015).
+1. A permission is `<feature>:<action>`, with actions `read`, `write` and `delete` (archive).
+2. `member`, `manager` and `admin` are presets, constant permission sets in code. Every member and API key has exactly one preset.
+3. Admins fine-tune with `allow` or `deny` overrides, stored as differences only, so a preset change reaches everyone on it. Effective = preset + allow − deny.
+4. Admin-only lock: every action but `read` on `member`, `apiKey` and `paymentAccount` comes only from the `admin` preset, so no toggle can make someone an admin.
+5. Feature scope: an operation returns only its own feature's data. Another feature's record is an id resolved through its owner, and denying `read` hides a feature everywhere. Shared vocabulary stays visible.
+6. API keys belong to the organization, with their own preset and overrides. Only admins manage them, and a key or the AI actor never creates keys.
+
+## Rejected
+- Per-resource levels: wrong mental model, cannot hide features.
+- Keys owned by users: they die with the user.
 
 ## Consequences
-- Every core operation's `permission` is `feature:action`; `RESOURCES` becomes `FEATURES`.
-- `packages/auth` resolves preset + overrides on every request (one extra indexed query), so changes apply at once.
-- The assistant's tools and Access section follow effective permissions instead of the role.
-
-## Addenda
-- 2026-10-20: owners of the single-source-of-truth entity types (`ENTITY_FEATURE`) and snapshot `read` checks are in the spec (ADR 0051–0057).
-- 2026-10-20: the `manager` preset gains `item:write` so managers maintain demands, setup times and working hours without an override (ADR 0059).
+- Every core operation's `permission` is `feature:action`.
+- Auth resolves preset and overrides on every request, so changes apply at once.
+- The assistant's tools and Access section follow effective permissions.
+- The superadmin platform role is unchanged (ADR 0015).

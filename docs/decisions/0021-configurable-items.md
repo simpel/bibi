@@ -7,20 +7,21 @@
 - **Spec:** `docs/specs/configurable-domain.md`
 
 ## Context
-- Venues differ. A conference estate has kitchens, allergens and room setups. A boat company has boats, tours and accessibility needs, and for a museum food may be irrelevant.
-- If the system assumes concepts such as "dish", "allergen" or "kitchen order", it takes two seconds before a customer wants something similar but different.
+- Venues differ: a conference estate has kitchens and room setups, a boat company has boats and tours, a museum may have no food at all.
+- If the code assumes "dish", "allergen" or "kitchen order", the first customer who wants something similar but different breaks it.
 
 ## Decision
-- **The code contains no domain words.** Each organization sets up its own types, fields, vocabularies, requirements, sheets and setups once, as data. The code provides only generic behaviour: a few capabilities on item types (priced, bundle, customisations, bookable, setups), matching of requirements against tags, and inherited tags for bundles.
-- **New organizations start empty.** Templates (the EU's 14 allergens, a starter configuration) are optional data created through ordinary operations. Rejected: preinstalled domain concepts such as the global `Allergen` table (ADR 0011).
-- **A capability cannot be turned off while data exists for it** (`CONFLICT`): data loss is never silent.
-- **There is no personal data about guests.** Requirements are counts against a list value, never linked to a person.
-- **The assistant can suggest a configuration**; the user approves as usual (ADR 0007).
+1. The code contains no domain words. Each organization defines its own types, fields, lists, requirements, sheets and setups as data. The code provides only generic capabilities on item types (priced, bundle, customisations, bookable, setups; ADR 0059), matching of requirements against tags, and inherited tags for bundles.
+2. New organizations start empty. Templates (for example the EU's 14 allergens) are optional data created through ordinary operations.
+3. A capability cannot be turned off while data exists for it (`CONFLICT`). Data loss is never silent.
+4. No personal data about guests. Requirements are counts against a list value, never linked to a person.
+5. The assistant may suggest a configuration; the user approves as usual (ADR 0007).
+
+## Rejected
+- Preinstalled domain concepts such as a global `Allergen` table (ADR 0011): it hard-codes one venue type.
+- Per-guest requirements and participant registration: personal data, and no longer a differentiator.
 
 ## Consequences
-- `Room` became an `Item` of a bookable type with setups; `room.*` was replaced by `item.*`. Participants were dropped from the MVP, since self-registration with allergies per person is no longer a differentiator.
-- Operations are generic. GraphQL and REST expose `fields: JSON` plus definitions; the MCP tools describe the organization's fields dynamically. Each capability and field kind has its own Zod schema and `@bibi/ui` component.
-- Reports build on capabilities and phases, never on type names.
-
-## Addendum 2026-10-20 – capabilities and resources
-- The behaviours are renamed to capabilities (`COMPOSABLE` → `BUNDLE`, `CHOICES` → `CUSTOMISATIONS`), bundles will expand into linked lines, and items can demand pooled equipment and staff (ADR 0059).
+- `Room` became an `Item` of a bookable type; operations are generic.
+- GraphQL and REST expose `fields: JSON` plus definitions, and MCP tools describe the organization's fields dynamically.
+- Reports build on capabilities and statuses, never on type names.
