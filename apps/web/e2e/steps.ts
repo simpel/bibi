@@ -14,7 +14,7 @@ export type PageInput = { page: Page };
 /** Sign up with email + password; a new user has no organization, so we land on /welcome. */
 export async function signUp({ page, credentials }: PageInput & { credentials: Credentials }) {
   await page.goto("/");
-  await page.getByRole("link", { name: "Kom igång" }).first().click();
+  await page.getByRole("link", { name: "Testa gratis" }).first().click();
   await expect(page).toHaveURL(/\/sv\/sign-up/);
   await page.getByLabel("Namn").fill(credentials.name);
   await page.getByLabel("E-post").fill(credentials.email);
