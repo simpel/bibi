@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/api-v1.0.1...@bibi/api-v1.1.0) (2026-11-06)
+
+
+### Features
+
+* new organizations start with example orders and the base types to create orders ([2e9e74b](https://github.com/simpel/bibi/commit/2e9e74b6e5291a5a317be4accdd1fadf722fcb63))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 1.1.0
+
 ## [1.0.1](https://github.com/simpel/bibi/compare/@bibi/api-v1.0.0...@bibi/api-v1.0.1) (2026-11-06)
 
 

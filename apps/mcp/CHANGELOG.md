@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/mcp-v1.0.2...@bibi/mcp-v1.1.0) (2026-11-06)
+
+
+### Features
+
+* magic link is the only sign-in, passwords removed ([105ae06](https://github.com/simpel/bibi/commit/105ae068a0e194cf2bc6afcbe7248e9f4f4ff890))
+* new organizations start with example orders and the base types to create orders ([2e9e74b](https://github.com/simpel/bibi/commit/2e9e74b6e5291a5a317be4accdd1fadf722fcb63))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 1.1.0
+    * @bibi/auth bumped to 0.5.0
+    * @bibi/core bumped to 1.1.0
+    * @bibi/graphql bumped to 1.1.0
+    * @bibi/mail bumped to 0.4.0
+    * @bibi/storage bumped to 0.2.2
+  * devDependencies
+    * @bibi/api bumped to 1.1.0
+
 ## [1.0.2](https://github.com/simpel/bibi/compare/@bibi/mcp-v1.0.1...@bibi/mcp-v1.0.2) (2026-11-06)
 
 

@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.3.0](https://github.com/simpel/bibi/compare/@bibi/web-v1.2.0...@bibi/web-v1.3.0) (2026-11-06)
+
+
+### Features
+
+* create an order from the pipeline board's entry column ([b2bb99d](https://github.com/simpel/bibi/commit/b2bb99d524887bddd2db053e59d5e734cebc09ce))
+* magic link is the only sign-in, passwords removed ([105ae06](https://github.com/simpel/bibi/commit/105ae068a0e194cf2bc6afcbe7248e9f4f4ff890))
+* new organizations start with example orders and the base types to create orders ([2e9e74b](https://github.com/simpel/bibi/commit/2e9e74b6e5291a5a317be4accdd1fadf722fcb63))
+* setup review shows template statuses and states in the user's language ([a0a58c0](https://github.com/simpel/bibi/commit/a0a58c0a2306aa33a33d93762d126ee292948b35))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 1.1.0
+    * @bibi/api bumped to 1.1.0
+    * @bibi/auth bumped to 0.5.0
+    * @bibi/core bumped to 1.1.0
+    * @bibi/graphql bumped to 1.1.0
+    * @bibi/i18n bumped to 1.3.0
+    * @bibi/mail bumped to 0.4.0
+    * @bibi/storage bumped to 0.2.2
+    * @bibi/ui bumped to 1.1.0
+
 ## [1.2.0](https://github.com/simpel/bibi/compare/@bibi/web-v1.1.0...@bibi/web-v1.2.0) (2026-11-06)
 
 
