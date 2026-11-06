@@ -28,6 +28,8 @@ export type KanbanBoardProps<TCard extends KanbanCardData> = {
   onMove: (move: KanbanMove) => void;
   /** A line under each lane's title from its cards, e.g. their total value. */
   renderSummary?: KanbanRenderSummary<TCard>;
+  /** Content at the end of a lane, under its cards, e.g. a create action. */
+  renderFooter?: KanbanRenderSummary<TCard>;
 };
 
 const ALWAYS: KanbanCanDrop = () => true;
@@ -39,10 +41,11 @@ type KanbanLaneProps<TCard extends KanbanCardData> = {
   emptyLabel: string;
   renderCard: KanbanRenderCard<TCard>;
   renderSummary?: KanbanRenderSummary<TCard> | undefined;
+  renderFooter?: KanbanRenderSummary<TCard> | undefined;
 };
 
 function KanbanLane<TCard extends KanbanCardData>(props: KanbanLaneProps<TCard>) {
-  const { column, cards, state, emptyLabel, renderCard, renderSummary } = props;
+  const { column, cards, state, emptyLabel, renderCard, renderSummary, renderFooter } = props;
   return (
     <KanbanColumn
       column={column}
@@ -51,6 +54,7 @@ function KanbanLane<TCard extends KanbanCardData>(props: KanbanLaneProps<TCard>)
       zones={state.zones}
       emptyLabel={emptyLabel}
       summary={renderSummary?.({ column, cards })}
+      footer={renderFooter?.({ column, cards })}
     >
       {cards.map((card) => (
         <KanbanCard key={card.id} id={card.id}>
@@ -92,6 +96,7 @@ export function KanbanBoard<TCard extends KanbanCardData>({
   canDrop = ALWAYS,
   onMove,
   renderSummary,
+  renderFooter,
 }: KanbanBoardProps<TCard>) {
   const drop = useKanbanDrop({ cards, columns, canDrop, onMove });
   return (
@@ -114,6 +119,7 @@ export function KanbanBoard<TCard extends KanbanCardData>({
             emptyLabel={labels.emptyColumn}
             renderCard={renderCard}
             renderSummary={renderSummary}
+            renderFooter={renderFooter}
           />
         ))}
       </div>

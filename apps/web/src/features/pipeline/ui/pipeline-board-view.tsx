@@ -6,6 +6,7 @@ import { KanbanBoard } from "@bibi/ui";
 import { useState } from "react";
 import { OrderSheet } from "@/features/order/sheet/ui/order-sheet";
 import { findDrop, kanbanCards, kanbanColumns } from "../lib/kanban-model";
+import { CreateOrderFooter } from "./create-order-footer";
 import { PhaseValue } from "./phase-value";
 import { PipelineCardContent } from "./pipeline-card";
 import { useMoveCard } from "./use-move-card";
@@ -30,6 +31,9 @@ export function PipelineBoardView(props: PipelineBoardViewProps) {
   const labels = usePipelineLabels();
   const { drop, dialog } = useMoveCard({ moveGates });
   const [openId, setOpenId] = useState<string | null>(null);
+  const entryColumnIds = new Set(
+    board.columns.filter((c) => c.statuses.some((s) => s.entry)).map((c) => c.id),
+  );
   return (
     <>
       <KanbanBoard
@@ -42,6 +46,9 @@ export function PipelineBoardView(props: PipelineBoardViewProps) {
         renderSummary={({ cards }) => (
           <PhaseValue cards={cards} currency={board.currency} size="sm" />
         )}
+        renderFooter={({ column }) =>
+          entryColumnIds.has(column.id) ? <CreateOrderFooter /> : null
+        }
         canDrop={(move) => {
           const found = findDrop({ board, move, transitions });
           // Another phase is always a drop (with a message when nothing may move there); inside

@@ -31,6 +31,7 @@ const status = ({
   title: "Lead",
   color: "#f59e0b",
   closed: false,
+  entry: false,
   ...overrides,
 });
 

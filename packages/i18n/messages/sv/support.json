@@ -38,6 +38,10 @@
             "question": "Hur skapar jag en bokning?",
             "answer": "Klicka på Skapa bokning, välj kund och lägg till raderna: lokaler, mat, aktiviteter. Du kan också be assistenten skapa den åt dig.\nFör mindre möten behöver du ingen offert först. Skapa bokningen och skicka betalningen direkt."
           },
+          "createFromBoard": {
+            "question": "Kan jag skapa en order direkt från tavlan?",
+            "answer": "Ja. Längst ner i kolumnen där nya ordrar hamnar finns + Skapa bokning. Den öppnar samma sida som Skapa bokning i menyn, och ordern hamnar i den första kolumnen."
+          },
           "holds": {
             "question": "Vad är skillnaden mellan preliminär och definitiv bokning av en lokal?",
             "answer": "En preliminär bokning håller en lokal åt en kund som inte har bestämt sig än. Andra ser den, och den har ett sista datum så att lokalen inte blir blockerad för alltid.\nEn definitiv bokning blockerar lokalen helt. Vilka statusar som ger preliminär eller definitiv bokning ställer er administratör in."

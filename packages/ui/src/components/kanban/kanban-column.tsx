@@ -21,6 +21,8 @@ export type KanbanColumnProps = {
   emptyLabel: string;
   /** Shown under the title, e.g. the lane's total value. */
   summary?: ReactNode;
+  /** At the end of the lane, under its cards, e.g. a create action. */
+  footer?: ReactNode;
   children: ReactNode;
 };
 
@@ -57,6 +59,7 @@ export function KanbanColumn({
   zones = [],
   emptyLabel,
   summary,
+  footer,
   children,
 }: KanbanColumnProps) {
   const zoned = zones.length > 0;
@@ -80,6 +83,7 @@ export function KanbanColumn({
         )}
         {zoned ? <KanbanZones zones={zones} /> : null}
       </div>
+      {footer}
     </section>
   );
 }

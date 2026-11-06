@@ -17,6 +17,7 @@ const toStatus = ({ row }: { row: OrderStatus }) => ({
   title: row.name,
   color: row.color,
   closed: row.closes,
+  entry: row.entry,
 });
 
 /**

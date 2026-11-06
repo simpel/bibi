@@ -5,6 +5,7 @@ export const PipelineStatusSchema = z.object({
   title: z.string().describe("The status name"),
   color: z.string().describe("The status colour"),
   closed: z.boolean().describe("A closing status"),
+  entry: z.boolean().describe("New orders start in this status"),
 });
 
 export const PipelineColumnSchema = z.object({

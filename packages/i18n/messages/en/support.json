@@ -38,6 +38,10 @@
             "question": "How do I create an order?",
             "answer": "Click Create order, pick the customer and add the lines: rooms, food, activities. You can also ask the assistant to create it for you.\nFor smaller meetings you don't need a quote first. Create the order and send the payment straight away."
           },
+          "createFromBoard": {
+            "question": "Can I create an order from the pipeline board?",
+            "answer": "Yes. At the bottom of the column where new orders start there is + Create order. It opens the same page as Create order in the menu, and the order lands in that first column."
+          },
           "holds": {
             "question": "What is the difference between a soft and a hard hold?",
             "answer": "A soft hold reserves a room for a customer who hasn't decided yet. Others can see it, and it has an expiry date so the room doesn't stay blocked forever.\nA hard hold blocks the room completely. Which statuses give a soft or a hard hold is set up by your admin."
