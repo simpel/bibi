@@ -54,13 +54,40 @@ jobs:
         if: steps.cfg.outputs.configured == 'true'
         # One Coolify Docker Compose resource runs docker-compose.prod.yml (migrate, web, mcp, worker),
         # so setting IMAGE_TAG and redeploying rolls out every service on the same SHA.
+        id: trigger
         run: |
           uuid="${{ secrets.COOLIFY_APP_UUID }}"
-          curl -sS --fail-with-body -X PATCH "$COOLIFY_URL/api/v1/applications/$uuid/envs" \
+          curl -sS --fail-with-body -o /dev/null -X PATCH "$COOLIFY_URL/api/v1/applications/$uuid/envs" \
             -H "Authorization: Bearer $COOLIFY_TOKEN" -H "Content-Type: application/json" \
             -d "{\"key\": \"IMAGE_TAG\", \"value\": \"${SHA}\"}"
-          curl -sS --fail-with-body -X POST "$COOLIFY_URL/api/v1/deploy?uuid=$uuid&force=false" \
-            -H "Authorization: Bearer $COOLIFY_TOKEN"
+          response=$(curl -sS --fail-with-body -X POST "$COOLIFY_URL/api/v1/deploy?uuid=$uuid&force=false" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN")
+          echo "$response"
+          deployment=$(echo "$response" | jq -er '.deployments[0].deployment_uuid')
+          echo "deployment=$deployment" >> "$GITHUB_OUTPUT"
+      # The old containers keep answering the health checks while a rollout fails, so the job
+      # follows Coolify's own deployment status and fails with its log when the rollout fails.
+      - name: Wait for the Coolify rollout
+        if: steps.cfg.outputs.configured == 'true'
+        env:
+          DEPLOYMENT: ${{ steps.trigger.outputs.deployment }}
+        run: |
+          for i in $(seq 1 120); do
+            body=$(curl -sS --fail-with-body "$COOLIFY_URL/api/v1/deployments/$DEPLOYMENT" \
+              -H "Authorization: Bearer $COOLIFY_TOKEN")
+            status=$(echo "$body" | jq -r '.status')
+            echo "Coolify deployment $DEPLOYMENT: $status"
+            case "$status" in
+              finished) exit 0 ;;
+              queued|in_progress) sleep 10 ;;
+              *)
+                echo "$body" | jq -r '.logs // "[]" | fromjson? // [] | .[] | select(.hidden != true) | .output'
+                echo "::error::Coolify rollout of $SHA ended as '$status'. Production still runs the previous SHA."
+                exit 1 ;;
+            esac
+          done
+          echo "::error::Coolify rollout of $SHA did not finish in 20 minutes."
+          exit 1
       - name: Health gate
         if: steps.cfg.outputs.configured == 'true'
         run: |

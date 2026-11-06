@@ -4,7 +4,7 @@ Decision: `docs/decisions/0013-hosting-and-deploy.md`.
 
 ## Flow
 1. Merge to `main`. CI runs `check`, then `publish-images` pushes `ghcr.io/<repo>-web` and `-mcp` tagged with the full git SHA.
-2. The `deploy` job (`.github/workflows/deploy.yml`) verifies the three images exist, opens an SSH tunnel to Coolify as the tunnel-only `deploy` user, sets `IMAGE_TAG` on the one Coolify Docker Compose resource (`docker-compose.prod.yml`: migrate, web, mcp, worker, backup), triggers a deploy, then polls `/api/health` (web) and `/health` (mcp) for up to 10 minutes. A failed gate fails the run.
+2. The `deploy` job (`.github/workflows/deploy.yml`) verifies the three images exist, opens an SSH tunnel to Coolify as the tunnel-only `deploy` user, sets `IMAGE_TAG` on the one Coolify Docker Compose resource (`docker-compose.prod.yml`: migrate, web, mcp, worker, backup), triggers a deploy, waits up to 20 minutes for Coolify's deployment status to reach `finished` (any other end state fails the run and prints Coolify's log), then polls `/api/health` (web) and `/health` (mcp) for up to 10 minutes. The health checks alone cannot catch a failed rollout: the previous containers keep answering. Deploys run from `release.yml` when a release PR is merged, not from CI.
 3. Migrations run as a one-off step before new containers take traffic and must be backward compatible (expand/contract), so the previous SHA keeps working against the migrated database.
 
 ## Rollback
