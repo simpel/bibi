@@ -7,6 +7,17 @@ Decision: `docs/decisions/0013-hosting-and-deploy.md`.
 2. The `deploy` job (`.github/workflows/deploy.yml`) verifies the three images exist, opens an SSH tunnel to Coolify as the tunnel-only `deploy` user, sets `IMAGE_TAG` on the one Coolify Docker Compose resource (`docker-compose.prod.yml`: migrate, web, mcp, worker, backup), triggers a deploy, waits up to 20 minutes for Coolify's deployment status to reach `finished` (any other end state fails the run and prints Coolify's log), then polls `/api/health` (web) and `/health` (mcp) for up to 10 minutes. The health checks alone cannot catch a failed rollout: the previous containers keep answering. Deploys run from `release.yml` when a release PR is merged, not from CI.
 3. Migrations run as a one-off step before new containers take traffic and must be backward compatible (expand/contract), so the previous SHA keeps working against the migrated database.
 
+## Disk space
+Every release pulls new web, mcp and worker images (about 1 GB) and rebuilds the backup image; nothing else removes the old ones. A full disk fails the image pull (`no space left on device` in the Coolify deployment log) and also stops Postgres writes, which share the disk.
+- Coolify > Servers > localhost > Docker cleanup: frequency `0 3 * * *`, trigger **Run on every schedule**, threshold `80`. Keep **Delete unused volumes** off (the database lives in a volume). Coolify keeps the last images of each application for its own rollback; older SHAs are pulled again from GHCR by the Rollback workflow.
+- Check after setting it up and after any deploy failure: `ssh root@<server> 'df -h / && docker system df'`.
+
+## Stuck deployment
+Coolify runs one deployment per resource at a time. If a deployment's build container dies, its status can stay `in_progress` and every later deploy queues behind it: the resource header keeps showing "Deploying…" and Environment Variables show "Changes pending". The deploy job then fails at "No earlier Coolify deployment is still running" and names the deployment.
+1. Open the deployment (the "Deploying…" link) and read its log to the end; note the last line for the cause.
+2. Cancel it there. Do not edit `IMAGE_TAG` or press Redeploy by hand.
+3. Re-run the failed deploy through GitHub: the Rollback workflow with the SHA you want live (for a release that never rolled out, that release's SHA). It goes through the same checks and health gate.
+
 ## Rollback
 Run the **Rollback** workflow (Actions > Rollback > Run workflow) with the full 40-character SHA of the earlier release (taken from an earlier green Deploy run). It reuses the same deploy job and health gate. Never roll back past a contract migration; restore from backup instead.
 

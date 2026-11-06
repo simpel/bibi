@@ -50,6 +50,22 @@ jobs:
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
           echo "${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           ssh -i ~/.ssh/deploy -fN -o ExitOnForwardFailure=yes -L 8000:localhost:8000 "deploy@${{ secrets.DEPLOY_HOST }}"
+      # Coolify runs one deployment per resource at a time: a stuck earlier one (status left at
+      # in_progress after its build container died) silently queues every later deploy behind it.
+      - name: No earlier Coolify deployment is still running
+        if: steps.cfg.outputs.configured == 'true'
+        run: |
+          uuid="${{ secrets.COOLIFY_APP_UUID }}"
+          running=$(curl -sS --fail-with-body "$COOLIFY_URL/api/v1/deployments/applications/$uuid?take=10" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" \
+            | jq -r '(if type == "array" then . else .deployments // [] end)[]
+                | select(.status == "queued" or .status == "in_progress")
+                | "\(.deployment_uuid) \(.status) since \(.created_at)"')
+          if [ -n "$running" ]; then
+            echo "$running"
+            echo "::error::An earlier Coolify deployment is still running. Cancel it in Coolify if it is stuck (docs/runbooks/deploy.md), then re-run this job."
+            exit 1
+          fi
       - name: Set image tag and trigger rollout in Coolify
         if: steps.cfg.outputs.configured == 'true'
         # One Coolify Docker Compose resource runs docker-compose.prod.yml (migrate, web, mcp, worker),
