@@ -12,6 +12,7 @@ import { DevUserSwitcherSlot } from "@/features/dev/ui/dev-user-switcher-slot";
 import { pickSurfaceMessages, ROOT_NAMESPACES } from "@/i18n/surface-messages";
 import { DisplayFormatsProvider } from "@/lib/time/display-formats-provider";
 import { loadDisplayFormats } from "@/server/display-formats";
+import webPackage from "../../../package.json";
 import "../globals.css";
 
 const sans = Inter({
@@ -58,6 +59,8 @@ export async function generateMetadata({
     metadataBase: new URL(getEnv().BETTER_AUTH_URL),
     openGraph: { siteName: appName, title: appName, type: "website", locale },
     twitter: { card: "summary_large_image", title: appName },
+    // The released version (release-please bumps package.json), readable in the page source.
+    other: { "app-version": webPackage.version },
   };
 }
 
