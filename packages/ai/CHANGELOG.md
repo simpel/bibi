@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.2](https://github.com/simpel/bibi/compare/@bibi/ai-v1.0.1...@bibi/ai-v1.0.2) (2026-11-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/auth bumped to 0.4.0
+    * @bibi/config bumped to 0.3.0
+    * @bibi/core bumped to 1.0.1
+    * @bibi/db bumped to 1.0.1
+    * @bibi/logger bumped to 0.1.2
+
 ## [1.0.1](https://github.com/simpel/bibi/compare/@bibi/ai-v1.0.0...@bibi/ai-v1.0.1) (2026-11-05)
 
 

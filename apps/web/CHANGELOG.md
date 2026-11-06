@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.2.0](https://github.com/simpel/bibi/compare/@bibi/web-v1.1.0...@bibi/web-v1.2.0) (2026-11-06)
+
+
+### Features
+
+* app-version meta tag shows the released web version ([8a7b284](https://github.com/simpel/bibi/commit/8a7b284c4abb7548cf352a5c45fd94db596b22ad))
+* public /support help centre and /developers, replacing /docs ([81936c0](https://github.com/simpel/bibi/commit/81936c02ffd771c5944c5a5e348233017d453796))
+
+
+### Bug Fixes
+
+* e2e sign-in test opens the password tab before filling it ([70cdad8](https://github.com/simpel/bibi/commit/70cdad868bd6fb797a4dd6a39dcc9763d8ecd336))
+* sign-up, login and invitations open the app instead of the public front page ([31b1a76](https://github.com/simpel/bibi/commit/31b1a768109280b6a34c7896c2a0f0d1a212843d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 1.0.2
+    * @bibi/api bumped to 1.0.1
+    * @bibi/auth bumped to 0.4.0
+    * @bibi/config bumped to 0.3.0
+    * @bibi/core bumped to 1.0.1
+    * @bibi/db bumped to 1.0.1
+    * @bibi/graphql bumped to 1.0.1
+    * @bibi/i18n bumped to 1.2.0
+    * @bibi/logger bumped to 0.1.2
+    * @bibi/mail bumped to 0.3.1
+    * @bibi/storage bumped to 0.2.1
+    * @bibi/ui bumped to 1.0.1
+
 ## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/web-v1.0.0...@bibi/web-v1.1.0) (2026-11-05)
 
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.1](https://github.com/simpel/bibi/compare/@bibi/core-v1.0.0...@bibi/core-v1.0.1) (2026-11-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 0.3.0
+    * @bibi/db bumped to 1.0.1
+    * @bibi/logger bumped to 0.1.2
+
 ## [1.0.0](https://github.com/simpel/bibi/compare/@bibi/core-v0.1.0...@bibi/core-v1.0.0) (2026-11-05)
 
 
