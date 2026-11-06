@@ -72,14 +72,17 @@ test("theme toggle, localized validation messages and mapped sign-in errors", as
   await page.getByRole("menuitem", { name: "Logga ut" }).click();
   await expect(page).toHaveURL(/\/sv\/login/);
 
-  await page.getByLabel("E-post").fill(credentials.email);
-  await page.getByRole("textbox", { name: "Lösenord" }).fill("wrong-password-123");
+  // Magic link is the default sign-in tab; the password form sits behind its own tab.
+  await page.getByRole("tab", { name: "Lösenord" }).click();
+  const passwordPanel = page.getByRole("tabpanel", { name: "Lösenord" });
+  await passwordPanel.getByLabel("E-post").fill(credentials.email);
+  await passwordPanel.getByRole("textbox", { name: "Lösenord" }).fill("wrong-password-123");
   await page.getByRole("button", { name: "Logga in" }).click();
   await expect(page.getByText("Fel e-postadress eller lösenord.")).toBeVisible();
 
   // Better Auth rate-limits sign-in (3 per 10 s); wait out the window before the valid attempt.
   await page.waitForTimeout(10_500);
-  await page.getByRole("textbox", { name: "Lösenord" }).fill(credentials.password);
+  await passwordPanel.getByRole("textbox", { name: "Lösenord" }).fill(credentials.password);
   await page.getByRole("button", { name: "Logga in" }).click();
   await expect(page).toHaveURL(/\/sv\/[^/]+$/);
 });
