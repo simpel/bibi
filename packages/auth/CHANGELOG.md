@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.4.0](https://github.com/simpel/bibi/compare/@bibi/auth-v0.3.0...@bibi/auth-v0.4.0) (2026-11-06)
+
+
+### Features
+
+* public /support help centre and /developers, replacing /docs ([81936c0](https://github.com/simpel/bibi/commit/81936c02ffd771c5944c5a5e348233017d453796))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 0.3.0
+    * @bibi/core bumped to 1.0.1
+    * @bibi/db bumped to 1.0.1
+    * @bibi/i18n bumped to 1.2.0
+    * @bibi/logger bumped to 0.1.2
+    * @bibi/mail bumped to 0.3.1
+
 ## [0.3.0](https://github.com/simpel/bibi/compare/@bibi/auth-v0.2.0...@bibi/auth-v0.3.0) (2026-11-05)
 
 

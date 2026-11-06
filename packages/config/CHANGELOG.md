@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/simpel/bibi/compare/@bibi/config-v0.2.0...@bibi/config-v0.3.0) (2026-11-06)
+
+
+### Features
+
+* public /support help centre and /developers, replacing /docs ([81936c0](https://github.com/simpel/bibi/commit/81936c02ffd771c5944c5a5e348233017d453796))
+
 ## [0.2.0](https://github.com/simpel/bibi/compare/@bibi/config-v0.1.0...@bibi/config-v0.2.0) (2026-11-05)
 
 
