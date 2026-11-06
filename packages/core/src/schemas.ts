@@ -90,6 +90,7 @@ export * from "./features/payment-account/schema";
 export * from "./features/payment-account/settings-schema";
 export * from "./features/permission/schema";
 export * from "./features/pipeline/schema";
+export * from "./features/pipeline-setup/examples-schema";
 export * from "./features/pipeline-setup/preset-schema";
 export * from "./features/pipeline-setup/schema";
 export * from "./features/price-list/schema";

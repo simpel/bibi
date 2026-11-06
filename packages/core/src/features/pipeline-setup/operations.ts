@@ -1,6 +1,12 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { regenerateRunSheets } from "../run-sheet/regenerate";
 import { activatePipeline } from "./activate";
+import { createExamples, examplesIndexed } from "./create-examples";
+import {
+  PipelineCreateExamplesInputSchema,
+  PipelineCreateExamplesOutputSchema,
+} from "./examples-schema";
 import { presetDraft } from "./preset-draft";
 import { PipelinePresetDraftInputSchema } from "./preset-schema";
 import { previewPipeline } from "./preview";
@@ -63,9 +69,36 @@ export const presetDraftPipelineSetup = defineOperation({
   handler: ({ input, context }) => presetDraft({ context, input }),
 });
 
+export const createExamplesPipelineSetup = defineOperation({
+  name: "pipelineSetup.createExamples",
+  kind: "command",
+  description:
+    "Create example orders so a new organization's pipeline board is not empty, all or " +
+    "nothing. Every text comes from the caller in the user's language. A customer, contact, " +
+    "order or line type is created with the given name only when the organization has none; " +
+    "otherwise its first one is used. Then the example customer with its contact person and " +
+    "each order with its lines over the order's time (a day from today and local start and end " +
+    "times in the organization's time zone), assigned to the caller. A line names one of the " +
+    "organization's item types (entityType.list base ITEM) and an item in it, found or created " +
+    "by name; a line whose item type does not exist is left out. An order with `advance` is " +
+    "moved from the entry status to the first later open status that is entered by hand, " +
+    "when the organization's rules allow it. Returns the customer and order ids; archive the " +
+    "customer with its orders (customer.archive) to remove the examples.",
+  input: PipelineCreateExamplesInputSchema,
+  output: PipelineCreateExamplesOutputSchema,
+  permission: "pipeline:write",
+  entityType: "pipelineSetup",
+  alsoIndexed: examplesIndexed,
+  followUp: async ({ output, context }) => {
+    for (const orderId of output.orderIds) await regenerateRunSheets({ context, orderId });
+  },
+  handler: ({ input, context }) => createExamples({ context, input }),
+});
+
 /** The guided pipeline setup (ADR 0044) and its presets (ADR 0045). */
 export const pipelineSetupOperations = [
   previewPipelineSetup,
   activatePipelineSetup,
   presetDraftPipelineSetup,
+  createExamplesPipelineSetup,
 ];

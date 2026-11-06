@@ -1,8 +1,11 @@
 import {
   activatePipelineSetup,
+  createExamplesPipelineSetup,
   type PipelineActivateOutput,
   type PipelineCellDraft,
   PipelineCellDraftSchema,
+  type PipelineCreateExamplesOutput,
+  PipelineCreateExamplesOutputSchema,
   type PipelinePreview,
   type PipelinePreviewLine,
   PipelinePreviewLineSchema,
@@ -122,3 +125,11 @@ fieldFromOperation({
   type: DraftRef,
   name: "pipelineSetupPresetDraft",
 });
+
+const ExamplesRef = objectFromSchema<PipelineCreateExamplesOutput>({
+  name: "PipelineExamples",
+  schema: PipelineCreateExamplesOutputSchema,
+  description: "The example customer and orders created for a new organization's board.",
+});
+
+mutationFromOperation({ operation: createExamplesPipelineSetup, type: ExamplesRef });

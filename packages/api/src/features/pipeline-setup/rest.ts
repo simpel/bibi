@@ -12,6 +12,11 @@ export const pipelineSetupRoutes = [
   }),
   restRoute({ operation: "pipelineSetup.activate", method: "POST", path: `${BASE}/activate` }),
   restRoute({
+    operation: "pipelineSetup.createExamples",
+    method: "POST",
+    path: `${BASE}/examples`,
+  }),
+  restRoute({
     operation: "pipelineSetup.presetDraft",
     method: "GET",
     path: `${BASE}/presets/{key}`,

@@ -262,6 +262,21 @@
         "confirmed": "Bekräftad",
         "active": "Aktiv"
       }
+    },
+    "examples": {
+      "typeNames": {
+        "customer": "Företag",
+        "contact": "Kontaktperson",
+        "order": "Bokning",
+        "line": "Programpunkt"
+      },
+      "customerName": "Exempelkund AB",
+      "contactName": "Anna Exempel",
+      "orders": {
+        "meeting": "Exempel: Styrelsemöte",
+        "conference": "Exempel: Heldagskonferens",
+        "dinner": "Exempel: Kundmiddag"
+      }
     }
   },
   "administration": {

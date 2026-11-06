@@ -6,12 +6,14 @@ import { getSetupPreset } from "@bibi/core/setup-presets";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
-import { chosenTypes } from "../../lib/setup-draft";
+import { exampleOrdersInput } from "../../lib/example-orders";
+import { categoryOf, chosenTypes } from "../../lib/setup-draft";
 import { welcomePath } from "../../lib/welcome-step";
 import { activateSetupAction } from "../../setup-actions";
 import { WelcomeStepActions } from "../welcome-step-actions";
 import { ReviewLists } from "./review-lists";
 import { useDraftGuard } from "./use-draft-guard";
+import { useExampleTexts } from "./use-example-texts";
 import { useTemplateLabel } from "./use-template-label";
 
 /** Everything chosen, each with Edit, then Activate: the baseline is saved in one go (ADR 0061) and the app opens. */
@@ -28,18 +30,18 @@ export function ReviewStep({ organization }: { organization: string }) {
     statusName: ({ name }) => label({ group: "statuses", name }),
     stateName: ({ name }) => label({ group: "states", name }),
   });
+  const exampleTexts = useExampleTexts();
+  const examples = exampleOrdersInput({ draft, texts: exampleTexts });
   const activate = () =>
     run({
-      action: () => activateSetupAction({ draft: pipeline }),
+      action: () => activateSetupAction({ draft: pipeline, examples }),
       messages: {
         pending: t("setup.review.activating", { organization }),
         success: t("activated", { organization }),
       },
-      onSuccess: () => router.push("/", { org }),
+      onSuccess: () => router.push("/pipeline", { org }),
     });
   const back = draft.kind === "empty" ? "setup/kind" : "setup/extras";
-  const categoryOf = ({ type }: { type: (typeof draft.types)[number] }) =>
-    type.category ?? (type.bookable ? "spaces" : "food");
   const spaces = draft.types
     .filter((type) => categoryOf({ type }) === "spaces" && type.checked)
     .map((type) => type.name);

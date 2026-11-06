@@ -2,32 +2,46 @@
 
 import {
   activatePipelineSetup,
+  createExamplesPipelineSetup,
   createVenue,
   type OrganizationProfileDto,
+  type PipelineCreateExamplesInput,
   type PipelineSetupDraft,
   setOrganizationSetupStatus,
   type VenueCreateInput,
   type VenueDto,
 } from "@bibi/core";
+import { getLogger } from "@bibi/logger";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
 
+export type ActivateSetupInput = {
+  draft: PipelineSetupDraft;
+  /** The example orders for the board, in the user's language (`welcome.examples`). */
+  examples: PipelineCreateExamplesInput;
+};
+
 /**
- * Review → Activate (ADR 0061): saves the baseline through `pipelineSetup.activate` and then
- * marks the setup COMPLETED. A failed activation leaves the setup PENDING.
+ * Review → Activate (ADR 0061): saves the baseline through `pipelineSetup.activate`, marks the
+ * setup COMPLETED, then creates the example orders. A failed activation leaves the setup
+ * PENDING; failed examples are logged and the setup still counts as done.
  */
 export async function activateSetupAction({
   draft,
-}: {
-  draft: PipelineSetupDraft;
-}): Promise<ActionResult<OrganizationProfileDto>> {
+  examples,
+}: ActivateSetupInput): Promise<ActionResult<OrganizationProfileDto>> {
   const activated = await runOperation({ operation: activatePipelineSetup, input: draft });
   if (!activated.ok) return toActionResult({ result: activated });
   const result = await runOperation({
     operation: setOrganizationSetupStatus,
     input: { setupStatus: "COMPLETED" },
   });
+  if (!result.ok) return toActionResult({ result });
+  const created = await runOperation({ operation: createExamplesPipelineSetup, input: examples });
+  if (!created.ok) {
+    getLogger().warn({ event: "welcome.examplesFailed", code: created.error.code });
+  }
   return toActionResult({ result });
 }
 

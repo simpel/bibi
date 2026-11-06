@@ -3,7 +3,7 @@
 import type { SetupCategory } from "@bibi/core/setup-presets";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
-import type { TypeChoice } from "../../lib/setup-draft";
+import { categoryOf, type TypeChoice } from "../../lib/setup-draft";
 import { type WelcomeStep, welcomePath } from "../../lib/welcome-step";
 import { WelcomeStepActions } from "../welcome-step-actions";
 import { SkipSetupButton } from "./skip-setup-button";
@@ -45,7 +45,7 @@ export function TypeChoiceStep({ category, back, next }: TypeChoiceStepProps) {
 
   const rows = draft.types
     .map((type, index): [TypeChoice, number] => [type, index])
-    .filter(([type]) => (type.category ?? (type.bookable ? "spaces" : "food")) === category);
+    .filter(([type]) => categoryOf({ type }) === category);
 
   const continueDisabled = category === "spaces" ? rows.length === 0 : false;
 

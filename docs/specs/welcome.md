@@ -78,9 +78,27 @@ Locale prefix (`/sv`, `/en`) omitted.
 - **`organization`:** legal name, org number, street address, postal code, city, country (default SE), website, contact email and phone. The checkbox "This address is also our first venue" is on by default and creates a venue.
 - **`kind`:** a grid of the 8 venue kinds, plus a "Start empty" link that skips to review.
 - **`spaces` / `food` / `extras`:** the kind's item types as checkboxes, with "+ Add another". A note says more can be added later in Settings → Types.
-- **`review`:** a short "You're all set" summary (organization name, the chosen kind and how many types), then Activate (`pipelineSetup.activate`, `actor=user`). It shows no statuses, states or grid: the kind's flow sets them silently. Activate sets the setup status to `COMPLETED`.
+- **`review`:** a short "You're all set" summary (organization name, the chosen kind and how many types), then Activate (`pipelineSetup.activate`, `actor=user`). It shows no statuses, states or grid: the kind's flow sets them silently. Activate sets the setup status to `COMPLETED`, creates the example orders (below) and opens the pipeline board (`/:org/pipeline`).
 - **Skip for now** (on every setup page) sets the status to `SKIPPED`. The organization keeps flow C, which it got at creation. Setup can still be changed later in Settings and through the assistant.
 - The draft lives in the `setup` layout and is copied to `sessionStorage`. A step without a draft goes back to `kind`.
+
+## Example orders
+
+So the board is not empty, Activate also runs `pipelineSetup.createExamples` with texts from `welcome.examples` in the user's language (core holds no domain words). It is one transaction; if it fails, the failure is logged (`welcome.examplesFailed`) and the setup still counts as done.
+
+- **Base types:** a customer, contact, order and line type is created (Företag/Company, Kontaktperson/Contact, Bokning/Order, Programpunkt/Line) only when the organization has none of that base; otherwise its first one is used. Without them no order could be created.
+- **Customer:** Exempelkund AB / Example Company Ltd with the contact Anna Exempel / Anna Example (`anna@example.com`).
+- **Orders**, assigned to the member who activates, times in the organization's zone, each line over the order's whole time:
+
+| Order      | When                    | Guests | Lines                                                                    | Status                  |
+| ---------- | ----------------------- | ------ | ------------------------------------------------------------------------ | ----------------------- |
+| Meeting    | in 3 days, 09:00–12:00  | 12     | first space type, first food type                                        | entry                   |
+| Conference | in 10 days, 08:30–17:00 | 40     | second space type (else the first), second and third food type (else the first) | entry           |
+| Dinner     | in 24 days, 18:00–23:00 | 24     | first space type, third food type (else the last)                        | moved on (below)        |
+
+- A line's item is named like its type (e.g. Bankettsal) and found or created in it; a line whose type does not exist is left out. "Start empty" gets the types, the customer and the orders without lines.
+- "Moved on" is the first open status after the entry status, in status order, that is entered by hand (no quote event), picked by flags, never by name: Confirmed in flow C's default template, Site visit in the conference-estate template. A move the rules refuse leaves the order in the entry status.
+- To remove them: archive the contact, then the customer with its orders (support question "What are the example orders on my board?").
 
 ## Venue kinds
 

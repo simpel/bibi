@@ -25,6 +25,7 @@ export const SALES_NAMES = [
   "statusGrid.setCell",
   "statusGrid.importTemplate",
   "pipelineSetup.activate",
+  "pipelineSetup.createExamples",
   "pipelineSetup.presetDraft",
   "pipelineSetup.preview",
   "quote.accept",

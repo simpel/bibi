@@ -262,6 +262,21 @@
         "confirmed": "Confirmed",
         "active": "Active"
       }
+    },
+    "examples": {
+      "typeNames": {
+        "customer": "Company",
+        "contact": "Contact",
+        "order": "Order",
+        "line": "Line"
+      },
+      "customerName": "Example Company Ltd",
+      "contactName": "Anna Example",
+      "orders": {
+        "meeting": "Example: Board meeting",
+        "conference": "Example: Full-day conference",
+        "dinner": "Example: Client dinner"
+      }
     }
   },
   "administration": {

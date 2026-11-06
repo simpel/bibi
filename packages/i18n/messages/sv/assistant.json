@@ -252,6 +252,7 @@
         "orderTemplate_update": "Uppdatera mall",
         "orderTemplate_archive": "Arkivera mall",
         "pipelineSetup_activate": "Sätt upp pipelinen",
+        "pipelineSetup_createExamples": "Skapa exempelbokningar",
         "deposit_create": "Skapa förskott",
         "deposit_send": "Markera förskott som skickat",
         "deposit_void": "Makulera förskott",

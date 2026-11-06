@@ -2,8 +2,7 @@ import type { OrderCreateInput } from "../../features/order/schema";
 import { createOrder } from "../../features/order/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { addDays } from "../../time/plain-date";
-import { fromZonedParts, toZonedParts } from "../../time/zoned-time";
+import { atDaysAhead } from "../../time/days-ahead";
 import type { DemoTimeZones } from "./demo-time-zones";
 import { demoTitle } from "./demo-title";
 import type { DemoOrder } from "./order-types";
@@ -13,10 +12,7 @@ type AtInput = { now: Date; day: number; time: string; timeZone: string };
 
 /** D + `day` at the local time `HH:MM` in `timeZone`. */
 export function at({ now, day, time, timeZone }: AtInput): Date {
-  const [hour = 0, minute = 0] = time.split(":").map(Number);
-  const today = toZonedParts({ instant: now, timeZone }).date;
-  const date = addDays({ date: today, days: day });
-  return fromZonedParts({ date, time: { hour, minute, second: 0 }, timeZone });
+  return atDaysAhead({ now, days: day, time, timeZone });
 }
 
 type PeriodInput = { order: DemoOrder; now: Date; timeZone: string };

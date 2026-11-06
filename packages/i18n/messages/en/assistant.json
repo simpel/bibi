@@ -252,6 +252,7 @@
         "orderTemplate_update": "Update package",
         "orderTemplate_archive": "Archive package",
         "pipelineSetup_activate": "Set up the pipeline",
+        "pipelineSetup_createExamples": "Create example orders",
         "deposit_create": "Create deposit request",
         "deposit_send": "Mark deposit request as sent",
         "deposit_void": "Void deposit request",

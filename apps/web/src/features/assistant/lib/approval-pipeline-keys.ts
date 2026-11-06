@@ -79,6 +79,7 @@ export const PIPELINE_OPERATION_KEYS = [
   "orderTemplate_update",
   "orderTemplate_archive",
   "pipelineSetup_activate",
+  "pipelineSetup_createExamples",
   "itemDemand_create",
   "itemDemand_update",
   "itemDemand_archive",

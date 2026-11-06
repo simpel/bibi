@@ -20,6 +20,10 @@
             "question": "Hur kommer jag igång?",
             "answer": "Klicka på Testa gratis på vår startsida, skapa ditt konto och namnge din organisation. Du får 14 dagar gratis med allt inkluderat.\nNär provperioden är slut lägger en administratör till ett betalsätt för att fortsätta använda Bibi."
           },
+          "exampleOrders": {
+            "question": "Vad är exempelbokningarna på min tavla?",
+            "answer": "När du har satt upp Bibi lägger vi in tre exempelbokningar så att tavlan inte är tom: ett möte, en konferens och en middag. Alla hör till kunden Exempelkund AB och använder de typer du valde.\nKlicka runt i dem, ändra och flytta dem som du vill.\nNär du är klar öppnar du Exempelkund AB under Kunder, arkiverar kontaktpersonen Anna Exempel och arkiverar sedan kunden med Arkivera även kundens alla bokningar ikryssat."
+          },
           "inviteColleagues": {
             "question": "Hur bjuder jag in mina kollegor?",
             "answer": "Gå till Administration → Medlemmar och bjud in dem via e-post. De får en länk som tar dem direkt in i er organisation.\nTio platser ingår i abonnemanget."

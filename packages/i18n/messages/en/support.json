@@ -20,6 +20,10 @@
             "question": "How do I get started?",
             "answer": "Click Try for free on our front page, create your account and name your organization. You get 14 days free with everything included.\nWhen the trial ends, an admin adds a payment method to keep using Bibi."
           },
+          "exampleOrders": {
+            "question": "What are the example orders on my board?",
+            "answer": "When you finish setting up Bibi, we add three example orders so your board isn't empty: a meeting, a conference and a dinner. They all belong to the customer Example Company Ltd and use the types you chose.\nClick around in them, edit them and move them as you like.\nWhen you're done, open Example Company Ltd under Customers, archive the contact person Anna Example, then archive the customer with Also archive all orders for this customer ticked."
+          },
           "inviteColleagues": {
             "question": "How do I invite my colleagues?",
             "answer": "Go to Administration → Members and invite them by email. They get a link that takes them straight into your organization.\nTen seats are included in the subscription."

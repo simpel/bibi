@@ -13,5 +13,6 @@ export const WELCOME_SURFACES: readonly WebSurface[] = [
   { operation: "organizationProfile.setSetupStatus", route: "/welcome/setup/review" },
   { operation: "pipelineSetup.preview", route: "/welcome/setup/review" },
   { operation: "pipelineSetup.activate", route: "/welcome/setup/review" },
+  { operation: "pipelineSetup.createExamples", route: "/welcome/setup/review" },
   { operation: "pipelineSetup.presetDraft", route: "/welcome/setup/kind" },
 ];

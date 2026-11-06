@@ -40,3 +40,8 @@ export function chosenTypes({ draft }: { draft: SetupDraft }) {
     .filter((type) => type.checked && type.name.trim().length > 0)
     .map((type) => ({ name: type.name.trim(), bookable: type.bookable }));
 }
+
+/** A type's setup step; a type from before categories falls back on its bookable flag. */
+export function categoryOf({ type }: { type: TypeChoice }): SetupCategory {
+  return type.category ?? (type.bookable ? "spaces" : "food");
+}
