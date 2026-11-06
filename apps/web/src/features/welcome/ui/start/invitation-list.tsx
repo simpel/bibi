@@ -48,7 +48,7 @@ function InvitationRow({ invitation }: { invitation: UserInvitation }) {
         success: auth("invitationAccepted"),
       },
       onSuccess: () => {
-        router.replace(ROUTES.home);
+        router.replace(ROUTES.app);
         router.refresh();
       },
     });

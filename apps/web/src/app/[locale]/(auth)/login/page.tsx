@@ -25,7 +25,7 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
   setRequestLocale(locale);
   if (!sig) await redirectIfSignedIn({ locale });
   const t = await getTranslations("auth");
-  const target = safePath({ value: next, fallback: ROUTES.home });
+  const target = safePath({ value: next, fallback: ROUTES.app });
   return (
     <AuthCard
       title={t("signInTitle")}

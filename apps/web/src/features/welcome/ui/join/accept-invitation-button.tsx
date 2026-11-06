@@ -40,7 +40,7 @@ export function AcceptInvitationButton({
         if (stay) {
           router.refresh();
         } else {
-          router.replace(ROUTES.home);
+          router.replace(ROUTES.app);
           router.refresh();
         }
       },

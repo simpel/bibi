@@ -25,7 +25,7 @@ export default async function SignUpPage({ params, searchParams }: SignUpPagePro
   setRequestLocale(locale);
   await redirectIfSignedIn({ locale });
   const t = await getTranslations("auth");
-  const target = safePath({ value: next, fallback: ROUTES.home });
+  const target = safePath({ value: next, fallback: ROUTES.app });
   return (
     <AuthCard
       title={t("signUpTitle")}

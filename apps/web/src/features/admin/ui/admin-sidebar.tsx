@@ -43,7 +43,7 @@ export function AdminSidebar({ user, organizationId }: AdminSidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip={t("backToApp")}>
-              <Link href={ROUTES.home}>
+              <Link href={ROUTES.app}>
                 <ArrowLeftIcon />
                 <span>{t("backToApp")}</span>
               </Link>

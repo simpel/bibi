@@ -1,5 +1,7 @@
 export const ROUTES = {
   home: "/",
+  /** Opens the active organization (or welcome, or login); `/` is the public front page (ADR 0073). */
+  app: "/select-organization",
   chats: "/chats",
   pipeline: "/pipeline",
   dashboard: "/data",
