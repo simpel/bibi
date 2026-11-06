@@ -31,6 +31,20 @@ const config: NextConfig = {
     "@bibi/ui",
   ],
   serverExternalPackages: ["pg", "nodemailer", "pino", "pino-pretty"],
+  // `/docs` was split into `/support` (staff) and `/developers`; old links keep working.
+  async redirects() {
+    const moves = [
+      { from: "/docs/guide/:slug", to: "/support/:slug" },
+      { from: "/docs/developers/overview", to: "/developers" },
+      { from: "/docs/developers/:slug", to: "/developers/:slug" },
+      { from: "/docs/reference/:slug", to: "/developers/reference/:slug" },
+      { from: "/docs", to: "/support" },
+    ];
+    return moves.flatMap(({ from, to }) => [
+      { source: `/:locale(sv|en)${from}`, destination: `/:locale${to}`, permanent: true },
+      { source: from, destination: to, permanent: true },
+    ]);
+  },
 };
 
 export default withNextIntl(config);

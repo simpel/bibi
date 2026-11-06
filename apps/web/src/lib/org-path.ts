@@ -9,7 +9,7 @@ export const SCOPED_RESERVED_SEGMENTS: ReadonlySet<string> = new Set([
   "new",
 ]);
 
-/** First path segments that live outside `/:org` (login, docs, pay...; ADR 0062). */
+/** First path segments that live outside `/:org` (login, support, pay...; ADR 0062). */
 export const UNSCOPED_SEGMENTS: ReadonlySet<string> = new Set(
   [...RESERVED_SLUGS].filter((segment) => !SCOPED_RESERVED_SEGMENTS.has(segment)),
 );

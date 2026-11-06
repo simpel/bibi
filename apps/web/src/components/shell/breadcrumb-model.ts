@@ -17,7 +17,8 @@ export type CrumbLabelKey =
   | "logs"
   | "aiModels"
   | "platformAdmin"
-  | "docs";
+  | "support"
+  | "developers";
 
 const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   chats: "chats",
@@ -59,7 +60,8 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   organizations: "organizations",
   logs: "logs",
   "ai-models": "aiModels",
-  docs: "docs",
+  support: "support",
+  developers: "developers",
   new: "new",
   edit: "edit",
   update: "edit",
@@ -117,12 +119,9 @@ export function buildCrumbs({ pathname }: BuildCrumbsInput): Crumb[] {
       ...(segments.length > 1 ? [{ href: pathname, labelKey: "quotes" as const }] : []),
     ];
   }
-  if (segments[0] === "docs") {
-    if (segments.length <= 1) return [{ href: "/docs", labelKey: "docs" }];
-    return [
-      { href: "/docs", labelKey: "docs" },
-      { href: pathname, labelKey: "detail" },
-    ];
+  if (segments[0] === "support" || segments[0] === "developers") {
+    const root: Crumb = { href: `/${segments[0]}`, labelKey: segments[0] };
+    return segments.length <= 1 ? [root] : [root, { href: pathname, labelKey: "detail" }];
   }
   if (
     segments[0] === "settings" &&

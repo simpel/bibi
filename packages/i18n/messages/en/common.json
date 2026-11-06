@@ -184,7 +184,8 @@
     "organizations": "Organizations",
     "logs": "System logs",
     "aiModels": "AI models",
-    "docs": "Documentation"
+    "support": "Support",
+    "developers": "Developers"
   },
   "shell": {
     "mainNavigation": "Main navigation",
@@ -523,6 +524,8 @@
     "metaDescription": "Bibi is an app that helps organisations handle their daily operation: bookings, rooms, food and drink, activities and payments in one place.",
     "login": "Log in",
     "toApp": "To the app",
-    "footer": "© Bibi"
+    "footer": "© Bibi",
+    "supportLink": "Support",
+    "developersLink": "Developers"
   }
 }

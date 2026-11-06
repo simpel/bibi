@@ -78,10 +78,12 @@ describe("buildCrumbs", () => {
   });
 
   it("builds crumbs for public documentation pages without dead intermediate links", () => {
-    expect(buildCrumbs({ pathname: "/docs" })).toEqual([{ href: "/docs", labelKey: "docs" }]);
-    expect(buildCrumbs({ pathname: "/docs/reference/mcp" })).toEqual([
-      { href: "/docs", labelKey: "docs" },
-      { href: "/docs/reference/mcp", labelKey: "detail" },
+    expect(buildCrumbs({ pathname: "/support" })).toEqual([
+      { href: "/support", labelKey: "support" },
+    ]);
+    expect(buildCrumbs({ pathname: "/developers/reference/mcp" })).toEqual([
+      { href: "/developers", labelKey: "developers" },
+      { href: "/developers/reference/mcp", labelKey: "detail" },
     ]);
   });
 

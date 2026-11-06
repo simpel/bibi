@@ -114,6 +114,7 @@
 - Work that adds or changes data or behaviour updates the demo seed and is not done until `seed:demo` runs from an empty database with green checks. Run `seed:demo` once at the end of a batch, not after each small change, and skip it when nothing touches data or behaviour.
 - **No browser checks.** Do not open the browser, take screenshots or start a preview to verify UI changes; the user checks visually. Verify with `node tools/ci/verify.mjs` (scoped to changed files), typecheck, lint and tests. Use the browser only when asked, or to debug a runtime error you cannot find from code (console and network reads, not screenshots).
 - Batch UI changes: make several edits, let the user review them in one pass, then fix from their notes.
+- **Document user-facing features on `/support`.** A change that adds or changes something users see adds or edits its question under `support.topics` in `packages/i18n/messages/{sv,en}/support.json` in the same change (the page reads topics and questions in file order, no code needed); a bigger flow also updates its step-by-step guide under `support.guides`. API, GraphQL and MCP changes go to `/developers` (`docs.json`). Write it like customer service: the question as a user would ask it, a friendly answer of two to four short sentences that says where to click, `\n` between paragraphs. No internal words (ADRs, permission keys, code names, "operation"), and only what is built, never what is planned.
 
 ## Commands
 - `docker compose up -d`: starts Postgres and Mailpit (mail at http://localhost:8025).

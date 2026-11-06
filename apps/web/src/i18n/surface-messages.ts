@@ -22,9 +22,10 @@ export const AUTH_NAMESPACES = [
   "profile",
 ] as const satisfies readonly MessageNamespace[];
 
-/** Namespaces required by client components under `(docs)/docs`. */
+/** Namespaces required by client components under `(docs)`: `/support` and `/developers`. */
 export const DOCS_NAMESPACES = [
   ...ROOT_NAMESPACES,
+  "nav",
   "docs",
 ] as const satisfies readonly MessageNamespace[];
 
@@ -60,6 +61,7 @@ export const NON_APP_NAMESPACES = [
   "docs",
   "welcome",
   "site",
+  "support",
 ] as const satisfies readonly MessageNamespace[];
 
 const nonAppSet = new Set<string>(NON_APP_NAMESPACES);

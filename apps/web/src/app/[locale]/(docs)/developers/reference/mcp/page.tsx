@@ -13,7 +13,7 @@ type McpReferencePageProps = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: McpReferencePageProps) {
   const { locale } = await params;
-  const text = await loadDocText({ locale, key: "reference.mcp" });
+  const text = await loadDocText({ locale, namespace: "docs", key: "reference.mcp" });
   return { title: text.title, description: text.lead };
 }
 
@@ -21,10 +21,10 @@ export async function generateMetadata({ params }: McpReferencePageProps) {
 export default async function McpReferencePage({ params }: McpReferencePageProps) {
   const { locale } = await params;
   setRequestLocale(resolveLocale({ value: locale }));
-  const text = await loadDocText({ locale, key: "reference.mcp" });
+  const text = await loadDocText({ locale, namespace: "docs", key: "reference.mcp" });
   return (
     <div className="grid min-w-0 gap-8">
-      <CrumbName href="/docs/reference/mcp" name={text.title} />
+      <CrumbName href="/developers/reference/mcp" name={text.title} />
       <DocArticle title={text.title} lead={text.lead} markdown={text.body} />
       <ReferenceExplorer entries={mcpReference()} />
     </div>

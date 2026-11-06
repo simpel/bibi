@@ -67,6 +67,8 @@ const envSchema = z
      * Unset: one host serves everything and the public site is only reachable at `/<locale>/site`.
      */
     PUBLIC_URL: z.string().url().optional(),
+    /** Address shown on the public `/support` page. Unset: the page points to the assistant and admins only. */
+    SUPPORT_EMAIL: z.string().email().optional(),
     MCP_URL: z.string().url().default("http://localhost:3331"),
     /** Storybook of `@bibi/ui` (`pnpm --filter @bibi/ui dev`), shown in the dev banner. */
     STORYBOOK_URL: z.string().url().default("http://localhost:3332"),

@@ -1,5 +1,6 @@
 import { PageContainer } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/lib/navigation";
 import { SiteAudience } from "./site-audience";
 import { SiteCta } from "./site-cta";
 import { SiteFeatures } from "./site-features";
@@ -25,7 +26,17 @@ export async function SitePage({ locale, appUrl }: SitePageProps) {
         <SiteCta locale={locale} appUrl={appUrl} />
       </main>
       <footer className="border-t py-6 text-sm text-muted-foreground">
-        <PageContainer>{t("footer")}</PageContainer>
+        <PageContainer className="flex flex-wrap items-center justify-between gap-4">
+          <span>{t("footer")}</span>
+          <nav className="flex gap-6">
+            <Link href="/support" className="hover:text-foreground">
+              {t("supportLink")}
+            </Link>
+            <Link href="/developers" className="hover:text-foreground">
+              {t("developersLink")}
+            </Link>
+          </nav>
+        </PageContainer>
       </footer>
     </div>
   );

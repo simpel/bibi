@@ -184,7 +184,8 @@
     "organizations": "Organisationer",
     "logs": "Systemloggar",
     "aiModels": "AI-modeller",
-    "docs": "Dokumentation"
+    "support": "Support",
+    "developers": "Utvecklare"
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",
@@ -523,6 +524,8 @@
     "metaDescription": "Bibi är en app som hjälper organisationer att hantera sin dagliga verksamhet: bokningar, lokaler, mat och dryck, aktiviteter och betalningar på ett ställe.",
     "login": "Logga in",
     "toApp": "Till appen",
-    "footer": "© Bibi"
+    "footer": "© Bibi",
+    "supportLink": "Support",
+    "developersLink": "Utvecklare"
   }
 }

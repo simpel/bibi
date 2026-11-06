@@ -3,11 +3,12 @@ import { getEnv } from "@bibi/config";
 import { resolveLocale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 
-export type DocTextInput = { locale: string; key: string };
+/** `docs` holds the developer pages, `support` the staff guides. */
+export type DocTextInput = { locale: string; namespace: "docs" | "support"; key: string };
 
 export type DocText = { title: string; lead: string; body: string };
 
-/** Keys are built from the page registry, so the docs namespace is read untyped here. */
+/** Keys are built from the page registries, so the namespace is read untyped here. */
 type DocsTranslator = {
   (key: string): string;
   raw(key: string): unknown;
@@ -21,10 +22,10 @@ function fillUrls({ text }: { text: string }): string {
 }
 
 /** Title, lead and markdown body of a docs page. Bodies are read raw (no ICU parsing). */
-export async function loadDocText({ locale, key }: DocTextInput): Promise<DocText> {
+export async function loadDocText({ locale, namespace, key }: DocTextInput): Promise<DocText> {
   const t = (await getTranslations({
     locale: resolveLocale({ value: locale }),
-    namespace: "docs",
+    namespace,
   })) as unknown as DocsTranslator;
   return {
     title: t(`${key}.title`),
