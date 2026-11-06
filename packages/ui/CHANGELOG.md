@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/ui-v1.0.1...@bibi/ui-v1.1.0) (2026-11-06)
+
+
+### Features
+
+* create an order from the pipeline board's entry column ([b2bb99d](https://github.com/simpel/bibi/commit/b2bb99d524887bddd2db053e59d5e734cebc09ce))
+
 ## [1.0.1](https://github.com/simpel/bibi/compare/@bibi/ui-v1.0.0...@bibi/ui-v1.0.1) (2026-11-06)
 
 

@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/ai-v1.0.2...@bibi/ai-v1.1.0) (2026-11-06)
+
+
+### Features
+
+* magic link is the only sign-in, passwords removed ([105ae06](https://github.com/simpel/bibi/commit/105ae068a0e194cf2bc6afcbe7248e9f4f4ff890))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/auth bumped to 0.5.0
+    * @bibi/core bumped to 1.1.0
+
 ## [1.0.2](https://github.com/simpel/bibi/compare/@bibi/ai-v1.0.1...@bibi/ai-v1.0.2) (2026-11-06)
 
 

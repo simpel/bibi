@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/core-v1.0.1...@bibi/core-v1.1.0) (2026-11-06)
+
+
+### Features
+
+* create an order from the pipeline board's entry column ([b2bb99d](https://github.com/simpel/bibi/commit/b2bb99d524887bddd2db053e59d5e734cebc09ce))
+* new organizations start with example orders and the base types to create orders ([2e9e74b](https://github.com/simpel/bibi/commit/2e9e74b6e5291a5a317be4accdd1fadf722fcb63))
+* setup review shows template statuses and states in the user's language ([a0a58c0](https://github.com/simpel/bibi/commit/a0a58c0a2306aa33a33d93762d126ee292948b35))
+
 ## [1.0.1](https://github.com/simpel/bibi/compare/@bibi/core-v1.0.0...@bibi/core-v1.0.1) (2026-11-06)
 
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.5.0](https://github.com/simpel/bibi/compare/@bibi/auth-v0.4.0...@bibi/auth-v0.5.0) (2026-11-06)
+
+
+### Features
+
+* magic link is the only sign-in, passwords removed ([105ae06](https://github.com/simpel/bibi/commit/105ae068a0e194cf2bc6afcbe7248e9f4f4ff890))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 1.1.0
+    * @bibi/i18n bumped to 1.3.0
+    * @bibi/mail bumped to 0.4.0
+
 ## [0.4.0](https://github.com/simpel/bibi/compare/@bibi/auth-v0.3.0...@bibi/auth-v0.4.0) (2026-11-06)
 
 
