@@ -55,8 +55,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=${{ matrix.app }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+          # No layer cache: every release changes the source, so only the `pnpm install` layer (~20 s)
+          # could hit, while exporting the cache (mode=max) took ~6 of the web image's ~10 minutes.
 
   deploy:
     # Rolls out the SHA that publish-images just pushed (ADR 0013). Rollback: rollback.yml.
