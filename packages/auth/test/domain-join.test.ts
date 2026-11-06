@@ -8,27 +8,18 @@ import {
   loadJoinableOrganizations,
   setPrimaryOrganization,
 } from "../src/index";
-import { cookieHeaders, createOrg, PASSWORD } from "./helpers";
+import { signInByLink } from "../src/testing/sign-in-by-link";
+import { createOrg } from "./helpers";
 
-/** Signs up with `email`, optionally marks it verified, and signs in again for a fresh session. */
+/** Signs up with `email` by magic link (verified), optionally marking the address unverified. */
 const signUpAt = async ({ email, verified }: { email: string; verified: boolean }) => {
-  const { response } = await getAuth().api.signUpEmail({
-    body: { email, password: PASSWORD, name: "Test User" },
-    returnHeaders: true,
-  });
-  if (verified) {
-    await getDb().user.update({ where: { id: response.user.id }, data: { emailVerified: true } });
-  }
-  return { userId: response.user.id, email, headers: await signInAt({ email }) };
+  const { userId, headers } = await signInByLink({ email, name: "Test User" });
+  if (!verified)
+    await getDb().user.update({ where: { id: userId }, data: { emailVerified: false } });
+  return { userId, email, headers };
 };
 
-const signInAt = async ({ email }: { email: string }) => {
-  const { headers } = await getAuth().api.signInEmail({
-    body: { email, password: PASSWORD },
-    returnHeaders: true,
-  });
-  return cookieHeaders({ response: headers });
-};
+const signInAt = async ({ email }: { email: string }) => (await signInByLink({ email })).headers;
 
 const activeOrganization = async ({ headers }: { headers: Headers }) =>
   (await getAuth().api.getSession({ headers }))?.session.activeOrganizationId ?? null;

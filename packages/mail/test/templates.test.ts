@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   renderInvitationEmail,
   renderMagicLinkEmail,
-  renderPasswordResetEmail,
   renderReminderEmail,
   renderSeatRequestEmail,
 } from "../src/index";
@@ -31,24 +30,6 @@ describe("Email templates design and typography", () => {
     expect(en.subject).toBe("Sign in to Bibi");
     expect(en.text).toContain("Click the button below to sign in to Bibi");
     expect(en.html).toContain("Sign in to Bibi");
-  });
-
-  it("renders Password Reset email", () => {
-    const sv = renderPasswordResetEmail({
-      url: "https://bibi.test/reset-password?token=abc",
-      locale: "sv",
-    });
-    expect(sv.subject).toBe("Återställ ditt lösenord");
-    expect(sv.text).toContain("https://bibi.test/reset-password?token=abc");
-    expect(sv.html).toContain("#1a4e30");
-    expect(sv.html).toContain("Återställ lösenord");
-
-    const en = renderPasswordResetEmail({
-      url: "https://bibi.test/reset-password?token=abc",
-      locale: "en",
-    });
-    expect(en.subject).toBe("Reset your password");
-    expect(en.html).toContain("Reset password");
   });
 
   it("renders Invitation email with button and manual join code", () => {

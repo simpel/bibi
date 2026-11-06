@@ -8,7 +8,7 @@ Bibi has several kinds of clients: staff in the web UI, REST integrations from o
 
 ## Decision
 - Better Auth is the authentication solution.
-- Web (staff only): email and password, plus magic link (the default tab). The one-time code (OTP) was dropped 2026-11-06: it duplicated the magic link and added a second code path to secure and translate. Guests and customers see only the payment page, never the booking system UI.
+- Web (staff only): magic link only (since 2026-11-06, see the addendum; it was email and password plus magic link). The one-time code (OTP) was dropped 2026-11-06: it duplicated the magic link and added a second code path to secure and translate. Guests and customers see only the payment page, never the booking system UI.
 - REST: API keys (Better Auth API key plugin), bound to an organization.
 - MCP: OAuth through the Better Auth OAuth plugin. The client gets a token that represents the signed-in user. No separate service-account path.
 - The AI assistant in the web app uses the same MCP surface with the user's token. It gets no higher permissions than the user.
@@ -30,3 +30,11 @@ Bibi has several kinds of clients: staff in the web UI, REST integrations from o
 - `apiKey.create|list|update|revoke` need `apiKey:*`, which comes only from the `admin` preset. `apiKey.update` renames and changes the preset.
 - The actor of a key request is `{ type: "apiKey", userId: null, apiKeyId }` and the audit actor type is `API_KEY`. A key cannot run `self:*` operations (they are personal).
 - Existing keys were dropped (no production users).
+
+## Addendum 2026-11-06: magic link only
+- Web sign-in and sign-up use the magic link only. Email and password is turned off (`emailAndPassword.enabled: false`), with the password reset mail, the password tab and the change-password section. Rejected: keeping password as a second tab. It is a second credential to secure, reset and support, and staff already reach their work mail.
+- Sign-up asks for name and email and mails a link; the first link creates the user (Better Auth's magic link sign-up, email verified).
+- Inside an OAuth authorize flow the link returns to the login page with the signed query, which resumes the flow with `oauth2.continue({ postLogin: true })`. The signed query expires, so a link opened too late restarts the flow from the client.
+- Sign-in depends on mail delivery. Production mail must be verified in Resend before a deploy that relies on it.
+- Existing `credential` accounts stay in the database unused; those users sign in with a link to the same email.
+- Tests sign users in through the same magic link verification (`@bibi/auth/testing`), not a password.

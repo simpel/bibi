@@ -9,7 +9,6 @@ import { OauthGrantSection } from "@/features/oauth-grant/ui/oauth-grant-section
 import { DisplayFormatForm } from "@/features/user-settings/ui/display-format-form";
 import { runOperation } from "@/server/run-operation";
 import { ProfileNameForm } from "./profile-name-form";
-import { ProfilePasswordForm } from "./profile-password-form";
 import { ProfileSectionNav } from "./profile-section-nav";
 import type { ProfileSectionId } from "./profile-sections";
 import { ProfileSessions } from "./profile-sessions";
@@ -43,7 +42,7 @@ const NO_FORMATS = {
 };
 
 /**
- * Profile page body: name, email (read-only), formats, notifications, password, sessions and
+ * Profile page body: name, email (read-only), formats, notifications, sessions and
  * connected apps, with an in-page nav.
  */
 export async function ProfileView({ name, email, locale }: ProfileViewProps) {
@@ -65,13 +64,6 @@ export async function ProfileView({ name, email, locale }: ProfileViewProps) {
           <DisplayFormatForm formats={settings.ok ? settings.value : NO_FORMATS} />
         </ProfileCard>
         <NotificationPreferencesSection id="notifications" locale={locale} />
-        <ProfileCard
-          id="password"
-          title={t("passwordTitle")}
-          description={t("passwordDescription")}
-        >
-          <ProfilePasswordForm />
-        </ProfileCard>
         <ProfileCard
           id="sessions"
           title={t("sessionsTitle")}

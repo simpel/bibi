@@ -1,10 +1,10 @@
 import { getAuth, mcpResourceUrl } from "@bibi/auth";
+import { signInByLink } from "@bibi/auth/testing";
 import { getEnv } from "@bibi/config";
 import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 
-const PASSWORD = "correct-horse-battery";
 /** Redirect used by packages/auth's OAuth tests for the same client id (shared test database). */
 const AUTH_TEST_REDIRECT = "http://localhost:3330/oauth/callback";
 /** Same default as `provision:oauth` and `@bibi/auth` (assistant token minting). */
@@ -13,29 +13,17 @@ const assistantRedirectUri = () =>
 
 export type TestUser = { userId: string; organizationId: string; cookies: Headers };
 
-const cookieHeaders = ({ response }: { response: Headers }): Headers => {
-  const cookie = response
-    .getSetCookie()
-    .map((value) => value.split(";")[0])
-    .join("; ");
-  return new Headers({ cookie });
-};
-
 /** Fresh user with a session whose active organization is a new org they own. */
 export async function signUpWithOrg(): Promise<TestUser> {
   const email = `ai-${createId()}@example.test`;
-  const { headers, response } = await getAuth().api.signUpEmail({
-    body: { email, password: PASSWORD, name: "AI Test" },
-    returnHeaders: true,
-  });
-  const cookies = cookieHeaders({ response: headers });
+  const { userId, headers: cookies } = await signInByLink({ email, name: "AI Test" });
   const slug = `org-${createId()}`;
   const org = await getAuth().api.createOrganization({
     headers: cookies,
     body: { name: slug, slug, metadata: { timeZone: FALLBACK_TIME_ZONE } },
   });
   if (!org) throw new Error("organization not created");
-  return { userId: response.user.id, organizationId: org.id, cookies };
+  return { userId, organizationId: org.id, cookies };
 }
 
 /** The first-party web client (`WEB_OAUTH_CLIENT_ID`) as `provision:oauth` creates it. */

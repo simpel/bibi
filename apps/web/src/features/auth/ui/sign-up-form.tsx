@@ -4,38 +4,34 @@ import { Button, Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
-import { authClient } from "@/lib/auth-client";
-import { useRouter } from "@/lib/navigation";
+import { EmailField } from "@/components/form/email-field";
+import { TextField } from "@/components/form/text-field";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { SignUpSchema, type SignUpValues } from "./auth-schemas";
-import { finishSignIn } from "./finish-sign-in";
-import { SignUpFields } from "./sign-up-fields";
-import { useAuthFormAction } from "./use-auth-form-action";
+import { useSendLink } from "./use-send-link";
 
 export type SignUpFormProps = { next: string };
 
-/** Email + password sign-up; the new session has no organization yet, so the guard routes on. */
+/**
+ * Sign-up: name and email, then a link by mail. The first link creates the user; the new session
+ * has no organization yet, so the guard routes on to /welcome (ADR 0005).
+ */
 export function SignUpForm({ next }: SignUpFormProps) {
   const t = useTranslations("auth");
-  const router = useRouter();
   const messages = useZodMessages();
+  const { sentTo, pending, send } = useSendLink({ next });
   const form = useForm<SignUpValues>({
     mode: "onBlur",
     resolver: zodResolver(SignUpSchema, messages),
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { name: "", email: "" },
   });
-  const { pending, run } = useAuthFormAction();
-  const onSubmit = form.handleSubmit((values) =>
-    run({
-      call: () => authClient.signUp.email(values),
-      messages: { pending: t("creatingAccount"), success: t("accountCreated") },
-      onSuccess: () => finishSignIn({ router, next }),
-    }),
-  );
+  const onSubmit = form.handleSubmit((values) => send(values));
+  if (sentTo) return <output className="block">{t("magicLinkSent", { email: sentTo })}</output>;
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} noValidate className="grid gap-4">
-        <SignUpFields form={form} />
+        <TextField form={form} name="name" label={t("name")} autoComplete="name" required />
+        <EmailField form={form} name="email" label={t("email")} required />
         <Button type="submit" disabled={pending}>
           {t("signUp")}
         </Button>

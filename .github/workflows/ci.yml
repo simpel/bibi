@@ -75,6 +75,10 @@ jobs:
         options: >-
           --health-cmd "pg_isready -U bibi" --health-interval 5s
           --health-timeout 3s --health-retries 10
+      # Sign-in is magic link only (ADR 0005): e2e reads the link from Mailpit's API.
+      mailpit:
+        image: axllent/mailpit:latest
+        ports: ["1025:1025", "8025:8025"]
     env:
       DATABASE_URL: postgresql://bibi:bibi@localhost:5432/bibi
       BETTER_AUTH_SECRET: ci-secret-ci-secret-ci-secret-123

@@ -1,5 +1,6 @@
 import { createRestHandler } from "@bibi/api";
 import { getAuth, resolveExecuteContext } from "@bibi/auth";
+import { signInByLink } from "@bibi/auth/testing";
 import { createApiKey, createCoreOperations, execute, revokeApiKey } from "@bibi/core";
 import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { getDb } from "@bibi/db";
@@ -25,15 +26,7 @@ const get = async ({ key }: { key: string }) =>
 async function ownerWithKey() {
   const email = `rest-${createId()}@example.test`;
   const auth = getAuth();
-  const { headers } = await auth.api.signUpEmail({
-    body: { email, password: "correct-horse-battery", name: "Rest Owner" },
-    returnHeaders: true,
-  });
-  const cookie = headers
-    .getSetCookie()
-    .map((value) => value.split(";")[0])
-    .join("; ");
-  const session = new Headers({ cookie });
+  const { headers: session } = await signInByLink({ email, name: "Rest Owner" });
   const slug = `org-${createId()}`;
   await auth.api.createOrganization({
     headers: session,

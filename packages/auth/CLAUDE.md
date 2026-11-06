@@ -1,6 +1,6 @@
 # @bibi/auth – context for Claude
 
-Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, organization, API key (`@better-auth/api-key`), MCP/OAuth 2.1 (`@better-auth/mcp` + `jwt` + `cimd`). See ADR 0004 and 0005. Security-critical: changes are reviewed at Opus level.
+Better Auth 1.7.7 (Prisma adapter) + plugins: magic link (the only web sign-in; email/password off, ADR 0005), organization, API key (`@better-auth/api-key`), MCP/OAuth 2.1 (`@better-auth/mcp` + `jwt` + `cimd`). See ADR 0004 and 0005. Security-critical: changes are reviewed at Opus level.
 
 ## The contract
 - `resolveExecuteContext({ headers })` → `Result<ExecuteContext>` is the **only** caller lookup for web, GraphQL, REST and MCP. Never build `createExecuteContext` yourself in a surface.

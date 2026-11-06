@@ -5,7 +5,6 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { authAfterHook, authLogger } from "./auth-logging";
 import { defaultActiveOrganization } from "./default-active-organization";
-import { sendPasswordResetMail } from "./mail";
 import { adminPlugin, DISABLED_ADMIN_PATHS } from "./plugins/admin";
 import { apiKeyPlugin, DISABLED_API_KEY_PATHS } from "./plugins/api-key";
 import { devSwitchUserPlugin } from "./plugins/dev-switch-user";
@@ -41,13 +40,8 @@ export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
     trustedOrigins: [env.WEB_URL, env.MCP_URL],
     ...HARDENING,
     ...(withoutDatabase ? {} : { database: prismaAdapter(db, { provider: "postgresql" }) }),
-    emailAndPassword: {
-      enabled: true,
-      minPasswordLength: 10,
-      sendResetPassword: async ({ user, url }) => {
-        await sendPasswordResetMail({ to: user.email, url, userId: user.id });
-      },
-    },
+    // Magic link only (ADR 0005, addendum 2026-11-06).
+    emailAndPassword: { enabled: false },
     databaseHooks: {
       session: {
         create: {

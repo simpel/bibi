@@ -128,5 +128,5 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 ## Pitfalls
 - `loading.tsx`/`error.tsx`/`not-found.tsx` need `// biome-ignore lint/style/noDefaultExport` (see `[locale]/error.tsx`).
 - Auth pages opened by OAuth (`sig` in the query) must not redirect signed-in users.
-- A magic link during an ongoing OAuth flow does not return to authorize (not verified). Password continues the flow.
+- Sign-in is magic link only (ADR 0005). Inside an OAuth flow the link returns to `/login?<signed query>`, which renders `OAuthResume` (`oauth2.continue({ postLogin: true })`) instead of the form.
 - The web font for `--font-serif` is not loaded yet; the system serif is used until the Claude Design export exists.

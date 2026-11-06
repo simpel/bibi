@@ -1,8 +1,7 @@
 import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { createId } from "@paralleldrive/cuid2";
 import { getAuth } from "../src/index";
-
-export const PASSWORD = "correct-horse-battery";
+import { signInByLink } from "../src/testing/sign-in-by-link";
 
 export type TestUser = { userId: string; email: string; headers: Headers };
 
@@ -17,24 +16,18 @@ export function cookieHeaders({ response }: CookieHeadersInput): Headers {
   return new Headers({ cookie });
 }
 
-/** Signs up a fresh user (unique email) and returns session headers. */
+/** Signs up a fresh user (unique email) by magic link and returns session headers. */
 export async function signUp(): Promise<TestUser> {
   const email = `user-${createId()}@example.test`;
-  const { headers, response } = await getAuth().api.signUpEmail({
-    body: { email, password: PASSWORD, name: "Test User" },
-    returnHeaders: true,
-  });
-  return { userId: response.user.id, email, headers: cookieHeaders({ response: headers }) };
+  const { userId, headers } = await signInByLink({ email, name: "Test User" });
+  return { userId, email, headers };
 }
 
 export type SignInInput = { email: string };
 
+/** A fresh session for an existing user, by magic link. */
 export async function signIn({ email }: SignInInput): Promise<Headers> {
-  const { headers } = await getAuth().api.signInEmail({
-    body: { email, password: PASSWORD },
-    returnHeaders: true,
-  });
-  return cookieHeaders({ response: headers });
+  return (await signInByLink({ email })).headers;
 }
 
 export type CreateOrgInput = { headers: Headers };

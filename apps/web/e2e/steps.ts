@@ -1,27 +1,41 @@
 import { expect, type Page } from "@playwright/test";
 import { gotoApp } from "./goto-app";
+import { openMagicLink } from "./mailbox";
 import { completeProfile, nameOrganization } from "./welcome-steps";
 
-export type Credentials = { name: string; email: string; password: string };
+export type Credentials = { name: string; email: string };
 
 export function uniqueCredentials(): Credentials {
   const stamp = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
-  return { name: "E2E Tester", email: `e2e-${stamp}@example.com`, password: "e2e-password-123" };
+  return { name: "E2E Tester", email: `e2e-${stamp}@example.com` };
 }
 
 export type PageInput = { page: Page };
 
-/** Sign up with email + password; a new user has no organization, so we land on /welcome. */
+/** Sign up with name and email, then open the mailed link; a new user has no organization yet. */
 export async function signUp({ page, credentials }: PageInput & { credentials: Credentials }) {
   await page.goto("/");
   await page.getByRole("link", { name: "Testa gratis" }).first().click();
   await expect(page).toHaveURL(/\/sv\/sign-up/);
   await page.getByLabel("Namn").fill(credentials.name);
   await page.getByLabel("E-post").fill(credentials.email);
-  await page.getByLabel("Lösenord").fill(credentials.password);
+  const sentAfter = new Date(Date.now() - 1000);
   await page.getByRole("button", { name: "Skapa konto" }).click();
-  // Sign-up creates the account and session before redirecting; slow under load.
+  await expect(
+    page.getByText(`Vi har skickat en inloggningslänk till ${credentials.email}.`),
+  ).toBeVisible();
+  await openMagicLink({ page, email: credentials.email, sentAfter });
+  // The link creates the account and session before redirecting; slow under load.
   await expect(page).toHaveURL(/\/sv\/welcome$/, { timeout: 15_000 });
+}
+
+/** Signs in from the login page with a mailed link. */
+export async function signIn({ page, email }: PageInput & { email: string }) {
+  await page.getByLabel("E-post").fill(email);
+  const sentAfter = new Date(Date.now() - 1000);
+  await page.getByRole("button", { name: "Skicka inloggningslänk" }).click();
+  await expect(page.getByText(`Vi har skickat en inloggningslänk till ${email}.`)).toBeVisible();
+  await openMagicLink({ page, email, sentAfter });
 }
 
 /**
