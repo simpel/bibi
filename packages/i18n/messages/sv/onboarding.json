@@ -144,13 +144,12 @@
       "remove": "Ta bort",
       "review": {
         "title": "Så här ser er uppsättning ut",
-        "description": "En startpunkt. Inget sparas förrän du aktiverar.",
+        "description": "Kontrollera att allt stämmer. Inget sparas förrän du aktiverar.",
         "spaces": "Lokaler & rum",
         "food": "Mat & dryck",
         "extras": "Utrustning & tillval",
         "book": "Lokaler & rum",
         "sell": "Mat & dryck",
-        "path": "Hur en förfrågan går vidare",
         "none": "Inget än",
         "activate": "Aktivera",
         "activating": "Sätter upp {organization}…"
@@ -239,6 +238,30 @@
       "rehearsalRoom": "Repetitionsrum",
       "preShowDinner": "Middag före föreställning",
       "intervalPackage": "Pauspaket"
+    },
+    "templates": {
+      "statuses": {
+        "lead": "Förfrågan",
+        "new": "Ny förfrågan",
+        "site-visit": "Visning",
+        "quote-sent": "Offert skickad",
+        "confirmed": "Bekräftad",
+        "final-count-locked": "Slutantal låst",
+        "completed": "Genomförd",
+        "lost": "Förlorad",
+        "cancelled": "Avbokad"
+      },
+      "states": {
+        "prebooked": "Preliminärbokad",
+        "booked": "Bokad",
+        "released": "Släppt",
+        "estimated": "Uppskattad",
+        "ordered": "Beställd",
+        "locked": "Låst",
+        "planned": "Planerad",
+        "confirmed": "Bekräftad",
+        "active": "Aktiv"
+      }
     }
   },
   "administration": {

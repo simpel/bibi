@@ -144,13 +144,12 @@
       "remove": "Remove",
       "review": {
         "title": "Here's your setup",
-        "description": "A starting point. Nothing is saved until you activate it.",
+        "description": "Check that everything looks right. Nothing is saved until you activate.",
         "spaces": "Spaces & rooms",
         "food": "Food & beverage",
         "extras": "Equipment & extras",
         "book": "Spaces & rooms",
         "sell": "Food & beverage",
-        "path": "How a request moves",
         "none": "None yet",
         "activate": "Activate",
         "activating": "Setting up {organization}…"
@@ -239,6 +238,30 @@
       "rehearsalRoom": "Rehearsal room",
       "preShowDinner": "Pre-show dinner",
       "intervalPackage": "Interval package"
+    },
+    "templates": {
+      "statuses": {
+        "lead": "Lead",
+        "new": "New",
+        "site-visit": "Site visit",
+        "quote-sent": "Quote sent",
+        "confirmed": "Confirmed",
+        "final-count-locked": "Final count locked",
+        "completed": "Completed",
+        "lost": "Lost",
+        "cancelled": "Cancelled"
+      },
+      "states": {
+        "prebooked": "Prebooked",
+        "booked": "Booked",
+        "released": "Released",
+        "estimated": "Estimated",
+        "ordered": "Ordered",
+        "locked": "Locked",
+        "planned": "Planned",
+        "confirmed": "Confirmed",
+        "active": "Active"
+      }
     }
   },
   "administration": {

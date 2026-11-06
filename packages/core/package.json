@@ -11,6 +11,7 @@
     "./dev-notification": "./src/features/notification/dev-test-notification.ts",
     "./dev-inbox-message": "./src/features/inbound-message/dev-test-message.ts",
     "./pipeline-setup-templates": "./src/features/pipeline-setup/draft-from-templates.ts",
+    "./pipeline-setup-localize": "./src/features/pipeline-setup/localize-draft.ts",
     "./setup-presets": "./src/templates/setup-presets/setup-presets.ts",
     "./domain-join": "./src/organization/join-by-domain.ts",
     "./known-member": "./src/organization/known-member.ts",

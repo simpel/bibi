@@ -1,5 +1,6 @@
 "use client";
 
+import { localizeDraft } from "@bibi/core/pipeline-setup-localize";
 import { draftFromTypes } from "@bibi/core/pipeline-setup-templates";
 import { getSetupPreset } from "@bibi/core/setup-presets";
 import { useTranslations } from "next-intl";
@@ -10,11 +11,10 @@ import { welcomePath } from "../../lib/welcome-step";
 import { activateSetupAction } from "../../setup-actions";
 import { WelcomeStepActions } from "../welcome-step-actions";
 import { ReviewLists } from "./review-lists";
-import { ReviewPath } from "./review-path";
-import { SkipSetupButton } from "./skip-setup-button";
 import { useDraftGuard } from "./use-draft-guard";
+import { useTemplateLabel } from "./use-template-label";
 
-/** Everything chosen, then Activate: the baseline is saved in one go (ADR 0061). */
+/** Everything chosen, each with Edit, then Activate: the baseline is saved in one go (ADR 0061) and the app opens. */
 export function ReviewStep({ organization }: { organization: string }) {
   const t = useTranslations("welcome");
   const router = useRouter();
@@ -22,7 +22,12 @@ export function ReviewStep({ organization }: { organization: string }) {
   const { run, pending } = useToastAction();
   const types = chosenTypes({ draft });
   const statuses = getSetupPreset({ key: draft.kind ?? "empty" }).statuses;
-  const pipeline = draftFromTypes({ statuses, types, existingTypes: [] });
+  const label = useTemplateLabel();
+  const pipeline = localizeDraft({
+    draft: draftFromTypes({ statuses, types, existingTypes: [] }),
+    statusName: ({ name }) => label({ group: "statuses", name }),
+    stateName: ({ name }) => label({ group: "states", name }),
+  });
   const activate = () =>
     run({
       action: () => activateSetupAction({ draft: pipeline }),
@@ -30,7 +35,7 @@ export function ReviewStep({ organization }: { organization: string }) {
         pending: t("setup.review.activating", { organization }),
         success: t("activated", { organization }),
       },
-      onSuccess: () => router.push(welcomePath({ step: "done" }), { org }),
+      onSuccess: () => router.push("/", { org }),
     });
   const back = draft.kind === "empty" ? "setup/kind" : "setup/extras";
   const categoryOf = ({ type }: { type: (typeof draft.types)[number] }) =>
@@ -52,13 +57,11 @@ export function ReviewStep({ organization }: { organization: string }) {
         activate();
       }}
     >
-      <ReviewLists spaces={spaces} food={food} extras={extras} />
-      <ReviewPath statuses={pipeline.statuses} />
+      <ReviewLists org={org} spaces={spaces} food={food} extras={extras} />
       <WelcomeStepActions
         back={{ href: welcomePath({ step: back }), org }}
         pending={pending}
         label={t("setup.review.activate")}
-        aside={<SkipSetupButton org={org} />}
       />
     </form>
   );
