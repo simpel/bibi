@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.6.0](https://github.com/simpel/bibi/compare/@bibi/auth-v0.5.0...@bibi/auth-v0.6.0) (2026-11-07)
+
+
+### Features
+
+* administration area with its own sidebar replaces the settings hubs ([caef1fd](https://github.com/simpel/bibi/commit/caef1fdd1589443e6f4597f8312d1ca6fb7e708b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 1.2.0
+    * @bibi/db bumped to 1.1.0
+    * @bibi/i18n bumped to 1.4.0
+    * @bibi/mail bumped to 0.5.0
+
 ## [0.5.0](https://github.com/simpel/bibi/compare/@bibi/auth-v0.4.0...@bibi/auth-v0.5.0) (2026-11-06)
 
 

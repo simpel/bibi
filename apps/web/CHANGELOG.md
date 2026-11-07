@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.4.0](https://github.com/simpel/bibi/compare/@bibi/web-v1.3.0...@bibi/web-v1.4.0) (2026-11-07)
+
+
+### Features
+
+* admin lists are full data tables and the admin sidebar searches every setting ([4528c37](https://github.com/simpel/bibi/commit/4528c376fa4663b39db4d916ea41acd3fedc9f1f))
+* admin pages are sections with sidebar anchors, no tabs ([0e5dcba](https://github.com/simpel/bibi/commit/0e5dcbae6a1eee4be2504ba0760557b507d7532c))
+* administration area with its own sidebar replaces the settings hubs ([caef1fd](https://github.com/simpel/bibi/commit/caef1fdd1589443e6f4597f8312d1ca6fb7e708b))
+* the payment operator is stored, and empty admin sections stay off the page ([3645afe](https://github.com/simpel/bibi/commit/3645afe91e52627dedc7202ef7d6ae549cfb28b6))
+
+
+### Bug Fixes
+
+* admin page titles and breadcrumbs match the sidebar ([64f873d](https://github.com/simpel/bibi/commit/64f873da10185173f5cb5b5d51fe0e55f3993115))
+* admin sidebar sub-links and page sections match one to one ([f2f7f20](https://github.com/simpel/bibi/commit/f2f7f208fd9294842e9a33c8e14c7cd344bcbcaa))
+* example orders isolation test and pipeline e2e follow the admin sections ([5f9bd79](https://github.com/simpel/bibi/commit/5f9bd791ad108f29e9d49c6598c5bb1fa10018b7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 1.2.0
+    * @bibi/api bumped to 1.1.1
+    * @bibi/auth bumped to 0.6.0
+    * @bibi/core bumped to 1.2.0
+    * @bibi/db bumped to 1.1.0
+    * @bibi/graphql bumped to 1.1.1
+    * @bibi/i18n bumped to 1.4.0
+    * @bibi/mail bumped to 0.5.0
+    * @bibi/storage bumped to 0.2.3
+
 ## [1.3.0](https://github.com/simpel/bibi/compare/@bibi/web-v1.2.0...@bibi/web-v1.3.0) (2026-11-06)
 
 

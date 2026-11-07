@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.2.0](https://github.com/simpel/bibi/compare/@bibi/core-v1.1.0...@bibi/core-v1.2.0) (2026-11-07)
+
+
+### Features
+
+* administration area with its own sidebar replaces the settings hubs ([caef1fd](https://github.com/simpel/bibi/commit/caef1fdd1589443e6f4597f8312d1ca6fb7e708b))
+* the payment operator is stored, and empty admin sections stay off the page ([3645afe](https://github.com/simpel/bibi/commit/3645afe91e52627dedc7202ef7d6ae549cfb28b6))
+
+
+### Bug Fixes
+
+* example orders isolation test and pipeline e2e follow the admin sections ([5f9bd79](https://github.com/simpel/bibi/commit/5f9bd791ad108f29e9d49c6598c5bb1fa10018b7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/db bumped to 1.1.0
+
 ## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/core-v1.0.1...@bibi/core-v1.1.0) (2026-11-06)
 
 
