@@ -3,6 +3,7 @@ import { gotoApp } from "./goto-app";
 import { createItemType, signUpWithOrganization } from "./steps";
 
 const SETTINGS = "/admin/pipeline";
+const ITEM_STATES = /\/sv\/[^/]+\/admin\/pipeline(#item-states)?$/;
 
 async function createStatus({
   page,
@@ -25,8 +26,13 @@ async function createStatus({
   await editStatus({ page, row: name });
   await expect(page).toHaveURL(/\/sv\/[^/]+\/admin\/pipeline\/[^/]+\/update$/);
   await page.getByRole("checkbox", { name: flag }).click();
-  await page.getByRole("button", { name: "Spara" }).click();
+  await saveStatusForm({ page });
   await expect(page).toHaveURL(/\/sv\/[^/]+\/admin\/pipeline$/, { timeout: 15_000 });
+}
+
+/** The status form's own Save; the gate sections below it each have one too. */
+async function saveStatusForm({ page }: { page: import("@playwright/test").Page }) {
+  await page.getByRole("button", { name: "Spara", exact: true }).first().click();
 }
 
 async function rowAction({
@@ -65,7 +71,7 @@ test("an admin edits statuses and the grid on step pages", async ({ page }) => {
   await editStatus({ page, row: "Booked" });
   await expect(page).toHaveURL(/\/sv\/[^/]+\/admin\/pipeline\/[^/]+\/update$/);
   await page.getByLabel("Namn").fill("Reserved");
-  await page.getByRole("button", { name: "Spara" }).click();
+  await saveStatusForm({ page });
   await expect(page.getByRole("cell", { name: "Reserved" }).first()).toBeVisible();
 
   await rowAction({ page, row: "Spare", item: "Flytta vänster" });
@@ -106,15 +112,18 @@ test("an admin edits item states on step pages", async ({ page }) => {
   await signUpWithOrganization({ page, name: "States AB" });
   await createItemType({ page, name: "Conference room", numberField: "Max guests" });
 
+  // Item states are a section of the pipeline page; the old address opens it there.
   await gotoApp({ page, path: "/admin/item-states" });
-  await expect(page.getByRole("heading", { name: "Artikelstatusar", level: 1 })).toBeVisible();
+  await expect(page).toHaveURL(ITEM_STATES);
+  await expect(page.getByRole("heading", { name: "Artikelstatusar", level: 2 })).toBeVisible();
   await expect(page.getByRole("cell", { name: "Active" }).first()).toBeVisible();
 
-  await page.getByRole("link", { name: "Skapa status" }).click();
+  await page.getByRole("button", { name: "Skapa status", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Conference room" }).click();
   await expect(page).toHaveURL(/\/sv\/[^/]+\/new\/item-state\?type=/);
   await page.getByLabel("Namn").fill("Prebooked");
   await page.getByRole("button", { name: "Spara" }).click();
-  await expect(page).toHaveURL(/\/sv\/[^/]+\/admin\/item-states$/);
+  await expect(page).toHaveURL(ITEM_STATES);
   await expect(page.getByRole("cell", { name: "Prebooked" }).first()).toBeVisible();
 
   await rowAction({ page, row: "Prebooked", item: "Redigera status" });

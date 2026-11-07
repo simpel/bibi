@@ -77,6 +77,14 @@ async function exampleOrder({ context, order, types, party, timeZone }: OrderInp
   return created.ok ? ok({ value: created.value.id }) : created;
 }
 
+/** The calling person when they are a member; an API key, the system or an outsider assigns no one. */
+async function callerAsAssignee({ context }: { context: OperationContext }) {
+  const { actor } = context;
+  if ((actor.type !== "user" && actor.type !== "ai") || !actor.userId) return null;
+  const member = await context.db.member.count({ where: { userId: actor.userId } });
+  return member > 0 ? actor.userId : null;
+}
+
 export type CreateExamplesInput = { context: OperationContext; input: PipelineCreateExamplesInput };
 
 /**
@@ -91,9 +99,7 @@ export async function createExamples({
   if (!types.ok) return types;
   const customer = await exampleCustomer({ context, customer: input.customer, types: types.value });
   if (!customer.ok) return customer;
-  const { actor } = context;
-  const person = actor.type === "user" || actor.type === "ai";
-  const party = { ...customer.value, assigneeId: person ? actor.userId : null };
+  const party = { ...customer.value, assigneeId: await callerAsAssignee({ context }) };
   const timeZone = (await loadZoneOfVenue({ context }))({ venue: null });
   const advanceTo = await exampleAdvanceStatusId({ context });
   const orderIds: string[] = [];
