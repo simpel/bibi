@@ -1,5 +1,5 @@
 name: PR title
-# The PR title becomes the squash-merge commit, which release-please reads (ADR 0060).
+# Shipped PRs merge with a merge commit; the title is the shipped commit's Conventional Commit subject (ADR 0060, 0098).
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]

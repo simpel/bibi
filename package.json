@@ -16,6 +16,7 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "check:structure": "node tools/check-structure.mjs",
+    "ship": "node tools/ci/ship.mjs",
     "db:migrate": "pnpm --filter @bibi/db migrate",
     "test:db": "pnpm --filter @bibi/db migrate:test",
     "db:generate": "pnpm --filter @bibi/db generate",

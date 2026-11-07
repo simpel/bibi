@@ -1,7 +1,7 @@
 # 0075 – No ticket step: work starts from the request
 
 - **Date:** 2026-11-01
-- **Status:** Accepted
+- **Status:** Accepted, superseded in part by 0098 (work reaches `main` through a pull request)
 - **Supersedes:** 0070 in part (the `new-ticket` skill, the board and `Closes #N`)
 - **Related:** 0060 (versioning from Conventional Commits)
 

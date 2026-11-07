@@ -1,7 +1,7 @@
 # 0070 – Solo flow: two skills, commits straight to main
 
 - **Date:** 2026-10-24
-- **Status:** Accepted, superseded in part by 0075
+- **Status:** Accepted, superseded in part by 0075 and 0098
 - **Supersedes:** 0065 (pull requests only, workload gate) and 0066 (the order loop)
 - **Related:** 0060 (versioning from Conventional Commits), 0075
 
