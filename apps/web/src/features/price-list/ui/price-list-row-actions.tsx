@@ -32,7 +32,7 @@ function ActionsMenu({ priceList, access, itemsHidden, onOpen }: MenuProps) {
   const common = useTranslations("common");
   const router = useRouter();
   const editHref = updateRoute({
-    detail: listItemRoute({ list: ROUTES.settingsPriceLists, id: priceList.id }),
+    detail: listItemRoute({ list: ROUTES.adminPriceLists, id: priceList.id }),
   });
   return (
     <DataTableRowActions

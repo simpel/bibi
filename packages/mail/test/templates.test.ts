@@ -67,7 +67,7 @@ describe("Email templates design and typography", () => {
       who: "Erik",
       organization: "Acme Corp",
       inviteeEmail: "newhire@acme.test",
-      url: "https://bibi.test/acme-corp/settings/billing",
+      url: "https://bibi.test/acme-corp/admin/billing",
       adminName: "Maria",
       locale: "sv",
     });
@@ -81,7 +81,7 @@ describe("Email templates design and typography", () => {
       who: "Erik",
       organization: "Acme Corp",
       inviteeEmail: "newhire@acme.test",
-      url: "https://bibi.test/acme-corp/settings/billing",
+      url: "https://bibi.test/acme-corp/admin/billing",
       adminName: "Maria",
       locale: "en",
     });

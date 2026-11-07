@@ -279,47 +279,6 @@
       }
     }
   },
-  "administration": {
-    "title": "Administration",
-    "description": "Manage your organization members, API keys, and settings.",
-    "members": {
-      "title": "Members",
-      "description": "Manage organization staff, roles, invitations, and fine-grained permissions.",
-      "action": "Manage members"
-    },
-    "apiKeys": {
-      "title": "API keys",
-      "description": "Generate and manage keys for external integrations and the REST API.",
-      "action": "Manage API keys"
-    },
-    "settings": {
-      "title": "Settings",
-      "description": "Configure entity types, item states, order templates, price lists, and pipelines.",
-      "action": "Open settings"
-    }
-  },
-  "settingsHub": {
-    "title": "Settings",
-    "description": "How your organization is set up. Changes here affect everyone.",
-    "items": {
-      "billing": "Your Bibi plan, seats and seat requests.",
-      "organization": "The organization's time zone, used by every venue without its own.",
-      "types": "The kinds of items you offer and the fields they have.",
-      "lists": "Your own value lists, such as allergens or equipment.",
-      "setups": "Room setups like theatre, classroom or boardroom.",
-      "responsibilities": "What someone answers for, such as head of kitchen, and who it defaults to.",
-      "runSheets": "Run sheet definitions, such as the kitchen order, and who gets them.",
-      "priceLists": "Prices per customer group or season.",
-      "orderStatuses": "The statuses an order moves through.",
-      "members": "Who has access and with which role.",
-      "payments": "Deposit rule and invoice provider for payments.",
-      "accounting": "Accounts, VAT and fiscal year for the accounting export.",
-      "skills": "Reusable instructions for the assistant.",
-      "integrations": "Connect Stripe and Fortnox and manage API keys for other systems.",
-      "itemStates": "The states a line can be in, per item type.",
-      "orderTemplates": "Ready-made orders that staff create an order from in one step."
-    }
-  },
   "organizationSettings": {
     "title": "Organization",
     "description": "Settings that apply to the whole organization.",
@@ -332,7 +291,8 @@
       "noDomain": "No email domain yet. Turn this on while signed in with a verified work email to use its domain.",
       "turnedOn": "Colleagues with your email domain are now offered to join when they sign in.",
       "turnedOff": "Colleagues now need an invitation to join."
-    }
+    },
+    "readOnly": "You can view these settings but not change them."
   },
   "hours": {
     "off": "Off",

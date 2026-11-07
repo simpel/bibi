@@ -1,6 +1,7 @@
 import { Button } from "@bibi/ui";
 import { PlusIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { AdminSection } from "@/components/admin/admin-section";
 import type { RowAccess } from "@/lib/can";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
@@ -12,20 +13,17 @@ export type ItemStateSectionProps = TypeStates & { canCreate: boolean; access: R
 /** One item type: its name, a create link and the table of its states. */
 export async function ItemStateSection({ type, states, canCreate, access }: ItemStateSectionProps) {
   const t = await getTranslations("itemState");
+  const create = canCreate ? (
+    <Button asChild variant="outline" size="sm">
+      <Link href={`${ROUTES.itemStateNew}?type=${encodeURIComponent(type.id)}`}>
+        <PlusIcon />
+        {t("create")}
+      </Link>
+    </Button>
+  ) : undefined;
   return (
-    <section className="grid gap-3" aria-label={type.name}>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-xl font-medium">{type.name}</h2>
-        {canCreate ? (
-          <Button asChild variant="outline" size="sm">
-            <Link href={`${ROUTES.itemStateNew}?type=${encodeURIComponent(type.id)}`}>
-              <PlusIcon />
-              {t("create")}
-            </Link>
-          </Button>
-        ) : null}
-      </div>
+    <AdminSection title={type.name} action={create} flush>
       <ItemStateTable states={states} access={access} />
-    </section>
+    </AdminSection>
   );
 }

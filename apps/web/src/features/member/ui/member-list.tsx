@@ -1,9 +1,10 @@
 import { type FixedRole, listMembers, type MemberDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
+import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminPage } from "@/components/admin/admin-page";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
-import { PageHeader } from "@/components/states/page-header";
 import type { RowAccess } from "@/lib/can";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
@@ -41,13 +42,15 @@ export async function MemberList({ locale, cursor }: MemberListProps) {
     input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
   });
   const invite = <InviteMemberButton roles={assignableRoles({ caller: role })} />;
+  const header = (
+    <AdminHeader
+      title={t("plural")}
+      description={t("listDescription")}
+      actions={canInvite ? invite : undefined}
+    />
+  );
   return (
-    <div className="grid gap-6">
-      <PageHeader
-        title={t("plural")}
-        description={t("listDescription")}
-        actions={canInvite ? invite : undefined}
-      />
+    <AdminPage header={header}>
       {members.ok ? (
         <MemberContent
           page={members.value}
@@ -55,9 +58,9 @@ export async function MemberList({ locale, cursor }: MemberListProps) {
           access={rowAccess({ abilities, feature: "member" })}
         />
       ) : (
-        <ErrorState errorKey={handleLoadError({ error: members.error, locale })} />
+        <ErrorState inline errorKey={handleLoadError({ error: members.error, locale })} />
       )}
       {canInvite ? <InvitationList locale={locale} /> : null}
-    </div>
+    </AdminPage>
   );
 }

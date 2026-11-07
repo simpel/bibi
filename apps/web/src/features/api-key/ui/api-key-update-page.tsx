@@ -14,7 +14,7 @@ import { ApiKeyUpdateForm } from "./api-key-update-form";
 
 export type ApiKeyUpdatePageProps = { locale: Locale; id: string };
 
-/** `/settings/api-keys/[id]/update`: rename a key and change its preset. Admins only. */
+/** `/admin/api-keys/[id]/update`: rename a key and change its preset. Admins only. */
 export async function ApiKeyUpdatePage({ locale, id }: ApiKeyUpdatePageProps) {
   const t = await getTranslations("integration.apiKeys");
   const abilities = await getCallerAbilities();

@@ -28,7 +28,7 @@ export function BillingCardView({ billing }: BillingCardViewProps) {
         <p className="text-muted-foreground">
           {t("seats", { used: seats.used, total: seats.included + seats.extra, held: seats.held })}
         </p>
-        <Link href={ROUTES.settingsBilling} className="text-primary hover:underline">
+        <Link href={ROUTES.adminBilling} className="text-primary hover:underline">
           {t("open")}
         </Link>
       </CardContent>

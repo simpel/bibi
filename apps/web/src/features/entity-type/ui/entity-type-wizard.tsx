@@ -36,7 +36,7 @@ export function EntityTypeWizard() {
           last={isLast}
           pending={pending}
           canSave
-          onBack={() => (index === 0 ? router.push(ROUTES.settingsTypes) : setIndex(index - 1))}
+          onBack={() => (index === 0 ? router.push(ROUTES.adminTypes) : setIndex(index - 1))}
           onNext={next}
         />
       </form>

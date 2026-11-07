@@ -20,6 +20,7 @@ export function StatusGridTable({ statuses, types, cells, canEdit }: StatusGridT
   return (
     <PersistedDataTable
       tableId="status-grid.edit"
+      flush
       columns={columns}
       data={rows}
       getRowId={(row) => row.orderStatus.id}

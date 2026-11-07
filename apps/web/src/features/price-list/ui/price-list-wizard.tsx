@@ -15,7 +15,7 @@ export function PriceListWizard({ data }: PriceListWizardProps) {
   const t = useTranslations("priceList");
   const router = useRouter();
   const { form, run, pending } = usePriceListForm({
-    onDone: () => router.push(ROUTES.settingsPriceLists),
+    onDone: () => router.push(ROUTES.adminPriceLists),
   });
   const text = ({ id }: { id: "identity" | "terms" }) => ({
     id,
@@ -27,7 +27,7 @@ export function PriceListWizard({ data }: PriceListWizardProps) {
       form={form}
       run={run}
       pending={pending}
-      cancelHref={ROUTES.settingsPriceLists}
+      cancelHref={ROUTES.adminPriceLists}
       progressLabel={t("wizard.progress")}
       steps={[
         {

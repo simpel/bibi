@@ -16,7 +16,7 @@ export async function OrderTemplateCreate({ locale }: OrderTemplateCreateProps) 
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   return (
     <FormPageShell
-      backHref={ROUTES.settingsOrderTemplates}
+      backHref={ROUTES.adminOrderTemplates}
       title={t("create")}
       description={t("createDescription")}
     >

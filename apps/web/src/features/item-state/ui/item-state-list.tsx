@@ -1,17 +1,18 @@
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
+import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminPage } from "@/components/admin/admin-page";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
-import { PageHeader } from "@/components/states/page-header";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { loadItemStateData } from "../load-item-state-data";
 import { ItemStateSection } from "./item-state-section";
 
-export type ItemStateListProps = { locale: Locale };
+export type ItemStateListProps = { locale: Locale; inTab?: boolean };
 
-/** `/settings/item-states`: the states of every item type. */
-export async function ItemStateList({ locale }: ItemStateListProps) {
+/** `/admin/item-states`: the states of every item type, one section per type. */
+export async function ItemStateList({ locale, inTab = false }: ItemStateListProps) {
   const [t, abilities, data] = await Promise.all([
     getTranslations("itemState"),
     getCallerAbilities(),
@@ -19,19 +20,19 @@ export async function ItemStateList({ locale }: ItemStateListProps) {
   ]);
   const canCreate = can({ abilities, permission: "pipeline:write" });
   const access = rowAccess({ abilities, feature: "pipeline" });
-  const header = <PageHeader title={t("plural")} description={t("listDescription")} />;
+  const header = (
+    <AdminHeader title={t("plural")} description={t("listDescription")} inTab={inTab} />
+  );
   if (!data.ok) {
     const errorKey = handleLoadError({ error: data.error, locale });
     return (
-      <div className="grid gap-6">
-        {header}
-        <ErrorState errorKey={errorKey} />
-      </div>
+      <AdminPage header={header}>
+        <ErrorState errorKey={errorKey} inline={inTab} />
+      </AdminPage>
     );
   }
   return (
-    <div className="grid gap-6">
-      {header}
+    <AdminPage header={header}>
       {data.value.length === 0 ? (
         <EmptyState title={t("noTypes")} description={t("noTypesDescription")} />
       ) : (
@@ -39,6 +40,6 @@ export async function ItemStateList({ locale }: ItemStateListProps) {
           <ItemStateSection key={entry.type.id} {...entry} canCreate={canCreate} access={access} />
         ))
       )}
-    </div>
+    </AdminPage>
   );
 }

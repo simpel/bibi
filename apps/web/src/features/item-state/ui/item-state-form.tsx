@@ -38,7 +38,7 @@ export function ItemStateForm({ type, state }: ItemStateFormProps) {
   const t = useTranslations("itemState");
   const common = useTranslations("common");
   const router = useRouter();
-  const back = () => router.push(ROUTES.settingsItemStates);
+  const back = () => router.push(ROUTES.adminItemStates);
   const form = useForm<ItemStateFormValues, unknown, ItemStateCreateInput>({
     resolver: zodResolver(itemStateFormSchema({ entityTypeId: type.id }), useZodMessages()),
     defaultValues: itemStateFormDefaults({ state }),

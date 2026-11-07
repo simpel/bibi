@@ -1,6 +1,6 @@
 import type { BillingDto } from "@bibi/core";
-import { Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { AdminSection } from "@/components/admin/admin-section";
 import { getNumberFormat } from "@/server/number-format";
 import { AutoAssignSwitch } from "./auto-assign-switch";
 import { ExtraSeatsForm } from "./extra-seats-form";
@@ -18,11 +18,8 @@ export async function SeatsCard({ billing, seatPrice, canEdit }: SeatsCardProps)
     { key: "held", value: held },
   ] as const;
   return (
-    <Card className="shadow-none">
-      <CardHeader>
-        <CardTitle className="text-base">{t("seatsTitle")}</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-6 text-sm">
+    <AdminSection title={t("seatsTitle")}>
+      <div className="grid gap-6 text-sm">
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {figures.map(({ key, value }) => (
             <div key={key} className="grid gap-0.5">
@@ -33,7 +30,7 @@ export async function SeatsCard({ billing, seatPrice, canEdit }: SeatsCardProps)
         </dl>
         <AutoAssignSwitch enabled={billing.autoAssignSeats} canEdit={canEdit} />
         <ExtraSeatsForm extraSeats={extra} seatPrice={seatPrice} canEdit={canEdit} />
-      </CardContent>
-    </Card>
+      </div>
+    </AdminSection>
   );
 }

@@ -1,9 +1,11 @@
+import type { AdminKey } from "./admin-items";
 import type { NavLabelKey } from "./nav-items";
-import type { SettingsKey } from "./settings-items";
 
 export type CrumbLabelKey =
   | NavLabelKey
-  | SettingsKey
+  | AdminKey
+  | "skills"
+  | "billing"
   | "profile"
   | "quotes"
   | "chats"
@@ -36,8 +38,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   venues: "venues",
   skills: "skills",
   admin: "admin",
-  settings: "settings",
-  organization: "organization",
+  general: "general",
   types: "types",
   lists: "lists",
   setups: "setups",
@@ -67,7 +68,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   update: "edit",
 };
 
-/** Settings collections that have an update page but no detail page of their own. */
+/** Administration collections that have an update page but no detail page of their own. */
 const NO_DETAIL_SETTINGS = new Set([
   "pipeline",
   "price-lists",
@@ -83,15 +84,15 @@ const NEW_PARENTS: Record<string, string> = {
   skill: "skills",
   order: "orders",
   deposit: "orders",
-  type: "settings/types",
+  type: "admin/types",
   venue: "venues",
   customer: "customers",
-  "run-sheet": "settings/run-sheets",
-  responsibility: "settings/responsibilities",
-  "price-list": "settings/price-lists",
-  "order-status": "settings/pipeline",
-  "item-state": "settings/item-states",
-  "order-template": "settings/order-templates",
+  "run-sheet": "admin/run-sheets",
+  responsibility: "admin/responsibilities",
+  "price-list": "admin/price-lists",
+  "order-status": "admin/pipeline",
+  "item-state": "admin/item-states",
+  "order-template": "admin/order-templates",
 };
 
 /** Pages whose later segments are a period, not a page (`/calendar/{from}/{to}`, ADR 0064). */
@@ -124,14 +125,14 @@ export function buildCrumbs({ pathname }: BuildCrumbsInput): Crumb[] {
     return segments.length <= 1 ? [root] : [root, { href: pathname, labelKey: "detail" }];
   }
   if (
-    segments[0] === "settings" &&
+    segments[0] === "admin" &&
     NO_DETAIL_SETTINGS.has(segments[1] ?? "") &&
     segments[3] === "update"
   ) {
     const section = segments[1] ?? "";
     return [
-      { href: "/settings", labelKey: "settings" },
-      { href: `/settings/${section}`, labelKey: SEGMENT_KEYS[section] ?? "detail" },
+      { href: "/admin", labelKey: "admin" },
+      { href: `/admin/${section}`, labelKey: SEGMENT_KEYS[section] ?? "detail" },
       { href: pathname, labelKey: "edit" },
     ];
   }

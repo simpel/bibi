@@ -1,13 +1,19 @@
 "use client";
 
 import type { ItemStateDto } from "@bibi/core/schemas";
-import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { ContextMenuItem, DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
+import { Link } from "@/lib/navigation";
+import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
 import { ArchiveItemStateDialog } from "./archive-item-state-dialog";
 import { ItemStateTransitionsDialog } from "./item-state-transitions-dialog";
 import { EditStateItem, MoveStateItems } from "./state-menu-items";
+
+/** The update page of one state. */
+export const itemStateEditHref = ({ id }: { id: string }) =>
+  updateRoute({ detail: listItemRoute({ list: ROUTES.adminItemStates, id }) });
 
 export type ItemStateRowActionsProps = {
   state: ItemStateDto;
@@ -57,5 +63,18 @@ export function ItemStateRowActions({ state, index, states, access }: ItemStateR
         onOpenChange={(open) => !open && setDialog(null)}
       />
     </>
+  );
+}
+
+export type ItemStateRowMenuProps = { state: ItemStateDto; access: RowAccess };
+
+/** Right-click menu for a state row: the edit page. */
+export function ItemStateRowMenu({ state, access }: ItemStateRowMenuProps) {
+  const t = useTranslations("itemState");
+  if (!access.canEdit) return null;
+  return (
+    <ContextMenuItem asChild>
+      <Link href={itemStateEditHref({ id: state.id })}>{t("edit")}</Link>
+    </ContextMenuItem>
   );
 }

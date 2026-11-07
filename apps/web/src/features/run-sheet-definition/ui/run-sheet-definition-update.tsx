@@ -11,7 +11,7 @@ import { RunSheetDefinitionUpdateForm } from "./run-sheet-definition-update-form
 
 export type RunSheetDefinitionUpdateProps = { locale: Locale; id: string };
 
-/** `/settings/run-sheets/[id]/update`: edit on a page of its own. */
+/** `/admin/run-sheets/[id]/update`: edit on a page of its own. */
 export async function RunSheetDefinitionUpdate({ locale, id }: RunSheetDefinitionUpdateProps) {
   const t = await getTranslations("runSheetDefinition");
   const [runSheet, options] = await Promise.all([
@@ -24,9 +24,9 @@ export async function RunSheetDefinitionUpdate({ locale, id }: RunSheetDefinitio
     return <ErrorState errorKey={handleLoadError({ error: options.error, locale })} />;
   return (
     <>
-      <CrumbName href={`/settings/run-sheets/${id}/update`} name={runSheet.value.name} />
+      <CrumbName href={`/admin/run-sheets/${id}/update`} name={runSheet.value.name} />
       <FormPageShell
-        backHref={ROUTES.settingsRunSheets}
+        backHref={ROUTES.adminRunSheets}
         title={t("edit")}
         description={t("editDescription")}
       >

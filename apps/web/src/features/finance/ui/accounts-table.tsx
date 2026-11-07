@@ -15,6 +15,8 @@ export type AccountsTableProps = {
   types: ItemTypeOption[];
   grouped: boolean;
   emptyText: string;
+  /** Inside a card: the table runs edge to edge (ADR 0086). */
+  flush?: boolean;
   /** Without `finance:write` there is no actions column. */
   canEdit: boolean;
 };
@@ -28,6 +30,7 @@ export function AccountsTable({
   grouped,
   emptyText,
   canEdit,
+  flush = false,
 }: AccountsTableProps) {
   const columns = useAccountColumns({
     types,
@@ -45,6 +48,7 @@ export function AccountsTable({
       data={rows}
       getRowId={(row) => row.id}
       emptyText={emptyText}
+      flush={flush}
     />
   );
 }

@@ -39,9 +39,9 @@ export async function VocabularyDetail({ locale, id }: VocabularyDetailProps) {
   );
   return (
     <div className="grid gap-6">
-      <CrumbName href={`/settings/lists/${id}`} name={vocabulary.name} />
+      <CrumbName href={`/admin/lists/${id}`} name={vocabulary.name} />
       <Link
-        href={ROUTES.settingsLists}
+        href={ROUTES.adminLists}
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeftIcon className="size-4" />

@@ -22,7 +22,7 @@ export function ResponsibilityUpdateForm({
       <ResponsibilityForm
         responsibility={responsibility}
         options={options}
-        onDone={() => router.push(ROUTES.settingsResponsibilities)}
+        onDone={() => router.push(ROUTES.adminResponsibilities)}
       />
     </div>
   );

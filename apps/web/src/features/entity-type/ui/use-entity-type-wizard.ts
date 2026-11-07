@@ -33,7 +33,7 @@ export function useEntityTypeWizard() {
     form,
     action: ({ values }) => createEntityTypeAction({ input: values }),
     messages: { pending: t("saving"), success: t("created") },
-    onSuccess: ({ value }) => router.push(`${ROUTES.settingsTypes}/${value.id}`),
+    onSuccess: ({ value }) => router.push(`${ROUTES.adminTypes}/${value.id}`),
   });
   const steps: EntityTypeStep[] =
     form.watch("base") === "ITEM" ? ["base", "capabilities"] : ["base"];

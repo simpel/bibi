@@ -38,7 +38,7 @@ export function IntegrationCardView({ items, authorizeUrl }: IntegrationCardView
             {fortnox("connect")}
           </a>
         ) : null}
-        <Link href={ROUTES.settingsIntegrations} className="text-primary hover:underline">
+        <Link href={ROUTES.adminIntegrations} className="text-primary hover:underline">
           {t("open")}
         </Link>
       </CardContent>

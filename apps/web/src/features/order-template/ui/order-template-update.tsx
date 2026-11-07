@@ -11,7 +11,7 @@ import { OrderTemplatePageForm } from "./order-template-page-form";
 
 export type OrderTemplateUpdateProps = { locale: Locale; id: string };
 
-/** `/settings/order-templates/[id]/update`: edit a predefined order on a page of its own. */
+/** `/admin/order-templates/[id]/update`: edit a predefined order on a page of its own. */
 export async function OrderTemplateUpdate({ locale, id }: OrderTemplateUpdateProps) {
   const t = await getTranslations("orderTemplate");
   const [template, data] = await Promise.all([loadOrderTemplate({ id }), loadOrderTemplateData()]);
@@ -20,9 +20,9 @@ export async function OrderTemplateUpdate({ locale, id }: OrderTemplateUpdatePro
   if (!template.ok || !data.ok) return null;
   return (
     <>
-      <CrumbName href={`/settings/order-templates/${id}/update`} name={template.value.name} />
+      <CrumbName href={`/admin/order-templates/${id}/update`} name={template.value.name} />
       <FormPageShell
-        backHref={ROUTES.settingsOrderTemplates}
+        backHref={ROUTES.adminOrderTemplates}
         title={t("edit")}
         description={t("editDescription")}
       >

@@ -47,7 +47,7 @@ export async function InboxAddress({ isAdmin: passedIsAdmin }: InboxAddressProps
       <div className="col-start-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <AlertDescription className="text-foreground">{t("noAddress")}</AlertDescription>
         <Button asChild size="sm" variant="outline" className="shrink-0 self-start sm:self-center">
-          <Link href={ROUTES.settingsOrganization}>{t("configureAddress")}</Link>
+          <Link href={ROUTES.adminGeneral}>{t("configureAddress")}</Link>
         </Button>
       </div>
     </Alert>

@@ -7,10 +7,10 @@ describe("buildCrumbs", () => {
   });
 
   it("builds one linked crumb per segment and labels ids as details", () => {
-    expect(buildCrumbs({ pathname: "/settings/price-lists/abc" })).toEqual([
-      { href: "/settings", labelKey: "settings" },
-      { href: "/settings/price-lists", labelKey: "priceLists" },
-      { href: "/settings/price-lists/abc", labelKey: "detail" },
+    expect(buildCrumbs({ pathname: "/admin/price-lists/abc" })).toEqual([
+      { href: "/admin", labelKey: "admin" },
+      { href: "/admin/price-lists", labelKey: "priceLists" },
+      { href: "/admin/price-lists/abc", labelKey: "detail" },
     ]);
     expect(buildCrumbs({ pathname: "/admin/api-keys" })).toEqual([
       { href: "/admin", labelKey: "admin" },
@@ -69,11 +69,11 @@ describe("buildCrumbs", () => {
     ]);
   });
 
-  it("skips non-existent detail crumbs for settings update pages", () => {
-    expect(buildCrumbs({ pathname: "/settings/price-lists/abc/update" })).toEqual([
-      { href: "/settings", labelKey: "settings" },
-      { href: "/settings/price-lists", labelKey: "priceLists" },
-      { href: "/settings/price-lists/abc/update", labelKey: "edit" },
+  it("skips non-existent detail crumbs for administration update pages", () => {
+    expect(buildCrumbs({ pathname: "/admin/price-lists/abc/update" })).toEqual([
+      { href: "/admin", labelKey: "admin" },
+      { href: "/admin/price-lists", labelKey: "priceLists" },
+      { href: "/admin/price-lists/abc/update", labelKey: "edit" },
     ]);
   });
 

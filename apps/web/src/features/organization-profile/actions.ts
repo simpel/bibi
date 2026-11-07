@@ -9,7 +9,7 @@ import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
 
-/** `/settings/organization`: domain join on or off (ADR 0078). */
+/** `/admin/general`: domain join on or off (ADR 0078). */
 export async function setDomainJoinAction({
   input,
 }: {

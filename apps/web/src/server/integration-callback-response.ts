@@ -51,7 +51,7 @@ export const fortnoxCallbackResponse = withRequestLogging({
     const outcome: IntegrationOutcome | "unauthenticated" =
       params.has("error") || !code || !state ? "denied" : await complete({ code, state });
     if (outcome === "unauthenticated") return redirectTo({ request, path: ROUTES.login });
-    const path = `/${session.organizationSlug}${ROUTES.settingsIntegrations}?fortnox=${outcome}`;
+    const path = `/${session.organizationSlug}${ROUTES.adminIntegrations}?fortnox=${outcome}`;
     return redirectTo({ request, path });
   },
 });

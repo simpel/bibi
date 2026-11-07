@@ -21,6 +21,7 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
       data={invitations}
       getRowId={(invitation) => invitation.id}
       emptyText={t("noInvitations")}
+      flush
     />
   );
 }

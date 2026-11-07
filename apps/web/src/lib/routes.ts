@@ -34,27 +34,25 @@ export const ROUTES = {
   workload: "/data/workload",
   forecast: "/data/forecast",
   quotes: "/quotes",
-  settings: "/settings",
-  settingsOrganization: "/settings/organization",
-  settingsTypes: "/settings/types",
-  settingsLists: "/settings/lists",
-  settingsSetups: "/settings/setups",
-  settingsResponsibilities: "/settings/responsibilities",
-  settingsRunSheets: "/settings/run-sheets",
-  settingsPriceLists: "/settings/price-lists",
-  settingsPipeline: "/settings/pipeline",
   /** The welcome flow (ADR 0061); under an organization it is `/:org/welcome`. */
   welcome: "/welcome",
-  settingsItemStates: "/settings/item-states",
-  settingsOrderTemplates: "/settings/order-templates",
-  settingsMembers: "/admin/members",
-  settingsPayments: "/settings/payments",
-  settingsBilling: "/settings/billing",
-  settingsAccounting: "/settings/accounting",
-  settingsIntegrations: "/settings/integrations",
-  settingsApiKeys: "/admin/api-keys",
+  /** The administration area (ADR 0036): its own sidebar, opens on the first page the caller may see. */
   admin: "/admin",
+  adminGeneral: "/admin/general",
   adminMembers: "/admin/members",
+  adminBilling: "/admin/billing",
+  adminTypes: "/admin/types",
+  adminSetups: "/admin/setups",
+  adminLists: "/admin/lists",
+  adminPriceLists: "/admin/price-lists",
+  adminPipeline: "/admin/pipeline",
+  adminItemStates: "/admin/item-states",
+  adminOrderTemplates: "/admin/order-templates",
+  adminRunSheets: "/admin/run-sheets",
+  adminResponsibilities: "/admin/responsibilities",
+  adminPayments: "/admin/payments",
+  adminAccounting: "/admin/accounting",
+  adminIntegrations: "/admin/integrations",
   adminApiKeys: "/admin/api-keys",
   mothership: "/mothership",
   mothershipOrganizations: "/mothership/organizations",
@@ -73,7 +71,7 @@ export function itemRoute({ id }: ItemRouteInput): string {
 
 export type ListItemRouteInput = { list: string; id: string };
 
-/** Detail path of a record under a list page, e.g. `/settings/run-sheets/<id>`. */
+/** Detail path of a record under a list page, e.g. `/admin/run-sheets/<id>`. */
 export function listItemRoute({ list, id }: ListItemRouteInput): string {
   return `${list}/${encodeURIComponent(id)}`;
 }

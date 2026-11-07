@@ -8,7 +8,7 @@ export async function OrderStatusCreate() {
   const t = await getTranslations("orderStatus");
   return (
     <FormPageShell
-      backHref={ROUTES.settingsPipeline}
+      backHref={ROUTES.adminPipeline}
       title={t("create")}
       description={t("createDescription")}
     >

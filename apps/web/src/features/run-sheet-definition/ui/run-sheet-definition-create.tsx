@@ -19,7 +19,7 @@ export async function RunSheetDefinitionCreate({ locale }: RunSheetDefinitionCre
     return <ErrorState errorKey={handleLoadError({ error: options.error, locale })} />;
   return (
     <FormPageShell
-      backHref={ROUTES.settingsRunSheets}
+      backHref={ROUTES.adminRunSheets}
       title={t("create")}
       description={t("createDescription")}
     >

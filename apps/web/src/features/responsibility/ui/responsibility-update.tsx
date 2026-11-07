@@ -11,7 +11,7 @@ import { ResponsibilityUpdateForm } from "./responsibility-update-form";
 
 export type ResponsibilityUpdateProps = { locale: Locale; id: string };
 
-/** `/settings/responsibilities/[id]/update`: edit on a page of its own. */
+/** `/admin/responsibilities/[id]/update`: edit on a page of its own. */
 export async function ResponsibilityUpdate({ locale, id }: ResponsibilityUpdateProps) {
   const t = await getTranslations("responsibility");
   const [responsibility, options] = await Promise.all([
@@ -24,12 +24,9 @@ export async function ResponsibilityUpdate({ locale, id }: ResponsibilityUpdateP
     return <ErrorState errorKey={handleLoadError({ error: options.error, locale })} />;
   return (
     <>
-      <CrumbName
-        href={`/settings/responsibilities/${id}/update`}
-        name={responsibility.value.name}
-      />
+      <CrumbName href={`/admin/responsibilities/${id}/update`} name={responsibility.value.name} />
       <FormPageShell
-        backHref={ROUTES.settingsResponsibilities}
+        backHref={ROUTES.adminResponsibilities}
         title={t("edit")}
         description={t("editDescription")}
       >

@@ -1,7 +1,8 @@
 "use client";
 
-import { Label, Switch } from "@bibi/ui";
+import { Switch } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { AdminSection } from "@/components/admin/admin-section";
 import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { setDomainJoinAction } from "../actions";
@@ -31,19 +32,17 @@ export function DomainJoinForm({ emailDomain, enabled, canEdit }: DomainJoinForm
       onSuccess: () => router.refresh(),
     });
   return (
-    <section className="grid max-w-md gap-2">
-      <div className="flex items-center justify-between gap-4">
-        <Label htmlFor="domain-join">{t("label")}</Label>
+    <AdminSection
+      title={t("label")}
+      description={emailDomain ? t("hint", { domain: emailDomain }) : t("noDomain")}
+      action={
         <Switch
-          id="domain-join"
+          aria-label={t("label")}
           checked={on}
           disabled={!canEdit || pending}
           onCheckedChange={(checked) => change({ checked })}
         />
-      </div>
-      <p className="text-sm text-muted-foreground">
-        {emailDomain ? t("hint", { domain: emailDomain }) : t("noDomain")}
-      </p>
-    </section>
+      }
+    />
   );
 }

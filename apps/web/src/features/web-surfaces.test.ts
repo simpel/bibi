@@ -16,13 +16,32 @@ const appDirs = [
   join(srcDir, "app", "[locale]", "[org]"),
 ];
 
-/** A route's page, or an optional catch-all below it that also serves the bare route. */
+/** The directories a path segment can live in: itself, or inside route groups like `(tabs)`. */
+function segmentDirs({ dir, segment }: { dir: string; segment: string }): string[] {
+  if (!existsSync(dir)) return [];
+  const groups = readdirSync(dir).filter((entry) => /^\(.+\)$/.test(entry));
+  return [
+    join(dir, segment),
+    ...groups.flatMap((group) => segmentDirs({ dir: join(dir, group), segment })),
+  ];
+}
+
+/** A route's page (route groups allowed), or an optional catch-all below it that also serves the bare route. */
 function servesRoute({ dir, route }: { dir: string; route: string }): boolean {
-  const base = join(dir, route);
-  if (existsSync(join(base, "page.tsx"))) return true;
-  if (!existsSync(base)) return false;
-  return readdirSync(base).some(
-    (entry) => /^\[\[\.\.\..+\]\]$/.test(entry) && existsSync(join(base, entry, "page.tsx")),
+  const bases = route
+    .split("/")
+    .filter(Boolean)
+    .reduce<string[]>(
+      (dirs, segment) => dirs.flatMap((base) => segmentDirs({ dir: base, segment })),
+      [dir],
+    );
+  return bases.some(
+    (base) =>
+      existsSync(join(base, "page.tsx")) ||
+      (existsSync(base) &&
+        readdirSync(base).some(
+          (entry) => /^\[\[\.\.\..+\]\]$/.test(entry) && existsSync(join(base, entry, "page.tsx")),
+        )),
   );
 }
 

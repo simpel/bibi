@@ -33,7 +33,7 @@ Denying `read` on a feature must hide its data everywhere, not only its own page
 - **Guard.** A core test fails when an operation's output schema has a field named after another feature's entity (`customerName`, `itemPriceMinor`, ...) or when an audited entity type has no owner in `ENTITY_FEATURE`.
 
 ## UI
-- `/settings/members/<id>/permissions` and `/settings/api-keys/<id>/permissions`: a page per subject with the preset and a grid of features × actions. Each cell shows the preset value and whether it is overridden, and can be reset to the preset.
+- `/admin/members/<id>/permissions` and `/admin/api-keys/<id>/permissions`: a page per subject with the preset and a grid of features × actions. Each cell shows the preset value and whether it is overridden, and can be reset to the preset.
 
 ## Adding a permission
 See `packages/auth/CLAUDE.md`.

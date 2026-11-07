@@ -272,7 +272,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > Minimum configuration, checked on every change (`CONFLICT`): one `entry` and one `closes` status. Movement is free by default. Reports group by flag, never by status name.
 
-> Operations (`pipeline:write|delete` to change, `pipeline:read` to read; `pipeline:write` is the admin-only flow, boards use `board:*`): `orderStatus.list|get|create|update|archive|reorder|setTransitions|setGates|importTemplate`. `setTransitions({ id, allowedNext: "ANY" | "ONLY_THESE", toStatusIds })` sets `restrictsNext` and the targets; `setGates({ id, gates })` replaces all gates into the status. `list|get` return `restrictsNext`, `transitionsTo` (effective targets), `transitionGates` (effective per target) and `gatesInto` (raw, by source). Settings page `/settings/pipeline`; first-time setup is the assistant onboarding at `/onboarding` ([ADR 0045](decisions/0045-soft-landing-onboarding.md), building on [ADR 0044](decisions/0044-line-states-and-the-status-grid.md)).
+> Operations (`pipeline:write|delete` to change, `pipeline:read` to read; `pipeline:write` is the admin-only flow, boards use `board:*`): `orderStatus.list|get|create|update|archive|reorder|setTransitions|setGates|importTemplate`. `setTransitions({ id, allowedNext: "ANY" | "ONLY_THESE", toStatusIds })` sets `restrictsNext` and the targets; `setGates({ id, gates })` replaces all gates into the status. `list|get` return `restrictsNext`, `transitionsTo` (effective targets), `transitionGates` (effective per target) and `gatesInto` (raw, by source). Settings page `/admin/pipeline`; first-time setup is the assistant onboarding at `/onboarding` ([ADR 0045](decisions/0045-soft-landing-onboarding.md), building on [ADR 0044](decisions/0044-line-states-and-the-status-grid.md)).
 
 ### Board (`Board`), BoardPhase (`BoardPhase`) and BoardPhaseStatus (`BoardPhaseStatus`)
 
@@ -308,7 +308,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` is from/to in → Transition (`ItemStateTransition`)
 - `1:N` is the result of → StatusStateRule
 
-> A new item type starts with one initial state, "Active" (`HARD` for a `BOOKABLE` type, in run sheets), which the organization renames or replaces. A state in use is archived only with a chosen target state of the same type; the type's expiry state follows it. Changing `hold` or `released` re-derives the holds of every line in the state that has not ended (by trigger, ADR 0053), all or nothing. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by held since (the newest `LineStateChange`) and staff decide who gets the item; `HARD` blocks the item. Operations (`pipeline:read|write|delete`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
+> A new item type starts with one initial state, "Active" (`HARD` for a `BOOKABLE` type, in run sheets), which the organization renames or replaces. A state in use is archived only with a chosen target state of the same type; the type's expiry state follows it. Changing `hold` or `released` re-derives the holds of every line in the state that has not ended (by trigger, ADR 0053), all or nothing. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by held since (the newest `LineStateChange`) and staff decide who gets the item; `HARD` blocks the item. Operations (`pipeline:read|write|delete`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/admin/item-states`.
 
 ### StatusStateRule (`StatusStateRule`) – the status grid
 
@@ -359,7 +359,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` receives → RunSheetDefinition, Run sheet
 - `1:N` RunSheetDefinition goes to this
 
-> Operations: `responsibility.list|get|create|update|archive` under the resource `configuration` (`responsibility:write|delete`, held by `admin`, to change). The covered types and people are stored as id lists and checked by core: every covered type must be an active item type of the organization and the default assignee and followers must be members (`VALIDATION`); the assignee is not repeated among the followers. Names are unique among active responsibilities (`CONFLICT`). Settings page: `/settings/responsibilities`. The "Conference venue" template ships Sales (Bundle), Coordinator (Conference room, Equipment) and Head of kitchen (Dish, Drink, Meal) as optional data; `configuration.importTemplate` makes the importing member their default assignee and creates none when the caller is not a member (e.g. SYSTEM). Archiving is refused with `CONFLICT` while an active run sheet definition uses the responsibility, once run sheets go to a responsibility.
+> Operations: `responsibility.list|get|create|update|archive` under the resource `configuration` (`responsibility:write|delete`, held by `admin`, to change). The covered types and people are stored as id lists and checked by core: every covered type must be an active item type of the organization and the default assignee and followers must be members (`VALIDATION`); the assignee is not repeated among the followers. Names are unique among active responsibilities (`CONFLICT`). Settings page: `/admin/responsibilities`. The "Conference venue" template ships Sales (Bundle), Coordinator (Conference room, Equipment) and Head of kitchen (Dish, Drink, Meal) as optional data; `configuration.importTemplate` makes the importing member their default assignee and creates none when the caller is not a member (e.g. SYSTEM). Archiving is refused with `CONFLICT` while an active run sheet definition uses the responsibility, once run sheets go to a responsibility.
 
 ### Assignment (`Assignment`)
 
@@ -1202,7 +1202,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### ApiKey
 
-*MVP* · A key for the REST API, for another system such as a CRM ([ADR 0005](decisions/0005-authentication.md), [ADR 0050](decisions/0050-permission-presets-and-overrides.md)). Created, listed, updated and revoked in `/settings/integrations` and `/settings/api-keys` by admins (`apiKey:*`, admin preset only). Only a signed-in web session can create one, and the assistant never can. The secret is shown once; only its hash is stored.
+*MVP* · A key for the REST API, for another system such as a CRM ([ADR 0005](decisions/0005-authentication.md), [ADR 0050](decisions/0050-permission-presets-and-overrides.md)). Created, listed, updated and revoked in `/admin/integrations` and `/admin/api-keys` by admins (`apiKey:*`, admin preset only). Only a signed-in web session can create one, and the assistant never can. The secret is shown once; only its hash is stored.
 
 **Attributes**
 - name
@@ -1219,7 +1219,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### PermissionOverride
 
-*MVP* · Organization data ([ADR 0050](decisions/0050-permission-presets-and-overrides.md)). One `feature:action` that an admin adds to (`ALLOW`) or takes from (`DENY`) the preset of one member or API key. Only the differences are stored, so a change to a preset reaches everyone on it. Read with `permission.get` and changed with `permission.update` (permission `member:write`, admins), edited in `/settings/members/<id>/permissions` and `/settings/api-keys/<id>/permissions`.
+*MVP* · Organization data ([ADR 0050](decisions/0050-permission-presets-and-overrides.md)). One `feature:action` that an admin adds to (`ALLOW`) or takes from (`DENY`) the preset of one member or API key. Only the differences are stored, so a change to a preset reaches everyone on it. Read with `permission.get` and changed with `permission.update` (permission `member:write`, admins), edited in `/admin/members/<id>/permissions` and `/admin/api-keys/<id>/permissions`.
 
 **Attributes**
 - subject type (`MEMBER` or `API_KEY`) and subject id (`Member.id` or the key id)
@@ -1341,7 +1341,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - legalName, orgNumber
 - streetAddress, postalCode, city, country (default `SE`)
 - website, contactEmail, contactPhone
-- timeZone (owned, IANA name, required; existing rows backfilled `Europe/Stockholm`; ADR 0064): the zone of order-level times and the default of every venue, read only through `effectiveTimeZone`. Editable in `/settings/organization`.
+- timeZone (owned, IANA name, required; existing rows backfilled `Europe/Stockholm`; ADR 0064): the zone of order-level times and the default of every venue, read only through `effectiveTimeZone`. Editable in `/admin/general`.
 - emailDomain (owned, lowercase, optional; [ADR 0078](decisions/0078-domain-join.md)): the work email domain whose verified users are offered to join as members. Never typed in: taken from the creator's verified email at creation, and from the admin who turns domain join on (their own domain replaces the stored one). Public mail providers never count.
 - domainJoin (owned, default on; ADR 0078): the admin's switch. It takes effect only while emailDomain is set.
 

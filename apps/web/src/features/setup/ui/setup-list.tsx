@@ -1,61 +1,57 @@
 import { listSetups } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
-import { CursorPagination } from "@/components/cursor-pagination";
+import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminPage } from "@/components/admin/admin-page";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
-import { PageHeader } from "@/components/states/page-header";
-import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { CreateSetupButton } from "./create-setup-button";
 import { SetupTable } from "./setup-table";
 
-export type SetupListProps = { locale: Locale; cursor?: string | undefined };
+export type SetupListProps = {
+  locale: Locale;
+  /** Accepted for the page's search params; the client view paginates one loaded page. */
+  inTab?: boolean;
+};
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 100;
 const CREATE = "configuration:write";
 
-/** Setups page body: header with create, table, cursor pagination. */
-export async function SetupList({ locale, cursor }: SetupListProps) {
+/** Setups page body: header with create and one table with search and pagination. */
+export async function SetupList({ locale, inTab = false }: SetupListProps) {
   const [t, abilities, result] = await Promise.all([
     getTranslations("setup"),
     getCallerAbilities(),
-    runOperation({
-      operation: listSetups,
-      input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
-    }),
+    runOperation({ operation: listSetups, input: { limit: PAGE_SIZE } }),
   ]);
   const create = can({ abilities, permission: CREATE }) ? <CreateSetupButton /> : undefined;
   const header = (
-    <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
+    <AdminHeader
+      title={t("plural")}
+      description={t("listDescription")}
+      actions={create}
+      inTab={inTab}
+    />
   );
   if (!result.ok) {
     const errorKey = handleLoadError({ error: result.error, locale });
     return (
-      <div className="grid gap-6">
-        {header}
-        <ErrorState errorKey={errorKey} />
-      </div>
+      <AdminPage header={header}>
+        <ErrorState errorKey={errorKey} inline={inTab} />
+      </AdminPage>
     );
   }
-  const { items, nextCursor } = result.value;
+  const { items } = result.value;
   return (
-    <div className="grid gap-6">
-      {header}
-      {items.length === 0 && !cursor ? (
+    <AdminPage header={header}>
+      {items.length === 0 ? (
         <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />
       ) : (
-        <>
-          <SetupTable setups={items} access={rowAccess({ abilities, feature: "configuration" })} />
-          <CursorPagination
-            pathname={ROUTES.settingsSetups}
-            cursor={cursor}
-            nextCursor={nextCursor}
-          />
-        </>
+        <SetupTable setups={items} access={rowAccess({ abilities, feature: "configuration" })} />
       )}
-    </div>
+    </AdminPage>
   );
 }

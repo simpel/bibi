@@ -43,7 +43,7 @@ Locale prefix (`/sv`, `/en`) omitted.
 - Nobody is added without clicking Join. An organization is offered when it claims the user's verified work domain with domain join on, unless the user has been a member there before (removed or left) or has a pending invitation (shown as an invitation instead).
 - An invite code works only for the invited email, while the invitation is pending; it is accepted through Better Auth like the mailed link.
 - The primary organization is where a new session starts; with one membership it is that one.
-- Creating an organization claims the creator's verified work domain (never a public provider). Admins turn it off or on in `/settings/organization`, which shows the domain.
+- Creating an organization claims the creator's verified work domain (never a public provider). Admins turn it off or on in `/admin/general`, which shows the domain.
 
 ## `/welcome`
 
@@ -65,7 +65,7 @@ Locale prefix (`/sv`, `/en`) omitted.
 | invalid  | Use 3–40 letters, numbers or dashes                     |
 
 - The server checks again on create.
-- **Time zone** (ADR 0064): a searchable dropdown of IANA zones after name and URL, defaulting to the browser's zone (fallback `Europe/Stockholm`). It is required: the create call carries it in Better Auth's `metadata`, `beforeCreateOrganization` refuses a missing or unknown zone, and `afterCreateOrganization` stores it on the organization's profile and clears `metadata`. Editable later in `/settings/organization`.
+- **Time zone** (ADR 0064): a searchable dropdown of IANA zones after name and URL, defaulting to the browser's zone (fallback `Europe/Stockholm`). It is required: the create call carries it in Better Auth's `metadata`, `beforeCreateOrganization` refuses a missing or unknown zone, and `afterCreateOrganization` stores it on the organization's profile and clears `metadata`. Editable later in `/admin/general`.
 
 ## Profile (per user, entered once)
 

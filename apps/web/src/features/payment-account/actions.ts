@@ -30,7 +30,7 @@ export async function syncPaymentAccountAction(): Promise<ActionResult<PaymentAc
 
 export type UpdatePaymentSettingsActionInput = { input: PaymentSettingsUpdateInput };
 
-/** `/settings/payments`: the deposit rule and the invoice provider (ADR 0090). */
+/** `/admin/payments`: the deposit rule and the invoice provider (ADR 0090). */
 export async function updatePaymentSettingsAction({
   input,
 }: UpdatePaymentSettingsActionInput): Promise<ActionResult<PaymentSettingsDto>> {

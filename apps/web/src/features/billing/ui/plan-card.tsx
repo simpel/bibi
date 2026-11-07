@@ -1,6 +1,6 @@
 import type { BillingDto } from "@bibi/core";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { AdminSection } from "@/components/admin/admin-section";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { isSubscribed } from "../lib/billing-status";
 import type { PlanTexts } from "../plan-texts";
@@ -8,7 +8,7 @@ import { AddPaymentButton } from "./add-payment-button";
 import { BillingStateBadge } from "./billing-state-badge";
 import { ManageBillingButton } from "./manage-billing-button";
 
-const RETURN_TO = "/settings/billing";
+const RETURN_TO = "/admin/billing";
 
 export type PlanCardProps = { billing: BillingDto; texts: PlanTexts; canEdit: boolean };
 
@@ -34,14 +34,8 @@ export async function PlanCard({ billing, texts, canEdit }: PlanCardProps) {
   const subscribed = isSubscribed({ subscriptionStatus: billing.subscriptionStatus });
   const periodEnd = currentPeriodEnd ? dates.date({ instant: currentPeriodEnd }) : t("none");
   return (
-    <Card className="shadow-none">
-      <CardHeader>
-        <CardTitle className="text-base">{t("planTitle")}</CardTitle>
-        <CardAction>
-          <BillingStateBadge state={access.state} />
-        </CardAction>
-      </CardHeader>
-      <CardContent className="grid gap-4 text-sm">
+    <AdminSection title={t("planTitle")} action={<BillingStateBadge state={access.state} />}>
+      <div className="grid gap-4 text-sm">
         <dl className="grid gap-3 sm:grid-cols-3">
           {access.state === "TRIAL" ? (
             <Fact label={t("trialEndsAt")} value={dates.date({ instant: access.trialEndsAt })} />
@@ -62,7 +56,7 @@ export async function PlanCard({ billing, texts, canEdit }: PlanCardProps) {
         ) : (
           <p className="text-muted-foreground">{t("readOnly")}</p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </AdminSection>
   );
 }

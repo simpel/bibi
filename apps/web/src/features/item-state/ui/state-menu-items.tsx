@@ -10,7 +10,7 @@ export type EditStateItemProps = { id: string };
 /** The "Edit state" menu item: a link to the update page. */
 export function EditStateItem({ id }: EditStateItemProps) {
   const t = useTranslations("itemState");
-  const detail = listItemRoute({ list: ROUTES.settingsItemStates, id });
+  const detail = listItemRoute({ list: ROUTES.adminItemStates, id });
   return (
     <DropdownMenuItem asChild>
       <Link href={updateRoute({ detail })}>{t("edit")}</Link>

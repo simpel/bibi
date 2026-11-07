@@ -22,7 +22,7 @@ export function RunSheetDefinitionUpdateForm({
       <RunSheetDefinitionForm
         runSheet={runSheet}
         options={options}
-        onDone={() => router.push(ROUTES.settingsRunSheets)}
+        onDone={() => router.push(ROUTES.adminRunSheets)}
       />
     </div>
   );

@@ -21,7 +21,7 @@ export function ResponsibilityWizard({ options }: ResponsibilityWizardProps) {
     form,
     action: ({ values }) => createResponsibilityAction({ input: values }),
     messages: { pending: t("saving"), success: t("created") },
-    onSuccess: () => router.push(ROUTES.settingsResponsibilities),
+    onSuccess: () => router.push(ROUTES.adminResponsibilities),
   });
   const text = ({ id }: { id: string }) => ({
     id,
@@ -33,7 +33,7 @@ export function ResponsibilityWizard({ options }: ResponsibilityWizardProps) {
       form={form}
       run={run}
       pending={pending}
-      cancelHref={ROUTES.settingsResponsibilities}
+      cancelHref={ROUTES.adminResponsibilities}
       progressLabel={t("wizard.progress")}
       steps={responsibilitySteps({ form, options, nameLabel: t("fields.name"), text })}
     />

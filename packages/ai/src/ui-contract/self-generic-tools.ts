@@ -23,9 +23,8 @@ export const SELF_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   profile_setLocale:
     "the UI and email language is switched via the header menu and on /profile; JSON",
   accountingExport_list: "the export history is on the Financials page; shown as JSON",
-  accountingSettings_get: "accounting settings are edited on /settings/accounting (ADR 0077); JSON",
-  accountingSettings_update:
-    "accounting settings are edited on /settings/accounting (ADR 0077); JSON",
+  accountingSettings_get: "accounting settings are edited on /admin/accounting (ADR 0077); JSON",
+  accountingSettings_update: "accounting settings are edited on /admin/accounting (ADR 0077); JSON",
   paymentSettings_get: "payment settings are edited on Settings → Integrations (ADR 0090); JSON",
   paymentSettings_update: "payment settings are edited on Settings → Integrations (ADR 0090); JSON",
   deposit_suggest: "a suggested amount the assistant reads out; no card of its own (ADR 0090)",

@@ -279,47 +279,6 @@
       }
     }
   },
-  "administration": {
-    "title": "Administration",
-    "description": "Hantera organisationens medlemmar, API-nycklar och inställningar.",
-    "members": {
-      "title": "Medlemmar",
-      "description": "Hantera personal, roller, inbjudningar och detaljerade behörigheter.",
-      "action": "Hantera medlemmar"
-    },
-    "apiKeys": {
-      "title": "API-nycklar",
-      "description": "Skapa och hantera nycklar för externa integrationer och REST API:et.",
-      "action": "Hantera API-nycklar"
-    },
-    "settings": {
-      "title": "Inställningar",
-      "description": "Konfigurera artikeltyper, artikelstatusar, bokningsmallar, prislistor och pipeline.",
-      "action": "Öppna inställningar"
-    }
-  },
-  "settingsHub": {
-    "title": "Inställningar",
-    "description": "Hur er organisation är uppsatt. Ändringar här påverkar alla.",
-    "items": {
-      "billing": "Er Bibi-plan, era platser och platsförfrågningar.",
-      "organization": "Organisationens tidszon, som varje anläggning utan egen zon använder.",
-      "types": "Vilka sorters artiklar ni erbjuder och vilka fält de har.",
-      "lists": "Era egna värdelistor, till exempel allergener eller utrustning.",
-      "setups": "Möblering som teater, klassrum eller styrelserum.",
-      "responsibilities": "Vad någon svarar för, till exempel kökschef, och vem det går till som standard.",
-      "runSheets": "Körschemadefinitioner, till exempel kökskörschemat, och vem som får dem.",
-      "priceLists": "Priser per kundgrupp eller säsong.",
-      "orderStatuses": "De bokningsstatusar en bokning går igenom.",
-      "members": "Vem som har åtkomst och med vilken roll.",
-      "payments": "Förskottsregel och fakturaleverantör för betalningar.",
-      "accounting": "Konton, moms och räkenskapsår för bokföringsexporten.",
-      "skills": "Återanvändbara instruktioner för assistenten.",
-      "integrations": "Anslut Stripe och Fortnox och hantera API-nycklar för andra system.",
-      "itemStates": "De statusar en rad kan ha, per artikeltyp.",
-      "orderTemplates": "Färdiga bokningar som personalen skapar en bokning från i ett steg."
-    }
-  },
   "organizationSettings": {
     "title": "Organisation",
     "description": "Inställningar som gäller hela organisationen.",
@@ -332,7 +291,8 @@
       "noDomain": "Ingen e-postdomän än. Slå på det här när du är inloggad med en verifierad jobbadress så används dess domän.",
       "turnedOn": "Kollegor med er e-postdomän erbjuds nu att gå med när de loggar in.",
       "turnedOff": "Kollegor behöver nu en inbjudan för att ansluta."
-    }
+    },
+    "readOnly": "Du kan se de här inställningarna men inte ändra dem."
   },
   "hours": {
     "off": "Ledig",

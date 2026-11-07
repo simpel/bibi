@@ -30,10 +30,9 @@ export type NavLabelKey =
   | "venues"
   | "members"
   | "apiKeys"
-  | "settings"
   | "admin";
 
-/** Who sees an entry: everyone (subject to its permission) or settings viewers. */
+/** Who sees an entry: everyone (subject to its permission) or members who may open the administration area. */
 export type NavAudience = "everyone" | "configure";
 
 /** A page under an entry, shown as a sub-item while the entry is expanded. */
@@ -58,7 +57,7 @@ export type NavGroupId = "primary" | "work" | "catalog" | "admin";
 
 /**
  * Sidebar entries per zone, most used first (ADR 0036). A new entity adds its entry to the
- * right group (and its `nav.*` message); configuration pages go to `SETTINGS_ITEMS` instead.
+ * right group (and its `nav.*` message); administration pages go to `ADMIN_GROUPS` instead.
  */
 export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
   primary: [
@@ -136,8 +135,7 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       href: ROUTES.admin,
       labelKey: "admin",
       icon: ShieldCheckIcon,
-      audience: "everyone",
-      permission: "member:write",
+      audience: "configure",
     },
   ],
 };

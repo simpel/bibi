@@ -47,7 +47,7 @@ export function StripeRequiredButton({ size, children }: StripeRequiredButtonPro
               {common("close")}
             </Button>
             <Button variant="stripe" asChild>
-              <Link href={ROUTES.settingsIntegrations}>{t("connect")}</Link>
+              <Link href={ROUTES.adminPayments}>{t("connect")}</Link>
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -26,7 +26,7 @@ export function ArchiveEntityTypeDialog(props: ArchiveEntityTypeDialogProps) {
       messages: { pending: t("archiving"), success: t("archived") },
       onSuccess: () => {
         onOpenChange(false);
-        if (redirectToList) router.replace(ROUTES.settingsTypes);
+        if (redirectToList) router.replace(ROUTES.adminTypes);
         else router.refresh();
       },
     });

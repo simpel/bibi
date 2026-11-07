@@ -17,7 +17,7 @@ import { loadMember } from "@/server/load-member";
 
 export type MemberDetailProps = { locale: Locale; id: string };
 
-/** `/settings/members/[id]`: a member's contact details and role, with a link to the permissions. */
+/** `/admin/members/[id]`: a member's contact details and role, with a link to the permissions. */
 export async function MemberDetail({ locale, id }: MemberDetailProps) {
   const t = await getTranslations("member");
   const role = await getTranslations("role");

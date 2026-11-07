@@ -17,7 +17,7 @@ export function useOrderTemplateViewColumns(): ColumnDef<Row>[] {
         header: t("columns.name"),
         accessorFn: (template) => template.name,
         cell: ({ row: { original: template } }) => (
-          <Link href={ROUTES.settingsOrderTemplates} className="font-medium hover:underline">
+          <Link href={ROUTES.adminOrderTemplates} className="font-medium hover:underline">
             {template.name}
           </Link>
         ),

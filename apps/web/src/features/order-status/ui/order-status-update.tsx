@@ -10,7 +10,7 @@ import { OrderStatusPageForm } from "./order-status-page-form";
 
 export type OrderStatusUpdateProps = { locale: Locale; id: string };
 
-/** `/settings/pipeline/[id]/update`: edit a status on a page of its own. */
+/** `/admin/pipeline/[id]/update`: edit a status on a page of its own. */
 export async function OrderStatusUpdate({ locale, id }: OrderStatusUpdateProps) {
   const t = await getTranslations("orderStatus");
   const orderStatus = await loadOrderStatus({ id });
@@ -18,9 +18,9 @@ export async function OrderStatusUpdate({ locale, id }: OrderStatusUpdateProps) 
     return <ErrorState errorKey={handleLoadError({ error: orderStatus.error, locale })} />;
   return (
     <>
-      <CrumbName href={`/settings/pipeline/${id}/update`} name={orderStatus.value.name} />
+      <CrumbName href={`/admin/pipeline/${id}/update`} name={orderStatus.value.name} />
       <FormPageShell
-        backHref={ROUTES.settingsPipeline}
+        backHref={ROUTES.adminPipeline}
         title={t("edit")}
         description={t("editDescription")}
       >

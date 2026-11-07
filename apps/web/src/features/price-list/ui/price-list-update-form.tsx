@@ -16,7 +16,7 @@ export function PriceListUpdateForm({ priceList, data }: PriceListUpdateFormProp
       <PriceListForm
         priceList={priceList}
         data={data}
-        onDone={() => router.push(ROUTES.settingsPriceLists)}
+        onDone={() => router.push(ROUTES.adminPriceLists)}
       />
     </div>
   );

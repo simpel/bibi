@@ -1,8 +1,9 @@
 "use client";
 
 import type { AccountingSettingsDto } from "@bibi/core/schemas";
-import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@bibi/ui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { AdminSection } from "@/components/admin/admin-section";
 import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { updateAccountingSettingsAction } from "../actions";
@@ -28,24 +29,25 @@ export function FiscalYearSetting({ settings, canEdit }: FiscalYearSettingProps)
       onSuccess: () => router.refresh(),
     });
   return (
-    <section className="grid max-w-xs gap-2">
-      <Label htmlFor="fiscal-year-start">{t("fields.fiscalYearStartMonth")}</Label>
-      <Select
-        value={String(settings.fiscalYearStartMonth)}
-        onValueChange={(month) => save({ month })}
-        disabled={!canEdit || pending}
-      >
-        <SelectTrigger id="fiscal-year-start">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {MONTHS.map((month) => (
-            <SelectItem key={month} value={month}>
-              {t("monthName", { month })}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </section>
+    <AdminSection title={t("fields.fiscalYearStartMonth")}>
+      <div className="max-w-xs">
+        <Select
+          value={String(settings.fiscalYearStartMonth)}
+          onValueChange={(month) => save({ month })}
+          disabled={!canEdit || pending}
+        >
+          <SelectTrigger aria-label={t("fields.fiscalYearStartMonth")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {MONTHS.map((month) => (
+              <SelectItem key={month} value={month}>
+                {t("monthName", { month })}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </AdminSection>
   );
 }

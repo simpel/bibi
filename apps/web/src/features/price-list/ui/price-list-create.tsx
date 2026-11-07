@@ -9,7 +9,7 @@ export async function PriceListCreate() {
   const [t, data] = await Promise.all([getTranslations("priceList"), loadPriceListFormData()]);
   return (
     <FormPageShell
-      backHref={ROUTES.settingsPriceLists}
+      backHref={ROUTES.adminPriceLists}
       title={t("create")}
       description={t("createDescription")}
     >

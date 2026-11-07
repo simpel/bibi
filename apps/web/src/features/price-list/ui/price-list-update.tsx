@@ -11,7 +11,7 @@ import { PriceListUpdateForm } from "./price-list-update-form";
 
 export type PriceListUpdateProps = { locale: Locale; id: string };
 
-/** `/settings/price-lists/[id]/update`: edit on a page of its own. */
+/** `/admin/price-lists/[id]/update`: edit on a page of its own. */
 export async function PriceListUpdate({ locale, id }: PriceListUpdateProps) {
   const t = await getTranslations("priceList");
   const [priceList, data] = await Promise.all([loadPriceList({ id }), loadPriceListFormData()]);
@@ -19,9 +19,9 @@ export async function PriceListUpdate({ locale, id }: PriceListUpdateProps) {
     return <ErrorState errorKey={handleLoadError({ error: priceList.error, locale })} />;
   return (
     <>
-      <CrumbName href={`/settings/price-lists/${id}/update`} name={priceList.value.name} />
+      <CrumbName href={`/admin/price-lists/${id}/update`} name={priceList.value.name} />
       <FormPageShell
-        backHref={ROUTES.settingsPriceLists}
+        backHref={ROUTES.adminPriceLists}
         title={t("edit")}
         description={t("editDescription")}
       >

@@ -26,7 +26,7 @@ export async function ItemCatalog(props: ItemCatalogProps) {
   const create = canCreate && !noTypes ? <CreateItemButton typeId={typeId} /> : undefined;
   const toTypes = (
     <Button asChild variant="outline">
-      <Link href={ROUTES.settingsTypes}>{t("goToTypes")}</Link>
+      <Link href={ROUTES.adminTypes}>{t("goToTypes")}</Link>
     </Button>
   );
   return (

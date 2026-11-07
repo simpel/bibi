@@ -5,7 +5,7 @@ describe("org paths", () => {
   it("treats app routes as scoped and top-level pages as unscoped", () => {
     expect(isScopedPath({ path: "/pipeline" })).toBe(true);
     expect(isScopedPath({ path: "/" })).toBe(true);
-    expect(isScopedPath({ path: "/settings/payments" })).toBe(true);
+    expect(isScopedPath({ path: "/admin/payments" })).toBe(true);
     expect(isScopedPath({ path: "/new/venue?x=1" })).toBe(true);
     expect(isScopedPath({ path: "/login?next=%2F" })).toBe(false);
     expect(isScopedPath({ path: "/mothership/logs" })).toBe(false);

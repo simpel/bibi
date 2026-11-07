@@ -8,7 +8,7 @@ export async function EntityTypeCreate() {
   const t = await getTranslations("entityType");
   return (
     <FormPageShell
-      backHref={ROUTES.settingsTypes}
+      backHref={ROUTES.adminTypes}
       title={t("create")}
       description={t("createDescription")}
     >

@@ -185,7 +185,18 @@
     "logs": "System logs",
     "aiModels": "AI models",
     "support": "Support",
-    "developers": "Developers"
+    "developers": "Developers",
+    "general": "General",
+    "planBilling": "Plan & billing",
+    "orderFlow": "Order flow",
+    "fortnox": "Fortnox",
+    "backToApp": "Back to app",
+    "adminGroups": {
+      "organization": "Organization",
+      "catalog": "Catalog",
+      "orders": "Orders",
+      "money": "Money & connections"
+    }
   },
   "shell": {
     "mainNavigation": "Main navigation",
@@ -527,5 +538,13 @@
     "footer": "© Bibi",
     "supportLink": "Support",
     "developersLink": "Developers"
+  },
+  "adminArea": {
+    "descriptions": {
+      "types": "The kinds of items you offer, their fields and how rooms can be set up.",
+      "orderFlow": "The statuses an order moves through and what each line does in them.",
+      "runSheets": "Run sheets sent to a responsibility, and who holds each responsibility.",
+      "integrations": "Accounting systems and API keys for your own connections."
+    }
   }
 }

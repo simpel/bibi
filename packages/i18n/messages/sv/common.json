@@ -185,7 +185,18 @@
     "logs": "Systemloggar",
     "aiModels": "AI-modeller",
     "support": "Support",
-    "developers": "Utvecklare"
+    "developers": "Utvecklare",
+    "general": "Allmänt",
+    "planBilling": "Plan och fakturering",
+    "orderFlow": "Bokningsflöde",
+    "fortnox": "Fortnox",
+    "backToApp": "Tillbaka till appen",
+    "adminGroups": {
+      "organization": "Organisation",
+      "catalog": "Katalog",
+      "orders": "Bokningar",
+      "money": "Pengar och kopplingar"
+    }
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",
@@ -527,5 +538,13 @@
     "footer": "© Bibi",
     "supportLink": "Support",
     "developersLink": "Utvecklare"
+  },
+  "adminArea": {
+    "descriptions": {
+      "types": "Vilka sorters artiklar ni erbjuder, deras fält och hur rum kan ställas upp.",
+      "orderFlow": "Statusarna en bokning går igenom och vad varje rad gör i dem.",
+      "runSheets": "Körscheman som skickas till ett ansvar, och vem som har vilket ansvar.",
+      "integrations": "Bokföringssystem och API-nycklar för egna kopplingar."
+    }
   }
 }

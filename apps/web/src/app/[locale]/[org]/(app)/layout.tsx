@@ -4,8 +4,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { TablePreferencesProvider } from "@/components/data-table/table-preferences-provider";
+import { canOpenAdmin } from "@/components/shell/admin-items";
 import { AppShell } from "@/components/shell/app-shell";
-import { canOpenSettings } from "@/components/shell/settings-items";
 import { billingGateRedirect } from "@/features/billing/load-billing-gate";
 import { AppPinnedBookings } from "@/features/calendar/ui/app-pinned-bookings";
 import { loadLiveCounts } from "@/features/notification/load-live-counts";
@@ -35,7 +35,7 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
   // After the trial, an unpaid organization sees only the payment page (ADR 0095 §5).
   if (payHref) redirect({ href: payHref, locale, org: organizationSlug });
   const { id, name, email } = session.user;
-  // Only decide which sidebar links show (ADR 0036); `/settings/*` and `/admin` check again.
+  // Only decide which sidebar links show (ADR 0036); `/admin/*` and `/admin` check again.
   const counts = loadLiveCounts().catch(() => ({ unread: 0, inboxOpen: null }));
   const [platformAdmin, abilities, preferences, canDraftFromMessage] = await Promise.all([
     isPlatformAdmin({ userId: id }),
@@ -51,7 +51,7 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
           user={{ name, email }}
           counts={counts}
           access={{
-            canConfigure: canOpenSettings({ permissions: abilities.permissions }),
+            canConfigure: canOpenAdmin({ permissions: abilities.permissions }),
             canDraftFromMessage,
             platformAdmin,
             permissions: abilities.permissions,

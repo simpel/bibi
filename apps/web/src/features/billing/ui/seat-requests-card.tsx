@@ -1,6 +1,6 @@
 import type { SeatRequestDto } from "@bibi/core";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { AdminSection } from "@/components/admin/admin-section";
 import { SeatRequestTable } from "./seat-request-table";
 
 export type SeatRequestsCardProps = {
@@ -13,14 +13,8 @@ export type SeatRequestsCardProps = {
 export async function SeatRequestsCard({ requests, seatPrice, canEdit }: SeatRequestsCardProps) {
   const t = await getTranslations("billing.settings");
   return (
-    <Card className="shadow-none">
-      <CardHeader>
-        <CardTitle className="text-base">{t("requestsTitle")}</CardTitle>
-        <CardDescription>{t("requestsDescription")}</CardDescription>
-      </CardHeader>
-      <CardContent className="px-0">
-        <SeatRequestTable requests={requests} seatPrice={seatPrice} canEdit={canEdit} />
-      </CardContent>
-    </Card>
+    <AdminSection title={t("requestsTitle")} description={t("requestsDescription")} flush>
+      <SeatRequestTable requests={requests} seatPrice={seatPrice} canEdit={canEdit} />
+    </AdminSection>
   );
 }

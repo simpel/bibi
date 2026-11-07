@@ -8,7 +8,7 @@ export function isActive({ pathname, href }: IsActiveInput): boolean {
 export type ActiveHrefInput = { pathname: string; hrefs: readonly string[] };
 
 /**
- * The one entry to highlight: the most specific active href, so `/settings/members` lights up
+ * The one entry to highlight: the most specific active href, so `/admin/members` lights up
  * Members, not Settings as well.
  */
 export function activeHref({ pathname, hrefs }: ActiveHrefInput): string | null {

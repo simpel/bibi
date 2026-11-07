@@ -28,7 +28,7 @@ export async function sendSeatRequestMail({
     getDb().user.findUnique({ where: { id: requesterId }, select: { name: true, email: true } }),
   ]);
   const who = requester?.name || requester?.email || "Someone";
-  const url = webUrl({ path: `/${organization.slug}/settings/billing` });
+  const url = webUrl({ path: `/${organization.slug}/admin/billing` });
   for (const admin of admins) {
     const locale = await resolveUserLocale({ userId: admin.id, email: admin.email });
     const rendered = renderSeatRequestEmail({

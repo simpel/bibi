@@ -30,7 +30,7 @@ export function FinancialsToolbar(props: FinancialsToolbarProps) {
       <div className="flex flex-wrap items-center gap-2">
         {exportPeriod ? <ExportSieButton period={exportPeriod} today={today} /> : null}
         <Button asChild variant="outline" size="sm">
-          <Link href={ROUTES.settingsAccounting}>{t("accountingSettings")}</Link>
+          <Link href={ROUTES.adminAccounting}>{t("accountingSettings")}</Link>
         </Button>
       </div>
     </div>

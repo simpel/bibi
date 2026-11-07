@@ -20,7 +20,7 @@ const PAGE_SIZE = 100;
 
 const GoToTypes = ({ label }: { label: string }) => (
   <Button asChild variant="outline">
-    <Link href={ROUTES.settingsTypes}>{label}</Link>
+    <Link href={ROUTES.adminTypes}>{label}</Link>
   </Button>
 );
 

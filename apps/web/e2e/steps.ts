@@ -75,7 +75,7 @@ export async function createItemType({
   name,
   numberField,
 }: PageInput & { name: string; numberField: string }) {
-  await gotoApp({ page, path: "/settings/types" });
+  await gotoApp({ page, path: "/admin/types" });
   // Create is a step page (/new/type): base and name, then capabilities; it opens the new type.
   await page.getByRole("link", { name: "Skapa typ" }).first().click();
   await page.getByLabel("Namn").fill(name);

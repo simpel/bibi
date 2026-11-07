@@ -39,7 +39,7 @@ export const BILLING_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
 export const BILLING_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   billing_access:
     "one open/closed flag the app layout acts on; the payment page is the UI (ADR 0095)",
-  billing_listSeatRequests: "seat requests are decided in the table on /settings/billing",
+  billing_listSeatRequests: "seat requests are decided in the table on /admin/billing",
   billing_startCheckout: "never offered to the assistant (aiAllowed: false): a Stripe link",
   billing_openPortal: "never offered to the assistant (aiAllowed: false): a Stripe link",
   billing_remindAdmins: "a sent flag; the payment page shows the outcome as a toast",

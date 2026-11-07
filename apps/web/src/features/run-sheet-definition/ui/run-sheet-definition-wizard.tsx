@@ -21,7 +21,7 @@ export function RunSheetDefinitionWizard({ options }: RunSheetDefinitionWizardPr
     form,
     action: ({ values }) => createRunSheetDefinitionAction({ input: values }),
     messages: { pending: t("saving"), success: t("created") },
-    onSuccess: () => router.push(ROUTES.settingsRunSheets),
+    onSuccess: () => router.push(ROUTES.adminRunSheets),
   });
   const text = ({ id }: { id: string }) => ({
     id,
@@ -33,7 +33,7 @@ export function RunSheetDefinitionWizard({ options }: RunSheetDefinitionWizardPr
       form={form}
       run={run}
       pending={pending}
-      cancelHref={ROUTES.settingsRunSheets}
+      cancelHref={ROUTES.adminRunSheets}
       progressLabel={t("wizard.progress")}
       steps={runSheetSteps({ form, options, nameLabel: t("fields.name"), text })}
     />

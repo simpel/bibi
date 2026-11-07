@@ -22,7 +22,7 @@ export function OrderTemplateCardView({ template }: OrderTemplateCardViewProps) 
       </CardHeader>
       <CardContent className="grid gap-1 p-4 pt-0 text-sm text-muted-foreground">
         <p>{t("lines", { count: template.lines.length })}</p>
-        <Link href={ROUTES.settingsOrderTemplates} className="text-primary hover:underline">
+        <Link href={ROUTES.adminOrderTemplates} className="text-primary hover:underline">
           {t("open")}
         </Link>
       </CardContent>

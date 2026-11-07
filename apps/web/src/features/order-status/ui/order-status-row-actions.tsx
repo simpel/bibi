@@ -1,12 +1,12 @@
 "use client";
 
 import type { OrderStatusDto } from "@bibi/core/schemas";
-import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { ContextMenuItem, DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
-import { useRouter } from "@/lib/navigation";
+import { Link, useRouter } from "@/lib/navigation";
 import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
 import { ArchiveOrderStatusDialog } from "./archive-order-status-dialog";
 import { MoveItems } from "./move-items";
@@ -18,15 +18,17 @@ export type OrderStatusRowActionsProps = {
   access: RowAccess;
 };
 
+/** The update page of one status. */
+export const orderStatusEditHref = ({ id }: { id: string }) =>
+  updateRoute({ detail: listItemRoute({ list: ROUTES.adminPipeline, id }) });
+
 type MenuProps = OrderStatusRowActionsProps & { onArchive: () => void };
 
 function StatusMenu({ orderStatus, index, statuses, access, onArchive }: MenuProps) {
   const t = useTranslations("orderStatus");
   const common = useTranslations("common");
   const router = useRouter();
-  const editHref = updateRoute({
-    detail: listItemRoute({ list: ROUTES.settingsPipeline, id: orderStatus.id }),
-  });
+  const editHref = orderStatusEditHref({ id: orderStatus.id });
   return (
     <DataTableRowActions
       label={common("actions")}
@@ -60,5 +62,18 @@ export function OrderStatusRowActions(props: OrderStatusRowActionsProps) {
         onOpenChange={setArchiveOpen}
       />
     </>
+  );
+}
+
+export type OrderStatusRowMenuProps = { orderStatus: OrderStatusDto; access: RowAccess };
+
+/** Right-click menu for a status row: the edit page. */
+export function OrderStatusRowMenu({ orderStatus, access }: OrderStatusRowMenuProps) {
+  const t = useTranslations("orderStatus");
+  if (!access.canEdit) return null;
+  return (
+    <ContextMenuItem asChild>
+      <Link href={orderStatusEditHref({ id: orderStatus.id })}>{t("edit")}</Link>
+    </ContextMenuItem>
   );
 }

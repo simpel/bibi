@@ -71,14 +71,14 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
   {
     key: "list",
     group: "settings",
-    href: ROUTES.settingsLists,
+    href: ROUTES.adminLists,
     icon: ListIcon,
     permission: "configuration:write",
   },
   {
     key: "setup",
     group: "settings",
-    href: ROUTES.settingsSetups,
+    href: ROUTES.adminSetups,
     icon: LayoutGridIcon,
     permission: "configuration:write",
   },
@@ -99,7 +99,7 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
   {
     key: "orderStatus",
     group: "settings",
-    href: ROUTES.settingsPipeline,
+    href: ROUTES.adminPipeline,
     icon: CircleDotIcon,
     permission: "pipeline:write",
   },

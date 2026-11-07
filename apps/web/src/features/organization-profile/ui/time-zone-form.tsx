@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
+import { AdminSection } from "@/components/admin/admin-section";
 import { TimeZoneField } from "@/components/form/time-zone-field";
 import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
@@ -37,18 +38,23 @@ export function TimeZoneForm({ timeZone, canEdit }: TimeZoneFormProps) {
     onSuccess: () => router.refresh(),
   });
   return (
-    <Form {...form}>
-      <form onSubmit={submit} noValidate className="grid max-w-md gap-4">
-        <TimeZoneField control={form.control} name="timeZone" label={t("timeZone")} />
-        <p className="text-sm text-muted-foreground">{t("timeZoneHint")}</p>
-        {canEdit ? (
-          <div>
-            <Button type="submit" disabled={pending}>
-              {common("save")}
-            </Button>
-          </div>
-        ) : null}
-      </form>
-    </Form>
+    <AdminSection title={t("timeZone")} description={t("timeZoneHint")}>
+      <Form {...form}>
+        <form onSubmit={submit} noValidate className="grid max-w-md gap-4">
+          <fieldset disabled={!canEdit} className="grid gap-4">
+            <TimeZoneField control={form.control} name="timeZone" label={t("timeZone")} />
+          </fieldset>
+          {canEdit ? (
+            <div>
+              <Button type="submit" disabled={pending}>
+                {common("save")}
+              </Button>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">{t("readOnly")}</p>
+          )}
+        </form>
+      </Form>
+    </AdminSection>
   );
 }

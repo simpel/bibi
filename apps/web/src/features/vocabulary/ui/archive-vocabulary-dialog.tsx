@@ -26,7 +26,7 @@ export function ArchiveVocabularyDialog(props: ArchiveVocabularyDialogProps) {
       messages: { pending: t("archiving"), success: t("archived") },
       onSuccess: () => {
         onOpenChange(false);
-        if (redirectToList) router.replace(ROUTES.settingsLists);
+        if (redirectToList) router.replace(ROUTES.adminLists);
         else router.refresh();
       },
     });

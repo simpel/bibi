@@ -8,7 +8,7 @@ export type EditOrderStatusItemProps = { id: string };
 /** The "Edit status" menu item: a link to the update page. */
 export function EditOrderStatusItem({ id }: EditOrderStatusItemProps) {
   const t = useTranslations("orderStatus");
-  const detail = listItemRoute({ list: ROUTES.settingsPipeline, id });
+  const detail = listItemRoute({ list: ROUTES.adminPipeline, id });
   return (
     <DropdownMenuItem asChild>
       <Link href={updateRoute({ detail })}>{t("edit")}</Link>

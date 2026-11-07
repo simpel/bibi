@@ -11,7 +11,7 @@ export type OrderStatusPageFormProps = { orderStatus?: OrderStatusDto | undefine
 /** The status form on its create or update page; saving (or cancelling) goes back to the list. */
 export function OrderStatusPageForm({ orderStatus }: OrderStatusPageFormProps) {
   const router = useRouter();
-  const onDone = () => router.push(ROUTES.settingsPipeline);
+  const onDone = () => router.push(ROUTES.adminPipeline);
   return (
     <div className="max-w-2xl">
       {orderStatus ? (

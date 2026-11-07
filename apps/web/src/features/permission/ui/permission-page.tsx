@@ -31,7 +31,7 @@ function canChangePreset({ abilities, isMember, preset }: CanChangePresetInput):
 export type PermissionPageProps = { locale: Locale; subjectType: SubjectType; subjectId: string };
 
 /**
- * `/settings/members/[id]/permissions` and `/settings/api-keys/[id]/permissions`: the preset and
+ * `/admin/members/[id]/permissions` and `/admin/api-keys/[id]/permissions`: the preset and
  * the features × actions grid of one member or API key (ADR 0050). Admins only; all auto-saves.
  */
 export async function PermissionPage({ locale, subjectType, subjectId }: PermissionPageProps) {

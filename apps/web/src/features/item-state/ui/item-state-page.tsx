@@ -15,7 +15,7 @@ export type ItemStatePageProps = {
   mode: { create: string } | { update: string };
 };
 
-/** `/new/item-state` and `/settings/item-states/[id]/update`: the form on a page of its own. */
+/** `/new/item-state` and `/admin/item-states/[id]/update`: the form on a page of its own. */
 export async function ItemStatePage({ locale, mode }: ItemStatePageProps) {
   const [t, state] = await Promise.all([
     getTranslations("itemState"),
@@ -32,10 +32,10 @@ export async function ItemStatePage({ locale, mode }: ItemStatePageProps) {
   return (
     <>
       {editing && "update" in mode ? (
-        <CrumbName href={`/settings/item-states/${mode.update}/update`} name={editing.name} />
+        <CrumbName href={`/admin/item-states/${mode.update}/update`} name={editing.name} />
       ) : null}
       <FormPageShell
-        backHref={ROUTES.settingsItemStates}
+        backHref={ROUTES.adminItemStates}
         title={editing ? t("edit") : t("create")}
         description={
           editing ? t("editDescription") : t("createDescription", { type: type.value.name })

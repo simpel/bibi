@@ -1,6 +1,8 @@
 import { listApiKeys } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
+import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminPage } from "@/components/admin/admin-page";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { assignableRoles } from "@/features/member/assignable-roles";
@@ -10,37 +12,34 @@ import { runOperation } from "@/server/run-operation";
 import { ApiKeyTable } from "./api-key-table";
 import { CreateApiKeyButton } from "./create-api-key-button";
 
-export type ApiKeySectionProps = { locale: Locale };
+export type ApiKeySectionProps = {
+  locale: Locale;
+  /** Rendered as a tab of an administration page: the layout above shows the title. */
+  inTab?: boolean;
+};
 
 /** The organization's REST API keys: create (a preset up to the caller's), edit and revoke. */
-export async function ApiKeySection({ locale }: ApiKeySectionProps) {
+export async function ApiKeySection({ locale, inTab = false }: ApiKeySectionProps) {
   const [t, abilities, keys] = await Promise.all([
     getTranslations("integration.apiKeys"),
     getCallerAbilities(),
     runOperation({ operation: listApiKeys, input: { limit: 100 } }),
   ]);
   const roles = assignableRoles({ caller: abilities.role });
+  const canManage = can({ abilities, permission: "apiKey:write" });
+  const create = canManage ? <CreateApiKeyButton roles={roles} /> : null;
+  const header = (
+    <AdminHeader title={t("title")} description={t("description")} actions={create} inTab={inTab} />
+  );
   return (
-    <section className="grid gap-4">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="grid gap-1">
-          <h2 className="text-xl">{t("title")}</h2>
-          <p className="text-sm text-muted-foreground">{t("description")}</p>
-        </div>
-        {can({ abilities, permission: "apiKey:write" }) ? (
-          <CreateApiKeyButton roles={roles} />
-        ) : null}
-      </header>
+    <AdminPage header={header}>
       {!keys.ok ? (
         <ErrorState inline errorKey={handleLoadError({ error: keys.error, locale })} />
       ) : keys.value.items.length === 0 ? (
-        <EmptyState title={t("empty")} />
+        <EmptyState title={t("empty")} action={create} />
       ) : (
-        <ApiKeyTable
-          apiKeys={keys.value.items}
-          canManage={can({ abilities, permission: "apiKey:write" })}
-        />
+        <ApiKeyTable apiKeys={keys.value.items} canManage={canManage} />
       )}
-    </section>
+    </AdminPage>
   );
 }

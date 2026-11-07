@@ -1,5 +1,6 @@
 import type { AccountingSettingsDto } from "@bibi/core/schemas";
 import { getTranslations } from "next-intl/server";
+import { AdminSection } from "@/components/admin/admin-section";
 import { typeRows } from "../lib/account-rows";
 import type { ItemTypeOption } from "../lib/accounting-form";
 import { AccountsTable } from "./accounts-table";
@@ -19,14 +20,12 @@ export async function RevenueAccountsSection({
 }: RevenueAccountsSectionProps) {
   const t = await getTranslations("finance.accounting");
   return (
-    <section className="grid gap-3">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="grid gap-1">
-          <h2 className="text-base">{t("groups.revenueByType")}</h2>
-          <p className="text-sm text-muted-foreground">{t("revenueByTypeHint")}</p>
-        </div>
-        {canEdit ? <AddAccountButton settings={settings} types={types} /> : null}
-      </div>
+    <AdminSection
+      title={t("groups.revenueByType")}
+      description={t("revenueByTypeHint")}
+      action={canEdit ? <AddAccountButton settings={settings} types={types} /> : null}
+      flush
+    >
       <AccountsTable
         tableId="finance.revenue-accounts"
         rows={typeRows({ settings, types })}
@@ -35,7 +34,8 @@ export async function RevenueAccountsSection({
         grouped={false}
         emptyText={t("emptyRevenue")}
         canEdit={canEdit}
+        flush
       />
-    </section>
+    </AdminSection>
   );
 }

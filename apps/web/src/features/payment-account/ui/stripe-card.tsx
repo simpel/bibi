@@ -10,7 +10,7 @@ import { SyncStatusButton } from "./sync-status-button";
 export type StripeCardProps = { canEdit: boolean };
 
 /**
- * The organization's own Stripe account on Settings → Integrations (ADR 0090): customers pay the
+ * The organization's own Stripe account on Administration → Payments (ADR 0090): customers pay the
  * venue directly into it, Bibi never holds the money. Renders nothing if the account can't load.
  */
 export async function StripeCard({ canEdit }: StripeCardProps) {

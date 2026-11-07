@@ -1,6 +1,7 @@
 import { listInvitations } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
+import { AdminSection } from "@/components/admin/admin-section";
 import { ErrorState } from "@/components/states/error-state";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -17,17 +18,17 @@ export async function InvitationList({ locale }: InvitationListProps) {
     operation: listInvitations,
     input: { limit: PAGE_SIZE },
   });
+  const items = invitations.ok ? invitations.value.items : [];
   const body = !invitations.ok ? (
     <ErrorState inline errorKey={handleLoadError({ error: invitations.error, locale })} />
-  ) : invitations.value.items.length === 0 ? (
-    <p className="text-sm text-muted-foreground">{t("noInvitations")}</p>
+  ) : items.length === 0 ? (
+    <p className="px-6 text-sm text-muted-foreground">{t("noInvitations")}</p>
   ) : (
-    <InvitationTable invitations={invitations.value.items} />
+    <InvitationTable invitations={items} />
   );
   return (
-    <section className="grid gap-3">
-      <h2 className="text-xl">{t("invitations")}</h2>
+    <AdminSection title={t("invitations")} flush>
       {body}
-    </section>
+    </AdminSection>
   );
 }

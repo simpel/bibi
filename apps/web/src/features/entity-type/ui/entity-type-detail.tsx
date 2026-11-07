@@ -30,11 +30,11 @@ export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
     <ArchiveEntityTypeButton entityType={entityType} redirectToList />
   ) : undefined;
   return (
-    <div className="grid gap-8">
-      <CrumbName href={`/settings/types/${id}`} name={entityType.name} />
+    <div className="grid gap-6">
+      <CrumbName href={`/admin/types/${id}`} name={entityType.name} />
       <div className="grid gap-4">
         <Link
-          href={ROUTES.settingsTypes}
+          href={ROUTES.adminTypes}
           className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeftIcon className="size-4" />

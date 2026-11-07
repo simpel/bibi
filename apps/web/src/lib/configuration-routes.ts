@@ -7,37 +7,37 @@ export function itemRoute({ id }: IdRouteInput): string {
   return `${ROUTES.items}/${encodeURIComponent(id)}`;
 }
 
-/** `/settings/types/<id>`: type detail page (capabilities and fields). */
+/** `/admin/types/<id>`: type detail page (capabilities and fields). */
 export function entityTypeRoute({ id }: IdRouteInput): string {
-  return `${ROUTES.settingsTypes}/${encodeURIComponent(id)}`;
+  return `${ROUTES.adminTypes}/${encodeURIComponent(id)}`;
 }
 
-/** `/settings/lists/<id>`: list detail page (values). */
+/** `/admin/lists/<id>`: list detail page (values). */
 export function vocabularyRoute({ id }: IdRouteInput): string {
-  return `${ROUTES.settingsLists}/${encodeURIComponent(id)}`;
+  return `${ROUTES.adminLists}/${encodeURIComponent(id)}`;
 }
 
-/** `/settings/setups`: the organization's setups (no detail page). */
+/** `/admin/setups`: the organization's setups (no detail page). */
 export function setupsRoute(): string {
-  return ROUTES.settingsSetups;
+  return ROUTES.adminSetups;
 }
 
-/** `/settings/responsibilities`: the organization's responsibilities (no detail page). */
+/** `/admin/responsibilities`: the organization's responsibilities (no detail page). */
 export function responsibilitiesRoute(): string {
-  return ROUTES.settingsResponsibilities;
+  return ROUTES.adminResponsibilities;
 }
 
-/** `/settings/run-sheets`: the organization's run sheet definitions (no detail page). */
+/** `/admin/run-sheets`: the organization's run sheet definitions (no detail page). */
 export function runSheetDefinitionsRoute(): string {
-  return ROUTES.settingsRunSheets;
+  return ROUTES.adminRunSheets;
 }
 
-/** `/settings/price-lists`: the organization's price lists (no detail page). */
+/** `/admin/price-lists`: the organization's price lists (no detail page). */
 export function priceListsRoute(): string {
-  return ROUTES.settingsPriceLists;
+  return ROUTES.adminPriceLists;
 }
 
-/** `/settings/pipeline`: the organization's order statuses (no detail page). */
+/** `/admin/pipeline`: the organization's order statuses (no detail page). */
 export function orderStatusesRoute(): string {
-  return ROUTES.settingsPipeline;
+  return ROUTES.adminPipeline;
 }

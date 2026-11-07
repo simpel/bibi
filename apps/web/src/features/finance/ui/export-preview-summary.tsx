@@ -10,8 +10,8 @@ export type ExportPreviewSummaryProps = {
 };
 
 const BLOCKER_LINKS: Record<ExportBlocker["code"], string | null> = {
-  ORG_NUMBER_MISSING: ROUTES.settingsOrganization,
-  VAT_ACCOUNT_MISSING: ROUTES.settingsAccounting,
+  ORG_NUMBER_MISSING: ROUTES.adminGeneral,
+  VAT_ACCOUNT_MISSING: ROUTES.adminAccounting,
   NOTHING_TO_EXPORT: null,
 };
 

@@ -1,8 +1,10 @@
 import { getAccountingSettings } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
+import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminPage } from "@/components/admin/admin-page";
+import { AdminSection } from "@/components/admin/admin-section";
 import { ErrorState } from "@/components/states/error-state";
-import { PageHeader } from "@/components/states/page-header";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { handleLoadError } from "@/server/load-error";
@@ -14,7 +16,7 @@ import { RevenueAccountsSection } from "./revenue-accounts-section";
 
 export type AccountingSettingsProps = { locale: Locale };
 
-/** `/settings/accounting`: the accounts the SIE export books to (ADR 0077 decision 4). */
+/** `/admin/accounting`: the accounts the SIE export books to (ADR 0077 decision 4). */
 export async function AccountingSettings({ locale }: AccountingSettingsProps) {
   const [t, abilities, settingsResult, itemTypes] = await Promise.all([
     getTranslations("finance.accounting"),
@@ -22,19 +24,22 @@ export async function AccountingSettings({ locale }: AccountingSettingsProps) {
     runOperation({ operation: getAccountingSettings, input: {} }),
     loadEntityTypesOf({ base: "ITEM" }),
   ]);
-  if (!settingsResult.ok)
-    return <ErrorState errorKey={handleLoadError({ error: settingsResult.error, locale })} />;
-  if (!itemTypes.ok)
-    return <ErrorState errorKey={handleLoadError({ error: itemTypes.error, locale })} />;
+  const header = <AdminHeader title={t("title")} description={t("description")} />;
+  const error = !settingsResult.ok ? settingsResult.error : !itemTypes.ok ? itemTypes.error : null;
+  if (error || !settingsResult.ok || !itemTypes.ok) {
+    return (
+      <AdminPage header={header}>
+        {error ? <ErrorState inline errorKey={handleLoadError({ error, locale })} /> : null}
+      </AdminPage>
+    );
+  }
   const settings = settingsResult.value;
   const types = itemTypes.value.items.map(({ id, name }) => ({ id, name }));
   const canEdit = can({ abilities, permission: "finance:write" });
   return (
-    <div className="grid gap-8">
-      <PageHeader title={t("title")} description={t("description")} />
+    <AdminPage header={header}>
       <FiscalYearSetting settings={settings} canEdit={canEdit} />
-      <section className="grid gap-3">
-        <h2 className="text-base">{t("groups.accounts")}</h2>
+      <AdminSection title={t("groups.accounts")} flush>
         <AccountsTable
           tableId="finance.accounts"
           rows={accountRows({ settings })}
@@ -43,10 +48,11 @@ export async function AccountingSettings({ locale }: AccountingSettingsProps) {
           grouped
           emptyText={t("empty")}
           canEdit={canEdit}
+          flush
         />
-      </section>
+      </AdminSection>
       <RevenueAccountsSection settings={settings} types={types} canEdit={canEdit} />
       {canEdit ? null : <p className="text-sm text-muted-foreground">{t("readOnly")}</p>}
-    </div>
+    </AdminPage>
   );
 }
