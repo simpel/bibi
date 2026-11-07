@@ -26,4 +26,5 @@ export const PEOPLE_OPERATION_KEYS = [
   "venueHours_set",
   "itemHours_set",
   "organizationProfile_setDomainJoin",
+  "organizationProfile_update",
 ] as const;

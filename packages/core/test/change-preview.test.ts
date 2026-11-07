@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  addVocabularyValue,
   createSetup,
+  createVocabulary,
   execute,
   getItem,
   previewChange,
@@ -72,5 +74,20 @@ describe("previewChange (ADR 0049)", () => {
     });
     expect(preview.consequences).toEqual([]);
     expect(fieldsOf({ change: preview.changes[0] }).priceMinor).toEqual([null, 450_000]);
+  });
+
+  it("names the list a value is added to", async () => {
+    const context = testContext();
+    const list = unwrap({
+      result: await execute({ operation: createVocabulary, input: { name: "Allergens" }, context }),
+    });
+    const preview = unwrap({
+      result: await previewChange({
+        operation: addVocabularyValue,
+        input: { vocabularyId: list.id, name: "Celery" },
+        context,
+      }),
+    });
+    expect(preview.names[list.id]).toBe("Allergens");
   });
 });

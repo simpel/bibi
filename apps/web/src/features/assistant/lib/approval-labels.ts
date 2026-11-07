@@ -13,6 +13,8 @@ export const FIELD_KEYS = [
   "postalCode",
   "city",
   "country",
+  "timeZone",
+  "domainJoin",
   "contactEmail",
   "contactPhone",
   "openingHours",

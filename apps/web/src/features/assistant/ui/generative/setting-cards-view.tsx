@@ -1,16 +1,17 @@
 "use client";
 
+import { Card } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { SETTING_CARDS } from "@/features/settings/ui/setting-cards";
 import type { SettingGroups } from "@/features/settings/ui/setting-props";
+import { SETTING_ROWS } from "@/features/settings/ui/setting-rows";
 import type { GenerativeProps } from "./generative-props";
 
 export type SettingCardsViewProps = GenerativeProps<"setting-cards">;
 
 /**
- * The settings the user asked about, one card each, editable in place. The cards share one view,
- * so a save in one card (e.g. the payment operator) is what the next card (the deposit) builds on.
+ * The settings the user asked about in one card, one row each, editable in place. The rows share
+ * one view, so a save in one row (e.g. the payment operator) is what the next row builds on.
  */
 export function SettingCardsView({ view }: SettingCardsViewProps) {
   const t = useTranslations("assistant.ui.settings");
@@ -20,11 +21,11 @@ export function SettingCardsView({ view }: SettingCardsViewProps) {
   const onSaved = ({ patch }: { patch: Partial<SettingGroups> }) =>
     setCurrent((before) => ({ ...before, ...patch }));
   return (
-    <div className="grid gap-3">
+    <Card data-slot="setting-cards" className="gap-0 overflow-hidden py-0 shadow-none">
       {current.keys.map((key) => {
-        const Card = SETTING_CARDS[key];
-        return <Card key={key} view={current} onSaved={onSaved} />;
+        const Row = SETTING_ROWS[key];
+        return <Row key={key} view={current} onSaved={onSaved} />;
       })}
-    </div>
+    </Card>
   );
 }

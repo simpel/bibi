@@ -6,36 +6,36 @@ import { useCan } from "@/components/shell/permissions-context";
 import { accountRows } from "@/features/finance/lib/account-rows";
 import { AccountsTable } from "@/features/finance/ui/accounts-table";
 import { FiscalYearSelect } from "@/features/finance/ui/fiscal-year-setting";
-import { SettingCard } from "./setting-card";
-import type { SettingCardProps } from "./setting-props";
+import type { SettingEditorProps } from "./setting-props";
+import { SettingRow } from "./setting-row";
 
 const savedAccounting =
-  ({ onSaved }: Pick<SettingCardProps, "onSaved">) =>
+  ({ onSaved }: Pick<SettingEditorProps, "onSaved">) =>
   ({ value }: { value: AccountingSettingsDto }) =>
     onSaved({ patch: { accounting: value } });
 
 /** The first month of the fiscal year, saved on change. */
-export function FiscalYearSettingCard({ view, onSaved }: SettingCardProps) {
+export function FiscalYearSettingRow({ view, onSaved }: SettingEditorProps) {
   const canEdit = useCan({ permission: "finance:write" });
   if (!view.accounting) return null;
   return (
-    <SettingCard setting="fiscalYear">
+    <SettingRow setting="fiscalYear">
       <FiscalYearSelect
         month={view.accounting.fiscalYearStartMonth}
         canEdit={canEdit}
         onSaved={savedAccounting({ onSaved })}
       />
-    </SettingCard>
+    </SettingRow>
   );
 }
 
 /** The fixed accounts of the SIE export (ADR 0077), the Accounting page's table. */
-export function AccountsSettingCard({ view, onSaved }: SettingCardProps) {
+export function AccountsSettingRow({ view, onSaved }: SettingEditorProps) {
   const t = useTranslations("finance.accounting");
   const canEdit = useCan({ permission: "finance:write" });
   if (!view.accounting) return null;
   return (
-    <SettingCard setting="accounts">
+    <SettingRow setting="accounts">
       <AccountsTable
         tableId="finance.accounts.assistant"
         rows={accountRows({ settings: view.accounting })}
@@ -47,6 +47,6 @@ export function AccountsSettingCard({ view, onSaved }: SettingCardProps) {
         scope="chat-accounts"
         onSaved={savedAccounting({ onSaved })}
       />
-    </SettingCard>
+    </SettingRow>
   );
 }

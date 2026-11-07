@@ -9,10 +9,13 @@ export type ChangeRow = DescribedChange & { id: string; record: string };
 
 function useValueText() {
   const t = useTranslations("assistant.approval");
+  const months = useTranslations("finance.accounting");
   const { money } = useNumberFormat();
   return ({ value }: { value: DescribedValue }) => {
     if (value.kind === "empty") return t("changes.empty");
     if (value.kind === "money") return money({ minor: value.minor });
+    if (value.kind === "yesNo") return value.value ? t("changes.yes") : t("changes.no");
+    if (value.kind === "month") return months("monthName", { month: String(value.month) });
     return value.text;
   };
 }

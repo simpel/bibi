@@ -165,7 +165,9 @@
         "extraSeats": "Extra platser",
         "invoiceProvider": "Fakturaleverantör",
         "paymentOperator": "Betaloperatör",
-        "revenueAccounts": "Intäktskonton per artikeltyp eller artikel"
+        "revenueAccounts": "Intäktskonton per artikeltyp eller artikel",
+        "timeZone": "Tidszon",
+        "domainJoin": "Gå med via e-postdomän"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -287,7 +289,8 @@
         "inboundMessage_markRead": "Markera meddelande som läst",
         "inboundMessage_markUnread": "Markera meddelande som oläst",
         "inboundMessage_delete": "Ta bort meddelande",
-        "notification_delete": "Ta bort notiser"
+        "notification_delete": "Ta bort notiser",
+        "organizationProfile_update": "Ändra organisationens uppgifter"
       },
       "setup": {
         "title": "Skapa min första version",
@@ -307,7 +310,9 @@
         "before": "Före",
         "after": "Efter",
         "empty": "–",
-        "none": "Inget ändras."
+        "none": "Inget ändras.",
+        "yes": "Ja",
+        "no": "Nej"
       },
       "consequences": {
         "title": "Vad det här påverkar",

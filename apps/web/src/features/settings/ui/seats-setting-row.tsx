@@ -6,11 +6,11 @@ import { useCan } from "@/components/shell/permissions-context";
 import { AutoAssignSwitch } from "@/features/billing/ui/auto-assign-switch";
 import { ExtraSeatsForm } from "@/features/billing/ui/extra-seats-form";
 import { useNumberFormat } from "@/lib/number/use-number-format";
-import { SettingCard } from "./setting-card";
-import type { SettingCardProps } from "./setting-props";
+import type { SettingEditorProps } from "./setting-props";
+import { SettingRow } from "./setting-row";
 
 /** Seats (ADR 0095): what is used, how new seats are added and the extra paid seats. */
-export function SeatsSettingCard({ view, onSaved }: SettingCardProps) {
+export function SeatsSettingRow({ view, onSaved }: SettingEditorProps) {
   const t = useTranslations("assistant.ui.billing");
   const numbers = useNumberFormat();
   const canEdit = useCan({ permission: "billing:write" });
@@ -23,7 +23,7 @@ export function SeatsSettingCard({ view, onSaved }: SettingCardProps) {
       },
     });
   return (
-    <SettingCard
+    <SettingRow
       setting="seats"
       description={t("seats", {
         used: seats.used,
@@ -38,6 +38,6 @@ export function SeatsSettingCard({ view, onSaved }: SettingCardProps) {
         canEdit={canEdit}
         onSaved={saved}
       />
-    </SettingCard>
+    </SettingRow>
   );
 }
