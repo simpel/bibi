@@ -166,7 +166,16 @@
       "scopeLabel": "Which moves to {name} this applies to",
       "fromAny": "From any status",
       "fromSpecific": "Only from specific statuses",
-      "fromStatus": "From {name}"
+      "fromStatus": "From {name}",
+      "columns": {
+        "gates": "Gates"
+      },
+      "editRules": "Edit rules",
+      "gateNames": {
+        "REASON": "Reason",
+        "ASSIGNEE": "Assignee",
+        "ACCEPTED_QUOTE": "Accepted quote"
+      }
     },
     "flags": {
       "entry": "New orders start here",

@@ -1,38 +1,35 @@
 "use client";
 
-import type { AccountingSettingsDto } from "@bibi/core/schemas";
-import { DataTableRowActions } from "@bibi/ui";
+import { ContextMenuItem, DataTableRowActions } from "@bibi/ui";
 import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { AccountRow } from "../lib/account-rows";
-import type { ItemTypeOption } from "../lib/accounting-form";
-import { AccountDialog } from "./account-dialog";
 
 export type AccountRowActionsProps = {
   row: AccountRow;
-  settings: AccountingSettingsDto;
-  types: ItemTypeOption[];
+  /** Opens the edit dialog; it lives in the table so a context menu and a row click open it too. */
+  onEdit: (row: AccountRow) => void;
 };
 
-/** The edit action of one row; it opens the dialog. */
-export function AccountRowActions({ row, settings, types }: AccountRowActionsProps) {
+/** The edit action of one row. */
+export function AccountRowActions({ row, onEdit }: AccountRowActionsProps) {
   const t = useTranslations("finance.accounting");
   const common = useTranslations("common");
-  const [open, setOpen] = useState(false);
   return (
-    <>
-      <DataTableRowActions
-        label={common("actions")}
-        primary={[{ label: t("edit"), icon: PencilIcon, onClick: () => setOpen(true) }]}
-      />
-      <AccountDialog
-        open={open}
-        onOpenChange={setOpen}
-        settings={settings}
-        types={types}
-        target={row.target}
-      />
-    </>
+    <DataTableRowActions
+      label={common("actions")}
+      primary={[{ label: t("edit"), icon: PencilIcon, onClick: () => onEdit(row) }]}
+    />
+  );
+}
+
+/** Right-click menu of one row: the same edit action. */
+export function AccountRowMenu({ row, onEdit }: AccountRowActionsProps) {
+  const t = useTranslations("finance.accounting");
+  return (
+    <ContextMenuItem onSelect={() => onEdit(row)}>
+      <PencilIcon />
+      {t("edit")}
+    </ContextMenuItem>
   );
 }

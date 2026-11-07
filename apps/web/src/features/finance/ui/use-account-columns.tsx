@@ -1,11 +1,11 @@
-import { actionsColumn, type ColumnDef } from "@bibi/ui";
+import { actionsColumn, type ColumnDef, createTableColumns, numberColumn } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { type AccountRow, rowGroup } from "../lib/account-rows";
-import type { ItemTypeOption } from "../lib/accounting-form";
+import type { AccountRow } from "../lib/account-rows";
+import type { AccountLabels } from "./use-account-labels";
 
 export type UseAccountColumnsInput = {
-  types: ItemTypeOption[];
+  labels: AccountLabels;
   /** Adds the group column (fixed accounts); item type rows have no group. */
   grouped: boolean;
   /** Row actions menu; omit for no actions column. */
@@ -14,39 +14,40 @@ export type UseAccountColumnsInput = {
 
 /** Name, optional group and account of each row, with the edit action last. */
 export function useAccountColumns({
-  types,
+  labels,
   grouped,
   renderActions,
 }: UseAccountColumnsInput): ColumnDef<AccountRow>[] {
   const t = useTranslations("finance.accounting");
   const common = useTranslations("common");
-  const label = ({ target }: AccountRow) => {
-    if (target.kind === "account") return t(`fields.${target.key}`);
-    const entityTypeId = target.entityTypeId;
-    return types.find(({ id }) => id === entityTypeId)?.name ?? "–";
-  };
-  const group: ColumnDef<AccountRow>[] = grouped
-    ? [
-        {
-          id: "group",
-          header: t("columns.group"),
-          accessorFn: ({ target }) =>
-            target.kind === "account" ? t(`groups.${rowGroup({ key: target.key })}`) : "",
-        },
-      ]
-    : [];
-  const actions = renderActions
-    ? [actionsColumn<AccountRow>({ label: common("actions"), cell: renderActions })]
-    : [];
-  return [
-    {
-      id: "name",
-      header: t("columns.name"),
-      accessorFn: label,
-      cell: ({ row }) => <span className="font-medium">{label(row.original)}</span>,
-    },
-    ...group,
-    { id: "account", header: t("columns.account"), accessorFn: ({ value }) => value },
-    ...actions,
-  ];
+  return createTableColumns<AccountRow>({
+    primary: [
+      {
+        id: "name",
+        header: t("columns.name"),
+        accessorFn: labels.name,
+        cell: ({ row }) => <span className="font-medium">{labels.name(row.original)}</span>,
+      },
+    ],
+    relations: grouped
+      ? [
+          {
+            id: "group",
+            header: t("columns.group"),
+            accessorFn: (row) => labels.group(row) ?? "",
+          },
+        ]
+      : [],
+    numbers: [
+      numberColumn<AccountRow>({
+        id: "account",
+        header: t("columns.account"),
+        getValue: ({ value }) => value,
+        align: "left",
+      }),
+    ],
+    actions: renderActions
+      ? [actionsColumn<AccountRow>({ label: common("actions"), cell: renderActions })]
+      : [],
+  });
 }

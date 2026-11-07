@@ -29,7 +29,7 @@ export function FiscalYearSetting({ settings, canEdit }: FiscalYearSettingProps)
       onSuccess: () => router.refresh(),
     });
   return (
-    <AdminSection title={t("fields.fiscalYearStartMonth")}>
+    <AdminSection id="fiscal-year" title={t("fields.fiscalYearStartMonth")}>
       <div className="max-w-xs">
         <Select
           value={String(settings.fiscalYearStartMonth)}

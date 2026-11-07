@@ -21,7 +21,7 @@ export async function StatusGridEditor({ locale }: StatusGridEditorProps) {
   }
   if (data.value.statuses.length === 0 || data.value.types.length === 0) return null;
   return (
-    <AdminSection title={t("title")} description={t("description")} flush>
+    <AdminSection id="status-grid" title={t("title")} description={t("description")} flush>
       <StatusGridTable {...data.value} canEdit={can({ abilities, permission: "pipeline:write" })} />
     </AdminSection>
   );

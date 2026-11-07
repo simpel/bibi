@@ -38,7 +38,7 @@ export function TimeZoneForm({ timeZone, canEdit }: TimeZoneFormProps) {
     onSuccess: () => router.refresh(),
   });
   return (
-    <AdminSection title={t("timeZone")} description={t("timeZoneHint")}>
+    <AdminSection id="time-zone" title={t("timeZone")} description={t("timeZoneHint")}>
       <Form {...form}>
         <form onSubmit={submit} noValidate className="grid max-w-md gap-4">
           <fieldset disabled={!canEdit} className="grid gap-4">

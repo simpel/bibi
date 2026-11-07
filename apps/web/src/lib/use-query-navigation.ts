@@ -12,8 +12,19 @@ export function useQueryNavigation() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
-  const navigate = ({ patch }: { patch: Record<string, string | null> }) => {
-    const query = patchQuery({ current: new URLSearchParams(searchParams), patch });
+  /** `pageKey`: the page key that any other change resets (a scoped table has its own). */
+  const navigate = ({
+    patch,
+    pageKey,
+  }: {
+    patch: Record<string, string | null>;
+    pageKey?: string;
+  }) => {
+    const query = patchQuery({
+      current: new URLSearchParams(searchParams),
+      patch,
+      ...(pageKey ? { pageKey } : {}),
+    });
     startTransition(() => router.push(`${pathname}${query}`, { scroll: false }));
   };
   return { navigate, pending };

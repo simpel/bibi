@@ -18,7 +18,7 @@ export async function SeatsCard({ billing, seatPrice, canEdit }: SeatsCardProps)
     { key: "held", value: held },
   ] as const;
   return (
-    <AdminSection title={t("seatsTitle")}>
+    <AdminSection id="seats" title={t("seatsTitle")}>
       <div className="grid gap-6 text-sm">
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {figures.map(({ key, value }) => (

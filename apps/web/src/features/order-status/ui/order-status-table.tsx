@@ -1,37 +1,48 @@
 "use client";
 
-import type { OrderStatusDto } from "@bibi/core/schemas";
+import { type OrderStatusDto, STATUS_FLAGS } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
+import { qualifierPills } from "@/components/data-table/qualifier-pills";
 import { TableFilterBar } from "@/components/data-table/table-filter-bar";
-import type { TableQualifier } from "@/components/data-table/table-filter-query";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
 import type { RowAccess } from "@/lib/can";
 import { useRouter } from "@/lib/navigation";
 import { OrderStatusRowMenu, orderStatusEditHref } from "./order-status-row-actions";
 import { type StatusRow, toStatusRows } from "./status-rows";
 import { useStatusColumns } from "./use-status-columns";
+import { useStatusQualifiers } from "./use-status-qualifiers";
 
 export type OrderStatusTableProps = { statuses: OrderStatusDto[]; access: RowAccess };
-
-const NO_QUALIFIERS: TableQualifier<StatusRow>[] = [];
 
 /** The organization's statuses in board order: name, flags and allowed transitions. */
 export function OrderStatusTable({ statuses, access }: OrderStatusTableProps) {
   const t = useTranslations("orderStatus");
+  const common = useTranslations("common");
   const router = useRouter();
   const columns = useStatusColumns({ statuses, access });
   const rows = useMemo(() => toStatusRows({ statuses }), [statuses]);
+  const qualifiers = useStatusQualifiers();
   const view = useClientTableView({
     rows,
-    qualifiers: NO_QUALIFIERS,
+    qualifiers,
     getSearchText: (row) => row.orderStatus.name,
     totalLabel: (count) => `${count}`,
   });
+  const pills = qualifierPills({
+    allLabel: common("readFilter.all"),
+    qualifier: "flag",
+    values: STATUS_FLAGS.map((flag) => ({ key: flag, label: t(`flags.${flag}`) })),
+  });
   return (
     <div className="grid gap-4">
-      <TableFilterBar q={view.q} query={view.query} />
+      <TableFilterBar
+        q={view.q}
+        query={view.query}
+        pills={pills}
+        onSelectPill={(next) => view.navigate({ patch: { q: next ?? null, page: null } })}
+      />
       <PersistedDataTable
         tableId="order-status.list"
         columns={columns}

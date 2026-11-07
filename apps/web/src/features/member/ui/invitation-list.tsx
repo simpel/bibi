@@ -21,13 +21,11 @@ export async function InvitationList({ locale }: InvitationListProps) {
   const items = invitations.ok ? invitations.value.items : [];
   const body = !invitations.ok ? (
     <ErrorState inline errorKey={handleLoadError({ error: invitations.error, locale })} />
-  ) : items.length === 0 ? (
-    <p className="px-6 text-sm text-muted-foreground">{t("noInvitations")}</p>
   ) : (
     <InvitationTable invitations={items} />
   );
   return (
-    <AdminSection title={t("invitations")} flush>
+    <AdminSection id="invitations" title={t("invitations")} flush>
       {body}
     </AdminSection>
   );

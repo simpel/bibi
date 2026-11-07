@@ -1,12 +1,13 @@
 import type { ResponsibilityDto } from "@bibi/core";
-import { actionsColumn, type ColumnDef } from "@bibi/ui";
+import { actionsColumn, type ColumnDef, createTableColumns } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersonNames } from "@/components/people/person-names";
 import { namesOf } from "@/features/run-sheet-definition/ui/run-sheet-options";
 import type { RowAccess } from "@/lib/can";
+import { Link } from "@/lib/navigation";
 import type { ResponsibilityOption, ResponsibilityOptions } from "./responsibility-options";
-import { ResponsibilityRowActions } from "./responsibility-row-actions";
+import { ResponsibilityRowActions, responsibilityEditHref } from "./responsibility-row-actions";
 
 type Column = ColumnDef<ResponsibilityDto>;
 
@@ -44,30 +45,52 @@ export function useResponsibilityColumns({
 }: UseResponsibilityColumnsInput): Column[] {
   const t = useTranslations("responsibility");
   const common = useTranslations("common");
-  return useMemo<Column[]>(() => {
-    const data: Column[] = [
-      { id: "name", header: t("columns.name"), accessorFn: (r) => r.name },
-      {
-        id: "types",
-        header: t("columns.types"),
-        accessorFn: (r) => names({ ids: r.entityTypeIds, options: options.types }),
-      },
-      peopleColumn({
-        ...{ id: "assignee", header: t("columns.assignee"), people: options.people },
-        ids: (r) => [r.defaultAssigneeId],
+  return useMemo<Column[]>(
+    () =>
+      createTableColumns<ResponsibilityDto>({
+        primary: [
+          {
+            id: "name",
+            header: t("columns.name"),
+            accessorFn: (r) => r.name,
+            cell: ({ row }) =>
+              access.canEdit ? (
+                <Link
+                  href={responsibilityEditHref({ id: row.original.id })}
+                  className="font-medium hover:underline"
+                >
+                  {row.original.name}
+                </Link>
+              ) : (
+                <span className="font-medium">{row.original.name}</span>
+              ),
+          },
+        ],
+        relations: [
+          {
+            id: "types",
+            header: t("columns.types"),
+            accessorFn: (r) => names({ ids: r.entityTypeIds, options: options.types }),
+          },
+          peopleColumn({
+            ...{ id: "assignee", header: t("columns.assignee"), people: options.people },
+            ids: (r) => [r.defaultAssigneeId],
+          }),
+          peopleColumn({
+            ...{ id: "followers", header: t("columns.followers"), people: options.people },
+            ids: (r) => r.defaultFollowerIds,
+          }),
+        ],
+        actions:
+          access.canEdit || access.canRemove
+            ? [
+                actionsColumn<ResponsibilityDto>({
+                  label: common("actions"),
+                  cell: (r) => <ResponsibilityRowActions responsibility={r} access={access} />,
+                }),
+              ]
+            : [],
       }),
-      peopleColumn({
-        ...{ id: "followers", header: t("columns.followers"), people: options.people },
-        ids: (r) => r.defaultFollowerIds,
-      }),
-    ];
-    if (!access.canEdit && !access.canRemove) return data;
-    return [
-      ...data,
-      actionsColumn<ResponsibilityDto>({
-        label: common("actions"),
-        cell: (r) => <ResponsibilityRowActions responsibility={r} access={access} />,
-      }),
-    ];
-  }, [t, common, options, access]);
+    [t, common, options, access],
+  );
 }

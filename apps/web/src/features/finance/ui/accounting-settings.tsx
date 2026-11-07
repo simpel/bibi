@@ -39,7 +39,7 @@ export async function AccountingSettings({ locale }: AccountingSettingsProps) {
   return (
     <AdminPage header={header}>
       <FiscalYearSetting settings={settings} canEdit={canEdit} />
-      <AdminSection title={t("groups.accounts")} flush>
+      <AdminSection id="accounts" title={t("groups.accounts")} flush>
         <AccountsTable
           tableId="finance.accounts"
           rows={accountRows({ settings })}

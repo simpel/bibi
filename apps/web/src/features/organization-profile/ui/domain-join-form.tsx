@@ -33,6 +33,7 @@ export function DomainJoinForm({ emailDomain, enabled, canEdit }: DomainJoinForm
     });
   return (
     <AdminSection
+      id="domain-join"
       title={t("label")}
       description={emailDomain ? t("hint", { domain: emailDomain }) : t("noDomain")}
       action={

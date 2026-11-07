@@ -236,7 +236,8 @@
     "columns": {
       "name": "Namn",
       "flags": "Gör",
-      "transitions": "Får flyttas till"
+      "transitions": "Får flyttas till",
+      "type": "Artikeltyp"
     },
     "flagChoices": {
       "initial": "Nya rader börjar här",
@@ -590,7 +591,9 @@
     },
     "pricing": {
       "discount": "{percent} % rabatt",
-      "items": "{count, plural, =0 {Inga artikelpriser} one {# artikelpris} other {# artikelpriser}}"
+      "items": "{count, plural, =0 {Inga artikelpriser} one {# artikelpris} other {# artikelpriser}}",
+      "kindDiscount": "Rabatt",
+      "kindItems": "Artikelpriser"
     },
     "items": {
       "edit": "Artikelpriser",

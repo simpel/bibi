@@ -892,7 +892,8 @@
         "role": "Role",
         "expires": "Expires",
         "lastUsed": "Last used",
-        "createdBy": "Created by"
+        "createdBy": "Created by",
+        "createdAt": "Created"
       },
       "edit": "Edit API key",
       "editDescription": "Rename the key or change its preset. Its permission overrides stay.",

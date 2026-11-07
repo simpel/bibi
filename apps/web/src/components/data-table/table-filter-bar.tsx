@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { QuerySearch } from "@/components/query-search/query-search";
 import type { BuiltTableQuery } from "./table-filter-query";
+import type { TableQueryKeys } from "./table-query-keys";
 
 export type QuickFilterPill = {
   key: string;
@@ -20,6 +21,8 @@ export type TableFilterBarProps = {
   pills?: readonly QuickFilterPill[] | undefined;
   onSelectPill?: ((query: string | undefined) => void) | undefined;
   children?: ReactNode;
+  /** The table's URL keys when it is scoped (`useClientTableView` returns them as `keys`). */
+  keys?: TableQueryKeys | undefined;
 };
 
 function QuickPills({
@@ -66,6 +69,7 @@ export function TableFilterBar({
   pills,
   onSelectPill,
   children,
+  keys,
 }: TableFilterBarProps) {
   const common = useTranslations("common");
   const label = placeholder ?? common("search");
@@ -88,6 +92,7 @@ export function TableFilterBar({
         texts={query.texts}
         catalog={query.catalog}
         className="ml-auto"
+        {...(keys ? { keys } : {})}
       />
     </div>
   );

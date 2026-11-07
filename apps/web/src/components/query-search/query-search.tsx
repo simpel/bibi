@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import type { TableQueryKeys } from "@/components/data-table/table-query-keys";
 import { SearchForm } from "@/components/search-form";
 import { usePendingToast } from "@/lib/use-pending-toast";
 import { useQueryNavigation } from "@/lib/use-query-navigation";
@@ -17,13 +18,15 @@ export type QuerySearchProps = {
   vocabulary: QueryVocabulary;
   texts: QueryTexts;
   className?: string;
+  /** URL keys of the search and its page; a second table on a page gets its own (`useClientTableView` `scope`). */
+  keys?: TableQueryKeys;
 };
 
 /**
  * A list's search and GitHub-style filters (`assignee:me status:Lead`), with suggestions while
  * typing; a new search starts on page 1, with a loading toast until its page is there.
  */
-export function QuerySearch({ value, label, submitLabel, ...query }: QuerySearchProps) {
+export function QuerySearch({ value, label, submitLabel, keys, ...query }: QuerySearchProps) {
   const common = useTranslations("common");
   const { navigate, pending } = useQueryNavigation();
   usePendingToast({ pending, message: common("searching") });
@@ -32,7 +35,9 @@ export function QuerySearch({ value, label, submitLabel, ...query }: QuerySearch
       value={value}
       label={label}
       submitLabel={submitLabel}
-      onSearch={(q) => navigate({ patch: { q } })}
+      onSearch={(q) =>
+        navigate({ patch: { [keys?.q ?? "q"]: q }, ...(keys ? { pageKey: keys.page } : {}) })
+      }
       pending={pending}
       pendingLabel={common("searching")}
       className={query.className}

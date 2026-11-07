@@ -892,7 +892,8 @@
         "role": "Roll",
         "expires": "Upphör",
         "lastUsed": "Senast använd",
-        "createdBy": "Skapad av"
+        "createdBy": "Skapad av",
+        "createdAt": "Skapad"
       },
       "edit": "Redigera API-nyckel",
       "editDescription": "Byt namn på nyckeln eller ändra dess förval. Dess behörighetsundantag finns kvar.",

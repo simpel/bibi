@@ -23,7 +23,7 @@ export async function PaymentSettings({ locale }: PaymentSettingsProps) {
   const header = <AdminHeader title={t("title")} description={t("description")} />;
   return (
     <AdminPage header={header}>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div id="stripe" className="grid scroll-mt-6 gap-4 md:grid-cols-2">
         <StripeCard canEdit={canEdit} />
       </div>
       {result.ok ? (

@@ -21,6 +21,7 @@ export async function RevenueAccountsSection({
   const t = await getTranslations("finance.accounting");
   return (
     <AdminSection
+      id="revenue-accounts"
       title={t("groups.revenueByType")}
       description={t("revenueByTypeHint")}
       action={canEdit ? <AddAccountButton settings={settings} types={types} /> : null}
@@ -35,6 +36,7 @@ export async function RevenueAccountsSection({
         emptyText={t("emptyRevenue")}
         canEdit={canEdit}
         flush
+        scope="revenue"
       />
     </AdminSection>
   );

@@ -236,7 +236,8 @@
     "columns": {
       "name": "Name",
       "flags": "Does",
-      "transitions": "May move to"
+      "transitions": "May move to",
+      "type": "Item type"
     },
     "flagChoices": {
       "initial": "New lines start here",
@@ -590,7 +591,9 @@
     },
     "pricing": {
       "discount": "{percent} % discount",
-      "items": "{count, plural, =0 {No item prices} one {# item price} other {# item prices}}"
+      "items": "{count, plural, =0 {No item prices} one {# item price} other {# item prices}}",
+      "kindDiscount": "Discount",
+      "kindItems": "Item prices"
     },
     "items": {
       "edit": "Item prices",

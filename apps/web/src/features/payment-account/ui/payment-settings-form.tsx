@@ -20,7 +20,7 @@ type SectionProps = {
 function DepositSection({ form }: SectionProps) {
   const t = useTranslations("paymentSettings");
   return (
-    <AdminSection title={t("deposit.title")} description={t("deposit.description")}>
+    <AdminSection id="deposit" title={t("deposit.title")} description={t("deposit.description")}>
       <div className="grid max-w-lg gap-4">
         <TextField
           form={form}
@@ -47,7 +47,7 @@ function DepositSection({ form }: SectionProps) {
 function InvoiceSection({ form }: SectionProps) {
   const t = useTranslations("paymentSettings");
   return (
-    <AdminSection title={t("invoice.title")} description={t("invoice.description")}>
+    <AdminSection id="invoices" title={t("invoice.title")} description={t("invoice.description")}>
       <InvoiceProviderField form={form} />
     </AdminSection>
   );

@@ -166,7 +166,16 @@
       "scopeLabel": "Vilka flyttar till {name} kravet gäller",
       "fromAny": "Från vilken bokningsstatus som helst",
       "fromSpecific": "Bara från vissa bokningsstatusar",
-      "fromStatus": "Från {name}"
+      "fromStatus": "Från {name}",
+      "columns": {
+        "gates": "Krav"
+      },
+      "editRules": "Redigera regler",
+      "gateNames": {
+        "REASON": "Orsak",
+        "ASSIGNEE": "Ansvarig",
+        "ACCEPTED_QUOTE": "Godkänd offert"
+      }
     },
     "flags": {
       "entry": "Nya bokningar startar här",

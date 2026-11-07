@@ -28,3 +28,17 @@ export function toStateRows({ states }: ToStateRowsInput): StateRow[] {
     flags: flagsOf({ state }),
   }));
 }
+
+/** A state row of the one table of every item type: the type's name and its ordered states. */
+export type TypedStateRow = StateRow & { typeName: string; siblings: readonly ItemStateDto[] };
+
+export type ToTypedStateRowsInput = {
+  entries: readonly { type: { name: string }; states: readonly ItemStateDto[] }[];
+};
+
+/** Rows of every type, type by type in each type's order; `siblings` feed move and archive. */
+export function toTypedStateRows({ entries }: ToTypedStateRowsInput): TypedStateRow[] {
+  return entries.flatMap(({ type, states }) =>
+    toStateRows({ states }).map((row) => ({ ...row, typeName: type.name, siblings: states })),
+  );
+}

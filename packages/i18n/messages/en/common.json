@@ -545,6 +545,118 @@
       "orderFlow": "The statuses an order moves through and what each line does in them.",
       "runSheets": "Run sheets sent to a responsibility, and who holds each responsibility.",
       "integrations": "Accounting systems and API keys for your own connections."
+    },
+    "search": {
+      "label": "Search administration",
+      "placeholder": "Search settings",
+      "noResults": "No matches.",
+      "results": "Search results",
+      "entries": {
+        "timeZone": {
+          "label": "Time zone",
+          "keywords": "clock time zone daylight venue"
+        },
+        "domainJoin": {
+          "label": "Join by email domain",
+          "keywords": "domain email colleagues join automatically"
+        },
+        "members": {
+          "label": "Members",
+          "keywords": "people users roles invite permissions"
+        },
+        "invitations": {
+          "label": "Invitations",
+          "keywords": "invite sent pending email"
+        },
+        "plan": {
+          "label": "Plan",
+          "keywords": "subscription price trial pay card"
+        },
+        "seats": {
+          "label": "Seats",
+          "keywords": "licenses users extra seats"
+        },
+        "seatRequests": {
+          "label": "Seat requests",
+          "keywords": "request seat approve decline"
+        },
+        "types": {
+          "label": "Types and fields",
+          "keywords": "items customers contacts fields capabilities rooms template"
+        },
+        "setups": {
+          "label": "Setups",
+          "keywords": "room layout capacity changeover space"
+        },
+        "lists": {
+          "label": "Lists",
+          "keywords": "allergens diets needs values word list"
+        },
+        "priceLists": {
+          "label": "Price lists",
+          "keywords": "price customer discount agreement"
+        },
+        "orderStatuses": {
+          "label": "Order statuses",
+          "keywords": "status pipeline board inquiry confirmed"
+        },
+        "flowRules": {
+          "label": "Flow rules",
+          "keywords": "allowed next move requirements gates"
+        },
+        "statusGrid": {
+          "label": "Status grid",
+          "keywords": "lines soft hold hard hold block"
+        },
+        "itemStates": {
+          "label": "Item states",
+          "keywords": "line state item status"
+        },
+        "orderTemplates": {
+          "label": "Packages",
+          "keywords": "predefined orders package template"
+        },
+        "runSheets": {
+          "label": "Run sheets",
+          "keywords": "kitchen order send export pdf"
+        },
+        "responsibilities": {
+          "label": "Responsibilities",
+          "keywords": "head of kitchen recipient responsible"
+        },
+        "stripe": {
+          "label": "Stripe",
+          "keywords": "card payment connect online payment"
+        },
+        "deposit": {
+          "label": "Deposit",
+          "keywords": "advance percent minimum amount"
+        },
+        "invoices": {
+          "label": "Invoices",
+          "keywords": "invoicing invoice provider fortnox stripe"
+        },
+        "fiscalYear": {
+          "label": "Fiscal year",
+          "keywords": "accounting year start month"
+        },
+        "accounts": {
+          "label": "Accounts",
+          "keywords": "chart of accounts bas vat revenue sie"
+        },
+        "revenueAccounts": {
+          "label": "Revenue accounts by type",
+          "keywords": "revenue account item type"
+        },
+        "fortnox": {
+          "label": "Fortnox",
+          "keywords": "accounting connect integration invoice"
+        },
+        "apiKeys": {
+          "label": "API keys",
+          "keywords": "api rest key integration crm"
+        }
+      }
     }
   }
 }

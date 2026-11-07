@@ -11,7 +11,8 @@ import { useMemo } from "react";
 import type { NamedOption } from "@/components/form/named-option";
 import { nameOf } from "@/components/form/named-option";
 import type { RowAccess } from "@/lib/can";
-import { OrderTemplateRowActions } from "./order-template-row-actions";
+import { Link } from "@/lib/navigation";
+import { OrderTemplateRowActions, orderTemplateEditHref } from "./order-template-row-actions";
 
 const guestRange = ({ min, max }: { min: number | null; max: number | null }) => {
   if (min === null && max === null) return "–";
@@ -36,7 +37,24 @@ export function useTemplateColumns({ statuses, types, access }: TemplateColumnsI
   return useMemo<Column[]>(
     () =>
       createTableColumns<OrderTemplateDto>({
-        primary: [{ id: "name", header: t("columns.name"), accessorFn: (row) => row.name }],
+        primary: [
+          {
+            id: "name",
+            header: t("columns.name"),
+            accessorFn: (row) => row.name,
+            cell: ({ row }) =>
+              access.canEdit ? (
+                <Link
+                  href={orderTemplateEditHref({ id: row.original.id })}
+                  className="font-medium hover:underline"
+                >
+                  {row.original.name}
+                </Link>
+              ) : (
+                <span className="font-medium">{row.original.name}</span>
+              ),
+          },
+        ],
         relations: [
           {
             id: "orderType",

@@ -545,6 +545,118 @@
       "orderFlow": "Statusarna en bokning går igenom och vad varje rad gör i dem.",
       "runSheets": "Körscheman som skickas till ett ansvar, och vem som har vilket ansvar.",
       "integrations": "Bokföringssystem och API-nycklar för egna kopplingar."
+    },
+    "search": {
+      "label": "Sök i administrationen",
+      "placeholder": "Sök inställningar",
+      "noResults": "Inga träffar.",
+      "results": "Sökträffar",
+      "entries": {
+        "timeZone": {
+          "label": "Tidszon",
+          "keywords": "klocka tid zon sommartid anläggning"
+        },
+        "domainJoin": {
+          "label": "Gå med via e-postdomän",
+          "keywords": "domän e-post kollegor gå med automatiskt"
+        },
+        "members": {
+          "label": "Medlemmar",
+          "keywords": "personer användare roller bjud in behörigheter"
+        },
+        "invitations": {
+          "label": "Inbjudningar",
+          "keywords": "bjud in skickade väntande e-post"
+        },
+        "plan": {
+          "label": "Plan",
+          "keywords": "prenumeration pris provperiod betala kort"
+        },
+        "seats": {
+          "label": "Platser",
+          "keywords": "licenser användare extra platser"
+        },
+        "seatRequests": {
+          "label": "Platsförfrågningar",
+          "keywords": "förfrågan plats godkänn neka"
+        },
+        "types": {
+          "label": "Typer och fält",
+          "keywords": "artiklar kunder kontakter fält förmågor rum mall"
+        },
+        "setups": {
+          "label": "Uppställningar",
+          "keywords": "rum möblering kapacitet ställtid lokal"
+        },
+        "lists": {
+          "label": "Listor",
+          "keywords": "allergener kost behov värden ordlista"
+        },
+        "priceLists": {
+          "label": "Prislistor",
+          "keywords": "pris kund rabatt avtal"
+        },
+        "orderStatuses": {
+          "label": "Bokningsstatusar",
+          "keywords": "status pipeline tavla förfrågan bekräftad"
+        },
+        "flowRules": {
+          "label": "Flödesregler",
+          "keywords": "tillåtna nästa flytt krav grindar"
+        },
+        "statusGrid": {
+          "label": "Statusrutnät",
+          "keywords": "rader preliminär definitiv hold blockera"
+        },
+        "itemStates": {
+          "label": "Artikelstatusar",
+          "keywords": "radstatus artikel status"
+        },
+        "orderTemplates": {
+          "label": "Mallar",
+          "keywords": "fördefinierade bokningar paket mall"
+        },
+        "runSheets": {
+          "label": "Körscheman",
+          "keywords": "kök order skicka export pdf"
+        },
+        "responsibilities": {
+          "label": "Ansvar",
+          "keywords": "kökschef mottagare ansvarig"
+        },
+        "stripe": {
+          "label": "Stripe",
+          "keywords": "kort betalning koppla onlinebetalning"
+        },
+        "deposit": {
+          "label": "Handpenning",
+          "keywords": "förskott procent minimibelopp"
+        },
+        "invoices": {
+          "label": "Fakturor",
+          "keywords": "fakturering fakturaleverantör fortnox stripe"
+        },
+        "fiscalYear": {
+          "label": "Räkenskapsår",
+          "keywords": "bokföringsår startmånad"
+        },
+        "accounts": {
+          "label": "Konton",
+          "keywords": "kontoplan bas moms intäkt sie"
+        },
+        "revenueAccounts": {
+          "label": "Intäktskonton per typ",
+          "keywords": "intäkt konto artikeltyp"
+        },
+        "fortnox": {
+          "label": "Fortnox",
+          "keywords": "bokföring koppla integration faktura"
+        },
+        "apiKeys": {
+          "label": "API-nycklar",
+          "keywords": "api rest nyckel integration crm"
+        }
+      }
     }
   }
 }
