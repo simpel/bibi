@@ -15,9 +15,17 @@ jobs:
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
     steps:
+      # The release PR is opened with the bibi-release app's token, not GITHUB_TOKEN: GitHub runs no workflows on
+      # PRs that GITHUB_TOKEN opens, and protected main needs CI on the release PR (ADR 0098).
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
       - uses: googleapis/release-please-action@v5
         id: release
         with:
+          token: ${{ steps.app-token.outputs.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
