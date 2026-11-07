@@ -20,7 +20,10 @@ import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
 import { PERMISSION_UI_ENTRIES } from "./permission-entries";
 import { PIPELINE_UI_ENTRIES } from "./pipeline-entries";
-import { PIPELINE_SETUP_UI_ENTRIES } from "./pipeline-setup-entries";
+import {
+  PIPELINE_SETUP_GENERIC_UI_TOOLS,
+  PIPELINE_SETUP_UI_ENTRIES,
+} from "./pipeline-setup-entries";
 import { PRICE_LIST_UI_ENTRIES } from "./price-list-entries";
 import { QUESTION_UI_ENTRIES } from "./question-entries";
 import { QUOTE_UI_ENTRIES } from "./quote-entries";
@@ -123,4 +126,5 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   ...ALLOCATION_GENERIC_UI_TOOLS,
   ...READ_GENERIC_UI_TOOLS,
   ...BILLING_GENERIC_UI_TOOLS,
+  ...PIPELINE_SETUP_GENERIC_UI_TOOLS,
 };

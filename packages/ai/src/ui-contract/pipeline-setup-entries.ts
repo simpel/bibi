@@ -29,3 +29,9 @@ export const PIPELINE_SETUP_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = 
     toProps: ({ value }) => value.grid,
   }),
 };
+
+/** Pipeline setup tools shown as JSON, with the reason (part of `GENERIC_UI_TOOLS`). */
+export const PIPELINE_SETUP_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
+  pipelineSetup_createExamples:
+    "returns only the new customer and order ids; the examples show on the pipeline board",
+};
