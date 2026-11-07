@@ -164,6 +164,7 @@
         "autoAssignSeats": "Add seats automatically",
         "extraSeats": "Extra seats",
         "invoiceProvider": "Invoice provider",
+        "paymentOperator": "Payment operator",
         "revenueAccounts": "Revenue accounts per item type or item"
       },
       "operations": {

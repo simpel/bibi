@@ -129,6 +129,10 @@
           "manageBilling": {
             "question": "Where do I find my invoices and change payment details?",
             "answer": "An admin finds them under Administration → Plan & billing."
+          },
+          "paymentOperator": {
+            "question": "Can I choose which payment operator takes card payments?",
+            "answer": "Yes. Go to Administration → Payments and pick it under **Payment operator**. It saves right away.\nThe operator must be connected first: connect or disconnect it under Administration → Integrations. Today Stripe is the one available."
           }
         }
       },

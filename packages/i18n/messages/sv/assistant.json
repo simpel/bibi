@@ -164,6 +164,7 @@
         "autoAssignSeats": "Lägg till platser automatiskt",
         "extraSeats": "Extra platser",
         "invoiceProvider": "Fakturaleverantör",
+        "paymentOperator": "Betaloperatör",
         "revenueAccounts": "Intäktskonton per artikeltyp eller artikel"
       },
       "operations": {

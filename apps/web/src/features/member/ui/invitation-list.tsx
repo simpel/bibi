@@ -17,6 +17,8 @@ export async function InvitationList({ locale }: InvitationListProps) {
     input: { limit: PAGE_SIZE },
   });
   const items = invitations.ok ? invitations.value.items : [];
+  // Invitations are created from the members section: an empty list is not shown.
+  if (invitations.ok && items.length === 0) return null;
   const body = !invitations.ok ? (
     <ErrorState inline errorKey={handleLoadError({ error: invitations.error, locale })} />
   ) : (

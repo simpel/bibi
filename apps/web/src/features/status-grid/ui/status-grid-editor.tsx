@@ -1,7 +1,6 @@
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { AdminSection } from "@/components/admin/admin-section";
-import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
@@ -17,12 +16,11 @@ export async function StatusGridEditor({ locale }: StatusGridEditorProps) {
     getCallerAbilities(),
     loadGridData(),
   ]);
-  const empty = data.ok && (data.value.statuses.length === 0 || data.value.types.length === 0);
+  // The grid needs statuses and item types; without them there is nothing to show or set.
+  if (data.ok && (data.value.statuses.length === 0 || data.value.types.length === 0)) return null;
   return (
     <AdminSection section="statusGrid" description={t("description")}>
-      {empty ? (
-        <EmptyState title={t("empty")} />
-      ) : data.ok ? (
+      {data.ok ? (
         <StatusGridTable
           {...data.value}
           canEdit={can({ abilities, permission: "pipeline:write" })}

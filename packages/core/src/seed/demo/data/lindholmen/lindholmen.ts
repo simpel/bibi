@@ -116,5 +116,6 @@ export const lindholmen: DemoOrg = {
     depositPercent: 30,
     depositMinimumMinor: 1_000_000,
     invoiceProvider: "STRIPE",
+    paymentOperator: "STRIPE",
   },
 };

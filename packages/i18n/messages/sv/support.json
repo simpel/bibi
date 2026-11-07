@@ -129,6 +129,10 @@
           "manageBilling": {
             "question": "Var hittar jag mina fakturor och ändrar betaluppgifter?",
             "answer": "En administratör hittar dem under Administration → Plan och fakturering."
+          },
+          "paymentOperator": {
+            "question": "Kan jag välja vilken betaloperatör som tar emot kortbetalningar?",
+            "answer": "Ja. Gå till Administration → Betalningar och välj under **Betaloperatör**. Valet sparas direkt.\nOperatören måste vara kopplad först: koppla eller koppla från under Administration → Integrationer. I dag är Stripe den som finns."
           }
         }
       },

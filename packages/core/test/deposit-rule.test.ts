@@ -48,6 +48,7 @@ describe("the deposit rule (ADR 0090)", () => {
       depositPercent: null,
       depositMinimumMinor: null,
       invoiceProvider: null,
+      paymentOperator: null,
     });
     await execute({ operation: updatePaymentSettings, input: rule, context });
     const input = { invoiceProvider: "STRIPE" as const };

@@ -1,4 +1,7 @@
-import type { InvoiceProvider } from "../../features/payment-account/settings-schema";
+import type {
+  InvoiceProvider,
+  PaymentOperator,
+} from "../../features/payment-account/settings-schema";
 import type { FixedRole } from "../../permissions/fixed-roles";
 import type { PermissionOverride } from "../../permissions/overrides";
 import type { OrderStatusTemplate } from "../../templates/order-statuses/order-status-template";
@@ -118,6 +121,7 @@ export type DemoPaymentSettings = {
   depositPercent: number;
   depositMinimumMinor: number;
   invoiceProvider: InvoiceProvider;
+  paymentOperator: PaymentOperator;
 };
 
 export type DemoFinance = {

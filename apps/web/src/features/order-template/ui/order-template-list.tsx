@@ -43,6 +43,8 @@ export async function OrderTemplateList({ locale }: OrderTemplateListProps) {
   }
   if (!result.ok || !data.ok) return null;
   const { items } = result.value;
+  // Nothing to show and nothing the caller may create here: the section stays off the page.
+  if (items.length === 0 && !create) return null;
   return (
     <AdminSection {...section}>
       {items.length === 0 ? (

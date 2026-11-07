@@ -8,6 +8,8 @@ export type RunToastActionInput<R> = {
   action: () => Promise<ActionResult<R>>;
   messages: ToastMessages<R>;
   onSuccess?: (input: { value: R }) => void;
+  /** After the error toast, e.g. to put an auto-saved field back. */
+  onError?: () => void;
 };
 
 /**
@@ -17,11 +19,12 @@ export type RunToastActionInput<R> = {
 export function useToastAction() {
   const t = useTranslations("errors");
   const [pending, startTransition] = useTransition();
-  const run = <R>({ action, messages, onSuccess }: RunToastActionInput<R>) => {
+  const run = <R>({ action, messages, onSuccess, onError }: RunToastActionInput<R>) => {
     startTransition(async () => {
       const translate = ({ key }: { key: Parameters<typeof t>[0] }) => t(key);
       const result = await actionWithToast({ action, messages, translate });
       if (result.ok) onSuccess?.({ value: result.value });
+      else onError?.();
     });
   };
   return { run, pending };

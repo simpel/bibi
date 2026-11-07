@@ -25,6 +25,7 @@ export const MONEY_FIELD_KEYS = [
   "depositPercent",
   "depositMinimumMinor",
   "invoiceProvider",
+  "paymentOperator",
   "autoAssignSeats",
   "extraSeats",
 ] as const;

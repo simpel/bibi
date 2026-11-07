@@ -1456,13 +1456,14 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### PaymentSettings (`PaymentSettings`)
 
-*MVP* · How the organization takes order money ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)): the deposit rule and the invoice provider. One row per organization, created by the first save; until then there is no deposit rule and the connected provider is used.
+*MVP* · How the organization takes order money ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)): the deposit rule, the payment operator and the invoice provider. One row per organization, created by the first save; until then there is no deposit rule and the connected provider is used.
 
 > **Ownership:** owned every column; nothing derived.
 
 **Attributes**
 - deposit percent: 1 to 100 of the order's total incl. VAT (empty = no deposits)
 - deposit minimum in minor units: an order whose total incl. VAT is below it is paid in full up front (empty = no minimum)
+- payment operator (`PaymentOperator`: `STRIPE`, more later; empty = the one that is connected)
 - invoice provider (`InvoiceProvider`; empty = whichever is connected)
 
 **Relations**

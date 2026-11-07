@@ -623,8 +623,8 @@
       "title": "Betaloperatör",
       "description": "Företaget som hanterar kortbetalningar för era bokningar.",
       "label": "Betaloperatör",
-      "none": "Ingen ansluten",
-      "manage": "Aktivera eller inaktivera kopplingar under Integrationer"
+      "manage": "Aktivera eller inaktivera kopplingar under Integrationer",
+      "notConnected": "Stripe (inte kopplat)"
     }
   },
   "paymentAccount": {

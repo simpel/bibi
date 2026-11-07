@@ -31,8 +31,8 @@ enum PaymentAccountStatus {
 }
 
 /// PaymentSettings – how the organization takes order money (ADR 0090). One row per organization,
-/// created on the first `paymentSettings.update`; no row = no deposit rule and the invoice
-/// provider follows what is connected. Owned: every column. Nothing is copied onto deposits: a
+/// created on the first `paymentSettings.update`; no row = no deposit rule and the payment
+/// operator and invoice provider follow what is connected. Owned: every column. Nothing is copied onto deposits: a
 /// deposit keeps the amount it was created with (ADR 0057).
 model PaymentSettings {
   id                  String           @id @default(cuid(2))
@@ -43,12 +43,19 @@ model PaymentSettings {
   depositMinimumMinor Int?
   /// Where invoices are raised when both Stripe and Fortnox are connected; null = whichever is.
   invoiceProvider     InvoiceProvider?
+  /// The payment operator that takes card payments for orders; null = the one that is connected.
+  paymentOperator     PaymentOperator?
   status              RecordStatus     @default(ACTIVE)
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
   createdBy           String?
 
   @@unique([id, organizationId])
+}
+
+/// The company that processes an organization's card payments (ADR 0090). More come later.
+enum PaymentOperator {
+  STRIPE
 }
 
 /// The system an organization raises its invoices in (ADR 0090).

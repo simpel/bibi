@@ -42,6 +42,8 @@ export async function ResponsibilityList({ locale }: ResponsibilityListProps) {
     );
   }
   if (!page.ok || !options.ok) return null;
+  // Nothing to show and nothing the caller may create here: the section stays off the page.
+  if (page.value.items.length === 0 && !create) return null;
   return (
     <AdminSection {...section}>
       {page.value.items.length === 0 ? (

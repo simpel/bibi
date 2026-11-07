@@ -37,6 +37,8 @@ export async function SetupList({ locale }: SetupListProps) {
     );
   }
   const { items } = result.value;
+  // Nothing to show and nothing the caller may create here: the section stays off the page.
+  if (items.length === 0 && !create) return null;
   return (
     <AdminSection {...section}>
       {items.length === 0 ? (

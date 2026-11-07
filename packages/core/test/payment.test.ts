@@ -5,10 +5,12 @@ import {
   type ExecuteContext,
   execute,
   getPayment,
+  getPaymentSettings,
   listPayments,
   setPaymentProvider,
   setStripeConnectGateway,
   updateCustomer,
+  updatePaymentSettings,
 } from "../src/index";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
 import { createTestOrder, orderSetup } from "./order-helpers";
@@ -103,6 +105,25 @@ describe("payment", () => {
     const { id: depositId } = await sentDeposit({ context, orderId: order.id });
     const result = await create({ context, depositId });
     expect(errorCode({ result })).toBe("CONFLICT");
+  });
+
+  it("charges through the chosen payment operator and refuses one that is not connected", async () => {
+    const { context, depositId } = await paymentSetup();
+    unwrap({
+      result: await execute({
+        operation: updatePaymentSettings,
+        input: { paymentOperator: "STRIPE" },
+        context,
+      }),
+    });
+    const settings = unwrap({
+      result: await execute({ operation: getPaymentSettings, input: {}, context }),
+    });
+    expect(settings.paymentOperator).toBe("STRIPE");
+    unwrap({ result: await create({ context, depositId }) });
+    await getDb().paymentAccount.updateMany({ data: { disconnectedAt: new Date() } });
+    const refused = await create({ context, depositId });
+    expect(errorCode({ result: refused })).toBe("CONFLICT");
   });
 
   it("keeps payments per organization and needs payment:write to create", async () => {

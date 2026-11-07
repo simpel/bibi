@@ -12,7 +12,7 @@ export type CheckDemoPaymentSettingsInput = { context: ExecuteContext; org: Demo
 export async function checkDemoPaymentSettings({ context, org }: CheckDemoPaymentSettingsInput) {
   const read = await execute({ operation: getPaymentSettings, input: {}, context });
   if (!read.ok) return [`${org.slug}: could not read payment settings`];
-  const { id, depositPercent, depositMinimumMinor, invoiceProvider } = read.value;
+  const { id, depositPercent, depositMinimumMinor, invoiceProvider, paymentOperator } = read.value;
   const wanted = org.paymentSettings;
   if (!wanted) {
     return id === null ? [] : [`${org.slug}: payment settings saved, expected none`];
@@ -20,9 +20,10 @@ export async function checkDemoPaymentSettings({ context, org }: CheckDemoPaymen
   const same =
     depositPercent === wanted.depositPercent &&
     depositMinimumMinor === wanted.depositMinimumMinor &&
-    invoiceProvider === wanted.invoiceProvider;
+    invoiceProvider === wanted.invoiceProvider &&
+    paymentOperator === wanted.paymentOperator;
   if (same) return [];
-  const actual = `${depositPercent} / ${depositMinimumMinor} / ${invoiceProvider}`;
-  const expected = `${wanted.depositPercent} / ${wanted.depositMinimumMinor} / ${wanted.invoiceProvider}`;
+  const actual = `${depositPercent} / ${depositMinimumMinor} / ${invoiceProvider} / ${paymentOperator}`;
+  const expected = `${wanted.depositPercent} / ${wanted.depositMinimumMinor} / ${wanted.invoiceProvider} / ${wanted.paymentOperator}`;
   return [`${org.slug}: payment settings ${actual}, expected ${expected}`];
 }

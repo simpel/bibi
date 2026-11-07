@@ -8,13 +8,20 @@ const SELECT = {
   depositPercent: true,
   depositMinimumMinor: true,
   invoiceProvider: true,
+  paymentOperator: true,
 } as const;
 
 /** The organization's payment settings, or none of them set before the first save (ADR 0090). */
 export async function loadPaymentSettings({ context }: Db): Promise<PaymentSettingsDto> {
   const row = await context.db.paymentSettings.findFirst({ select: SELECT });
   return (
-    row ?? { id: null, depositPercent: null, depositMinimumMinor: null, invoiceProvider: null }
+    row ?? {
+      id: null,
+      depositPercent: null,
+      depositMinimumMinor: null,
+      invoiceProvider: null,
+      paymentOperator: null,
+    }
   );
 }
 

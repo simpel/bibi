@@ -15,8 +15,8 @@ export type AdminSectionProps = {
 /**
  * One section of an administration page (ADR 0036, 0038): an edge-to-edge band, its content in
  * the page container, a title row with the section's actions on the right. Bands alternate
- * their background inside `AdminSections`. A visible section always renders, empty or not, so
- * the sidebar's sub-links and the page's sections are the same list.
+ * their background inside `AdminSections`. A section with nothing to show is left out by its
+ * feature unless the caller may create something in it; the sidebar lists what is on the page.
  */
 export function AdminSection({ section, description, actions, children }: AdminSectionProps) {
   const t = useTranslations("adminArea.search.entries");

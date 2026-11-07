@@ -23,6 +23,8 @@ export async function ApiKeySection({ locale }: ApiKeySectionProps) {
   const roles = assignableRoles({ caller: abilities.role });
   const canManage = can({ abilities, permission: "apiKey:write" });
   const create = canManage ? <CreateApiKeyButton roles={roles} /> : null;
+  // Nothing to show and nothing the caller may create here: the section stays off the page.
+  if (keys.ok && keys.value.items.length === 0 && !create) return null;
   return (
     <AdminSection
       section="apiKeys"

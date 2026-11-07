@@ -18,6 +18,8 @@ export async function RevenueAccountsSection({
   types,
   canEdit,
 }: RevenueAccountsSectionProps) {
+  const rows = typeRows({ settings, types });
+  if (rows.length === 0 && !canEdit) return null;
   const t = await getTranslations("finance.accounting");
   return (
     <AdminSection
@@ -27,7 +29,7 @@ export async function RevenueAccountsSection({
     >
       <AccountsTable
         tableId="finance.revenue-accounts"
-        rows={typeRows({ settings, types })}
+        rows={rows}
         settings={settings}
         types={types}
         grouped={false}

@@ -35,9 +35,12 @@ export async function OrderStatusList({ locale, show }: OrderStatusListProps) {
   const errorKey: ErrorKey | undefined =
     result && !result.ok ? handleLoadError({ error: result.error, locale }) : undefined;
   const items = result?.ok ? result.value.items : [];
+  // Without statuses or the right to create one, the statuses section stays off the page.
+  const showStatuses =
+    show.has("orderStatuses") && (Boolean(errorKey) || items.length > 0 || canWrite);
   return (
     <>
-      {show.has("orderStatuses") ? (
+      {showStatuses ? (
         <AdminSection
           section="orderStatuses"
           description={t("listDescription")}

@@ -11,6 +11,7 @@ export type SeatRequestsCardProps = {
 
 /** The invitations held for a seat. */
 export async function SeatRequestsCard({ requests, seatPrice, canEdit }: SeatRequestsCardProps) {
+  if (requests.length === 0) return null;
   const t = await getTranslations("billing.settings");
   return (
     <AdminSection section="seatRequests" description={t("requestsDescription")}>

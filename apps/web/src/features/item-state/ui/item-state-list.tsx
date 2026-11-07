@@ -34,10 +34,14 @@ export async function ItemStateList({ locale }: ItemStateListProps) {
       </AdminSection>
     );
   }
+  const stateCount = data.value.reduce((count, entry) => count + entry.states.length, 0);
+  // No item types means no states can be created here; without states or the right to create
+  // one, there is nothing to show.
+  if (types.length === 0 || (stateCount === 0 && !canCreate)) return null;
   return (
     <AdminSection {...section}>
-      {data.value.length === 0 ? (
-        <EmptyState title={t("noTypes")} description={t("noTypesDescription")} />
+      {stateCount === 0 ? (
+        <EmptyState title={t("empty")} action={section.actions} />
       ) : (
         <ItemStateTable entries={data.value} access={access} />
       )}

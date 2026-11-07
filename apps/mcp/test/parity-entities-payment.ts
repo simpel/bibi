@@ -32,7 +32,12 @@ export const paymentSettingsEntity: ParityEntity = {
     tool({
       mcp,
       name: "paymentSettings_update",
-      args: { depositPercent: 30, depositMinimumMinor: 500_000, invoiceProvider: "STRIPE" },
+      args: {
+        depositPercent: 30,
+        depositMinimumMinor: 500_000,
+        invoiceProvider: "STRIPE",
+        paymentOperator: "STRIPE",
+      },
     }),
   viaMcp: ({ mcp }) => tool({ mcp, name: "paymentSettings_get", args: {} }),
   viaRest: ({ context }) => createRestClient({ context }).get({ path: "/payment-settings" }),
