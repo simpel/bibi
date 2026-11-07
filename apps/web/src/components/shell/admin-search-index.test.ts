@@ -58,7 +58,7 @@ describe("administration sections", () => {
     expect([...ids].sort()).toEqual(Object.keys(ADMIN_SECTIONS).sort());
   });
 
-  it("renders every anchor as an `id` somewhere in the web app", () => {
+  it("renders every section somewhere in the web app (so each sub-link has its section)", () => {
     const featuresDir = join(import.meta.dirname, "..", "..", "features");
     const files = readdirSync(featuresDir, { recursive: true, encoding: "utf8" })
       .filter((file) => file.endsWith(".tsx"))
@@ -66,9 +66,9 @@ describe("administration sections", () => {
     const missing = index.filter(
       (one) =>
         !files.some(
-          (text) => text.includes(`id="${one.anchor}"`) || text.includes(`id: "${one.anchor}"`),
+          (text) => text.includes(`section="${one.id}"`) || text.includes(`section: "${one.id}"`),
         ),
     );
-    expect(missing.map((one) => one.anchor)).toEqual([]);
+    expect(missing.map((one) => one.id)).toEqual([]);
   });
 });

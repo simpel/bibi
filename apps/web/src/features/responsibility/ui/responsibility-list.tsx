@@ -28,8 +28,7 @@ export async function ResponsibilityList({ locale }: ResponsibilityListProps) {
     <CreateResponsibilityButton />
   ) : undefined;
   const section = {
-    id: "responsibilities",
-    title: t("plural"),
+    section: "responsibilities" as const,
     description: t("listDescription"),
     actions: create,
   };

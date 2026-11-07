@@ -42,8 +42,7 @@ export async function PriceListList({ locale }: PriceListListProps) {
   ]);
   const create = createAction({ abilities });
   const section = {
-    id: "price-lists",
-    title: t("plural"),
+    section: "priceLists" as const,
     description: t("listDescription"),
     actions: create,
   };

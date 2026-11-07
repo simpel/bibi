@@ -34,11 +34,7 @@ export async function PlanCard({ billing, texts, canEdit }: PlanCardProps) {
   const subscribed = isSubscribed({ subscriptionStatus: billing.subscriptionStatus });
   const periodEnd = currentPeriodEnd ? dates.date({ instant: currentPeriodEnd }) : t("none");
   return (
-    <AdminSection
-      id="plan"
-      title={t("planTitle")}
-      actions={<BillingStateBadge state={access.state} />}
-    >
+    <AdminSection section="plan" actions={<BillingStateBadge state={access.state} />}>
       <div className="grid gap-4 text-sm">
         <dl className="grid gap-3 sm:grid-cols-3">
           {access.state === "TRIAL" ? (

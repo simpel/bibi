@@ -38,7 +38,7 @@ function SaveRow({ canEdit, pending }: Pick<SectionProps, "canEdit" | "pending">
 function DepositSection({ form, canEdit, save, pending }: SectionProps) {
   const t = useTranslations("paymentSettings");
   return (
-    <AdminSection id="deposit" title={t("deposit.title")} description={t("deposit.description")}>
+    <AdminSection section="deposit" description={t("deposit.description")}>
       <fieldset disabled={!canEdit} className="grid max-w-lg gap-4">
         <TextField
           form={form}
@@ -66,7 +66,7 @@ function DepositSection({ form, canEdit, save, pending }: SectionProps) {
 function InvoiceSection({ form, canEdit, save, pending }: SectionProps) {
   const t = useTranslations("paymentSettings");
   return (
-    <AdminSection id="invoices" title={t("invoice.title")} description={t("invoice.description")}>
+    <AdminSection section="invoices" description={t("invoice.description")}>
       <fieldset disabled={!canEdit} className="grid gap-4">
         <InvoiceProviderField form={form} />
       </fieldset>

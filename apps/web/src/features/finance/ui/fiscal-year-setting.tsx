@@ -29,7 +29,7 @@ export function FiscalYearSetting({ settings, canEdit }: FiscalYearSettingProps)
       onSuccess: () => router.refresh(),
     });
   return (
-    <AdminSection id="fiscal-year" title={t("groups.fiscalYear")}>
+    <AdminSection section="fiscalYear">
       <div className="grid max-w-xs gap-2">
         <Label htmlFor="fiscal-year-start">{t("fields.fiscalYearStartMonth")}</Label>
         <Select

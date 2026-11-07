@@ -1,6 +1,5 @@
 import { getBilling, listSeatRequests } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { getTranslations } from "next-intl/server";
 import { AdminSection } from "@/components/admin/admin-section";
 import type { AdminSectionId } from "@/components/shell/admin-sections";
 import { ErrorState } from "@/components/states/error-state";
@@ -16,8 +15,7 @@ export type BillingSettingsProps = { locale: Locale; show: ReadonlySet<AdminSect
 
 /** `/admin/billing` (ADR 0095): the plan, the seats and the invitations waiting for one. */
 export async function BillingSettings({ locale, show }: BillingSettingsProps) {
-  const [t, billing, requests, abilities] = await Promise.all([
-    getTranslations("billing.settings"),
+  const [billing, requests, abilities] = await Promise.all([
     runOperation({ operation: getBilling, input: {} }),
     runOperation({ operation: listSeatRequests, input: {} }),
     getCallerAbilities(),
@@ -29,20 +27,10 @@ export async function BillingSettings({ locale, show }: BillingSettingsProps) {
     ) : null;
     return (
       <>
-        {show.has("plan") ? (
-          <AdminSection id="plan" title={t("planTitle")}>
-            {state}
-          </AdminSection>
-        ) : null}
-        {show.has("seats") ? (
-          <AdminSection id="seats" title={t("seatsTitle")}>
-            {state}
-          </AdminSection>
-        ) : null}
+        {show.has("plan") ? <AdminSection section="plan">{state}</AdminSection> : null}
+        {show.has("seats") ? <AdminSection section="seats">{state}</AdminSection> : null}
         {show.has("seatRequests") ? (
-          <AdminSection id="seat-requests" title={t("requestsTitle")}>
-            {state}
-          </AdminSection>
+          <AdminSection section="seatRequests">{state}</AdminSection>
         ) : null}
       </>
     );

@@ -1,10 +1,11 @@
 import { PageContainer, PageSection } from "@bibi/ui";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { ADMIN_SECTIONS, type AdminSectionId } from "@/components/shell/admin-sections";
 
 export type AdminSectionProps = {
-  /** The anchor the sidebar and the search link to (`ADMIN_SECTIONS`). */
-  id: string;
-  title: string;
+  /** Which section this is: its anchor and title are the sidebar sub-link's, so they always match. */
+  section: AdminSectionId;
   description?: string | undefined;
   /** Buttons, a switch or a badge on the right of the title row. */
   actions?: ReactNode;
@@ -14,16 +15,19 @@ export type AdminSectionProps = {
 /**
  * One section of an administration page (ADR 0036, 0038): an edge-to-edge band, its content in
  * the page container, a title row with the section's actions on the right. Bands alternate
- * their background inside `AdminSections`.
+ * their background inside `AdminSections`. A visible section always renders, empty or not, so
+ * the sidebar's sub-links and the page's sections are the same list.
  */
-export function AdminSection({ id, title, description, actions, children }: AdminSectionProps) {
+export function AdminSection({ section, description, actions, children }: AdminSectionProps) {
+  const t = useTranslations("adminArea.search.entries");
+  const { anchor } = ADMIN_SECTIONS[section];
   return (
-    <PageSection id={id} aria-labelledby={`${id}-title`} className="scroll-mt-14">
+    <PageSection id={anchor} aria-labelledby={`${anchor}-title`} className="scroll-mt-14">
       <PageContainer className="grid gap-6 py-8 sm:py-10">
         <header className="grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
           <div className="grid min-w-0 gap-1">
-            <h2 id={`${id}-title`} className="text-2xl">
-              {title}
+            <h2 id={`${anchor}-title`} className="text-2xl">
+              {t(`${section}.label`)}
             </h2>
             {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
           </div>

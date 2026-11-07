@@ -34,20 +34,10 @@ export async function AccountingSettings({ locale, show }: AccountingSettingsPro
     ) : null;
     return (
       <>
-        {show.has("fiscalYear") ? (
-          <AdminSection id="fiscal-year" title={t("fields.fiscalYearStartMonth")}>
-            {state}
-          </AdminSection>
-        ) : null}
-        {show.has("accounts") ? (
-          <AdminSection id="accounts" title={t("groups.accounts")}>
-            {state}
-          </AdminSection>
-        ) : null}
+        {show.has("fiscalYear") ? <AdminSection section="fiscalYear">{state}</AdminSection> : null}
+        {show.has("accounts") ? <AdminSection section="accounts">{state}</AdminSection> : null}
         {show.has("revenueAccounts") ? (
-          <AdminSection id="revenue-accounts" title={t("groups.revenueByType")}>
-            {state}
-          </AdminSection>
+          <AdminSection section="revenueAccounts">{state}</AdminSection>
         ) : null}
       </>
     );
@@ -59,7 +49,7 @@ export async function AccountingSettings({ locale, show }: AccountingSettingsPro
     <>
       {show.has("fiscalYear") ? <FiscalYearSetting settings={settings} canEdit={canEdit} /> : null}
       {show.has("accounts") ? (
-        <AdminSection id="accounts" title={t("groups.accounts")}>
+        <AdminSection section="accounts">
           <AccountsTable
             tableId="finance.accounts"
             rows={accountRows({ settings })}

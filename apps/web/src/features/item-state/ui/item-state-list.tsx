@@ -22,8 +22,7 @@ export async function ItemStateList({ locale }: ItemStateListProps) {
   const access = rowAccess({ abilities, feature: "pipeline" });
   const types = data.ok ? data.value.map((entry) => entry.type) : [];
   const section = {
-    id: "item-states",
-    title: t("plural"),
+    section: "itemStates" as const,
     description: t("listDescription"),
     actions: canCreate && types.length > 0 ? <CreateItemStateMenu types={types} /> : undefined,
   };

@@ -1,7 +1,6 @@
 import { listIntegrations } from "@bibi/core";
 import type { IntegrationConnectionDto } from "@bibi/core/schemas";
 import type { Locale } from "@bibi/i18n";
-import { getTranslations } from "next-intl/server";
 import { AdminSection } from "@/components/admin/admin-section";
 import type { AdminSectionId } from "@/components/shell/admin-sections";
 import { ErrorState } from "@/components/states/error-state";
@@ -37,8 +36,7 @@ const NOT_CONNECTED: IntegrationConnectionDto = {
  * or not: Stripe (ADR 0090) and Fortnox.
  */
 export async function IntegrationPanel({ locale, outcome, show }: IntegrationPanelProps) {
-  const [t, abilities, list, dates] = await Promise.all([
-    getTranslations("integration.fortnox"),
+  const [abilities, list, dates] = await Promise.all([
     getCallerAbilities(),
     runOperation({ operation: listIntegrations, input: {} }),
     getDateTimeFormat(),
@@ -54,7 +52,7 @@ export async function IntegrationPanel({ locale, outcome, show }: IntegrationPan
     return (
       <>
         {stripe}
-        <AdminSection id="fortnox" title={t("name")}>
+        <AdminSection section="fortnox">
           <ErrorState inline errorKey={handleLoadError({ error: list.error, locale })} />
         </AdminSection>
       </>

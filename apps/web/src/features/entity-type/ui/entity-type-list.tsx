@@ -36,8 +36,7 @@ export async function EntityTypeList({ locale }: EntityTypeListProps) {
   ]);
   const create = can({ abilities, permission: CREATE }) ? <CreateEntityTypeButton /> : undefined;
   const section = {
-    id: "types",
-    title: t("plural"),
+    section: "types" as const,
     description: t("listDescription"),
     actions: create && <HeaderActions create={create} />,
   };

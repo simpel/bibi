@@ -49,8 +49,7 @@ export async function FortnoxSection({
   ].filter((fact) => status === "CONNECTED" && fact.value);
   return (
     <AdminSection
-      id="fortnox"
-      title={t("name")}
+      section="fortnox"
       description={t("description")}
       actions={
         <>

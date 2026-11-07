@@ -21,8 +21,7 @@ export async function RevenueAccountsSection({
   const t = await getTranslations("finance.accounting");
   return (
     <AdminSection
-      id="revenue-accounts"
-      title={t("groups.revenueByType")}
+      section="revenueAccounts"
       description={t("revenueByTypeHint")}
       actions={canEdit ? <AddAccountButton settings={settings} types={types} /> : null}
     >

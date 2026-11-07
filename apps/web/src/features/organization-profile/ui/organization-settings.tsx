@@ -1,6 +1,5 @@
 import { getOrganizationProfile } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { getTranslations } from "next-intl/server";
 import { AdminSection } from "@/components/admin/admin-section";
 import type { AdminSectionId } from "@/components/shell/admin-sections";
 import { ErrorState } from "@/components/states/error-state";
@@ -14,8 +13,7 @@ export type OrganizationSettingsProps = { locale: Locale; show: ReadonlySet<Admi
 
 /** `/admin/general`: the organization's time zone (ADR 0064) and domain join (ADR 0078). */
 export async function OrganizationSettings({ locale, show }: OrganizationSettingsProps) {
-  const [t, abilities, profile] = await Promise.all([
-    getTranslations("organizationSettings"),
+  const [abilities, profile] = await Promise.all([
     getCallerAbilities(),
     runOperation({ operation: getOrganizationProfile, input: {} }),
   ]);
@@ -27,16 +25,8 @@ export async function OrganizationSettings({ locale, show }: OrganizationSetting
     );
     return (
       <>
-        {show.has("timeZone") ? (
-          <AdminSection id="time-zone" title={t("timeZone")}>
-            {error}
-          </AdminSection>
-        ) : null}
-        {show.has("domainJoin") ? (
-          <AdminSection id="domain-join" title={t("domainJoin.label")}>
-            {error}
-          </AdminSection>
-        ) : null}
+        {show.has("timeZone") ? <AdminSection section="timeZone">{error}</AdminSection> : null}
+        {show.has("domainJoin") ? <AdminSection section="domainJoin">{error}</AdminSection> : null}
       </>
     );
   }

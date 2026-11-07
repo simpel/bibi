@@ -25,8 +25,7 @@ export async function ApiKeySection({ locale }: ApiKeySectionProps) {
   const create = canManage ? <CreateApiKeyButton roles={roles} /> : null;
   return (
     <AdminSection
-      id="api-keys"
-      title={t("title")}
+      section="apiKeys"
       description={t("description")}
       actions={keys.ok && keys.value.items.length === 0 ? null : create}
     >

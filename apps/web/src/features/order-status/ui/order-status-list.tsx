@@ -39,8 +39,7 @@ export async function OrderStatusList({ locale, show }: OrderStatusListProps) {
     <>
       {show.has("orderStatuses") ? (
         <AdminSection
-          id="statuses"
-          title={t("plural")}
+          section="orderStatuses"
           description={t("listDescription")}
           actions={
             canWrite ? (

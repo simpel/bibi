@@ -20,10 +20,9 @@ export async function PaymentOperatorSection({ locale }: PaymentOperatorSectionP
     getTranslations("paymentSettings"),
     runOperation({ operation: getPaymentAccount, input: {} }),
   ]);
-  const title = t("operator.title");
   if (!account.ok) {
     return (
-      <AdminSection id="payment-operator" title={title}>
+      <AdminSection section="paymentOperator">
         <ErrorState inline errorKey={handleLoadError({ error: account.error, locale })} />
       </AdminSection>
     );
@@ -31,7 +30,7 @@ export async function PaymentOperatorSection({ locale }: PaymentOperatorSectionP
   const { status } = account.value;
   const connected = status !== "NOT_CONNECTED" && status !== "DISCONNECTED";
   return (
-    <AdminSection id="payment-operator" title={title} description={t("operator.description")}>
+    <AdminSection section="paymentOperator" description={t("operator.description")}>
       <div className="grid gap-3">
         <PaymentOperatorSelect
           label={t("operator.label")}

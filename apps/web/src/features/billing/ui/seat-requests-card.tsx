@@ -13,11 +13,7 @@ export type SeatRequestsCardProps = {
 export async function SeatRequestsCard({ requests, seatPrice, canEdit }: SeatRequestsCardProps) {
   const t = await getTranslations("billing.settings");
   return (
-    <AdminSection
-      id="seat-requests"
-      title={t("requestsTitle")}
-      description={t("requestsDescription")}
-    >
+    <AdminSection section="seatRequests" description={t("requestsDescription")}>
       <SeatRequestTable requests={requests} seatPrice={seatPrice} canEdit={canEdit} />
     </AdminSection>
   );

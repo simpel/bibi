@@ -28,8 +28,7 @@ export async function OrderTemplateList({ locale }: OrderTemplateListProps) {
     <CreateOrderTemplateButton />
   ) : undefined;
   const section = {
-    id: "order-templates",
-    title: t("plural"),
+    section: "orderTemplates" as const,
     description: t("listDescription"),
     actions: create,
   };

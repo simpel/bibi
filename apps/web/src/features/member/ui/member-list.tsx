@@ -40,12 +40,7 @@ export async function MemberList({ locale }: MemberListProps) {
     <InviteMemberButton roles={assignableRoles({ caller: role })} />
   ) : null;
   return (
-    <AdminSection
-      id="members"
-      title={t("plural")}
-      description={t("listDescription")}
-      actions={invite}
-    >
+    <AdminSection section="members" description={t("listDescription")} actions={invite}>
       {members.ok ? (
         <MemberContent
           page={members.value}

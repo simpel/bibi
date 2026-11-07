@@ -1,6 +1,7 @@
 import type { OrderStatusDto } from "@bibi/core/schemas";
 import { getTranslations } from "next-intl/server";
 import { AdminSection } from "@/components/admin/admin-section";
+import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import type { ErrorKey } from "@/lib/error-key";
 import { StatusFlowTable } from "./status-flow-table";
@@ -17,12 +18,13 @@ export type FlowEditorProps = {
  * Boards never edit these rules.
  */
 export async function FlowEditor({ statuses, errorKey }: FlowEditorProps) {
-  const t = await getTranslations("orderStatus.flow");
-  if (!errorKey && statuses.length === 0) return null;
+  const t = await getTranslations("orderStatus");
   return (
-    <AdminSection id="flow-rules" title={t("title")} description={t("description")}>
+    <AdminSection section="flowRules" description={t("flow.description")}>
       {errorKey ? (
         <ErrorState errorKey={errorKey} inline />
+      ) : statuses.length === 0 ? (
+        <EmptyState title={t("empty")} />
       ) : (
         <StatusFlowTable statuses={statuses} />
       )}

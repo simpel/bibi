@@ -551,7 +551,7 @@
           "keywords": "klocka tid zon sommartid anläggning"
         },
         "domainJoin": {
-          "label": "Kollegor kan gå med via e-postdomän",
+          "label": "Gå med via e-postdomän",
           "keywords": "domän e-post kollegor gå med automatiskt"
         },
         "members": {
@@ -619,7 +619,7 @@
           "keywords": "kökschef mottagare ansvarig"
         },
         "stripe": {
-          "label": "Stripe-utbetalningskonto",
+          "label": "Stripe",
           "keywords": "kort betalning koppla onlinebetalning"
         },
         "deposit": {

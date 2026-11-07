@@ -31,8 +31,7 @@ export async function VocabularyList({ locale }: VocabularyListProps) {
     </>
   );
   const section = {
-    id: "lists",
-    title: t("plural"),
+    section: "lists" as const,
     description: t("listDescription"),
     actions,
   };

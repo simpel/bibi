@@ -551,7 +551,7 @@
           "keywords": "clock time zone daylight venue"
         },
         "domainJoin": {
-          "label": "Colleagues can join by email domain",
+          "label": "Join by email domain",
           "keywords": "domain email colleagues join automatically"
         },
         "members": {
@@ -619,7 +619,7 @@
           "keywords": "head of kitchen recipient responsible"
         },
         "stripe": {
-          "label": "Stripe payout account",
+          "label": "Stripe",
           "keywords": "card payment connect online payment"
         },
         "deposit": {

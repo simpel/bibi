@@ -24,7 +24,7 @@ export async function StripeSection({ locale, canEdit }: StripeSectionProps) {
   ]);
   if (!account.ok) {
     return (
-      <AdminSection id="stripe" title={t("stripe")}>
+      <AdminSection section="stripe">
         <ErrorState inline errorKey={handleLoadError({ error: account.error, locale })} />
       </AdminSection>
     );
@@ -41,8 +41,7 @@ export async function StripeSection({ locale, canEdit }: StripeSectionProps) {
   ) : null;
   return (
     <AdminSection
-      id="stripe"
-      title={t("stripe")}
+      section="stripe"
       description={t("description")}
       actions={
         <>

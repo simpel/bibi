@@ -1,6 +1,5 @@
 import { getPaymentSettings } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { getTranslations } from "next-intl/server";
 import { AdminSection } from "@/components/admin/admin-section";
 import type { AdminSectionId } from "@/components/shell/admin-sections";
 import { ErrorState } from "@/components/states/error-state";
@@ -14,8 +13,7 @@ export type PaymentSettingsProps = { locale: Locale; show: ReadonlySet<AdminSect
 
 /** `/admin/payments`: the payment operator and how the organization takes order money (ADR 0090). */
 export async function PaymentSettings({ locale, show }: PaymentSettingsProps) {
-  const [t, abilities, result] = await Promise.all([
-    getTranslations("paymentSettings"),
+  const [abilities, result] = await Promise.all([
     getCallerAbilities(),
     runOperation({ operation: getPaymentSettings, input: {} }),
   ]);
@@ -35,12 +33,12 @@ export async function PaymentSettings({ locale, show }: PaymentSettingsProps) {
       ) : (
         <>
           {deposit ? (
-            <AdminSection id="deposit" title={t("deposit.title")}>
+            <AdminSection section="deposit">
               <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />
             </AdminSection>
           ) : null}
           {invoices ? (
-            <AdminSection id="invoices" title={t("invoice.title")}>
+            <AdminSection section="invoices">
               <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />
             </AdminSection>
           ) : null}

@@ -1,6 +1,5 @@
 import { listInvitations } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { getTranslations } from "next-intl/server";
 import { AdminSection } from "@/components/admin/admin-section";
 import { ErrorState } from "@/components/states/error-state";
 import { handleLoadError } from "@/server/load-error";
@@ -13,7 +12,6 @@ const PAGE_SIZE = 100;
 
 /** Pending invitations for member admins (`member.listInvitations`). */
 export async function InvitationList({ locale }: InvitationListProps) {
-  const t = await getTranslations("member");
   const invitations = await runOperation({
     operation: listInvitations,
     input: { limit: PAGE_SIZE },
@@ -24,9 +22,5 @@ export async function InvitationList({ locale }: InvitationListProps) {
   ) : (
     <InvitationTable invitations={items} />
   );
-  return (
-    <AdminSection id="invitations" title={t("invitations")}>
-      {body}
-    </AdminSection>
-  );
+  return <AdminSection section="invitations">{body}</AdminSection>;
 }

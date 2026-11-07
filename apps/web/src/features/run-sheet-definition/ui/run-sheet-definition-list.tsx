@@ -28,8 +28,7 @@ export async function RunSheetDefinitionList({ locale }: RunSheetDefinitionListP
     <CreateRunSheetDefinitionButton />
   ) : undefined;
   const section = {
-    id: "run-sheets",
-    title: t("plural"),
+    section: "runSheets" as const,
     description: t("listDescription"),
     actions: create,
   };

@@ -24,8 +24,7 @@ export async function SetupList({ locale }: SetupListProps) {
   ]);
   const create = can({ abilities, permission: CREATE }) ? <CreateSetupButton /> : undefined;
   const section = {
-    id: "setups",
-    title: t("plural"),
+    section: "setups" as const,
     description: t("listDescription"),
     actions: create,
   };
