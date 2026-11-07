@@ -1,11 +1,11 @@
 ---
 name: implement
-description: Implement a piece of work in bibi and commit it straight to main, alone or with parallel subagents for larger work. Use for any feature, bugfix, tech debt, test, docs or codemod request. Specs describe behaviour; ADRs gate only costly-to-reverse decisions. Why: ADR 0070, ADR 0075.
+description: Implement a piece of work in bibi and ship it to main through a pull request with auto-merge (`pnpm ship`), alone or with parallel subagents for larger work. Use for any feature, bugfix, tech debt, test, docs or codemod request. Specs describe behaviour; ADRs gate only costly-to-reverse decisions. Why: ADR 0070, 0075, 0098.
 ---
 
 # Implement
 
-One piece of work, one commit, pushed to `main`. No order is needed. No pull request. You are the only gate before main, so run the checks.
+One piece of work, one commit, shipped with `pnpm ship`: a pull request that merges into `main` by itself once CI is green (ADR 0098). No order is needed. CI is the gate, but a red PR is yours to fix, so run the checks first.
 
 Every run works in its own worktree with its own environment: a fresh `.env`, database (`bibi_<name>`, test database `bibi_<name>_test`) and port block. Never build in the main checkout; it may hold the user's own work.
 
@@ -58,10 +58,11 @@ Decide before you build. The test is how many independent pieces there are, not 
 
 ## 7. Commit and push
 - One commit: `<type>: <summary>`. The type comes from the kind of work: Feature `feat`, Bugfix `fix`, Tech debt and Codemod `refactor`, Docs `docs`, Test `test` (ADR 0060). Body: what changed and why in a few lines, then the Co-Authored-By line.
-- `git fetch origin main && git rebase origin/main`. After a rebase that brought in changes, run `node tools/ci/verify.mjs` again.
-- `git push origin HEAD:main`.
-- Check CI on main: `gh run list -R simpel/bibi --branch main -L 1`. If it goes red, fixing it comes before the next piece of work.
+- Never push to `main`; it is protected. Ship with `pnpm ship -- --footer "🤖 Generated with [Claude Code](https://claude.com/claude-code)"`. It pushes `HEAD` to `ship/<slug>-<sha>`, opens a PR titled with your commit's subject and turns on auto-merge. PR CI tests the merge with the current `main`, so no rebase is needed first.
+- Don't wait for CI. In the desktop app, bind the PR (`ccd_pr` tools) and turn on Auto-fix, so a red run wakes you. Otherwise check it once at the start of your next piece of work: `gh pr list -R simpel/bibi --author @me`.
+- A red PR: fix it in the main checkout, commit, and push the fix to the same branch with `git push origin HEAD:refs/heads/<branch>`. The PR updates and merges once green.
+- The PR may carry other sessions' unshipped commits from the shared checkout. If one of them is what fails, fix it too and say so in the report.
 - Remove the worktree from the main checkout: `pnpm wt:rm <name> --delete-branch`. It drops both databases and frees the port block. When you stop without pushing, keep the worktree and tell the user its path.
 
 ## 8. Report
-In a few lines, tell the user: the commit, what changed, whether the worktree was removed, what was verified, which subagents you used for what.
+In a few lines, tell the user: the commit and its PR link, what changed, whether the worktree was removed, what was verified, which subagents you used for what.
