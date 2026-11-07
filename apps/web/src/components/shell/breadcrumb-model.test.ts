@@ -87,6 +87,15 @@ describe("buildCrumbs", () => {
     ]);
   });
 
+  it("names administration pages as the area's sidebar does", () => {
+    expect(buildCrumbs({ pathname: "/admin/pipeline" })).toEqual([
+      { href: "/admin", labelKey: "admin" },
+      { href: "/admin/pipeline", labelKey: "orderStatuses" },
+    ]);
+    expect(buildCrumbs({ pathname: "/admin/billing" })[1]?.labelKey).toBe("planBilling");
+    expect(buildCrumbs({ pathname: "/pipeline" })[0]?.labelKey).toBe("pipeline");
+  });
+
   it("builds crumbs for platform admin mothership pages", () => {
     expect(buildCrumbs({ pathname: "/mothership" })).toEqual([
       { href: "/mothership", labelKey: "platformAdmin" },

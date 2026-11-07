@@ -68,6 +68,20 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   update: "edit",
 };
 
+/** Segments named after their administration page or tab rather than the app page of that name. */
+const ADMIN_SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
+  pipeline: "orderStatuses",
+  billing: "planBilling",
+};
+
+type SegmentKeyInput = { segments: readonly string[]; segment: string };
+
+/** The label of one path segment; inside `/admin` the area's own names win. */
+function segmentKey({ segments, segment }: SegmentKeyInput): CrumbLabelKey {
+  const admin = segments[0] === "admin" ? ADMIN_SEGMENT_KEYS[segment] : undefined;
+  return admin ?? SEGMENT_KEYS[segment] ?? "detail";
+}
+
 /** Administration collections that have an update page but no detail page of their own. */
 const NO_DETAIL_SETTINGS = new Set([
   "pipeline",
@@ -132,7 +146,7 @@ export function buildCrumbs({ pathname }: BuildCrumbsInput): Crumb[] {
     const section = segments[1] ?? "";
     return [
       { href: "/admin", labelKey: "admin" },
-      { href: `/admin/${section}`, labelKey: SEGMENT_KEYS[section] ?? "detail" },
+      { href: `/admin/${section}`, labelKey: segmentKey({ segments, segment: section }) },
       { href: pathname, labelKey: "edit" },
     ];
   }
@@ -142,6 +156,6 @@ export function buildCrumbs({ pathname }: BuildCrumbsInput): Crumb[] {
   }
   return segments.map((segment, index) => ({
     href: `/${segments.slice(0, index + 1).join("/")}`,
-    labelKey: SEGMENT_KEYS[segment] ?? "detail",
+    labelKey: segmentKey({ segments, segment }),
   }));
 }

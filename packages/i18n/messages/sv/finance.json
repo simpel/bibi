@@ -1,6 +1,6 @@
 {
   "billing": {
-    "title": "Fakturering",
+    "title": "Plan och fakturering",
     "description": "Ert Bibi-abonnemang, era platser och vilka som väntar på en.",
     "state": {
       "EXEMPT": "Kostnadsfritt",
@@ -590,7 +590,7 @@
   },
   "paymentSettings": {
     "title": "Betalningar",
-    "description": "Förskottsregel och vilket system som skickar fakturor. Stripe kopplas under Integrationer.",
+    "description": "Stripe-kontot, förskottsregeln och vilket system som skickar fakturor.",
     "saved": "Betalningsinställningarna har sparats.",
     "readOnly": "Du kan se inställningarna men inte ändra dem.",
     "save": "Spara",

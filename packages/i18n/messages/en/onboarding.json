@@ -280,7 +280,7 @@
     }
   },
   "organizationSettings": {
-    "title": "Organization",
+    "title": "General",
     "description": "Settings that apply to the whole organization.",
     "timeZone": "Time zone",
     "timeZoneHint": "Order times and every venue without its own zone use this zone. Changing it changes how times are shown and entered; saved times stay the same.",

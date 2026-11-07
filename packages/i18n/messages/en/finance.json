@@ -1,6 +1,6 @@
 {
   "billing": {
-    "title": "Billing",
+    "title": "Plan & billing",
     "description": "Your Bibi subscription, your seats and anyone waiting for one.",
     "state": {
       "EXEMPT": "Free of charge",
@@ -590,7 +590,7 @@
   },
   "paymentSettings": {
     "title": "Payments",
-    "description": "The deposit rule and which system sends invoices. Stripe is connected under Integrations.",
+    "description": "The Stripe account, the deposit rule and which system sends invoices.",
     "saved": "Payment settings saved.",
     "readOnly": "You can view these settings but not change them.",
     "save": "Save",

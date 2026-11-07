@@ -280,7 +280,7 @@
     }
   },
   "organizationSettings": {
-    "title": "Organisation",
+    "title": "Allmänt",
     "description": "Inställningar som gäller hela organisationen.",
     "timeZone": "Tidszon",
     "timeZoneHint": "Bokningens tider och varje anläggning utan egen zon använder den här zonen. En ändring påverkar hur tider visas och skrivs in; sparade tider ändras inte.",
