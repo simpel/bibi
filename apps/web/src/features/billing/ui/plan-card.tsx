@@ -37,7 +37,7 @@ export async function PlanCard({ billing, texts, canEdit }: PlanCardProps) {
     <AdminSection
       id="plan"
       title={t("planTitle")}
-      action={<BillingStateBadge state={access.state} />}
+      actions={<BillingStateBadge state={access.state} />}
     >
       <div className="grid gap-4 text-sm">
         <dl className="grid gap-3 sm:grid-cols-3">

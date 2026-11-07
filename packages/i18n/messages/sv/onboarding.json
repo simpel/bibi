@@ -365,7 +365,7 @@
     }
   },
   "statusGrid": {
-    "title": "Rutnätet",
+    "title": "Statusrutnät",
     "description": "Vad som händer med varje artikeltyps rader när en bokning går in i en bokningsstatus. Välj en status, eller behåll för att lämna raderna som de är.",
     "status": "Bokningsstatus",
     "keep": "Behåll",

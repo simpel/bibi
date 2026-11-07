@@ -24,8 +24,7 @@ export async function RevenueAccountsSection({
       id="revenue-accounts"
       title={t("groups.revenueByType")}
       description={t("revenueByTypeHint")}
-      action={canEdit ? <AddAccountButton settings={settings} types={types} /> : null}
-      flush
+      actions={canEdit ? <AddAccountButton settings={settings} types={types} /> : null}
     >
       <AccountsTable
         tableId="finance.revenue-accounts"
@@ -35,7 +34,6 @@ export async function RevenueAccountsSection({
         grouped={false}
         emptyText={t("emptyRevenue")}
         canEdit={canEdit}
-        flush
         scope="revenue"
       />
     </AdminSection>

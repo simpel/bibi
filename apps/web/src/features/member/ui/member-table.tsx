@@ -4,7 +4,7 @@ import type { FixedRole, MemberDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { type QuickFilterPill, TableFilterBar } from "@/components/data-table/table-filter-bar";
+import { TableFilterBar } from "@/components/data-table/table-filter-bar";
 import type { TableQualifier } from "@/components/data-table/table-filter-query";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
 import type { RowAccess } from "@/lib/can";
@@ -54,7 +54,6 @@ function useMemberQualifiers({ members }: { members: MemberDto[] }): TableQualif
  */
 export function MemberTable({ members, roles, caller, access }: MemberTableProps) {
   const t = useTranslations("member");
-  const common = useTranslations("common");
   const roleLabel = useTranslations("role");
   const router = useRouter();
   const manageable = ({ role }: MemberDto) => canManageMember({ caller, member: role });
@@ -65,10 +64,6 @@ export function MemberTable({ members, roles, caller, access }: MemberTableProps
     getSearchText: (m) => `${m.name} ${m.email} ${m.role ? roleLabel(m.role) : ""}`,
     totalLabel: (count) => `${count}`,
   });
-  const pills: QuickFilterPill[] = [
-    { key: "all", label: common("readFilter.all"), query: undefined },
-    ...ALL_ROLES.map((r) => ({ key: r, label: roleLabel(r), query: `role:${roleLabel(r)}` })),
-  ];
   const columns = useMemberColumns<MemberDto>({
     linkNames: true,
     renderRole: (member) =>
@@ -85,12 +80,7 @@ export function MemberTable({ members, roles, caller, access }: MemberTableProps
   });
   return (
     <div className="grid gap-4">
-      <TableFilterBar
-        q={view.q}
-        query={view.query}
-        pills={pills}
-        onSelectPill={(next) => view.navigate({ patch: { q: next ?? null, page: null } })}
-      />
+      <TableFilterBar q={view.q} query={view.query} />
       <PersistedDataTable
         tableId="member"
         columns={columns}

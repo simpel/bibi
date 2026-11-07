@@ -9,7 +9,7 @@ export type SeatRequestsCardProps = {
   canEdit: boolean;
 };
 
-/** The held invitations, edge to edge in their card (ADR 0086). */
+/** The invitations held for a seat. */
 export async function SeatRequestsCard({ requests, seatPrice, canEdit }: SeatRequestsCardProps) {
   const t = await getTranslations("billing.settings");
   return (
@@ -17,7 +17,6 @@ export async function SeatRequestsCard({ requests, seatPrice, canEdit }: SeatReq
       id="seat-requests"
       title={t("requestsTitle")}
       description={t("requestsDescription")}
-      flush
     >
       <SeatRequestTable requests={requests} seatPrice={seatPrice} canEdit={canEdit} />
     </AdminSection>

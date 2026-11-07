@@ -1,8 +1,7 @@
 import { listVocabularies } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
-import { AdminHeader } from "@/components/admin/admin-header";
-import { AdminPage } from "@/components/admin/admin-page";
+import { AdminSection } from "@/components/admin/admin-section";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
@@ -12,22 +11,17 @@ import { CreateVocabularyButton } from "./create-vocabulary-button";
 import { ImportAllergensButton } from "./import-allergens-button";
 import { VocabularyTable } from "./vocabulary-table";
 
-export type VocabularyListProps = {
-  locale: Locale /** Accepted for the page's search params; the client view paginates one loaded page. */;
-};
+export type VocabularyListProps = { locale: Locale };
 
 const PAGE_SIZE = 100;
 const CREATE = "configuration:write";
 
-/** Lists page body: header with create and the allergen template import, table, pagination. */
+/** The `lists` section: header with create and the allergen template import, table. */
 export async function VocabularyList({ locale }: VocabularyListProps) {
   const [t, abilities, result] = await Promise.all([
     getTranslations("vocabulary"),
     getCallerAbilities(),
-    runOperation({
-      operation: listVocabularies,
-      input: { limit: PAGE_SIZE },
-    }),
+    runOperation({ operation: listVocabularies, input: { limit: PAGE_SIZE } }),
   ]);
   const create = can({ abilities, permission: CREATE }) ? <CreateVocabularyButton /> : undefined;
   const actions = create && (
@@ -36,20 +30,23 @@ export async function VocabularyList({ locale }: VocabularyListProps) {
       {create}
     </>
   );
-  const header = (
-    <AdminHeader title={t("plural")} description={t("listDescription")} actions={actions} />
-  );
+  const section = {
+    id: "lists",
+    title: t("plural"),
+    description: t("listDescription"),
+    actions,
+  };
   if (!result.ok) {
     const errorKey = handleLoadError({ error: result.error, locale });
     return (
-      <AdminPage header={header}>
-        <ErrorState errorKey={errorKey} />
-      </AdminPage>
+      <AdminSection {...section}>
+        <ErrorState errorKey={errorKey} inline />
+      </AdminSection>
     );
   }
   const { items } = result.value;
   return (
-    <AdminPage header={header}>
+    <AdminSection {...section}>
       {items.length === 0 ? (
         <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />
       ) : (
@@ -58,6 +55,6 @@ export async function VocabularyList({ locale }: VocabularyListProps) {
           access={rowAccess({ abilities, feature: "configuration" })}
         />
       )}
-    </AdminPage>
+    </AdminSection>
   );
 }

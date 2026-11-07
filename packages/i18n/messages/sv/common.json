@@ -540,12 +540,6 @@
     "developersLink": "Utvecklare"
   },
   "adminArea": {
-    "descriptions": {
-      "types": "Vilka sorters artiklar ni erbjuder, deras fält och hur rum kan ställas upp.",
-      "orderFlow": "Statusarna en bokning går igenom och vad varje rad gör i dem.",
-      "runSheets": "Körscheman som skickas till ett ansvar, och vem som har vilket ansvar.",
-      "integrations": "Bokföringssystem och API-nycklar för egna kopplingar."
-    },
     "search": {
       "label": "Sök i administrationen",
       "placeholder": "Sök inställningar",
@@ -557,7 +551,7 @@
           "keywords": "klocka tid zon sommartid anläggning"
         },
         "domainJoin": {
-          "label": "Gå med via e-postdomän",
+          "label": "Kollegor kan gå med via e-postdomän",
           "keywords": "domän e-post kollegor gå med automatiskt"
         },
         "members": {
@@ -565,7 +559,7 @@
           "keywords": "personer användare roller bjud in behörigheter"
         },
         "invitations": {
-          "label": "Inbjudningar",
+          "label": "Väntande inbjudningar",
           "keywords": "bjud in skickade väntande e-post"
         },
         "plan": {
@@ -581,7 +575,7 @@
           "keywords": "förfrågan plats godkänn neka"
         },
         "types": {
-          "label": "Typer och fält",
+          "label": "Typer",
           "keywords": "artiklar kunder kontakter fält förmågor rum mall"
         },
         "setups": {
@@ -625,15 +619,15 @@
           "keywords": "kökschef mottagare ansvarig"
         },
         "stripe": {
-          "label": "Stripe",
+          "label": "Stripe-utbetalningskonto",
           "keywords": "kort betalning koppla onlinebetalning"
         },
         "deposit": {
-          "label": "Handpenning",
+          "label": "Förskott",
           "keywords": "förskott procent minimibelopp"
         },
         "invoices": {
-          "label": "Fakturor",
+          "label": "Fakturaleverantör",
           "keywords": "fakturering fakturaleverantör fortnox stripe"
         },
         "fiscalYear": {
@@ -645,7 +639,7 @@
           "keywords": "kontoplan bas moms intäkt sie"
         },
         "revenueAccounts": {
-          "label": "Intäktskonton per typ",
+          "label": "Intäktskonto per artikeltyp",
           "keywords": "intäkt konto artikeltyp"
         },
         "fortnox": {
@@ -655,6 +649,10 @@
         "apiKeys": {
           "label": "API-nycklar",
           "keywords": "api rest nyckel integration crm"
+        },
+        "paymentOperator": {
+          "label": "Betaloperatör",
+          "keywords": "stripe betalning operatör kort koppling"
         }
       }
     }

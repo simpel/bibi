@@ -4,7 +4,6 @@ import type { RunSheetDefinitionDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { qualifierPills } from "@/components/data-table/qualifier-pills";
 import { TableFilterBar } from "@/components/data-table/table-filter-bar";
 import type { TableQualifier } from "@/components/data-table/table-filter-query";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
@@ -64,7 +63,6 @@ export function RunSheetDefinitionTable({
   access,
 }: RunSheetDefinitionTableProps) {
   const t = useTranslations("runSheetDefinition");
-  const common = useTranslations("common");
   const router = useRouter();
   const columns = useRunSheetDefinitionColumns({ options, access });
   const qualifiers = useRunSheetQualifiers({ options });
@@ -74,19 +72,9 @@ export function RunSheetDefinitionTable({
     getSearchText: (runSheet) => runSheet.name,
     totalLabel: (count) => `${count}`,
   });
-  const pills = qualifierPills({
-    allLabel: common("readFilter.all"),
-    qualifier: "responsibility",
-    values: options.responsibilities.map((item) => ({ key: item.id, label: item.name })),
-  });
   return (
     <div className="grid gap-4">
-      <TableFilterBar
-        q={view.q}
-        query={view.query}
-        pills={pills}
-        onSelectPill={(next) => view.navigate({ patch: { q: next ?? null, page: null } })}
-      />
+      <TableFilterBar q={view.q} query={view.query} />
       <PersistedDataTable
         tableId="run-sheet-definition.list"
         columns={columns}

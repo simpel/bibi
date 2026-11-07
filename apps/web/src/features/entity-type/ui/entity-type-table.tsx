@@ -4,7 +4,7 @@ import type { EntityTypeDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { type QuickFilterPill, TableFilterBar } from "@/components/data-table/table-filter-bar";
+import { TableFilterBar } from "@/components/data-table/table-filter-bar";
 import type { TableQualifier } from "@/components/data-table/table-filter-query";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
 import type { RowAccess } from "@/lib/can";
@@ -59,7 +59,6 @@ export function EntityTypeTable({
   access = { canEdit: false, canRemove: false },
 }: EntityTypeTableProps) {
   const t = useTranslations("entityType");
-  const common = useTranslations("common");
   const router = useRouter();
   const qualifiers = useEntityTypeQualifiers({ types });
   const view = useClientTableView({
@@ -68,25 +67,12 @@ export function EntityTypeTable({
     getSearchText: (type) => `${type.name} ${t(`bases.${type.base}`)}`,
     totalLabel: (count) => `${count}`,
   });
-  const baseValues = Array.from(new Set(types.map((type) => type.base)));
-  const pills: QuickFilterPill[] = [
-    { key: "all", label: common("readFilter.all"), query: undefined },
-    ...baseValues.map((base) => {
-      const label = t(`bases.${base}`);
-      return { key: base, label, query: label.includes(" ") ? `base:"${label}"` : `base:${label}` };
-    }),
-  ];
   const columns = useEntityTypeColumns({
     renderActions: (entityType) => <EntityTypeRowActions entityType={entityType} access={access} />,
   });
   return (
     <div className="grid gap-4">
-      <TableFilterBar
-        q={view.q}
-        query={view.query}
-        pills={pills}
-        onSelectPill={(next) => view.navigate({ patch: { q: next ?? null, page: null } })}
-      />
+      <TableFilterBar q={view.q} query={view.query} />
       <PersistedDataTable
         tableId="entity-type.list"
         columns={columns}

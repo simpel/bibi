@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { qualifierPills } from "@/components/data-table/qualifier-pills";
 import { TableFilterBar } from "@/components/data-table/table-filter-bar";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
 import type { RowAccess } from "@/lib/can";
@@ -19,7 +18,6 @@ export type ItemStateTableProps = { entries: TypeStates[]; access: RowAccess };
 /** The states of every item type in one table, each type's states in its own order. */
 export function ItemStateTable({ entries, access }: ItemStateTableProps) {
   const t = useTranslations("itemState");
-  const common = useTranslations("common");
   const router = useRouter();
   const columns = useStateColumns({ access });
   const rows = useMemo(() => toTypedStateRows({ entries }), [entries]);
@@ -31,19 +29,9 @@ export function ItemStateTable({ entries, access }: ItemStateTableProps) {
     getSearchText: (row) => `${row.state.name} ${row.typeName}`,
     totalLabel: (count) => `${count}`,
   });
-  const pills = qualifierPills({
-    allLabel: common("readFilter.all"),
-    qualifier: "type",
-    values: entries.map((entry) => ({ key: entry.type.id, label: entry.type.name })),
-  });
   return (
     <div className="grid gap-4">
-      <TableFilterBar
-        q={view.q}
-        query={view.query}
-        pills={pills}
-        onSelectPill={(next) => view.navigate({ patch: { q: next ?? null, page: null } })}
-      />
+      <TableFilterBar q={view.q} query={view.query} />
       <PersistedDataTable
         tableId="item-state.list"
         columns={columns}

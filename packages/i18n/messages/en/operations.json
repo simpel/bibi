@@ -145,7 +145,7 @@
       "order": "Order"
     },
     "flow": {
-      "title": "Flow",
+      "title": "Flow rules",
       "description": "Where orders may move and what a move needs. Everyone moves orders by these rules on the boards; only you change them here.",
       "saving": "Saving…",
       "movesSaved": "The moves have been saved.",

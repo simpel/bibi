@@ -4,20 +4,19 @@ import { describe, expect, it } from "vitest";
 import { ROUTES } from "@/lib/routes";
 import { ADMIN_GROUPS } from "./admin-items";
 import {
-  ADMIN_SEARCH_INDEX,
-  adminSearchHref,
+  adminSearchIndex,
+  adminSectionHref,
   type SearchableEntry,
   searchAdmin,
 } from "./admin-search-index";
+import { ADMIN_SECTIONS } from "./admin-sections";
 
-const entry = ({
-  overrides,
-}: {
-  overrides: Partial<SearchableEntry> & Pick<SearchableEntry, "id">;
-}) => ({
-  page: "general" as const,
+type Overrides = Partial<SearchableEntry> & Pick<SearchableEntry, "id" | "label">;
+
+const entry = ({ overrides }: { overrides: Overrides }): SearchableEntry => ({
+  page: "general",
   href: ROUTES.adminGeneral,
-  label: "",
+  anchor: "x",
   pageLabel: "General",
   keywords: "",
   ...overrides,
@@ -27,71 +26,49 @@ const entries: SearchableEntry[] = [
   entry({
     overrides: { id: "timeZone", label: "Tidszon", keywords: "klocka", anchor: "time-zone" },
   }),
-  entry({
-    overrides: {
-      id: "stripe",
-      label: "Stripe",
-      href: ROUTES.adminPayments,
-      keywords: "kort betalning",
-    },
-  }),
-  entry({
-    overrides: {
-      id: "accounts",
-      label: "Konton",
-      href: ROUTES.adminAccounting,
-      keywords: "moms bas",
-    },
-  }),
+  entry({ overrides: { id: "stripe", label: "Stripe", keywords: "kort betalning" } }),
+  entry({ overrides: { id: "accounts", label: "Konton", keywords: "moms bas" } }),
 ];
-const all = new Set(entries.map((one) => one.href));
 
 describe("searchAdmin", () => {
   it("matches labels, keywords and pages, ignoring case and diacritics", () => {
-    expect(searchAdmin({ entries, visibleHrefs: all, query: "TIDSZON" }).map((e) => e.id)).toEqual([
-      "timeZone",
-    ]);
-    expect(searchAdmin({ entries, visibleHrefs: all, query: "moms" }).map((e) => e.id)).toEqual([
-      "accounts",
-    ]);
-    expect(searchAdmin({ entries, visibleHrefs: all, query: "general" })).toHaveLength(3);
+    expect(searchAdmin({ entries, query: "TIDSZON" }).map((e) => e.id)).toEqual(["timeZone"]);
+    expect(searchAdmin({ entries, query: "moms" }).map((e) => e.id)).toEqual(["accounts"]);
+    expect(searchAdmin({ entries, query: "general" })).toHaveLength(3);
   });
 
-  it("needs every word and hides pages the caller may not view", () => {
-    expect(searchAdmin({ entries, visibleHrefs: all, query: "kort klocka" })).toEqual([]);
-    const noPayments = new Set([ROUTES.adminGeneral, ROUTES.adminAccounting]);
-    expect(searchAdmin({ entries, visibleHrefs: noPayments, query: "stripe" })).toEqual([]);
+  it("needs every word, and nothing for an empty query", () => {
+    expect(searchAdmin({ entries, query: "kort klocka" })).toEqual([]);
+    expect(searchAdmin({ entries, query: "  " })).toEqual([]);
   });
 
-  it("returns nothing for an empty query", () => {
-    expect(searchAdmin({ entries, visibleHrefs: all, query: "  " })).toEqual([]);
-  });
-});
-
-describe("ADMIN_SEARCH_INDEX", () => {
-  it("only points at tabs in the administration sidebar", () => {
-    const tabs = new Set(
-      ADMIN_GROUPS.flatMap((g) => g.pages.flatMap((p) => p.tabs.map((t) => t.href))),
-    );
-    expect(ADMIN_SEARCH_INDEX.filter((one) => !tabs.has(one.href))).toEqual([]);
-  });
-
-  it("links to the section on the page", () => {
-    expect(adminSearchHref({ entry: entries[0] as SearchableEntry })).toBe(
+  it("links to the section on its page", () => {
+    expect(adminSectionHref({ entry: entries[0] as SearchableEntry })).toBe(
       "/admin/general#time-zone",
     );
   });
 });
 
-describe("ADMIN_SEARCH_INDEX anchors", () => {
-  it("names an `id` that a component in the web app renders", () => {
-    const srcDir = join(import.meta.dirname, "..", "..");
-    const files = readdirSync(join(srcDir, "features"), { recursive: true, encoding: "utf8" })
+describe("administration sections", () => {
+  const index = adminSearchIndex({ groups: ADMIN_GROUPS });
+
+  it("puts every section on exactly one page", () => {
+    const ids = index.map((one) => one.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect([...ids].sort()).toEqual(Object.keys(ADMIN_SECTIONS).sort());
+  });
+
+  it("renders every anchor as an `id` somewhere in the web app", () => {
+    const featuresDir = join(import.meta.dirname, "..", "..", "features");
+    const files = readdirSync(featuresDir, { recursive: true, encoding: "utf8" })
       .filter((file) => file.endsWith(".tsx"))
-      .map((file) => readFileSync(join(srcDir, "features", file), "utf8"));
-    const missing = ADMIN_SEARCH_INDEX.filter(
-      (one) => one.anchor && !files.some((text) => text.includes(`id="${one.anchor}"`)),
+      .map((file) => readFileSync(join(featuresDir, file), "utf8"));
+    const missing = index.filter(
+      (one) =>
+        !files.some(
+          (text) => text.includes(`id="${one.anchor}"`) || text.includes(`id: "${one.anchor}"`),
+        ),
     );
-    expect(missing).toEqual([]);
+    expect(missing.map((one) => one.anchor)).toEqual([]);
   });
 });

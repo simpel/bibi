@@ -1,11 +1,12 @@
 import { listOrderStatuses } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
-import { AdminHeader } from "@/components/admin/admin-header";
-import { AdminPage } from "@/components/admin/admin-page";
+import { AdminSection } from "@/components/admin/admin-section";
+import type { AdminSectionId } from "@/components/shell/admin-sections";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { StatusGridEditor } from "@/features/status-grid/ui/status-grid-editor";
+import type { ErrorKey } from "@/lib/error-key";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -14,54 +15,58 @@ import { FlowEditor } from "./flow-editor";
 import { ImportOrderStatusTemplateButton } from "./import-order-status-template-button";
 import { OrderStatusTable } from "./order-status-table";
 
-export type OrderStatusListProps = { locale: Locale; inTab?: boolean };
+export type OrderStatusListProps = { locale: Locale; show: ReadonlySet<AdminSectionId> };
 
 /** An organization has a handful of statuses; reordering needs all of them on one page. */
 const PAGE_SIZE = 100;
 
-/** Order statuses page body: header with admin actions, the ordered table, flow and grid. */
-export async function OrderStatusList({ locale, inTab = false }: OrderStatusListProps) {
+/** The pipeline sections: `statuses`, `flow-rules` and `status-grid`, each only when shown. */
+export async function OrderStatusList({ locale, show }: OrderStatusListProps) {
+  const needsStatuses = show.has("orderStatuses") || show.has("flowRules");
   const [t, abilities, result] = await Promise.all([
     getTranslations("orderStatus"),
     getCallerAbilities(),
-    runOperation({ operation: listOrderStatuses, input: { limit: PAGE_SIZE } }),
+    needsStatuses
+      ? runOperation({ operation: listOrderStatuses, input: { limit: PAGE_SIZE } })
+      : undefined,
   ]);
   const canWrite = can({ abilities, permission: "pipeline:write" });
   const create = canWrite ? <CreateOrderStatusButton /> : undefined;
-  const header = (
-    <AdminHeader
-      title={t("plural")}
-      description={t("listDescription")}
-      inTab={inTab}
-      actions={
-        canWrite ? (
-          <>
-            <ImportOrderStatusTemplateButton />
-            {create}
-          </>
-        ) : undefined
-      }
-    />
-  );
-  if (!result.ok) {
-    const errorKey = handleLoadError({ error: result.error, locale });
-    return (
-      <AdminPage header={header}>
-        <ErrorState errorKey={errorKey} inline={inTab} />
-      </AdminPage>
-    );
-  }
-  const { items } = result.value;
-  const access = rowAccess({ abilities, feature: "pipeline" });
+  const errorKey: ErrorKey | undefined =
+    result && !result.ok ? handleLoadError({ error: result.error, locale }) : undefined;
+  const items = result?.ok ? result.value.items : [];
   return (
-    <AdminPage header={header}>
-      {items.length === 0 ? (
-        <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />
-      ) : (
-        <OrderStatusTable statuses={items} access={access} />
-      )}
-      {canWrite ? <FlowEditor statuses={items} /> : null}
-      <StatusGridEditor locale={locale} />
-    </AdminPage>
+    <>
+      {show.has("orderStatuses") ? (
+        <AdminSection
+          id="statuses"
+          title={t("plural")}
+          description={t("listDescription")}
+          actions={
+            canWrite ? (
+              <>
+                <ImportOrderStatusTemplateButton />
+                {create}
+              </>
+            ) : undefined
+          }
+        >
+          {errorKey ? (
+            <ErrorState errorKey={errorKey} inline />
+          ) : items.length === 0 ? (
+            <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />
+          ) : (
+            <OrderStatusTable
+              statuses={items}
+              access={rowAccess({ abilities, feature: "pipeline" })}
+            />
+          )}
+        </AdminSection>
+      ) : null}
+      {show.has("flowRules") && canWrite ? (
+        <FlowEditor statuses={items} errorKey={errorKey} />
+      ) : null}
+      {show.has("statusGrid") ? <StatusGridEditor locale={locale} /> : null}
+    </>
   );
 }

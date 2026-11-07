@@ -5,7 +5,6 @@ import { ContextMenuItem } from "@bibi/ui";
 import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { qualifierPills } from "@/components/data-table/qualifier-pills";
 import { TableFilterBar } from "@/components/data-table/table-filter-bar";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
 import type { RowAccess } from "@/lib/can";
@@ -27,7 +26,6 @@ const editRoute = ({ id }: { id: string }) =>
 /** Price lists with their customer, validity and pricing; a row opens its update page. */
 export function PriceListTable({ priceLists, data, access }: PriceListTableProps) {
   const t = useTranslations("priceList");
-  const common = useTranslations("common");
   const router = useRouter();
   const columns = usePriceListColumns({ data, access });
   const qualifiers = usePriceListQualifiers({ priceLists, data });
@@ -37,19 +35,9 @@ export function PriceListTable({ priceLists, data, access }: PriceListTableProps
     getSearchText: (list) => list.name,
     totalLabel: (count) => `${count}`,
   });
-  const pills = qualifierPills({
-    allLabel: common("readFilter.all"),
-    qualifier: "customer",
-    values: [{ key: "general", label: t("noCustomer") }],
-  });
   return (
     <div className="grid gap-4">
-      <TableFilterBar
-        q={view.q}
-        query={view.query}
-        pills={pills}
-        onSelectPill={(next) => view.navigate({ patch: { q: next ?? null, page: null } })}
-      />
+      <TableFilterBar q={view.q} query={view.query} />
       <PersistedDataTable
         tableId="price-list.list"
         columns={columns}

@@ -5,6 +5,10 @@ export type CrumbLabelKey =
   | NavLabelKey
   | AdminKey
   | "skills"
+  | "setups"
+  | "responsibilities"
+  | "itemStates"
+  | "orderStatuses"
   | "billing"
   | "profile"
   | "quotes"
@@ -70,7 +74,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
 
 /** Segments named after their administration page or tab rather than the app page of that name. */
 const ADMIN_SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
-  pipeline: "orderStatuses",
+  pipeline: "orderFlow",
   billing: "planBilling",
 };
 

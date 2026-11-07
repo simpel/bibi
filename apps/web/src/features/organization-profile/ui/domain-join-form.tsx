@@ -36,7 +36,7 @@ export function DomainJoinForm({ emailDomain, enabled, canEdit }: DomainJoinForm
       id="domain-join"
       title={t("label")}
       description={emailDomain ? t("hint", { domain: emailDomain }) : t("noDomain")}
-      action={
+      actions={
         <Switch
           aria-label={t("label")}
           checked={on}

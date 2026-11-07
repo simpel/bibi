@@ -13,15 +13,33 @@ import {
   usePaymentSettingsForm,
 } from "./use-payment-settings-form";
 
+const FORM_ID = "payment-settings";
+
 type SectionProps = {
   form: UseFormReturn<PaymentSettingsFormValues, unknown, PaymentSettingsFormOutput>;
+  canEdit: boolean;
+  /** The last section shown holds the one Save button. */
+  save: boolean;
+  pending: boolean;
 };
 
-function DepositSection({ form }: SectionProps) {
+function SaveRow({ canEdit, pending }: Pick<SectionProps, "canEdit" | "pending">) {
+  const t = useTranslations("paymentSettings");
+  if (!canEdit) return <p className="text-sm text-muted-foreground">{t("readOnly")}</p>;
+  return (
+    <div>
+      <Button type="submit" form={FORM_ID} disabled={pending}>
+        {t("save")}
+      </Button>
+    </div>
+  );
+}
+
+function DepositSection({ form, canEdit, save, pending }: SectionProps) {
   const t = useTranslations("paymentSettings");
   return (
     <AdminSection id="deposit" title={t("deposit.title")} description={t("deposit.description")}>
-      <div className="grid max-w-lg gap-4">
+      <fieldset disabled={!canEdit} className="grid max-w-lg gap-4">
         <TextField
           form={form}
           name="depositPercent"
@@ -39,43 +57,52 @@ function DepositSection({ form }: SectionProps) {
           placeholder={t("placeholders.none")}
         />
         <p className="-mt-2 text-xs text-muted-foreground">{t("hints.depositMinimum")}</p>
-      </div>
+      </fieldset>
+      {save ? <SaveRow canEdit={canEdit} pending={pending} /> : null}
     </AdminSection>
   );
 }
 
-function InvoiceSection({ form }: SectionProps) {
+function InvoiceSection({ form, canEdit, save, pending }: SectionProps) {
   const t = useTranslations("paymentSettings");
   return (
     <AdminSection id="invoices" title={t("invoice.title")} description={t("invoice.description")}>
-      <InvoiceProviderField form={form} />
+      <fieldset disabled={!canEdit} className="grid gap-4">
+        <InvoiceProviderField form={form} />
+      </fieldset>
+      {save ? <SaveRow canEdit={canEdit} pending={pending} /> : null}
     </AdminSection>
   );
 }
 
-export type PaymentSettingsFormProps = { settings: PaymentSettingsDto; canEdit: boolean };
+export type PaymentSettingsFormProps = {
+  settings: PaymentSettingsDto;
+  canEdit: boolean;
+  showDeposit: boolean;
+  showInvoices: boolean;
+};
 
-/** The deposit rule and the invoice provider (`paymentSettings.update`, ADR 0090). */
-export function PaymentSettingsForm({ settings, canEdit }: PaymentSettingsFormProps) {
-  const t = useTranslations("paymentSettings");
+/**
+ * The deposit rule and the invoice provider (`paymentSettings.update`, ADR 0090): one form, one
+ * Save. The sections stay direct children of the page so their bands alternate, so the form
+ * element sits after them, empty, and the controls and the Save button belong to it by its id.
+ */
+export function PaymentSettingsForm({
+  settings,
+  canEdit,
+  showDeposit,
+  showInvoices,
+}: PaymentSettingsFormProps) {
   const { form, submit, pending } = usePaymentSettingsForm({ settings });
   return (
     <Form {...form}>
-      <form onSubmit={submit} noValidate className="grid gap-6">
-        <fieldset disabled={!canEdit} className="grid gap-6">
-          <DepositSection form={form} />
-          <InvoiceSection form={form} />
-        </fieldset>
-        {canEdit ? (
-          <div>
-            <Button type="submit" disabled={pending}>
-              {t("save")}
-            </Button>
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">{t("readOnly")}</p>
-        )}
-      </form>
+      {showDeposit ? (
+        <DepositSection form={form} canEdit={canEdit} save={!showInvoices} pending={pending} />
+      ) : null}
+      {showInvoices ? (
+        <InvoiceSection form={form} canEdit={canEdit} save pending={pending} />
+      ) : null}
+      <form id={FORM_ID} onSubmit={submit} noValidate />
     </Form>
   );
 }

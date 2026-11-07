@@ -618,6 +618,13 @@
       "AUTO": "Följ vad som är kopplat",
       "STRIPE": "Stripe",
       "FORTNOX": "Fortnox"
+    },
+    "operator": {
+      "title": "Betaloperatör",
+      "description": "Företaget som hanterar kortbetalningar för era bokningar.",
+      "label": "Betaloperatör",
+      "none": "Ingen ansluten",
+      "manage": "Aktivera eller inaktivera kopplingar under Integrationer"
     }
   },
   "paymentAccount": {

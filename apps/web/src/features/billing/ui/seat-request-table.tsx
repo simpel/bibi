@@ -4,7 +4,7 @@ import type { SeatRequestDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { type QuickFilterPill, TableFilterBar } from "@/components/data-table/table-filter-bar";
+import { TableFilterBar } from "@/components/data-table/table-filter-bar";
 import type { TableQualifier } from "@/components/data-table/table-filter-query";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
 import {
@@ -55,7 +55,6 @@ function useSeatRequestQualifiers({
 export function SeatRequestTable({ requests, seatPrice, canEdit }: SeatRequestTableProps) {
   const t = useTranslations("billing.requests");
   const roles = useTranslations("role");
-  const common = useTranslations("common");
   const [decision, setDecision] = useState<SeatDecision | null>(null);
   const qualifiers = useSeatRequestQualifiers({ requests });
   const view = useClientTableView({
@@ -64,10 +63,6 @@ export function SeatRequestTable({ requests, seatPrice, canEdit }: SeatRequestTa
     getSearchText: (r) => `${r.email} ${r.role ? roles(r.role) : ""}`,
     totalLabel: (count) => `${count}`,
   });
-  const pills: QuickFilterPill[] = [
-    { key: "all", label: common("readFilter.all"), query: undefined },
-    ...ROLES.map((r) => ({ key: r, label: roles(r), query: `role:${roles(r)}` })),
-  ];
   const columns = useSeatRequestColumns({
     ...(canEdit
       ? {
@@ -79,14 +74,7 @@ export function SeatRequestTable({ requests, seatPrice, canEdit }: SeatRequestTa
   });
   return (
     <div className="grid gap-4">
-      <div className="px-6">
-        <TableFilterBar
-          q={view.q}
-          query={view.query}
-          pills={pills}
-          onSelectPill={(next) => view.navigate({ patch: { q: next ?? null, page: null } })}
-        />
-      </div>
+      <TableFilterBar q={view.q} query={view.query} />
       <PersistedDataTable
         tableId="billing.seat-requests"
         columns={columns}
@@ -101,7 +89,6 @@ export function SeatRequestTable({ requests, seatPrice, canEdit }: SeatRequestTa
           : {})}
         emptyText={t("empty")}
         pagination={view.pagination}
-        flush
       />
       {decision ? (
         <SeatDecisionDialog

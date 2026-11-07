@@ -2,8 +2,7 @@ import { listEntityTypes } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
-import { AdminHeader } from "@/components/admin/admin-header";
-import { AdminPage } from "@/components/admin/admin-page";
+import { AdminSection } from "@/components/admin/admin-section";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
@@ -13,11 +12,7 @@ import { CreateEntityTypeButton } from "./create-entity-type-button";
 import { EntityTypeTable } from "./entity-type-table";
 import { ImportConfigurationTemplateButton } from "./import-configuration-template-button";
 
-export type EntityTypeListProps = {
-  locale: Locale;
-  /** Accepted for the page's search params; the client view paginates one loaded page. */
-  inTab?: boolean;
-};
+export type EntityTypeListProps = { locale: Locale };
 
 const PAGE_SIZE = 100;
 const CREATE = "configuration:write";
@@ -32,37 +27,31 @@ function HeaderActions({ create }: { create: ReactNode }) {
   );
 }
 
-/** Types page body: header with create and one unified table with `QuerySearch` and pagination. */
-export async function EntityTypeList({ locale, inTab = false }: EntityTypeListProps) {
+/** The `types` section: header with import and create, one table with search and pagination. */
+export async function EntityTypeList({ locale }: EntityTypeListProps) {
   const [t, abilities, result] = await Promise.all([
     getTranslations("entityType"),
     getCallerAbilities(),
-    runOperation({
-      operation: listEntityTypes,
-      input: { limit: PAGE_SIZE },
-    }),
+    runOperation({ operation: listEntityTypes, input: { limit: PAGE_SIZE } }),
   ]);
   const create = can({ abilities, permission: CREATE }) ? <CreateEntityTypeButton /> : undefined;
-  const actions = create && <HeaderActions create={create} />;
-  const header = (
-    <AdminHeader
-      title={t("plural")}
-      description={t("listDescription")}
-      actions={actions}
-      inTab={inTab}
-    />
-  );
+  const section = {
+    id: "types",
+    title: t("plural"),
+    description: t("listDescription"),
+    actions: create && <HeaderActions create={create} />,
+  };
   if (!result.ok) {
     const errorKey = handleLoadError({ error: result.error, locale });
     return (
-      <AdminPage header={header}>
-        <ErrorState errorKey={errorKey} inline={inTab} />
-      </AdminPage>
+      <AdminSection {...section}>
+        <ErrorState errorKey={errorKey} inline />
+      </AdminSection>
     );
   }
   const { items } = result.value;
   return (
-    <AdminPage header={header}>
+    <AdminSection {...section}>
       {items.length === 0 ? (
         <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />
       ) : (
@@ -71,6 +60,6 @@ export async function EntityTypeList({ locale, inTab = false }: EntityTypeListPr
           access={rowAccess({ abilities, feature: "configuration" })}
         />
       )}
-    </AdminPage>
+    </AdminSection>
   );
 }

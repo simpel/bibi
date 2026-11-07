@@ -365,7 +365,7 @@
     }
   },
   "statusGrid": {
-    "title": "The grid",
+    "title": "Status grid",
     "description": "What happens to each item type's lines when an order enters a status. Choose a state, or keep to leave the lines as they are.",
     "status": "Status",
     "keep": "Keep",

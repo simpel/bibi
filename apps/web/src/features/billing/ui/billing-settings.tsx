@@ -1,8 +1,8 @@
 import { getBilling, listSeatRequests } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
-import { AdminHeader } from "@/components/admin/admin-header";
-import { AdminPage } from "@/components/admin/admin-page";
+import { AdminSection } from "@/components/admin/admin-section";
+import type { AdminSectionId } from "@/components/shell/admin-sections";
 import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
@@ -12,37 +12,59 @@ import { PlanCard } from "./plan-card";
 import { SeatRequestsCard } from "./seat-requests-card";
 import { SeatsCard } from "./seats-card";
 
-export type BillingSettingsProps = { locale: Locale };
+export type BillingSettingsProps = { locale: Locale; show: ReadonlySet<AdminSectionId> };
 
 /** `/admin/billing` (ADR 0095): the plan, the seats and the invitations waiting for one. */
-export async function BillingSettings({ locale }: BillingSettingsProps) {
+export async function BillingSettings({ locale, show }: BillingSettingsProps) {
   const [t, billing, requests, abilities] = await Promise.all([
-    getTranslations("billing"),
+    getTranslations("billing.settings"),
     runOperation({ operation: getBilling, input: {} }),
     runOperation({ operation: listSeatRequests, input: {} }),
     getCallerAbilities(),
   ]);
-  const header = <AdminHeader title={t("title")} description={t("description")} />;
-  const error = !billing.ok ? billing.error : !requests.ok ? requests.error : null;
-  if (error || !billing.ok || !requests.ok) {
+  if (!billing.ok || !requests.ok) {
+    const error = !billing.ok ? billing.error : !requests.ok ? requests.error : null;
+    const state = error ? (
+      <ErrorState inline errorKey={handleLoadError({ error, locale })} />
+    ) : null;
     return (
-      <AdminPage header={header}>
-        {error ? <ErrorState inline errorKey={handleLoadError({ error, locale })} /> : null}
-      </AdminPage>
+      <>
+        {show.has("plan") ? (
+          <AdminSection id="plan" title={t("planTitle")}>
+            {state}
+          </AdminSection>
+        ) : null}
+        {show.has("seats") ? (
+          <AdminSection id="seats" title={t("seatsTitle")}>
+            {state}
+          </AdminSection>
+        ) : null}
+        {show.has("seatRequests") ? (
+          <AdminSection id="seat-requests" title={t("requestsTitle")}>
+            {state}
+          </AdminSection>
+        ) : null}
+      </>
     );
   }
   const canEdit = can({ abilities, permission: "billing:write" });
   const { prices, seats } = billing.value;
   const texts = await planTexts({ prices, includedSeats: seats.included });
   return (
-    <AdminPage header={header}>
-      <PlanCard billing={billing.value} texts={texts} canEdit={canEdit} />
-      <SeatsCard billing={billing.value} seatPrice={texts.seatPrice} canEdit={canEdit} />
-      <SeatRequestsCard
-        requests={requests.value.items}
-        seatPrice={texts.seatPrice}
-        canEdit={canEdit}
-      />
-    </AdminPage>
+    <>
+      {show.has("plan") ? (
+        <PlanCard billing={billing.value} texts={texts} canEdit={canEdit} />
+      ) : null}
+      {show.has("seats") ? (
+        <SeatsCard billing={billing.value} seatPrice={texts.seatPrice} canEdit={canEdit} />
+      ) : null}
+      {show.has("seatRequests") ? (
+        <SeatRequestsCard
+          requests={requests.value.items}
+          seatPrice={texts.seatPrice}
+          canEdit={canEdit}
+        />
+      ) : null}
+    </>
   );
 }

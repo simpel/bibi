@@ -618,6 +618,13 @@
       "AUTO": "Follow what is connected",
       "STRIPE": "Stripe",
       "FORTNOX": "Fortnox"
+    },
+    "operator": {
+      "title": "Payment operator",
+      "description": "The company that processes card payments for your orders.",
+      "label": "Payment operator",
+      "none": "None connected",
+      "manage": "Activate or deactivate connections in Integrations"
     }
   },
   "paymentAccount": {

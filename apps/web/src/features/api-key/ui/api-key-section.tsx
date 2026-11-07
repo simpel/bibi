@@ -1,8 +1,7 @@
 import { listApiKeys } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
-import { AdminHeader } from "@/components/admin/admin-header";
-import { AdminPage } from "@/components/admin/admin-page";
+import { AdminSection } from "@/components/admin/admin-section";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { assignableRoles } from "@/features/member/assignable-roles";
@@ -12,14 +11,10 @@ import { runOperation } from "@/server/run-operation";
 import { ApiKeyTable } from "./api-key-table";
 import { CreateApiKeyButton } from "./create-api-key-button";
 
-export type ApiKeySectionProps = {
-  locale: Locale;
-  /** Rendered as a tab of an administration page: the layout above shows the title. */
-  inTab?: boolean;
-};
+export type ApiKeySectionProps = { locale: Locale };
 
 /** The organization's REST API keys: create (a preset up to the caller's), edit and revoke. */
-export async function ApiKeySection({ locale, inTab = false }: ApiKeySectionProps) {
+export async function ApiKeySection({ locale }: ApiKeySectionProps) {
   const [t, abilities, keys] = await Promise.all([
     getTranslations("integration.apiKeys"),
     getCallerAbilities(),
@@ -28,11 +23,13 @@ export async function ApiKeySection({ locale, inTab = false }: ApiKeySectionProp
   const roles = assignableRoles({ caller: abilities.role });
   const canManage = can({ abilities, permission: "apiKey:write" });
   const create = canManage ? <CreateApiKeyButton roles={roles} /> : null;
-  const header = (
-    <AdminHeader title={t("title")} description={t("description")} actions={create} inTab={inTab} />
-  );
   return (
-    <AdminPage header={header}>
+    <AdminSection
+      id="api-keys"
+      title={t("title")}
+      description={t("description")}
+      actions={keys.ok && keys.value.items.length === 0 ? null : create}
+    >
       {!keys.ok ? (
         <ErrorState inline errorKey={handleLoadError({ error: keys.error, locale })} />
       ) : keys.value.items.length === 0 ? (
@@ -40,6 +37,6 @@ export async function ApiKeySection({ locale, inTab = false }: ApiKeySectionProp
       ) : (
         <ApiKeyTable apiKeys={keys.value.items} canManage={canManage} />
       )}
-    </AdminPage>
+    </AdminSection>
   );
 }

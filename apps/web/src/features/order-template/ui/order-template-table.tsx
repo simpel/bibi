@@ -4,7 +4,6 @@ import type { OrderTemplateDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { qualifierPills } from "@/components/data-table/qualifier-pills";
 import { TableFilterBar } from "@/components/data-table/table-filter-bar";
 import type { TableQualifier } from "@/components/data-table/table-filter-query";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
@@ -55,7 +54,6 @@ export function OrderTemplateTable({
   access,
 }: OrderTemplateTableProps) {
   const t = useTranslations("orderTemplate");
-  const common = useTranslations("common");
   const router = useRouter();
   const columns = useTemplateColumns({ statuses, types, access });
   const qualifiers = useTemplateQualifiers({ statuses, types });
@@ -65,19 +63,9 @@ export function OrderTemplateTable({
     getSearchText: (template) => template.name,
     totalLabel: (count) => `${count}`,
   });
-  const pills = qualifierPills({
-    allLabel: common("readFilter.all"),
-    qualifier: "status",
-    values: statuses.map((status) => ({ key: status.id, label: status.name })),
-  });
   return (
     <div className="grid gap-4">
-      <TableFilterBar
-        q={view.q}
-        query={view.query}
-        pills={pills}
-        onSelectPill={(next) => view.navigate({ patch: { q: next ?? null, page: null } })}
-      />
+      <TableFilterBar q={view.q} query={view.query} />
       <PersistedDataTable
         tableId="order-template.list"
         columns={columns}

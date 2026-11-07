@@ -25,7 +25,7 @@ export async function InvitationList({ locale }: InvitationListProps) {
     <InvitationTable invitations={items} />
   );
   return (
-    <AdminSection id="invitations" title={t("invitations")} flush>
+    <AdminSection id="invitations" title={t("invitations")}>
       {body}
     </AdminSection>
   );

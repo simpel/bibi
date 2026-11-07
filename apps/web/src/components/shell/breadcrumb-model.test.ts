@@ -90,7 +90,7 @@ describe("buildCrumbs", () => {
   it("names administration pages as the area's sidebar does", () => {
     expect(buildCrumbs({ pathname: "/admin/pipeline" })).toEqual([
       { href: "/admin", labelKey: "admin" },
-      { href: "/admin/pipeline", labelKey: "orderStatuses" },
+      { href: "/admin/pipeline", labelKey: "orderFlow" },
     ]);
     expect(buildCrumbs({ pathname: "/admin/billing" })[1]?.labelKey).toBe("planBilling");
     expect(buildCrumbs({ pathname: "/pipeline" })[0]?.labelKey).toBe("pipeline");

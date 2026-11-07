@@ -4,7 +4,7 @@ import type { AccountingSettingsDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { type QuickFilterPill, TableFilterBar } from "@/components/data-table/table-filter-bar";
+import { TableFilterBar } from "@/components/data-table/table-filter-bar";
 import type { TableQualifier } from "@/components/data-table/table-filter-query";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
 import type { AccountRow } from "../lib/account-rows";
@@ -22,8 +22,6 @@ export type AccountsTableProps = {
   types: ItemTypeOption[];
   grouped: boolean;
   emptyText: string;
-  /** Inside a card: the table runs edge to edge (ADR 0086). */
-  flush?: boolean;
   /** Without `finance:write` there is no actions column. */
   canEdit: boolean;
   /** A second table on the page keeps its own search and page in the URL. */
@@ -76,10 +74,7 @@ export function AccountsTable({
   emptyText,
   canEdit,
   scope,
-  flush = false,
 }: AccountsTableProps) {
-  const t = useTranslations("finance.accounting");
-  const common = useTranslations("common");
   const [editing, setEditing] = useState<AccountRow | null>(null);
   const labels = useAccountLabels({ types });
   const qualifiers = useAccountQualifiers({ rows, labels, grouped });
@@ -90,20 +85,6 @@ export function AccountsTable({
     totalLabel: (count) => `${count}`,
     ...(scope ? { scope } : {}),
   });
-  const groups = grouped ? (["accounts", "vat"] as const) : [];
-  const pills: QuickFilterPill[] = groups.length
-    ? [
-        { key: "all", label: common("readFilter.all"), query: undefined },
-        ...groups.map((group) => {
-          const label = t(`groups.${group}`);
-          return {
-            key: group,
-            label,
-            query: `group:${label.includes(" ") ? `"${label}"` : label}`,
-          };
-        }),
-      ]
-    : [];
   const columns = useAccountColumns({
     labels,
     grouped,
@@ -113,15 +94,7 @@ export function AccountsTable({
   });
   return (
     <div className="grid gap-4">
-      <div className={flush ? "px-6" : undefined}>
-        <TableFilterBar
-          q={view.q}
-          query={view.query}
-          keys={view.keys}
-          pills={pills.length ? pills : undefined}
-          onSelectPill={(next) => view.navigate({ patch: { q: next ?? null, page: null } })}
-        />
-      </div>
+      <TableFilterBar q={view.q} query={view.query} keys={view.keys} />
       <PersistedDataTable
         tableId={tableId}
         columns={columns}
@@ -135,7 +108,6 @@ export function AccountsTable({
           : {})}
         emptyText={emptyText}
         pagination={view.pagination}
-        flush={flush}
       />
       {editing ? (
         <AccountDialog

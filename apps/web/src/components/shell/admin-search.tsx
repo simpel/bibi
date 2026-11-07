@@ -12,9 +12,10 @@ import { SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Link, useRouter } from "@/lib/navigation";
+import type { AdminGroup } from "./admin-items";
 import {
-  ADMIN_SEARCH_INDEX,
-  adminSearchHref,
+  adminSearchIndex,
+  adminSectionHref,
   type SearchableEntry,
   searchAdmin,
 } from "./admin-search-index";
@@ -45,7 +46,7 @@ export function AdminSearchField({ query, onQueryChange, first }: AdminSearchFie
             if (event.key === "Escape") onQueryChange("");
             if (event.key === "Enter" && first) {
               event.preventDefault();
-              router.push(adminSearchHref({ entry: first }));
+              router.push(adminSectionHref({ entry: first }));
               onQueryChange("");
             }
           }}
@@ -55,26 +56,23 @@ export function AdminSearchField({ query, onQueryChange, first }: AdminSearchFie
   );
 }
 
-export type UseAdminSearchInput = { query: string; visibleHrefs: ReadonlySet<string> };
+export type UseAdminSearchInput = { query: string; groups: readonly AdminGroup[] };
 
 /** The index with its texts in the user's language, searched for `query`. */
-export function useAdminSearch({ query, visibleHrefs }: UseAdminSearchInput): SearchableEntry[] {
+export function useAdminSearch({ query, groups }: UseAdminSearchInput): SearchableEntry[] {
   const t = useTranslations("adminArea.search.entries");
   const nav = useTranslations("nav");
   const entries = useMemo(
     () =>
-      ADMIN_SEARCH_INDEX.map((entry) => ({
+      adminSearchIndex({ groups }).map((entry) => ({
         ...entry,
         label: t(`${entry.id}.label`),
         keywords: t(`${entry.id}.keywords`),
         pageLabel: nav(entry.page),
       })),
-    [t, nav],
+    [t, nav, groups],
   );
-  return useMemo(
-    () => searchAdmin({ entries, visibleHrefs, query }),
-    [entries, visibleHrefs, query],
-  );
+  return useMemo(() => searchAdmin({ entries, query }), [entries, query]);
 }
 
 export type AdminSearchResultsProps = {
@@ -95,7 +93,7 @@ export function AdminSearchResults({ results, onPick }: AdminSearchResultsProps)
             {results.map((entry) => (
               <SidebarMenuItem key={entry.id}>
                 <SidebarMenuButton asChild className="h-auto py-1.5">
-                  <Link href={adminSearchHref({ entry })} onClick={onPick}>
+                  <Link href={adminSectionHref({ entry })} onClick={onPick}>
                     <span className="grid min-w-0">
                       <span className="truncate">{entry.label}</span>
                       <span className="truncate text-xs text-muted-foreground">

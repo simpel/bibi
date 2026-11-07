@@ -540,12 +540,6 @@
     "developersLink": "Developers"
   },
   "adminArea": {
-    "descriptions": {
-      "types": "The kinds of items you offer, their fields and how rooms can be set up.",
-      "orderFlow": "The statuses an order moves through and what each line does in them.",
-      "runSheets": "Run sheets sent to a responsibility, and who holds each responsibility.",
-      "integrations": "Accounting systems and API keys for your own connections."
-    },
     "search": {
       "label": "Search administration",
       "placeholder": "Search settings",
@@ -557,7 +551,7 @@
           "keywords": "clock time zone daylight venue"
         },
         "domainJoin": {
-          "label": "Join by email domain",
+          "label": "Colleagues can join by email domain",
           "keywords": "domain email colleagues join automatically"
         },
         "members": {
@@ -565,7 +559,7 @@
           "keywords": "people users roles invite permissions"
         },
         "invitations": {
-          "label": "Invitations",
+          "label": "Pending invitations",
           "keywords": "invite sent pending email"
         },
         "plan": {
@@ -581,7 +575,7 @@
           "keywords": "request seat approve decline"
         },
         "types": {
-          "label": "Types and fields",
+          "label": "Types",
           "keywords": "items customers contacts fields capabilities rooms template"
         },
         "setups": {
@@ -625,15 +619,15 @@
           "keywords": "head of kitchen recipient responsible"
         },
         "stripe": {
-          "label": "Stripe",
+          "label": "Stripe payout account",
           "keywords": "card payment connect online payment"
         },
         "deposit": {
-          "label": "Deposit",
+          "label": "Deposits",
           "keywords": "advance percent minimum amount"
         },
         "invoices": {
-          "label": "Invoices",
+          "label": "Invoice provider",
           "keywords": "invoicing invoice provider fortnox stripe"
         },
         "fiscalYear": {
@@ -645,7 +639,7 @@
           "keywords": "chart of accounts bas vat revenue sie"
         },
         "revenueAccounts": {
-          "label": "Revenue accounts by type",
+          "label": "Revenue per item type",
           "keywords": "revenue account item type"
         },
         "fortnox": {
@@ -655,6 +649,10 @@
         "apiKeys": {
           "label": "API keys",
           "keywords": "api rest key integration crm"
+        },
+        "paymentOperator": {
+          "label": "Payment operator",
+          "keywords": "stripe payment operator card connection"
         }
       }
     }

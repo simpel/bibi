@@ -1,22 +1,24 @@
 import { resolveLocale } from "@bibi/i18n";
-import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
+import { AdminSections } from "@/components/admin/admin-sections";
+import { loadAdminPage } from "@/components/admin/load-admin-page";
 import { OrganizationSettings } from "@/features/organization-profile/ui/organization-settings";
 import { pageTitle } from "@/lib/page-metadata";
 
-type OrganizationPageProps = { params: Promise<{ locale: string }> };
+type PageProps = { params: Promise<{ locale: string }> };
 
-export async function generateMetadata({ params }: OrganizationPageProps) {
+export async function generateMetadata({ params }: PageProps) {
   const { locale } = await params;
-  return pageTitle({ locale, namespace: "nav", key: "organization" });
+  return pageTitle({ locale, namespace: "nav", key: "general" });
 }
 
-export default async function OrganizationPage({ params }: OrganizationPageProps) {
+export default async function GeneralPage({ params }: PageProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
+  const { title, show } = await loadAdminPage({ key: "general" });
   return (
-    <SimplePage>
-      <OrganizationSettings locale={locale} />
-    </SimplePage>
+    <AdminSections title={title}>
+      <OrganizationSettings locale={locale} show={show} />
+    </AdminSections>
   );
 }

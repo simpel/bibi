@@ -4,7 +4,7 @@ import { type ApiKeyDto, parseFixedRole } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { type QuickFilterPill, TableFilterBar } from "@/components/data-table/table-filter-bar";
+import { TableFilterBar } from "@/components/data-table/table-filter-bar";
 import type { TableQualifier } from "@/components/data-table/table-filter-query";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
 import { useRouter } from "@/lib/navigation";
@@ -52,7 +52,6 @@ function useApiKeyQualifiers({ apiKeys }: { apiKeys: ApiKeyDto[] }): TableQualif
 export function ApiKeyTable({ apiKeys, canManage }: ApiKeyTableProps) {
   const t = useTranslations("integration.apiKeys");
   const roles = useTranslations("role");
-  const common = useTranslations("common");
   const router = useRouter();
   const [revoking, setRevoking] = useState<ApiKeyDto | null>(null);
   const qualifiers = useApiKeyQualifiers({ apiKeys });
@@ -63,19 +62,10 @@ export function ApiKeyTable({ apiKeys, canManage }: ApiKeyTableProps) {
       `${k.name} ${k.start ?? ""} ${roles(parseFixedRole({ role: k.role }) ?? "unknown")} ${k.createdByName ?? ""}`,
     totalLabel: (count) => `${count}`,
   });
-  const pills: QuickFilterPill[] = [
-    { key: "all", label: common("readFilter.all"), query: undefined },
-    ...PRESETS.map((r) => ({ key: r, label: roles(r), query: `role:${roles(r)}` })),
-  ];
   const columns = useApiKeyColumns({ canManage });
   return (
     <div className="grid gap-4">
-      <TableFilterBar
-        q={view.q}
-        query={view.query}
-        pills={pills}
-        onSelectPill={(next) => view.navigate({ patch: { q: next ?? null, page: null } })}
-      />
+      <TableFilterBar q={view.q} query={view.query} />
       <PersistedDataTable
         tableId="api-key.list"
         columns={columns}

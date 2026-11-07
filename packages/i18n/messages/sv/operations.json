@@ -145,7 +145,7 @@
       "order": "Ordning"
     },
     "flow": {
-      "title": "Flöde",
+      "title": "Flödesregler",
       "description": "Vart bokningar får flyttas och vad en flytt kräver. Alla flyttar bokningar efter de här reglerna på tavlorna; bara du ändrar dem här.",
       "saving": "Sparar…",
       "movesSaved": "Flytterna har sparats.",

@@ -1,7 +1,7 @@
 "use client";
 
 import type { AccountingSettingsDto } from "@bibi/core/schemas";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@bibi/ui";
+import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { AdminSection } from "@/components/admin/admin-section";
 import { useRouter } from "@/lib/navigation";
@@ -29,14 +29,15 @@ export function FiscalYearSetting({ settings, canEdit }: FiscalYearSettingProps)
       onSuccess: () => router.refresh(),
     });
   return (
-    <AdminSection id="fiscal-year" title={t("fields.fiscalYearStartMonth")}>
-      <div className="max-w-xs">
+    <AdminSection id="fiscal-year" title={t("groups.fiscalYear")}>
+      <div className="grid max-w-xs gap-2">
+        <Label htmlFor="fiscal-year-start">{t("fields.fiscalYearStartMonth")}</Label>
         <Select
           value={String(settings.fiscalYearStartMonth)}
           onValueChange={(month) => save({ month })}
           disabled={!canEdit || pending}
         >
-          <SelectTrigger aria-label={t("fields.fiscalYearStartMonth")}>
+          <SelectTrigger id="fiscal-year-start">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -48,6 +49,7 @@ export function FiscalYearSetting({ settings, canEdit }: FiscalYearSettingProps)
           </SelectContent>
         </Select>
       </div>
+      {canEdit ? null : <p className="text-sm text-muted-foreground">{t("readOnly")}</p>}
     </AdminSection>
   );
 }

@@ -1,27 +1,26 @@
 import { resolveLocale } from "@bibi/i18n";
-import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
+import { AdminSections } from "@/components/admin/admin-sections";
+import { loadAdminPage } from "@/components/admin/load-admin-page";
+import { InvitationList } from "@/features/member/ui/invitation-list";
 import { MemberList } from "@/features/member/ui/member-list";
-import { readCursor } from "@/lib/page-cursor";
 import { pageTitle } from "@/lib/page-metadata";
 
-type MembersPageProps = {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<{ cursor?: string | string[] }>;
-};
+type PageProps = { params: Promise<{ locale: string }> };
 
-export async function generateMetadata({ params }: MembersPageProps) {
+export async function generateMetadata({ params }: PageProps) {
   const { locale } = await params;
   return pageTitle({ locale, namespace: "nav", key: "members" });
 }
 
-export default async function MembersPage({ params, searchParams }: MembersPageProps) {
+export default async function MembersPage({ params }: PageProps) {
   const locale = resolveLocale({ value: (await params).locale });
-  const { cursor } = await searchParams;
   setRequestLocale(locale);
+  const { title, show } = await loadAdminPage({ key: "members" });
   return (
-    <SimplePage>
-      <MemberList locale={locale} cursor={readCursor({ value: cursor })} />
-    </SimplePage>
+    <AdminSections title={title}>
+      {show.has("members") ? <MemberList locale={locale} /> : null}
+      {show.has("invitations") ? <InvitationList locale={locale} /> : null}
+    </AdminSections>
   );
 }

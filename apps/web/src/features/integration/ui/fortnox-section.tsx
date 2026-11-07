@@ -1,15 +1,19 @@
 import type { IntegrationConnectionDto } from "@bibi/core/schemas";
-import { Card, CardAction, CardContent, CardHeader, CardTitle, FortnoxLogo } from "@bibi/ui";
+import { FortnoxLogo } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { AdminSection } from "@/components/admin/admin-section";
 import { ConnectFortnoxButton } from "./connect-fortnox-button";
 import { DisconnectFortnoxButton } from "./disconnect-fortnox-button";
+import { IntegrationNotice, type IntegrationOutcome } from "./integration-notice";
 import { IntegrationStatusBadge } from "./integration-status-badge";
 
-export type FortnoxCardProps = {
+export type FortnoxSectionProps = {
   connection: IntegrationConnectionDto;
   canEdit: boolean;
   /** The connect date, written on the server in the user's format. */
   connectedOn: string | null;
+  /** What happened when Fortnox sent the admin back, shown inside the section. */
+  outcome: IntegrationOutcome | null;
 };
 
 type CompanyFactsProps = { facts: { label: string; value: string | null }[] };
@@ -29,7 +33,12 @@ function CompanyFacts({ facts }: CompanyFactsProps) {
 }
 
 /** The organization's Fortnox connection: status, company and the actions that fit the status. */
-export async function FortnoxCard({ connection, canEdit, connectedOn }: FortnoxCardProps) {
+export async function FortnoxSection({
+  connection,
+  canEdit,
+  connectedOn,
+  outcome,
+}: FortnoxSectionProps) {
   const t = await getTranslations("integration.fortnox");
   const { status, configured } = connection;
   const hasGrant = status === "CONNECTED" || status === "EXPIRED";
@@ -39,28 +48,32 @@ export async function FortnoxCard({ connection, canEdit, connectedOn }: FortnoxC
     { label: t("connectedAt"), value: connectedOn },
   ].filter((fact) => status === "CONNECTED" && fact.value);
   return (
-    <Card className="flex h-full flex-col shadow-none">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <FortnoxLogo className="size-6" aria-hidden />
-          {t("name")}
-        </CardTitle>
-        <CardAction>
+    <AdminSection
+      id="fortnox"
+      title={t("name")}
+      description={t("description")}
+      actions={
+        <>
           <IntegrationStatusBadge status={status} />
-        </CardAction>
-      </CardHeader>
-      <CardContent className="flex flex-1 flex-col gap-4 text-sm text-muted-foreground">
-        <p>{t(`hint.${status}`)}</p>
+          {canEdit ? (
+            <>
+              <ConnectFortnoxButton reconnect={hasGrant} disabled={!configured} />
+              {hasGrant ? <DisconnectFortnoxButton /> : null}
+            </>
+          ) : null}
+        </>
+      }
+    >
+      <div className="grid gap-4 text-sm text-muted-foreground">
+        {outcome ? <IntegrationNotice outcome={outcome} /> : null}
+        <div className="flex items-start gap-3">
+          <FortnoxLogo className="size-6 shrink-0" aria-hidden />
+          <p>{t(`hint.${status}`)}</p>
+        </div>
         <CompanyFacts facts={facts} />
         {status === "CONNECTED" ? <p>{t("reconnectNote")}</p> : null}
         {configured ? <p>{t("adminNote")}</p> : <p>{t("notConfigured")}</p>}
-        {canEdit ? (
-          <div className="mt-auto flex flex-wrap gap-2">
-            <ConnectFortnoxButton reconnect={hasGrant} disabled={!configured} />
-            {hasGrant ? <DisconnectFortnoxButton /> : null}
-          </div>
-        ) : null}
-      </CardContent>
-    </Card>
+      </div>
+    </AdminSection>
   );
 }

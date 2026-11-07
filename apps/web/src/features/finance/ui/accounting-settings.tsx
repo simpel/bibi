@@ -1,9 +1,8 @@
 import { getAccountingSettings } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
-import { AdminHeader } from "@/components/admin/admin-header";
-import { AdminPage } from "@/components/admin/admin-page";
 import { AdminSection } from "@/components/admin/admin-section";
+import type { AdminSectionId } from "@/components/shell/admin-sections";
 import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { loadEntityTypesOf } from "@/server/load-entity-types";
@@ -14,45 +13,67 @@ import { AccountsTable } from "./accounts-table";
 import { FiscalYearSetting } from "./fiscal-year-setting";
 import { RevenueAccountsSection } from "./revenue-accounts-section";
 
-export type AccountingSettingsProps = { locale: Locale };
+export type AccountingSettingsProps = { locale: Locale; show: ReadonlySet<AdminSectionId> };
 
 /** `/admin/accounting`: the accounts the SIE export books to (ADR 0077 decision 4). */
-export async function AccountingSettings({ locale }: AccountingSettingsProps) {
+export async function AccountingSettings({ locale, show }: AccountingSettingsProps) {
   const [t, abilities, settingsResult, itemTypes] = await Promise.all([
     getTranslations("finance.accounting"),
     getCallerAbilities(),
     runOperation({ operation: getAccountingSettings, input: {} }),
     loadEntityTypesOf({ base: "ITEM" }),
   ]);
-  const header = <AdminHeader title={t("title")} description={t("description")} />;
-  const error = !settingsResult.ok ? settingsResult.error : !itemTypes.ok ? itemTypes.error : null;
-  if (error || !settingsResult.ok || !itemTypes.ok) {
+  if (!settingsResult.ok || !itemTypes.ok) {
+    const error = !settingsResult.ok
+      ? settingsResult.error
+      : !itemTypes.ok
+        ? itemTypes.error
+        : null;
+    const state = error ? (
+      <ErrorState inline errorKey={handleLoadError({ error, locale })} />
+    ) : null;
     return (
-      <AdminPage header={header}>
-        {error ? <ErrorState inline errorKey={handleLoadError({ error, locale })} /> : null}
-      </AdminPage>
+      <>
+        {show.has("fiscalYear") ? (
+          <AdminSection id="fiscal-year" title={t("fields.fiscalYearStartMonth")}>
+            {state}
+          </AdminSection>
+        ) : null}
+        {show.has("accounts") ? (
+          <AdminSection id="accounts" title={t("groups.accounts")}>
+            {state}
+          </AdminSection>
+        ) : null}
+        {show.has("revenueAccounts") ? (
+          <AdminSection id="revenue-accounts" title={t("groups.revenueByType")}>
+            {state}
+          </AdminSection>
+        ) : null}
+      </>
     );
   }
   const settings = settingsResult.value;
   const types = itemTypes.value.items.map(({ id, name }) => ({ id, name }));
   const canEdit = can({ abilities, permission: "finance:write" });
   return (
-    <AdminPage header={header}>
-      <FiscalYearSetting settings={settings} canEdit={canEdit} />
-      <AdminSection id="accounts" title={t("groups.accounts")} flush>
-        <AccountsTable
-          tableId="finance.accounts"
-          rows={accountRows({ settings })}
-          settings={settings}
-          types={types}
-          grouped
-          emptyText={t("empty")}
-          canEdit={canEdit}
-          flush
-        />
-      </AdminSection>
-      <RevenueAccountsSection settings={settings} types={types} canEdit={canEdit} />
-      {canEdit ? null : <p className="text-sm text-muted-foreground">{t("readOnly")}</p>}
-    </AdminPage>
+    <>
+      {show.has("fiscalYear") ? <FiscalYearSetting settings={settings} canEdit={canEdit} /> : null}
+      {show.has("accounts") ? (
+        <AdminSection id="accounts" title={t("groups.accounts")}>
+          <AccountsTable
+            tableId="finance.accounts"
+            rows={accountRows({ settings })}
+            settings={settings}
+            types={types}
+            grouped
+            emptyText={t("empty")}
+            canEdit={canEdit}
+          />
+        </AdminSection>
+      ) : null}
+      {show.has("revenueAccounts") ? (
+        <RevenueAccountsSection settings={settings} types={types} canEdit={canEdit} />
+      ) : null}
+    </>
   );
 }
