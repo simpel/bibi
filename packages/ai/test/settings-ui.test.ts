@@ -3,28 +3,41 @@ import { resolveToolUi } from "../src/ui-contract/resolve-tool-ui";
 
 const mcp = ({ value }: { value: unknown }) => ({ content: [], structuredContent: value });
 
-const paymentSettings = {
+const payment = {
   id: null,
   depositPercent: 30,
   depositMinimumMinor: null,
   invoiceProvider: null,
   paymentOperator: "STRIPE",
 };
+const empty = { organization: null, payment: null, accounting: null, seats: null };
 
-describe("settings cards", () => {
-  it("answers a settings read and a settings change with the same editable card", () => {
+describe("setting cards", () => {
+  it("shows exactly the settings the view was asked for, one card each", () => {
+    const view = {
+      ...empty,
+      keys: ["timeZone"],
+      organization: { timeZone: "Europe/Stockholm", emailDomain: null, domainJoin: true },
+    };
+    const ui = resolveToolUi({ toolName: "settings_view", output: mcp({ value: view }) });
+    expect(ui).toEqual({ component: "setting-cards", props: { view } });
+  });
+
+  it("shows an owner's read or change as its own settings", () => {
     for (const toolName of ["paymentSettings_get", "paymentSettings_update"]) {
-      const ui = resolveToolUi({ toolName, output: mcp({ value: paymentSettings }) });
+      const ui = resolveToolUi({ toolName, output: mcp({ value: payment }) });
       expect(ui).toEqual({
-        component: "payment-settings-card",
-        props: { settings: paymentSettings },
+        component: "setting-cards",
+        props: {
+          view: { ...empty, keys: ["paymentOperator", "deposit", "invoices"], payment },
+        },
       });
     }
   });
 
   it("falls back to JSON when the result is not the settings shape", () => {
     const ui = resolveToolUi({
-      toolName: "accountingSettings_get",
+      toolName: "settings_view",
       output: mcp({ value: { unexpected: true } }),
     });
     expect(ui.component).toBe("json");

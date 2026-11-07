@@ -28,5 +28,10 @@ export const SELF_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   workingHours_set: "working hours are edited in the welcome flow (#418); shown as JSON",
   file_upload: "returns only a storage key; the avatar is shown by the profile UI",
   file_get: "base64 bytes, not something to render as a card",
+  organizationProfile_get:
+    "the organization's details (legal, contact); its settings are shown by settings_view; JSON",
+  organizationProfile_update:
+    "the organization's details are edited in the welcome flow (#418); settings_view shows its " +
+    "time zone as a setting card; JSON",
   organizationProfile_setSetupStatus: "first setup bookkeeping (ADR 0061), not a tool card",
 };

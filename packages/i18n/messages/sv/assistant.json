@@ -357,10 +357,12 @@
       "billing": {
         "singular": "Bibi-abonnemang",
         "trialEndsAt": "Provperioden slutar {date}.",
-        "seats": "{used} av {total} platser används, {held} väntar"
+        "seats": "{used} av {total} platser används, {held} väntar",
+        "open": "Öppna faktureringen"
       },
       "settings": {
-        "open": "Öppna i administrationen"
+        "open": "Öppna i administrationen",
+        "none": "Det finns inga inställningar här som du har behörighet att se."
       },
       "open": "Öppna",
       "openVenue": "Öppna anläggningen",

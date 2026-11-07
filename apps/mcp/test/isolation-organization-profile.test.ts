@@ -41,4 +41,23 @@ describe("organization profile isolation (ADR 0061)", () => {
     expect(await profileOf({ client: b })).toMatchObject({ domainJoin: false });
     expect(await profileOf({ client: a })).toMatchObject({ legalName: "A AB", domainJoin: true });
   });
+
+  it("reads only the caller's own settings through the settings view (ADR 0071)", async () => {
+    const a = await connect({ context: testContext() });
+    const b = await connect({ context: testContext() });
+    await call({
+      client: a,
+      name: "organizationProfile_update",
+      args: { timeZone: "Europe/London" },
+    });
+    await call({ client: a, name: "paymentSettings_update", args: { depositPercent: 40 } });
+    const seen = await call({
+      client: b,
+      name: "settings_view",
+      args: { keys: ["timeZone", "deposit"] },
+    });
+    expect(seen.data).toMatchObject({ keys: ["timeZone", "deposit"] });
+    expect(seen.data).not.toMatchObject({ organization: { timeZone: "Europe/London" } });
+    expect(seen.data).toMatchObject({ payment: { depositPercent: null } });
+  });
 });

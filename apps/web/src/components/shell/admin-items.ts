@@ -182,3 +182,16 @@ export function visibleSections({ permissions, key }: VisibleSectionsInput): Set
     .find((one) => one.key === key);
   return new Set(found?.sections.map((section) => section.id) ?? []);
 }
+
+export type AdminSectionLinkInput = { id: AdminSectionId };
+
+/** The page and anchor of a section (`/admin/general#time-zone`), or null for an unknown id. */
+export function adminSectionLink({ id }: AdminSectionLinkInput): string | null {
+  for (const group of ADMIN_GROUPS) {
+    for (const one of group.pages) {
+      const section = one.sections.find((candidate) => candidate.id === id);
+      if (section) return `${one.href}#${section.anchor}`;
+    }
+  }
+  return null;
+}

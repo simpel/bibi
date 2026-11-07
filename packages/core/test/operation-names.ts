@@ -20,6 +20,7 @@ const NAMES = [
   "orderTemplate.list",
   "orderTemplate.update",
   "configuration.importTemplate",
+  "settings.view",
   "contact.archive",
   "contact.create",
   "contact.get",

@@ -357,10 +357,12 @@
       "billing": {
         "singular": "Bibi subscription",
         "trialEndsAt": "The free trial ends {date}.",
-        "seats": "{used} of {total} seats in use, {held} waiting"
+        "seats": "{used} of {total} seats in use, {held} waiting",
+        "open": "Open billing"
       },
       "settings": {
-        "open": "Open in administration"
+        "open": "Open in administration",
+        "none": "There are no settings here you have access to."
       },
       "open": "Open",
       "openVenue": "Open the venue",

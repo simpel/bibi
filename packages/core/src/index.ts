@@ -106,6 +106,7 @@ export * from "./features/responsibility/write-operations";
 export * from "./features/run-sheet/operations";
 export * from "./features/run-sheet-definition/read-operations";
 export * from "./features/run-sheet-definition/write-operations";
+export * from "./features/settings/operations";
 export * from "./features/setup/operations";
 export * from "./features/skill/lifecycle-operations";
 export * from "./features/skill/operations";

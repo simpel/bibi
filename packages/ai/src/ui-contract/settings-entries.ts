@@ -1,50 +1,82 @@
 import {
   AccountingSettingsSchema,
-  OrganizationProfileSchema,
   PaymentSettingsSchema,
+  type SettingKey,
+  SettingsOrganizationSchema,
+  SettingsViewSchema,
 } from "@bibi/core/schemas";
 import type { z } from "zod";
+import { BillingWireSchema } from "./billing-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 
-/** The organization settings as tool results carry them: plain JSON, no dates to convert. */
-export type OrganizationSettingsWire = z.infer<typeof OrganizationProfileSchema>;
-export type PaymentSettingsWire = z.infer<typeof PaymentSettingsSchema>;
-export type AccountingSettingsWire = z.infer<typeof AccountingSettingsSchema>;
+/** The settings view as tool results carry it: plain JSON, no dates to convert. */
+export type SettingsViewWire = z.infer<typeof SettingsViewSchema>;
 
 /**
- * Props of the settings cards: each shows one administration page's settings, editable in place
- * by the user (the card saves through the same server actions as the page, with a toast).
+ * One card per setting (`view.keys`), each editable in place by the user: the card saves through
+ * the same server action as its administration section, with the same toast.
  */
-export type SettingsUiProps = {
-  "organization-settings-card": { profile: OrganizationSettingsWire };
-  "payment-settings-card": { settings: PaymentSettingsWire };
-  "accounting-settings-card": { settings: AccountingSettingsWire };
+export type SettingsUiProps = { "setting-cards": { view: SettingsViewWire } };
+
+const EMPTY: Omit<SettingsViewWire, "keys"> = {
+  organization: null,
+  payment: null,
+  accounting: null,
+  seats: null,
 };
 
-const organizationSettingsCard = uiEntry({
-  component: "organization-settings-card",
-  schema: OrganizationProfileSchema,
-  toProps: ({ value }) => ({ profile: value }),
+type ViewInput = Partial<Omit<SettingsViewWire, "keys">> & { keys: SettingKey[] };
+
+const view = ({ keys, ...groups }: ViewInput) => ({ view: { ...EMPTY, ...groups, keys } });
+
+const settingsView = uiEntry({
+  component: "setting-cards",
+  schema: SettingsViewSchema,
+  toProps: ({ value }) => ({ view: value }),
 });
-const paymentSettingsCard = uiEntry({
-  component: "payment-settings-card",
+/** An owner read or change of the payment settings: its three settings, one card each. */
+const paymentSettings = uiEntry({
+  component: "setting-cards",
   schema: PaymentSettingsSchema,
-  toProps: ({ value }) => ({ settings: value }),
+  toProps: ({ value }) =>
+    view({ keys: ["paymentOperator", "deposit", "invoices"], payment: value }),
 });
-const accountingSettingsCard = uiEntry({
-  component: "accounting-settings-card",
+const accountingSettings = uiEntry({
+  component: "setting-cards",
   schema: AccountingSettingsSchema,
-  toProps: ({ value }) => ({ settings: value }),
+  toProps: ({ value }) => view({ keys: ["fiscalYear", "accounts"], accounting: value }),
+});
+const domainJoin = uiEntry({
+  component: "setting-cards",
+  schema: SettingsOrganizationSchema,
+  toProps: ({ value }) => {
+    const { timeZone, emailDomain, domainJoin } = value;
+    return view({ keys: ["domainJoin"], organization: { timeZone, emailDomain, domainJoin } });
+  },
+});
+const seats = uiEntry({
+  component: "setting-cards",
+  schema: BillingWireSchema,
+  toProps: ({ value }) =>
+    view({
+      keys: ["seats"],
+      seats: {
+        ...value.seats,
+        autoAssignSeats: value.autoAssignSeats,
+        currency: value.prices.currency,
+        seatMonthlyMinor: value.prices.seatMonthlyMinor,
+      },
+    }),
 });
 
-/** Tool → settings card: reading a setting and changing it both answer with the editable card. */
+/** Tool → setting cards: a settings read and a settings change both answer with the cards. */
 export const SETTINGS_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
-  organizationProfile_get: organizationSettingsCard,
-  organizationProfile_update: organizationSettingsCard,
-  organizationProfile_setDomainJoin: organizationSettingsCard,
-  paymentSettings_get: paymentSettingsCard,
-  paymentSettings_update: paymentSettingsCard,
-  accountingSettings_get: accountingSettingsCard,
-  accountingSettings_update: accountingSettingsCard,
+  settings_view: settingsView,
+  organizationProfile_setDomainJoin: domainJoin,
+  paymentSettings_get: paymentSettings,
+  paymentSettings_update: paymentSettings,
+  accountingSettings_get: accountingSettings,
+  accountingSettings_update: accountingSettings,
+  billing_update: seats,
 };
