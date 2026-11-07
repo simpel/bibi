@@ -23,17 +23,10 @@ export const SELF_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   profile_setLocale:
     "the UI and email language is switched via the header menu and on /profile; JSON",
   accountingExport_list: "the export history is on the Financials page; shown as JSON",
-  accountingSettings_get: "accounting settings are edited on /admin/accounting (ADR 0077); JSON",
-  accountingSettings_update: "accounting settings are edited on /admin/accounting (ADR 0077); JSON",
-  paymentSettings_get: "payment settings are edited on Settings → Integrations (ADR 0090); JSON",
-  paymentSettings_update: "payment settings are edited on Settings → Integrations (ADR 0090); JSON",
   deposit_suggest: "a suggested amount the assistant reads out; no card of its own (ADR 0090)",
   workingHours_get: "working hours are edited in the welcome flow (#418); shown as JSON",
   workingHours_set: "working hours are edited in the welcome flow (#418); shown as JSON",
   file_upload: "returns only a storage key; the avatar is shown by the profile UI",
   file_get: "base64 bytes, not something to render as a card",
-  organizationProfile_get: "organization details are edited in the welcome flow (#418); JSON",
-  organizationProfile_update: "organization details are edited in the welcome flow (#418); JSON",
   organizationProfile_setSetupStatus: "first setup bookkeeping (ADR 0061), not a tool card",
-  organizationProfile_setDomainJoin: "an organization setting (ADR 0078), edited in settings; JSON",
 };

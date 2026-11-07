@@ -6,10 +6,12 @@ import { useTranslations } from "next-intl";
 import type { VenueShortcut } from "@/features/venue/actions";
 import { canPermission } from "@/lib/can";
 import { useRouter } from "@/lib/navigation";
+import { AdminCommandGroup } from "./admin-command-group";
 import { ACTION_ENTRIES, type CommandEntry, NAVIGATE_ENTRIES } from "./command-entries";
 import { VenueCommandGroup } from "./venue-command-group";
 
 export type CommandGroupsProps = {
+  query: string;
   venues: VenueShortcut[];
   permissions: PermissionSet;
   onDone: () => void;
@@ -39,8 +41,11 @@ function EntryGroup({ heading, entries, permissions, onGo }: EntryGroupProps) {
   );
 }
 
-/** Navigation and quick actions, all plain router pushes (no LLM), filtered by permissions. */
-export function CommandGroups({ venues, permissions, onDone }: CommandGroupsProps) {
+/**
+ * Navigation, quick actions and settings sections, all plain router pushes (no LLM), filtered by
+ * permissions.
+ */
+export function CommandGroups({ query, venues, permissions, onDone }: CommandGroupsProps) {
   const t = useTranslations("commandBar");
   const router = useRouter();
   const go = ({ href }: { href: string }) => {
@@ -61,6 +66,7 @@ export function CommandGroups({ venues, permissions, onDone }: CommandGroupsProp
         permissions={permissions}
         onGo={go}
       />
+      <AdminCommandGroup query={query} permissions={permissions} onGo={go} />
       <VenueCommandGroup venues={venues} onGo={go} />
     </>
   );

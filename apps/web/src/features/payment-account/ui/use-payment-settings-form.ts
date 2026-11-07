@@ -34,6 +34,11 @@ const paymentSettingsSchema = formSchema({
 
 export type PaymentSettingsDefaultsInput = { settings: PaymentSettingsDto };
 
+export type UsePaymentSettingsFormInput = PaymentSettingsDefaultsInput & {
+  /** After a save; without it the page refreshes. The assistant's card keeps the new value. */
+  onSaved?: ((input: { value: PaymentSettingsDto }) => void) | undefined;
+};
+
 /** Saved settings as raw form text. */
 export function paymentSettingsDefaults({
   settings,
@@ -47,7 +52,7 @@ export function paymentSettingsDefaults({
 }
 
 /** Form state for `paymentSettings.update`. */
-export function usePaymentSettingsForm({ settings }: PaymentSettingsDefaultsInput) {
+export function usePaymentSettingsForm({ settings, onSaved }: UsePaymentSettingsFormInput) {
   const t = useTranslations("paymentSettings");
   const common = useTranslations("common");
   const router = useRouter();
@@ -59,7 +64,7 @@ export function usePaymentSettingsForm({ settings }: PaymentSettingsDefaultsInpu
     form,
     action: ({ values }) => updatePaymentSettingsAction({ input: values }),
     messages: { pending: common("saving"), success: t("saved") },
-    onSuccess: () => router.refresh(),
+    onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
   });
   return { form, submit, pending };
 }

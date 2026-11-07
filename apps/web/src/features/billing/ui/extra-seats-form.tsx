@@ -1,5 +1,6 @@
 "use client";
 
+import type { BillingDto } from "@bibi/core";
 import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
@@ -10,12 +11,14 @@ export type ExtraSeatsFormProps = {
   /** One extra seat a month, in the user's money format. */
   seatPrice: string;
   canEdit: boolean;
+  /** After a save; without it the page refreshes. The assistant's card keeps the new value. */
+  onSaved?: (input: { value: BillingDto }) => void;
 };
 
 /** Paid seats beyond the included ones; never below what members use (core says so). */
-export function ExtraSeatsForm({ extraSeats, seatPrice, canEdit }: ExtraSeatsFormProps) {
+export function ExtraSeatsForm({ extraSeats, seatPrice, canEdit, onSaved }: ExtraSeatsFormProps) {
   const t = useTranslations("billing.settings");
-  const { form, submit, pending } = useExtraSeatsForm({ extraSeats });
+  const { form, submit, pending } = useExtraSeatsForm({ extraSeats, onSaved });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid max-w-xs gap-3">

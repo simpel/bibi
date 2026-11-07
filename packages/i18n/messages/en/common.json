@@ -233,7 +233,8 @@
     "createItem": "Create item",
     "assistant": "Assistant",
     "askAssistant": "Ask the assistant: “{query}”",
-    "openAssistant": "Open the assistant"
+    "openAssistant": "Open the assistant",
+    "settings": "Settings"
   },
   "search": {
     "placeholder": "Search venues, items and more...",
@@ -541,10 +542,6 @@
   },
   "adminArea": {
     "search": {
-      "label": "Search administration",
-      "placeholder": "Search settings",
-      "noResults": "No matches.",
-      "results": "Search results",
       "entries": {
         "timeZone": {
           "label": "Time zone",

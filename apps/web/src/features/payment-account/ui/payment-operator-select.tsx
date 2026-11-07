@@ -1,9 +1,9 @@
 "use client";
 
-import type { PaymentOperator } from "@bibi/core";
+import type { PaymentOperator, PaymentSettingsDto } from "@bibi/core";
 import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { updatePaymentSettingsAction } from "../actions";
@@ -17,6 +17,8 @@ export type PaymentOperatorSelectProps = {
   value: OperatorChoice;
   canEdit: boolean;
   options: PaymentOperatorOption[];
+  /** After a save; without it the page refreshes. The assistant's card keeps the new value. */
+  onSaved?: (input: { value: PaymentSettingsDto }) => void;
 };
 
 const isChoice = ({ value, options }: { value: string; options: PaymentOperatorOption[] }) =>
@@ -28,12 +30,15 @@ export function PaymentOperatorSelect({
   value,
   canEdit,
   options,
+  onSaved,
 }: PaymentOperatorSelectProps) {
   const t = useTranslations("paymentSettings");
   const common = useTranslations("common");
   const router = useRouter();
   const { run, pending } = useToastAction();
   const [current, setCurrent] = useState(value);
+  // Unique per render: the Payments page and chat cards can show this select at the same time.
+  const id = useId();
   const choose = ({ next }: { next: string }) => {
     const choice = isChoice({ value: next, options });
     if (!choice || choice === current) return;
@@ -45,19 +50,19 @@ export function PaymentOperatorSelect({
           input: { paymentOperator: choice === "AUTO" ? null : choice },
         }),
       messages: { pending: common("saving"), success: t("saved") },
-      onSuccess: () => router.refresh(),
+      onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
       onError: () => setCurrent(previous),
     });
   };
   return (
     <div className="grid max-w-sm gap-2">
-      <Label htmlFor="payment-operator-choice">{label}</Label>
+      <Label htmlFor={id}>{label}</Label>
       <Select
         value={current}
         onValueChange={(next) => choose({ next })}
         disabled={!canEdit || pending}
       >
-        <SelectTrigger id="payment-operator-choice">
+        <SelectTrigger id={id}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

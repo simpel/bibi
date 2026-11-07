@@ -35,29 +35,39 @@ function SaveRow({ canEdit, pending }: Pick<SectionProps, "canEdit" | "pending">
   );
 }
 
+export type DepositFieldsProps = Pick<SectionProps, "form" | "canEdit">;
+
+/** The deposit rule's two fields; shared with the assistant's payment settings card. */
+export function DepositFields({ form, canEdit }: DepositFieldsProps) {
+  const t = useTranslations("paymentSettings");
+  return (
+    <fieldset disabled={!canEdit} className="grid max-w-lg gap-4">
+      <TextField
+        form={form}
+        name="depositPercent"
+        label={t("fields.depositPercent")}
+        type="number"
+        step="1"
+        placeholder={t("placeholders.none")}
+      />
+      <TextField
+        form={form}
+        name="depositMinimumMinor"
+        label={t("fields.depositMinimum")}
+        type="number"
+        step="0.01"
+        placeholder={t("placeholders.none")}
+      />
+      <p className="-mt-2 text-xs text-muted-foreground">{t("hints.depositMinimum")}</p>
+    </fieldset>
+  );
+}
+
 function DepositSection({ form, canEdit, save, pending }: SectionProps) {
   const t = useTranslations("paymentSettings");
   return (
     <AdminSection section="deposit" description={t("deposit.description")}>
-      <fieldset disabled={!canEdit} className="grid max-w-lg gap-4">
-        <TextField
-          form={form}
-          name="depositPercent"
-          label={t("fields.depositPercent")}
-          type="number"
-          step="1"
-          placeholder={t("placeholders.none")}
-        />
-        <TextField
-          form={form}
-          name="depositMinimumMinor"
-          label={t("fields.depositMinimum")}
-          type="number"
-          step="0.01"
-          placeholder={t("placeholders.none")}
-        />
-        <p className="-mt-2 text-xs text-muted-foreground">{t("hints.depositMinimum")}</p>
-      </fieldset>
+      <DepositFields form={form} canEdit={canEdit} />
       {save ? <SaveRow canEdit={canEdit} pending={pending} /> : null}
     </AdminSection>
   );

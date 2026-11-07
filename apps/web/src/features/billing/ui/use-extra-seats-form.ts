@@ -1,3 +1,4 @@
+import type { BillingDto } from "@bibi/core";
 import { BillingUpdateInputSchema } from "@bibi/core/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -21,10 +22,14 @@ const extraSeatsSchema = formSchema({
   }),
 });
 
-export type UseExtraSeatsFormInput = { extraSeats: number };
+export type UseExtraSeatsFormInput = {
+  extraSeats: number;
+  /** After a save; without it the page refreshes. The assistant's card keeps the new value. */
+  onSaved?: ((input: { value: BillingDto }) => void) | undefined;
+};
 
 /** Form state for `billing.update` with only the extra seats. */
-export function useExtraSeatsForm({ extraSeats }: UseExtraSeatsFormInput) {
+export function useExtraSeatsForm({ extraSeats, onSaved }: UseExtraSeatsFormInput) {
   const t = useTranslations("billing.settings");
   const common = useTranslations("common");
   const router = useRouter();
@@ -36,7 +41,7 @@ export function useExtraSeatsForm({ extraSeats }: UseExtraSeatsFormInput) {
     form,
     action: ({ values }) => updateBillingAction({ input: values }),
     messages: { pending: common("saving"), success: t("seatsSaved") },
-    onSuccess: () => router.refresh(),
+    onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
   });
   return { form, submit, pending };
 }
