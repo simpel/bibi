@@ -11,6 +11,9 @@ const IGNORED = new Set([
   "archivedAt",
 ]);
 
+/** Derived at any depth, never changed on their own: a capacity change already shows (ADR 0099). */
+const DERIVED = new Set(["effectiveCapacity", "capacitySource"]);
+
 type Json = unknown;
 
 /** The value as a plain object, or null for anything else (arrays, dates, leaves). */
@@ -50,6 +53,7 @@ function flatten({ value, prefix }: { value: Json; prefix: string }): Map<string
   }
   for (const [name, child] of Object.entries(object)) {
     if (!prefix && IGNORED.has(name)) continue;
+    if (DERIVED.has(name)) continue;
     const path = prefix ? `${prefix}.${name}` : name;
     for (const [leaf, leafValue] of flatten({ value: child, prefix: path }))
       out.set(leaf, leafValue);
