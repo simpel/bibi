@@ -196,7 +196,8 @@
       "catalog": "Katalog",
       "orders": "Bokningar",
       "money": "Pengar och kopplingar"
-    }
+    },
+    "layouts": "Möbleringar"
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",

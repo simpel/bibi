@@ -14,7 +14,7 @@ type Translate = Awaited<ReturnType<typeof getTranslations<"calendar">>>;
 
 /** One fact to pick a row by: the most people a setup takes, else the venue when there are many. */
 function detailOf({ item, venue, t }: { item: ItemDto; venue?: string; t: Translate }) {
-  const capacity = Math.max(0, ...item.setups.map((setup) => setup.capacity));
+  const capacity = Math.max(0, ...item.setups.map((setup) => setup.effectiveCapacity ?? 0));
   if (capacity > 0) return t("capacity", { count: capacity });
   return venue;
 }

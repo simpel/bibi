@@ -13,6 +13,7 @@ export type SetupsSectionProps = {
 /** SETUPS capability: one capacity per setup of the organization; empty = not used. */
 export function SetupsSection({ form, setups }: SetupsSectionProps) {
   const t = useTranslations("item");
+  const layoutSetups = form.getValues("layoutSetups");
   return (
     <fieldset className="grid gap-4">
       <legend className="mb-1 text-sm font-semibold">{t("sections.setups")}</legend>
@@ -21,7 +22,14 @@ export function SetupsSection({ form, setups }: SetupsSectionProps) {
       </p>
       <div className="grid gap-4 sm:grid-cols-2">
         {setups.map(({ id, name }) => (
-          <TextField key={id} form={form} name={`setups.${id}`} label={name} type="number" />
+          <TextField
+            key={id}
+            form={form}
+            name={`setups.${id}`}
+            label={name}
+            type="number"
+            placeholder={layoutSetups.includes(id) ? t("capacityFromLayoutPlaceholder") : undefined}
+          />
         ))}
       </div>
     </fieldset>

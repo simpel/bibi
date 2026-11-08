@@ -183,7 +183,10 @@
       "description": "When this item is available, for example a person or a room. It never blocks a booking.",
       "followsVenue": "No own hours: this item follows its venue's opening hours.",
       "followHint": "Switch off every day and remove all exceptions to follow the venue's opening hours again."
-    }
+    },
+    "layouts": "Layouts",
+    "capacityFromLayout": "{capacity} (from the layout)",
+    "capacityFromLayoutPlaceholder": "From the layout"
   },
   "itemState": {
     "flags": {
@@ -622,5 +625,104 @@
     "INCLUDED": "Included",
     "EXTRA": "Extra",
     "REPLACES": "Replaces"
+  },
+  "floorPlan": {
+    "tabs": "Floor plan and layouts",
+    "tabsPlan": "Floor plan",
+    "dock": "Furniture",
+    "add": "Add {name}",
+    "pieceName": "{kind} {label}, {seats, plural, one {# seat} other {# seats}}",
+    "drawingOf": "Layout for {setup}",
+    "metres": "{value} m",
+    "undo": "Undo",
+    "redo": "Redo",
+    "saved": "Layout saved",
+    "savedState": "Saved",
+    "leave": {
+      "title": "Leave without saving?",
+      "description": "Your changes to this layout are not saved yet.",
+      "confirm": "Discard changes"
+    },
+    "size": {
+      "label": "Size",
+      "width": "Width (cm)",
+      "depth": "Depth (cm)",
+      "diameter": "Diameter (cm)",
+      "value": "{width} × {depth} cm",
+      "roundValue": "Ø {width} cm",
+      "reset": "Reset to the library's size and chairs"
+    },
+    "chairs": {
+      "label": "Chairs",
+      "fewer": "One chair less",
+      "more": "One chair more",
+      "count": "{count, plural, one {# chair} other {# chairs}}",
+      "hint": "Chairs on each side of the table.",
+      "sides": {
+        "top": "Chairs on the top side",
+        "right": "Chairs on the right end",
+        "bottom": "Chairs on the bottom side",
+        "left": "Chairs on the left end"
+      }
+    },
+    "selection": {
+      "label": "Selected furniture",
+      "count": "{count, plural, one {# piece} other {# pieces}}",
+      "rotate": "Rotate 90° (R). Shift-click for 15°.",
+      "duplicate": "Duplicate (Ctrl+D)",
+      "delete": "Delete (Del)"
+    },
+    "summary": {
+      "seats": "{count, plural, one {# seat} other {# seats}}",
+      "seatsAndCapacity": "{count, plural, one {# seat} other {# seats}} · capacity {capacity}",
+      "warnings": "{count, plural, one {# warning} other {# warnings}}"
+    },
+    "menu": {
+      "label": "More",
+      "capacity": "Capacity",
+      "typeCapacity": "Type a capacity (now {seats} from the seats)",
+      "editCapacity": "Edit typed capacity ({capacity})",
+      "useSeats": "Use the seats ({seats})",
+      "startOver": "Start over",
+      "templates": {
+        "rows": "Rows of chairs",
+        "uShape": "U-shape",
+        "banquet": "Banquet, round tables"
+      },
+      "roomSize": "Edit the room's size"
+    },
+    "start": {
+      "title": "Start the {setup} layout",
+      "people": "For how many people?",
+      "templates": {
+        "rows": "Rows of chairs",
+        "uShape": "U-shape",
+        "banquet": "Banquet"
+      },
+      "missingKind": "Not in your furniture",
+      "empty": "Start with an empty room",
+      "partial": "Only {placed} of {wanted} fit in this room."
+    },
+    "capacityDialog": {
+      "title": "Type a capacity",
+      "description": "Use a typed capacity instead of the {seats} seats, for example for standing guests. It is saved with the layout.",
+      "confirm": "Use this capacity",
+      "field": "Capacity"
+    },
+    "roomDialog": {
+      "title": "Edit the room's size",
+      "description": "Width and depth in metres. The walls become a rectangle of this size.",
+      "confirm": "Use this size",
+      "width": "Width (m)",
+      "depth": "Depth (m)"
+    },
+    "noKinds": {
+      "title": "No furniture yet",
+      "description": "Layouts are drawn with your organization's furniture: tables, rows of chairs, doors. Import a starter set and edit it later.",
+      "askAdmin": "Ask an administrator to add furniture",
+      "import": "Import starter furniture",
+      "importing": "Importing furniture…",
+      "imported": "Furniture imported"
+    }
   }
 }

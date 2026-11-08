@@ -38,6 +38,9 @@ model Item {
   venue                  Venue?                     @relation(fields: [venueId, organizationId], references: [id, organizationId])
   customer               Customer?                  @relation(fields: [customerId, organizationId], references: [id, organizationId])
   setups                 ItemSetup[]
+  /// SETUPS: the drawing of the item and its layouts (ADR 0099).
+  floorPlan              FloorPlan?
+  setupLayouts           SetupLayout[]
   /// BUNDLE: the parts this item contains.
   parts                  ItemPart[]                 @relation("ItemPartParent")
   /// The bundles this item is a part of.
@@ -78,12 +81,14 @@ model Item {
 }
 
 /// Item setup – capacity of a `SETUPS` item in one setup. Replaced as a set by `item.*`.
+/// `capacity` is owned; null = the seats of the item's layout for the setup (ADR 0099, derived on
+/// read as `effectiveCapacity`).
 model ItemSetup {
   id             String   @id @default(cuid(2))
   organizationId String
   itemId         String
   setupId        String
-  capacity       Int
+  capacity       Int?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   createdBy      String?

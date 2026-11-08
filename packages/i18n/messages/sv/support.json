@@ -64,6 +64,28 @@
           }
         }
       },
+      "layouts": {
+        "title": "Rum och möbleringar",
+        "description": "Rita hur ett rum är möblerat för varje uppställning.",
+        "questions": {
+          "drawLayout": {
+            "question": "Hur ritar jag en möblering för ett rum?",
+            "answer": "Öppna rummet under Artiklar och välj Möbleringar. Varje uppställning som rummet har får en flik, och en tom flik föreslår stolsrader, U-bord eller bankett för det antal personer du skriver.\nDra möbler från panelen till vänster in i rummet, eller klicka på en möbel för att placera den i mitten. Klicka på Spara när du är klar."
+          },
+          "tableChairs": {
+            "question": "Hur ändrar jag ett bords storlek eller var stolarna står?",
+            "answer": "Klicka på bordet. Ovanför det kan du ange storleken i centimeter och välja hur många stolar som står på varje sida, till exempel bara på ena långsidan eller en på varje kortsida.\nÅterställ bibliotekets storlek och stolar gör bordet som det är bland era möbler igen."
+          },
+          "capacity": {
+            "question": "Hur räknas ett rums kapacitet?",
+            "answer": "När en uppställning har en möblering är kapaciteten antalet stolar i ritningen. Bibi varnar när en bokning har fler gäster än så.\nFör stående gäster, eller när du vill ha ett annat tal, välj menyn med tre punkter i möbleringen och ange en kapacitet."
+          },
+          "floorPlan": {
+            "question": "Var lägger jag in dörrar och pelare?",
+            "answer": "Öppna fliken Planritning under Möbleringar. Dörrar, pelare och skärmar som du placerar där syns i alla rummets möbleringar, och Bibi varnar om en möbel står i vägen för en dörr.\nAnvänd menyn med tre punkter för att ange rummets bredd och djup."
+          }
+        }
+      },
       "lists": {
         "title": "Egna listor och körscheman",
         "description": "Håll koll på vad varje bokning behöver, på ert sätt.",

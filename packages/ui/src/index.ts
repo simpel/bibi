@@ -73,6 +73,7 @@ export * from "./components/field-value/field-value";
 export type { ChartPoint, ChartRow, ChartSeries } from "./components/finance-charts/chart-model";
 export * from "./components/finance-charts/money-by-month-chart";
 export * from "./components/finance-charts/single-series-charts";
+export * from "./components/floor-drawing/floor-drawing";
 export { Form, FormController, useFormField } from "./components/form/form-context";
 export { FormControl } from "./components/form/form-control";
 export { FormItem } from "./components/form/form-item";

@@ -6,7 +6,7 @@ import {
   type ItemDto,
   ItemPartSchema,
   ItemSchema,
-  ItemSetupSchema,
+  ItemSetupDtoSchema,
   listItems,
   saveItemAsBundle,
   updateItem,
@@ -27,7 +27,7 @@ type ItemCustomisationGroupDto = ItemDto["customisationGroups"][number];
 
 export const ItemSetupRef = objectFromSchema<ItemSetupDto>({
   name: "ItemSetup",
-  schema: ItemSetupSchema,
+  schema: ItemSetupDtoSchema,
   description: "Capacity of an item in one setup.",
 });
 

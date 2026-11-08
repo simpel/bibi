@@ -160,6 +160,7 @@ model Setup {
   updatedAt         DateTime             @updatedAt
   createdBy         String?
   items             ItemSetup[]
+  layouts           SetupLayout[]
   lines             Line[]
   templateLines     OrderTemplateLine[]
 

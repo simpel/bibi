@@ -39,12 +39,17 @@ describe("previewChange (ADR 0049)", () => {
     });
     const [change] = preview.changes;
     expect(change).toMatchObject({ entityType: "item", kind: "update", name: "Linnea" });
-    expect(fieldsOf({ change })).toEqual({ [`setups.${setup.id}.capacity`]: [10, 12] });
+    expect(fieldsOf({ change })).toEqual({
+      [`setups.${setup.id}.capacity`]: [10, 12],
+      [`setups.${setup.id}.effectiveCapacity`]: [10, 12],
+    });
     expect(preview.names[setup.id]).toBe("Boardroom");
     const after = unwrap({
       result: await execute({ operation: getItem, input: { id: item.id }, context }),
     });
-    expect(after.setups).toEqual([{ setupId: setup.id, capacity: 10 }]);
+    expect(after.setups).toEqual([
+      { setupId: setup.id, capacity: 10, effectiveCapacity: 10, capacitySource: "MANUAL" },
+    ]);
   });
 
   it("fails like the command would, and checks the permission first", async () => {

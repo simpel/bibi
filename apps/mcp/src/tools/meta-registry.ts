@@ -14,6 +14,7 @@ import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
 import { fileMcpTools } from "../features/file/mcp";
 import { financeMcpTools } from "../features/finance/mcp";
+import { floorPlanMcpTools } from "../features/floor-plan/mcp";
 import { inboundMessageMcpTools } from "../features/inbound-message/mcp";
 import { itemMcpTools } from "../features/item/mcp";
 import { itemDemandMcpTools } from "../features/item-demand/mcp";
@@ -96,6 +97,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...fieldDefinitionMcpTools,
     ...vocabularyMcpTools,
     ...setupMcpTools,
+    ...floorPlanMcpTools,
     ...responsibilityMcpTools,
     ...runSheetDefinitionMcpTools,
     ...configurationMcpTools,

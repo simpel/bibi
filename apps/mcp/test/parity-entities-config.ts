@@ -91,7 +91,7 @@ const item: ParityEntity = {
     createTool: "",
     args: {},
     nested: {
-      setups: "{ setupId capacity }",
+      setups: "{ setupId capacity effectiveCapacity capacitySource }",
       parts: "{ itemId quantity offsetMinutes durationMinutes required }",
       customisationGroups: "{ name minPick maxPick split options }",
     },

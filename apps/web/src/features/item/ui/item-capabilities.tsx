@@ -28,9 +28,14 @@ export async function ItemCapabilities({ item, data }: ItemCapabilitiesProps) {
     item.defaultDurationMinutes === null
       ? null
       : t("durationValue", { minutes: item.defaultDurationMinutes });
-  const setups = item.setups.map(({ setupId, capacity }) => ({
+  const setups = item.setups.map(({ setupId, effectiveCapacity, capacitySource }) => ({
     name: data.setups.find(({ id }) => id === setupId)?.name ?? "–",
-    capacity: String(capacity),
+    capacity:
+      effectiveCapacity === null
+        ? "–"
+        : capacitySource === "LAYOUT"
+          ? t("capacityFromLayout", { capacity: effectiveCapacity })
+          : String(effectiveCapacity),
   }));
   const parts = item.parts.map(({ itemId, quantity, offsetMinutes, required }) =>
     t("partValue", {

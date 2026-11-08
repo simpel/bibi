@@ -1,7 +1,7 @@
 # 0099 – Floor plans and setup layouts: drawn per item, furniture from the organization's library, capacity inherited from seats
 
 - **Date:** 2026-11-08
-- **Status:** Proposed
+- **Status:** Accepted
 - **Related:** 0021, 0026, 0051, 0052, 0056, 0059, 0063, 0003, 0007
 - **Spec:** `docs/specs/floor-plans-and-layouts.md`
 
@@ -14,13 +14,13 @@
 
 ## Decision
 1. **A floor plan per item with `SETUPS`** (`FloorPlan`, one per item): the size in centimetres, an outline of points, an optional background image (`backgroundKey` in `packages/storage`) and an optional minimum aisle. Its elements are the fixed parts shared by every layout (a door, a pillar, a screen).
-2. **A layout per item and setup** (`SetupLayout`, one per `ItemSetup`), with its own elements. A layout is drawn on top of the plan's fixed elements.
+2. **A layout per item and setup** (`SetupLayout`, unique on item and setup, not a child of `ItemSetup`, which `item.*` replaces as a set), with its own elements. A layout is drawn on top of the plan's fixed elements.
 3. **Elements are rows** (`FloorElement`, in exactly one plan or one layout) with position and rotation, and size and seats that inherit from their kind (`null` = inherit). Units are integer centimetres and whole degrees.
-4. **The organization owns the library** (`FloorElementKind`): name, a generic shape (`RECT`, `ROUND`, `SEAT_ROW`, `ZONE`), default size, seats and seat placement, `fixed` (plan only) and an optional keep-clear distance. A starter template ("Conference and banquet furniture") imports common kinds as data.
+4. **The organization owns the library** (`FloorElementKind`, `configuration:*`): name, a generic shape (`RECT`, `ROUND`, `SEAT_ROW`, `ZONE`), default size, chairs (per side for `RECT`, around or along for the others), `fixed` (plan only) and an optional keep-clear distance. A placed piece may override its size and chairs per side. A starter template ("Conference and banquet furniture") imports common kinds as data.
 5. **Capacity inherits from the layout.** `ItemSetup.capacity` becomes nullable: `null` means the layout's seat count. A number is an override (a standing reception has no seats). Derived on read: `effectiveCapacity` with its source (`LAYOUT`, `MANUAL`). Existing capacities stay as overrides.
 6. **A plan and a layout are each saved as a whole** (`floorPlan.save`, `setupLayout.save`), with a `version` for optimistic concurrency (`CONFLICT` on a stale save). One audit row per save, not per element.
-7. **Warnings are derived on read, never stored, never blocking**: outside the outline, overlapping elements, an element in a keep-clear zone, an aisle under the minimum.
-8. **Permissions are the catalog's** (`item:read`, `item:write`). Every operation exists on web, GraphQL, REST and MCP. The assistant proposes a whole layout and the user approves the preview.
+7. **Warnings are derived on read, never stored, never blocking**: outside the outline, overlapping elements, an element in a keep-clear zone (an aisle check against `minAisleCm` comes later).
+8. **Permissions are the catalog's** (`item:read`, `item:write`; the library is `configuration:*` like setups). Every operation exists on web, GraphQL, REST and MCP. The assistant proposes a whole layout and the user approves the preview.
 9. **One SVG renderer in `@bibi/ui`** draws the editor, the read-only view, the generative UI result and the run sheet PDF.
 
 ## Rejected

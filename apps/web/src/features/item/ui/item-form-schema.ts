@@ -68,8 +68,11 @@ function capabilityInput({ values, type }: Omit<ItemInputArgs, "specs">) {
     ...(hasCapability({ type, capability: "SETUPS" })
       ? {
           setups: Object.entries(values.setups)
-            .filter(([, capacity]) => capacity.trim() !== "")
-            .map(([setupId, capacity]) => ({ setupId, capacity: Number(capacity) })),
+            .filter(([id, capacity]) => capacity.trim() !== "" || values.layoutSetups.includes(id))
+            .map(([setupId, capacity]) => ({
+              setupId,
+              capacity: capacity.trim() === "" ? null : Number(capacity),
+            })),
         }
       : {}),
     ...(hasCapability({ type, capability: "BUNDLE" })

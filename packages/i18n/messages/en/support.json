@@ -64,6 +64,28 @@
           }
         }
       },
+      "layouts": {
+        "title": "Rooms and layouts",
+        "description": "Draw how a room is furnished for each setup.",
+        "questions": {
+          "drawLayout": {
+            "question": "How do I draw a layout for a room?",
+            "answer": "Open the room under Items and choose Layouts. Each setup the room has gets a tab, and an empty one offers rows of chairs, a U-shape or a banquet for the number of people you type.\nDrag furniture from the panel on the left onto the room, or click it to place it in the middle. Click Save when you are done."
+          },
+          "tableChairs": {
+            "question": "How do I change a table's size or where the chairs are?",
+            "answer": "Click the table. Above it you can set its size in centimetres and choose how many chairs go on each side, for example only on one long side, or one at each end.\nReset to the library's size and chairs puts the table back the way it is in your furniture."
+          },
+          "capacity": {
+            "question": "How is a room's capacity counted?",
+            "answer": "When a setup has a layout, its capacity is the number of chairs in the drawing. Bibi warns when a booking has more guests than that.\nFor standing guests, or when you want another number, choose the menu with three dots in the layout and type a capacity."
+          },
+          "floorPlan": {
+            "question": "Where do I put doors and pillars?",
+            "answer": "Open the Floor plan tab under Layouts. Doors, pillars and screens placed there show in every layout of the room, and Bibi warns if furniture blocks a door.\nUse the menu with three dots to set the room's width and depth."
+          }
+        }
+      },
       "lists": {
         "title": "Your own lists and run sheets",
         "description": "Keep track of what each order needs, your way.",

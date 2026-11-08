@@ -11,6 +11,7 @@ import { resetDemoOrg } from "./reset";
 import { runPlatformSeed } from "./run-platform-seed";
 import { seedAcrossOrganizations } from "./seed-across-organizations";
 import { seedDemoConfig } from "./seed-config";
+import { seedDemoFloorPlans } from "./seed-floor-plans";
 import { seedDemoItems } from "./seed-items";
 import { seedNotificationReads } from "./seed-notification-reads";
 import { seedPipelineAndSales } from "./seed-pipeline-and-sales";
@@ -69,6 +70,11 @@ async function seedSlices({
   ranParts.add(2);
   const items = await seedDemoItems({ context, config: org.config, refs: refs.value });
   if (!items.ok) return items;
+  const floorPlans = await seedDemoFloorPlans({
+    ...{ context, config: org.config, refs: refs.value },
+    catalog: items.value,
+  });
+  if (!floorPlans.ok) return floorPlans;
   const staff = await seedDemoStaff({ context, org, members, items: items.value.items });
   if (!staff.ok) return staff;
   ranParts.add(3);

@@ -16,7 +16,22 @@ export const PriceUnitSchema = z.enum(PRICE_UNITS);
 
 export const ItemSetupSchema = z.object({
   setupId: z.string().min(1),
-  capacity: z.number().int().positive().max(100_000).describe("Max people in this setup"),
+  capacity: z
+    .number()
+    .int()
+    .positive()
+    .max(100_000)
+    .nullable()
+    .describe("Max people in this setup; null = the seats of its drawn layout (ADR 0099)"),
+});
+
+export const ItemSetupDtoSchema = ItemSetupSchema.extend({
+  effectiveCapacity: z
+    .number()
+    .int()
+    .nullable()
+    .describe("Derived: the typed capacity, else the layout's seats, else null"),
+  capacitySource: z.enum(["LAYOUT", "MANUAL", "NONE"]),
 });
 
 export const ItemPartSchema = z.object({
@@ -66,7 +81,7 @@ export const ItemSchema = z.object({
     .describe(
       "Derived (ADR 0064): the zone of the item's times, its venue's else the organization's",
     ),
-  setups: z.array(ItemSetupSchema),
+  setups: z.array(ItemSetupDtoSchema),
   parts: z.array(ItemPartSchema),
   customisationGroups: z.array(ItemCustomisationGroupDtoSchema),
   status: RecordStatusSchema,

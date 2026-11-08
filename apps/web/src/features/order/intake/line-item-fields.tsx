@@ -21,7 +21,7 @@ function SetupField({ form, item }: Omit<LineItemFieldsProps, "quantity">) {
   }
   const options = item.setups.map(({ id, name, capacity }) => ({
     id,
-    name: t("setupOption", { name, capacity }),
+    name: capacity === null ? name : t("setupOption", { name, capacity }),
   }));
   return (
     <OptionSelectField

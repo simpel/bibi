@@ -9,7 +9,7 @@ type SetupsInput = { item: DemoItem; refs: DemoRefs };
 function resolveSetups({
   item,
   refs,
-}: SetupsInput): Result<{ setupId: string; capacity: number }[]> {
+}: SetupsInput): Result<{ setupId: string; capacity: number | null }[]> {
   const setups = [];
   for (const [name, capacity] of Object.entries(item.setups ?? {})) {
     const setupId = refs.setups.get(name);

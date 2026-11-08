@@ -16,7 +16,7 @@ export type CatalogItem = {
   priceMinor: number | null;
   priceUnit: ItemDto["priceUnit"];
   defaultDurationMinutes: number | null;
-  setups: { id: string; name: string; capacity: number }[];
+  setups: { id: string; name: string; capacity: number | null }[];
   groups: CustomisableItem["groups"];
 };
 

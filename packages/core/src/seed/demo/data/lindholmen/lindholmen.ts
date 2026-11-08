@@ -12,6 +12,7 @@ import { lindholmenCustomers } from "./customers";
 import { lindholmenDensity } from "./density";
 import { lindholmenDishes } from "./dishes";
 import { lindholmenDrinks } from "./drinks";
+import { lindholmenFloorPlans } from "./floor-plans";
 import { lindholmenMeals } from "./meals";
 import { lindholmenOrders } from "./orders";
 import { lindholmenPipeline } from "./pipeline";
@@ -92,6 +93,7 @@ export const lindholmen: DemoOrg = {
     },
     venueHours: lindholmenHours,
     items,
+    floorPlans: lindholmenFloorPlans,
     checks: { listSizes: { Allergens: 14 } },
   },
   responsibilities: lindholmenResponsibilities,

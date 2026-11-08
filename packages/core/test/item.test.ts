@@ -64,9 +64,10 @@ describe("items (ADR 0021)", () => {
         context,
       }),
     });
+    const manual = { capacitySource: "MANUAL" };
     expect(created.setups).toEqual([
-      { setupId: mingel.id, capacity: 250 },
-      { setupId: theatre.id, capacity: 220 },
+      { setupId: mingel.id, capacity: 250, effectiveCapacity: 250, ...manual },
+      { setupId: theatre.id, capacity: 220, effectiveCapacity: 220, ...manual },
     ]);
     const updated = unwrap({
       result: await execute({
@@ -75,7 +76,9 @@ describe("items (ADR 0021)", () => {
         context,
       }),
     });
-    expect(updated.setups).toEqual([{ setupId: theatre.id, capacity: 200 }]);
+    expect(updated.setups).toEqual([
+      { setupId: theatre.id, capacity: 200, effectiveCapacity: 200, ...manual },
+    ]);
     expect(updated.priceMinor).toBe(450_000);
     const twice = await execute({
       operation: updateItem,

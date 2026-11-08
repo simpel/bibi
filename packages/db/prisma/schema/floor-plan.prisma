@@ -1,0 +1,121 @@
+/// How a floor element is drawn and seated (ADR 0099). Generic shapes, no furniture words:
+/// `RECT` and `ROUND` are bodies with chairs around them, `SEAT_ROW` is a row of chairs and
+/// `ZONE` is an outlined area (a dance floor, a no-go zone).
+enum FloorShape {
+  RECT
+  ROUND
+  SEAT_ROW
+  ZONE
+}
+
+/// Floor element kind – one entry of the organization's furniture library (ADR 0099), e.g.
+/// "Round table Ø180" or "Door". All columns are owned. Seats: `RECT` uses the four sides in the
+/// element's own frame (top, right, bottom, left); `ROUND` and `SEAT_ROW` use `seats` (around the
+/// body, along the row). `fixed` kinds belong to a floor plan, never to a layout.
+model FloorElementKind {
+  id             String         @id @default(cuid(2))
+  organizationId String
+  name           String
+  shape          FloorShape
+  widthCm        Int
+  depthCm        Int
+  seats          Int            @default(0)
+  seatsTop       Int            @default(0)
+  seatsRight     Int            @default(0)
+  seatsBottom    Int            @default(0)
+  seatsLeft      Int            @default(0)
+  fixed          Boolean        @default(false)
+  /// A clear area in front of the element (its local bottom side), e.g. a door's swing.
+  keepClearCm    Int?
+  status         RecordStatus   @default(ACTIVE)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  createdBy      String?
+  elements       FloorElement[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+}
+
+/// Floor plan – the drawing of one item with `SETUPS` (ADR 0099): its size, outline and fixed
+/// elements, shared by every layout of the item. All columns are owned; `version` counts saves
+/// (optimistic concurrency).
+model FloorPlan {
+  id             String         @id @default(cuid(2))
+  organizationId String
+  itemId         String
+  widthCm        Int
+  depthCm        Int
+  /// The walls as points in centimetres, clockwise (coordinates only, no references).
+  outline        Json
+  /// Minimum aisle between pieces; null = no aisle check.
+  minAisleCm     Int?
+  version        Int            @default(1)
+  status         RecordStatus   @default(ACTIVE)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  createdBy      String?
+  item           Item           @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  elements       FloorElement[]
+
+  @@unique([id, organizationId])
+  @@unique([itemId, organizationId])
+  @@index([organizationId, status])
+}
+
+/// Setup layout – one setup drawn in one item's floor plan (ADR 0099). Keyed by item and setup,
+/// not by `ItemSetup`, which `item.*` replaces as a set: a layout survives an item save, and a
+/// setup removed from the item and added again gets its drawing back. Owned; `version` counts saves.
+model SetupLayout {
+  id             String         @id @default(cuid(2))
+  organizationId String
+  itemId         String
+  setupId        String
+  note           String?
+  version        Int            @default(1)
+  status         RecordStatus   @default(ACTIVE)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  createdBy      String?
+  item           Item           @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  setup          Setup          @relation(fields: [setupId, organizationId], references: [id, organizationId])
+  elements       FloorElement[]
+
+  @@unique([id, organizationId])
+  @@unique([itemId, setupId])
+  @@index([organizationId, itemId])
+}
+
+/// Floor element – one piece placed in a floor plan (fixed) or in a setup layout (ADR 0099).
+/// Replaced as a set by `floorPlan.save` and `setupLayout.save`, audited on its parent. Exactly
+/// one parent (CHECK in the migration). Position is the centre in centimetres; size and seats are
+/// owned overrides, null = the kind's.
+model FloorElement {
+  id             String           @id @default(cuid(2))
+  organizationId String
+  floorPlanId    String?
+  setupLayoutId  String?
+  kindId         String
+  position       Int
+  xCm            Int
+  yCm            Int
+  rotationDeg    Int              @default(0)
+  widthCm        Int?
+  depthCm        Int?
+  seats          Int?
+  seatsTop       Int?
+  seatsRight     Int?
+  seatsBottom    Int?
+  seatsLeft      Int?
+  label          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  createdBy      String?
+  floorPlan      FloorPlan?       @relation(fields: [floorPlanId, organizationId], references: [id, organizationId])
+  setupLayout    SetupLayout?     @relation(fields: [setupLayoutId, organizationId], references: [id, organizationId])
+  kind           FloorElementKind @relation(fields: [kindId, organizationId], references: [id, organizationId])
+
+  @@index([organizationId, floorPlanId])
+  @@index([organizationId, setupLayoutId])
+  @@index([organizationId, kindId])
+}

@@ -117,7 +117,12 @@ describe("entity read parity: core -> GraphQL, REST, MCP return equal data", () 
       // Singletons without an id (a file's key, a user's working days, a notification kind's
       // preference) are told apart by those.
       const identity =
-        created?.id ?? created?.subjectId ?? created?.key ?? created?.days ?? created?.kind;
+        created?.id ??
+        created?.subjectId ??
+        created?.key ??
+        created?.days ??
+        created?.kind ??
+        created?.setupId;
       expect(identity, `${entity.name}: create via MCP`).toBeTruthy();
       made[entity.name] = created;
       const keys = Object.keys(created).filter((key) => key !== "organizationId");

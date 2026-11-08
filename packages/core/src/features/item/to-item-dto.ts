@@ -3,6 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { loadRecordLinks, withLinks } from "../../records/record-links";
 import { effectiveBuffers } from "../../shared/buffers";
 import { loadVenueZones } from "../../shared/time-zones";
+import { effectiveCapacity, layoutKey, loadLayoutSeats } from "../floor-plan/layout-seats";
 import type { ItemDto } from "./schema";
 
 type Db = Pick<OperationContext, "db">;
@@ -45,14 +46,15 @@ async function typeBuffers({ context, rows }: ToItemDtosInput) {
   return new Map(types.map(({ id, ...minutes }) => [id, minutes]));
 }
 
-/** Items with setup capacities (largest first), parts (by offset) and customisation groups. */
+/** Items with setup capacities (largest effective first, ADR 0099), parts (by offset) and customisation groups. */
 export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<ItemDto[]> {
   const ids = rows.map((row) => row.id);
   const setups = await context.db.itemSetup.findMany({
     where: { itemId: { in: ids } },
-    orderBy: [{ capacity: "desc" }, { setupId: "asc" }],
+    orderBy: [{ setupId: "asc" }],
     select: { itemId: true, setupId: true, capacity: true },
   });
+  const seats = await loadLayoutSeats({ context, itemIds: ids });
   const parts = await context.db.itemPart.findMany({
     where: { parentId: { in: ids } },
     orderBy: [{ offsetMinutes: "asc" }, { position: "asc" }],
@@ -68,7 +70,11 @@ export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<It
     fields: withLinks({ fields: row.fields, links: links.filter((l) => l.recordId === row.id) }),
     setups: setups
       .filter((setup) => setup.itemId === row.id)
-      .map(({ setupId, capacity }) => ({ setupId, capacity })),
+      .map(({ itemId, setupId, capacity }) => {
+        const seatCount = seats.get(layoutKey({ itemId, setupId }))?.seatCount ?? null;
+        return { setupId, capacity, ...effectiveCapacity({ capacity, seatCount }) };
+      })
+      .sort((a, b) => (b.effectiveCapacity ?? -1) - (a.effectiveCapacity ?? -1)),
     parts: parts
       .filter((part) => part.parentId === row.id)
       .map(({ partId, quantity, offsetMinutes, durationMinutes, required }) => ({

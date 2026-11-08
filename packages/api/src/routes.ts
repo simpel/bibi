@@ -16,6 +16,7 @@ import { entityTypeRoutes } from "./features/entity-type/rest";
 import { fieldDefinitionRoutes } from "./features/field-definition/rest";
 import { fileRoutes } from "./features/file/rest";
 import { financeRoutes } from "./features/finance/rest";
+import { floorPlanRoutes } from "./features/floor-plan/rest";
 import { inboundMessageRoutes } from "./features/inbound-message/rest";
 import { integrationRoutes } from "./features/integration/rest";
 import { invoiceRoutes } from "./features/invoice/rest";
@@ -103,6 +104,7 @@ export function listRestRoutes(): RestRoute[] {
     ...fieldDefinitionRoutes,
     ...vocabularyRoutes,
     ...setupRoutes,
+    ...floorPlanRoutes,
     ...responsibilityRoutes,
     ...assignmentRoutes,
     ...runSheetDefinitionRoutes,
