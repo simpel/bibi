@@ -67,18 +67,18 @@ export function DepositEditor({
     action: ({ values }) => updatePaymentSettingsAction({ input: values }),
     messages: { pending: common("saving"), success: t("saved") },
     onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
-    confirm: ({ values }) => [
-      {
-        field: t("fields.depositPercent"),
-        before: percentText({ value: depositPercent }),
-        after: percentText({ value: values.depositPercent ?? null }),
-      },
-      {
-        field: t("fields.depositMinimum"),
-        before: minimumText({ value: depositMinimumMinor }),
-        after: minimumText({ value: values.depositMinimumMinor ?? null }),
-      },
-    ],
+    confirm: ({ values }) => {
+      const percent = values.depositPercent ?? null;
+      const minimum = values.depositMinimumMinor ?? null;
+      return [
+        ...(percent === depositPercent
+          ? []
+          : [{ field: t("fields.depositPercent"), value: percentText({ value: percent }) }]),
+        ...(minimum === depositMinimumMinor
+          ? []
+          : [{ field: t("fields.depositMinimum"), value: minimumText({ value: minimum }) }]),
+      ];
+    },
   });
   return (
     <Form {...form}>

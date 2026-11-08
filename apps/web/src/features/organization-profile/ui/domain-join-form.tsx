@@ -37,9 +37,7 @@ export function DomainJoinSwitch({
       action: () => setDomainJoinAction({ input: { enabled: checked } }),
       messages: { pending: common("saving"), success: checked ? t("turnedOn") : t("turnedOff") },
       onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
-      confirm: [
-        { field: t("label"), before: onOff({ value: on }), after: onOff({ value: checked }) },
-      ],
+      confirm: [{ field: t("label"), value: onOff({ value: checked }) }],
     });
   return (
     <Switch

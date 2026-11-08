@@ -30,13 +30,7 @@ export function AutoAssignSwitch({ enabled, canEdit, onSaved }: AutoAssignSwitch
         success: checked ? t("autoAssignOn") : t("autoAssignOff"),
       },
       onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
-      confirm: [
-        {
-          field: t("autoAssign"),
-          before: onOff({ value: enabled }),
-          after: onOff({ value: checked }),
-        },
-      ],
+      confirm: [{ field: t("autoAssign"), value: onOff({ value: checked }) }],
     });
   return (
     <section className="grid gap-2">

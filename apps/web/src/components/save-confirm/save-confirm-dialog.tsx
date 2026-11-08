@@ -8,12 +8,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { SaveChange } from "./save-confirm-context";
@@ -25,7 +19,13 @@ export type SaveConfirmDialogProps = {
   onCancel: () => void;
 };
 
-/** "Confirm change": each field before (struck through) and after. The outcome is a toast. */
+/** A field label inside a sentence: "Time zone" → "time zone", an acronym ("SIE") as it is. */
+function inSentence({ label }: { label: string }): string {
+  const [first = "", second = ""] = label;
+  return second === second.toLowerCase() ? first.toLowerCase() + label.slice(1) : label;
+}
+
+/** "You're changing time zone to **Europe/London**.", one line per field. The outcome is a toast. */
 export function SaveConfirmDialog({ changes, onConfirm, onCancel }: SaveConfirmDialogProps) {
   const t = useTranslations("common.saveConfirm");
   const common = useTranslations("common");
@@ -34,30 +34,16 @@ export function SaveConfirmDialog({ changes, onConfirm, onCancel }: SaveConfirmD
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
+          {(changes ?? []).map((change) => (
+            <DialogDescription key={change.field}>
+              {t.rich("line", {
+                field: inSentence({ label: change.field }),
+                value: change.value,
+                b: (chunks) => <strong className="font-medium text-foreground">{chunks}</strong>,
+              })}
+            </DialogDescription>
+          ))}
         </DialogHeader>
-        <div data-slot="save-confirm-changes" className="overflow-hidden rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("field")}</TableHead>
-                <TableHead>{t("before")}</TableHead>
-                <TableHead>{t("after")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(changes ?? []).map((change) => (
-                <TableRow key={change.field}>
-                  <TableCell>{change.field}</TableCell>
-                  <TableCell className="text-muted-foreground line-through">
-                    {change.before}
-                  </TableCell>
-                  <TableCell className="font-medium">{change.after}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
         <DialogFooter>
           <Button variant="outline" onClick={onCancel}>
             {common("cancel")}

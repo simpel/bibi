@@ -86,8 +86,9 @@ export function useFormAction<V extends FieldValues, R, T = V>({
     });
   };
   const run = ({ values }: { values: T }) => {
-    if (!ask || !confirm) return save({ values });
-    void ask({ changes: confirm({ values }) }).then((ok) => (ok ? save({ values }) : undefined));
+    const changes = confirm?.({ values }) ?? [];
+    if (!ask || changes.length === 0) return save({ values });
+    void ask({ changes }).then((ok) => (ok ? save({ values }) : undefined));
   };
   return { submit: form.handleSubmit((values) => run({ values })), run, pending };
 }

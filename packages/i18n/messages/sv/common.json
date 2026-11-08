@@ -94,13 +94,10 @@
     "deleting": "Tar bort…",
     "open": "Öppna",
     "saveConfirm": {
-      "title": "Bekräfta ändring",
-      "description": "Det här ändras när du bekräftar.",
-      "field": "Fält",
-      "before": "Före",
-      "after": "Efter",
-      "on": "På",
-      "off": "Av"
+      "title": "Bekräfta ändringen",
+      "line": "Du ändrar {field} till <b>{value}</b>.",
+      "on": "på",
+      "off": "av"
     }
   },
   "errors": {

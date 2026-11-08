@@ -94,13 +94,10 @@
     "deleting": "Deleting…",
     "open": "Open",
     "saveConfirm": {
-      "title": "Confirm change",
-      "description": "This is what changes when you confirm.",
-      "field": "Field",
-      "before": "Before",
-      "after": "After",
-      "on": "On",
-      "off": "Off"
+      "title": "Confirm the change",
+      "line": "You're changing {field} to <b>{value}</b>.",
+      "on": "on",
+      "off": "off"
     }
   },
   "errors": {
