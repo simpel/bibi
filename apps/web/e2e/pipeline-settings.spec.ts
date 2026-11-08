@@ -116,6 +116,9 @@ test("an admin edits item states on step pages", async ({ page }) => {
   await gotoApp({ page, path: "/admin/item-states" });
   await expect(page).toHaveURL(ITEM_STATES);
   await expect(page.getByRole("heading", { name: "Artikelstatusar", level: 2 })).toBeVisible();
+  // A fresh load: the client router keeps the redirect's anchored URL and would add the anchor
+  // again on the next push to the section (production builds only).
+  await gotoApp({ page, path: SETTINGS });
   await expect(page.getByRole("cell", { name: "Active" }).first()).toBeVisible();
 
   await page.getByRole("button", { name: "Skapa status", exact: true }).click();
