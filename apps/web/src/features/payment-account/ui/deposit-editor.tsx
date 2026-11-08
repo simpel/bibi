@@ -4,12 +4,15 @@ import { type PaymentSettingsDto, PaymentSettingsUpdateInputSchema } from "@bibi
 import { Button, Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { TextField } from "@/components/form/text-field";
 import { minorOrNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 import { useRouter } from "@/lib/navigation";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { updatePaymentSettingsAction } from "../actions";
@@ -39,7 +42,10 @@ export type DepositEditorProps = {
   onSaved?: ((input: { value: PaymentSettingsDto }) => void) | undefined;
 };
 
-/** The deposit rule (`paymentSettings.update` with only its two fields, ADR 0090). */
+/**
+ * The deposit rule (`paymentSettings.update` with only its two fields, ADR 0090). It changes what
+ * customers are asked to pay, so Save asks first.
+ */
 export function DepositEditor({
   depositPercent,
   depositMinimumMinor,
@@ -56,12 +62,21 @@ export function DepositEditor({
       depositMinimumMinor: depositMinimumMinor === null ? "" : String(depositMinimumMinor / 100),
     },
   });
-  const { submit, pending } = useFormAction({
+  const { amount } = useNumberFormat();
+  const [asking, setAsking] = useState<DepositFormOutput | null>(null);
+  const { run, pending } = useFormAction({
     form,
     action: ({ values }) => updatePaymentSettingsAction({ input: values }),
     messages: { pending: common("saving"), success: t("saved") },
-    onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
+    onSuccess: ({ value }) => {
+      setAsking(null);
+      if (onSaved) onSaved({ value });
+      else router.refresh();
+    },
   });
+  const submit = form.handleSubmit((values) => setAsking(values));
+  const percent = asking?.depositPercent ?? null;
+  const minimum = asking?.depositMinimumMinor ?? null;
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid max-w-lg gap-4">
@@ -94,6 +109,19 @@ export function DepositEditor({
           <p className="text-sm text-muted-foreground">{t("readOnly")}</p>
         )}
       </form>
+      <ConfirmDialog
+        open={asking !== null}
+        onOpenChange={(open) => (open ? null : setAsking(null))}
+        title={t("confirmDepositTitle")}
+        description={t("confirmDepositDescription", {
+          percent: percent === null ? t("placeholders.none") : `${percent} %`,
+          minimum: minimum === null ? t("placeholders.none") : amount({ minor: minimum }),
+        })}
+        confirmLabel={t("save")}
+        variant="default"
+        pending={pending}
+        onConfirm={() => (asking ? run({ values: asking }) : undefined)}
+      />
     </Form>
   );
 }

@@ -630,7 +630,9 @@
       "label": "Betaloperatör",
       "manage": "Aktivera eller inaktivera kopplingar under Integrationer",
       "notConnected": "Stripe (inte kopplat)"
-    }
+    },
+    "confirmDepositTitle": "Ändra förskottet?",
+    "confirmDepositDescription": "Förskott: {percent}. Lägsta belopp: {minimum}. Från och med nu är det här vad kunder ombeds betala i förväg."
   },
   "paymentAccount": {
     "title": "Betalningar",

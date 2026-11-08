@@ -1,10 +1,11 @@
 "use client";
 
 import { type OrderStatusDto, TRANSITION_GATES } from "@bibi/core/schemas";
-import { Button, Form } from "@bibi/ui";
+import { Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
+import { useSaveOnChange } from "@/lib/use-save-on-change";
 import { setOrderStatusGatesAction } from "../actions";
 import { FlowGateRow } from "./flow-gate-row";
 import { useFlowGatesForm } from "./use-flow-gates-form";
@@ -16,21 +17,28 @@ export type FlowGatesFormProps = {
   sources: readonly OrderStatusDto[];
 };
 
-/** What a move into one status requires, written as sentences with a source choice (ADR 0076). */
+/**
+ * What a move into one status requires, written as sentences with a source choice (ADR 0076).
+ * Each change saves at once.
+ */
 export function FlowGatesForm({ orderStatus, sources }: FlowGatesFormProps) {
   const t = useTranslations("orderStatus.flow");
-  const common = useTranslations("common");
   const router = useRouter();
   const form = useFlowGatesForm({ orderStatus });
-  const { submit, pending } = useFormAction({
+  const { run } = useFormAction({
     form,
     action: ({ values }) => setOrderStatusGatesAction({ input: values }),
     messages: { pending: t("saving"), success: t("gatesSaved") },
-    onSuccess: () => router.refresh(),
+    onSuccess: () => {
+      form.reset(form.getValues());
+      router.refresh();
+    },
+    onError: () => form.reset(),
   });
+  useSaveOnChange({ form, run });
   return (
     <Form {...form}>
-      <form onSubmit={submit} noValidate className="grid gap-3">
+      <form onSubmit={(event) => event.preventDefault()} noValidate className="grid gap-3">
         <p className="text-sm text-muted-foreground">
           {t("requirementsIntro", { name: orderStatus.name })}
         </p>
@@ -43,9 +51,6 @@ export function FlowGatesForm({ orderStatus, sources }: FlowGatesFormProps) {
             sources={sources}
           />
         ))}
-        <Button type="submit" size="sm" className="justify-self-start" disabled={pending}>
-          {common("save")}
-        </Button>
       </form>
     </Form>
   );

@@ -630,7 +630,9 @@
       "label": "Payment operator",
       "manage": "Activate or deactivate connections in Integrations",
       "notConnected": "Stripe (not connected)"
-    }
+    },
+    "confirmDepositTitle": "Change the deposit?",
+    "confirmDepositDescription": "Deposit: {percent}. Minimum: {minimum}. From now on, this is what customers are asked to pay in advance."
   },
   "paymentAccount": {
     "title": "Payments",

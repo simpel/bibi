@@ -216,7 +216,8 @@
     "profile": "Profil",
     "platformAdminTitle": "Mothership",
     "platformAdminDescription": "Systemlogg och AI-modeller för hela plattformen.",
-    "platformAdminOpen": "Öppna mothership"
+    "platformAdminOpen": "Öppna mothership",
+    "languageSaved": "Språket har sparats."
   },
   "commandBar": {
     "title": "Kommandofält",

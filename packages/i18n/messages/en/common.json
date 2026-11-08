@@ -216,7 +216,8 @@
     "profile": "Profile",
     "platformAdminTitle": "Mothership",
     "platformAdminDescription": "System log and AI models for the whole platform.",
-    "platformAdminOpen": "Open mothership"
+    "platformAdminOpen": "Open mothership",
+    "languageSaved": "The language has been saved."
   },
   "commandBar": {
     "title": "Command bar",

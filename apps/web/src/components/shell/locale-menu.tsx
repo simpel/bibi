@@ -10,10 +10,14 @@ import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { saveProfileLocale } from "@/features/profile/actions";
 import { usePathname, useRouter } from "@/lib/navigation";
+import { useToastAction } from "@/lib/use-toast-action";
 
 const LABEL_KEY = { sv: "languageSv", en: "languageEn" } as const;
 
-/** User-menu submenu: switches the URL locale prefix (sv/en), keeping the path and query. */
+/**
+ * User-menu submenu: saves the language on the profile (pending → outcome toast), then switches the
+ * URL locale prefix (sv/en), keeping the path and query.
+ */
 export function LocaleMenu() {
   const t = useTranslations("shell");
   const common = useTranslations("common");
@@ -23,10 +27,13 @@ export function LocaleMenu() {
   const query = useSearchParams().toString();
   const href = query ? `${pathname}?${query}` : pathname;
 
-  const handleSelect = ({ locale }: { locale: Locale }) => {
-    void saveProfileLocale({ locale }).catch(() => {});
-    router.replace(href, { locale });
-  };
+  const { run } = useToastAction();
+  const handleSelect = ({ locale }: { locale: Locale }) =>
+    run({
+      action: () => saveProfileLocale({ locale }),
+      messages: { pending: common("saving"), success: t("languageSaved") },
+      onSuccess: () => router.replace(href, { locale }),
+    });
 
   return (
     <DropdownMenuSub>
