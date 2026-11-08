@@ -26,19 +26,18 @@ Behaviour spec for ADR 0099 (Proposed, not built). Setups and capacity today: `d
 - Parity: GraphQL, REST (`/items/{id}/floor-plan`, `/item-setups/{id}/layout`), MCP tools. The MCP result renders as the read-only layout in chat (generative UI `FloorLayoutView`).
 
 ## The editor (`/catalog/items/:id/floor-plan`, `item:write`)
-- **Layout**: canvas in the middle, library on the left, properties of the selection on the right, layout tabs on top: "Floor plan" first (fixed elements only), then one tab per setup the item has, then **+ Create layout** (picks a setup the item lacks and adds its `ItemSetup`).
-- **Starting a plan**: width and depth in metres, or **Trace a floor plan image**: upload an image, click two points and type the distance between them to set the scale, then drag the corners of the outline.
-- **Placing**: drag a kind from the library onto the canvas, or click it to drop it in the centre. Snaps to a 10 cm grid and to the edges and centres of other elements (guides shown); Alt drags without snapping.
-- **Editing**: click to select, Shift-click or drag a box for several. Drag to move, the handle to rotate (15° steps, Shift for free), arrow keys move 10 cm (Shift 1 m), `R` rotates 90°, Ctrl+D duplicates, Delete deletes, Ctrl+Z / Ctrl+Shift+Z undo and redo. Align and distribute for a multi-selection.
-- **Properties**: label, seats (shown as "10 (from kind)" until changed), width and depth, rotation, and **Reset to kind**.
-- **Generators** (each places elements as a normal edit, undoable):
-  - Rows of seats: rows, seats per row, aisle in the middle or on the sides, spacing.
-  - U-shape, boardroom and classroom for N people, from the chosen table kind.
-  - Banquet: N people at round tables of a chosen kind, staggered, keeping `minAisleCm`.
-- **Status bar**: seats in this layout, the effective capacity and its source ("Capacity 64, from the layout" or "Capacity 120, typed in" with **Use the layout's seats**), live issues as a count that opens a list; clicking an issue selects its elements.
-- **Save** saves the open tab; switching tab with unsaved changes asks Save or Discard. Unsaved edits are kept as a local browser draft per tab.
-- **Copy from**: copies another layout's elements into the open tab (asks before replacing).
-- Keyboard and screen readers: every element is a focusable SVG group with a label ("Round table 3, 10 seats"); Tab moves between elements.
+- **The drawing is the page.** Above it: the item's name, undo, redo and **Save** (reads "Saved" when nothing has changed). One row of tabs: "Floor plan", then one tab per setup the item has, each with its capacity. A tab with unsaved changes shows a dot. **Save** saves every changed tab.
+- **Four things sit on the drawing, nothing else:**
+  - A **dock** of furniture from the library (icons, name on hover). Click drops the piece in the middle; drag places it where you let go. On the Floor plan tab it shows the fixed kinds only. Phones get a row at the bottom.
+  - A **summary** bottom left: "70 seats" (and "capacity 120" when typed in), plus "2 warnings" when there are any. Clicking the warnings selects the next problem and says what it is. Problem pieces are outlined in the warning colour.
+  - A **toolbar next to the selection**, only while something is selected: − seats +, rotate 90° (Shift 15°), duplicate, delete. With several selected it shows the count instead of the seats.
+  - A **⋯ menu** for what is rare: capacity (from the seats, or type a number), start over from a template, copy from another layout. On the Floor plan tab: trace a floor plan image, change the room's size.
+- **An empty layout** shows one card: "Start the Classroom layout", a people count and three templates with a thumbnail each (Rows, U-shape, Banquet), plus "Start with an empty room". A template fills the room for that many people, keeps clear of fixed elements and keep-clear zones, and says when not everyone fits.
+- **Moving**: drag a piece, or drag on empty floor to select several (Shift-click adds). Snaps to a 10 cm grid; Alt drags without snapping.
+- **Keyboard** (no help panel; shortcuts are in the tooltips): arrows move 10 cm (Shift 1 m), `R` rotates, Ctrl+D duplicates, Delete deletes, Ctrl+Z / Ctrl+Shift+Z undo and redo, Esc clears the selection.
+- **Not in the first version**: free size per piece, labels, align and distribute. Size and seats come from the kind; the toolbar changes only seats. Table numbers are given in order as tables are added.
+- Unsaved edits are kept as a local browser draft per tab. A stale save shows "Someone saved this layout after you opened it" with **Load the latest** and **Keep mine** (see Operations).
+- Every piece is a focusable SVG group with a label ("Round table 3, 10 seats"); Tab moves between pieces.
 
 ## Where layouts show
 - **Item page**: a "Floor plan" section with thumbnails of the plan and each layout, seats and capacity.
