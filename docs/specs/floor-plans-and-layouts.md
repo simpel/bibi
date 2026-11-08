@@ -25,8 +25,10 @@ Behaviour spec for ADR 0099 (Proposed, not built). Setups and capacity today: `d
 - Issues (derived on read and in the editor live, same module in core, client-safe): `OUTSIDE_OUTLINE`, `OVERLAP` (two elements, `ZONE` excluded), `KEEP_CLEAR` (an element in a kind's keep-clear distance), `NARROW_AISLE` (gap under `minAisleCm`), `SEATS_UNDER_HEADCOUNT` only in a booking context.
 - Parity: GraphQL, REST (`/items/{id}/floor-plan`, `/item-setups/{id}/layout`), MCP tools. The MCP result renders as the read-only layout in chat (generative UI `FloorLayoutView`).
 
-## The editor (`/catalog/items/:id/floor-plan`, `item:write`)
-- **The drawing is the page.** Above it: the item's name, undo, redo and **Save** (reads "Saved" when nothing has changed). One row of tabs: "Floor plan", then one tab per setup the item has, each with its capacity. A tab with unsaved changes shows a dot. **Save** saves every changed tab.
+## The editor (`/items/:id/layouts`, `item:write`)
+- **In the normal app shell**, as a full-width canvas page like Calendar and Pipeline (ADR 0038): route `(app)/(canvas)/items/[id]/layouts/[[...tab]]`, sidebar on Items, breadcrumb "Items / <item> / Layouts" (`CrumbName` for the item). `/items/:id/layouts` opens the first layout; `/items/:id/layouts/plan` is the floor plan and `/items/:id/layouts/<setupId>` a layout, so a tab is a link (header in the layout, per "a page whose tabs are in the path"). The item page links here from its layouts section ("Edit layouts").
+- **One toolbar row under the top bar**: `Tabs` on the left ("Floor plan", then one per setup the item has, each with its capacity; a dot marks unsaved changes; scrolls sideways on phones), undo, redo and **Save** on the right ("Saved" when nothing has changed; Save saves every changed tab). No page title: the breadcrumb names the page.
+- **The drawing fills the rest of the viewport** and scales the room to fit; nothing on the page scrolls.
 - **Four things sit on the drawing, nothing else:**
   - A **dock** of furniture from the library (icons, name on hover). Click drops the piece in the middle; drag places it where you let go. On the Floor plan tab it shows the fixed kinds only. Phones get a row at the bottom.
   - A **summary** bottom left: "70 seats" (and "capacity 120" when typed in), plus "2 warnings" when there are any. Clicking the warnings selects the next problem and says what it is. Problem pieces are outlined in the warning colour.
