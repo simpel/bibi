@@ -100,7 +100,7 @@
           },
           "settings": {
             "question": "Can I see and change settings in the chat?",
-            "answer": "Yes. Ask the assistant, for example \"Which time zone do we use?\" or \"How big is the deposit?\", and the settings show as a card in the chat.\nIf you may change them, you can do it right in the card. The change is saved when you pick a new value or choose **Save**, and a notice confirms it. You only see settings you have access to."
+            "answer": "Yes. Ask the assistant, for example \"Which time zone do we use?\" or \"How big is the deposit?\", and the settings show as a card in the chat.\nIf you may change them, do it right in the card. Before anything is saved you see the change, before and after, and choose **Confirm**. A notice then tells you it is saved. You only see settings you have access to."
           }
         }
       },

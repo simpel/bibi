@@ -10,6 +10,7 @@ import { TextField } from "@/components/form/text-field";
 import { minorOrNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 import { useRouter } from "@/lib/navigation";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { updatePaymentSettingsAction } from "../actions";
@@ -49,6 +50,11 @@ export function DepositEditor({
   const t = useTranslations("paymentSettings");
   const common = useTranslations("common");
   const router = useRouter();
+  const { amount } = useNumberFormat();
+  const percentText = ({ value }: { value: number | null }) =>
+    value === null ? t("placeholders.none") : `${value} %`;
+  const minimumText = ({ value }: { value: number | null }) =>
+    value === null ? t("placeholders.none") : amount({ minor: value });
   const form = useForm<DepositFormValues, unknown, DepositFormOutput>({
     resolver: zodResolver(depositSchema, useZodMessages()),
     defaultValues: {
@@ -61,6 +67,18 @@ export function DepositEditor({
     action: ({ values }) => updatePaymentSettingsAction({ input: values }),
     messages: { pending: common("saving"), success: t("saved") },
     onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
+    confirm: ({ values }) => [
+      {
+        field: t("fields.depositPercent"),
+        before: percentText({ value: depositPercent }),
+        after: percentText({ value: values.depositPercent ?? null }),
+      },
+      {
+        field: t("fields.depositMinimum"),
+        before: minimumText({ value: depositMinimumMinor }),
+        after: minimumText({ value: values.depositMinimumMinor ?? null }),
+      },
+    ],
   });
   return (
     <Form {...form}>

@@ -27,6 +27,8 @@ export function DomainJoinSwitch({
 }: DomainJoinSwitchProps) {
   const t = useTranslations("organizationSettings.domainJoin");
   const common = useTranslations("common");
+  const onOff = ({ value }: { value: boolean }) =>
+    common(value ? "saveConfirm.on" : "saveConfirm.off");
   const router = useRouter();
   const { run, pending } = useToastAction();
   const on = enabled && emailDomain !== null;
@@ -35,6 +37,9 @@ export function DomainJoinSwitch({
       action: () => setDomainJoinAction({ input: { enabled: checked } }),
       messages: { pending: common("saving"), success: checked ? t("turnedOn") : t("turnedOff") },
       onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
+      confirm: [
+        { field: t("label"), before: onOff({ value: on }), after: onOff({ value: checked }) },
+      ],
     });
   return (
     <Switch

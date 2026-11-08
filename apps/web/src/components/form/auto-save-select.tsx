@@ -47,8 +47,12 @@ export function AutoSaveSelect<V extends string, R>({
     const choice = options.find((option) => option.value === next)?.value;
     if (!choice || choice === current) return;
     const previous = current;
+    const labelOf = ({ of }: { of: V }) => options.find((o) => o.value === of)?.label ?? of;
     setCurrent(choice);
     run({
+      confirm: [
+        { field: label, before: labelOf({ of: previous }), after: labelOf({ of: choice }) },
+      ],
       action: () => save({ value: choice }),
       messages: { pending: common("saving"), success: saved },
       onSuccess: ({ value: result }) => (onSaved ? onSaved({ value: result }) : router.refresh()),

@@ -2,6 +2,7 @@ import type { AppErrorIssue } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
+import { type SaveChange, useConfirmSave } from "@/components/save-confirm/save-confirm-context";
 import type { ActionError, ActionResult } from "./action-result";
 import { actionWithToast } from "./action-with-toast";
 import { isFormPath } from "./issue-form-path";
@@ -31,6 +32,8 @@ export type UseFormActionInput<V extends FieldValues, R, T = V> = {
   onError?: (input: { error: ActionError; values: T }) => void;
   /** Server issues whose path is no field of the form, for the form to show them itself. */
   onUnmappedIssues?: (input: { issues: AppErrorIssue[] }) => void;
+  /** The change as the user reads it; inside a `SaveConfirmProvider` it is confirmed first. */
+  confirm?: ((input: { values: T }) => SaveChange[]) | undefined;
 };
 
 type SplitInput = { error: ActionError; values: FieldValues };
@@ -55,6 +58,7 @@ export function useFormAction<V extends FieldValues, R, T = V>({
   onSuccess,
   onError,
   onUnmappedIssues,
+  confirm,
 }: UseFormActionInput<V, R, T>) {
   const t = useTranslations("errors");
   const [pending, startTransition] = useTransition();
@@ -63,7 +67,8 @@ export function useFormAction<V extends FieldValues, R, T = V>({
     if (splitIssues({ error, values: form.getValues() }).mapped.length > 0) return null;
     return messages.unmapped ?? t("validationUnmapped", { message: error.message });
   };
-  const run = ({ values }: { values: T }) => {
+  const ask = useConfirmSave();
+  const save = ({ values }: { values: T }) => {
     startTransition(async () => {
       const translate = ({ key }: { key: Parameters<typeof t>[0] }) => t(key);
       const result = await actionWithToast({
@@ -79,6 +84,10 @@ export function useFormAction<V extends FieldValues, R, T = V>({
       if (unmapped.length > 0) onUnmappedIssues?.({ issues: unmapped });
       onError?.({ error: result.error, values });
     });
+  };
+  const run = ({ values }: { values: T }) => {
+    if (!ask || !confirm) return save({ values });
+    void ask({ changes: confirm({ values }) }).then((ok) => (ok ? save({ values }) : undefined));
   };
   return { submit: form.handleSubmit((values) => run({ values })), run, pending };
 }

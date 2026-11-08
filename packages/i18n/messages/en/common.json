@@ -92,7 +92,16 @@
       "read": "Read"
     },
     "deleting": "Deleting…",
-    "open": "Open"
+    "open": "Open",
+    "saveConfirm": {
+      "title": "Confirm change",
+      "description": "This is what changes when you confirm.",
+      "field": "Field",
+      "before": "Before",
+      "after": "After",
+      "on": "On",
+      "off": "Off"
+    }
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
