@@ -42,7 +42,6 @@ export function useExtraSeatsForm({ extraSeats, onSaved }: UseExtraSeatsFormInpu
     action: ({ values }) => updateBillingAction({ input: values }),
     messages: { pending: common("saving"), success: t("seatsSaved") },
     onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
-    confirm: ({ values }) => [{ field: t("extraSeats"), value: String(values.extraSeats) }],
   });
   return { form, submit, pending };
 }

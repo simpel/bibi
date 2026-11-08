@@ -39,7 +39,6 @@ export function TimeZoneEditor({ timeZone, canEdit, onSaved }: TimeZoneEditorPro
     action: ({ values }) => saveOrganizationAction({ input: values }),
     messages: { pending: common("saving"), success: t("saved") },
     onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
-    confirm: ({ values }) => [{ field: t("timeZone"), value: values.timeZone }],
   });
   return (
     <Form {...form}>

@@ -92,13 +92,7 @@
       "read": "Read"
     },
     "deleting": "Deleting…",
-    "open": "Open",
-    "saveConfirm": {
-      "title": "Confirm the change",
-      "line": "You're changing {field} to <b>{value}</b>.",
-      "on": "on",
-      "off": "off"
-    }
+    "open": "Open"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",

@@ -3,7 +3,6 @@
 import { Card } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { SaveConfirmProvider } from "@/components/save-confirm/save-confirm-context";
 import type { SettingGroups } from "@/features/settings/ui/setting-props";
 import { SETTING_ROWS } from "@/features/settings/ui/setting-rows";
 import type { GenerativeProps } from "./generative-props";
@@ -12,9 +11,7 @@ export type SettingCardsViewProps = GenerativeProps<"setting-cards">;
 
 /**
  * The settings the user asked about in one card, one row each, editable in place. The rows share
- * one view, so a save in one row (e.g. the payment operator) is what the next row builds on. Each
- * save asks first in a dialog with the change before and after, then reports in a toast; the
- * chat itself does not react.
+ * one view, so a save in one row (e.g. the payment operator) is what the next row builds on.
  */
 export function SettingCardsView({ view }: SettingCardsViewProps) {
   const t = useTranslations("assistant.ui.settings");
@@ -24,13 +21,11 @@ export function SettingCardsView({ view }: SettingCardsViewProps) {
   const onSaved = ({ patch }: { patch: Partial<SettingGroups> }) =>
     setCurrent((before) => ({ ...before, ...patch }));
   return (
-    <SaveConfirmProvider>
-      <Card data-slot="setting-cards" className="gap-0 overflow-hidden py-0 shadow-none">
-        {current.keys.map((key) => {
-          const Row = SETTING_ROWS[key];
-          return <Row key={key} view={current} onSaved={onSaved} />;
-        })}
-      </Card>
-    </SaveConfirmProvider>
+    <Card data-slot="setting-cards" className="gap-0 overflow-hidden py-0 shadow-none">
+      {current.keys.map((key) => {
+        const Row = SETTING_ROWS[key];
+        return <Row key={key} view={current} onSaved={onSaved} />;
+      })}
+    </Card>
   );
 }

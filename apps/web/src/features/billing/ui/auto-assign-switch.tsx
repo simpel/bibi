@@ -18,8 +18,6 @@ export type AutoAssignSwitchProps = {
 export function AutoAssignSwitch({ enabled, canEdit, onSaved }: AutoAssignSwitchProps) {
   const t = useTranslations("billing.settings");
   const common = useTranslations("common");
-  const onOff = ({ value }: { value: boolean }) =>
-    common(value ? "saveConfirm.on" : "saveConfirm.off");
   const router = useRouter();
   const { run, pending } = useToastAction();
   const change = ({ checked }: { checked: boolean }) =>
@@ -30,7 +28,6 @@ export function AutoAssignSwitch({ enabled, canEdit, onSaved }: AutoAssignSwitch
         success: checked ? t("autoAssignOn") : t("autoAssignOff"),
       },
       onSuccess: ({ value }) => (onSaved ? onSaved({ value }) : router.refresh()),
-      confirm: [{ field: t("autoAssign"), value: onOff({ value: checked }) }],
     });
   return (
     <section className="grid gap-2">

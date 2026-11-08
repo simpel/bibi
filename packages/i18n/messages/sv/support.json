@@ -100,7 +100,7 @@
           },
           "settings": {
             "question": "Kan jag se och ändra inställningar i chatten?",
-            "answer": "Ja. Fråga assistenten, till exempel \"Vilken tidszon har vi?\" eller \"Hur stor är handpenningen?\", så visas inställningarna som ett kort i chatten.\nOm du får ändra dem gör du det direkt i kortet. Innan något sparas ser du vad det ändras till och väljer **Bekräfta**. En notis visar sedan att den är sparad. Du ser bara inställningar du har behörighet till."
+            "answer": "Ja. Fråga assistenten, till exempel \"Vilken tidszon har vi?\" eller \"Hur stor är handpenningen?\", så visas inställningarna som ett kort i chatten.\nOm du får ändra dem gör du det direkt i kortet. Ändringen sparas när du väljer ett nytt värde eller trycker **Spara**, och en notis visar att den sparas och sedan att den är sparad. Du ser bara inställningar du har behörighet till."
           }
         }
       },

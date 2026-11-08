@@ -5,7 +5,6 @@ import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { updateAccountingSettingsAction } from "../actions";
 import { type AccountTarget, targetField } from "../lib/account-rows";
-import type { ItemTypeOption } from "../lib/accounting-form";
 import { type UseAccountingFormInput, useAccountingForm } from "./use-accounting-form";
 
 export type UseAccountEditInput = UseAccountingFormInput & {
@@ -26,8 +25,6 @@ export function useAccountEdit({ settings, types, target, onDone, onSaved }: Use
     target ?? (picked ? { kind: "type", entityTypeId: picked } : undefined);
   const form = useAccountingForm({ settings, types });
   const value = current ? form.watch(targetField({ target: current, types })) : "";
-  const field = current ? targetField({ target: current, types }) : null;
-  const label = current ? targetLabel({ target: current, types, fieldLabel: t }) : "";
   const { submit, pending } = useFormAction({
     form,
     action: ({ values }) => updateAccountingSettingsAction({ input: values }),
@@ -37,21 +34,7 @@ export function useAccountEdit({ settings, types, target, onDone, onSaved }: Use
       else router.refresh();
       onDone();
     },
-    confirm: () => (field ? [{ field: label, value: String(form.getValues(field) ?? "") }] : []),
   });
   const blocked = pending || (!target && String(value).trim() === "");
   return { form, submit, blocked, current, picked, setPicked };
-}
-
-type TargetLabelInput = {
-  target: AccountTarget;
-  types: ItemTypeOption[];
-  fieldLabel: (key: `fields.${Extract<AccountTarget, { kind: "account" }>["key"]}`) => string;
-};
-
-/** The row's name as the table shows it: the account's label, or the item type's name. */
-function targetLabel({ target, types, fieldLabel }: TargetLabelInput): string {
-  if (target.kind === "account") return fieldLabel(`fields.${target.key}`);
-  const entityTypeId = target.entityTypeId;
-  return types.find(({ id }) => id === entityTypeId)?.name ?? "";
 }

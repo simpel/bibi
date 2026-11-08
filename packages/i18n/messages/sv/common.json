@@ -92,13 +92,7 @@
       "read": "Lästa"
     },
     "deleting": "Tar bort…",
-    "open": "Öppna",
-    "saveConfirm": {
-      "title": "Bekräfta ändringen",
-      "line": "Du ändrar {field} till <b>{value}</b>.",
-      "on": "på",
-      "off": "av"
-    }
+    "open": "Öppna"
   },
   "errors": {
     "generic": "Något gick fel. Försök igen.",
