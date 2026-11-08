@@ -77,7 +77,7 @@ test("an admin edits statuses and the grid on step pages", async ({ page }) => {
   await rowAction({ page, row: "Spare", item: "Flytta vänster" });
   await expect(page.getByText("Ordningen har sparats.")).toBeVisible();
 
-  await expect(page.getByRole("heading", { name: "Rutnätet" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Statusrutnät" })).toBeVisible();
   await expect(page.getByText("Släpper alla rader").first()).toBeVisible();
   // The grid re-renders after the reorder (router.refresh). Wait for the new order to show, so no
   // later refresh can close the select mid-click, then reopen it until its options show.

@@ -25,7 +25,7 @@ export async function ApiKeyUpdatePage({ locale, id }: ApiKeyUpdatePageProps) {
   if (!apiKey) notFound();
   return (
     <FormPageShell
-      backHref={ROUTES.adminApiKeys}
+      backHref={ROUTES.adminApiKeysSection}
       title={t("edit")}
       description={t("editDescription")}
     >
