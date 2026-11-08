@@ -28,7 +28,11 @@ export async function SeatsCard({ billing, seatPrice, canEdit }: SeatsCardProps)
             </div>
           ))}
         </dl>
-        <AutoAssignSwitch enabled={billing.autoAssignSeats} canEdit={canEdit} />
+        <AutoAssignSwitch
+          enabled={billing.autoAssignSeats}
+          canEdit={canEdit}
+          seatPrice={seatPrice}
+        />
         <ExtraSeatsForm extraSeats={extra} seatPrice={seatPrice} canEdit={canEdit} />
       </div>
     </AdminSection>

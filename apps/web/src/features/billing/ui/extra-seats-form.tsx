@@ -3,6 +3,7 @@
 import type { BillingDto } from "@bibi/core";
 import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { TextField } from "@/components/form/text-field";
 import { useExtraSeatsForm } from "./use-extra-seats-form";
 
@@ -18,7 +19,10 @@ export type ExtraSeatsFormProps = {
 /** Paid seats beyond the included ones; never below what members use (core says so). */
 export function ExtraSeatsForm({ extraSeats, seatPrice, canEdit, onSaved }: ExtraSeatsFormProps) {
   const t = useTranslations("billing.settings");
-  const { form, submit, pending } = useExtraSeatsForm({ extraSeats, onSaved });
+  const { form, submit, pending, asking, confirm, cancel } = useExtraSeatsForm({
+    extraSeats,
+    onSaved,
+  });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid max-w-xs gap-3">
@@ -36,6 +40,19 @@ export function ExtraSeatsForm({ extraSeats, seatPrice, canEdit, onSaved }: Extr
           </div>
         ) : null}
       </form>
+      <ConfirmDialog
+        open={asking !== null}
+        onOpenChange={(open) => (open ? null : cancel())}
+        title={t("confirmSeatsTitle")}
+        description={t("confirmSeatsDescription", {
+          count: asking?.extraSeats ?? 0,
+          price: seatPrice,
+        })}
+        confirmLabel={t("saveSeats")}
+        variant="default"
+        pending={pending}
+        onConfirm={confirm}
+      />
     </Form>
   );
 }

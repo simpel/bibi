@@ -16,6 +16,7 @@ export function SeatsSettingRow({ view, onSaved }: SettingEditorProps) {
   const canEdit = useCan({ permission: "billing:write" });
   if (!view.seats) return null;
   const seats = view.seats;
+  const seatPrice = numbers.money({ minor: seats.seatMonthlyMinor, currency: seats.currency });
   const saved = ({ value }: { value: BillingDto }) =>
     onSaved({
       patch: {
@@ -31,10 +32,15 @@ export function SeatsSettingRow({ view, onSaved }: SettingEditorProps) {
         held: seats.held,
       })}
     >
-      <AutoAssignSwitch enabled={seats.autoAssignSeats} canEdit={canEdit} onSaved={saved} />
+      <AutoAssignSwitch
+        enabled={seats.autoAssignSeats}
+        canEdit={canEdit}
+        seatPrice={seatPrice}
+        onSaved={saved}
+      />
       <ExtraSeatsForm
         extraSeats={seats.extra}
-        seatPrice={numbers.money({ minor: seats.seatMonthlyMinor, currency: seats.currency })}
+        seatPrice={seatPrice}
         canEdit={canEdit}
         onSaved={saved}
       />
