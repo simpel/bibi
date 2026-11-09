@@ -5,7 +5,10 @@ const round = "Round table Ø180";
 /** Chairs on the outside of a U only (ADR 0099: own chairs per side). */
 const outside = { seatsTop: 0, seatsBottom: 3 };
 
-/** Hönö drawn to scale: a U-shape for 24 and a banquet of six round tables. */
+/**
+ * Hönö drawn to scale: a U-shape for 24 and a banquet of six round tables. Knippla is an L-shaped
+ * room (its walls only), so the editor shows a room that is not a rectangle.
+ */
 export const lindholmenFloorPlans: readonly DemoFloorPlan[] = [
   {
     item: "Hönö",
@@ -31,5 +34,20 @@ export const lindholmenFloorPlans: readonly DemoFloorPlan[] = [
         ),
       },
     },
+  },
+  {
+    item: "Knippla (workshop)",
+    widthCm: 1400,
+    depthCm: 1100,
+    outline: [
+      [0, 0],
+      [1400, 0],
+      [1400, 600],
+      [800, 600],
+      [800, 1100],
+      [0, 1100],
+    ],
+    fixed: [{ kind: "Door", x: 400, y: 1090, rotation: 180 }],
+    layouts: {},
   },
 ];

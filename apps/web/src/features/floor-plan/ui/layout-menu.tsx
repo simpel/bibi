@@ -18,6 +18,8 @@ export type LayoutMenuProps = {
   onUseSeats: () => void;
   onTemplate: ((template: TemplateKey) => void) | null;
   onRoomSize: (() => void) | null;
+  /** Floor plan only: straight walls again. */
+  onRectangle: (() => void) | null;
 };
 
 /** What is rare: the capacity rule, starting over from a template, the room's size. */
@@ -27,6 +29,7 @@ export function LayoutMenu({
   onUseSeats,
   onTemplate,
   onRoomSize,
+  onRectangle,
 }: LayoutMenuProps) {
   const t = useTranslations("floorPlan.menu");
   return (
@@ -74,6 +77,9 @@ export function LayoutMenu({
         ) : null}
         {onRoomSize ? (
           <DropdownMenuItem onSelect={onRoomSize}>{t("roomSize")}</DropdownMenuItem>
+        ) : null}
+        {onRectangle ? (
+          <DropdownMenuItem onSelect={onRectangle}>{t("rectangle")}</DropdownMenuItem>
         ) : null}
       </DropdownMenuContent>
     </DropdownMenu>

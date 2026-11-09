@@ -6,6 +6,7 @@ import { FloorDrawing, TooltipProvider } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { type DragEvent, useMemo, useRef, useState } from "react";
 import { placedOf, seatTotal, toDraft } from "../lib/draft";
+import { outlineSize } from "../lib/outline-edit";
 import { draftToDrawing } from "../lib/to-drawing";
 import { type EditorDialog, EditorDialogs } from "./editor-dialogs";
 import { EditorToolbar } from "./editor-toolbar";
@@ -22,6 +23,8 @@ import { useLayoutCommands } from "./use-layout-commands";
 import { useLayoutDraft } from "./use-layout-draft";
 import { toScreen, useStageSize } from "./use-stage-size";
 import { useTemplateStart } from "./use-template-start";
+import { useWallPointer } from "./use-wall-pointer";
+import { WallHandles } from "./wall-handles";
 
 export type EditorRoom = {
   widthCm: number;
@@ -50,19 +53,33 @@ export function LayoutEditor(props: LayoutEditorProps) {
   const { setup, room, kinds: kindList, canEdit } = props;
   const t = useTranslations("floorPlan");
   const kinds = useMemo(() => new Map(kindList.map((kind) => [kind.id, kind])), [kindList]);
-  const draft = useLayoutDraft({ initial: props.elements.map((element) => toDraft({ element })) });
+  const draft = useLayoutDraft({
+    initial: props.elements.map((element) => toDraft({ element })),
+    outline: room.outline,
+  });
   const { state } = draft;
-  const commands = useLayoutCommands({ draft, kinds, room });
-  const [room2, setRoom] = useState(room);
+  const room2: EditorRoom = {
+    ...outlineSize({ outline: state.outline }),
+    outline: state.outline,
+    minAisleCm: room.minAisleCm,
+  };
+  const commands = useLayoutCommands({ draft, kinds, room: room2 });
   const [capacity, setCapacity] = useState(setup?.capacity ?? null);
   const [dialog, setDialog] = useState<EditorDialog>(null);
   const [issueIndex, setIssueIndex] = useState(-1);
   const svg = useRef<SVGSVGElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const size = useStageSize({ ref: stage });
-  const pointer = useDrawingPointer({ svg, draft });
-  useEditorKeys({ commands, hasSelection: state.selected.size > 0, enabled: canEdit });
-  const dirty = state.dirty || room2 !== room || capacity !== (setup?.capacity ?? null);
+  const editWalls = canEdit && setup === null;
+  const walls = useWallPointer({ draft });
+  const pointer = useDrawingPointer({ svg, draft, walls: editWalls ? walls : null });
+  useEditorKeys({
+    commands,
+    hasSelection: state.selected.size > 0,
+    enabled: canEdit,
+    removeCorner: editWalls ? walls.removeSelected : null,
+  });
+  const dirty = state.dirty || capacity !== (setup?.capacity ?? null);
   const save = useEditorSave({
     itemId: props.itemId,
     setup,
@@ -172,12 +189,17 @@ export function LayoutEditor(props: LayoutEditorProps) {
             fixed={fixedDrawn}
             elements={drawn}
             interactive={canEdit}
-            widthLabel={t("metres", { value: room2.widthCm / 100 })}
+            widthLabel={setup ? t("metres", { value: room2.widthCm / 100 }) : undefined}
             className="size-full touch-none"
             overlay={
-              pointer.box ? (
-                <rect className="fill-primary/10 stroke-primary stroke-2" {...pointer.box} />
-              ) : null
+              <>
+                {setup ? null : (
+                  <WallHandles outline={state.outline} corner={walls.corner} editable={editWalls} />
+                )}
+                {pointer.box ? (
+                  <rect className="fill-primary/10 stroke-primary stroke-2" {...pointer.box} />
+                ) : null}
+              </>
             }
             {...(canEdit ? pointer.handlers : {})}
           />
@@ -191,6 +213,7 @@ export function LayoutEditor(props: LayoutEditorProps) {
               onUseSeats={() => setCapacity(null)}
               onTemplate={setup ? template.replace : null}
               onRoomSize={setup ? null : () => setDialog("room")}
+              onRectangle={setup ? null : commands.rectangle}
             />
           ) : null}
           <LayoutSummary
@@ -198,6 +221,7 @@ export function LayoutEditor(props: LayoutEditorProps) {
             capacity={capacity}
             issues={issues}
             onShowIssue={showIssue}
+            hint={editWalls ? t("walls.hint") : null}
           />
           {canEdit && anchor && selected.length > 0 && !pointer.dragging ? (
             <SelectionToolbar
@@ -229,7 +253,8 @@ export function LayoutEditor(props: LayoutEditorProps) {
           ) : null}
         </div>
         <EditorDialogs
-          {...{ dialog, setDialog, capacity, seats: seats ?? 0, room: room2, setCapacity, setRoom }}
+          {...{ dialog, setDialog, capacity, seats: seats ?? 0, room: room2, setCapacity }}
+          setOutline={commands.setOutline}
         />
       </div>
     </TooltipProvider>

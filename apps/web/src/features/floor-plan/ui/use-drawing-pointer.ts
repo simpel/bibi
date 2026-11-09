@@ -1,6 +1,6 @@
-import { type PointerEvent, type RefObject, useRef, useState } from "react";
-import type { DraftElement } from "../lib/draft";
-import type { LayoutDraft } from "./use-layout-draft";
+import { type MouseEvent, type PointerEvent, type RefObject, useRef, useState } from "react";
+import type { DraftSnapshot, LayoutDraft } from "./use-layout-draft";
+import type { WallPointer } from "./use-wall-pointer";
 
 export type Box = { x: number; y: number; width: number; height: number };
 
@@ -9,7 +9,7 @@ type Drag =
       mode: "move";
       x0: number;
       y0: number;
-      before: DraftElement[];
+      before: DraftSnapshot;
       keys: ReadonlySet<string>;
       moved: boolean;
     }
@@ -34,13 +34,18 @@ export function toDrawing({
   return { x: point.x, y: point.y };
 }
 
-export type UseDrawingPointerInput = { svg: RefObject<SVGSVGElement | null>; draft: LayoutDraft };
+export type UseDrawingPointerInput = {
+  svg: RefObject<SVGSVGElement | null>;
+  draft: LayoutDraft;
+  /** Wall editing, on the floor plan tab only. */
+  walls?: WallPointer | null;
+};
 
 /**
  * Pointer handling on the drawing: drag pieces (10 cm snap, Alt for free), Shift-click to add to
  * the selection, drag on the floor for a selection box. One undo step per drag.
  */
-export function useDrawingPointer({ svg, draft }: UseDrawingPointerInput) {
+export function useDrawingPointer({ svg, draft, walls = null }: UseDrawingPointerInput) {
   const drag = useRef<Drag | null>(null);
   const [box, setBox] = useState<Box | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -53,8 +58,10 @@ export function useDrawingPointer({ svg, draft }: UseDrawingPointerInput) {
       clientX: event.clientX,
       clientY: event.clientY,
     });
-    const key = (event.target as Element).closest("[data-id]")?.getAttribute("data-id");
+    const target = event.target as Element;
     svg.current.setPointerCapture(event.pointerId);
+    if (walls?.down({ target, point: { x, y, free: event.altKey } })) return;
+    const key = target.closest("[data-id]")?.getAttribute("data-id");
     if (key) {
       const selected = state.selected.has(key);
       const keys = event.shiftKey
@@ -69,7 +76,7 @@ export function useDrawingPointer({ svg, draft }: UseDrawingPointerInput) {
         mode: "move",
         x0: x,
         y0: y,
-        before: state.elements,
+        before: { elements: state.elements, outline: state.outline },
         keys: new Set(keys),
         moved: false,
       };
@@ -81,20 +88,22 @@ export function useDrawingPointer({ svg, draft }: UseDrawingPointerInput) {
   };
 
   const move = ({ event }: { event: PointerEvent<SVGSVGElement> }) => {
-    const current = drag.current;
-    if (!current || !svg.current) return;
+    if (!svg.current) return;
     const { x, y } = toDrawing({
       svg: svg.current,
       clientX: event.clientX,
       clientY: event.clientY,
     });
+    if (walls?.move({ point: { x, y, free: event.altKey } })) return;
+    const current = drag.current;
+    if (!current) return;
     if (current.mode === "move") {
       const dx = x - current.x0;
       const dy = y - current.y0;
       if (!current.moved && Math.hypot(dx, dy) < 3) return;
       if (!current.moved) setDragging(true);
       current.moved = true;
-      const elements = current.before.map((element) =>
+      const elements = current.before.elements.map((element) =>
         current.keys.has(element.key)
           ? {
               ...element,
@@ -127,6 +136,7 @@ export function useDrawingPointer({ svg, draft }: UseDrawingPointerInput) {
   };
 
   const onPointerUp = () => {
+    walls?.up();
     const current = drag.current;
     drag.current = null;
     setBox(null);
@@ -143,6 +153,8 @@ export function useDrawingPointer({ svg, draft }: UseDrawingPointerInput) {
       onPointerMove: (event: PointerEvent<SVGSVGElement>) => move({ event }),
       onPointerUp,
       onPointerCancel: onPointerUp,
+      onDoubleClick: (event: MouseEvent<SVGSVGElement>) =>
+        walls?.onDoubleClick({ target: event.target as Element }),
     },
   };
 }

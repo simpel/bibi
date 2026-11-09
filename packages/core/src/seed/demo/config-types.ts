@@ -118,6 +118,8 @@ export type DemoFloorPlan = {
   item: string;
   widthCm: number;
   depthCm: number;
+  /** The walls as [x, y] points in cm, clockwise; omitted = a width × depth rectangle. */
+  outline?: readonly (readonly [number, number])[];
   fixed: readonly DemoFloorPiece[];
   /** Setup name → its pieces; `useSeats` clears the typed capacity so the seats count. */
   layouts: Readonly<Record<string, { pieces: readonly DemoFloorPiece[]; useSeats?: boolean }>>;

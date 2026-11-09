@@ -79,7 +79,7 @@ export async function seedDemoFloorPlans({
     const fixed = toElements({ pieces: plan.fixed, kinds });
     if (!fixed.ok) return fixed;
     const { widthCm, depthCm } = plan;
-    const outline: [number, number][] = [
+    const outline: [number, number][] = plan.outline?.map(([x, y]) => [x, y]) ?? [
       [0, 0],
       [widthCm, 0],
       [widthCm, depthCm],

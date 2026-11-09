@@ -83,6 +83,10 @@
           "floorPlan": {
             "question": "Var lägger jag in dörrar och pelare?",
             "answer": "Öppna fliken Planritning under Möbleringar. Dörrar, pelare och skärmar som du placerar där syns i alla rummets möbleringar, och Bibi varnar om en möbel står i vägen för en dörr.\nAnvänd menyn med tre punkter för att ange rummets bredd och djup."
+          },
+          "roomShape": {
+            "question": "Hur ritar jag ett rum som inte är rektangulärt?",
+            "answer": "Öppna rummet under Artiklar, välj Möbleringar och sedan fliken Planritning. Dra i ett hörn för att flytta väggarna, klicka på + mitt på en vägg för att lägga till ett hörn och dubbelklicka på ett hörn för att ta bort det.\nVarje vägg visar sin längd. Klicka på Spara när formen stämmer, så använder alla möbleringar i rummet den."
           }
         }
       },

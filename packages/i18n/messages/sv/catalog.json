@@ -689,7 +689,8 @@
         "uShape": "U-bord",
         "banquet": "Bankett, runda bord"
       },
-      "roomSize": "Redigera rummets storlek"
+      "roomSize": "Redigera rummets storlek",
+      "rectangle": "Gör väggarna till en rektangel"
     },
     "start": {
       "title": "Börja möblera {setup}",
@@ -711,7 +712,7 @@
     },
     "roomDialog": {
       "title": "Redigera rummets storlek",
-      "description": "Bredd och djup i meter. Väggarna blir en rektangel med den storleken.",
+      "description": "Bredd och djup i meter. Rummet behåller sin form och sträcks till den här storleken.",
       "confirm": "Använd storleken",
       "width": "Bredd (m)",
       "depth": "Djup (m)"
@@ -723,6 +724,11 @@
       "import": "Importera startmöbler",
       "importing": "Importerar möbler…",
       "imported": "Möblerna har importerats"
+    },
+    "walls": {
+      "hint": "Dra i ett hörn för att flytta väggarna. Klicka på + för att lägga till ett hörn, dubbelklicka på ett hörn för att ta bort det.",
+      "corner": "Hörn {corner}",
+      "addCorner": "Lägg till ett hörn på vägg {wall}"
     }
   }
 }
