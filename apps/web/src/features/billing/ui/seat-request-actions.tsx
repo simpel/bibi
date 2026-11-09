@@ -92,6 +92,7 @@ export function SeatDecisionDialog({ decision, seatPrice, onClose }: SeatDecisio
         approve ? t("approveDescription", { price: seatPrice }) : t("declineDescription")
       }
       confirmLabel={approve ? t("approve") : t("decline")}
+      variant={approve ? "default" : "destructive"}
       pending={pending}
       onConfirm={decide}
     />

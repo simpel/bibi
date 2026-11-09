@@ -29,7 +29,6 @@ const invitationCard = uiEntry({
 /** Tool → component for Bibi's own subscription; a decided seat request is its invitation. */
 export const BILLING_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   billing_get: billingCard,
-  billing_update: billingCard,
   billing_sync: billingCard,
   billing_approveSeat: invitationCard,
   billing_rejectSeat: invitationCard,

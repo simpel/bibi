@@ -1,3 +1,4 @@
+import type { AccountingSettingsDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useRouter } from "@/lib/navigation";
@@ -10,10 +11,12 @@ export type UseAccountEditInput = UseAccountingFormInput & {
   /** The row being edited; absent = add, where an item type is picked first. */
   target?: AccountTarget | undefined;
   onDone: () => void;
+  /** After a save; without it the page refreshes. The assistant's card keeps the new value. */
+  onSaved?: ((input: { value: AccountingSettingsDto }) => void) | undefined;
 };
 
 /** The accounting form for one row (or a new item type account) and its save action. */
-export function useAccountEdit({ settings, types, target, onDone }: UseAccountEditInput) {
+export function useAccountEdit({ settings, types, target, onDone, onSaved }: UseAccountEditInput) {
   const t = useTranslations("finance.accounting");
   const common = useTranslations("common");
   const router = useRouter();
@@ -26,8 +29,9 @@ export function useAccountEdit({ settings, types, target, onDone }: UseAccountEd
     form,
     action: ({ values }) => updateAccountingSettingsAction({ input: values }),
     messages: { pending: common("saving"), success: t("saved") },
-    onSuccess: () => {
-      router.refresh();
+    onSuccess: ({ value }) => {
+      if (onSaved) onSaved({ value });
+      else router.refresh();
       onDone();
     },
   });

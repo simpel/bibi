@@ -4,6 +4,11 @@ export type UiExempt = { operation: string; reason: string };
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
   {
+    operation: "settings.view",
+    reason:
+      "The assistant's read of single settings (one card each); the administration pages read each owner's settings.",
+  },
+  {
     operation: "profile.setLocale",
     reason:
       "Language switching is handled via route locale prefix (/sv, /en); profile.setLocale serves background sync and API clients.",

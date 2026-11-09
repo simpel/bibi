@@ -15,6 +15,8 @@ export type AccountEditFormProps = {
   target?: AccountTarget | undefined;
   choices?: ItemTypeOption[] | undefined;
   onDone: () => void;
+  /** After a save; without it the page refreshes. The assistant's card keeps the new value. */
+  onSaved?: ((input: { value: AccountingSettingsDto }) => void) | undefined;
 };
 
 /** One input over the full accounting update: the rest of the settings are sent as they are. */

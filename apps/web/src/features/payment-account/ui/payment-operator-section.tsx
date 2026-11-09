@@ -38,7 +38,6 @@ export async function PaymentOperatorSection({ locale }: PaymentOperatorSectionP
     <AdminSection section="paymentOperator" description={t("operator.description")}>
       <div className="grid gap-3">
         <PaymentOperatorSelect
-          label={t("operator.label")}
           value={settings.value.paymentOperator ?? "AUTO"}
           canEdit={can({ abilities, permission: "paymentAccount:write" })}
           options={[

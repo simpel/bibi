@@ -19,10 +19,12 @@ export type ConfirmDialogProps = {
   confirmLabel: string;
   pending: boolean;
   onConfirm: () => void;
+  /** `default` for a change that is not destructive, e.g. one that costs money. */
+  variant?: "destructive" | "default" | undefined;
 };
 
 /**
- * Destructive confirmation (archive). The outcome is a toast (CLAUDE.md "Forms"); the dialog
+ * Confirmation of a destructive action (archive) or a money change (paid seats). The outcome is a toast (CLAUDE.md "Forms"); the dialog
  * stays open while `pending` and the caller closes it on success.
  */
 export function ConfirmDialog(props: ConfirmDialogProps) {
@@ -38,7 +40,11 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
           <Button variant="outline" onClick={() => props.onOpenChange(false)}>
             {t("cancel")}
           </Button>
-          <Button variant="destructive" disabled={props.pending} onClick={props.onConfirm}>
+          <Button
+            variant={props.variant ?? "destructive"}
+            disabled={props.pending}
+            onClick={props.onConfirm}
+          >
             {props.confirmLabel}
           </Button>
         </DialogFooter>

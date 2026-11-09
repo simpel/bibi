@@ -11,11 +11,13 @@ export type TimeZoneFieldProps<V extends FieldValues, O> = {
   label: string;
   /** Label of an extra "inherit" choice (value `NONE`); omitted = a zone is required. */
   inheritLabel?: string;
+  /** Called with the picked zone, for a field that saves on change. */
+  onPick?: ((input: { value: string }) => void) | undefined;
 };
 
 /** A searchable dropdown of IANA zones with their current offset (ADR 0064). */
 export function TimeZoneField<V extends FieldValues, O>(props: TimeZoneFieldProps<V, O>) {
-  const { control, name, label, inheritLabel } = props;
+  const { control, name, label, inheritLabel, onPick } = props;
   const t = useTranslations("timeZone");
   const locale = useLocale();
   const now = useNow();
@@ -35,7 +37,10 @@ export function TimeZoneField<V extends FieldValues, O>(props: TimeZoneFieldProp
             <Combobox
               options={options}
               value={String(field.value ?? "")}
-              onValueChange={field.onChange}
+              onValueChange={(value) => {
+                field.onChange(value);
+                onPick?.({ value });
+              }}
               placeholder={t("placeholder")}
               searchPlaceholder={t("search")}
               emptyText={t("empty")}

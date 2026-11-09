@@ -8,6 +8,7 @@ import type { z } from "zod";
 import { formSchema } from "@/lib/form-schema";
 import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
+import { useSaveOnChange } from "@/lib/use-save-on-change";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { setItemStateTransitionsAction } from "../actions";
 import type { TransitionValues } from "./transition-choices";
@@ -27,7 +28,7 @@ export type ItemStateTransitionsFormProps = {
   onDone: () => void;
 };
 
-/** Checkbox list of allowed targets, saved as a set with `itemState.setTransitions`. */
+/** Checkbox list of allowed targets, saved as a set with `itemState.setTransitions` on each change. */
 export function ItemStateTransitionsForm({
   state,
   targets,
@@ -40,26 +41,25 @@ export function ItemStateTransitionsForm({
     resolver: zodResolver(schemaFor({ id: state.id }), useZodMessages()),
     defaultValues: { toStateIds: [...state.transitionsTo] },
   });
-  const { submit, pending } = useFormAction({
+  const { run } = useFormAction({
     form,
     action: ({ values }) => setItemStateTransitionsAction({ input: values }),
     messages: { pending: t("saving"), success: t("transitionsSaved") },
     onSuccess: () => {
+      form.reset(form.getValues());
       router.refresh();
-      onDone();
     },
+    onError: () => form.reset(),
   });
+  useSaveOnChange({ form, run });
   const choices = state.released ? [] : targets;
   return (
     <Form {...form}>
-      <form onSubmit={submit} noValidate className="grid gap-4">
+      <form onSubmit={(event) => event.preventDefault()} noValidate className="grid gap-4">
         <TransitionChoices control={form.control} choices={choices} />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>
-            {common("cancel")}
-          </Button>
-          <Button type="submit" disabled={pending}>
-            {common("save")}
+            {common("close")}
           </Button>
         </DialogFooter>
       </form>

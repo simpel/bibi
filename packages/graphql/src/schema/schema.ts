@@ -34,6 +34,7 @@ import "../features/requirement/graphql";
 import "../features/run-sheet/graphql";
 import "../features/pipeline/graphql";
 import "../features/calendar/graphql";
+import "../features/settings/graphql";
 import "../features/dashboard/graphql";
 import "../features/finance/graphql";
 import "../features/finance/export-graphql";

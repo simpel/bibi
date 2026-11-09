@@ -74,7 +74,12 @@
       "saveSeats": "Spara platser",
       "seatsSaved": "Platserna har sparats.",
       "requestsTitle": "Platsförfrågningar",
-      "requestsDescription": "Inbjudningar som väntar på en plats. Godkänner du en läggs en betald plats till och inbjudan skickas."
+      "requestsDescription": "Inbjudningar som väntar på en plats. Godkänner du en läggs en betald plats till och inbjudan skickas.",
+      "confirmSeatsTitle": "Ändra extra platser?",
+      "confirmSeatsDescription": "Du betalar för {count, plural, one {# extra plats} other {# extra platser}}, {price} i månaden styck.",
+      "confirmAutoAssignTitle": "Lägga till platser automatiskt?",
+      "confirmAutoAssignDescription": "När alla platser är tagna lägger varje ny inbjudan till en betald plats för {price} i månaden.",
+      "confirmAutoAssign": "Slå på"
     },
     "requests": {
       "columns": {
@@ -625,7 +630,9 @@
       "label": "Betaloperatör",
       "manage": "Aktivera eller inaktivera kopplingar under Integrationer",
       "notConnected": "Stripe (inte kopplat)"
-    }
+    },
+    "confirmDepositTitle": "Ändra förskottet?",
+    "confirmDepositDescription": "Förskott: {percent}. Lägsta belopp: {minimum}. Från och med nu är det här vad kunder ombeds betala i förväg."
   },
   "paymentAccount": {
     "title": "Betalningar",

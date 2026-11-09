@@ -103,6 +103,7 @@ export * from "./features/responsibility/schema";
 export * from "./features/run-sheet/list-schema";
 export * from "./features/run-sheet/schema";
 export * from "./features/run-sheet-definition/schema";
+export * from "./features/settings/schema";
 export * from "./features/setup/schema";
 export * from "./features/skill/schema";
 export * from "./features/status-grid/schema";

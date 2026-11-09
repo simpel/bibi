@@ -216,7 +216,8 @@
     "profile": "Profil",
     "platformAdminTitle": "Mothership",
     "platformAdminDescription": "Systemlogg och AI-modeller för hela plattformen.",
-    "platformAdminOpen": "Öppna mothership"
+    "platformAdminOpen": "Öppna mothership",
+    "languageSaved": "Språket har sparats."
   },
   "commandBar": {
     "title": "Kommandofält",
@@ -233,7 +234,8 @@
     "createItem": "Skapa artikel",
     "assistant": "Assistent",
     "askAssistant": "Fråga assistenten: ”{query}”",
-    "openAssistant": "Öppna assistenten"
+    "openAssistant": "Öppna assistenten",
+    "settings": "Inställningar"
   },
   "search": {
     "placeholder": "Sök anläggningar, artiklar och mer...",
@@ -541,10 +543,6 @@
   },
   "adminArea": {
     "search": {
-      "label": "Sök i administrationen",
-      "placeholder": "Sök inställningar",
-      "noResults": "Inga träffar.",
-      "results": "Sökträffar",
       "entries": {
         "timeZone": {
           "label": "Tidszon",

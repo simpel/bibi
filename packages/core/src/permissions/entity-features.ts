@@ -46,6 +46,8 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   vocabularyValue: "configuration",
   setup: "configuration",
   organizationProfile: "configuration",
+  // A view read model (ADR 0071): its other features' settings are gated per key.
+  settings: "configuration",
   orderStatus: "pipeline",
   board: "board",
   boardPhase: "board",

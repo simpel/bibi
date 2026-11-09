@@ -23,6 +23,8 @@ const FINDERS: Readonly<Record<string, FindNamed>> = {
   priceList: ({ db, ids }) => db.priceList.findMany({ where: { id: { in: ids } }, select }),
   responsibility: ({ db, ids }) =>
     db.responsibility.findMany({ where: { id: { in: ids } }, select }),
+  // The list a value is added to, so `vocabulary.addValue`'s approval names it.
+  vocabulary: ({ db, ids }) => db.vocabulary.findMany({ where: { id: { in: ids } }, select }),
   vocabularyValue: ({ db, ids }) =>
     db.vocabularyValue.findMany({ where: { id: { in: ids } }, select }),
   fieldDefinition: ({ db, ids }) =>
