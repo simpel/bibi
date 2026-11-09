@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.5.0](https://github.com/simpel/bibi/compare/@bibi/web-v1.4.0...@bibi/web-v1.5.0) (2026-11-09)
+
+
+### Features
+
+* draw rooms of any shape on the floor plan ([#511](https://github.com/simpel/bibi/issues/511)) ([77e9225](https://github.com/simpel/bibi/commit/77e922584a05c33210a516d6a0ec035fbfe183f1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 1.2.1
+    * @bibi/api bumped to 1.1.2
+    * @bibi/auth bumped to 0.6.1
+    * @bibi/core bumped to 1.3.0
+    * @bibi/graphql bumped to 1.1.2
+    * @bibi/i18n bumped to 1.5.0
+    * @bibi/mail bumped to 0.5.1
+    * @bibi/storage bumped to 0.2.4
+    * @bibi/ui bumped to 1.2.0
+
 ## [1.4.0](https://github.com/simpel/bibi/compare/@bibi/web-v1.3.0...@bibi/web-v1.4.0) (2026-11-07)
 
 

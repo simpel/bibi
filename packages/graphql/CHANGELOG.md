@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.2](https://github.com/simpel/bibi/compare/@bibi/graphql-v1.1.1...@bibi/graphql-v1.1.2) (2026-11-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 1.3.0
+
 ## [1.1.1](https://github.com/simpel/bibi/compare/@bibi/graphql-v1.1.0...@bibi/graphql-v1.1.1) (2026-11-07)
 
 

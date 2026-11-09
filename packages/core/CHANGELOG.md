@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/simpel/bibi/compare/@bibi/core-v1.2.0...@bibi/core-v1.3.0) (2026-11-09)
+
+
+### Features
+
+* draw rooms of any shape on the floor plan ([#511](https://github.com/simpel/bibi/issues/511)) ([77e9225](https://github.com/simpel/bibi/commit/77e922584a05c33210a516d6a0ec035fbfe183f1))
+
 ## [1.2.0](https://github.com/simpel/bibi/compare/@bibi/core-v1.1.0...@bibi/core-v1.2.0) (2026-11-07)
 
 
