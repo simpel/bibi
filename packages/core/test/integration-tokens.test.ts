@@ -109,7 +109,7 @@ describe("getAccessToken (Fortnox)", () => {
     const list = unwrap({
       result: await execute({ operation: listIntegrations, input: {}, context }),
     });
-    expect(list.items[0]?.status).toBe("EXPIRED");
+    expect(list.items.find((item) => item.provider === "FORTNOX")?.status).toBe("EXPIRED");
   });
 });
 

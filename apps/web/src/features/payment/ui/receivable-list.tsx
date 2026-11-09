@@ -7,14 +7,16 @@ import type {
   ReceivableSettlement,
 } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
+import { CreditInvoiceButton } from "./credit-invoice-button";
 import { DepositEntry } from "./deposit-entry";
-import { FortnoxSyncButton } from "./fortnox-sync-button";
 import { InvoiceEntry } from "./invoice-entry";
 import { InvoiceLines } from "./invoice-lines";
 import { PaidOf } from "./paid-of";
 import { ReceivableActions } from "./receivable-actions";
 import { ReceivableBadges } from "./receivable-badges";
+import { RecordPaymentButton } from "./record-payment-button";
 import { RequestPaymentButton } from "./request-payment-button";
+import { SyncInvoiceButton } from "./sync-invoice-button";
 
 /** The viewer's formats, from the server (`getDateTimeFormat`, `getNumberFormat`). */
 type Formats = { dates: DateTimeFormat; numbers: NumberFormat };
@@ -30,8 +32,9 @@ function QuoteRow({ quote, canWrite, numbers }: QuoteRowProps) {
       <PaidOf paidMinor={quote.paidMinor} amountMinor={quote.amountMinor} numbers={numbers} />
       <ReceivableBadges progress={quote.progress} />
       {canWrite && quote.openMinor > 0 ? (
-        <div className="ml-auto">
+        <div className="ml-auto flex gap-2">
           <RequestPaymentButton target={{ quoteId: quote.id }} openMinor={quote.openMinor} />
+          <RecordPaymentButton target={{ quoteId: quote.id }} openMinor={quote.openMinor} />
         </div>
       ) : null}
     </li>
@@ -58,12 +61,19 @@ type InvoiceRowProps = { invoice: InvoiceDto; canWrite: boolean } & Formats;
 
 function InvoiceRow({ invoice, canWrite, ...formats }: InvoiceRowProps) {
   const t = useTranslations("invoice");
-  const { id, status, openMinor } = invoice;
+  const providers = useTranslations("providers");
+  const { id, status, openMinor, canVoid } = invoice;
   const confirm = t("voidConfirm", { number: invoice.number });
   const actions = canWrite ? (
     <>
-      {invoice.provider === "FORTNOX" && status === "SENT" ? <FortnoxSyncButton id={id} /> : null}
-      <ReceivableActions {...{ kind: "invoice", id, status, openMinor }} voidConfirm={confirm} />
+      {invoice.canSync && invoice.provider ? (
+        <SyncInvoiceButton id={id} name={providers(`${invoice.provider}.name`)} />
+      ) : null}
+      {invoice.canCredit ? <CreditInvoiceButton invoice={invoice} /> : null}
+      <ReceivableActions
+        {...{ kind: "invoice", id, status, openMinor, canVoid }}
+        voidConfirm={confirm}
+      />
     </>
   ) : null;
   return (

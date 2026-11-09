@@ -69,6 +69,16 @@ export const InvoiceSchema = z.object({
         "payments settle",
     ),
   ...SettlementShape,
+  canSync: z
+    .boolean()
+    .describe("invoice.sync can run: SENT and raised in a provider that keeps invoices"),
+  canCredit: z.boolean().describe("invoice.credit can run: SENT with an amount still due"),
+  canVoid: z
+    .boolean()
+    .describe(
+      "invoice.void can run: not VOID, nothing paid and not booked in an accounting system " +
+        "(credit it instead)",
+    ),
   createdAt: z.date(),
   updatedAt: z.date(),
   createdBy: z.string().nullable(),

@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import type { ProviderKey } from "../../providers/provider-keys";
-import { findProvider, takesMethod } from "../../providers/registry";
+import { findProvider, listProviders, takesMethod } from "../../providers/registry";
 import { invalid } from "../../shared/errors";
 import {
   type PaymentRoute,
@@ -25,6 +25,12 @@ export async function loadPaymentSettings({ context }: Db): Promise<PaymentSetti
   return {
     ...(row ?? { id: null, depositPercent: null, depositMinimumMinor: null }),
     routes: ROUTABLE_METHODS.map((method) => ({ method, provider: providerOf({ method }) })),
+    choices: ROUTABLE_METHODS.map((method) => ({
+      method,
+      providers: listProviders()
+        .filter((adapter) => takesMethod({ adapter, method }))
+        .map((adapter) => adapter.key),
+    })),
     invoiceProvider: providerOf({ method: "INVOICE" }),
     paymentOperator: providerOf({ method: "CARD" }),
   };

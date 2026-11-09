@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PROVIDER_KEYS } from "../../providers/provider-keys";
+import { PAYMENT_METHODS, PROVIDER_KEYS } from "../../providers/provider-keys";
 
 export const IntegrationProviderSchema = z
   .enum(PROVIDER_KEYS)
@@ -16,6 +16,32 @@ export const IntegrationStatusSchema = z
       "disconnected.",
   );
 
+export const ConnectKindSchema = z
+  .enum(["OAUTH", "HOSTED_ONBOARDING", "CREDENTIALS"])
+  .describe(
+    "How the provider connects: OAUTH (approve at the provider, integration.connect returns " +
+      "authorizeUrl), HOSTED_ONBOARDING (the payout account, paymentAccount.startOnboarding) or " +
+      "CREDENTIALS (integration.connect with `credentials`, see credentialFields).",
+  );
+
+/** One credential an admin enters for a CREDENTIALS provider (ADR 0100). */
+export const CredentialFieldSchema = z.object({
+  key: z.string().describe("The key in integration.connect `credentials`"),
+  kind: z
+    .enum(["TEXT", "SECRET", "FILE"])
+    .describe("TEXT, SECRET (never shown again) or FILE (the file's content as base64)"),
+  description: z.string().nullable(),
+});
+
+/** What the provider can do for the organization once connected (ADR 0100). */
+export const IntegrationCapabilitiesSchema = z.object({
+  methods: z
+    .array(z.enum(PAYMENT_METHODS))
+    .describe("The payment methods it can take (CARD, SWISH, INVOICE); routes pick among these"),
+  invoicing: z.boolean().describe("It raises invoices (an INVOICE route can point to it)"),
+  ledger: z.boolean().describe("It keeps the books for what it invoices; the SIE export skips it"),
+});
+
 /** One provider's connection for the organization (ADR 0087). Tokens never appear here. */
 export const IntegrationConnectionSchema = z.object({
   id: z.string().nullable().describe("Null while NOT_CONNECTED (no row yet)."),
@@ -27,6 +53,11 @@ export const IntegrationConnectionSchema = z.object({
     .describe(
       "False when Bibi has no app credentials for the provider: connecting is unavailable.",
     ),
+  connectKind: ConnectKindSchema,
+  credentialFields: z
+    .array(CredentialFieldSchema)
+    .describe("What integration.connect takes in `credentials`; [] unless CREDENTIALS"),
+  capabilities: IntegrationCapabilitiesSchema,
   companyName: z.string().nullable().describe("The provider's company name, captured at connect."),
   organizationNumber: z.string().nullable(),
   connectedAt: z.date().nullable(),
@@ -39,14 +70,25 @@ export const IntegrationListOutputSchema = z.object({
   items: z.array(IntegrationConnectionSchema),
 });
 
-export const IntegrationConnectInputSchema = z.object({ provider: IntegrationProviderSchema });
+export const IntegrationConnectInputSchema = z.object({
+  provider: IntegrationProviderSchema,
+  credentials: z
+    .record(z.string(), z.string().max(200_000))
+    .optional()
+    .describe(
+      "For a CREDENTIALS provider only: its credentialFields by key (a FILE as base64). Checked " +
+        "with the provider before they are stored sealed; never returned.",
+    ),
+});
 
 export const IntegrationConnectOutputSchema = IntegrationConnectionSchema.extend({
   authorizeUrl: z
     .url()
+    .nullable()
     .describe(
-      "The provider's consent page. Open it in a browser signed in to Bibi; it is valid for 10 " +
-        "minutes. Some providers (Fortnox) require their system administrator to approve.",
+      "OAUTH: the provider's consent page. Open it in a browser signed in to Bibi; it is valid " +
+        "for 10 minutes. Some providers require their system administrator to approve. Null " +
+        "for CREDENTIALS, which are connected at once.",
     ),
 });
 
@@ -68,6 +110,9 @@ export const IntegrationRefreshExpiringOutputSchema = z.object({
 
 export type IntegrationProvider = z.infer<typeof IntegrationProviderSchema>;
 export type IntegrationStatus = z.infer<typeof IntegrationStatusSchema>;
+export type IntegrationConnectKind = z.infer<typeof ConnectKindSchema>;
+export type CredentialField = z.infer<typeof CredentialFieldSchema>;
+export type IntegrationCapabilities = z.infer<typeof IntegrationCapabilitiesSchema>;
 export type IntegrationConnectionDto = z.infer<typeof IntegrationConnectionSchema>;
 export type IntegrationConnectInput = z.infer<typeof IntegrationConnectInputSchema>;
 export type IntegrationConnectOutput = z.infer<typeof IntegrationConnectOutputSchema>;

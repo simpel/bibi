@@ -1,15 +1,8 @@
 import type { Result } from "../../errors/result";
+import type { ProviderInvoiceRow } from "../invoice-rows";
 
 /** One invoice row as Fortnox takes it (ADR 0090): amounts in currency units, excl. VAT. */
-export type FortnoxInvoiceRow = {
-  description: string;
-  quantity: number;
-  price: number;
-  discountPercent: number;
-  vatPercent: number;
-  /** Revenue account, or the customer advances account for a deducted deposit. */
-  accountNumber: number;
-};
+export type FortnoxInvoiceRow = ProviderInvoiceRow;
 
 export type FortnoxCustomerInput = { name: string; email: string | null };
 

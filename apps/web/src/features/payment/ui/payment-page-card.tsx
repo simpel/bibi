@@ -2,11 +2,14 @@ import type { NumberFormat, PublicPaymentDto } from "@bibi/core/schemas";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { AutoRefresh } from "./auto-refresh";
-import { type PaymentOutcome, paymentOutcome } from "./payment-outcome";
+import { PaymentMethodPicker } from "./payment-method-picker";
+import { type PaymentOutcome, paymentOutcome, pickableMethods } from "./payment-outcome";
 import { PaymentPageLines } from "./payment-page-lines";
 
 export type PaymentPageCardProps = {
   payment: PublicPaymentDto;
+  /** The page's token: the picker starts an attempt with it. */
+  token: string;
   returning?: boolean;
   /** The viewer's number format: `getNumberFormat()` on the server, the hook in a client card. */
   numbers: NumberFormat;
@@ -31,7 +34,41 @@ const DESCRIPTION_KEY = {
 } as const satisfies Record<PaymentOutcome, string>;
 
 /** What the customer sees at `/pay/<token>`: the amount and a way to pay, or why not. */
-export function PaymentPageCard({ payment, returning = false, numbers }: PaymentPageCardProps) {
+type PayActionsProps = Pick<PaymentPageCardProps, "payment" | "token">;
+
+/** The method picker for routed methods, or the one prepared link of an older payment. */
+function PayActions({ payment, token }: PayActionsProps) {
+  const t = useTranslations("payment.public");
+  const method = useTranslations("payment.method");
+  const methods = pickableMethods({ payment });
+  if (methods.length === 0) {
+    return payment.paymentUrl ? (
+      <Button asChild size="lg">
+        <a href={payment.paymentUrl} rel="noreferrer">
+          {t("pay")}
+        </a>
+      </Button>
+    ) : null;
+  }
+  const labels = {
+    methods: {
+      CARD: t("payWith", { method: method("CARD") }),
+      SWISH: t("payWith", { method: method("SWISH") }),
+    },
+    scan: t("swishScan"),
+    openApp: t("swishOpen"),
+    waiting: t("swishWaiting"),
+    failed: t("startFailed"),
+  };
+  return <PaymentMethodPicker token={token} methods={methods} labels={labels} />;
+}
+
+export function PaymentPageCard({
+  payment,
+  token,
+  returning = false,
+  numbers,
+}: PaymentPageCardProps) {
   const t = useTranslations("payment.public");
   const { money } = numbers;
   const outcome = paymentOutcome({ payment, returning });
@@ -53,13 +90,9 @@ export function PaymentPageCard({ payment, returning = false, numbers }: Payment
         ) : null}
         {showAmount ? <PaymentPageLines payment={payment} numbers={numbers} /> : null}
         {outcome === "processing" ? <AutoRefresh /> : null}
-        {outcome === "pay" && payment.paymentUrl ? (
+        {outcome === "pay" ? (
           <>
-            <Button asChild size="lg">
-              <a href={payment.paymentUrl} rel="noreferrer">
-                {t("pay")}
-              </a>
-            </Button>
+            <PayActions payment={payment} token={token} />
             <p className="text-center text-sm text-muted-foreground">{t("secured")}</p>
           </>
         ) : null}

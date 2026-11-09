@@ -31,19 +31,34 @@ const complete = ({
   });
 
 describe("integration.connect", () => {
-  it("lists Fortnox as NOT_CONNECTED and configured before anything starts", async () => {
+  it("lists every provider as NOT_CONNECTED with how it connects and what it can do", async () => {
     const list = unwrap({
       result: await execute({ operation: listIntegrations, input: {}, context: testContext() }),
     });
-    expect(list.items).toEqual([
-      expect.objectContaining({ provider: "FORTNOX", status: "NOT_CONNECTED", configured: true }),
+    expect(list.items.map((item) => item.provider)).toEqual([
+      "STRIPE",
+      "FORTNOX",
+      "SWISH",
+      "VISMA",
     ]);
+    expect(list.items).toContainEqual(
+      expect.objectContaining({
+        provider: "FORTNOX",
+        status: "NOT_CONNECTED",
+        configured: true,
+        connectKind: "OAUTH",
+        capabilities: { methods: ["INVOICE"], invoicing: true, ledger: true },
+      }),
+    );
+    const swish = list.items.find((item) => item.provider === "SWISH");
+    expect(swish?.connectKind).toBe("CREDENTIALS");
+    expect(swish?.credentialFields.map((field) => field.kind)).toEqual(["TEXT", "FILE", "SECRET"]);
   });
 
   it("returns a service-account authorize URL with PKCE and stores only the state hash", async () => {
     installFakeFortnox();
     const { started, state } = await startFortnox({ context: testContext() });
-    const params = new URL(started.authorizeUrl).searchParams;
+    const params = new URL(started.authorizeUrl ?? "").searchParams;
     expect(started.authorizeUrl).toMatch(/^https:\/\/apps\.fortnox\.se\/oauth-v1\/auth\?/);
     expect(Object.fromEntries(params)).toMatchObject({
       client_id: "client-id",

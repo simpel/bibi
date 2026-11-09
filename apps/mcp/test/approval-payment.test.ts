@@ -1,4 +1,4 @@
-import { resetProviderAdapters } from "@bibi/core";
+import { applyProviderDelivery, type ExecuteContext, resetProviderAdapters } from "@bibi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
@@ -32,6 +32,23 @@ async function setup() {
   return { base, user, assistant: await connect({ context: ai }), depositId, provider };
 }
 
+/** The provider's webhook reporting the card checkout paid (ADR 0100). */
+async function settle({ context, reference }: { context: ExecuteContext; reference: string }) {
+  const connection = await context.db.providerConnection.findFirstOrThrow({});
+  const eventId = `evt_${createId()}`;
+  const signal = {
+    provider: connection.provider,
+    eventId,
+    externalAccountId: connection.externalAccountId,
+    occurredAt: new Date(),
+    kind: "attempt.succeeded" as const,
+    reference,
+  };
+  const delivery = { eventId, type: signal.kind, signals: [signal] };
+  const applied = await applyProviderDelivery({ provider: connection.provider, delivery });
+  expect(applied.ok && applied.value.status, JSON.stringify(applied)).toBe("applied");
+}
+
 describe("approval flow: payments (ADR 0058)", () => {
   it("never calls the payment provider for a proposal, only after approval", async () => {
     const { base, user, assistant, depositId, provider } = await setup();
@@ -63,5 +80,27 @@ describe("approval flow: payments (ADR 0058)", () => {
       idempotencyKey: `bibi-payment-${confirmed.data.id}`,
     });
     expect(confirmed.data.providerReference).toMatch(/^cs_test_/);
+  });
+
+  it("proposes cancels, manual payments and refunds without touching the provider", async () => {
+    const { base, user, assistant, depositId, provider } = await setup();
+    const args = { depositId, method: "CARD", amountMinor: 50_000 };
+    const payment = await call({ client: user, name: "payment_create", args });
+    expect(payment.isError, JSON.stringify(payment.data)).toBe(false);
+    const { id } = payment.data;
+    const propose = async ({ name, args: toolArgs }: { name: string; args: object }) => {
+      const proposal = await call({ client: assistant, name, args: { ...toolArgs } });
+      expect(proposal.data.status, `${name} ${JSON.stringify(proposal.data)}`).toBe(
+        "approval_required",
+      );
+    };
+    await propose({ name: "payment_cancel", args: { id } });
+    await settle({ context: base, reference: payment.data.providerReference });
+    await propose({ name: "payment_refund", args: { id, amountMinor: 10_000 } });
+    const manual = { depositId, amountMinor: 10_000, paidAt: "2026-05-01T10:00:00Z" };
+    await propose({ name: "payment_recordManual", args: manual });
+    expect(provider.portCalls).toEqual([]);
+    expect(await base.db.paymentRefund.count()).toBe(0);
+    expect(await base.db.payment.count()).toBe(1);
   });
 });

@@ -50,6 +50,11 @@ describe("the deposit rule (ADR 0090)", () => {
         { method: "SWISH", provider: null },
         { method: "INVOICE", provider: null },
       ],
+      choices: [
+        { method: "CARD", providers: ["STRIPE"] },
+        { method: "SWISH", providers: ["SWISH"] },
+        { method: "INVOICE", providers: ["STRIPE", "FORTNOX", "VISMA"] },
+      ],
       invoiceProvider: null,
       paymentOperator: null,
     });

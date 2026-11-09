@@ -44,6 +44,14 @@ export const PaymentSettingsSchema = z.object({
   routes: z
     .array(PaymentRouteSchema)
     .describe("Which provider takes each payment method (CARD, SWISH, INVOICE), one per method"),
+  choices: z
+    .array(
+      z.object({
+        method: z.enum(ROUTABLE_METHODS),
+        providers: z.array(ProviderKeySchema).describe("The providers that can take the method"),
+      }),
+    )
+    .describe("Which providers a route may name per method; integration.list says which connect"),
   invoiceProvider: InvoiceProviderSchema.nullable().describe(
     "The INVOICE route's provider (same as in routes); null = whichever is connected",
   ),

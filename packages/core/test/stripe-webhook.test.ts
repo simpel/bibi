@@ -66,7 +66,7 @@ describe("Stripe webhook", () => {
     expect(row.status).toBe("SUCCEEDED");
   });
 
-  it("cancels an expired checkout", async () => {
+  it("ends only the attempt when its checkout expires", async () => {
     const { context, account, payment } = await pendingPayment({ coordinated: true });
     const event = stripeEvent({
       type: "checkout.session.expired",
@@ -75,7 +75,11 @@ describe("Stripe webhook", () => {
     });
     await postEvent({ event });
     const row = await context.db.payment.findUniqueOrThrow({ where: { id: payment.id } });
-    expect(row.status).toBe("CANCELLED");
+    expect(row.status).toBe("PENDING");
+    const attempt = await context.db.paymentAttempt.findFirstOrThrow({
+      where: { paymentId: payment.id },
+    });
+    expect(attempt.status).toBe("EXPIRED");
   });
 
   it("tracks partial and full refunds from the charge metadata", async () => {

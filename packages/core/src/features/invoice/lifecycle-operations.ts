@@ -8,7 +8,7 @@ import { invoiceProviderCall, raisedInProvider } from "./invoice-provider";
 import { moveInvoice } from "./move-invoice";
 import { type InvoiceDto, InvoiceIdInputSchema, InvoiceSchema } from "./schema";
 import { syncWithProvider } from "./sync-operation";
-import { loadInvoice } from "./to-invoice-dto";
+import { invoiceFlags, loadInvoice } from "./to-invoice-dto";
 
 export { moveInvoice };
 
@@ -35,7 +35,8 @@ export const sendInvoice = defineOperation({
       where: { id },
       data: { provider, connectionId: connection.id },
     });
-    return ok({ value: { ...sent.value, provider } });
+    const invoice = { ...sent.value, provider };
+    return ok({ value: { ...invoice, ...invoiceFlags({ invoice }) } });
   },
   // The provider only after the commit (ADR 0058); a failure leaves it SENT without a document
   // number, and invoice.sync raises it again.

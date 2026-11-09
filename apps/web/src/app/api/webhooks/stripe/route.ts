@@ -1,9 +1,10 @@
-import { createStripeWebhookHandler } from "@bibi/core";
+import { providerWebhookResponse } from "@/server/provider-webhook-response";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const handler = createStripeWebhookHandler();
-
-/** Stripe's signed webhook (ADR 0028): payment results and account updates, no session. */
-export const POST = (request: Request) => handler(request);
+/**
+ * The URL registered in Stripe's dashboard (ADR 0028), kept as an alias of the generic
+ * `/api/providers/stripe/webhook` (ADR 0100).
+ */
+export const POST = (request: Request) => providerWebhookResponse({ request, segment: "stripe" });

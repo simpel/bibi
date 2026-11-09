@@ -1,4 +1,5 @@
 import {
+  cancelPayment,
   createPayment,
   getOrderBalance,
   getPayment,
@@ -9,6 +10,8 @@ import {
   PaymentSchema,
   type ReceivableSettlement,
   ReceivableSettlementSchema,
+  recordManualPayment,
+  refundPayment,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
@@ -22,14 +25,16 @@ export const PaymentRef = objectFromSchema<PaymentDto>({
   schema: PaymentSchema,
   omit: ["organizationId"],
   description:
-    "A payment requested from an order's customer (card checkout or Stripe invoice), charged " +
-    "directly on the organization's Stripe account.",
+    "A payment requested from an order's customer and paid by card or Swish through the " +
+    "routed provider, or recorded by staff (MANUAL), with its refunds (ADR 0100).",
 });
 const PaymentPageRef = pageType({ name: "PaymentPage", item: PaymentRef });
 
 fieldFromOperation({ operation: listPayments, type: PaymentPageRef, name: "payments" });
 fieldFromOperation({ operation: getPayment, type: PaymentRef, name: "payment" });
-mutationFromOperation({ operation: createPayment, type: PaymentRef });
+for (const operation of [createPayment, refundPayment, cancelPayment, recordManualPayment]) {
+  mutationFromOperation({ operation, type: PaymentRef });
+}
 
 const ReceivableSettlementRef = objectFromSchema<ReceivableSettlement>({
   name: "ReceivableSettlement",

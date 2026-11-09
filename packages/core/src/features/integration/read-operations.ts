@@ -1,6 +1,6 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import { providersWith } from "../../providers/registry";
+import { listProviders } from "../../providers/registry";
 import { IntegrationListInputSchema, IntegrationListOutputSchema } from "./schema";
 import { toIntegrationDto } from "./to-integration-dto";
 
@@ -8,9 +8,10 @@ export const listIntegrations = defineOperation({
   name: "integration.list",
   kind: "query",
   description:
-    "The organization's connections to outside systems connected by OAuth (e.g. Fortnox), one " +
-    "per provider, with status " +
-    "and the connected company's name and organization number. Tokens are never returned.",
+    "The organization's connections to outside systems, one per provider Bibi knows (payment " +
+    "operators, accounting systems), with status, how it connects (connectKind), what it can do " +
+    "(capabilities: payment methods, invoicing) and the connected company's name and " +
+    "organization number. Tokens and credentials are never returned.",
   input: IntegrationListInputSchema,
   output: IntegrationListOutputSchema,
   permission: "integration:read",
@@ -18,7 +19,7 @@ export const listIntegrations = defineOperation({
   handler: async ({ context }) => {
     const rows = await context.db.providerConnection.findMany({});
     const { organizationId } = context;
-    const providers = providersWith({ capability: "OAUTH" }).map((adapter) => adapter.key);
+    const providers = listProviders().map((adapter) => adapter.key);
     const items = providers.map((provider) =>
       toIntegrationDto({
         row: rows.find((row) => row.provider === provider) ?? null,

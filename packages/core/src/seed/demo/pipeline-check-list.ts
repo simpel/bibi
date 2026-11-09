@@ -26,6 +26,7 @@ import { checkDemoPaymentSettings } from "./payment-settings-checks";
 import { checkDemoPipeline } from "./pipeline-checks";
 import { checkDemoPreview } from "./preview-checks";
 import { checkDemoPrices } from "./price-checks";
+import { checkDemoProviders } from "./provider-checks";
 import { checkDemoQuoteEvents } from "./quote-event-checks";
 import { checkDemoRunSheets } from "./run-sheet-checks";
 import { checkDemoShowcase } from "./showcase-checks";
@@ -62,6 +63,7 @@ export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoAllocations,
   checkDemoPayments,
   checkDemoPaymentSettings,
+  checkDemoProviders,
   checkDemoFinance,
   checkDemoDensity,
   checkDemoDashboard,

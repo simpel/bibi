@@ -1,56 +1,75 @@
-# Payments with Stripe
+# Payments and invoicing through providers
 
-Current behaviour. Why: ADR 0028 (provider and Connect), 0029 (invoicing), 0057 (derived balance), 0058 (after commit).
+Current behaviour. Why: ADR 0100 (providers as ports), which amends 0028 (Stripe and Connect), 0029 (invoicing), 0087 (Fortnox connection) and 0090 (the venue's own providers). Also 0057 (derived balance), 0058 (after commit), 0077 and 0093 (SIE and VAT). Connections: `docs/specs/integrations.md`. Runbooks: `docs/runbooks/swish.md`, `docs/runbooks/visma.md`.
 
-## Model
-- `paymentAccount.startOnboarding` inserts the account row first (`stripeAccountId` null) and calls Stripe only after the commit (ADR 0058): a preview creates no connected account, and a call after a refused one resumes the row instead of creating a second account.
-- Stripe is the provider, with Connect: one connected account per organization, direct charges on it (the venue is the merchant and Stripe carries the loss risk, not Bibi; never mix with destination charges). Accounts are created with the Accounts v2 API and onboarded through an account link started from Settings → Integrations, next to Fortnox (ADR 0090). Customers pay the venue's own account; Bibi never holds order money. The platform account comes from `@bibi/config`.
-- A `PaymentProvider` interface keeps the adapter replaceable (like `MailProvider`).
-- A payment settles exactly one receivable: a sent quote, a deposit request or an invoice (`quoteId`, `depositId` or `invoiceId`). `payment.create` takes the receivable; the amount defaults to the open balance and may be lower.
-- Nothing stores a balance. Paid = `SUCCEEDED` payments minus refunds; receivable progress (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`) and the order balance are derived (`payment.balance`). `status`, `paidAt` and `refundedMinor` mirror Stripe and are written only by `payment.applySignal`. The application fee is stored per payment and shown to the venue.
-- A paid payment only sets the payment to `SUCCEEDED`; staff change the order's status. Payments never move an order.
-- `payment.create` inserts the `PENDING` row first and calls Stripe in its `external` step after commit, with the row id as idempotency key. A refused charge leaves the row `FAILED`. A change preview never creates a checkout or sends an invoice.
+## Providers
+- A provider is one adapter folder in `packages/core/src/providers/<key>/` that declares what it can do (`connect`, `collect`, `invoicing`, `signals`; `providers/types.ts`). Core dispatches through the registry and no code outside a provider folder names a provider (`packages/core/CLAUDE.md`, Providers).
+- Built:
 
-## Webhook
-- `POST /api/webhooks/stripe`: one Connect webhook for the platform. The `Stripe-Signature` header is verified against the raw body with `STRIPE_WEBHOOK_SECRET` (HMAC-SHA256, constant-time, 5 minute window); without the secret it answers 503.
-- The event is reduced to a signal and applied by SYSTEM-only operations (`payment.applySignal`, `paymentAccount.applySignal`) with no adapters, so no surface can mark a payment paid. The organization comes from the connected account the event happened on (the one cross-organization lookup, ADR 0004); the payment must belong to that account.
-- Handled: `checkout.session.completed`, `checkout.session.async_payment_succeeded|failed`, `checkout.session.expired`, `invoice.paid`, `invoice.voided`, `charge.refunded`, `account.updated` and Accounts v2 `v2.core.account*`. Others are acknowledged and ignored. `invoice.payment_failed` is ignored on purpose: Stripe retries.
-- Idempotency: the Stripe event id is claimed in the platform table `StripeWebhookEvent` before applying and released on failure so Stripe's retry is processed. A payment never moves backwards.
+  | Provider | Connects by | Takes | Invoices | Pushes |
+  | --- | --- | --- | --- | --- |
+  | Stripe | Hosted onboarding (Connect) | `CARD` (hosted checkout) | Stripe Invoicing; not a ledger | Webhook |
+  | Swish (Swish Handel) | Credentials (certificate, passphrase, number) | `SWISH` (on demand) | - | Unsigned callback, re-read |
+  | Fortnox | OAuth | - | Yes; a ledger provider | Topics stream (worker) |
+  | Visma eEkonomi | OAuth | - | Yes; a ledger provider | None; polled by the worker |
+
+- Money stays with the venue: the venue is the merchant on its own Stripe account (direct charges, never destination charges; accounts are created with the Accounts v2 API) and its own Swish number. Bibi never holds order money. Bibi's application fee is stored per payment and shown to the venue.
+
+## Routes
+- `PaymentMethodRoute` maps a method (`CARD`, `SWISH`, `INVOICE`) to one provider. No row = the first connected provider that can take the method (registry order); a route to a provider that is not connected is `CONFLICT`, never a silent switch (`resolveRoute`). A provider takes `INVOICE` when it has an invoicing port.
+- `paymentSettings.get|update` (`paymentAccount:read|write`) hold the deposit rule and one route per method; `choices` lists the providers that can take each. The deprecated `invoiceProvider` and `paymentOperator` fields read and write the INVOICE and CARD routes.
+- Settings → Payments shows the routing; connecting and disconnecting happens under Settings → Integrations.
+
+## Payment requests and attempts
+- A `Payment` is the request the customer pays: amount (default the receivable's open balance, never more), one receivable (`quoteId`, `depositId` or `invoiceId`), `publicToken`, status. Methods `CARD`, `SWISH`, `INVOICE` (booked on a provider invoice) and `MANUAL`. Each try at a provider is a `PaymentAttempt` with its own reference, link and expiry.
+- `payment.create` inserts the `PENDING` request, then in `external` (ADR 0058) prepares the first routed method's attempt at its provider with an idempotency key; a refused charge leaves the payment `FAILED`. `CONFLICT` when no method is routed to a connected provider, when the invoice is booked in a ledger provider that cannot take the payment, or the order is in a `closes` status that is not `invoiceable`. A change preview never creates a checkout.
+- A Swish request lives minutes, so its attempt is started from the pay page (`payment.startAttempt`, SYSTEM only, scoped to the token): idempotent per payment and method while an attempt is still valid, and it fails with `CONFLICT` once the payment is not `PENDING`.
+- The first attempt that succeeds settles the payment and sets its `method`, `provider` and `connectionId`. An attempt that fails, expires or is cancelled ends only that attempt; the payment stays `PENDING` and the customer can start another. Only `payment.cancel` (`PENDING` only) ends the payment: it closes the open attempts at their providers after the commit. Money that still arrives on an attempt of a cancelled or failed payment settles it anyway. A payment never moves backwards.
+- A paid payment never moves an order's status.
+- Nothing stores a balance (ADR 0057). Paid = `SUCCEEDED` payments minus their `SUCCEEDED` refunds; receivable progress and the order balance are derived (`payment.balance`).
+
+## Refunds
+- `payment.refund` (`payment:refund`, manager and admin) refunds a `SUCCEEDED` payment in full or in part, at most what is left. The `PaymentRefund` row is written `PENDING` first, the provider is called in `external`, and the provider's signal makes it `SUCCEEDED` (a refused call marks it `FAILED`). The payment is `REFUNDED` when succeeded refunds cover its amount. A payment booked on a provider invoice that has no collect port is refunded in that provider.
+- A refund made in the provider's own app arrives as a signal and becomes one `SUCCEEDED` row (Stripe's refunded total is turned into the step). A `MANUAL` payment is refunded at once, and the money is paid back outside Bibi.
+- Each refund has `refundedAt` (the date of its reversal voucher, ADR 0077) and `initiatedBy`.
+
+## Manual payments
+- `payment.recordManual` (`payment:write`) records money paid outside providers (bank transfer, cash): a `SUCCEEDED` `MANUAL` payment with `paidAt` and a note, at most the open balance. On an invoice in a ledger provider it is booked there if that provider can register payments; none can yet, so it is `CONFLICT` and staff record it in the accounting system.
+
+## Invoices and credit notes
+- `invoice.send` raises the invoice through the INVOICE route (Stripe Invoicing, Fortnox or Visma) after the commit and stores `provider`, `connectionId`, `providerReference` and `providerUrl`; with no INVOICE route the invoice stays in Bibi and the customer pays a requested payment. A failed raise leaves it `SENT` without a reference and `invoice.sync` raises it again.
+- `invoice.sync` raises a missing document, then reads `listPayments` and applies each as an `invoice.payment_recorded` or `invoice.payment_removed` signal (a payment appears as a `SUCCEEDED` attempt and payment with method `INVOICE`; one no longer there is `CANCELLED`).
+- `invoice.void` voids at the provider after the commit. It is `CONFLICT` once anything is paid or when the invoice is booked in a ledger provider; use `invoice.credit`. Visma cannot void a booked invoice at all.
+- `invoice.credit` (`payment:write`) credits a `SENT` invoice in full or in part (whole `lineIds`, an `amountMinor`, or all that is due). The `CreditNote` gets the organization's next number, freezes the credited lines (ADR 0052) and lowers the invoice's `amountDueMinor` and the order balance. At a provider it is `PENDING` until the provider confirms (then `ISSUED`, or `FAILED`, which credits nothing); in Bibi only it is `ISSUED` at once. Money already paid is returned with `payment.refund`.
+- A final invoice deducts the paid deposits (ADR 0090): `invoice.create` freezes one `InvoiceDeposit` per deposit that has something paid; `amountDueMinor` is the total incl. VAT minus the deductions and minus credit notes, and is what payments settle and the pay page shows. The order is still billed the gross total.
+- Fortnox and Visma rows: each line on its revenue account as the SIE export resolves it, one row per VAT rate for a bundle, each deducted deposit as negative rows per VAT rate of its `vatRows` (ADR 0093). The customer is found by email, then by name, and created if missing. Visma uses one article per VAT rate that Bibi creates on first use.
+
+## Ledger providers and the SIE export
+- Fortnox and Visma keep the books for what they invoice (`ledger`). An invoice raised there takes only payments that provider receives or can register (`checkLedgerAccepts`), and the SIE export skips their invoices, voids, credit notes and the payments and refunds on them (`ownBooks`, `finance/export-sources.ts`). Stripe and Swish keep no books: their payments are exported. This awaits an accountant's confirmation (ADR 0093 decision 6).
+- Credit notes and refunds that Bibi keeps the books for get vouchers dated by `issuedAt` and `refundedAt`.
+
+## Inbound events
+- Every provider event becomes a `ProviderSignal` (`attempt.succeeded|failed|expired|cancelled`, `refund.succeeded|failed`, `invoice.payment_recorded|payment_removed|voided|credited`, `connection.status`) applied as SYSTEM by `payment.applySignal`, `invoice.applySignal` or `integration.applySignal`, none registered on any surface. The organization comes from the connection's `externalAccountId` (the one cross-organization lookup, ADR 0004). Dedupe is `ProviderEventReceipt (provider, eventId)`, claimed before applying and released on failure so the provider retries.
+- `POST /api/providers/<provider>/webhook` verifies the delivery with the provider's webhook port: 200 for applied, duplicate, ignored and unmatched, 401 bad signature, 400 not an event, 503 not configured. `/api/webhooks/stripe` stays as an alias (registered in Stripe's dashboard). Stripe checks `Stripe-Signature` against the raw body with `STRIPE_WEBHOOK_SECRET` (HMAC-SHA256, 5 minute window).
+- Stripe events handled: `checkout.session.completed`, `checkout.session.async_payment_succeeded|failed`, `checkout.session.expired`, `invoice.paid`, `invoice.voided`, `charge.refunded`, `account.updated` and Accounts v2 `v2.core.account*` (status is read back from Stripe). Others are acknowledged and ignored; `invoice.payment_failed` on purpose, since Stripe retries.
+- Swish callbacks are unsigned: the body only names which request or refund to read, and Bibi reads it again over mTLS with the venue's certificate and applies what Swish reports. Unknown Swish numbers and unfinished states give no signals.
+- Fortnox pushes invoice and payment events over the Topics stream the worker keeps for every connected company (`apps/worker/CLAUDE.md`); on start, a gap over 14 days re-reads every `SENT` Fortnox invoice. Visma pushes nothing: the `provider.poll` job runs every 15 minutes and syncs every `SENT` Visma invoice, deriving what is paid from the invoice's total and remaining amount.
+- The stream's offset per topic is in `ProviderStreamOffset`.
 
 ## Public payment page
-- `/pay/<token>` (locale-prefixed, route group `(public)`), outside the signed-in app. The token is `Payment.publicToken`: 32 random bytes, base64url, unique. It is not the payment id, is never part of the payment DTO and never logged.
-- Read through the SYSTEM-only `payment.getPublic` (one cross-organization lookup, token to organization). An unknown or malformed token is `NOT_FOUND`.
-- Shows organization name, order reference, amount, status and the Stripe-hosted checkout link; no customer or order details. A `PENDING` payment past `expiresAt` shows as expired without a pay link. Stripe returns with `?checkout=success`; while the status is still `PENDING` the page shows a "processing" state that refreshes every 3 seconds up to 20 times.
-- Under the amount it lists what is paid for: the lines of the quote or invoice the payment settles, read only from that document's frozen `OrderLine` rows (ADR 0052), never the order's live lines, plus its totals (excl. VAT, VAT, incl. VAT, "from" while an alternative group is unchosen). Each line has name, quantity, unit price, discount, VAT rate, line total, `role` and `inTotal`; sub-lines (ADR 0088) follow their parent and are indented, an add-on or option labelled, a part shown without price. No ids, item, tags or anything the document did not show. A deposit payment has no lines (`lines: []`, `totals: null`). The pinned SYSTEM context may read `payment` and `quote` (ADR 0071) and reads only that payment's document in the token's organization.
-- A Next page is not a `Request` handler, so the request context is opened with `runWithLogContext` (surface `web`).
+- `/pay/<token>` (locale-prefixed, `(public)` group). The token is `Payment.publicToken`: 32 random bytes, base64url, unique, never in a DTO or log. Read through the SYSTEM-only `payment.getPublic` (token to organization); an unknown token is `NOT_FOUND`.
+- Shows organization name, order reference, amount, status, each routed method and the lines of the document it settles from its frozen `OrderLine` rows (ADR 0052, 0088; a deposit has none), no customer or order details. A `PENDING` payment past its expiry shows as expired. While `PENDING` after a return from the provider it shows a processing state that refreshes every 3 seconds up to 20 times.
+- A Next page is not a `Request` handler, so the context is opened with `runWithLogContext` (surface `web`).
 
-## Refunds and dates (ADR 0077)
-- A refund signal (`charge.refunded`) appends one `PaymentRefund` row through `payment.applySignal`: the step, the refunded total after it and `refundedAt`, the time the signal was applied. A repeated signal with the same total adds no row. `Payment.refundedMinor` stays the Stripe mirror; the `payment refunds` reconciliation checks that the rows sum to it.
-- `Invoice` and `Deposit` keep `sentAt` (set by send) and `voidedAt` (set by void). A void keeps `sentAt`. These dates are the accounting dates of the SIE vouchers.
-
-## Deposit rule, payment operator and invoice provider (ADR 0090)
-- The venue's money stays with the venue: card payments and invoices go to its own Stripe or Fortnox. Bibi sends the links and mirrors the results.
-- `PaymentSettings` (one row per organization) holds the deposit rule (`depositPercent`, 1–100, and `depositMinimumMinor`) the `paymentOperator` (`STRIPE`; more operators come later; null = whichever is connected) and the `invoiceProvider` (`STRIPE` or `FORTNOX`, null = whichever is connected). `paymentSettings.get|update` use `paymentAccount:read|write`.
-- `deposit.suggest` applies the rule to the order's live priced lines incl. VAT and returns the basis (`PERCENT`, `FULL` for an order under the minimum, or `NONE`) and the amount. `deposit.request` creates the deposit, sends it and creates a `CARD` payment against it in one step, and returns the payment with its `/pay` link. Its amount defaults to the rule.
-- Administration → Payments holds the payment operator (a dropdown that saves on change, with a link to Integrations), the deposit rule and the invoice provider. Connecting and disconnecting Stripe and Fortnox happens on Administration → Integrations, which always shows every integration.
-- A new payment goes through `resolvePaymentOperator` (`payment-account/payment-operator.ts`): the chosen operator, else the connected one. A chosen operator that is not connected is `CONFLICT`, never a silent switch.
-- A final invoice deducts the order's paid deposits (ADR 0090): `invoice.create` freezes one `InvoiceDeposit` per deposit that is not VOID and has something paid, at what is paid on it then. The invoice's `amountDueMinor` (total incl. VAT minus the deductions) is what payments settle, what the order's receivables, aging and the pay page show, and the default of `payment.create`. The order is still billed the gross total, so its balance is unchanged. The SIE voucher moves exactly the deducted amounts from customer advances to receivables and reverses the VAT reported when each deposit was paid. A deposit paid after the invoice was created is not deducted; void and recreate the invoice.
-- `paymentAccount.disconnect` (admin) sets `PaymentAccount.disconnectedAt`: the account reads `DISCONNECTED`, nothing is charged on it, and links already sent keep working until they expire and are still recorded by the webhook. `status` keeps mirroring Stripe. `paymentAccount.startOnboarding` clears it and resumes the same Stripe account. Settings → Integrations shows one card per provider (Stripe, Fortnox, API keys) in a grid of up to three columns.
-- Without an active Stripe account there are no payment links: `deposit.request` and `payment.create` refuse with `CONFLICT`, and `deposit.suggest` returns `paymentLinksAvailable: false`. The order's payment-link buttons then show dimmed, and a click explains that an administrator connects Stripe under Settings → Integrations.
+## Deposit rule (ADR 0090)
+- `PaymentSettings` holds `depositPercent` (1-100) and `depositMinimumMinor`. `deposit.suggest` applies the rule to the order's live priced lines incl. VAT and returns the basis (`PERCENT`, `FULL` below the minimum, or `NONE`) and `paymentLinksAvailable`. `deposit.request` creates and sends the deposit and a payment against it in one step.
+- Dates: `Invoice` and `Deposit` keep `sentAt` and `voidedAt`, the accounting dates of the SIE vouchers (ADR 0077).
 
 ## VAT on deposits (ADR 0093)
-- `deposit.create` and `deposit.request` snapshot `Deposit.vatRows`: the order's live priced lines (what `deposit.suggest` totals) summed per VAT rate and scaled to the amount incl. VAT, summing to it. An order without priced lines gives `[]` (no VAT). Deposits created before ADR 0093 keep `[]`.
-- SIE: a deposit payment debits clearing and credits customer advances excl. VAT plus output VAT per rate, the paid amount split pro rata. A refund is its negation. The invoice voucher debits customer advances excl. VAT and that output VAT for each deduction, against receivables, so advances net to zero and VAT totals the invoice's.
-- The treatment awaits an accountant's confirmation (ADR 0093 decision 6).
-
-## Invoices in Fortnox (ADR 0090)
-- `invoice.send` raises the invoice where `PaymentSettings.invoiceProvider` says (`invoice/invoice-provider.ts`): the setting; else Fortnox when only Fortnox is connected; else Stripe when the Stripe account is active; else nowhere. Fortnox chosen but not connected is `CONFLICT`. With Stripe or nowhere nothing is raised: the customer pays through a payment requested with `payment.create`. The provider is stored on `Invoice.provider`.
-- Raising runs after the commit (ADR 0058). A failure leaves the invoice `SENT` without `providerReference`; `invoice.sync` raises it again.
-- The customer is found by email, then by name, and created if missing (Bibi customers have no organization number). Each line is one row on its revenue account, as the SIE export resolves it; a bundle with several VAT rates has one row per rate. Each deducted deposit is one negative row per VAT rate of its `vatRows` on the customer advances account, priced excl. VAT (ADR 0093); a deposit without a split is one row without VAT. The invoice is booked, and emailed when the customer has an email. Fortnox's document number is `Invoice.providerReference`.
-- `invoice.sync` mirrors the payments booked on the invoice: a new one becomes a `SUCCEEDED` payment with method `INVOICE`, `provider` `FORTNOX` and `providerReference` `fortnox:<organizationId>:<payment number>`; a changed one is updated; one no longer in Fortnox is `CANCELLED`. `providerAccountId` is null for these payments.
-- Pushed, not polled: the worker keeps one Fortnox Topics connection for every connected company (`apps/worker/CLAUDE.md`). Payment events run `invoice.sync`; `invoice-cancelled-v1` runs `invoice.void`, which voids the Bibi invoice only. Events for invoices Bibi did not raise are ignored. The stream's offset per topic is in `FortnoxTopicOffset`. On worker start, when the stream has been away longer than 14 days or never ran, every `SENT` Fortnox invoice is re-read.
-- Fortnox needs the scopes `companyinformation invoice customer payment`; connected organizations reconnect once (ADR 0087).
+- `deposit.create` and `deposit.request` snapshot `Deposit.vatRows` from the order's priced lines scaled to the amount; an order without priced lines gives `[]`. A deposit payment debits clearing and credits customer advances excl. VAT plus output VAT per rate; a refund is its negation; the invoice voucher reverses the VAT per deduction.
 
 ## Not built
-- Swish for customers (needs per-venue bank onboarding). Update the differentiators in `CLAUDE.md` when it is added.
-- Open: the application fee amount, Stripe's EU data handling, the exact Accounts v2 responsibilities for fees and losses.
+- Visma `registerPayment`: Bibi cannot tell a payment it booked from one Visma received, so a card, Swish or manual payment cannot be booked on a Visma invoice. Fortnox has no `registerPayment` either, so the same guard applies.
+- Swish connects by entering credentials in a dialog; there is no onboarding flow with the bank. Swish takes SEK only, at least 1 SEK.
+- Visma checks against the sandbox are open (`docs/runbooks/visma.md`); Peppol e-invoicing is deferred.
+- Open: the application fee amount, Stripe's EU data handling, the exact Accounts v2 responsibilities for fees and losses, the accountant's confirmation of the ledger and VAT treatment.

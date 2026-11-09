@@ -7,4 +7,9 @@ export const invoiceRoutes = [
   restRoute({ operation: "invoice.send", method: "POST", path: "/invoices/{id}/send" }),
   restRoute({ operation: "invoice.sync", method: "POST", path: "/invoices/{id}/sync" }),
   restRoute({ operation: "invoice.void", method: "POST", path: "/invoices/{id}/void" }),
+  restRoute({
+    operation: "invoice.credit",
+    method: "POST",
+    path: "/invoices/{invoiceId}/credit-notes",
+  }),
 ];

@@ -56,11 +56,27 @@
           },
           "customerPay": {
             "question": "Hur betalar min kund?",
-            "answer": "Skicka en betallänk till kunden från bokningen. Kunden öppnar den och betalar med kort, utan att skapa något konto.\nDu kan också skicka en faktura i stället."
+            "answer": "Skicka en betallänk till kunden från bokningen. Kunden öppnar den och väljer hur hen vill betala, med kort eller Swish, utan att skapa något konto.\nVilka betalsätt kunden ser beror på vad er administratör har kopplat. Du kan också skicka en faktura i stället."
           },
           "changeStatus": {
             "question": "Hur flyttar jag en bokning till nästa steg?",
             "answer": "Ändra status på bokningens sida, eller dra bokningen på tavlan. Om ett steg kräver att något är gjort först säger Bibi vad som saknas.\nStegen ställer er administratör in."
+          },
+          "refund": {
+            "question": "Hur återbetalar jag en betalning?",
+            "answer": "Öppna bokningen, leta upp betalningen under **Betalningar** och välj **Återbetala**. Lämna beloppet tomt för att betala tillbaka allt som återstår, eller skriv ett lägre belopp för en delvis återbetalning.\nPengarna går tillbaka samma väg som kunden betalade. Betalningen visar det återbetalda beloppet när betaltjänsten har bekräftat det."
+          },
+          "cancelPayment": {
+            "question": "Kan jag avbryta en betallänk som jag redan har skickat?",
+            "answer": "Ja, så länge den inte är betald. Öppna bokningen, leta upp betalningen och välj **Avbryt betalning**.\nLänken slutar fungera för kunden. Om pengar ändå kommer in registrerar Bibi dem."
+          },
+          "recordPayment": {
+            "question": "Kunden betalade med banköverföring. Hur registrerar jag det?",
+            "answer": "Öppna bokningen och välj **Registrera betalning** vid offerten, förskottet eller fakturan som pengarna gällde. Fyll i beloppet, dagen pengarna kom och en anteckning, till exempel referensen.\nSaldot på bokningen uppdateras direkt."
+          },
+          "creditNote": {
+            "question": "Hur krediterar jag en faktura?",
+            "answer": "Öppna bokningen och välj **Kreditera** vid den skickade fakturan. Lämna beloppet tomt för att kreditera allt som återstår, eller skriv ett lägre belopp, och lägg till en anledning.\nBibi skapar en kreditfaktura som sänker det kunden är skyldig. Om fakturan skapades i ert bokföringssystem krediteras den där också. Pengar som redan betalats betalas tillbaka med **Återbetala** på betalningen."
           }
         }
       },
@@ -159,10 +175,6 @@
           "manageBilling": {
             "question": "Var hittar jag mina fakturor och ändrar betaluppgifter?",
             "answer": "En administratör hittar dem under Administration → Plan och fakturering."
-          },
-          "paymentOperator": {
-            "question": "Kan jag välja vilken betaloperatör som tar emot kortbetalningar?",
-            "answer": "Ja. Gå till Administration → Betalningar och välj under **Betaloperatör**. Valet sparas direkt.\nOperatören måste vara kopplad först: koppla eller koppla från under Administration → Integrationer. I dag är Stripe den som finns."
           }
         }
       },
@@ -177,6 +189,18 @@
           "otherAccounting": {
             "question": "Vi använder ett annat bokföringssystem. Hur gör vi?",
             "answer": "Exportera er försäljning som en SIE-fil under Administration → Bokföring. De flesta svenska bokföringssystem kan läsa in den."
+          },
+          "paymentMethods": {
+            "question": "Kan jag välja vilken tjänst som tar emot kort-, Swish- och fakturabetalningar?",
+            "answer": "Ja. Gå till Administration → Betalningar och välj en tjänst för varje betalsätt under **Betalsätt**. Varje val sparas direkt.\n**Automatiskt** använder den kopplade tjänst som kan ta emot betalsättet. Koppla tjänsterna först under Administration → Integrationer."
+          },
+          "swish": {
+            "question": "Hur kopplar vi Swish?",
+            "answer": "Ni behöver Swish Handel från er bank, med ert Swish-nummer, certifikatfilen (.p12) och lösenordet till den.\nEn administratör öppnar Administration → Integrationer, väljer **Anslut** på Swish och fyller i de tre uppgifterna. Bibi kontrollerar dem hos Swish innan de sparas."
+          },
+          "visma": {
+            "question": "Kan jag koppla Bibi till Visma eEkonomi?",
+            "answer": "Ja. En administratör väljer **Anslut** på Visma eEkonomi under Administration → Integrationer och loggar in i Visma för att godkänna kopplingen.\nVälj sedan Visma eEkonomi för **Faktura** under Administration → Betalningar, så skapas fakturorna där och betalningarna speglas tillbaka till Bibi."
           }
         }
       }
@@ -232,8 +256,8 @@
       },
       "payments": {
         "title": "Betalningar",
-        "lead": "Be en kund betala med kortlänk eller mot faktura. Pengarna går direkt till ert eget Stripe-konto, och Bibi håller dem aldrig.",
-        "body": "# Koppla Stripe först\n\nInnan du kan begära en betalning måste en administratör koppla er organisation till Stripe.\n\n1. Öppna **Administration** och välj **Betalningar**.\n2. Välj **Koppla till Stripe**. Du skickas till Stripe för att verifiera ert företag.\n3. När du kommer tillbaka väljer du **Uppdatera status**. Är registreringen inte klar, välj **Fortsätt registreringen**.\n\nStatusen visar **Inte kopplat**, **Registrering pågår**, **Aktivt** eller **Begränsat**. Betalningar fungerar när den är **Aktivt**. Är den **Begränsat** behöver Stripe fler uppgifter från er, så fortsätt registreringen.\n\nBetalningarna dras på ert eget anslutna konto, så ni är säljare och utbetalningen går till er.\n\n# Begär en betalning\n\n1. Öppna bokningen och hitta **Betalningar**.\n2. Välj **Begär betalning**.\n3. Välj metod och belopp.\n4. Spara.\n\nDet finns två metoder.\n\n- **Kort**: Bibi skapar en betallänk. Välj **Öppna betalningslänken** för att kopiera eller öppna den, och skicka den till kunden.\n- **Faktura**: Stripe mejlar en faktura till kunden. Kunden behöver en e-postadress på kundposten. Förfallodagen följer kundens betalningsvillkor, 30 dagar om inget är angivet.\n\nDu kan begära en betalning för ett öppet bokning, eller för ett i en avslutande bokningsstatus som kan faktureras.\n\n# Vad kunden ser\n\nKunden öppnar länken och kommer till en enkel sida med er organisations namn, bokningsnumret, beloppet och en knapp **Betala nu**. Stripe hanterar kortuppgifterna. Kunden behöver inget konto och ser aldrig Bibis app.\n\nHar länken gått ut säger sidan det och ber kunden kontakta er. Ni kan då begära en ny betalning.\n\n# Betalningsstatus\n\nVarje betalning har en status: **Väntar**, **Betald**, **Misslyckad**, **Avbruten** eller **Återbetald**. Statusen uppdateras av sig själv när Stripe rapporterar tillbaka. Du behöver inte markera något som betalt.\n\n# Betald flyttar inte bokningen\n\nEn betald betalning ändrar bara betalningens status. Bokningen stannar i sin bokningsstatus, och du flyttar det själv när ni är redo.\n\n# Kommer senare\n\nSwish för kunder, prislistor som tillämpas på fakturor och fakturor som skickas till Fortnox, Visma eller Peppol är beslutade men finns inte än."
+        "lead": "Be en kund betala med kort, Swish eller faktura. Pengarna går direkt till tjänsterna ni har kopplat, och Bibi håller aldrig era pengar.",
+        "body": "# Koppla en betaltjänst först\n\nInnan du kan begära en betalning kopplar en administratör minst en tjänst som tar emot betalningar.\n\n1. Öppna **Administration** och välj **Integrationer**.\n2. Välj **Anslut** på tjänsten ni använder: Stripe för kort, Swish för Swish-betalningar, eller Fortnox eller Visma eEkonomi för fakturor.\n3. Stripe skickar dig till sina sidor för att verifiera ert företag; när du kommer tillbaka väljer du **Uppdatera status**. Swish ber om ert Swish-nummer, certifikat och lösenord. Fortnox och Visma ber dig logga in och godkänna.\n\nVarje kort visar **Inte ansluten**, **Väntar på godkännande**, **Ansluten**, **Behöver anslutas igen** eller **Frånkopplad**.\n\n# Välj tjänst för varje betalsätt\n\nUnder **Administration → Betalningar** har **Betalsätt** en rad var för kort, Swish och faktura. Välj vilken tjänst som ska ta emot betalsättet, eller **Automatiskt** för den kopplade tjänst som kan. Varje val sparas direkt.\n\n# Begär en betalning\n\n1. Öppna bokningen och leta upp **Betalningar**.\n2. Välj **Begär betalning**.\n3. Välj betalsätt och belopp.\n4. Spara.\n\nBibi skapar en betallänk. Välj **Öppna betallänk** för att kopiera eller öppna den, och skicka den till kunden.\n\n# Det här ser kunden\n\nKunden öppnar länken och ser er organisations namn, bokningsreferensen, beloppet och en knapp för varje betalsätt ni erbjuder. Kort leder till en säker kortsida. Swish visar en QR-kod på datorn och öppnar Swish-appen i mobilen. Kunden behöver inget konto och ser aldrig Bibis app.\n\nOm länken har gått ut står det på sidan, och kunden ombeds kontakta er. Då kan du begära en ny betalning.\n\n# Betalningens status\n\nVarje betalning har en status: **Väntar**, **Betald**, **Misslyckad**, **Avbruten** eller **Återbetald**. Statusen uppdateras av sig själv när betaltjänsten hör av sig. Du behöver inte markera något som betalt.\n\n# Återbetalningar, avbrutna länkar och pengar utanför Bibi\n\n- **Återbetala** på en betald betalning ger tillbaka pengar, allt eller en del.\n- **Avbryt betalning** på en väntande betalning stänger dess länk.\n- **Registrera betalning** vid en offert, ett förskott eller en faktura registrerar pengar ni fått via banköverföring eller kontant.\n- **Kreditera** vid en skickad faktura skapar en kreditfaktura som sänker det kunden är skyldig.\n\n# Betald flyttar inte bokningen\n\nEn betald betalning ändrar bara betalningens status. Bokningen stannar i sin status, och du flyttar den själv när du är redo."
       },
       "configuration": {
         "title": "Konfiguration",

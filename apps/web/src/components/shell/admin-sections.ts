@@ -20,14 +20,12 @@ export type AdminSectionId =
   | "orderTemplates"
   | "runSheets"
   | "responsibilities"
-  | "paymentOperator"
+  | "paymentMethods"
   | "deposit"
-  | "invoices"
   | "fiscalYear"
   | "accounts"
   | "revenueAccounts"
-  | "stripe"
-  | "fortnox"
+  | "providers"
   | "apiKeys";
 
 /**
@@ -53,13 +51,11 @@ export const ADMIN_SECTIONS: Record<AdminSectionId, { anchor: string; permission
   orderTemplates: { anchor: "order-templates", permission: "template:read" },
   runSheets: { anchor: "run-sheets", permission: "template:read" },
   responsibilities: { anchor: "responsibilities", permission: "responsibility:read" },
-  paymentOperator: { anchor: "payment-operator", permission: "paymentAccount:read" },
+  paymentMethods: { anchor: "payment-methods", permission: "paymentAccount:read" },
   deposit: { anchor: "deposit", permission: "paymentAccount:read" },
-  invoices: { anchor: "invoices", permission: "paymentAccount:read" },
   fiscalYear: { anchor: "fiscal-year", permission: "finance:read" },
   accounts: { anchor: "accounts", permission: "finance:read" },
   revenueAccounts: { anchor: "revenue-accounts", permission: "finance:read" },
-  stripe: { anchor: "stripe", permission: "paymentAccount:read" },
-  fortnox: { anchor: "fortnox", permission: "integration:read" },
+  providers: { anchor: "providers", permission: "integration:read" },
   apiKeys: { anchor: "api-keys", permission: "apiKey:read" },
 };

@@ -18,9 +18,8 @@ const GROUP_OF: Record<
 > = {
   timeZone: { group: "organization", feature: "configuration" },
   domainJoin: { group: "organization", feature: "configuration" },
-  paymentOperator: { group: "payment", feature: "paymentAccount" },
+  paymentMethods: { group: "payment", feature: "paymentAccount" },
   deposit: { group: "payment", feature: "paymentAccount" },
-  invoices: { group: "payment", feature: "paymentAccount" },
   fiscalYear: { group: "accounting", feature: "finance" },
   accounts: { group: "accounting", feature: "finance" },
   seats: { group: "seats", feature: "billing" },

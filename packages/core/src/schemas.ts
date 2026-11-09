@@ -43,6 +43,7 @@ export * from "./features/inbound-message/endpoint-schema";
 export * from "./features/inbound-message/receive-schema";
 export * from "./features/inbound-message/schema";
 export * from "./features/integration/schema";
+export * from "./features/invoice/credit-schema";
 export * from "./features/invoice/schema";
 export * from "./features/item/bundle-schema";
 export * from "./features/item/customisation-group-schema";

@@ -36,13 +36,20 @@ type PastInput = Pick<
   DemoOrder,
   "ref" | "title" | "customer" | "type" | "day" | "headcount" | "lines"
 > &
-  Pick<DemoInvoice, "paidDay" | "refund"> & { dueAfter?: number };
+  Pick<DemoInvoice, "paidDay" | "refund" | "credit"> & { dueAfter?: number };
 
 /**
  * A Completed past event, invoiced two days later with 30 days to pay (`dueAfter` overrides):
  * paid on `paidDay` when set, otherwise open.
  */
-export const past = ({ day, paidDay, refund, dueAfter = 30, ...order }: PastInput): DemoOrder => ({
+export const past = ({
+  day,
+  paidDay,
+  refund,
+  credit,
+  dueAfter = 30,
+  ...order
+}: PastInput): DemoOrder => ({
   ...order,
   day,
   from: "09:00",
@@ -57,6 +64,7 @@ export const past = ({ day, paidDay, refund, dueAfter = 30, ...order }: PastInpu
       dueDay: day + 2 + dueAfter,
       ...(paidDay === undefined ? {} : { paidDay }),
       ...(refund ? { refund } : {}),
+      ...(credit ? { credit } : {}),
     },
   },
 });

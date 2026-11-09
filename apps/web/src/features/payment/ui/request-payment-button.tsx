@@ -15,9 +15,9 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { TextField } from "@/components/form/text-field";
 import { useNumberFormat } from "@/lib/number/use-number-format";
+import { MethodRequiredButton } from "./method-required-button";
 import { usePaymentLinksAvailable } from "./payment-links-context";
 import { PaymentMethodField } from "./payment-method-field";
-import { StripeRequiredButton } from "./stripe-required-button";
 import { type ReceivableTarget, useRequestPaymentForm } from "./use-request-payment-form";
 
 type RequestPaymentFormProps = { target: ReceivableTarget; openMinor: number; onDone: () => void };
@@ -57,10 +57,10 @@ export function RequestPaymentButton({ target, openMinor }: RequestPaymentButton
   const [open, setOpen] = useState(false);
   if (!usePaymentLinksAvailable()) {
     return (
-      <StripeRequiredButton size="sm">
+      <MethodRequiredButton size="sm">
         <CreditCardIcon />
         {t("request")}
-      </StripeRequiredButton>
+      </MethodRequiredButton>
     );
   }
   return (

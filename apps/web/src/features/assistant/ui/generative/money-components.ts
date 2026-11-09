@@ -2,6 +2,7 @@ import { AccountingExportCardView } from "./accounting-export-card-view";
 import { AccountingExportFileView } from "./accounting-export-file-view";
 import { AccountingExportPreviewView } from "./accounting-export-preview-view";
 import { BillingCardView } from "./billing-card-view";
+import { CreditNoteCardView } from "./credit-note-card-view";
 import { DepositCardView } from "./deposit-card-view";
 import { DepositTableView } from "./deposit-table-view";
 import { FinanceOverviewView } from "./finance-overview-view";
@@ -11,6 +12,7 @@ import { InvoiceTableView } from "./invoice-table-view";
 import { OrderBalanceCardView } from "./order-balance-card-view";
 import { PaymentAccountCardView } from "./payment-account-card-view";
 import { PaymentCardView } from "./payment-card-view";
+import { PaymentRefundCardView } from "./payment-refund-card-view";
 import { PaymentTableView } from "./payment-table-view";
 import { SettingCardsView } from "./setting-cards-view";
 
@@ -23,11 +25,13 @@ export const MONEY_COMPONENTS = {
   "integration-card": IntegrationCardView,
   "payment-table": PaymentTableView,
   "payment-card": PaymentCardView,
+  "payment-refund-card": PaymentRefundCardView,
   "order-balance-card": OrderBalanceCardView,
   "deposit-table": DepositTableView,
   "deposit-card": DepositCardView,
   "invoice-table": InvoiceTableView,
   "invoice-card": InvoiceCardView,
+  "credit-note-card": CreditNoteCardView,
   "finance-overview": FinanceOverviewView,
   "accounting-export-preview": AccountingExportPreviewView,
   "accounting-export-card": AccountingExportCardView,

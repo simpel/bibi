@@ -189,7 +189,6 @@
     "general": "General",
     "planBilling": "Plan & billing",
     "orderFlow": "Order flow",
-    "fortnox": "Fortnox",
     "backToApp": "Back to app",
     "adminGroups": {
       "organization": "Organization",
@@ -617,17 +616,13 @@
           "label": "Responsibilities",
           "keywords": "head of kitchen recipient responsible"
         },
-        "stripe": {
-          "label": "Stripe",
-          "keywords": "card payment connect online payment"
+        "providers": {
+          "label": "Connections",
+          "keywords": "stripe fortnox swish visma payment service accounting connect integration"
         },
         "deposit": {
           "label": "Deposits",
           "keywords": "advance percent minimum amount"
-        },
-        "invoices": {
-          "label": "Invoice provider",
-          "keywords": "invoicing invoice provider fortnox stripe"
         },
         "fiscalYear": {
           "label": "Fiscal year",
@@ -641,17 +636,13 @@
           "label": "Revenue per item type",
           "keywords": "revenue account item type"
         },
-        "fortnox": {
-          "label": "Fortnox",
-          "keywords": "accounting connect integration invoice"
-        },
         "apiKeys": {
           "label": "API keys",
           "keywords": "api rest key integration crm"
         },
-        "paymentOperator": {
-          "label": "Payment operator",
-          "keywords": "stripe payment operator card connection"
+        "paymentMethods": {
+          "label": "Payment methods",
+          "keywords": "card swish invoice payment service stripe fortnox visma"
         }
       }
     }

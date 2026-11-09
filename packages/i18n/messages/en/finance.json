@@ -448,14 +448,8 @@
     "plural": "Payments",
     "empty": "No payments requested yet.",
     "request": "Request payment",
-    "requestDescription": "Charged directly on your Stripe account. A card payment gives a link to send to the customer; an invoice is emailed to the customer's email address.",
-    "stripeRequired": {
-      "title": "Connect Stripe first",
-      "description": "Payment links and payments go straight to your organization's own Stripe account. An administrator connects Stripe under Settings → Integrations; until then these actions are not available.",
-      "connect": "Go to Integrations"
-    },
+    "requestDescription": "The customer gets a pay link and pays with the methods you have connected, such as card or Swish. The money goes straight to you.",
     "created": "The payment has been requested.",
-    "providerFortnox": "Fortnox",
     "openLink": "Open payment link",
     "public": {
       "title": "Payment to {organization}",
@@ -471,7 +465,7 @@
       "unavailableTitle": "This payment can no longer be made",
       "unavailableDescription": "Contact {organization} if you think this is wrong.",
       "invoiceDescription": "An invoice has been sent to you. Use the link in it to pay.",
-      "secured": "Payment is handled by Stripe.",
+      "secured": "Payment is handled securely by the payment service.",
       "lines": "What you are paying for",
       "addOn": "Add-on",
       "option": "Option",
@@ -484,7 +478,12 @@
       "totalInclVat": "Total incl. VAT",
       "from": "from {amount}",
       "deduction": "Paid deposit: {description}",
-      "amountDue": "Left to pay"
+      "amountDue": "Left to pay",
+      "payWith": "Pay with {method}",
+      "swishScan": "Scan the QR code with the Swish app.",
+      "swishOpen": "Open Swish",
+      "swishWaiting": "Waiting for the payment to be approved in Swish. This page updates by itself.",
+      "startFailed": "The payment could not be started. Try again in a moment."
     },
     "fields": {
       "method": "Method",
@@ -537,6 +536,42 @@
         "QUOTE": "From the accepted quote",
         "NONE": "Nothing billed yet"
       }
+    },
+    "methodRequired": {
+      "title": "Connect a payment method first",
+      "description": "Pay links need a connected service that takes payments, such as Stripe or Swish. An administrator connects one under Administration → Integrations; until then these actions are not available.",
+      "connect": "Go to Integrations"
+    },
+    "via": "Via {name}",
+    "refunded": "Refunded {amount}",
+    "refund": {
+      "action": "Refund",
+      "title": "Refund payment",
+      "description": "The money goes back to the customer the way it was paid. A payment you recorded yourselves counts as refunded at once; pay the money back outside Bibi.",
+      "amount": "Amount (SEK)",
+      "amountHint": "Leave empty to refund all that is left: {left}.",
+      "reason": "Reason",
+      "submit": "Refund",
+      "done": "The refund has been started.",
+      "cardTitle": "Refund",
+      "cardSummary": "Refunded {refunded}, left to refund {left}."
+    },
+    "cancel": {
+      "action": "Cancel payment",
+      "title": "Cancel the payment?",
+      "confirm": "The pay link stops working and the payment is no longer requested. If money still comes in, it is recorded.",
+      "done": "The payment has been cancelled."
+    },
+    "recordManual": {
+      "action": "Record payment",
+      "title": "Record payment",
+      "description": "For money you received outside Bibi, such as a bank transfer or cash.",
+      "amount": "Amount (SEK)",
+      "amountHint": "Left to pay: {open}.",
+      "paidOn": "Paid on",
+      "note": "Note, such as a reference",
+      "submit": "Record payment",
+      "done": "The payment has been recorded."
     }
   },
   "deposit": {
@@ -587,18 +622,36 @@
     "due": "Due {date}",
     "send": "Mark as sent",
     "sent": "The invoice is marked as sent.",
-    "sync": "Refresh from Fortnox",
-    "synced": "The invoice has been refreshed from Fortnox.",
-    "inFortnox": "In Fortnox #{reference}",
-    "notInFortnox": "Not yet in Fortnox",
+    "sync": "Refresh from {name}",
+    "synced": "The invoice has been refreshed from {name}.",
     "void": "Void",
     "voidConfirm": "Void invoice #{number}? It is no longer owed and the order can be invoiced again.",
     "voided": "The invoice has been voided.",
-    "deducted": "{amount} in paid deposits deducted"
+    "deducted": "{amount} in paid deposits deducted",
+    "inProvider": "In {name} #{reference}",
+    "notInProvider": "Not yet in {name}",
+    "credited": "{amount} credited",
+    "credit": {
+      "action": "Credit",
+      "title": "Credit invoice #{number}",
+      "description": "A credit note lowers what the customer owes. Money already paid is refunded from the payment.",
+      "amount": "Amount incl. VAT (SEK)",
+      "amountHint": "Leave empty to credit all that is still due: {due}.",
+      "reason": "Reason",
+      "submit": "Create credit note",
+      "done": "The credit note has been created.",
+      "cardTitle": "Credit note",
+      "noteNumber": "Credit note #{number}",
+      "status": {
+        "PENDING": "Pending",
+        "ISSUED": "Issued",
+        "FAILED": "Failed"
+      }
+    }
   },
   "paymentSettings": {
     "title": "Payments",
-    "description": "The Stripe account, the deposit rule and which system sends invoices.",
+    "description": "Which service takes each payment method, and the deposit rule.",
     "saved": "Payment settings saved.",
     "readOnly": "You can view these settings but not change them.",
     "save": "Save",
@@ -606,65 +659,52 @@
       "title": "Deposits",
       "description": "The deposit suggested when you request one for an order."
     },
-    "invoice": {
-      "title": "Invoice provider",
-      "description": "Which system sends invoices when both Stripe and Fortnox are connected."
-    },
     "fields": {
       "depositPercent": "Deposit (% of the order total incl. VAT)",
-      "depositMinimum": "Minimum for a deposit (SEK)",
-      "invoiceProvider": "Send invoices via"
+      "depositMinimum": "Minimum for a deposit (SEK)"
     },
     "placeholders": {
       "none": "No rule"
     },
     "hints": {
-      "depositMinimum": "Orders below this amount are paid in full up front.",
-      "invoiceProvider": "Follow what is connected uses whichever system is connected."
-    },
-    "provider": {
-      "AUTO": "Follow what is connected",
-      "STRIPE": "Stripe",
-      "FORTNOX": "Fortnox"
-    },
-    "operator": {
-      "title": "Payment operator",
-      "description": "The company that processes card payments for your orders.",
-      "label": "Payment operator",
-      "manage": "Activate or deactivate connections in Integrations",
-      "notConnected": "Stripe (not connected)"
+      "depositMinimum": "Orders below this amount are paid in full up front."
     },
     "confirmDepositTitle": "Change the deposit?",
-    "confirmDepositDescription": "Deposit: {percent}. Minimum: {minimum}. From now on, this is what customers are asked to pay in advance."
+    "confirmDepositDescription": "Deposit: {percent}. Minimum: {minimum}. From now on, this is what customers are asked to pay in advance.",
+    "routes": {
+      "title": "Payment methods",
+      "description": "Choose which connected service takes each payment method. Automatic uses the connected service that can take it.",
+      "automatic": "Automatic",
+      "notConnected": "{name} (not connected)",
+      "saved": "{method} has been saved.",
+      "manage": "Connect services under Integrations"
+    }
   },
   "paymentAccount": {
-    "title": "Payments",
-    "description": "Connect your organization to Stripe so customers pay you directly. Bibi never holds your funds.",
-    "stripe": "Stripe payout account",
     "status": {
       "NOT_CONNECTED": "Not connected",
       "ONBOARDING": "Onboarding",
       "ACTIVE": "Active",
       "RESTRICTED": "Restricted",
       "DISCONNECTED": "Disconnected"
+    }
+  },
+  "providers": {
+    "STRIPE": {
+      "name": "Stripe",
+      "description": "Card payments and invoices with a pay link, straight to your organization's own Stripe account."
     },
-    "hint": {
-      "NOT_CONNECTED": "Connect to Stripe to start taking payments. You will be sent to Stripe to verify your business.",
-      "ONBOARDING": "Onboarding with Stripe is not finished yet. Continue where you left off, then refresh the status.",
-      "ACTIVE": "Your account can take card payments.",
-      "RESTRICTED": "Stripe has restricted card payments on this account. Continue onboarding to provide what Stripe asks for.",
-      "DISCONNECTED": "Stripe is disconnected. Payment links and card payments are off. Connect again to use the same Stripe account."
+    "FORTNOX": {
+      "name": "Fortnox",
+      "description": "Accounting and invoicing. Invoices are raised in Fortnox, and payments booked there are mirrored back to Bibi."
     },
-    "connect": "Connect to Stripe",
-    "continueOnboarding": "Continue onboarding",
-    "refresh": "Refresh status",
-    "starting": "Preparing Stripe onboarding…",
-    "redirecting": "Opening Stripe…",
-    "refreshing": "Refreshing status…",
-    "refreshed": "The payment status has been refreshed.",
-    "disconnect": "Disconnect",
-    "disconnectConfirm": "Disconnect Stripe? Bibi stops sending payment links. Links already sent keep working until they expire. Your Stripe account stays yours.",
-    "disconnecting": "Disconnecting Stripe…",
-    "disconnected": "Stripe has been disconnected."
+    "SWISH": {
+      "name": "Swish",
+      "description": "Swish for merchants: the customer pays in the Swish app, with a QR code on a computer or straight on the phone."
+    },
+    "VISMA": {
+      "name": "Visma eEkonomi",
+      "description": "Accounting and invoicing. Invoices are raised in Visma eEkonomi, and payments booked there are mirrored back to Bibi."
+    }
   }
 }

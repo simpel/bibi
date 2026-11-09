@@ -1,10 +1,6 @@
 import { AccountsSettingRow, FiscalYearSettingRow } from "./accounting-setting-rows";
 import { DomainJoinSettingRow, TimeZoneSettingRow } from "./organization-setting-rows";
-import {
-  DepositSettingRow,
-  InvoicesSettingRow,
-  PaymentOperatorSettingRow,
-} from "./payment-setting-rows";
+import { DepositSettingRow, PaymentMethodsSettingRow } from "./payment-setting-rows";
 import { SeatsSettingRow } from "./seats-setting-row";
 import type { SettingRowRegistry } from "./setting-props";
 
@@ -15,9 +11,8 @@ import type { SettingRowRegistry } from "./setting-props";
 export const SETTING_ROWS: SettingRowRegistry = {
   timeZone: TimeZoneSettingRow,
   domainJoin: DomainJoinSettingRow,
-  paymentOperator: PaymentOperatorSettingRow,
+  paymentMethods: PaymentMethodsSettingRow,
   deposit: DepositSettingRow,
-  invoices: InvoicesSettingRow,
   fiscalYear: FiscalYearSettingRow,
   accounts: AccountsSettingRow,
   seats: SeatsSettingRow,

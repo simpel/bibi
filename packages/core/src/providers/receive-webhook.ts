@@ -6,7 +6,7 @@ import { toHttpStatus } from "../errors/to-http-status";
 import { applyProviderDelivery, type DeliveryStatus } from "./apply-delivery";
 import type { ProviderKey } from "./provider-keys";
 import { findProvider } from "./registry";
-import type { VerifiedDelivery } from "./types";
+import type { VerifiedDelivery, VerifyWebhookInput } from "./types";
 
 const unavailable = () =>
   err({ error: new AppError({ code: "UNAVAILABLE", message: "Webhook not configured" }) });
@@ -16,7 +16,9 @@ export type ReceiveProviderWebhookInput = {
   request: Request;
   db?: Db;
   /** Verifies the raw body; defaults to the provider's own webhook port. */
-  verify?: (input: { payload: string; headers: Headers }) => Result<VerifiedDelivery>;
+  verify?: (
+    input: VerifyWebhookInput,
+  ) => Result<VerifiedDelivery> | Promise<Result<VerifiedDelivery>>;
 };
 
 /**
@@ -34,7 +36,7 @@ export async function receiveProviderWebhook({
   const check = verify ?? (port?.isConfigured() ? port.verify : null);
   if (!check) return unavailable();
   const payload = await request.text();
-  const verified = check({ payload, headers: request.headers });
+  const verified = await check({ payload, headers: request.headers, ...(db ? { db } : {}) });
   if (!verified.ok) return verified;
   return applyProviderDelivery({ provider, delivery: verified.value, ...(db ? { db } : {}) });
 }

@@ -70,7 +70,7 @@ async function PaymentActions({ orderId, suggestion }: PaymentActionsProps) {
 
 /** What the order's customer owes and has paid, what it pays for, and new requests. */
 export async function OrderPayments({ locale, orderId, canRequest }: OrderPaymentsProps) {
-  // Payment links need the organization's own active Stripe account (ADR 0090).
+  // Payment links need a connected provider that takes a payment method (ADR 0090, 0100).
   const [t, dates, numbers, result, suggestion] = await Promise.all([
     getTranslations("payment"),
     getDateTimeFormat(),
@@ -102,7 +102,7 @@ export async function OrderPayments({ locale, orderId, canRequest }: OrderPaymen
           canWrite={canRequest}
         />
         <h3 className="font-medium">{t("plural")}</h3>
-        <PaymentList payments={payments} dates={dates} numbers={numbers} />
+        <PaymentList payments={payments} dates={dates} numbers={numbers} canWrite={canRequest} />
       </section>
     </PaymentLinksProvider>
   );

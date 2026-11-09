@@ -45,6 +45,8 @@ export const lindholmenOrders: readonly DemoOrder[] = [
     ...{ status: "Confirmed", headcount: 12, assignee: "Maria Holm" },
     followers: ["Sara Nilsson", "Anna Berg"],
     lines: l4Lines,
+    // ADR 0100: 2 000 kr paid by Swish on the pay page, 3 000 kr recorded from a bank transfer.
+    money: { swishKr: 2_000, manual: { kr: 3_000, note: "Bank transfer, ref 4471" } },
     // ADR 0052: two more for lunch after the customer accepted; the accepted quote shows it.
     changeAfterQuote: { line: "Conference lunch", quantity: 14 },
   },

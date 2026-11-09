@@ -46,6 +46,20 @@ describe("cross-organization isolation: payments", () => {
       args: { orderId, description: "Advance", amountMinor: 100_000 },
     });
     expect(request.data.code).toBe("NOT_FOUND");
+    const id = payment.data.id;
+    const manual = {
+      depositId: draft.data.id,
+      amountMinor: 10_000,
+      paidAt: "2026-05-01T10:00:00Z",
+    };
+    for (const [name, toolArgs] of [
+      ["payment_refund", { id }],
+      ["payment_cancel", { id }],
+      ["payment_recordManual", manual],
+    ] as const) {
+      const result = await call({ client: b, name, args: toolArgs });
+      expect(result.data.code, `${name} ${JSON.stringify(result.data)}`).toBe("NOT_FOUND");
+    }
     const own = await call({ client: a, name: "payment_list", args: { orderId } });
     expect(own.data.items).toHaveLength(1);
   });

@@ -57,6 +57,13 @@ export const PaymentSchema = z.object({
     .number()
     .int()
     .describe("What payment.refund may still refund, minor units; 0 unless SUCCEEDED"),
+  canRefund: z
+    .boolean()
+    .describe(
+      "payment.refund can run: SUCCEEDED with money left to refund, taken by a provider that " +
+        "refunds (or recorded by staff)",
+    ),
+  canCancel: z.boolean().describe("payment.cancel can run: still PENDING"),
   createdAt: z.date(),
   updatedAt: z.date(),
   createdBy: z.string().nullable(),

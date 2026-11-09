@@ -32,12 +32,12 @@ export type AuthForInput = { context: OauthContext; row: ProviderConnection };
 
 /**
  * What a provider call acts with (ADR 0087): the account id and, for an OAuth provider, a fresh
- * access token. Call it only in `external`: a refresh rotates the refresh token.
+ * access token, else the sealed credentials (opened only by the adapter). Call it only in `external`: a refresh rotates the refresh token.
  */
 export async function authFor({ context, row }: AuthForInput): Promise<Result<ProviderAuth>> {
-  const { provider, externalAccountId } = row;
+  const { provider, externalAccountId, credentialsSealed } = row;
   if (findProvider({ key: provider })?.connect.kind !== "OAUTH") {
-    return ok({ value: { externalAccountId, accessToken: null } });
+    return ok({ value: { externalAccountId, accessToken: null, credentialsSealed } });
   }
   const token = await getAccessToken({ context, provider });
   if (!token.ok) return token;

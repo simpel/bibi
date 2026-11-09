@@ -6,21 +6,17 @@ export type PaymentChange = Pick<Payment, "status" | "paidAt">;
 export type NextPaymentInput = { payment: Payment; signal: PaymentSignal; now: Date };
 
 /**
- * The payment's new state after an attempt signal, or null when nothing changes. A payment never
- * moves backwards: a late `expired` after `SUCCEEDED`, or a repeated success, is ignored. Money that
- * arrives on an attempt of a cancelled or failed payment still settles it: it reached the venue.
+ * The payment's new state after an attempt signal, or null when nothing changes (ADR 0100). Only a
+ * success moves the payment: an attempt that fails, expires or is cancelled ends that attempt alone,
+ * and the customer can start another from the pay page; `payment.cancel` ends the payment. A
+ * payment never moves backwards. Money that arrives on an attempt of a cancelled or failed payment
+ * still settles it: it reached the venue.
  */
 export function nextPaymentState({ payment, signal, now }: NextPaymentInput): PaymentChange | null {
   const { status } = payment;
-  const open = status === "PENDING";
-  const { kind } = signal;
-  if (kind === "attempt.succeeded" && (open || status === "FAILED" || status === "CANCELLED")) {
+  const settleable = status === "PENDING" || status === "FAILED" || status === "CANCELLED";
+  if (signal.kind === "attempt.succeeded" && settleable)
     return { status: "SUCCEEDED", paidAt: now };
-  }
-  if ((kind === "attempt.cancelled" || kind === "attempt.expired") && open) {
-    return { status: "CANCELLED", paidAt: null };
-  }
-  if (kind === "attempt.failed" && open) return { status: "FAILED", paidAt: null };
   return null;
 }
 

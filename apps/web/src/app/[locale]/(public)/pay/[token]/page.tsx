@@ -13,7 +13,7 @@ type PayPageProps = {
 
 export const dynamic = "force-dynamic";
 
-/** The URL is the credential: no indexing, and no Referer to Stripe or anyone else. */
+/** The URL is the credential: no indexing, and no Referer to a provider or anyone else. */
 export async function generateMetadata({ params }: PayPageProps) {
   const { locale, token } = await params;
   const payment = await loadPublicPayment({ token });
@@ -39,5 +39,12 @@ export default async function PayPage({ params, searchParams }: PayPageProps) {
   const { checkout } = await searchParams;
   const [payment, numbers] = await Promise.all([loadPublicPayment({ token }), getNumberFormat()]);
   if (!payment) notFound();
-  return <PaymentPageCard payment={payment} returning={checkout === "success"} numbers={numbers} />;
+  return (
+    <PaymentPageCard
+      payment={payment}
+      token={token}
+      returning={checkout === "success"}
+      numbers={numbers}
+    />
+  );
 }

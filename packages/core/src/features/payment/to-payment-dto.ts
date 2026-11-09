@@ -1,4 +1,5 @@
 import type { Payment, PaymentAttempt, PaymentRefund } from "@bibi/db";
+import { findProvider } from "../../providers/registry";
 import type { PaymentDto } from "./schema";
 
 /** Prisma `include` for every payment read: its latest attempt and its refunds (ADR 0100). */
@@ -36,12 +37,18 @@ export function toPaymentDto({ row }: ToPaymentDtoInput): PaymentDto {
   const { connectionId: _connection, publicToken: _token, attempts, refunds, ...payment } = row;
   const attempt = attempts[0];
   const { refundedMinor, committedMinor } = refundTotals({ refunds });
+  const refundableMinor = payment.status === "SUCCEEDED" ? payment.amountMinor - committedMinor : 0;
+  // A payment booked in a provider that only invoices is refunded there, not from Bibi.
+  const refundsHere =
+    !payment.provider || Boolean(findProvider({ key: payment.provider })?.collect);
   return {
     ...payment,
     providerReference: attempt?.providerReference ?? null,
     paymentUrl: attempt?.url ?? null,
     expiresAt: attempt?.expiresAt ?? null,
     refundedMinor,
-    refundableMinor: payment.status === "SUCCEEDED" ? payment.amountMinor - committedMinor : 0,
+    refundableMinor,
+    canRefund: refundableMinor > 0 && refundsHere,
+    canCancel: payment.status === "PENDING",
   };
 }

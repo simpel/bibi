@@ -51,7 +51,7 @@ export async function ensurePaymentAccountRow({
 export type OnboardingReturnUrlsInput = { organizationId: string };
 
 /**
- * Where Stripe sends the venue back; both lead to Administration → Payments under the
+ * Where Stripe sends the venue back; both lead to Administration → Integrations under the
  * organization's slug (ADR 0062). The slug is read outside the org-scoped client.
  */
 export async function onboardingReturnUrls({ organizationId }: OnboardingReturnUrlsInput) {
@@ -60,6 +60,6 @@ export async function onboardingReturnUrls({ organizationId }: OnboardingReturnU
     select: { slug: true },
   });
   const slug = encodeURIComponent(organization?.slug ?? "");
-  const url = `${getEnv().WEB_URL}/${slug}/admin/payments`;
+  const url = `${getEnv().WEB_URL}/${slug}/admin/integrations`;
   return { returnUrl: url, refreshUrl: url };
 }

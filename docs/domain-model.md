@@ -121,6 +121,11 @@ erDiagram
   Invoice ||--o{ OrderLine : "invoices"
   Invoice ||--o{ Deposit : "offsets"
   Payment ||--o{ PaymentRefund : "is refunded with"
+  Payment ||--o{ PaymentAttempt : "is tried with"
+  Invoice ||--o{ CreditNote : "is credited with"
+  ProviderConnection ||--o{ Payment : "took"
+  ProviderConnection ||--o{ Invoice : "raised"
+  CreditNote |o--o{ AccountingExportEntry : "is exported as"
   AccountingExport ||--o{ AccountingExportEntry : "contains"
   Invoice |o--o{ AccountingExportEntry : "is exported as"
   Payment |o--o{ AccountingExportEntry : "is exported as"
@@ -1007,49 +1012,66 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### Payment ★ (`Payment`)
 
-*MVP* · A payment requested from the order's customer: a card checkout or a Stripe invoice ([ADR 0028](decisions/0028-payments-with-stripe.md), [ADR 0029](decisions/0029-invoicing-via-stripe.md)). Every payment is a direct charge on the organization's connected account (`PaymentAccount`), so the venue is the merchant and Bibi never holds its funds.
+*MVP* · A payment requested from the order's customer: the request the customer pays, however they pay ([ADR 0028](decisions/0028-payments-with-stripe.md), [ADR 0100](decisions/0100-payment-providers-as-ports.md)). Each try at a provider is a `PaymentAttempt`. Money goes to the venue's own provider account (a direct charge on its Stripe account, its own Swish number), so Bibi never holds it.
 
-> **Ownership:** owned `method`, `amountMinor`, `currency`, `applicationFeeMinor` (agreed at charge time) and the receivable it settles; mirror of Stripe `status`, `paidAt`, `refundedMinor`, `providerReference`, `paymentUrl` (written only by `payment.applySignal` and the after-commit charge).
+> **Ownership:** owned `method` (`MANUAL` set at create; otherwise set by the attempt that paid), `amountMinor`, `currency`, `applicationFeeMinor` (agreed at charge time), `provider` and `connectionId` (where it was requested, then where it was paid), `note` and the receivable it settles; mirror of the provider: `status` and `paidAt`, written only by the signal path (`payment.applySignal`, `invoice.applySignal`), `payment.cancel` and `payment.recordManual`. Derived: what is refunded (the sum of its `SUCCEEDED` `PaymentRefund` rows, ADR 0057). The link, reference and expiry live on the attempt.
 
 **Attributes**
-- method: `CARD` (hosted checkout link) or `INVOICE` (Stripe invoice emailed to the customer, or a payment booked on a Fortnox invoice); Swish comes later through Stripe
-- status: `PENDING`, `SUCCEEDED`, `FAILED`, `CANCELLED` or `REFUNDED`
+- method: `CARD` (hosted checkout), `SWISH`, `INVOICE` (paid against a provider invoice: a Stripe invoice, or booked on a Fortnox or Visma invoice) or `MANUAL` (bank transfer or cash recorded by staff)
+- status: `PENDING`, `SUCCEEDED`, `FAILED`, `CANCELLED` or `REFUNDED` (paid, then refunded in full)
 - amount and currency (`amountMinor` in minor units, ISO 4217)
-- provider (`InvoiceProvider`): `STRIPE` (a charge Bibi requested) or `FORTNOX` (booked on an invoice raised there, mirrored by `invoice.sync`, [ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)); `providerAccountId` (the connected account) is null for Fortnox
-- application fee (`applicationFeeMinor`, null = none; from `STRIPE_APPLICATION_FEE_BPS`), shown on each payment on the order page
+- provider (`Provider`, null for `MANUAL`) and the connection it was requested on
+- application fee (`applicationFeeMinor`, null = none), shown on each payment on the order page
 - the receivable it settles: exactly one of `quoteId`, `depositId`, `invoiceId` (check constraint)
-- PSP reference (`providerReference`: the Checkout Session or Invoice id, unique; for Fortnox `fortnox:<organizationId>:<payment number>`; null until the provider has it)
-- payment link (`paymentUrl`) and, for a checkout, when it expires
 - public token (`publicToken`, unique, 256 random bits): addresses the customer's payment page `/pay/<token>`; never in the DTO
-- paid at
-- refunded so far (`refundedMinor`, the Stripe mirror); each refund is also a `PaymentRefund` row (amount, total after it, `refundedAt`; append-only, written only by `payment.applySignal`, ADR 0077), and the `payment refunds` reconciliation checks that they sum to `refundedMinor`
+- paid at; note (staff's text on a manual payment)
 
 **Relations**
 - `N:1` Order is paid with this
 - `N:1` Quote is paid with this (a SENT or ACCEPTED one)
 - `N:1` Deposit is paid with this
 - `N:1` Invoice is settled with this
+- `N:0..1` ProviderConnection took this
+- `1:N` is tried with → PaymentAttempt
+- `1:N` is refunded with → PaymentRefund
 
-> Operations: `payment.list` (per order, newest first) and `payment.get` (permission `payment:read`), and `payment.create({ quoteId | depositId | invoiceId, method, amountMinor?, description? })` (`payment:write`), on every surface (GraphQL also as `Order.payments`; web on the order page). `create` takes exactly one receivable (`VALIDATION` otherwise): a SENT or ACCEPTED quote (needs `quote:read`), a SENT deposit or a SENT invoice (`CONFLICT` otherwise); the order and currency are the receivable's. The amount defaults to the receivable's open balance and may be lower (partial payment), never higher (`VALIDATION`); nothing open is `CONFLICT`. A deposit or invoice row is claimed for the transaction, so a concurrent void waits and then sees the new payment. `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), an order that is not in a `closes` status unless that status is `invoiceable`, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The row is inserted `PENDING` first and Stripe is called only after the commit (`external`, [ADR 0058](decisions/0058-external-effects-after-commit.md)), so an AI proposal never charges; a refused charge leaves the row `FAILED`. The status is updated by the Stripe webhook `POST /api/webhooks/stripe` (signature verified with `STRIPE_WEBHOOK_SECRET`), which runs the SYSTEM-only `payment.applySignal` (no user, AI or API surface): `paid` -> `SUCCEEDED` (a payment never moves an order's status), expired -> `CANCELLED`, failed checkout -> `FAILED`, refunds update `refundedMinor` (`REFUNDED` when full). A payment never moves backwards. Events are deduplicated on the Stripe event id in the platform table `StripeWebhookEvent`. The customer's payment page `/pay/<token>` (no sign-in) is read through the SYSTEM-only `payment.getPublic`, which has no adapters and returns no personal data (organization name, order reference, amount, status, pay link, and the frozen lines and totals of the quote or invoice it settles); an unknown or malformed token is `NOT_FOUND`.
+> Operations: `payment.list` (per order, newest first), `payment.get` and `payment.balance` (`payment:read`); `payment.create({ quoteId | depositId | invoiceId, method?, amountMinor?, description? })`, `payment.cancel` and `payment.recordManual({ quoteId | depositId | invoiceId, amountMinor, paidAt, note? })` (`payment:write`); `payment.refund({ id, amountMinor?, reason? })` (`payment:refund`, manager and admin), on every surface. `create` takes exactly one receivable and prepares the first routed method at its provider after the commit (ADR 0058); the others start from the pay page (`payment.startAttempt`, SYSTEM only, scoped to the token). An attempt that fails or expires ends only the attempt; `cancel` ends a `PENDING` payment. Behaviour: `docs/specs/payments.md`.
 
-> **Balance (ADR 0057):** `payment.balance({ orderId })` (`payment:read`) derives what the order owes in `packages/core/src/features/payment/settlement.ts` and `order-balance.ts`, the one module that computes money: paid per receivable = SUCCEEDED and REFUNDED payments minus `refundedMinor`; progress `OPEN`, `PARTLY_PAID`, `PAID` or `OVERPAID`; billed = the SENT invoices once invoiced, else the ACCEPTED quote; balance = billed minus everything paid on the order. Quotes are left out for a caller without `quote:read`. Nothing is stored. GraphQL `orderBalance`, REST `GET /orders/{orderId}/balance`.
+> **Balance (ADR 0057):** `payment.balance({ orderId })` (`payment:read`) derives what the order owes in `packages/core/src/features/payment/settlement.ts` and `order-balance.ts`, the one module that computes money: paid per receivable = SUCCEEDED and REFUNDED payments minus their succeeded refunds; progress `OPEN`, `PARTLY_PAID`, `PAID` or `OVERPAID`; billed = the SENT invoices once invoiced (less credit notes), else the ACCEPTED quote; balance = billed minus everything paid on the order. Nothing is stored. GraphQL `orderBalance`, REST `GET /orders/{orderId}/balance`.
 
 > ★ Swish and card directly in the order. Lega shows no online payment.
+
+### PaymentAttempt (`PaymentAttempt`)
+
+*MVP* · One try to collect a payment at a provider ([ADR 0100](decisions/0100-payment-providers-as-ports.md)): a hosted card checkout, a provider invoice or a Swish request. The first attempt that succeeds settles the payment; an attempt that fails, expires or is cancelled ends only itself. A payment a ledger provider booked on its invoice (Fortnox, Visma) is one `SUCCEEDED` attempt keyed by the provider's payment reference.
+
+> **Ownership:** owned `paymentId`, `method`, `provider`, `connectionId`; mirror of the provider: `providerReference` (null until the call after the commit stored it, unique per provider), `url`, `qrToken`, `expiresAt` and `status`, written by the signal path.
+
+**Attributes**
+- method and provider, connection
+- provider reference (Stripe Checkout Session or Invoice id; Swish request id)
+- link (`url`: the hosted page, or the Swish app link) and QR token (Swish), when it expires (null for invoices)
+- status: `PENDING`, `SUCCEEDED`, `FAILED`, `EXPIRED` or `CANCELLED`
+
+**Relations**
+- `N:1` Payment is tried with this
+- `N:0..1` ProviderConnection took this
+
+> No operation of its own: `payment.create` and `payment.startAttempt` write it, signals move it; its link and QR token show on the payment and the pay page.
 
 ### Invoice (`Invoice`)
 
 *MVP* · The invoice after delivery: a snapshot of the order's priced lines, like a sent quote ([ADR 0052](decisions/0052-the-line-is-the-booking.md), [ADR 0057](decisions/0057-money-balance-is-derived.md)). An order can be invoiced only in a status with the `invoiceable` flag.
 
-> **Ownership:** owned `number` (per organization, highest + 1), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); `provider` (set by send, ADR 0090) and the mirror `providerReference`; snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments).
+> **Ownership:** owned `number` (per organization, highest + 1), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); `provider` and `connectionId` (set by send from the INVOICE route, ADR 0090, 0100) and the mirrors `providerReference` and `providerUrl`; snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments) and `amountDueMinor` (total less deductions and credit notes).
 
 **Attributes**
 - invoice number, due date (given, else after the customer's payment terms, default 30 days)
 - status: `DRAFT → SENT → VOID` (VOID is final)
 - totals of the frozen lines
 - deducted deposits (`InvoiceDeposit`, snapshot at create) and the amount due: total incl. VAT minus them, which payments settle ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md))
-- provider (`InvoiceProvider`, owned): where the invoice was raised when it was sent; null = in Bibi only
-- Fortnox document number (`providerReference`, a mirror; null until raised there)
-- export status (Fortnox / Visma) – *later*
+- provider (`Provider`, owned) and its connection: where the invoice was raised when it was sent (Stripe, Fortnox or Visma); null = in Bibi only
+- the provider's document number (`providerReference`, a mirror, unique per connection; null until raised there) and its page (`providerUrl`)
 - e-invoice – *later*
 
 **Relations**
@@ -1057,8 +1079,10 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `1:N` is settled with → Payment
 - `1:N` invoices → OrderLine
 - `1:N` deducts → InvoiceDeposit → Deposit
+- `1:N` is credited with → CreditNote
+- `N:0..1` ProviderConnection raised this
 
-> Operations (`payment:read` to read, `payment:write` to change): `invoice.list` (per order, newest first), `invoice.get`, `invoice.create({ orderId, dueDate? })` (needs `program:read`, since it copies the lines; an `invoiceable` status; at least one priced line with quantity and VAT; and no other invoice of the order that is not VOID, held by a partial unique index so a concurrent second create is `CONFLICT`), `invoice.send` and `invoice.void` (as for a deposit; voiding lets the order be invoiced again). On every surface; web on the order page. `invoice.send` raises the invoice in Fortnox after the commit when `provider` is FORTNOX; `invoice.sync` (`payment:write`) raises it again if that failed and mirrors the payments booked on it ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)).
+> Operations (`payment:read` to read, `payment:write` to change): `invoice.list` (per order, newest first), `invoice.get`, `invoice.create({ orderId, dueDate? })` (needs `program:read`, since it copies the lines; an `invoiceable` status; at least one priced line with quantity and VAT; and no other invoice of the order that is not VOID, held by a partial unique index so a concurrent second create is `CONFLICT`), `invoice.send` and `invoice.void` (as for a deposit; voiding lets the order be invoiced again), `invoice.credit` and `invoice.sync` (`payment:write`). On every surface; web on the order page. `invoice.send` raises the invoice at the provider the INVOICE route names, after the commit (ADR 0058); `invoice.void` voids it there too and is `CONFLICT` once anything is paid or when a ledger provider booked it (credit it instead); `invoice.sync` raises it again if that failed and mirrors the payments booked on it ([ADR 0100](decisions/0100-payment-providers-as-ports.md)).
 
 ### InvoiceDeposit (`InvoiceDeposit`)
 
@@ -1072,17 +1096,42 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Relations**
 - `N:1` Invoice deducts this; `N:1` Deposit is deducted by this (at most once per invoice)
 
+### CreditNote (`CreditNote`)
+
+*MVP* · A credit of an invoice ([ADR 0100](decisions/0100-payment-providers-as-ports.md)): the credited lines frozen as order lines like an invoice freezes its lines ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). It lowers the invoice's amount due and the order balance. Money already paid on the invoice is returned with `payment.refund`.
+
+> **Ownership:** owned `number` (per organization, highest + 1), `reason`, `status` and where it was raised (`provider`, `connectionId`); snapshot its `OrderLine` rows, `amountMinor` (incl. VAT) and totals; mirror `providerReference` and `providerUrl`, and `issuedAt` (when it was confirmed: the date of its reversal voucher).
+
+**Attributes**
+- number, reason, amount incl. VAT and totals of the frozen lines
+- status: `PENDING` (waiting for the provider), `ISSUED` or `FAILED` (credits nothing); in Bibi only it is `ISSUED` at once
+- provider, connection and the provider's reference and page
+
+**Relations**
+- `N:1` Invoice is credited with this
+- `1:N` credits → OrderLine
+- `N:0..1` ProviderConnection raised this
+- `N:0..1` AccountingExportEntry is exported as a CREDIT_NOTE (only when Bibi keeps the books)
+
+> Written only by `invoice.credit({ invoiceId, lineIds? | amountMinor?, reason? })` (`payment:write`), on every surface; at most what is still due.
+
 ### PaymentRefund (`PaymentRefund`)
 
-*MVP* · One refund of a payment, append-only ([ADR 0077](decisions/0077-financials-and-sie-export.md)). A repeated signal from Stripe adds nothing.
+*MVP* · One refund of a payment, one row per refund ([ADR 0077](decisions/0077-financials-and-sie-export.md), [ADR 0100](decisions/0100-payment-providers-as-ports.md)). What a payment has refunded is the sum of its `SUCCEEDED` rows and is never stored (ADR 0057).
 
-> **Ownership:** owned `amountMinor` (this refund), `refundedTotalMinor` (the total on the payment after it) and `refundedAt` (when the signal was applied, the date of its reversal voucher). The payment's `refundedMinor` mirrors the newest total (reconciliation check `payment refunds`).
+> **Ownership:** owned `amountMinor` (this refund), `reason`, `initiatedBy` (null when the provider reported it) and `status` (`payment.refund` writes `PENDING`, the provider's signal completes it; a manual payment's refund is `SUCCEEDED` at once); mirror `providerReference` and `refundedAt` (when it succeeded, the date of its reversal voucher).
+
+**Attributes**
+- amount, reason, who started it
+- status: `PENDING`, `SUCCEEDED` or `FAILED`
+- provider reference (null when only a refunded total was reported); unique per payment
+- refunded at
 
 **Relations**
 - `N:1` Payment is refunded with this
 - `N:0..1` AccountingExportEntry is exported as a REFUND
 
-> Written only by `payment.applySignal` (SYSTEM) when Stripe reports a higher refunded total. No operation of its own; a refund shows on the payment and in the SIE export.
+> Written by `payment.refund` and by `payment.applySignal` (SYSTEM) for a refund the provider reports on its own. The reconciliation check `payment refunds` verifies that a payment is `REFUNDED` exactly when its succeeded refunds cover its amount and never exceed it.
 
 ### AccountingSettings (`AccountingSettings`)
 
@@ -1146,7 +1195,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Relations**
 - `N:1` AccountingExport contains this
-- `N:0..1` refers to → Invoice, Payment or PaymentRefund
+- `N:0..1` refers to → Invoice, CreditNote, Payment or PaymentRefund
 
 > Written by `accountingExport.create` with its export. No operation of its own.
 
@@ -1490,65 +1539,75 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > Operations: `billing.get`, `billing.listSeatRequests` (`billing:read`), `billing.access` (every member), `billing.startCheckout`, `billing.openPortal` (`billing:write`, never the AI), `billing.sync`, `billing.update`, `billing.approveSeat`, `billing.rejectSeat` (`billing:write`) and `billing.remindAdmins` (every member, mails the admins at most once an hour), on every surface. The SYSTEM-only `billing.applySignal` runs from `POST /api/webhooks/stripe-billing`. When access is required, every page leads to `/:org/billing/pay?returnTo=…`. Bibi's Stripe key, webhook secret and price ids are platform data (`BillingConfig`), set by a superadmin in `/mothership/billing`.
 
-### PaymentAccount (`PaymentAccount`)
+### ProviderConnection (`ProviderConnection`)
 
-*MVP* · The organization's Stripe Connect payout account ([ADR 0028](decisions/0028-payments-with-stripe.md)): one connected account per organization, created with Stripe's Accounts v2 API, so venues are paid directly and Bibi never holds their funds. No row means "not connected". Created by `paymentAccount.startOnboarding`, which also returns a short-lived Stripe onboarding link.
+*MVP* · The organization's connection to one provider ([ADR 0087](decisions/0087-fortnox-connection.md), [ADR 0100](decisions/0100-payment-providers-as-ports.md)): Stripe, Swish, Fortnox or Visma eEkonomi, one row per organization and provider. It replaces `PaymentAccount` and `IntegrationConnection`. No row means "not connected". It connects by OAuth (Fortnox, Visma), hosted onboarding (Stripe Connect, Accounts v2) or credentials (Swish certificate, passphrase and number); payments and invoices go through it, and its `externalAccountId` maps an inbound event to the organization.
+
+> **Ownership:** owned `status` (OAuth providers: written at connect, refresh and disconnect; Stripe: mirrors the account's card payments capability), `disconnectedAt` (an admin disconnected; connecting again clears it, ADR 0090), the sealed secrets and their expiries, and the pending OAuth state; `externalAccountId` (owned: Stripe `acct_`, the Fortnox Topics tenant id, the Swish number); snapshots of the provider's company at connect.
 
 **Attributes**
-- Stripe account id (unique; empty from the committed row until the Stripe call after the commit stored it, ADR 0058)
-- status: onboarding, active or restricted (mirrors the card payments capability; shown as not connected when there is no row)
-- disconnected at (owned, [ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)): an admin disconnected Stripe; reads as disconnected and nothing is charged until it is connected again (the same Stripe account)
+- provider (`Provider`: `STRIPE`, `FORTNOX`, `SWISH`, `VISMA`)
+- status: `PENDING`, `ONBOARDING`, `CONNECTED`, `RESTRICTED`, `EXPIRED` or `DISCONNECTED`
+- external account id (unique per provider; null until the call after the commit stored it, ADR 0058), granted scopes
+- sealed access and refresh tokens (OAuth) or sealed credentials (Swish), AES-256-GCM under `INTEGRATION_SECRET_KEY`, with expiries; never returned by any operation
+- pending OAuth state hash, sealed PKCE verifier, start time (cleared when the callback runs); refresh lease (30 seconds)
+- the provider's company name, organization number and tenant id (snapshots at connect)
+- connected at, connected by, disconnected at
 
-> Operations: `paymentAccount.get` (permission `paymentAccount:read`), `paymentAccount.startOnboarding` (`paymentAccount:write`) and `paymentAccount.sync` (`paymentAccount:write`, refreshes the status from Stripe) and `paymentAccount.disconnect` (`paymentAccount:write`), on every surface. The webhook also refreshes the status on `account.updated` through the SYSTEM-only `paymentAccount.applySignal`, which reads the status back from Stripe instead of trusting the payload. The web app offers them under Settings, Integrations. The platform account id and secret key come from `@bibi/config` (`STRIPE_PLATFORM_ACCOUNT_ID`, `STRIPE_SECRET_KEY`).
+**Relations**
+- `1:N` took → Payment, PaymentAttempt
+- `1:N` raised → Invoice, CreditNote
+
+> Operations: `integration.list` (`integration:read`), `integration.connect` and `integration.disconnect` (`integration:write`, admin only), and for Stripe `paymentAccount.get|startOnboarding|sync|disconnect` (`paymentAccount:read|write`), on every surface. `integration.completeConnect` runs only from the web callback and `integration.refreshExpiring` only from the worker; `integration.applySignal` is SYSTEM only. Access tokens come only from `getAccessToken`/`authFor`, outside a transaction. The web app offers them under Settings, Integrations. Behaviour: `docs/specs/integrations.md`.
+
+### PaymentMethodRoute (`PaymentMethodRoute`)
+
+*MVP* · Which provider takes each payment method for the organization ([ADR 0100](decisions/0100-payment-providers-as-ports.md)): `CARD`, `SWISH` or `INVOICE` to one provider, so an organization can offer card and Swish side by side and invoice elsewhere. No row for a method = the connected provider that can take it; a route to a provider that is not connected is `CONFLICT`, never a silent switch.
+
+> **Ownership:** owned every column; written only by `paymentSettings.update`. Unique per organization and method.
+
+**Attributes**
+- method, provider
+
+**Relations**
+- `N:1` Organization has this
 
 ### PaymentSettings (`PaymentSettings`)
 
-*MVP* · How the organization takes order money ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)): the deposit rule, the payment operator and the invoice provider. One row per organization, created by the first save; until then there is no deposit rule and the connected provider is used.
+*MVP* · How the organization takes order money ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md), [ADR 0100](decisions/0100-payment-providers-as-ports.md)): the deposit rule. Which provider takes each method is a `PaymentMethodRoute`. One row per organization, created by the first save; until then there is no deposit rule.
 
 > **Ownership:** owned every column; nothing derived.
 
 **Attributes**
 - deposit percent: 1 to 100 of the order's total incl. VAT (empty = no deposits)
 - deposit minimum in minor units: an order whose total incl. VAT is below it is paid in full up front (empty = no minimum)
-- payment operator (`PaymentOperator`: `STRIPE`, more later; empty = the one that is connected)
-- invoice provider (`InvoiceProvider`; empty = whichever is connected)
 
 **Relations**
 - `1:1` Organization has one (`organizationId`, unique)
 
-> Operations: `paymentSettings.get` (permission `paymentAccount:read`) and `paymentSettings.update` (`paymentAccount:write`), on every surface. `deposit.suggest` applies the rule to an order's priced lines, and `deposit.request` uses it when no amount is given. The web app holds them under Settings, Payments.
+> Operations: `paymentSettings.get` (permission `paymentAccount:read`, with the routes and the providers each method may use) and `paymentSettings.update` (`paymentAccount:write`, deposit rule and routes), on every surface. `deposit.suggest` applies the rule to an order's priced lines, and `deposit.request` uses it when no amount is given. The web app holds them under Settings, Payments.
 
-### InvoiceProvider (`InvoiceProvider`)
+### Provider (`Provider`)
 
-*MVP* · An enum: the system an organization raises its invoices in ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)). Values: `STRIPE` (Stripe Invoicing on the organization's account) and `FORTNOX` (its Fortnox company, connected under Settings, Integrations, [ADR 0087](decisions/0087-fortnox-connection.md)). Set on `PaymentSettings`; when both providers are connected, the admin picks.
+*MVP* · An enum: the outside companies Bibi connects an organization to ([ADR 0100](decisions/0100-payment-providers-as-ports.md)). Values: `STRIPE` (card payments and Stripe Invoicing), `SWISH` (Swish Handel), `FORTNOX` and `VISMA` (invoices raised and booked in the venue's own accounting program, which keeps the books). Replaces `PaymentOperator`, `InvoiceProvider` and `IntegrationProvider`.
 
-### IntegrationConnection (`IntegrationConnection`)
+### ProviderEventReceipt (`ProviderEventReceipt`)
 
-*MVP* · The organization's connection to an outside system ([ADR 0087](decisions/0087-fortnox-connection.md)), one per provider; Fortnox is the only provider so far. No row means "not connected". An admin starts it with `integration.connect`, approves at Fortnox (a Fortnox system administrator, service account) and the browser callback finishes it. Invoices are raised in Fortnox through this connection ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)).
+*MVP* · Platform data. A provider event that has been handled; `(provider, eventId)` is the dedupe key, so a redelivered event changes nothing ([ADR 0028](decisions/0028-payments-with-stripe.md), [ADR 0100](decisions/0100-payment-providers-as-ports.md)). Bibi's own billing records its Stripe events here too (ADR 0095).
 
-**Attributes**
-- provider (Fortnox)
-- status: pending, connected, expired (Fortnox refused the stored grant; reconnect) or disconnected
-- granted scopes (`scope`: `companyinformation invoice customer payment`)
-- Fortnox tenant id (`fortnoxTenantId`): the company's id in the worker's Topics stream, which routes its events to the organization (ADR 0090)
-- access and refresh tokens, sealed with AES-256-GCM (`INTEGRATION_SECRET_KEY`), with their expiries; never returned by any operation
-- pending authorization: hash of the OAuth state, sealed PKCE verifier, start time (cleared when the callback runs)
-- refresh lease: when a caller claimed the rotating refresh token (30 seconds)
-- Fortnox company name, organization number and database number (snapshots at connect)
-- connected at, connected by
-
-> Operations: `integration.list` (permission `integration:read`), `integration.connect` and `integration.disconnect` (`integration:write`, admin only), on every surface. `integration.completeConnect` is run only by the web callback (`/api/integrations/fortnox/callback`) as the signed-in user, and `integration.refreshExpiring` only by the worker's daily job as SYSTEM. Access tokens come only from `getFortnoxAccessToken`, called outside a transaction. The web app offers them under Settings, Integrations. Credentials come from `@bibi/config` (`FORTNOX_CLIENT_ID`, `FORTNOX_CLIENT_SECRET`, `INTEGRATION_SECRET_KEY`).
-
-### FortnoxTopicOffset (`FortnoxTopicOffset`)
-
-*MVP* · Platform data. Where the worker's Fortnox Topics stream stopped, one row per topic; Fortnox replays up to 14 days, so a restart resumes from here ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)).
-
-> **Ownership:** owned; written by the worker after each event (`saveFortnoxOffset`) and read at worker start (`loadFortnoxOffsets`). No organization: the stream is shared by every organization.
+> **Ownership:** owned; claimed before an event is applied and released on failure so the provider's retry is processed. No organization: the event is resolved to one through its connection.
 
 **Attributes**
-- topic (key; `invoices` today)
-- offset (Fortnox's, as text)
-- updated at
+- provider, event id, type, received at
+
+### ProviderStreamOffset (`ProviderStreamOffset`)
+
+*MVP* · Platform data. Where a provider's event stream stopped, one row per provider and topic; Fortnox's Topics stream replays up to 14 days, so a restart resumes from here ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md), [ADR 0100](decisions/0100-payment-providers-as-ports.md)). It replaces `FortnoxTopicOffset`.
+
+> **Ownership:** owned; written by the worker after each event and read at worker start. No organization: the stream is shared by every organization.
+
+**Attributes**
+- provider, topic (`invoices` today), offset (the provider's, as text), updated at
 
 ### Communication & log
 

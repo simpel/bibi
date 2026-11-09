@@ -467,7 +467,8 @@
         "singular": "Integrations",
         "unavailable": "Not available on this server",
         "company": "{company} ({number})",
-        "open": "Open integrations"
+        "open": "Open integrations",
+        "approve": "Approve at {name}"
       },
       "calendar": {
         "title": "Calendar, {period}",
@@ -831,7 +832,7 @@
   },
   "integration": {
     "title": "Integrations",
-    "description": "Connect Bibi to the systems your organization already uses.",
+    "description": "Connect Bibi to the payment services and accounting systems your organization already uses.",
     "status": {
       "NOT_CONNECTED": "Not connected",
       "PENDING": "Waiting for approval",
@@ -839,36 +840,11 @@
       "EXPIRED": "Needs reconnecting",
       "DISCONNECTED": "Disconnected"
     },
-    "fortnox": {
-      "name": "Fortnox",
-      "description": "Connect your organization's Fortnox company. Invoices can be raised in Fortnox, and payments booked there are mirrored back to Bibi.",
-      "hint": {
-        "NOT_CONNECTED": "Connect Fortnox to link your accounting system. You are sent to Fortnox to approve the connection.",
-        "PENDING": "The connection was started but not approved. Connect again to finish it.",
-        "CONNECTED": "Fortnox is connected. Invoices are raised in Fortnox when Settings → Payments says so; payments booked there are mirrored back.",
-        "EXPIRED": "Fortnox no longer accepts the connection. Reconnect to restore it.",
-        "DISCONNECTED": "Fortnox was disconnected. Connect again to restore it."
-      },
-      "notConfigured": "Fortnox is not available yet: Bibi has no Fortnox app credentials on this server.",
-      "reconnectNote": "Organizations connected before invoicing was added must reconnect once to grant invoicing.",
-      "adminNote": "A Fortnox system administrator must approve the connection. If you are not one, ask them to approve when Fortnox asks.",
-      "company": "Company",
-      "organizationNumber": "Organization number",
-      "connectedAt": "Connected",
-      "connect": "Connect Fortnox",
-      "reconnect": "Reconnect",
-      "connecting": "Preparing the Fortnox connection…",
-      "redirecting": "Opening Fortnox…",
-      "disconnect": "Disconnect",
-      "disconnectConfirm": "Disconnect Fortnox? Bibi forgets the connection and revokes its access at Fortnox. You can connect again later.",
-      "disconnecting": "Disconnecting Fortnox…",
-      "disconnected": "Fortnox has been disconnected."
-    },
     "notice": {
-      "connected": "Fortnox is connected.",
-      "denied": "The connection was not approved at Fortnox, so nothing was connected.",
+      "connected": "{name} is connected.",
+      "denied": "The connection was not approved at {name}, so nothing was connected.",
       "expired": "The approval took too long or came from somewhere else. Start the connection again.",
-      "failed": "Fortnox could not be connected. Try again in a moment."
+      "failed": "{name} could not be connected. Try again in a moment."
     },
     "apiKeysCard": {
       "title": "API keys",
@@ -947,6 +923,47 @@
         "promptCopied": "Prompt copied. Paste it into your AI app.",
         "local": "Only reachable from this computer.",
         "prompt": "Help me connect {name} to you as an MCP connector, so you can work in {name} for me. Explain each step in plain language and wait for me between steps.\n\nName: {name}\nAddress: {url}\n\nWhen I connect, {name} asks me to sign in and choose Allow."
+      }
+    },
+    "card": {
+      "connect": "Connect",
+      "reconnect": "Reconnect",
+      "continueOnboarding": "Continue onboarding",
+      "connecting": "Preparing the connection to {name}…",
+      "redirecting": "Opening {name}…",
+      "refresh": "Refresh status",
+      "refreshing": "Refreshing status…",
+      "refreshed": "The status has been refreshed.",
+      "disconnect": "Disconnect",
+      "disconnectTitle": "Disconnect {name}?",
+      "disconnectConfirm": "Bibi forgets the connection to {name} and stops using it. You can connect again later.",
+      "disconnectHostedConfirm": "Bibi stops sending pay links through {name}. Links already sent keep working until they expire. Your account at {name} stays yours.",
+      "disconnecting": "Disconnecting {name}…",
+      "disconnected": "{name} has been disconnected.",
+      "company": "Company",
+      "organizationNumber": "Organization number",
+      "connectedAt": "Connected",
+      "takes": "Takes: {methods}",
+      "ledger": "{name} keeps the books for invoices raised there, so the SIE export leaves them out.",
+      "notConfigured": "{name} is not available on this server yet.",
+      "hint": {
+        "NOT_CONNECTED": "{name} is not connected.",
+        "PENDING": "The connection to {name} was started but is not finished. Continue to complete it.",
+        "CONNECTED": "{name} is connected and used where Payments settings say so.",
+        "EXPIRED": "{name} needs more from you or no longer accepts the connection. Reconnect to restore it.",
+        "DISCONNECTED": "{name} is disconnected. Connect again to use it."
+      }
+    },
+    "connectForm": {
+      "title": "Connect {name}",
+      "description": "The details are checked with {name} and stored encrypted. They are never shown again.",
+      "submit": "Connect {name}",
+      "connecting": "Connecting {name}…",
+      "connected": "{name} is connected.",
+      "fields": {
+        "swishNumber": "Swish number",
+        "certificate": "Certificate (.p12)",
+        "passphrase": "Certificate passphrase"
       }
     }
   }

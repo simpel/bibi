@@ -22,6 +22,7 @@ export type InvoiceEntryProps = {
 /** One invoice: its number, what is paid of its total, due date, status and progress. */
 export function InvoiceEntry({ invoice, actions, dates: format, numbers }: InvoiceEntryProps) {
   const t = useTranslations("invoice");
+  const providers = useTranslations("providers");
   const due = invoice.dueDate ? new Date(invoice.dueDate) : null;
   return (
     <article data-slot="invoice-entry" className="flex flex-wrap items-center gap-2 py-3 text-sm">
@@ -42,11 +43,19 @@ export function InvoiceEntry({ invoice, actions, dates: format, numbers }: Invoi
         </span>
       ) : null}
       <ReceivableBadges status={invoice.status} progress={invoice.progress} />
-      {invoice.provider === "FORTNOX" && invoice.status === "SENT" ? (
+      {invoice.creditedMinor > 0 ? (
+        <span className="text-xs text-muted-foreground">
+          {t("credited", { amount: numbers.money({ minor: invoice.creditedMinor }) })}
+        </span>
+      ) : null}
+      {invoice.provider && invoice.status === "SENT" ? (
         <span className="text-xs text-muted-foreground">
           {invoice.providerReference
-            ? t("inFortnox", { reference: invoice.providerReference })
-            : t("notInFortnox")}
+            ? t("inProvider", {
+                name: providers(`${invoice.provider}.name`),
+                reference: invoice.providerReference,
+              })
+            : t("notInProvider", { name: providers(`${invoice.provider}.name`) })}
         </span>
       ) : null}
       {due ? (

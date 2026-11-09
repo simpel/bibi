@@ -1,7 +1,4 @@
-import type {
-  InvoiceProvider,
-  PaymentOperator,
-} from "../../features/payment-account/settings-schema";
+import type { PaymentRoute } from "../../features/payment-account/settings-schema";
 import type { FixedRole } from "../../permissions/fixed-roles";
 import type { PermissionOverride } from "../../permissions/overrides";
 import type { OrderStatusTemplate } from "../../templates/order-statuses/order-status-template";
@@ -109,6 +106,8 @@ export type DemoOrg = {
   finance?: DemoFinance;
   /** ADR 0090: the deposit rule and invoice provider; none for an organization without one. */
   paymentSettings?: DemoPaymentSettings;
+  /** ADR 0100: connected before the orders' money is seeded; Stripe is connected for any money. */
+  providers?: readonly DemoProvider[];
   /** ADR 0094: members who have read their oldest notifications; the rest stay unread. */
   notificationReads?: readonly DemoNotificationReads[];
 };
@@ -118,11 +117,14 @@ export type DemoNotificationReads = { user: string; read: number };
 
 /** ADR 0090: the deposit rule and the invoice provider (`PaymentSettings`); none when left out. */
 export type DemoPaymentSettings = {
-  depositPercent: number;
-  depositMinimumMinor: number;
-  invoiceProvider: InvoiceProvider;
-  paymentOperator: PaymentOperator;
+  depositPercent?: number;
+  depositMinimumMinor?: number;
+  /** ADR 0100: which provider takes each method; saved last, with the rule. */
+  routes: readonly PaymentRoute[];
 };
+
+/** The providers a demo organization connects besides Stripe (memory fakes, ADR 0100). */
+export type DemoProvider = "SWISH" | "FORTNOX" | "VISMA";
 
 export type DemoFinance = {
   orgNumber: string;

@@ -121,7 +121,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 
 ## Webhooks
 - `POST /api/webhooks/resend`: inbound mail, stored as an EMAIL `InboundMessage` via `inboundMessage.receive`: on the order for `order-<id>@<domain>`, in the organization's inbox for its address (ADR 0012, 0085, `packages/mail`).
-- `POST /api/webhooks/stripe`: signed with `STRIPE_WEBHOOK_SECRET`; runs the SYSTEM-only `payment.applySignal` and `paymentAccount.applySignal` (ADR 0028).
+- `POST /api/webhooks/stripe`: signed with `STRIPE_WEBHOOK_SECRET`; runs the SYSTEM-only `payment.applySignal` and `integration.applySignal` (ADR 0028).
 - `POST /api/webhooks/stripe-billing`: Bibi's own subscription, signed with the secret stored in `/mothership/billing` (never env); runs the SYSTEM-only `billing.applySignal` (ADR 0095).
 
 ## Commands and environment

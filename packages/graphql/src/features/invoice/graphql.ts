@@ -1,5 +1,6 @@
 import {
   createInvoice,
+  creditInvoice,
   getInvoice,
   type InvoiceDto,
   InvoiceSchema,
@@ -29,7 +30,8 @@ export const InvoiceRef = objectFromSchema<InvoiceDto>({
   omit: ["organizationId", "lines"],
   description:
     "An invoice (ADR 0052, 0057): a frozen snapshot of the order's priced lines with totals. " +
-    "Lifecycle DRAFT → SENT → VOID; what is paid against it is derived from its payments.",
+    "Lifecycle DRAFT → SENT → VOID, credited by credit notes; what is paid against it is " +
+    "derived from its payments.",
 });
 const InvoicePageRef = pageType({ name: "InvoicePage", item: InvoiceRef });
 
@@ -43,7 +45,7 @@ builder.objectField(InvoiceRef, "lines", (t) =>
 
 fieldFromOperation({ operation: listInvoices, type: InvoicePageRef, name: "invoices" });
 fieldFromOperation({ operation: getInvoice, type: InvoiceRef, name: "invoice" });
-for (const operation of [createInvoice, sendInvoice, syncInvoice, voidInvoice]) {
+for (const operation of [createInvoice, sendInvoice, syncInvoice, voidInvoice, creditInvoice]) {
   mutationFromOperation({ operation, type: InvoiceRef });
 }
 

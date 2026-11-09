@@ -4,8 +4,7 @@ import type { PaymentSettingsDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useCan } from "@/components/shell/permissions-context";
 import { DepositEditor } from "@/features/payment-account/ui/deposit-editor";
-import { InvoiceProviderSelect } from "@/features/payment-account/ui/invoice-provider-select";
-import { PaymentOperatorSelect } from "@/features/payment-account/ui/payment-operator-select";
+import { PaymentRoutesEditor } from "@/features/payment-account/ui/payment-routes-editor";
 import type { SettingEditorProps } from "./setting-props";
 import { SettingRow } from "./setting-row";
 
@@ -14,15 +13,16 @@ const savedPayment =
   ({ value }: { value: PaymentSettingsDto }) =>
     onSaved({ patch: { payment: value } });
 
-/** Who takes card payments (ADR 0090), saved on change. */
-export function PaymentOperatorSettingRow({ view, onSaved }: SettingEditorProps) {
+/** Which provider takes each payment method (ADR 0100), each saved on change. */
+export function PaymentMethodsSettingRow({ view, onSaved }: SettingEditorProps) {
   const t = useTranslations("paymentSettings");
   const canEdit = useCan({ permission: "paymentAccount:write" });
   if (!view.payment) return null;
   return (
-    <SettingRow setting="paymentOperator" description={t("operator.description")}>
-      <PaymentOperatorSelect
-        value={view.payment.paymentOperator ?? "AUTO"}
+    <SettingRow setting="paymentMethods" description={t("routes.description")}>
+      <PaymentRoutesEditor
+        settings={view.payment}
+        connected={null}
         canEdit={canEdit}
         onSaved={savedPayment({ onSaved })}
       />
@@ -40,22 +40,6 @@ export function DepositSettingRow({ view, onSaved }: SettingEditorProps) {
       <DepositEditor
         depositPercent={view.payment.depositPercent}
         depositMinimumMinor={view.payment.depositMinimumMinor}
-        canEdit={canEdit}
-        onSaved={savedPayment({ onSaved })}
-      />
-    </SettingRow>
-  );
-}
-
-/** Which connected system raises invoices (ADR 0090), saved on change. */
-export function InvoicesSettingRow({ view, onSaved }: SettingEditorProps) {
-  const t = useTranslations("paymentSettings");
-  const canEdit = useCan({ permission: "paymentAccount:write" });
-  if (!view.payment) return null;
-  return (
-    <SettingRow setting="invoices" description={t("invoice.description")}>
-      <InvoiceProviderSelect
-        value={view.payment.invoiceProvider}
         canEdit={canEdit}
         onSaved={savedPayment({ onSaved })}
       />

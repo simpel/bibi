@@ -1,3 +1,4 @@
+import type { Db } from "@bibi/db";
 import type { Result } from "../errors/result";
 import type { ConnectPort } from "./connect-types";
 import type { PaymentMethodKey, ProviderKey } from "./provider-keys";
@@ -7,8 +8,15 @@ export type * from "./connect-types";
 export type * from "./provider-keys";
 export type * from "./signal";
 
-/** What a provider call acts with: the connection's account id and, for OAuth, a fresh token. */
-export type ProviderAuth = { externalAccountId: string | null; accessToken: string | null };
+/**
+ * What a provider call acts with: the connection's account id and, for OAuth, a fresh token; for
+ * a CREDENTIALS provider its sealed credentials, which only the adapter opens.
+ */
+export type ProviderAuth = {
+  externalAccountId: string | null;
+  accessToken: string | null;
+  credentialsSealed?: string | null;
+};
 
 export type StartAttemptInput = {
   auth: ProviderAuth;
@@ -125,20 +133,40 @@ export type InvoicingPort = {
 /** A verified inbound delivery: its event id and what it means for Bibi. */
 export type VerifiedDelivery = { eventId: string; type: string; signals: ProviderSignal[] };
 
+export type VerifyWebhookInput = { payload: string; headers: Headers; db?: Db };
+
+/**
+ * `verify` checks a signed delivery, or, for a provider whose callbacks are unsigned (Swish),
+ * reads the state again from the provider and builds the signals from that (ADR 0100).
+ */
 export type WebhookPort = {
   isConfigured(): boolean;
-  verify(input: { payload: string; headers: Headers }): Result<VerifiedDelivery>;
+  verify(input: VerifyWebhookInput): Result<VerifiedDelivery> | Promise<Result<VerifiedDelivery>>;
 };
+
+/** An open stream; the worker stops it on shutdown. */
+export type StreamHandle = { stop(): void };
+export type StreamCatchUpInput = { db?: Db };
 
 /** A long-lived connection that pushes events (Fortnox Topics), run by the worker. */
 export type StreamPort = {
   isConfigured(): boolean;
   /** How long the provider replays missed events; a longer gap needs a catch-up. */
   replayMs: number;
+  /** Opens the one connection for every connected organization; it reconnects until stopped. */
+  start(): StreamHandle;
+  /** Re-reads what the stream missed when it was away longer than `replayMs` (worker start). */
+  catchUp(input: StreamCatchUpInput): Promise<Result<PollOutcome>>;
 };
 
-/** A scheduled pull for providers without push (ADR 0100). */
-export type PollPort = { intervalMs: number };
+export type PollRunInput = { db?: Db };
+export type PollOutcome = { organizations: number; synced: number };
+
+/** A scheduled pull for providers without push (ADR 0100); the worker calls `run` every interval. */
+export type PollPort = {
+  intervalMs: number;
+  run(input: PollRunInput): Promise<Result<PollOutcome>>;
+};
 
 export type SignalsPort = { webhook?: WebhookPort; stream?: StreamPort; poll?: PollPort };
 

@@ -109,6 +109,7 @@ export * from "./components/phone-input/phone-format";
 export * from "./components/phone-input/phone-input";
 export * from "./components/popover/popover";
 export * from "./components/provider-logo/provider-logo";
+export * from "./components/qr-code/qr-code";
 export * from "./components/questionnaire/questionnaire";
 export * from "./components/questionnaire/questionnaire-actions";
 export * from "./components/questionnaire/questionnaire-choices";

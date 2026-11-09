@@ -85,6 +85,6 @@ export async function startFortnox({ context }: StartInput) {
       context,
     }),
   });
-  const state = new URL(started.authorizeUrl).searchParams.get("state") ?? "";
+  const state = new URL(started.authorizeUrl ?? "").searchParams.get("state") ?? "";
   return { started, state };
 }

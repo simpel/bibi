@@ -100,11 +100,13 @@ export type ToolUiProps = BoardUiProps &
     "integration-card": { items: IntegrationWire[]; authorizeUrl: string | null };
     "payment-table": { items: PaymentWire[]; nextCursor: string | null };
     "payment-card": { payment: PaymentWire };
+    "payment-refund-card": { payment: PaymentWire };
     "order-balance-card": { balance: OrderBalanceWire };
     "deposit-table": { items: DepositWire[]; nextCursor: string | null };
     "deposit-card": { deposit: DepositWire };
     "invoice-table": { items: InvoiceWire[]; nextCursor: string | null };
     "invoice-card": { invoice: InvoiceWire };
+    "credit-note-card": { invoice: InvoiceWire };
     "entity-type-table": { items: EntityTypeWire[]; nextCursor: string | null };
     "entity-type-card": { entityType: EntityTypeWire };
     "field-definition-table": { items: FieldDefinitionWire[]; nextCursor: string | null };

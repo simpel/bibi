@@ -53,7 +53,7 @@ async function connectedOrganization() {
     context,
   });
   const state = started.ok
-    ? (new URL(started.value.authorizeUrl).searchParams.get("state") ?? "")
+    ? (new URL(started.value.authorizeUrl ?? "").searchParams.get("state") ?? "")
     : "";
   const input = { provider: "FORTNOX" as const, code: "code", state };
   expect((await execute({ operation: completeIntegrationConnect, input, context })).ok).toBe(true);

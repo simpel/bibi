@@ -1,6 +1,14 @@
 "use server";
 
-import { createInvoice, type InvoiceDto, sendInvoice, syncInvoice, voidInvoice } from "@bibi/core";
+import {
+  createInvoice,
+  creditInvoice,
+  type InvoiceCreditInput,
+  type InvoiceDto,
+  sendInvoice,
+  syncInvoice,
+  voidInvoice,
+} from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
@@ -31,4 +39,12 @@ export async function syncInvoiceAction({
   id,
 }: InvoiceIdActionInput): Promise<ActionResult<InvoiceDto>> {
   return toActionResult({ result: await runOperation({ operation: syncInvoice, input: { id } }) });
+}
+
+export type CreditInvoiceActionInput = { input: InvoiceCreditInput };
+
+export async function creditInvoiceAction({
+  input,
+}: CreditInvoiceActionInput): Promise<ActionResult<InvoiceDto>> {
+  return toActionResult({ result: await runOperation({ operation: creditInvoice, input }) });
 }

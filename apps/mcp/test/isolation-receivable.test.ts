@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
 import { seedOrder } from "./seed-order";
+import { seedQuoteBasis } from "./seed-quote-basis";
 
 afterEach(() => {
   resetProviderAdapters();
@@ -64,5 +65,21 @@ describe("cross-organization isolation: receivables and balances (ADR 0057)", ()
     expect(graph.data.data.deposits.items).toEqual([]);
     const own = await call({ client: a, name: "deposit_get", args: { id } });
     expect(own.data).toMatchObject({ id, status: "DRAFT", progress: "OPEN" });
+  });
+
+  it("refuses to credit another organization's sent invoice", async () => {
+    const a = await connect({ context: testContext() });
+    const b = await connect({ context: testContext() });
+    const { orderId } = await seedQuoteBasis({ client: a });
+    const order = await call({ client: a, name: "order_get", args: { id: orderId } });
+    const status = { id: order.data.statusId, invoiceable: true };
+    await call({ client: a, name: "orderStatus_update", args: status });
+    const invoice = await call({ client: a, name: "invoice_create", args: { orderId } });
+    expect(invoice.isError, JSON.stringify(invoice.data)).toBe(false);
+    const invoiceId: string = invoice.data.id;
+    await call({ client: a, name: "invoice_send", args: { id: invoiceId } });
+    await expectNotFound({ client: b, calls: [["invoice_credit", { invoiceId }]] });
+    const own = await call({ client: a, name: "invoice_get", args: { id: invoiceId } });
+    expect(own.data).toMatchObject({ status: "SENT", creditNotes: [] });
   });
 });

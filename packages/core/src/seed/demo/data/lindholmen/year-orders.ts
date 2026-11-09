@@ -113,6 +113,8 @@ export const lindholmenYearOrders: readonly DemoOrder[] = [
     day: -80,
     headcount: 40,
     lines: [buffet],
+    // ADR 0100: 1 000 kr credited on the open invoice (a credit note), so it owes less.
+    credit: { kr: 1_000, reason: "Fewer guests than invoiced" },
   }),
   past({
     title: "Seglarsällskapet annual meeting",

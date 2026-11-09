@@ -4,12 +4,16 @@ import type { HostedOnboardingPort, OauthConnectPort } from "./connect-types";
 import { fortnoxAdapter } from "./fortnox/fortnox-adapter";
 import { type PaymentMethodKey, PROVIDER_KEYS, type ProviderKey } from "./provider-keys";
 import { stripeAdapter } from "./stripe/stripe-adapter";
+import { swishAdapter } from "./swish/swish-adapter";
 import type { ProviderAdapter } from "./types";
+import { vismaAdapter } from "./visma/visma-adapter";
 
-/** The adapters each provider folder registers (ADR 0100). SWISH and VISMA come in phase 3. */
-const BUILT_IN: Partial<Record<ProviderKey, ProviderAdapter>> = {
+/** The adapters each provider folder registers (ADR 0100). */
+const BUILT_IN: Record<ProviderKey, ProviderAdapter> = {
   STRIPE: stripeAdapter,
   FORTNOX: fortnoxAdapter,
+  SWISH: swishAdapter,
+  VISMA: vismaAdapter,
 };
 
 const overrides = new Map<ProviderKey, ProviderAdapter>();
@@ -18,7 +22,7 @@ export type ProviderKeyInput = { key: ProviderKey };
 
 /** The adapter registered for a provider, or null when Bibi has none. */
 export function findProvider({ key }: ProviderKeyInput): ProviderAdapter | null {
-  return overrides.get(key) ?? BUILT_IN[key] ?? null;
+  return overrides.get(key) ?? BUILT_IN[key];
 }
 
 /** The adapter for a provider; UNAVAILABLE when Bibi has none. */

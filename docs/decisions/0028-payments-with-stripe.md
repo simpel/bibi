@@ -2,6 +2,7 @@
 
 - **Date:** 2026-10-15
 - **Status:** Accepted
+- **Amended by:** 0100 (providers as ports: one connection table, routes per method, payment attempts, refunds, credit notes)
 - **Related:** 0029 (invoicing), 0051, 0057 (derived balance), 0058 (after commit), 0004
 - **Spec:** `docs/specs/payments.md`
 

@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, ComponentType } from "react";
 import { cn } from "../../lib/cn";
 
 export type ProviderLogoProps = ComponentProps<"svg">;
@@ -77,4 +77,63 @@ export function FortnoxLogo({ className, ...props }: ProviderLogoProps) {
       />
     </svg>
   );
+}
+
+/**
+ * A simple Swish mark (ADR 0100): two interlocking arcs in `currentColor`, not the official logo,
+ * so it follows the text colour in light and dark mode.
+ */
+export function SwishLogo({ className, ...props }: ProviderLogoProps) {
+  return (
+    <svg
+      data-slot="swish-logo"
+      viewBox="0 0 24 24"
+      role="img"
+      aria-label="Swish"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={3}
+      strokeLinecap="round"
+      className={cn("size-5 shrink-0 text-foreground", className)}
+      {...props}
+    >
+      <path d="M5.5 15.5A7 7 0 0 1 15 5.2" />
+      <path d="M18.5 8.5A7 7 0 0 1 9 18.8" />
+    </svg>
+  );
+}
+
+/** A simple Visma mark (ADR 0100): a V in `currentColor`, not the official logo. */
+export function VismaLogo({ className, ...props }: ProviderLogoProps) {
+  return (
+    <svg
+      data-slot="visma-logo"
+      viewBox="0 0 24 24"
+      role="img"
+      aria-label="Visma"
+      className={cn("size-5 shrink-0 fill-current text-foreground", className)}
+      {...props}
+    >
+      <path d="M2 4h4.6L12 15.2 17.4 4H22l-8 16h-4z" />
+    </svg>
+  );
+}
+
+/** Each provider's mark, by its key in lower case (the provider keys are data, ADR 0100). */
+const LOGOS: Record<string, ComponentType<ProviderLogoProps>> = {
+  stripe: StripeLogo,
+  fortnox: FortnoxLogo,
+  swish: SwishLogo,
+  visma: VismaLogo,
+};
+
+export type ProviderLogoByKeyProps = ProviderLogoProps & {
+  /** The provider's key (`STRIPE`, `FORTNOX`, ...); an unknown key renders nothing. */
+  provider: string;
+};
+
+/** The mark of a provider looked up by its key, for screens that render providers from data. */
+export function ProviderLogo({ provider, ...props }: ProviderLogoByKeyProps) {
+  const Logo = LOGOS[provider.toLowerCase()];
+  return Logo ? <Logo {...props} /> : null;
 }
