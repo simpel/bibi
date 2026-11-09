@@ -26,6 +26,8 @@ export type MemoryState = {
   portCalls: string[];
   /** When set, the next port call of that name fails with UNAVAILABLE (`refund`, `issue`, ...). */
   failing: Set<string>;
+  /** When set, the next port call of that name is refused definitely (CONFLICT). */
+  refusing: Set<string>;
   configured: boolean;
 };
 
@@ -40,5 +42,6 @@ export const newMemoryState = (): MemoryState => ({
   payments: [],
   portCalls: [],
   failing: new Set(),
+  refusing: new Set(),
   configured: true,
 });

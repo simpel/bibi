@@ -37,12 +37,21 @@ async function complete({ context, signal, refund }: CompleteInput): Promise<boo
 
 /**
  * A refund the provider made without Bibi starting it (in its own dashboard): it reports a
- * refunded total, and the part Bibi does not know yet becomes one SUCCEEDED row.
+ * refunded total, and the part Bibi does not know yet becomes one SUCCEEDED row. The total counts
+ * what the provider holds: the SUCCEEDED refunds and the PENDING ones it was given (a reference).
+ * A PENDING refund it never got is not in it, so a dashboard refund is never lost behind one that
+ * later fails; one that fails at the provider drops out of its total as it does here.
  */
 async function recordReportedStep({ context, payment, signal }: RefundSignalInput) {
   if (signal.kind !== "refund.succeeded" || signal.refundedTotalMinor === undefined) return false;
-  const { committedMinor } = refundTotals({ refunds: payment.refunds });
-  const step = Math.min(signal.refundedTotalMinor, payment.amountMinor) - committedMinor;
+  const refunds = await context.db.paymentRefund.findMany({
+    where: { paymentId: payment.id, status: { in: ["SUCCEEDED", "PENDING"] } },
+    select: { amountMinor: true, status: true, providerReference: true },
+  });
+  const known = refunds
+    .filter((r) => r.status === "SUCCEEDED" || r.providerReference !== null)
+    .reduce((sum, r) => sum + r.amountMinor, 0);
+  const step = Math.min(signal.refundedTotalMinor, payment.amountMinor) - known;
   if (step <= 0) return false;
   await context.db.paymentRefund.create({
     data: {

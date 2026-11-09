@@ -206,11 +206,23 @@ describe("Visma invoicing (ADR 0100)", () => {
       { ArticleId: "a25", Text: "Room", UnitPrice: -500, Quantity: 1, DiscountPercentage: 0 },
     ]);
     const now = new Date("2026-11-09T12:00:00Z");
-    expect(derivedPayments({ id: "inv", totalAmount: 1250, remainingAmount: 1250, now })).toEqual(
-      [],
-    );
-    expect(derivedPayments({ id: "inv", totalAmount: 1250, remainingAmount: 250, now })).toEqual([
-      { reference: "inv:paid:100000", amountMinor: 100_000, paidAt: now },
-    ]);
+    expect(
+      derivedPayments({
+        id: "inv",
+        totalAmount: 1250,
+        remainingAmount: 1250,
+        creditedMinor: 0,
+        now,
+      }),
+    ).toEqual([]);
+    expect(
+      derivedPayments({
+        id: "inv",
+        totalAmount: 1250,
+        remainingAmount: 250,
+        creditedMinor: 0,
+        now,
+      }),
+    ).toEqual([{ reference: "inv:paid:100000", amountMinor: 100_000, paidAt: now }]);
   });
 });

@@ -119,12 +119,19 @@ export const connectIntegration = defineOperation({
     "in to Bibi (some providers require their system administrator to approve); a CONNECTED " +
     "connection keeps working until the new approval replaces it. CREDENTIALS: pass " +
     "`credentials` (its credentialFields); after the change is committed they are checked with " +
-    "the provider and stored sealed, never returned. HOSTED_ONBOARDING is paymentAccount.startOnboarding (CONFLICT here).",
+    "the provider and stored sealed, never returned; the assistant may not pass them (FORBIDDEN: " +
+    "the admin enters them on the settings page). HOSTED_ONBOARDING is paymentAccount.startOnboarding (CONFLICT here).",
   input: IntegrationConnectInputSchema,
   output: IntegrationConnectOutputSchema,
   permission: "integration:write",
   entityType: "integrationConnection",
   handler: async ({ input, context }) => {
+    // Secrets never pass through the assistant: not in a chat, a proposal card or its audit.
+    if (input.credentials !== undefined && context.actor.type === "ai") {
+      const message =
+        "The assistant cannot enter credentials: connect it on the settings page, Integrations";
+      return err({ error: new AppError({ code: "FORBIDDEN", message }) });
+    }
     const adapter = getProvider({ key: input.provider });
     if (!adapter.ok) return adapter;
     const { connect } = adapter.value;

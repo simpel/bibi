@@ -75,6 +75,18 @@ FROM "PaymentAccount";
 CREATE INDEX "ProviderConnection_provider_status_refreshExpiresAt_idx" ON "ProviderConnection"("provider", "status", "refreshExpiresAt");
 CREATE UNIQUE INDEX "ProviderConnection_id_organizationId_key" ON "ProviderConnection"("id", "organizationId");
 CREATE UNIQUE INDEX "ProviderConnection_organizationId_provider_key" ON "ProviderConnection"("organizationId", "provider");
+-- Two organizations may have connected the same Fortnox company: the oldest connection keeps the
+-- Topics tenant id and the others lose it (the worker learns it again), so the index can hold.
+UPDATE "ProviderConnection" AS c SET "externalAccountId" = NULL
+FROM (
+    SELECT "id", row_number() OVER (
+        PARTITION BY "provider", "externalAccountId" ORDER BY "createdAt", "id"
+    ) AS rank
+    FROM "ProviderConnection"
+    WHERE "provider" = 'FORTNOX' AND "externalAccountId" IS NOT NULL
+) AS d
+WHERE c."id" = d."id" AND d.rank > 1;
+
 CREATE UNIQUE INDEX "ProviderConnection_provider_externalAccountId_key" ON "ProviderConnection"("provider", "externalAccountId");
 
 -- Payment: provider enum, connection FK; references and links move to PaymentAttempt ------------

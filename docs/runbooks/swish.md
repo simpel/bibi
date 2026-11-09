@@ -3,9 +3,9 @@
 Decision: `docs/decisions/0100-payment-providers-as-ports.md`. Code: `packages/core/src/providers/swish/`.
 
 ## What it does
-- A venue connects its own Swish Handel agreement in Settings → Integrations: Swish number (123xxxxxxx), client certificate (.p12, base64) and passphrase. Bibi checks the certificate with a harmless read (a payment request that cannot exist must answer 404) and stores the three sealed under `INTEGRATION_SECRET_KEY` on the venue's connection.
+- A venue connects its own Swish Handel agreement in Settings → Integrations: Swish number (123xxxxxxx), client certificate (.p12, base64) and passphrase. Bibi first checks that the certificate was issued to that Swish number (Swish puts the number in the certificate subject's common name; Node's TLS opens the .p12, no extra library), so nobody can claim another venue's number with their own certificate and receive its callbacks. Then it checks the certificate with a harmless read (a payment request that cannot exist must answer 404) and stores the three sealed under `INTEGRATION_SECRET_KEY` on the venue's connection.
 - Payment requests are m-commerce (no payer number): the pay page starts one when the customer picks Swish, and shows the QR token on a desktop or the `swish://` app link on a phone. A request lives about three minutes; SEK only.
-- Refunds go from the venue's Swish number back to the payer, by the original's payment reference.
+- Refunds go from the venue's Swish number back to the payer, by the original's payment reference. The refund's instruction id is derived from Bibi's refund id and stored before Swish is called, so a retry never pays out twice and the callback finds the refund. A timeout, outage or 409 keeps it pending until the callback (or a read) settles it; only a 400/422 marks it failed.
 - Callbacks are unsigned. Bibi trusts the body only for which request or refund to read, reads it again over mTLS with the venue's certificate, and applies what Swish reports.
 
 ## Environment
@@ -24,6 +24,8 @@ Decision: `docs/decisions/0100-payment-providers-as-ports.md`. Code: `packages/c
 2. Set `SWISH_API_URL=https://cpc.getswish.net/swish-cpcapi`.
 
 ## Troubleshooting
-- Connect says Swish did not accept the certificate: wrong passphrase, a certificate for another number, or the test certificate against production.
+- Connect says the certificate was issued to another Swish number: the .p12 belongs to a different Swish number than the one entered. Connect says it could not be opened: wrong passphrase or not a .p12.
+- Connect says Swish did not accept the certificate: the test certificate against production, or a revoked certificate.
+- A refund stuck pending after an error: Swish may or may not have made it. Check the refund in the Swish portal; the callback completes it. Do not refund again until it is settled.
 - `Swish refused the payment request (422: RP03)`: the callback URL is not HTTPS. `ACMT03`: the payee is not enrolled. `AM02`: amount too large.
 - A declined, failed or expired request ends only that attempt: the payment stays pending and the customer can start a new Swish request from the pay page.

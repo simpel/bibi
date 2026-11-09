@@ -166,4 +166,17 @@ describe("Swish connect (ADR 0100)", () => {
     });
     expect(errorCode({ result: bad })).toBe("VALIDATION");
   });
+
+  it("refuses another venue's Swish number with a certificate issued to a different one", async () => {
+    const stub = stubSwish();
+    const squat = await swish().connect.verify({
+      credentials: swishCredentials({ number: SWISH_NUMBER, issuedTo: "1239999999" }),
+    });
+    expect(errorCode({ result: squat })).toBe("VALIDATION");
+    const unreadable = await swish().connect.verify({
+      credentials: { ...swishCredentials(), passphrase: "wrong" },
+    });
+    expect(errorCode({ result: unreadable })).toBe("VALIDATION");
+    expect(stub.calls).toHaveLength(0);
+  });
 });

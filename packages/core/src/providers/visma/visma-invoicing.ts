@@ -11,7 +11,8 @@ const tokenOf = ({ auth }: { auth: ProviderAuth }): Result<string> =>
   auth.accessToken ? ok({ value: auth.accessToken }) : vismaNotConnected();
 
 /**
- * What Visma has received on the invoice, derived from its total and what is left to pay: one
+ * What Visma has received on the invoice, derived from its total and what is left to pay, less
+ * what credit invoices took off it (`creditedMinor`; Visma lowers the remaining amount by them): one
  * entry per paid level, keyed by the invoice and the paid sum, so a further payment replaces the
  * entry (removed, then recorded at the new sum). Visma lists no single payments on an invoice
  * through this API. // Verify against Visma sandbox (a per-payment listing would replace this)
@@ -20,14 +21,16 @@ export function derivedPayments({
   id,
   totalAmount,
   remainingAmount,
+  creditedMinor,
   now,
 }: {
   id: string;
   totalAmount: number;
   remainingAmount: number;
+  creditedMinor: number;
   now: Date;
 }): ProviderPayment[] {
-  const paidMinor = Math.round((totalAmount - remainingAmount) * 100);
+  const paidMinor = Math.round((totalAmount - remainingAmount) * 100) - creditedMinor;
   if (paidMinor <= 0) return [];
   return [{ reference: `${id}:paid:${paidMinor}`, amountMinor: paidMinor, paidAt: now }];
 }
@@ -76,7 +79,7 @@ export const vismaInvoicing: InvoicingPort = {
     });
     return id.ok ? ok({ value: { providerReference: id.value, url: null } }) : id;
   },
-  async listPayments({ auth, providerReference }) {
+  async listPayments({ auth, providerReference, creditedMinor }) {
     const accessToken = tokenOf({ auth });
     if (!accessToken.ok) return accessToken;
     const invoice = await readInvoice({ accessToken: accessToken.value, id: providerReference });
@@ -87,6 +90,7 @@ export const vismaInvoicing: InvoicingPort = {
         id: Id,
         totalAmount: TotalAmount,
         remainingAmount: RemainingAmount,
+        creditedMinor,
         now: new Date(),
       }),
     });

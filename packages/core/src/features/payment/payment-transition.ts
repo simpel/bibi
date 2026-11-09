@@ -20,6 +20,10 @@ export function nextPaymentState({ payment, signal, now }: NextPaymentInput): Pa
   return null;
 }
 
+/** The payment's money already reached the venue (paid, possibly refunded since). */
+export const isSettled = ({ payment }: { payment: Pick<Payment, "status"> }) =>
+  payment.status === "SUCCEEDED" || payment.status === "REFUNDED";
+
 const ATTEMPT_STATUS = {
   "attempt.succeeded": "SUCCEEDED",
   "attempt.failed": "FAILED",

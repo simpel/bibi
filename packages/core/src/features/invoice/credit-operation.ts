@@ -58,6 +58,12 @@ async function writeCredit({ context, input }: WriteInput) {
     const message = "Give lineIds or amountMinor, not both";
     return invalid({ message, issues: [{ path: "lineIds", message }] });
   }
+  // Locks the SENT invoice row first (a no-op update): concurrent credits of it run one after
+  // the other, each seeing what the one before credited and the number it took.
+  await context.db.invoice.updateMany({
+    where: { id: input.invoiceId, status: "SENT" },
+    data: { status: "SENT" },
+  });
   const before = await loadInvoice({ context, id: input.invoiceId });
   const invoice = await loadSent({ context, id: input.invoiceId });
   if (!before || !invoice) {
@@ -80,6 +86,8 @@ async function writeCredit({ context, input }: WriteInput) {
     });
   }
   const atProvider = Boolean(invoice.providerReference) && raisedInProvider({ invoice });
+  // Credits of two invoices at once may take the same number: the unique key refuses the
+  // second with CONFLICT (as invoice numbers, ADR 0077), and a retry takes the next.
   const top = await context.db.creditNote.aggregate({ _max: { number: true } });
   const note = await context.db.creditNote.create({
     data: {

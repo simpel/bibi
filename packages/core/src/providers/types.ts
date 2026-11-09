@@ -69,6 +69,12 @@ export type CollectPort = {
   startAttempt(input: StartAttemptInput): Promise<Result<AttemptRef>>;
   cancelAttempt(input: AttemptRefInput): Promise<Result<true>>;
   refund(input: RefundInput): Promise<Result<ProviderReference>>;
+  /**
+   * The refund's reference before the call, when the provider derives it from the idempotency key
+   * (Swish's instruction id): core stores it first, so a signal finds a refund whose call ended
+   * ambiguously. Without it the reference comes back from `refund` and signals carry Bibi's id.
+   */
+  refundReference?(input: { idempotencyKey: string }): string;
 };
 
 /** One frozen invoice line with the revenue account the export posts it to (ADR 0077). */
@@ -117,6 +123,14 @@ export type CreditInput = AttemptRefInput & {
   idempotencyKey: string;
 };
 
+export type ListPaymentsInput = AttemptRefInput & {
+  /**
+   * What Bibi's ISSUED credit notes took off the invoice at the provider, minor units: a provider
+   * that only reports what is left to pay (Visma) must not read a credit as money received.
+   */
+  creditedMinor: number;
+};
+
 export type RegisterPaymentInput = AttemptRefInput & { payment: ProviderPayment };
 
 /** Raising invoices in the provider (ADR 0100). Every call runs after the commit (ADR 0058). */
@@ -125,7 +139,7 @@ export type InvoicingPort = {
   issue(input: IssueInput): Promise<Result<IssuedDocument>>;
   void(input: AttemptRefInput): Promise<Result<true>>;
   credit(input: CreditInput): Promise<Result<IssuedDocument>>;
-  listPayments(input: AttemptRefInput): Promise<Result<ProviderPayment[]>>;
+  listPayments(input: ListPaymentsInput): Promise<Result<ProviderPayment[]>>;
   /** Books a payment another provider took (card, Swish) on the provider's invoice. */
   registerPayment?(input: RegisterPaymentInput): Promise<Result<ProviderReference>>;
 };

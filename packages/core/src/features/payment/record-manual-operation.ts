@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid } from "../../shared/errors";
+import { closeOpenAttempts } from "./close-attempts";
 import { guardLedgerInvoice } from "./insert-payment";
 import { type PaymentRecordManualInput, PaymentRecordManualInputSchema } from "./lifecycle-schema";
 import { newPublicToken } from "./public-token";
@@ -56,7 +57,8 @@ export const recordManualPayment = defineOperation({
   description:
     "Record money the customer paid outside Bibi's providers, e.g. a bank transfer or cash " +
     "(ADR 0100): a SUCCEEDED MANUAL payment against exactly one receivable (quoteId, depositId " +
-    "or invoiceId), at most its open balance. An invoice raised in an accounting system that " +
+    "or invoiceId), at most its open balance. Once nothing is left open, the open card or Swish " +
+    "attempts on it are closed at their providers. An invoice raised in an accounting system that " +
     "can book payments gets the payment booked there too; one that cannot refuses it with " +
     "CONFLICT: record it in that system instead.",
   input: PaymentRecordManualInputSchema,
@@ -64,6 +66,7 @@ export const recordManualPayment = defineOperation({
   permission: "payment:write",
   handler: ({ input, context }) => recordManual({ context, input }),
   external: async ({ output, context }) => {
+    await closeOpenAttempts({ context, paymentId: output.id });
     const registered = await registerOnInvoice({ context, paymentId: output.id });
     return registered.ok ? ok({ value: output }) : registered;
   },

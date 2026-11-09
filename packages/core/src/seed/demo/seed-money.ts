@@ -11,7 +11,7 @@ import {
 } from "../../features/payment-account/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { DEMO_SWISH_CREDENTIALS } from "./demo-payments";
+import { demoSwishCredentials } from "./demo-payments";
 import { applyDemoSignal } from "./demo-signal";
 import type { DemoOrder } from "./order-types";
 import { seedOrderEstimates } from "./seed-estimates";
@@ -23,7 +23,7 @@ type Ctx = { context: ExecuteContext };
 
 /** Swish: the number and certificate are entered, then checked after the commit (ADR 0100). */
 async function connectSwish({ context }: Ctx) {
-  const input = { provider: "SWISH" as const, credentials: DEMO_SWISH_CREDENTIALS };
+  const input = { provider: "SWISH" as const, credentials: demoSwishCredentials(context) };
   return execute({ operation: connectIntegration, input, context });
 }
 

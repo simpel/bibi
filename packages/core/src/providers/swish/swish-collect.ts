@@ -107,4 +107,5 @@ export const swishCollect: CollectPort = {
   startAttempt,
   cancelAttempt,
   refund,
+  refundReference: ({ idempotencyKey }) => swishInstructionId({ key: idempotencyKey }),
 };

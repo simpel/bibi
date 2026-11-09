@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { getEnv } from "@bibi/config";
 import { z } from "zod";
 import { ok, type Result } from "../../errors/result";
@@ -13,12 +13,18 @@ const SwishDemoCredentials = z.object({
   passphrase: z.string().min(1),
 });
 
-/** What the demo organizations enter as their Swish agreement (a fake; no certificate is read). */
-export const DEMO_SWISH_CREDENTIALS = {
-  swishNumber: "1234679304",
-  certificate: "ZGVtbw==",
-  passphrase: "demo",
-};
+/**
+ * What a demo organization enters as its Swish agreement (a fake; no certificate is read). The
+ * number is derived from the organization, since a Swish number belongs to one organization.
+ */
+export function demoSwishCredentials({ organizationId }: { organizationId: string }) {
+  const digits = createHash("sha256").update(organizationId).digest().readUInt32BE(0) % 10_000_000;
+  return {
+    swishNumber: `123${String(digits).padStart(7, "0")}`,
+    certificate: "ZGVtbw==",
+    passphrase: "demo",
+  };
+}
 
 type Installed = ProviderKey[];
 

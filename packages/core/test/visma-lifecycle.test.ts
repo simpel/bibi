@@ -3,6 +3,7 @@ import {
   completeIntegrationConnect,
   connectIntegration,
   createInvoice,
+  creditInvoice,
   type ExecuteContext,
   execute,
   findProvider,
@@ -76,6 +77,38 @@ describe("Visma through the core operations (ADR 0100)", () => {
       where: { invoiceId: draft.id, status: "SUCCEEDED" },
     });
     expect(settled.map((p) => p.amountMinor)).toEqual([560_000]);
+  });
+
+  it("does not read a credit note as a payment", async () => {
+    const { context, order } = await moneySetup();
+    const stub = stubVisma();
+    const company = vismaCompany({ stub });
+    await connectVisma({ context });
+    const routes = [{ method: "INVOICE" as const, provider: "VISMA" as const }];
+    unwrap({
+      result: await execute({ operation: updatePaymentSettings, input: { routes }, context }),
+    });
+    await makeInvoiceable({ context, statusId: order.statusId });
+    const draft = unwrap({
+      result: await execute({ operation: createInvoice, input: { orderId: order.id }, context }),
+    });
+    unwrap({ result: await execute({ operation: sendInvoice, input: { id: draft.id }, context }) });
+    company.invoice = { TotalAmount: 5600, RemainingAmount: 5600 };
+    const credit = { invoiceId: draft.id, amountMinor: 100_000 };
+    unwrap({ result: await execute({ operation: creditInvoice, input: credit, context }) });
+    const note = await context.db.creditNote.findFirstOrThrow({ where: { invoiceId: draft.id } });
+    expect(note.status).toBe("ISSUED");
+
+    // Visma lowers what is left to pay by the credit: no money arrived.
+    const poll = findProvider({ key: "VISMA" })?.signals?.poll;
+    company.invoice = { TotalAmount: 5600, RemainingAmount: 4600 };
+    unwrap({ result: (await poll?.run({})) ?? { ok: false, error: new Error("no poll") } });
+    const none = await context.db.payment.count({ where: { invoiceId: draft.id } });
+    expect(none).toBe(0);
+    company.invoice = { TotalAmount: 5600, RemainingAmount: 600 };
+    unwrap({ result: (await poll?.run({})) ?? { ok: false, error: new Error("no poll") } });
+    const paid = await context.db.payment.findMany({ where: { invoiceId: draft.id } });
+    expect(paid.map((p) => p.amountMinor)).toEqual([400_000]);
   });
 
   it("refreshes an expired access token through the shared lease before calling Visma", async () => {

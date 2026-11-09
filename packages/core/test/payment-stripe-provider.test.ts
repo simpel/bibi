@@ -134,7 +134,7 @@ describe("stripeCharges", () => {
     expect(new Set(calls.map(({ headers }) => headers["Idempotency-Key"])).size).toBe(5);
   });
 
-  it("maps a refused request to UNAVAILABLE", async () => {
+  it("maps a refused request (4xx) to CONFLICT", async () => {
     vi.stubGlobal(
       "fetch",
       async () =>
@@ -142,6 +142,6 @@ describe("stripeCharges", () => {
     );
     const input = { ...base, successUrl: "https://s", cancelUrl: "https://c" };
     const result = await stripeCharges.createCheckout(input);
-    expect(result.ok ? null : result.error.code).toBe("UNAVAILABLE");
+    expect(result.ok ? null : result.error.code).toBe("CONFLICT");
   });
 });

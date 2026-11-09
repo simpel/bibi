@@ -17,6 +17,15 @@ export const PaymentStatusSchema = z.enum([
   "REFUNDED",
 ]);
 
+/** One refund of a payment (ADR 0100): PENDING until the provider confirms it. */
+export const PaymentRefundSchema = z.object({
+  id: z.string(),
+  amountMinor: z.number().int().describe("This refund in minor units"),
+  status: z.enum(["PENDING", "SUCCEEDED", "FAILED"]),
+  refundedAt: z.date().nullable().describe("When the provider confirmed it; null until then"),
+  createdAt: z.date(),
+});
+
 /** A payment requested from the customer that settles one receivable (ADR 0028, 0029, 0057). */
 export const PaymentSchema = z.object({
   id: z.string(),
@@ -57,6 +66,9 @@ export const PaymentSchema = z.object({
     .number()
     .int()
     .describe("What payment.refund may still refund, minor units; 0 unless SUCCEEDED"),
+  refunds: z
+    .array(PaymentRefundSchema)
+    .describe("Its refunds, oldest first, the ones the provider made on its own included"),
   canRefund: z
     .boolean()
     .describe(

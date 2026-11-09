@@ -5,6 +5,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { ProviderSignalSchema } from "../../providers/signal";
 import { notFound } from "../../shared/errors";
 import { notifyPaymentReceived } from "../notification/follow-ups";
+import { closeOpenAttempts } from "../payment/close-attempts";
 import { PaymentStatusSchema } from "../payment/schema";
 import { applyInvoicePaymentSignal } from "./invoice-payment-signal";
 import { moveInvoice } from "./move-invoice";
@@ -60,5 +61,12 @@ export const applyInvoiceSignal = defineOperation({
     return ok({
       value: { ...base, paymentId: payment?.id ?? null, status: payment?.status ?? null, changed },
     });
+  },
+  // Paid in the ledger provider: open card or Swish attempts on the invoice close (ADR 0100).
+  external: async ({ output, context }) => {
+    if (output.changed && output.status === "SUCCEEDED" && output.paymentId) {
+      await closeOpenAttempts({ context, paymentId: output.paymentId });
+    }
+    return ok({ value: output });
   },
 });

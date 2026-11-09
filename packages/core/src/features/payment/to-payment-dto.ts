@@ -5,12 +5,20 @@ import type { PaymentDto } from "./schema";
 /** Prisma `include` for every payment read: its latest attempt and its refunds (ADR 0100). */
 export const PAYMENT_INCLUDE = {
   attempts: { orderBy: [{ createdAt: "desc" as const }, { id: "desc" as const }], take: 1 },
-  refunds: { select: { amountMinor: true, status: true } },
+  refunds: {
+    select: { id: true, amountMinor: true, status: true, refundedAt: true, createdAt: true },
+    orderBy: [{ createdAt: "asc" as const }, { id: "asc" as const }],
+  },
 };
 
 export type RefundFacts = Pick<PaymentRefund, "amountMinor" | "status">;
 
-export type PaymentRow = Payment & { attempts: PaymentAttempt[]; refunds: RefundFacts[] };
+export type RefundRow = Pick<
+  PaymentRefund,
+  "id" | "amountMinor" | "status" | "refundedAt" | "createdAt"
+>;
+
+export type PaymentRow = Payment & { attempts: PaymentAttempt[]; refunds: RefundRow[] };
 
 export type RefundTotalsInput = { refunds: readonly RefundFacts[] };
 
@@ -48,6 +56,9 @@ export function toPaymentDto({ row }: ToPaymentDtoInput): PaymentDto {
     expiresAt: attempt?.expiresAt ?? null,
     refundedMinor,
     refundableMinor,
+    refunds: refunds.map(({ id, amountMinor, status, refundedAt, createdAt }) => ({
+      ...{ id, amountMinor, status, refundedAt, createdAt },
+    })),
     canRefund: refundableMinor > 0 && refundsHere,
     canCancel: payment.status === "PENDING",
   };

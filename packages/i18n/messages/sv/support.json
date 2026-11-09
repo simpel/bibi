@@ -66,6 +66,10 @@
             "question": "Hur återbetalar jag en betalning?",
             "answer": "Öppna bokningen, leta upp betalningen under **Betalningar** och välj **Återbetala**. Lämna beloppet tomt för att betala tillbaka allt som återstår, eller skriv ett lägre belopp för en delvis återbetalning.\nPengarna går tillbaka samma väg som kunden betalade. Betalningen visar det återbetalda beloppet när betaltjänsten har bekräftat det."
           },
+          "paidTwice": {
+            "question": "Vad händer om en kund betalar två gånger?",
+            "answer": "Om en kund betalar samma betalning igen, till exempel både med kort och Swish, behåller Bibi pengarna och meddelar personerna på bokningen med en notis om att den betalades igen.\nÖppna bokningen, leta upp betalningen under **Betalningar** och välj **Återbetala** för att skicka tillbaka det extra, eller behåll det som tillgodo för kunden."
+          },
           "cancelPayment": {
             "question": "Kan jag avbryta en betallänk som jag redan har skickat?",
             "answer": "Ja, så länge den inte är betald. Öppna bokningen, leta upp betalningen och välj **Avbryt betalning**.\nLänken slutar fungera för kunden. Om pengar ändå kommer in registrerar Bibi dem."

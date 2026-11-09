@@ -12,7 +12,8 @@ export function useNotificationText() {
   return ({ notification }: { notification: NotificationLike }) => {
     const { data } = notification;
     const reference = data.orderReference ?? "";
-    const message = t(`messages.${notification.kind}`, {
+    const key = data.overpaid ? "PAYMENT_OVERPAID" : notification.kind;
+    const message = t(`messages.${key}`, {
       actor: data.actorName ?? t("someone"),
       reference,
       runSheet: data.runSheetName ?? t("aRunSheet"),

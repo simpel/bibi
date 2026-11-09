@@ -16,6 +16,7 @@ import {
 } from "./lifecycle-schema";
 import { routedMethods } from "./payment-preconditions";
 import { PublicTokenSchema } from "./public-token";
+import { receivableOpenMinor } from "./receivable-open";
 import { PAYMENT_INCLUDE } from "./to-payment-dto";
 
 type Attempt = Omit<PaymentAttemptDto, "method"> & { method: string };
@@ -28,12 +29,37 @@ const toAttemptDto = ({ row }: { row: Attempt }): PaymentAttemptDto => {
 
 type HandlerInput = { context: OperationContext; input: PaymentStartAttemptInput };
 
-/** Reuses a still valid open attempt for the method, else writes a new one to start after commit. */
-async function openAttempt({ context, input }: HandlerInput): Promise<Result<PaymentAttemptDto>> {
-  const payment = await context.db.payment.findFirst({ where: { publicToken: input.token } });
+/**
+ * Locks the PENDING payment row for the transaction (a no-op update, as `claimReceivable`), so two
+ * concurrent starts for one payment run one after the other and the second reuses the first's
+ * attempt instead of opening another the customer could also pay.
+ */
+async function lockPending({ context, token }: { context: OperationContext; token: string }) {
+  const { count } = await context.db.payment.updateMany({
+    where: { publicToken: token, status: "PENDING" },
+    data: { status: "PENDING" },
+  });
+  const payment = await context.db.payment.findFirst({ where: { publicToken: token } });
   if (!payment) return notFound({ entity: "Payment" });
-  if (payment.status !== "PENDING")
-    return conflict({ message: `The payment is ${payment.status}` });
+  if (count === 0) return conflict({ message: `The payment is ${payment.status}` });
+  const ref = {
+    quoteId: payment.quoteId,
+    depositId: payment.depositId,
+    invoiceId: payment.invoiceId,
+  };
+  const open = await receivableOpenMinor({ context, ref });
+  if (open !== null && open <= 0) return conflict({ message: "Nothing is left to pay on it" });
+  return ok({ value: payment });
+}
+
+/**
+ * Reuses the method's open attempt (still valid, or written but not started yet), else writes a
+ * new one to start after commit: at most one open attempt per method and payment.
+ */
+async function openAttempt({ context, input }: HandlerInput): Promise<Result<PaymentAttemptDto>> {
+  const locked = await lockPending({ context, token: input.token });
+  if (!locked.ok) return locked;
+  const payment = locked.value;
   const routes = await routedMethods({ context });
   if (!routes.ok) return routes;
   const route = routes.value.find((r) => r.method === input.method)?.route;
@@ -45,8 +71,7 @@ async function openAttempt({ context, input }: HandlerInput): Promise<Result<Pay
       method: input.method,
       provider: route.provider,
       status: "PENDING",
-      providerReference: { not: null },
-      OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+      OR: [{ providerReference: null }, { expiresAt: null }, { expiresAt: { gt: now } }],
     },
     orderBy: [{ createdAt: "desc" }, { id: "desc" }],
   });
@@ -89,8 +114,8 @@ async function startNew({
     idempotencyKey: `bibi-attempt-${attempt.id}`,
   });
   if (!started.ok) {
-    await context.db.paymentAttempt.update({
-      where: { id: attempt.id },
+    await context.db.paymentAttempt.updateMany({
+      where: { id: attempt.id, providerReference: null },
       data: { status: "FAILED" },
     });
     return err({ error: started.error });

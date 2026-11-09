@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { connectIntegration, execute, listIntegrations } from "../src/index";
+import { connectIntegration, execute, listIntegrations, previewChange } from "../src/index";
 import { testContext, unwrap } from "./helpers";
 import { stubSwish, swishCredentials, useSwishEnv } from "./swish-helpers";
 
@@ -52,5 +52,24 @@ describe("integration.connect by connect kind (ADR 0100)", () => {
       context,
     });
     expect(hosted.ok ? null : hosted.error.code).toBe("CONFLICT");
+  });
+
+  it("refuses credentials from the assistant, also in a proposal's preview", async () => {
+    const stub = stubSwish();
+    stub.route = () => ({ status: 404 });
+    const admin = testContext({ role: "admin" });
+    const userId = admin.actor.userId ?? "user_ai";
+    const ai = {
+      ...admin,
+      actor: { type: "ai" as const, userId, conversationId: "c", approvedBy: userId },
+    };
+    const input = { provider: "SWISH" as const, credentials: swishCredentials() };
+    const preview = await previewChange({ operation: connectIntegration, input, context: ai });
+    expect(preview.ok ? null : preview.error.code).toBe("FORBIDDEN");
+    const run = await execute({ operation: connectIntegration, input, context: ai });
+    expect(run.ok ? null : run.error.code).toBe("FORBIDDEN");
+    expect(stub.calls).toHaveLength(0);
+    const rows = await admin.db.providerConnection.count({ where: { provider: "SWISH" } });
+    expect(rows).toBe(0);
   });
 });

@@ -26,7 +26,15 @@ export async function syncWithProvider({
   const call = await invoiceProviderCall({ context, invoice: row });
   if (!call.ok) return call;
   const { invoicing, auth } = call.value;
-  const payments = await invoicing.listPayments({ auth, providerReference: raised.value });
+  const credited = await context.db.creditNote.aggregate({
+    where: { invoiceId: row.id, status: "ISSUED" },
+    _sum: { amountMinor: true },
+  });
+  const payments = await invoicing.listPayments({
+    auth,
+    providerReference: raised.value,
+    creditedMinor: credited._sum.amountMinor ?? 0,
+  });
   if (!payments.ok) return payments;
   const target = { ...row, provider: row.provider };
   const recorded = await recordProviderPayments({

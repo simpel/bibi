@@ -101,12 +101,12 @@ describe("stripeConnect (hosted onboarding port)", () => {
     });
   });
 
-  it("maps a Stripe error response to UNAVAILABLE with the Stripe message", async () => {
+  it("maps a Stripe refusal (4xx) to CONFLICT with the Stripe message", async () => {
     stubStripe({ status: 400, body: { error: { message: "Bad country" } } });
     const result = await stripeConnect.status({ externalAccountId: "acct_1" });
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error.code).toBe("UNAVAILABLE");
+      expect(result.error.code).toBe("CONFLICT");
       expect(result.error.message).toContain("Bad country");
     }
   });

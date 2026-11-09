@@ -66,6 +66,10 @@
             "question": "How do I refund a payment?",
             "answer": "Open the order, find the payment under **Payments** and choose **Refund**. Leave the amount empty to refund everything that is left, or type a smaller amount for a partial refund.\nThe money goes back the way the customer paid. The payment shows the refunded amount once the payment service confirms it."
           },
+          "paidTwice": {
+            "question": "What happens if a customer pays twice?",
+            "answer": "If a customer pays the same payment again, for example with both card and Swish, Bibi keeps the money and tells the people on the order with a notification that it was paid again.\nOpen the order, find the payment under **Payments** and choose **Refund** to send the extra back, or keep it as credit for the customer."
+          },
           "cancelPayment": {
             "question": "Can I cancel a payment link I already sent?",
             "answer": "Yes, as long as it is not paid. Open the order, find the payment and choose **Cancel payment**.\nThe link stops working for the customer. If money still comes in, Bibi records it."

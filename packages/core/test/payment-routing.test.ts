@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
+import { newPublicToken } from "../src/features/payment/public-token";
 import {
   createMemoryProvider,
   createPayment,
@@ -76,6 +77,60 @@ describe("routing by method (ADR 0100)", () => {
     const closed = unwrap({ result: await getPublicPayment({ token }) });
     expect(closed.methods).toEqual([]);
     const late = await startPublicAttempt({ token, method: "CARD" });
+    expect(errorCode({ result: late })).toBe("CONFLICT");
+  });
+
+  it("opens one attempt per method for concurrent starts", async () => {
+    const { context, depositId } = await paymentSetup();
+    const swish = await connectSwish({ context });
+    const input = { depositId, amountMinor: 100_000 };
+    const payment = unwrap({ result: await execute({ operation: createPayment, input, context }) });
+    const token = await tokenOf({ context, id: payment.id });
+    const both = await Promise.all([
+      startPublicAttempt({ token, method: "SWISH" }),
+      startPublicAttempt({ token, method: "SWISH" }),
+    ]);
+    const [a, b] = both.map((result) => unwrap({ result }));
+    expect(a?.id).toBe(b?.id);
+    const attempts = await context.db.paymentAttempt.count({
+      where: { paymentId: payment.id, method: "SWISH" },
+    });
+    expect(attempts).toBe(1);
+    expect(swish.charges).toHaveLength(1);
+  });
+
+  it("closes the card checkout when Swish pays, and refuses new attempts once paid", async () => {
+    const { context, depositId, provider: card } = await paymentSetup();
+    await connectSwish({ context });
+    const input = { depositId, amountMinor: 1_000_000 };
+    const payment = unwrap({ result: await execute({ operation: createPayment, input, context }) });
+    const token = await tokenOf({ context, id: payment.id });
+    const started = unwrap({ result: await startPublicAttempt({ token, method: "SWISH" }) });
+    const reference = started.qrToken?.slice(3) ?? "";
+    await sendSignal({
+      context,
+      provider: "SWISH",
+      signal: { kind: "attempt.succeeded", reference },
+    });
+    expect(card.portCalls).toEqual([`cancel:${payment.providerReference}`]);
+    const checkout = await context.db.paymentAttempt.findFirstOrThrow({
+      where: { paymentId: payment.id, method: "CARD" },
+    });
+    expect(checkout.status).toBe("CANCELLED");
+
+    // A second request for the same deposit cannot be paid once nothing is open on it.
+    const other = await context.db.payment.create({
+      data: {
+        organizationId: context.organizationId,
+        orderId: payment.orderId,
+        depositId,
+        method: "CARD",
+        amountMinor: 1_000,
+        currency: "SEK",
+        publicToken: newPublicToken(),
+      },
+    });
+    const late = await startPublicAttempt({ token: other.publicToken, method: "CARD" });
     expect(errorCode({ result: late })).toBe("CONFLICT");
   });
 

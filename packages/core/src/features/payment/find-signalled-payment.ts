@@ -29,7 +29,15 @@ export async function findSignalledPayment({
         where: { provider, providerReference: reference, connectionId: connection.id },
       })
     : null;
-  const id = attempt?.paymentId ?? paymentId;
+  // A refund signal names the refund's reference, stored before the provider was called.
+  const refund =
+    !attempt && reference && signal.kind.startsWith("refund.")
+      ? await context.db.paymentRefund.findFirst({
+          where: { providerReference: reference },
+          select: { paymentId: true },
+        })
+      : null;
+  const id = attempt?.paymentId ?? refund?.paymentId ?? paymentId;
   if (!id) return null;
   // Matched by its attempt on this connection, or by our id on a payment requested or paid there.
   const payment = await context.db.payment.findFirst({

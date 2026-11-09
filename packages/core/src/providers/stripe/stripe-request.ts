@@ -30,6 +30,17 @@ type UnavailableInput = { message: string };
 const unavailable = ({ message }: UnavailableInput) =>
   err({ error: new AppError({ code: "UNAVAILABLE", message }) });
 
+/**
+ * A 4xx is Stripe's definite no (CONFLICT); a 409 (idempotency clash), a 429 and a 5xx may still
+ * have done the work or may succeed on retry (UNAVAILABLE). A refund stays PENDING on those.
+ */
+function refused({ status, message }: { status: number; message: string }) {
+  const definite = status >= 400 && status < 500 && status !== 409 && status !== 429;
+  return definite
+    ? err({ error: new AppError({ code: "CONFLICT", message }) })
+    : unavailable({ message });
+}
+
 /** The Connect platform key from env (ADR 0028), or null when Connect is not configured. */
 function connectKey(): string | null {
   const { STRIPE_SECRET_KEY, STRIPE_PLATFORM_ACCOUNT_ID } = getEnv();
@@ -64,9 +75,8 @@ export async function stripeFetch({
     });
     const json = (await response.json()) as Record<string, unknown> & StripeErrorBody;
     if (response.ok) return ok({ value: json });
-    return unavailable({
-      message: `Stripe refused the request: ${json.error?.message ?? response.status}`,
-    });
+    const message = `Stripe refused the request: ${json.error?.message ?? response.status}`;
+    return refused({ status: response.status, message });
   } catch (cause) {
     return err({
       error: new AppError({ code: "UNAVAILABLE", message: "Stripe is unreachable.", cause }),

@@ -5,8 +5,9 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
 import { notifyPaymentReceived } from "../notification/follow-ups";
+import { closeOpenAttempts } from "./close-attempts";
 import { findSignalledPayment } from "./find-signalled-payment";
-import { nextAttemptStatus, nextPaymentState } from "./payment-transition";
+import { isSettled, nextAttemptStatus, nextPaymentState } from "./payment-transition";
 import { applyRefundSignal } from "./refund-signal";
 import { registerOnInvoice } from "./register-on-invoice";
 import { PAYMENT_INCLUDE, toPaymentDto } from "./to-payment-dto";
@@ -17,7 +18,9 @@ import { PaymentSignalResultSchema, PaymentSignalSchema } from "./webhook-schema
  * outcome, or a refund. SYSTEM only: a provider's webhook runs it after verifying the delivery.
  * Deliberately not part of `createCoreOperations` (no user, AI or API surface may mark a payment
  * paid), so it has no adapters. Idempotent: a repeated signal finds the payment already moved and
- * changes nothing. A payment on an invoice raised in a ledger provider is booked there afterwards.
+ * changes nothing. A success closes the payment's other open attempts; a success on an attempt of
+ * a payment already paid is an over-payment (`overpaid`), kept and told to staff, never absorbed.
+ * A payment on an invoice raised in a ledger provider is booked there afterwards.
  */
 export const applyPaymentSignal = defineOperation({
   name: "payment.applySignal",
@@ -53,7 +56,11 @@ export const applyPaymentSignal = defineOperation({
       });
     }
     const next = nextPaymentState({ payment: before, signal: input, now: nowOf({ context }) });
-    if (!next) return ok({ value: unchanged });
+    if (!next) {
+      // Money on a second attempt of a payment already paid: kept, and staff are told (ADR 0100).
+      const overpaid = attemptStatus === "SUCCEEDED" && isSettled({ payment: before });
+      return ok({ value: { ...unchanged, changed: overpaid, overpaid } });
+    }
     // The attempt that paid decides how and where it was paid (ADR 0100).
     const paidWith =
       next.status === "SUCCEEDED" && attempt
@@ -71,8 +78,15 @@ export const applyPaymentSignal = defineOperation({
     });
     return ok({ value: { ...base, status: row.status, changed: true } });
   },
-  external: async ({ output, context }) => {
+  external: async ({ input, output, context }) => {
+    if (output.overpaid) {
+      const fields = { paymentId: output.paymentId, provider: input.provider };
+      getLogger().warn({ event: "payment.overpaid", reference: input.reference, ...fields });
+      return ok({ value: output });
+    }
     if (!output.changed || output.status !== "SUCCEEDED") return ok({ value: output });
+    // The customer cannot pay twice: the payment's other open attempts close at their providers.
+    await closeOpenAttempts({ context, paymentId: output.paymentId });
     // Booking it in the invoice's ledger provider never undoes the payment; staff see it unbooked.
     const registered = await registerOnInvoice({ context, paymentId: output.paymentId });
     if (!registered.ok) {

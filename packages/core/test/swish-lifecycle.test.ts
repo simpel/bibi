@@ -139,3 +139,71 @@ describe("Swish through the core operations (ADR 0100)", () => {
     expect(done.status).toBe("SUCCEEDED");
   });
 });
+
+describe("Swish refunds that Swish may or may not have made (ADR 0100)", () => {
+  const original = "1E2FC19E5E5E4E18916609B7F8911C12";
+
+  /** Swish answers the original as PAID and the refund PUT with `put`. */
+  const answer = ({ setup, put }: { setup: PaidSetup; put: () => Partial<{ status: number }> }) => {
+    setup.stub.route = (request) => {
+      if (request.method === "PUT") return put();
+      const request_ = { id: setup.requestId, payeeAlias: setup.number, status: "PAID" };
+      return { json: paymentRequest({ ...request_, paymentReference: original }) };
+    };
+  };
+
+  const refundOnce = ({ setup, amountMinor }: { setup: PaidSetup; amountMinor: number }) =>
+    execute({
+      operation: refundPayment,
+      input: { id: setup.paymentId, amountMinor },
+      context: setup.context,
+    });
+
+  it("keeps a refund whose call timed out PENDING with its reference, never sent twice", async () => {
+    const setup = await paidWithSwish();
+    answer({
+      setup,
+      put: () => {
+        throw new Error("socket hang up");
+      },
+    });
+    const first = await refundOnce({ setup, amountMinor: 40_000 });
+    expect(first.ok).toBe(false);
+    const row = await setup.context.db.paymentRefund.findFirstOrThrow({
+      where: { paymentId: setup.paymentId },
+    });
+    const refundRef = swishInstructionId({ key: `bibi-refund-${row.id}` });
+    expect(row).toMatchObject({ status: "PENDING", providerReference: refundRef });
+
+    // A second refund sends only its own refund, never the first one again.
+    answer({ setup, put: () => ({ status: 201 }) });
+    unwrap({ result: await refundOnce({ setup, amountMinor: 10_000 }) });
+    const puts = setup.stub.calls.filter((call) => call.method === "PUT");
+    expect(puts.filter((call) => call.url.endsWith(refundRef))).toHaveLength(1);
+
+    // Swish did make the first: its callback completes it by the stored reference.
+    const refund = {
+      id: refundRef,
+      originalPaymentReference: original,
+      payerAlias: setup.number,
+      amount: "400.00",
+    };
+    setup.stub.route = () => ({ json: { ...refund, status: "PAID" } });
+    expect(await statusOf({ result: callback({ body: { ...refund, status: "PAID" } }) })).toBe(
+      "applied",
+    );
+    const done = await setup.context.db.paymentRefund.findUniqueOrThrow({ where: { id: row.id } });
+    expect(done.status).toBe("SUCCEEDED");
+  });
+
+  it("marks a refund Swish refused FAILED, so it can be refunded again", async () => {
+    const setup = await paidWithSwish();
+    answer({ setup, put: () => ({ status: 422 }) });
+    const refused = await refundOnce({ setup, amountMinor: 40_000 });
+    expect(refused.ok).toBe(false);
+    const row = await setup.context.db.paymentRefund.findFirstOrThrow({
+      where: { paymentId: setup.paymentId },
+    });
+    expect(row.status).toBe("FAILED");
+  });
+});

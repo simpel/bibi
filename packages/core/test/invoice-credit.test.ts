@@ -61,6 +61,20 @@ const credit = ({
 }) => execute({ operation: creditInvoice, input, context });
 
 describe("invoices raised at a payment operator (ADR 0100)", () => {
+  it("numbers concurrent credit notes one after the other, never failing INTERNAL", async () => {
+    const { context, invoice } = await raisedInvoice();
+    const results = await Promise.all(
+      [1, 2, 3].map(() => credit({ context, invoiceId: invoice.id, amountMinor: 100_000 })),
+    );
+    expect(results.map((result) => (result.ok ? "ok" : result.error.code))).toEqual([
+      "ok",
+      "ok",
+      "ok",
+    ]);
+    const notes = await context.db.creditNote.findMany({ where: { invoiceId: invoice.id } });
+    expect(notes.map((note) => note.number).sort()).toEqual([1, 2, 3]);
+  });
+
   it("issues the invoice and records its payment from the provider's signal once", async () => {
     const { context, fake, invoice, order } = await raisedInvoice();
     expect(invoice).toMatchObject({ provider: "STRIPE", providerReference: "1" });

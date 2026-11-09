@@ -8,7 +8,7 @@ const HOUR = 60 * 60 * 1000;
 
 type PortInput = { state: MemoryState };
 
-/** Records a port call; UNAVAILABLE (once) when the test made that call fail. */
+/** Records a port call; UNAVAILABLE or CONFLICT (once) when the test made it fail or refuse. */
 function call<T>({
   state,
   name,
@@ -17,6 +17,9 @@ function call<T>({
 }: PortInput & { name: string; entry: string; value: T }): Result<T> {
   if (state.failing.delete(name)) {
     return err({ error: new AppError({ code: "UNAVAILABLE", message: `${name} failed` }) });
+  }
+  if (state.refusing.delete(name)) {
+    return err({ error: new AppError({ code: "CONFLICT", message: `${name} refused` }) });
   }
   state.portCalls.push(entry);
   return ok({ value });

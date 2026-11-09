@@ -1,12 +1,12 @@
-import type { PaymentRefund } from "@bibi/db";
-import { err, ok, type Result } from "../../errors/result";
+import { createId } from "@paralleldrive/cuid2";
+import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
-import { authFor } from "../../providers/connections";
 import { findProvider } from "../../providers/registry";
 import { conflict, notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
 import { type PaymentRefundInput, PaymentRefundInputSchema } from "./lifecycle-schema";
+import { refundAtProvider, refundKey } from "./refund-at-provider";
 import { settleRefundStatus } from "./refund-signal";
 import { type PaymentDto, PaymentSchema } from "./schema";
 import { PAYMENT_INCLUDE, refundTotals, toPaymentDto } from "./to-payment-dto";
@@ -32,7 +32,7 @@ async function lockPayment({ context, id }: { context: Context; id: string }) {
 }
 
 /**
- * The refund row first (ADR 0058): PENDING until the provider's signal completes it, or
+ * The refund row first (ADR 0058, with its reference when the provider derives it): PENDING until the provider's signal completes it, or
  * SUCCEEDED at once for a MANUAL payment no provider took.
  */
 async function writeRefund({
@@ -54,11 +54,20 @@ async function writeRefund({
     });
   }
   const manual = before.provider === null;
-  if (before.provider && !findProvider({ key: before.provider })?.collect) {
+  const collect = before.provider ? findProvider({ key: before.provider })?.collect : undefined;
+  if (before.provider && !collect) {
     return conflict({ message: `The payment was booked in ${before.provider}; refund it there` });
   }
+  // The reference first, when the provider derives it (ADR 0100): a signal then finds the refund
+  // even if the call after the commit ends without an answer.
+  const id = createId();
+  const providerReference = collect?.refundReference?.({
+    idempotencyKey: refundKey({ refundId: id }),
+  });
   await context.db.paymentRefund.create({
     data: {
+      id,
+      providerReference: providerReference ?? null,
       organizationId: context.organizationId,
       paymentId: before.id,
       amountMinor,
@@ -72,66 +81,6 @@ async function writeRefund({
   const after = toPaymentDto({ row });
   context.recordChange({ entityId: row.id, before: toPaymentDto({ row: before }), after });
   return ok({ value: after });
-}
-
-type RefundAtProviderInput = { context: OperationContext; payment: PaymentDto };
-
-/** The provider's refund for every PENDING refund of the payment not sent yet (ADR 0058). */
-async function refundAtProvider({
-  context,
-  payment,
-}: RefundAtProviderInput): Promise<Result<PaymentDto>> {
-  const pending = await context.db.paymentRefund.findMany({
-    where: { paymentId: payment.id, status: "PENDING", providerReference: null },
-  });
-  for (const refund of pending) {
-    const sent = await sendRefund({ context, payment, refund });
-    if (!sent.ok) {
-      await context.db.paymentRefund.update({
-        where: { id: refund.id },
-        data: { status: "FAILED" },
-      });
-      return err({ error: sent.error });
-    }
-    await context.db.paymentRefund.update({
-      where: { id: refund.id },
-      data: { providerReference: sent.value },
-    });
-  }
-  const row = await context.db.payment.findFirst({
-    where: { id: payment.id },
-    include: PAYMENT_INCLUDE,
-  });
-  return row ? ok({ value: toPaymentDto({ row }) }) : notFound({ entity: "Payment" });
-}
-
-type SendInput = RefundAtProviderInput & { refund: PaymentRefund };
-
-async function sendRefund({ context, payment, refund }: SendInput): Promise<Result<string>> {
-  const collect = payment.provider ? findProvider({ key: payment.provider })?.collect : undefined;
-  if (!collect) return conflict({ message: `${payment.provider} cannot refund payments` });
-  const attempt = await context.db.paymentAttempt.findFirst({
-    where: { paymentId: payment.id, status: "SUCCEEDED", provider: payment.provider ?? undefined },
-    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-    include: { connection: true },
-  });
-  if (!attempt?.providerReference || !attempt.connection) {
-    return conflict({ message: "The payment has no paid attempt to refund" });
-  }
-  const auth = await authFor({ context, row: attempt.connection });
-  if (!auth.ok) return auth;
-  const refunded = await collect.refund({
-    auth: auth.value,
-    providerReference: attempt.providerReference,
-    amountMinor: refund.amountMinor,
-    idempotencyKey: `bibi-refund-${refund.id}`,
-    metadata: {
-      paymentId: payment.id,
-      refundId: refund.id,
-      organizationId: context.organizationId,
-    },
-  });
-  return refunded.ok ? ok({ value: refunded.value.providerReference }) : refunded;
 }
 
 export const refundPayment = defineOperation({

@@ -1,9 +1,8 @@
 import { err, ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
-import { authFor } from "../../providers/connections";
-import { findProvider } from "../../providers/registry";
 import { conflict, notFound } from "../../shared/errors";
+import { cancelAttemptAtProvider } from "./close-attempts";
 import { PaymentCancelInputSchema } from "./lifecycle-schema";
 import { type PaymentDto, PaymentSchema } from "./schema";
 import { PAYMENT_INCLUDE, toPaymentDto } from "./to-payment-dto";
@@ -21,20 +20,8 @@ async function cancelAttempts({ context, payment }: CancelInput): Promise<Result
     include: { connection: true },
   });
   for (const attempt of open) {
-    const collect = findProvider({ key: attempt.provider })?.collect;
-    if (attempt.providerReference && attempt.connection && collect) {
-      const auth = await authFor({ context, row: attempt.connection });
-      if (!auth.ok) return err({ error: auth.error });
-      const done = await collect.cancelAttempt({
-        auth: auth.value,
-        providerReference: attempt.providerReference,
-      });
-      if (!done.ok) return done;
-    }
-    await context.db.paymentAttempt.update({
-      where: { id: attempt.id },
-      data: { status: "CANCELLED" },
-    });
+    const closed = await cancelAttemptAtProvider({ context, attempt });
+    if (!closed.ok) return err({ error: closed.error });
   }
   const row = await context.db.payment.findFirst({
     where: { id: payment.id },

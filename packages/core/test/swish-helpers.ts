@@ -1,4 +1,8 @@
+import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { getEnv } from "@bibi/config";
 import { afterEach, beforeEach } from "vitest";
 import { connectWithCredentials, type ExecuteContext, resetProviderAdapters } from "../src/index";
@@ -11,10 +15,56 @@ import { unwrap } from "./helpers";
 
 export const SWISH_NUMBER = "1231181189";
 
-/** What an admin enters; the certificate is opaque to the stubbed transport. */
-export const swishCredentials = ({ number = SWISH_NUMBER }: { number?: string } = {}) => ({
+const certificates = new Map<string, string>();
+
+/**
+ * A self-signed .p12 issued to `issuedTo` (subject CN, as Swish issues them), base64, made once
+ * per number with the openssl CLI. The stubbed transport never uses it for TLS.
+ */
+export function swishCertificate({ issuedTo }: { issuedTo: string }): string {
+  const known = certificates.get(issuedTo);
+  if (known) return known;
+  const dir = mkdtempSync(join(tmpdir(), "swish-cert-"));
+  const key = join(dir, "key.pem");
+  const cert = join(dir, "cert.pem");
+  const p12 = join(dir, "cert.p12");
+  try {
+    const subject = `/CN=${issuedTo}/O=Swish Test`;
+    const ec = ["-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:prime256v1", "-nodes"];
+    const req = [
+      "req",
+      "-x509",
+      ...ec,
+      "-keyout",
+      key,
+      "-out",
+      cert,
+      "-days",
+      "30",
+      "-subj",
+      subject,
+    ];
+    execFileSync("openssl", req, { stdio: "ignore" });
+    const pkcs12 = ["pkcs12", "-export", "-inkey", key, "-in", cert, "-out", p12];
+    execFileSync("openssl", [...pkcs12, "-passout", "pass:swish"], { stdio: "ignore" });
+    const base64 = readFileSync(p12).toString("base64");
+    certificates.set(issuedTo, base64);
+    return base64;
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+/** What an admin enters: the number and a certificate issued to `issuedTo` (the number itself). */
+export const swishCredentials = ({
+  number = SWISH_NUMBER,
+  issuedTo = number,
+}: {
+  number?: string;
+  issuedTo?: string;
+} = {}) => ({
   swishNumber: number,
-  certificate: Buffer.from("not a real p12 certificate").toString("base64"),
+  certificate: swishCertificate({ issuedTo }),
   passphrase: "swish",
 });
 
