@@ -196,7 +196,8 @@
       "catalog": "Catalog",
       "orders": "Orders",
       "money": "Money & connections"
-    }
+    },
+    "layouts": "Layouts"
   },
   "shell": {
     "mainNavigation": "Main navigation",

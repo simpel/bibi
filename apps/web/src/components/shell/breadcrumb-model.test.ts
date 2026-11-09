@@ -30,6 +30,14 @@ describe("buildCrumbs", () => {
     ]);
   });
 
+  it("ends at the layouts crumb; the tab is part of that page (ADR 0099)", () => {
+    expect(buildCrumbs({ pathname: "/items/abc/layouts/setup1" })).toEqual([
+      { href: "/items", labelKey: "items" },
+      { href: "/items/abc", labelKey: "detail" },
+      { href: "/items/abc/layouts", labelKey: "layouts" },
+    ]);
+  });
+
   it("shows a calendar period as the calendar crumb alone", () => {
     expect(buildCrumbs({ pathname: "/calendar/2026-10-12/2026-10-18" })).toEqual([
       { href: "/calendar", labelKey: "calendar" },

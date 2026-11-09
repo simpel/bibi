@@ -80,6 +80,11 @@ const itemChildren = ({ db, where }: ScopeInput) => [
   db.itemPart.deleteMany({ where }),
   db.itemCustomisationGroup.deleteMany({ where }),
   db.itemSetup.deleteMany({ where }),
+  // Floor plans and layouts (ADR 0099): pieces first, then their parents and the library.
+  db.floorElement.deleteMany({ where }),
+  db.setupLayout.deleteMany({ where }),
+  db.floorPlan.deleteMany({ where }),
+  db.floorElementKind.deleteMany({ where }),
   // Hours patterns of items and venues (ADR 0064): before both.
   db.hoursException.deleteMany({ where }),
   db.hoursDay.deleteMany({ where }),

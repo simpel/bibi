@@ -4,6 +4,26 @@ export type UiExempt = { operation: string; reason: string };
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
   {
+    operation: "floorElementKind.get",
+    reason:
+      "The furniture library is imported and used on the layouts page (ADR 0099); its own admin section to edit kinds follows. Until then the API, MCP and the assistant edit it.",
+  },
+  {
+    operation: "floorElementKind.create",
+    reason:
+      "The furniture library is imported and used on the layouts page (ADR 0099); its own admin section to edit kinds follows. Until then the API, MCP and the assistant edit it.",
+  },
+  {
+    operation: "floorElementKind.update",
+    reason:
+      "The furniture library is imported and used on the layouts page (ADR 0099); its own admin section to edit kinds follows. Until then the API, MCP and the assistant edit it.",
+  },
+  {
+    operation: "floorElementKind.archive",
+    reason:
+      "The furniture library is imported and used on the layouts page (ADR 0099); its own admin section to edit kinds follows. Until then the API, MCP and the assistant edit it.",
+  },
+  {
     operation: "settings.view",
     reason:
       "The assistant's read of single settings (one card each); the administration pages read each owner's settings.",

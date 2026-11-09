@@ -27,8 +27,8 @@ function toCatalogItem({ item, types, setupNames, groups }: ToCatalogInput): Cat
     typeName: type?.name ?? "",
     capabilities: type?.capabilities ?? [],
     defaultDurationMinutes: item.defaultDurationMinutes,
-    setups: item.setups.map(({ setupId, capacity }) => ({
-      ...{ id: setupId, capacity },
+    setups: item.setups.map(({ setupId, effectiveCapacity }) => ({
+      ...{ id: setupId, capacity: effectiveCapacity },
       name: setupNames.get(setupId) ?? "–",
     })),
     groups: groups.get(item.id) ?? [],

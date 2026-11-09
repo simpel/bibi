@@ -5,6 +5,7 @@ import { ASSIGNMENT_UI_ENTRIES } from "./assignment-entries";
 import { BILLING_GENERIC_UI_TOOLS, BILLING_UI_ENTRIES } from "./billing-entries";
 import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import { CUSTOMER_UI_ENTRIES } from "./customer-entries";
+import { FLOOR_PLAN_GENERIC_UI_TOOLS } from "./floor-plan-generic-tools";
 import { INBOUND_EMAIL_UI_ENTRIES } from "./inbound-email-entries";
 import { INBOUND_MESSAGE_UI_ENTRIES } from "./inbound-message-entries";
 import { ITEM_RESOLUTION_UI_ENTRIES } from "./item-resolution-entries";
@@ -126,6 +127,7 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   apiKey_update: "credentials are managed on /admin/api-keys, not in chat",
   ...SELF_GENERIC_UI_TOOLS,
   ...ALLOCATION_GENERIC_UI_TOOLS,
+  ...FLOOR_PLAN_GENERIC_UI_TOOLS,
   ...READ_GENERIC_UI_TOOLS,
   ...BILLING_GENERIC_UI_TOOLS,
   ...PIPELINE_SETUP_GENERIC_UI_TOOLS,

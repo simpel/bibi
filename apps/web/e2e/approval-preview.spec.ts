@@ -33,7 +33,9 @@ test("a capacity change shows before and after, and Confirm applies it (ADR 0049
   await card.getByRole("button", { name: "Bekräfta" }).click();
   await expect(card).toHaveAttribute("data-state", "approved");
   const saved = await (await page.request.get(`/api/v1/items/${item.id}`)).json();
-  expect(saved.setups).toEqual([{ setupId: setup.id, capacity: 12 }]);
+  expect(saved.setups).toEqual([
+    { setupId: setup.id, capacity: 12, effectiveCapacity: 12, capacitySource: "MANUAL" },
+  ]);
 });
 
 test("a responsibility change shows the Needs admin badge (setup group, ADR 0050)", async ({

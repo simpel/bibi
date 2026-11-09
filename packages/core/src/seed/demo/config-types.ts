@@ -101,6 +101,28 @@ export type DemoItem = {
   demands?: readonly DemoDemand[];
 };
 
+/** One piece in a demo drawing (ADR 0099): a library kind by name, centre in centimetres. */
+export type DemoFloorPiece = {
+  kind: string;
+  x: number;
+  y: number;
+  rotation?: number;
+  label?: string;
+  /** Own chairs per side of a rectangular piece; left out = the kind's. */
+  seatsTop?: number;
+  seatsBottom?: number;
+};
+
+/** A demo floor plan with its fixed parts and some setups drawn (ADR 0099). */
+export type DemoFloorPlan = {
+  item: string;
+  widthCm: number;
+  depthCm: number;
+  fixed: readonly DemoFloorPiece[];
+  /** Setup name → its pieces; `useSeats` clears the typed capacity so the seats count. */
+  layouts: Readonly<Record<string, { pieces: readonly DemoFloorPiece[]; useSeats?: boolean }>>;
+};
+
 /** Slice 2 of ADR 0025: what the organization configures (`docs/demo-seed.md`). */
 export type DemoConfig = {
   listTemplates: readonly VocabularyTemplateKey[];
@@ -119,6 +141,8 @@ export type DemoConfig = {
   venueHours: HoursPattern;
   /** Seeded in the venue. Slice 2 seeds the bookable spaces, slice 3 the rest of the catalog. */
   items: readonly DemoItem[];
+  /** Drawn rooms (ADR 0099), seeded after the items with the starter furniture library. */
+  floorPlans?: readonly DemoFloorPlan[];
   /** Org-specific checks (`docs/demo-seed.md`, Checks), e.g. check 2. */
   checks: { absentLists?: readonly string[]; listSizes?: Readonly<Record<string, number>> };
 };

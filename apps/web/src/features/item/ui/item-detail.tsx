@@ -32,7 +32,8 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
   const data = await loadItemFormData({ customerId: item.value.customerId });
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const type = data.value.types.find((candidate) => candidate.id === item.value.entityTypeId);
-  const actions = <ItemActions item={item.value} abilities={abilities} />;
+  const hasLayouts = type?.capabilities.includes("SETUPS") ?? false;
+  const actions = <ItemActions item={item.value} abilities={abilities} hasLayouts={hasLayouts} />;
   return (
     <div className="grid gap-6">
       <CrumbName href={itemRoute({ id })} name={item.value.name} />

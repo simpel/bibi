@@ -6,6 +6,7 @@ export type CrumbLabelKey =
   | AdminKey
   | "skills"
   | "setups"
+  | "layouts"
   | "responsibilities"
   | "itemStates"
   | "orderStatuses"
@@ -46,6 +47,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   types: "types",
   lists: "lists",
   setups: "setups",
+  layouts: "layouts",
   "run-sheets": "runSheets",
   "price-lists": "priceLists",
   responsibilities: "responsibilities",
@@ -116,6 +118,9 @@ const NEW_PARENTS: Record<string, string> = {
 /** Pages whose later segments are a period, not a page (`/calendar/{from}/{to}`, ADR 0064). */
 const PERIOD_PAGES = new Set(["calendar"]);
 
+/** Segments whose next segment is a tab of the same page (`/items/{id}/layouts/{tab}`, ADR 0099). */
+const TAB_SEGMENTS = new Set(["layouts"]);
+
 export type Crumb = { href: string; labelKey: CrumbLabelKey };
 
 export type BuildCrumbsInput = { pathname: string };
@@ -131,7 +136,9 @@ export function buildCrumbs({ pathname }: BuildCrumbsInput): Crumb[] {
     }
     return [rootCrumb];
   }
-  const segments = PERIOD_PAGES.has(all[0] ?? "") ? all.slice(0, 1) : all;
+  const tabAt = all.findIndex((segment) => TAB_SEGMENTS.has(segment));
+  const untabbed = tabAt >= 0 ? all.slice(0, tabAt + 1) : all;
+  const segments = PERIOD_PAGES.has(untabbed[0] ?? "") ? untabbed.slice(0, 1) : untabbed;
   if (segments[0] === "quotes") {
     return [
       { href: "/orders", labelKey: "orders" },

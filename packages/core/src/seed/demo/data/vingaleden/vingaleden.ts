@@ -5,6 +5,7 @@ import { saltholmenHours } from "../demo-hours";
 import { vingaledenBoats, vingaledenConfig } from "./config";
 import { vingaledenCustomers } from "./customers";
 import { vingaledenDensity } from "./density";
+import { vingaledenFloorPlans } from "./floor-plans";
 import { vingaledenOrders } from "./orders";
 import { vingaledenPipeline } from "./pipeline";
 import { vingaledenResponsibilities } from "./responsibilities";
@@ -45,6 +46,7 @@ export const vingaleden: DemoOrg = {
     },
     venueHours: saltholmenHours,
     items,
+    floorPlans: vingaledenFloorPlans,
     // Check 2: no allergen list at all. Its run sheets (slice 6) will not include food either.
     checks: { absentLists: ["Allergens"] },
   },

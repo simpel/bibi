@@ -46,7 +46,9 @@ describe("previewChange (ADR 0049)", () => {
     const after = unwrap({
       result: await execute({ operation: getItem, input: { id: item.id }, context }),
     });
-    expect(after.setups).toEqual([{ setupId: setup.id, capacity: 10 }]);
+    expect(after.setups).toEqual([
+      { setupId: setup.id, capacity: 10, effectiveCapacity: 10, capacitySource: "MANUAL" },
+    ]);
   });
 
   it("fails like the command would, and checks the permission first", async () => {

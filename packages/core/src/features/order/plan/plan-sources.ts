@@ -1,5 +1,6 @@
 import type { OperationContext } from "../../../operations/types";
 import { effectiveBuffers } from "../../../shared/buffers";
+import { effectiveCapacity, layoutKey, loadLayoutSeats } from "../../floor-plan/layout-seats";
 import type { PlannedLine } from "./planned-line";
 import { loadStartStates, type StartState } from "./start-states";
 
@@ -67,11 +68,21 @@ export async function loadPlanSources({
     ]),
   );
   const typeIds = unique({ ids: rows.map((row) => row.entityTypeId) });
+  const seats = await loadLayoutSeats({ context, itemIds });
   const states = await loadStartStates({ context, statusId, entityTypeIds: typeIds });
   return {
     items,
     changeovers: new Map(setups.map((setup) => [setup.id, setup.changeoverMinutes])),
-    capacities: new Map(itemSetups.map((row) => [`${row.itemId} ${row.setupId}`, row.capacity])),
+    capacities: new Map(
+      itemSetups.flatMap((row) => {
+        const seatCount = seats.get(layoutKey(row))?.seatCount ?? null;
+        const { effectiveCapacity: capacity } = effectiveCapacity({
+          capacity: row.capacity,
+          seatCount,
+        });
+        return capacity === null ? [] : [[`${row.itemId} ${row.setupId}`, capacity] as const];
+      }),
+    ),
     stateOf: ({ entityTypeId }) => states.get(entityTypeId) ?? null,
   };
 }

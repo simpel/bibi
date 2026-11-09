@@ -183,7 +183,10 @@
       "description": "När den här resursen är tillgänglig, till exempel en person eller ett rum. Blockerar aldrig en bokning.",
       "followsVenue": "Inga egna tider: resursen följer lokalens öppettider.",
       "followHint": "Stäng av alla dagar och ta bort alla undantag för att följa lokalens öppettider igen."
-    }
+    },
+    "layouts": "Möbleringar",
+    "capacityFromLayout": "{capacity} (från möbleringen)",
+    "capacityFromLayoutPlaceholder": "Från möbleringen"
   },
   "itemState": {
     "flags": {
@@ -622,5 +625,104 @@
     "INCLUDED": "Ingår",
     "EXTRA": "Tillägg",
     "REPLACES": "Ersätter"
+  },
+  "floorPlan": {
+    "tabs": "Planritning och möbleringar",
+    "tabsPlan": "Planritning",
+    "dock": "Möbler",
+    "add": "Lägg till {name}",
+    "pieceName": "{kind} {label}, {seats, plural, one {# plats} other {# platser}}",
+    "drawingOf": "Möblering för {setup}",
+    "metres": "{value} m",
+    "undo": "Ångra",
+    "redo": "Gör om",
+    "saved": "Möbleringen har sparats",
+    "savedState": "Sparad",
+    "leave": {
+      "title": "Lämna utan att spara?",
+      "description": "Dina ändringar i möbleringen är inte sparade än.",
+      "confirm": "Släng ändringarna"
+    },
+    "size": {
+      "label": "Storlek",
+      "width": "Bredd (cm)",
+      "depth": "Djup (cm)",
+      "diameter": "Diameter (cm)",
+      "value": "{width} × {depth} cm",
+      "roundValue": "Ø {width} cm",
+      "reset": "Återställ bibliotekets storlek och stolar"
+    },
+    "chairs": {
+      "label": "Stolar",
+      "fewer": "En stol färre",
+      "more": "En stol till",
+      "count": "{count, plural, one {# stol} other {# stolar}}",
+      "hint": "Stolar på varje sida av bordet.",
+      "sides": {
+        "top": "Stolar på övre långsidan",
+        "right": "Stolar på högra kortsidan",
+        "bottom": "Stolar på nedre långsidan",
+        "left": "Stolar på vänstra kortsidan"
+      }
+    },
+    "selection": {
+      "label": "Markerade möbler",
+      "count": "{count, plural, one {# möbel} other {# möbler}}",
+      "rotate": "Rotera 90° (R). Skift-klicka för 15°.",
+      "duplicate": "Duplicera (Ctrl+D)",
+      "delete": "Ta bort (Del)"
+    },
+    "summary": {
+      "seats": "{count, plural, one {# plats} other {# platser}}",
+      "seatsAndCapacity": "{count, plural, one {# plats} other {# platser}} · kapacitet {capacity}",
+      "warnings": "{count, plural, one {# varning} other {# varningar}}"
+    },
+    "menu": {
+      "label": "Mer",
+      "capacity": "Kapacitet",
+      "typeCapacity": "Ange en kapacitet (nu {seats} från platserna)",
+      "editCapacity": "Ändra angiven kapacitet ({capacity})",
+      "useSeats": "Använd platserna ({seats})",
+      "startOver": "Börja om",
+      "templates": {
+        "rows": "Stolsrader",
+        "uShape": "U-bord",
+        "banquet": "Bankett, runda bord"
+      },
+      "roomSize": "Redigera rummets storlek"
+    },
+    "start": {
+      "title": "Börja möblera {setup}",
+      "people": "För hur många personer?",
+      "templates": {
+        "rows": "Stolsrader",
+        "uShape": "U-bord",
+        "banquet": "Bankett"
+      },
+      "missingKind": "Finns inte bland era möbler",
+      "empty": "Börja med ett tomt rum",
+      "partial": "Bara {placed} av {wanted} får plats i rummet."
+    },
+    "capacityDialog": {
+      "title": "Ange en kapacitet",
+      "description": "Använd en angiven kapacitet i stället för de {seats} platserna, till exempel för stående gäster. Den sparas med möbleringen.",
+      "confirm": "Använd kapaciteten",
+      "field": "Kapacitet"
+    },
+    "roomDialog": {
+      "title": "Redigera rummets storlek",
+      "description": "Bredd och djup i meter. Väggarna blir en rektangel med den storleken.",
+      "confirm": "Använd storleken",
+      "width": "Bredd (m)",
+      "depth": "Djup (m)"
+    },
+    "noKinds": {
+      "title": "Inga möbler än",
+      "description": "Möbleringar ritas med organisationens egna möbler: bord, stolsrader, dörrar. Importera ett startpaket och redigera det sedan.",
+      "askAdmin": "Be en administratör lägga till möbler",
+      "import": "Importera startmöbler",
+      "importing": "Importerar möbler…",
+      "imported": "Möblerna har importerats"
+    }
   }
 }

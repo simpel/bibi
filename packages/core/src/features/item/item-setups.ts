@@ -2,7 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 
-type Setups = readonly { setupId: string; capacity: number }[];
+type Setups = readonly { setupId: string; capacity: number | null }[];
 
 export type CheckSetupsInput = { context: Pick<OperationContext, "db">; setups: Setups };
 

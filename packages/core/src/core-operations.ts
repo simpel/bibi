@@ -11,6 +11,7 @@ import { customerOperations } from "./features/customer/operations";
 import { dashboardOperations } from "./features/dashboard/operations";
 import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
+import { floorPlanOperations } from "./features/floor-plan/operations";
 import { inboundMessageOperations } from "./features/inbound-message/operations";
 import { itemOperations } from "./features/item/operations";
 import { itemDemandOperations } from "./features/item-demand/operations";
@@ -79,6 +80,7 @@ function staticOperations(): AnyOperation[] {
     ...fieldDefinitionOperations,
     ...vocabularyOperations,
     ...setupOperations,
+    ...floorPlanOperations,
     ...permissionOperations,
     ...responsibilityOperations,
     ...runSheetDefinitionOperations,

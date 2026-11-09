@@ -92,6 +92,12 @@ erDiagram
   LineAllocation ||--o{ Occupancy : "holds"
   Item ||--o{ ItemSetup : "has"
   Setup ||--o{ ItemSetup : "is used in"
+  Item ||--o| FloorPlan : "is drawn as"
+  Item ||--o{ SetupLayout : "is laid out as"
+  Setup ||--o{ SetupLayout : "is drawn in"
+  FloorPlan ||--o{ FloorElement : "has fixed"
+  SetupLayout ||--o{ FloorElement : "has"
+  FloorElementKind ||--o{ FloorElement : "is placed as"
   Item }o--o{ VocabularyValue : "is tagged with"
   OrderLine }o--|| Item : "refers to"
   RunSheetDefinition ||--o{ RunSheet : "produces version"
@@ -224,13 +230,54 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Attributes**
 - item
 - setup
-- capacity
+- capacity (owned, nullable; null = the seats of the item's layout for the setup, ADR 0099)
 
 **Relations**
 - `N:1` Item has this
 - `N:1` Setup is used in this
 
-> Replaced as a set by `item.create/update` (`setups`).
+> Replaced as a set by `item.create/update` (`setups`). Reads carry the derived `effectiveCapacity` (typed, else the layout's seats, else null) and `capacitySource` (`MANUAL`, `LAYOUT`, `NONE`); order planning checks against it.
+
+### FloorElementKind (`FloorElementKind`)
+
+*ADR 0099* · The organization's furniture library, e.g. Round table Ø180, Row of chairs, Door.
+
+**Attributes**
+- name (unique among active), shape (`RECT`, `ROUND`, `SEAT_ROW`, `ZONE`)
+- width and depth in cm
+- chairs: `seats` (ROUND around, SEAT_ROW along) and `seatsTop`, `seatsRight`, `seatsBottom`, `seatsLeft` (RECT, the piece's own frame)
+- fixed (floor plan only), keepClearCm (nullable)
+
+> `floorElementKind.list|get|create|update|archive|importTemplate` (`configuration:*`). Archiving is refused while a piece uses it.
+
+### FloorPlan (`FloorPlan`)
+
+*ADR 0099* · The drawing of one item with `SETUPS`: size, walls and fixed elements, shared by every layout of the item.
+
+**Attributes**
+- item (one plan per item), width and depth in cm, outline (points in cm), minAisleCm (nullable), version
+
+> `floorPlan.get|save` (`item:read|write`); saved as a whole with `expectedVersion`.
+
+### SetupLayout (`SetupLayout`)
+
+*ADR 0099* · One setup drawn in one item's floor plan.
+
+**Attributes**
+- item and setup (unique pair), note, version
+
+> Keyed by item and setup, not by `ItemSetup`, so an item save never drops a drawing. `setupLayout.get|save` (`item:read|write`); the read carries the seat count, effective capacity and warnings.
+
+### FloorElement (`FloorElement`)
+
+*ADR 0099* · One piece placed in a floor plan (fixed) or a setup layout.
+
+**Attributes**
+- floor plan xor setup layout, kind, position
+- centre (xCm, yCm), rotationDeg
+- own width, depth, `seats` and chairs per side (each null = the kind's), label
+
+> Replaced as a set by its parent's save; audited on the parent.
 
 ### RunSheetDefinition (`RunSheetDefinition`)
 
@@ -1602,6 +1649,10 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | VocabularyValue | Listvärde |
 | Setup | Uppställning |
 | ItemSetup | Item-uppställning |
+| FloorElementKind | Möbeltyp |
+| FloorPlan | Planritning |
+| SetupLayout | Möblering |
+| FloorElement | Möbel |
 | Item | Artikel |
 | ItemPart | Artikeldel |
 | MemberProfile | Medlemsprofil |
