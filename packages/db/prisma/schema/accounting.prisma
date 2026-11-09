@@ -62,6 +62,8 @@ enum AccountingSourceKind {
   FEE
   /// One refund (`refundId`).
   REFUND
+  /// A credit note issued (`creditNoteId`, ADR 0100): the sale reversed for its amount.
+  CREDIT_NOTE
 }
 
 /// AccountingExport – one SIE 4I file handed to the accounting program (ADR 0077). A snapshot:
@@ -89,7 +91,7 @@ model AccountingExport {
 }
 
 /// AccountingExportEntry – one event an export contained (ADR 0077), append-only. Exactly one of
-/// `invoiceId`, `paymentId`, `refundId` is set, as `kind` says (check constraint). An event has one
+/// `invoiceId`, `paymentId`, `refundId`, `creditNoteId` is set, as `kind` says (check constraint). An event has one
 /// entry per export that contained it: a range can be exported again.
 model AccountingExportEntry {
   id             String               @id @default(cuid(2))
@@ -99,11 +101,13 @@ model AccountingExportEntry {
   invoiceId      String?
   paymentId      String?
   refundId       String?
+  creditNoteId   String?
   createdAt      DateTime             @default(now())
   export         AccountingExport     @relation(fields: [exportId, organizationId], references: [id, organizationId])
   invoice        Invoice?             @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
   payment        Payment?             @relation(fields: [paymentId, organizationId], references: [id, organizationId])
   refund         PaymentRefund?       @relation(fields: [refundId, organizationId], references: [id, organizationId])
+  creditNote     CreditNote?          @relation(fields: [creditNoteId, organizationId], references: [id, organizationId])
 
   @@index([organizationId, exportId])
 }

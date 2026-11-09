@@ -10,10 +10,12 @@ export const createPayment = defineOperation({
     "Request a payment from the order's customer against one receivable (ADR 0057): a SENT " +
     "or ACCEPTED quote (quoteId), a SENT deposit request (depositId) or a SENT invoice " +
     "(invoiceId). The amount defaults to its open balance and may be lower for a partial " +
-    "payment. Charged directly on the organization's Stripe account. CARD returns a hosted " +
-    "checkout link (paymentUrl) to send to the customer; INVOICE emails a Stripe invoice to the " +
-    "customer's email. Needs an ACTIVE payment account. The payment starts PENDING and is " +
-    "updated when Stripe reports it paid; if Stripe refuses the charge it is FAILED.",
+    "payment. The customer pays with any method routed to a connected provider (ADR 0100): a " +
+    "card checkout link (paymentUrl) is prepared at once; a Swish request starts when the " +
+    "customer opens the payment page. CONFLICT when no provider is connected for any method, " +
+    "or the invoice is booked in an accounting system that cannot take the payment. The " +
+    "payment starts PENDING and is updated when the provider reports it paid; if the provider " +
+    "refuses the charge it is FAILED. To invoice, use invoice.send.",
   input: PaymentCreateInputSchema,
   output: PaymentSchema,
   permission: "payment:write",

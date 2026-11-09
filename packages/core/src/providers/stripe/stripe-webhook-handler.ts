@@ -1,6 +1,6 @@
 import type { Db } from "@bibi/db";
-import { createProviderWebhookHandler } from "../../providers/receive-webhook";
-import { verifyStripeDelivery } from "../../providers/stripe/stripe-webhook";
+import { createProviderWebhookHandler } from "../receive-webhook";
+import { verifyStripeDelivery } from "./stripe-webhook";
 
 export type CreateStripeWebhookHandlerInput = {
   /** Defaults to `STRIPE_WEBHOOK_SECRET`. */

@@ -14,7 +14,7 @@ type AccountInput = { auth: ProviderAuth };
 
 const accountOf = ({ auth }: AccountInput) => auth.externalAccountId;
 
-/** A card checkout, or (until invoices move to the invoicing port) a one-line Stripe invoice. */
+/** A hosted card checkout; invoices go through the invoicing port (ADR 0100). */
 async function startAttempt({
   auth,
   method,
@@ -22,16 +22,16 @@ async function startAttempt({
 }: StartAttemptInput): Promise<Result<AttemptRef>> {
   const connectedAccountId = accountOf({ auth });
   if (!connectedAccountId) return noAccount();
-  const { successUrl, cancelUrl, recipient, daysUntilDue, ...rest } = input;
-  const base: ChargeBase = { ...rest, connectedAccountId };
-  if (method === "CARD") {
-    const checkout = await stripeCharges.createCheckout({ ...base, successUrl, cancelUrl });
-    if (!checkout.ok) return checkout;
-    return ok({ value: { ...checkout.value, qrToken: null } });
+  if (method !== "CARD") {
+    return err({
+      error: new AppError({ code: "CONFLICT", message: `Stripe does not take ${method}` }),
+    });
   }
-  const invoice = await stripeCharges.createInvoice({ ...base, recipient, daysUntilDue });
-  if (!invoice.ok) return invoice;
-  return ok({ value: { ...invoice.value, qrToken: null, expiresAt: null } });
+  const { successUrl, cancelUrl, recipient: _r, daysUntilDue: _d, ...rest } = input;
+  const base: ChargeBase = { ...rest, connectedAccountId };
+  const checkout = await stripeCharges.createCheckout({ ...base, successUrl, cancelUrl });
+  if (!checkout.ok) return checkout;
+  return ok({ value: { ...checkout.value, qrToken: null } });
 }
 
 type RefInput = AccountInput & { providerReference: string };
@@ -48,7 +48,11 @@ async function cancelAttempt({ auth, providerReference }: RefInput): Promise<Res
   return done.ok ? ok({ value: true }) : done;
 }
 
-type RefundAttemptInput = RefInput & { amountMinor: number; idempotencyKey: string };
+type RefundAttemptInput = RefInput & {
+  amountMinor: number;
+  idempotencyKey: string;
+  metadata: Record<string, string>;
+};
 
 /** The payment intent behind a paid checkout or invoice. */
 async function paymentIntentOf({ auth, providerReference }: RefInput): Promise<Result<string>> {
@@ -63,13 +67,13 @@ async function paymentIntentOf({ auth, providerReference }: RefInput): Promise<R
   return typeof intent === "string" ? ok({ value: intent }) : stripeBadResponse({ what: "intent" });
 }
 
-/** A refund of a paid checkout or invoice (called from phase 2's `payment.refund`). */
-async function refund({ amountMinor, idempotencyKey, ...ref }: RefundAttemptInput) {
+/** A refund of a paid checkout or invoice (`payment.refund`); metadata finds it again. */
+async function refund({ amountMinor, idempotencyKey, metadata, ...ref }: RefundAttemptInput) {
   const connectedAccountId = accountOf(ref);
   if (!connectedAccountId) return noAccount();
   const intent = await paymentIntentOf(ref);
   if (!intent.ok) return intent;
-  const params = { payment_intent: intent.value, amount: amountMinor };
+  const params = { payment_intent: intent.value, amount: amountMinor, metadata };
   const done = await stripeFormRequest({
     path: "/refunds",
     params,
@@ -85,7 +89,7 @@ async function refund({ amountMinor, idempotencyKey, ...ref }: RefundAttemptInpu
 
 /** Card payments as direct charges on the venue's connected account (ADR 0028). */
 export const stripeCollect: CollectPort = {
-  methods: ["CARD", "INVOICE"],
+  methods: ["CARD"],
   onDemand: false,
   startAttempt,
   cancelAttempt,

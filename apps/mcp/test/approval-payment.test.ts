@@ -35,11 +35,11 @@ async function setup() {
 describe("approval flow: payments (ADR 0058)", () => {
   it("never calls the payment provider for a proposal, only after approval", async () => {
     const { base, user, assistant, depositId, provider } = await setup();
-    for (const method of ["INVOICE", "CARD"]) {
+    for (const amountMinor of [50_000, 40_000]) {
       const proposal = await call({
         client: assistant,
         name: "payment_create",
-        args: { depositId, method, amountMinor: 50_000 },
+        args: { depositId, method: "CARD", amountMinor },
       });
       expect(proposal.data.status, JSON.stringify(proposal.data)).toBe("approval_required");
     }
@@ -49,7 +49,7 @@ describe("approval flow: payments (ADR 0058)", () => {
     const proposal = await call({
       client: assistant,
       name: "payment_create",
-      args: { depositId, method: "INVOICE", amountMinor: 50_000 },
+      args: { depositId, method: "CARD", amountMinor: 50_000 },
     });
     const confirmed = await call({
       client: user,
@@ -59,9 +59,9 @@ describe("approval flow: payments (ADR 0058)", () => {
     expect(confirmed.isError, JSON.stringify(confirmed.data)).toBe(false);
     expect(provider.charges).toHaveLength(1);
     expect(provider.charges[0]).toMatchObject({
-      kind: "invoice",
+      kind: "checkout",
       idempotencyKey: `bibi-payment-${confirmed.data.id}`,
     });
-    expect(confirmed.data.providerReference).toMatch(/^in_test_/);
+    expect(confirmed.data.providerReference).toMatch(/^cs_test_/);
   });
 });

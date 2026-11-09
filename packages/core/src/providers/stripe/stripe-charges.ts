@@ -1,9 +1,8 @@
 import { z } from "zod";
 import { err, ok } from "../../errors/result";
-import type { CreateCheckoutInput, CreateInvoiceInput } from "./charge-types";
+import type { CreateCheckoutInput } from "./charge-types";
 import { stripeBadResponse } from "./stripe-bad-response";
 import { stripeFormRequest } from "./stripe-form-request";
-import { createStripeInvoice } from "./stripe-invoice";
 
 const CheckoutSessionSchema = z.object({
   id: z.string(),
@@ -41,8 +40,8 @@ export function checkoutParams({
 }
 
 /**
- * Stripe charges (ADR 0028, 0029). Every call carries `Stripe-Account`, so checkouts and invoices
- * are direct charges on the venue's connected account; the application fee is optional.
+ * Stripe charges (ADR 0028, 0029). Every call carries `Stripe-Account`, so checkouts are direct
+ * charges on the venue's connected account; the application fee is optional.
  */
 export const stripeCharges = {
   async createCheckout({ ...input }: CreateCheckoutInput) {
@@ -60,5 +59,4 @@ export const stripeCharges = {
       value: { providerReference: id, url, expiresAt: new Date(expires_at * 1000) },
     });
   },
-  createInvoice: (input: CreateInvoiceInput) => createStripeInvoice(input),
 };

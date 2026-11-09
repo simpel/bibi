@@ -6,6 +6,7 @@ const base: PublicPaymentDto = {
   organizationName: "Venue",
   orderReference: 1,
   method: "CARD",
+  methods: ["CARD"],
   status: "PENDING",
   amountMinor: 10_000,
   currency: "SEK",

@@ -7,8 +7,8 @@ import { PublicTokenSchema } from "./public-token";
 export const PaymentMethodSchema = z
   .enum(PAYMENT_METHODS)
   .describe("CARD, SWISH, INVOICE (paid against an invoice) or MANUAL (recorded by staff)");
-/** The methods `payment.create` requests today (ADR 0100 adds the rest). */
-export const PaymentCreateMethodSchema = z.enum(["CARD", "INVOICE"]);
+/** The methods a customer pays a requested payment with at a provider (ADR 0100). */
+export const PaymentCreateMethodSchema = z.enum(["CARD", "SWISH"]);
 export const PaymentStatusSchema = z.enum([
   "PENDING",
   "SUCCEEDED",
@@ -48,7 +48,15 @@ export const PaymentSchema = z.object({
   paymentUrl: z.string().nullable().describe("Hosted checkout or invoice page for the customer"),
   expiresAt: z.date().nullable().describe("When the latest attempt stops accepting payment"),
   paidAt: z.date().nullable(),
-  refundedMinor: z.number().int(),
+  note: z.string().nullable().describe("Staff's note on a payment they recorded (MANUAL)"),
+  refundedMinor: z
+    .number()
+    .int()
+    .describe("Refunded so far, minor units: the sum of its succeeded refunds (derived)"),
+  refundableMinor: z
+    .number()
+    .int()
+    .describe("What payment.refund may still refund, minor units; 0 unless SUCCEEDED"),
   createdAt: z.date(),
   updatedAt: z.date(),
   createdBy: z.string().nullable(),
@@ -77,9 +85,10 @@ export const PaymentCreateInputSchema = z.object({
   quoteId: receivableId({ what: "SENT or ACCEPTED quote (quote.list)" }),
   depositId: receivableId({ what: "SENT deposit request (deposit.list)" }),
   invoiceId: receivableId({ what: "SENT invoice (invoice.list)" }),
-  method: PaymentCreateMethodSchema.describe(
-    "CARD: a hosted card checkout link. INVOICE: an invoice from the payment operator emailed to " +
-      "the customer.",
+  method: PaymentCreateMethodSchema.optional().describe(
+    "The method to prepare first: CARD (a hosted checkout link) or SWISH. Defaults to CARD when " +
+      "it is routed, else the first routed method. The customer may pay with any routed method " +
+      "on the payment page. Invoices are raised with invoice.send, not here.",
   ),
   amountMinor: z
     .number()
@@ -118,6 +127,9 @@ export const PublicPaymentSchema = z.object({
   organizationName: z.string(),
   orderReference: z.number().int(),
   method: PaymentMethodSchema,
+  methods: z
+    .array(PaymentMethodSchema)
+    .describe("The methods the customer can pay with now (routed, ADR 0100); [] once settled"),
   /** `EXPIRED` is derived: still `PENDING` but past `expiresAt`. */
   status: z.enum([...PaymentStatusSchema.options, "EXPIRED"]),
   amountMinor: z.number().int(),

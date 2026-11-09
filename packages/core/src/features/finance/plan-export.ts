@@ -62,7 +62,7 @@ export function exportBlockers({ plan }: { plan: ExportPlan }): ExportBlocker[] 
   ];
 }
 
-const KINDS = ["INVOICE_SENT", "INVOICE_VOID", "PAYMENT", "FEE", "REFUND"] as const;
+const KINDS = ["INVOICE_SENT", "INVOICE_VOID", "CREDIT_NOTE", "PAYMENT", "FEE", "REFUND"] as const;
 
 /** The preview: how many vouchers of each kind, the date span and the blockers. */
 export function previewOf({ plan }: { plan: ExportPlan }): AccountingExportPreviewDto {

@@ -8,7 +8,6 @@ import {
   getPaymentSettings,
   listPayments,
   resetProviderAdapters,
-  updateCustomer,
   updatePaymentSettings,
 } from "../src/index";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
@@ -78,19 +77,11 @@ describe("payment", () => {
     expect(read).not.toHaveProperty("providerAccountId");
   });
 
-  it("sends an invoice only to a customer with an email", async () => {
-    const { context, depositId, customerId, provider } = await paymentSetup();
-    const refused = await create({ context, depositId, method: "INVOICE" });
-    expect(errorCode({ result: refused })).toBe("CONFLICT");
-    const input = { id: customerId, email: "billing@example.com", paymentTermsDays: 15 };
-    unwrap({ result: await execute({ operation: updateCustomer, input, context }) });
-    const payment = unwrap({ result: await create({ context, depositId, method: "INVOICE" }) });
-    expect(payment).toMatchObject({ method: "INVOICE", status: "PENDING", expiresAt: null });
-    expect(provider.charges.at(-1)).toMatchObject({
-      kind: "invoice",
-      recipient: { email: "billing@example.com" },
-      daysUntilDue: 15,
-    });
+  it("raises invoices with invoice.send, not as a payment method", async () => {
+    const { context, depositId } = await paymentSetup();
+    const input = { depositId, method: "INVOICE" };
+    const refused = await execute({ operation: createPayment, input, context });
+    expect(errorCode({ result: refused })).toBe("VALIDATION");
   });
 
   it("refuses to charge before the payment account is active", async () => {

@@ -31,8 +31,17 @@ export async function findSignalledPayment({
     : null;
   const id = attempt?.paymentId ?? paymentId;
   if (!id) return null;
+  // Matched by its attempt on this connection, or by our id on a payment requested or paid there.
   const payment = await context.db.payment.findFirst({
-    where: { id, connectionId: connection.id },
+    where: attempt
+      ? { id }
+      : {
+          id,
+          OR: [
+            { connectionId: connection.id },
+            { attempts: { some: { connectionId: connection.id } } },
+          ],
+        },
     include: PAYMENT_INCLUDE,
   });
   return payment ? { payment, attempt } : null;

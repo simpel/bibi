@@ -99,7 +99,7 @@ model Invoice {
 /// `status` (PENDING until the provider confirmed it, then ISSUED, or FAILED) and where it was
 /// raised (`provider`, `connectionId`). Snapshot: lines and totals; `amountMinor` is what it
 /// credits incl. VAT. Mirrors: `providerReference`, `providerUrl`. Written by `invoice.credit`
-/// (ADR 0100, not built yet). Never deleted: `status` is its lifecycle.
+/// (ADR 0100). Never deleted: `status` is its lifecycle.
 model CreditNote {
   id                String              @id @default(cuid(2))
   organizationId    String
@@ -127,6 +127,7 @@ model CreditNote {
   invoice           Invoice             @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
   connection        ProviderConnection? @relation(fields: [connectionId, organizationId], references: [id, organizationId])
   lines             OrderLine[]
+  exportEntries     AccountingExportEntry[]
 
   @@unique([id, organizationId])
   @@unique([organizationId, number])

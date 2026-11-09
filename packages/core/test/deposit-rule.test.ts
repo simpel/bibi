@@ -45,6 +45,11 @@ describe("the deposit rule (ADR 0090)", () => {
       id: null,
       depositPercent: null,
       depositMinimumMinor: null,
+      routes: [
+        { method: "CARD", provider: null },
+        { method: "SWISH", provider: null },
+        { method: "INVOICE", provider: null },
+      ],
       invoiceProvider: null,
       paymentOperator: null,
     });

@@ -8,11 +8,16 @@ export type CheckDemoPaymentsInput = { context: ExecuteContext; org: DemoOrg };
 async function succeededByOrder({ context }: Pick<CheckDemoPaymentsInput, "context">) {
   const rows = await context.db.payment.findMany({
     where: { status: { in: ["SUCCEEDED", "REFUNDED"] }, quoteId: { not: null } },
-    select: { orderId: true, amountMinor: true, refundedMinor: true },
+    select: {
+      orderId: true,
+      amountMinor: true,
+      refunds: { where: { status: "SUCCEEDED" }, select: { amountMinor: true } },
+    },
   });
   const paid = new Map<string, number>();
   for (const row of rows) {
-    paid.set(row.orderId, (paid.get(row.orderId) ?? 0) + row.amountMinor - row.refundedMinor);
+    const refunded = row.refunds.reduce((sum, refund) => sum + refund.amountMinor, 0);
+    paid.set(row.orderId, (paid.get(row.orderId) ?? 0) + row.amountMinor - refunded);
   }
   return paid;
 }

@@ -7,7 +7,7 @@ import {
 
 /**
  * Payment operator stand-in (ADR 0100): the account is created through the real operation, only
- * the provider is faked; it also takes card checkouts and invoices in memory.
+ * the provider is faked; it also takes card checkouts in memory.
  */
 export function installFakeStripe({
   status = "ONBOARDING",
@@ -21,7 +21,7 @@ export function installFakeStripe({
   const fake = createMemoryProvider({
     key,
     connectKind: "HOSTED_ONBOARDING",
-    methods: ["CARD", "INVOICE"],
+    methods: ["CARD"],
   });
   fake.accountStatus = status;
   const createAccount = fake.onboarding.createAccount;

@@ -8,10 +8,13 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { OrderBalanceInputSchema, OrderBalanceSchema } from "./balance-schema";
+import { cancelPayment } from "./cancel-operation";
 import { createPayment } from "./create-operation";
 import { orderBalance } from "./order-balance";
 import { getPublicPaymentOperation } from "./public-operation";
 import { PublicTokenSchema } from "./public-token";
+import { recordManualPayment } from "./record-manual-operation";
+import { refundPayment } from "./refund-operation";
 import {
   PaymentIdInputSchema,
   PaymentListInputSchema,
@@ -82,7 +85,7 @@ export const getOrderBalance = defineOperation({
   },
 });
 
-export { createPayment };
+export { cancelPayment, createPayment, recordManualPayment, refundPayment };
 
 export type GetPublicPaymentInput = { token: string; db?: Db };
 
@@ -112,5 +115,13 @@ export async function getPublicPayment({
   return execute({ operation: getPublicPaymentOperation, input: { token }, context });
 }
 
-/** Payments requested from customers, charged on the venue's connected account (ADR 0028, 0029). */
-export const paymentOperations = [listPayments, getPayment, createPayment, getOrderBalance];
+/** Payments requested from customers and their lifecycle (ADR 0028, 0029, 0100). */
+export const paymentOperations = [
+  listPayments,
+  getPayment,
+  createPayment,
+  refundPayment,
+  cancelPayment,
+  recordManualPayment,
+  getOrderBalance,
+];

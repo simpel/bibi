@@ -33,12 +33,12 @@ export async function freezeLines({
 
 export type WriteOrderLinesInput = {
   context: Pick<OperationContext, "db" | "organizationId">;
-  /** The snapshot the lines belong to: exactly one quote or invoice (check constraint). */
-  owner: { quoteId: string } | { invoiceId: string };
+  /** The snapshot the lines belong to: one quote, invoice or credit note (check constraint). */
+  owner: { quoteId: string } | { invoiceId: string } | { creditNoteId: string };
   lines: readonly OrderLineDto[];
 };
 
-/** The only writer of `OrderLine` rows (ADR 0052), for a sent quote or a new invoice. */
+/** The only writer of `OrderLine` rows (ADR 0052): a sent quote, a new invoice or credit note. */
 export async function writeOrderLines({ context, owner, lines }: WriteOrderLinesInput) {
   await context.db.orderLine.createMany({
     data: lines.map(({ id: _id, tags, vatRows, ...line }) => ({

@@ -24,6 +24,18 @@ export type InvoiceEvent = Base & {
   deductions: readonly (DepositVat & { amountMinor: number })[];
 };
 
+/**
+ * A credit note issued (ADR 0100): the sale reversed for its amount, against receivables. `parts`
+ * are its frozen lines, or the invoice's scaled to the credited amount.
+ */
+export type CreditNoteEvent = Base & {
+  kind: "CREDIT_NOTE";
+  creditNoteNumber: number;
+  invoiceNumber: number;
+  totalInclVatMinor: number;
+  parts: readonly RevenuePart[];
+};
+
 /** Money received, or refunded, against one receivable. */
 export type CashEvent = Base & {
   kind: "PAYMENT" | "REFUND";
@@ -35,10 +47,11 @@ export type CashEvent = Base & {
 export type FeeEvent = Base & { kind: "FEE"; amountMinor: number };
 
 /** The facts a voucher is derived from, one per event (ADR 0077 decision 5). */
-export type AccountingEvent = InvoiceEvent | CashEvent | FeeEvent;
+export type AccountingEvent = InvoiceEvent | CreditNoteEvent | CashEvent | FeeEvent;
 
 /** Every VAT part an event posts: its sale, a settled quote or deposit, its deductions. */
 function partsOf({ event }: { event: AccountingEvent }): readonly VatPart[] {
+  if (event.kind === "CREDIT_NOTE") return event.parts;
   if ("parts" in event) return [...event.parts, ...event.deductions.flatMap((d) => d.parts)];
   if ("settles" in event && event.settles.kind !== "INVOICE") return event.settles.parts;
   return [];

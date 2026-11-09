@@ -17,7 +17,7 @@ export function installFakeGateway(): FakeGateway {
   const fake = createMemoryProvider({
     key: operator.key,
     connectKind: "HOSTED_ONBOARDING",
-    methods: ["CARD", "INVOICE"],
+    methods: ["CARD"],
     ...(operator.signals ? { signals: operator.signals } : {}),
   });
   setProviderAdapter({ key: operator.key, adapter: fake.adapter });

@@ -1,4 +1,4 @@
-import type { PaymentMethod } from "@bibi/core/schemas";
+import type { PaymentCreateMethod } from "@bibi/core/schemas";
 import { PaymentCreateInputSchema } from "@bibi/core/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -12,7 +12,7 @@ import { useZodMessages } from "@/lib/use-zod-messages";
 import { createPaymentAction } from "../actions";
 
 export type RequestPaymentFormValues = {
-  method: PaymentMethod;
+  method: PaymentCreateMethod;
   amount: string;
   description: string;
 };

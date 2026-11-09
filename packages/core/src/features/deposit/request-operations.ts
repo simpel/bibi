@@ -51,15 +51,15 @@ export const requestDeposit = defineOperation({
   kind: "command",
   description:
     "Ask the order's customer for a deposit in one step (ADR 0090): creates a SENT deposit " +
-    "request and a CARD payment against it, and returns the payment with its /pay link " +
-    "(paymentUrl) to send to the customer. The amount defaults to the organization's deposit " +
-    "rule (deposit.suggest). The customer pays the organization's own Stripe account, so it " +
-    "needs an ACTIVE payment account.",
+    "request and a payment against it, and returns the payment with its link (paymentUrl) to " +
+    "send to the customer. The amount defaults to the organization's deposit rule " +
+    "(deposit.suggest). The customer pays through the organization's routed payment methods, " +
+    "so a payment provider must be connected.",
   input: DepositRequestInputSchema,
   output: PaymentSchema,
   permission: "payment:write",
   handler: async ({ input, context }) => {
-    const target = await loadChargeTarget({ context, orderId: input.orderId, method: "CARD" });
+    const target = await loadChargeTarget({ context, orderId: input.orderId, method: undefined });
     if (!target.ok) return err({ error: target.error });
     const amount = await requestedAmount({ context, input });
     if (!amount.ok) return amount;
@@ -81,11 +81,11 @@ export const requestDeposit = defineOperation({
       },
     });
     context.recordChange({ entityId: row.id, after: row });
-    return insertPayment({ context, input: { depositId: row.id, method: "CARD" } });
+    return insertPayment({ context, input: { depositId: row.id } });
   },
   external: ({ output, context }) =>
     chargeAfterCommit({
-      input: { depositId: output.depositId ?? "", method: "CARD" },
+      input: { depositId: output.depositId ?? "" },
       output,
       context,
     }),

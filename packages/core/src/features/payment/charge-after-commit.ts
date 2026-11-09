@@ -7,28 +7,46 @@ import { conflict, notFound } from "../../shared/errors";
 import { loadChargeTarget } from "./payment-preconditions";
 import { loadReceivable } from "./receivable";
 import { requestCharge } from "./request-charge";
-import type { PaymentCreateInput, PaymentDto } from "./schema";
+import type { PaymentCreateInput, PaymentCreateMethod, PaymentDto } from "./schema";
 import { PAYMENT_INCLUDE, type PaymentRow, toPaymentDto } from "./to-payment-dto";
 
 export type ChargeAfterCommitInput = ExternalInput<PaymentCreateInput, PaymentDto>;
 
-type AttemptInput = ChargeAfterCommitInput & { row: PaymentRow };
+export type StartAtProviderInput = Pick<ChargeAfterCommitInput, "context"> & {
+  row: PaymentRow;
+  method: PaymentCreateMethod;
+  connectionId: string | null;
+  description: string | undefined;
+  idempotencyKey: string;
+};
 
-/** The order, customer and the payment's own connection again, then the provider's attempt. */
-async function startAttempt({ input, context, row }: AttemptInput): Promise<Result<AttemptRef>> {
-  const receivable = await loadReceivable({ context, input });
+/** The order, customer and the attempt's connection again, then the provider's attempt. */
+export async function startAtProvider({
+  context,
+  row,
+  method,
+  connectionId,
+  description,
+  idempotencyKey,
+}: StartAtProviderInput): Promise<Result<AttemptRef>> {
+  const { quoteId, depositId, invoiceId } = row;
+  const ids = {
+    quoteId: quoteId ?? undefined,
+    depositId: depositId ?? undefined,
+    invoiceId: invoiceId ?? undefined,
+  };
+  const receivable = await loadReceivable({ context, input: ids });
   if (!receivable.ok) return receivable;
-  const { orderId, description } = receivable.value;
-  const target = await loadChargeTarget({ context, orderId, method: input.method });
+  const target = await loadChargeTarget({ context, orderId: row.orderId, method });
   if (!target.ok) return target;
   const connection = await context.db.providerConnection.findFirst({
-    where: { id: row.connectionId ?? "" },
+    where: { id: connectionId ?? "" },
   });
-  if (!connection || !row.provider) return conflict({ message: "The payment has no provider" });
-  const adapter = getProvider({ key: row.provider });
+  if (!connection) return conflict({ message: "The payment has no provider" });
+  const adapter = getProvider({ key: connection.provider });
   if (!adapter.ok) return adapter;
   const { collect } = adapter.value;
-  if (!collect) return conflict({ message: `${row.provider} does not take payments` });
+  if (!collect) return conflict({ message: `${connection.provider} does not take payments` });
   const auth = await authFor({ context, row: connection });
   if (!auth.ok) return auth;
   return requestCharge({
@@ -37,7 +55,8 @@ async function startAttempt({ input, context, row }: AttemptInput): Promise<Resu
     paymentId: row.id,
     publicToken: row.publicToken,
     organizationId: context.organizationId,
-    input: { ...row, method: input.method, description: input.description ?? description },
+    idempotencyKey,
+    input: { ...row, method, description: description ?? receivable.value.description },
     target: target.value,
     applicationFeeMinor: row.applicationFeeMinor ?? undefined,
   });
@@ -45,9 +64,9 @@ async function startAttempt({ input, context, row }: AttemptInput): Promise<Resu
 
 /**
  * `payment.create`'s call to the provider, run by `execute` once the PENDING row is committed and
- * never by a change preview (ADR 0058). The row id is the idempotency key, so a retry for the same
- * row returns the same checkout or invoice; the attempt is recorded with its reference, link and
- * expiry (ADR 0100). The amount is the row's. A refused charge leaves the payment FAILED.
+ * never by a change preview (ADR 0058). Only a provider whose attempts keep (not `onDemand`, ADR
+ * 0100) gets one now; a Swish request starts at the pay page. The row id is the idempotency key, so
+ * a retry for the same row returns the same checkout. A refused charge leaves the payment FAILED.
  */
 export async function chargeAfterCommit({
   input,
@@ -59,7 +78,20 @@ export async function chargeAfterCommit({
     include: PAYMENT_INCLUDE,
   });
   if (!row) return notFound({ entity: "Payment" });
-  const charge = await startAttempt({ input, output, context, row });
+  const { provider } = row;
+  const method = row.method === "SWISH" ? "SWISH" : "CARD";
+  const adapter = provider ? getProvider({ key: provider }) : null;
+  if (!provider || !adapter?.ok || adapter.value.collect?.onDemand !== false) {
+    return ok({ value: output });
+  }
+  const charge = await startAtProvider({
+    context,
+    row,
+    method,
+    connectionId: row.connectionId,
+    description: input.description,
+    idempotencyKey: `bibi-payment-${row.id}`,
+  });
   if (!charge.ok) {
     const failed = await context.db.payment.update({
       where: { id: row.id },
@@ -70,14 +102,12 @@ export async function chargeAfterCommit({
     context.recordChange({ entityId: row.id, before: toPaymentDto({ row }), after });
     return err({ error: charge.error });
   }
-  const { provider } = row;
-  if (!provider) return conflict({ message: "The payment has no provider" });
   const { providerReference, url, qrToken, expiresAt } = charge.value;
   const attempt = await context.db.paymentAttempt.create({
     data: {
       organizationId: context.organizationId,
       paymentId: row.id,
-      method: row.method,
+      method,
       provider,
       connectionId: row.connectionId,
       ...{ providerReference, url, qrToken, expiresAt },

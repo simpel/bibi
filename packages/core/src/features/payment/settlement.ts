@@ -28,7 +28,10 @@ export type ReceivableRef = {
   invoiceId: string | null;
 };
 
-export type PaymentFacts = ReceivableRef & { amountMinor: number; refundedMinor: number };
+export type PaymentFacts = ReceivableRef & {
+  amountMinor: number;
+  refunds: readonly { amountMinor: number }[];
+};
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -58,7 +61,7 @@ type SumPaidInput = Db & {
   where: { orderId: { in: string[] } } | { invoiceId: { in: string[] } };
 };
 
-/** Settled payments matching `where`, summed per receivable id, refunds subtracted. */
+/** Settled payments matching `where`, summed per receivable id, succeeded refunds subtracted. */
 async function sumPaid({ context, where }: SumPaidInput): Promise<Map<string, number>> {
   const paid = new Map<string, number>();
   const rows: PaymentFacts[] = await context.db.payment.findMany({
@@ -68,12 +71,13 @@ async function sumPaid({ context, where }: SumPaidInput): Promise<Map<string, nu
       depositId: true,
       invoiceId: true,
       amountMinor: true,
-      refundedMinor: true,
+      refunds: { where: { status: "SUCCEEDED" }, select: { amountMinor: true } },
     },
   });
   for (const row of rows) {
     const id = row.quoteId ?? row.depositId ?? row.invoiceId;
-    if (id) paid.set(id, (paid.get(id) ?? 0) + row.amountMinor - row.refundedMinor);
+    const refunded = row.refunds.reduce((sum, refund) => sum + refund.amountMinor, 0);
+    if (id) paid.set(id, (paid.get(id) ?? 0) + row.amountMinor - refunded);
   }
   return paid;
 }

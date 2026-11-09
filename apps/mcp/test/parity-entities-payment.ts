@@ -34,7 +34,7 @@ export const paymentSettingsEntity: ParityEntity = {
       args: {
         depositPercent: 30,
         depositMinimumMinor: 500_000,
-        invoiceProvider: "STRIPE",
+        invoiceProvider: null,
         paymentOperator: "STRIPE",
       },
     }),

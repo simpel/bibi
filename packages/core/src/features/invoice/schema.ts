@@ -11,6 +11,16 @@ export const InvoiceDeductionSchema = z.object({
   amountMinor: z.number().int().describe("Paid on the deposit at invoice create, minor units"),
 });
 
+/** A credit note of the invoice (ADR 0100): what it credits incl. VAT. */
+export const InvoiceCreditNoteSchema = z.object({
+  id: z.string(),
+  number: z.number().int().describe("The organization's credit note number"),
+  amountMinor: z.number().int().describe("Credited incl. VAT, minor units"),
+  status: z
+    .enum(["PENDING", "ISSUED", "FAILED"])
+    .describe("PENDING until the provider confirmed it; FAILED ones credit nothing"),
+});
+
 /**
  * An invoice (ADR 0052, 0057): a frozen receivable whose lines are a snapshot of the order's
  * priced lines when it was created. `status` holds only its lifecycle; what is paid is derived.
@@ -37,19 +47,27 @@ export const InvoiceSchema = z.object({
     .enum(PROVIDER_KEYS)
     .nullable()
     .describe(
-      "Where it was raised when sent (ADR 0090, 0100): an invoicing system such as FORTNOX " +
-        "(payments mirrored from there), the payment operator such as STRIPE (paid through a " +
-        "payment Bibi requests) or null (in Bibi only)",
+      "Where it was raised when sent (ADR 0090, 0100): the provider the INVOICE route chose " +
+        "(an accounting system whose payments are mirrored, or a payment operator's invoicing) " +
+        "or null (in Bibi only)",
     ),
   providerReference: z
     .string()
     .nullable()
     .describe("The invoice's document number at the provider; null until raised there"),
   providerUrl: z.string().nullable().describe("The provider's page for the invoice, if any"),
+  creditNotes: z.array(InvoiceCreditNoteSchema).describe("Its credit notes (invoice.credit)"),
+  creditedMinor: z
+    .number()
+    .int()
+    .describe("What its credit notes that did not fail credit, minor units"),
   amountDueMinor: z
     .number()
     .int()
-    .describe("Total incl. VAT minus the deductions, minor units: what payments settle"),
+    .describe(
+      "Total incl. VAT minus the deductions and the credited amount, minor units: what " +
+        "payments settle",
+    ),
   ...SettlementShape,
   createdAt: z.date(),
   updatedAt: z.date(),

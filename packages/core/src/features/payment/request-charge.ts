@@ -30,18 +30,21 @@ export type RequestChargeInput = {
   paymentId: string;
   publicToken: string;
   organizationId: string;
+  /** Same key, same attempt at the provider. */
+  idempotencyKey: string;
   input: ChargeRequest;
   target: Pick<ChargeTarget, "order" | "customer">;
   applicationFeeMinor: number | undefined;
 };
 
-/** Asks the provider for an attempt (checkout or invoice); the payment id is the idempotency key. */
+/** Asks the provider for an attempt (a checkout, a Swish request). */
 export function requestCharge({
   collect,
   auth,
   paymentId,
   publicToken,
   organizationId,
+  idempotencyKey,
   input,
   target,
   applicationFeeMinor,
@@ -56,7 +59,7 @@ export function requestCharge({
     currency: input.currency,
     applicationFeeMinor,
     description: input.description ?? `Order #${target.order.reference}`,
-    idempotencyKey: `bibi-payment-${paymentId}`,
+    idempotencyKey,
     metadata: { paymentId, orderId: target.order.id, organizationId },
     // `checkout=success` lets the page show "processing" until the webhook marks it paid.
     successUrl: `${pageUrl}?checkout=success`,

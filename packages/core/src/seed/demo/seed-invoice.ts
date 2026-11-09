@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { createInvoice } from "../../features/invoice/create-operation";
 import { sendInvoice } from "../../features/invoice/lifecycle-operations";
 import { createPayment } from "../../features/payment/create-operation";
+import { refundPayment } from "../../features/payment/refund-operation";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { applyDemoSignal } from "./demo-signal";
@@ -21,7 +22,10 @@ type Refund = { context: ExecuteContext; refundedMinor: number };
 
 type PayInput = { context: ExecuteContext; invoiceId: string; refund: Refund | null };
 
-/** A card payment of the invoice's open amount, marked paid; then the refund, if any. */
+/**
+ * A card payment of the invoice's open amount, marked paid; then the refund, if any, started in
+ * Bibi (`payment.refund`) and confirmed by the provider's signal (ADR 0100).
+ */
 async function payInvoice({ context, invoiceId, refund }: PayInput) {
   const input = { invoiceId, method: "CARD" as const };
   const payment = await execute({ operation: createPayment, input, context });
@@ -30,11 +34,21 @@ async function payInvoice({ context, invoiceId, refund }: PayInput) {
   const paid = await applyDemoSignal({ context, paymentId, kind: "attempt.succeeded" });
   if (!paid.ok || !refund) return paid;
   const { context: refundContext, refundedMinor } = refund;
+  const refunded = await execute({
+    operation: refundPayment,
+    input: { id: paymentId, amountMinor: refundedMinor },
+    context: refundContext,
+  });
+  if (!refunded.ok) return refunded;
+  const row = await refundContext.db.paymentRefund.findFirst({
+    where: { paymentId, status: "PENDING" },
+    orderBy: { createdAt: "desc" },
+  });
   return applyDemoSignal({
     context: refundContext,
     paymentId,
     kind: "refund.succeeded",
-    refundedTotalMinor: refundedMinor,
+    ...(row ? { refundId: row.id } : {}),
   });
 }
 

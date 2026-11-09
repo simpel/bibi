@@ -89,6 +89,7 @@ export * from "./features/order-status/schema";
 export * from "./features/order-template/schema";
 export * from "./features/organization-profile/schema";
 export * from "./features/payment/balance-schema";
+export * from "./features/payment/lifecycle-schema";
 export * from "./features/payment/public-document-schema";
 export * from "./features/payment/schema";
 export * from "./features/payment/settlement-schema";

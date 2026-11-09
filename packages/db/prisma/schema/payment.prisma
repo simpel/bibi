@@ -3,10 +3,11 @@
 /// with its own reference, link and expiry. It settles exactly one receivable (ADR 0057): a sent
 /// quote, a deposit or an invoice (check constraint in the migration). Owned: amount, currency,
 /// receivable, `method`, `provider` and `connectionId` (where it was requested, at create).
-/// `status`, `paidAt` and `refundedMinor` mirror the provider and are written only by the signal
-/// path (`payment.applySignal`, `invoice.sync`); what a receivable or order has paid is derived from
-/// them. `refundedMinor` stays a mirror until Bibi starts refunds (phase 2 derives it from
-/// `PaymentRefund`, ADR 0100). Never deleted: `status` is its lifecycle.
+/// `status` and `paidAt` mirror the provider and are written only by the signal path
+/// (`payment.applySignal`, `invoice.applySignal`), by `payment.cancel` and `payment.recordManual`;
+/// what a receivable or order has paid is derived from them. What is refunded is derived from the
+/// SUCCEEDED `PaymentRefund` rows (ADR 0057, 0100); `REFUNDED` is set when they cover the amount.
+/// `note` (owned) is staff's text on a MANUAL payment. Never deleted: `status` is its lifecycle.
 model Payment {
   id                  String                  @id @default(cuid(2))
   organizationId      String
@@ -32,8 +33,8 @@ model Payment {
   publicToken         String                  @unique
   /// Set when the provider reports the payment as completed.
   paidAt              DateTime?
-  /// Refunded so far, in minor units (the provider's mirror; see the model comment).
-  refundedMinor       Int                     @default(0)
+  /// Staff's note on a payment they recorded (MANUAL); null otherwise.
+  note                String?
   createdAt           DateTime                @default(now())
   updatedAt           DateTime                @updatedAt
   createdBy           String?
@@ -123,32 +124,30 @@ enum PaymentStatus {
 
 /// PaymentRefund – one refund of a payment (ADR 0077, 0100), one row per refund. Owned:
 /// `amountMinor` (this refund), `reason`, `initiatedBy` (null when the provider reported it) and
-/// `status`; mirror: `providerReference`. Today every row is written by the signal path when the
-/// provider reports a higher refunded total (`refundedTotalMinor`, unique per payment, so a repeated
-/// signal adds nothing) and is SUCCEEDED. `Payment.refundedMinor` equals the sum of SUCCEEDED rows
-/// (reconciliation check `payment refunds`).
+/// `status` (`payment.refund` writes PENDING, the provider's signal completes it; a MANUAL payment's
+/// refund is SUCCEEDED at once). Mirror: `providerReference`, `refundedAt` (when it succeeded).
+/// What a payment has refunded is the sum of its SUCCEEDED rows, never stored (ADR 0057). A refund
+/// the provider reports without Bibi starting it is one SUCCEEDED row for the step.
 model PaymentRefund {
   id                 String                  @id @default(cuid(2))
   organizationId     String
   paymentId          String
   /// This refund in minor units.
   amountMinor        Int
-  /// Refunded on the payment so far, this refund included.
-  refundedTotalMinor Int
-  /// When the provider reported the refund: the date of its reversal voucher.
-  refundedAt         DateTime
-  status             PaymentRefundStatus     @default(SUCCEEDED)
+  /// When the refund succeeded: the date of its reversal voucher; null until then.
+  refundedAt         DateTime?
+  status             PaymentRefundStatus     @default(PENDING)
   /// The provider's refund id; null when only a refunded total was reported.
   providerReference  String?
   reason             String?
   /// The user who started the refund in Bibi; null when it came from the provider.
   initiatedBy        String?
   createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
   payment            Payment                 @relation(fields: [paymentId, organizationId], references: [id, organizationId])
   exportEntries      AccountingExportEntry[]
 
   @@unique([id, organizationId])
-  @@unique([paymentId, refundedTotalMinor])
   @@unique([paymentId, providerReference])
   @@index([organizationId, refundedAt])
 }

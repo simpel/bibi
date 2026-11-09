@@ -57,6 +57,7 @@ describe("public payment page lookup", () => {
       "expiresAt",
       "lines",
       "method",
+      "methods",
       "orderReference",
       "organizationName",
       "paidAt",

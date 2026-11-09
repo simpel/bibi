@@ -22,7 +22,9 @@ const cashFacts = ({ cash }: { cash: CashInPeriod }): Fact[] => [
   ...cash.payments.flatMap((row) =>
     row.paidAt ? [{ at: row.paidAt, amount: row.amountMinor }] : [],
   ),
-  ...cash.refunds.map((row) => ({ at: row.refundedAt, amount: -row.amountMinor })),
+  ...cash.refunds.flatMap((row) =>
+    row.refundedAt ? [{ at: row.refundedAt, amount: -row.amountMinor }] : [],
+  ),
 ];
 
 export type FinanceTrendsInput = {

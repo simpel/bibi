@@ -81,6 +81,7 @@ export {
   type Payment,
   type PaymentAttempt,
   PaymentMethod,
+  type PaymentRefund,
   PaymentStatus,
   PermissionEffect,
   type PermissionOverride,

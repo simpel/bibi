@@ -29,7 +29,12 @@ export async function syncWithProvider({
   const payments = await invoicing.listPayments({ auth, providerReference: raised.value });
   if (!payments.ok) return payments;
   const target = { ...row, provider: row.provider };
-  await recordProviderPayments({ context, invoice: target, payments: payments.value });
+  const recorded = await recordProviderPayments({
+    context,
+    invoice: target,
+    payments: payments.value,
+  });
+  if (!recorded.ok) return recorded;
   const after = await loadInvoice({ context, id: invoice.id });
   return after ? ok({ value: after }) : notFound({ entity: "Invoice" });
 }
@@ -38,8 +43,9 @@ export const syncInvoice = defineOperation({
   name: "invoice.sync",
   kind: "command",
   description:
-    "Bring a SENT invoice raised in the venue's invoicing system (e.g. Fortnox) up to date " +
-    "(ADR 0090): raise it there if sending did not reach it, then read the payments booked on " +
+    "Bring a SENT invoice raised at a provider (an accounting system, or the " +
+    "payment operator's invoicing) up to date (ADR 0090, 0100): raise it there if sending did " +
+    "not reach it, then read the payments booked on " +
     "it. Bibi also does this by itself when the provider reports a payment; use it to refresh " +
     "now. CONFLICT for an invoice that is not SENT or not raised in such a provider.",
   input: InvoiceIdInputSchema,

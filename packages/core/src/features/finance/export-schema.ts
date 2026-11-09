@@ -9,6 +9,7 @@ export const ACCOUNTING_SOURCE_KINDS = [
   "PAYMENT",
   "FEE",
   "REFUND",
+  "CREDIT_NOTE",
 ] as const;
 
 /** One SIE file handed to the accounting program (ADR 0077); its bytes come with download. */

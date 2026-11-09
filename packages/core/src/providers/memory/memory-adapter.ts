@@ -12,7 +12,11 @@ export type CreateMemoryProviderInput = {
   connectKind: Exclude<ConnectKind, "CREDENTIALS">;
   /** Methods it collects; none = no collect port. */
   methods?: readonly PaymentMethodKey[];
+  /** Attempts start at the pay page (Swish), not at `payment.create`. */
+  onDemand?: boolean;
   invoicing?: boolean;
+  /** The invoicing port can book a payment another provider took. */
+  registerPayment?: boolean;
   ledger?: boolean;
   signals?: SignalsPort;
 };
@@ -32,7 +36,9 @@ export function createMemoryProvider({
   key,
   connectKind,
   methods = [],
+  onDemand = false,
   invoicing = false,
+  registerPayment = false,
   ledger = false,
   signals,
 }: CreateMemoryProviderInput): MemoryProvider {
@@ -47,8 +53,8 @@ export function createMemoryProvider({
     ledger,
     isConfigured: () => fake.configured,
     connect: connectKind === "OAUTH" ? oauth : onboarding,
-    ...(methods.length > 0 ? { collect: memoryCollect({ state, methods }) } : {}),
-    ...(invoicing ? { invoicing: memoryInvoicing({ state }) } : {}),
+    ...(methods.length > 0 ? { collect: memoryCollect({ state, methods, onDemand }) } : {}),
+    ...(invoicing ? { invoicing: memoryInvoicing({ state, registerPayment }) } : {}),
     ...(signals ? { signals } : {}),
   };
   return fake;

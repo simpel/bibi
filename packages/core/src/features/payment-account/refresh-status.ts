@@ -1,7 +1,7 @@
 import type { ProviderConnection } from "@bibi/db";
 import { err, ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { accountProvider } from "./account-provider";
+import { onboardingPortOf } from "../../providers/registry";
 import { toPaymentAccountDto } from "./to-payment-account-dto";
 
 export type RefreshStatusInput = {
@@ -21,9 +21,9 @@ export async function refreshAccountStatus({
   before,
 }: RefreshStatusInput): Promise<Result<RefreshedStatus>> {
   if (!before.externalAccountId) return ok({ value: { row: before, changed: false } });
-  const provider = accountProvider();
-  if (!provider.ok) return provider;
-  const fetched = await provider.value.port.status({ externalAccountId: before.externalAccountId });
+  const port = onboardingPortOf({ key: before.provider });
+  if (!port.ok) return port;
+  const fetched = await port.value.status({ externalAccountId: before.externalAccountId });
   if (!fetched.ok) return err({ error: fetched.error });
   if (fetched.value.status === before.status) return ok({ value: { row: before, changed: false } });
   const row = await context.db.providerConnection.update({

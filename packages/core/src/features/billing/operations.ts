@@ -24,7 +24,7 @@ export {
 
 /**
  * Bibi's own subscription per organization (ADR 0091, 0095). `billing.applySignal` is left out:
- * only the billing webhook runs it, as SYSTEM, like `paymentAccount.applySignal`.
+ * only the billing webhook runs it, as SYSTEM, like `integration.applySignal`.
  */
 export const billingOperations = [
   getBilling,

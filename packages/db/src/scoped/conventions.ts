@@ -23,8 +23,8 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   ["LineStateChange", ["createdAt", "updatedAt", "createdBy"]],
   // Append-only (ADR 0078): users who have been members, written by SYSTEM.
   ["KnownMember", ["updatedAt", "createdBy"]],
-  // Append-only (ADR 0077): a refund the provider reported, written by SYSTEM through the signal path.
-  ["PaymentRefund", ["updatedAt", "createdBy"]],
+  // A refund (ADR 0077, 0100): `initiatedBy` is who started it in Bibi (null when the provider reported it).
+  ["PaymentRefund", ["createdBy"]],
   // Append-only (ADR 0077): which events an export contained; its export records who made it.
   ["AccountingExportEntry", ["updatedAt", "createdBy"]],
   ["OrderEstimate", ["createdAt", "updatedAt", "createdBy"]],

@@ -1,4 +1,6 @@
 import type { OperationContext } from "../../operations/types";
+import type { ProviderKey } from "../../providers/provider-keys";
+import { ledgerProviderKeys } from "../../providers/registry";
 
 const SETTLED = { in: ["SUCCEEDED" as const, "REFUNDED" as const] };
 const LINES = {
@@ -14,10 +16,11 @@ const PAYMENT_SELECT = {
   amountMinor: true,
   applicationFeeMinor: true,
   paidAt: true,
+  provider: true,
   depositId: true,
   deposit: { select: { vatRows: true } },
   order: ORDER,
-  invoice: { select: { number: true } },
+  invoice: { select: { number: true, provider: true } },
   quote: { select: { lines: LINES } },
 } as const;
 
@@ -28,6 +31,8 @@ const INVOICE_SELECT = {
   sentAt: true,
   voidedAt: true,
   totalInclVatMinor: true,
+  totalExclVatMinor: true,
+  provider: true,
   order: ORDER,
   lines: LINES,
   deductions: { select: { amountMinor: true, deposit: { select: { vatRows: true } } } },
@@ -62,7 +67,7 @@ function loadCash({ context, period }: Sources) {
       select: PAYMENT_SELECT,
     }),
     context.db.paymentRefund.findMany({
-      where: { refundedAt: within({ period }) },
+      where: { status: "SUCCEEDED", refundedAt: within({ period }) },
       select: {
         id: true,
         amountMinor: true,
@@ -73,19 +78,61 @@ function loadCash({ context, period }: Sources) {
   ]);
 }
 
+/** Credit notes issued in the range, with their own frozen lines and their invoice. */
+function loadCreditNotes({ context, period }: Sources) {
+  return context.db.creditNote.findMany({
+    where: { status: "ISSUED", issuedAt: within({ period }) },
+    select: {
+      id: true,
+      number: true,
+      issuedAt: true,
+      amountMinor: true,
+      lines: LINES,
+      invoice: { select: INVOICE_SELECT },
+    },
+  });
+}
+
+type Booked = { provider: ProviderKey | null };
+
+/**
+ * A ledger provider keeps the books for what it invoices (ADR 0100): its invoices, the payments
+ * on them and payments it took are left to it. Awaits an accountant's confirmation (ADR 0093).
+ */
+function ownBooks({ ledger }: { ledger: readonly ProviderKey[] }) {
+  const inLedger = ({ row }: { row: Booked | null }) =>
+    row?.provider != null && ledger.includes(row.provider);
+  return {
+    invoice: (row: Booked) => !inLedger({ row }),
+    payment: (row: Booked & { invoice: Booked | null }) =>
+      !inLedger({ row }) && !inLedger({ row: row.invoice }),
+  };
+}
+
 /**
  * Every fact dated in the range (ADR 0077, addendum): invoices by send date, voids by void date,
  * settled payments and their fees by `paidAt`, refunds by refund date. Facts exported before are
- * included again, so a range can be exported any number of times.
+ * included again, so a range can be exported any number of times. Credit notes by issue date.
+ * What a ledger provider books is left out (`ownBooks`).
  */
 export async function loadExportSources({ context, period }: Sources) {
-  const [[sent, voided], [payments, fees, refunds]] = await Promise.all([
+  const [[sent, voided], [payments, fees, refunds], creditNotes] = await Promise.all([
     loadInvoices({ context, period }),
     loadCash({ context, period }),
+    loadCreditNotes({ context, period }),
   ]);
-  return { sent, voided, payments, fees, refunds };
+  const keep = ownBooks({ ledger: ledgerProviderKeys() });
+  return {
+    sent: sent.filter(keep.invoice),
+    voided: voided.filter(keep.invoice),
+    creditNotes: creditNotes.filter((note) => keep.invoice(note.invoice)),
+    payments: payments.filter(keep.payment),
+    fees: fees.filter(keep.payment),
+    refunds: refunds.filter((refund) => keep.payment(refund.payment)),
+  };
 }
 
 export type ExportSources = Awaited<ReturnType<typeof loadExportSources>>;
 export type SourceInvoice = ExportSources["sent"][number];
 export type SourcePayment = ExportSources["payments"][number];
+export type SourceCreditNote = ExportSources["creditNotes"][number];

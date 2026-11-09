@@ -168,6 +168,7 @@
       "kinds": {
         "INVOICE_SENT": "Fakturor skickade",
         "INVOICE_VOID": "Fakturor makulerade",
+        "CREDIT_NOTE": "Kreditfakturor",
         "PAYMENT": "Betalningar",
         "FEE": "Avgifter",
         "REFUND": "Återbetalningar"

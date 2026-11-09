@@ -21,7 +21,11 @@ export async function issueInProvider({
   const call = await invoiceProviderCall({ context, invoice });
   if (!call.ok) return call;
   const snapshot = await toInvoiceSnapshot({ context, invoice });
-  const issued = await call.value.invoicing.issue({ auth: call.value.auth, invoice: snapshot });
+  const issued = await call.value.invoicing.issue({
+    auth: call.value.auth,
+    invoice: snapshot,
+    idempotencyKey: `bibi-invoice-${invoiceId}`,
+  });
   if (!issued.ok) return issued;
   await context.db.invoice.update({
     where: { id: invoiceId },

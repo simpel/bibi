@@ -1,6 +1,7 @@
 import { getEnv } from "@bibi/config";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { stripeCharges } from "../src/providers/stripe/stripe-charges";
+import { stripeInvoicing } from "../src/providers/stripe/stripe-invoicing";
 import { unwrap } from "./helpers";
 
 type Call = { url: string; headers: Record<string, string>; body: URLSearchParams };
@@ -91,11 +92,29 @@ describe("stripeCharges", () => {
       ],
     });
     const invoice = unwrap({
-      result: await stripeCharges.createInvoice({
-        ...base,
-        applicationFeeMinor: 500,
-        recipient: { name: "Hisingen Energi AB", email: "billing@example.com" },
-        daysUntilDue: 30,
+      result: await stripeInvoicing.issue({
+        auth: { externalAccountId: "acct_venue", accessToken: null },
+        idempotencyKey: "bibi-invoice-i1",
+        invoice: {
+          invoiceDate: "2026-11-09",
+          dueDate: "2026-12-09",
+          currency: "SEK",
+          reference: "Order #7, invoice #1",
+          customer: { name: "Hisingen Energi AB", email: "billing@example.com" },
+          lines: [
+            {
+              name: "Lunch",
+              quantity: 10,
+              unitPriceMinor: 10_000,
+              discountPercent: 0,
+              vatRatePercent: 12,
+              vatRows: [{ vatRatePercent: 12, totalExclVatMinor: 100_000 }],
+              revenueAccount: "3001",
+            },
+          ],
+          deductions: [],
+          advancesAccount: "2420",
+        },
       }),
     });
     expect(invoice).toEqual({
@@ -110,8 +129,8 @@ describe("stripeCharges", () => {
       "/invoices/in_1/send",
     ]);
     expect(calls.every(({ headers }) => headers["Stripe-Account"] === "acct_venue")).toBe(true);
-    expect(calls[1]?.body.get("application_fee_amount")).toBe("500");
     expect(calls[2]?.body.get("invoice")).toBe("in_1");
+    expect(calls[2]?.body.get("amount")).toBe("112000");
     expect(new Set(calls.map(({ headers }) => headers["Idempotency-Key"])).size).toBe(5);
   });
 

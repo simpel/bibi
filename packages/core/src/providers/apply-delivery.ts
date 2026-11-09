@@ -2,11 +2,12 @@ import { type Db, getDb } from "@bibi/db";
 import { getLogger } from "@bibi/logger";
 import { AppError } from "../errors/app-error";
 import { err, ok, type Result } from "../errors/result";
+import { applyIntegrationSignal } from "../features/integration/apply-signal-operation";
+import { applyInvoiceSignal } from "../features/invoice/apply-signal-operation";
 import { applyPaymentSignal } from "../features/payment/apply-signal-operation";
-import { applyPaymentAccountSignal } from "../features/payment-account/apply-signal-operation";
+import type { ExecuteContext } from "../operations/context";
 import { execute } from "../operations/execute";
 import type { ProviderKey } from "./provider-keys";
-import { findProvider } from "./registry";
 import type { ProviderSignal } from "./signal";
 import { providerSystemContext } from "./system-context";
 import type { VerifiedDelivery } from "./types";
@@ -31,6 +32,41 @@ async function organizationOf({ db, signal }: ApplyInput): Promise<string | null
 const done = ({ result }: { result: Result<unknown> }): Result<true> =>
   result.ok ? ok({ value: true }) : err({ error: result.error });
 
+/** An attempt signal a provider sends for an invoice no longer raised through the port. */
+const AS_ATTEMPT = {
+  "invoice.payment_recorded": "attempt.succeeded",
+  "invoice.voided": "attempt.cancelled",
+} as const;
+
+type InOrganization = { context: ExecuteContext; signal: ProviderSignal };
+
+/**
+ * An `invoice.*` signal: the invoice the provider raised on that account, by its document id. A
+ * provider id Bibi knows only from an attempt (a one-line invoice from before ADR 0100) is applied
+ * to that payment instead.
+ */
+async function applyToInvoice({ context, signal }: InOrganization): Promise<Result<true>> {
+  const connection = await context.db.providerConnection.findFirst({
+    where: { provider: signal.provider, externalAccountId: signal.externalAccountId ?? "" },
+    select: { id: true },
+  });
+  const invoice =
+    connection && signal.documentReference
+      ? await context.db.invoice.findFirst({
+          where: { connectionId: connection.id, providerReference: signal.documentReference },
+          select: { id: true },
+        })
+      : null;
+  if (invoice) {
+    const input = { invoiceId: invoice.id, signal };
+    return done({ result: await execute({ operation: applyInvoiceSignal, input, context }) });
+  }
+  const kind = AS_ATTEMPT[signal.kind as keyof typeof AS_ATTEMPT];
+  if (!kind) return ok({ value: true });
+  const input = { ...signal, kind };
+  return done({ result: await execute({ operation: applyPaymentSignal, input, context }) });
+}
+
 /** Runs one signal as SYSTEM in its organization; a payment never moves the order (ADR 0043). */
 async function applySignal({ db, signal }: ApplyInput): Promise<Result<true>> {
   const organizationId = await organizationOf({ db, signal });
@@ -39,23 +75,14 @@ async function applySignal({ db, signal }: ApplyInput): Promise<Result<true>> {
   }
   const context = providerSystemContext({ db, organizationId });
   if (signal.kind === "connection.status") {
-    // Only a hosted payout account refreshes its status from an event (ADR 0028).
-    if (findProvider({ key: signal.provider })?.connect.kind !== "HOSTED_ONBOARDING") {
-      return ok({ value: true });
-    }
-    const input = { providerAccountId: signal.externalAccountId ?? "" };
-    return done({
-      result: await execute({ operation: applyPaymentAccountSignal, input, context }),
-    });
+    const input = { provider: signal.provider, externalAccountId: signal.externalAccountId ?? "" };
+    return done({ result: await execute({ operation: applyIntegrationSignal, input, context }) });
   }
-  if (signal.kind.startsWith("attempt.") || signal.kind.startsWith("refund.")) {
-    return done({
-      result: await execute({ operation: applyPaymentSignal, input: signal, context }),
-    });
-  }
-  return ok({ value: true });
+  if (signal.kind.startsWith("invoice.")) return applyToInvoice({ context, signal });
+  return done({
+    result: await execute({ operation: applyPaymentSignal, input: signal, context }),
+  });
 }
-
 type ClaimInput = { db: Db; provider: ProviderKey; delivery: VerifiedDelivery };
 
 async function claim({ db, provider, delivery }: ClaimInput): Promise<boolean> {

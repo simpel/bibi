@@ -1,5 +1,5 @@
 import type { OperationContext } from "../../operations/types";
-import { invoiceDueMinor } from "../invoice/to-invoice-dto";
+import { DUE_INCLUDE, invoiceDueMinor } from "../invoice/to-invoice-dto";
 import { paidForInvoices } from "../payment/settlement";
 import type { FinancePeriod } from "./period";
 
@@ -48,7 +48,7 @@ export async function loadCashInPeriod({ context, period, customerId }: FactsInp
       select: { paidAt: true, amountMinor: true },
     }),
     context.db.paymentRefund.findMany({
-      where: { refundedAt: when, payment: orderOf({ customerId }) },
+      where: { status: "SUCCEEDED", refundedAt: when, payment: orderOf({ customerId }) },
       select: { refundedAt: true, amountMinor: true },
     }),
   ]);
@@ -67,14 +67,14 @@ export async function loadOpenInvoices({ context, customerId }: Db) {
       orderId: true,
       dueDate: true,
       totalInclVatMinor: true,
-      deductions: { select: { amountMinor: true } },
+      ...DUE_INCLUDE,
       order: { select: { reference: true, title: true } },
     },
   });
   const paid = await paidForInvoices({ context, invoiceIds: invoices.map((row) => row.id) });
   return invoices
-    .map(({ deductions, ...row }) => {
-      const due = invoiceDueMinor({ invoice: row, deductions });
+    .map(({ deductions, creditNotes, ...row }) => {
+      const due = invoiceDueMinor({ invoice: row, deductions, creditNotes });
       return { ...row, openMinor: due - (paid.get(row.id) ?? 0) };
     })
     .filter((row) => row.openMinor > 0);

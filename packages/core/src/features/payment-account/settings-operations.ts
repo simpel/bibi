@@ -14,8 +14,8 @@ export const getPaymentSettings = defineOperation({
   description:
     "Read how the organization takes order money (ADR 0090): the deposit rule (depositPercent " +
     "of the order's total incl. VAT; an order below depositMinimumMinor is paid in full up " +
-    "front), the payment operator that takes card payments, and the invoice provider used when " +
-    "both Stripe and Fortnox are connected.",
+    "front) and the routes: which connected provider takes each payment method (CARD, SWISH, " +
+    "INVOICE; null = the connected one that can).",
   input: PaymentSettingsGetInputSchema,
   output: PaymentSettingsSchema,
   permission: "paymentAccount:read",
@@ -27,12 +27,12 @@ export const updatePaymentSettings = defineOperation({
   entityType: "paymentSettings",
   kind: "command",
   description:
-    "Change the deposit rule, the payment operator or the invoice provider. Omitted fields keep " +
-    "their value; null clears one (no deposit rule, no minimum, or the operator and provider " +
-    "follow what is connected).",
+    "Change the deposit rule or the routes (which provider takes each payment method). Omitted " +
+    "fields and methods keep their value; null clears one (no deposit rule, no minimum, or the " +
+    "method goes to the connected provider that can take it). VALIDATION when a provider " +
+    "cannot take the method.",
   input: PaymentSettingsUpdateInputSchema,
   output: PaymentSettingsSchema,
   permission: "paymentAccount:write",
-  handler: async ({ input, context }) =>
-    ok({ value: await savePaymentSettings({ context, data: input }) }),
+  handler: ({ input, context }) => savePaymentSettings({ context, data: input }),
 });

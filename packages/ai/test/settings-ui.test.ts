@@ -7,6 +7,11 @@ const payment = {
   id: null,
   depositPercent: 30,
   depositMinimumMinor: null,
+  routes: [
+    { method: "CARD", provider: "STRIPE" },
+    { method: "SWISH", provider: null },
+    { method: "INVOICE", provider: null },
+  ],
   invoiceProvider: null,
   paymentOperator: "STRIPE",
 };

@@ -3,7 +3,7 @@ import type { InvoiceSnapshot, ProviderPayment, StartAttemptInput } from "../typ
 
 /** An attempt the fake was asked for: a card checkout or an invoice, as Stripe would make it. */
 export type RecordedCharge = Omit<StartAttemptInput, "auth"> & {
-  kind: "checkout" | "invoice";
+  kind: "checkout" | "swish";
   connectedAccountId: string | null;
 };
 
@@ -22,6 +22,10 @@ export type MemoryState = {
   raised: InvoiceSnapshot[];
   /** What `listPayments` answers for any invoice. */
   payments: ProviderPayment[];
+  /** Port calls after the attempt (`refund:<ref>:<amount>`, `void:<ref>`, `credit:<ref>:<amount>`, `cancel:<ref>`, `register:<ref>:<amount>`). */
+  portCalls: string[];
+  /** When set, the next port call of that name fails with UNAVAILABLE (`refund`, `issue`, ...). */
+  failing: Set<string>;
   configured: boolean;
 };
 
@@ -34,5 +38,7 @@ export const newMemoryState = (): MemoryState => ({
   charges: [],
   raised: [],
   payments: [],
+  portCalls: [],
+  failing: new Set(),
   configured: true,
 });

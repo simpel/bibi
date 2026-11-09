@@ -43,7 +43,13 @@ export type AttemptRef = {
 
 export type AttemptRefInput = { auth: ProviderAuth; providerReference: string };
 
-export type RefundInput = AttemptRefInput & { amountMinor: number; idempotencyKey: string };
+export type RefundInput = AttemptRefInput & {
+  amountMinor: number;
+  /** Bibi's refund id: the same key never refunds twice. */
+  idempotencyKey: string;
+  /** Bibi ids (`paymentId`, `refundId`) for the provider's event to find the refund again. */
+  metadata: Record<string, string>;
+};
 
 /** The provider's id of what a call created (a refund, a booked payment). */
 export type ProviderReference = { providerReference: string };
@@ -94,13 +100,21 @@ export type IssuedDocument = { providerReference: string; url: string | null };
 /** A payment the provider booked on an invoice. `reference` is unique within the connection. */
 export type ProviderPayment = { reference: string; amountMinor: number; paidAt: Date };
 
-export type CreditInput = AttemptRefInput & { amountMinor: number; reason: string | null };
+export type IssueInput = { auth: ProviderAuth; invoice: InvoiceSnapshot; idempotencyKey: string };
+
+export type CreditInput = AttemptRefInput & {
+  amountMinor: number;
+  reason: string | null;
+  /** Bibi's credit note id. */
+  idempotencyKey: string;
+};
 
 export type RegisterPaymentInput = AttemptRefInput & { payment: ProviderPayment };
 
 /** Raising invoices in the provider (ADR 0100). Every call runs after the commit (ADR 0058). */
 export type InvoicingPort = {
-  issue(input: { auth: ProviderAuth; invoice: InvoiceSnapshot }): Promise<Result<IssuedDocument>>;
+  /** `idempotencyKey`: Bibi's invoice id, so a retried issue never raises it twice. */
+  issue(input: IssueInput): Promise<Result<IssuedDocument>>;
   void(input: AttemptRefInput): Promise<Result<true>>;
   credit(input: CreditInput): Promise<Result<IssuedDocument>>;
   listPayments(input: AttemptRefInput): Promise<Result<ProviderPayment[]>>;

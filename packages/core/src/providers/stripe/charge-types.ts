@@ -29,17 +29,3 @@ export type CheckoutRef = {
   url: string;
   expiresAt: Date;
 };
-
-export type InvoiceRecipient = { name: string; email: string };
-
-export type CreateInvoiceInput = ChargeBase & {
-  recipient: InvoiceRecipient;
-  daysUntilDue: number;
-};
-
-export type InvoiceRef = {
-  /** PSP reference (`in_...`). */
-  providerReference: string;
-  /** The hosted invoice page. */
-  url: string;
-};

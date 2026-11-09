@@ -2,6 +2,7 @@ import { getDb } from "@bibi/db";
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
+import { routedMethods } from "./payment-preconditions";
 import { publicDocument } from "./public-document";
 import { PublicPaymentInputSchema, PublicPaymentSchema } from "./schema";
 import { PAYMENT_INCLUDE, toPaymentDto } from "./to-payment-dto";
@@ -38,13 +39,18 @@ export const getPublicPaymentOperation = defineOperation({
     });
     if (!order || !organization) return notFound({ entity: "Payment" });
     const document = await publicDocument({ context, payment: row });
-    const expired =
-      payment.status === "PENDING" && payment.expiresAt && payment.expiresAt <= new Date();
+    const expired = Boolean(
+      payment.status === "PENDING" && payment.expiresAt && payment.expiresAt <= new Date(),
+    );
+    const routes = await routedMethods({ context });
+    const open = payment.status === "PENDING" && !expired;
+    const methods = open && routes.ok ? routes.value.map((route) => route.method) : [];
     return ok({
       value: {
         organizationName: organization.name,
         orderReference: order.reference,
         method: payment.method,
+        methods,
         status: expired ? "EXPIRED" : payment.status,
         amountMinor: payment.amountMinor,
         currency: payment.currency,

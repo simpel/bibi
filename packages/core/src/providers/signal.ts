@@ -18,7 +18,8 @@ export const SIGNAL_KINDS = [
 /**
  * Every inbound provider change, normalized (ADR 0100). A provider's webhook, stream or poll turns
  * its own events into these; core applies them as SYSTEM. `externalAccountId` finds the
- * organization; `reference` is the provider's id of the attempt, refund or invoice.
+ * organization; `reference` is the provider's id of the attempt, refund or booked payment;
+ * `documentReference` names the invoice an `invoice.*` signal is about.
  */
 export const ProviderSignalSchema = z.object({
   provider: z.enum(PROVIDER_KEYS),
@@ -27,6 +28,12 @@ export const ProviderSignalSchema = z.object({
   externalAccountId: z.string().min(1).nullable().describe("The account the event happened on"),
   reference: z.string().min(1).optional().describe("The attempt's or invoice's provider id"),
   paymentId: z.string().min(1).optional().describe("Bibi payment id from the provider metadata"),
+  refundId: z.string().min(1).optional().describe("Bibi refund id from the provider metadata"),
+  documentReference: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("The invoice's provider id, for `invoice.*` signals"),
   amountMinor: z.number().int().optional(),
   refundedTotalMinor: z
     .number()

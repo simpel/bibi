@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { resolveRoute } from "../../providers/resolve-route";
 import { notFound } from "../../shared/errors";
+import { routedMethods } from "../payment/payment-preconditions";
 import type { PaymentSettingsDto } from "../payment-account/settings-schema";
 import { loadPaymentSettings } from "../payment-account/settings-store";
 import { checkLinesReadable } from "../quote/check-lines-readable";
@@ -54,9 +54,9 @@ export async function suggestDeposit({
   const { totalInclVatMinor } = quoteTotals({ lines: derived.map((d) => d.line) });
   const [settings, card] = await Promise.all([
     loadPaymentSettings({ context }),
-    resolveRoute({ context, method: "CARD" }),
+    routedMethods({ context }),
   ]);
-  const paymentLinksAvailable = card.ok && card.value !== null;
+  const paymentLinksAvailable = card.ok && card.value.length > 0;
   const rule = depositFromRule({ totalMinor: totalInclVatMinor, settings });
   return ok({ value: { totalInclVatMinor, ...rule, paymentLinksAvailable } });
 }

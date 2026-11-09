@@ -26,6 +26,7 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   payment: "payment",
   deposit: "payment",
   invoice: "payment",
+  creditNote: "payment",
   finance: "finance",
   accountingSettings: "finance",
   accountingExport: "finance",

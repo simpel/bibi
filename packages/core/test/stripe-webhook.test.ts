@@ -87,21 +87,19 @@ describe("Stripe webhook", () => {
         account,
         object: { amount_refunded: amount, metadata: { paymentId: payment.id } },
       });
+    const refunds = () =>
+      context.db.paymentRefund.findMany({
+        where: { paymentId: payment.id, status: "SUCCEEDED" },
+        orderBy: { createdAt: "asc" },
+      });
     await postEvent({ event: refund({ amount: 25_000 }) });
     const partial = await context.db.payment.findUniqueOrThrow({ where: { id: payment.id } });
-    expect([partial.status, partial.refundedMinor]).toEqual(["SUCCEEDED", 25_000]);
+    expect(partial.status).toBe("SUCCEEDED");
+    expect((await refunds()).map((row) => row.amountMinor)).toEqual([25_000]);
     await postEvent({ event: refund({ amount: 125_000 }) });
     const full = await context.db.payment.findUniqueOrThrow({ where: { id: payment.id } });
-    expect([full.status, full.refundedMinor]).toEqual(["REFUNDED", 125_000]);
+    expect(full.status).toBe("REFUNDED");
     await postEvent({ event: refund({ amount: 125_000 }) });
-    const refunds = await context.db.paymentRefund.findMany({
-      where: { paymentId: payment.id },
-      orderBy: { refundedTotalMinor: "asc" },
-    });
-    const steps = refunds.map((row) => [row.amountMinor, row.refundedTotalMinor]);
-    expect(steps).toEqual([
-      [25_000, 25_000],
-      [100_000, 125_000],
-    ]);
+    expect((await refunds()).map((row) => row.amountMinor)).toEqual([25_000, 100_000]);
   });
 });

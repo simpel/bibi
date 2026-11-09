@@ -10,7 +10,8 @@ type Db = { context: Pick<OperationContext, "db"> };
 export type ChargeTarget = {
   order: { id: string; reference: number };
   customer: Customer;
-  /** The provider and connection the payment is requested on. */
+  /** The method prepared first, and the provider and connection that take it. */
+  method: PaymentCreateMethod;
   route: Route;
 };
 
@@ -30,23 +31,44 @@ export async function loadChargeableOrder({ context, orderId }: ChargeableOrderI
   return ok({ value: order });
 }
 
-export type LoadTargetInput = Db & { orderId: string; method: PaymentCreateMethod };
+export type CollectRoute = { method: PaymentCreateMethod; route: Route };
+
+const COLLECT_METHODS: readonly PaymentCreateMethod[] = ["CARD", "SWISH"];
 
 /**
- * What a new payment needs: a chargeable order, its customer (with an email for invoices) and the
- * payment operator: the CARD route (ADR 0100), which also sends its own invoices until invoices
- * move to the invoicing port.
+ * The methods a customer can pay a requested payment with (ADR 0100): each one routed to a
+ * connected provider that collects it, in the order card, Swish. A route to a provider that is not
+ * connected is a CONFLICT, never a silent switch.
  */
-async function operatorRoute({ context }: Db): Promise<Result<Route>> {
-  const route = await resolveRoute({ context, method: "CARD" });
-  if (!route.ok) return route;
-  if (route.value) return ok({ value: route.value });
+export async function routedMethods({ context }: Db): Promise<Result<CollectRoute[]>> {
+  const routes: CollectRoute[] = [];
+  for (const method of COLLECT_METHODS) {
+    const route = await resolveRoute({ context, method });
+    if (!route.ok) return route;
+    if (route.value?.adapter.collect?.methods.includes(method)) {
+      routes.push({ method, route: route.value });
+    }
+  }
+  return ok({ value: routes });
+}
+
+export type LoadTargetInput = Db & { orderId: string; method: PaymentCreateMethod | undefined };
+
+/** The method to prepare first: the one asked for, else the first routed one. */
+async function chosenRoute({ context, method }: Db & { method: PaymentCreateMethod | undefined }) {
+  const routes = await routedMethods({ context });
+  if (!routes.ok) return routes;
+  const chosen = method ? routes.value.find((r) => r.method === method) : routes.value[0];
+  if (chosen) return ok({ value: chosen });
   return conflict({
-    message: "No payment operator is connected. Connect one in Administration → Integrations.",
+    message: method
+      ? `No connected provider takes ${method} payments. Connect one in Administration → Integrations.`
+      : "No payment operator is connected. Connect one in Administration → Integrations.",
+    ...(method ? { issues: [{ path: "method", message: `${method} is not available` }] } : {}),
   });
 }
 
-/** The chargeable order, its customer and the operator route a new payment goes through. */
+/** The chargeable order, its customer and the route the payment is first prepared on. */
 export async function loadChargeTarget({
   context,
   orderId,
@@ -54,20 +76,19 @@ export async function loadChargeTarget({
 }: LoadTargetInput): Promise<Result<ChargeTarget>> {
   const order = await loadChargeableOrder({ context, orderId });
   if (!order.ok) return order;
-  const route = await operatorRoute({ context });
-  if (!route.ok) return route;
+  const chosen = await chosenRoute({ context, method });
+  if (!chosen.ok) return chosen;
   const customer = await context.db.customer.findFirst({
     where: { id: order.value.customerId, status: { in: ["ACTIVE", "ARCHIVED"] } },
   });
   if (!customer) return notFound({ entity: "Customer" });
-  if (method === "INVOICE" && !customer.email) {
-    return conflict({
-      message: "The customer has no email address to send the invoice to",
-      issues: [{ path: "method", message: "The customer has no email address" }],
-    });
-  }
   const { id, reference } = order.value;
   return ok({
-    value: { order: { id, reference }, customer, route: route.value },
+    value: {
+      order: { id, reference },
+      customer,
+      method: chosen.value.method,
+      route: chosen.value.route,
+    },
   });
 }

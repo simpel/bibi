@@ -1,6 +1,6 @@
 import { type Db, getDb } from "@bibi/db";
 import { z } from "zod";
-import { voidInvoice } from "../../../features/invoice/lifecycle-operations";
+import { applyInvoiceSignal } from "../../../features/invoice/apply-signal-operation";
 import { syncInvoice } from "../../../features/invoice/sync-operation";
 import { execute } from "../../../operations/execute";
 import { providerSystemContext } from "../../system-context";
@@ -32,8 +32,9 @@ export type HandleEventInput = { db?: Db; event: FortnoxTopicEvent };
 
 /**
  * Routes a Topics event to the organization it belongs to (the one cross-organization lookup,
- * tenant id → connection, ADR 0004) and runs, as SYSTEM, `invoice.sync` for a payment event or
- * `invoice.void` for a cancelled invoice. Events for invoices Bibi did not raise are ignored.
+ * tenant id → connection, ADR 0004) and runs, as SYSTEM, `invoice.sync` for a payment event (it
+ * reads the booked payments and applies them as signals) or `invoice.applySignal` with
+ * `invoice.voided` for a cancelled invoice. Events for invoices Bibi did not raise are ignored.
  */
 export async function handleFortnoxEvent({
   db = getDb(),
@@ -52,7 +53,23 @@ export async function handleFortnoxEvent({
     select: { id: true },
   });
   if (!invoice) return "ignored";
-  const operation = event.type === "invoice-cancelled-v1" ? voidInvoice : syncInvoice;
-  const done = await execute({ operation, input: { id: invoice.id }, context });
+  const done =
+    event.type === "invoice-cancelled-v1"
+      ? await execute({
+          operation: applyInvoiceSignal,
+          input: {
+            invoiceId: invoice.id,
+            signal: {
+              provider: "FORTNOX",
+              eventId: `${event.topic}:${event.offset}`,
+              kind: "invoice.voided",
+              externalAccountId: String(event.tenantId),
+              documentReference: documentNumber,
+              occurredAt: new Date(),
+            },
+          },
+          context,
+        })
+      : await execute({ operation: syncInvoice, input: { id: invoice.id }, context });
   return done.ok ? "applied" : "failed";
 }

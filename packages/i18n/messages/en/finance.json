@@ -168,6 +168,7 @@
       "kinds": {
         "INVOICE_SENT": "Invoices sent",
         "INVOICE_VOID": "Invoices voided",
+        "CREDIT_NOTE": "Credit notes",
         "PAYMENT": "Payments",
         "FEE": "Fees",
         "REFUND": "Refunds"

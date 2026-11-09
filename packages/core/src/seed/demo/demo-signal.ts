@@ -10,7 +10,8 @@ export type DemoSignalInput = {
   context: ExecuteContext;
   paymentId: string;
   kind: SignalKind;
-  refundedTotalMinor?: number;
+  /** The refund Bibi started that a `refund.*` signal completes. */
+  refundId?: string;
 };
 
 /** The provider's signal for a demo payment, applied as its webhook would (ADR 0100). */
@@ -18,7 +19,7 @@ export async function applyDemoSignal({
   context,
   paymentId,
   kind,
-  refundedTotalMinor,
+  refundId,
 }: DemoSignalInput): Promise<Result<true>> {
   const row = await context.db.payment.findFirst({
     where: { id: paymentId },
@@ -29,12 +30,12 @@ export async function applyDemoSignal({
   const reference = row.attempts[0]?.providerReference;
   const input = {
     provider: row.provider,
-    eventId: `demo-${paymentId}-${kind}-${refundedTotalMinor ?? 0}`,
+    eventId: `demo-${paymentId}-${kind}-${refundId ?? 0}`,
     kind,
     externalAccountId: row.connection.externalAccountId,
     paymentId,
     ...(reference ? { reference } : {}),
-    ...(refundedTotalMinor === undefined ? {} : { refundedTotalMinor }),
+    ...(refundId ? { refundId } : {}),
     occurredAt: nowOf({ context }),
   };
   const applied = await execute({ operation: applyPaymentSignal, input, context });
