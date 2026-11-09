@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.2.0](https://github.com/simpel/bibi/compare/@bibi/ai-v1.1.0...@bibi/ai-v1.2.0) (2026-11-07)
+
+
+### Features
+
+* administration area with its own sidebar replaces the settings hubs ([caef1fd](https://github.com/simpel/bibi/commit/caef1fdd1589443e6f4597f8312d1ca6fb7e708b))
+
+
+### Bug Fixes
+
+* assistant shows example-order creation as JSON ([eeff63c](https://github.com/simpel/bibi/commit/eeff63c9ae1915667dff227d171a870a2cf9b407))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/auth bumped to 0.6.0
+    * @bibi/core bumped to 1.2.0
+    * @bibi/db bumped to 1.1.0
+
 ## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/ai-v1.0.2...@bibi/ai-v1.1.0) (2026-11-06)
 
 

@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.2.0](https://github.com/simpel/bibi/compare/@bibi/mcp-v1.1.0...@bibi/mcp-v1.2.0) (2026-11-07)
+
+
+### Features
+
+* the payment operator is stored, and empty admin sections stay off the page ([3645afe](https://github.com/simpel/bibi/commit/3645afe91e52627dedc7202ef7d6ae549cfb28b6))
+
+
+### Bug Fixes
+
+* example orders isolation test and pipeline e2e follow the admin sections ([5f9bd79](https://github.com/simpel/bibi/commit/5f9bd791ad108f29e9d49c6598c5bb1fa10018b7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 1.2.0
+    * @bibi/auth bumped to 0.6.0
+    * @bibi/core bumped to 1.2.0
+    * @bibi/db bumped to 1.1.0
+    * @bibi/graphql bumped to 1.1.1
+    * @bibi/mail bumped to 0.5.0
+    * @bibi/storage bumped to 0.2.3
+  * devDependencies
+    * @bibi/api bumped to 1.1.1
+
 ## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/mcp-v1.0.2...@bibi/mcp-v1.1.0) (2026-11-06)
 
 

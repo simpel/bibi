@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/db-v1.0.1...@bibi/db-v1.1.0) (2026-11-07)
+
+
+### Features
+
+* the payment operator is stored, and empty admin sections stay off the page ([3645afe](https://github.com/simpel/bibi/commit/3645afe91e52627dedc7202ef7d6ae549cfb28b6))
+
 ## [1.0.1](https://github.com/simpel/bibi/compare/@bibi/db-v1.0.0...@bibi/db-v1.0.1) (2026-11-06)
 
 
