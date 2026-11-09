@@ -136,8 +136,10 @@ test("an admin edits item states on step pages", async ({ page }) => {
   await expect(page.getByRole("cell", { name: "Tentative" }).first()).toBeVisible();
 
   await rowAction({ page, row: "Tentative", item: "Redigera övergångar" });
+  // The transitions save on each change (one save convention); the dialog only closes.
   await page.getByRole("dialog").getByRole("checkbox", { name: "Active" }).click();
-  await page.getByRole("dialog").getByRole("button", { name: "Spara" }).click();
+  await expect(page.getByText("Övergångarna har sparats")).toBeVisible();
+  await page.getByRole("dialog").getByRole("button", { name: "Stäng" }).click();
   await expect(page.getByRole("row", { name: /^Tentative/ })).toContainText("Active");
 
   await rowAction({ page, row: "Tentative", item: "Arkivera status" });
