@@ -1,6 +1,9 @@
 import { type DraftElement, type KindMap, NO_OVERRIDES, newKey } from "../lib/draft";
 import { duplicatePieces, movePieces, removePieces, rotatePieces } from "../lib/edit-pieces";
+import { type Outline, outlineSize, rectangle } from "../lib/outline-edit";
 import type { LayoutDraft } from "./use-layout-draft";
+
+const rectangleOf = ({ outline }: { outline: Outline }) => rectangle(outlineSize({ outline }));
 
 export type UseLayoutCommandsInput = {
   draft: LayoutDraft;
@@ -46,6 +49,9 @@ export function useLayoutCommands({ draft, kinds, room }: UseLayoutCommandsInput
     remove: () => set({ elements: removePieces({ elements: state.elements, keys }), select: [] }),
     replaceAll: (elements: DraftElement[]) => set({ elements, select: [] }),
     select: (selected: readonly string[]) => dispatch({ type: "select", keys: selected }),
+    /** The walls replaced as one undo step (a new size, a rectangle). */
+    setOutline: (outline: Outline) => dispatch({ type: "set", outline }),
+    rectangle: () => dispatch({ type: "set", outline: rectangleOf({ outline: state.outline }) }),
     undo: () => dispatch({ type: "undo" }),
     redo: () => dispatch({ type: "redo" }),
   };

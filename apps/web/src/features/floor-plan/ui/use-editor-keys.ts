@@ -5,6 +5,8 @@ export type UseEditorKeysInput = {
   commands: LayoutCommands;
   hasSelection: boolean;
   enabled: boolean;
+  /** Deletes the selected wall corner (floor plan only). */
+  removeCorner?: (() => void) | null;
 };
 
 const ARROWS: Record<string, [number, number]> = {
@@ -15,7 +17,12 @@ const ARROWS: Record<string, [number, number]> = {
 };
 
 /** Shortcuts: arrows move 10 cm (Shift 1 m), R rotates, Ctrl+D duplicates, Delete, undo, redo. */
-export function useEditorKeys({ commands, hasSelection, enabled }: UseEditorKeysInput) {
+export function useEditorKeys({
+  commands,
+  hasSelection,
+  enabled,
+  removeCorner = null,
+}: UseEditorKeysInput) {
   // Browser API: keyboard shortcuts on the window while the editor is open.
   useEffect(() => {
     if (!enabled) return;
@@ -32,6 +39,9 @@ export function useEditorKeys({ commands, hasSelection, enabled }: UseEditorKeys
       } else if (mod && key === "d" && hasSelection) {
         event.preventDefault();
         commands.duplicate();
+      } else if ((event.key === "Delete" || event.key === "Backspace") && removeCorner) {
+        event.preventDefault();
+        removeCorner();
       } else if ((event.key === "Delete" || event.key === "Backspace") && hasSelection) {
         event.preventDefault();
         commands.remove();
@@ -48,5 +58,5 @@ export function useEditorKeys({ commands, hasSelection, enabled }: UseEditorKeys
     const listening = new AbortController();
     window.addEventListener("keydown", (event) => onKey({ event }), { signal: listening.signal });
     return () => listening.abort();
-  }, [commands, hasSelection, enabled]);
+  }, [commands, hasSelection, enabled, removeCorner]);
 }

@@ -1,4 +1,6 @@
+import { isSimpleOutline } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
+import { type Outline, rectangle, scaleOutline } from "../lib/outline-edit";
 import type { EditorRoom } from "./layout-editor";
 import { NumbersDialog } from "./numbers-dialog";
 
@@ -11,7 +13,7 @@ export type EditorDialogsProps = {
   seats: number;
   room: EditorRoom;
   setCapacity: (capacity: number | null) => void;
-  setRoom: (room: EditorRoom) => void;
+  setOutline: (outline: Outline) => void;
 };
 
 /** The typed capacity and the room's size; both are stored with the next Save. */
@@ -22,7 +24,7 @@ export function EditorDialogs({
   seats,
   room,
   setCapacity,
-  setRoom,
+  setOutline,
 }: EditorDialogsProps) {
   const t = useTranslations("floorPlan");
   return (
@@ -67,15 +69,13 @@ export function EditorDialogs({
           },
         ]}
         onConfirm={(values) => {
-          const widthCm = (values.width ?? 10) * 100;
-          const depthCm = (values.depth ?? 8) * 100;
-          const outline: [number, number][] = [
-            [0, 0],
-            [widthCm, 0],
-            [widthCm, depthCm],
-            [0, depthCm],
-          ];
-          setRoom({ ...room, widthCm, depthCm, outline });
+          const widthCm = Math.round((values.width ?? 10) * 100);
+          const depthCm = Math.round((values.depth ?? 8) * 100);
+          // The same shape stretched; a rectangle if rounding would make its walls cross.
+          const scaled = scaleOutline({ outline: room.outline, widthCm, depthCm });
+          setOutline(
+            isSimpleOutline({ outline: scaled }) ? scaled : rectangle({ widthCm, depthCm }),
+          );
         }}
       />
     </>

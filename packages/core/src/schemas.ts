@@ -35,6 +35,7 @@ export * from "./features/finance/settings-schema";
 export * from "./features/floor-plan/footprint";
 export * from "./features/floor-plan/layout-issues";
 export * from "./features/floor-plan/layout-schema";
+export * from "./features/floor-plan/outline";
 export * from "./features/floor-plan/schema";
 export * from "./features/floor-plan/seats";
 export * from "./features/inbound-email/schema";

@@ -689,7 +689,8 @@
         "uShape": "U-shape",
         "banquet": "Banquet, round tables"
       },
-      "roomSize": "Edit the room's size"
+      "roomSize": "Edit the room's size",
+      "rectangle": "Make the walls a rectangle"
     },
     "start": {
       "title": "Start the {setup} layout",
@@ -711,7 +712,7 @@
     },
     "roomDialog": {
       "title": "Edit the room's size",
-      "description": "Width and depth in metres. The walls become a rectangle of this size.",
+      "description": "Width and depth in metres. The room keeps its shape and is stretched to this size.",
       "confirm": "Use this size",
       "width": "Width (m)",
       "depth": "Depth (m)"
@@ -723,6 +724,11 @@
       "import": "Import starter furniture",
       "importing": "Importing furniture…",
       "imported": "Furniture imported"
+    },
+    "walls": {
+      "hint": "Drag a corner to move the walls. Click + to add a corner, double-click a corner to delete it.",
+      "corner": "Corner {corner}",
+      "addCorner": "Add a corner on wall {wall}"
     }
   }
 }

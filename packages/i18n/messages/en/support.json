@@ -83,6 +83,10 @@
           "floorPlan": {
             "question": "Where do I put doors and pillars?",
             "answer": "Open the Floor plan tab under Layouts. Doors, pillars and screens placed there show in every layout of the room, and Bibi warns if furniture blocks a door.\nUse the menu with three dots to set the room's width and depth."
+          },
+          "roomShape": {
+            "question": "How do I draw a room that is not a rectangle?",
+            "answer": "Open the room under Items, choose Layouts and then the Floor plan tab. Drag a corner to move the walls, click the + in the middle of a wall to add a corner, and double-click a corner to delete it.\nEach wall shows its length. Click Save when the shape is right; every layout of the room uses it."
           }
         }
       },

@@ -9,10 +9,18 @@ export type LayoutSummaryProps = {
   capacity: number | null;
   issues: readonly LayoutIssue[];
   onShowIssue: () => void;
+  /** A short how-to shown next to the summary (the floor plan's wall editing). */
+  hint?: string | null;
 };
 
 /** Seats and capacity bottom left; warnings as a button that steps through them. */
-export function LayoutSummary({ seats, capacity, issues, onShowIssue }: LayoutSummaryProps) {
+export function LayoutSummary({
+  seats,
+  capacity,
+  issues,
+  onShowIssue,
+  hint = null,
+}: LayoutSummaryProps) {
   const t = useTranslations("floorPlan.summary");
   return (
     <div className="absolute bottom-3 left-3 flex items-center gap-2 max-sm:top-3 max-sm:bottom-auto">
@@ -33,6 +41,11 @@ export function LayoutSummary({ seats, capacity, issues, onShowIssue }: LayoutSu
           <TriangleAlertIcon className="text-warning" />
           {t("warnings", { count: issues.length })}
         </Button>
+      ) : null}
+      {hint ? (
+        <p className="rounded-md border bg-card px-3 py-1.5 text-muted-foreground text-sm shadow-sm">
+          {hint}
+        </p>
       ) : null}
     </div>
   );

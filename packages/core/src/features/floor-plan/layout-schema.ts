@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isSimpleOutline } from "./outline";
 import {
   FloorElementInputSchema,
   FloorElementSchema,
@@ -32,6 +33,24 @@ export const FloorPlanSaveInputSchema = FloorPlanShapeSchema.extend({
     .array(FloorElementInputSchema)
     .max(200)
     .describe("Fixed elements only (doors, pillars). Replaces the whole set."),
+}).superRefine((plan, issues) => {
+  if (!isSimpleOutline({ outline: plan.outline })) {
+    issues.addIssue({
+      code: "custom",
+      path: ["outline"],
+      message: "The walls cross or touch each other, or two corners are the same point",
+    });
+  }
+  const outside = plan.outline.some(
+    ([x, y]) => x < 0 || y < 0 || x > plan.widthCm || y > plan.depthCm,
+  );
+  if (outside) {
+    issues.addIssue({
+      code: "custom",
+      path: ["outline"],
+      message: "Every corner must lie within 0..widthCm and 0..depthCm",
+    });
+  }
 });
 
 export const LayoutSummarySchema = z.object({
