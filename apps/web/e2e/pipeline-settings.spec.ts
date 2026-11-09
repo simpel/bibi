@@ -77,7 +77,7 @@ test("an admin edits statuses and the grid on step pages", async ({ page }) => {
   await rowAction({ page, row: "Spare", item: "Flytta vänster" });
   await expect(page.getByText("Ordningen har sparats.")).toBeVisible();
 
-  await expect(page.getByRole("heading", { name: "Rutnätet" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Statusrutnät" })).toBeVisible();
   await expect(page.getByText("Släpper alla rader").first()).toBeVisible();
   // The grid re-renders after the reorder (router.refresh). Wait for the new order to show, so no
   // later refresh can close the select mid-click, then reopen it until its options show.
@@ -116,6 +116,9 @@ test("an admin edits item states on step pages", async ({ page }) => {
   await gotoApp({ page, path: "/admin/item-states" });
   await expect(page).toHaveURL(ITEM_STATES);
   await expect(page.getByRole("heading", { name: "Artikelstatusar", level: 2 })).toBeVisible();
+  // A fresh load: the client router keeps the redirect's anchored URL and would add the anchor
+  // again on the next push to the section (production builds only).
+  await gotoApp({ page, path: SETTINGS });
   await expect(page.getByRole("cell", { name: "Active" }).first()).toBeVisible();
 
   await page.getByRole("button", { name: "Skapa status", exact: true }).click();
@@ -133,8 +136,10 @@ test("an admin edits item states on step pages", async ({ page }) => {
   await expect(page.getByRole("cell", { name: "Tentative" }).first()).toBeVisible();
 
   await rowAction({ page, row: "Tentative", item: "Redigera övergångar" });
+  // The transitions save on each change (one save convention); the dialog only closes.
   await page.getByRole("dialog").getByRole("checkbox", { name: "Active" }).click();
-  await page.getByRole("dialog").getByRole("button", { name: "Spara" }).click();
+  await expect(page.getByText("Övergångarna har sparats")).toBeVisible();
+  await page.getByRole("dialog").getByRole("button", { name: "Stäng" }).click();
   await expect(page.getByRole("row", { name: /^Tentative/ })).toContainText("Active");
 
   await rowAction({ page, row: "Tentative", item: "Arkivera status" });

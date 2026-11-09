@@ -36,6 +36,7 @@ import { requirementOperations } from "./features/requirement/operations";
 import { responsibilityOperations } from "./features/responsibility/operations";
 import { runSheetOperations } from "./features/run-sheet/operations";
 import { runSheetDefinitionOperations } from "./features/run-sheet-definition/operations";
+import { settingsOperations } from "./features/settings/operations";
 import { setupOperations } from "./features/setup/operations";
 import { skillOperations } from "./features/skill/operations";
 import { statusGridOperations } from "./features/status-grid/operations";
@@ -84,6 +85,7 @@ function staticOperations(): AnyOperation[] {
     ...responsibilityOperations,
     ...runSheetDefinitionOperations,
     ...configurationOperations,
+    ...settingsOperations,
     ...itemGroupOperations,
     ...customerOperations,
     ...contactOperations,

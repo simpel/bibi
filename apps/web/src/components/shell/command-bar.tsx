@@ -14,8 +14,8 @@ import { useVenueShortcuts } from "./use-venue-shortcuts";
 export type CommandBarProps = { permissions: PermissionSet };
 
 /**
- * ⌘K command bar: navigation and quick actions the caller's `permissions` allow, plus "Ask
- * assistant" for natural language (ADR 0007). Free text + Enter hands a one-shot question to the
+ * ⌘K command bar: navigation, quick actions and settings sections the caller's `permissions`
+ * allow, plus "Ask assistant" for natural language (ADR 0007). Free text + Enter hands a one-shot question to the
  * assistant on the start page.
  */
 export function CommandBar({ permissions }: CommandBarProps) {
@@ -52,7 +52,7 @@ export function CommandBar({ permissions }: CommandBarProps) {
         <CommandList>
           {query.trim() ? null : <CommandEmpty>{t("empty")}</CommandEmpty>}
           <AskAssistantGroup query={query} onAsk={onAsk} />
-          <CommandGroups venues={venues} permissions={permissions} onDone={close} />
+          <CommandGroups query={query} venues={venues} permissions={permissions} onDone={close} />
         </CommandList>
       </CommandDialog>
     </>

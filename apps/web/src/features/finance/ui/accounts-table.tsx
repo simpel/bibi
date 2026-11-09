@@ -26,6 +26,8 @@ export type AccountsTableProps = {
   canEdit: boolean;
   /** A second table on the page keeps its own search and page in the URL. */
   scope?: string;
+  /** After a save; without it the page refreshes. The assistant's card keeps the new value. */
+  onSaved?: (input: { value: AccountingSettingsDto }) => void;
 };
 
 type QualifiersInput = { rows: AccountRow[]; labels: AccountLabels; grouped: boolean };
@@ -74,6 +76,7 @@ export function AccountsTable({
   emptyText,
   canEdit,
   scope,
+  onSaved,
 }: AccountsTableProps) {
   const [editing, setEditing] = useState<AccountRow | null>(null);
   const labels = useAccountLabels({ types });
@@ -116,6 +119,7 @@ export function AccountsTable({
           settings={settings}
           types={types}
           target={editing.target}
+          onSaved={onSaved}
         />
       ) : null}
     </div>

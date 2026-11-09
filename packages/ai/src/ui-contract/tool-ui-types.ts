@@ -29,6 +29,7 @@ import type { RequirementWire } from "./requirement-entries";
 import type { ResponsibilityWire } from "./responsibility-entries";
 import type { RunSheetDefinitionWire } from "./run-sheet-definition-entries";
 import type { RunSheetWire } from "./run-sheet-entries";
+import type { SettingsUiProps } from "./settings-entries";
 import type { SkillUiProps } from "./skill-entries";
 import type { StatusGridCellWire } from "./status-grid-entries";
 import type {
@@ -55,6 +56,7 @@ export type ToolUiProps = BoardUiProps &
   InboundUiProps &
   NotificationUiProps &
   SkillUiProps &
+  SettingsUiProps &
   DashboardUiProps &
   FinanceUiProps &
   OrderToolUiProps & {

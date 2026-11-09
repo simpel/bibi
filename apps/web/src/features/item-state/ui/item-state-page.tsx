@@ -35,7 +35,7 @@ export async function ItemStatePage({ locale, mode }: ItemStatePageProps) {
         <CrumbName href={`/admin/item-states/${mode.update}/update`} name={editing.name} />
       ) : null}
       <FormPageShell
-        backHref={ROUTES.adminItemStates}
+        backHref={ROUTES.adminItemStatesSection}
         title={editing ? t("edit") : t("create")}
         description={
           editing ? t("editDescription") : t("createDescription", { type: type.value.name })

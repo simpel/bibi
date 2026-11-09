@@ -10,13 +10,14 @@ import {
   MoneyFormatSchema,
   NumberFormatSchema,
 } from "@bibi/core/schemas";
-import { Button, Form } from "@bibi/ui";
+import { Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
+import { useSaveOnChange } from "@/lib/use-save-on-change";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { saveUserSettings } from "../actions";
 import { DisplayFormatFields } from "./display-format-fields";
@@ -35,7 +36,7 @@ export type DisplayFormatFormProps = { formats: DisplayFormats };
 
 /**
  * The signed-in user's date, clock, number and currency format (ADR 0046, #482). Every option reads as a live example of
- * one sample instant; picking the default stores `null` (inherit, ADR 0051).
+ * one sample instant; picking the default stores `null` (inherit, ADR 0051). Each pick saves at once.
  */
 export function DisplayFormatForm({ formats }: DisplayFormatFormProps) {
   const t = useTranslations("userSettings");
@@ -50,7 +51,7 @@ export function DisplayFormatForm({ formats }: DisplayFormatFormProps) {
       moneyFormat: formats.moneyFormat ?? DEFAULT_MONEY_FORMAT,
     },
   });
-  const { submit, pending } = useFormAction({
+  const { run } = useFormAction({
     form,
     action: ({ values }) =>
       saveUserSettings({
@@ -60,17 +61,17 @@ export function DisplayFormatForm({ formats }: DisplayFormatFormProps) {
         moneyFormat: values.moneyFormat === DEFAULT_MONEY_FORMAT ? null : values.moneyFormat,
       }),
     messages: { pending: common("saving"), success: t("saved") },
-    onSuccess: () => router.refresh(),
+    onSuccess: () => {
+      form.reset(form.getValues());
+      router.refresh();
+    },
+    onError: () => form.reset(),
   });
+  useSaveOnChange({ form, run });
   return (
     <Form {...form}>
-      <form onSubmit={submit} noValidate className="grid max-w-md gap-4">
+      <form onSubmit={(event) => event.preventDefault()} noValidate className="grid max-w-md gap-4">
         <DisplayFormatFields control={form.control} />
-        <div>
-          <Button type="submit" disabled={pending}>
-            {common("save")}
-          </Button>
-        </div>
       </form>
     </Form>
   );

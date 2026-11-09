@@ -35,6 +35,7 @@ import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
 import { RUN_SHEET_DEFINITION_UI_ENTRIES } from "./run-sheet-definition-entries";
 import { RUN_SHEET_UI_ENTRIES } from "./run-sheet-entries";
 import { SELF_GENERIC_UI_TOOLS } from "./self-generic-tools";
+import { SETTINGS_UI_ENTRIES } from "./settings-entries";
 import { SKILL_UI_ENTRIES } from "./skill-entries";
 import { STATUS_GRID_UI_ENTRIES } from "./status-grid-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
@@ -99,6 +100,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...SKILL_UI_ENTRIES,
   ...NOTIFICATION_UI_ENTRIES,
   ...BILLING_UI_ENTRIES,
+  ...SETTINGS_UI_ENTRIES,
 };
 
 /**

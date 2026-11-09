@@ -11,6 +11,8 @@ export type PathSegment =
 export type DescribedValue =
   | { kind: "empty" }
   | { kind: "money"; minor: number }
+  | { kind: "yesNo"; value: boolean }
+  | { kind: "month"; month: number }
   | { kind: "text"; text: string };
 
 export type DescribedChange = {
@@ -40,6 +42,8 @@ function describeValue({
 }): DescribedValue {
   if (value === undefined || value === null || value === "") return { kind: "empty" };
   if (typeof value === "number" && path.endsWith("Minor")) return { kind: "money", minor: value };
+  if (typeof value === "boolean") return { kind: "yesNo", value };
+  if (typeof value === "number" && path.endsWith("Month")) return { kind: "month", month: value };
   if (typeof value === "string") return { kind: "text", text: names[value] ?? value };
   if (Array.isArray(value)) {
     const items = value.map((item) =>
@@ -62,4 +66,22 @@ export function describeFieldChange({ change, names }: DescribeFieldChangeInput)
     before: describeValue({ value: change.before, path: change.path, names }),
     after: describeValue({ value: change.after, path: change.path, names }),
   };
+}
+
+type RecordChange = ChangePreview["changes"][number];
+
+/** Bookkeeping a new record always gets: shown on an update, left out of a create. */
+const CREATE_BOOKKEEPING: Readonly<Record<string, unknown>> = { status: "ACTIVE" };
+
+export type VisibleFieldsInput = { change: RecordChange };
+
+/**
+ * The fields of a record change worth showing: a create leaves out its bookkeeping (a new record
+ * is active, its position is where it lands), so the card shows only what the user asked for.
+ */
+export function visibleFields({ change }: VisibleFieldsInput): FieldChange[] {
+  if (change.kind !== "create") return change.fields;
+  return change.fields.filter(
+    ({ path, after }) => path !== "position" && CREATE_BOOKKEEPING[path] !== after,
+  );
 }

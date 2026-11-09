@@ -12,8 +12,12 @@ import { OrderBalanceCardView } from "./order-balance-card-view";
 import { PaymentAccountCardView } from "./payment-account-card-view";
 import { PaymentCardView } from "./payment-card-view";
 import { PaymentTableView } from "./payment-table-view";
+import { SettingCardsView } from "./setting-cards-view";
 
-/** Payments, receivables and the derived balance (ADR 0057), part of `GENERATIVE_COMPONENTS`. */
+/**
+ * Payments, receivables, the derived balance (ADR 0057) and the editable setting cards, part of
+ * `GENERATIVE_COMPONENTS`.
+ */
 export const MONEY_COMPONENTS = {
   "payment-account-card": PaymentAccountCardView,
   "integration-card": IntegrationCardView,
@@ -29,4 +33,5 @@ export const MONEY_COMPONENTS = {
   "accounting-export-card": AccountingExportCardView,
   "accounting-export-file": AccountingExportFileView,
   "billing-card": BillingCardView,
+  "setting-cards": SettingCardsView,
 } as const;

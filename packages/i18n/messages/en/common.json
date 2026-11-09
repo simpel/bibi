@@ -217,7 +217,8 @@
     "profile": "Profile",
     "platformAdminTitle": "Mothership",
     "platformAdminDescription": "System log and AI models for the whole platform.",
-    "platformAdminOpen": "Open mothership"
+    "platformAdminOpen": "Open mothership",
+    "languageSaved": "The language has been saved."
   },
   "commandBar": {
     "title": "Command bar",
@@ -234,7 +235,8 @@
     "createItem": "Create item",
     "assistant": "Assistant",
     "askAssistant": "Ask the assistant: “{query}”",
-    "openAssistant": "Open the assistant"
+    "openAssistant": "Open the assistant",
+    "settings": "Settings"
   },
   "search": {
     "placeholder": "Search venues, items and more...",
@@ -542,10 +544,6 @@
   },
   "adminArea": {
     "search": {
-      "label": "Search administration",
-      "placeholder": "Search settings",
-      "noResults": "No matches.",
-      "results": "Search results",
       "entries": {
         "timeZone": {
           "label": "Time zone",

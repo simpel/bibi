@@ -49,6 +49,7 @@ import { requirementRoutes } from "./features/requirement/rest";
 import { responsibilityRoutes } from "./features/responsibility/rest";
 import { runSheetRoutes } from "./features/run-sheet/rest";
 import { runSheetDefinitionRoutes } from "./features/run-sheet-definition/rest";
+import { settingsRoutes } from "./features/settings/rest";
 import { setupRoutes } from "./features/setup/rest";
 import { skillRoutes } from "./features/skill/rest";
 import { statusGridRoutes } from "./features/status-grid/rest";
@@ -64,6 +65,7 @@ const accessRoutes = [...memberRoutes, ...apiKeyRoutes, ...permissionRoutes];
 const boardRoutes = [
   ...pipelineRoutes,
   ...calendarRoutes,
+  ...settingsRoutes,
   ...dashboardRoutes,
   ...financeRoutes,
   ...boardCrudRoutes,

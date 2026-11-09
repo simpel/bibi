@@ -24,6 +24,11 @@ export const UI_EXEMPT: readonly UiExempt[] = [
       "The furniture library is imported and used on the layouts page (ADR 0099); its own admin section to edit kinds follows. Until then the API, MCP and the assistant edit it.",
   },
   {
+    operation: "settings.view",
+    reason:
+      "The assistant's read of single settings (one card each); the administration pages read each owner's settings.",
+  },
+  {
     operation: "profile.setLocale",
     reason:
       "Language switching is handled via route locale prefix (/sv, /en); profile.setLocale serves background sync and API clients.",

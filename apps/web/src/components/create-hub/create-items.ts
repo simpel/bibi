@@ -78,7 +78,7 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
   {
     key: "setup",
     group: "settings",
-    href: ROUTES.adminSetups,
+    href: ROUTES.adminSetupsSection,
     icon: LayoutGridIcon,
     permission: "configuration:write",
   },

@@ -74,7 +74,12 @@
       "saveSeats": "Save seats",
       "seatsSaved": "The seats have been saved.",
       "requestsTitle": "Seat requests",
-      "requestsDescription": "Invitations waiting for a seat. Approving one adds a paid seat and sends the invitation."
+      "requestsDescription": "Invitations waiting for a seat. Approving one adds a paid seat and sends the invitation.",
+      "confirmSeatsTitle": "Change extra seats?",
+      "confirmSeatsDescription": "You'll pay for {count, plural, one {# extra seat} other {# extra seats}}, {price} a month each.",
+      "confirmAutoAssignTitle": "Add seats automatically?",
+      "confirmAutoAssignDescription": "When every seat is taken, each new invitation adds a paid seat at {price} a month.",
+      "confirmAutoAssign": "Turn on"
     },
     "requests": {
       "columns": {
@@ -625,7 +630,9 @@
       "label": "Payment operator",
       "manage": "Activate or deactivate connections in Integrations",
       "notConnected": "Stripe (not connected)"
-    }
+    },
+    "confirmDepositTitle": "Change the deposit?",
+    "confirmDepositDescription": "Deposit: {percent}. Minimum: {minimum}. From now on, this is what customers are asked to pay in advance."
   },
   "paymentAccount": {
     "title": "Payments",

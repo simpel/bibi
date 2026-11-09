@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { describeFieldChange } from "./describe-change";
+import { describeFieldChange, visibleFields } from "./describe-change";
 
 describe("describeFieldChange", () => {
   it("names the setup in the path and keeps the capacity numbers", () => {
@@ -32,5 +32,35 @@ describe("describeFieldChange", () => {
     });
     expect(described.before).toEqual({ kind: "text", text: "Main house" });
     expect(described.after).toEqual({ kind: "text", text: "Annex" });
+  });
+});
+
+describe("settings in the change table", () => {
+  it("shows switches as yes or no and the fiscal year as a month", () => {
+    const join = describeFieldChange({
+      change: { path: "domainJoin", before: true, after: false },
+      names: {},
+    });
+    expect(join.before).toEqual({ kind: "yesNo", value: true });
+    expect(join.after).toEqual({ kind: "yesNo", value: false });
+    const month = describeFieldChange({
+      change: { path: "fiscalYearStartMonth", before: 1, after: 7 },
+      names: {},
+    });
+    expect(month.after).toEqual({ kind: "month", month: 7 });
+  });
+
+  it("leaves a new record's bookkeeping out, but keeps it on an update", () => {
+    const fields = [
+      { path: "vocabularyId", after: "v1" },
+      { path: "name", after: "Selleri" },
+      { path: "position", after: 3 },
+      { path: "status", after: "ACTIVE" },
+    ];
+    const base = { entityType: "vocabularyValue", entityId: "x", name: "Selleri" };
+    const created = visibleFields({ change: { ...base, kind: "create", fields } });
+    expect(created.map((field) => field.path)).toEqual(["vocabularyId", "name"]);
+    const updated = visibleFields({ change: { ...base, kind: "update", fields } });
+    expect(updated).toHaveLength(4);
   });
 });

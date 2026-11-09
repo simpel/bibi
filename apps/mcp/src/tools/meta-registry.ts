@@ -43,6 +43,7 @@ import { requirementMcpTools } from "../features/requirement/mcp";
 import { responsibilityMcpTools } from "../features/responsibility/mcp";
 import { runSheetMcpTools } from "../features/run-sheet/mcp";
 import { runSheetDefinitionMcpTools } from "../features/run-sheet-definition/mcp";
+import { settingsMcpTools } from "../features/settings/mcp";
 import { setupMcpTools } from "../features/setup/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { statusGridMcpTools } from "../features/status-grid/mcp";
@@ -69,6 +70,7 @@ const lineAndGroupMcpTools = [
 const boardMcpTools = [
   ...pipelineMcpTools,
   ...calendarMcpTools,
+  ...settingsMcpTools,
   ...dashboardMcpTools,
   ...financeMcpTools,
   ...boardCrudMcpTools,

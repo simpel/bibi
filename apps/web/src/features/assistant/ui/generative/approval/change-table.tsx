@@ -1,14 +1,14 @@
 import type { ChangePreview } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { describeFieldChange } from "../../../lib/describe-change";
+import { describeFieldChange, visibleFields } from "../../../lib/describe-change";
 import { type ChangeRow, useChangeColumns } from "./use-change-columns";
 
 export type ChangeTableProps = { preview: ChangePreview };
 
 function rowsOf({ preview }: ChangeTableProps): ChangeRow[] {
   return preview.changes.flatMap((change) =>
-    change.fields.map((field) => ({
+    visibleFields({ change }).map((field) => ({
       id: `${change.entityId}:${field.path}`,
       record: change.name ?? change.entityType,
       ...describeFieldChange({ change: field, names: preview.names }),

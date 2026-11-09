@@ -17,14 +17,14 @@ export function vocabularyRoute({ id }: IdRouteInput): string {
   return `${ROUTES.adminLists}/${encodeURIComponent(id)}`;
 }
 
-/** `/admin/setups`: the organization's setups (no detail page). */
+/** The setups section on `/admin/types` (no detail page). */
 export function setupsRoute(): string {
-  return ROUTES.adminSetups;
+  return ROUTES.adminSetupsSection;
 }
 
-/** `/admin/responsibilities`: the organization's responsibilities (no detail page). */
+/** The responsibilities section on `/admin/run-sheets` (no detail page). */
 export function responsibilitiesRoute(): string {
-  return ROUTES.adminResponsibilities;
+  return ROUTES.adminResponsibilitiesSection;
 }
 
 /** `/admin/run-sheets`: the organization's run sheet definitions (no detail page). */

@@ -25,4 +25,4 @@
 - `main` is green by construction. A broken commit waits in its PR instead of reaching everyone.
 - A change lands about 10–15 minutes after `pnpm ship` instead of at once. Nobody waits on it.
 - A PR may carry other sessions' unshipped commits from the shared checkout. A failure in them blocks that PR until someone fixes it.
-- release-please reads the conventional commits inside each merge. Its own release PR is unchanged.
+- release-please reads the conventional commits inside each merge. It opens its release PR with the `bibi-release` GitHub App's token (`RELEASE_APP_CLIENT_ID` variable, `RELEASE_APP_PRIVATE_KEY` secret): GitHub runs no CI on a PR that `GITHUB_TOKEN` opens, and protected `main` needs CI to report on it.

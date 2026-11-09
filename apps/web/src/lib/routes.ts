@@ -54,6 +54,12 @@ export const ROUTES = {
   adminAccounting: "/admin/accounting",
   adminIntegrations: "/admin/integrations",
   adminApiKeys: "/admin/api-keys",
+  // Lists that are sections of another page now: return here, not through the old list address,
+  // whose redirect would add its anchor a second time.
+  adminItemStatesSection: "/admin/pipeline#item-states",
+  adminSetupsSection: "/admin/types#setups",
+  adminResponsibilitiesSection: "/admin/run-sheets#responsibilities",
+  adminApiKeysSection: "/admin/integrations#api-keys",
   mothership: "/mothership",
   mothershipOrganizations: "/mothership/organizations",
   mothershipBilling: "/mothership/billing",
