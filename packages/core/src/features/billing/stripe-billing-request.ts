@@ -1,6 +1,6 @@
 import type { Result } from "../../errors/result";
-import { type FormParams, toStripeForm } from "../payment/stripe-form-request";
-import { stripeFetch } from "../payment-account/stripe-request";
+import { type FormParams, toStripeForm } from "../../providers/stripe/stripe-form-request";
+import { stripeFetch } from "../../providers/stripe/stripe-request";
 
 const STRIPE_V1_URL = "https://api.stripe.com/v1";
 

@@ -59,10 +59,13 @@ The parity core: every capability is defined **once** as an operation and then e
 - Rows reference the subject's `Record` (`recordId`, composite FK) while the API keeps `subjectType`/`subjectId`.
 - Id lists on responsibilities and run sheet definitions are join rows: read and write them through the `*-rows.ts` helpers, never as JSON.
 
-## Integrations (ADR 0087)
-- A Fortnox access token comes only from `getFortnoxAccessToken` (`features/integration/fortnox/access-token.ts`), called in `external`, never in a handler: a refresh rotates the refresh token and a rollback would lose it. Tokens are sealed with `sealSecret` (`crypto/secret-box.ts`) and never appear in an output, log or audit row.
-- `integration.completeConnect` (web callback) and `integration.refreshExpiring` (worker) are run directly, never registered. Tests swap Fortnox with `setFortnoxGateway`.
-- Fortnox invoicing goes through `getFortnoxInvoicingGateway` (`features/integration/fortnox/invoicing-registry.ts`), called in `external`; tests swap it with `setFortnoxInvoicingGateway` (ADR 0090).
+## Providers (ADR 0087, 0100)
+- A provider is one adapter folder in `src/providers/<key>/` registered in `providers/registry.ts`; it declares its ports (`providers/types.ts`: `connect` OAUTH | HOSTED_ONBOARDING | CREDENTIALS, `collect`, `invoicing`, `signals`). Code outside `src/providers/` dispatches through `getProvider`/`providersWith` and never names a provider.
+- Which provider takes a method comes only from `resolveRoute({ context, method })` (`PaymentMethodRoute`; no row = the connected provider that can take it; a route to an unconnected provider is `CONFLICT`).
+- Provider calls run in `external`, never in a handler. An OAuth access token comes only from `getAccessToken` / `authFor` (`providers/oauth/`, `providers/connections.ts`): a refresh rotates the refresh token and a rollback would lose it. Secrets are sealed with `sealSecret` and never appear in an output, log or audit row.
+- Inbound events become `ProviderSignal`s; webhooks go through `receiveProviderWebhook` / `applyProviderDelivery` (dedupe in `ProviderEventReceipt`), invoice payments through `recordProviderPayments`.
+- `integration.completeConnect` (web callback) and `integration.refreshExpiring` (worker) are run directly, never registered.
+- Tests swap a provider with `setProviderAdapter({ key, adapter: createMemoryProvider(...).adapter })` and undo with `resetProviderAdapters()`.
 
 ## Bibi's own billing (ADR 0091, 0095)
 - Stripe goes only through `getBillingGateway()` (tests: `setBillingGateway({ gateway: createMemoryBillingGateway() })`); its key and prices come from the platform row `BillingConfig` (`loadBillingKeys`), never env. Unconfigured, nothing is gated.

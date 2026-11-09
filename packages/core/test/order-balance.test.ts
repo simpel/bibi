@@ -5,16 +5,14 @@ import {
   execute,
   getOrderBalance,
   grantAll,
-  setPaymentProvider,
-  setStripeConnectGateway,
+  resetProviderAdapters,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { sentDeposit } from "./payment-helpers";
 import { markSucceeded, moneySetup, sentTestQuote } from "./receivable-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 const balanceOf = async ({ context, orderId }: { context: ExecuteContext; orderId: string }) =>

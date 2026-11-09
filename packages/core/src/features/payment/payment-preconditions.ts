@@ -1,16 +1,17 @@
 import type { Customer } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { type Route, resolveRoute } from "../../providers/resolve-route";
 import { conflict, notFound } from "../../shared/errors";
-import { resolvePaymentOperator } from "../payment-account/payment-operator";
-import type { PaymentMethod } from "./schema";
+import type { PaymentCreateMethod } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
 export type ChargeTarget = {
   order: { id: string; reference: number };
   customer: Customer;
-  connectedAccountId: string;
+  /** The provider and connection the payment is requested on. */
+  route: Route;
 };
 
 export type ChargeableOrderInput = Db & { orderId: string };
@@ -29,12 +30,23 @@ export async function loadChargeableOrder({ context, orderId }: ChargeableOrderI
   return ok({ value: order });
 }
 
-export type LoadTargetInput = Db & { orderId: string; method: PaymentMethod };
+export type LoadTargetInput = Db & { orderId: string; method: PaymentCreateMethod };
 
 /**
- * What a new payment needs: a chargeable order, its customer (with an email for invoices) and
- * the payment operator the organization chose (or the connected one) with card payments active.
+ * What a new payment needs: a chargeable order, its customer (with an email for invoices) and the
+ * payment operator: the CARD route (ADR 0100), which also sends its own invoices until invoices
+ * move to the invoicing port.
  */
+async function operatorRoute({ context }: Db): Promise<Result<Route>> {
+  const route = await resolveRoute({ context, method: "CARD" });
+  if (!route.ok) return route;
+  if (route.value) return ok({ value: route.value });
+  return conflict({
+    message: "No payment operator is connected. Connect one in Administration → Integrations.",
+  });
+}
+
+/** The chargeable order, its customer and the operator route a new payment goes through. */
 export async function loadChargeTarget({
   context,
   orderId,
@@ -42,10 +54,8 @@ export async function loadChargeTarget({
 }: LoadTargetInput): Promise<Result<ChargeTarget>> {
   const order = await loadChargeableOrder({ context, orderId });
   if (!order.ok) return order;
-  const operator = await resolvePaymentOperator({ context });
-  if (!operator.ok) return operator;
-  const { stripeAccountId } = operator.value.account;
-  if (!stripeAccountId) return conflict({ message: "The Stripe account has no account id yet" });
+  const route = await operatorRoute({ context });
+  if (!route.ok) return route;
   const customer = await context.db.customer.findFirst({
     where: { id: order.value.customerId, status: { in: ["ACTIVE", "ARCHIVED"] } },
   });
@@ -58,6 +68,6 @@ export async function loadChargeTarget({
   }
   const { id, reference } = order.value;
   return ok({
-    value: { order: { id, reference }, customer, connectedAccountId: stripeAccountId },
+    value: { order: { id, reference }, customer, route: route.value },
   });
 }

@@ -1,6 +1,6 @@
 import { getEnv } from "@bibi/config";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { stripePaymentProvider } from "../src/features/payment/stripe-provider";
+import { stripeCharges } from "../src/providers/stripe/stripe-charges";
 import { unwrap } from "./helpers";
 
 type Call = { url: string; headers: Record<string, string>; body: URLSearchParams };
@@ -41,7 +41,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("stripePaymentProvider", () => {
+describe("stripeCharges", () => {
   it("creates a checkout session on the connected account with the application fee", async () => {
     stubStripe({
       responses: [
@@ -49,7 +49,7 @@ describe("stripePaymentProvider", () => {
       ],
     });
     const checkout = unwrap({
-      result: await stripePaymentProvider.createCheckout({
+      result: await stripeCharges.createCheckout({
         ...base,
         applicationFeeMinor: 3_125,
         successUrl: "https://bibi.test/pay/p1",
@@ -76,7 +76,7 @@ describe("stripePaymentProvider", () => {
   it("omits the application fee when none is given", async () => {
     stubStripe({ responses: [{ id: "cs_2", url: "https://x", expires_at: 1 }] });
     const input = { ...base, successUrl: "https://s", cancelUrl: "https://c" };
-    unwrap({ result: await stripePaymentProvider.createCheckout(input) });
+    unwrap({ result: await stripeCharges.createCheckout(input) });
     expect(calls[0]?.body.has("payment_intent_data[application_fee_amount]")).toBe(false);
   });
 
@@ -91,7 +91,7 @@ describe("stripePaymentProvider", () => {
       ],
     });
     const invoice = unwrap({
-      result: await stripePaymentProvider.createInvoice({
+      result: await stripeCharges.createInvoice({
         ...base,
         applicationFeeMinor: 500,
         recipient: { name: "Hisingen Energi AB", email: "billing@example.com" },
@@ -122,7 +122,7 @@ describe("stripePaymentProvider", () => {
         new Response(JSON.stringify({ error: { message: "No such account" } }), { status: 400 }),
     );
     const input = { ...base, successUrl: "https://s", cancelUrl: "https://c" };
-    const result = await stripePaymentProvider.createCheckout(input);
+    const result = await stripeCharges.createCheckout(input);
     expect(result.ok ? null : result.error.code).toBe("UNAVAILABLE");
   });
 });

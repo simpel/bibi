@@ -2,12 +2,11 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   createInvoice,
   execute,
+  fortnoxRows,
   listPayments,
   requestDeposit,
+  resetProviderAdapters,
   sendInvoice,
-  setFortnoxInvoicingGateway,
-  setPaymentProvider,
-  setStripeConnectGateway,
   syncInvoice,
   updatePaymentSettings,
 } from "../src/index";
@@ -19,9 +18,7 @@ import { makeInvoiceable, markSucceeded, moneySetup } from "./receivable-helpers
 useFortnoxEnv();
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
-  setFortnoxInvoicingGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 describe("invoices in Fortnox (ADR 0090)", () => {
@@ -53,14 +50,15 @@ describe("invoices in Fortnox (ADR 0090)", () => {
     expect(sent).toMatchObject({ provider: "FORTNOX", providerReference: "1" });
     expect(fake.raised).toHaveLength(1);
     // The deposit carries the order's 12 % (ADR 0093): 1 500 kr = 1 339.29 + 160.71 VAT.
-    expect(fake.raised[0]?.rows.at(-1)).toMatchObject({
+    const raised = fake.raised[0];
+    expect(raised && fortnoxRows({ invoice: raised }).at(-1)).toMatchObject({
       description: "Advance",
       price: -1339.29,
       vatPercent: 12,
     });
 
     fake.payments = [
-      { number: "7", amountMinor: 410_000, paidAt: new Date("2026-11-20T12:00:00Z") },
+      { reference: "7", amountMinor: 410_000, paidAt: new Date("2026-11-20T12:00:00Z") },
     ];
     const synced = unwrap({
       result: await execute({ operation: syncInvoice, input: { id: draft.id }, context }),

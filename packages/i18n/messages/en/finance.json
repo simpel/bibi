@@ -492,7 +492,9 @@
     },
     "method": {
       "CARD": "Card",
-      "INVOICE": "Invoice"
+      "SWISH": "Swish",
+      "INVOICE": "Invoice",
+      "MANUAL": "Manual"
     },
     "status": {
       "PENDING": "Pending",

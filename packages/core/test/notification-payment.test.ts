@@ -5,16 +5,14 @@ import {
   execute,
   listNotifications,
   PRESET_PERMISSIONS,
-  setPaymentProvider,
-  setStripeConnectGateway,
+  resetProviderAdapters,
 } from "../src/index";
 import { testContext, unwrap } from "./helpers";
 import { makeReaders, notificationsOf } from "./notification-helpers";
 import { pendingPayment } from "./stripe-webhook-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 describe("payment notifications (ADR 0094)", () => {
@@ -32,9 +30,12 @@ describe("payment notifications (ADR 0094)", () => {
       actor: { type: "system", userId: null },
     });
     const signal = {
-      kind: "paid" as const,
-      providerAccountId: account,
-      providerReference: payment.providerReference,
+      provider: "STRIPE" as const,
+      eventId: "evt_paid",
+      kind: "attempt.succeeded" as const,
+      externalAccountId: account,
+      reference: payment.providerReference,
+      occurredAt: new Date(),
     };
     for (const _ of [1, 2]) {
       unwrap({

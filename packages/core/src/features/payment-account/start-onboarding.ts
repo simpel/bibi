@@ -1,6 +1,8 @@
 import { getEnv } from "@bibi/config";
-import { getDb, type PaymentAccount } from "@bibi/db";
+import { getDb, type ProviderConnection } from "@bibi/db";
+import { err, ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { accountProvider, loadAccountRow } from "./account-provider";
 import { toPaymentAccountDto } from "./to-payment-account-dto";
 
 export type EnsureRowInput = { context: OperationContext };
@@ -11,11 +13,13 @@ export type EnsureRowInput = { context: OperationContext };
  */
 export async function ensurePaymentAccountRow({
   context,
-}: EnsureRowInput): Promise<PaymentAccount> {
-  const existing = await context.db.paymentAccount.findFirst({});
+}: EnsureRowInput): Promise<Result<ProviderConnection>> {
+  const provider = accountProvider();
+  if (!provider.ok) return err({ error: provider.error });
+  const existing = await loadAccountRow({ context });
   if (existing?.disconnectedAt) {
     // Connecting again resumes the same Stripe account (ADR 0090).
-    const row = await context.db.paymentAccount.update({
+    const row = await context.db.providerConnection.update({
       where: { id: existing.id },
       data: { disconnectedAt: null },
     });
@@ -26,17 +30,22 @@ export async function ensurePaymentAccountRow({
       before,
       after: toPaymentAccountDto({ row, organizationId }),
     });
-    return row;
+    return ok({ value: row });
   }
-  if (existing) return existing;
-  const row = await context.db.paymentAccount.create({
-    data: { organizationId: context.organizationId, createdBy: context.actor.userId },
+  if (existing) return ok({ value: existing });
+  const row = await context.db.providerConnection.create({
+    data: {
+      organizationId: context.organizationId,
+      provider: provider.value.key,
+      status: "ONBOARDING",
+      createdBy: context.actor.userId,
+    },
   });
   context.recordChange({
     entityId: row.id,
     after: toPaymentAccountDto({ row, organizationId: context.organizationId }),
   });
-  return row;
+  return ok({ value: row });
 }
 
 export type OnboardingReturnUrlsInput = { organizationId: string };

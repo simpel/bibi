@@ -67,24 +67,77 @@ model Invoice {
   /// Sums of the frozen lines in minor units (snapshot).
   totalExclVatMinor Int
   totalInclVatMinor Int
-  /// Owned (ADR 0090): where the invoice was raised when it was sent; null = in Bibi only (the
-  /// customer pays through a payment Bibi requests).
-  provider          InvoiceProvider?
+  /// Owned (ADR 0090, 0100): the provider the INVOICE route chose when it was sent, and its
+  /// connection; null = in Bibi only (the customer pays through a payment Bibi requests).
+  provider          Provider?
+  connectionId      String?
   /// Mirror: the invoice's document number at the provider (Fortnox); null until raised there.
+  /// Unique per connection (document numbers are per company).
   providerReference String?
+  /// Mirror: the provider's page for the invoice, if it has one.
+  providerUrl       String?
   createdAt         DateTime                @default(now())
   updatedAt         DateTime                @updatedAt
   createdBy         String?
   order            Order                  @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  connection        ProviderConnection?     @relation(fields: [connectionId, organizationId], references: [id, organizationId])
   lines             OrderLine[]
   payments          Payment[]
   exportEntries     AccountingExportEntry[]
   /// Paid deposits this invoice deducts (snapshot at create, ADR 0090).
   deductions        InvoiceDeposit[]
+  creditNotes       CreditNote[]
 
   @@unique([id, organizationId])
   @@unique([organizationId, number])
+  @@unique([connectionId, providerReference])
   @@index([organizationId, orderId])
+}
+
+/// CreditNote – a credit of an invoice (ADR 0052, 0100): the credited lines snapshotted as
+/// `OrderLine` rows, like an invoice freezes its lines, with their totals. Owned: number, reason,
+/// `status` (PENDING until the provider confirmed it, then ISSUED, or FAILED) and where it was
+/// raised (`provider`, `connectionId`). Snapshot: lines and totals; `amountMinor` is what it
+/// credits incl. VAT. Mirrors: `providerReference`, `providerUrl`. Written by `invoice.credit`
+/// (ADR 0100, not built yet). Never deleted: `status` is its lifecycle.
+model CreditNote {
+  id                String              @id @default(cuid(2))
+  organizationId    String
+  invoiceId         String
+  /// Per organization, highest + 1.
+  number            Int
+  /// ISO 4217, upper case.
+  currency          String              @default("SEK")
+  /// What it credits incl. VAT, minor units (snapshot).
+  amountMinor       Int
+  /// Sums of the frozen lines in minor units (snapshot).
+  totalExclVatMinor Int
+  totalInclVatMinor Int
+  reason            String?
+  status            CreditNoteStatus    @default(PENDING)
+  /// When the provider confirmed it (owned): the date of its reversal voucher.
+  issuedAt          DateTime?
+  provider          Provider?
+  connectionId      String?
+  providerReference String?
+  providerUrl       String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  createdBy         String?
+  invoice           Invoice             @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
+  connection        ProviderConnection? @relation(fields: [connectionId, organizationId], references: [id, organizationId])
+  lines             OrderLine[]
+
+  @@unique([id, organizationId])
+  @@unique([organizationId, number])
+  @@unique([connectionId, providerReference])
+  @@index([organizationId, invoiceId])
+}
+
+enum CreditNoteStatus {
+  PENDING
+  ISSUED
+  FAILED
 }
 
 /// InvoiceDeposit – a paid deposit a final invoice deducts (ADR 0090). Snapshot at

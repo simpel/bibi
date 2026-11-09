@@ -3,8 +3,7 @@ import {
   createInvoice,
   createPayment,
   execute,
-  setPaymentProvider,
-  setStripeConnectGateway,
+  resetProviderAdapters,
   voidDeposit,
 } from "../src/index";
 import { errorCode } from "./helpers";
@@ -12,8 +11,7 @@ import { paymentSetup } from "./payment-helpers";
 import { makeInvoiceable, moneySetup } from "./receivable-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 describe("receivables under concurrency (ADR 0057)", () => {
@@ -47,7 +45,6 @@ describe("receivables under concurrency (ADR 0057)", () => {
         orderId,
         method: "CARD",
         amountMinor: 100,
-        providerAccountId: "acct_x",
         publicToken: `t_${depositId}`,
       },
     });

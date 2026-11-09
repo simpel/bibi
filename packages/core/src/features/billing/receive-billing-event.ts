@@ -39,8 +39,8 @@ async function apply({ db, action }: { db: Db; action: BillingAction }): Promise
 }
 
 async function claim({ db, event }: { db: Db; event: BillingEvent }) {
-  const data = [{ eventId: event.id, type: event.type }];
-  const { count } = await db.stripeWebhookEvent.createMany({ data, skipDuplicates: true });
+  const data = [{ provider: "STRIPE" as const, eventId: event.id, type: event.type }];
+  const { count } = await db.providerEventReceipt.createMany({ data, skipDuplicates: true });
   return count === 1;
 }
 
@@ -72,6 +72,6 @@ export async function receiveBillingEvent({
     getLogger().warn({ event: "billing.webhook.unmatched", ...fields });
     return ok({ value: { status: "unmatched" } });
   }
-  await db.stripeWebhookEvent.deleteMany({ where: { eventId: event.id } });
+  await db.providerEventReceipt.deleteMany({ where: { provider: "STRIPE", eventId: event.id } });
   return err({ error: done.error });
 }

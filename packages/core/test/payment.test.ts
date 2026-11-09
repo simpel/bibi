@@ -7,8 +7,7 @@ import {
   getPayment,
   getPaymentSettings,
   listPayments,
-  setPaymentProvider,
-  setStripeConnectGateway,
+  resetProviderAdapters,
   updateCustomer,
   updatePaymentSettings,
 } from "../src/index";
@@ -17,8 +16,7 @@ import { createTestOrder, orderSetup } from "./order-helpers";
 import { paymentSetup, sentDeposit } from "./payment-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 type CreateInput = { context: ExecuteContext; depositId: string; method?: "CARD" | "INVOICE" };
@@ -121,7 +119,7 @@ describe("payment", () => {
     });
     expect(settings.paymentOperator).toBe("STRIPE");
     unwrap({ result: await create({ context, depositId }) });
-    await getDb().paymentAccount.updateMany({ data: { disconnectedAt: new Date() } });
+    await context.db.providerConnection.updateMany({ data: { disconnectedAt: new Date() } });
     const refused = await create({ context, depositId });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
   });

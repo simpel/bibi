@@ -1,5 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { resolveRoute } from "../../providers/resolve-route";
 import { notFound } from "../../shared/errors";
 import type { PaymentSettingsDto } from "../payment-account/settings-schema";
 import { loadPaymentSettings } from "../payment-account/settings-store";
@@ -51,14 +52,11 @@ export async function suggestDeposit({
   if (!order) return notFound({ entity: "Order" });
   const derived = (await deriveOrderLines({ context, orderIds: [orderId] })).get(orderId) ?? [];
   const { totalInclVatMinor } = quoteTotals({ lines: derived.map((d) => d.line) });
-  const [settings, account] = await Promise.all([
+  const [settings, card] = await Promise.all([
     loadPaymentSettings({ context }),
-    context.db.paymentAccount.findFirst({
-      select: { status: true, stripeAccountId: true, disconnectedAt: true },
-    }),
+    resolveRoute({ context, method: "CARD" }),
   ]);
-  const paymentLinksAvailable =
-    account?.status === "ACTIVE" && account.stripeAccountId !== null && !account.disconnectedAt;
+  const paymentLinksAvailable = card.ok && card.value !== null;
   const rule = depositFromRule({ totalMinor: totalInclVatMinor, settings });
   return ok({ value: { totalInclVatMinor, ...rule, paymentLinksAvailable } });
 }

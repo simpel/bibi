@@ -1,24 +1,24 @@
 import { getEnv } from "@bibi/config";
 import { describe, expect, it, vi } from "vitest";
-import { stripeConnectGateway } from "../src/features/payment-account/stripe-gateway";
-import { STRIPE_API_VERSION } from "../src/features/payment-account/stripe-request";
+import { stripeConnect } from "../src/providers/stripe/stripe-connect";
+import { STRIPE_API_VERSION } from "../src/providers/stripe/stripe-request";
 import { unwrap } from "./helpers";
 import { accountWith, calls, stubStripe, useStripeEnv } from "./stripe-gateway-helpers";
 
 useStripeEnv();
 
-describe("stripeConnectGateway", () => {
+describe("stripeConnect (hosted onboarding port)", () => {
   it("creates an Accounts v2 account with a JSON body and idempotency key", async () => {
     stubStripe({ body: { id: "acct_1" } });
     const created = unwrap({
-      result: await stripeConnectGateway.createAccount({
+      result: await stripeConnect.createAccount({
         organizationId: "org_1",
         displayName: "Venue",
         country: "se",
         contactEmail: "a@b.test",
       }),
     });
-    expect(created).toEqual({ stripeAccountId: "acct_1" });
+    expect(created).toEqual({ externalAccountId: "acct_1" });
     const [call] = calls;
     expect(call?.url).toBe("https://api.stripe.com/v2/core/accounts");
     expect(call?.method).toBe("POST");
@@ -38,7 +38,7 @@ describe("stripeConnectGateway", () => {
 
   it("omits the contact email when none is given", async () => {
     stubStripe({ body: { id: "acct_1" } });
-    await stripeConnectGateway.createAccount({
+    await stripeConnect.createAccount({
       organizationId: "org_1",
       displayName: "Venue",
       country: "se",
@@ -47,14 +47,14 @@ describe("stripeConnectGateway", () => {
   });
 
   it.each([
-    ["active", "ACTIVE"],
+    ["active", "CONNECTED"],
     ["restricted", "RESTRICTED"],
     ["pending", "ONBOARDING"],
     [undefined, "ONBOARDING"],
   ])("maps the card_payments capability %s to %s", async (status, expected) => {
     stubStripe({ body: accountWith({ ...(status ? { status } : {}) }) });
     const result = unwrap({
-      result: await stripeConnectGateway.getAccountStatus({ stripeAccountId: "acct_1" }),
+      result: await stripeConnect.status({ externalAccountId: "acct_1" }),
     });
     expect(result).toEqual({ status: expected });
     expect(calls[0]?.method).toBe("GET");
@@ -67,7 +67,7 @@ describe("stripeConnectGateway", () => {
   it("treats an account without merchant configuration as onboarding", async () => {
     stubStripe({ body: { id: "acct_1" } });
     const result = unwrap({
-      result: await stripeConnectGateway.getAccountStatus({ stripeAccountId: "acct_1" }),
+      result: await stripeConnect.status({ externalAccountId: "acct_1" }),
     });
     expect(result).toEqual({ status: "ONBOARDING" });
   });
@@ -77,8 +77,8 @@ describe("stripeConnectGateway", () => {
       body: { url: "https://connect.stripe.com/x", expires_at: "2030-01-01T00:00:00Z" },
     });
     const link = unwrap({
-      result: await stripeConnectGateway.createOnboardingLink({
-        stripeAccountId: "acct_1",
+      result: await stripeConnect.onboardingLink({
+        externalAccountId: "acct_1",
         returnUrl: "https://bibi.test/ok",
         refreshUrl: "https://bibi.test/retry",
       }),
@@ -103,7 +103,7 @@ describe("stripeConnectGateway", () => {
 
   it("maps a Stripe error response to UNAVAILABLE with the Stripe message", async () => {
     stubStripe({ status: 400, body: { error: { message: "Bad country" } } });
-    const result = await stripeConnectGateway.getAccountStatus({ stripeAccountId: "acct_1" });
+    const result = await stripeConnect.status({ externalAccountId: "acct_1" });
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.error.code).toBe("UNAVAILABLE");
@@ -113,7 +113,7 @@ describe("stripeConnectGateway", () => {
 
   it("maps an unreadable 2xx body to INTERNAL", async () => {
     stubStripe({ body: { nope: true } });
-    const result = await stripeConnectGateway.createAccount({
+    const result = await stripeConnect.createAccount({
       organizationId: "org_1",
       displayName: "Venue",
       country: "se",
@@ -126,14 +126,14 @@ describe("stripeConnectGateway", () => {
     vi.stubGlobal("fetch", async () => {
       throw new Error("offline");
     });
-    const result = await stripeConnectGateway.getAccountStatus({ stripeAccountId: "acct_1" });
+    const result = await stripeConnect.status({ externalAccountId: "acct_1" });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.code).toBe("UNAVAILABLE");
   });
 
   it("is UNAVAILABLE without Stripe configuration", async () => {
     Object.assign(getEnv(), { STRIPE_SECRET_KEY: undefined });
-    const result = await stripeConnectGateway.getAccountStatus({ stripeAccountId: "acct_1" });
+    const result = await stripeConnect.status({ externalAccountId: "acct_1" });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.code).toBe("UNAVAILABLE");
   });

@@ -1,4 +1,3 @@
-import { createMemoryPaymentProvider, setPaymentProvider } from "@bibi/core";
 import { installFakeStripe } from "./fake-stripe";
 import { byId, type ParityEntity, tool } from "./parity-entities";
 import { gqlQuery } from "./parity-graphql";
@@ -87,7 +86,6 @@ export function paymentEntity(): ParityEntity {
     ...reads,
     create: async ({ mcp, made }) => {
       installFakeStripe({ status: "ACTIVE" });
-      setPaymentProvider({ provider: createMemoryPaymentProvider() });
       await tool({ mcp, name: "paymentAccount_sync", args: {} });
       const args = { depositId: made.deposit.id, method: "CARD", amountMinor: 50_000 };
       return tool({ mcp, name: "payment_create", args });

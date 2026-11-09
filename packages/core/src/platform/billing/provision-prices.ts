@@ -2,7 +2,7 @@ import { z } from "zod";
 import { err, ok, type Result } from "../../errors/result";
 import { BILLING_LOOKUP_KEYS, BILLING_PLAN } from "../../features/billing/plan";
 import { billingStripeRequest } from "../../features/billing/stripe-billing-request";
-import { stripeBadResponse } from "../../features/payment/stripe-bad-response";
+import { stripeBadResponse } from "../../providers/stripe/stripe-bad-response";
 
 /** Stripe's tax code for business-use SaaS, so Stripe Tax picks the right rate. */
 const SAAS_TAX_CODE = "txcd_10103001";

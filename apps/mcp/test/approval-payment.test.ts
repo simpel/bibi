@@ -1,8 +1,4 @@
-import {
-  createMemoryPaymentProvider,
-  setPaymentProvider,
-  setStripeConnectGateway,
-} from "@bibi/core";
+import { resetProviderAdapters } from "@bibi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
@@ -10,8 +6,7 @@ import { call, connect, testContext } from "./helpers";
 import { seedOrder } from "./seed-order";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 /** An order at an organization with an active payment account, and the user's AI assistant. */
@@ -26,11 +21,10 @@ async function setup() {
   const { id: orderId, customerId } = await seedOrder({ client: user });
   const email = { id: customerId, email: "billing@example.com" };
   await call({ client: user, name: "customer_update", args: email });
-  installFakeStripe({ status: "ACTIVE" });
+  const provider = installFakeStripe({ status: "ACTIVE" });
   await call({ client: user, name: "paymentAccount_startOnboarding" });
   await call({ client: user, name: "paymentAccount_sync" });
-  const provider = createMemoryPaymentProvider();
-  setPaymentProvider({ provider });
+
   const args = { orderId, description: "Advance", amountMinor: 100_000 };
   const draft = await call({ client: user, name: "deposit_create", args });
   await call({ client: user, name: "deposit_send", args: { id: draft.data.id } });

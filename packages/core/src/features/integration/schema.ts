@@ -1,8 +1,12 @@
 import { z } from "zod";
+import { PROVIDER_KEYS } from "../../providers/provider-keys";
 
 export const IntegrationProviderSchema = z
-  .enum(["FORTNOX"])
-  .describe("The outside system: FORTNOX (accounting and invoicing).");
+  .enum(PROVIDER_KEYS)
+  .describe(
+    "The outside system. integration.list names the ones connected here by OAuth (e.g. FORTNOX, " +
+      "accounting and invoicing).",
+  );
 
 export const IntegrationStatusSchema = z
   .enum(["NOT_CONNECTED", "PENDING", "CONNECTED", "EXPIRED", "DISCONNECTED"])
@@ -42,7 +46,7 @@ export const IntegrationConnectOutputSchema = IntegrationConnectionSchema.extend
     .url()
     .describe(
       "The provider's consent page. Open it in a browser signed in to Bibi; it is valid for 10 " +
-        "minutes. For Fortnox a Fortnox system administrator must approve.",
+        "minutes. Some providers (Fortnox) require their system administrator to approve.",
     ),
 });
 

@@ -1,10 +1,8 @@
 import {
   acceptQuote,
-  createMemoryPaymentProvider,
   type ExecuteContext,
   execute,
   sendQuote,
-  setPaymentProvider,
   updateOrderStatus,
 } from "../src/index";
 import { unwrap } from "./helpers";
@@ -20,9 +18,7 @@ export async function moneySetup() {
   const { context, order, lineType, lunch } = setup;
   const lines = [{ itemId: lunch.id }];
   await addTestLines({ context, orderId: order.id, lineTypeId: lineType.id, lines });
-  await activatePaymentAccount({ context });
-  const provider = createMemoryPaymentProvider();
-  setPaymentProvider({ provider });
+  const { provider } = await activatePaymentAccount({ context });
   return { ...setup, provider };
 }
 

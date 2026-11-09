@@ -23,7 +23,7 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   ["LineStateChange", ["createdAt", "updatedAt", "createdBy"]],
   // Append-only (ADR 0078): users who have been members, written by SYSTEM.
   ["KnownMember", ["updatedAt", "createdBy"]],
-  // Append-only (ADR 0077): a refund Stripe reported, written by SYSTEM through the webhook.
+  // Append-only (ADR 0077): a refund the provider reported, written by SYSTEM through the signal path.
   ["PaymentRefund", ["updatedAt", "createdBy"]],
   // Append-only (ADR 0077): which events an export contained; its export records who made it.
   ["AccountingExportEntry", ["updatedAt", "createdBy"]],
@@ -101,13 +101,15 @@ export const CREATED_BY_MODELS = new Set<string>([
   "InboundEmail",
   "InboundEndpoint",
   "InboundMessage",
-  "PaymentAccount",
-  "IntegrationConnection",
+  "ProviderConnection",
+  "PaymentMethodRoute",
   "Payment",
+  "PaymentAttempt",
   "Deposit",
   "OrganizationProfile",
   "Invoice",
   "InvoiceDeposit",
+  "CreditNote",
   "AccountingSettings",
   "PaymentSettings",
   "BillingAccount",

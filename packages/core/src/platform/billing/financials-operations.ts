@@ -2,7 +2,7 @@ import { z } from "zod";
 import { openSecret } from "../../crypto/secret-box";
 import { ok } from "../../errors/result";
 import { BILLING_PLAN } from "../../features/billing/plan";
-import { stripeFetch } from "../../features/payment-account/stripe-request";
+import { stripeFetch } from "../../providers/stripe/stripe-request";
 import { definePlatformOperation } from "../define-platform-operation";
 import { loadConfigRow } from "./config-store";
 import {

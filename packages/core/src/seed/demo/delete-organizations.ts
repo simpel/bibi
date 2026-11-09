@@ -22,7 +22,9 @@ const orderChildren = ({ db, where }: ScopeInput) => [
   db.revenueAccount.deleteMany({ where }),
   db.accountingSettings.deleteMany({ where }),
   db.paymentSettings.deleteMany({ where }),
+  db.paymentMethodRoute.deleteMany({ where }),
   db.paymentRefund.deleteMany({ where }),
+  db.paymentAttempt.deleteMany({ where }),
   // Payments settle quotes, deposits and invoices (ADR 0057): before all three.
   db.payment.deleteMany({ where }),
   db.deposit.deleteMany({ where }),
@@ -31,7 +33,10 @@ const orderChildren = ({ db, where }: ScopeInput) => [
   db.requirement.deleteMany({ where }),
   // Order lines point at the lines they froze and at their quote or invoice (ADR 0052).
   db.orderLine.deleteMany({ where }),
+  db.creditNote.deleteMany({ where }),
   db.invoice.deleteMany({ where }),
+  // Payments, attempts, invoices and credit notes point at their provider connection (ADR 0100).
+  db.providerConnection.deleteMany({ where }),
   db.quote.deleteMany({ where }),
   // A chosen alternative points at its line and the lines at their group (ADR 0052).
   db.alternativeGroup.updateMany({ where, data: { chosenLineId: null } }),

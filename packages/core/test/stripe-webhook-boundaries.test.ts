@@ -1,17 +1,11 @@
 import { afterEach, describe, expect, it } from "vitest";
-import {
-  applyPaymentSignal,
-  execute,
-  setPaymentProvider,
-  setStripeConnectGateway,
-} from "../src/index";
+import { applyPaymentSignal, execute, resetProviderAdapters } from "../src/index";
 import { errorCode } from "./helpers";
 import { installFakeGateway } from "./payment-account-helpers";
 import { paidEvent, pendingPayment, postEvent, stripeEvent } from "./stripe-webhook-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 describe("Stripe webhook boundaries", () => {
@@ -46,7 +40,9 @@ describe("Stripe webhook boundaries", () => {
     installFakeGateway().accountStatus = "RESTRICTED";
     const posted = await postEvent({ event: stripeEvent({ type: "account.updated", account }) });
     expect(posted.body.status).toBe("applied");
-    const row = await context.db.paymentAccount.findFirstOrThrow({});
+    const row = await context.db.providerConnection.findFirstOrThrow({
+      where: { provider: "STRIPE" },
+    });
     expect(row.status).toBe("RESTRICTED");
   });
 
@@ -55,9 +51,12 @@ describe("Stripe webhook boundaries", () => {
     const result = await execute({
       operation: applyPaymentSignal,
       input: {
-        kind: "paid",
-        providerAccountId: account,
-        providerReference: payment.providerReference,
+        provider: "STRIPE",
+        eventId: "evt_user",
+        kind: "attempt.succeeded",
+        externalAccountId: account,
+        reference: payment.providerReference,
+        occurredAt: new Date(),
       },
       context,
     });

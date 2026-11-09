@@ -6,9 +6,8 @@ import {
   execute,
   getDeposit,
   getOrderBalance,
+  resetProviderAdapters,
   sendDeposit,
-  setPaymentProvider,
-  setStripeConnectGateway,
   voidDeposit,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
@@ -16,8 +15,7 @@ import { paymentSetup } from "./payment-helpers";
 import { markSucceeded } from "./receivable-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 type PayInput = { context: ExecuteContext; depositId: string; amountMinor?: number };

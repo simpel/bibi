@@ -1,15 +1,14 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { appError } from "../src/errors/app-error";
 import { err } from "../src/errors/result";
-import { createPayment, execute, setPaymentProvider, setStripeConnectGateway } from "../src/index";
+import { createPayment, execute, resetProviderAdapters } from "../src/index";
 import { runDryRun } from "../src/operations/run-dry-run";
 import { runNested } from "../src/operations/run-nested";
 import { errorCode } from "./helpers";
 import { paymentSetup } from "./payment-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 const input = ({ depositId }: { depositId: string }) => ({
@@ -42,11 +41,10 @@ describe("payment.create calls Stripe only after the commit (ADR 0058)", () => {
   });
 
   it("keeps the row FAILED and audited when Stripe refuses the charge", async () => {
-    const { context, depositId } = await paymentSetup();
+    const { context, depositId, provider } = await paymentSetup();
     const refused = err({ error: appError({ code: "UNAVAILABLE", message: "Stripe is down" }) });
-    setPaymentProvider({
-      provider: { createCheckout: async () => refused, createInvoice: async () => refused },
-    });
+    const { collect } = provider.adapter;
+    if (collect) collect.startAttempt = async () => refused;
     const result = await execute({
       operation: createPayment,
       input: input({ depositId }),
@@ -55,7 +53,8 @@ describe("payment.create calls Stripe only after the commit (ADR 0058)", () => {
     expect(errorCode({ result })).toBe("UNAVAILABLE");
     const rows = await context.db.payment.findMany();
     expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({ status: "FAILED", providerReference: null });
+    expect(rows[0]).toMatchObject({ status: "FAILED" });
+    expect(await context.db.paymentAttempt.count()).toBe(0);
     const audit = await context.db.auditLog.findMany({ orderBy: { createdAt: "asc" } });
     const created = audit.filter((row) => row.operation === "payment.create");
     expect(created.map((row) => (row.after as { status?: string }).status)).toEqual([

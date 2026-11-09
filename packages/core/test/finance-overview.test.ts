@@ -4,8 +4,7 @@ import {
   execute,
   financeOverview,
   grantAll,
-  setPaymentProvider,
-  setStripeConnectGateway,
+  resetProviderAdapters,
   updateOrder,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
@@ -15,8 +14,7 @@ import { statuses } from "./order-status-helpers";
 import { moneySetup, sentTestQuote } from "./receivable-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 const thisYear = () => {

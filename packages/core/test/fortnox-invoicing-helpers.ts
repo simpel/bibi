@@ -1,31 +1,18 @@
-import {
-  completeIntegrationConnect,
-  type ExecuteContext,
-  execute,
-  type FortnoxInvoiceInput,
-  type FortnoxPayment,
-  ok,
-  setFortnoxInvoicingGateway,
-} from "../src/index";
+import { completeIntegrationConnect, type ExecuteContext, execute } from "../src/index";
 import { unwrap } from "./helpers";
-import { installFakeFortnox, startFortnox } from "./integration-helpers";
+import {
+  type FakeFortnox,
+  installFakeFortnox,
+  lastFakeFortnox,
+  startFortnox,
+} from "./integration-helpers";
 
-export type FakeInvoicing = { raised: FortnoxInvoiceInput[]; payments: FortnoxPayment[] };
-
-/** An in-memory Fortnox invoicing API that numbers raised invoices 1, 2, ... */
-export function installFakeInvoicing(): FakeInvoicing {
-  const fake: FakeInvoicing = { raised: [], payments: [] };
-  setFortnoxInvoicingGateway({
-    gateway: {
-      findOrCreateCustomer: async () => ok({ value: "C-1" }),
-      raiseInvoice: async ({ accessToken: _token, email: _email, ...invoice }) => {
-        fake.raised.push(invoice);
-        return ok({ value: String(fake.raised.length) });
-      },
-      listPayments: async () => ok({ value: fake.payments }),
-    },
-  });
-  return fake;
+/**
+ * The in-memory Fortnox's invoicing (ADR 0100): raised invoices are numbered 1, 2, ... and
+ * `payments` is what it lists as booked. Uses the fake `connectFortnox` installed.
+ */
+export function installFakeInvoicing(): FakeFortnox {
+  return lastFakeFortnox() ?? installFakeFortnox();
 }
 
 /** Connects Fortnox through the real operations with Fortnox faked (ADR 0087). */

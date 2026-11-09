@@ -1,16 +1,11 @@
-import {
-  createMemoryPaymentProvider,
-  setPaymentProvider,
-  setStripeConnectGateway,
-} from "@bibi/core";
+import { resetProviderAdapters } from "@bibi/core";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
 import { seedOrder } from "./seed-order";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 describe("cross-organization isolation: payments", () => {
@@ -19,7 +14,6 @@ describe("cross-organization isolation: payments", () => {
     const b = await connect({ context: testContext() });
     const { id: orderId } = await seedOrder({ client: a });
     installFakeStripe({ status: "ACTIVE" });
-    setPaymentProvider({ provider: createMemoryPaymentProvider() });
     await call({ client: a, name: "paymentAccount_startOnboarding" });
     await call({ client: a, name: "paymentAccount_sync" });
     const depositArgs = { orderId, description: "Advance", amountMinor: 100_000 };

@@ -3,8 +3,7 @@ import {
   createPayment,
   execute,
   listAccountingExports,
-  setPaymentProvider,
-  setStripeConnectGateway,
+  resetProviderAdapters,
   voidInvoice,
 } from "../src/index";
 import {
@@ -19,8 +18,7 @@ import { errorCode, unwrap } from "./helpers";
 import { markSucceeded, moneySetup } from "./receivable-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 describe("accounting exports are SIE 4I files of a date range (ADR 0077)", () => {

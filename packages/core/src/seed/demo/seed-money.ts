@@ -1,6 +1,5 @@
 import { ok, type Result } from "../../errors/result";
 import { createDeposit, sendDeposit } from "../../features/deposit/write-operations";
-import { applyPaymentSignal } from "../../features/payment/apply-signal-operation";
 import { createPayment } from "../../features/payment/create-operation";
 import {
   startPaymentOnboarding,
@@ -8,6 +7,7 @@ import {
 } from "../../features/payment-account/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import { applyDemoSignal } from "./demo-signal";
 import type { DemoOrder } from "./order-types";
 import { seedOrderEstimates } from "./seed-estimates";
 import { missing } from "./seed-fields";
@@ -50,15 +50,7 @@ async function seedPartialPayment({ context, order, orderId }: OrderMoneyInput) 
   const input = { quoteId: quote.id, method: "CARD" as const, amountMinor: paidKr * 100 };
   const payment = await execute({ operation: createPayment, input, context });
   if (!payment.ok) return payment;
-  const row = await context.db.payment.findFirst({ where: { id: payment.value.id } });
-  if (!row) return missing({ what: `payment of order ${order.ref}` });
-  const signal = {
-    kind: "paid" as const,
-    providerAccountId: row.providerAccountId,
-    paymentId: row.id,
-  };
-  const paid = await execute({ operation: applyPaymentSignal, input: signal, context });
-  return paid.ok ? ok({ value: true as const }) : paid;
+  return applyDemoSignal({ context, paymentId: payment.value.id, kind: "attempt.succeeded" });
 }
 
 /** The order's demo money (`order.money`): a deposit request, a partial payment, an invoice. */

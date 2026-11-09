@@ -5,8 +5,7 @@ import {
   execute,
   getPaymentSettings,
   requestDeposit,
-  setPaymentProvider,
-  setStripeConnectGateway,
+  resetProviderAdapters,
   startPaymentOnboarding,
   suggestDepositAmount,
   updatePaymentSettings,
@@ -15,8 +14,7 @@ import { errorCode, testContext, unwrap } from "./helpers";
 import { moneySetup } from "./receivable-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 const rule = { depositPercent: 30, depositMinimumMinor: 1_000_000 };

@@ -4,11 +4,12 @@ import {
   completeIntegrationConnect,
   connectIntegration,
   createExecuteContext,
+  createMemoryProvider,
   execute,
-  type FortnoxGateway,
-  ok,
+  type MemoryProvider,
   PRESET_PERMISSIONS,
-  setFortnoxGateway,
+  resetProviderAdapters,
+  setProviderAdapter,
 } from "@bibi/core";
 import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
@@ -17,25 +18,14 @@ import { JOBS } from "../src/jobs";
 import { refreshIntegrationsJob } from "../src/jobs/refresh-integrations";
 
 const db = getDb();
-const calls: string[] = [];
-const tokens = ({ n }: { n: number }) => ({
-  accessToken: `access-${n}`,
-  refreshToken: `refresh-${n}`,
-  scope: "companyinformation",
-  expiresIn: 3600,
-});
-const fake: FortnoxGateway = {
-  exchangeCode: async () => ok({ value: tokens({ n: 1 }) }),
-  refresh: async ({ refreshToken }) => {
-    calls.push(refreshToken);
-    return ok({ value: { kind: "tokens", tokens: tokens({ n: 2 }) } });
-  },
-  revoke: async () => ok({ value: { revoked: true } }),
-  getCompany: async () =>
-    ok({ value: { name: "AB", organizationNumber: null, databaseNumber: null } }),
-};
+let fake: MemoryProvider | null = null;
+const refreshCalls = () =>
+  (fake?.calls ?? []).flatMap((call) => (call.startsWith("refresh:") ? [call.slice(8)] : []));
 
-afterEach(() => setFortnoxGateway({ gateway: undefined }));
+afterEach(() => {
+  resetProviderAdapters();
+  fake = null;
+});
 
 /** A real organization with a CONNECTED Fortnox connection whose refresh token dies in 3 days. */
 async function connectedOrganization() {
@@ -44,7 +34,8 @@ async function connectedOrganization() {
     FORTNOX_CLIENT_SECRET: "client-secret",
     INTEGRATION_SECRET_KEY: randomBytes(32).toString("base64"),
   });
-  setFortnoxGateway({ gateway: fake });
+  fake = createMemoryProvider({ key: "FORTNOX", connectKind: "OAUTH", invoicing: true });
+  setProviderAdapter({ key: "FORTNOX", adapter: fake.adapter });
   const id = `org_${createId()}`;
   await db.organization.create({ data: { id, name: id, slug: id, createdAt: new Date() } });
   const context = {
@@ -67,7 +58,7 @@ async function connectedOrganization() {
   const input = { provider: "FORTNOX" as const, code: "code", state };
   expect((await execute({ operation: completeIntegrationConnect, input, context })).ok).toBe(true);
   const soon = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
-  await db.integrationConnection.updateMany({
+  await db.providerConnection.updateMany({
     where: { organizationId: id },
     data: { refreshExpiresAt: soon },
   });
@@ -84,8 +75,8 @@ describe("integration.refreshExpiring job (ADR 0027, 0087)", () => {
     const organizationId = await connectedOrganization();
     // Only this test's organization: the test database is shared with other suites running now.
     await refreshIntegrationsJob.handler({ db, organizationIds: [organizationId] });
-    expect(calls).toEqual(["refresh-1"]);
-    const row = await db.integrationConnection.findFirst({ where: { organizationId } });
+    expect(refreshCalls()).toEqual(["refresh-1"]);
+    const row = await db.providerConnection.findFirst({ where: { organizationId } });
     expect(row?.refreshExpiresAt?.getTime()).toBeGreaterThan(Date.now() + 40 * 24 * 60 * 60 * 1000);
   });
 });

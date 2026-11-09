@@ -19,13 +19,13 @@ import {
   PaymentSchema,
   type PublicPaymentDto,
 } from "./schema";
-import { toPaymentDto } from "./to-payment-dto";
+import { PAYMENT_INCLUDE, toPaymentDto } from "./to-payment-dto";
 
 export const listPayments = defineOperation({
   name: "payment.list",
   kind: "query",
   description:
-    "Payments requested for an order, newest first: method (CARD or INVOICE), status, amount " +
+    "Payments requested for an order, newest first: method (CARD, SWISH, INVOICE, MANUAL), status, amount " +
     "in minor units, currency and the customer's payment link.",
   input: PaymentListInputSchema,
   output: PaymentListOutputSchema,
@@ -33,6 +33,7 @@ export const listPayments = defineOperation({
   handler: async ({ input: { orderId, limit, cursor }, context }) => {
     const rows = await context.db.payment.findMany({
       where: { orderId },
+      include: PAYMENT_INCLUDE,
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       ...pageArgs({ limit, cursor }),
     });
@@ -51,7 +52,10 @@ export const getPayment = defineOperation({
   output: PaymentSchema,
   permission: "payment:read",
   handler: async ({ input, context }) => {
-    const row = await context.db.payment.findFirst({ where: { id: input.id } });
+    const row = await context.db.payment.findFirst({
+      where: { id: input.id },
+      include: PAYMENT_INCLUDE,
+    });
     return row ? ok({ value: toPaymentDto({ row }) }) : notFound({ entity: "Payment" });
   },
 });

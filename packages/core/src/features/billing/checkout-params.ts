@@ -1,4 +1,4 @@
-import type { FormParams } from "../payment/stripe-form-request";
+import type { FormParams } from "../../providers/stripe/stripe-form-request";
 import type { BillingKeys } from "./billing-config";
 import type { CreateBillingCheckoutInput } from "./gateway";
 

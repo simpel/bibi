@@ -1,11 +1,10 @@
 import { getEnv } from "@bibi/config";
-import { err, ok, type Result } from "../../errors/result";
+import type { Result } from "../../errors/result";
+import type { AttemptRef, CollectPort, ProviderAuth } from "../../providers/types";
 import type { ChargeTarget } from "./payment-preconditions";
-import type { ChargeBase } from "./provider";
-import { getPaymentProvider } from "./provider-registry";
-import type { PaymentMethod } from "./schema";
+import type { PaymentCreateMethod } from "./schema";
 
-/** Days until a Stripe invoice is due when the customer has no own payment terms. */
+/** Days until an invoice is due when the customer has no own payment terms. */
 export const DEFAULT_INVOICE_DAYS = 30;
 
 export type ApplicationFeeInput = { amountMinor: number };
@@ -17,57 +16,52 @@ export function applicationFee({ amountMinor }: ApplicationFeeInput): number | u
   return Math.round((amountMinor * bps) / 10_000);
 }
 
-export type ChargeOutcome = { providerReference: string; url: string; expiresAt: Date | null };
-
 /** What is charged, as stored on the PENDING payment row. */
 export type ChargeRequest = {
-  method: PaymentMethod;
+  method: PaymentCreateMethod;
   amountMinor: number;
   currency: string;
   description: string | undefined;
 };
 
 export type RequestChargeInput = {
+  collect: CollectPort;
+  auth: ProviderAuth;
   paymentId: string;
   publicToken: string;
   organizationId: string;
   input: ChargeRequest;
-  target: ChargeTarget;
+  target: Pick<ChargeTarget, "order" | "customer">;
   applicationFeeMinor: number | undefined;
 };
 
-/** Asks the provider for a checkout or an invoice; the payment id is the idempotency key. */
-export async function requestCharge({
+/** Asks the provider for an attempt (checkout or invoice); the payment id is the idempotency key. */
+export function requestCharge({
+  collect,
+  auth,
   paymentId,
   publicToken,
   organizationId,
   input,
   target,
   applicationFeeMinor,
-}: RequestChargeInput): Promise<Result<ChargeOutcome>> {
-  const base: ChargeBase = {
-    connectedAccountId: target.connectedAccountId,
+}: RequestChargeInput): Promise<Result<AttemptRef>> {
+  // The public payment page (ADR 0028) lives at /pay/<publicToken>; the provider returns there.
+  const pageUrl = `${getEnv().WEB_URL}/pay/${publicToken}`;
+  const { name, email, paymentTermsDays } = target.customer;
+  return collect.startAttempt({
+    auth,
+    method: input.method,
     amountMinor: input.amountMinor,
     currency: input.currency,
     applicationFeeMinor,
     description: input.description ?? `Order #${target.order.reference}`,
     idempotencyKey: `bibi-payment-${paymentId}`,
     metadata: { paymentId, orderId: target.order.id, organizationId },
-  };
-  const provider = getPaymentProvider();
-  if (input.method === "CARD") {
-    // The public payment page (ADR 0028) lives at /pay/<publicToken>; Stripe returns there.
-    const pageUrl = `${getEnv().WEB_URL}/pay/${publicToken}`;
     // `checkout=success` lets the page show "processing" until the webhook marks it paid.
-    const successUrl = `${pageUrl}?checkout=success`;
-    return provider.createCheckout({ ...base, successUrl, cancelUrl: pageUrl });
-  }
-  const { name, email, paymentTermsDays } = target.customer;
-  const invoice = await provider.createInvoice({
-    ...base,
+    successUrl: `${pageUrl}?checkout=success`,
+    cancelUrl: pageUrl,
     recipient: { name, email: email ?? "" },
     daysUntilDue: paymentTermsDays ?? DEFAULT_INVOICE_DAYS,
   });
-  if (!invoice.ok) return err({ error: invoice.error });
-  return ok({ value: { ...invoice.value, expiresAt: null } });
 }

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ok, type Result } from "../../errors/result";
-import { stripeBadResponse } from "../payment/stripe-bad-response";
+import { stripeBadResponse } from "../../providers/stripe/stripe-bad-response";
 import type { BillingKeys } from "./billing-config";
 import type { BillingSubscription } from "./gateway";
 import { billingStripeRequest } from "./stripe-billing-request";

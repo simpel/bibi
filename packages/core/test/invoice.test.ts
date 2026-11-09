@@ -7,9 +7,8 @@ import {
   getInvoice,
   getOrderBalance,
   grantAll,
+  resetProviderAdapters,
   sendInvoice,
-  setPaymentProvider,
-  setStripeConnectGateway,
   updateLine,
   voidInvoice,
 } from "../src/index";
@@ -17,8 +16,7 @@ import { errorCode, testContext, unwrap } from "./helpers";
 import { makeInvoiceable, markSucceeded, moneySetup } from "./receivable-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 type Ctx = { context: ExecuteContext };

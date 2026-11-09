@@ -1,0 +1,18 @@
+/// PaymentSettings – how the organization takes order money (ADR 0090). One row per organization,
+/// created on the first `paymentSettings.update`; no row = no deposit rule. Which provider takes
+/// each payment method is a `PaymentMethodRoute` row (ADR 0100). Owned: every column. Nothing is
+/// copied onto deposits: a deposit keeps the amount it was created with (ADR 0057).
+model PaymentSettings {
+  id                  String       @id @default(cuid(2))
+  organizationId      String       @unique
+  /// Share of the order's total incl. VAT asked as a deposit, 1–100; null = no deposit rule.
+  depositPercent      Int?
+  /// A order whose total incl. VAT is below this (minor units) is paid in full up front.
+  depositMinimumMinor Int?
+  status              RecordStatus @default(ACTIVE)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  createdBy           String?
+
+  @@unique([id, organizationId])
+}

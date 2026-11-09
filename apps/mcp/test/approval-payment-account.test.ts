@@ -1,10 +1,10 @@
-import { setStripeConnectGateway } from "@bibi/core";
+import { resetProviderAdapters } from "@bibi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
 
-afterEach(() => setStripeConnectGateway({ gateway: undefined }));
+afterEach(() => resetProviderAdapters());
 
 describe("approval flow: payment account (ADR 0058)", () => {
   it("creates the connected account only after approval, once", async () => {
@@ -22,7 +22,7 @@ describe("approval flow: payment account (ADR 0058)", () => {
     const proposal = await call({ client: assistant, name: "paymentAccount_startOnboarding" });
     expect(proposal.data.status, JSON.stringify(proposal.data)).toBe("approval_required");
     expect(created).toBe(0);
-    expect(await base.db.paymentAccount.count()).toBe(0);
+    expect(await base.db.providerConnection.count()).toBe(0);
 
     const confirmed = await call({
       client: user,

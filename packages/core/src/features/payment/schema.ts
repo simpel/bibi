@@ -1,9 +1,14 @@
 import { z } from "zod";
+import { PAYMENT_METHODS, PROVIDER_KEYS } from "../../providers/provider-keys";
 import { PageInputShape } from "../../shared/page-input";
 import { PublicPaymentLineSchema, PublicPaymentTotalsSchema } from "./public-document-schema";
 import { PublicTokenSchema } from "./public-token";
 
-export const PaymentMethodSchema = z.enum(["CARD", "INVOICE"]);
+export const PaymentMethodSchema = z
+  .enum(PAYMENT_METHODS)
+  .describe("CARD, SWISH, INVOICE (paid against an invoice) or MANUAL (recorded by staff)");
+/** The methods `payment.create` requests today (ADR 0100 adds the rest). */
+export const PaymentCreateMethodSchema = z.enum(["CARD", "INVOICE"]);
 export const PaymentStatusSchema = z.enum([
   "PENDING",
   "SUCCEEDED",
@@ -30,14 +35,18 @@ export const PaymentSchema = z.object({
     .nullable()
     .describe("Bibi's application fee on this charge in minor units, agreed at charge time"),
   provider: z
-    .enum(["STRIPE", "FORTNOX"])
-    .describe("STRIPE: a charge Bibi requested. FORTNOX: a payment booked on a Fortnox invoice"),
+    .enum(PROVIDER_KEYS)
+    .nullable()
+    .describe(
+      "Where it was paid: the provider Bibi asked (a card charge), or the provider whose invoice " +
+        "it was booked on; null when no provider took it",
+    ),
   providerReference: z
     .string()
     .nullable()
-    .describe("Stripe Checkout Session or Invoice id; null until Stripe has created it"),
+    .describe("The latest attempt's provider id; null until the provider has created it"),
   paymentUrl: z.string().nullable().describe("Hosted checkout or invoice page for the customer"),
-  expiresAt: z.date().nullable(),
+  expiresAt: z.date().nullable().describe("When the latest attempt stops accepting payment"),
   paidAt: z.date().nullable(),
   refundedMinor: z.number().int(),
   createdAt: z.date(),
@@ -68,8 +77,9 @@ export const PaymentCreateInputSchema = z.object({
   quoteId: receivableId({ what: "SENT or ACCEPTED quote (quote.list)" }),
   depositId: receivableId({ what: "SENT deposit request (deposit.list)" }),
   invoiceId: receivableId({ what: "SENT invoice (invoice.list)" }),
-  method: PaymentMethodSchema.describe(
-    "CARD: a hosted card checkout link. INVOICE: a Stripe invoice emailed to the customer.",
+  method: PaymentCreateMethodSchema.describe(
+    "CARD: a hosted card checkout link. INVOICE: an invoice from the payment operator emailed to " +
+      "the customer.",
   ),
   amountMinor: z
     .number()
@@ -93,6 +103,7 @@ export const PaymentCreateInputSchema = z.object({
 });
 
 export type PaymentMethod = z.infer<typeof PaymentMethodSchema>;
+export type PaymentCreateMethod = z.infer<typeof PaymentCreateMethodSchema>;
 export type PaymentStatus = z.infer<typeof PaymentStatusSchema>;
 export type PaymentDto = z.infer<typeof PaymentSchema>;
 export type PaymentPage = z.infer<typeof PaymentListOutputSchema>;

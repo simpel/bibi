@@ -1,7 +1,6 @@
 import { completeIntegrationConnect } from "./complete-connect-operation";
 import { connectIntegration } from "./connect-operation";
 import { disconnectIntegration } from "./disconnect-operation";
-import { getFortnoxAccessToken } from "./fortnox/access-token";
 import { listIntegrations } from "./read-operations";
 import { refreshExpiringIntegrations } from "./refresh-expiring-operation";
 
@@ -9,7 +8,6 @@ export {
   completeIntegrationConnect,
   connectIntegration,
   disconnectIntegration,
-  getFortnoxAccessToken,
   listIntegrations,
   refreshExpiringIntegrations,
 };

@@ -492,7 +492,9 @@
     },
     "method": {
       "CARD": "Kort",
-      "INVOICE": "Faktura"
+      "SWISH": "Swish",
+      "INVOICE": "Faktura",
+      "MANUAL": "Manuell"
     },
     "status": {
       "PENDING": "Väntar",

@@ -5,10 +5,8 @@ import {
   handleFortnoxEvent,
   listPayments,
   rememberFortnoxTenant,
+  resetProviderAdapters,
   sendInvoice,
-  setFortnoxInvoicingGateway,
-  setPaymentProvider,
-  setStripeConnectGateway,
   updatePaymentSettings,
 } from "../src/index";
 import { connectFortnox, installFakeInvoicing } from "./fortnox-invoicing-helpers";
@@ -19,9 +17,7 @@ import { makeInvoiceable, moneySetup } from "./receivable-helpers";
 useFortnoxEnv();
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
-  setFortnoxInvoicingGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 describe("the Fortnox Topics stream (ADR 0090)", () => {
@@ -38,7 +34,7 @@ describe("the Fortnox Topics stream (ADR 0090)", () => {
     await execute({ operation: sendInvoice, input: { id: draft.id }, context });
     const tenantId = Math.floor(Math.random() * 1_000_000_000);
     await rememberFortnoxTenant({ organizationId: context.organizationId, tenantId });
-    fake.payments = [{ number: "1", amountMinor: 560_000, paidAt: new Date() }];
+    fake.payments = [{ reference: "1", amountMinor: 560_000, paidAt: new Date() }];
     const base = { topic: "invoices", offset: "a1", tenantId };
     const paid = { ...base, type: "invoicepayment-bookkeep-v1", invoiceId: "1" };
     expect(await handleFortnoxEvent({ event: paid })).toBe("applied");

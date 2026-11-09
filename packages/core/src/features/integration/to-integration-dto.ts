@@ -1,24 +1,28 @@
-import type { IntegrationConnection } from "@bibi/db";
-import { fortnoxCredentials } from "./fortnox/fortnox-config";
-import type { IntegrationConnectionDto, IntegrationProvider } from "./schema";
+import type { ProviderConnection } from "@bibi/db";
+import type { ProviderKey } from "../../providers/provider-keys";
+import { findProvider } from "../../providers/registry";
+import type { IntegrationConnectionDto, IntegrationStatus } from "./schema";
 
 export type ToIntegrationDtoInput = {
-  row: IntegrationConnection | null;
+  row: ProviderConnection | null;
   organizationId: string;
-  provider: IntegrationProvider;
+  provider: ProviderKey;
 };
 
-const CONFIGURED: Record<IntegrationProvider, () => boolean> = {
-  FORTNOX: () => fortnoxCredentials() !== null,
-};
+/** OAuth connections never onboard or get restricted; the hosted states read as their nearest. */
+function statusOf({ row }: { row: ProviderConnection }): IntegrationStatus {
+  if (row.status === "ONBOARDING") return "PENDING";
+  if (row.status === "RESTRICTED") return "EXPIRED";
+  return row.status;
+}
 
-/** No row means the provider was never connected. Sealed tokens and OAuth state stay out. */
+/** No row means the provider was never connected. Sealed secrets and OAuth state stay out. */
 export function toIntegrationDto({
   row,
   organizationId,
   provider,
 }: ToIntegrationDtoInput): IntegrationConnectionDto {
-  const configured = CONFIGURED[provider]();
+  const configured = findProvider({ key: provider })?.isConfigured() ?? false;
   if (!row) {
     return {
       id: null,
@@ -36,7 +40,7 @@ export function toIntegrationDto({
     id: row.id,
     organizationId,
     provider,
-    status: row.status,
+    status: statusOf({ row }),
     configured,
     companyName: row.externalCompanyName,
     organizationNumber: row.externalOrgNumber,

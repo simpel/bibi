@@ -1,11 +1,10 @@
 import { ok, type Result } from "../../errors/result";
 import { createInvoice } from "../../features/invoice/create-operation";
 import { sendInvoice } from "../../features/invoice/lifecycle-operations";
-import { applyPaymentSignal } from "../../features/payment/apply-signal-operation";
 import { createPayment } from "../../features/payment/create-operation";
-import type { PaymentSignal } from "../../features/payment/webhook-schema";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import { applyDemoSignal } from "./demo-signal";
 import type { DemoOrder } from "./order-types";
 import { atDay as at } from "./seed-clock";
 
@@ -18,19 +17,6 @@ type SeedInvoiceInput = {
   now: Date;
 };
 
-type SignalInput = { context: ExecuteContext; paymentId: string } & Pick<
-  PaymentSignal,
-  "kind" | "refundedMinor"
->;
-
-/** Stripe's signal for the payment, applied as the webhook would. */
-async function signal({ context, paymentId, ...rest }: SignalInput) {
-  const row = await context.db.payment.findFirstOrThrow({ where: { id: paymentId } });
-  const input = { ...rest, providerAccountId: row.providerAccountId, paymentId };
-  const applied = await execute({ operation: applyPaymentSignal, input, context });
-  return applied.ok ? ok({ value: true as const }) : applied;
-}
-
 type Refund = { context: ExecuteContext; refundedMinor: number };
 
 type PayInput = { context: ExecuteContext; invoiceId: string; refund: Refund | null };
@@ -41,10 +27,15 @@ async function payInvoice({ context, invoiceId, refund }: PayInput) {
   const payment = await execute({ operation: createPayment, input, context });
   if (!payment.ok) return payment;
   const paymentId = payment.value.id;
-  const paid = await signal({ context, paymentId, kind: "paid" });
+  const paid = await applyDemoSignal({ context, paymentId, kind: "attempt.succeeded" });
   if (!paid.ok || !refund) return paid;
   const { context: refundContext, refundedMinor } = refund;
-  return signal({ context: refundContext, paymentId, kind: "refunded", refundedMinor });
+  return applyDemoSignal({
+    context: refundContext,
+    paymentId,
+    kind: "refund.succeeded",
+    refundedTotalMinor: refundedMinor,
+  });
 }
 
 /** `money.invoice` (ADR 0077): the order invoiced and sent; paid in full when asked. */

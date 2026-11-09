@@ -124,7 +124,7 @@ describe("integration.completeConnect", () => {
   it("keeps the state cleared after Fortnox refuses the code", async () => {
     const fortnox = installFakeFortnox();
     const { AppError, err } = await import("../src/index");
-    vi.spyOn(fortnox, "exchangeCode").mockResolvedValueOnce(
+    vi.spyOn(fortnox.oauth, "exchangeCode").mockResolvedValueOnce(
       err({ error: new AppError({ code: "UNAVAILABLE", message: "no" }) }),
     );
     const context = sessionAdmin();

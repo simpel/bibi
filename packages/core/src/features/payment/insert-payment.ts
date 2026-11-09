@@ -36,8 +36,9 @@ export type InsertPaymentInput = {
 };
 
 /**
- * The PENDING payment row against one receivable (`payment.create`, `deposit.request`). Stripe is
- * called only after it committed, by the operation's `external` (`chargeAfterCommit`, ADR 0058).
+ * The PENDING payment row against one receivable (`payment.create`, `deposit.request`), on the
+ * operator's connection. The provider is called only after it committed, by the operation's
+ * `external` (`chargeAfterCommit`, ADR 0058), which records the attempt.
  */
 export async function insertPayment({
   context,
@@ -52,7 +53,7 @@ export async function insertPayment({
   if (!claimed.ok) return claimed;
   const amount = await chargeAmount({ context, receivable: receivable.value, input });
   if (!amount.ok) return amount;
-  // The row comes first; Stripe is called only after it committed (`external`, ADR 0058).
+  // The row comes first; the provider is called only after it committed (`external`, ADR 0058).
   const row = await context.db.payment.create({
     data: {
       ...ref,
@@ -63,12 +64,13 @@ export async function insertPayment({
       amountMinor: amount.value,
       currency,
       applicationFeeMinor: applicationFee({ amountMinor: amount.value }) ?? null,
-      providerAccountId: target.value.connectedAccountId,
+      provider: target.value.route.provider,
+      connectionId: target.value.route.connection.id,
       createdBy: context.actor.userId,
     },
   });
-  const payment = toPaymentDto({ row });
-  // Audit images are DTOs: the public token and the connected account id never enter them.
+  const payment = toPaymentDto({ row: { ...row, attempts: [] } });
+  // Audit images are DTOs: the public token and the connection id never enter them.
   context.recordChange({ entityId: row.id, after: payment });
   return ok({ value: payment });
 }

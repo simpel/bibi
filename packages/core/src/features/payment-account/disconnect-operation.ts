@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
+import { loadAccountRow } from "./account-provider";
 import { PaymentAccountDisconnectInputSchema, PaymentAccountSchema } from "./schema";
 import { toPaymentAccountDto } from "./to-payment-account-dto";
 
@@ -19,11 +20,11 @@ export const disconnectPaymentAccount = defineOperation({
   entityType: "paymentAccount",
   handler: async ({ context }) => {
     const { organizationId } = context;
-    const before = await context.db.paymentAccount.findFirst({});
+    const before = await loadAccountRow({ context });
     if (!before) return notFound({ entity: "Payment account" });
     if (before.disconnectedAt)
       return ok({ value: toPaymentAccountDto({ row: before, organizationId }) });
-    const row = await context.db.paymentAccount.update({
+    const row = await context.db.providerConnection.update({
       where: { id: before.id },
       data: { disconnectedAt: nowOf({ context }) },
     });

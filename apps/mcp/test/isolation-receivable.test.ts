@@ -1,16 +1,11 @@
-import {
-  createMemoryPaymentProvider,
-  setPaymentProvider,
-  setStripeConnectGateway,
-} from "@bibi/core";
+import { resetProviderAdapters } from "@bibi/core";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
 import { seedOrder } from "./seed-order";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 type Client = Awaited<ReturnType<typeof connect>>;
@@ -35,7 +30,6 @@ describe("cross-organization isolation: receivables and balances (ADR 0057)", ()
     const b = await connect({ context: testContext() });
     const order = await seedOrder({ client: a });
     installFakeStripe({ status: "ACTIVE" });
-    setPaymentProvider({ provider: createMemoryPaymentProvider() });
     const args = { orderId: order.id, description: "Advance", amountMinor: 100_000 };
     const deposit = await call({ client: a, name: "deposit_create", args });
     expect(deposit.isError, JSON.stringify(deposit.data)).toBe(false);
