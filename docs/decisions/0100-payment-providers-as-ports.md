@@ -1,7 +1,7 @@
 # 0100 – Payment providers as ports
 
 - **Date:** 2026-11-09
-- **Status:** Proposed
+- **Status:** Accepted
 - **Amends:** 0028, 0029, 0087, 0090
 - **Related:** 0051, 0052, 0056, 0057, 0058, 0077, 0093
 
