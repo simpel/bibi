@@ -92,7 +92,7 @@ export const ADMIN_GROUPS: readonly AdminGroup[] = [
         key: "types",
         icon: ShapesIcon,
         href: ROUTES.adminTypes,
-        ids: ["types", "groups", "setups"],
+        ids: ["types", "groups"],
       }),
       page({ key: "lists", icon: ListIcon, href: ROUTES.adminLists, ids: ["lists"] }),
       page({
