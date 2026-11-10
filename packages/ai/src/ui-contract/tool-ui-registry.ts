@@ -125,6 +125,12 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   apiKey_revoke: "credentials are managed on /admin/api-keys, not in chat",
   apiKey_get: "credentials are managed on /admin/api-keys, not in chat",
   apiKey_update: "credentials are managed on /admin/api-keys, not in chat",
+  ...Object.fromEntries(
+    ["list", "get", "create", "update", "reorder", "archive"].map((verb) => [
+      `itemTypeGroup_${verb}`,
+      "item type groups are set up in the administration area (ADR 0101); shown as JSON in chat",
+    ]),
+  ),
   ...SELF_GENERIC_UI_TOOLS,
   ...ALLOCATION_GENERIC_UI_TOOLS,
   ...FLOOR_PLAN_GENERIC_UI_TOOLS,

@@ -7,6 +7,15 @@ export const ItemListInputSchema = z.object({
   entityTypeId: z.string().optional().describe("Only items of this type"),
   venueId: z.string().optional().describe("Only items in this venue"),
   capability: ItemCapabilitySchema.optional().describe("Only items whose type has this capability"),
+  groupId: z
+    .string()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Only items whose type is in this item type group (itemTypeGroup.list); null for types " +
+        "in no group",
+    ),
   customerId: z
     .string()
     .optional()

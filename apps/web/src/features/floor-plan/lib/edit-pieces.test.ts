@@ -13,6 +13,7 @@ const base = {
   seatsLeft: 0,
   fixed: false,
   keepClearCm: null,
+  swingDeg: null,
   status: "ACTIVE" as const,
   createdAt: new Date(0),
   updatedAt: new Date(0),

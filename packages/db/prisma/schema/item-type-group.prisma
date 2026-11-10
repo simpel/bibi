@@ -1,0 +1,19 @@
+// Item type groups (ADR 0101): the organization's own headings for browsing item types, e.g.
+// Spaces, Food and Extras. Navigation only: a group carries no behaviour.
+
+/// Item type group – owned: `name`, `position`. Item types point to it with `EntityType.groupId`;
+/// archiving a group sets its types' `groupId` to null.
+model ItemTypeGroup {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  name           String
+  position       Int          @default(0)
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  types          EntityType[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status, position])
+}

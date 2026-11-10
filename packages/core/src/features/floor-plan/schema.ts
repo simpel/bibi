@@ -8,11 +8,18 @@ export const FloorShapeSchema = z
   .enum(FLOOR_SHAPES)
   .describe(
     "RECT: a body with chairs per side. ROUND: a body with chairs around it. SEAT_ROW: a row of " +
-      "chairs. ZONE: an outlined area without chairs.",
+      "chairs. ZONE: an outlined area without chairs. DOOR, WINDOW: an opening in a wall " +
+      "(always fixed, never seated, placed on the nearest wall).",
   );
 
 const cm = z.number().int().min(10).max(5000);
 const count = z.number().int().min(0).max(60);
+const swing = z
+  .number()
+  .int()
+  .min(0)
+  .max(180)
+  .describe("DOOR, WINDOW: how far it opens in degrees (0 = sliding door or fixed pane)");
 
 const SeatCountsShape = {
   seats: count.describe("ROUND: chairs around the body. SEAT_ROW: chairs in the row."),
@@ -32,6 +39,7 @@ export const FloorElementKindSchema = z.object({
   ...SeatCountsShape,
   fixed: z.boolean(),
   keepClearCm: z.number().int().nullable(),
+  swingDeg: z.number().int().nullable(),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -59,7 +67,8 @@ export const FloorElementKindCreateInputSchema = z.object({
     .max(1000)
     .nullable()
     .optional()
-    .describe("Depth of the area in front of it that must stay clear, e.g. a door's swing"),
+    .describe("Depth of the area in front of it that must stay clear (not for DOOR, WINDOW)"),
+  swingDeg: swing.nullable().optional(),
 });
 
 export const FloorElementKindUpdateInputSchema = FloorElementKindCreateInputSchema.omit({
@@ -102,6 +111,7 @@ export const FloorElementInputSchema = z.object({
   seatsRight: nullableCount.describe("RECT: own chairs on the right end; null = the kind's"),
   seatsBottom: nullableCount.describe("RECT: own chairs on the bottom side; null = the kind's"),
   seatsLeft: nullableCount.describe("RECT: own chairs on the left end; null = the kind's"),
+  swingDeg: swing.nullable().optional().describe("DOOR, WINDOW: own opening angle; null = kind's"),
   label: z.string().trim().max(40).nullable().optional().describe("e.g. a table number"),
 });
 
@@ -122,6 +132,7 @@ export const FloorElementSchema = FloorElementInputSchema.required().extend({
   effectiveDepthCm: z.number().int(),
   effectiveAround: z.number().int().describe("ROUND, SEAT_ROW: chairs after inheritance"),
   effectiveSides: SeatSidesSchema.describe("RECT: chairs per side after inheritance"),
+  effectiveSwingDeg: z.number().int().describe("DOOR, WINDOW: opening angle after inheritance"),
   seatCount: z.number().int(),
 });
 

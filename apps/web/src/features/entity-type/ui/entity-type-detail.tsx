@@ -7,6 +7,7 @@ import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { loadEntityType } from "@/features/entity-type/load-entity-type";
 import { FieldSection } from "@/features/field-definition/ui/field-section";
+import { loadItemTypeGroups } from "@/features/item-type-group/load-item-type-groups";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
@@ -18,11 +19,12 @@ export type EntityTypeDetailProps = { locale: Locale; id: string };
 
 /** Type detail page: rename, capabilities (one form, saved together), fields and archive. */
 export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
-  const [t, common, abilities, result] = await Promise.all([
+  const [t, common, abilities, result, groups] = await Promise.all([
     getTranslations("entityType"),
     getTranslations("common"),
     getCallerAbilities(),
     loadEntityType({ id }),
+    loadItemTypeGroups(),
   ]);
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const entityType = result.value;
@@ -48,7 +50,7 @@ export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
       {can({ abilities, permission: "configuration:write" }) ? (
         <section className="grid max-w-xl gap-4">
           <h2 className="text-xl">{t("edit")}</h2>
-          <EntityTypeForm entityType={entityType} />
+          <EntityTypeForm entityType={entityType} groups={groups.ok ? groups.value : []} />
         </section>
       ) : null}
       <FieldSection entityType={entityType} />

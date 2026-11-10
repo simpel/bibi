@@ -26,24 +26,35 @@ const snapshot = ({ state }: { state: State }): DraftSnapshot => ({
   outline: state.outline,
 });
 
-function reduce({ state, action }: { state: State; action: Action }): State {
+/** Applied to every change of pieces or walls, e.g. doors kept on a wall. */
+export type Normalize = (snapshot: DraftSnapshot) => DraftElement[];
+
+type ReduceInput = { state: State; action: Action; normalize?: Normalize };
+
+/** The next pieces and walls of a change, normalized. */
+const next = ({
+  state,
+  action,
+  normalize,
+}: ReduceInput & { action: { elements?: DraftElement[]; outline?: Outline } }) => {
+  const outline = action.outline ?? state.outline;
+  const elements = action.elements ?? state.elements;
+  return { outline, elements: normalize ? normalize({ elements, outline }) : elements };
+};
+
+function reduce({ state, action, normalize }: ReduceInput): State {
   switch (action.type) {
     case "set":
       return {
         ...state,
-        elements: action.elements ?? state.elements,
-        outline: action.outline ?? state.outline,
+        ...next({ state, action, normalize }),
         undo: [...state.undo, snapshot({ state })],
         redo: [],
         selected: action.select ? new Set(action.select) : state.selected,
         dirty: true,
       };
     case "preview":
-      return {
-        ...state,
-        elements: action.elements ?? state.elements,
-        outline: action.outline ?? state.outline,
-      };
+      return { ...state, ...next({ state, action, normalize }) };
     case "commit":
       return { ...state, undo: [...state.undo, action.before], redo: [], dirty: true };
     case "select":
@@ -75,12 +86,16 @@ function reduce({ state, action }: { state: State; action: Action }): State {
   }
 }
 
-export type UseLayoutDraftInput = { initial: DraftElement[]; outline: Outline };
+export type UseLayoutDraftInput = {
+  initial: DraftElement[];
+  outline: Outline;
+  normalize?: Normalize;
+};
 
 /** The pieces and walls being edited with undo and redo, the selection and unsaved state. */
-export function useLayoutDraft({ initial, outline }: UseLayoutDraftInput) {
+export function useLayoutDraft({ initial, outline, normalize }: UseLayoutDraftInput) {
   const [state, dispatch] = useReducer(
-    (state: State, action: Action) => reduce({ state, action }),
+    (state: State, action: Action) => reduce({ state, action, normalize }),
     {
       elements: initial,
       outline,

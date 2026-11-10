@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { AdminSection } from "@/components/admin/admin-section";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
+import { loadItemTypeGroups } from "@/features/item-type-group/load-item-type-groups";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -29,10 +30,11 @@ function HeaderActions({ create }: { create: ReactNode }) {
 
 /** The `types` section: header with import and create, one table with search and pagination. */
 export async function EntityTypeList({ locale }: EntityTypeListProps) {
-  const [t, abilities, result] = await Promise.all([
+  const [t, abilities, result, groups] = await Promise.all([
     getTranslations("entityType"),
     getCallerAbilities(),
     runOperation({ operation: listEntityTypes, input: { limit: PAGE_SIZE } }),
+    loadItemTypeGroups(),
   ]);
   const create = can({ abilities, permission: CREATE }) ? <CreateEntityTypeButton /> : undefined;
   const section = {
@@ -58,6 +60,7 @@ export async function EntityTypeList({ locale }: EntityTypeListProps) {
       ) : (
         <EntityTypeTable
           types={items}
+          groups={groups.ok ? groups.value.map(({ id, name }) => ({ id, name })) : []}
           access={rowAccess({ abilities, feature: "configuration" })}
         />
       )}

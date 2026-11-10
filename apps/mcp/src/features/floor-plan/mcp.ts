@@ -33,9 +33,19 @@ export const floorPlanMcpTools = [
   }),
   mcpTool({ operation: "setupLayout.get" }),
   mcpTool({
+    operation: "setupLayout.create",
+    summary: ({ input }) =>
+      `Create layout "${text({ value: input.name })}" for item ${text({ value: input.itemId })}`,
+  }),
+  mcpTool({
     operation: "setupLayout.save",
     idempotent: true,
-    summary: ({ input }) =>
-      `Save layout of item ${text({ value: input.itemId })}, setup ${text({ value: input.setupId })}`,
+    summary: ({ input }) => `Save layout ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "setupLayout.archive",
+    destructive: true,
+    idempotent: true,
+    summary: ({ input }) => `Archive layout ${text({ value: input.id })}`,
   }),
 ];

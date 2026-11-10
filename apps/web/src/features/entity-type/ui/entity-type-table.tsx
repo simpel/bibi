@@ -13,7 +13,12 @@ import { useRouter } from "@/lib/navigation";
 import { EntityTypeRowActions, EntityTypeRowMenu } from "./entity-type-row-actions";
 import { useEntityTypeColumns } from "./use-entity-type-columns";
 
-export type EntityTypeTableProps = { types: EntityTypeDto[]; access?: RowAccess | undefined };
+export type EntityTypeTableProps = {
+  types: EntityTypeDto[];
+  /** Group names by id, for the Group column of item types. */
+  groups: readonly { id: string; name: string }[];
+  access?: RowAccess | undefined;
+};
 
 function useEntityTypeQualifiers({
   types,
@@ -56,6 +61,7 @@ function useEntityTypeQualifiers({
 /** Unified entity types table: name, base (Applies to), capabilities, field count and actions. */
 export function EntityTypeTable({
   types,
+  groups,
   access = { canEdit: false, canRemove: false },
 }: EntityTypeTableProps) {
   const t = useTranslations("entityType");
@@ -68,6 +74,7 @@ export function EntityTypeTable({
     totalLabel: (count) => `${count}`,
   });
   const columns = useEntityTypeColumns({
+    groups,
     renderActions: (entityType) => <EntityTypeRowActions entityType={entityType} access={access} />,
   });
   return (

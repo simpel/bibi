@@ -16,6 +16,7 @@ import { inboundMessageOperations } from "./features/inbound-message/operations"
 import { itemOperations } from "./features/item/operations";
 import { itemDemandOperations } from "./features/item-demand/operations";
 import { itemStateOperations } from "./features/item-state/operations";
+import { itemTypeGroupOperations } from "./features/item-type-group/operations";
 import { lineOperations } from "./features/line/operations";
 import { lineAllocationOperations } from "./features/line-allocation/operations";
 import { memberOperations } from "./features/member/operations";
@@ -77,6 +78,7 @@ function staticOperations(): AnyOperation[] {
   return [
     ...venueOperations,
     ...entityTypeOperations,
+    ...itemTypeGroupOperations,
     ...fieldDefinitionOperations,
     ...vocabularyOperations,
     ...setupOperations,

@@ -1,11 +1,12 @@
 import { cva } from "class-variance-authority";
 import { type ComponentProps, type ReactNode, useId } from "react";
 import { cn } from "../../lib/cn";
+import { FloorOpening } from "./floor-opening";
 
 /** One chair: its centre and facing, in the element's own frame (centimetres, degrees). */
 export type FloorDrawingSeat = { x: number; y: number; rotationDeg: number };
 
-export type FloorDrawingShape = "RECT" | "ROUND" | "SEAT_ROW" | "ZONE";
+export type FloorDrawingShape = "RECT" | "ROUND" | "SEAT_ROW" | "ZONE" | "DOOR" | "WINDOW";
 
 export type FloorDrawingTone = "default" | "selected" | "warning" | "muted" | "ghost";
 
@@ -22,6 +23,8 @@ export type FloorDrawingElement = {
   label: string | null;
   fixed: boolean;
   keepClearCm: number | null;
+  /** DOOR, WINDOW: how far it opens in degrees (0 or left out = it does not). */
+  swingDeg?: number;
   /** Accessible name of the piece, e.g. "Round table 3, 10 seats". */
   name: string;
   tone?: FloorDrawingTone;
@@ -103,6 +106,7 @@ export type FloorPieceProps = { element: FloorDrawingElement; interactive?: bool
 export function FloorPiece({ element, interactive = false }: FloorPieceProps) {
   const { xCm, yCm, rotationDeg, widthCm: w, depthCm: d, keepClearCm, label } = element;
   const tone = element.tone ?? "default";
+  const opening = element.shape === "DOOR" || element.shape === "WINDOW";
   return (
     <g
       data-slot="floor-piece"
@@ -113,7 +117,7 @@ export function FloorPiece({ element, interactive = false }: FloorPieceProps) {
       className={cn(groupTone[tone], interactive && "cursor-grab outline-none")}
       transform={`translate(${xCm} ${yCm}) rotate(${rotationDeg})`}
     >
-      {keepClearCm ? (
+      {keepClearCm && !opening ? (
         <rect
           className="fill-warning/20"
           x={-w / 2 - 20}
@@ -126,7 +130,16 @@ export function FloorPiece({ element, interactive = false }: FloorPieceProps) {
       {element.seats.map((seat) => (
         <Chair key={`${seat.x} ${seat.y}`} seat={seat} />
       ))}
-      <Body element={element} />
+      {element.shape === "DOOR" || element.shape === "WINDOW" ? (
+        <FloorOpening
+          kind={element.shape}
+          widthCm={w}
+          swingDeg={element.swingDeg ?? 0}
+          selected={tone === "selected" || tone === "warning"}
+        />
+      ) : (
+        <Body element={element} />
+      )}
       {label ? (
         <text
           className="fill-muted-foreground font-sans text-[24px]"

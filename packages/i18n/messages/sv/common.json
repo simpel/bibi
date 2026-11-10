@@ -196,7 +196,8 @@
       "orders": "Bokningar",
       "money": "Pengar och kopplingar"
     },
-    "layouts": "Möbleringar"
+    "layouts": "Möbleringar",
+    "floorPlan": "Planritning"
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",
@@ -579,6 +580,10 @@
         "setups": {
           "label": "Uppställningar",
           "keywords": "rum möblering kapacitet ställtid lokal"
+        },
+        "groups": {
+          "label": "Grupper",
+          "keywords": "artikeltyper lokaler mat tillval flikar sortera rubriker"
         },
         "lists": {
           "label": "Listor",

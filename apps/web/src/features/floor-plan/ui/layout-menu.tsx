@@ -20,6 +20,9 @@ export type LayoutMenuProps = {
   onRoomSize: (() => void) | null;
   /** Floor plan only: straight walls again. */
   onRectangle: (() => void) | null;
+  /** Layouts only: rename (stored with the next Save) and delete. */
+  onRename: (() => void) | null;
+  onDelete: (() => void) | null;
 };
 
 /** What is rare: the capacity rule, starting over from a template, the room's size. */
@@ -30,6 +33,8 @@ export function LayoutMenu({
   onTemplate,
   onRoomSize,
   onRectangle,
+  onRename,
+  onDelete,
 }: LayoutMenuProps) {
   const t = useTranslations("floorPlan.menu");
   return (
@@ -80,6 +85,13 @@ export function LayoutMenu({
         ) : null}
         {onRectangle ? (
           <DropdownMenuItem onSelect={onRectangle}>{t("rectangle")}</DropdownMenuItem>
+        ) : null}
+        {onRename || onDelete ? <DropdownMenuSeparator /> : null}
+        {onRename ? <DropdownMenuItem onSelect={onRename}>{t("rename")}</DropdownMenuItem> : null}
+        {onDelete ? (
+          <DropdownMenuItem destructive onSelect={onDelete}>
+            {t("delete")}
+          </DropdownMenuItem>
         ) : null}
       </DropdownMenuContent>
     </DropdownMenu>

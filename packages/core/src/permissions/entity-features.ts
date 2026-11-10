@@ -42,6 +42,7 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   priceList: "priceList",
   configuration: "configuration",
   entityType: "configuration",
+  itemTypeGroup: "configuration",
   fieldDefinition: "configuration",
   vocabulary: "configuration",
   vocabularyValue: "configuration",

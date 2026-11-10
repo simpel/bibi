@@ -14,6 +14,9 @@ export type SetUpType = { entityTypeId: string; stateIds: Map<string, string> };
 
 type TypeInput = { context: OperationContext; draft: PipelineTypeDraft };
 
+/** The group the type is put in (ADR 0101): a new type, or an existing one without a group. */
+type GroupedTypeInput = TypeInput & { groupId: string | null };
+
 const flagsOf = ({ state }: { state: PipelineStateDraft }) => ({
   color: state.color,
   initial: state.initial ?? false,
@@ -24,9 +27,14 @@ const flagsOf = ({ state }: { state: PipelineStateDraft }) => ({
 });
 
 /** The draft's type: the existing one, or a new item type (with its default state). */
-async function ensureType({ context, draft }: TypeInput): Promise<Result<string>> {
+async function ensureType({ context, draft, groupId }: GroupedTypeInput): Promise<Result<string>> {
   if (draft.entityTypeId) return ok({ value: draft.entityTypeId });
-  const input = { base: "ITEM" as const, name: draft.name, capabilities: draft.capabilities ?? [] };
+  const input = {
+    base: "ITEM" as const,
+    name: draft.name,
+    capabilities: draft.capabilities ?? [],
+    groupId,
+  };
   const created = await runNested({ operation: createEntityType, input, context });
   return created.ok ? ok({ value: created.value.id }) : created;
 }
@@ -67,10 +75,14 @@ async function upsertStates({ context, draft, entityTypeId }: StatesInput) {
   return ok({ value: stateIds });
 }
 
-type FinishInput = StatesInput & { stateIds: Map<string, string> };
+type FinishInput = StatesInput & {
+  stateIds: Map<string, string>;
+  /** Set on the type with the expiry state; undefined leaves its group as it is. */
+  groupId: string | undefined;
+};
 
 /** The draft's order, the default transitions and the expiry state. */
-async function finishStates({ context, draft, entityTypeId, stateIds }: FinishInput) {
+async function finishStates({ context, draft, entityTypeId, stateIds, groupId }: FinishInput) {
   const idOf = ({ name }: { name: string }) => stateIds.get(name) ?? "";
   const ids = draft.states.map((state) => idOf({ name: state.name }));
   const reordered = await runNested({
@@ -89,19 +101,33 @@ async function finishStates({ context, draft, entityTypeId, stateIds }: FinishIn
     if (!set.ok) return set;
   }
   const expiryStateId = draft.expiryState ? idOf({ name: draft.expiryState }) : null;
-  const input = { id: entityTypeId, expiryStateId };
+  const input = { id: entityTypeId, expiryStateId, ...(groupId ? { groupId } : {}) };
   const updated = await runNested({ operation: updateEntityType, input, context });
   return updated.ok ? ok({ value: true }) : updated;
 }
 
 /** Sets up one draft item type with its states through the normal operations. */
-export async function activateType({ context, draft }: TypeInput): Promise<Result<SetUpType>> {
-  const type = await ensureType({ context, draft });
+export async function activateType({
+  context,
+  draft,
+  groupId,
+}: GroupedTypeInput): Promise<Result<SetUpType>> {
+  const type = await ensureType({ context, draft, groupId });
   if (!type.ok) return type;
   const entityTypeId = type.value;
+  const existing = draft.entityTypeId
+    ? await context.db.entityType.findFirst({ where: { id: entityTypeId } })
+    : null;
+  const regroup = groupId && existing && existing.groupId === null ? groupId : undefined;
   const states = await upsertStates({ context, draft, entityTypeId });
   if (!states.ok) return states;
   const stateIds = states.value;
-  const finished = await finishStates({ context, draft, entityTypeId, stateIds });
+  const finished = await finishStates({
+    context,
+    draft,
+    entityTypeId,
+    stateIds,
+    groupId: regroup,
+  });
   return finished.ok ? ok({ value: { entityTypeId, stateIds } }) : finished;
 }

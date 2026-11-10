@@ -88,7 +88,12 @@ export const ADMIN_GROUPS: readonly AdminGroup[] = [
   {
     id: "catalog",
     pages: [
-      page({ key: "types", icon: ShapesIcon, href: ROUTES.adminTypes, ids: ["types", "setups"] }),
+      page({
+        key: "types",
+        icon: ShapesIcon,
+        href: ROUTES.adminTypes,
+        ids: ["types", "groups", "setups"],
+      }),
       page({ key: "lists", icon: ListIcon, href: ROUTES.adminLists, ids: ["lists"] }),
       page({
         key: "priceLists",

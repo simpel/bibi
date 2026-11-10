@@ -28,6 +28,7 @@ import "../features/line/issues-graphql";
 import "../features/line-allocation/graphql";
 import "../features/alternative-group/graphql";
 import "../features/item-state/graphql";
+import "../features/item-type-group/graphql";
 import "../features/status-grid/graphql";
 import "../features/pipeline-setup/graphql";
 import "../features/change-set/graphql";

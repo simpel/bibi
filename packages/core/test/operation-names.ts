@@ -1,4 +1,4 @@
-import { ASSIGNMENT_NAMES, BOARD_NAMES } from "./operation-names-assignment";
+import { ASSIGNMENT_NAMES, BOARD_NAMES, ITEM_TYPE_GROUP_NAMES } from "./operation-names-assignment";
 import { EXTRA_NAMES } from "./operation-names-integration";
 import { ORDER_NAMES } from "./operation-names-order";
 
@@ -112,7 +112,9 @@ const NAMES = [
   "floorPlan.get",
   "floorPlan.save",
   "setupLayout.get",
+  "setupLayout.create",
   "setupLayout.save",
+  "setupLayout.archive",
   "setup.create",
   "setup.get",
   "setup.list",
@@ -159,4 +161,5 @@ export const OPERATION_NAMES: readonly string[] = [
   ...EXTRA_NAMES,
   ...ASSIGNMENT_NAMES,
   ...BOARD_NAMES,
+  ...ITEM_TYPE_GROUP_NAMES,
 ].sort((a, b) => a.localeCompare(b));

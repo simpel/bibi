@@ -15,10 +15,10 @@ export type ElementRow = FloorElement & { kind: FloorElementKind };
 export function toElementDto({ row }: { row: ElementRow }): FloorElementDto {
   const effective = effectiveElement({ element: row, kind: row.kind });
   const { id, kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label } = row;
-  const { seats, seatsTop, seatsRight, seatsBottom, seatsLeft } = row;
+  const { seats, seatsTop, seatsRight, seatsBottom, seatsLeft, swingDeg } = row;
   return {
     ...{ id, kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label },
-    ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft },
+    ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft, swingDeg },
     shape: effective.shape,
     fixed: effective.fixed,
     keepClearCm: effective.keepClearCm,
@@ -26,6 +26,7 @@ export function toElementDto({ row }: { row: ElementRow }): FloorElementDto {
     effectiveDepthCm: effective.depthCm,
     effectiveAround: effective.around,
     effectiveSides: effective.sides,
+    effectiveSwingDeg: effective.swingDeg,
     seatCount: effective.seatCount,
   };
 }
@@ -44,7 +45,18 @@ export const toPlaced = ({ element }: { element: FloorElementDto }): PlacedEleme
   seatCount: element.seatCount,
   fixed: element.fixed,
   keepClearCm: element.keepClearCm,
+  swingDeg: element.effectiveSwingDeg,
 });
+
+/** A stored element as save input: its position and own overrides (for copying a layout). */
+export const toInput = ({ element }: { element: FloorElementDto }): FloorElementInput => {
+  const { kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label, swingDeg } = element;
+  const { seats, seatsTop, seatsRight, seatsBottom, seatsLeft } = element;
+  return {
+    ...{ kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label, swingDeg },
+    ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft },
+  };
+};
 
 export type Parent = { floorPlanId: string } | { setupLayoutId: string };
 
@@ -58,6 +70,8 @@ export async function loadElements({ context, parent }: Db & { parent: Parent })
   return rows.map((row) => toElementDto({ row }));
 }
 
+export type KindShape = { shape: FloorElementKind["shape"]; widthCm: number };
+
 export type CheckKindsInput = Db & { elements: readonly FloorElementInput[]; fixed: boolean };
 
 /** Every kind is active in the organization; a floor plan takes fixed kinds, a layout the rest. */
@@ -65,13 +79,14 @@ export async function checkKinds({
   context,
   elements,
   fixed,
-}: CheckKindsInput): Promise<Result<true>> {
+}: CheckKindsInput): Promise<Result<ReadonlyMap<string, KindShape>>> {
   const ids = [...new Set(elements.map((element) => element.kindId))];
   const kinds = await context.db.floorElementKind.findMany({
     where: { id: { in: ids } },
-    select: { id: true, fixed: true },
+    select: { id: true, fixed: true, shape: true, widthCm: true },
   });
   const known = new Map(kinds.map((kind) => [kind.id, kind.fixed]));
+  const shapes = new Map(kinds.map(({ id, shape, widthCm }) => [id, { shape, widthCm }]));
   const issues = elements.flatMap((element, index) => {
     const kindFixed = known.get(element.kindId);
     if (kindFixed === undefined)
@@ -86,7 +101,7 @@ export async function checkKinds({
   });
   return issues.length
     ? invalid({ message: issues[0]?.message ?? "Invalid kind", issues })
-    : ok({ value: true });
+    : ok({ value: shapes });
 }
 
 export type ReplaceElementsInput = {
@@ -114,6 +129,7 @@ export async function replaceElements({ context, parent, elements }: ReplaceElem
       seatsRight: element.seatsRight ?? null,
       seatsBottom: element.seatsBottom ?? null,
       seatsLeft: element.seatsLeft ?? null,
+      swingDeg: element.swingDeg ?? null,
       label: element.label || null,
     })),
   });

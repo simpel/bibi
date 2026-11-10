@@ -1,11 +1,14 @@
 /// How a floor element is drawn and seated (ADR 0099). Generic shapes, no furniture words:
 /// `RECT` and `ROUND` are bodies with chairs around them, `SEAT_ROW` is a row of chairs and
-/// `ZONE` is an outlined area (a dance floor, a no-go zone).
+/// `ZONE` is an outlined area (a dance floor, a no-go zone). `DOOR` and `WINDOW` are openings in a
+/// wall (ADR 0102): always fixed, never seated, snapped onto the outline.
 enum FloorShape {
   RECT
   ROUND
   SEAT_ROW
   ZONE
+  DOOR
+  WINDOW
 }
 
 /// Floor element kind – one entry of the organization's furniture library (ADR 0099), e.g.
@@ -27,6 +30,8 @@ model FloorElementKind {
   fixed          Boolean        @default(false)
   /// A clear area in front of the element (its local bottom side), e.g. a door's swing.
   keepClearCm    Int?
+  /// DOOR, WINDOW: how far it opens, 0–180 degrees (ADR 0102); null = it does not open.
+  swingDeg       Int?
   status         RecordStatus   @default(ACTIVE)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
@@ -63,14 +68,16 @@ model FloorPlan {
   @@index([organizationId, status])
 }
 
-/// Setup layout – one setup drawn in one item's floor plan (ADR 0099). Keyed by item and setup,
-/// not by `ItemSetup`, which `item.*` replaces as a set: a layout survives an item save, and a
-/// setup removed from the item and added again gets its drawing back. Owned; `version` counts saves.
+/// Setup layout – one way of furnishing an item in a setup (ADR 0099, 0102); an item may have
+/// several per setup. Tied to item and setup, not to `ItemSetup`, which `item.*` replaces as a set:
+/// a layout survives an item save, and a setup removed and added again gets its drawings back.
+/// Owned; `name` null = the setup's name; `version` counts saves.
 model SetupLayout {
   id             String         @id @default(cuid(2))
   organizationId String
   itemId         String
   setupId        String
+  name           String?
   note           String?
   version        Int            @default(1)
   status         RecordStatus   @default(ACTIVE)
@@ -82,7 +89,6 @@ model SetupLayout {
   elements       FloorElement[]
 
   @@unique([id, organizationId])
-  @@unique([itemId, setupId])
   @@index([organizationId, itemId])
 }
 
@@ -107,6 +113,8 @@ model FloorElement {
   seatsRight     Int?
   seatsBottom    Int?
   seatsLeft      Int?
+  /// DOOR, WINDOW: own opening angle; null = the kind's.
+  swingDeg       Int?
   label          String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt

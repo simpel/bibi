@@ -196,7 +196,8 @@
       "orders": "Orders",
       "money": "Money & connections"
     },
-    "layouts": "Layouts"
+    "layouts": "Layouts",
+    "floorPlan": "Floor plan"
   },
   "shell": {
     "mainNavigation": "Main navigation",
@@ -579,6 +580,10 @@
         "setups": {
           "label": "Setups",
           "keywords": "room layout capacity changeover space"
+        },
+        "groups": {
+          "label": "Groups",
+          "keywords": "item types spaces food extras tabs sort headings"
         },
         "lists": {
           "label": "Lists",

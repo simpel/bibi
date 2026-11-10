@@ -8,12 +8,24 @@ import { CapabilityBadges } from "./capability-badges";
 
 type Column = ColumnDef<EntityTypeDto>;
 
+type GroupNameInput = { groups: readonly { id: string; name: string }[]; type: EntityTypeDto };
+
+/** The name of an item type's group; "–" for other bases and ungrouped types. */
+function groupName({ groups, type }: GroupNameInput): string {
+  return groups.find((group) => group.id === type.groupId)?.name ?? "–";
+}
+
 export type UseEntityTypeColumnsInput = {
+  /** Group names by id; with none, the Group column is left out. */
+  groups?: readonly { id: string; name: string }[] | undefined;
   renderActions?: ((row: EntityTypeDto) => ReactNode) | undefined;
 };
 
 /** Name · base (Applies to) · capabilities · number of fields · sticky actions. */
-export function useEntityTypeColumns({ renderActions }: UseEntityTypeColumnsInput = {}): Column[] {
+export function useEntityTypeColumns({
+  renderActions,
+  groups = [],
+}: UseEntityTypeColumnsInput = {}): Column[] {
   const t = useTranslations("entityType");
   const common = useTranslations("common");
   return useMemo<Column[]>(
@@ -37,6 +49,17 @@ export function useEntityTypeColumns({ renderActions }: UseEntityTypeColumnsInpu
         accessorFn: (type) => t(`bases.${type.base}`),
         cell: ({ row }) => <Badge variant="outline">{t(`bases.${row.original.base}`)}</Badge>,
       },
+      ...(groups.length > 0
+        ? [
+            {
+              id: "group",
+              header: t("columns.group"),
+              accessorFn: (type: EntityTypeDto) => groupName({ groups, type }),
+              cell: ({ row }: { row: { original: EntityTypeDto } }) =>
+                groupName({ groups, type: row.original }),
+            } satisfies Column,
+          ]
+        : []),
       {
         id: "capabilities",
         header: t("columns.capabilities"),
@@ -53,6 +76,6 @@ export function useEntityTypeColumns({ renderActions }: UseEntityTypeColumnsInpu
         ? [actionsColumn<EntityTypeDto>({ label: common("actions"), cell: renderActions })]
         : []),
     ],
-    [t, common, renderActions],
+    [t, common, renderActions, groups],
   );
 }

@@ -11,6 +11,7 @@ import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoConfig, DemoField, DemoType } from "./config-types";
 import type { DemoRefs, FieldRef, TypeRef } from "./demo-refs";
+import { groupOfDemoType, seedItemTypeGroups } from "./item-type-groups";
 import { seedItemStates } from "./seed-item-states";
 
 export type SeedConfigInput = {
@@ -71,13 +72,26 @@ async function seedField({ context, refs, typeId, field }: FieldInput) {
   return execute({ operation: createFieldDefinition, input, context });
 }
 
-type TypeInput = { context: ExecuteContext; refs: DemoRefs; type: DemoType; skipStates: boolean };
+type TypeInput = {
+  context: ExecuteContext;
+  refs: DemoRefs;
+  type: DemoType;
+  skipStates: boolean;
+  groups: Map<string, string>;
+};
 
-async function seedType({ context, refs, type, skipStates }: TypeInput): Promise<Result<TypeRef>> {
+async function seedType({
+  context,
+  refs,
+  type,
+  skipStates,
+  groups,
+}: TypeInput): Promise<Result<TypeRef>> {
   const input = {
     ...{ base: type.base, name: type.name, capabilities: [...(type.capabilities ?? [])] },
     ...{ setupMinutes: type.setupMinutes ?? null, teardownMinutes: type.teardownMinutes ?? null },
     ...(type.resourceKind ? { resourceKind: type.resourceKind } : {}),
+    ...(type.base === "ITEM" ? { groupId: groups.get(groupOfDemoType({ type })) ?? null } : {}),
   };
   const created = await execute({ operation: createEntityType, input, context });
   if (!created.ok) return created;
@@ -127,8 +141,10 @@ export async function seedDemoConfig({
     if (!result.ok) return result;
     refs.setups.set(setup.name, result.value.id);
   }
+  const groups = await seedItemTypeGroups({ context, types: config.types });
+  if (!groups.ok) return groups;
   for (const type of config.types) {
-    const result = await seedType({ context, refs, type, skipStates });
+    const result = await seedType({ context, refs, type, skipStates, groups: groups.value });
     if (!result.ok) return result;
     const byBase = {
       ITEM: refs.itemTypes,

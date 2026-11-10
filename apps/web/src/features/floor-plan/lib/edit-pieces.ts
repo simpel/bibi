@@ -130,6 +130,15 @@ export function setAround({ element, kinds, seats }: SetAroundInput): DraftEleme
   };
 }
 
+export type SetSwingInput = { element: DraftElement; kinds: KindMap; swingDeg: number };
+
+/** How far a door or window opens, in degrees. */
+export function setSwing({ element, kinds, swingDeg }: SetSwingInput): DraftElement {
+  const kind = kinds.get(element.kindId);
+  if (!kind) return element;
+  return { ...element, swingDeg: own({ value: swingDeg, kindValue: kind.swingDeg ?? 0 }) };
+}
+
 /** Back to the library's size and chairs. */
 export const resetPiece = ({ element }: { element: DraftElement }): DraftElement => ({
   ...element,

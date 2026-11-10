@@ -7,6 +7,7 @@ export type CrumbLabelKey =
   | "skills"
   | "setups"
   | "layouts"
+  | "floorPlan"
   | "responsibilities"
   | "itemStates"
   | "orderStatuses"
@@ -48,6 +49,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   lists: "lists",
   setups: "setups",
   layouts: "layouts",
+  "floor-plan": "floorPlan",
   "run-sheets": "runSheets",
   "price-lists": "priceLists",
   responsibilities: "responsibilities",

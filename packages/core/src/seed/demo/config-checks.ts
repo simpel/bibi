@@ -1,5 +1,6 @@
 import type { ExecuteContext } from "../../operations/context";
 import type { DemoItem } from "./config-types";
+import { checkDemoItemTypeGroups } from "./item-type-group-checks";
 import { checkDemoLinks } from "./link-checks";
 import { getTemplateListSize } from "./template-size";
 import type { DemoOrg } from "./types";
@@ -133,5 +134,6 @@ export async function checkDemoConfig({
     const values = await context.db.vocabularyValue.count({ where: { vocabulary: { name } } });
     if (values !== size) failures.push(`${org.slug}: list "${name}" has ${values} values`);
   }
-  return [...failures, ...(await checkDemoLinks({ context, org, skipPipeline }))];
+  const groupFailures = await checkDemoItemTypeGroups({ context, org });
+  return [...failures, ...groupFailures, ...(await checkDemoLinks({ context, org, skipPipeline }))];
 }

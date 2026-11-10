@@ -19,6 +19,7 @@ import { inboundMessageMcpTools } from "../features/inbound-message/mcp";
 import { itemMcpTools } from "../features/item/mcp";
 import { itemDemandMcpTools } from "../features/item-demand/mcp";
 import { itemStateMcpTools } from "../features/item-state/mcp";
+import { itemTypeGroupMcpTools } from "../features/item-type-group/mcp";
 import { lineMcpTools } from "../features/line/mcp";
 import { lineAllocationMcpTools } from "../features/line-allocation/mcp";
 import { memberMcpTools } from "../features/member/mcp";
@@ -96,6 +97,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
   return [
     ...venueMcpTools,
     ...entityTypeMcpTools,
+    ...itemTypeGroupMcpTools,
     ...fieldDefinitionMcpTools,
     ...vocabularyMcpTools,
     ...setupMcpTools,

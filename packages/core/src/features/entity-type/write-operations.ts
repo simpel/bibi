@@ -17,6 +17,7 @@ import {
   EntityTypeUpdateInputSchema,
 } from "./schema";
 import { checkTypeBuffers } from "./type-buffers";
+import { checkTypeGroup } from "./type-group";
 
 type NameTakenInput = {
   context: Pick<OperationContext, "db">;
@@ -52,7 +53,8 @@ export const updateEntityType = defineOperation({
   description:
     "Rename a type, replace its capabilities, set an item type's expiry state (where lines in " +
     "an expiring state fall when the order's holdsUntil passes) or its default setup and " +
-    "teardown minutes (held around bookings; a hard hold that would then collide is CONFLICT). " +
+    "teardown minutes (held around bookings; a hard hold that would then collide is CONFLICT) " +
+    "or its group (groupId, ADR 0101; null leaves it ungrouped). " +
     "Switching a capability off while items of the " +
     "type have data for it (e.g. prices for PRICED) is refused with CONFLICT.",
   input: EntityTypeUpdateInputSchema,
@@ -75,6 +77,8 @@ export const updateEntityType = defineOperation({
       expiryStateId: data.expiryStateId,
     });
     if (!expiry.ok) return expiry;
+    const grouped = await checkTypeGroup({ context, base: before.base, groupId: data.groupId });
+    if (!grouped.ok) return grouped;
     if (data.name && (await nameTaken({ context, base: before.base, name: data.name, id }))) {
       return taken({ name: data.name });
     }

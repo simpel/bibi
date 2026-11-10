@@ -32,6 +32,12 @@ export const PipelineTypeDraftSchema = z.object({
     "New types only; an existing type keeps its own capabilities",
   ),
   states: z.array(PipelineStateDraftSchema).min(1).max(20).describe("The type's states, in order"),
+  group: name({ max: 64, example: "Item type group name (ADR 0101), e.g. Spaces or Food" })
+    .optional()
+    .describe(
+      "Name of the item type group to put the type in, reused by name or created; an existing " +
+        "type that already has a group keeps it",
+    ),
   expiryState: z
     .string()
     .nullable()

@@ -5,6 +5,7 @@ import { loadStatesOfType } from "../item-state/load-item-state";
 import { loadAllOrderStatuses } from "../order-status/load-order-status";
 import { loadGrid } from "../status-grid/load-grid";
 import { activateGrid } from "./activate-grid";
+import { activateGroups } from "./activate-groups";
 import { activateType, type SetUpType } from "./activate-states";
 import { finishStatuses, upsertStatuses } from "./activate-statuses";
 import { previewPipeline } from "./preview";
@@ -26,7 +27,7 @@ async function checkReady({ context, draft }: ActivatePipelineInput): Promise<Re
 }
 
 /**
- * `pipelineSetup.activate` (ADR 0044): item types and states, statuses, the grid, then the statuses
+ * `pipelineSetup.activate` (ADR 0044): item type groups (ADR 0101), item types and states, statuses, the grid, then the statuses
  * the draft left out are archived and the order and transitions set, all through the normal
  * operations in the caller's one transaction and audit batch.
  */
@@ -36,9 +37,12 @@ export async function activatePipeline({
 }: ActivatePipelineInput): Promise<Result<PipelineActivateOutput>> {
   const ready = await checkReady({ context, draft });
   if (!ready.ok) return ready;
+  const groups = await activateGroups({ context, draft });
+  if (!groups.ok) return groups;
   const types = new Map<string, SetUpType>();
   for (const type of draft.itemTypes) {
-    const setUp = await activateType({ context, draft: type });
+    const groupId = type.group ? (groups.value.get(type.group) ?? null) : null;
+    const setUp = await activateType({ context, draft: type, groupId });
     if (!setUp.ok) return setUp;
     types.set(type.name, setUp.value);
   }

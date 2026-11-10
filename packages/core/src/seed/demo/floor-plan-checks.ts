@@ -1,6 +1,6 @@
 import { getSetupLayout } from "../../features/floor-plan/layout-operations";
+import { getFloorPlan } from "../../features/floor-plan/plan-operations";
 import { listItems } from "../../features/item/read-operations";
-import { listSetups } from "../../features/setup/operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoOrg } from "./types";
@@ -8,8 +8,8 @@ import type { DemoOrg } from "./types";
 export type CheckFloorPlansInput = { context: ExecuteContext; org: DemoOrg };
 
 /**
- * ADR 0099: every drawn layout has no warnings, and a layout that uses its seats has the seat
- * count as its effective capacity. Returns failure messages.
+ * ADR 0099, 0102: every drawn layout exists by name and has no warnings, and a setup that uses
+ * its seats has its largest layout's seat count as its effective capacity. Returns failures.
  */
 export async function checkDemoFloorPlans({
   context,
@@ -17,36 +17,43 @@ export async function checkDemoFloorPlans({
 }: CheckFloorPlansInput): Promise<string[]> {
   const plans = org.config.floorPlans ?? [];
   if (plans.length === 0) return [];
-  const [items, setups] = await Promise.all([
-    execute({ operation: listItems, input: { capability: "SETUPS", limit: 100 }, context }),
-    execute({ operation: listSetups, input: { limit: 100 }, context }),
-  ]);
-  if (!items.ok || !setups.ok) return [`${org.slug}: could not read items or setups`];
+  const items = await execute({
+    operation: listItems,
+    input: { capability: "SETUPS", limit: 100 },
+    context,
+  });
+  if (!items.ok) return [`${org.slug}: could not read items`];
   const failures: string[] = [];
   for (const plan of plans) {
     const itemId = items.value.items.find((item) => item.name === plan.item)?.id;
-    for (const [name, drawn] of Object.entries(plan.layouts)) {
-      const setupId = setups.value.items.find((setup) => setup.name === name)?.id;
-      if (!itemId || !setupId) {
-        failures.push(`${org.slug}: ${plan.item} ${name} is missing`);
+    const read = itemId
+      ? await execute({ operation: getFloorPlan, input: { itemId }, context })
+      : null;
+    if (!read?.ok) {
+      failures.push(`${org.slug}: could not read the floor plan of ${plan.item}`);
+      continue;
+    }
+    for (const drawn of plan.layouts) {
+      const summary = read.value.layouts.find((layout) => layout.name === drawn.name);
+      const layout = summary
+        ? await execute({ operation: getSetupLayout, input: { id: summary.id }, context })
+        : null;
+      if (!layout?.ok) {
+        failures.push(`${org.slug}: ${plan.item} has no layout ${drawn.name}`);
         continue;
       }
-      const layout = await execute({
-        operation: getSetupLayout,
-        input: { itemId, setupId },
-        context,
-      });
-      if (!layout.ok) {
-        failures.push(`${org.slug}: could not read the ${name} layout of ${plan.item}`);
-        continue;
-      }
-      const { issues, seatCount, effectiveCapacity, capacitySource } = layout.value;
+      const { issues, effectiveCapacity, capacitySource, setupId } = layout.value;
       if (issues.length > 0) {
-        failures.push(`${org.slug}: ${plan.item} ${name} has ${issues.length} warnings`);
+        failures.push(`${org.slug}: ${plan.item} ${drawn.name} has ${issues.length} warnings`);
       }
-      if (drawn.useSeats && (capacitySource !== "LAYOUT" || effectiveCapacity !== seatCount)) {
+      const largest = Math.max(
+        ...read.value.layouts
+          .filter((each) => each.setupId === setupId)
+          .map((each) => each.seatCount),
+      );
+      if (drawn.useSeats && (capacitySource !== "LAYOUT" || effectiveCapacity !== largest)) {
         failures.push(
-          `${org.slug}: ${plan.item} ${name} does not take its capacity from the seats`,
+          `${org.slug}: ${plan.item} ${drawn.name} does not take its capacity from the seats`,
         );
       }
     }

@@ -7,6 +7,7 @@ import type { EntityBase, ItemCapability, ResourceKind } from "./capability-kind
 import { toEntityTypeDto } from "./load-entity-type";
 import type { EntityTypeDto } from "./schema";
 import { checkTypeBuffers } from "./type-buffers";
+import { checkTypeGroup } from "./type-group";
 
 export type InsertEntityTypeInput = {
   context: OperationContext;
@@ -18,6 +19,8 @@ export type InsertEntityTypeInput = {
   teardownMinutes?: number | null;
   /** Item types: EQUIPMENT (default) or PERSON (ADR 0059). */
   resourceKind?: ResourceKind;
+  /** Item types: the group (ADR 0101); null or omitted = ungrouped. */
+  groupId?: string | null | undefined;
 };
 
 type DefaultStateInput = { context: OperationContext; type: EntityTypeDto };
@@ -45,12 +48,15 @@ export async function insertEntityType({
   name,
   capabilities = [],
   resourceKind,
+  groupId = null,
   ...buffers
 }: InsertEntityTypeInput): Promise<Result<EntityTypeDto>> {
   const valid = checkCapabilities({ base, capabilities });
   if (!valid.ok) return valid;
   const buffered = checkTypeBuffers({ base, resourceKind, ...buffers });
   if (!buffered.ok) return buffered;
+  const grouped = await checkTypeGroup({ context, base, groupId });
+  if (!grouped.ok) return grouped;
   if (await context.db.entityType.findFirst({ where: { base, name } })) {
     return conflict({ message: `A type named "${name}" exists` });
   }
@@ -58,6 +64,7 @@ export async function insertEntityType({
     data: {
       ...{ base, name, capabilities: [...capabilities], ...buffers },
       resourceKind: base === "ITEM" ? (resourceKind ?? "EQUIPMENT") : null,
+      groupId,
       organizationId: context.organizationId,
     },
   });

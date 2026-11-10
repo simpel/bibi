@@ -5,11 +5,13 @@ import { CrumbName } from "@/components/shell/crumb-name";
 import { DeferredSection } from "@/components/states/deferred-section";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
-import { WithHistory } from "@/features/audit-log/ui/with-history";
+import { historyNode } from "@/features/audit-log/ui/history-node";
+import { LastEdited } from "@/features/audit-log/ui/last-edited";
 import { Link } from "@/lib/navigation";
 import { itemRoute, ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
+import { LayoutsSection } from "../../floor-plan/ui/layouts-section";
 import { DemandsSection } from "../../item-demand/ui/demands-section";
 import { OccupancySection } from "../../occupancy/ui/occupancy-section";
 import { loadItem } from "../load-item";
@@ -23,7 +25,7 @@ import { ItemResolutionSection } from "./item-resolution-section";
 
 export type ItemDetailProps = { locale: Locale; id: string };
 
-/** Item detail page body: facts with edit and archive, contents, occupancy and history. */
+/** Item detail page body: facts with edit and archive, contents and occupancy. */
 export async function ItemDetail({ locale, id }: ItemDetailProps) {
   const common = await getTranslations("common");
   const abilities = await getCallerAbilities();
@@ -33,7 +35,15 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const type = data.value.types.find((candidate) => candidate.id === item.value.entityTypeId);
   const hasLayouts = type?.capabilities.includes("SETUPS") ?? false;
-  const actions = <ItemActions item={item.value} abilities={abilities} hasLayouts={hasLayouts} />;
+  const history = await historyNode({ locale, entityType: "item", entityId: id });
+  const actions = (
+    <ItemActions
+      item={item.value}
+      abilities={abilities}
+      hasLayouts={hasLayouts}
+      history={history}
+    />
+  );
   return (
     <div className="grid gap-6">
       <CrumbName href={itemRoute({ id })} name={item.value.name} />
@@ -49,31 +59,31 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         description={item.value.description ?? undefined}
         actions={actions}
       />
+      <LastEdited entityType="item" entityId={item.value.id} />
       {item.value.customerId ? <BundleOwner customerId={item.value.customerId} /> : null}
-      <WithHistory locale={locale} entityType="item" entityId={item.value.id}>
-        <ItemFacts item={item.value} type={type} data={data.value} />
-        <ItemCapabilities item={item.value} data={data.value} />
-        {type?.capabilities.includes("BUNDLE") ? (
-          <DeferredSection>
-            <ItemResolutionSection locale={locale} itemId={item.value.id} />
-          </DeferredSection>
-        ) : null}
+      <ItemFacts item={item.value} type={type} data={data.value} />
+      <ItemCapabilities item={item.value} data={data.value} />
+      {hasLayouts ? (
         <DeferredSection>
-          <ItemHoursSection locale={locale} itemId={item.value.id} />
+          <LayoutsSection locale={locale} itemId={item.value.id} />
         </DeferredSection>
+      ) : null}
+      {type?.capabilities.includes("BUNDLE") ? (
         <DeferredSection>
-          <DemandsSection locale={locale} itemId={item.value.id} />
+          <ItemResolutionSection locale={locale} itemId={item.value.id} />
         </DeferredSection>
-        {type?.capabilities.includes("BOOKABLE") && can({ abilities, permission: "order:read" }) ? (
-          <DeferredSection>
-            <OccupancySection
-              locale={locale}
-              itemId={item.value.id}
-              timeZone={item.value.timeZone}
-            />
-          </DeferredSection>
-        ) : null}
-      </WithHistory>
+      ) : null}
+      <DeferredSection>
+        <ItemHoursSection locale={locale} itemId={item.value.id} />
+      </DeferredSection>
+      <DeferredSection>
+        <DemandsSection locale={locale} itemId={item.value.id} />
+      </DeferredSection>
+      {type?.capabilities.includes("BOOKABLE") && can({ abilities, permission: "order:read" }) ? (
+        <DeferredSection>
+          <OccupancySection locale={locale} itemId={item.value.id} timeZone={item.value.timeZone} />
+        </DeferredSection>
+      ) : null}
     </div>
   );
 }

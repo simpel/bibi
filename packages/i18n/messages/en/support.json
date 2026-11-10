@@ -24,6 +24,10 @@
             "question": "What are the example orders on my board?",
             "answer": "When you finish setting up Bibi, we add three example orders so your board isn't empty: a meeting, a conference and a dinner. They all belong to the customer Example Company Ltd and use the types you chose.\nClick around in them, edit them and move them as you like.\nWhen you're done, open Example Company Ltd under Customers, archive the contact person Anna Example, then archive the customer with Also archive all orders for this customer ticked."
           },
+          "itemGroups": {
+            "question": "How do I sort my items into groups like Spaces and Food?",
+            "answer": "Go to Settings, open Types and find Groups. Create a group, then open a type and pick its group. You can rename, reorder and archive groups there.\nItems then shows one tab per group, so rooms, food and extras are no longer mixed in one list.\nWhen you set up Bibi, we create Spaces, Food & drink and Extras for you."
+          },
           "inviteColleagues": {
             "question": "How do I invite my colleagues?",
             "answer": "Go to Administration → Members and invite them by email. They get a link that takes them straight into your organization.\nTen seats are included in the subscription."
@@ -94,7 +98,11 @@
         "questions": {
           "drawLayout": {
             "question": "How do I draw a layout for a room?",
-            "answer": "Open the room under Items and choose Layouts. Each setup the room has gets a tab, and an empty one offers rows of chairs, a U-shape or a banquet for the number of people you type.\nDrag furniture from the panel on the left onto the room, or click it to place it in the middle. Click Save when you are done."
+            "answer": "Open the room under Items and choose Layouts. Click Create layout, give it a name and pick its setup; an empty layout offers rows of chairs, a U-shape or a banquet for the number of people you type.\nDrag furniture from the panel on the left onto the room, or click it to place it in the middle. Click Save when you are done."
+          },
+          "severalLayouts": {
+            "question": "Can a room have more than one layout for the same setup?",
+            "answer": "Yes. Create one layout per way you furnish the room, for example Banquet 60 with round tables and Banquet 80 with long tables. Create layout can start from a copy of one you already have.\nThe item page shows every layout as a small drawing under its setup. Rename or delete a layout from the menu with three dots in the layout."
           },
           "tableChairs": {
             "question": "How do I change a table's size or where the chairs are?",
@@ -102,15 +110,19 @@
           },
           "capacity": {
             "question": "How is a room's capacity counted?",
-            "answer": "When a setup has a layout, its capacity is the number of chairs in the drawing. Bibi warns when a booking has more guests than that.\nFor standing guests, or when you want another number, choose the menu with three dots in the layout and type a capacity."
+            "answer": "A setup's capacity is the number of chairs in its largest layout. Bibi warns when a booking has more guests than that.\nFor standing guests, or when you want another number, choose the menu with three dots in a layout and type a capacity."
           },
           "floorPlan": {
-            "question": "Where do I put doors and pillars?",
-            "answer": "Open the Floor plan tab under Layouts. Doors, pillars and screens placed there show in every layout of the room, and Bibi warns if furniture blocks a door.\nUse the menu with three dots to set the room's width and depth."
+            "question": "Where do I put doors, windows and pillars?",
+            "answer": "Open the room under Items and choose Floor plan. Doors, windows, pillars and screens placed there show in every layout of the room, and Bibi warns if furniture stands where a door opens.\nDoors and windows always sit on a wall: drag one and it follows the nearest wall. Click it to set its width and how far it opens."
           },
           "roomShape": {
             "question": "How do I draw a room that is not a rectangle?",
-            "answer": "Open the room under Items, choose Layouts and then the Floor plan tab. Drag a corner to move the walls, click the + in the middle of a wall to add a corner, and double-click a corner to delete it.\nEach wall shows its length. Click Save when the shape is right; every layout of the room uses it."
+            "answer": "Open the room under Items and choose Floor plan. Drag a corner to move the walls, click the + in the middle of a wall to add a corner, and double-click a corner to delete it.\nEach wall shows its length. Click Save when the shape is right; every layout of the room uses it. Use the menu with three dots to set the room's width and depth."
+          },
+          "history": {
+            "question": "Where can I see who changed an item?",
+            "answer": "Open the item and look just under its title: it says when it was last edited and by whom. To see every change, click the three dots at the top right and choose View history.\nA panel opens with who changed what and when. You only see this if you have access to the change history."
           }
         }
       },

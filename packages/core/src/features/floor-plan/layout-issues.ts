@@ -6,6 +6,7 @@ import {
   type PlacedElement,
   polygonsOverlap,
 } from "./footprint";
+import { isOpening } from "./seats";
 
 export const LAYOUT_ISSUE_KINDS = ["OUTSIDE_OUTLINE", "OVERLAP", "KEEP_CLEAR"] as const;
 export type LayoutIssueKind = (typeof LAYOUT_ISSUE_KINDS)[number];
@@ -21,7 +22,9 @@ export type LayoutIssuesInput = {
   elements: readonly PlacedElement[];
 };
 
-const solid = ({ element }: { element: PlacedElement }) => element.shape !== "ZONE";
+/** Zones and wall openings take no floor; a door's swing counts through its keep-clear area. */
+const solid = ({ element }: { element: PlacedElement }) =>
+  element.shape !== "ZONE" && !isOpening(element);
 
 /**
  * Warnings for a layout: a piece outside the walls, two pieces whose floor overlaps (chairs

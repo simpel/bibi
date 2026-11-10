@@ -6,8 +6,9 @@ const round = "Round table Ø180";
 const outside = { seatsTop: 0, seatsBottom: 3 };
 
 /**
- * Hönö drawn to scale: a U-shape for 24 and a banquet of six round tables. Knippla is an L-shaped
- * room (its walls only), so the editor shows a room that is not a rectangle.
+ * Hönö drawn to scale with a door and a window: a U-shape for 24 and two banquets, six round
+ * tables (60) and nine long tables (54), so the setup has two layouts (ADR 0102). Knippla is an
+ * L-shaped room (its walls only), so the editor shows a room that is not a rectangle.
  */
 export const lindholmenFloorPlans: readonly DemoFloorPlan[] = [
   {
@@ -16,10 +17,13 @@ export const lindholmenFloorPlans: readonly DemoFloorPlan[] = [
     depthCm: 750,
     fixed: [
       { kind: "Screen", x: 600, y: 8 },
-      { kind: "Door", x: 1150, y: 740, rotation: 180 },
+      { kind: "Door", x: 1150, y: 750 },
+      { kind: "Window", x: 0, y: 375 },
     ],
-    layouts: {
-      "U-shape": {
+    layouts: [
+      {
+        name: "U-shape",
+        setup: "U-shape",
         pieces: [
           { kind: table, x: 200, y: 290, rotation: 90, ...outside },
           { kind: table, x: 200, y: 470, rotation: 90, ...outside },
@@ -28,12 +32,19 @@ export const lindholmenFloorPlans: readonly DemoFloorPlan[] = [
           ...[330, 510, 690, 870].map((x) => ({ kind: table, x, y: 600, ...outside })),
         ],
       },
-      Banquet: {
+      {
+        name: "Banquet",
+        setup: "Banquet",
         pieces: [230, 580, 930].flatMap((x, column) =>
           [230, 560].map((y, row) => ({ kind: round, x, y, label: String(row * 3 + column + 1) })),
         ),
       },
-    },
+      {
+        name: "Banquet, long tables",
+        setup: "Banquet",
+        pieces: [250, 550, 850].flatMap((x) => [180, 400, 620].map((y) => ({ kind: table, x, y }))),
+      },
+    ],
   },
   {
     item: "Knippla (workshop)",
@@ -47,7 +58,7 @@ export const lindholmenFloorPlans: readonly DemoFloorPlan[] = [
       [800, 1100],
       [0, 1100],
     ],
-    fixed: [{ kind: "Door", x: 400, y: 1090, rotation: 180 }],
-    layouts: {},
+    fixed: [{ kind: "Door", x: 400, y: 1100 }],
+    layouts: [],
   },
 ];

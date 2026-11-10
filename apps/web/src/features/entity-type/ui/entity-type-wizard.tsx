@@ -8,11 +8,12 @@ import { WizardProgress } from "@/components/wizard/wizard-progress";
 import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { BaseSelectField } from "./base-select-field";
+import type { GroupOption } from "./group-select-field";
 import { ItemTypeFields } from "./item-type-fields";
 import { useEntityTypeWizard } from "./use-entity-type-wizard";
 
 /** Create a type step by step: base and name, then (item types) capabilities; fields come next. */
-export function EntityTypeWizard() {
+export function EntityTypeWizard({ groups }: { groups: readonly GroupOption[] }) {
   const t = useTranslations("entityType");
   const router = useRouter();
   const { form, steps, step, index, isLast, pending, next, submit, setIndex } =
@@ -29,7 +30,7 @@ export function EntityTypeWizard() {
             <TextField form={form} name="name" label={t("fields.name")} required />
           </>
         ) : (
-          <ItemTypeFields form={form} />
+          <ItemTypeFields form={form} groups={groups} />
         )}
         <WizardFooter
           first={index === 0}

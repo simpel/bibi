@@ -40,6 +40,14 @@ const vocabularyValue: ParityEntity = {
   },
 };
 
+const itemTypeGroup = byId({
+  name: "itemTypeGroup",
+  field: "itemTypeGroup",
+  list: "item-type-groups",
+  createTool: "itemTypeGroup_create",
+  args: { name: "Parity group" },
+});
+
 const entityType = byId({
   name: "entityType",
   field: "entityType",
@@ -135,6 +143,7 @@ const occupancy: ParityEntity = {
  */
 export function configurationEntities(): ParityEntity[] {
   return [
+    itemTypeGroup,
     entityType,
     fieldDefinition,
     vocabulary,

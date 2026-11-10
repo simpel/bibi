@@ -3,11 +3,26 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import type { ItemCapability } from "../entity-type/capability-kinds";
 import { ItemListInputSchema, ItemListOutputSchema } from "./list-schema";
 import { ItemIdInputSchema, ItemSchema } from "./schema";
 import { loadItem, toItemDtos } from "./to-item-dto";
 
 type OwnerFilterInput = { customerId?: string | undefined; onlyCustomer?: boolean | undefined };
+
+type TypeFilterInput = {
+  capability?: ItemCapability | undefined;
+  groupId?: string | null | undefined;
+};
+
+/** Filters on the item's type: a capability and/or a group (ADR 0101; null = ungrouped). */
+function typeFilter({ capability, groupId }: TypeFilterInput) {
+  const entityType = {
+    ...(capability ? { capabilities: { has: capability } } : {}),
+    ...(groupId !== undefined ? { groupId } : {}),
+  };
+  return Object.keys(entityType).length > 0 ? { entityType } : {};
+}
 
 /** The catalog, plus or instead of one customer's own bundles (ADR 0021). */
 function ownerFilter({ customerId, onlyCustomer }: OwnerFilterInput) {
@@ -21,7 +36,8 @@ export const listItems = defineOperation({
   kind: "query",
   description:
     "List the organization's items (artiklar): everything it sells or books, e.g. rooms, " +
-    "dishes or boats. Filter by type, venue or capability (BOOKABLE for bookable resources). " +
+    "dishes or boats. Filter by type, type group, venue or capability (BOOKABLE for bookable " +
+    "resources). " +
     "Lists the catalog; with customerId it also lists that customer's own bundles.",
   input: ItemListInputSchema,
   output: ItemListOutputSchema,
@@ -31,7 +47,7 @@ export const listItems = defineOperation({
       where: {
         ...(input.entityTypeId ? { entityTypeId: input.entityTypeId } : {}),
         ...(input.venueId ? { venueId: input.venueId } : {}),
-        ...(input.capability ? { entityType: { capabilities: { has: input.capability } } } : {}),
+        ...typeFilter(input),
         ...ownerFilter(input),
       },
       orderBy: [{ name: "asc" }, { id: "asc" }],
