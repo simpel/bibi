@@ -4,7 +4,7 @@
  * the renderer all use these, so a drawing and its seat count never disagree.
  */
 
-export const FLOOR_SHAPES = ["RECT", "ROUND", "SEAT_ROW", "ZONE"] as const;
+export const FLOOR_SHAPES = ["RECT", "ROUND", "SEAT_ROW", "ZONE", "DOOR", "WINDOW"] as const;
 export type FloorShape = (typeof FLOOR_SHAPES)[number];
 
 /** Depth a chair takes beside a table, and its distance from the table edge to its centre. */
@@ -29,6 +29,8 @@ export type FloorKindLike = SeatCounts & {
   depthCm: number;
   fixed: boolean;
   keepClearCm: number | null;
+  /** DOOR, WINDOW: how far it opens in degrees; null = it does not open (ADR 0102). */
+  swingDeg: number | null;
 };
 
 /** The element's owned overrides; null = the kind's. */
@@ -40,6 +42,8 @@ export type FloorOverrides = {
   seatsRight: number | null;
   seatsBottom: number | null;
   seatsLeft: number | null;
+  /** DOOR, WINDOW: own opening angle. Optional so pieces saved before ADR 0102 read as inherit. */
+  swingDeg?: number | null;
 };
 
 export type EffectiveElement = {
@@ -53,7 +57,13 @@ export type EffectiveElement = {
   seatCount: number;
   fixed: boolean;
   keepClearCm: number | null;
+  /** DOOR, WINDOW: opening angle after inheritance; 0 = does not open. Others: 0. */
+  swingDeg: number;
 };
+
+/** A door or a window: an opening in a wall, fixed and without chairs (ADR 0102). */
+export const isOpening = ({ shape }: { shape: FloorShape }) =>
+  shape === "DOOR" || shape === "WINDOW";
 
 const NO_SIDES: SeatSides = { top: 0, right: 0, bottom: 0, left: 0 };
 
@@ -75,8 +85,16 @@ export function effectiveElement({ element, kind }: EffectiveElementInput): Effe
         }
       : NO_SIDES;
   const seatCount = around + sides.top + sides.right + sides.bottom + sides.left;
-  const { shape, fixed, keepClearCm } = kind;
-  return { shape, widthCm, depthCm, around, sides, seatCount, fixed, keepClearCm };
+  const { shape } = kind;
+  if (isOpening({ shape })) {
+    const swingDeg = element.swingDeg ?? kind.swingDeg ?? 0;
+    // A door's swing is the floor that must stay clear; a window never blocks the floor.
+    const keepClearCm = shape === "DOOR" && swingDeg > 0 ? widthCm : null;
+    const sizes = { widthCm, depthCm, around: 0, sides: NO_SIDES, seatCount: 0 };
+    return { shape, ...sizes, fixed: true, keepClearCm, swingDeg };
+  }
+  const { fixed, keepClearCm } = kind;
+  return { shape, widthCm, depthCm, around, sides, seatCount, fixed, keepClearCm, swingDeg: 0 };
 }
 
 /** One chair: its centre and the direction it faces, in the element's own frame. */

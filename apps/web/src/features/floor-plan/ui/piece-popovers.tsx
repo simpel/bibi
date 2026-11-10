@@ -1,4 +1,4 @@
-import type { EffectiveElement, SeatSides } from "@bibi/core/schemas";
+import { type EffectiveElement, isOpening, type SeatSides } from "@bibi/core/schemas";
 import { Button, Input, Label, Popover, PopoverContent, PopoverTrigger } from "@bibi/ui";
 import { ArmchairIcon, RulerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -26,6 +26,8 @@ export function SizePopover({ effective, overridden, onChange }: SizePopoverProp
   const t = useTranslations("floorPlan.size");
   const id = useId();
   const round = effective.shape === "ROUND";
+  // A door or window has only a width: its depth is the wall's.
+  const single = round || isOpening(effective);
   const field = ({ key, value }: { key: "widthCm" | "depthCm"; value: number }) => (
     <div className="grid gap-1.5">
       <Label htmlFor={`${id}-${key}`}>
@@ -56,14 +58,16 @@ export function SizePopover({ effective, overridden, onChange }: SizePopoverProp
           <span className="tabular-nums">
             {round
               ? t("roundValue", { width: effective.widthCm })
-              : t("value", { width: effective.widthCm, depth: effective.depthCm })}
+              : single
+                ? t("widthValue", { width: effective.widthCm })
+                : t("value", { width: effective.widthCm, depth: effective.depthCm })}
           </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="grid w-64 gap-3">
-        <div className={round ? "grid" : "grid grid-cols-2 gap-3"}>
+        <div className={single ? "grid" : "grid grid-cols-2 gap-3"}>
           {field({ key: "widthCm", value: effective.widthCm })}
-          {round ? null : field({ key: "depthCm", value: effective.depthCm })}
+          {single ? null : field({ key: "depthCm", value: effective.depthCm })}
         </div>
         <Button
           variant="outline"

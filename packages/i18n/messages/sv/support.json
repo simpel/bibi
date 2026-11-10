@@ -98,7 +98,11 @@
         "questions": {
           "drawLayout": {
             "question": "Hur ritar jag en möblering för ett rum?",
-            "answer": "Öppna rummet under Artiklar och välj Möbleringar. Varje uppställning som rummet har får en flik, och en tom flik föreslår stolsrader, U-bord eller bankett för det antal personer du skriver.\nDra möbler från panelen till vänster in i rummet, eller klicka på en möbel för att placera den i mitten. Klicka på Spara när du är klar."
+            "answer": "Öppna rummet under Artiklar och välj Möbleringar. Klicka på Skapa möblering, ge den ett namn och välj uppställning; en tom möblering föreslår stolsrader, U-bord eller bankett för det antal personer du skriver.\nDra möbler från panelen till vänster in i rummet, eller klicka på en möbel för att placera den i mitten. Klicka på Spara när du är klar."
+          },
+          "severalLayouts": {
+            "question": "Kan ett rum ha flera möbleringar för samma uppställning?",
+            "answer": "Ja. Skapa en möblering för varje sätt ni möblerar rummet på, till exempel Bankett 60 med runda bord och Bankett 80 med långbord. Skapa möblering kan utgå från en kopia av en som redan finns.\nArtikelsidan visar varje möblering som en liten ritning under sin uppställning. Byt namn på eller ta bort en möblering via menyn med tre punkter i möbleringen."
           },
           "tableChairs": {
             "question": "Hur ändrar jag ett bords storlek eller var stolarna står?",
@@ -106,15 +110,19 @@
           },
           "capacity": {
             "question": "Hur räknas ett rums kapacitet?",
-            "answer": "När en uppställning har en möblering är kapaciteten antalet stolar i ritningen. Bibi varnar när en bokning har fler gäster än så.\nFör stående gäster, eller när du vill ha ett annat tal, välj menyn med tre punkter i möbleringen och ange en kapacitet."
+            "answer": "En uppställnings kapacitet är antalet stolar i dess största möblering. Bibi varnar när en bokning har fler gäster än så.\nFör stående gäster, eller när du vill ha ett annat tal, välj menyn med tre punkter i en möblering och ange en kapacitet."
           },
           "floorPlan": {
-            "question": "Var lägger jag in dörrar och pelare?",
-            "answer": "Öppna fliken Planritning under Möbleringar. Dörrar, pelare och skärmar som du placerar där syns i alla rummets möbleringar, och Bibi varnar om en möbel står i vägen för en dörr.\nAnvänd menyn med tre punkter för att ange rummets bredd och djup."
+            "question": "Var lägger jag in dörrar, fönster och pelare?",
+            "answer": "Öppna rummet under Artiklar och välj Planritning. Dörrar, fönster, pelare och skärmar som du placerar där syns i alla rummets möbleringar, och Bibi varnar om en möbel står där en dörr öppnas.\nDörrar och fönster sitter alltid på en vägg: dra en så följer den närmaste vägg. Klicka på den för att ange bredd och hur långt den öppnas."
           },
           "roomShape": {
             "question": "Hur ritar jag ett rum som inte är rektangulärt?",
-            "answer": "Öppna rummet under Artiklar, välj Möbleringar och sedan fliken Planritning. Dra i ett hörn för att flytta väggarna, klicka på + mitt på en vägg för att lägga till ett hörn och dubbelklicka på ett hörn för att ta bort det.\nVarje vägg visar sin längd. Klicka på Spara när formen stämmer, så använder alla möbleringar i rummet den."
+            "answer": "Öppna rummet under Artiklar och välj Planritning. Dra i ett hörn för att flytta väggarna, klicka på + mitt på en vägg för att lägga till ett hörn och dubbelklicka på ett hörn för att ta bort det.\nVarje vägg visar sin längd. Klicka på Spara när formen stämmer, så använder alla möbleringar i rummet den. Använd menyn med tre punkter för att ange rummets bredd och djup."
+          },
+          "history": {
+            "question": "Var ser jag vem som har ändrat en artikel?",
+            "answer": "Öppna artikeln och titta precis under rubriken: där står när den senast ändrades och av vem. Vill du se alla ändringar klickar du på de tre prickarna uppe till höger och väljer Visa historik.\nDå öppnas en panel som visar vem som ändrade vad och när. Du ser det här bara om du har behörighet till ändringshistoriken."
           }
         }
       },

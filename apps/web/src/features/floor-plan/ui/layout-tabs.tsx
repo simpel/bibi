@@ -5,7 +5,8 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Link, useRouter } from "@/lib/navigation";
 import { layoutsRoute } from "../layouts-path";
 
-export type LayoutTab = { key: string; label: string; capacity: number | null };
+/** One layout: its name, its setup's name when it differs, and its seats. */
+export type LayoutTab = { key: string; label: string; hint: string | null; seats: number };
 
 export type LayoutTabsProps = {
   itemId: string;
@@ -15,7 +16,7 @@ export type LayoutTabsProps = {
   dirty: boolean;
 };
 
-/** The floor plan and one tab per setup; each tab is its own URL. */
+/** One tab per layout of the item; each tab is its own URL. */
 export function LayoutTabs({ itemId, tabs, current, dirty }: LayoutTabsProps) {
   const t = useTranslations("floorPlan");
   const router = useRouter();
@@ -30,16 +31,15 @@ export function LayoutTabs({ itemId, tabs, current, dirty }: LayoutTabsProps) {
       <Tabs value={current} className="min-w-0">
         <TabsList aria-label={t("tabs")} className="max-w-full justify-start overflow-x-auto">
           {tabs.map((tab) => {
-            const href = layoutsRoute({ itemId, tab: tab.key });
+            const href = layoutsRoute({ itemId, layoutId: tab.key });
             return (
               <TabsTrigger key={tab.key} value={tab.key} asChild className="flex-none gap-1.5">
                 <Link href={href} onClick={(event) => guard({ event, href })}>
                   {tab.label}
-                  {tab.capacity === null ? null : (
-                    <span className="text-xs text-muted-foreground tabular-nums">
-                      {tab.capacity}
-                    </span>
-                  )}
+                  {tab.hint && tab.hint !== tab.label ? (
+                    <span className="text-xs text-muted-foreground">{tab.hint}</span>
+                  ) : null}
+                  <span className="text-xs text-muted-foreground tabular-nums">{tab.seats}</span>
                 </Link>
               </TabsTrigger>
             );

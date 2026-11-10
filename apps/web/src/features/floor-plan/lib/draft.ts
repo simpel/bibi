@@ -4,7 +4,10 @@ import {
   type FloorElementDto,
   type FloorElementInput,
   type FloorElementKindDto,
+  type FloorPoint,
+  isOpening,
   type PlacedElement,
+  snapToWall,
 } from "@bibi/core/schemas";
 
 /** A piece while it is edited: the save input plus a key that is stable within the editor. */
@@ -31,15 +34,16 @@ export const NO_OVERRIDES = {
   seatsRight: null,
   seatsBottom: null,
   seatsLeft: null,
+  swingDeg: null,
 } as const;
 
 /** A stored piece as a draft. */
 export function toDraft({ element }: { element: FloorElementDto }): DraftElement {
   const { id, kindId, xCm, yCm, rotationDeg, label, widthCm, depthCm } = element;
-  const { seats, seatsTop, seatsRight, seatsBottom, seatsLeft } = element;
+  const { seats, seatsTop, seatsRight, seatsBottom, seatsLeft, swingDeg } = element;
   return {
     ...{ key: id, kindId, xCm, yCm, rotationDeg, label, widthCm, depthCm },
-    ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft },
+    ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft, swingDeg },
   };
 }
 
@@ -69,3 +73,24 @@ export type SeatTotalInput = { elements: readonly DraftElement[]; kinds: KindMap
 
 export const seatTotal = ({ elements, kinds }: SeatTotalInput) =>
   elements.reduce((sum, element) => sum + (effectiveOf({ element, kinds })?.seatCount ?? 0), 0);
+
+export type SnapOpeningsInput = {
+  elements: readonly DraftElement[];
+  outline: readonly FloorPoint[];
+  kinds: KindMap;
+};
+
+/** Doors and windows kept on the nearest wall, turned along it (ADR 0102). */
+export function snapOpenings({ elements, outline, kinds }: SnapOpeningsInput): DraftElement[] {
+  return elements.map((element) => {
+    const kind = kinds.get(element.kindId);
+    if (!kind || !isOpening(kind)) return element;
+    const widthCm = element.widthCm ?? kind.widthCm;
+    const placed = snapToWall({ outline, xCm: element.xCm, yCm: element.yCm, widthCm });
+    const same =
+      placed.xCm === element.xCm &&
+      placed.yCm === element.yCm &&
+      placed.rotationDeg === element.rotationDeg;
+    return same ? element : { ...element, ...placed };
+  });
+}

@@ -196,7 +196,8 @@
       "orders": "Orders",
       "money": "Money & connections"
     },
-    "layouts": "Layouts"
+    "layouts": "Layouts",
+    "floorPlan": "Floor plan"
   },
   "shell": {
     "mainNavigation": "Main navigation",

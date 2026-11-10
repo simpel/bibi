@@ -1,6 +1,8 @@
 import { Button, Tooltip, TooltipContent, TooltipTrigger } from "@bibi/ui";
 import { Redo2Icon, Undo2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { NamedOption } from "@/components/form/named-option";
+import { CreateLayoutButton } from "./create-layout-button";
 import { type LayoutTab, LayoutTabs } from "./layout-tabs";
 import type { EditorSave } from "./use-editor-save";
 import type { LayoutDraft } from "./use-layout-draft";
@@ -9,17 +11,20 @@ export type EditorToolbarProps = {
   itemId: string;
   tab: string;
   tabs: readonly LayoutTab[];
+  /** What a new layout can be made from; null on the floor plan page. */
+  creating: { setups: readonly NamedOption[]; layouts: readonly NamedOption[] } | null;
   dirty: boolean;
   canEdit: boolean;
   save: EditorSave;
   draft: LayoutDraft;
 };
 
-/** One row under the top bar: the tabs left, undo, redo and Save right. */
+/** One row under the top bar: the layout tabs left (none on the floor plan), undo, redo, Save. */
 export function EditorToolbar({
   itemId,
   tab,
   tabs,
+  creating,
   dirty,
   canEdit,
   save,
@@ -30,7 +35,14 @@ export function EditorToolbar({
   const { state, dispatch } = draft;
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b px-4 py-2">
-      <LayoutTabs itemId={itemId} tabs={tabs} current={tab} dirty={dirty} />
+      <div className="flex min-w-0 items-center gap-1">
+        {tabs.length ? (
+          <LayoutTabs itemId={itemId} tabs={tabs} current={tab} dirty={dirty} />
+        ) : null}
+        {canEdit && creating?.setups.length ? (
+          <CreateLayoutButton itemId={itemId} {...creating} compact />
+        ) : null}
+      </div>
       {canEdit ? (
         <div className="flex items-center gap-1">
           <Tooltip>

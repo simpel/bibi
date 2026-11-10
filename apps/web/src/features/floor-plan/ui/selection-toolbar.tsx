@@ -1,11 +1,20 @@
+import { isOpening } from "@bibi/core/schemas";
 import { Button, Separator, Tooltip, TooltipContent, TooltipTrigger } from "@bibi/ui";
 import { CopyIcon, RotateCwIcon, Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { CSSProperties, ReactNode } from "react";
 import { type DraftElement, effectiveOf, type KindMap } from "../lib/draft";
-import { isOverridden, resetPiece, resizePiece, setAround, setSides } from "../lib/edit-pieces";
+import {
+  isOverridden,
+  resetPiece,
+  resizePiece,
+  setAround,
+  setSides,
+  setSwing,
+} from "../lib/edit-pieces";
 import { ChairsPopover, SizePopover } from "./piece-popovers";
 import { SeatStepper } from "./seat-stepper";
+import { SwingStepper } from "./swing-stepper";
 
 function IconAction({
   label,
@@ -58,6 +67,10 @@ export function SelectionToolbar({
   const one = selected.length === 1 ? selected[0] : undefined;
   const effective = one ? effectiveOf({ element: one, kinds }) : null;
   const shape = effective?.shape;
+  /** Fixed pieces (a door, a pillar) never take chairs. */
+  const seated = effective ? !effective.fixed : false;
+  /** A door or window follows its wall: it is not rotated by hand (ADR 0102). */
+  const opening = effective ? isOpening(effective) : false;
   return (
     <div
       role="toolbar"
@@ -81,19 +94,25 @@ export function SelectionToolbar({
               }
             />
           )}
-          {shape === "RECT" ? (
+          {seated && shape === "RECT" ? (
             <ChairsPopover
               sides={effective.sides}
               total={effective.seatCount}
               onChange={(sides) => onReplace(setSides({ element: one, kinds, sides }))}
             />
           ) : null}
-          {shape === "ROUND" || shape === "SEAT_ROW" ? (
+          {seated && (shape === "ROUND" || shape === "SEAT_ROW") ? (
             <SeatStepper
               value={effective.around}
               max={shape === "ROUND" ? 24 : 60}
               label={t("chairs.label")}
               onChange={(seats) => onReplace(setAround({ element: one, kinds, seats }))}
+            />
+          ) : null}
+          {opening && effective ? (
+            <SwingStepper
+              value={effective.swingDeg}
+              onChange={(swingDeg) => onReplace(setSwing({ element: one, kinds, swingDeg }))}
             />
           ) : null}
           <Separator orientation="vertical" className="mx-1 h-5" />
@@ -106,9 +125,11 @@ export function SelectionToolbar({
           <Separator orientation="vertical" className="mx-1 h-5" />
         </>
       )}
-      <IconAction label={t("selection.rotate")} onClick={(shift) => onRotate(shift ? 15 : 90)}>
-        <RotateCwIcon />
-      </IconAction>
+      {opening ? null : (
+        <IconAction label={t("selection.rotate")} onClick={(shift) => onRotate(shift ? 15 : 90)}>
+          <RotateCwIcon />
+        </IconAction>
+      )}
       <IconAction label={t("selection.duplicate")} onClick={onDuplicate}>
         <CopyIcon />
       </IconAction>

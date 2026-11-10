@@ -53,13 +53,25 @@ export const FloorPlanSaveInputSchema = FloorPlanShapeSchema.extend({
   }
 });
 
-export const LayoutSummarySchema = z.object({
+export const SetupCapacitySchema = z.object({
   setupId: z.string(),
-  layoutId: z.string().nullable(),
-  seatCount: z.number().int().nullable().describe("null = no layout drawn"),
-  capacity: z.number().int().nullable().describe("Typed capacity; null = the layout's seats"),
+  seatCount: z
+    .number()
+    .int()
+    .nullable()
+    .describe("The most seats of the item's layouts for this setup; null = none drawn"),
+  capacity: z.number().int().nullable().describe("Typed capacity; null = the largest layout's"),
   effectiveCapacity: z.number().int().nullable(),
   capacitySource: CapacitySourceSchema,
+});
+
+export const LayoutSummarySchema = z.object({
+  id: z.string(),
+  setupId: z.string(),
+  name: z.string(),
+  version: z.number().int(),
+  seatCount: z.number().int(),
+  elements: z.array(FloorElementSchema).describe("The layout's pieces, e.g. for a thumbnail"),
 });
 
 export const FloorPlanSchema = FloorPlanShapeSchema.extend({
@@ -67,35 +79,57 @@ export const FloorPlanSchema = FloorPlanShapeSchema.extend({
   itemId: z.string(),
   version: z.number().int(),
   elements: z.array(FloorElementSchema),
-  layouts: z.array(LayoutSummarySchema).describe("One per setup the item has"),
+  setups: z.array(SetupCapacitySchema).describe("One per setup the item has"),
+  layouts: z
+    .array(LayoutSummarySchema)
+    .describe("Every layout of the item, by setup in the item's order, then by name"),
 });
 
-export const SetupLayoutKeyInputSchema = z.object({
+const name = z.string().trim().min(1).max(80).describe("e.g. Banquet 80; unique within the item");
+
+export const SetupLayoutIdInputSchema = z.object({ id: z.string().min(1) });
+
+export const SetupLayoutCreateInputSchema = z.object({
   itemId: z.string().min(1),
   setupId: z.string().min(1).describe("One of the item's setups"),
+  name,
+  copyFromId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("Another layout of the same item to copy the pieces and note from"),
 });
 
-export const SetupLayoutSaveInputSchema = SetupLayoutKeyInputSchema.extend({
+const capacity = z
+  .number()
+  .int()
+  .positive()
+  .max(100_000)
+  .nullable()
+  .optional()
+  .describe(
+    "Typed capacity for the layout's setup in this item; null = the largest layout's seats; omit = unchanged",
+  );
+
+export const SetupLayoutSaveInputSchema = z.object({
+  id: z.string().min(1),
   expectedVersion: version,
+  name: name.optional().describe("New name; omit = unchanged"),
   note: z.string().trim().max(2000).nullable().optional(),
-  capacity: z
-    .number()
-    .int()
-    .positive()
-    .max(100_000)
-    .nullable()
-    .optional()
-    .describe("Typed capacity for this setup; null = use the layout's seats; omit = unchanged"),
+  capacity,
   elements: z
     .array(FloorElementInputSchema)
     .max(400)
     .describe("The layout's pieces (no fixed kinds). Replaces the whole set."),
 });
 
-export const SetupLayoutSchema = LayoutSummarySchema.extend({
+export const SetupLayoutSchema = SetupCapacitySchema.omit({ seatCount: true }).extend({
+  id: z.string(),
   itemId: z.string(),
+  name: z.string(),
   version: z.number().int(),
   note: z.string().nullable(),
+  seatCount: z.number().int().describe("This layout's seats"),
   elements: z.array(FloorElementSchema),
   plan: FloorPlanShapeSchema.extend({
     elements: z.array(FloorElementSchema).describe("The floor plan's fixed elements"),
@@ -106,5 +140,7 @@ export const SetupLayoutSchema = LayoutSummarySchema.extend({
 export type FloorPlanDto = z.infer<typeof FloorPlanSchema>;
 export type SetupLayoutDto = z.infer<typeof SetupLayoutSchema>;
 export type LayoutSummaryDto = z.infer<typeof LayoutSummarySchema>;
+export type SetupCapacityDto = z.infer<typeof SetupCapacitySchema>;
 export type SetupLayoutSaveInput = z.input<typeof SetupLayoutSaveInputSchema>;
+export type SetupLayoutCreateInput = z.input<typeof SetupLayoutCreateInputSchema>;
 export type FloorPlanSaveInput = z.input<typeof FloorPlanSaveInputSchema>;

@@ -4,7 +4,7 @@ import {
   importFloorElementKinds,
   listFloorElementKinds,
 } from "../../features/floor-plan/kind-operations";
-import { saveSetupLayout } from "../../features/floor-plan/layout-operations";
+import { createSetupLayout, saveSetupLayout } from "../../features/floor-plan/layout-operations";
 import { saveFloorPlan } from "../../features/floor-plan/plan-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
@@ -53,8 +53,8 @@ function toElements({ pieces, kinds }: PiecesInput): Result<SeedElement[]> {
 }
 
 /**
- * ADR 0099: the starter furniture library and the org's drawn rooms, through `floorPlan.save`
- * and `setupLayout.save` as SYSTEM.
+ * ADR 0099, 0102: the starter furniture library and the org's drawn rooms, through
+ * `floorPlan.save`, `setupLayout.create` and `setupLayout.save` as SYSTEM.
  */
 export async function seedDemoFloorPlans({
   context,
@@ -96,13 +96,20 @@ export async function seedDemoFloorPlans({
     };
     const saved = await execute({ operation: saveFloorPlan, input, context });
     if (!saved.ok) return saved;
-    for (const [setup, layout] of Object.entries(plan.layouts)) {
-      const setupId = refs.setups.get(setup);
-      if (!setupId) return missing({ what: `setup ${setup}` });
+    for (const layout of plan.layouts) {
+      const setupId = refs.setups.get(layout.setup);
+      if (!setupId) return missing({ what: `setup ${layout.setup}` });
       const elements = toElements({ pieces: layout.pieces, kinds });
       if (!elements.ok) return elements;
+      const created = await execute({
+        operation: createSetupLayout,
+        input: { itemId, setupId, name: layout.name },
+        context,
+      });
+      if (!created.ok) return created;
       const capacity = layout.useSeats ? { capacity: null } : {};
-      const input = { itemId, setupId, expectedVersion: 0, ...capacity, elements: elements.value };
+      const { id, version } = created.value;
+      const input = { id, expectedVersion: version, ...capacity, elements: elements.value };
       const drawn = await execute({ operation: saveSetupLayout, input, context });
       if (!drawn.ok) return drawn;
     }

@@ -113,7 +113,15 @@ export type DemoFloorPiece = {
   seatsBottom?: number;
 };
 
-/** A demo floor plan with its fixed parts and some setups drawn (ADR 0099). */
+/** One named layout of a setup (ADR 0102); `useSeats` clears the typed capacity so seats count. */
+export type DemoLayout = {
+  name: string;
+  setup: string;
+  pieces: readonly DemoFloorPiece[];
+  useSeats?: boolean;
+};
+
+/** A demo floor plan with its fixed parts (doors and windows snap to a wall) and layouts. */
 export type DemoFloorPlan = {
   item: string;
   widthCm: number;
@@ -121,8 +129,7 @@ export type DemoFloorPlan = {
   /** The walls as [x, y] points in cm, clockwise; omitted = a width × depth rectangle. */
   outline?: readonly (readonly [number, number])[];
   fixed: readonly DemoFloorPiece[];
-  /** Setup name → its pieces; `useSeats` clears the typed capacity so the seats count. */
-  layouts: Readonly<Record<string, { pieces: readonly DemoFloorPiece[]; useSeats?: boolean }>>;
+  layouts: readonly DemoLayout[];
 };
 
 /** Slice 2 of ADR 0025: what the organization configures (`docs/demo-seed.md`). */

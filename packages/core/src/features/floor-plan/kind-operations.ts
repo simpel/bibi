@@ -5,6 +5,18 @@ import { conflict, notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { CONFERENCE_BANQUET_KINDS } from "./kind-template";
+import { isOpening } from "./seats";
+
+const OPENING_DEFAULTS = {
+  fixed: true,
+  keepClearCm: null,
+  seats: 0,
+  seatsTop: 0,
+  seatsRight: 0,
+  seatsBottom: 0,
+  seatsLeft: 0,
+} as const;
+
 import {
   type FloorElementKindCreateInput,
   FloorElementKindCreateInputSchema,
@@ -28,8 +40,12 @@ async function insertKind({
   if (await context.db.floorElementKind.findFirst({ where: { name: input.name } })) {
     return conflict({ message: `A kind named "${input.name}" exists` });
   }
+  // Doors and windows are part of the room (ADR 0102): always fixed, no chairs, no keep-clear depth.
+  const data = isOpening(input)
+    ? { ...input, ...OPENING_DEFAULTS, swingDeg: input.swingDeg ?? null }
+    : { ...input, swingDeg: null };
   const kind = await context.db.floorElementKind.create({
-    data: { ...input, organizationId: context.organizationId },
+    data: { ...data, organizationId: context.organizationId },
   });
   context.recordChange({ entityId: kind.id, after: kind });
   return ok({ value: kind });

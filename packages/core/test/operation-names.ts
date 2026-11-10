@@ -112,7 +112,9 @@ const NAMES = [
   "floorPlan.get",
   "floorPlan.save",
   "setupLayout.get",
+  "setupLayout.create",
   "setupLayout.save",
+  "setupLayout.archive",
   "setup.create",
   "setup.get",
   "setup.list",
@@ -159,5 +161,5 @@ export const OPERATION_NAMES: readonly string[] = [
   ...EXTRA_NAMES,
   ...ASSIGNMENT_NAMES,
   ...BOARD_NAMES,
-].sort((a, b) => a.localeCompare(b));
   ...ITEM_TYPE_GROUP_NAMES,
+].sort((a, b) => a.localeCompare(b));

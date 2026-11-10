@@ -196,7 +196,8 @@
       "orders": "Bokningar",
       "money": "Pengar och kopplingar"
     },
-    "layouts": "Möbleringar"
+    "layouts": "Möbleringar",
+    "floorPlan": "Planritning"
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",

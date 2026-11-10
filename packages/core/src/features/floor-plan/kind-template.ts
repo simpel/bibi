@@ -14,7 +14,8 @@ export const CONFERENCE_BANQUET_KINDS: readonly FloorElementKindCreateInput[] = 
   { name: "Stage", shape: "RECT", widthCm: 400, depthCm: 200 },
   { name: "Buffet", shape: "RECT", widthCm: 240, depthCm: 80 },
   { name: "Dance floor", shape: "ZONE", widthCm: 400, depthCm: 400 },
-  { name: "Door", shape: "RECT", widthCm: 100, depthCm: 20, fixed: true, keepClearCm: 140 },
+  { name: "Door", shape: "DOOR", widthCm: 90, depthCm: 12, fixed: true, swingDeg: 90 },
+  { name: "Window", shape: "WINDOW", widthCm: 120, depthCm: 12, fixed: true, swingDeg: 0 },
   { name: "Pillar", shape: "RECT", widthCm: 40, depthCm: 40, fixed: true },
   { name: "Screen", shape: "RECT", widthCm: 400, depthCm: 16, fixed: true },
 ];

@@ -682,7 +682,8 @@
       "diameter": "Diameter (cm)",
       "value": "{width} × {depth} cm",
       "roundValue": "Ø {width} cm",
-      "reset": "Återställ bibliotekets storlek och stolar"
+      "reset": "Återställ bibliotekets storlek och stolar",
+      "widthValue": "{width} cm"
     },
     "chairs": {
       "label": "Stolar",
@@ -722,7 +723,9 @@
         "banquet": "Bankett, runda bord"
       },
       "roomSize": "Redigera rummets storlek",
-      "rectangle": "Gör väggarna till en rektangel"
+      "rectangle": "Gör väggarna till en rektangel",
+      "rename": "Byt namn på möblering",
+      "delete": "Ta bort möblering"
     },
     "start": {
       "title": "Börja möblera {setup}",
@@ -761,6 +764,49 @@
       "hint": "Dra i ett hörn för att flytta väggarna. Klicka på + för att lägga till ett hörn, dubbelklicka på ett hörn för att ta bort det.",
       "corner": "Hörn {corner}",
       "addCorner": "Lägg till ett hörn på vägg {wall}"
+    },
+    "swing": {
+      "label": "Öppningsvinkel",
+      "less": "Öppna mindre",
+      "more": "Öppna mer",
+      "value": "{degrees}°"
+    },
+    "create": {
+      "button": "Skapa möblering",
+      "title": "Skapa möblering",
+      "description": "Ett rum kan möbleras på flera sätt i samma uppställning, till exempel Bankett 60 och Bankett 80. Uppställningens kapacitet är den största möbleringen.",
+      "name": "Namn",
+      "setup": "Uppställning",
+      "copyFrom": "Utgå från",
+      "empty": "Ett tomt rum",
+      "created": "Möbleringen har skapats"
+    },
+    "renameDialog": {
+      "title": "Byt namn på möblering",
+      "field": "Namn",
+      "confirm": "Byt namn"
+    },
+    "deleteDialog": {
+      "title": "Ta bort {name}?",
+      "description": "Möbleringen och dess möbler tas bort. Uppställningens kapacitet kommer sedan från rummets andra möbleringar.",
+      "confirm": "Ta bort möblering",
+      "deleted": "Möbleringen har tagits bort"
+    },
+    "noLayouts": {
+      "title": "Inga möbleringar än",
+      "description": "Skapa en möblering för att rita hur rummet möbleras i en av sina uppställningar.",
+      "noSetups": "Ge artikeln en uppställning först (Redigera artikeln), skapa sedan dess möbleringar."
+    },
+    "section": {
+      "title": "Möbleringar",
+      "floorPlan": "Planritning",
+      "editLayouts": "Redigera möbleringar",
+      "noSetups": "Artikeln har inga uppställningar än.",
+      "noLayouts": "Ingen möblering ritad än.",
+      "noCapacity": "ingen kapacitet",
+      "capacityTyped": "kapacitet {capacity}",
+      "capacityLargest": "upp till {capacity} (största möbleringen)",
+      "seats": "{count, plural, one {# plats} other {# platser}}"
     }
   }
 }

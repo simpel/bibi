@@ -1,120 +1,125 @@
-import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
-import { checkKinds, loadElements, replaceElements, toPlaced } from "./element-rows";
-import { layoutIssues } from "./layout-issues";
+import { checkKinds, loadElements, replaceElements, toInput } from "./element-rows";
+import { checkNameFree, loadItemSetup, readLayout } from "./layout-read";
 import {
-  type SetupLayoutDto,
-  SetupLayoutKeyInputSchema,
+  SetupLayoutCreateInputSchema,
+  SetupLayoutIdInputSchema,
   SetupLayoutSaveInputSchema,
   SetupLayoutSchema,
 } from "./layout-schema";
-import { effectiveCapacity } from "./layout-seats";
-import { checkSetupsItem, checkVersion, loadPlanState, raceLost } from "./plan-load";
-
-type Db = { context: Pick<OperationContext, "db"> };
-type Key = { itemId: string; setupId: string };
-
-/** The item's setup row; a setup the item lacks reads as not found. */
-async function loadItemSetup({ context, itemId, setupId }: Db & Key) {
-  const checked = await checkSetupsItem({ context, itemId });
-  if (!checked.ok) return checked;
-  const row = await context.db.itemSetup.findFirst({
-    where: { itemId, setupId },
-    select: { id: true, capacity: true },
-  });
-  return row ? ok({ value: row }) : notFound({ entity: "Setup of the item" });
-}
-
-/** The layout with the plan it is drawn on, its seats, effective capacity and warnings. */
-async function readLayout({ context, itemId, setupId }: Db & Key): Promise<Result<SetupLayoutDto>> {
-  const itemSetup = await loadItemSetup({ context, itemId, setupId });
-  if (!itemSetup.ok) return itemSetup;
-  const [plan, layout] = await Promise.all([
-    loadPlanState({ context, itemId }),
-    context.db.setupLayout.findFirst({ where: { itemId, setupId } }),
-  ]);
-  const elements = layout
-    ? await loadElements({ context, parent: { setupLayoutId: layout.id } })
-    : [];
-  const seatCount = layout ? elements.reduce((sum, element) => sum + element.seatCount, 0) : null;
-  const { capacity } = itemSetup.value;
-  const issues = layoutIssues({
-    outline: plan.outline,
-    fixed: plan.elements.map((element) => toPlaced({ element })),
-    elements: elements.map((element) => toPlaced({ element })),
-  });
-  const { widthCm, depthCm, outline, minAisleCm } = plan;
-  return ok({
-    value: {
-      ...{ itemId, setupId, layoutId: layout?.id ?? null, version: layout?.version ?? 0 },
-      ...{ note: layout?.note ?? null, elements, seatCount, capacity, issues },
-      ...effectiveCapacity({ capacity, seatCount }),
-      plan: { widthCm, depthCm, outline, minAisleCm, elements: plan.elements },
-    },
-  });
-}
+import { checkVersion, raceLost } from "./plan-load";
 
 export const getSetupLayout = defineOperation({
   name: "setupLayout.get",
   kind: "query",
   description:
-    "One setup drawn in an item's floor plan: the pieces with their effective size and chairs, " +
-    "the plan they stand in (with its fixed elements), the seat count, the effective capacity " +
-    "(a typed capacity, else the seats) and warnings (outside the walls, overlapping pieces, a " +
-    "blocked keep-clear area). Version 0 means nothing is drawn yet.",
-  input: SetupLayoutKeyInputSchema,
+    "One layout of an item (a named way of furnishing it in one setup): the pieces with their " +
+    "effective size and chairs, the plan they stand in (with its fixed elements, doors and " +
+    "windows), this layout's seats, the setup's capacity in the item (a typed capacity, else the " +
+    "largest layout's seats) and warnings (outside the walls, overlapping pieces, a blocked " +
+    "keep-clear area such as a door's swing).",
+  input: SetupLayoutIdInputSchema,
   output: SetupLayoutSchema,
   permission: "item:read",
-  handler: ({ input, context }) => readLayout({ context, ...input }),
+  handler: ({ input, context }) => readLayout({ context, id: input.id }),
+});
+
+export const createSetupLayout = defineOperation({
+  name: "setupLayout.create",
+  kind: "command",
+  description:
+    "Create a named layout for one of an item's setups, e.g. Banquet 80 beside Banquet 60. It " +
+    "starts empty, or as a copy of the pieces and note of another layout of the same item " +
+    "(copyFromId). Names are unique within the item.",
+  input: SetupLayoutCreateInputSchema,
+  output: SetupLayoutSchema,
+  permission: "item:write",
+  handler: async ({ input, context }) => {
+    const { itemId, setupId, name, copyFromId } = input;
+    const itemSetup = await loadItemSetup({ context, itemId, setupId });
+    if (!itemSetup.ok) return itemSetup;
+    const free = await checkNameFree({ context, itemId, name });
+    if (!free.ok) return free;
+    const source = copyFromId
+      ? await context.db.setupLayout.findFirst({ where: { id: copyFromId, itemId } })
+      : null;
+    if (copyFromId && !source) return notFound({ entity: "Layout to copy" });
+    const layout = await context.db.setupLayout.create({
+      data: {
+        ...{ itemId, setupId, name, note: source?.note ?? null, version: 1 },
+        organizationId: context.organizationId,
+      },
+    });
+    if (source) {
+      const pieces = await loadElements({ context, parent: { setupLayoutId: source.id } });
+      const elements = pieces.map((element) => toInput({ element }));
+      await replaceElements({ context, parent: { setupLayoutId: layout.id }, elements });
+    }
+    const after = await readLayout({ context, id: layout.id });
+    if (after.ok) context.recordChange({ entityId: layout.id, after: after.value });
+    return after;
+  },
 });
 
 export const saveSetupLayout = defineOperation({
   name: "setupLayout.save",
   kind: "command",
   description:
-    "Save one setup's layout in an item as a whole: the pieces (not fixed kinds) with position, " +
-    "rotation and their own size and chairs per side where they differ from the kind, an " +
-    "optional note and, when given, the typed capacity (null = use the seats). Pass the " +
-    "version you loaded; a newer saved version gives CONFLICT. Warnings never block the save.",
+    "Save a layout as a whole: the pieces (not fixed kinds) with position, rotation and their " +
+    "own size and chairs per side where they differ from the kind, and optionally a new name, " +
+    "the note and the setup's typed capacity in the item (null = the largest layout's seats). " +
+    "Pass the version you loaded; a newer saved version gives CONFLICT. Warnings never block.",
   input: SetupLayoutSaveInputSchema,
   output: SetupLayoutSchema,
   permission: "item:write",
   handler: async ({ input, context }) => {
-    const { itemId, setupId, expectedVersion, note, capacity, elements } = input;
-    const before = await readLayout({ context, itemId, setupId });
+    const { id, expectedVersion, name, note, capacity, elements } = input;
+    const before = await readLayout({ context, id });
     if (!before.ok) return before;
+    const { itemId, setupId } = before.value;
     const version = checkVersion({ expected: expectedVersion, current: before.value.version });
     if (!version.ok) return version;
+    if (name !== undefined) {
+      const free = await checkNameFree({ context, itemId, name, exceptId: id });
+      if (!free.ok) return free;
+    }
     const kinds = await checkKinds({ context, elements, fixed: false });
     if (!kinds.ok) return kinds;
-    const data = { version: before.value.version + 1, ...(note === undefined ? {} : { note }) };
+    const data = {
+      version: before.value.version + 1,
+      ...(name === undefined ? {} : { name }),
+      ...(note === undefined ? {} : { note }),
+    };
     // The version in the where makes a concurrent save of the same version lose (CONFLICT).
-    const { layoutId } = before.value;
-    const moved = layoutId
-      ? await context.db.setupLayout.updateMany({
-          where: { id: layoutId, version: before.value.version },
-          data,
-        })
-      : null;
-    if (moved && moved.count === 0) return raceLost();
-    const layout = layoutId
-      ? { id: layoutId }
-      : await context.db.setupLayout.create({
-          data: { ...data, itemId, setupId, organizationId: context.organizationId },
-        });
-    await replaceElements({ context, parent: { setupLayoutId: layout.id }, elements });
+    const moved = await context.db.setupLayout.updateMany({
+      where: { id, version: before.value.version },
+      data,
+    });
+    if (moved.count === 0) return raceLost();
+    await replaceElements({ context, parent: { setupLayoutId: id }, elements });
     if (capacity !== undefined) {
       await context.db.itemSetup.updateMany({ where: { itemId, setupId }, data: { capacity } });
     }
-    const after = await readLayout({ context, itemId, setupId });
-    if (!after.ok) return after;
-    context.recordChange({
-      entityId: layout.id,
-      before: before.value.layoutId ? before.value : undefined,
-      after: after.value,
-    });
+    const after = await readLayout({ context, id });
+    if (after.ok) context.recordChange({ entityId: id, before: before.value, after: after.value });
     return after;
+  },
+});
+
+export const archiveSetupLayout = defineOperation({
+  name: "setupLayout.archive",
+  kind: "command",
+  description:
+    "Archive a layout. The setup's capacity then comes from the item's remaining layouts.",
+  input: SetupLayoutIdInputSchema,
+  output: SetupLayoutSchema,
+  permission: "item:write",
+  handler: async ({ input: { id }, context }) => {
+    const before = await readLayout({ context, id });
+    if (!before.ok) return before;
+    await context.db.setupLayout.update({ where: { id }, data: { status: "ARCHIVED" } });
+    context.recordChange({ entityId: id, before: before.value });
+    return before;
   },
 });

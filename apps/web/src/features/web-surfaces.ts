@@ -117,13 +117,15 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "setup.create", route: "/admin/setups" },
   { operation: "setup.update", route: "/admin/setups" },
   { operation: "setup.archive", route: "/admin/setups" },
-  // The floor element library is a section of the setups page; plans and layouts have their own tab.
+  // The floor element library is a section of the setups page; the floor plan and the layouts have their own tabs.
   { operation: "floorElementKind.list", route: "/items/[id]/layouts" },
   { operation: "floorElementKind.importTemplate", route: "/items/[id]/layouts" },
-  { operation: "floorPlan.get", route: "/items/[id]/layouts" },
-  { operation: "floorPlan.save", route: "/items/[id]/layouts" },
+  { operation: "floorPlan.get", route: "/items/[id]/floor-plan" },
+  { operation: "floorPlan.save", route: "/items/[id]/floor-plan" },
   { operation: "setupLayout.get", route: "/items/[id]/layouts" },
+  { operation: "setupLayout.create", route: "/items/[id]/layouts" },
   { operation: "setupLayout.save", route: "/items/[id]/layouts" },
+  { operation: "setupLayout.archive", route: "/items/[id]/layouts" },
   { operation: "responsibility.list", route: "/admin/responsibilities" },
   { operation: "responsibility.get", route: "/admin/responsibilities" },
   { operation: "responsibility.create", route: "/admin/responsibilities" },

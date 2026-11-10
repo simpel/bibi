@@ -28,6 +28,7 @@ export function draftToDrawing({ element, kinds, tone, nameOf }: DraftToDrawingI
     label: element.label,
     fixed: effective.fixed,
     keepClearCm: effective.keepClearCm,
+    swingDeg: effective.swingDeg,
     name: nameOf({ kindName: kind.name, label: element.label, seats: effective.seatCount }),
     tone,
   };
@@ -45,6 +46,7 @@ export function storedToDrawing({ element }: { element: FloorElementDto }): Floo
     seatCount: element.seatCount,
     fixed: element.fixed,
     keepClearCm: element.keepClearCm,
+    swingDeg: element.effectiveSwingDeg,
   };
   return {
     id: element.id,
@@ -58,6 +60,7 @@ export function storedToDrawing({ element }: { element: FloorElementDto }): Floo
     label: element.label,
     fixed: element.fixed,
     keepClearCm: element.keepClearCm,
+    swingDeg: element.effectiveSwingDeg,
     name: element.label ?? "",
   };
 }

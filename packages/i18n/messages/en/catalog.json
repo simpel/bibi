@@ -682,7 +682,8 @@
       "diameter": "Diameter (cm)",
       "value": "{width} × {depth} cm",
       "roundValue": "Ø {width} cm",
-      "reset": "Reset to the library's size and chairs"
+      "reset": "Reset to the library's size and chairs",
+      "widthValue": "{width} cm"
     },
     "chairs": {
       "label": "Chairs",
@@ -722,7 +723,9 @@
         "banquet": "Banquet, round tables"
       },
       "roomSize": "Edit the room's size",
-      "rectangle": "Make the walls a rectangle"
+      "rectangle": "Make the walls a rectangle",
+      "rename": "Rename layout",
+      "delete": "Delete layout"
     },
     "start": {
       "title": "Start the {setup} layout",
@@ -761,6 +764,49 @@
       "hint": "Drag a corner to move the walls. Click + to add a corner, double-click a corner to delete it.",
       "corner": "Corner {corner}",
       "addCorner": "Add a corner on wall {wall}"
+    },
+    "swing": {
+      "label": "Opening angle",
+      "less": "Open less",
+      "more": "Open more",
+      "value": "{degrees}°"
+    },
+    "create": {
+      "button": "Create layout",
+      "title": "Create layout",
+      "description": "A room can be furnished several ways in the same setup, for example Banquet 60 and Banquet 80. The setup's capacity is its largest layout.",
+      "name": "Name",
+      "setup": "Setup",
+      "copyFrom": "Start from",
+      "empty": "An empty room",
+      "created": "Layout created"
+    },
+    "renameDialog": {
+      "title": "Rename layout",
+      "field": "Name",
+      "confirm": "Rename layout"
+    },
+    "deleteDialog": {
+      "title": "Delete {name}?",
+      "description": "The layout and its furniture are removed. The setup's capacity then comes from the room's other layouts.",
+      "confirm": "Delete layout",
+      "deleted": "Layout deleted"
+    },
+    "noLayouts": {
+      "title": "No layouts yet",
+      "description": "Create a layout to draw how the room is furnished in one of its setups.",
+      "noSetups": "Give the item a setup first (Edit the item), then create its layouts."
+    },
+    "section": {
+      "title": "Layouts",
+      "floorPlan": "Floor plan",
+      "editLayouts": "Edit layouts",
+      "noSetups": "The item has no setups yet.",
+      "noLayouts": "No layout drawn yet.",
+      "noCapacity": "no capacity",
+      "capacityTyped": "capacity {capacity}",
+      "capacityLargest": "up to {capacity} (largest layout)",
+      "seats": "{count, plural, one {# seat} other {# seats}}"
     }
   }
 }

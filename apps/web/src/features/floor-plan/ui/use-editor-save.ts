@@ -7,7 +7,7 @@ import type { EditorRoom } from "./layout-editor";
 
 export type UseEditorSaveInput = {
   itemId: string;
-  setup: { id: string } | null;
+  layout: { id: string; name: string } | null;
   room: EditorRoom;
   elements: readonly DraftElement[];
   version: number;
@@ -17,7 +17,7 @@ export type UseEditorSaveInput = {
 /** Saves the open tab as a whole; the page renders again with what was stored. */
 export function useEditorSave({
   itemId,
-  setup,
+  layout,
   room,
   elements,
   version,
@@ -31,10 +31,10 @@ export function useEditorSave({
   const messages = { pending: common("saving"), success: t("saved") };
   const onSuccess = () => router.refresh();
   const save = () => {
-    if (setup) {
+    if (layout) {
       const input = {
-        itemId,
-        setupId: setup.id,
+        id: layout.id,
+        name: layout.name,
         expectedVersion: version,
         capacity,
         elements: pieces,

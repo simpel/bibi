@@ -5,16 +5,18 @@ import { layoutIssues } from "@bibi/core/schemas";
 import { FloorDrawing, TooltipProvider } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { type DragEvent, useMemo, useRef, useState } from "react";
-import { placedOf, seatTotal, toDraft } from "../lib/draft";
+import { placedOf, seatTotal, snapOpenings, toDraft } from "../lib/draft";
 import { outlineSize } from "../lib/outline-edit";
 import { draftToDrawing } from "../lib/to-drawing";
+import { DeleteLayoutDialog } from "./delete-layout-dialog";
 import { type EditorDialog, EditorDialogs } from "./editor-dialogs";
-import { EditorToolbar } from "./editor-toolbar";
+import { EditorToolbar, type EditorToolbarProps } from "./editor-toolbar";
 import { EmptyLayout } from "./empty-layout";
 import { FurnitureDock, KIND_MIME } from "./furniture-dock";
 import { LayoutMenu } from "./layout-menu";
 import { LayoutSummary } from "./layout-summary";
 import type { LayoutTab } from "./layout-tabs";
+import { NameDialog } from "./name-dialog";
 import { SelectionToolbar } from "./selection-toolbar";
 import { toDrawing, useDrawingPointer } from "./use-drawing-pointer";
 import { useEditorKeys } from "./use-editor-keys";
@@ -33,12 +35,15 @@ export type EditorRoom = {
   minAisleCm: number | null;
 };
 
+/** The open layout: its name, its setup's name and the setup's typed capacity in the room. */
+export type EditorLayout = { id: string; name: string; setupName: string; capacity: number | null };
+
 export type LayoutEditorProps = {
   itemId: string;
-  tab: string;
+  /** null on the floor plan page. */
+  layout: EditorLayout | null;
   tabs: readonly LayoutTab[];
-  /** null on the floor plan tab. */
-  setup: { id: string; name: string; capacity: number | null } | null;
+  creating: EditorToolbarProps["creating"];
   room: EditorRoom;
   /** The floor plan's fixed parts (on a layout tab). */
   fixed: readonly FloorElementDto[];
@@ -48,14 +53,19 @@ export type LayoutEditorProps = {
   canEdit: boolean;
 };
 
-/** The floor plan or one setup's layout, drawn to scale and edited in place (ADR 0099). */
+/** The floor plan or one layout, drawn to scale and edited in place (ADR 0099, 0102). */
 export function LayoutEditor(props: LayoutEditorProps) {
-  const { setup, room, kinds: kindList, canEdit } = props;
+  const { layout, room, kinds: kindList, canEdit } = props;
+  const setup = layout ? { name: layout.setupName } : null;
   const t = useTranslations("floorPlan");
   const kinds = useMemo(() => new Map(kindList.map((kind) => [kind.id, kind])), [kindList]);
   const draft = useLayoutDraft({
     initial: props.elements.map((element) => toDraft({ element })),
     outline: room.outline,
+    // On the floor plan, doors and windows stay on a wall while pieces and corners move.
+    normalize: layout
+      ? undefined
+      : ({ elements, outline }) => snapOpenings({ elements, outline, kinds }),
   });
   const { state } = draft;
   const room2: EditorRoom = {
@@ -64,7 +74,9 @@ export function LayoutEditor(props: LayoutEditorProps) {
     minAisleCm: room.minAisleCm,
   };
   const commands = useLayoutCommands({ draft, kinds, room: room2 });
-  const [capacity, setCapacity] = useState(setup?.capacity ?? null);
+  const [capacity, setCapacity] = useState(layout?.capacity ?? null);
+  const [name, setName] = useState(layout?.name ?? "");
+  const [layoutDialog, setLayoutDialog] = useState<"rename" | "delete" | null>(null);
   const [dialog, setDialog] = useState<EditorDialog>(null);
   const [issueIndex, setIssueIndex] = useState(-1);
   const svg = useRef<SVGSVGElement>(null);
@@ -79,10 +91,11 @@ export function LayoutEditor(props: LayoutEditorProps) {
     enabled: canEdit,
     removeCorner: editWalls ? walls.removeSelected : null,
   });
-  const dirty = state.dirty || capacity !== (setup?.capacity ?? null);
+  const dirty =
+    state.dirty || capacity !== (layout?.capacity ?? null) || name !== (layout?.name ?? "");
   const save = useEditorSave({
     itemId: props.itemId,
-    setup,
+    layout: layout ? { id: layout.id, name } : null,
     room: room2,
     elements: state.elements,
     version: props.version,
@@ -163,8 +176,9 @@ export function LayoutEditor(props: LayoutEditorProps) {
         <EditorToolbar
           {...{
             itemId: props.itemId,
-            tab: props.tab,
+            tab: layout?.id ?? "",
             tabs: props.tabs,
+            creating: props.creating,
             dirty,
             canEdit,
             save,
@@ -182,7 +196,7 @@ export function LayoutEditor(props: LayoutEditorProps) {
         >
           <FloorDrawing
             ref={svg}
-            title={setup ? t("drawingOf", { setup: setup.name }) : t("tabsPlan")}
+            title={layout ? t("drawingOf", { setup: name }) : t("tabsPlan")}
             widthCm={room2.widthCm}
             depthCm={room2.depthCm}
             outline={room2.outline}
@@ -214,6 +228,8 @@ export function LayoutEditor(props: LayoutEditorProps) {
               onTemplate={setup ? template.replace : null}
               onRoomSize={setup ? null : () => setDialog("room")}
               onRectangle={setup ? null : commands.rectangle}
+              onRename={layout ? () => setLayoutDialog("rename") : null}
+              onDelete={layout ? () => setLayoutDialog("delete") : null}
             />
           ) : null}
           <LayoutSummary
@@ -241,7 +257,7 @@ export function LayoutEditor(props: LayoutEditorProps) {
           setup &&
           template.showStart &&
           state.elements.length === 0 &&
-          props.version === 0 ? (
+          props.elements.length === 0 ? (
             <EmptyLayout
               setupName={setup.name}
               room={room2}
@@ -256,6 +272,22 @@ export function LayoutEditor(props: LayoutEditorProps) {
           {...{ dialog, setDialog, capacity, seats: seats ?? 0, room: room2, setCapacity }}
           setOutline={commands.setOutline}
         />
+        {layout ? (
+          <>
+            <NameDialog
+              open={layoutDialog === "rename"}
+              onOpenChange={(open) => setLayoutDialog(open ? "rename" : null)}
+              name={name}
+              onConfirm={setName}
+            />
+            <DeleteLayoutDialog
+              open={layoutDialog === "delete"}
+              onOpenChange={(open) => setLayoutDialog(open ? "delete" : null)}
+              itemId={props.itemId}
+              layout={{ id: layout.id, name: layout.name }}
+            />
+          </>
+        ) : null}
       </div>
     </TooltipProvider>
   );

@@ -15,5 +15,7 @@ export const FLOOR_PLAN_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   floorPlan_get: UNTIL_VIEW,
   floorPlan_save: UNTIL_VIEW,
   setupLayout_get: UNTIL_VIEW,
+  setupLayout_create: UNTIL_VIEW,
   setupLayout_save: UNTIL_VIEW,
+  setupLayout_archive: UNTIL_VIEW,
 };
