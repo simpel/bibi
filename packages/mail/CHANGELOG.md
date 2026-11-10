@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.1](https://github.com/simpel/bibi/compare/@bibi/mail-v0.5.0...@bibi/mail-v0.5.1) (2026-11-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 1.3.0
+    * @bibi/i18n bumped to 1.5.0
+
 ## [0.5.0](https://github.com/simpel/bibi/compare/@bibi/mail-v0.4.0...@bibi/mail-v0.5.0) (2026-11-07)
 
 

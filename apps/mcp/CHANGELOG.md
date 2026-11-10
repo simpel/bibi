@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.1](https://github.com/simpel/bibi/compare/@bibi/mcp-v1.2.0...@bibi/mcp-v1.2.1) (2026-11-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 1.2.1
+    * @bibi/auth bumped to 0.6.1
+    * @bibi/core bumped to 1.3.0
+    * @bibi/graphql bumped to 1.1.2
+    * @bibi/mail bumped to 0.5.1
+    * @bibi/storage bumped to 0.2.4
+  * devDependencies
+    * @bibi/api bumped to 1.1.2
+
 ## [1.2.0](https://github.com/simpel/bibi/compare/@bibi/mcp-v1.1.0...@bibi/mcp-v1.2.0) (2026-11-07)
 
 

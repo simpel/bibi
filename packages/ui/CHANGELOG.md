@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/simpel/bibi/compare/@bibi/ui-v1.1.0...@bibi/ui-v1.2.0) (2026-11-09)
+
+
+### Features
+
+* draw floor plans and setup layouts with table sizes and chairs per side ([#509](https://github.com/simpel/bibi/issues/509)) ([51ddd0c](https://github.com/simpel/bibi/commit/51ddd0c1d772701ff06b4d66e2aecdcbd1bc18fa))
+
 ## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/ui-v1.0.1...@bibi/ui-v1.1.0) (2026-11-06)
 
 
