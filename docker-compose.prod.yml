@@ -37,10 +37,28 @@ x-app-env: &app-env
   S3_ACCESS_KEY: ${S3_ACCESS_KEY:?set S3_ACCESS_KEY}
   S3_SECRET_KEY: ${S3_SECRET_KEY:?set S3_SECRET_KEY}
 
+# Memory: every service has a limit so one runaway process cannot take the whole server (the host
+# also runs Coolify and its proxy); Node's heap is capped below its container's limit so it collects
+# garbage instead of being OOM-killed. See "Disk and memory" in docs/runbooks/deploy.md.
 services:
   postgres:
     image: pgvector/pgvector:pg17
     restart: unless-stopped
+    mem_limit: 1g
+    # Sized for a 4 GB host. max_connections must stay above the pools: web, mcp and worker
+    # (DATABASE_POOL_MAX each, default 10), pg-boss's own pool, the notification listener and backup.
+    command:
+      - postgres
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - effective_cache_size=768MB
+      - -c
+      - work_mem=8MB
+      - -c
+      - maintenance_work_mem=64MB
+      - -c
+      - max_connections=60
     environment:
       POSTGRES_USER: bibi
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
@@ -57,11 +75,10 @@ services:
   # One-off step: applies pending migrations and exits. web and mcp wait for it.
   # Migrations must be backward compatible (expand/contract), see docs/decisions/0013-hosting-and-deploy.md.
   migrate:
-    image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-web:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
+    # Its own image (packages/db and the Prisma CLI) runs `prisma migrate deploy`.
+    image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-migrate:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
     restart: "no"
-    # The image is a `pnpm deploy` output, not a workspace, so call pnpm's hoisted Prisma CLI directly.
-    working_dir: /app/node_modules/@bibi/db
-    command: ["/app/node_modules/.pnpm/node_modules/.bin/prisma", "migrate", "deploy"]
+    mem_limit: 512m
     healthcheck:
       disable: true
     environment:
@@ -73,7 +90,10 @@ services:
   web:
     image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-web:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
     restart: unless-stopped
-    environment: *app-env
+    mem_limit: 768m
+    environment:
+      <<: *app-env
+      NODE_OPTIONS: --max-old-space-size=576
     # Not published: Coolify's proxy reaches the container on this internal port.
     expose:
       - "3330"
@@ -91,7 +111,10 @@ services:
   mcp:
     image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-mcp:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
     restart: unless-stopped
-    environment: *app-env
+    mem_limit: 384m
+    environment:
+      <<: *app-env
+      NODE_OPTIONS: --max-old-space-size=288
     expose:
       - "3331"
     depends_on:
@@ -110,7 +133,10 @@ services:
   worker:
     image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-worker:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
     restart: unless-stopped
-    environment: *app-env
+    mem_limit: 384m
+    environment:
+      <<: *app-env
+      NODE_OPTIONS: --max-old-space-size=288
     stop_grace_period: 30s
     depends_on:
       postgres: { condition: service_healthy }
@@ -120,12 +146,12 @@ services:
     logging: *logging
 
   # Nightly pg_dump to S3-compatible storage (Hetzner Object Storage) with retention.
-  # See docs/operations/backup-and-restore.md. Built from the repo (docker/backup/Dockerfile).
+  # See docs/operations/backup-and-restore.md. Built in CI from docker/backup/Dockerfile, so the
+  # server never builds images (a build leaves a cache on its disk).
   backup:
-    build:
-      context: .
-      dockerfile: docker/backup/Dockerfile
+    image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-backup:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
     restart: unless-stopped
+    mem_limit: 256m
     environment:
       PGHOST: postgres
       PGUSER: bibi
