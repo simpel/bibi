@@ -24,6 +24,7 @@ import { invoiceRoutes } from "./features/invoice/rest";
 import { itemRoutes } from "./features/item/rest";
 import { itemDemandRoutes } from "./features/item-demand/rest";
 import { itemStateRoutes } from "./features/item-state/rest";
+import { itemTypeGroupRoutes } from "./features/item-type-group/rest";
 import { lineRoutes } from "./features/line/rest";
 import { lineAllocationRoutes } from "./features/line-allocation/rest";
 import { memberRoutes } from "./features/member/rest";
@@ -105,6 +106,7 @@ export function listRestRoutes(): RestRoute[] {
   return [
     ...venueRoutes,
     ...entityTypeRoutes,
+    ...itemTypeGroupRoutes,
     ...fieldDefinitionRoutes,
     ...vocabularyRoutes,
     ...setupRoutes,

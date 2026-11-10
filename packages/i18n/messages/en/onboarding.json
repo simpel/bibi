@@ -239,6 +239,11 @@
       "preShowDinner": "Pre-show dinner",
       "intervalPackage": "Interval package"
     },
+    "groups": {
+      "spaces": "Spaces",
+      "food": "Food & drink",
+      "extras": "Extras"
+    },
     "templates": {
       "statuses": {
         "lead": "Lead",

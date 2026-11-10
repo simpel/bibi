@@ -580,6 +580,10 @@
           "label": "Uppställningar",
           "keywords": "rum möblering kapacitet ställtid lokal"
         },
+        "groups": {
+          "label": "Grupper",
+          "keywords": "artikeltyper lokaler mat tillval flikar sortera rubriker"
+        },
         "lists": {
           "label": "Listor",
           "keywords": "allergener kost behov värden ordlista"

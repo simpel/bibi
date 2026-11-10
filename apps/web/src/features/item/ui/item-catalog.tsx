@@ -5,8 +5,10 @@ import { EmptyState } from "@/components/states/empty-state";
 import { PageHeader } from "@/components/states/page-header";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
+import type { GroupTab } from "../group-tabs";
 import { CreateItemButton } from "./create-item-button";
 import type { ItemFormData } from "./item-form-data";
+import { ItemGroupTabs } from "./item-group-tabs";
 import { ItemTable } from "./item-table";
 import { ItemTypeFilter } from "./item-type-filter";
 
@@ -14,13 +16,15 @@ export type ItemCatalogProps = {
   data: ItemFormData;
   page: { items: ItemDto[]; nextCursor: string | null };
   canCreate: boolean;
+  /** Tabs per item type group; null when the organization has none. */
+  groups: { tabs: GroupTab[]; current: string } | null;
   typeId?: string | undefined;
   cursor?: string | undefined;
 };
 
 /** The catalog: header with create, type filter, and the table (or an empty state). */
 export async function ItemCatalog(props: ItemCatalogProps) {
-  const { data, page, canCreate, typeId, cursor } = props;
+  const { data, page, canCreate, groups, typeId, cursor } = props;
   const t = await getTranslations("item");
   const noTypes = data.types.length === 0;
   const create = canCreate && !noTypes ? <CreateItemButton typeId={typeId} /> : undefined;
@@ -32,7 +36,8 @@ export async function ItemCatalog(props: ItemCatalogProps) {
   return (
     <div className="grid gap-6">
       <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
-      {page.items.length === 0 && !cursor && !typeId ? (
+      {groups ? <ItemGroupTabs tabs={groups.tabs} current={groups.current} /> : null}
+      {page.items.length === 0 && !cursor && !typeId && !groups ? (
         <EmptyState
           title={t("empty")}
           description={noTypes ? t("noTypes") : t("emptyDescription")}
@@ -46,7 +51,7 @@ export async function ItemCatalog(props: ItemCatalogProps) {
           venuesHidden={data.venuesHidden}
           canEdit={canCreate}
           withControls
-          filterBar={<ItemTypeFilter types={data.types} typeId={typeId} />}
+          filterBar={<ItemTypeFilter types={data.types} typeId={typeId} group={groups?.current} />}
         />
       )}
     </div>

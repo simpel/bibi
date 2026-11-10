@@ -7,7 +7,11 @@ import { pageTitle } from "@/lib/page-metadata";
 
 type ItemsPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ cursor?: string | string[]; type?: string | string[] }>;
+  searchParams: Promise<{
+    cursor?: string | string[];
+    type?: string | string[];
+    group?: string | string[];
+  }>;
 };
 
 export async function generateMetadata({ params }: ItemsPageProps) {
@@ -17,12 +21,17 @@ export async function generateMetadata({ params }: ItemsPageProps) {
 
 export default async function ItemsPage({ params, searchParams }: ItemsPageProps) {
   const locale = resolveLocale({ value: (await params).locale });
-  const { cursor, type } = await searchParams;
+  const { cursor, type, group } = await searchParams;
   setRequestLocale(locale);
   const typeId = readCursor({ value: type });
   return (
     <SimplePage>
-      <ItemList locale={locale} typeId={typeId} cursor={readCursor({ value: cursor })} />
+      <ItemList
+        locale={locale}
+        typeId={typeId}
+        group={readCursor({ value: group })}
+        cursor={readCursor({ value: cursor })}
+      />
     </SimplePage>
   );
 }

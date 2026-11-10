@@ -24,6 +24,10 @@
             "question": "What are the example orders on my board?",
             "answer": "When you finish setting up Bibi, we add three example orders so your board isn't empty: a meeting, a conference and a dinner. They all belong to the customer Example Company Ltd and use the types you chose.\nClick around in them, edit them and move them as you like.\nWhen you're done, open Example Company Ltd under Customers, archive the contact person Anna Example, then archive the customer with Also archive all orders for this customer ticked."
           },
+          "itemGroups": {
+            "question": "How do I sort my items into groups like Spaces and Food?",
+            "answer": "Go to Settings, open Types and find Groups. Create a group, then open a type and pick its group. You can rename, reorder and archive groups there.\nItems then shows one tab per group, so rooms, food and extras are no longer mixed in one list.\nWhen you set up Bibi, we create Spaces, Food & drink and Extras for you."
+          },
           "inviteColleagues": {
             "question": "How do I invite my colleagues?",
             "answer": "Go to Administration → Members and invite them by email. They get a link that takes them straight into your organization.\nTen seats are included in the subscription."

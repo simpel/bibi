@@ -17,7 +17,12 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
-export type ItemTypeFilterProps = { types: EntityTypeDto[]; typeId?: string | undefined };
+export type ItemTypeFilterProps = {
+  types: EntityTypeDto[];
+  typeId?: string | undefined;
+  /** The open group tab, kept when the type changes. */
+  group?: string | undefined;
+};
 
 const ALL = "all";
 
@@ -38,12 +43,15 @@ function TypeOptions({ types }: TypeOptionsProps) {
 }
 
 /** Type filter above the catalog. A filter form (CLAUDE.md "Forms"): the URL is the state. */
-export function ItemTypeFilter({ types, typeId }: ItemTypeFilterProps) {
+export function ItemTypeFilter({ types, typeId, group }: ItemTypeFilterProps) {
   const t = useTranslations("item");
   const router = useRouter();
   const form = useForm<{ type: string }>({ defaultValues: { type: typeId ?? ALL } });
   const go = ({ value }: { value: string }) =>
-    router.push(value === ALL ? ROUTES.items : { pathname: ROUTES.items, query: { type: value } });
+    router.push({
+      pathname: ROUTES.items,
+      query: { ...(group ? { group } : {}), ...(value === ALL ? {} : { type: value }) },
+    });
   return (
     <Form {...form}>
       <form className="max-w-xs" onSubmit={(event) => event.preventDefault()}>

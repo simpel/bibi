@@ -22,7 +22,7 @@ export function ReviewStep({ organization }: { organization: string }) {
   const router = useRouter();
   const { org, draft } = useDraftGuard();
   const { run, pending } = useToastAction();
-  const types = chosenTypes({ draft });
+  const types = chosenTypes({ draft, groupName: ({ category }) => t(`groups.${category}`) });
   const statuses = getSetupPreset({ key: draft.kind ?? "empty" }).statuses;
   const label = useTemplateLabel();
   const pipeline = localizeDraft({

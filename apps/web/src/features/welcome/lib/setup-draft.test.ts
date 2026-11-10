@@ -26,12 +26,20 @@ describe("setup draft (ADR 0061)", () => {
       label: (t) => t.name,
     });
     draft.types.push({ key: null, name: "  ", category: "food", bookable: false, checked: true });
-    expect(chosenTypes({ draft }).map((type) => type.name)).toEqual([
-      "Event space",
-      "Guide",
-      "Guided tour",
-      "Coffee break",
-      "Meal",
-    ]);
+    expect(
+      chosenTypes({ draft, groupName: ({ category }) => `g:${category}` }).map((type) => type.name),
+    ).toEqual(["Event space", "Guide", "Guided tour", "Coffee break", "Meal"]);
+  });
+
+  it("puts each type in its step's group", () => {
+    const draft = draftFromKind({
+      preset: getSetupPreset({ key: "restaurant" }),
+      label: ({ key }) => key,
+    });
+    const groups = chosenTypes({ draft, groupName: ({ category }) => `g:${category}` }).map(
+      (type) => [type.name, type.group],
+    );
+    expect(groups[0]).toEqual(["privateRoom", "g:spaces"]);
+    expect(groups[1]).toEqual(["setMenu", "g:food"]);
   });
 });

@@ -4,6 +4,7 @@ Current behaviour, checked against the code. Why: ADR 0021, 0026. Direction (par
 
 ## What the organization configures (data)
 - **Types** (`EntityType`) for the base entities in `ENTITY_BASES` (`ITEM`, `CUSTOMER`, `CONTACT`, `ORDER`, `REQUIREMENT`, `LINE`). Examples: Conference room, Dish or Package for items, Company for customers, Conference for orders.
+- **Item type groups** (`ItemTypeGroup`, ADR 0101): headings the item types are browsed under. See "Item type groups" below.
 - **Fields** (`FieldDefinition`) per type. Kinds (`FIELD_KINDS`): `TEXT`, `NUMBER`, `BOOLEAN`, `DATE`, `CHOICE`, `MULTI_CHOICE`, `LINK`.
 - **Vocabularies** (`Vocabulary` + `VocabularyValue`): the organization's own lists ("Allergens", "Diet", "Accessibility"). Choice fields and requirements point to one.
 - **Requirements** (`Requirement`): a count on an order against a vocabulary value (Gluten × 3). It applies to the whole order or to one line, and a row on a line replaces the order's count there. Requirement is also a type with its own fields. Requirements never link to a person: there is no personal data about guests.
@@ -32,6 +33,13 @@ Current behaviour, checked against the code. Why: ADR 0021, 0026. Direction (par
 - The part graph is acyclic; core rejects cycles and more than 5 levels. In a bundle the bundle's price is charged and its VAT is distributed over the part lines in proportion to their effective price × quantity, with largest-remainder rounding, one VAT row per rate (ADR 0059).
 - `customerId = null` is a catalog item; set means a customer-specific bundle (`item.saveAsBundle` creates one from a quote).
 - Adding an item to an order expands it into lines, occupancy and order lines that copy name, price, VAT and tags (snapshot). `line.expandBundle` adds a bundle as one bundle line that carries the price plus part lines linked by `Line.parentLineId`, which show their own prices but do not count in the totals (ADR 0059); customisation options are not expanded yet.
+
+## Item type groups
+- A group (`name`, `position`, `status`) only organizes item types for browsing; it carries no behaviour. `EntityType.groupId` is a nullable foreign key on item types (`null` = ungrouped).
+- `/items` shows one tab per active group in `position` order, plus "Other" for ungrouped types when any exist. With no groups the page is one list. The `?type=` filter works within a tab.
+- Groups are edited in Settings → Types → Groups: create, rename, reorder, archive and move a type. Archiving a group moves its types to ungrouped.
+- The welcome flow creates the groups (one per step with chosen types) and the demo seed creates Spaces, Food & drink and Extras. Existing organizations get none.
+- Operations `itemTypeGroup.*` under `configuration:read|write|delete`; `entityType.create|update` take `groupId` and `item.list` takes `groupId` (`null` = ungrouped).
 
 ## Matching and tags
 - A requirement is compared with the items on the order tagged with the same vocabulary value. A hit on a mandatory part without an alternative is flagged and blocks the run sheet.

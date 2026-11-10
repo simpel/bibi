@@ -20,7 +20,12 @@ export type EntityTypeFormValues = BufferFormValues & {
   capabilities: ItemCapability[];
   /** Item types: Equipment or Person (ADR 0059). */
   resourceKind: ResourceKind;
+  /** Item types: the group id, or `NO_GROUP` for none (a Select item cannot be empty). */
+  groupId: string;
 };
+
+/** The form value that stands for "no group". */
+export const NO_GROUP = "none";
 
 /** What the resolver outputs: core's create input. */
 export type EntityTypeFormOutput = z.infer<typeof EntityTypeCreateInputSchema>;
@@ -35,6 +40,7 @@ export function entityTypeFormToInput({ values }: EntityTypeFormInput) {
     name: values.name.trim(),
     capabilities: item ? values.capabilities : undefined,
     resourceKind: item ? values.resourceKind : undefined,
+    groupId: item ? (values.groupId === NO_GROUP ? null : values.groupId) : undefined,
     ...(item ? bufferFormToInput({ values }) : {}),
   };
 }
@@ -54,6 +60,7 @@ export function entityTypeFormDefaults({
     name: entityType?.name ?? "",
     capabilities: entityType?.capabilities ?? [],
     resourceKind: entityType?.resourceKind ?? "EQUIPMENT",
+    groupId: entityType?.groupId ?? NO_GROUP,
     ...bufferFormDefaults({ stored: entityType }),
   };
 }

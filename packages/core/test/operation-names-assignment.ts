@@ -19,6 +19,16 @@ export const ALLOCATION_NAMES = [
   "lineAllocation.list",
 ];
 
+/** Item type group operations (ADR 0101). */
+export const ITEM_TYPE_GROUP_NAMES = [
+  "itemTypeGroup.archive",
+  "itemTypeGroup.create",
+  "itemTypeGroup.get",
+  "itemTypeGroup.list",
+  "itemTypeGroup.reorder",
+  "itemTypeGroup.update",
+];
+
 /** Board and board phase operations (ADR 0067), kept apart so `operation-names.ts` fits its file. */
 export const BOARD_NAMES = [
   "board.archive",

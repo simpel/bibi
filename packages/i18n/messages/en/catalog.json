@@ -78,6 +78,8 @@
     "goToTypes": "Go to types",
     "filterLabel": "Filter by type",
     "allTypes": "All types",
+    "otherGroup": "Other",
+    "groupTabs": "Item groups",
     "saving": "Saving item…",
     "archiving": "Archiving item…",
     "select": "Select…",
@@ -315,6 +317,33 @@
       "changeover": "Changeover"
     }
   },
+  "itemTypeGroup": {
+    "singular": "Group",
+    "plural": "Groups",
+    "listDescription": "The headings your item types are sorted under, e.g. Spaces and Food. Items shows one tab per group.",
+    "create": "Create group",
+    "edit": "Edit group",
+    "createDescription": "Name the group.",
+    "editDescription": "Change the name of the group.",
+    "archive": "Archive group",
+    "archiveConfirm": "Do you want to archive the group {name}? Its types become ungrouped.",
+    "archived": "The group has been archived.",
+    "created": "The group has been created.",
+    "updated": "The group has been updated.",
+    "reordered": "The groups have been reordered.",
+    "empty": "No groups yet.",
+    "emptyDescription": "Create groups such as Spaces, Food and Extras to sort your item types.",
+    "saving": "Saving group…",
+    "archiving": "Archiving group…",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "fields": {
+      "name": "Name"
+    },
+    "columns": {
+      "name": "Name"
+    }
+  },
   "entityType": {
     "singular": "Type",
     "plural": "Types",
@@ -336,6 +365,7 @@
     "importing": "Importing template…",
     "imported": "{created, plural, one {# type} other {# types}} created, {skipped} already existed.",
     "fieldCount": "{count, plural, one {# field} other {# fields}}",
+    "noGroup": "No group",
     "noCapabilities": "No capabilities",
     "capabilitiesHeading": "Capabilities",
     "fieldsHeading": "Fields",
@@ -343,7 +373,8 @@
       "base": "Applies to",
       "name": "Name",
       "sections": "Sections",
-      "resourceKind": "Equipment or person"
+      "resourceKind": "Equipment or person",
+      "group": "Group"
     },
     "resourceKinds": {
       "EQUIPMENT": "Equipment",
@@ -351,6 +382,7 @@
     },
     "columns": {
       "name": "Name",
+      "group": "Group",
       "capabilities": "Capabilities",
       "fields": "Fields"
     },

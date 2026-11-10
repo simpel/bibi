@@ -24,6 +24,10 @@
             "question": "Vad är exempelbokningarna på min tavla?",
             "answer": "När du har satt upp Bibi lägger vi in tre exempelbokningar så att tavlan inte är tom: ett möte, en konferens och en middag. Alla hör till kunden Exempelkund AB och använder de typer du valde.\nKlicka runt i dem, ändra och flytta dem som du vill.\nNär du är klar öppnar du Exempelkund AB under Kunder, arkiverar kontaktpersonen Anna Exempel och arkiverar sedan kunden med Arkivera även kundens alla bokningar ikryssat."
           },
+          "itemGroups": {
+            "question": "Hur sorterar jag mina artiklar i grupper som Lokaler och Mat?",
+            "answer": "Gå till Inställningar, öppna Typer och hitta Grupper. Skapa en grupp, öppna sedan en typ och välj dess grupp. Där kan du också byta namn på, ändra ordning på och arkivera grupper.\nArtiklar visar sedan en flik per grupp, så att lokaler, mat och tillval inte ligger blandade i en lista.\nNär du sätter upp Bibi skapar vi Lokaler, Mat & dryck och Tillval åt dig."
+          },
           "inviteColleagues": {
             "question": "Hur bjuder jag in mina kollegor?",
             "answer": "Gå till Administration → Medlemmar och bjud in dem via e-post. De får en länk som tar dem direkt in i er organisation.\nTio platser ingår i abonnemanget."

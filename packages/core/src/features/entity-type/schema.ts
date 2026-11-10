@@ -22,6 +22,8 @@ export const EntityTypeSchema = z.object({
   ...BufferMinutesShape,
   /** Item types: EQUIPMENT or PERSON (ADR 0059); null on every other base. */
   resourceKind: ResourceKindSchema.nullable(),
+  /** Item types: the group the type is browsed under (ADR 0101); null = ungrouped. */
+  groupId: z.string().nullable(),
   /** Active fields of the type, in display order. */
   fields: z.array(FieldDefinitionSchema),
   status: RecordStatusSchema,
@@ -37,6 +39,13 @@ const NameSchema = z
   .max(100)
   .describe("Type name as staff see it, e.g. Conference room, Dish, Boat or Company");
 
+const GroupIdSchema = z
+  .string()
+  .min(1)
+  .nullable()
+  .optional()
+  .describe("Item types only: the group (itemTypeGroup.list) to browse it under; null = ungrouped");
+
 /** Item types only: the default buffers of the type's items (ADR 0059). */
 const TypeBufferInputShape = bufferMinutesInputShape({ inherits: "none (item types only)" });
 
@@ -48,6 +57,7 @@ export const EntityTypeCreateInputSchema = z.object({
   resourceKind: ResourceKindSchema.optional().describe(
     "Item types only: EQUIPMENT (default) or PERSON (ADR 0059)",
   ),
+  groupId: GroupIdSchema,
 });
 
 export const EntityTypeUpdateInputSchema = z.object({
@@ -67,6 +77,7 @@ export const EntityTypeUpdateInputSchema = z.object({
     ),
   ...TypeBufferInputShape,
   resourceKind: ResourceKindSchema.optional(),
+  groupId: GroupIdSchema,
 });
 
 export const EntityTypeIdInputSchema = z.object({ id: z.string().min(1) });

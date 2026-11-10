@@ -70,6 +70,7 @@ erDiagram
   Order ||--o{ Payment : "is paid with"
   EntityType ||--o{ FieldDefinition : "has"
   EntityType ||--o{ Item : "classifies"
+  ItemTypeGroup |o--o{ EntityType : "groups"
   Vocabulary ||--o{ VocabularyValue : "has"
   FieldDefinition }o--o| Vocabulary : "selects from"
   FieldDefinition }o--o| EntityType : "links to records of"
@@ -157,6 +158,20 @@ erDiagram
 
 A new organization starts with the fixed access roles (`member`, `manager`, `admin`; [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)) and no responsibilities. Nothing else is preinstalled, except the default order statuses, item states and grid so that orders work right away (ADR 0044). Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists, setups, and types with capabilities and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
 
+### ItemTypeGroup (`ItemTypeGroup`)
+
+*MVP* · A heading the organization browses its item types under, e.g. Spaces, Food & drink or Extras ([ADR 0101](decisions/0101-item-type-groups.md)). It carries no behaviour; `/items` shows one tab per active group.
+
+**Attributes** (all owned)
+- name — unique per organization, ignoring case
+- position — order among the groups (0 = first)
+- status (`ACTIVE | ARCHIVED`)
+
+**Relations**
+- `1:N` groups → EntityType (item types only, through `EntityType.groupId`)
+
+> Archiving a group moves its types to ungrouped (`groupId = null`). The welcome flow creates one group per step that has a chosen type; the demo seed creates them the same way. Operations `itemTypeGroup.list|get|create|update|reorder|archive` under `configuration:read|write|delete`.
+
 ### EntityType (`EntityType`)
 
 *MVP* · The organization's own type for a base entity: item, customer, contact, order, requirement or line.
@@ -171,8 +186,10 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - base entity (`ITEM | CUSTOMER | CONTACT | ORDER | REQUIREMENT | LINE`)
 - name (e.g. Conference room, Dish, Boat, Bundle, Company, Conference) — unique per base entity
 - capabilities (`ITEM` only): `PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE`, `SETUPS` — `SETUPS` requires `BOOKABLE` (otherwise `VALIDATION`)
+- group (`groupId`, owned, `ITEM` only, nullable foreign key to ItemTypeGroup; `null` = ungrouped, `VALIDATION` on other bases): where `/items` lists the type's items (ADR 0101). An item's group is read through its type, never copied.
 
 **Relations**
+- `N:0..1` belongs to → ItemTypeGroup (item types)
 - `1:N` has → FieldDefinition
 - `1:N` classifies → Item (and customer, order, etc.)
 
@@ -241,17 +258,18 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `N:1` Item has this
 - `N:1` Setup is used in this
 
-> Replaced as a set by `item.create/update` (`setups`). Reads carry the derived `effectiveCapacity` (typed, else the layout's seats, else null) and `capacitySource` (`MANUAL`, `LAYOUT`, `NONE`); order planning checks against it.
+> Replaced as a set by `item.create/update` (`setups`). Reads carry the derived `effectiveCapacity` (typed, else the largest layout's seats, else null; ADR 0102) and `capacitySource` (`MANUAL`, `LAYOUT`, `NONE`); order planning checks against it.
 
 ### FloorElementKind (`FloorElementKind`)
 
-*ADR 0099* · The organization's furniture library, e.g. Round table Ø180, Row of chairs, Door.
+*ADR 0099, 0102* · The organization's furniture library, e.g. Round table Ø180, Row of chairs, Door, Window.
 
 **Attributes**
-- name (unique among active), shape (`RECT`, `ROUND`, `SEAT_ROW`, `ZONE`)
+- name (unique among active), shape (`RECT`, `ROUND`, `SEAT_ROW`, `ZONE`, `DOOR`, `WINDOW`)
 - width and depth in cm
 - chairs: `seats` (ROUND around, SEAT_ROW along) and `seatsTop`, `seatsRight`, `seatsBottom`, `seatsLeft` (RECT, the piece's own frame)
 - fixed (floor plan only), keepClearCm (nullable)
+- swingDeg (DOOR, WINDOW: how far it opens, 0–180; nullable). Doors and windows are always fixed and never seated.
 
 > `floorElementKind.list|get|create|update|archive|importTemplate` (`configuration:*`). Archiving is refused while a piece uses it.
 
@@ -266,12 +284,12 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 ### SetupLayout (`SetupLayout`)
 
-*ADR 0099* · One setup drawn in one item's floor plan.
+*ADR 0099, 0102* · One named way of furnishing an item in one setup; an item may have several per setup (Banquet 60, Banquet 80).
 
 **Attributes**
-- item and setup (unique pair), note, version
+- item, setup, name (unique among the item's active layouts), note, version, status
 
-> Keyed by item and setup, not by `ItemSetup`, so an item save never drops a drawing. `setupLayout.get|save` (`item:read|write`); the read carries the seat count, effective capacity and warnings.
+> Tied to item and setup, not to `ItemSetup`, so an item save never drops a drawing. `setupLayout.get|create|save|archive` (`item:read|write`) by id; the read carries its seats, the setup's effective capacity (the largest layout) and warnings.
 
 ### FloorElement (`FloorElement`)
 
@@ -280,7 +298,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Attributes**
 - floor plan xor setup layout, kind, position
 - centre (xCm, yCm), rotationDeg
-- own width, depth, `seats` and chairs per side (each null = the kind's), label
+- own width, depth, `seats`, chairs per side and swingDeg (each null = the kind's), label
+- doors and windows are snapped onto the nearest wall by `floorPlan.save` (ADR 0102)
 
 > Replaced as a set by its parent's save; audited on the parent.
 

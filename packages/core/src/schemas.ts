@@ -56,6 +56,7 @@ export * from "./features/item-demand/schema";
 export * from "./features/item-state/hold-kind";
 export * from "./features/item-state/schema";
 export * from "./features/line/amounts-schema";
+export * from "./features/item-type-group/schema";
 export * from "./features/line/choose-options-schema";
 export * from "./features/line/expand-schema";
 export * from "./features/line/issues-schema";

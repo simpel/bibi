@@ -49,6 +49,8 @@ model EntityType {
   teardownMinutes  Int?
   /// Item types: Equipment or Person (ADR 0059, owned); null on every other base.
   resourceKind     ResourceKind?
+  /// Item types: the group the type is browsed under (ADR 0101, owned); null = ungrouped.
+  groupId          String?
   status           RecordStatus                @default(ACTIVE)
   createdAt        DateTime                    @default(now())
   updatedAt        DateTime                    @updatedAt
@@ -73,6 +75,7 @@ model EntityType {
   demands          ItemDemand[]
   boards           Board[]
   revenueAccounts  RevenueAccount[]
+  group            ItemTypeGroup?              @relation(fields: [groupId, organizationId], references: [id, organizationId])
   expiryState      ItemState?                  @relation("ExpiryState", fields: [expiryStateId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])

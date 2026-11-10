@@ -54,6 +54,7 @@ export { toItemStateDto, WITH_STATE_TRANSITIONS } from "./features/item-state/lo
 export * from "./features/item-state/order-operations";
 export * from "./features/item-state/read-operations";
 export * from "./features/item-state/write-operations";
+export * from "./features/item-type-group/operations";
 export * from "./features/line/change-state-operation";
 export * from "./features/line/expand-operation";
 export * from "./features/line/follow-status-operation";

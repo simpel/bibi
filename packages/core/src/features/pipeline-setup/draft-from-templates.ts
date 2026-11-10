@@ -112,7 +112,7 @@ export function draftFromPreset({ key, existingTypes }: DraftFromPresetInput): P
 export type DraftFromTypesInput = {
   statuses: SetupPresetStatuses;
   /** The new types by name, e.g. a preset's types as the user ticked and named them. */
-  types: readonly { name: string; bookable: boolean }[];
+  types: readonly { name: string; bookable: boolean; group?: string | undefined }[];
   existingTypes: readonly ExistingSetupType[];
 };
 
@@ -130,16 +130,18 @@ export function draftFromTypes({
     ...existingTypes.map((type) => ({ ...type, entityTypeId: type.id })),
     ...types
       .filter((type) => !known.has(type.name.toLowerCase()))
-      .map(({ name, bookable }) => ({ name, bookable, entityTypeId: undefined })),
+      .map(({ name, bookable, group }) => ({ name, bookable, group, entityTypeId: undefined })),
   ];
-  const itemTypes = wanted.map(({ entityTypeId, name, bookable }): PipelineTypeDraft => {
+  const itemTypes = wanted.map((type): PipelineTypeDraft => {
+    const { entityTypeId, name, bookable } = type;
+    const group = "group" in type && type.group ? { group: type.group } : {};
     const states = statesFromTemplate({ template: defaultStateTemplate({ bookable }), bookable });
     const identity = entityTypeId
       ? { entityTypeId }
       : bookable
         ? { capabilities: ["BOOKABLE" as const] }
         : {};
-    return { ...identity, name, ...states };
+    return { ...identity, name, ...group, ...states };
   });
   const statuses = statusesFromTemplate({ template });
   return { itemTypes, statuses, cells: cellsFromTemplate({ template, statuses, itemTypes }) };

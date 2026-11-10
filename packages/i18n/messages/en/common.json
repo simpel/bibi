@@ -580,6 +580,10 @@
           "label": "Setups",
           "keywords": "room layout capacity changeover space"
         },
+        "groups": {
+          "label": "Groups",
+          "keywords": "item types spaces food extras tabs sort headings"
+        },
         "lists": {
           "label": "Lists",
           "keywords": "allergens diets needs values word list"

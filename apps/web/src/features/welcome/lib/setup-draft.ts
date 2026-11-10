@@ -34,14 +34,24 @@ export function draftFromKind({ preset, label }: DraftFromKindInput): SetupDraft
   };
 }
 
-/** The ticked types with a name, as `draftFromTypes` wants them. */
-export function chosenTypes({ draft }: { draft: SetupDraft }) {
-  return draft.types
-    .filter((type) => type.checked && type.name.trim().length > 0)
-    .map((type) => ({ name: type.name.trim(), bookable: type.bookable }));
-}
-
 /** A type's setup step; a type from before categories falls back on its bookable flag. */
 export function categoryOf({ type }: { type: TypeChoice }): SetupCategory {
   return type.category ?? (type.bookable ? "spaces" : "food");
+}
+
+/** The ticked types with a name, each with its step's group name, as `draftFromTypes` wants them. */
+export function chosenTypes({
+  draft,
+  groupName,
+}: {
+  draft: SetupDraft;
+  groupName: (input: { category: SetupCategory }) => string;
+}) {
+  return draft.types
+    .filter((type) => type.checked && type.name.trim().length > 0)
+    .map((type) => ({
+      name: type.name.trim(),
+      bookable: type.bookable,
+      group: groupName({ category: categoryOf({ type }) }),
+    }));
 }
