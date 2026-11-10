@@ -3,7 +3,8 @@ import { openSecret } from "../../crypto/secret-box";
 import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { ExternalInput } from "../../operations/types";
-import { getFortnoxGateway } from "./fortnox/gateway-registry";
+import { oauthPortOf } from "../../providers/registry";
+import { nowOf } from "../../time/now";
 import {
   type IntegrationConnectionDto,
   IntegrationConnectionSchema,
@@ -13,7 +14,7 @@ import {
 import { toIntegrationDto } from "./to-integration-dto";
 
 /**
- * After the commit (ADR 0058): revoke the refresh token at Fortnox, then clear the sealed tokens.
+ * After the commit (ADR 0058): revoke the refresh token at the provider, then clear the tokens.
  * A failed revoke is logged and the tokens are cleared anyway, so Bibi keeps no secret.
  */
 async function revokeAfterCommit({
@@ -24,16 +25,19 @@ async function revokeAfterCommit({
   Result<IntegrationConnectionDto>
 > {
   const { provider } = input;
-  const row = await context.db.integrationConnection.findFirst({ where: { provider } });
+  const row = await context.db.providerConnection.findFirst({ where: { provider } });
   if (!row?.refreshTokenSealed) return ok({ value: output });
+  const port = oauthPortOf({ key: provider });
   const refreshToken = openSecret({ sealed: row.refreshTokenSealed });
-  const revoked = refreshToken.ok
-    ? await getFortnoxGateway().revoke({ refreshToken: refreshToken.value })
-    : refreshToken;
+  const revoked = !port.ok
+    ? port
+    : refreshToken.ok
+      ? await port.value.revoke({ refreshToken: refreshToken.value })
+      : refreshToken;
   if (!revoked.ok) {
     getLogger().warn({ event: "integration.revokeFailed", provider, err: revoked.error });
   }
-  await context.db.integrationConnection.update({
+  await context.db.providerConnection.update({
     where: { id: row.id },
     data: { accessTokenSealed: null, refreshTokenSealed: null, accessExpiresAt: null },
   });
@@ -44,7 +48,7 @@ export const disconnectIntegration = defineOperation({
   name: "integration.disconnect",
   kind: "command",
   description:
-    "Disconnect the organization from an outside system (Fortnox): revokes Bibi's access at the " +
+    "Disconnect the organization from an outside system (e.g. Fortnox): revokes Bibi's access at the " +
     "provider and forgets the tokens. Reconnecting needs a new approval at the provider.",
   input: IntegrationDisconnectInputSchema,
   output: IntegrationConnectionSchema,
@@ -53,14 +57,15 @@ export const disconnectIntegration = defineOperation({
   handler: async ({ input, context }) => {
     const { provider } = input;
     const { organizationId } = context;
-    const before = await context.db.integrationConnection.findFirst({ where: { provider } });
+    const before = await context.db.providerConnection.findFirst({ where: { provider } });
     if (!before || before.status === "DISCONNECTED") {
       return ok({ value: toIntegrationDto({ row: before, organizationId, provider }) });
     }
-    const row = await context.db.integrationConnection.update({
+    const row = await context.db.providerConnection.update({
       where: { id: before.id },
       data: {
         status: "DISCONNECTED",
+        disconnectedAt: nowOf({ context }),
         oauthStateHash: null,
         codeVerifierSealed: null,
         oauthStartedAt: null,

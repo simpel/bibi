@@ -1,5 +1,6 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { loadAccountRow } from "./account-provider";
 import { PaymentAccountGetInputSchema, PaymentAccountSchema } from "./schema";
 import { toPaymentAccountDto } from "./to-payment-account-dto";
 
@@ -14,7 +15,7 @@ export const getPaymentAccount = defineOperation({
   permission: "paymentAccount:read",
   entityType: "paymentAccount",
   handler: async ({ context }) => {
-    const row = await context.db.paymentAccount.findFirst({});
+    const row = await loadAccountRow({ context });
     return ok({ value: toPaymentAccountDto({ row, organizationId: context.organizationId }) });
   },
 });

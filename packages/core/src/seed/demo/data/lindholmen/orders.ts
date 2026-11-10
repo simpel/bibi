@@ -45,6 +45,8 @@ export const lindholmenOrders: readonly DemoOrder[] = [
     ...{ status: "Confirmed", headcount: 12, assignee: "Maria Holm" },
     followers: ["Sara Nilsson", "Anna Berg"],
     lines: l4Lines,
+    // ADR 0100: 2 000 kr paid by Swish on the pay page, 3 000 kr recorded from a bank transfer.
+    money: { swishKr: 2_000, manual: { kr: 3_000, note: "Bank transfer, ref 4471" } },
     // ADR 0052: two more for lunch after the customer accepted; the accepted quote shows it.
     changeAfterQuote: { line: "Conference lunch", quantity: 14 },
   },
@@ -53,7 +55,8 @@ export const lindholmenOrders: readonly DemoOrder[] = [
     ...quoted,
     ...{ ref: "L5", customer: "Älvstrand Tech AB", type: "Event", day: 14, from: "18:00" },
     // ADR 0057: 10 000 kr of the accepted quote is paid; the rest is the balance.
-    money: { paidKr: 10_000 },
+    // ADR 0100: 500 kr refunded; its signal was lost and the refund retry job settled it.
+    money: { paidKr: 10_000, lostRefundKr: 500 },
     ...{
       to: "23:30",
       status: "Confirmed",

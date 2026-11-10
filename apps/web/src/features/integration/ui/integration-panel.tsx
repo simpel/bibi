@@ -1,74 +1,61 @@
 import { listIntegrations } from "@bibi/core";
-import type { IntegrationConnectionDto } from "@bibi/core/schemas";
+import type { IntegrationProvider } from "@bibi/core/schemas";
 import type { Locale } from "@bibi/i18n";
+import { getTranslations } from "next-intl/server";
 import { AdminSection } from "@/components/admin/admin-section";
-import type { AdminSectionId } from "@/components/shell/admin-sections";
 import { ErrorState } from "@/components/states/error-state";
-import { StripeSection } from "@/features/payment-account/ui/stripe-section";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { FortnoxSection } from "./fortnox-section";
 import type { IntegrationOutcome } from "./integration-notice";
+import { ProviderCard } from "./provider-card";
 
-export type IntegrationPanelProps = {
-  locale: Locale;
-  outcome: IntegrationOutcome | null;
-  show: ReadonlySet<AdminSectionId>;
-};
+/** The provider a callback sent the admin back from, with what happened. */
+export type ProviderOutcome = { provider: IntegrationProvider; outcome: IntegrationOutcome };
 
-/** A provider the list has no row for yet: shown as not connected, connecting disabled. */
-const NOT_CONNECTED: IntegrationConnectionDto = {
-  id: null,
-  organizationId: "",
-  provider: "FORTNOX",
-  status: "NOT_CONNECTED",
-  configured: false,
-  companyName: null,
-  organizationNumber: null,
-  connectedAt: null,
-  updatedAt: null,
-};
+export type IntegrationPanelProps = { locale: Locale; returned: ProviderOutcome | null };
 
 /**
- * Administration → Integrations (ADR 0087): every integration always has its section, connected
- * or not: Stripe (ADR 0090) and Fortnox.
+ * Administration → Integrations (ADR 0087, 0100): one card per provider Bibi knows, connected or
+ * not, all drawn from `integration.list`. A payout account (hosted onboarding) is edited with
+ * `paymentAccount:write`, every other connection with `integration:write`.
  */
-export async function IntegrationPanel({ locale, outcome, show }: IntegrationPanelProps) {
-  const [abilities, list, dates] = await Promise.all([
+export async function IntegrationPanel({ locale, returned }: IntegrationPanelProps) {
+  const [t, abilities, list, dates] = await Promise.all([
+    getTranslations("integration"),
     getCallerAbilities(),
     runOperation({ operation: listIntegrations, input: {} }),
     getDateTimeFormat(),
   ]);
-  const stripe = show.has("stripe") ? (
-    <StripeSection
-      locale={locale}
-      canEdit={can({ abilities, permission: "paymentAccount:write" })}
-    />
-  ) : null;
-  if (!show.has("fortnox")) return stripe;
   if (!list.ok) {
     return (
-      <>
-        {stripe}
-        <AdminSection section="fortnox">
-          <ErrorState inline errorKey={handleLoadError({ error: list.error, locale })} />
-        </AdminSection>
-      </>
+      <AdminSection section="providers">
+        <ErrorState inline errorKey={handleLoadError({ error: list.error, locale })} />
+      </AdminSection>
     );
   }
-  const fortnox = list.value.items.find((item) => item.provider === "FORTNOX") ?? NOT_CONNECTED;
-  const connectedOn = fortnox.connectedAt ? dates.date({ instant: fortnox.connectedAt }) : null;
+  const canEdit = {
+    hosted: can({ abilities, permission: "paymentAccount:write" }),
+    other: can({ abilities, permission: "integration:write" }),
+  };
   return (
-    <>
-      {stripe}
-      <FortnoxSection
-        connection={fortnox}
-        canEdit={can({ abilities, permission: "integration:write" })}
-        connectedOn={connectedOn}
-        outcome={outcome}
-      />
-    </>
+    <AdminSection section="providers" description={t("description")}>
+      <div className="grid gap-4 md:grid-cols-2">
+        {list.value.items.map((connection) => (
+          <ProviderCard
+            key={connection.provider}
+            connection={connection}
+            canEdit={
+              connection.connectKind === "HOSTED_ONBOARDING" ? canEdit.hosted : canEdit.other
+            }
+            connectedOn={
+              connection.connectedAt ? dates.date({ instant: connection.connectedAt }) : null
+            }
+            outcome={returned?.provider === connection.provider ? returned.outcome : null}
+          />
+        ))}
+      </div>
+    </AdminSection>
   );
 }

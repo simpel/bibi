@@ -1,35 +1,46 @@
-import { ok, type Result } from "../../errors/result";
+import type { Invoice, ProviderConnection } from "@bibi/db";
+import { err, ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { authFor } from "../../providers/connections";
+import { findProvider } from "../../providers/registry";
+import type { InvoicingPort, ProviderAuth } from "../../providers/types";
 import { conflict } from "../../shared/errors";
-import type { InvoiceProvider } from "../payment-account/settings-schema";
-import { loadPaymentSettings } from "../payment-account/settings-store";
 
-type Db = { context: Pick<OperationContext, "db"> };
+export type InvoiceProviderCall = {
+  invoicing: InvoicingPort;
+  auth: ProviderAuth;
+  connection: ProviderConnection;
+};
+
+export type ProviderCallInput = {
+  context: OperationContext;
+  invoice: Pick<Invoice, "provider" | "connectionId">;
+};
+
+/** Whether the invoice was raised in a provider that keeps invoices (an invoicing port). */
+export function raisedInProvider({ invoice }: { invoice: Pick<Invoice, "provider"> }): boolean {
+  return invoice.provider ? Boolean(findProvider({ key: invoice.provider })?.invoicing) : false;
+}
 
 /**
- * Where a sent invoice is raised (ADR 0090): the admin's choice in the payment settings, else
- * Fortnox when only Fortnox can take it, else Stripe when the Stripe account is active (the
- * customer then pays through a payment Bibi requests), else nowhere but Bibi (null).
+ * The invoicing port, connection and credentials of the provider the invoice was raised in
+ * (ADR 0100). Call it only in `external`: an OAuth token may be refreshed (ADR 0087).
  */
-export async function resolveInvoiceProvider({
+export async function invoiceProviderCall({
   context,
-}: Db): Promise<Result<InvoiceProvider | null>> {
-  const [settings, fortnox, account] = await Promise.all([
-    loadPaymentSettings({ context }),
-    context.db.integrationConnection.findFirst({
-      where: { provider: "FORTNOX", status: "CONNECTED" },
-      select: { id: true },
-    }),
-    context.db.paymentAccount.findFirst({ select: { status: true, disconnectedAt: true } }),
-  ]);
-  const stripe = account?.status === "ACTIVE" && !account.disconnectedAt;
-  if (settings.invoiceProvider === "FORTNOX" && !fortnox) {
+  invoice,
+}: ProviderCallInput): Promise<Result<InvoiceProviderCall>> {
+  const invoicing = invoice.provider ? findProvider({ key: invoice.provider })?.invoicing : null;
+  if (!invoicing) return conflict({ message: "The invoice was not raised in a provider" });
+  const connection = await context.db.providerConnection.findFirst({
+    where: { id: invoice.connectionId ?? "", status: "CONNECTED" },
+  });
+  if (!connection) {
     return conflict({
-      message:
-        "Invoices go to Fortnox, but Fortnox is not connected. Connect it in Settings → Integrations.",
+      message: `${invoice.provider} is not connected. Connect it in Settings → Integrations.`,
     });
   }
-  if (settings.invoiceProvider) return ok({ value: settings.invoiceProvider });
-  if (fortnox && !stripe) return ok({ value: "FORTNOX" });
-  return ok({ value: stripe ? "STRIPE" : null });
+  const auth = await authFor({ context, row: connection });
+  if (!auth.ok) return err({ error: auth.error });
+  return ok({ value: { invoicing, auth: auth.value, connection } });
 }

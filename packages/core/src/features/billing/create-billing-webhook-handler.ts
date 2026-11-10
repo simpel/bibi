@@ -1,7 +1,7 @@
 import type { Db } from "@bibi/db";
 import { withRequestLogging } from "@bibi/logger";
 import { toHttpStatus } from "../../errors/to-http-status";
-import { verifyStripeSignature } from "../payment/stripe-signature";
+import { verifyStripeSignature } from "../../providers/stripe/stripe-signature";
 import { loadBillingWebhookSecret } from "./billing-config";
 import { BillingEventSchema } from "./billing-event";
 import { receiveBillingEvent } from "./receive-billing-event";

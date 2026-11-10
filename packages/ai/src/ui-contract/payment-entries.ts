@@ -26,7 +26,7 @@ const paymentCard = uiEntry({
   toProps: ({ value }) => ({ payment: value }),
 });
 
-/** Tool → component for payments requested from customers (ADR 0028, 0029). */
+/** Tool → component for payments requested from customers and their refunds (ADR 0028, 0100). */
 export const PAYMENT_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   ...FINANCE_UI_ENTRIES,
   ...DASHBOARD_UI_ENTRIES,
@@ -37,6 +37,13 @@ export const PAYMENT_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   }),
   payment_get: paymentCard,
   payment_create: paymentCard,
+  payment_cancel: paymentCard,
+  payment_recordManual: paymentCard,
+  payment_refund: uiEntry({
+    component: "payment-refund-card",
+    schema: PaymentWireSchema,
+    toProps: ({ value }) => ({ payment: value }),
+  }),
   deposit_request: paymentCard,
   payment_balance: uiEntry({
     component: "order-balance-card",

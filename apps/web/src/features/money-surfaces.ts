@@ -8,6 +8,9 @@ import type { WebSurface } from "./web-surfaces";
 export const MONEY_SURFACES: readonly WebSurface[] = [
   { operation: "payment.list", route: "/orders/[id]" },
   { operation: "payment.create", route: "/orders/[id]" },
+  { operation: "payment.refund", route: "/orders/[id]" },
+  { operation: "payment.cancel", route: "/orders/[id]" },
+  { operation: "payment.recordManual", route: "/orders/[id]" },
   { operation: "payment.balance", route: "/orders/[id]" },
   { operation: "deposit.list", route: "/orders/[id]" },
   { operation: "deposit.create", route: "/new/deposit" },
@@ -20,5 +23,6 @@ export const MONEY_SURFACES: readonly WebSurface[] = [
   { operation: "invoice.send", route: "/orders/[id]" },
   { operation: "invoice.sync", route: "/orders/[id]" },
   { operation: "invoice.void", route: "/orders/[id]" },
+  { operation: "invoice.credit", route: "/orders/[id]" },
   ...FINANCE_SURFACES,
 ];

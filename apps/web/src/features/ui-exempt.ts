@@ -115,6 +115,15 @@ export const UI_EXEMPT: readonly UiExempt[] = [
     reason: "The order page shows every invoice from invoice.list; one invoice has no page yet",
   },
   {
+    operation: "creditNote.get",
+    reason: "The order page lists each invoice's credit notes from invoice.list; one has no page",
+  },
+  {
+    operation: "creditNote.list",
+    reason:
+      "The order page shows each invoice's credit notes from invoice.list (InvoiceDto.creditNotes); the list is for API, MCP and the assistant",
+  },
+  {
     operation: "auditLog.get",
     reason: "The history tab shows every entry in full from auditLog.list; one entry has no page",
   },

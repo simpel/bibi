@@ -55,6 +55,18 @@ const envSchema = z
     /** Fortnox app credentials (ADR 0087); both set or neither. Unset: Fortnox is not configured. */
     FORTNOX_CLIENT_ID: z.string().min(1).optional(),
     FORTNOX_CLIENT_SECRET: z.string().min(1).optional(),
+    /** Visma eEkonomi app credentials (ADR 0100); both set or neither. Unset: Visma is not configured. */
+    VISMA_CLIENT_ID: z.string().min(1).optional(),
+    VISMA_CLIENT_SECRET: z.string().min(1).optional(),
+    /** Visma Connect (OAuth) host; the sandbox is `https://identity-sandbox.test.vismaonline.com`. */
+    VISMA_IDENTITY_URL: z.string().url().default("https://identity.vismaonline.com"),
+    /** Visma eAccounting API root; the sandbox is `https://eaccountingapi-sandbox.test.vismaonline.com`. */
+    VISMA_API_URL: z.string().url().default("https://eaccountingapi.vismaonline.com"),
+    /**
+     * Swish for merchants API root (ADR 0100), up to and including `/swish-cpcapi`. Defaults to
+     * Swish's Merchant Swish Simulator (MSS); production is `https://cpc.getswish.net/swish-cpcapi`.
+     */
+    SWISH_API_URL: z.string().url().default("https://mss.cpc.getswish.net/swish-cpcapi"),
     /** Base64 32-byte key sealing integration tokens at rest (ADR 0087). Unset: no integration can connect. */
     INTEGRATION_SECRET_KEY: z
       .string()
@@ -85,6 +97,11 @@ const envSchema = z
      * (`apps/web/src/server/e2e-mock-model.ts`). Off by default; ignored when NODE_ENV=production.
      */
     E2E_MOCK_MODEL: z.stringbool().default(false),
+    /**
+     * E2E only: Stripe and Swish replaced by in-memory providers that accept unsigned test
+     * deliveries (`installE2eProviders`). Off by default; ignored when NODE_ENV=production.
+     */
+    E2E_MEMORY_PROVIDERS: z.stringbool().default(false),
     /** Minimum log level (ADR 0014). Default: `silent` when NODE_ENV=test, else `info`. */
     LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]).optional(),
     /** `json` (one event per line) or `pretty`. Default: `json` in production, else `pretty`. */
@@ -107,6 +124,10 @@ const envSchema = z
   .refine((env) => Boolean(env.FORTNOX_CLIENT_ID) === Boolean(env.FORTNOX_CLIENT_SECRET), {
     message: "FORTNOX_CLIENT_ID and FORTNOX_CLIENT_SECRET must be set together",
     path: ["FORTNOX_CLIENT_SECRET"],
+  })
+  .refine((env) => Boolean(env.VISMA_CLIENT_ID) === Boolean(env.VISMA_CLIENT_SECRET), {
+    message: "VISMA_CLIENT_ID and VISMA_CLIENT_SECRET must be set together",
+    path: ["VISMA_CLIENT_SECRET"],
   })
   .refine((env) => env.MAIL_PROVIDER !== "resend" || env.RESEND_API_KEY, {
     message: "RESEND_API_KEY is required when MAIL_PROVIDER=resend",

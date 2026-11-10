@@ -11,8 +11,8 @@ import {
 import { LinkIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { MethodRequiredButton } from "@/features/payment/ui/method-required-button";
 import { usePaymentLinksAvailable } from "@/features/payment/ui/payment-links-context";
-import { StripeRequiredButton } from "@/features/payment/ui/stripe-required-button";
 import { RequestDepositForm } from "./request-deposit-form";
 
 /** The deposit rule's suggestion, prepared on the server (amounts already formatted). */
@@ -32,10 +32,10 @@ export function RequestDepositButton({ orderId, suggestion }: RequestDepositButt
   const [open, setOpen] = useState(false);
   if (!usePaymentLinksAvailable()) {
     return (
-      <StripeRequiredButton>
+      <MethodRequiredButton>
         <LinkIcon />
         {t("action")}
-      </StripeRequiredButton>
+      </MethodRequiredButton>
     );
   }
   return (

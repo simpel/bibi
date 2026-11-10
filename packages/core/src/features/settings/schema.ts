@@ -11,9 +11,8 @@ import { PaymentSettingsSchema } from "../payment-account/settings-schema";
 export const SETTING_KEYS = [
   "timeZone",
   "domainJoin",
-  "paymentOperator",
+  "paymentMethods",
   "deposit",
-  "invoices",
   "fiscalYear",
   "accounts",
   "seats",
@@ -23,8 +22,8 @@ export const SettingKeySchema = z
   .enum(SETTING_KEYS)
   .describe(
     "timeZone: the organization's time zone. domainJoin: colleagues at the email domain join " +
-      "by themselves. paymentOperator: who takes card payments. deposit: the deposit rule. " +
-      "invoices: which system raises invoices. fiscalYear: first month of the fiscal year. " +
+      "by themselves. paymentMethods: which connected provider takes each payment method " +
+      "(card, Swish, invoice). deposit: the deposit rule. fiscalYear: first month of the fiscal year. " +
       "accounts: the bookkeeping accounts of the SIE export. seats: how seats are added and " +
       "how many extra seats are paid for",
   );
@@ -61,7 +60,7 @@ export const SettingsViewSchema = z.object({
     "timeZone and domainJoin (configuration); null when neither was asked",
   ),
   payment: PaymentSettingsSchema.nullable().describe(
-    "paymentOperator, deposit and invoices; null when not asked or without paymentAccount:read",
+    "paymentMethods and deposit; null when not asked or without paymentAccount:read",
   ),
   accounting: AccountingSettingsSchema.nullable().describe(
     "fiscalYear and accounts; null when not asked or without finance:read",

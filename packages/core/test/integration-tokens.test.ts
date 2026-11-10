@@ -4,7 +4,7 @@ import {
   completeIntegrationConnect,
   createExecuteContext,
   execute,
-  getFortnoxAccessToken,
+  getAccessToken,
   grantAll,
   listIntegrations,
   refreshExpiringIntegrations,
@@ -46,24 +46,31 @@ describe("secret box", () => {
   });
 });
 
-describe("getFortnoxAccessToken", () => {
+describe("getAccessToken (Fortnox)", () => {
   it("returns the stored token while it is fresh", async () => {
     const { fortnox, context } = await connected();
-    expect(unwrap({ result: await getFortnoxAccessToken({ context }) })).toBe("access-1");
+    expect(unwrap({ result: await getAccessToken({ context, provider: "FORTNOX" }) })).toBe(
+      "access-1",
+    );
     expect(fortnox.calls.filter((call) => call.startsWith("refresh"))).toHaveLength(0);
   });
 
   it("refreshes near expiry and stores the rotated refresh token", async () => {
     const { fortnox, context } = await connected();
     const later = at({ context, offsetMs: HOUR });
-    expect(unwrap({ result: await getFortnoxAccessToken({ context: later }) })).toBe("access-2");
+    expect(unwrap({ result: await getAccessToken({ context: later, provider: "FORTNOX" }) })).toBe(
+      "access-2",
+    );
     expect(
       unwrap({
-        result: await getFortnoxAccessToken({ context: at({ context, offsetMs: HOUR + 60_000 }) }),
+        result: await getAccessToken({
+          context: at({ context, offsetMs: HOUR + 60_000 }),
+          provider: "FORTNOX",
+        }),
       }),
     ).toBe("access-2");
     expect(
-      await getFortnoxAccessToken({ context: at({ context, offsetMs: 2 * HOUR }) }),
+      await getAccessToken({ context: at({ context, offsetMs: 2 * HOUR }), provider: "FORTNOX" }),
     ).toMatchObject({
       ok: true,
       value: "access-3",
@@ -76,8 +83,8 @@ describe("getFortnoxAccessToken", () => {
     const { fortnox, context } = await connected();
     const later = at({ context, offsetMs: HOUR });
     const [a, b] = await Promise.all([
-      getFortnoxAccessToken({ context: later }),
-      getFortnoxAccessToken({ context: later }),
+      getAccessToken({ context: later, provider: "FORTNOX" }),
+      getAccessToken({ context: later, provider: "FORTNOX" }),
     ]);
     expect([a, b]).toEqual([
       { ok: true, value: "access-2" },
@@ -93,13 +100,16 @@ describe("getFortnoxAccessToken", () => {
     fortnox.refreshOutcome = "refused";
     expect(
       errorCode({
-        result: await getFortnoxAccessToken({ context: at({ context, offsetMs: HOUR }) }),
+        result: await getAccessToken({
+          context: at({ context, offsetMs: HOUR }),
+          provider: "FORTNOX",
+        }),
       }),
     ).toBe("CONFLICT");
     const list = unwrap({
       result: await execute({ operation: listIntegrations, input: {}, context }),
     });
-    expect(list.items[0]?.status).toBe("EXPIRED");
+    expect(list.items.find((item) => item.provider === "FORTNOX")?.status).toBe("EXPIRED");
   });
 });
 

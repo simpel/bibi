@@ -1,0 +1,118 @@
+/// The outside companies Bibi connects an organization to (ADR 0100): payment operators, invoicing
+/// and accounting systems. One enum for every table that names one.
+enum Provider {
+  STRIPE
+  FORTNOX
+  SWISH
+  VISMA
+}
+
+enum ProviderConnectionStatus {
+  /// OAuth authorization started; waiting for the provider's callback.
+  PENDING
+  /// Hosted onboarding started (Stripe); the account cannot take payments yet.
+  ONBOARDING
+  /// Ready: tokens or credentials stored, or the account can take payments.
+  CONNECTED
+  /// The provider restricted the account (e.g. missing or failed verification).
+  RESTRICTED
+  /// The provider refused the stored grant; an admin must reconnect.
+  EXPIRED
+  /// An admin disconnected; tokens cleared and revoked.
+  DISCONNECTED
+}
+
+/// An organization's connection to one provider (ADR 0087, 0100), one row per provider. Replaces
+/// `PaymentAccount` (Stripe) and `IntegrationConnection` (Fortnox).
+/// Owned: `status` (OAuth providers: written at connect, refresh and disconnect; Stripe: mirrors the
+/// account's card payments capability, refreshed by `paymentAccount.sync` and the webhook),
+/// `disconnectedAt` (Stripe, ADR 0090: an admin disconnected; `status` keeps mirroring Stripe and
+/// connecting again clears it), the sealed secrets and their expiries, and the pending OAuth state
+/// (`oauthStateHash`, `codeVerifierSealed`, `oauthStartedAt`, cleared on completion).
+/// `externalAccountId` (owned) is the provider's id for the account: Stripe's `acct_...` (null until
+/// the call after the commit stored it, ADR 0058), Fortnox's Topics tenant id (learned by the worker,
+/// ADR 0090), later the Swish number. It maps an inbound event to the organization.
+/// Snapshots from the provider at connect: `externalCompanyName`, `externalOrgNumber`,
+/// `externalTenantId` (Fortnox's database number).
+/// Secrets: OAuth tokens stay in `accessTokenSealed` and `refreshTokenSealed` (moving the existing
+/// AES-256-GCM tokens into one sealed JSON cannot be done in SQL); `credentialsSealed` is a sealed
+/// JSON for providers that connect with credentials (Swish's certificate, ADR 0100). All are sealed
+/// with `INTEGRATION_SECRET_KEY` and never leave core.
+/// `refreshClaimedAt` is a 30-second lease: one caller at a time spends a rotating refresh token.
+model ProviderConnection {
+  id                  String                   @id @default(cuid(2))
+  organizationId      String
+  provider            Provider
+  status              ProviderConnectionStatus @default(PENDING)
+  externalAccountId   String?
+  scope               String?
+  accessTokenSealed   String?
+  refreshTokenSealed  String?
+  credentialsSealed   String?
+  accessExpiresAt     DateTime?
+  refreshExpiresAt    DateTime?
+  refreshClaimedAt    DateTime?
+  oauthStateHash      String?
+  codeVerifierSealed  String?
+  oauthStartedAt      DateTime?
+  externalCompanyName String?
+  externalOrgNumber   String?
+  externalTenantId    String?
+  disconnectedAt      DateTime?
+  connectedAt         DateTime?
+  connectedBy         String?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  createdBy           String?
+  payments            Payment[]
+  attempts            PaymentAttempt[]
+  invoices            Invoice[]
+  creditNotes         CreditNote[]
+
+  @@unique([id, organizationId])
+  @@unique([organizationId, provider])
+  @@unique([provider, externalAccountId])
+  @@index([provider, status, refreshExpiresAt])
+}
+
+/// Which provider takes each payment method for the organization (ADR 0100). Owned, written only
+/// by `paymentSettings.update`. No row for a method = the connected provider that can take it; a
+/// route to a provider that is not connected is a CONFLICT, never a silent switch.
+model PaymentMethodRoute {
+  id             String        @id @default(cuid(2))
+  organizationId String
+  method         PaymentMethod
+  provider       Provider
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  createdBy      String?
+
+  @@unique([id, organizationId])
+  @@unique([organizationId, method])
+}
+
+/// A provider event that has been handled (ADR 0028, 0100). `(provider, eventId)` is the dedupe
+/// key: a redelivered event finds its row and changes nothing. Platform table (an event is resolved
+/// to an organization through its connection or billing account), written only with `getDb()`.
+/// Bibi's own billing (ADR 0095) records its Stripe events here too.
+model ProviderEventReceipt {
+  id         String   @id @default(cuid(2))
+  provider   Provider
+  /// The provider's event id (Stripe `evt_...`).
+  eventId    String
+  type       String
+  receivedAt DateTime @default(now())
+
+  @@unique([provider, eventId])
+}
+
+/// Where a provider's event stream stopped, per topic (ADR 0090, 0100): Fortnox Topics. Platform
+/// table, written only by the worker with `getDb()`. Fortnox replays up to 14 days.
+model ProviderStreamOffset {
+  provider  Provider
+  topic     String
+  offset    String
+  updatedAt DateTime @updatedAt
+
+  @@id([provider, topic])
+}

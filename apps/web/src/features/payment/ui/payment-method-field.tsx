@@ -21,7 +21,7 @@ export type PaymentMethodFieldProps = {
   form: UseFormReturn<RequestPaymentFormValues, unknown, RequestPaymentFormOutput>;
 };
 
-/** Card (a checkout link to send) or invoice (Stripe emails it to the customer). */
+/** The method prepared first: card (a checkout link to send) or Swish; invoices use invoice.send. */
 export function PaymentMethodField({ form }: PaymentMethodFieldProps) {
   const t = useTranslations("payment");
   return (
@@ -33,7 +33,7 @@ export function PaymentMethodField({ form }: PaymentMethodFieldProps) {
           <FormLabel>{t("fields.method")}</FormLabel>
           <Select
             value={field.value}
-            onValueChange={(next) => field.onChange(next === "INVOICE" ? "INVOICE" : "CARD")}
+            onValueChange={(next) => field.onChange(next === "SWISH" ? "SWISH" : "CARD")}
           >
             <FormControl>
               <SelectTrigger>
@@ -42,7 +42,7 @@ export function PaymentMethodField({ form }: PaymentMethodFieldProps) {
             </FormControl>
             <SelectContent>
               <SelectItem value="CARD">{t("method.CARD")}</SelectItem>
-              <SelectItem value="INVOICE">{t("method.INVOICE")}</SelectItem>
+              <SelectItem value="SWISH">{t("method.SWISH")}</SelectItem>
             </SelectContent>
           </Select>
           <FormMessage />

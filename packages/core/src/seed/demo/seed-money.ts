@@ -1,28 +1,62 @@
 import { ok, type Result } from "../../errors/result";
 import { createDeposit, sendDeposit } from "../../features/deposit/write-operations";
-import { applyPaymentSignal } from "../../features/payment/apply-signal-operation";
+import { completeIntegrationConnect } from "../../features/integration/complete-connect-operation";
+import { connectIntegration } from "../../features/integration/connect-operation";
 import { createPayment } from "../../features/payment/create-operation";
+import { recordManualPayment } from "../../features/payment/record-manual-operation";
+import { refundPayment } from "../../features/payment/refund-operation";
+import { retryRefunds } from "../../features/payment/retry-refunds-operation";
+import { startPaymentAttempt } from "../../features/payment/start-attempt-operation";
 import {
   startPaymentOnboarding,
   syncPaymentAccount,
 } from "../../features/payment-account/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import { demoSwishCredentials } from "./demo-payments";
+import { applyDemoSignal } from "./demo-signal";
 import type { DemoOrder } from "./order-types";
 import { seedOrderEstimates } from "./seed-estimates";
 import { missing } from "./seed-fields";
 import { seedInvoice } from "./seed-invoice";
-import type { DemoOrg } from "./types";
+import type { DemoOrg, DemoProvider } from "./types";
 
 type Ctx = { context: ExecuteContext };
 
-/** An ACTIVE payout account (the demo gateway, `withDemoPayments`) when an order has money. */
+/** Swish: the number and certificate are entered, then checked after the commit (ADR 0100). */
+async function connectSwish({ context }: Ctx) {
+  const input = { provider: "SWISH" as const, credentials: demoSwishCredentials(context) };
+  return execute({ operation: connectIntegration, input, context });
+}
+
+/** An OAuth provider: the consent page's state comes back as the callback would bring it. */
+async function connectOauth({ context, provider }: Ctx & { provider: DemoProvider }) {
+  const started = await execute({ operation: connectIntegration, input: { provider }, context });
+  if (!started.ok) return started;
+  const state = new URL(started.value.authorizeUrl ?? "").searchParams.get("state") ?? "";
+  const callback = { ...context, credential: "session" as const };
+  const input = { provider, code: `demo-${provider}`, state };
+  return execute({ operation: completeIntegrationConnect, input, context: callback });
+}
+
+/**
+ * The organization's providers (ADR 0100) when an order has money: Stripe's account, then each
+ * provider of `org.providers`, all memory fakes (`withDemoPayments`), no call leaves the seed.
+ */
 export async function activateDemoPayments({ context, org }: Ctx & { org: DemoOrg }) {
   if (!org.orders.some((order) => order.money)) return ok({ value: true as const });
   const started = await execute({ operation: startPaymentOnboarding, input: {}, context });
   if (!started.ok) return started;
   const synced = await execute({ operation: syncPaymentAccount, input: {}, context });
-  return synced.ok ? ok({ value: true as const }) : synced;
+  if (!synced.ok) return synced;
+  for (const provider of org.providers ?? []) {
+    const connected =
+      provider === "SWISH"
+        ? await connectSwish({ context })
+        : await connectOauth({ context, provider });
+    if (!connected.ok) return connected;
+  }
+  return ok({ value: true as const });
 }
 
 type OrderMoneyInput = Ctx & { order: DemoOrder; orderId: string };
@@ -50,18 +84,78 @@ async function seedPartialPayment({ context, order, orderId }: OrderMoneyInput) 
   const input = { quoteId: quote.id, method: "CARD" as const, amountMinor: paidKr * 100 };
   const payment = await execute({ operation: createPayment, input, context });
   if (!payment.ok) return payment;
-  const row = await context.db.payment.findFirst({ where: { id: payment.value.id } });
-  if (!row) return missing({ what: `payment of order ${order.ref}` });
-  const signal = {
-    kind: "paid" as const,
-    providerAccountId: row.providerAccountId,
-    paymentId: row.id,
-  };
-  const paid = await execute({ operation: applyPaymentSignal, input: signal, context });
-  return paid.ok ? ok({ value: true as const }) : paid;
+  const paymentId = payment.value.id;
+  const paid = await applyDemoSignal({ context, paymentId, kind: "attempt.succeeded" });
+  if (!paid.ok) return paid;
+  return seedLostRefund({ context, paymentId, kr: order.money?.lostRefundKr });
 }
 
-/** The order's demo money (`order.money`): a deposit request, a partial payment, an invoice. */
+const RETRY_AFTER_MS = 20 * 60_000;
+
+/**
+ * `money.lostRefundKr`: a refund started in Bibi whose provider signal never comes; the refund
+ * retry job, run as the worker would 20 minutes later, reads it at the provider and completes it.
+ */
+async function seedLostRefund({
+  context,
+  paymentId,
+  kr,
+}: Ctx & { paymentId: string; kr: number | undefined }) {
+  if (!kr) return ok({ value: true as const });
+  const input = { id: paymentId, amountMinor: kr * 100, reason: "One guest fewer" };
+  const refunded = await execute({ operation: refundPayment, input, context });
+  if (!refunded.ok) return refunded;
+  const later = { ...context, now: () => new Date(Date.now() + RETRY_AFTER_MS) };
+  const retried = await execute({ operation: retryRefunds, input: {}, context: later });
+  return retried.ok ? ok({ value: true as const }) : retried;
+}
+
+type QuoteInput = OrderMoneyInput;
+
+async function acceptedQuote({ context, order, orderId }: QuoteInput) {
+  const quote = await context.db.quote.findFirst({ where: { orderId, quoteStatus: "ACCEPTED" } });
+  return quote ?? missing({ what: `accepted quote of order ${order.ref}` });
+}
+
+/**
+ * `money.swishKr`: a Swish payment against the accepted quote. The customer picks Swish on the
+ * pay page (`payment.startAttempt` by the public token); Swish's paid signal settles it (ADR 0100).
+ */
+async function seedSwishPayment({ context, order, orderId }: OrderMoneyInput) {
+  const swishKr = order.money?.swishKr;
+  if (!swishKr) return ok({ value: true as const });
+  const quote = await acceptedQuote({ context, order, orderId });
+  if ("ok" in quote) return quote;
+  const input = { quoteId: quote.id, method: "SWISH" as const, amountMinor: swishKr * 100 };
+  const payment = await execute({ operation: createPayment, input, context });
+  if (!payment.ok) return payment;
+  const row = await context.db.payment.findFirstOrThrow({ where: { id: payment.value.id } });
+  const started = await execute({
+    operation: startPaymentAttempt,
+    input: { token: row.publicToken, method: "SWISH" as const },
+    context,
+  });
+  if (!started.ok) return started;
+  return applyDemoSignal({ context, paymentId: row.id, kind: "attempt.succeeded" });
+}
+
+/** `money.manual`: a bank transfer staff recorded against the accepted quote (ADR 0100). */
+async function seedManualPayment({ context, order, orderId }: OrderMoneyInput) {
+  const manual = order.money?.manual;
+  if (!manual) return ok({ value: true as const });
+  const quote = await acceptedQuote({ context, order, orderId });
+  if ("ok" in quote) return quote;
+  const input = {
+    quoteId: quote.id,
+    amountMinor: manual.kr * 100,
+    paidAt: new Date(),
+    note: manual.note,
+  };
+  const recorded = await execute({ operation: recordManualPayment, input, context });
+  return recorded.ok ? ok({ value: true as const }) : recorded;
+}
+
+/** The order's demo money (`order.money`): a deposit request, payments, an invoice. */
 export async function seedOrderMoney({
   context,
   order,
@@ -73,5 +167,9 @@ export async function seedOrderMoney({
   if (!deposit.ok) return deposit;
   const paid = await seedPartialPayment({ context, order, orderId });
   if (!paid.ok) return paid;
+  const swish = await seedSwishPayment({ context, order, orderId });
+  if (!swish.ok) return swish;
+  const manual = await seedManualPayment({ context, order, orderId });
+  if (!manual.ok) return manual;
   return seedInvoice({ context, order, orderId, now: new Date() });
 }

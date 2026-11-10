@@ -1,5 +1,5 @@
 import type { OperationContext } from "../../operations/types";
-import { invoiceDueMinor } from "../invoice/to-invoice-dto";
+import { DUE_INCLUDE, invoiceDueMinor } from "../invoice/to-invoice-dto";
 import { daysOverdue } from "./aging";
 
 type Scope = { customerId?: string | undefined };
@@ -16,7 +16,7 @@ export async function loadBalanceHistory({ context, end, customerId }: Input) {
     where: { status: "SENT", sentAt: { lt: end }, ...orderOf({ customerId }) },
     select: {
       ...{ id: true, sentAt: true, dueDate: true, totalInclVatMinor: true },
-      deductions: { select: { amountMinor: true } },
+      ...DUE_INCLUDE,
     },
   });
   const invoiceIds = invoices.map((invoice) => invoice.id);
@@ -63,7 +63,7 @@ export function openAt({ history, instant, overdueOnly }: OpenAtInput): number {
   for (const invoice of history.invoices) {
     if (!before({ at: invoice.sentAt, instant })) continue;
     if (overdueOnly && daysOverdue({ dueDate: invoice.dueDate, now: instant }) <= 0) continue;
-    const due = invoiceDueMinor({ invoice, deductions: invoice.deductions });
+    const due = invoiceDueMinor({ invoice, ...invoice });
     open += Math.max(0, due - (paid.get(invoice.id) ?? 0));
   }
   return open;

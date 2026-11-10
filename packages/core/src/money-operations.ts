@@ -1,4 +1,9 @@
 import { billingOperations } from "./features/billing/operations";
+import {
+  creditNoteOperations,
+  getCreditNote,
+  listCreditNotes,
+} from "./features/credit-note/operations";
 import { depositOperations } from "./features/deposit/operations";
 import {
   createAccountingExport,
@@ -11,54 +16,19 @@ import {
   previewAccountingExport,
   updateAccountingSettings,
 } from "./features/finance/operations";
-import type {
-  FortnoxCompany,
-  FortnoxGateway,
-  FortnoxRefresh,
-  FortnoxTokens,
-} from "./features/integration/fortnox/gateway";
-import {
-  getFortnoxGateway,
-  setFortnoxGateway,
-} from "./features/integration/fortnox/gateway-registry";
-import type {
-  FortnoxInvoiceInput,
-  FortnoxInvoicingGateway,
-  FortnoxPayment,
-} from "./features/integration/fortnox/invoicing-gateway";
-import {
-  getFortnoxInvoicingGateway,
-  setFortnoxInvoicingGateway,
-} from "./features/integration/fortnox/invoicing-registry";
-import {
-  type FortnoxEventOutcome,
-  type FortnoxTopicEvent,
-  FortnoxTopicEventSchema,
-  handleFortnoxEvent,
-} from "./features/integration/fortnox/topics/events";
-import {
-  FORTNOX_REPLAY_MS,
-  fortnoxStreamSecret,
-  sweepFortnoxInvoices,
-} from "./features/integration/fortnox/topics/sweep";
-import {
-  type FortnoxTenantToken,
-  fortnoxTenantTokens,
-  loadFortnoxOffsets,
-  rememberFortnoxTenant,
-  saveFortnoxOffset,
-} from "./features/integration/fortnox/topics/tenants";
+import { applyIntegrationSignal } from "./features/integration/apply-signal-operation";
 import {
   completeIntegrationConnect,
   connectIntegration,
   disconnectIntegration,
-  getFortnoxAccessToken,
   integrationOperations,
   listIntegrations,
   refreshExpiringIntegrations,
 } from "./features/integration/operations";
+import { applyInvoiceSignal } from "./features/invoice/apply-signal-operation";
 import {
   createInvoice,
+  creditInvoice,
   getInvoice,
   invoiceOperations,
   listInvoices,
@@ -66,7 +36,13 @@ import {
   syncInvoice,
   voidInvoice,
 } from "./features/invoice/operations";
+import { retryVoids } from "./features/invoice/retry-voids-operation";
 import { paymentOperations } from "./features/payment/operations";
+import { retryRefunds } from "./features/payment/retry-refunds-operation";
+import {
+  startPaymentAttempt,
+  startPublicAttempt,
+} from "./features/payment/start-attempt-operation";
 import { paymentAccountOperations } from "./features/payment-account/operations";
 
 /**
@@ -79,56 +55,40 @@ export const moneyOperations = [
   ...paymentOperations,
   ...depositOperations,
   ...invoiceOperations,
+  ...creditNoteOperations,
   ...financeOperations,
   ...integrationOperations,
 ];
 
-// The integration feature reaches the package index through here (its size limit).
-export type {
-  FortnoxCompany,
-  FortnoxEventOutcome,
-  FortnoxGateway,
-  FortnoxInvoiceInput,
-  FortnoxInvoicingGateway,
-  FortnoxPayment,
-  FortnoxRefresh,
-  FortnoxTenantToken,
-  FortnoxTokens,
-  FortnoxTopicEvent,
-};
 // The invoice and financials operations reach the package index through here (its size limit).
+// SYSTEM-only operations (provider signals, the public pay page) are exported but not registered.
 export {
+  applyIntegrationSignal,
+  applyInvoiceSignal,
   completeIntegrationConnect,
   connectIntegration,
   createAccountingExport,
   createInvoice,
+  creditInvoice,
   disconnectIntegration,
   downloadAccountingExport,
-  FORTNOX_REPLAY_MS,
-  FortnoxTopicEventSchema,
   financeOverview,
-  fortnoxStreamSecret,
-  fortnoxTenantTokens,
   getAccountingExport,
   getAccountingSettings,
-  getFortnoxAccessToken,
-  getFortnoxGateway,
-  getFortnoxInvoicingGateway,
+  getCreditNote,
   getInvoice,
-  handleFortnoxEvent,
   invoiceOperations,
   listAccountingExports,
+  listCreditNotes,
   listIntegrations,
   listInvoices,
-  loadFortnoxOffsets,
   previewAccountingExport,
   refreshExpiringIntegrations,
-  rememberFortnoxTenant,
-  saveFortnoxOffset,
+  retryRefunds,
+  retryVoids,
   sendInvoice,
-  setFortnoxGateway,
-  setFortnoxInvoicingGateway,
-  sweepFortnoxInvoices,
+  startPaymentAttempt,
+  startPublicAttempt,
   syncInvoice,
   updateAccountingSettings,
   voidInvoice,

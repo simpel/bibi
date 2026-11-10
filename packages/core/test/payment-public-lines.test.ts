@@ -3,14 +3,12 @@ import { afterEach, describe, expect, it } from "vitest";
 import { getPublicPaymentOperation } from "../src/features/payment/public-operation";
 import {
   createInvoice,
-  createMemoryPaymentProvider,
   createPayment,
   type ExecuteContext,
   execute,
   getPublicPayment,
+  resetProviderAdapters,
   sendInvoice,
-  setPaymentProvider,
-  setStripeConnectGateway,
 } from "../src/index";
 import { testContext, unwrap } from "./helpers";
 import { addLine, addOnSetup } from "./line-add-on-helpers";
@@ -18,8 +16,7 @@ import { activatePaymentAccount, paymentSetup } from "./payment-helpers";
 import { makeInvoiceable, moneySetup, sentTestQuote } from "./receivable-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 type PayInput = { context: ExecuteContext } & (
@@ -43,7 +40,6 @@ async function quoteWithSubLines() {
   unwrap({ result: await addLine({ ...base, name: "Coffee" }) });
   const option = unwrap({ result: await addLine({ ...base, name: "Snack" }) });
   await activatePaymentAccount({ context });
-  setPaymentProvider({ provider: createMemoryPaymentProvider() });
   const quote = await sentTestQuote({ context, orderId: order.id });
   await getDb().orderLine.updateMany({
     where: { quoteId: quote.id, lineId: option.id },

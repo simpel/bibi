@@ -1,11 +1,12 @@
 import type { PublicPaymentDto } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
-import { paymentOutcome } from "./payment-outcome";
+import { paymentOutcome, pickableMethods } from "./payment-outcome";
 
 const base: PublicPaymentDto = {
   organizationName: "Venue",
   orderReference: 1,
   method: "CARD",
+  methods: ["CARD"],
   status: "PENDING",
   amountMinor: 10_000,
   currency: "SEK",
@@ -27,7 +28,15 @@ describe("paymentOutcome", () => {
     );
   });
   it("points an invoice payer to the invoice instead", () => {
-    expect(paymentOutcome({ payment: { ...base, method: "INVOICE" } })).toBe("invoice");
+    const invoice = { ...base, method: "INVOICE" as const, methods: [], paymentUrl: null };
+    expect(paymentOutcome({ payment: invoice })).toBe("invoice");
+  });
+  it("offers the picker for routed methods even before a checkout exists", () => {
+    const swish = { ...base, methods: ["SWISH" as const], paymentUrl: null };
+    expect(paymentOutcome({ payment: swish })).toBe("pay");
+    expect(
+      pickableMethods({ payment: { ...base, methods: ["CARD", "SWISH", "INVOICE"] } }),
+    ).toEqual(["CARD", "SWISH"]);
   });
   it("maps the final states", () => {
     expect(paymentOutcome({ payment: { ...base, status: "SUCCEEDED" } })).toBe("paid");

@@ -105,12 +105,18 @@ const PaymentOutput = z.object({
   orderId: z.string(),
   status: z.string(),
   changed: z.boolean(),
+  overpaid: z.boolean().optional(),
 });
 
-/** `payment.applySignal`: a payment that just succeeded, to everyone on its order. */
+/**
+ * `payment.applySignal`: a payment that just succeeded, to everyone on its order; an over-payment
+ * (a second attempt paid it again, ADR 0100) is told the same way, flagged `overpaid`.
+ */
 export async function notifyPaymentReceived({ output, context }: AnyFollowUp) {
   const parsed = PaymentOutput.safeParse(output);
-  if (!parsed.success || !parsed.data.changed || parsed.data.status !== "SUCCEEDED") return;
+  if (!parsed.success || !parsed.data.changed) return;
+  const overpaid = parsed.data.overpaid === true;
+  if (!overpaid && parsed.data.status !== "SUCCEEDED") return;
   const { paymentId, orderId } = parsed.data;
   const [facts, payment] = await Promise.all([
     orderFacts({ context, orderId }),
@@ -120,7 +126,7 @@ export async function notifyPaymentReceived({ output, context }: AnyFollowUp) {
     }),
   ]);
   if (!facts || !payment) return;
-  const data = { ...facts, ...payment };
+  const data = { ...facts, ...payment, ...(overpaid ? { overpaid } : {}) };
   const userIds = await orderPeople({ context, orderId });
   await notify({ context, kind: "PAYMENT_RECEIVED", userIds, orderId, paymentId, data });
 }

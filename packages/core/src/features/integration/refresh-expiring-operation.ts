@@ -2,25 +2,30 @@ import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { ExternalInput, OperationContext } from "../../operations/types";
+import { refreshConnection } from "../../providers/oauth/refresh-connection";
+import { providersWith } from "../../providers/registry";
 import { nowOf } from "../../time/now";
-import { refreshFortnoxConnection } from "./fortnox/refresh-connection";
 import {
   IntegrationRefreshExpiringInputSchema,
   type IntegrationRefreshExpiringOutput,
   IntegrationRefreshExpiringOutputSchema,
 } from "./schema";
 
-/** Refresh connections whose refresh token has less than this left (45-day lifetime). */
-const REFRESH_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
-
-const dueConnections = ({ context }: { context: Pick<OperationContext, "db" | "now"> }) =>
-  context.db.integrationConnection.findMany({
-    where: {
-      provider: "FORTNOX",
-      status: "CONNECTED",
-      refreshExpiresAt: { lt: new Date(nowOf({ context }).getTime() + REFRESH_WINDOW_MS) },
-    },
-  });
+/** CONNECTED OAuth connections whose refresh token ends within their provider's window. */
+async function dueConnections({ context }: { context: Pick<OperationContext, "db" | "now"> }) {
+  const now = nowOf({ context }).getTime();
+  const due = [];
+  for (const adapter of providersWith({ capability: "OAUTH" })) {
+    if (adapter.connect.kind !== "OAUTH") continue;
+    const before = new Date(now + adapter.connect.refreshWindowMs);
+    due.push(
+      ...(await context.db.providerConnection.findMany({
+        where: { provider: adapter.key, status: "CONNECTED", refreshExpiresAt: { lt: before } },
+      })),
+    );
+  }
+  return due;
+}
 
 /** The refreshes, after the commit: a rotated refresh token must never be rolled back (ADR 0058). */
 async function refreshAfterCommit({
@@ -31,7 +36,7 @@ async function refreshAfterCommit({
 > {
   const result = { ...output, refreshed: 0, expired: 0 };
   for (const row of await dueConnections({ context })) {
-    const refreshed = await refreshFortnoxConnection({ context, row });
+    const refreshed = await refreshConnection({ context, row });
     if (refreshed.ok) result.refreshed++;
     else if (refreshed.error.code === "CONFLICT") result.expired++;
     else return refreshed;
@@ -40,13 +45,14 @@ async function refreshAfterCommit({
 }
 
 /**
- * Keeps idle connections alive (ADR 0087): Fortnox refresh tokens die 45 days after issue and API
- * calls do not extend them. SYSTEM only (the worker's daily job); not registered on any surface.
+ * Keeps idle OAuth connections alive (ADR 0087): refresh tokens die after their provider's
+ * lifetime (Fortnox: 45 days) and API calls do not extend them. SYSTEM only (the worker's daily
+ * job); not registered on any surface.
  */
 export const refreshExpiringIntegrations = defineOperation({
   name: "integration.refreshExpiring",
   kind: "command",
-  description: "Refresh connections whose refresh token expires within 14 days (worker only).",
+  description: "Refresh OAuth connections whose refresh token expires soon (worker only).",
   input: IntegrationRefreshExpiringInputSchema,
   output: IntegrationRefreshExpiringOutputSchema,
   permission: "integration:write",

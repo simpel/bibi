@@ -2,6 +2,7 @@
 
 - **Date:** 2026-11-02
 - **Status:** Accepted
+- **Amended by:** 0100 (providers as ports: one connection table, routes per method, payment attempts, refunds, credit notes)
 - **Related:** 0029, 0077, 0090, 0003, 0050, 0051, 0058, 0027, 0028
 
 ## Context

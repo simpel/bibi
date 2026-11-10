@@ -270,6 +270,10 @@
         "invoice_sync": "Uppdatera faktura från Fortnox",
         "invoice_void": "Makulera faktura",
         "payment_create": "Begär betalning",
+        "invoice_credit": "Kreditera faktura",
+        "payment_refund": "Återbetala betalning",
+        "payment_cancel": "Avbryt betalning",
+        "payment_recordManual": "Registrera betalning",
         "memberProfile_update": "Ändra medlemmens schematyp",
         "memberProfile_setItems": "Koppla personalresurser till medlem",
         "venueHours_set": "Ange öppettider",
@@ -463,7 +467,8 @@
         "singular": "Integrationer",
         "unavailable": "Inte tillgängligt på den här servern",
         "company": "{company} ({number})",
-        "open": "Öppna integrationer"
+        "open": "Öppna integrationer",
+        "approve": "Godkänn hos {name}"
       },
       "calendar": {
         "title": "Kalender, {period}",
@@ -827,7 +832,7 @@
   },
   "integration": {
     "title": "Integrationer",
-    "description": "Koppla Bibi till de system som organisationen redan använder.",
+    "description": "Koppla Bibi till betaltjänster och bokföringssystem som organisationen redan använder.",
     "status": {
       "NOT_CONNECTED": "Inte ansluten",
       "PENDING": "Väntar på godkännande",
@@ -835,36 +840,11 @@
       "EXPIRED": "Behöver anslutas igen",
       "DISCONNECTED": "Frånkopplad"
     },
-    "fortnox": {
-      "name": "Fortnox",
-      "description": "Anslut organisationens Fortnox-företag. Fakturor kan skapas i Fortnox, och betalningar som bokförs där speglas tillbaka till Bibi.",
-      "hint": {
-        "NOT_CONNECTED": "Anslut Fortnox för att koppla ihop ditt bokföringssystem. Du skickas till Fortnox för att godkänna anslutningen.",
-        "PENDING": "Anslutningen är påbörjad men inte godkänd. Anslut igen för att slutföra den.",
-        "CONNECTED": "Fortnox är anslutet. Fakturor skapas i Fortnox när Inställningar → Betalningar säger det, och betalningar som bokförs där speglas tillbaka.",
-        "EXPIRED": "Fortnox godtar inte längre anslutningen. Anslut igen för att återställa den.",
-        "DISCONNECTED": "Fortnox har kopplats från. Anslut igen för att återställa anslutningen."
-      },
-      "notConfigured": "Fortnox är inte tillgängligt än: Bibi saknar inloggningsuppgifter till Fortnox-appen på den här servern.",
-      "reconnectNote": "Organisationer som anslöts innan fakturering lades till måste ansluta om en gång för att ge behörighet för fakturering.",
-      "adminNote": "En systemadministratör i Fortnox måste godkänna anslutningen. Är du inte det ber du en sådan person godkänna när Fortnox frågar.",
-      "company": "Företag",
-      "organizationNumber": "Organisationsnummer",
-      "connectedAt": "Ansluten",
-      "connect": "Anslut Fortnox",
-      "reconnect": "Anslut igen",
-      "connecting": "Förbereder anslutningen till Fortnox…",
-      "redirecting": "Öppnar Fortnox…",
-      "disconnect": "Koppla från",
-      "disconnectConfirm": "Koppla från Fortnox? Bibi glömmer anslutningen och återkallar åtkomsten hos Fortnox. Du kan ansluta igen senare.",
-      "disconnecting": "Kopplar från Fortnox…",
-      "disconnected": "Fortnox har kopplats från."
-    },
     "notice": {
-      "connected": "Fortnox är anslutet.",
-      "denied": "Anslutningen godkändes inte hos Fortnox, så ingenting anslöts.",
+      "connected": "{name} är ansluten.",
+      "denied": "Anslutningen godkändes inte hos {name}, så ingenting anslöts.",
       "expired": "Godkännandet tog för lång tid eller kom från ett annat håll. Starta anslutningen igen.",
-      "failed": "Det gick inte att ansluta Fortnox. Försök igen om en stund."
+      "failed": "Det gick inte att ansluta {name}. Försök igen om en stund."
     },
     "apiKeysCard": {
       "title": "API-nycklar",
@@ -943,6 +923,47 @@
         "promptCopied": "Prompten har kopierats. Klistra in den i din AI-app.",
         "local": "Nås bara från den här datorn.",
         "prompt": "Hjälp mig att koppla {name} till dig som en MCP-koppling, så att du kan arbeta i {name} åt mig. Förklara varje steg på enkel svenska och vänta på mig mellan stegen.\n\nNamn: {name}\nAdress: {url}\n\nNär jag ansluter ber {name} mig logga in och välja Tillåt."
+      }
+    },
+    "card": {
+      "connect": "Anslut",
+      "reconnect": "Anslut igen",
+      "continueOnboarding": "Fortsätt registreringen",
+      "connecting": "Förbereder anslutningen till {name}…",
+      "redirecting": "Öppnar {name}…",
+      "refresh": "Uppdatera status",
+      "refreshing": "Uppdaterar status…",
+      "refreshed": "Statusen har uppdaterats.",
+      "disconnect": "Koppla från",
+      "disconnectTitle": "Koppla från {name}?",
+      "disconnectConfirm": "Bibi glömmer anslutningen till {name} och slutar använda den. Du kan ansluta igen senare.",
+      "disconnectHostedConfirm": "Bibi slutar skicka betallänkar via {name}. Länkar som redan skickats fungerar tills de löper ut. Kontot hos {name} är fortfarande ert.",
+      "disconnecting": "Kopplar från {name}…",
+      "disconnected": "{name} har kopplats från.",
+      "company": "Företag",
+      "organizationNumber": "Organisationsnummer",
+      "connectedAt": "Ansluten",
+      "takes": "Tar emot: {methods}",
+      "ledger": "{name} sköter bokföringen för fakturor som skapas där, så de lämnas utanför SIE-exporten.",
+      "notConfigured": "{name} är inte tillgänglig ännu på den här servern.",
+      "hint": {
+        "NOT_CONNECTED": "{name} är inte ansluten.",
+        "PENDING": "Anslutningen till {name} är påbörjad men inte klar. Fortsätt för att slutföra den.",
+        "CONNECTED": "{name} är ansluten och används där inställningarna under Betalningar säger det.",
+        "EXPIRED": "{name} behöver mer från er eller godtar inte längre anslutningen. Anslut igen för att återställa den.",
+        "DISCONNECTED": "{name} är frånkopplad. Anslut igen för att använda den."
+      }
+    },
+    "connectForm": {
+      "title": "Anslut {name}",
+      "description": "Uppgifterna kontrolleras hos {name} och sparas krypterat. De visas aldrig igen.",
+      "submit": "Anslut {name}",
+      "connecting": "Ansluter {name}…",
+      "connected": "{name} är ansluten.",
+      "fields": {
+        "swishNumber": "Swish-nummer",
+        "certificate": "Certifikat (.p12)",
+        "passphrase": "Lösenord till certifikatet"
       }
     }
   }

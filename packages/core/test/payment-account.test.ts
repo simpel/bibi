@@ -6,7 +6,7 @@ import {
   execute,
   getPaymentAccount,
   previewChange,
-  setStripeConnectGateway,
+  resetProviderAdapters,
   startPaymentOnboarding,
   syncPaymentAccount,
 } from "../src/index";
@@ -17,7 +17,7 @@ let gateway: FakeGateway;
 beforeEach(() => {
   gateway = installFakeGateway();
 });
-afterEach(() => setStripeConnectGateway({ gateway: undefined }));
+afterEach(() => resetProviderAdapters());
 
 const start = ({ context }: { context: ExecuteContext }) =>
   execute({ operation: startPaymentOnboarding, input: { country: "SE" }, context });
@@ -49,24 +49,24 @@ describe("paymentAccount", () => {
     const preview = await previewChange({ operation: startPaymentOnboarding, input, context });
     expect(preview.ok).toBe(true);
     expect(gateway.calls).toEqual([]);
-    expect(await context.db.paymentAccount.count()).toBe(0);
+    expect(await context.db.providerConnection.count()).toBe(0);
   });
 
   it("resumes a row whose Stripe call was refused without a second account", async () => {
     const context = testContext();
-    const realCreate = gateway.createAccount;
-    gateway.createAccount = async () => {
+    const realCreate = gateway.onboarding.createAccount;
+    gateway.onboarding.createAccount = async () => {
       gateway.calls.push("createAccount");
       return err({ error: new AppError({ code: "UNAVAILABLE", message: "Stripe is down" }) });
     };
     expect(errorCode({ result: await start({ context }) })).toBe("UNAVAILABLE");
-    const stuck = await context.db.paymentAccount.findFirst({});
-    expect(stuck?.stripeAccountId).toBeNull();
-    gateway.createAccount = realCreate;
+    const stuck = await context.db.providerConnection.findFirst({});
+    expect(stuck?.externalAccountId).toBeNull();
+    gateway.onboarding.createAccount = realCreate;
     const resumed = unwrap({ result: await start({ context }) });
     expect(resumed.id).toBe(stuck?.id);
     expect(resumed.stripeAccountId).toMatch(/^acct_/);
-    expect(await context.db.paymentAccount.count()).toBe(1);
+    expect(await context.db.providerConnection.count()).toBe(1);
   });
 
   it("syncs the status from Stripe", async () => {
@@ -108,7 +108,7 @@ describe("paymentAccount", () => {
   });
 
   it("is UNAVAILABLE without Stripe configuration", async () => {
-    setStripeConnectGateway({ gateway: undefined });
+    resetProviderAdapters();
     expect(errorCode({ result: await start({ context: testContext() }) })).toBe("UNAVAILABLE");
   });
 });

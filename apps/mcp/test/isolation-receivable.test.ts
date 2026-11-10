@@ -1,16 +1,12 @@
-import {
-  createMemoryPaymentProvider,
-  setPaymentProvider,
-  setStripeConnectGateway,
-} from "@bibi/core";
+import { resetProviderAdapters } from "@bibi/core";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
 import { seedOrder } from "./seed-order";
+import { seedQuoteBasis } from "./seed-quote-basis";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 type Client = Awaited<ReturnType<typeof connect>>;
@@ -35,7 +31,6 @@ describe("cross-organization isolation: receivables and balances (ADR 0057)", ()
     const b = await connect({ context: testContext() });
     const order = await seedOrder({ client: a });
     installFakeStripe({ status: "ACTIVE" });
-    setPaymentProvider({ provider: createMemoryPaymentProvider() });
     const args = { orderId: order.id, description: "Advance", amountMinor: 100_000 };
     const deposit = await call({ client: a, name: "deposit_create", args });
     expect(deposit.isError, JSON.stringify(deposit.data)).toBe(false);
@@ -70,5 +65,32 @@ describe("cross-organization isolation: receivables and balances (ADR 0057)", ()
     expect(graph.data.data.deposits.items).toEqual([]);
     const own = await call({ client: a, name: "deposit_get", args: { id } });
     expect(own.data).toMatchObject({ id, status: "DRAFT", progress: "OPEN" });
+  });
+
+  it("refuses to credit another organization's sent invoice", async () => {
+    const a = await connect({ context: testContext() });
+    const b = await connect({ context: testContext() });
+    const { orderId } = await seedQuoteBasis({ client: a });
+    const order = await call({ client: a, name: "order_get", args: { id: orderId } });
+    const status = { id: order.data.statusId, invoiceable: true };
+    await call({ client: a, name: "orderStatus_update", args: status });
+    const invoice = await call({ client: a, name: "invoice_create", args: { orderId } });
+    expect(invoice.isError, JSON.stringify(invoice.data)).toBe(false);
+    const invoiceId: string = invoice.data.id;
+    await call({ client: a, name: "invoice_send", args: { id: invoiceId } });
+    await expectNotFound({ client: b, calls: [["invoice_credit", { invoiceId }]] });
+    const own = await call({ client: a, name: "invoice_get", args: { id: invoiceId } });
+    expect(own.data).toMatchObject({ status: "SENT", creditNotes: [] });
+    const args = { invoiceId, amountMinor: 10_000 };
+    const credited = await call({ client: a, name: "invoice_credit", args });
+    expect(credited.isError, JSON.stringify(credited.data)).toBe(false);
+    const noteId: string = credited.data.creditNotes[0].id;
+    await expectNotFound({ client: b, calls: [["creditNote_get", { id: noteId }]] });
+    const byInvoice = await call({ client: b, name: "creditNote_list", args: { invoiceId } });
+    expect(byInvoice.data.items).toEqual([]);
+    const byOrder = await call({ client: b, name: "creditNote_list", args: { orderId } });
+    expect(byOrder.data.items).toEqual([]);
+    const mine = await call({ client: a, name: "creditNote_list", args: { orderId } });
+    expect(mine.data.items.map((note: { id: string }) => note.id)).toEqual([noteId]);
   });
 });

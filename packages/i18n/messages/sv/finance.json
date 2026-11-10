@@ -168,6 +168,7 @@
       "kinds": {
         "INVOICE_SENT": "Fakturor skickade",
         "INVOICE_VOID": "Fakturor makulerade",
+        "CREDIT_NOTE": "Kreditfakturor",
         "PAYMENT": "Betalningar",
         "FEE": "Avgifter",
         "REFUND": "Återbetalningar"
@@ -447,14 +448,8 @@
     "plural": "Betalningar",
     "empty": "Inga betalningar begärda ännu.",
     "request": "Begär betalning",
-    "requestDescription": "Debiteras direkt på ert Stripe-konto. Kortbetalning ger en länk att skicka till kunden; en faktura mejlas till kundens e-postadress.",
-    "stripeRequired": {
-      "title": "Koppla Stripe först",
-      "description": "Betallänkar och betalningar går direkt till organisationens eget Stripe-konto. En administratör kopplar Stripe under Inställningar → Integrationer; tills dess går de här åtgärderna inte att använda.",
-      "connect": "Gå till Integrationer"
-    },
+    "requestDescription": "Kunden får en betallänk och betalar med de betalsätt ni har kopplat, till exempel kort eller Swish. Pengarna går direkt till er.",
     "created": "Betalningen har begärts.",
-    "providerFortnox": "Fortnox",
     "openLink": "Öppna betalningslänken",
     "public": {
       "title": "Betalning till {organization}",
@@ -470,7 +465,7 @@
       "unavailableTitle": "Betalningen kan inte längre göras",
       "unavailableDescription": "Kontakta {organization} om du tror att det är fel.",
       "invoiceDescription": "En faktura har skickats till dig. Använd länken i den för att betala.",
-      "secured": "Betalningen hanteras av Stripe.",
+      "secured": "Betalningen hanteras säkert av betaltjänsten.",
       "lines": "Det här betalar du för",
       "addOn": "Tillägg",
       "option": "Tillval",
@@ -483,7 +478,12 @@
       "totalInclVat": "Summa inkl. moms",
       "from": "från {amount}",
       "deduction": "Betalt förskott: {description}",
-      "amountDue": "Kvar att betala"
+      "amountDue": "Kvar att betala",
+      "payWith": "Betala med {method}",
+      "swishScan": "Skanna QR-koden med Swish-appen.",
+      "swishOpen": "Öppna Swish",
+      "swishWaiting": "Väntar på att betalningen godkänns i Swish. Sidan uppdateras av sig själv.",
+      "startFailed": "Betalningen kunde inte startas. Försök igen om en stund."
     },
     "fields": {
       "method": "Betalsätt",
@@ -492,7 +492,9 @@
     },
     "method": {
       "CARD": "Kort",
-      "INVOICE": "Faktura"
+      "SWISH": "Swish",
+      "INVOICE": "Faktura",
+      "MANUAL": "Manuell"
     },
     "status": {
       "PENDING": "Väntar",
@@ -534,6 +536,42 @@
         "QUOTE": "Från den accepterade offerten",
         "NONE": "Inget debiterat ännu"
       }
+    },
+    "methodRequired": {
+      "title": "Koppla ett betalsätt först",
+      "description": "Betallänkar kräver att organisationen har kopplat en tjänst som tar betalt, till exempel Stripe eller Swish. En administratör gör det under Administration → Integrationer; tills dess går de här åtgärderna inte att använda.",
+      "connect": "Gå till Integrationer"
+    },
+    "via": "Via {name}",
+    "refunded": "Återbetalt {amount}",
+    "refund": {
+      "action": "Återbetala",
+      "title": "Återbetala betalning",
+      "description": "Pengarna betalas tillbaka till kunden på samma sätt som de betalades. En betalning ni registrerat själva räknas som återbetald direkt; betala tillbaka pengarna utanför Bibi.",
+      "amount": "Belopp (kr)",
+      "amountHint": "Lämna tomt för att återbetala allt som återstår: {left}.",
+      "reason": "Anledning",
+      "submit": "Återbetala",
+      "done": "Återbetalningen har startats.",
+      "cardTitle": "Återbetalning",
+      "cardSummary": "Återbetalt {refunded}, kvar att återbetala {left}."
+    },
+    "cancel": {
+      "action": "Avbryt betalning",
+      "title": "Avbryta betalningen?",
+      "confirm": "Betallänken slutar fungera och betalningen begärs inte längre. Om pengar ändå kommer in registreras de.",
+      "done": "Betalningen har avbrutits."
+    },
+    "recordManual": {
+      "action": "Registrera betalning",
+      "title": "Registrera betalning",
+      "description": "För pengar ni fått utanför Bibi, till exempel en banköverföring eller kontant betalning.",
+      "amount": "Belopp (kr)",
+      "amountHint": "Kvar att betala: {open}.",
+      "paidOn": "Betaldag",
+      "note": "Anteckning, till exempel referens",
+      "submit": "Registrera betalning",
+      "done": "Betalningen har registrerats."
     }
   },
   "deposit": {
@@ -584,18 +622,37 @@
     "due": "Förfaller {date}",
     "send": "Markera som skickad",
     "sent": "Fakturan är markerad som skickad.",
-    "sync": "Uppdatera från Fortnox",
-    "synced": "Fakturan har uppdaterats från Fortnox.",
-    "inFortnox": "I Fortnox #{reference}",
-    "notInFortnox": "Inte i Fortnox än",
+    "sync": "Uppdatera från {name}",
+    "synced": "Fakturan har uppdaterats från {name}.",
     "void": "Makulera",
     "voidConfirm": "Makulera faktura nr {number}? Den är då inte längre skyldig och bokningen kan faktureras igen.",
     "voided": "Fakturan har makulerats.",
-    "deducted": "{amount} i betalda förskott avdraget"
+    "deducted": "{amount} i betalda förskott avdraget",
+    "inProvider": "I {name} #{reference}",
+    "notInProvider": "Ännu inte i {name}",
+    "voidPending": "Makuleringen i {name} är inte bekräftad än, Bibi försöker igen",
+    "credited": "{amount} krediterat",
+    "credit": {
+      "action": "Kreditera",
+      "title": "Kreditera faktura #{number}",
+      "description": "En kreditfaktura sänker det kunden är skyldig. Pengar som redan betalats återbetalas från betalningen.",
+      "amount": "Belopp inkl. moms (kr)",
+      "amountHint": "Lämna tomt för att kreditera allt som återstår: {due}.",
+      "reason": "Anledning",
+      "submit": "Skapa kreditfaktura",
+      "done": "Kreditfakturan har skapats.",
+      "cardTitle": "Kreditfaktura",
+      "noteNumber": "Kreditfaktura #{number}",
+      "status": {
+        "PENDING": "Väntar",
+        "ISSUED": "Utfärdad",
+        "FAILED": "Misslyckades"
+      }
+    }
   },
   "paymentSettings": {
     "title": "Betalningar",
-    "description": "Stripe-kontot, förskottsregeln och vilket system som skickar fakturor.",
+    "description": "Vilken tjänst som tar emot varje betalsätt, och förskottsregeln.",
     "saved": "Betalningsinställningarna har sparats.",
     "readOnly": "Du kan se inställningarna men inte ändra dem.",
     "save": "Spara",
@@ -603,65 +660,52 @@
       "title": "Förskott",
       "description": "Förskottet som föreslås när du begär ett för en bokning."
     },
-    "invoice": {
-      "title": "Fakturaleverantör",
-      "description": "Vilket system som skickar fakturorna när både Stripe och Fortnox är kopplade."
-    },
     "fields": {
       "depositPercent": "Förskott (% av bokningens summa inkl. moms)",
-      "depositMinimum": "Lägsta belopp för förskott (kr)",
-      "invoiceProvider": "Skicka fakturor via"
+      "depositMinimum": "Lägsta belopp för förskott (kr)"
     },
     "placeholders": {
       "none": "Ingen regel"
     },
     "hints": {
-      "depositMinimum": "Bokningar under det här beloppet betalas helt i förväg.",
-      "invoiceProvider": "Följ vad som är kopplat använder det system som är anslutet."
-    },
-    "provider": {
-      "AUTO": "Följ vad som är kopplat",
-      "STRIPE": "Stripe",
-      "FORTNOX": "Fortnox"
-    },
-    "operator": {
-      "title": "Betaloperatör",
-      "description": "Företaget som hanterar kortbetalningar för era bokningar.",
-      "label": "Betaloperatör",
-      "manage": "Aktivera eller inaktivera kopplingar under Integrationer",
-      "notConnected": "Stripe (inte kopplat)"
+      "depositMinimum": "Bokningar under det här beloppet betalas helt i förväg."
     },
     "confirmDepositTitle": "Ändra förskottet?",
-    "confirmDepositDescription": "Förskott: {percent}. Lägsta belopp: {minimum}. Från och med nu är det här vad kunder ombeds betala i förväg."
+    "confirmDepositDescription": "Förskott: {percent}. Lägsta belopp: {minimum}. Från och med nu är det här vad kunder ombeds betala i förväg.",
+    "routes": {
+      "title": "Betalsätt",
+      "description": "Välj vilken kopplad tjänst som tar emot varje betalsätt. Automatiskt använder den kopplade tjänst som kan ta emot det.",
+      "automatic": "Automatiskt",
+      "notConnected": "{name} (inte kopplad)",
+      "saved": "{method} har sparats.",
+      "manage": "Koppla tjänster under Integrationer"
+    }
   },
   "paymentAccount": {
-    "title": "Betalningar",
-    "description": "Koppla organisationen till Stripe så att kunderna betalar er direkt. Bibi håller aldrig era pengar.",
-    "stripe": "Stripe-utbetalningskonto",
     "status": {
       "NOT_CONNECTED": "Inte kopplat",
       "ONBOARDING": "Registrering pågår",
       "ACTIVE": "Aktivt",
       "RESTRICTED": "Begränsat",
       "DISCONNECTED": "Frånkopplad"
+    }
+  },
+  "providers": {
+    "STRIPE": {
+      "name": "Stripe",
+      "description": "Kortbetalningar och fakturor med betallänk, direkt till organisationens eget Stripe-konto."
     },
-    "hint": {
-      "NOT_CONNECTED": "Koppla till Stripe för att ta emot betalningar. Du skickas till Stripe för att verifiera ert företag.",
-      "ONBOARDING": "Registreringen hos Stripe är inte klar. Fortsätt där du slutade och uppdatera sedan statusen.",
-      "ACTIVE": "Ert konto kan ta emot kortbetalningar.",
-      "RESTRICTED": "Stripe har begränsat kortbetalningar på kontot. Fortsätt registreringen och lämna de uppgifter Stripe ber om.",
-      "DISCONNECTED": "Stripe är frånkopplat. Betallänkar och kortbetalningar är avstängda. Koppla igen för att använda samma Stripe-konto."
+    "FORTNOX": {
+      "name": "Fortnox",
+      "description": "Bokföring och fakturering. Fakturor skapas i Fortnox och betalningar som bokförs där speglas tillbaka till Bibi."
     },
-    "connect": "Koppla till Stripe",
-    "continueOnboarding": "Fortsätt registreringen",
-    "refresh": "Uppdatera status",
-    "starting": "Förbereder registrering hos Stripe…",
-    "redirecting": "Öppnar Stripe…",
-    "refreshing": "Uppdaterar status…",
-    "refreshed": "Betalningsstatusen har uppdaterats.",
-    "disconnect": "Koppla från",
-    "disconnectConfirm": "Koppla från Stripe? Bibi slutar skicka betallänkar. Länkar som redan skickats fungerar tills de går ut. Stripe-kontot förblir ert.",
-    "disconnecting": "Kopplar från Stripe…",
-    "disconnected": "Stripe har kopplats från."
+    "SWISH": {
+      "name": "Swish",
+      "description": "Swish Handel: kunden betalar med Swish-appen, med QR-kod på datorn eller direkt i mobilen."
+    },
+    "VISMA": {
+      "name": "Visma eEkonomi",
+      "description": "Bokföring och fakturering. Fakturor skapas i Visma eEkonomi och betalningar som bokförs där speglas tillbaka till Bibi."
+    }
   }
 }

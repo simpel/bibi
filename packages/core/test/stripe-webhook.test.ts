@@ -1,6 +1,6 @@
 import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { setPaymentProvider, setStripeConnectGateway } from "../src/index";
+import { resetProviderAdapters } from "../src/index";
 import { paidEvent, pendingPayment, postEvent, stripeEvent } from "./stripe-webhook-helpers";
 
 let logs: CapturedLogs;
@@ -9,8 +9,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   logs.restore();
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 describe("Stripe webhook", () => {
@@ -67,7 +66,7 @@ describe("Stripe webhook", () => {
     expect(row.status).toBe("SUCCEEDED");
   });
 
-  it("cancels an expired checkout", async () => {
+  it("ends only the attempt when its checkout expires", async () => {
     const { context, account, payment } = await pendingPayment({ coordinated: true });
     const event = stripeEvent({
       type: "checkout.session.expired",
@@ -76,7 +75,11 @@ describe("Stripe webhook", () => {
     });
     await postEvent({ event });
     const row = await context.db.payment.findUniqueOrThrow({ where: { id: payment.id } });
-    expect(row.status).toBe("CANCELLED");
+    expect(row.status).toBe("PENDING");
+    const attempt = await context.db.paymentAttempt.findFirstOrThrow({
+      where: { paymentId: payment.id },
+    });
+    expect(attempt.status).toBe("EXPIRED");
   });
 
   it("tracks partial and full refunds from the charge metadata", async () => {
@@ -88,21 +91,19 @@ describe("Stripe webhook", () => {
         account,
         object: { amount_refunded: amount, metadata: { paymentId: payment.id } },
       });
+    const refunds = () =>
+      context.db.paymentRefund.findMany({
+        where: { paymentId: payment.id, status: "SUCCEEDED" },
+        orderBy: { createdAt: "asc" },
+      });
     await postEvent({ event: refund({ amount: 25_000 }) });
     const partial = await context.db.payment.findUniqueOrThrow({ where: { id: payment.id } });
-    expect([partial.status, partial.refundedMinor]).toEqual(["SUCCEEDED", 25_000]);
+    expect(partial.status).toBe("SUCCEEDED");
+    expect((await refunds()).map((row) => row.amountMinor)).toEqual([25_000]);
     await postEvent({ event: refund({ amount: 125_000 }) });
     const full = await context.db.payment.findUniqueOrThrow({ where: { id: payment.id } });
-    expect([full.status, full.refundedMinor]).toEqual(["REFUNDED", 125_000]);
+    expect(full.status).toBe("REFUNDED");
     await postEvent({ event: refund({ amount: 125_000 }) });
-    const refunds = await context.db.paymentRefund.findMany({
-      where: { paymentId: payment.id },
-      orderBy: { refundedTotalMinor: "asc" },
-    });
-    const steps = refunds.map((row) => [row.amountMinor, row.refundedTotalMinor]);
-    expect(steps).toEqual([
-      [25_000, 25_000],
-      [100_000, 125_000],
-    ]);
+    expect((await refunds()).map((row) => row.amountMinor)).toEqual([25_000, 100_000]);
   });
 });

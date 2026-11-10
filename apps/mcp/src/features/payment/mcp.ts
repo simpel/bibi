@@ -22,7 +22,23 @@ export const paymentMcpTools = [
   mcpTool({
     operation: "payment.create",
     summary: ({ input }) =>
-      `Request ${amount({ input })} by ${input.method === "INVOICE" ? "invoice" : "card"} ` +
+      `Request ${amount({ input })} by ${input.method === "SWISH" ? "Swish" : "card"} ` +
       `against ${receivable({ input })}`,
+  }),
+  mcpTool({
+    operation: "payment.refund",
+    destructive: true,
+    summary: ({ input }) =>
+      `Refund ${typeof input.amountMinor === "number" ? amount({ input }) : "what is left"} ` +
+      `of payment ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "payment.cancel",
+    destructive: true,
+    summary: ({ input }) => `Cancel payment ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "payment.recordManual",
+    summary: ({ input }) => `Record ${amount({ input })} received against ${receivable({ input })}`,
   }),
 ];

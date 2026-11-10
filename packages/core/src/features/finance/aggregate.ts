@@ -28,7 +28,8 @@ export function monthly({ months, monthOf, invoiced, cash }: MonthlyInput): Fina
       add({ map: received, key: monthOf({ instant: row.paidAt }), amount: row.amountMinor });
   }
   for (const row of cash.refunds) {
-    add({ map: received, key: monthOf({ instant: row.refundedAt }), amount: -row.amountMinor });
+    if (row.refundedAt)
+      add({ map: received, key: monthOf({ instant: row.refundedAt }), amount: -row.amountMinor });
   }
   return months.map((month) => ({
     month,

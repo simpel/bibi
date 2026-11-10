@@ -48,7 +48,7 @@ describe("permission.get and permission.update (ADR 0050)", () => {
       }),
     });
     expect(reset.overrides).toEqual([]);
-    expect(reset.effective.payment).toEqual(["read", "write"]);
+    expect(reset.effective.payment).toEqual(["read", "write", "refund"]);
   });
 
   it("refuses locked admin-only permissions and duplicates", async () => {

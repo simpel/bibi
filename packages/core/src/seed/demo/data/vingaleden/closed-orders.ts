@@ -5,7 +5,7 @@ const coffee = { item: "Coffee on board", name: "Coffee" };
 
 /**
  * Vingaleden's closed orders for the dashboard (ADR 0079, `docs/demo-seed.md`, Dashboard data):
- * two won (an accepted quote, then Completed) and two lost (no accepted quote). The quote
+ * three won (an accepted quote, then Completed; VW1 and VW2 are invoiced, ADR 0100) and two lost (no accepted quote). The quote
  * charges the Coffee on board line.
  */
 export const vingaledenClosedOrders: readonly DemoOrder[] = [
@@ -15,11 +15,35 @@ export const vingaledenClosedOrders: readonly DemoOrder[] = [
     ...{ from: "18:00", to: "20:30", status: "Completed", headcount: 40, ...people },
     ...{ quote: coffee.item },
     lines: [{ ...coffee }],
+    // ADR 0100: invoiced in the venue's Fortnox, paid there (mirrored by `invoice.sync`).
+    money: {
+      invoice: { provider: "FORTNOX", paid: true, sentDay: -43, dueDay: -13, paidDay: -30 },
+    },
   },
   {
     title: "Rask family island trip",
     ...{ ref: "VW2", customer: "Familjen Rask", type: "Round trip", day: -80, won: true },
     ...{ from: "10:00", to: "11:30", status: "Completed", headcount: 9, ...people },
+    ...{ quote: coffee.item },
+    lines: [{ ...coffee }],
+    // ADR 0100: invoiced in Visma eEkonomi, still open with a credit note of 100 kr and a card
+    // payment of 50 kr registered into Visma.
+    money: {
+      invoice: {
+        provider: "VISMA",
+        paid: false,
+        sentDay: -78,
+        dueDay: -48,
+        credit: { kr: 100, reason: "Two guests cancelled" },
+        cardKr: 50,
+      },
+    },
+  },
+  {
+    // Won and not invoiced yet: the dashboard's value booked ahead (the others are invoiced).
+    title: "Rask family autumn trip",
+    ...{ ref: "VW3", customer: "Familjen Rask", type: "Round trip", day: -20, won: true },
+    ...{ from: "10:00", to: "11:30", status: "Completed", headcount: 12, ...people },
     ...{ quote: coffee.item },
     lines: [{ ...coffee }],
   },

@@ -1,6 +1,6 @@
 import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import type { OperationContext } from "../../operations/types";
-import { invoiceDueMinor } from "../invoice/to-invoice-dto";
+import { DUE_INCLUDE, invoiceDueMinor } from "../invoice/to-invoice-dto";
 import type { OrderBalanceDto, ReceivableKind, ReceivableSettlement } from "./balance-schema";
 import { paidByReceivable, settlementOf } from "./settlement";
 
@@ -30,7 +30,7 @@ async function receivablesOf({ context, orderId, withQuotes }: OrderBalanceInput
     context.db.invoice.findMany({
       where: { orderId },
       orderBy: { number: "asc" },
-      include: { deductions: { select: { amountMinor: true } } },
+      include: DUE_INCLUDE,
     }),
   ]);
   return { quotes, deposits, invoices };
@@ -55,7 +55,7 @@ function dueOf({ quotes, deposits, invoices }: Receivables): Due[] {
               kind: "INVOICE" as const,
               id: i.id,
               // What the invoice asks for; the deducted deposits are paid on themselves (ADR 0090).
-              amountMinor: invoiceDueMinor({ invoice: i, deductions: i.deductions }),
+              amountMinor: invoiceDueMinor({ invoice: i, ...i }),
             },
           ],
     ),
@@ -66,7 +66,13 @@ function dueOf({ quotes, deposits, invoices }: Receivables): Due[] {
 function billOf({ quotes, invoices }: Receivables) {
   const sent = invoices.filter((i) => i.status === "SENT");
   if (sent.length > 0) {
-    const billedMinor = sent.reduce((sum, i) => sum + i.totalInclVatMinor, 0);
+    // Credit notes reduce what is billed (ADR 0100); deducted deposits stay billed (ADR 0090).
+    const credited = ({ invoice }: { invoice: (typeof sent)[number] }) =>
+      invoice.creditNotes.reduce((s, c) => s + c.amountMinor, 0);
+    const billedMinor = sent.reduce(
+      (sum, i) => sum + i.totalInclVatMinor - credited({ invoice: i }),
+      0,
+    );
     return { billedFrom: "INVOICE" as const, billedMinor };
   }
   const accepted = quotes.findLast((q) => q.quoteStatus === "ACCEPTED");

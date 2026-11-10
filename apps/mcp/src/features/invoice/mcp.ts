@@ -14,11 +14,24 @@ export const invoiceMcpTools = [
   }),
   mcpTool({
     operation: "invoice.sync",
-    summary: ({ input }) => `Refresh invoice ${text({ value: input.id })} from Fortnox`,
+    summary: ({ input }) => `Refresh invoice ${text({ value: input.id })} from its provider`,
   }),
   mcpTool({
     operation: "invoice.void",
     destructive: true,
     summary: ({ input }) => `Void invoice ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "invoice.credit",
+    destructive: true,
+    summary: ({ input }) => {
+      const what =
+        typeof input.amountMinor === "number"
+          ? `${(input.amountMinor / 100).toFixed(2)} SEK`
+          : Array.isArray(input.lineIds)
+            ? `${input.lineIds.length} lines`
+            : "what is still due";
+      return `Credit ${what} of invoice ${text({ value: input.invoiceId })}`;
+    },
   }),
 ];

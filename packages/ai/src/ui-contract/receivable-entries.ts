@@ -52,4 +52,9 @@ export const RECEIVABLE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   invoice_send: invoiceCard,
   invoice_sync: invoiceCard,
   invoice_void: invoiceCard,
+  invoice_credit: uiEntry({
+    component: "credit-note-card",
+    schema: InvoiceWireSchema,
+    toProps: ({ value }) => ({ invoice: value }),
+  }),
 };

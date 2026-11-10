@@ -11,14 +11,14 @@ type Viewer = { context: Pick<OperationContext, "permissions"> };
  */
 function visibleData({ data, context }: Viewer & { data: NotificationData }): NotificationData {
   const { orderReference, orderTitle, fromStatus, toStatus, runSheetName, runSheetVersion } = data;
-  const { amountMinor, currency, actorName } = data;
+  const { amountMinor, currency, overpaid, actorName } = data;
   return {
     ...(actorName !== undefined ? { actorName } : {}),
     ...(canView({ context, feature: "order" })
       ? { orderReference, orderTitle, fromStatus, toStatus }
       : {}),
     ...(canView({ context, feature: "runSheet" }) ? { runSheetName, runSheetVersion } : {}),
-    ...(canView({ context, feature: "payment" }) ? { amountMinor, currency } : {}),
+    ...(canView({ context, feature: "payment" }) ? { amountMinor, currency, overpaid } : {}),
   };
 }
 

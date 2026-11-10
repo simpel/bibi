@@ -607,7 +607,8 @@
       "ASSIGNED": "{actor} assigned you to #{reference}",
       "RUN_SHEET_SENT": "{actor} sent you {runSheet} v{version} for #{reference}",
       "ORDER_STATUS_CHANGED": "#{reference} moved from {from} to {to}",
-      "PAYMENT_RECEIVED": "{amount} received on #{reference}"
+      "PAYMENT_RECEIVED": "{amount} received on #{reference}",
+      "PAYMENT_OVERPAID": "{amount} paid again on #{reference}, which was already paid: refund it or keep it as credit"
     },
     "someone": "Someone",
     "aRunSheet": "a run sheet",

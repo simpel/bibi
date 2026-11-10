@@ -2,8 +2,10 @@ import { getDb } from "@bibi/db";
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
+import { routedMethods } from "./payment-preconditions";
 import { publicDocument } from "./public-document";
 import { PublicPaymentInputSchema, PublicPaymentSchema } from "./schema";
+import { PAYMENT_INCLUDE, toPaymentDto } from "./to-payment-dto";
 
 /**
  * What the public payment page `/pay/<token>` shows (ADR 0028). Called by the web page as SYSTEM
@@ -21,25 +23,34 @@ export const getPublicPaymentOperation = defineOperation({
   permission: "payment:read",
   approval: false,
   handler: async ({ input, context }) => {
-    const payment = await context.db.payment.findFirst({ where: { publicToken: input.token } });
-    if (!payment) return notFound({ entity: "Payment" });
+    const row = await context.db.payment.findFirst({
+      where: { publicToken: input.token },
+      include: PAYMENT_INCLUDE,
+    });
+    if (!row) return notFound({ entity: "Payment" });
+    const payment = toPaymentDto({ row });
     const order = await context.db.order.findFirst({
       where: { id: payment.orderId },
       select: { reference: true },
     });
     const organization = await getDb().organization.findUnique({
-      where: { id: payment.organizationId },
+      where: { id: row.organizationId },
       select: { name: true },
     });
     if (!order || !organization) return notFound({ entity: "Payment" });
-    const document = await publicDocument({ context, payment });
-    const expired =
-      payment.status === "PENDING" && payment.expiresAt && payment.expiresAt <= new Date();
+    const document = await publicDocument({ context, payment: row });
+    const expired = Boolean(
+      payment.status === "PENDING" && payment.expiresAt && payment.expiresAt <= new Date(),
+    );
+    const routes = await routedMethods({ context });
+    const open = payment.status === "PENDING" && !expired;
+    const methods = open && routes.ok ? routes.value.map((route) => route.method) : [];
     return ok({
       value: {
         organizationName: organization.name,
         orderReference: order.reference,
         method: payment.method,
+        methods,
         status: expired ? "EXPIRED" : payment.status,
         amountMinor: payment.amountMinor,
         currency: payment.currency,

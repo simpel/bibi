@@ -21,6 +21,10 @@ export const NotificationDataSchema = z.object({
   runSheetVersion: z.number().int().optional().describe("RUN_SHEET_SENT: the version sent"),
   amountMinor: z.number().int().optional().describe("PAYMENT_RECEIVED: amount in minor units"),
   currency: z.string().optional().describe("PAYMENT_RECEIVED: ISO 4217 currency"),
+  overpaid: z
+    .boolean()
+    .optional()
+    .describe("PAYMENT_RECEIVED: money arrived on a payment already paid (give it back or keep)"),
 });
 export type NotificationData = z.infer<typeof NotificationDataSchema>;
 

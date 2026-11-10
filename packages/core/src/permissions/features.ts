@@ -7,15 +7,16 @@
  * sending, exporting and moving an order's status), `delete` archives it. Bibi never hard-deletes;
  * `delete` is the archive action. `submit` (ADR 0085, `inbox` only) hands a message in from
  * outside without seeing the feature, so unlike `write` and `delete` it does not imply `read`.
+ * `refund` (ADR 0100, `payment` only) gives money back to a customer; it implies `read`.
  */
-export const PERMISSION_ACTIONS = ["read", "write", "delete", "submit"] as const;
+export const PERMISSION_ACTIONS = ["read", "write", "delete", "submit", "refund"] as const;
 export type PermissionAction = (typeof PERMISSION_ACTIONS)[number];
 
 export type ImpliesReadInput = { action: PermissionAction };
 
-/** Whether granting `action` also grants `read` (`write` and `delete` do, `submit` does not). */
+/** Whether granting `action` also grants `read` (`write`, `delete` and `refund` do, `submit` not). */
 export function impliesRead({ action }: ImpliesReadInput): boolean {
-  return action === "write" || action === "delete";
+  return action === "write" || action === "delete" || action === "refund";
 }
 
 export const FEATURE_GROUPS = ["bookings", "selling", "catalog", "setup", "organization"] as const;
@@ -34,7 +35,8 @@ export const FEATURE_SPECS = {
   program: { group: "bookings", actions: all },
   customer: { group: "selling", actions: all },
   quote: { group: "selling", actions: all },
-  payment: { group: "selling", actions: noDelete },
+  // Refunds give money back (ADR 0100): their own action, managers and admins by preset.
+  payment: { group: "selling", actions: ["read", "write", "refund"] },
   runSheet: { group: "selling", actions: noDelete },
   finance: { group: "selling", actions: noDelete },
   item: { group: "catalog", actions: all },

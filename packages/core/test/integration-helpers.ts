@@ -1,67 +1,52 @@
 import { randomBytes } from "node:crypto";
-import { setTimeout as sleep } from "node:timers/promises";
 import { getEnv } from "@bibi/config";
 import { afterEach, beforeEach } from "vitest";
 import {
   connectIntegration,
+  createMemoryProvider,
   type ExecuteContext,
   execute,
-  type FortnoxGateway,
-  ok,
-  setFortnoxGateway,
+  findProvider,
+  type MemoryProvider,
+  resetProviderAdapters,
+  setProviderAdapter,
 } from "../src/index";
 import { testContext, unwrap } from "./helpers";
 
-export type FakeFortnox = FortnoxGateway & {
-  calls: string[];
-  /** Next `refresh` answer: new tokens, or Fortnox refusing the refresh token. */
-  refreshOutcome: "tokens" | "refused";
-  issued: number;
-};
+export type FakeFortnox = MemoryProvider;
 
-const tokensNumbered = ({ n }: { n: number }) => ({
-  accessToken: `access-${n}`,
-  refreshToken: `refresh-${n}`,
-  scope: "companyinformation",
-  expiresIn: 3600,
-});
+let last: FakeFortnox | null = null;
 
-/** An in-memory Fortnox that issues numbered tokens (`access-1`, `refresh-1`, ...). */
+/** The fake `installFakeFortnox` installed last in this test, if any. */
+export const lastFakeFortnox = (): FakeFortnox | null => last;
+
+/**
+ * An in-memory Fortnox (ADR 0100): OAuth that issues numbered tokens (`access-1`, `refresh-1`,
+ * ...) and rotates them, and invoicing. `resetProviderAdapters` undoes it.
+ */
 export function installFakeFortnox(): FakeFortnox {
-  const issue = () => tokensNumbered({ n: ++fake.issued });
-  const fake: FakeFortnox = {
-    calls: [],
-    refreshOutcome: "tokens",
-    issued: 0,
-    async exchangeCode({ code }) {
-      fake.calls.push(`exchangeCode:${code}`);
-      return ok({ value: issue() });
-    },
-    async refresh({ refreshToken }) {
-      fake.calls.push(`refresh:${refreshToken}`);
-      await sleep(20);
-      // Fortnox rotates: only the latest refresh token is accepted.
-      const spent = refreshToken !== `refresh-${fake.issued}`;
-      if (fake.refreshOutcome === "refused" || spent) return ok({ value: { kind: "refused" } });
-      return ok({ value: { kind: "tokens", tokens: issue() } });
-    },
-    async revoke({ refreshToken }) {
-      fake.calls.push(`revoke:${refreshToken}`);
-      return ok({ value: { revoked: true } });
-    },
-    async getCompany({ accessToken }) {
-      fake.calls.push(`getCompany:${accessToken}`);
-      return ok({
-        value: {
-          name: "Lindholmen Konferens AB",
-          organizationNumber: "556000-0000",
-          databaseNumber: "123",
-        },
-      });
-    },
-  };
-  setFortnoxGateway({ gateway: fake });
+  const fake = createMemoryProvider({
+    key: "FORTNOX",
+    connectKind: "OAUTH",
+    invoicing: true,
+    ledger: true,
+  });
+  fake.adapter.isConfigured = isConfigured;
+  // Fortnox's own consent page and callback, so the authorize URL can be checked.
+  const real = findProvider({ key: "FORTNOX" })?.connect;
+  if (real?.kind === "OAUTH") {
+    fake.oauth.authorizeUrl = real.authorizeUrl;
+    fake.oauth.redirectUri = real.redirectUri;
+  }
+  setProviderAdapter({ key: "FORTNOX", adapter: fake.adapter });
+  last = fake;
   return fake;
+}
+
+/** Configured like the real adapter: the app credentials and the sealing key. */
+function isConfigured(): boolean {
+  const { FORTNOX_CLIENT_ID, FORTNOX_CLIENT_SECRET, INTEGRATION_SECRET_KEY } = getEnv();
+  return Boolean(FORTNOX_CLIENT_ID && FORTNOX_CLIENT_SECRET && INTEGRATION_SECRET_KEY);
 }
 
 const FORTNOX_KEYS = [
@@ -82,7 +67,7 @@ export function useFortnoxEnv() {
   });
   afterEach(() => {
     Object.assign(getEnv(), saved);
-    setFortnoxGateway({ gateway: undefined });
+    resetProviderAdapters();
   });
 }
 
@@ -100,6 +85,6 @@ export async function startFortnox({ context }: StartInput) {
       context,
     }),
   });
-  const state = new URL(started.authorizeUrl).searchParams.get("state") ?? "";
+  const state = new URL(started.authorizeUrl ?? "").searchParams.get("state") ?? "";
   return { started, state };
 }

@@ -14,6 +14,8 @@ export function voucherText({ event }: { event: AccountingEvent }): string {
       return `Invoice ${event.invoiceNumber}, ${order}`;
     case "INVOICE_VOID":
       return `Void invoice ${event.invoiceNumber}, ${order}`;
+    case "CREDIT_NOTE":
+      return `Credit note ${event.creditNoteNumber}, invoice ${event.invoiceNumber}, ${order}`;
     case "PAYMENT":
       return `Payment ${settled({ settles: event.settles })}, ${order}`;
     case "REFUND":

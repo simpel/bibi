@@ -1,16 +1,11 @@
-import {
-  createMemoryPaymentProvider,
-  setPaymentProvider,
-  setStripeConnectGateway,
-} from "@bibi/core";
+import { resetProviderAdapters } from "@bibi/core";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
 import { seedOrder } from "./seed-order";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 describe("cross-organization isolation: payments", () => {
@@ -19,7 +14,6 @@ describe("cross-organization isolation: payments", () => {
     const b = await connect({ context: testContext() });
     const { id: orderId } = await seedOrder({ client: a });
     installFakeStripe({ status: "ACTIVE" });
-    setPaymentProvider({ provider: createMemoryPaymentProvider() });
     await call({ client: a, name: "paymentAccount_startOnboarding" });
     await call({ client: a, name: "paymentAccount_sync" });
     const depositArgs = { orderId, description: "Advance", amountMinor: 100_000 };
@@ -52,6 +46,20 @@ describe("cross-organization isolation: payments", () => {
       args: { orderId, description: "Advance", amountMinor: 100_000 },
     });
     expect(request.data.code).toBe("NOT_FOUND");
+    const id = payment.data.id;
+    const manual = {
+      depositId: draft.data.id,
+      amountMinor: 10_000,
+      paidAt: "2026-05-01T10:00:00Z",
+    };
+    for (const [name, toolArgs] of [
+      ["payment_refund", { id }],
+      ["payment_cancel", { id }],
+      ["payment_recordManual", manual],
+    ] as const) {
+      const result = await call({ client: b, name, args: toolArgs });
+      expect(result.data.code, `${name} ${JSON.stringify(result.data)}`).toBe("NOT_FOUND");
+    }
     const own = await call({ client: a, name: "payment_list", args: { orderId } });
     expect(own.data.items).toHaveLength(1);
   });

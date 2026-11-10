@@ -1,6 +1,8 @@
 import { getEnv } from "@bibi/config";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { stripePaymentProvider } from "../src/features/payment/stripe-provider";
+import { stripeCharges } from "../src/providers/stripe/stripe-charges";
+import { stripeInvoicing } from "../src/providers/stripe/stripe-invoicing";
+import { stripeRefundStatus } from "../src/providers/stripe/stripe-refunds";
 import { unwrap } from "./helpers";
 
 type Call = { url: string; headers: Record<string, string>; body: URLSearchParams };
@@ -41,7 +43,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("stripePaymentProvider", () => {
+describe("stripeCharges", () => {
   it("creates a checkout session on the connected account with the application fee", async () => {
     stubStripe({
       responses: [
@@ -49,7 +51,7 @@ describe("stripePaymentProvider", () => {
       ],
     });
     const checkout = unwrap({
-      result: await stripePaymentProvider.createCheckout({
+      result: await stripeCharges.createCheckout({
         ...base,
         applicationFeeMinor: 3_125,
         successUrl: "https://bibi.test/pay/p1",
@@ -76,7 +78,7 @@ describe("stripePaymentProvider", () => {
   it("omits the application fee when none is given", async () => {
     stubStripe({ responses: [{ id: "cs_2", url: "https://x", expires_at: 1 }] });
     const input = { ...base, successUrl: "https://s", cancelUrl: "https://c" };
-    unwrap({ result: await stripePaymentProvider.createCheckout(input) });
+    unwrap({ result: await stripeCharges.createCheckout(input) });
     expect(calls[0]?.body.has("payment_intent_data[application_fee_amount]")).toBe(false);
   });
 
@@ -91,11 +93,29 @@ describe("stripePaymentProvider", () => {
       ],
     });
     const invoice = unwrap({
-      result: await stripePaymentProvider.createInvoice({
-        ...base,
-        applicationFeeMinor: 500,
-        recipient: { name: "Hisingen Energi AB", email: "billing@example.com" },
-        daysUntilDue: 30,
+      result: await stripeInvoicing.issue({
+        auth: { externalAccountId: "acct_venue", accessToken: null },
+        idempotencyKey: "bibi-invoice-i1",
+        invoice: {
+          invoiceDate: "2026-11-09",
+          dueDate: "2026-12-09",
+          currency: "SEK",
+          reference: "Order #7, invoice #1",
+          customer: { name: "Hisingen Energi AB", email: "billing@example.com" },
+          lines: [
+            {
+              name: "Lunch",
+              quantity: 10,
+              unitPriceMinor: 10_000,
+              discountPercent: 0,
+              vatRatePercent: 12,
+              vatRows: [{ vatRatePercent: 12, totalExclVatMinor: 100_000 }],
+              revenueAccount: "3001",
+            },
+          ],
+          deductions: [],
+          advancesAccount: "2420",
+        },
       }),
     });
     expect(invoice).toEqual({
@@ -110,19 +130,67 @@ describe("stripePaymentProvider", () => {
       "/invoices/in_1/send",
     ]);
     expect(calls.every(({ headers }) => headers["Stripe-Account"] === "acct_venue")).toBe(true);
-    expect(calls[1]?.body.get("application_fee_amount")).toBe("500");
     expect(calls[2]?.body.get("invoice")).toBe("in_1");
+    expect(calls[2]?.body.get("amount")).toBe("112000");
     expect(new Set(calls.map(({ headers }) => headers["Idempotency-Key"])).size).toBe(5);
   });
 
-  it("maps a refused request to UNAVAILABLE", async () => {
+  it("maps a refused request (4xx) to CONFLICT", async () => {
     vi.stubGlobal(
       "fetch",
       async () =>
         new Response(JSON.stringify({ error: { message: "No such account" } }), { status: 400 }),
     );
     const input = { ...base, successUrl: "https://s", cancelUrl: "https://c" };
-    const result = await stripePaymentProvider.createCheckout(input);
-    expect(result.ok ? null : result.error.code).toBe("UNAVAILABLE");
+    const result = await stripeCharges.createCheckout(input);
+    expect(result.ok ? null : result.error.code).toBe("CONFLICT");
+  });
+});
+
+describe("stripe refundStatus (ADR 0100)", () => {
+  const input = {
+    auth: { externalAccountId: "acct_venue", accessToken: null },
+    providerReference: "cs_1",
+    idempotencyKey: "bibi-refund-r1",
+    refundReference: null,
+    metadata: { paymentId: "p1", refundId: "r1" },
+  };
+
+  it("finds Bibi's refund among the payment intent's refunds by its metadata", async () => {
+    stubStripe({
+      responses: [
+        { id: "cs_1", payment_intent: "pi_1" },
+        {
+          data: [
+            { id: "re_other", status: "succeeded", created: 1, metadata: { refundId: "r0" } },
+            {
+              id: "re_1",
+              status: "succeeded",
+              created: 1_800_000_000,
+              metadata: { refundId: "r1" },
+            },
+          ],
+        },
+      ],
+    });
+    const state = unwrap({ result: await stripeRefundStatus(input) });
+    expect(state).toEqual({
+      status: "SUCCEEDED",
+      providerReference: "re_1",
+      occurredAt: new Date(1_800_000_000_000),
+    });
+    expect(calls[1]?.url).toBe("https://api.stripe.com/v1/refunds?payment_intent=pi_1&limit=100");
+    expect(calls[1]?.headers["Stripe-Account"]).toBe("acct_venue");
+  });
+
+  it("is MISSING when Stripe has no such refund, and reads a known one by its id", async () => {
+    stubStripe({ responses: [{ id: "cs_1", payment_intent: "pi_1" }, { data: [] }] });
+    expect(unwrap({ result: await stripeRefundStatus(input) })).toEqual({ status: "MISSING" });
+    stubStripe({ responses: [{ id: "re_9", status: "pending", created: 1 }] });
+    const known = unwrap({
+      result: await stripeRefundStatus({ ...input, refundReference: "re_9" }),
+    });
+    expect(known).toEqual({ status: "PENDING", providerReference: "re_9" });
+    expect(calls[0]?.url).toBe("https://api.stripe.com/v1/refunds/re_9");
   });
 });

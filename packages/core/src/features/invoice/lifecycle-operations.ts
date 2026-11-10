@@ -1,73 +1,83 @@
 import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import type { OperationContext } from "../../operations/types";
-import { nowOf } from "../../time/now";
-import { moveReceivable } from "../payment/move-receivable";
-import { receivableMoveDates } from "../payment/receivable-lifecycle";
-import type { ReceivableStatus } from "../payment/settlement-schema";
-import { resolveInvoiceProvider } from "./invoice-provider";
+import { findProvider } from "../../providers/registry";
+import { resolveRoute } from "../../providers/resolve-route";
+import { conflict, notFound } from "../../shared/errors";
+import { raisedInProvider } from "./invoice-provider";
+import { moveInvoice } from "./move-invoice";
 import { type InvoiceDto, InvoiceIdInputSchema, InvoiceSchema } from "./schema";
-import { syncWithFortnox } from "./sync-operation";
-import { loadInvoice } from "./to-invoice-dto";
+import { syncWithProvider } from "./sync-operation";
+import { invoiceFlags, loadInvoice } from "./to-invoice-dto";
+import { voidAtProvider } from "./void-at-provider";
 
-type MoveInput = {
-  context: Pick<OperationContext, "db" | "recordChange" | "now">;
-  id: string;
-  to: ReceivableStatus;
-};
-
-const moveInvoice = ({ context, id, to }: MoveInput): Promise<Result<InvoiceDto>> =>
-  moveReceivable({
-    context,
-    kind: "invoice",
-    id,
-    to,
-    load: () => loadInvoice({ context, id }),
-    claim: async ({ from, to }) =>
-      (
-        await context.db.invoice.updateMany({
-          where: { id, status: from },
-          data: { status: to, ...receivableMoveDates({ to, at: nowOf({ context }) }) },
-        })
-      ).count,
-  });
+export { moveInvoice };
 
 export const sendInvoice = defineOperation({
   name: "invoice.send",
   kind: "command",
   description:
     "Mark a DRAFT invoice as SENT to the customer; it becomes what the order owes. It is " +
-    "raised where the payment settings say (ADR 0090): in the venue's Fortnox (created, booked " +
-    "and emailed there; payments are mirrored back), or kept in Bibi for payments requested " +
-    "through Stripe (payment.create). Any other starting status is a CONFLICT.",
+    "raised where the INVOICE route says (ADR 0090, 0100), through that provider's invoicing: " +
+    "in an accounting system (created, booked and emailed there; payments are " +
+    "mirrored back) or the payment operator's invoicing (emailed with a pay link, providerUrl). " +
+    "With no INVOICE route it is kept in Bibi for payments requested with payment.create. Any " +
+    "other starting status is a CONFLICT.",
   input: InvoiceIdInputSchema,
   output: InvoiceSchema,
   permission: "payment:write",
   handler: async ({ input: { id }, context }) => {
-    const provider = await resolveInvoiceProvider({ context });
-    if (!provider.ok) return provider;
+    const route = await resolveRoute({ context, method: "INVOICE" });
+    if (!route.ok) return route;
     const sent = await moveInvoice({ context, id, to: "SENT" });
-    if (!sent.ok || provider.value === null) return sent;
-    await context.db.invoice.update({ where: { id }, data: { provider: provider.value } });
-    return ok({ value: { ...sent.value, provider: provider.value } });
+    if (!sent.ok || route.value === null || !route.value.adapter.invoicing) return sent;
+    const { provider, connection } = route.value;
+    await context.db.invoice.update({
+      where: { id },
+      data: { provider, connectionId: connection.id },
+    });
+    const invoice = { ...sent.value, provider };
+    return ok({ value: { ...invoice, ...invoiceFlags({ invoice }) } });
   },
-  // Fortnox only after the commit (ADR 0058); a failure leaves it SENT without a document
+  // The provider only after the commit (ADR 0058); a failure leaves it SENT without a document
   // number, and invoice.sync raises it again.
   external: ({ output, context }) =>
-    output.provider === "FORTNOX"
-      ? syncWithFortnox({ context, invoice: output })
+    raisedInProvider({ invoice: output })
+      ? syncWithProvider({ context, invoice: output })
       : Promise.resolve(ok({ value: output })),
 });
+
+type VoidCheckInput = { invoice: InvoiceDto };
+
+/** A paid or booked invoice is credited, never voided (ADR 0100). */
+function checkNotBooked({ invoice }: VoidCheckInput): Result<true> {
+  const credit = "credit it instead (invoice.credit)";
+  if (invoice.paidMinor !== 0) return conflict({ message: `It has been paid; ${credit}` });
+  const ledger = invoice.provider ? findProvider({ key: invoice.provider })?.ledger : false;
+  if (ledger && invoice.providerReference) {
+    return conflict({ message: `It is booked in ${invoice.provider}; ${credit}` });
+  }
+  return ok({ value: true });
+}
 
 export const voidInvoice = defineOperation({
   name: "invoice.void",
   kind: "command",
   description:
-    "Void a DRAFT or SENT invoice: it is no longer owed and the order can be invoiced again. " +
-    "Refused (CONFLICT) while a payment against it is PENDING or anything paid against it has " +
-    "not been refunded.",
+    "Void a DRAFT or SENT invoice: it is no longer owed and the order can be invoiced again. An " +
+    "invoice raised at a provider is voided there too: if the provider refuses, the invoice is " +
+    "SENT again (the error says why); if it does not answer, the invoice stays VOID with " +
+    "voidPending true and Bibi retries every 15 minutes. Refused (CONFLICT) while a payment " +
+    "against it is PENDING, once anything is paid against it, or when it is booked in an " +
+    "accounting system: credit it with invoice.credit instead.",
   input: InvoiceIdInputSchema,
   output: InvoiceSchema,
   permission: "payment:write",
-  handler: ({ input: { id }, context }) => moveInvoice({ context, id, to: "VOID" }),
+  handler: async ({ input: { id }, context }) => {
+    const before = await loadInvoice({ context, id });
+    if (!before) return notFound({ entity: "Invoice" });
+    const allowed = checkNotBooked({ invoice: before });
+    if (!allowed.ok) return allowed;
+    return moveInvoice({ context, id, to: "VOID" });
+  },
+  external: ({ output, context }) => voidAtProvider({ context, invoice: output }),
 });

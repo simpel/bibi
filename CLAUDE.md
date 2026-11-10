@@ -11,7 +11,7 @@
 - Versioned run sheets (e.g. kitchen order) sent to a responsibility (e.g. head of kitchen), plus export (json, pdf, csv) for handover outside the system.
 - Configurable domain: each organization sets up its own types, fields, lists, statuses and responsibilities (ADR 0021, 0034). Access uses three fixed roles as presets (member, manager, admin) of `<feature>:<action>` permissions, which admins fine-tune per member or API key with allow/deny overrides (ADR 0034, 0050).
 - A order moves through the organization's own statuses, and each line (room, food, activity) has a state per status set in a grid: soft holds with a held-since date and one expiry date per order, hard holds that block (ADR 0043, 0044). A order may move to any status unless a status restricts its next move; gates sit on the target status, and the flow is admin-only (`pipeline:write`) while boards use `board:*` (ADR 0076).
-- Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing (Swish, Visma and Peppol deferred, ADR 0028 and 0029). Accounting systems are reached through the SIE 4I export (ADR 0077); an organization can connect Fortnox (OAuth only so far, ADR 0087).
+- Swedish integrations: Swish (Swish Handel) and Visma eEkonomi are built as providers beside Stripe and Fortnox (ADR 0100): a venue connects its own accounts, routes card, Swish and invoices to them and Bibi starts refunds, voids and credit notes. Fortnox and Visma raise and book invoices (SIE skips them); Fortnox payments are mirrored, Visma's are polled. Accounting systems without a connection are reached through the SIE 4I export (ADR 0077). BankID and Peppol e-invoicing are deferred (ADR 0029).
 - Bibi's own prices are published and venues can sign up without talking to sales: 9 990 SEK a month excl. VAT (yearly 10 % off), 10 seats included, extra seats 49 SEK a month, 14 days free, then the app waits for payment (ADR 0095).
 
 ## Domain model
@@ -139,4 +139,4 @@
 ## Open questions
 - Claude Design export (tokens) for `packages/ui` not delivered. Placeholder tokens are used until then.
 - Staging: production only until the first paying venue (ADR 0031). Hosting per `docs/decisions/0013-hosting-and-deploy.md` (Hetzner + Coolify, accepted; runbook `docs/runbooks/deploy.md`).
-- Payments (Stripe) and invoicing (Stripe) decided in `docs/decisions/0028-payments-with-stripe.md` and `0029-invoicing-via-stripe.md`. Swish, Visma and Peppol are deferred; Fortnox has a connection only (ADR 0087).
+- Payments and invoicing run through providers behind ports (`docs/decisions/0100-payment-providers-as-ports.md`, amending 0028, 0029, 0087 and 0090): Stripe, Swish, Fortnox and Visma. Peppol is deferred.

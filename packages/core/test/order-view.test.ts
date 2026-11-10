@@ -3,14 +3,14 @@ import {
   type ExecuteContext,
   execute,
   followAssignment,
-  setPaymentProvider,
+  resetProviderAdapters,
   viewOrder,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { memberUser } from "./order-helpers";
 import { moneySetup, sentTestQuote } from "./receivable-helpers";
 
-afterEach(() => setPaymentProvider({ provider: undefined }));
+afterEach(() => resetProviderAdapters());
 
 type ViewInput = { context: ExecuteContext; id: string };
 

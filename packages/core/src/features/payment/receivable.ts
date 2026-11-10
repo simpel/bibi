@@ -2,7 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
-import { invoiceDueMinor } from "../invoice/to-invoice-dto";
+import { DUE_INCLUDE, invoiceDueMinor } from "../invoice/to-invoice-dto";
 import { checkReadable } from "../order/order-rules";
 import type { PaymentCreateInput } from "./schema";
 import type { ReceivableRef } from "./settlement";
@@ -58,20 +58,23 @@ async function findDeposit({ context, id }: FindInput): Promise<Result<Receivabl
 async function findInvoice({ context, id }: FindInput): Promise<Result<Receivable>> {
   const invoice = await context.db.invoice.findFirst({
     where: { id },
-    include: { deductions: { select: { amountMinor: true } } },
+    include: DUE_INCLUDE,
   });
   if (!invoice) return notFound({ entity: "Invoice" });
   if (invoice.status !== "SENT")
     return conflict({ message: `A ${invoice.status} invoice cannot be paid` });
   const { orderId, currency, number } = invoice;
-  const amountMinor = invoiceDueMinor({ invoice, deductions: invoice.deductions });
+  const amountMinor = invoiceDueMinor({ invoice, ...invoice });
   const description = `Invoice #${number}`;
   return ok({
     value: { ref: { ...NONE, invoiceId: id }, orderId, amountMinor, currency, description },
   });
 }
 
-export type LoadReceivableInput = { context: Context; input: PaymentCreateInput };
+export type LoadReceivableInput = {
+  context: Context;
+  input: Pick<PaymentCreateInput, "quoteId" | "depositId" | "invoiceId">;
+};
 
 /** The one receivable the request names (`VALIDATION` unless exactly one id is given). */
 export async function loadReceivable({

@@ -4,6 +4,7 @@ import { conflict, invalid } from "../../shared/errors";
 import { loadChargeTarget } from "./payment-preconditions";
 import { newPublicToken } from "./public-token";
 import { claimReceivable, loadReceivable, type Receivable } from "./receivable";
+import { checkLedgerAccepts } from "./register-on-invoice";
 import { applicationFee } from "./request-charge";
 import type { PaymentCreateInput, PaymentDto } from "./schema";
 import { paidByReceivable, settlementOf } from "./settlement";
@@ -35,9 +36,28 @@ export type InsertPaymentInput = {
   input: PaymentCreateInput;
 };
 
+export type GuardLedgerInput = {
+  context: Pick<OperationContext, "db">;
+  invoiceId: string | null;
+};
+
+/** An invoice booked in a ledger provider takes only payments it can book (ADR 0100). */
+export async function guardLedgerInvoice({
+  context,
+  invoiceId,
+}: GuardLedgerInput): Promise<Result<true>> {
+  if (!invoiceId) return ok({ value: true });
+  const invoice = await context.db.invoice.findFirst({
+    where: { id: invoiceId },
+    select: { provider: true },
+  });
+  return checkLedgerAccepts({ invoice: { provider: invoice?.provider ?? null } });
+}
+
 /**
- * The PENDING payment row against one receivable (`payment.create`, `deposit.request`). Stripe is
- * called only after it committed, by the operation's `external` (`chargeAfterCommit`, ADR 0058).
+ * The PENDING payment row against one receivable (`payment.create`, `deposit.request`), on the
+ * connection of the method prepared first. The provider is called only after it committed, by the operation's
+ * `external` (`chargeAfterCommit`, ADR 0058), which records the attempt.
  */
 export async function insertPayment({
   context,
@@ -48,27 +68,30 @@ export async function insertPayment({
   const { orderId, ref, currency } = receivable.value;
   const target = await loadChargeTarget({ context, orderId, method: input.method });
   if (!target.ok) return err({ error: target.error });
+  const guarded = await guardLedgerInvoice({ context, invoiceId: ref.invoiceId });
+  if (!guarded.ok) return guarded;
   const claimed = await claimReceivable({ context, ref });
   if (!claimed.ok) return claimed;
   const amount = await chargeAmount({ context, receivable: receivable.value, input });
   if (!amount.ok) return amount;
-  // The row comes first; Stripe is called only after it committed (`external`, ADR 0058).
+  // The row comes first; the provider is called only after it committed (`external`, ADR 0058).
   const row = await context.db.payment.create({
     data: {
       ...ref,
       publicToken: newPublicToken(),
       organizationId: context.organizationId,
       orderId,
-      method: input.method,
+      method: target.value.method,
       amountMinor: amount.value,
       currency,
       applicationFeeMinor: applicationFee({ amountMinor: amount.value }) ?? null,
-      providerAccountId: target.value.connectedAccountId,
+      provider: target.value.route.provider,
+      connectionId: target.value.route.connection.id,
       createdBy: context.actor.userId,
     },
   });
-  const payment = toPaymentDto({ row });
-  // Audit images are DTOs: the public token and the connected account id never enter them.
+  const payment = toPaymentDto({ row: { ...row, attempts: [], refunds: [] } });
+  // Audit images are DTOs: the public token and the connection id never enter them.
   context.recordChange({ entityId: row.id, after: payment });
   return ok({ value: payment });
 }

@@ -1,10 +1,13 @@
-/// A payment requested from the customer for a order (ADR 0028, 0029): a card checkout or a
-/// Stripe invoice, charged directly on the organization's connected account (direct charge, the
-/// venue is the merchant). Created by `payment.create`; the status follows the provider (webhook).
-/// It settles exactly one receivable (ADR 0057): a sent quote, a deposit or an invoice (check
-/// constraint in the migration). `status`, `paidAt` and `refundedMinor` mirror Stripe and are
-/// written only by `payment.applySignal`; what a receivable or order has paid is derived from them.
-/// Never deleted: `status` is its lifecycle.
+/// A payment requested from the customer for an order (ADR 0028, 0029, 0100): the request the
+/// customer pays (amount, receivable, public token). Each try at a provider is a `PaymentAttempt`
+/// with its own reference, link and expiry. It settles exactly one receivable (ADR 0057): a sent
+/// quote, a deposit or an invoice (check constraint in the migration). Owned: amount, currency,
+/// receivable, `method`, `provider` and `connectionId` (where it was requested, at create).
+/// `status` and `paidAt` mirror the provider and are written only by the signal path
+/// (`payment.applySignal`, `invoice.applySignal`), by `payment.cancel` and `payment.recordManual`;
+/// what a receivable or order has paid is derived from them. What is refunded is derived from the
+/// SUCCEEDED `PaymentRefund` rows (ADR 0057, 0100); `REFUNDED` is set when they cover the amount.
+/// `note` (owned) is staff's text on a MANUAL payment. Never deleted: `status` is its lifecycle.
 model Payment {
   id                  String                  @id @default(cuid(2))
   organizationId      String
@@ -21,25 +24,17 @@ model Payment {
   currency            String                  @default("SEK")
   /// Bibi's application fee on the charge in minor units; null = no fee.
   applicationFeeMinor Int?
-  /// Where the payment was made (ADR 0090): Stripe (a charge Bibi requested) or Fortnox (a
-  /// payment booked on an invoice raised there, mirrored by `invoice.sync`).
-  provider            InvoiceProvider         @default(STRIPE)
-  /// Connected account the charge was made on (`acct_...`); null for Fortnox.
-  providerAccountId   String?
-  /// PSP reference: the Stripe Checkout Session (`cs_...`) or Invoice (`in_...`) id, or
-  /// `fortnox:<organizationId>:<payment number>`. Null until the provider call after the commit
-  /// has succeeded (ADR 0058).
-  providerReference   String?
-  /// Where the customer pays: the hosted checkout page or the hosted invoice page.
-  paymentUrl          String?
+  /// Where the payment was made (ADR 0100): the provider Bibi asked, or the ledger provider that
+  /// booked it on its invoice (Fortnox). Null for a payment no provider took (MANUAL).
+  provider            Provider?
+  /// The connection the payment was requested on; null when no connection was used.
+  connectionId        String?
   /// Unguessable token in the public payment page URL `/pay/<token>` (ADR 0028). Never in the DTO.
   publicToken         String                  @unique
-  /// When the hosted checkout stops accepting payment; null for invoices.
-  expiresAt           DateTime?
   /// Set when the provider reports the payment as completed.
   paidAt              DateTime?
-  /// Refunded so far, in minor units.
-  refundedMinor       Int                     @default(0)
+  /// Staff's note on a payment they recorded (MANUAL); null otherwise.
+  note                String?
   createdAt           DateTime                @default(now())
   updatedAt           DateTime                @updatedAt
   createdBy           String?
@@ -47,23 +42,71 @@ model Payment {
   quote               Quote?                  @relation(fields: [quoteId, organizationId], references: [id, organizationId])
   deposit             Deposit?                @relation(fields: [depositId, organizationId], references: [id, organizationId])
   invoice             Invoice?                @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
+  connection          ProviderConnection?     @relation(fields: [connectionId, organizationId], references: [id, organizationId])
+  attempts            PaymentAttempt[]
   refunds             PaymentRefund[]
   notifications       Notification[]
   exportEntries       AccountingExportEntry[]
 
   @@unique([id, organizationId])
-  @@unique([providerReference])
   @@index([organizationId, orderId])
   @@index([organizationId, quoteId])
   @@index([organizationId, depositId])
   @@index([organizationId, invoiceId])
+  @@index([organizationId, connectionId])
+}
+
+/// One try to collect a payment at a provider (ADR 0100): a hosted card checkout, a provider
+/// invoice, later a Swish request. Owned: `paymentId`, `method`, `provider`, `connectionId`.
+/// Mirrors from the provider: `providerReference` (null until the call after the commit stored it,
+/// ADR 0058), `url`, `qrToken`, `expiresAt` and `status` (written by the signal path). The first
+/// attempt that succeeds settles the payment. A payment Fortnox booked on its invoice is one
+/// SUCCEEDED attempt keyed `fortnox:<organizationId>:<payment number>`.
+model PaymentAttempt {
+  id                String               @id @default(cuid(2))
+  organizationId    String
+  paymentId         String
+  method            PaymentMethod
+  provider          Provider
+  connectionId      String?
+  /// The provider's id: Stripe Checkout Session `cs_...` or Invoice `in_...`; unique per provider.
+  providerReference String?
+  /// Where the customer pays: the hosted checkout or invoice page.
+  url               String?
+  /// What a QR code encodes (Swish); null otherwise.
+  qrToken           String?
+  status            PaymentAttemptStatus @default(PENDING)
+  /// When the provider stops accepting payment for it; null for invoices.
+  expiresAt         DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  createdBy         String?
+  payment           Payment              @relation(fields: [paymentId, organizationId], references: [id, organizationId])
+  connection        ProviderConnection?  @relation(fields: [connectionId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([provider, providerReference])
+  @@index([organizationId, paymentId])
+  @@index([organizationId, connectionId])
+}
+
+enum PaymentAttemptStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  EXPIRED
+  CANCELLED
 }
 
 enum PaymentMethod {
-  /// Card (and later Stripe's other wallet methods) through a hosted checkout.
+  /// Card (and the operator's wallet methods) through a hosted checkout.
   CARD
-  /// A Stripe invoice sent to the customer, paid by bank transfer or card.
+  /// Swish (ADR 0100).
+  SWISH
+  /// Paid against an invoice the provider raised (a Stripe invoice, or booked on a Fortnox invoice).
   INVOICE
+  /// Bank transfer or cash recorded by staff, no provider (ADR 0100).
+  MANUAL
 }
 
 enum PaymentStatus {
@@ -79,37 +122,38 @@ enum PaymentStatus {
   REFUNDED
 }
 
-/// PaymentRefund – one refund of a payment (ADR 0077), append-only. Owned fact written only by
-/// `payment.applySignal` when Stripe reports a higher refunded total: `amountMinor` is the step,
-/// `refundedTotalMinor` the total after it (unique per payment, so a repeated signal adds nothing).
-/// `Payment.refundedMinor` is the Stripe mirror and equals the newest total (reconciliation check
-/// `payment refunds`).
+/// PaymentRefund – one refund of a payment (ADR 0077, 0100), one row per refund. Owned:
+/// `amountMinor` (this refund), `reason`, `initiatedBy` (null when the provider reported it) and
+/// `status` (`payment.refund` writes PENDING, the provider's signal completes it; a MANUAL payment's
+/// refund is SUCCEEDED at once). Mirror: `providerReference`, `refundedAt` (when it succeeded).
+/// What a payment has refunded is the sum of its SUCCEEDED rows, never stored (ADR 0057). A refund
+/// the provider reports without Bibi starting it is one SUCCEEDED row for the step.
 model PaymentRefund {
   id                 String                  @id @default(cuid(2))
   organizationId     String
   paymentId          String
   /// This refund in minor units.
   amountMinor        Int
-  /// Refunded on the payment so far, this refund included.
-  refundedTotalMinor Int
-  /// When Stripe reported the refund: the date of its reversal voucher.
-  refundedAt         DateTime
+  /// When the refund succeeded: the date of its reversal voucher; null until then.
+  refundedAt         DateTime?
+  status             PaymentRefundStatus     @default(PENDING)
+  /// The provider's refund id; null when only a refunded total was reported.
+  providerReference  String?
+  reason             String?
+  /// The user who started the refund in Bibi; null when it came from the provider.
+  initiatedBy        String?
   createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
   payment            Payment                 @relation(fields: [paymentId, organizationId], references: [id, organizationId])
   exportEntries      AccountingExportEntry[]
 
   @@unique([id, organizationId])
-  @@unique([paymentId, refundedTotalMinor])
+  @@unique([paymentId, providerReference])
   @@index([organizationId, refundedAt])
 }
 
-/// A Stripe webhook event that has been handled (ADR 0028). The event id is the dedupe key: a
-/// redelivered event finds its row and changes nothing. Platform table (an event is resolved to an
-/// organization through its Payment or PaymentAccount), written only with `getDb()`.
-model StripeWebhookEvent {
-  id         String   @id @default(cuid(2))
-  /// Stripe's event id (`evt_...`).
-  eventId    String   @unique
-  type       String
-  receivedAt DateTime @default(now())
+enum PaymentRefundStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
 }

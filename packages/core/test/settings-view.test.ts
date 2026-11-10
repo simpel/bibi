@@ -28,7 +28,7 @@ describe("settings view (ADR 0071)", () => {
 
   it("gives every setting an admin may read when none are asked", async () => {
     const all = await view({ context: testContext() });
-    expect(all.keys).toHaveLength(8);
+    expect(all.keys).toHaveLength(7);
     expect(all.accounting?.fiscalYearStartMonth).toEqual(expect.any(Number));
     expect(all.seats?.included).toEqual(expect.any(Number));
   });

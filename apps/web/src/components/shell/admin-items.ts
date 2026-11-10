@@ -128,7 +128,7 @@ export const ADMIN_GROUPS: readonly AdminGroup[] = [
         key: "payments",
         icon: CreditCardIcon,
         href: ROUTES.adminPayments,
-        ids: ["paymentOperator", "deposit", "invoices"],
+        ids: ["paymentMethods", "deposit"],
       }),
       page({
         key: "accounting",
@@ -140,7 +140,7 @@ export const ADMIN_GROUPS: readonly AdminGroup[] = [
         key: "integrations",
         icon: PlugIcon,
         href: ROUTES.adminIntegrations,
-        ids: ["stripe", "fortnox", "apiKeys"],
+        ids: ["providers", "apiKeys"],
       }),
     ],
   },

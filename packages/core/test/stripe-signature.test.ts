@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { verifyStripeSignature } from "../src/features/payment/stripe-signature";
+import { verifyStripeSignature } from "../src/providers/stripe/stripe-signature";
 import { sign } from "./stripe-webhook-helpers";
 
 const secret = "whsec_test_secret";

@@ -8,11 +8,16 @@ export type CheckDemoPaymentsInput = { context: ExecuteContext; org: DemoOrg };
 async function succeededByOrder({ context }: Pick<CheckDemoPaymentsInput, "context">) {
   const rows = await context.db.payment.findMany({
     where: { status: { in: ["SUCCEEDED", "REFUNDED"] }, quoteId: { not: null } },
-    select: { orderId: true, amountMinor: true, refundedMinor: true },
+    select: {
+      orderId: true,
+      amountMinor: true,
+      refunds: { where: { status: "SUCCEEDED" }, select: { amountMinor: true } },
+    },
   });
   const paid = new Map<string, number>();
   for (const row of rows) {
-    paid.set(row.orderId, (paid.get(row.orderId) ?? 0) + row.amountMinor - row.refundedMinor);
+    const refunded = row.refunds.reduce((sum, refund) => sum + refund.amountMinor, 0);
+    paid.set(row.orderId, (paid.get(row.orderId) ?? 0) + row.amountMinor - refunded);
   }
   return paid;
 }
@@ -20,7 +25,8 @@ async function succeededByOrder({ context }: Pick<CheckDemoPaymentsInput, "conte
 /**
  * ADR 0057: every order with an accepted quote owes that quote's total minus its SUCCEEDED
  * payments, as derived by `payment.balance`; the demo's money (`order.money`) is there: one
- * SENT deposit request and one SUCCEEDED payment per spec. Returns failure messages.
+ * SENT deposit request and a card, Swish and manual payment per spec, less the refund the retry
+ * job settled. Returns failure messages.
  */
 export async function checkDemoPayments({ context, org }: CheckDemoPaymentsInput) {
   const failures: string[] = [];
@@ -43,7 +49,12 @@ export async function checkDemoPayments({ context, org }: CheckDemoPaymentsInput
   const wanted = money.filter((m) => m.deposit).length;
   if (deposits !== wanted)
     failures.push(`${org.slug}: ${deposits} sent deposits, expected ${wanted}`);
-  const total = money.reduce((sum, m) => sum + (m.paidKr ?? 0) * 100, 0);
+  const total = money.reduce(
+    (sum, m) =>
+      sum +
+      ((m.paidKr ?? 0) - (m.lostRefundKr ?? 0) + (m.swishKr ?? 0) + (m.manual?.kr ?? 0)) * 100,
+    0,
+  );
   const seen = [...paid.values()].reduce((sum, value) => sum + value, 0);
   if (seen !== total) failures.push(`${org.slug}: ${seen} paid, expected ${total}`);
   return failures;

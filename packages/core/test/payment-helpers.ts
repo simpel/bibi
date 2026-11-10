@@ -1,11 +1,9 @@
 import {
   createDeposit,
-  createMemoryPaymentProvider,
   type ExecuteContext,
   execute,
-  type MemoryPaymentProvider,
+  type MemoryProvider,
   sendDeposit,
-  setPaymentProvider,
   startPaymentOnboarding,
   syncPaymentAccount,
 } from "../src/index";
@@ -15,12 +13,15 @@ import { installFakeGateway } from "./payment-account-helpers";
 
 export type ActivateInput = { context: ExecuteContext };
 
-/** Onboards the organization through the real operations with Stripe faked as ACTIVE. */
+/** Onboards the organization through the real operations with the operator faked as ACTIVE. */
 export async function activatePaymentAccount({ context }: ActivateInput) {
   const gateway = installFakeGateway();
   gateway.accountStatus = "ACTIVE";
   unwrap({ result: await execute({ operation: startPaymentOnboarding, input: {}, context }) });
-  return unwrap({ result: await execute({ operation: syncPaymentAccount, input: {}, context }) });
+  const account = unwrap({
+    result: await execute({ operation: syncPaymentAccount, input: {}, context }),
+  });
+  return { ...account, provider: gateway };
 }
 
 export type SentDepositInput = { context: ExecuteContext; orderId: string; amountMinor?: number };
@@ -43,7 +44,7 @@ export async function paymentSetup(): Promise<{
   depositId: string;
   customerId: string;
   account: { stripeAccountId: string | null };
-  provider: MemoryPaymentProvider;
+  provider: MemoryProvider;
 }> {
   const { context, type, customer } = await orderSetup();
   const order = await createTestOrder({
@@ -51,9 +52,7 @@ export async function paymentSetup(): Promise<{
     entityTypeId: type.id,
     customerId: customer.id,
   });
-  const account = await activatePaymentAccount({ context });
-  const provider = createMemoryPaymentProvider();
-  setPaymentProvider({ provider });
+  const { provider, ...account } = await activatePaymentAccount({ context });
   const deposit = await sentDeposit({ context, orderId: order.id });
   const ids = { orderId: order.id, depositId: deposit.id, customerId: customer.id };
   return { context, ...ids, account, provider };

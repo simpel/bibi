@@ -14,7 +14,7 @@ const BillingSignalResultSchema = z.object({ changed: z.boolean() });
 
 /**
  * Mirrors a subscription after a Stripe Billing event (ADR 0091 §4, 0095 §8). SYSTEM only, like
- * `paymentAccount.applySignal`: the event only names the subscription, whose state is read back
+ * `integration.applySignal`: the event only names the subscription, whose state is read back
  * from Stripe. The seats follow the stored count afterwards (a yearly plan gets its seat item).
  */
 export const applyBillingSignal = defineOperation({

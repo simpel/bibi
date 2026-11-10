@@ -4,6 +4,7 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { createInvoice } from "./create-operation";
+import { creditInvoice } from "./credit-operation";
 import { sendInvoice, voidInvoice } from "./lifecycle-operations";
 import {
   InvoiceIdInputSchema,
@@ -49,7 +50,7 @@ export const getInvoice = defineOperation({
   },
 });
 
-export { createInvoice, sendInvoice, syncInvoice, voidInvoice };
+export { createInvoice, creditInvoice, sendInvoice, syncInvoice, voidInvoice };
 
 /** Invoices: frozen snapshots of the order's lines that payments settle (ADR 0052, 0057). */
 export const invoiceOperations = [
@@ -58,5 +59,6 @@ export const invoiceOperations = [
   createInvoice,
   sendInvoice,
   voidInvoice,
+  creditInvoice,
   syncInvoice,
 ];

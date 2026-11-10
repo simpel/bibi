@@ -46,6 +46,7 @@ import "../features/inbound-message/graphql";
 import "../features/payment/graphql";
 import "../features/deposit/graphql";
 import "../features/invoice/graphql";
+import "../features/credit-note/graphql";
 import "../features/payment-account/graphql";
 import "../features/billing/graphql";
 import "../features/integration/graphql";

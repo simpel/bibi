@@ -1,4 +1,5 @@
 import type { DemoFieldValues } from "./config-types";
+import type { DemoProvider } from "./types";
 
 /**
  * An explicit choice on an order's responsibility (ADR 0055): the only thing stored besides the
@@ -47,6 +48,15 @@ export type DemoOrder = {
   money?: {
     deposit?: { description: string; amountKr: number };
     paidKr?: number;
+    /**
+     * ADR 0100: a refund of this many kr of the `paidKr` card payment whose provider signal never
+     * came; the refund retry job (`payment.retryRefunds`) reads it at the provider and completes it.
+     */
+    lostRefundKr?: number;
+    /** ADR 0100: a Swish payment of this many kr against the accepted quote (Swish signal). */
+    swishKr?: number;
+    /** ADR 0100: money recorded by staff against the accepted quote (`payment.recordManual`). */
+    manual?: { kr: number; note: string };
     /** ADR 0077: an invoice of the priced lines, sent; paid in full or due `dueDay` (offset). */
     invoice?: DemoInvoice;
   };
@@ -94,6 +104,18 @@ export type DemoInvoice = {
   sentDay?: number;
   paidDay?: number;
   refund?: { kr: number; day: number };
+  /**
+   * ADR 0100: raised in this ledger provider (the INVOICE route is set to it first). Its payments
+   * are what the provider reports (`invoice.sync`), never a card payment.
+   */
+  provider?: Exclude<DemoProvider, "SWISH">;
+  /** A credit note of this many kr on the open invoice (`invoice.credit`). */
+  credit?: { kr: number; reason: string };
+  /**
+   * ADR 0100: a card payment of this many kr against the open invoice; on a ledger provider's
+   * invoice it is registered there (`registerPayment`), so the provider's books hold it too.
+   */
+  cardKr?: number;
 };
 
 /**

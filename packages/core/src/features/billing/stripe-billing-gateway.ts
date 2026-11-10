@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import { ok } from "../../errors/result";
-import { stripeBadResponse } from "../payment/stripe-bad-response";
+import { stripeBadResponse } from "../../providers/stripe/stripe-bad-response";
 import { loadBillingKeys } from "./billing-config";
 import { withBillingKeys } from "./billing-keys";
 import { checkoutParams } from "./checkout-params";

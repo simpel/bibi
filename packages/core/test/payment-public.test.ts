@@ -6,16 +6,14 @@ import {
   type ExecuteContext,
   execute,
   getPublicPayment,
-  setPaymentProvider,
-  setStripeConnectGateway,
+  resetProviderAdapters,
 } from "../src/index";
 import { fakeEmbed } from "./fake-embed";
 import { unwrap } from "./helpers";
 import { paymentSetup } from "./payment-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 type TokenInput = { context: ExecuteContext; depositId: string };
@@ -59,6 +57,7 @@ describe("public payment page lookup", () => {
       "expiresAt",
       "lines",
       "method",
+      "methods",
       "orderReference",
       "organizationName",
       "paidAt",
@@ -78,8 +77,8 @@ describe("public payment page lookup", () => {
   it("shows an unpaid payment past its checkout expiry as EXPIRED without a pay link", async () => {
     const { context, depositId } = await paymentSetup();
     const { payment, token } = await newPayment({ context, depositId });
-    await getDb().payment.update({
-      where: { id: payment.id },
+    await getDb().paymentAttempt.updateMany({
+      where: { paymentId: payment.id },
       data: { expiresAt: new Date(Date.now() - 1000) },
     });
     const view = unwrap({ result: await getPublicPayment({ token }) });

@@ -57,4 +57,7 @@ export const vingaleden: DemoOrg = {
   templates: vingaledenTemplates,
   orders: [...vingaledenOrders, ...densityOrders({ density: vingaledenDensity, reserved })],
   density: vingaledenDensity,
+  // ADR 0100: invoices go to Visma eEkonomi (VW1 was raised in Fortnox before the switch).
+  providers: ["FORTNOX", "VISMA"],
+  paymentSettings: { routes: [{ method: "INVOICE", provider: "VISMA" }] },
 };

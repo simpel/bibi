@@ -1,28 +1,34 @@
-import { ok, setStripeConnectGateway } from "@bibi/core";
-import { createId } from "@paralleldrive/cuid2";
+import {
+  createMemoryProvider,
+  type MemoryProvider,
+  providersWith,
+  setProviderAdapter,
+} from "@bibi/core";
 
-/** Stripe stand-in: the account is created through the real operation, only Stripe is faked. */
+/**
+ * Payment operator stand-in (ADR 0100): the account is created through the real operation, only
+ * the provider is faked; it also takes card checkouts in memory.
+ */
 export function installFakeStripe({
   status = "ONBOARDING",
   onCreateAccount,
 }: {
   status?: "ONBOARDING" | "ACTIVE";
   onCreateAccount?: () => void;
-} = {}) {
-  setStripeConnectGateway({
-    gateway: {
-      createAccount: async () => {
-        onCreateAccount?.();
-        return ok({ value: { stripeAccountId: `acct_${createId()}` } });
-      },
-      getAccountStatus: async () => ok({ value: { status } }),
-      createOnboardingLink: async ({ stripeAccountId }) =>
-        ok({
-          value: {
-            url: `https://connect.stripe.test/${stripeAccountId}`,
-            expiresAt: new Date("2030-01-01T00:00:00.000Z"),
-          },
-        }),
-    },
+} = {}): MemoryProvider {
+  const [operator] = providersWith({ capability: "HOSTED_ONBOARDING" });
+  const key = operator?.key ?? "STRIPE";
+  const fake = createMemoryProvider({
+    key,
+    connectKind: "HOSTED_ONBOARDING",
+    methods: ["CARD"],
   });
+  fake.accountStatus = status;
+  const createAccount = fake.onboarding.createAccount;
+  fake.onboarding.createAccount = async (input) => {
+    onCreateAccount?.();
+    return createAccount(input);
+  };
+  setProviderAdapter({ key, adapter: fake.adapter });
+  return fake;
 }

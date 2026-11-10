@@ -6,16 +6,14 @@ import {
   getDeposit,
   getOrderBalance,
   requestDeposit,
+  resetProviderAdapters,
   sendInvoice,
-  setPaymentProvider,
-  setStripeConnectGateway,
 } from "../src/index";
 import { unwrap } from "./helpers";
 import { makeInvoiceable, markSucceeded, moneySetup } from "./receivable-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 describe("a final invoice deducts paid deposits (ADR 0090)", () => {

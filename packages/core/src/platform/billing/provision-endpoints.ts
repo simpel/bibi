@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { ok, type Result } from "../../errors/result";
 import { billingStripeRequest } from "../../features/billing/stripe-billing-request";
-import { stripeBadResponse } from "../../features/payment/stripe-bad-response";
+import { stripeBadResponse } from "../../providers/stripe/stripe-bad-response";
 
 /** The events `billing.applySignal` acts on (ADR 0095 §8). */
 export const BILLING_WEBHOOK_EVENTS = [

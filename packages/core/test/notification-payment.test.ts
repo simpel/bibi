@@ -5,16 +5,14 @@ import {
   execute,
   listNotifications,
   PRESET_PERMISSIONS,
-  setPaymentProvider,
-  setStripeConnectGateway,
+  resetProviderAdapters,
 } from "../src/index";
 import { testContext, unwrap } from "./helpers";
 import { makeReaders, notificationsOf } from "./notification-helpers";
 import { pendingPayment } from "./stripe-webhook-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 describe("payment notifications (ADR 0094)", () => {
@@ -32,9 +30,12 @@ describe("payment notifications (ADR 0094)", () => {
       actor: { type: "system", userId: null },
     });
     const signal = {
-      kind: "paid" as const,
-      providerAccountId: account,
-      providerReference: payment.providerReference,
+      provider: "STRIPE" as const,
+      eventId: "evt_paid",
+      kind: "attempt.succeeded" as const,
+      externalAccountId: account,
+      reference: payment.providerReference,
+      occurredAt: new Date(),
     };
     for (const _ of [1, 2]) {
       unwrap({
@@ -60,5 +61,54 @@ describe("payment notifications (ADR 0094)", () => {
     const data = unwrap({ result: list }).items[0]?.data;
     expect(data?.amountMinor).toBeUndefined();
     expect(data?.orderReference).toBe(items[0]?.data.orderReference);
+  });
+
+  it("keeps money a second attempt took on a paid payment and tells staff it is over-paid", async () => {
+    const { context, account, payment, orderId } = await pendingPayment({ coordinated: true });
+    const main = await context.db.assignment.findFirstOrThrow({
+      where: { recordId: orderId, responsibilityId: null },
+    });
+    const assigneeId = main.assigneeId ?? "";
+    await makeReaders({ context, userIds: [assigneeId] });
+    const row = await context.db.payment.findUniqueOrThrow({ where: { id: payment.id } });
+    const second = await context.db.paymentAttempt.create({
+      data: {
+        organizationId: context.organizationId,
+        paymentId: payment.id,
+        method: "CARD",
+        provider: "STRIPE",
+        connectionId: row.connectionId,
+        providerReference: `cs_second_${payment.id}`,
+      },
+    });
+    const system = createExecuteContext({
+      organizationId: context.organizationId,
+      roles: [],
+      permissions: { payment: ["write"] },
+      actor: { type: "system", userId: null },
+    });
+    const paid = ({ reference }: { reference: string }) =>
+      execute({
+        operation: applyPaymentSignal,
+        input: {
+          provider: "STRIPE" as const,
+          eventId: `evt_${reference}`,
+          kind: "attempt.succeeded" as const,
+          externalAccountId: account,
+          reference,
+          occurredAt: new Date(),
+        },
+        context: system,
+      });
+    unwrap({ result: await paid({ reference: payment.providerReference }) });
+    // The first success closed the other open attempt.
+    const closed = await context.db.paymentAttempt.findUniqueOrThrow({ where: { id: second.id } });
+    expect(closed.status).toBe("CANCELLED");
+    const again = unwrap({ result: await paid({ reference: `cs_second_${payment.id}` }) });
+    expect(again).toMatchObject({ overpaid: true, changed: true, status: "SUCCEEDED" });
+    const kept = await context.db.paymentAttempt.findUniqueOrThrow({ where: { id: second.id } });
+    expect(kept.status).toBe("SUCCEEDED");
+    const { items } = await notificationsOf({ context, userId: assigneeId });
+    expect(items.map((item) => item.data.overpaid ?? false).sort()).toEqual([false, true]);
   });
 });

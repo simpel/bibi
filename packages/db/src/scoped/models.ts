@@ -65,9 +65,10 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "InboundEmail",
   "InboundEndpoint",
   "InboundMessage",
-  "PaymentAccount",
-  "IntegrationConnection",
+  "ProviderConnection",
+  "PaymentMethodRoute",
   "Payment",
+  "PaymentAttempt",
   "PaymentRefund",
   "AccountingSettings",
   "PaymentSettings",
@@ -78,6 +79,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "Deposit",
   "Invoice",
   "InvoiceDeposit",
+  "CreditNote",
   "AuditLog",
   "Embedding",
   "Conversation",
@@ -115,8 +117,8 @@ export const PLATFORM_MODELS = new Set<string>([
   "SystemLog",
   "AiSetting",
   "BillingConfig",
-  "StripeWebhookEvent",
-  "FortnoxTopicOffset",
+  "ProviderEventReceipt",
+  "ProviderStreamOffset",
 ]);
 
 /**

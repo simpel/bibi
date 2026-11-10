@@ -3,6 +3,7 @@
 - **Date:** 2026-11-02
 - **Status:** Accepted
 - **Amends:** 0028, 0029, 0087
+- **Amended by:** 0100 (providers as ports: one connection table, routes per method, payment attempts, refunds, credit notes)
 - **Related:** 0051, 0052, 0057, 0058, 0077, 0091, 0093
 - **Spec:** `docs/specs/payments.md`
 

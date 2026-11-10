@@ -7,6 +7,16 @@ const payment = {
   id: null,
   depositPercent: 30,
   depositMinimumMinor: null,
+  routes: [
+    { method: "CARD", provider: "STRIPE" },
+    { method: "SWISH", provider: null },
+    { method: "INVOICE", provider: null },
+  ],
+  choices: [
+    { method: "CARD", providers: ["STRIPE"] },
+    { method: "SWISH", providers: ["SWISH"] },
+    { method: "INVOICE", providers: ["STRIPE", "FORTNOX", "VISMA"] },
+  ],
   invoiceProvider: null,
   paymentOperator: "STRIPE",
 };
@@ -29,7 +39,7 @@ describe("setting cards", () => {
       expect(ui).toEqual({
         component: "setting-cards",
         props: {
-          view: { ...empty, keys: ["paymentOperator", "deposit", "invoices"], payment },
+          view: { ...empty, keys: ["paymentMethods", "deposit"], payment },
         },
       });
     }

@@ -1,5 +1,7 @@
 import type { JobDefinition } from "./job-definition";
 import { expireOrderHoldsJob } from "./jobs/expire-order-holds";
+import { paymentRefundRetryJob } from "./jobs/payment-refund-retry";
+import { providerPollJob } from "./jobs/provider-poll";
 import { pseudonymiseAuditLogJob } from "./jobs/pseudonymise-audit-log";
 import { refreshIntegrationsJob } from "./jobs/refresh-integrations";
 
@@ -8,4 +10,6 @@ export const JOBS: readonly JobDefinition[] = [
   expireOrderHoldsJob,
   pseudonymiseAuditLogJob,
   refreshIntegrationsJob,
+  providerPollJob,
+  paymentRefundRetryJob,
 ];

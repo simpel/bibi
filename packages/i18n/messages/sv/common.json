@@ -189,7 +189,6 @@
     "general": "Allmänt",
     "planBilling": "Plan och fakturering",
     "orderFlow": "Bokningsflöde",
-    "fortnox": "Fortnox",
     "backToApp": "Tillbaka till appen",
     "adminGroups": {
       "organization": "Organisation",
@@ -617,17 +616,13 @@
           "label": "Ansvar",
           "keywords": "kökschef mottagare ansvarig"
         },
-        "stripe": {
-          "label": "Stripe",
-          "keywords": "kort betalning koppla onlinebetalning"
+        "providers": {
+          "label": "Anslutningar",
+          "keywords": "stripe fortnox swish visma betaltjänst bokföring koppla integration"
         },
         "deposit": {
           "label": "Förskott",
           "keywords": "förskott procent minimibelopp"
-        },
-        "invoices": {
-          "label": "Fakturaleverantör",
-          "keywords": "fakturering fakturaleverantör fortnox stripe"
         },
         "fiscalYear": {
           "label": "Räkenskapsår",
@@ -641,17 +636,13 @@
           "label": "Intäktskonto per artikeltyp",
           "keywords": "intäkt konto artikeltyp"
         },
-        "fortnox": {
-          "label": "Fortnox",
-          "keywords": "bokföring koppla integration faktura"
-        },
         "apiKeys": {
           "label": "API-nycklar",
           "keywords": "api rest nyckel integration crm"
         },
-        "paymentOperator": {
-          "label": "Betaloperatör",
-          "keywords": "stripe betalning operatör kort koppling"
+        "paymentMethods": {
+          "label": "Betalsätt",
+          "keywords": "kort swish faktura betaltjänst stripe fortnox visma"
         }
       }
     }

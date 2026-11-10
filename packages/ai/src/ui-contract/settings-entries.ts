@@ -39,8 +39,7 @@ const settingsView = uiEntry({
 const paymentSettings = uiEntry({
   component: "setting-cards",
   schema: PaymentSettingsSchema,
-  toProps: ({ value }) =>
-    view({ keys: ["paymentOperator", "deposit", "invoices"], payment: value }),
+  toProps: ({ value }) => view({ keys: ["paymentMethods", "deposit"], payment: value }),
 });
 const accountingSettings = uiEntry({
   component: "setting-cards",

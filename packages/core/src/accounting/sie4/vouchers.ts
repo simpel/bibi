@@ -98,6 +98,13 @@ function transactionsOf({ event, ...build }: Build & { event: AccountingEvent })
       return invoiceLines({ ...build, event });
     case "INVOICE_VOID":
       return negate({ lines: invoiceLines({ ...build, event }) });
+    case "CREDIT_NOTE":
+      return negate({
+        lines: invoiceLines({
+          ...build,
+          event: { ...event, kind: "INVOICE_SENT", deductions: [] },
+        }),
+      });
   }
 }
 

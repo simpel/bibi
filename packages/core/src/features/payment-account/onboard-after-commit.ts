@@ -2,7 +2,7 @@ import { getDb } from "@bibi/db";
 import { err, ok, type Result } from "../../errors/result";
 import type { ExternalInput } from "../../operations/types";
 import { notFound } from "../../shared/errors";
-import { getStripeConnectGateway } from "./gateway-registry";
+import { accountProvider, loadAccountRow } from "./account-provider";
 import type { PaymentAccountOnboardingDto, PaymentAccountStartOnboardingInput } from "./schema";
 import { onboardingReturnUrls } from "./start-onboarding";
 import { toPaymentAccountDto } from "./to-payment-account-dto";
@@ -31,11 +31,13 @@ export async function onboardAfterCommit({
   input,
   context,
 }: OnboardAfterCommitInput): Promise<Result<PaymentAccountOnboardingDto>> {
-  const before = await context.db.paymentAccount.findFirst({});
+  const before = await loadAccountRow({ context });
   if (!before) return notFound({ entity: "Payment account" });
-  const gateway = getStripeConnectGateway();
+  const provider = accountProvider();
+  if (!provider.ok) return provider;
+  const gateway = provider.value.port;
   let row = before;
-  if (!row.stripeAccountId) {
+  if (!row.externalAccountId) {
     const created = await gateway.createAccount({
       organizationId: context.organizationId,
       displayName: await displayNameOf({ organizationId: context.organizationId }),
@@ -43,9 +45,9 @@ export async function onboardAfterCommit({
       contactEmail: input.contactEmail,
     });
     if (!created.ok) return err({ error: created.error });
-    row = await context.db.paymentAccount.update({
+    row = await context.db.providerConnection.update({
       where: { id: row.id },
-      data: { stripeAccountId: created.value.stripeAccountId },
+      data: { externalAccountId: created.value.externalAccountId },
     });
     const { organizationId } = context;
     context.recordChange({
@@ -54,8 +56,8 @@ export async function onboardAfterCommit({
       after: toPaymentAccountDto({ row, organizationId }),
     });
   }
-  const link = await gateway.createOnboardingLink({
-    stripeAccountId: row.stripeAccountId ?? "",
+  const link = await gateway.onboardingLink({
+    externalAccountId: row.externalAccountId ?? "",
     ...(await onboardingReturnUrls({ organizationId: context.organizationId })),
   });
   if (!link.ok) return err({ error: link.error });

@@ -2,9 +2,10 @@ import { defineReconciliation, type ReconcileContext } from "./reconcile";
 
 type Total = { id: string; value: number };
 
-/** Each payment's refunded total from its `PaymentRefund` rows (ADR 0077). */
+/** Each payment's succeeded refunds summed from its `PaymentRefund` rows (ADR 0057, 0100). */
 async function rebuildRefunds({ context: { db } }: ReconcileContext): Promise<Total[]> {
   const rows = await db.paymentRefund.findMany({
+    where: { status: "SUCCEEDED" },
     select: { paymentId: true, amountMinor: true },
   });
   const totals = new Map<string, number>();
@@ -14,18 +15,27 @@ async function rebuildRefunds({ context: { db } }: ReconcileContext): Promise<To
   return [...totals].map(([id, value]) => ({ id, value }));
 }
 
-/** `Payment.refundedMinor` (the Stripe mirror) against the sum of its refund rows. */
+/**
+ * The refunded total is derived, never stored; what follows from it is checked: a payment is
+ * REFUNDED exactly when its succeeded refunds cover its amount, and never refunds more.
+ */
 export const paymentRefundReconciliation = defineReconciliation({
   name: "payment refunds",
   rebuild: rebuildRefunds,
   compare: async ({ context, rebuilt }) => {
-    const want = new Map(rebuilt.map((row) => [row.id, row.value]));
-    const rows = await context.db.payment.findMany({ select: { id: true, refundedMinor: true } });
-    return rows
-      .filter((row) => (want.get(row.id) ?? 0) !== row.refundedMinor)
-      .map(
-        (row) =>
-          `payment ${row.id} has refundedMinor ${row.refundedMinor}, refunds sum to ${want.get(row.id) ?? 0}`,
-      );
+    const refunded = new Map(rebuilt.map((row) => [row.id, row.value]));
+    const rows = await context.db.payment.findMany({
+      where: { status: { in: ["SUCCEEDED", "REFUNDED"] } },
+      select: { id: true, status: true, amountMinor: true },
+    });
+    return rows.flatMap((row) => {
+      const sum = refunded.get(row.id) ?? 0;
+      const full = sum >= row.amountMinor;
+      if (sum > row.amountMinor) return [`payment ${row.id} refunds ${sum} of ${row.amountMinor}`];
+      if (full !== (row.status === "REFUNDED")) {
+        return [`payment ${row.id} is ${row.status} with ${sum} of ${row.amountMinor} refunded`];
+      }
+      return [];
+    });
   },
 });

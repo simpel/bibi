@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyPaymentAccountSignal } from "../src/features/payment-account/apply-signal-operation";
+import { applyIntegrationSignal } from "../src/features/integration/apply-signal-operation";
 import {
   type AnyOperation,
   applyPaymentSignal,
@@ -13,7 +13,7 @@ import { outputKeys } from "./feature-scope-walk";
 const OPERATIONS: readonly AnyOperation[] = [
   ...createCoreOperations({ embed: fakeEmbed }),
   applyPaymentSignal,
-  applyPaymentAccountSignal,
+  applyIntegrationSignal,
 ];
 
 const featureOf = ({ operation }: { operation: AnyOperation }) =>

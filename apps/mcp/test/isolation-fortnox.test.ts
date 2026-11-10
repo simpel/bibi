@@ -17,6 +17,14 @@ afterEach(() => {
   Object.assign(getEnv(), saved);
 });
 
+type Listed = {
+  items: { provider: string; id: string | null; status: string; organizationId: string }[];
+};
+
+/** The Fortnox row of an integration_list result (it lists every provider, ADR 0100). */
+const fortnoxOf = ({ list }: { list: Listed }) =>
+  list.items.find((item) => item.provider === "FORTNOX");
+
 describe("cross-organization isolation: Fortnox connection", () => {
   it("lists and disconnects only the caller's own connection", async () => {
     const contextA = testContext();
@@ -32,14 +40,15 @@ describe("cross-organization isolation: Fortnox connection", () => {
     expect(started.data.status).toBe("PENDING");
 
     const own = await call({ client: a, name: "integration_list" });
-    expect(own.data.items[0].id).toBe(started.data.id);
-    expect(own.data.items[0].organizationId).toBe(contextA.organizationId);
+    expect(fortnoxOf({ list: own.data })?.id).toBe(started.data.id);
+    expect(fortnoxOf({ list: own.data })?.organizationId).toBe(contextA.organizationId);
 
     const other = await call({ client: b, name: "integration_list" });
-    expect(other.data.items).toHaveLength(1);
-    expect(other.data.items[0].id).toBeNull();
-    expect(other.data.items[0].status).toBe("NOT_CONNECTED");
-    expect(other.data.items[0].organizationId).toBe(contextB.organizationId);
+    expect(other.data.items.length).toBeGreaterThan(0);
+    for (const item of other.data.items) {
+      expect(item).toMatchObject({ id: null, status: "NOT_CONNECTED" });
+      expect(item.organizationId).toBe(contextB.organizationId);
+    }
   });
 
   it("disconnect in one organization leaves the other's connection alone", async () => {
@@ -54,9 +63,9 @@ describe("cross-organization isolation: Fortnox connection", () => {
     await call({ client: a, name: "integration_disconnect", args: { provider: "FORTNOX" } });
 
     const aList = await call({ client: a, name: "integration_list" });
-    expect(aList.data.items[0].status).toBe("DISCONNECTED");
+    expect(fortnoxOf({ list: aList.data })?.status).toBe("DISCONNECTED");
     const bList = await call({ client: b, name: "integration_list" });
-    expect(bList.data.items[0].id).toBe(bStarted.data.id);
-    expect(bList.data.items[0].status).toBe("PENDING");
+    expect(fortnoxOf({ list: bList.data })?.id).toBe(bStarted.data.id);
+    expect(fortnoxOf({ list: bList.data })?.status).toBe("PENDING");
   });
 });

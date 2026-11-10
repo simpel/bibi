@@ -19,15 +19,6 @@ export async function halfPaidLateInvoice() {
     result: await execute({ operation: createPayment, input: pay, context }),
   });
   await markSucceeded({ context, paymentId: payment.id, refundedMinor: 100_000 });
-  await context.db.paymentRefund.create({
-    data: {
-      organizationId: context.organizationId,
-      paymentId: payment.id,
-      amountMinor: 100_000,
-      refundedTotalMinor: 100_000,
-      refundedAt: new Date(),
-    },
-  });
   const dueDate = new Date(Date.now() - 40 * DAY_MS);
   await context.db.invoice.update({ where: input, data: { dueDate } });
   return setup;

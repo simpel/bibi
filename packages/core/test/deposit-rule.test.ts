@@ -5,8 +5,7 @@ import {
   execute,
   getPaymentSettings,
   requestDeposit,
-  setPaymentProvider,
-  setStripeConnectGateway,
+  resetProviderAdapters,
   startPaymentOnboarding,
   suggestDepositAmount,
   updatePaymentSettings,
@@ -15,8 +14,7 @@ import { errorCode, testContext, unwrap } from "./helpers";
 import { moneySetup } from "./receivable-helpers";
 
 afterEach(() => {
-  setPaymentProvider({ provider: undefined });
-  setStripeConnectGateway({ gateway: undefined });
+  resetProviderAdapters();
 });
 
 const rule = { depositPercent: 30, depositMinimumMinor: 1_000_000 };
@@ -47,6 +45,16 @@ describe("the deposit rule (ADR 0090)", () => {
       id: null,
       depositPercent: null,
       depositMinimumMinor: null,
+      routes: [
+        { method: "CARD", provider: null },
+        { method: "SWISH", provider: null },
+        { method: "INVOICE", provider: null },
+      ],
+      choices: [
+        { method: "CARD", providers: ["STRIPE"] },
+        { method: "SWISH", providers: ["SWISH"] },
+        { method: "INVOICE", providers: ["STRIPE", "FORTNOX", "VISMA"] },
+      ],
       invoiceProvider: null,
       paymentOperator: null,
     });

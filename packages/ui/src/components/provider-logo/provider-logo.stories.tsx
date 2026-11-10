@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button } from "../button/button";
-import { FortnoxLogo, StripeLogo } from "./provider-logo";
+import { FortnoxLogo, ProviderLogo, StripeLogo } from "./provider-logo";
 
 const meta = {
   title: "Components/ProviderLogo",
@@ -15,6 +15,20 @@ export const Logos: Story = {
     <div className="flex items-center gap-6">
       <StripeLogo className="h-8" />
       <FortnoxLogo className="size-8" />
+    </div>
+  ),
+};
+
+/** `ProviderLogo` looks a mark up by the provider's key, as screens built from data do. */
+export const ByProviderKey: Story = {
+  render: () => (
+    <div className="flex items-center gap-6">
+      {["STRIPE", "FORTNOX", "SWISH", "VISMA"].map((provider) => (
+        <div key={provider} className="flex items-center gap-2 text-sm">
+          <ProviderLogo provider={provider} className="size-6 w-auto" />
+          {provider}
+        </div>
+      ))}
     </div>
   ),
 };

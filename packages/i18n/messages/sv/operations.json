@@ -607,7 +607,8 @@
       "ASSIGNED": "{actor} gjorde dig ansvarig för #{reference}",
       "RUN_SHEET_SENT": "{actor} skickade {runSheet} v{version} för #{reference} till dig",
       "ORDER_STATUS_CHANGED": "#{reference} flyttades från {from} till {to}",
-      "PAYMENT_RECEIVED": "{amount} betalt på #{reference}"
+      "PAYMENT_RECEIVED": "{amount} betalt på #{reference}",
+      "PAYMENT_OVERPAID": "{amount} betalades igen på #{reference}, som redan var betald: återbetala eller behåll som tillgodo"
     },
     "someone": "Någon",
     "aRunSheet": "ett körschema",

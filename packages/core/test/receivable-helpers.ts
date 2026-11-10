@@ -1,10 +1,8 @@
 import {
   acceptQuote,
-  createMemoryPaymentProvider,
   type ExecuteContext,
   execute,
   sendQuote,
-  setPaymentProvider,
   updateOrderStatus,
 } from "../src/index";
 import { unwrap } from "./helpers";
@@ -20,9 +18,7 @@ export async function moneySetup() {
   const { context, order, lineType, lunch } = setup;
   const lines = [{ itemId: lunch.id }];
   await addTestLines({ context, orderId: order.id, lineTypeId: lineType.id, lines });
-  await activatePaymentAccount({ context });
-  const provider = createMemoryPaymentProvider();
-  setPaymentProvider({ provider });
+  const { provider } = await activatePaymentAccount({ context });
   return { ...setup, provider };
 }
 
@@ -47,10 +43,23 @@ export async function makeInvoiceable({ context, statusId }: InvoiceableInput) {
 
 export type SettleInput = { context: ExecuteContext; paymentId: string; refundedMinor?: number };
 
-/** Stands in for Stripe's paid webhook (`payment.applySignal`): the payment SUCCEEDED. */
+/**
+ * Stands in for the provider's paid signal (`payment.applySignal`): the payment SUCCEEDED, with a
+ * SUCCEEDED refund of `refundedMinor` when given.
+ */
 export async function markSucceeded({ context, paymentId, refundedMinor = 0 }: SettleInput) {
   await context.db.payment.update({
     where: { id: paymentId },
-    data: { status: "SUCCEEDED", paidAt: new Date(), refundedMinor },
+    data: { status: "SUCCEEDED", paidAt: new Date() },
+  });
+  if (refundedMinor === 0) return;
+  await context.db.paymentRefund.create({
+    data: {
+      organizationId: context.organizationId,
+      paymentId,
+      amountMinor: refundedMinor,
+      status: "SUCCEEDED",
+      refundedAt: new Date(),
+    },
   });
 }

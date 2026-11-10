@@ -4,8 +4,9 @@ import { forEachOrganization } from "../for-each-organization";
 import type { JobDefinition } from "../job-definition";
 
 /**
- * Runs `integration.refreshExpiring` for every organization as SYSTEM once a day, so a Fortnox
- * connection with no traffic outlives its 45-day refresh token (ADR 0027, 0087).
+ * Runs `integration.refreshExpiring` for every organization as SYSTEM once a day: it refreshes
+ * each OAuth provider's connections whose refresh token ends within that provider's window, so a
+ * connection with no traffic outlives it (ADR 0027, 0087, 0100).
  */
 export const refreshIntegrationsJob: JobDefinition = {
   name: "integration.refreshExpiring",

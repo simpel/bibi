@@ -1,7 +1,15 @@
-import type { PaymentAccount } from "@bibi/db";
+import type { ProviderConnection } from "@bibi/db";
 import type { PaymentAccountDto } from "./schema";
 
-export type ToDtoInput = { row: PaymentAccount | null; organizationId: string };
+export type ToDtoInput = { row: ProviderConnection | null; organizationId: string };
+
+/** The connection's status as the payout account shows it (ADR 0028, 0090). */
+function accountStatus({ row }: { row: ProviderConnection }): PaymentAccountDto["status"] {
+  // Disconnected wins over the provider's own state: nothing is charged until an admin reconnects.
+  if (row.disconnectedAt || row.status === "DISCONNECTED") return "DISCONNECTED";
+  if (row.status === "CONNECTED") return "ACTIVE";
+  return row.status === "RESTRICTED" ? "RESTRICTED" : "ONBOARDING";
+}
 
 /** No row means the organization has not started onboarding yet. */
 export function toPaymentAccountDto({ row, organizationId }: ToDtoInput): PaymentAccountDto {
@@ -15,8 +23,7 @@ export function toPaymentAccountDto({ row, organizationId }: ToDtoInput): Paymen
       updatedAt: null,
     };
   }
-  const { id, stripeAccountId, createdAt, updatedAt } = row;
-  // Disconnected wins over Stripe's own state: nothing is charged until an admin reconnects.
-  const status = row.disconnectedAt ? ("DISCONNECTED" as const) : row.status;
-  return { id, organizationId, status, stripeAccountId, createdAt, updatedAt };
+  const { id, externalAccountId, createdAt, updatedAt } = row;
+  const status = accountStatus({ row });
+  return { id, organizationId, status, stripeAccountId: externalAccountId, createdAt, updatedAt };
 }
