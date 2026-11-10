@@ -64,7 +64,7 @@
           },
           "refund": {
             "question": "How do I refund a payment?",
-            "answer": "Open the order, find the payment under **Payments** and choose **Refund**. Leave the amount empty to refund everything that is left, or type a smaller amount for a partial refund.\nThe money goes back the way the customer paid. The payment shows the refunded amount once the payment service confirms it."
+            "answer": "Open the order, find the payment under **Payments** and choose **Refund**. Leave the amount empty to refund everything that is left, or type a smaller amount for a partial refund.\nThe money goes back the way the customer paid. The payment shows the refunded amount once the payment service confirms it. If the payment service has not confirmed a refund after 15 minutes, Bibi checks with it again by itself and sends the refund again if it never arrived."
           },
           "paidTwice": {
             "question": "What happens if a customer pays twice?",
@@ -81,6 +81,10 @@
           "creditNote": {
             "question": "How do I credit an invoice?",
             "answer": "Open the order and choose **Credit** next to the sent invoice. Leave the amount empty to credit everything still due, or type a smaller amount, and add a reason.\nBibi creates a credit note that lowers what the customer owes. If the invoice was made in your accounting system, it is credited there too. Money already paid is given back with **Refund** on the payment."
+          },
+          "voidInvoice": {
+            "question": "What happens when I void an invoice made in a payment service?",
+            "answer": "Open the order and choose **Void** next to the invoice. Bibi voids it in the payment service too.\nIf the service says no, the invoice goes back to sent and you see why. If the service does not answer, the invoice shows that voiding is not confirmed yet, and Bibi tries again every 15 minutes until it is."
           }
         }
       },
@@ -204,7 +208,7 @@
           },
           "visma": {
             "question": "Can I connect Bibi to Visma eEkonomi?",
-            "answer": "Yes. An admin chooses **Connect** on Visma eEkonomi under Administration → Integrations and signs in to Visma to approve the connection.\nThen pick Visma eEkonomi for **Invoice** under Administration → Payments, and invoices are made there with payments mirrored back to Bibi."
+            "answer": "Yes. An admin chooses **Connect** on Visma eEkonomi under Administration → Integrations and signs in to Visma to approve the connection.\nThen pick Visma eEkonomi for **Invoice** under Administration → Payments, and invoices are made there with payments mirrored back to Bibi. Card and Swish payments taken in Bibi on a Visma invoice are booked in Visma too."
           }
         }
       }

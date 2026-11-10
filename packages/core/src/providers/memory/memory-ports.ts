@@ -77,13 +77,35 @@ export function memoryCollect({ state, methods, onDemand }: MemoryCollectInput):
         entry: `cancel:${providerReference}`,
         value: true as const,
       }),
-    refund: async ({ providerReference, amountMinor, idempotencyKey }) =>
-      call({
+    async refund({ providerReference, amountMinor, idempotencyKey }) {
+      const done = call({
         state,
         name: "refund",
         entry: `refund:${providerReference}:${amountMinor}`,
         value: { providerReference: refFor({ key: idempotencyKey, prefix: "re" }) },
-      }),
+      });
+      if (done.ok && !state.refunds.has(idempotencyKey)) {
+        const entry = { providerReference: done.value.providerReference };
+        state.refunds.set(idempotencyKey, { ...entry, status: state.refundOutcome });
+      }
+      return done;
+    },
+    async refundStatus({ idempotencyKey }) {
+      if (state.failing.delete("refundStatus")) {
+        return err({
+          error: new AppError({ code: "UNAVAILABLE", message: "refundStatus failed" }),
+        });
+      }
+      const found = state.refunds.get(idempotencyKey);
+      if (!found) return ok({ value: { status: "MISSING" as const } });
+      const { providerReference, status } = found;
+      return ok({
+        value:
+          status === "PENDING"
+            ? { status, providerReference }
+            : { status, providerReference, occurredAt: new Date() },
+      });
+    },
   };
 }
 

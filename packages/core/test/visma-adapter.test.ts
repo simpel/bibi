@@ -212,6 +212,7 @@ describe("Visma invoicing (ADR 0100)", () => {
         totalAmount: 1250,
         remainingAmount: 1250,
         creditedMinor: 0,
+        registeredMinor: 0,
         now,
       }),
     ).toEqual([]);
@@ -221,8 +222,42 @@ describe("Visma invoicing (ADR 0100)", () => {
         totalAmount: 1250,
         remainingAmount: 250,
         creditedMinor: 0,
+        registeredMinor: 0,
         now,
       }),
     ).toEqual([{ reference: "inv:paid:100000", amountMinor: 100_000, paidAt: now }]);
+  });
+
+  it("subtracts what Bibi registered itself from the derived payments", () => {
+    const now = new Date("2026-11-09T12:00:00Z");
+    const base = { id: "inv", totalAmount: 1250, remainingAmount: 0, creditedMinor: 0, now };
+    expect(derivedPayments({ ...base, registeredMinor: 125_000 })).toEqual([]);
+    expect(derivedPayments({ ...base, registeredMinor: 25_000 })).toEqual([
+      { reference: "inv:paid:100000", amountMinor: 100_000, paidAt: now },
+    ]);
+  });
+
+  it("registers a card payment on the invoice", async () => {
+    const stub = stubVisma();
+    stub.route = () => ({ status: 201, json: { Id: "pay-1" } });
+    const paidAt = new Date("2026-11-09T12:00:00Z");
+    const register = visma().invoicing.registerPayment;
+    if (!register) throw new Error("no registerPayment");
+    const done = await register({
+      auth,
+      providerReference: "inv",
+      payment: { reference: "p1", amountMinor: 50_000, paidAt },
+    });
+    expect(unwrap({ result: done })).toEqual({ providerReference: "pay-1" });
+    const [call] = stub.calls;
+    expect(call?.method).toBe("POST");
+    expect(apiPath({ call: call as NonNullable<typeof call> })).toBe(
+      "/customerinvoices/inv/payments",
+    );
+    expect(JSON.parse(call?.body ?? "{}")).toEqual({
+      PaymentDate: "2026-11-09",
+      PaymentAmount: 500,
+      PaymentCurrencyAmount: 500,
+    });
   });
 });

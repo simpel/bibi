@@ -1,14 +1,22 @@
 import { isDevEnvironment } from "@bibi/auth";
 import { getEnv } from "@bibi/config";
+import { installE2eProviders } from "@bibi/core";
 import { createSystemLogSink } from "@bibi/db";
 import { getLogger, initLogger, installProcessHandlers } from "@bibi/logger";
 import { formatDevBanner } from "@/lib/dev-banner";
 import { devServices } from "@/lib/dev-services";
+import { shouldUseMockModel } from "@/server/mock-model-policy";
 import { ensureOperations } from "@/server/operations";
 
 /** Registers core operations on server startup (Node runtime only). */
 export function registerCoreOperations(): void {
   ensureOperations();
+  const { E2E_MEMORY_PROVIDERS, NODE_ENV } = getEnv();
+  // Browser tests only: never in production, like the scripted model (`mock-model-policy.ts`).
+  if (shouldUseMockModel({ flag: E2E_MEMORY_PROVIDERS, nodeEnv: NODE_ENV })) {
+    installE2eProviders();
+    getLogger().warn({ event: "config.e2eProviders", msg: "In-memory Stripe and Swish installed" });
+  }
 }
 
 /** Process logger for the web server; Next owns the process, so no exit on uncaught errors. */

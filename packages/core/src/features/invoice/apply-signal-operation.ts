@@ -47,8 +47,14 @@ export const applyInvoiceSignal = defineOperation({
     if (!row?.provider) return notFound({ entity: "Invoice" });
     const base = { invoiceId, orderId: row.orderId };
     if (signal.kind === "invoice.voided") {
-      if (row.status === "VOID")
-        return ok({ value: { ...base, paymentId: null, status: null, changed: false } });
+      if (row.status === "VOID") {
+        // The provider confirms a void that ended without an answer (ADR 0100).
+        const { count } = await context.db.invoice.updateMany({
+          where: { id: invoiceId, voidPendingAt: { not: null } },
+          data: { voidPendingAt: null },
+        });
+        return ok({ value: { ...base, paymentId: null, status: null, changed: count > 0 } });
+      }
       const moved = await moveInvoice({ context, id: invoiceId, to: "VOID" });
       if (!moved.ok) return moved;
       return ok({ value: { ...base, paymentId: null, status: null, changed: true } });

@@ -2,6 +2,7 @@ import { getEnv } from "@bibi/config";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { stripeCharges } from "../src/providers/stripe/stripe-charges";
 import { stripeInvoicing } from "../src/providers/stripe/stripe-invoicing";
+import { stripeRefundStatus } from "../src/providers/stripe/stripe-refunds";
 import { unwrap } from "./helpers";
 
 type Call = { url: string; headers: Record<string, string>; body: URLSearchParams };
@@ -143,5 +144,53 @@ describe("stripeCharges", () => {
     const input = { ...base, successUrl: "https://s", cancelUrl: "https://c" };
     const result = await stripeCharges.createCheckout(input);
     expect(result.ok ? null : result.error.code).toBe("CONFLICT");
+  });
+});
+
+describe("stripe refundStatus (ADR 0100)", () => {
+  const input = {
+    auth: { externalAccountId: "acct_venue", accessToken: null },
+    providerReference: "cs_1",
+    idempotencyKey: "bibi-refund-r1",
+    refundReference: null,
+    metadata: { paymentId: "p1", refundId: "r1" },
+  };
+
+  it("finds Bibi's refund among the payment intent's refunds by its metadata", async () => {
+    stubStripe({
+      responses: [
+        { id: "cs_1", payment_intent: "pi_1" },
+        {
+          data: [
+            { id: "re_other", status: "succeeded", created: 1, metadata: { refundId: "r0" } },
+            {
+              id: "re_1",
+              status: "succeeded",
+              created: 1_800_000_000,
+              metadata: { refundId: "r1" },
+            },
+          ],
+        },
+      ],
+    });
+    const state = unwrap({ result: await stripeRefundStatus(input) });
+    expect(state).toEqual({
+      status: "SUCCEEDED",
+      providerReference: "re_1",
+      occurredAt: new Date(1_800_000_000_000),
+    });
+    expect(calls[1]?.url).toBe("https://api.stripe.com/v1/refunds?payment_intent=pi_1&limit=100");
+    expect(calls[1]?.headers["Stripe-Account"]).toBe("acct_venue");
+  });
+
+  it("is MISSING when Stripe has no such refund, and reads a known one by its id", async () => {
+    stubStripe({ responses: [{ id: "cs_1", payment_intent: "pi_1" }, { data: [] }] });
+    expect(unwrap({ result: await stripeRefundStatus(input) })).toEqual({ status: "MISSING" });
+    stubStripe({ responses: [{ id: "re_9", status: "pending", created: 1 }] });
+    const known = unwrap({
+      result: await stripeRefundStatus({ ...input, refundReference: "re_9" }),
+    });
+    expect(known).toEqual({ status: "PENDING", providerReference: "re_9" });
+    expect(calls[0]?.url).toBe("https://api.stripe.com/v1/refunds/re_9");
   });
 });

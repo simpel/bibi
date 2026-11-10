@@ -48,6 +48,11 @@ export type DemoOrder = {
   money?: {
     deposit?: { description: string; amountKr: number };
     paidKr?: number;
+    /**
+     * ADR 0100: a refund of this many kr of the `paidKr` card payment whose provider signal never
+     * came; the refund retry job (`payment.retryRefunds`) reads it at the provider and completes it.
+     */
+    lostRefundKr?: number;
     /** ADR 0100: a Swish payment of this many kr against the accepted quote (Swish signal). */
     swishKr?: number;
     /** ADR 0100: money recorded by staff against the accepted quote (`payment.recordManual`). */
@@ -106,6 +111,11 @@ export type DemoInvoice = {
   provider?: Exclude<DemoProvider, "SWISH">;
   /** A credit note of this many kr on the open invoice (`invoice.credit`). */
   credit?: { kr: number; reason: string };
+  /**
+   * ADR 0100: a card payment of this many kr against the open invoice; on a ledger provider's
+   * invoice it is registered there (`registerPayment`), so the provider's books hold it too.
+   */
+  cardKr?: number;
 };
 
 /**

@@ -146,6 +146,7 @@ export * from "./providers/fortnox/fortnox-rows";
 export * from "./providers/fortnox/stream/events";
 export * from "./providers/fortnox/stream/replay";
 export * from "./providers/fortnox/stream/tenants";
+export * from "./providers/memory/e2e-providers";
 export * from "./providers/memory/memory-adapter";
 export { getAccessToken } from "./providers/oauth/access-token";
 export { PAYMENT_METHODS, PROVIDER_KEYS } from "./providers/provider-keys";

@@ -5,7 +5,7 @@ import type { ChargeBase } from "./charge-types";
 import { stripeBadResponse } from "./stripe-bad-response";
 import { stripeCharges } from "./stripe-charges";
 import { stripeFormRequest } from "./stripe-form-request";
-import { stripeFetch } from "./stripe-request";
+import { paymentIntentOf, stripeRefundStatus } from "./stripe-refunds";
 
 const noAccount = () =>
   err({ error: new AppError({ code: "CONFLICT", message: "The Stripe account has no id yet" }) });
@@ -54,19 +54,6 @@ type RefundAttemptInput = RefInput & {
   metadata: Record<string, string>;
 };
 
-/** The payment intent behind a paid checkout or invoice. */
-async function paymentIntentOf({ auth, providerReference }: RefInput): Promise<Result<string>> {
-  const kind = providerReference.startsWith("in_") ? "invoices" : "checkout/sessions";
-  const read = await stripeFetch({
-    method: "GET",
-    url: `https://api.stripe.com/v1/${kind}/${encodeURIComponent(providerReference)}`,
-    headers: { "Stripe-Account": accountOf({ auth }) ?? "" },
-  });
-  if (!read.ok) return read;
-  const intent = read.value.payment_intent;
-  return typeof intent === "string" ? ok({ value: intent }) : stripeBadResponse({ what: "intent" });
-}
-
 /** A refund of a paid checkout or invoice (`payment.refund`); metadata finds it again. */
 async function refund({ amountMinor, idempotencyKey, metadata, ...ref }: RefundAttemptInput) {
   const connectedAccountId = accountOf(ref);
@@ -94,4 +81,5 @@ export const stripeCollect: CollectPort = {
   startAttempt,
   cancelAttempt,
   refund,
+  refundStatus: stripeRefundStatus,
 };

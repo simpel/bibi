@@ -1,4 +1,9 @@
 import { billingOperations } from "./features/billing/operations";
+import {
+  creditNoteOperations,
+  getCreditNote,
+  listCreditNotes,
+} from "./features/credit-note/operations";
 import { depositOperations } from "./features/deposit/operations";
 import {
   createAccountingExport,
@@ -31,7 +36,9 @@ import {
   syncInvoice,
   voidInvoice,
 } from "./features/invoice/operations";
+import { retryVoids } from "./features/invoice/retry-voids-operation";
 import { paymentOperations } from "./features/payment/operations";
+import { retryRefunds } from "./features/payment/retry-refunds-operation";
 import {
   startPaymentAttempt,
   startPublicAttempt,
@@ -48,6 +55,7 @@ export const moneyOperations = [
   ...paymentOperations,
   ...depositOperations,
   ...invoiceOperations,
+  ...creditNoteOperations,
   ...financeOperations,
   ...integrationOperations,
 ];
@@ -67,13 +75,17 @@ export {
   financeOverview,
   getAccountingExport,
   getAccountingSettings,
+  getCreditNote,
   getInvoice,
   invoiceOperations,
   listAccountingExports,
+  listCreditNotes,
   listIntegrations,
   listInvoices,
   previewAccountingExport,
   refreshExpiringIntegrations,
+  retryRefunds,
+  retryVoids,
   sendInvoice,
   startPaymentAttempt,
   startPublicAttempt,

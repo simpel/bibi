@@ -81,5 +81,16 @@ describe("cross-organization isolation: receivables and balances (ADR 0057)", ()
     await expectNotFound({ client: b, calls: [["invoice_credit", { invoiceId }]] });
     const own = await call({ client: a, name: "invoice_get", args: { id: invoiceId } });
     expect(own.data).toMatchObject({ status: "SENT", creditNotes: [] });
+    const args = { invoiceId, amountMinor: 10_000 };
+    const credited = await call({ client: a, name: "invoice_credit", args });
+    expect(credited.isError, JSON.stringify(credited.data)).toBe(false);
+    const noteId: string = credited.data.creditNotes[0].id;
+    await expectNotFound({ client: b, calls: [["creditNote_get", { id: noteId }]] });
+    const byInvoice = await call({ client: b, name: "creditNote_list", args: { invoiceId } });
+    expect(byInvoice.data.items).toEqual([]);
+    const byOrder = await call({ client: b, name: "creditNote_list", args: { orderId } });
+    expect(byOrder.data.items).toEqual([]);
+    const mine = await call({ client: a, name: "creditNote_list", args: { orderId } });
+    expect(mine.data.items.map((note: { id: string }) => note.id)).toEqual([noteId]);
   });
 });

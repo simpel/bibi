@@ -31,6 +31,8 @@ const NAMES = [
   "conversation.get",
   "conversation.list",
   "conversation.rename",
+  "creditNote.get",
+  "creditNote.list",
   "customer.archive",
   "customer.create",
   "customer.findSimilar",

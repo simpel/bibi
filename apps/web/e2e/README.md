@@ -17,5 +17,8 @@ Run with a scripted model (`E2E_MOCK_MODEL=1`), never a paid AI call.
 - With `CI` set the HTML report goes to `apps/web/playwright-report`, uploaded as an artifact together with `test-results` (traces).
 - The `storybook` job runs `pnpm --filter @bibi/ui build-storybook`.
 
+## In-memory payment providers
+- `E2E_MEMORY_PROVIDERS=1` (set by `playwright.config.ts`, ignored when `NODE_ENV=production`, same policy as the mock model) makes the web server install in-memory Stripe and Swish at start (`installE2eProviders` in core, process-wide). Stripe connects at once through `/payment-account/onboarding` and `/sync`; its checkout link carries the pay page in `back`. Swish connects with any `swishNumber`. Both take unsigned test deliveries on `/api/providers/<key>/webhook` (`{ eventId, signals: [...] }`), so a spec can mark a checkout paid (`payment-fixtures.ts`). The config also passes a throwaway `INTEGRATION_SECRET_KEY` when none is set.
+
 ## The scripted model
 - `E2E_MOCK_MODEL=1` (and `NODE_ENV` not `production`, see `server/mock-model-policy.ts`) makes `assistant-handlers.ts` dynamically import `server/e2e-mock-model.ts` (`MockLanguageModelV4` from `ai/test`): "create venue <name>" → `venue_create`, "list venues" → `venue_list`, "list skills" → `skill_list`, "rename responsibility <id> <name>" → `responsibility_update`.

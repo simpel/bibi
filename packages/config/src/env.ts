@@ -97,6 +97,11 @@ const envSchema = z
      * (`apps/web/src/server/e2e-mock-model.ts`). Off by default; ignored when NODE_ENV=production.
      */
     E2E_MOCK_MODEL: z.stringbool().default(false),
+    /**
+     * E2E only: Stripe and Swish replaced by in-memory providers that accept unsigned test
+     * deliveries (`installE2eProviders`). Off by default; ignored when NODE_ENV=production.
+     */
+    E2E_MEMORY_PROVIDERS: z.stringbool().default(false),
     /** Minimum log level (ADR 0014). Default: `silent` when NODE_ENV=test, else `info`. */
     LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]).optional(),
     /** `json` (one event per line) or `pretty`. Default: `json` in production, else `pretty`. */

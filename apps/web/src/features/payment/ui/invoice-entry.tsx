@@ -58,6 +58,11 @@ export function InvoiceEntry({ invoice, actions, dates: format, numbers }: Invoi
             : t("notInProvider", { name: providers(`${invoice.provider}.name`) })}
         </span>
       ) : null}
+      {invoice.provider && invoice.voidPending ? (
+        <span data-slot="invoice-void-pending" className="text-xs text-warning">
+          {t("voidPending", { name: providers(`${invoice.provider}.name`) })}
+        </span>
+      ) : null}
       {due ? (
         <time className="text-xs text-muted-foreground" dateTime={due.toISOString()}>
           {t("due", { date: format.date({ instant: due }) })}

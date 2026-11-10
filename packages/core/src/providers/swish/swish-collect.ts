@@ -16,6 +16,7 @@ import {
 import { SWISH_CURRENCY, SWISH_REQUEST_TTL_MS } from "./swish-config";
 import { credentialsOf } from "./swish-credentials";
 import { swishInstructionId } from "./swish-format";
+import { swishRefundStatus } from "./swish-refund-status";
 
 const refuse = ({ message }: { message: string }) =>
   err({ error: new AppError({ code: "VALIDATION", message }) });
@@ -108,4 +109,5 @@ export const swishCollect: CollectPort = {
   cancelAttempt,
   refund,
   refundReference: ({ idempotencyKey }) => swishInstructionId({ key: idempotencyKey }),
+  refundStatus: swishRefundStatus,
 };

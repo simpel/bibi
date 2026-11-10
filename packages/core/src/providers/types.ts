@@ -62,6 +62,24 @@ export type RefundInput = AttemptRefInput & {
 /** The provider's id of what a call created (a refund, a booked payment). */
 export type ProviderReference = { providerReference: string };
 
+export type RefundStatusInput = AttemptRefInput & {
+  /** The key the refund was sent with (`refundKey`). */
+  idempotencyKey: string;
+  /** The refund's own reference, when Bibi stored one; else it is found by Bibi's ids. */
+  refundReference: string | null;
+  /** Bibi ids (`paymentId`, `refundId`) the refund was sent with. */
+  metadata: Record<string, string>;
+};
+
+/**
+ * Where a refund stands at the provider: settled either way, still in progress, or `MISSING`
+ * when the provider never received it (it is then sent again with the same key).
+ */
+export type RefundState =
+  | { status: "SUCCEEDED" | "FAILED"; providerReference: string | null; occurredAt: Date }
+  | { status: "PENDING"; providerReference: string | null }
+  | { status: "MISSING" };
+
 /** Taking payments (ADR 0100). `onDemand`: attempts expire in minutes and start at the pay page. */
 export type CollectPort = {
   methods: readonly PaymentMethodKey[];
@@ -75,6 +93,8 @@ export type CollectPort = {
    * ambiguously. Without it the reference comes back from `refund` and signals carry Bibi's id.
    */
   refundReference?(input: { idempotencyKey: string }): string;
+  /** Reads a refund again (the refund retry job, ADR 0100); without it a stuck refund waits. */
+  refundStatus?(input: RefundStatusInput): Promise<Result<RefundState>>;
 };
 
 /** One frozen invoice line with the revenue account the export posts it to (ADR 0077). */
@@ -129,6 +149,11 @@ export type ListPaymentsInput = AttemptRefInput & {
    * that only reports what is left to pay (Visma) must not read a credit as money received.
    */
   creditedMinor: number;
+  /**
+   * What Bibi registered on the invoice itself (`registerPayment`: card or Swish payments),
+   * minor units: a provider that only reports what is left to pay must not count it again.
+   */
+  registeredMinor: number;
 };
 
 export type RegisterPaymentInput = AttemptRefInput & { payment: ProviderPayment };

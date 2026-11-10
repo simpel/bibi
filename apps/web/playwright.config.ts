@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import nextEnv from "@next/env";
@@ -62,6 +63,10 @@ export default defineConfig({
         WEB_PORT,
         NODE_ENV: "test",
         E2E_MOCK_MODEL: "1",
+        E2E_MEMORY_PROVIDERS: "1",
+        // Connections seal their credentials (Swish in the payments spec); a throwaway key will do.
+        INTEGRATION_SECRET_KEY:
+          process.env.INTEGRATION_SECRET_KEY || randomBytes(32).toString("base64"),
       } as Record<string, string>,
     },
   ],

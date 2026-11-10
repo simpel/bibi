@@ -18,11 +18,24 @@ const BUILT_IN: Record<ProviderKey, ProviderAdapter> = {
 
 const overrides = new Map<ProviderKey, ProviderAdapter>();
 
+const shared = globalThis as typeof globalThis & {
+  __bibiProcessProviders?: Map<ProviderKey, ProviderAdapter>;
+};
+
+/**
+ * Adapters installed for the whole process (browser tests, `installE2eProviders`): kept on
+ * `globalThis`, since a Next server bundles its entry points with separate module instances.
+ */
+const processWide = () => {
+  shared.__bibiProcessProviders ??= new Map();
+  return shared.__bibiProcessProviders;
+};
+
 export type ProviderKeyInput = { key: ProviderKey };
 
 /** The adapter registered for a provider, or null when Bibi has none. */
 export function findProvider({ key }: ProviderKeyInput): ProviderAdapter | null {
-  return overrides.get(key) ?? BUILT_IN[key];
+  return overrides.get(key) ?? processWide().get(key) ?? BUILT_IN[key];
 }
 
 /** The adapter for a provider; UNAVAILABLE when Bibi has none. */
@@ -101,6 +114,12 @@ export type SetProviderAdapterInput = { key: ProviderKey; adapter: ProviderAdapt
 export function setProviderAdapter({ key, adapter }: SetProviderAdapterInput): void {
   if (adapter) overrides.set(key, adapter);
   else overrides.delete(key);
+}
+
+/** Installs an adapter for every module instance in the process (browser tests only). */
+export function setProcessProviderAdapter({ key, adapter }: SetProviderAdapterInput): void {
+  if (adapter) processWide().set(key, adapter);
+  else processWide().delete(key);
 }
 
 /** Restores every built-in adapter. */

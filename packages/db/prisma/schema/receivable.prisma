@@ -64,6 +64,10 @@ model Invoice {
   sentAt            DateTime?
   /// When it was voided (owned, ADR 0077): the date of a reversal voucher.
   voidedAt          DateTime?
+  /// Owned (ADR 0051, 0100): set when voiding at the provider ended without an answer, so the
+  /// VOID is not confirmed there yet; the refund retry job (`invoice.retryVoids`) or the
+  /// provider's `invoice.voided` signal clears it. Null = nothing pending.
+  voidPendingAt     DateTime?
   /// Sums of the frozen lines in minor units (snapshot).
   totalExclVatMinor Int
   totalInclVatMinor Int

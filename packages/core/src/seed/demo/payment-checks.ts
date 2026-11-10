@@ -25,7 +25,8 @@ async function succeededByOrder({ context }: Pick<CheckDemoPaymentsInput, "conte
 /**
  * ADR 0057: every order with an accepted quote owes that quote's total minus its SUCCEEDED
  * payments, as derived by `payment.balance`; the demo's money (`order.money`) is there: one
- * SENT deposit request and a card, Swish and manual payment per spec. Returns failure messages.
+ * SENT deposit request and a card, Swish and manual payment per spec, less the refund the retry
+ * job settled. Returns failure messages.
  */
 export async function checkDemoPayments({ context, org }: CheckDemoPaymentsInput) {
   const failures: string[] = [];
@@ -49,7 +50,9 @@ export async function checkDemoPayments({ context, org }: CheckDemoPaymentsInput
   if (deposits !== wanted)
     failures.push(`${org.slug}: ${deposits} sent deposits, expected ${wanted}`);
   const total = money.reduce(
-    (sum, m) => sum + ((m.paidKr ?? 0) + (m.swishKr ?? 0) + (m.manual?.kr ?? 0)) * 100,
+    (sum, m) =>
+      sum +
+      ((m.paidKr ?? 0) - (m.lostRefundKr ?? 0) + (m.swishKr ?? 0) + (m.manual?.kr ?? 0)) * 100,
     0,
   );
   const seen = [...paid.values()].reduce((sum, value) => sum + value, 0);

@@ -5,6 +5,7 @@ import type { InvoicingPort, ProviderAuth, ProviderPayment } from "../types";
 import { vismaNotConnected } from "./visma-config";
 import { findOrCreateCustomer } from "./visma-customers";
 import { createInvoice, creditRows, readInvoice } from "./visma-invoices";
+import { registerVismaPayment } from "./visma-payments";
 import { toVismaRows } from "./visma-rows";
 
 const tokenOf = ({ auth }: { auth: ProviderAuth }): Result<string> =>
@@ -12,7 +13,8 @@ const tokenOf = ({ auth }: { auth: ProviderAuth }): Result<string> =>
 
 /**
  * What Visma has received on the invoice, derived from its total and what is left to pay, less
- * what credit invoices took off it (`creditedMinor`; Visma lowers the remaining amount by them): one
+ * what credit invoices took off it (`creditedMinor`; Visma lowers the remaining amount by them) and
+ * what Bibi registered itself (`registeredMinor`: card or Swish payments, already Bibi's): one
  * entry per paid level, keyed by the invoice and the paid sum, so a further payment replaces the
  * entry (removed, then recorded at the new sum). Visma lists no single payments on an invoice
  * through this API. // Verify against Visma sandbox (a per-payment listing would replace this)
@@ -22,15 +24,18 @@ export function derivedPayments({
   totalAmount,
   remainingAmount,
   creditedMinor,
+  registeredMinor,
   now,
 }: {
   id: string;
   totalAmount: number;
   remainingAmount: number;
   creditedMinor: number;
+  registeredMinor: number;
   now: Date;
 }): ProviderPayment[] {
-  const paidMinor = Math.round((totalAmount - remainingAmount) * 100) - creditedMinor;
+  const paidMinor =
+    Math.round((totalAmount - remainingAmount) * 100) - creditedMinor - registeredMinor;
   if (paidMinor <= 0) return [];
   return [{ reference: `${id}:paid:${paidMinor}`, amountMinor: paidMinor, paidAt: now }];
 }
@@ -38,8 +43,8 @@ export function derivedPayments({
 /**
  * Visma eEkonomi invoicing (ADR 0100): finds or creates the customer, raises a booked invoice
  * from the frozen rows, credits it with a credit invoice, and reads what has been paid. A booked
- * invoice cannot be voided, only credited. No `registerPayment` yet: Bibi could not tell a
- * payment it booked from one Visma received (see `derivedPayments`).
+ * invoice cannot be voided, only credited. A card or Swish payment is registered on the invoice;
+ * polling subtracts what Bibi registered, so it is never counted twice (see `derivedPayments`).
  */
 export const vismaInvoicing: InvoicingPort = {
   async issue({ auth, invoice }) {
@@ -79,7 +84,16 @@ export const vismaInvoicing: InvoicingPort = {
     });
     return id.ok ? ok({ value: { providerReference: id.value, url: null } }) : id;
   },
-  async listPayments({ auth, providerReference, creditedMinor }) {
+  async registerPayment({ auth, providerReference, payment }) {
+    const accessToken = tokenOf({ auth });
+    if (!accessToken.ok) return accessToken;
+    return registerVismaPayment({
+      accessToken: accessToken.value,
+      invoiceId: providerReference,
+      payment,
+    });
+  },
+  async listPayments({ auth, providerReference, creditedMinor, registeredMinor }) {
     const accessToken = tokenOf({ auth });
     if (!accessToken.ok) return accessToken;
     const invoice = await readInvoice({ accessToken: accessToken.value, id: providerReference });
@@ -91,6 +105,7 @@ export const vismaInvoicing: InvoicingPort = {
         totalAmount: TotalAmount,
         remainingAmount: RemainingAmount,
         creditedMinor,
+        registeredMinor,
         now: new Date(),
       }),
     });

@@ -4,6 +4,8 @@ import { completeIntegrationConnect } from "../../features/integration/complete-
 import { connectIntegration } from "../../features/integration/connect-operation";
 import { createPayment } from "../../features/payment/create-operation";
 import { recordManualPayment } from "../../features/payment/record-manual-operation";
+import { refundPayment } from "../../features/payment/refund-operation";
+import { retryRefunds } from "../../features/payment/retry-refunds-operation";
 import { startPaymentAttempt } from "../../features/payment/start-attempt-operation";
 import {
   startPaymentOnboarding,
@@ -82,7 +84,30 @@ async function seedPartialPayment({ context, order, orderId }: OrderMoneyInput) 
   const input = { quoteId: quote.id, method: "CARD" as const, amountMinor: paidKr * 100 };
   const payment = await execute({ operation: createPayment, input, context });
   if (!payment.ok) return payment;
-  return applyDemoSignal({ context, paymentId: payment.value.id, kind: "attempt.succeeded" });
+  const paymentId = payment.value.id;
+  const paid = await applyDemoSignal({ context, paymentId, kind: "attempt.succeeded" });
+  if (!paid.ok) return paid;
+  return seedLostRefund({ context, paymentId, kr: order.money?.lostRefundKr });
+}
+
+const RETRY_AFTER_MS = 20 * 60_000;
+
+/**
+ * `money.lostRefundKr`: a refund started in Bibi whose provider signal never comes; the refund
+ * retry job, run as the worker would 20 minutes later, reads it at the provider and completes it.
+ */
+async function seedLostRefund({
+  context,
+  paymentId,
+  kr,
+}: Ctx & { paymentId: string; kr: number | undefined }) {
+  if (!kr) return ok({ value: true as const });
+  const input = { id: paymentId, amountMinor: kr * 100, reason: "One guest fewer" };
+  const refunded = await execute({ operation: refundPayment, input, context });
+  if (!refunded.ok) return refunded;
+  const later = { ...context, now: () => new Date(Date.now() + RETRY_AFTER_MS) };
+  const retried = await execute({ operation: retryRefunds, input: {}, context: later });
+  return retried.ok ? ok({ value: true as const }) : retried;
 }
 
 type QuoteInput = OrderMoneyInput;

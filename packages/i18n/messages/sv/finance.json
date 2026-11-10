@@ -630,6 +630,7 @@
     "deducted": "{amount} i betalda förskott avdraget",
     "inProvider": "I {name} #{reference}",
     "notInProvider": "Ännu inte i {name}",
+    "voidPending": "Makuleringen i {name} är inte bekräftad än, Bibi försöker igen",
     "credited": "{amount} krediterat",
     "credit": {
       "action": "Kreditera",

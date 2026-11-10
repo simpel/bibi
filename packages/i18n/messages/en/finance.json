@@ -630,6 +630,7 @@
     "deducted": "{amount} in paid deposits deducted",
     "inProvider": "In {name} #{reference}",
     "notInProvider": "Not yet in {name}",
+    "voidPending": "Voiding in {name} not confirmed yet, Bibi is retrying",
     "credited": "{amount} credited",
     "credit": {
       "action": "Credit",

@@ -1,14 +1,14 @@
 import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import type { OperationContext } from "../../operations/types";
 import { findProvider } from "../../providers/registry";
 import { resolveRoute } from "../../providers/resolve-route";
 import { conflict, notFound } from "../../shared/errors";
-import { invoiceProviderCall, raisedInProvider } from "./invoice-provider";
+import { raisedInProvider } from "./invoice-provider";
 import { moveInvoice } from "./move-invoice";
 import { type InvoiceDto, InvoiceIdInputSchema, InvoiceSchema } from "./schema";
 import { syncWithProvider } from "./sync-operation";
 import { invoiceFlags, loadInvoice } from "./to-invoice-dto";
+import { voidAtProvider } from "./void-at-provider";
 
 export { moveInvoice };
 
@@ -59,31 +59,14 @@ function checkNotBooked({ invoice }: VoidCheckInput): Result<true> {
   return ok({ value: true });
 }
 
-type VoidExternalInput = { context: OperationContext; invoice: InvoiceDto };
-
-/** Voids the invoice at the provider it was raised in, after the commit (ADR 0058). */
-async function voidAtProvider({
-  context,
-  invoice,
-}: VoidExternalInput): Promise<Result<InvoiceDto>> {
-  if (!invoice.providerReference || !raisedInProvider({ invoice })) return ok({ value: invoice });
-  const row = await context.db.invoice.findFirst({ where: { id: invoice.id } });
-  if (!row) return notFound({ entity: "Invoice" });
-  const call = await invoiceProviderCall({ context, invoice: row });
-  if (!call.ok) return call;
-  const { invoicing, auth } = call.value;
-  const voided = await invoicing.void({ auth, providerReference: invoice.providerReference });
-  if (!voided.ok) return voided;
-  const after = await loadInvoice({ context, id: invoice.id });
-  return after ? ok({ value: after }) : notFound({ entity: "Invoice" });
-}
-
 export const voidInvoice = defineOperation({
   name: "invoice.void",
   kind: "command",
   description:
     "Void a DRAFT or SENT invoice: it is no longer owed and the order can be invoiced again. An " +
-    "invoice raised at a provider is voided there too. Refused (CONFLICT) while a payment " +
+    "invoice raised at a provider is voided there too: if the provider refuses, the invoice is " +
+    "SENT again (the error says why); if it does not answer, the invoice stays VOID with " +
+    "voidPending true and Bibi retries every 15 minutes. Refused (CONFLICT) while a payment " +
     "against it is PENDING, once anything is paid against it, or when it is booked in an " +
     "accounting system: credit it with invoice.credit instead.",
   input: InvoiceIdInputSchema,

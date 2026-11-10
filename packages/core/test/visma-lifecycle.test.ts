@@ -8,6 +8,7 @@ import {
   execute,
   findProvider,
   getAccessToken,
+  recordManualPayment,
   sendInvoice,
   updatePaymentSettings,
 } from "../src/index";
@@ -109,6 +110,43 @@ describe("Visma through the core operations (ADR 0100)", () => {
     unwrap({ result: (await poll?.run({})) ?? { ok: false, error: new Error("no poll") } });
     const paid = await context.db.payment.findMany({ where: { invoiceId: draft.id } });
     expect(paid.map((p) => p.amountMinor)).toEqual([400_000]);
+  });
+
+  it("registers a payment taken in Bibi there and does not count it again on the poll", async () => {
+    const { context, order } = await moneySetup();
+    const stub = stubVisma();
+    const company = vismaCompany({ stub });
+    await connectVisma({ context });
+    const routes = [{ method: "INVOICE" as const, provider: "VISMA" as const }];
+    unwrap({
+      result: await execute({ operation: updatePaymentSettings, input: { routes }, context }),
+    });
+    await makeInvoiceable({ context, statusId: order.statusId });
+    const draft = unwrap({
+      result: await execute({ operation: createInvoice, input: { orderId: order.id }, context }),
+    });
+    unwrap({ result: await execute({ operation: sendInvoice, input: { id: draft.id }, context }) });
+    const input = { invoiceId: draft.id, amountMinor: 160_000, paidAt: new Date() };
+    unwrap({ result: await execute({ operation: recordManualPayment, input, context }) });
+    const registered = stub.calls.filter((c) => apiPath({ call: c }).endsWith("/payments"));
+    expect(registered).toHaveLength(1);
+
+    // Visma lowers what is left to pay by the registered payment: nothing new arrived.
+    const poll = findProvider({ key: "VISMA" })?.signals?.poll;
+    company.invoice = { TotalAmount: 5600, RemainingAmount: 4000 };
+    unwrap({ result: (await poll?.run({})) ?? { ok: false, error: new Error("no poll") } });
+    const only = await context.db.payment.findMany({ where: { invoiceId: draft.id } });
+    expect(only.map((p) => p.method)).toEqual(["MANUAL"]);
+    company.invoice = { TotalAmount: 5600, RemainingAmount: 0 };
+    unwrap({ result: (await poll?.run({})) ?? { ok: false, error: new Error("no poll") } });
+    const paid = await context.db.payment.findMany({
+      where: { invoiceId: draft.id },
+      orderBy: { createdAt: "asc" },
+    });
+    expect(paid.map((p) => [p.method, p.amountMinor])).toEqual([
+      ["MANUAL", 160_000],
+      ["INVOICE", 400_000],
+    ]);
   });
 
   it("refreshes an expired access token through the shared lease before calling Visma", async () => {

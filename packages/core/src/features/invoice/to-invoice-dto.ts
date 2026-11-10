@@ -74,7 +74,7 @@ export type ToInvoiceDtosInput = Db & { rows: readonly InvoiceRow[] };
 export async function toInvoiceDtos({ context, rows }: ToInvoiceDtosInput): Promise<InvoiceDto[]> {
   const orderIds = [...new Set(rows.map((row) => row.orderId))];
   const paid = await paidByReceivable({ context, orderIds });
-  return rows.map(({ lines, deductions, creditNotes, ...row }) => {
+  return rows.map(({ lines, deductions, creditNotes, voidPendingAt, ...row }) => {
     const live = creditNotes.filter((c) => c.status !== "FAILED");
     const amountDueMinor = invoiceDueMinor({ invoice: row, deductions, creditNotes: live });
     const settlement = settlementOf({ paid, id: row.id, amountMinor: amountDueMinor });
@@ -89,6 +89,7 @@ export async function toInvoiceDtos({ context, rows }: ToInvoiceDtosInput): Prom
       })),
       creditedMinor: live.reduce((sum, c) => sum + c.amountMinor, 0),
       amountDueMinor,
+      voidPending: voidPendingAt !== null,
       ...settlement,
       ...invoiceFlags({ invoice: { ...row, ...settlement, amountDueMinor } }),
     };

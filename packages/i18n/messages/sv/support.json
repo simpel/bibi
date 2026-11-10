@@ -64,7 +64,7 @@
           },
           "refund": {
             "question": "Hur återbetalar jag en betalning?",
-            "answer": "Öppna bokningen, leta upp betalningen under **Betalningar** och välj **Återbetala**. Lämna beloppet tomt för att betala tillbaka allt som återstår, eller skriv ett lägre belopp för en delvis återbetalning.\nPengarna går tillbaka samma väg som kunden betalade. Betalningen visar det återbetalda beloppet när betaltjänsten har bekräftat det."
+            "answer": "Öppna bokningen, leta upp betalningen under **Betalningar** och välj **Återbetala**. Lämna beloppet tomt för att betala tillbaka allt som återstår, eller skriv ett lägre belopp för en delvis återbetalning.\nPengarna går tillbaka samma väg som kunden betalade. Betalningen visar det återbetalda beloppet när betaltjänsten har bekräftat det. Om betaltjänsten inte har bekräftat en återbetalning efter 15 minuter frågar Bibi den igen av sig själv och skickar återbetalningen på nytt om den aldrig kom fram."
           },
           "paidTwice": {
             "question": "Vad händer om en kund betalar två gånger?",
@@ -81,6 +81,10 @@
           "creditNote": {
             "question": "Hur krediterar jag en faktura?",
             "answer": "Öppna bokningen och välj **Kreditera** vid den skickade fakturan. Lämna beloppet tomt för att kreditera allt som återstår, eller skriv ett lägre belopp, och lägg till en anledning.\nBibi skapar en kreditfaktura som sänker det kunden är skyldig. Om fakturan skapades i ert bokföringssystem krediteras den där också. Pengar som redan betalats betalas tillbaka med **Återbetala** på betalningen."
+          },
+          "voidInvoice": {
+            "question": "Vad händer när jag makulerar en faktura som skapats i en betaltjänst?",
+            "answer": "Öppna bokningen och välj **Makulera** vid fakturan. Bibi makulerar den i betaltjänsten också.\nOm tjänsten säger nej blir fakturan skickad igen och du ser varför. Om tjänsten inte svarar visar fakturan att makuleringen inte är bekräftad än, och Bibi försöker igen var 15:e minut tills den är det."
           }
         }
       },
@@ -204,7 +208,7 @@
           },
           "visma": {
             "question": "Kan jag koppla Bibi till Visma eEkonomi?",
-            "answer": "Ja. En administratör väljer **Anslut** på Visma eEkonomi under Administration → Integrationer och loggar in i Visma för att godkänna kopplingen.\nVälj sedan Visma eEkonomi för **Faktura** under Administration → Betalningar, så skapas fakturorna där och betalningarna speglas tillbaka till Bibi."
+            "answer": "Ja. En administratör väljer **Anslut** på Visma eEkonomi under Administration → Integrationer och loggar in i Visma för att godkänna kopplingen.\nVälj sedan Visma eEkonomi för **Faktura** under Administration → Betalningar, så skapas fakturorna där och betalningarna speglas tillbaka till Bibi. Kort- och Swishbetalningar som tas i Bibi på en Visma-faktura bokförs i Visma också."
           }
         }
       }

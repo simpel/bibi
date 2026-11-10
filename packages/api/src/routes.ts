@@ -9,6 +9,7 @@ import { changeSetRoutes } from "./features/change-set/rest";
 import { configurationRoutes } from "./features/configuration/rest";
 import { contactRoutes } from "./features/contact/rest";
 import { conversationRoutes } from "./features/conversation/rest";
+import { creditNoteRoutes } from "./features/credit-note/rest";
 import { customerRoutes } from "./features/customer/rest";
 import { dashboardRoutes } from "./features/dashboard/rest";
 import { depositRoutes } from "./features/deposit/rest";
@@ -90,6 +91,7 @@ const moneyRoutes = [
   ...paymentRoutes,
   ...depositRoutes,
   ...invoiceRoutes,
+  ...creditNoteRoutes,
 ];
 
 /** The organization's profile and its members' profiles (ADR 0061, 0068). */

@@ -59,6 +59,19 @@ async function payInvoice({ context, invoiceId, refund }: PayInput) {
   });
 }
 
+type CardInput = { context: ExecuteContext; invoiceId: string; kr: number };
+
+/**
+ * A card payment against the open invoice, paid by the provider's signal; on a ledger provider's
+ * invoice `payment.applySignal` registers it there (`registerPayment`, ADR 0100).
+ */
+async function payByCard({ context, invoiceId, kr }: CardInput) {
+  const input = { invoiceId, method: "CARD" as const, amountMinor: kr * 100 };
+  const payment = await execute({ operation: createPayment, input, context });
+  if (!payment.ok) return payment;
+  return applyDemoSignal({ context, paymentId: payment.value.id, kind: "attempt.succeeded" });
+}
+
 type LedgerProvider = NonNullable<DemoInvoice["provider"]>;
 type LedgerInput = { context: ExecuteContext; invoiceId: string; provider: LedgerProvider };
 
@@ -121,6 +134,10 @@ export async function seedInvoice({
   if (wanted.credit) {
     const credited = await creditOpenInvoice({ context, invoiceId: id, credit: wanted.credit });
     if (!credited.ok) return credited;
+  }
+  if (wanted.cardKr) {
+    const card = await payByCard({ context, invoiceId: id, kr: wanted.cardKr });
+    if (!card.ok) return card;
   }
   if (!wanted.paid) return ok({ value: true });
   const refund = wanted.refund

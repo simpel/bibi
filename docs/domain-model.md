@@ -1063,7 +1063,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · The invoice after delivery: a snapshot of the order's priced lines, like a sent quote ([ADR 0052](decisions/0052-the-line-is-the-booking.md), [ADR 0057](decisions/0057-money-balance-is-derived.md)). An order can be invoiced only in a status with the `invoiceable` flag.
 
-> **Ownership:** owned `number` (per organization, highest + 1), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); `provider` and `connectionId` (set by send from the INVOICE route, ADR 0090, 0100) and the mirrors `providerReference` and `providerUrl`; snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments) and `amountDueMinor` (total less deductions and credit notes).
+> **Ownership:** owned `number` (per organization, highest + 1), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); `voidPendingAt` (a void the provider has not confirmed, cleared by the retry job or the provider's signal, ADR 0100); `provider` and `connectionId` (set by send from the INVOICE route, ADR 0090, 0100) and the mirrors `providerReference` and `providerUrl`; snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments) and `amountDueMinor` (total less deductions and credit notes).
 
 **Attributes**
 - invoice number, due date (given, else after the customer's payment terms, default 30 days)
@@ -1098,7 +1098,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### CreditNote (`CreditNote`)
 
-*MVP* · A credit of an invoice ([ADR 0100](decisions/0100-payment-providers-as-ports.md)): the credited lines frozen as order lines like an invoice freezes its lines ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). It lowers the invoice's amount due and the order balance. Money already paid on the invoice is returned with `payment.refund`.
+*MVP* · A credit of an invoice ([ADR 0100](decisions/0100-payment-providers-as-ports.md)): the credited lines frozen as order lines like an invoice freezes its lines ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). It lowers the invoice's amount due and the order balance. Money already paid on the invoice is returned with `payment.refund`. Read with `creditNote.list` (by invoice or order) and `creditNote.get` (`payment:read`), created by `invoice.credit`.
 
 > **Ownership:** owned `number` (per organization, highest + 1), `reason`, `status` and where it was raised (`provider`, `connectionId`); snapshot its `OrderLine` rows, `amountMinor` (incl. VAT) and totals; mirror `providerReference` and `providerUrl`, and `issuedAt` (when it was confirmed: the date of its reversal voucher).
 

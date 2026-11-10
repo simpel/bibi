@@ -179,4 +179,35 @@ describe("Swish connect (ADR 0100)", () => {
     expect(errorCode({ result: unreadable })).toBe("VALIDATION");
     expect(stub.calls).toHaveLength(0);
   });
+
+  it("reads a refund again by the instruction id derived from Bibi's key", async () => {
+    const stub = stubSwish();
+    const id = swishInstructionId({ key: "bibi-refund-r1" });
+    const read = swish().collect.refundStatus;
+    if (!read) throw new Error("no refundStatus");
+    const input = {
+      auth: auth(),
+      providerReference: "11A86BE70EA346E4B1C39C874173F088",
+      idempotencyKey: "bibi-refund-r1",
+      refundReference: null,
+      metadata: { paymentId: "pay1", refundId: "r1" },
+    };
+    stub.route = () => ({
+      json: {
+        id,
+        originalPaymentReference: "1E2FC19E5E5E4E18916609B7F8911C12",
+        payerAlias: SWISH_NUMBER,
+        status: "PAID",
+        datePaid: "2026-11-09T12:00:00Z",
+      },
+    });
+    expect(unwrap({ result: await read(input) })).toEqual({
+      status: "SUCCEEDED",
+      providerReference: id,
+      occurredAt: new Date("2026-11-09T12:00:00Z"),
+    });
+    expect(stub.calls[0]?.url).toBe(`https://mss.swish.test/swish-cpcapi/api/v1/refunds/${id}`);
+    stub.route = () => ({ status: 404 });
+    expect(unwrap({ result: await read(input) })).toEqual({ status: "MISSING" });
+  });
 });

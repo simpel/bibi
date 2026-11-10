@@ -8,6 +8,29 @@ import { recordProviderPayments } from "./record-provider-payments";
 import { type InvoiceDto, InvoiceIdInputSchema, InvoiceSchema } from "./schema";
 import { loadInvoice } from "./to-invoice-dto";
 
+type RegisteredInput = {
+  context: Pick<OperationContext, "db">;
+  invoice: { id: string; provider: InvoiceDto["provider"] };
+};
+
+/**
+ * What Bibi booked on the invoice at its provider itself (`registerOnInvoice`): card, Swish or
+ * manual payments with a SUCCEEDED registration there. Refunded ones stay booked at the provider.
+ */
+async function registeredMinorOf({ context, invoice }: RegisteredInput): Promise<number> {
+  if (!invoice.provider) return 0;
+  const registered = await context.db.payment.aggregate({
+    where: {
+      invoiceId: invoice.id,
+      status: { in: ["SUCCEEDED", "REFUNDED"] },
+      method: { not: "INVOICE" },
+      attempts: { some: { provider: invoice.provider, status: "SUCCEEDED" } },
+    },
+    _sum: { amountMinor: true },
+  });
+  return registered._sum.amountMinor ?? 0;
+}
+
 type SyncInput = { context: OperationContext; invoice: InvoiceDto };
 
 /**
@@ -34,6 +57,7 @@ export async function syncWithProvider({
     auth,
     providerReference: raised.value,
     creditedMinor: credited._sum.amountMinor ?? 0,
+    registeredMinor: await registeredMinorOf({ context, invoice: row }),
   });
   if (!payments.ok) return payments;
   const target = { ...row, provider: row.provider };

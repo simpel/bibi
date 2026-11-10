@@ -140,6 +140,24 @@ export const accountingExportEntity = (): ParityEntity => ({
   },
 });
 
+/** A credit note of the invoice, once the export entity above has sent it (ADR 0100). */
+export const creditNoteEntity = (): ParityEntity => ({
+  ...byId({
+    name: "creditNote",
+    field: "creditNote",
+    list: "credit-notes",
+    createTool: "",
+    args: {},
+    nested: { lines: `{ ${LINE} }` },
+  }),
+  create: async ({ mcp, made }) => {
+    const args = { invoiceId: made.invoice.id, amountMinor: 10_000, reason: "Parity" };
+    await tool({ mcp, name: "invoice_credit", args });
+    const page = await tool({ mcp, name: "creditNote_list", args: { invoiceId: made.invoice.id } });
+    return page.items[0];
+  },
+});
+
 /** Money entities in creation order: account, receivables, then a payment against one. */
 export const moneyEntities = (): ParityEntity[] => [
   paymentAccountEntity,
@@ -149,4 +167,5 @@ export const moneyEntities = (): ParityEntity[] => [
   paymentEntity(),
   accountingSettingsEntity,
   accountingExportEntity(),
+  creditNoteEntity(),
 ];

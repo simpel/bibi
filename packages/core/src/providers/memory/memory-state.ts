@@ -24,6 +24,13 @@ export type MemoryState = {
   payments: ProviderPayment[];
   /** Port calls after the attempt (`refund:<ref>:<amount>`, `void:<ref>`, `credit:<ref>:<amount>`, `cancel:<ref>`, `register:<ref>:<amount>`). */
   portCalls: string[];
+  /**
+   * Refunds the fake received, by idempotency key, with where they stand (`refundStatus` reads
+   * them; a refund the fake never received is MISSING). A received refund starts at
+   * `refundOutcome`.
+   */
+  refunds: Map<string, { providerReference: string; status: "PENDING" | "SUCCEEDED" | "FAILED" }>;
+  refundOutcome: "PENDING" | "SUCCEEDED" | "FAILED";
   /** When set, the next port call of that name fails with UNAVAILABLE (`refund`, `issue`, ...). */
   failing: Set<string>;
   /** When set, the next port call of that name is refused definitely (CONFLICT). */
@@ -41,6 +48,8 @@ export const newMemoryState = (): MemoryState => ({
   raised: [],
   payments: [],
   portCalls: [],
+  refunds: new Map(),
+  refundOutcome: "SUCCEEDED",
   failing: new Set(),
   refusing: new Set(),
   configured: true,

@@ -63,7 +63,10 @@ async function invoiceFailures({ context, org }: CheckDemoProvidersInput) {
   const wanted = org.orders.flatMap((o) => (o.money?.invoice ? [o.money.invoice] : []));
   const invoices = await context.db.invoice.findMany({
     where: { status: "SENT" },
-    include: { creditNotes: true, payments: { where: { status: "SUCCEEDED" } } },
+    include: {
+      creditNotes: true,
+      payments: { where: { status: "SUCCEEDED" }, include: { attempts: true } },
+    },
   });
   const failures: string[] = [];
   const credited = invoices.filter((i) => i.creditNotes.length > 0);
@@ -89,9 +92,17 @@ async function invoiceFailures({ context, org }: CheckDemoProvidersInput) {
   for (const invoice of raised) {
     if (!invoice.providerReference)
       failures.push(`${org.slug}: invoice ${invoice.number} has no reference`);
-    const wrong = invoice.payments.filter((p) => p.method !== "INVOICE");
+    // A card payment counts only when the ledger provider booked it too (`registerPayment`).
+    const wrong = invoice.payments.filter(
+      (p) =>
+        p.method !== "INVOICE" &&
+        !p.attempts.some((a) => a.provider === invoice.provider && a.status === "SUCCEEDED"),
+    );
     if (wrong.length > 0)
       failures.push(`${org.slug}: invoice ${invoice.number} paid outside its ledger`);
+    const cards = invoice.payments.filter((p) => p.method === "CARD").length;
+    if (cards !== ledger.filter((w) => w.cardKr && w.provider === invoice.provider).length)
+      failures.push(`${org.slug}: invoice ${invoice.number} has ${cards} registered card payments`);
     const exported = await context.db.accountingExportEntry.count({
       where: {
         OR: [{ invoiceId: invoice.id }, { paymentId: { in: invoice.payments.map((p) => p.id) } }],
@@ -100,6 +111,20 @@ async function invoiceFailures({ context, org }: CheckDemoProvidersInput) {
     if (exported > 0)
       failures.push(`${org.slug}: ledger invoice ${invoice.number} is in the SIE export`);
   }
+  return failures;
+}
+
+/** ADR 0100: no refund is left PENDING (the retry job settled the lost one) and each lost one SUCCEEDED. */
+async function refundFailures({ context, org }: CheckDemoProvidersInput) {
+  const lost = org.orders.filter((order) => order.money?.lostRefundKr).length;
+  const pending = await context.db.paymentRefund.count({ where: { status: "PENDING" } });
+  const settled = await context.db.paymentRefund.count({
+    where: { status: "SUCCEEDED", reason: "One guest fewer" },
+  });
+  const failures: string[] = [];
+  if (pending > 0) failures.push(`${org.slug}: ${pending} refunds still PENDING`);
+  if (settled !== lost)
+    failures.push(`${org.slug}: ${settled} lost refunds settled, ${lost} seeded`);
   return failures;
 }
 
@@ -113,6 +138,7 @@ export async function checkDemoProviders({ context, org }: CheckDemoProvidersInp
     connectionFailures(input),
     paymentFailures(input),
     invoiceFailures(input),
+    refundFailures(input),
   ]);
   return parts.flat();
 }

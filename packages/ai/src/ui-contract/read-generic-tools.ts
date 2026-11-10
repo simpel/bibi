@@ -21,6 +21,11 @@ export const READ_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
     "a saved order's line issues; the order page shows one alert per issue; JSON in chat",
   order_previewLines:
     "planned lines and their issues; the /new/order intake shows them (ADR 0081); JSON in chat",
+  creditNote_list:
+    "credit notes with their frozen lines; the order page's invoice rows show each one, and " +
+    "invoice_credit shows the credit-note-card; JSON in chat",
+  creditNote_get:
+    "one credit note with its frozen lines; the order page's invoice rows show it; JSON in chat",
   venue_hoursList:
     "several venues' hours at once for the calendar page (ADR 0097); venueHours_get shows one " +
     "venue's hours as a card; JSON in chat",

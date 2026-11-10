@@ -64,6 +64,8 @@ BIBI_API_KEY=
 # E2E only: scripted mock chat model. Ignored when NODE_ENV=production.
 
 E2E_MOCK_MODEL=false
+# E2E only: in-memory Stripe and Swish with unsigned test webhooks. Ignored when NODE_ENV=production.
+E2E_MEMORY_PROVIDERS=false
 
 # System log (ADR 0014). Level: trace|debug|info|warn|error|fatal|silent (default info, silent in tests).
 

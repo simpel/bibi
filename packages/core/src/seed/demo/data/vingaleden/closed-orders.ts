@@ -26,7 +26,8 @@ export const vingaledenClosedOrders: readonly DemoOrder[] = [
     ...{ from: "10:00", to: "11:30", status: "Completed", headcount: 9, ...people },
     ...{ quote: coffee.item },
     lines: [{ ...coffee }],
-    // ADR 0100: invoiced in Visma eEkonomi, still open with a credit note of 100 kr.
+    // ADR 0100: invoiced in Visma eEkonomi, still open with a credit note of 100 kr and a card
+    // payment of 50 kr registered into Visma.
     money: {
       invoice: {
         provider: "VISMA",
@@ -34,6 +35,7 @@ export const vingaledenClosedOrders: readonly DemoOrder[] = [
         sentDay: -78,
         dueDay: -48,
         credit: { kr: 100, reason: "Two guests cancelled" },
+        cardKr: 50,
       },
     },
   },

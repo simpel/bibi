@@ -1,4 +1,5 @@
 import { billingMcpTools } from "../features/billing/mcp";
+import { creditNoteMcpTools } from "../features/credit-note/mcp";
 import { depositMcpTools } from "../features/deposit/mcp";
 import { integrationMcpTools } from "../features/integration/mcp";
 import { invoiceMcpTools } from "../features/invoice/mcp";
@@ -16,4 +17,5 @@ export const moneyMcpTools = [
   ...paymentMcpTools,
   ...depositMcpTools,
   ...invoiceMcpTools,
+  ...creditNoteMcpTools,
 ];

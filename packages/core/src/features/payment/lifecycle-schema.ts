@@ -57,3 +57,15 @@ export type PaymentRefundInput = z.infer<typeof PaymentRefundInputSchema>;
 export type PaymentRecordManualInput = z.infer<typeof PaymentRecordManualInputSchema>;
 export type PaymentStartAttemptInput = z.infer<typeof PaymentStartAttemptInputSchema>;
 export type PaymentAttemptDto = z.infer<typeof PaymentAttemptSchema>;
+
+export const PaymentRetryRefundsInputSchema = z.object({});
+
+/** What one run of the refund retry job did (ADR 0100). */
+export const PaymentRetryRefundsOutputSchema = z.object({
+  due: z.number().int().describe("PENDING refunds older than 15 minutes"),
+  settled: z.number().int().describe("Read again at the provider and completed or failed"),
+  resent: z.number().int().describe("Never received by the provider; sent again with the same key"),
+  waiting: z.number().int().describe("Still in progress, or the provider could not be read"),
+});
+
+export type PaymentRetryRefundsOutput = z.infer<typeof PaymentRetryRefundsOutputSchema>;

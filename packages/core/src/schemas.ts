@@ -17,6 +17,7 @@ export * from "./features/change-set/schema";
 export * from "./features/configuration/schema";
 export * from "./features/contact/schema";
 export * from "./features/conversation/schema";
+export * from "./features/credit-note/schema";
 export * from "./features/customer/find-similar-schema";
 export * from "./features/customer/schema";
 export * from "./features/dashboard/attention-schema";
