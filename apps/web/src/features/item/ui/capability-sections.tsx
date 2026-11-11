@@ -7,9 +7,9 @@ import { hasCapability } from "./has-capability";
 import type { ItemFormData } from "./item-form-data";
 import type { ItemFormOutput } from "./item-form-schema";
 import type { ItemFormValues } from "./item-form-values";
+import { MaxPeopleSection } from "./max-people-section";
 import { PartsSection } from "./parts-section";
 import { PriceSection } from "./price-section";
-import { SetupsSection } from "./setups-section";
 
 export type CapabilitySectionsProps = {
   form: UseFormReturn<ItemFormValues, unknown, ItemFormOutput>;
@@ -26,9 +26,7 @@ export function CapabilitySections({ form, type, data, itemId }: CapabilitySecti
     <>
       {hasCapability({ type, capability: "PRICED" }) ? <PriceSection form={form} /> : null}
       {hasCapability({ type, capability: "BOOKABLE" }) ? <BookableSection form={form} /> : null}
-      {hasCapability({ type, capability: "SETUPS" }) ? (
-        <SetupsSection form={form} setups={data.setups} />
-      ) : null}
+      {hasCapability({ type, capability: "SETUPS" }) ? <MaxPeopleSection form={form} /> : null}
       {hasCapability({ type, capability: "BUNDLE" }) ? (
         <PartsSection form={form} parts={parts} />
       ) : null}

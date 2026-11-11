@@ -28,6 +28,8 @@ Both are plain GET requests with a 10 second timeout and 3 retries. A failing pi
 
 Run a backup on demand: `docker compose -f docker-compose.prod.yml exec backup backup.sh`.
 
+**Verify after every setup or change of the `BACKUP_S3_*` values**: run a backup on demand and list the bucket (`aws s3 ls s3://$BACKUP_S3_BUCKET/bibi/db/ --endpoint-url $BACKUP_S3_ENDPOINT`). Production ran from launch until Nov 2026 with a placeholder endpoint: every nightly run logged `backup.failed` and no dump existed. Set `BACKUP_HEARTBEAT_URL` too, so a backup that never succeeds raises an alert.
+
 ## Coolify instance data
 Coolify keeps its configuration (applications, secrets, server keys) in its own Postgres database and `/data/coolify`.
 1. In the Coolify UI, under Settings > Backup, enable the scheduled backup of the instance database to the same S3 storage (prefix `coolify/`).

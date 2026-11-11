@@ -30,7 +30,7 @@ describe("graph traversal", () => {
     expect(venue.items[0].venue.name).toBe("The Farm");
   });
 
-  it("exposes item fields JSON, setups and the entity type with its fields", async () => {
+  it("exposes item fields JSON, layouts and the entity type with its fields", async () => {
     const gql = createClient({ context: testContext() });
     const entityTypeId = await createItemType({ gql });
     const field = `mutation($i: FieldDefinitionCreateInput!) { fieldDefinitionCreate(input: $i) { id } }`;
@@ -38,11 +38,6 @@ describe("graph traversal", () => {
       query: field,
       variables: { i: { entityTypeId, name: "Yta", key: "area", kind: "NUMBER" } },
     });
-    const setup = await gql({
-      query: `mutation($i: SetupCreateInput!) { setupCreate(input: $i) { id } }`,
-      variables: { i: { name: "U-bord", changeoverMinutes: 15 } },
-    });
-    const setupId = setup.body.data.setupCreate.id;
     const created = await gql({
       query: `mutation($i: ItemCreateInput!) { itemCreate(input: $i) { id } }`,
       variables: {
@@ -50,22 +45,29 @@ describe("graph traversal", () => {
           entityTypeId,
           name: "Salen",
           fields: { area: 42 },
-          setups: [{ setupId, capacity: 20 }],
+          maxPeople: 60,
         },
       },
     });
     expect(created.body.errors).toBeUndefined();
+    const itemId = created.body.data.itemCreate.id;
+    const layout = await gql({
+      query: `mutation($i: LayoutCreateInput!) { layoutCreate(input: $i) { id name } }`,
+      variables: { i: { itemId, name: "U-bord", capacity: 20 } },
+    });
+    expect(layout.body.errors).toBeUndefined();
     const res = await gql({
       query: `query($id: String!) { item(id: $id) {
-        fields setups { capacity setup { name changeoverMinutes } }
+        fields maxPeople layouts { name effectiveCapacity capacitySource }
         entityType { name capabilities fields { key name kind } }
       } }`,
-      variables: { id: created.body.data.itemCreate.id },
+      variables: { id: itemId },
     });
     expect(res.body.errors).toBeUndefined();
     expect(res.body.data.item).toEqual({
       fields: { area: 42 },
-      setups: [{ capacity: 20, setup: { name: "U-bord", changeoverMinutes: 15 } }],
+      maxPeople: 60,
+      layouts: [{ name: "U-bord", effectiveCapacity: 20, capacitySource: "MANUAL" }],
       entityType: {
         name: "Konferensrum",
         capabilities: expect.arrayContaining(["BOOKABLE", "SETUPS", "PRICED"]),

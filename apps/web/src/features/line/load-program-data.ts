@@ -1,5 +1,5 @@
 import "server-only";
-import { listItemStates, listItems, listSetups, type Result } from "@bibi/core";
+import { listItemStates, listItems, type Result } from "@bibi/core";
 import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
 import { runOperation } from "@/server/run-operation";
@@ -27,25 +27,22 @@ async function loadStates(): Promise<LineStateOption[]> {
 }
 
 /**
- * Line types and lists, bookable items, bundles, customisable items, setups and item states
+ * Line types and lists, bookable items, bundles, customisable items and item states
  * (one page each), with each item's zone as core derives it (ADR 0064). Without
  * `item:read` the items are hidden (ADR 0050 feature scope), not an error.
  */
 export async function loadProgramData(): Promise<Result<ProgramFormData>> {
-  const [typed, items, bundles, setups, states, customisable, timeZone, itemTypes] =
-    await Promise.all([
-      loadTypedFormData({ base: "LINE" }),
-      runOperation({ operation: listItems, input: { capability: "BOOKABLE", limit: LIMIT } }),
-      runOperation({ operation: listItems, input: { capability: "BUNDLE", limit: LIMIT } }),
-      runOperation({ operation: listSetups, input: { limit: LIMIT } }),
-      loadStates(),
-      loadCustomisableItems(),
-      loadOrganizationTimeZone(),
-      loadEntityTypesOf({ base: "ITEM" }),
-    ]);
+  const [typed, items, bundles, states, customisable, timeZone, itemTypes] = await Promise.all([
+    loadTypedFormData({ base: "LINE" }),
+    runOperation({ operation: listItems, input: { capability: "BOOKABLE", limit: LIMIT } }),
+    runOperation({ operation: listItems, input: { capability: "BUNDLE", limit: LIMIT } }),
+    loadStates(),
+    loadCustomisableItems(),
+    loadOrganizationTimeZone(),
+    loadEntityTypesOf({ base: "ITEM" }),
+  ]);
   if (!typed.ok) return typed;
   if (!items.ok && items.error.code !== "FORBIDDEN") return items;
-  if (!setups.ok) return setups;
   const typeMap = new Map(
     itemTypes.ok ? itemTypes.value.items.map(({ id, name }) => [id, name]) : [],
   );
@@ -55,10 +52,13 @@ export async function loadProgramData(): Promise<Result<ProgramFormData>> {
       ...typed.value,
       items: items.ok
         ? items.value.items.map(
-            ({ id, name, setups: own, timeZone: zone, entityTypeId, ...price }) => ({
+            ({ id, name, layouts, timeZone: zone, entityTypeId, ...price }) => ({
               ...{ id, name, timeZone: zone, entityTypeId, typeName: typeMap.get(entityTypeId) },
               ...{ priceMinor: price.priceMinor, priceUnit: price.priceUnit },
-              setupIds: own.map(({ setupId }) => setupId),
+              layouts: layouts.map((layout) => ({
+                ...{ id: layout.layoutId, name: layout.name },
+                capacity: layout.effectiveCapacity,
+              })),
             }),
           )
         : [],
@@ -66,7 +66,6 @@ export async function loadProgramData(): Promise<Result<ProgramFormData>> {
       bundles: bundles.ok
         ? bundles.value.items.map(({ id, name, timeZone: zone }) => ({ id, name, timeZone: zone }))
         : [],
-      setups: setups.value.items.map(({ id, name }) => ({ id, name })),
       states,
       customisable,
       timeZone,

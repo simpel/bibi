@@ -20,7 +20,6 @@ import { requirePermission } from "../../schema/require-permission";
 import { runOperation } from "../../schema/run-operation";
 import { EntityTypeRef } from "../entity-type/graphql";
 import { OrderRef } from "../order/graphql";
-import { SetupRef } from "../setup/graphql";
 
 export const LineRef = objectFromSchema<LineDto>({
   name: "Line",
@@ -28,7 +27,7 @@ export const LineRef = objectFromSchema<LineDto>({
   omit: ["organizationId"],
   description:
     "Line – a row in an order's run schedule: type and fields, time, the " +
-    "item and setup it uses, its state (ADR 0044), quantity, price overrides and a note, and " +
+    "item and layout it uses, its state (ADR 0044), quantity, price overrides and a note, and " +
     "the effective quantity, unit price, discount and VAT with their sources (ADR 0052), and the " +
     "effective setup and teardown minutes with theirs (ADR 0059).",
 });
@@ -76,19 +75,6 @@ builder.objectField(LineRef, "entityType", (t) =>
     resolve: (line, _args, ctx) => {
       requirePermission({ ctx, permission: "configuration:read" });
       return ctx.loaders.entityType.load({ id: line.entityTypeId }) as never;
-    },
-  }),
-);
-
-builder.objectField(LineRef, "setup", (t) =>
-  t.field({
-    type: SetupRef,
-    nullable: true,
-    description: "How the item is set up (null without a setup or if archived).",
-    resolve: (line, _args, ctx) => {
-      if (!line.setupId) return null;
-      requirePermission({ ctx, permission: "configuration:read" });
-      return ctx.loaders.setup.load({ id: line.setupId });
     },
   }),
 );

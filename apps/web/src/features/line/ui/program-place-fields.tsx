@@ -11,22 +11,26 @@ export type ProgramPlaceFieldsProps = {
   data: ProgramFormData;
 };
 
-/** The bookable item (searchable, full width), then one of its setups (only when it has any). */
+/** The bookable item (searchable, full width), then one of its layouts (only when it has any). */
 export function ProgramPlaceFields({ form, data }: ProgramPlaceFieldsProps) {
   const t = useTranslations("line");
   const itemId = form.watch("itemId");
-  const setupIds = data.items.find((item) => item.id === itemId)?.setupIds ?? [];
-  const setups = data.setups.filter((setup) => setupIds.includes(setup.id));
+  const layouts = (data.items.find((item) => item.id === itemId)?.layouts ?? []).map(
+    ({ id, name, capacity }) => ({
+      id,
+      name: capacity === null ? name : t("layoutOption", { name, capacity }),
+    }),
+  );
   return (
     <>
       <ProgramItemField form={form} data={data} />
-      {setups.length > 0 ? (
+      {layouts.length > 0 ? (
         <OptionSelectField
           control={form.control}
-          name="setupId"
-          label={t("fields.setup")}
-          options={setups}
-          noneLabel={t("noSetup")}
+          name="layoutId"
+          label={t("fields.layout")}
+          options={layouts}
+          noneLabel={t("noLayout")}
         />
       ) : null}
     </>

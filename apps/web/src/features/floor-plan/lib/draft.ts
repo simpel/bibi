@@ -11,9 +11,11 @@ import {
 } from "@bibi/core/schemas";
 
 /** A piece while it is edited: the save input plus a key that is stable within the editor. */
-export type DraftElement = Required<Omit<FloorElementInput, "label">> & {
+export type DraftElement = Required<Omit<FloorElementInput, "label" | "emergencyExit">> & {
   key: string;
   label: string | null;
+  /** A door or window marked as an emergency exit (floor plan only). */
+  emergencyExit?: boolean;
 };
 
 export type KindMap = ReadonlyMap<string, FloorElementKindDto>;
@@ -44,6 +46,7 @@ export function toDraft({ element }: { element: FloorElementDto }): DraftElement
   return {
     ...{ key: id, kindId, xCm, yCm, rotationDeg, label, widthCm, depthCm },
     ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft, swingDeg },
+    emergencyExit: element.emergencyExit,
   };
 }
 
@@ -66,7 +69,7 @@ export function placedOf({ element, kinds }: EffectiveInput): PlacedElement | nu
   const effective = effectiveOf({ element, kinds });
   if (!effective) return null;
   const { key: id, xCm, yCm, rotationDeg } = element;
-  return { ...effective, id, xCm, yCm, rotationDeg };
+  return { ...effective, id, xCm, yCm, rotationDeg, emergencyExit: element.emergencyExit === true };
 }
 
 export type SeatTotalInput = { elements: readonly DraftElement[]; kinds: KindMap };

@@ -1,11 +1,12 @@
 "use client";
 
 import type { FloorElementDto, FloorElementKindDto } from "@bibi/core/schemas";
-import { layoutIssues } from "@bibi/core/schemas";
+import { BLOCKING_ISSUE_KINDS, layoutIssues } from "@bibi/core/schemas";
 import { FloorDrawing, TooltipProvider } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { type DragEvent, useMemo, useRef, useState } from "react";
 import { placedOf, seatTotal, snapOpenings, toDraft } from "../lib/draft";
+import { effectiveCapacityOf, type LayoutFacts, sameFacts } from "../lib/layout-facts";
 import { outlineSize } from "../lib/outline-edit";
 import { draftToDrawing } from "../lib/to-drawing";
 import { DeleteLayoutDialog } from "./delete-layout-dialog";
@@ -13,10 +14,10 @@ import { type EditorDialog, EditorDialogs } from "./editor-dialogs";
 import { EditorToolbar, type EditorToolbarProps } from "./editor-toolbar";
 import { EmptyLayout } from "./empty-layout";
 import { FurnitureDock, KIND_MIME } from "./furniture-dock";
+import { LayoutDetailsDialog } from "./layout-details-dialog";
 import { LayoutMenu } from "./layout-menu";
 import { LayoutSummary } from "./layout-summary";
 import type { LayoutTab } from "./layout-tabs";
-import { NameDialog } from "./name-dialog";
 import { SelectionToolbar } from "./selection-toolbar";
 import { toDrawing, useDrawingPointer } from "./use-drawing-pointer";
 import { useEditorKeys } from "./use-editor-keys";
@@ -35,13 +36,15 @@ export type EditorRoom = {
   minAisleCm: number | null;
 };
 
-/** The open layout: its name, its setup's name and the setup's typed capacity in the room. */
-export type EditorLayout = { id: string; name: string; setupName: string; capacity: number | null };
+/** The open layout: its id and what it says about itself (ADR 0103). */
+export type EditorLayout = LayoutFacts & { id: string };
 
 export type LayoutEditorProps = {
   itemId: string;
   /** null on the floor plan page. */
   layout: EditorLayout | null;
+  /** The room's people limit, null = none. */
+  maxPeople: number | null;
   tabs: readonly LayoutTab[];
   creating: EditorToolbarProps["creating"];
   room: EditorRoom;
@@ -56,7 +59,7 @@ export type LayoutEditorProps = {
 /** The floor plan or one layout, drawn to scale and edited in place (ADR 0099, 0102). */
 export function LayoutEditor(props: LayoutEditorProps) {
   const { layout, room, kinds: kindList, canEdit } = props;
-  const setup = layout ? { name: layout.setupName } : null;
+  const isLayout = layout !== null;
   const t = useTranslations("floorPlan");
   const kinds = useMemo(() => new Map(kindList.map((kind) => [kind.id, kind])), [kindList]);
   const draft = useLayoutDraft({
@@ -74,15 +77,22 @@ export function LayoutEditor(props: LayoutEditorProps) {
     minAisleCm: room.minAisleCm,
   };
   const commands = useLayoutCommands({ draft, kinds, room: room2 });
-  const [capacity, setCapacity] = useState(layout?.capacity ?? null);
-  const [name, setName] = useState(layout?.name ?? "");
-  const [layoutDialog, setLayoutDialog] = useState<"rename" | "delete" | null>(null);
+  const [facts, setFacts] = useState<LayoutFacts>(
+    layout ?? {
+      name: "",
+      description: null,
+      capacity: null,
+      setupMinutes: null,
+      teardownMinutes: null,
+    },
+  );
+  const [layoutDialog, setLayoutDialog] = useState<"details" | "delete" | null>(null);
   const [dialog, setDialog] = useState<EditorDialog>(null);
   const [issueIndex, setIssueIndex] = useState(-1);
   const svg = useRef<SVGSVGElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const size = useStageSize({ ref: stage });
-  const editWalls = canEdit && setup === null;
+  const editWalls = canEdit && !isLayout;
   const walls = useWallPointer({ draft });
   const pointer = useDrawingPointer({ svg, draft, walls: editWalls ? walls : null });
   useEditorKeys({
@@ -91,25 +101,32 @@ export function LayoutEditor(props: LayoutEditorProps) {
     enabled: canEdit,
     removeCorner: editWalls ? walls.removeSelected : null,
   });
-  const dirty =
-    state.dirty || capacity !== (layout?.capacity ?? null) || name !== (layout?.name ?? "");
-  const save = useEditorSave({
-    itemId: props.itemId,
-    layout: layout ? { id: layout.id, name } : null,
-    room: room2,
-    elements: state.elements,
-    version: props.version,
-    capacity,
-  });
+  const dirty = state.dirty || (layout ? !sameFacts({ a: facts, b: layout }) : false);
   const fixedPlaced = props.fixed
     .map((element) => placedOf({ element: toDraft({ element }), kinds }))
     .filter((p) => p !== null);
   const placed = state.elements
     .map((element) => placedOf({ element, kinds }))
     .filter((p) => p !== null);
-  const issues = setup
-    ? layoutIssues({ outline: room2.outline, fixed: fixedPlaced, elements: placed })
+  const seats = isLayout ? seatTotal({ elements: state.elements, kinds }) : null;
+  const { capacity } = facts;
+  const issues = isLayout
+    ? layoutIssues({
+        outline: room2.outline,
+        fixed: fixedPlaced,
+        elements: placed,
+        capacity: effectiveCapacityOf({ capacity, seats: seats ?? 0 }),
+        maxPeople: props.maxPeople,
+      })
     : [];
+  const blocked = issues.some((issue) => BLOCKING_ISSUE_KINDS.includes(issue.kind));
+  const save = useEditorSave({
+    itemId: props.itemId,
+    layout: layout ? { id: layout.id, facts } : null,
+    room: room2,
+    elements: state.elements,
+    version: props.version,
+  });
   const warned = new Set(issues.flatMap((issue) => issue.elementIds));
   const nameOf = ({
     kindName,
@@ -133,7 +150,6 @@ export function LayoutEditor(props: LayoutEditorProps) {
     const one = draftToDrawing({ element: toDraft({ element }), kinds, tone: "muted", nameOf });
     return one ? [one] : [];
   });
-  const seats = setup ? seatTotal({ elements: state.elements, kinds }) : null;
   const template = useTemplateStart({
     room: room2,
     kinds,
@@ -169,7 +185,7 @@ export function LayoutEditor(props: LayoutEditorProps) {
     });
     commands.add({ kindId, xCm: x, yCm: y });
   };
-  const dockKinds = kindList.filter((kind) => kind.fixed === (setup === null));
+  const dockKinds = kindList.filter((kind) => kind.fixed === !isLayout);
   return (
     <TooltipProvider>
       <div className="flex min-h-0 flex-1 flex-col">
@@ -181,6 +197,7 @@ export function LayoutEditor(props: LayoutEditorProps) {
             creating: props.creating,
             dirty,
             canEdit,
+            blocked,
             save,
             draft,
           }}
@@ -196,18 +213,18 @@ export function LayoutEditor(props: LayoutEditorProps) {
         >
           <FloorDrawing
             ref={svg}
-            title={layout ? t("drawingOf", { setup: name }) : t("tabsPlan")}
+            title={layout ? t("drawingOf", { name: facts.name }) : t("tabsPlan")}
             widthCm={room2.widthCm}
             depthCm={room2.depthCm}
             outline={room2.outline}
             fixed={fixedDrawn}
             elements={drawn}
             interactive={canEdit}
-            widthLabel={setup ? t("metres", { value: room2.widthCm / 100 }) : undefined}
+            widthLabel={isLayout ? t("metres", { value: room2.widthCm / 100 }) : undefined}
             className="size-full touch-none"
             overlay={
               <>
-                {setup ? null : (
+                {isLayout ? null : (
                   <WallHandles outline={state.outline} corner={walls.corner} editable={editWalls} />
                 )}
                 {pointer.box ? (
@@ -222,19 +239,17 @@ export function LayoutEditor(props: LayoutEditorProps) {
           ) : null}
           {canEdit ? (
             <LayoutMenu
-              capacity={setup && seats !== null ? { typed: capacity, seats } : null}
-              onTypeCapacity={() => setDialog("capacity")}
-              onUseSeats={() => setCapacity(null)}
-              onTemplate={setup ? template.replace : null}
-              onRoomSize={setup ? null : () => setDialog("room")}
-              onRectangle={setup ? null : commands.rectangle}
-              onRename={layout ? () => setLayoutDialog("rename") : null}
+              onEditDetails={isLayout ? () => setLayoutDialog("details") : null}
+              onTemplate={isLayout ? template.replace : null}
+              onRoomSize={isLayout ? null : () => setDialog("room")}
+              onRectangle={isLayout ? null : commands.rectangle}
               onDelete={layout ? () => setLayoutDialog("delete") : null}
             />
           ) : null}
           <LayoutSummary
             seats={seats}
             capacity={capacity}
+            maxPeople={isLayout ? props.maxPeople : null}
             issues={issues}
             onShowIssue={showIssue}
             hint={editWalls ? t("walls.hint") : null}
@@ -243,6 +258,7 @@ export function LayoutEditor(props: LayoutEditorProps) {
             <SelectionToolbar
               selected={selected}
               kinds={kinds}
+              exits={!isLayout}
               style={{
                 left: Math.max(180, Math.min(size.width - 180, anchor.x)),
                 top: Math.max(64, anchor.y),
@@ -254,12 +270,12 @@ export function LayoutEditor(props: LayoutEditorProps) {
             />
           ) : null}
           {canEdit &&
-          setup &&
+          isLayout &&
           template.showStart &&
           state.elements.length === 0 &&
           props.elements.length === 0 ? (
             <EmptyLayout
-              setupName={setup.name}
+              layoutName={facts.name}
               room={room2}
               kinds={kinds}
               fixed={fixedPlaced}
@@ -268,17 +284,17 @@ export function LayoutEditor(props: LayoutEditorProps) {
             />
           ) : null}
         </div>
-        <EditorDialogs
-          {...{ dialog, setDialog, capacity, seats: seats ?? 0, room: room2, setCapacity }}
-          setOutline={commands.setOutline}
-        />
+        <EditorDialogs {...{ dialog, setDialog, room: room2 }} setOutline={commands.setOutline} />
         {layout ? (
           <>
-            <NameDialog
-              open={layoutDialog === "rename"}
-              onOpenChange={(open) => setLayoutDialog(open ? "rename" : null)}
-              name={name}
-              onConfirm={setName}
+            <LayoutDetailsDialog
+              key={JSON.stringify(facts)}
+              open={layoutDialog === "details"}
+              onOpenChange={(open) => setLayoutDialog(open ? "details" : null)}
+              facts={facts}
+              seats={seats ?? 0}
+              maxPeople={props.maxPeople}
+              onConfirm={setFacts}
             />
             <DeleteLayoutDialog
               open={layoutDialog === "delete"}

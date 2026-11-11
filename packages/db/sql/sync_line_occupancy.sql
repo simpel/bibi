@@ -6,9 +6,10 @@
 -- close it, the line is timed, its item's type is BOOKABLE and its state is not released and
 -- holds (SOFT or HARD). It then has one HOLD row of the state's kind for [startsAt, endsAt), a
 -- SETUP row right before and a TEARDOWN row right after, each of the same kind and only when its
--- minutes are above zero. Setup minutes are the line's, else the item's, else the type's, and
--- the larger of that and the setup's changeover time (never the sum); teardown minutes are the
--- line's, else the item's, else the type's. SOFT buffers never block, like SOFT holds.
+-- minutes are above zero. Setup and teardown minutes are the line's, else its layout's, else the
+-- item's, else the type's (ADR 0103). A line saved before layouts (a setup and no layout) keeps
+-- the old rule until it is saved again: the larger of the inherited setup minutes and the setup's
+-- changeover time. SOFT buffers never block, like SOFT holds.
 --
 -- A held line also holds the unit of every active, filled allocation (`LineAllocation`) of an
 -- active demand whose unit is active and of a BOOKABLE type, for each of the demand's windows
@@ -57,12 +58,14 @@ RETURNS TABLE (item_id text, allocation_id text, kind "OccupancyType", hold "Hol
 LANGUAGE sql STABLE AS $$
   WITH held AS (
     SELECT l."id", l."organizationId", l."itemId", l."startsAt", l."endsAt", s."hold",
-           l."startsAt" - make_interval(mins => GREATEST(
-             COALESCE(l."setupMinutes", i."setupMinutes", et."setupMinutes", 0),
-             COALESCE(su."changeoverMinutes", 0))) AS setup_from,
-           l."endsAt" + make_interval(mins =>
-             COALESCE(l."teardownMinutes", i."teardownMinutes", et."teardownMinutes", 0))
-             AS teardown_to
+           l."startsAt" - make_interval(mins => CASE
+             WHEN l."layoutId" IS NOT NULL THEN
+               COALESCE(l."setupMinutes", ly."setupMinutes", i."setupMinutes", et."setupMinutes", 0)
+             ELSE GREATEST(
+               COALESCE(l."setupMinutes", i."setupMinutes", et."setupMinutes", 0),
+               COALESCE(su."changeoverMinutes", 0)) END) AS setup_from,
+           l."endsAt" + make_interval(mins => COALESCE(l."teardownMinutes", ly."teardownMinutes",
+             i."teardownMinutes", et."teardownMinutes", 0)) AS teardown_to
       FROM "Line" l
       JOIN "Order" t ON t."id" = l."orderId" AND t."organizationId" = l."organizationId"
       JOIN "OrderStatus" p ON p."id" = t."statusId" AND p."organizationId" = t."organizationId"
@@ -71,6 +74,8 @@ LANGUAGE sql STABLE AS $$
         AND et."organizationId" = i."organizationId"
       JOIN "ItemState" s ON s."id" = l."stateId" AND s."organizationId" = l."organizationId"
       LEFT JOIN "Setup" su ON su."id" = l."setupId" AND su."organizationId" = l."organizationId"
+      LEFT JOIN "SetupLayout" ly ON ly."id" = l."layoutId"
+        AND ly."organizationId" = l."organizationId"
      WHERE l."id" = target_line_id
        AND l."status" = 'ACTIVE' AND t."status" = 'ACTIVE' AND NOT p."closes"
        AND l."startsAt" IS NOT NULL AND l."endsAt" IS NOT NULL
@@ -179,6 +184,16 @@ BEGIN
   RETURN NULL;
 END $$;
 
+-- A layout's buffer minutes changed: the lines that book it and have not ended follow.
+CREATE OR REPLACE FUNCTION line_occupancy_on_layout() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM sync_line_occupancies(ARRAY(
+    SELECT l."id" FROM "Line" l
+     WHERE l."layoutId" = NEW."id" AND l."organizationId" = NEW."organizationId"
+       AND line_not_ended(l."endsAt") ORDER BY l."id"));
+  RETURN NULL;
+END $$;
+
 CREATE OR REPLACE FUNCTION line_occupancy_on_entity_type() RETURNS trigger
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -254,11 +269,11 @@ CREATE TRIGGER line_occupancy_insert AFTER INSERT ON "Line"
 DROP TRIGGER IF EXISTS line_occupancy_update ON "Line";
 CREATE TRIGGER line_occupancy_update AFTER UPDATE ON "Line"
   FOR EACH ROW WHEN (
-    (OLD."itemId", OLD."setupId", OLD."setupMinutes", OLD."teardownMinutes", OLD."startsAt",
-     OLD."endsAt", OLD."stateId", OLD."orderId", OLD."status")
+    (OLD."itemId", OLD."setupId", OLD."layoutId", OLD."setupMinutes", OLD."teardownMinutes",
+     OLD."startsAt", OLD."endsAt", OLD."stateId", OLD."orderId", OLD."status")
     IS DISTINCT FROM
-    (NEW."itemId", NEW."setupId", NEW."setupMinutes", NEW."teardownMinutes", NEW."startsAt",
-     NEW."endsAt", NEW."stateId", NEW."orderId", NEW."status"))
+    (NEW."itemId", NEW."setupId", NEW."layoutId", NEW."setupMinutes", NEW."teardownMinutes",
+     NEW."startsAt", NEW."endsAt", NEW."stateId", NEW."orderId", NEW."status"))
   EXECUTE FUNCTION line_occupancy_on_line();
 
 DROP TRIGGER IF EXISTS line_occupancy_item_state ON "ItemState";
@@ -270,6 +285,13 @@ DROP TRIGGER IF EXISTS line_occupancy_setup ON "Setup";
 CREATE TRIGGER line_occupancy_setup AFTER UPDATE ON "Setup"
   FOR EACH ROW WHEN (OLD."changeoverMinutes" IS DISTINCT FROM NEW."changeoverMinutes")
   EXECUTE FUNCTION line_occupancy_on_setup();
+
+DROP TRIGGER IF EXISTS line_occupancy_layout ON "SetupLayout";
+CREATE TRIGGER line_occupancy_layout AFTER UPDATE ON "SetupLayout"
+  FOR EACH ROW WHEN (
+    (OLD."setupMinutes", OLD."teardownMinutes")
+    IS DISTINCT FROM (NEW."setupMinutes", NEW."teardownMinutes"))
+  EXECUTE FUNCTION line_occupancy_on_layout();
 
 DROP TRIGGER IF EXISTS line_occupancy_entity_type ON "EntityType";
 CREATE TRIGGER line_occupancy_entity_type AFTER UPDATE ON "EntityType"

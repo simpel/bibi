@@ -50,7 +50,7 @@ function lineDetailsInput({ values, item, date, timeZone }: DetailsInput) {
     entityTypeId: values.entityTypeId,
     name: values.name,
     itemId: item?.id ?? null,
-    setupId: item && values.setupId !== NONE ? values.setupId : null,
+    layoutId: item && values.layoutId !== NONE ? values.layoutId : null,
     ...formTimes({ date, timeZone, values }),
     quantity: numberOrNull({ value: values.quantity }),
     unitPriceMinor: minorOrNull({ value: values.unitPrice }),
@@ -103,7 +103,7 @@ const iso = ({ at }: { at: Date | null | undefined }) => (at ? at.toISOString() 
 export function toDraftLine({ line, key }: { line: CreateDraftLine; key: string }): DraftLine {
   return {
     ...{ key, entityTypeId: line.entityTypeId, name: line.name },
-    ...{ itemId: line.itemId ?? null, setupId: line.setupId ?? null },
+    ...{ itemId: line.itemId ?? null, layoutId: line.layoutId ?? null },
     ...{ startsAt: iso({ at: line.startsAt }), endsAt: iso({ at: line.endsAt }) },
     quantity: line.quantity ?? null,
     unitPriceMinor: line.unitPriceMinor ?? null,

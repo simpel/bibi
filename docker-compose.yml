@@ -58,6 +58,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+      target: web
       args: { APP: web }
     env_file: .env
     environment:
@@ -77,6 +78,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+      target: node
       args: { APP: mcp }
     env_file: .env
     environment:
@@ -94,6 +96,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+      target: node
       args: { APP: worker }
     env_file: .env
     environment:

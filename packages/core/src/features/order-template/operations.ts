@@ -54,7 +54,7 @@ export const getOrderTemplate = defineOperation({
 
 const LINE_NOTE =
   "Each line is a line the order gets: a line type, a name, an optional " +
-  "general item and setup, minutes from the order's start and a duration, and a quantity " +
+  "general item and one of its layouts (layoutId), minutes from the order's start and a duration, and a quantity " +
   "(empty: the line counts the order's headcount).";
 
 export const createOrderTemplate = defineOperation({

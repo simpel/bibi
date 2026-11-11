@@ -30,10 +30,10 @@ function useItemColumns(): ColumnDef<Row>[] {
         ),
       },
       {
-        id: "setups",
-        header: t("columns.setups"),
-        accessorFn: (item) => item.setups.length,
-        cell: ({ row }) => (row.original.setups.length > 0 ? row.original.setups.length : "–"),
+        id: "layouts",
+        header: t("columns.layouts"),
+        accessorFn: (item) => item.layouts.length,
+        cell: ({ row }) => (row.original.layouts.length > 0 ? row.original.layouts.length : "–"),
       },
       {
         id: "price",

@@ -66,8 +66,8 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 180_000 }, () => {
       include: { parts: { include: { part: true }, orderBy: { createdAt: "asc" } } },
     });
     expect(tour?.parts.map((part) => part.part.name).sort()).toEqual(["Jonna Sand", "RIB Snabben"]);
-    const vinga220 = await db.itemSetup.findFirst({
-      where: { organizationId: lind?.organizationId, capacity: 220, setup: { name: "Theatre" } },
+    const vinga220 = await db.setupLayout.findFirst({
+      where: { organizationId: lind?.organizationId, capacity: 220, name: "Theatre" },
       include: { item: true },
     });
     expect(vinga220?.item).toMatchObject({ name: "Vinga (auditorium)", priceMinor: 450_000 });

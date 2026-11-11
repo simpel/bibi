@@ -15,11 +15,11 @@ export const lineIssues = defineOperation({
     "checks as order.previewLines (ADR 0081), each line judged in its own item state: " +
     "HARD_CLASH (another order's hard hold, a buffer or a manual block on the item, with that " +
     "order's reference and period), SOFT_OVERLAP (another order's soft hold), SELF_OVERLAP " +
-    "(two of the order's lines hold one item at once), SETUP_CAPACITY, POOL_SHORT and " +
+    "(two of the order's lines hold one item at once), LAYOUT_CAPACITY, MAX_PEOPLE, POOL_SHORT and " +
     "OUTSIDE_HOURS. The order's own holds never count against it; the other order's reference " +
     "needs order:read. Only lines with issues come " +
     "back. Availability needs item:read; without it `availabilityHidden` is true and only " +
-    "SELF_OVERLAP is checked. Writes nothing.",
+    "SELF_OVERLAP and MAX_PEOPLE are checked. Writes nothing.",
   input: LineIssuesInputSchema,
   output: LineIssuesOutputSchema,
   permission: "program:read",

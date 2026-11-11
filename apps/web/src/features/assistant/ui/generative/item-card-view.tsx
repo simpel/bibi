@@ -34,7 +34,8 @@ function Capabilities({ item }: CapabilitiesProps) {
     item.defaultDurationMinutes === null
       ? null
       : t("duration", { minutes: item.defaultDurationMinutes });
-  const setups = item.setups.length > 0 ? [t("setupsCount", { count: item.setups.length })] : [];
+  const layouts =
+    item.layouts.length > 0 ? [t("layoutsCount", { count: item.layouts.length })] : [];
   const parts = item.parts.length > 0 ? [t("partsCount", { count: item.parts.length })] : [];
   const groups = customisationGroupLines({
     groups: item.customisationGroups,
@@ -46,8 +47,8 @@ function Capabilities({ item }: CapabilitiesProps) {
       <BookableDisplay title={t("sections.bookable")} duration={duration} variant="plain" />
       <CapabilityDisplay
         capability="SETUPS"
-        title={t("sections.setups")}
-        rows={setups.map((value) => ({ value }))}
+        title={t("sections.layouts")}
+        rows={layouts.map((value) => ({ value }))}
         variant="plain"
       />
       <BundleDisplay title={t("sections.parts")} parts={parts} variant="plain" />
@@ -56,7 +57,7 @@ function Capabilities({ item }: CapabilitiesProps) {
   );
 }
 
-/** One item: name (link), field values and capabilities (price, length, setups, parts, customisations). */
+/** One item: name (link), field values and capabilities (price, length, layouts, parts, customisations). */
 export function ItemCardView({ item }: ItemCardViewProps) {
   const t = useTranslations("assistant.ui.item");
   const lines = fieldLines({ fields: item.fields });

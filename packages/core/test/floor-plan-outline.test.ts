@@ -1,12 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  createItem,
-  createSetup,
-  execute,
-  getFloorPlan,
-  isSimpleOutline,
-  saveFloorPlan,
-} from "../src/index";
+import { createItem, execute, getFloorPlan, isSimpleOutline, saveFloorPlan } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { createRoomType } from "./item-helpers";
 
@@ -47,16 +40,12 @@ describe("room outlines", () => {
   it("saves an L-shaped room and refuses walls that cross or leave the size", async () => {
     const context = testContext();
     const type = await createRoomType({ context });
-    const setup = unwrap({
-      result: await execute({ operation: createSetup, input: { name: "Theatre" }, context }),
-    });
     const item = unwrap({
       result: await execute({
         operation: createItem,
         input: {
           entityTypeId: type.id,
           name: "Vinkeln",
-          setups: [{ setupId: setup.id, capacity: null }],
         },
         context,
       }),

@@ -1,5 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { checkPeopleLimit } from "../line/people-limit";
 import { checkContact, checkCustomer, checkDesiredPeriod, checkReadable } from "./order-rules";
 import type { OrderDto, OrderUpdateInput } from "./schema";
 
@@ -42,4 +43,25 @@ export async function checkOrderDetails({
   }
   const contact = await checkContact({ context, contactId, customerId });
   return contact.ok ? ok({ value: true }) : contact;
+}
+
+/**
+ * ADR 0103 decision 4: a headcount change may not put a line that counts it above its item's
+ * people limit. `VALIDATION` on the headcount field in effect after the change.
+ */
+export async function checkHeadcountChange({
+  context,
+  before,
+  change,
+}: CheckOrderDetailsInput): Promise<Result<true>> {
+  const { estimatedHeadcount, guaranteedHeadcount } = change;
+  if (estimatedHeadcount === undefined && guaranteedHeadcount === undefined) {
+    return ok({ value: true });
+  }
+  const value = {
+    estimatedHeadcount: pick({ given: estimatedHeadcount, stored: before.estimatedHeadcount }),
+    guaranteedHeadcount: pick({ given: guaranteedHeadcount, stored: before.guaranteedHeadcount }),
+  };
+  const path = value.guaranteedHeadcount === null ? "estimatedHeadcount" : "guaranteedHeadcount";
+  return checkPeopleLimit({ context, orderId: before.id, headcount: { value, path } });
 }

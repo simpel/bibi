@@ -20,7 +20,7 @@ export async function replaceLines({ context, templateId, lines }: ReplaceLinesI
       ...line,
       id: createId(),
       itemId: line.itemId ?? null,
-      setupId: line.setupId ?? null,
+      layoutId: line.layoutId ?? null,
       quantity: line.quantity ?? null,
       ...{ position, templateId, organizationId },
     },

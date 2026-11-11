@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
-import { archiveSetupLayoutAction } from "../actions";
+import { archiveLayoutAction } from "../actions";
 import { layoutsRoute } from "../layouts-path";
 
 export type DeleteLayoutDialogProps = {
@@ -33,7 +33,7 @@ export function DeleteLayoutDialog({
       pending={pending}
       onConfirm={() =>
         run({
-          action: () => archiveSetupLayoutAction({ id: layout.id }),
+          action: () => archiveLayoutAction({ id: layout.id }),
           messages: { pending: common("archiving"), success: t("deleted") },
           onSuccess: () => {
             onOpenChange(false);

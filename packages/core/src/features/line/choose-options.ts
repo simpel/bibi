@@ -5,6 +5,7 @@ import type { LineChooseOptionsInput } from "./choose-options-schema";
 import { insertLine } from "./insert-line";
 import { archiveLineRow, archiveParts } from "./line-parts";
 import { type ChosenLineOption, checkChoice, loadOptionGroups } from "./option-groups";
+import { checkPeopleLimit } from "./people-limit";
 import type { LineRecord } from "./schema";
 import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
 
@@ -49,13 +50,16 @@ const addOptionLine = ({ context, line, option }: AddInput) =>
 
 type KeepInput = { context: Context; kept: LineRecord; option: ChosenLineOption };
 
-/** A still chosen option line, with the quantity of the new choice (ADR 0082). */
-async function keepOptionLine({ context, kept, option }: KeepInput) {
-  if (kept.quantity === option.quantity) return kept;
+/** A still chosen option line, with the quantity of the new choice (ADR 0082, 0103 limit). */
+async function keepOptionLine({ context, kept, option }: KeepInput): Promise<Result<LineRecord>> {
+  if (kept.quantity === option.quantity) return ok({ value: kept });
+  const line = { ...kept, quantity: option.quantity };
+  const limited = await checkPeopleLimit({ context, orderId: kept.orderId, line });
+  if (!limited.ok) return limited;
   await context.db.line.update({ where: { id: kept.id }, data: { quantity: option.quantity } });
   const after = (await loadLine({ context, id: kept.id })) ?? kept;
   context.recordChange({ entityId: kept.id, before: kept, after });
-  return after;
+  return ok({ value: after });
 }
 
 /**
@@ -85,7 +89,7 @@ export async function chooseOptions({
   for (const option of chosen.value) {
     const kept = existing.find((row) => row.itemId === option.itemId);
     const added = kept
-      ? ok({ value: await keepOptionLine({ context, kept, option }) })
+      ? await keepOptionLine({ context, kept, option })
       : await addOptionLine({ context, line, option });
     if (!added.ok) return added;
     lines.push(added.value);

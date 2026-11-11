@@ -16,7 +16,9 @@ export type CatalogItem = {
   priceMinor: number | null;
   priceUnit: ItemDto["priceUnit"];
   defaultDurationMinutes: number | null;
-  setups: { id: string; name: string; capacity: number | null }[];
+  layouts: { id: string; name: string; capacity: number | null }[];
+  /** The room's people limit: a headcount above it is refused (ADR 0103). */
+  maxPeople: number | null;
   groups: CustomisableItem["groups"];
 };
 

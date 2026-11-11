@@ -9,11 +9,12 @@ export const vingaledenConfig: Omit<DemoConfig, "items" | "venue" | "venueHours"
     { name: "Life jacket", values: ["Child under 15 kg", "Child 15–40 kg"] },
     { name: "Certification", values: ["Ship officer class VIII", "Boat license"] },
   ],
-  setups: [
-    { name: "Seated", changeoverMinutes: 10 },
-    { name: "Standing", changeoverMinutes: 5 },
-    { name: "Deck reception", changeoverMinutes: 20 },
-  ],
+  /** ADR 0103: the setup minutes of every boat's layout with this name. */
+  layoutMinutes: {
+    Seated: 10,
+    Standing: 5,
+    "Deck reception": 20,
+  },
   types: [
     {
       base: "ITEM",
@@ -60,20 +61,20 @@ export const vingaledenBoats: readonly DemoItem[] = [
     name: "M/S Kajan",
     fields: { "Toilet on board": true },
     ...{ priceKr: 3200, priceUnit: "PER_HOUR" },
-    setups: { Seated: 48, Standing: 80, "Deck reception": 60 },
+    layouts: { Seated: 48, Standing: 80, "Deck reception": 60 },
   },
   {
     type: "Boat",
     name: "M/S Tern",
     fields: { "Toilet on board": true },
     ...{ priceKr: 2100, priceUnit: "PER_HOUR" },
-    setups: { Seated: 24, Standing: 40 },
+    layouts: { Seated: 24, Standing: 40 },
   },
   {
     type: "Boat",
     name: "RIB Snabben",
     fields: { "Toilet on board": false, "Max knots": 40 },
     ...{ priceKr: 2600, priceUnit: "PER_HOUR" },
-    setups: { Seated: 12 },
+    layouts: { Seated: 12 },
   },
 ];

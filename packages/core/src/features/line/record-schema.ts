@@ -16,8 +16,9 @@ export const LineRecordSchema = z.object({
   startsAt: z.date().nullable(),
   endsAt: z.date().nullable(),
   itemId: z.string().nullable(),
-  setupId: z.string().nullable(),
-  /** Own buffers around the booking (ADR 0059); null = the item's, else its type's. */
+  /** The layout of the item the line books (ADR 0103); null without one. */
+  layoutId: z.string().nullable(),
+  /** Own buffers around the booking (ADR 0059, 0103); null = the layout's, else the item's, else its type's. */
   ...BufferMinutesShape,
   /** Null = the order's headcount. */
   quantity: z.number().int().nullable(),

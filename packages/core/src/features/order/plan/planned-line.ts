@@ -7,7 +7,11 @@ export type PlannedLine = {
   entityTypeId: string;
   name: string;
   itemId?: string | null;
-  setupId?: string | null;
+  /** One of the item's layouts (ADR 0103): its capacity and buffer minutes apply. */
+  layoutId?: string | null;
+  /** The line's own buffers (ADR 0059); null or left out = the layout's, item's or type's. */
+  setupMinutes?: number | null;
+  teardownMinutes?: number | null;
   startsAt?: Date | null;
   endsAt?: Date | null;
   quantity?: number | null;

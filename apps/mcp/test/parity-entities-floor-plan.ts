@@ -4,9 +4,9 @@ import { createRestClient } from "./parity-rest";
 
 const ELEMENT = `{ id kindId xCm yCm rotationDeg widthCm depthCm seats seatsTop seatsRight seatsBottom
   seatsLeft label shape fixed keepClearCm effectiveWidthCm effectiveDepthCm effectiveAround
-  effectiveSides { top right bottom left } seatCount }`;
-const SETUP_CAPACITY = "{ setupId seatCount capacity effectiveCapacity capacitySource }";
-const LAYOUT_SUMMARY = `{ id setupId name version seatCount elements ${ELEMENT} }`;
+  effectiveSides { top right bottom left } effectiveSwingDeg swingDeg emergencyExit seatCount }`;
+const LAYOUT_SUMMARY = `{ id itemId name description version seatCount capacity effectiveCapacity
+  capacitySource setupMinutes teardownMinutes elements ${ELEMENT} }`;
 const PLAN_SHAPE = "widthCm depthCm outline minAisleCm";
 const OUTLINE = [
   [0, 0],
@@ -46,22 +46,22 @@ const floorPlan: ParityEntity = {
     createRestClient({ context }).get({ path: `/items/${created.itemId}/floor-plan` }),
   viaGraph: async ({ context, created }) => {
     const query = `query($id: String!) { floorPlan(itemId: $id) {
-      id itemId version ${PLAN_SHAPE} elements ${ELEMENT} setups ${SETUP_CAPACITY} layouts ${LAYOUT_SUMMARY} } }`;
+      id itemId version maxPeople ${PLAN_SHAPE} elements ${ELEMENT} layouts ${LAYOUT_SUMMARY} } }`;
     return (await gqlQuery({ context, query, variables: { id: created.itemId } })).floorPlan;
   },
 };
 
-const setupLayout: ParityEntity = {
-  name: "setupLayout",
+const layout: ParityEntity = {
+  name: "layout",
   create: async ({ mcp, made }) => {
     const layout = await tool({
       mcp,
-      name: "setupLayout_create",
-      args: { itemId: made.item.id, setupId: made.setup.id, name: "Parity layout" },
+      name: "layout_create",
+      args: { itemId: made.item.id, name: "Parity layout" },
     });
     return tool({
       mcp,
-      name: "setupLayout_save",
+      name: "layout_save",
       args: {
         id: layout.id,
         expectedVersion: layout.version,
@@ -71,20 +71,20 @@ const setupLayout: ParityEntity = {
       },
     });
   },
-  viaMcp: ({ mcp, created }) => tool({ mcp, name: "setupLayout_get", args: { id: created.id } }),
+  viaMcp: ({ mcp, created }) => tool({ mcp, name: "layout_get", args: { id: created.id } }),
   viaRest: ({ context, created }) =>
-    createRestClient({ context }).get({ path: `/setup-layouts/${created.id}` }),
+    createRestClient({ context }).get({ path: `/layouts/${created.id}` }),
   viaGraph: async ({ context, created }) => {
-    const selection = `id itemId setupId name seatCount capacity effectiveCapacity capacitySource
-        version note elements ${ELEMENT} plan { ${PLAN_SHAPE} elements ${ELEMENT} }
+    const selection = `id itemId name description seatCount capacity effectiveCapacity capacitySource
+        setupMinutes teardownMinutes maxPeople version note elements ${ELEMENT} plan { ${PLAN_SHAPE} elements ${ELEMENT} }
         issues { kind elementIds }`;
-    const query = `query($id: String!) { setupLayout(id: $id) { ${selection} } }`;
+    const query = `query($id: String!) { layout(id: $id) { ${selection} } }`;
     const variables = { id: created.id };
-    return (await gqlQuery({ context, query, variables })).setupLayout;
+    return (await gqlQuery({ context, query, variables })).layout;
   },
 };
 
-/** Floor element library, an item's floor plan and a setup's layout (ADR 0099). */
+/** Floor element library, an item's floor plan and a room's layouts (ADR 0099, 0103). */
 export function floorPlanEntities(): ParityEntity[] {
-  return [floorElementKind, floorPlan, setupLayout];
+  return [floorElementKind, floorPlan, layout];
 }

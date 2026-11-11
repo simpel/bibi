@@ -36,7 +36,7 @@ export const previewOrderLines = defineOperation({
     "requested period and a headcount. Each line comes back with its effective times, quantity, " +
     "unit price and discount, the item state it would start in (the entry status's grid, ADR " +
     "0044) and its issues: HARD_CLASH (with the blocking order's reference and period, and " +
-    "whether Create would refuse it), SOFT_OVERLAP, SELF_OVERLAP, SETUP_CAPACITY, POOL_SHORT and " +
+    "whether Create would refuse it), SOFT_OVERLAP, SELF_OVERLAP, LAYOUT_CAPACITY, MAX_PEOPLE, POOL_SHORT and " +
     "OUTSIDE_HOURS. Each entry has its group (AVAILABLE, CLASHES, OUTSIDE_RANGE), the issues " +
     "GUESTS_OUTSIDE_RANGE and PAST_REQUESTED_END, and the first clash-free start that day. " +
     "A draft line's add-ons (ADR 0088) come back under it, priced as their own lines (the " +

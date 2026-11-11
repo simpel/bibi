@@ -1,4 +1,4 @@
-import { getSetupLayout, type SetupLayoutDto } from "@bibi/core";
+import { getLayout, type LayoutDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
@@ -41,14 +41,10 @@ export async function LayoutsPage({ locale, org, itemId, layoutId }: LayoutsPage
       </Frame>
     );
   }
-  const { item, plan, kinds, setupNames, canEdit, canImportKinds } = room.value;
+  const { item, plan, kinds, canEdit, canImportKinds } = room.value;
   const crumbs = <CrumbName href={itemRoute({ id: itemId })} name={item.name} />;
   if (kinds.length === 0) return <NoKinds crumbs={crumbs} canImport={canImportKinds} />;
-  const setups = plan.setups.map(({ setupId }) => ({
-    id: setupId,
-    name: setupNames.get(setupId) ?? "–",
-  }));
-  const creating = { setups, layouts: plan.layouts.map(({ id, name }) => ({ id, name })) };
+  const creating = { layouts: plan.layouts.map(({ id, name }) => ({ id, name })) };
   const first = plan.layouts[0];
   if (!layoutId && first)
     redirect({ org, locale, href: layoutsRoute({ itemId, layoutId: first.id }) });
@@ -60,15 +56,13 @@ export async function LayoutsPage({ locale, org, itemId, layoutId }: LayoutsPage
         {crumbs}
         <EmptyState
           title={t("noLayouts.title")}
-          description={t(setups.length ? "noLayouts.description" : "noLayouts.noSetups")}
-          action={
-            canEdit && setups.length ? <CreateLayoutButton itemId={itemId} {...creating} /> : null
-          }
+          description={t("noLayouts.description")}
+          action={canEdit ? <CreateLayoutButton itemId={itemId} {...creating} /> : null}
         />
       </Frame>
     );
   }
-  const read = await runOperation({ operation: getSetupLayout, input: { id: summary.id } });
+  const read = await runOperation({ operation: getLayout, input: { id: summary.id } });
   if (!read.ok) {
     return (
       <Frame>
@@ -76,12 +70,11 @@ export async function LayoutsPage({ locale, org, itemId, layoutId }: LayoutsPage
       </Frame>
     );
   }
-  const layout: SetupLayoutDto = read.value;
+  const layout: LayoutDto = read.value;
   const tabs = plan.layouts.map((each) => ({
     key: each.id,
     label: each.name,
-    hint: setupNames.get(each.setupId) ?? null,
-    seats: each.seatCount,
+    capacity: each.effectiveCapacity,
   }));
   const { widthCm, depthCm, outline, minAisleCm } = plan;
   return (
@@ -93,9 +86,12 @@ export async function LayoutsPage({ locale, org, itemId, layoutId }: LayoutsPage
         layout={{
           id: layout.id,
           name: layout.name,
-          setupName: setupNames.get(layout.setupId) ?? "–",
+          description: layout.description,
           capacity: layout.capacity,
+          setupMinutes: layout.setupMinutes,
+          teardownMinutes: layout.teardownMinutes,
         }}
+        maxPeople={layout.maxPeople}
         tabs={tabs}
         creating={creating}
         room={{ widthCm, depthCm, outline, minAisleCm }}

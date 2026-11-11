@@ -3,6 +3,7 @@ import { loadHoursWarnings } from "../../hours/hours-warnings";
 import type { HandlerInput, OperationContext } from "../../operations/types";
 import { effectiveBuffers } from "../../shared/buffers";
 import { loadZoneOfVenue } from "../../shared/time-zones";
+import { loadLayoutFacts } from "../floor-plan/layout-seats";
 import { loadPriceTerms } from "../price-list/customer-price-terms";
 import { effectiveOf } from "./effective-values";
 import { loadLineWarnings } from "./line-warnings";
@@ -14,16 +15,13 @@ type Db = { context: Pick<OperationContext, "db" | "permissions"> };
 
 export type WithEffectiveInput = Db & { lines: readonly LineRecord[] };
 
-/** The changeover time of each setup the lines use, by setup id (archived ones included). */
-async function loadChangeovers({ context, lines }: WithEffectiveInput) {
-  const setupIds = [...new Set(lines.flatMap((line) => (line.setupId ? [line.setupId] : [])))];
-  if (setupIds.length === 0) return new Map<string, number>();
-  const setups = await context.db.setup.findMany({
-    where: { id: { in: setupIds }, status: { in: ["ACTIVE", "ARCHIVED"] } },
-    select: { id: true, changeoverMinutes: true },
+/** The layouts the lines book, by id (archived ones included, ADR 0103). */
+const loadLayouts = ({ context, lines }: WithEffectiveInput) =>
+  loadLayoutFacts({
+    context,
+    ids: [...new Set(lines.flatMap((line) => (line.layoutId ? [line.layoutId] : [])))],
+    archived: true,
   });
-  return new Map(setups.map((setup) => [setup.id, setup.changeoverMinutes]));
-}
 
 /** The lines' items with their venue's VAT default and their zone (ADR 0064), by id. */
 async function loadItems({ context, lines }: WithEffectiveInput) {
@@ -56,7 +54,7 @@ async function loadItems({ context, lines }: WithEffectiveInput) {
 
 async function loadSources({ context, lines }: WithEffectiveInput) {
   const orderIds = [...new Set(lines.map((line) => line.orderId))];
-  const [orders, items, changeovers] = await Promise.all([
+  const [orders, items, layouts] = await Promise.all([
     context.db.order.findMany({
       where: { id: { in: orderIds } },
       select: {
@@ -65,7 +63,7 @@ async function loadSources({ context, lines }: WithEffectiveInput) {
       },
     }),
     loadItems({ context, lines }),
-    loadChangeovers({ context, lines }),
+    loadLayouts({ context, lines }),
   ]);
   const terms = await loadPriceTerms({
     context,
@@ -74,7 +72,7 @@ async function loadSources({ context, lines }: WithEffectiveInput) {
   return {
     orders: new Map(orders.map((order) => [order.id, order])),
     ...items,
-    changeovers,
+    layouts,
     terms,
   };
 }
@@ -97,16 +95,16 @@ export async function withEffective({ context, lines }: WithEffectiveInput): Pro
     loadSplitSums({ context, lines }),
     loadOpenRequiredGroups({ context, lines }),
   ]);
-  const { orders, items, changeovers, terms, organizationZone } = sources;
+  const { orders, items, layouts, terms, organizationZone } = sources;
   return lines.map((line) => {
     const order = orders.get(line.orderId);
     const item = line.itemId ? (items.get(line.itemId) ?? null) : null;
     const on = line.startsAt ?? order?.desiredStartsAt ?? new Date();
     const priceTerms = order ? terms({ customerId: order.customerId, on }) : null;
     const headcount = order ?? NO_HEADCOUNT;
-    const changeoverMinutes = line.setupId ? (changeovers.get(line.setupId) ?? null) : null;
+    const layout = line.layoutId ? (layouts.get(line.layoutId) ?? null) : null;
     const type = item?.entityType ?? null;
-    const buffers = effectiveBuffers({ line, item, type, changeoverMinutes });
+    const buffers = effectiveBuffers({ line, layout, item, type });
     const outside = outsideHours.get(line.id);
     const parent = parents.get(line.id) ?? null;
     const effective = effectiveOf({ line, order: headcount, parent, item, terms: priceTerms });

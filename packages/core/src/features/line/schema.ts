@@ -40,19 +40,25 @@ const LineDetailsShape = {
       "Id of the item (item.list), e.g. a room or a dish. It starts in the item type's initial " +
         "state; a bookable item is held as that state says",
     ),
-  setupId: z
+  layoutId: z
     .string()
     .min(1)
     .nullish()
-    .describe("Id of one of the item's setups (needs itemId); its changeover is the least setup"),
-  ...bufferMinutesInputShape({ inherits: "the item's, else its type's" }),
+    .describe(
+      "Id of one of the item's layouts (layout.list, needs itemId): how the room is arranged; " +
+        "its capacity is checked and its setup and teardown minutes are inherited",
+    ),
+  ...bufferMinutesInputShape({ inherits: "the layout's, else the item's, else its type's" }),
   quantity: z
     .number()
     .int()
     .min(0)
     .max(100_000)
     .nullish()
-    .describe("How many; null = the order's headcount (guaranteed if set, else estimated)"),
+    .describe(
+      "How many; null = the order's headcount (guaranteed if set, else estimated). Never above " +
+        "the item's people limit (maxPeople)",
+    ),
   unitPriceMinor: z
     .number()
     .int()

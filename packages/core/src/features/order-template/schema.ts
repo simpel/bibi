@@ -9,7 +9,8 @@ export const OrderTemplateLineSchema = z.object({
   entityTypeId: z.string(),
   name: z.string(),
   itemId: z.string().nullable(),
-  setupId: z.string().nullable(),
+  /** The layout of the item the line books (ADR 0103); null without one. */
+  layoutId: z.string().nullable(),
   offsetMinutes: z.number().int(),
   durationMinutes: z.number().int(),
   /** Null = the line counts the order's headcount (ADR 0052). */
@@ -62,7 +63,11 @@ export const OrderTemplateLineInputSchema = z.object({
     .min(1)
     .nullish()
     .describe("Id of a general item (item.list), e.g. a room or a dish; not a customer's bundle"),
-  setupId: z.string().min(1).nullish().describe("One of the item's setups (needs itemId)"),
+  layoutId: z
+    .string()
+    .min(1)
+    .nullish()
+    .describe("One of the item's active layouts (layout.list, needs itemId)"),
   offsetMinutes: MinutesSchema.describe("Minutes from the order's start to the line's start"),
   durationMinutes: MinutesSchema.min(1).describe("How long the line lasts, in minutes"),
   quantity: z

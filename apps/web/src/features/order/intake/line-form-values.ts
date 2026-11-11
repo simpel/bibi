@@ -19,7 +19,7 @@ export type LineFormValues = WithRawFields & {
   to: string;
   /** Empty: one per guest, follows the headcount. */
   quantity: string;
-  setupId: string;
+  layoutId: string;
   unitPrice: string;
   discountPercent: string;
   note: string;
@@ -77,7 +77,7 @@ export function lineFormDefaults({
     from: time({ at: times.startsAt, timeZone }),
     to: time({ at: times.endsAt, timeZone }),
     quantity: text({ value: line?.quantity ?? null }),
-    setupId: line?.setupId ?? NONE,
+    layoutId: line?.layoutId ?? NONE,
     unitPrice: line?.unitPriceMinor == null ? "" : String(line.unitPriceMinor / 100),
     discountPercent: text({ value: line?.discountPercent ?? null }),
     note: line?.note ?? "",

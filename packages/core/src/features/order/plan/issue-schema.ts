@@ -5,7 +5,8 @@ export const LINE_ISSUE_KINDS = [
   "HARD_CLASH",
   "SOFT_OVERLAP",
   "SELF_OVERLAP",
-  "SETUP_CAPACITY",
+  "LAYOUT_CAPACITY",
+  "MAX_PEOPLE",
   "POOL_SHORT",
   "OUTSIDE_HOURS",
 ] as const;
@@ -23,8 +24,9 @@ export const PlanLineIssueSchema = z.object({
   kind: LineIssueKindSchema.describe(
     "HARD_CLASH: an existing hard hold, buffer or manual block on the item overlaps. " +
       "SOFT_OVERLAP: an existing soft hold overlaps (allowed, ADR 0044). SELF_OVERLAP: another " +
-      "line of the same plan holds the same item at the same time. SETUP_CAPACITY: the quantity " +
-      "is above the setup's capacity. POOL_SHORT: a mandatory demand of the item finds fewer " +
+      "line of the same plan holds the same item at the same time. LAYOUT_CAPACITY: the quantity " +
+      "is above the layout's capacity. MAX_PEOPLE: the quantity is above the item's people " +
+      "limit (saving the line is refused, ADR 0103). POOL_SHORT: a mandatory demand of the item finds fewer " +
       "free units than it needs. OUTSIDE_HOURS: outside the item's or venue's hours (advisory)",
   ),
   message: z.string().describe("A short English explanation, for logs and the assistant"),
@@ -66,7 +68,10 @@ export const PlanLineIssueSchema = z.object({
     .number()
     .int()
     .nullable()
-    .describe(`${only({ kinds: "SETUP_CAPACITY" })}: the setup's capacity`),
+    .describe(
+      `${only({ kinds: "LAYOUT_CAPACITY and MAX_PEOPLE" })}: the layout's capacity, or the ` +
+        "item's people limit",
+    ),
   demandId: z
     .string()
     .nullable()

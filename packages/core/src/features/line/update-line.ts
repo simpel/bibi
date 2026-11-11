@@ -12,6 +12,7 @@ import { checkBundleItem, moveParts } from "./line-parts";
 import { checkLinePeriod, checkPlace } from "./line-rules";
 import { stateAfterMove } from "./line-state";
 import { checkOptionQuantity } from "./option-quantity-rule";
+import { checkPeopleLimit } from "./people-limit";
 import type { LineRecord, LineUpdateInput } from "./schema";
 import { loadLine, toLineRecord } from "./to-line-record";
 
@@ -37,11 +38,12 @@ async function fieldsPatch({ context, before, patch }: FieldsPatchInput) {
 /** The line's place and time after the change; omitted values keep the line's own. */
 function placeAfter({ before, data }: { before: LineRecord; data: Omit<LineUpdateInput, "id"> }) {
   const itemId = data.itemId === undefined ? before.itemId : data.itemId;
-  // A line that leaves its item cannot keep that item's setup.
-  const setupId = data.setupId === undefined ? (itemId ? before.setupId : null) : data.setupId;
+  // A line that leaves its item cannot keep that item's layout (ADR 0103).
+  const kept = itemId !== null && itemId === before.itemId ? before.layoutId : null;
+  const layoutId = data.layoutId === undefined ? kept : data.layoutId;
   const startsAt = data.startsAt === undefined ? before.startsAt : data.startsAt;
   const endsAt = data.endsAt === undefined ? before.endsAt : data.endsAt;
-  return { itemId, setupId, startsAt, endsAt };
+  return { itemId, layoutId, startsAt, endsAt };
 }
 
 /**
@@ -58,7 +60,15 @@ export async function updateLineRow({
   const after = placeAfter({ before, data });
   for (const check of [
     checkLinePeriod(after),
-    await checkPlace({ context, orderId: before.orderId, ...after }),
+    await checkPlace({ context, orderId: before.orderId, ...after, keptLayoutId: before.layoutId }),
+    await checkPeopleLimit({
+      ...{ context, orderId: before.orderId },
+      line: {
+        ...before,
+        ...{ name: data.name ?? before.name, itemId: after.itemId },
+        quantity: data.quantity === undefined ? before.quantity : data.quantity,
+      },
+    }),
     await checkBundleItem({ context, lineId: id, before, itemId: after.itemId }),
     await checkOptionQuantity({ context, before, quantity: data.quantity }),
   ]) {

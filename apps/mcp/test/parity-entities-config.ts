@@ -84,13 +84,6 @@ const vocabulary = byId({
   args: { name: "Parity list", values: ["Wheelchair", "Hearing loop"] },
   nested: { values: VALUE },
 });
-const setup = byId({
-  name: "setup",
-  field: "setup",
-  list: "setups",
-  createTool: "setup_create",
-  args: { name: "Parity theatre", changeoverMinutes: 15 },
-});
 const item: ParityEntity = {
   ...byId({
     name: "item",
@@ -99,7 +92,7 @@ const item: ParityEntity = {
     createTool: "",
     args: {},
     nested: {
-      setups: "{ setupId capacity effectiveCapacity capacitySource }",
+      layouts: "{ layoutId name effectiveCapacity capacitySource }",
       parts: "{ itemId quantity offsetMinutes durationMinutes required }",
       customisationGroups: "{ name minPick maxPick split options }",
     },
@@ -115,7 +108,7 @@ const item: ParityEntity = {
         fields: { style: ["Light"] },
         priceMinor: 190_000,
         priceUnit: "PER_HOUR",
-        setups: [{ setupId: made.setup.id, capacity: 70 }],
+        maxPeople: 70,
       },
     }),
 };
@@ -138,7 +131,7 @@ const occupancy: ParityEntity = {
 };
 
 /**
- * The configurable domain (ADR 0021): types, fields, lists, setups, run sheet definitions, items and
+ * The configurable domain (ADR 0021): types, fields, lists, run sheet definitions, items and
  * their occupancy.
  */
 export function configurationEntities(): ParityEntity[] {
@@ -148,7 +141,6 @@ export function configurationEntities(): ParityEntity[] {
     fieldDefinition,
     vocabulary,
     vocabularyValue,
-    setup,
     responsibility,
     runSheetDefinition,
     item,

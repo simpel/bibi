@@ -10,7 +10,7 @@ export type DraftFixtureInput = Partial<DraftLine> & { from?: number; to?: numbe
 export function draftFixture({ from, to, ...rest }: DraftFixtureInput = {}): DraftLine {
   const timed = from !== undefined && to !== undefined;
   return {
-    ...{ key: "l1", entityTypeId: "lt", name: "Room", itemId: "i1", setupId: null },
+    ...{ key: "l1", entityTypeId: "lt", name: "Room", itemId: "i1", layoutId: null },
     startsAt: timed ? at({ hour: from }).toISOString() : null,
     endsAt: timed ? at({ hour: to }).toISOString() : null,
     ...{ quantity: null, unitPriceMinor: null, discountPercent: null, note: null },
@@ -42,7 +42,7 @@ export type PreviewLineFixtureInput = Partial<PreviewLine> & { from?: number; to
 export function previewLineFixture({ from, to, ...rest }: PreviewLineFixtureInput): PreviewLine {
   const timed = from !== undefined && to !== undefined;
   return {
-    ...{ index: 0, entityTypeId: "lt", name: "Room", itemId: "i1", setupId: null },
+    ...{ index: 0, entityTypeId: "lt", name: "Room", itemId: "i1", layoutId: null },
     ...{ startsAt: timed ? at({ hour: from }) : null, endsAt: timed ? at({ hour: to }) : null },
     ...{ quantity: null, effectiveQuantity: 10, quantitySource: null },
     ...{ effectiveUnitPriceMinor: null, unitPriceSource: null },

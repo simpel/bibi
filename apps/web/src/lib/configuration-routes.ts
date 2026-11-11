@@ -17,9 +17,9 @@ export function vocabularyRoute({ id }: IdRouteInput): string {
   return `${ROUTES.adminLists}/${encodeURIComponent(id)}`;
 }
 
-/** The setups section on `/admin/types` (no detail page). */
+/** Setups no longer exist (ADR 0103); the assistant's old setup cards link to the types page. */
 export function setupsRoute(): string {
-  return ROUTES.adminSetupsSection;
+  return ROUTES.adminTypes;
 }
 
 /** The responsibilities section on `/admin/run-sheets` (no detail page). */

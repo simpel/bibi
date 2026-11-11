@@ -16,7 +16,7 @@ function line({ kinds }: { kinds: PlanLineIssue["kind"][] }): PreviewLine {
     ...{ hoursKind: null, hoursOwnerId: null },
   }));
   return {
-    ...{ index: 0, entityTypeId: "type", name: "Room", itemId: null, setupId: null },
+    ...{ index: 0, entityTypeId: "type", name: "Room", itemId: null, layoutId: null },
     ...{ startsAt: null, endsAt: null, quantity: null, effectiveQuantity: 1 },
     ...{ quantitySource: null, effectiveUnitPriceMinor: null, unitPriceSource: null },
     ...{ effectiveDiscountPercent: 0, discountSource: null, stateId: null },

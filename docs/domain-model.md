@@ -32,7 +32,7 @@ What changes:
 - **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
 - **One `Record` table** ([ADR 0056](decisions/0056-records-and-relations.md)) for every entity with a type and fields, with `fields` JSON behind a GIN index. *Done:* `Record` (`id`, `entityTypeId`, `base`, `fields`, `status`) is the supertable of `Item`, `Customer`, `Contact`, `Order`, `OrderTemplate`, `Line` and `Requirement`, which share its id (composite foreign key with `organizationId`); core writes both rows in one transaction (`packages/core/src/records/`). `base` is the entity base, or `ORDER_TEMPLATE` for a predefined order. *Done:* `LINK` values are `RecordLink` rows (`recordId`, `fieldId`, `targetRecordId`, `position`; composite foreign keys, several rows for several targets), never ids in `fields` JSON; core merges them into `fields` on read. Id lists are join tables. *Target:* polymorphic pairs point at `Record`.
 - **Money is derived** ([ADR 0057](decisions/0057-money-balance-is-derived.md)): a payment settles one receivable (sent quote, deposit or invoice); no balance is stored. External calls run after commit (ADR 0058).
-- **Capabilities, demands and buffers** ([ADR 0059](decisions/0059-capabilities-demands-and-buffers.md), accepted, partly built): the keys are renamed end to end (`capabilities`, `BUNDLE`, `CUSTOMISATIONS`, `ItemPart`, `ItemCustomisationGroup`); customisations work on any item, each option an item with a price effect (`ItemCustomisationOption`, `line.chooseOptions`); setup and teardown minutes on type, item and line are built (soft and hard buffers, `TEARDOWN`, the larger-of rule); the pool target selector is built as a derived read, `item.freeUnits` (a specific item, or an item type plus required list values; free units in name order, the first is the prepick); the type editor shows one section per capability with a plain-language switch (Pricing, Availability, Room layouts, Bundle, Customisations; sections for Resources and Staffing land with their slices); item types are Equipment or Person (`resourceKind`), items ask pools for units (`ItemDemand`, `itemDemand.*`) and lines get them as `LineAllocation` rows (prepicked, `lineAllocation.*`), held for the demand's windows by the line holds trigger, with the chained pool check (an AV unit needs a free technician); line reads carry derived `warnings` (an id and a kind, `UNFILLED_OPTIONAL_DEMAND` for an open slot of an optional demand; nothing stored, shown as a badge on the program line); still to come are the allocation UI (#384), working hours, and `item:write` for managers.
+- **Capabilities, demands and buffers** ([ADR 0059](decisions/0059-capabilities-demands-and-buffers.md), accepted, partly built): the keys are renamed end to end (`capabilities`, `BUNDLE`, `CUSTOMISATIONS`, `ItemPart`, `ItemCustomisationGroup`); customisations work on any item, each option an item with a price effect (`ItemCustomisationOption`, `line.chooseOptions`); setup and teardown minutes on type, item, layout and line are built (soft and hard buffers, `TEARDOWN`; first set wins line → layout → item → type since ADR 0103, which replaced the larger-of rule); the pool target selector is built as a derived read, `item.freeUnits` (a specific item, or an item type plus required list values; free units in name order, the first is the prepick); the type editor shows one section per capability with a plain-language switch (Pricing, Availability, Room layouts, Bundle, Customisations; sections for Resources and Staffing land with their slices); item types are Equipment or Person (`resourceKind`), items ask pools for units (`ItemDemand`, `itemDemand.*`) and lines get them as `LineAllocation` rows (prepicked, `lineAllocation.*`), held for the demand's windows by the line holds trigger, with the chained pool check (an AV unit needs a free technician); line reads carry derived `warnings` (an id and a kind, `UNFILLED_OPTIONAL_DEMAND` for an open slot of an optional demand; nothing stored, shown as a badge on the program line); still to come are the allocation UI (#384), working hours, and `item:write` for managers.
 
 ## ER diagram (MVP)
 
@@ -91,11 +91,10 @@ erDiagram
   ItemDemand ||--o{ LineAllocation : "is filled by"
   LineAllocation }o--o| Item : "allocates"
   LineAllocation ||--o{ Occupancy : "holds"
-  Item ||--o{ ItemSetup : "has"
-  Setup ||--o{ ItemSetup : "is used in"
   Item ||--o| FloorPlan : "is drawn as"
   Item ||--o{ SetupLayout : "is laid out as"
-  Setup ||--o{ SetupLayout : "is drawn in"
+  SetupLayout ||--o{ Line : "is booked by"
+  SetupLayout ||--o{ OrderTemplateLine : "is booked by"
   FloorPlan ||--o{ FloorElement : "has fixed"
   SetupLayout ||--o{ FloorElement : "has"
   FloorElementKind ||--o{ FloorElement : "is placed as"
@@ -156,7 +155,7 @@ erDiagram
 
 *MVP* · What the organization sets up itself. Everything is data per organization and is created through regular operations ([ADR 0021](decisions/0021-configurable-items.md)).
 
-A new organization starts with the fixed access roles (`member`, `manager`, `admin`; [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)) and no responsibilities. Nothing else is preinstalled, except the default order statuses, item states and grid so that orders work right away (ADR 0044). Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists, setups, and types with capabilities and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
+A new organization starts with the fixed access roles (`member`, `manager`, `admin`; [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)) and no responsibilities. Nothing else is preinstalled, except the default order statuses, item states and grid so that orders work right away (ADR 0044). Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists and types with capabilities and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
 
 ### ItemTypeGroup (`ItemTypeGroup`)
 
@@ -232,33 +231,9 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > Tags = values in fields that select from a vocabulary (no separate tag rows). A value cannot be archived as long as an item carries it or a requirement counts it. A vocabulary cannot be archived as long as a field uses it or a requirement counts one of its values.
 
-### Setup (`Setup`)
+### Setup (`Setup`) and ItemSetup (`ItemSetup`), retired
 
-*MVP* · The organization's own setups, e.g. Cinema, U-shape and Mingle.
-
-**Attributes**
-- name — unique
-- changeover time (`changeoverMinutes`)
-
-**Relations**
-- `1:N` is used in → ItemSetup
-
-> Cannot be archived as long as an active item has capacity for it.
-
-### ItemSetup (`ItemSetup`)
-
-*MVP* · Capacity per bookable item and setup, unique per pair.
-
-**Attributes**
-- item
-- setup
-- capacity (owned, nullable; null = the seats of the item's layout for the setup, ADR 0099)
-
-**Relations**
-- `N:1` Item has this
-- `N:1` Setup is used in this
-
-> Replaced as a set by `item.create/update` (`setups`). Reads carry the derived `effectiveCapacity` (typed, else the largest layout's seats, else null; ADR 0102) and `capacitySource` (`MANUAL`, `LAYOUT`, `NONE`); order planning checks against it.
+*Deprecated (ADR 0103)* · The shared setup list and the per-room capacity rows are no longer read or written; a room's arrangements are its `SetupLayout` rows. The tables, `Line.setupId` and `SetupLayout.setupId` stay until the next release, which drops them (expand, then contract, ADR 0013). `setup.*` and `item.*` `setups` are gone.
 
 ### FloorElementKind (`FloorElementKind`)
 
@@ -284,12 +259,21 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 ### SetupLayout (`SetupLayout`)
 
-*ADR 0099, 0102* · One named way of furnishing an item in one setup; an item may have several per setup (Banquet 60, Banquet 80).
+*ADR 0099, 0102, 0103* · One way of furnishing a room, called a Layout in the UI (Banquet 60, Theatre 120, Standing reception). A room has several; an order line books room + layout.
 
 **Attributes**
-- item, setup, name (unique among the item's active layouts), note, version, status
+- item (the room), name (unique among the room's active layouts), description (what it suits), note, version, status
+- capacity (owned, nullable; null = its seats; never above the room's `maxPeople`)
+- setup and teardown minutes (`setupMinutes`, `teardownMinutes`, owned, null = inherit: layout → item → type, ADR 0059 as amended by 0103)
+- drawing (`FloorElement` rows, optional; a layout with no pieces is fine)
 
-> Tied to item and setup, not to `ItemSetup`, so an item save never drops a drawing. `setupLayout.get|create|save|archive` (`item:read|write`) by id; the read carries its seats, the setup's effective capacity (the largest layout) and warnings.
+**Relations**
+- `N:1` Item is laid out as this
+- `1:N` has → FloorElement
+- `1:N` Line books this
+- `1:N` OrderTemplateLine books this
+
+> `layout.get|create|save|archive` (`item:read|write`) by id; the read carries its seats, `capacity`, `effectiveCapacity` (typed, else seats, else null), the buffer minutes, the room's `maxPeople` and `issues`. Two hard limits refuse a save (ADR 0103): a capacity above `Item.maxPeople` is `VALIDATION`, and a piece inside an emergency exit's no-block zone is `VALIDATION` (`EXIT_BLOCKED`, naming the pieces). Every other drawing issue is a warning. Changing a layout's minutes re-derives the holds of its lines that have not ended (trigger, ADR 0053). `floorPlan.get` returns `maxPeople` and every layout of the room.
 
 ### FloorElement (`FloorElement`)
 
@@ -300,6 +284,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - centre (xCm, yCm), rotationDeg
 - own width, depth, `seats`, chairs per side and swingDeg (each null = the kind's), label
 - doors and windows are snapped onto the nearest wall by `floorPlan.save` (ADR 0102)
+- `emergencyExit` (owned, door or window in a floor plan, ADR 0103): a hard limit. The no-block zone in front of it is at least 150 cm deep and as wide as the opening plus 20 cm on each side; a layout piece inside it is refused (`EXIT_BLOCKED`), and marking or moving an exit so an existing layout blocks it is `CONFLICT`, naming the layouts
 
 > Replaced as a set by its parent's save; audited on the parent.
 
@@ -402,7 +387,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Attributes**
 - name (unique among the organization's active templates), order type, start status (`statusId`), default own-field values
 - guest range (`minGuests`, `maxGuests`, optional; the package is made for that many guests, ADR 0081)
-- lines (`OrderTemplateLine`, replaced as a set): line type (base `LINE`), name, optional general item and setup, offset and duration in minutes from the order start, quantity (null = the order's headcount, ADR 0052)
+- lines (`OrderTemplateLine`, replaced as a set): line type (base `LINE`), name, optional general item and layout (`layoutId`, a layout of the item), offset and duration in minutes from the order start, quantity (null = the order's headcount, ADR 0052)
 - default choices (`OrderTemplateLineOption`, owned, ADR 0089): per template line the option items to preselect (foreign key to `Item`, never an option id, since groups get new ids when replaced), replaced with the lines, removed with their line; at most each normal group's maxPick, none in a split group (`VALIDATION` at `lines.<i>.options`). Reads add a derived `stale` for a default that no longer fits the item; a stale default is ignored by the intake and `order.createFromTemplate`, and dropped on the next save.
 - status (active / archived)
 
@@ -631,8 +616,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - name and type (the organization's own, base `LINE`) and custom fields
 - start – end (`startsAt`, `endsAt`; `[start, end)`; both or neither: an untimed line, e.g. a fee, never holds and is not on the calendar, [ADR 0052](decisions/0052-the-line-is-the-booking.md))
 - item (`itemId`, optional; any active item, e.g. a venue space or a dish; only a `BOOKABLE` item on a timed line is held)
-- setup (`setupId`, optional; one of the item's setups, requires the item)
-- buffers (`setupMinutes`, `teardownMinutes`; null = the item's, else its type's; ADR 0059)
+- layout (`layoutId`, optional; one of the item's active layouts, requires the item; replaces `setupId`, ADR 0103)
+- buffers (`setupMinutes`, `teardownMinutes`; null = the layout's, else the item's, else its type's; ADR 0059, 0103)
 - quantity (`quantity`; null = the order's headcount, guaranteed if set, else estimated; on an option line null = its parent's, and set only in a split group, ADR 0082)
 - commercial overrides (`unitPriceMinor`, `discountPercent`, `vatRatePercent`; null = inherit). Derived on every read, never stored: the unit price is the line's own, else the customer's price list valid on the line's day (else the order's desired start, else today; the newest start wins) with an agreed price for the item, else the item's price; the discount is the line's own, else that price list's general discount on the item's price, else 0; VAT is the line's own, else the item's, else the item's venue default. Each effective value comes with its source (`LINE` = own, anything else = inherited), so a changed price list or headcount shows on the line at once
 - state (`stateId`, an `ItemState` of the item's type; null for a line without an item), `stateOverridden` (set by hand, skipped by status moves)
@@ -648,7 +633,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `N:1` is in → ItemState
 - `1:N` has → LineStateChange (its state history)
 - `N:0..1` is held in → Item (bookable)
-- `N:0..1` is set up as → Setup
+- `N:0..1` books → SetupLayout
 - `1:N` adjusts → Requirement
 - `1:N` is charged via → OrderLine
 - `N:0..1` is an option of → AlternativeGroup
@@ -779,7 +764,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · Everything that can be sold or booked: dish, drink, venue space, equipment, guide, bundle.
 
-> **Done (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` (owned, an override of the type default, on any item); derived on read `effectiveSetupMinutes` and `effectiveTeardownMinutes` with their source (`ITEM` or `TYPE`). A line's effective setup is the larger of these and its setup's changeover.
+> **Done (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` (owned, an override of the type default, on any item); derived on read `effectiveSetupMinutes` and `effectiveTeardownMinutes` with their source (`ITEM` or `TYPE`). A line's own `layoutId` adds the layout's minutes first (line → layout → item → type, source `LINE`, `LAYOUT`, `ITEM` or `TYPE`; ADR 0103 replaced the "larger of the item's and the setup's changeover" rule).
 
 > **Done (ADR 0064):** derived on every read, `timeZone`: its venue's zone, else the organization's (the zone of its lines and occupancy).
 
@@ -796,7 +781,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
   - `BUNDLE`: contains other items with count, `offsetMinutes`, `durationMinutes`
   - `CUSTOMISATIONS`: customisation groups of options, each another item with a price effect (on any item)
   - `BOOKABLE`: occupancy in time, conflict protection, `defaultDurationMinutes`
-  - `SETUPS`: capacity per setup (requires `BOOKABLE`)
+  - `SETUPS` (UI: Layouts): the room's layouts and its people limit `maxPeople` (nullable = no limit; a hard limit on layout capacities and on the people of an order line; lowering it below a layout's capacity or an upcoming line's people is `CONFLICT`, naming them; ADR 0103). Requires `BOOKABLE`
 - buffers (`setupMinutes`, `teardownMinutes`; any item, null = the type's; ADR 0059)
 - venue (optional)
 - customerId (`null` = catalog item; set = a customer-specific bundle, created by `item.saveAsBundle` and listed by `item.list` only together with its customer)
@@ -812,7 +797,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` has → Occupancy
 - `1:N` asks → ItemDemand
 - `1:N` is allocated as a unit in → LineAllocation
-- `1:N` has → ItemSetup
+- `1:N` is laid out as → SetupLayout
 - Tagged via fields that select from a vocabulary
 - `1:N` OrderLine refers to this
 - `1:N` PriceListItem refers to this
@@ -1725,8 +1710,8 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | FieldDefinition | Fältdefinition |
 | Vocabulary | Lista |
 | VocabularyValue | Listvärde |
-| Setup | Uppställning |
-| ItemSetup | Item-uppställning |
+| Setup (retired, ADR 0103) | Uppställning |
+| ItemSetup (retired, ADR 0103) | Item-uppställning |
 | FloorElementKind | Möbeltyp |
 | FloorPlan | Planritning |
 | SetupLayout | Möblering |

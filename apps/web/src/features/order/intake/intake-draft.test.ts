@@ -13,7 +13,7 @@ const state: IntakeState = {
 };
 
 const line = {
-  ...{ key: "l1", entityTypeId: "lt", name: "Room", itemId: "i1", setupId: null },
+  ...{ key: "l1", entityTypeId: "lt", name: "Room", itemId: "i1", layoutId: null },
   ...{ startsAt: "2026-11-20T08:00:00.000Z", endsAt: "2026-11-20T10:00:00.000Z", quantity: null },
   ...{ unitPriceMinor: 1200, discountPercent: null, note: null, options: [], needs: [] },
   addOns: [],

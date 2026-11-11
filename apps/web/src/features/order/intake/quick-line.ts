@@ -26,7 +26,7 @@ export function quickLine({ item, lineTypeId, period, key }: QuickLineInput): Dr
         : period.endsAt
       : null;
   return {
-    ...{ key, entityTypeId: lineTypeId, name: item.name, itemId: item.id, setupId: null },
+    ...{ key, entityTypeId: lineTypeId, name: item.name, itemId: item.id, layoutId: null },
     startsAt: bookable && period ? period.startsAt.toISOString() : null,
     endsAt: endsAt?.toISOString() ?? null,
     ...{ quantity: null, unitPriceMinor: null, discountPercent: null, note: null },

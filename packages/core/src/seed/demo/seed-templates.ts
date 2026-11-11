@@ -17,11 +17,10 @@ type LineInput = {
   context: ExecuteContext;
   line: DemoTemplateLine;
   typeId: string;
-  refs: DemoRefs;
 };
 
-/** One template line as `orderTemplate.create` takes it: item, setup and defaults by name → ids. */
-async function toLineInput({ context, line, typeId, refs }: LineInput) {
+/** One template line as `orderTemplate.create` takes it: item, layout and defaults by name → ids. */
+async function toLineInput({ context, line, typeId }: LineInput) {
   const item = await context.db.item.findFirst({ where: { name: line.item } });
   if (!item) return missing({ what: `item ${line.item}` });
   const options: { itemId: string }[] = [];
@@ -30,10 +29,12 @@ async function toLineInput({ context, line, typeId, refs }: LineInput) {
     if (!option) return missing({ what: `option ${name}` });
     options.push({ itemId: option.id });
   }
-  const setupId = line.setup ? refs.setups.get(line.setup) : undefined;
-  if (line.setup && !setupId) return missing({ what: `setup ${line.setup}` });
+  const layout = line.layout
+    ? await context.db.setupLayout.findFirst({ where: { itemId: item.id, name: line.layout } })
+    : null;
+  if (line.layout && !layout) return missing({ what: `layout ${line.layout} of ${line.item}` });
   const input: OrderTemplateLineInput = {
-    ...{ entityTypeId: typeId, name: line.name, itemId: item.id, setupId: setupId ?? null },
+    ...{ entityTypeId: typeId, name: line.name, itemId: item.id, layoutId: layout?.id ?? null },
     ...{ offsetMinutes: line.offsetMinutes, durationMinutes: line.durationMinutes },
     quantity: line.quantity ?? null,
     options,
@@ -54,7 +55,7 @@ async function seedTemplate({ context, refs, template }: TemplateInput): Promise
   if (!lineType) return missing({ what: "a line type (base LINE)" });
   const lines: OrderTemplateLineInput[] = [];
   for (const line of template.lines) {
-    const input = await toLineInput({ context, line, typeId: lineType.id, refs });
+    const input = await toLineInput({ context, line, typeId: lineType.id });
     if (!input.ok) return input;
     lines.push(input.value);
   }

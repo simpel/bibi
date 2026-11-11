@@ -30,6 +30,9 @@ model Item {
   /// Buffers before and after a booking, in minutes (ADR 0059, owned); null = the type's.
   setupMinutes           Int?
   teardownMinutes        Int?
+  /// SETUPS: the most people the room may hold (fire safety, ventilation; ADR 0103, owned, a hard
+  /// limit on layouts and order lines); null = no limit.
+  maxPeople              Int?
   status                 RecordStatus               @default(ACTIVE)
   createdAt              DateTime                   @default(now())
   updatedAt              DateTime                   @updatedAt
@@ -38,7 +41,7 @@ model Item {
   venue                  Venue?                     @relation(fields: [venueId, organizationId], references: [id, organizationId])
   customer               Customer?                  @relation(fields: [customerId, organizationId], references: [id, organizationId])
   setups                 ItemSetup[]
-  /// SETUPS: the drawing of the item and its layouts (ADR 0099).
+  /// SETUPS: the drawing of the item and its layouts (ADR 0099, 0103).
   floorPlan              FloorPlan?
   setupLayouts           SetupLayout[]
   /// BUNDLE: the parts this item contains.

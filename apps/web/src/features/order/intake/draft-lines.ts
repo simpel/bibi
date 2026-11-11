@@ -13,7 +13,7 @@ function fromPreview({ line, newKey }: FromPreviewInput): DraftLine {
   return {
     key: newKey(),
     ...{ entityTypeId: line.entityTypeId, name: line.name },
-    ...{ itemId: line.itemId, setupId: line.setupId },
+    ...{ itemId: line.itemId, layoutId: line.layoutId },
     ...{ startsAt: iso({ date: line.startsAt }), endsAt: iso({ date: line.endsAt }) },
     quantity: line.quantity,
     ...{ unitPriceMinor: null, discountPercent: null, note: null },

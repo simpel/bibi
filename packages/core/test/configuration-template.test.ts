@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   archiveFieldDefinition,
   type ConfigurationImportResult,
-  createSetup,
   execute,
   importConfigurationTemplate,
   listEntityTypes,
@@ -20,7 +19,6 @@ const importTemplate = async ({ context }: { context: Context }) =>
 
 const names = ({ result }: { result: ConfigurationImportResult }) => ({
   vocabularies: result.created.vocabularies.map((list) => list.name),
-  setups: result.created.setups.map((setup) => setup.name),
   entityTypes: result.created.entityTypes.map((type) => type.name),
 });
 
@@ -30,7 +28,6 @@ describe("configuration.importTemplate (ADR 0021)", () => {
     const result = await importTemplate({ context });
     expect(names({ result })).toEqual({
       vocabularies: ["Allergens", ...template.lists.map((list) => list.name)],
-      setups: template.setups.map((setup) => setup.name),
       entityTypes: template.types.map((type) => type.name),
     });
     const dish = result.created.entityTypes.find((type) => type.name === "Dish");
@@ -56,7 +53,7 @@ describe("configuration.importTemplate (ADR 0021)", () => {
       result: await execute({ operation: updateEntityType, input: capabilities, context }),
     });
     const again = await importTemplate({ context });
-    expect(names({ result: again })).toEqual({ vocabularies: [], setups: [], entityTypes: [] });
+    expect(names({ result: again })).toEqual({ vocabularies: [], entityTypes: [] });
     expect(again.skipped.entityTypes).toHaveLength(template.types.length);
     const types = unwrap({
       result: await execute({ operation: listEntityTypes, input: { base: "ITEM" }, context }),
@@ -64,15 +61,6 @@ describe("configuration.importTemplate (ADR 0021)", () => {
     const kept = types.items.find((type) => type.id === room?.id);
     expect(kept?.capabilities).toEqual(["BOOKABLE"]);
     expect(kept?.fields.some((field) => field.name === "Floor")).toBe(false);
-  });
-
-  it("only adds what is missing next to the organization's own configuration", async () => {
-    const context = testContext();
-    const own = { name: "Theatre", changeoverMinutes: 5 };
-    unwrap({ result: await execute({ operation: createSetup, input: own, context }) });
-    const result = await importTemplate({ context });
-    expect(result.skipped.setups).toEqual(["Theatre"]);
-    expect(result.created.setups).toHaveLength(template.setups.length - 1);
   });
 
   it("audits every created row under its own entity type", async () => {
@@ -84,7 +72,6 @@ describe("configuration.importTemplate (ADR 0021)", () => {
     const count = ({ of }: { of: string }) => rows.filter((row) => row.entityType === of);
     const fields = template.types.flatMap((type) => type.fields ?? []);
     expect(count({ of: "vocabulary" })).toHaveLength(result.created.vocabularies.length);
-    expect(count({ of: "setup" })).toHaveLength(result.created.setups.length);
     expect(count({ of: "entityType" })).toHaveLength(result.created.entityTypes.length);
     expect(count({ of: "fieldDefinition" })).toHaveLength(fields.length);
     expect(rows.every((row) => row.organizationId === context.organizationId)).toBe(true);

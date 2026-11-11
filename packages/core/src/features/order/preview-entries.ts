@@ -47,7 +47,7 @@ function previewRow({ input, plan, p, evaluation, terms, row }: RowInput): Previ
   return {
     index: plan.slots[row]?.addOnIndex ?? plan.slots[row]?.lineIndex ?? row,
     ...{ entityTypeId: line.entityTypeId, name: line.name },
-    ...{ itemId: line.itemId ?? null, setupId: line.setupId ?? null },
+    ...{ itemId: line.itemId ?? null, layoutId: line.layoutId ?? null },
     ...{ startsAt: line.startsAt ?? null, endsAt: line.endsAt ?? null },
     quantity: line.quantity ?? null,
     effectiveQuantity: evaluated?.quantity.value ?? null,

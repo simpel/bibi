@@ -3,9 +3,7 @@ import {
   archiveCustomer,
   archiveFieldDefinition,
   archiveItem,
-  archiveSetup,
   createCustomer,
-  createSetup,
   execute,
   updateFieldDefinition,
   updateItem,
@@ -60,26 +58,5 @@ describe("field usage across bases (ADR 0026)", () => {
       context,
     });
     expect(errorCode({ result: archive })).toBeNull();
-  });
-
-  it("refuses to archive a setup while an active item has a capacity for it", async () => {
-    const context = testContext();
-    const type = await createRoomType({ context });
-    const setup = unwrap({
-      result: await execute({ operation: createSetup, input: { name: "Theatre" }, context }),
-    });
-    const item = await createTestItem({ context, entityTypeId: type.id, name: "Vinga" });
-    unwrap({
-      result: await execute({
-        operation: updateItem,
-        input: { id: item.id, setups: [{ setupId: setup.id, capacity: 220 }] },
-        context,
-      }),
-    });
-    const blocked = await execute({ operation: archiveSetup, input: { id: setup.id }, context });
-    expect(errorCode({ result: blocked })).toBe("CONFLICT");
-    unwrap({ result: await execute({ operation: archiveItem, input: { id: item.id }, context }) });
-    const allowed = await execute({ operation: archiveSetup, input: { id: setup.id }, context });
-    expect(errorCode({ result: allowed })).toBeNull();
   });
 });

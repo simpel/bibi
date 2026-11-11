@@ -18,30 +18,40 @@ export async function checkOrder({ context, orderId }: CheckOrderInput) {
 export type CheckPlaceInput = Db & {
   orderId: string;
   itemId: string | null;
-  setupId: string | null;
+  layoutId: string | null;
+  /** The layout the line already books: kept as is, it may since have been archived. */
+  keptLayoutId?: string | null;
 };
+
+const atLayout = ({ message }: { message: string }) =>
+  invalid({ message, issues: [{ path: "layoutId", message }] });
 
 /**
  * Where a line is held: no item at all, or an active item (general or the order
- * customer's own bundle). A setup needs a `BOOKABLE` item and one of the item's own setups;
- * a setup without an item is a `VALIDATION` issue on `setupId`.
+ * customer's own bundle). A layout (ADR 0103) needs a `BOOKABLE` item and must be one of the
+ * item's active layouts; a layout without an item is a `VALIDATION` issue on `layoutId`.
  */
-export async function checkPlace({ context, orderId, itemId, setupId }: CheckPlaceInput) {
+export async function checkPlace({
+  context,
+  orderId,
+  itemId,
+  layoutId,
+  keptLayoutId,
+}: CheckPlaceInput) {
   if (!itemId) {
-    if (!setupId) return ok({ value: true });
-    const message = "A setup needs a bookable item";
-    return invalid({ message, issues: [{ path: "setupId", message }] });
+    return layoutId ? atLayout({ message: "A layout needs a bookable item" }) : ok({ value: true });
   }
   const order = await context.db.order.findFirst({ where: { id: orderId } });
   const customerId = order?.customerId;
   const known = await checkItem({ context, itemId, customerId });
-  if (!known.ok || !setupId) return known;
+  if (!known.ok || !layoutId) return known;
   const bookable = await checkBookable({ context, itemId, customerId });
   if (!bookable.ok) return bookable;
-  const found = await context.db.itemSetup.count({ where: { itemId, setupId } });
-  if (found > 0) return ok({ value: true });
-  const message = "The item has no such setup";
-  return invalid({ message, issues: [{ path: "setupId", message }] });
+  const kept = layoutId === keptLayoutId;
+  const found = await context.db.setupLayout.count({
+    where: { id: layoutId, itemId, ...(kept ? { status: { in: ["ACTIVE", "ARCHIVED"] } } : {}) },
+  });
+  return found > 0 ? ok({ value: true }) : atLayout({ message: "The item has no such layout" });
 }
 
 type CheckItemInput = Db & { itemId: string; customerId: string | undefined };

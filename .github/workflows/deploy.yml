@@ -39,7 +39,7 @@ jobs:
         if: steps.cfg.outputs.configured == 'true'
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-          for app in web mcp worker; do
+          for app in web mcp worker migrate backup; do
             docker manifest inspect "ghcr.io/${GITHUB_REPOSITORY}-${app}:${SHA}" > /dev/null
           done
       - name: Open SSH tunnel to Coolify (its port is not public, ADR 0013)

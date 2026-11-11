@@ -4,7 +4,7 @@ import type { DraftLine } from "./draft-line";
 
 /** The parts of a line's second row, each a name or a count, never formatted text. */
 export type LineDetails = {
-  setup: string | null;
+  layout: string | null;
   /** "Fish" or, in a split group, "Fish" with its quantity. */
   choices: { name: string; quantity: number | null }[];
   needs: { name: string; quantity: number }[];
@@ -29,7 +29,7 @@ export function lineDetails({ line, items, needValues }: LineDetailsInput): Line
   );
   const values = new Map(needValues.map(({ id, name }) => [id, name]));
   return {
-    setup: item?.setups.find(({ id }) => id === line.setupId)?.name ?? null,
+    layout: item?.layouts.find(({ id }) => id === line.layoutId)?.name ?? null,
     choices: line.options.map(({ itemId, quantity }) => ({
       name: options.get(itemId) ?? "–",
       quantity,

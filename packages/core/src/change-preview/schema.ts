@@ -5,7 +5,7 @@ import { FEATURE_GROUPS } from "../permissions/features";
 // Optional: JSON drops `undefined`, so a field that did not exist arrives without the key.
 const ValueSchema = z.unknown().optional().describe("The value; absent when it did not exist");
 
-/** One changed field, by path (`priceMinor`, `fields.seats`, `setups.<setupId>.capacity`). */
+/** One changed field, by path (`priceMinor`, `fields.seats`, `layouts.<layoutId>.capacity`). */
 export const FieldChangeSchema = z.object({
   path: z.string().describe("Dot path of the field; array entries are keyed by their id"),
   before: ValueSchema,

@@ -3,8 +3,8 @@ import {
   BookableDisplay,
   BundleDisplay,
   CustomisationsDisplay,
+  LayoutsDisplay,
   PricedDisplay,
-  SetupsDisplay,
 } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { getNumberFormat } from "@/server/number-format";
@@ -13,7 +13,7 @@ import type { ItemFormData } from "./item-form-data";
 
 export type ItemCapabilitiesProps = { item: ItemDto; data: ItemFormData };
 
-/** The capability values of an item (price, length, setups, parts, customisations), shown with `@bibi/ui` displays. */
+/** The capability values of an item (price, length, layouts, parts, customisations), shown with `@bibi/ui` displays. */
 export async function ItemCapabilities({ item, data }: ItemCapabilitiesProps) {
   const t = await getTranslations("item");
   const { money } = await getNumberFormat();
@@ -28,15 +28,8 @@ export async function ItemCapabilities({ item, data }: ItemCapabilitiesProps) {
     item.defaultDurationMinutes === null
       ? null
       : t("durationValue", { minutes: item.defaultDurationMinutes });
-  const setups = item.setups.map(({ setupId, effectiveCapacity, capacitySource }) => ({
-    name: data.setups.find(({ id }) => id === setupId)?.name ?? "–",
-    capacity:
-      effectiveCapacity === null
-        ? "–"
-        : capacitySource === "LAYOUT"
-          ? t("capacityFromLayout", { capacity: effectiveCapacity })
-          : String(effectiveCapacity),
-  }));
+  const limits =
+    item.maxPeople === null ? [] : [{ label: t("maxPeople"), value: String(item.maxPeople) }];
   const parts = item.parts.map(({ itemId, quantity, offsetMinutes, required }) =>
     t("partValue", {
       quantity,
@@ -53,7 +46,7 @@ export async function ItemCapabilities({ item, data }: ItemCapabilitiesProps) {
     <div className="grid gap-4 sm:grid-cols-2">
       <PricedDisplay title={t("sections.price")} price={price} />
       <BookableDisplay title={t("sections.bookable")} duration={duration} />
-      <SetupsDisplay title={t("sections.setups")} setups={setups} />
+      <LayoutsDisplay title={t("sections.layouts")} rows={limits} />
       <BundleDisplay title={t("sections.parts")} parts={parts} />
       <CustomisationsDisplay title={t("sections.customisations")} groups={groups} />
     </div>

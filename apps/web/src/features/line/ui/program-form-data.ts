@@ -3,9 +3,12 @@ import type { NamedOption } from "@/components/form/named-option";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
 import type { LineStateOption } from "./line-state-option";
 
-/** A bookable item with its setups, its venue's zone and its list price (shown in the picker). */
+/** One layout of a room: its name and capacity (null = unknown). */
+export type LayoutOption = NamedOption & { capacity: number | null };
+
+/** A bookable item with its layouts, its venue's zone and its list price (shown in the picker). */
 export type BookableOption = NamedOption & {
-  setupIds: string[];
+  layouts: LayoutOption[];
   timeZone: string;
   priceMinor: number | null;
   priceUnit: ItemDto["priceUnit"];
@@ -32,13 +35,12 @@ export type CustomisableItem = {
 
 /**
  * What the run schedule reads besides the lines: line types and lists (own
- * fields), the bookable items and setups to pick from, and the item states of the lines.
+ * fields), the bookable items and their layouts to pick from, and the item states of the lines.
  */
 export type ProgramFormData = TypedFormData & {
   items: BookableOption[];
   /** The caller may not view items: their names show as hidden and the picker is disabled. */
   itemsHidden: boolean;
-  setups: NamedOption[];
   /** `BUNDLE` items that can be added as a bundle line with its parts (ADR 0059). */
   bundles: BundleOption[];
   /** The organization's zone: the zone of a line without an item (ADR 0064). */

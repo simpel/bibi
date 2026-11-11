@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { BufferMinutesShape, bufferMinutesInputShape } from "../../shared/buffers";
 import { isSimpleOutline } from "./outline";
 import {
   FloorElementInputSchema,
@@ -15,7 +16,7 @@ const version = z
 
 export const CapacitySourceSchema = z
   .enum(["LAYOUT", "MANUAL", "NONE"])
-  .describe("LAYOUT: the layout's seats. MANUAL: a typed capacity. NONE: neither");
+  .describe("LAYOUT: the layout's seats. MANUAL: a typed capacity. NONE: neither (no pieces)");
 
 export const FloorPlanShapeSchema = z.object({
   widthCm: z.number().int().min(100).max(20_000),
@@ -53,24 +54,37 @@ export const FloorPlanSaveInputSchema = FloorPlanShapeSchema.extend({
   }
 });
 
-export const SetupCapacitySchema = z.object({
-  setupId: z.string(),
-  seatCount: z
-    .number()
-    .int()
-    .nullable()
-    .describe("The most seats of the item's layouts for this setup; null = none drawn"),
-  capacity: z.number().int().nullable().describe("Typed capacity; null = the largest layout's"),
+const name = z.string().trim().min(1).max(80).describe("e.g. Banquet 80; unique within the room");
+const description = z
+  .string()
+  .trim()
+  .max(2000)
+  .nullable()
+  .describe("What the layout is suited for, e.g. dinner with speeches and a dance floor");
+const capacity = z
+  .number()
+  .int()
+  .positive()
+  .max(100_000)
+  .nullable()
+  .describe("Typed capacity; null = the layout's seats. Never above the room's maxPeople");
+
+/** The facts every layout read carries, with its capacity after inheritance. */
+const LayoutFactsShape = {
+  id: z.string(),
+  itemId: z.string(),
+  name: z.string(),
+  description: z.string().nullable(),
+  version: z.number().int(),
+  seatCount: z.number().int().describe("Chairs drawn in the layout"),
+  capacity: z.number().int().nullable().describe("Typed capacity; null = the seats"),
   effectiveCapacity: z.number().int().nullable(),
   capacitySource: CapacitySourceSchema,
-});
+  ...BufferMinutesShape,
+};
 
 export const LayoutSummarySchema = z.object({
-  id: z.string(),
-  setupId: z.string(),
-  name: z.string(),
-  version: z.number().int(),
-  seatCount: z.number().int(),
+  ...LayoutFactsShape,
   elements: z.array(FloorElementSchema).describe("The layout's pieces, e.g. for a thumbnail"),
 });
 
@@ -78,69 +92,56 @@ export const FloorPlanSchema = FloorPlanShapeSchema.extend({
   id: z.string().nullable().describe("null = nothing saved yet; the default rectangle is shown"),
   itemId: z.string(),
   version: z.number().int(),
+  maxPeople: z.number().int().nullable().describe("The room's people limit; null = none"),
   elements: z.array(FloorElementSchema),
-  setups: z.array(SetupCapacitySchema).describe("One per setup the item has"),
-  layouts: z
-    .array(LayoutSummarySchema)
-    .describe("Every layout of the item, by setup in the item's order, then by name"),
+  layouts: z.array(LayoutSummarySchema).describe("Every layout of the room, by name"),
 });
 
-const name = z.string().trim().min(1).max(80).describe("e.g. Banquet 80; unique within the item");
+export const LayoutIdInputSchema = z.object({ id: z.string().min(1) });
 
-export const SetupLayoutIdInputSchema = z.object({ id: z.string().min(1) });
-
-export const SetupLayoutCreateInputSchema = z.object({
-  itemId: z.string().min(1),
-  setupId: z.string().min(1).describe("One of the item's setups"),
+export const LayoutCreateInputSchema = z.object({
+  itemId: z.string().min(1).describe("The room (an item with SETUPS)"),
   name,
+  description: description.optional(),
+  capacity: capacity.optional(),
+  ...bufferMinutesInputShape({ inherits: "the room's" }),
   copyFromId: z
     .string()
     .min(1)
     .optional()
-    .describe("Another layout of the same item to copy the pieces and note from"),
+    .describe("Another layout of the same room to copy the pieces, note and other fields from"),
 });
 
-const capacity = z
-  .number()
-  .int()
-  .positive()
-  .max(100_000)
-  .nullable()
-  .optional()
-  .describe(
-    "Typed capacity for the layout's setup in this item; null = the largest layout's seats; omit = unchanged",
-  );
-
-export const SetupLayoutSaveInputSchema = z.object({
+export const LayoutSaveInputSchema = z.object({
   id: z.string().min(1),
   expectedVersion: version,
   name: name.optional().describe("New name; omit = unchanged"),
+  description: description.optional().describe("omit = unchanged"),
+  capacity: capacity.optional().describe("omit = unchanged"),
+  ...bufferMinutesInputShape({ inherits: "the room's; omit = unchanged" }),
   note: z.string().trim().max(2000).nullable().optional(),
-  capacity,
   elements: z
     .array(FloorElementInputSchema)
     .max(400)
     .describe("The layout's pieces (no fixed kinds). Replaces the whole set."),
 });
 
-export const SetupLayoutSchema = SetupCapacitySchema.omit({ seatCount: true }).extend({
-  id: z.string(),
-  itemId: z.string(),
-  name: z.string(),
-  version: z.number().int(),
+export const LayoutSchema = z.object({
+  ...LayoutFactsShape,
+  maxPeople: z.number().int().nullable().describe("The room's people limit; null = none"),
   note: z.string().nullable(),
-  seatCount: z.number().int().describe("This layout's seats"),
   elements: z.array(FloorElementSchema),
   plan: FloorPlanShapeSchema.extend({
     elements: z.array(FloorElementSchema).describe("The floor plan's fixed elements"),
   }),
-  issues: z.array(LayoutIssueSchema).describe("Warnings; they never block a save"),
+  issues: z
+    .array(LayoutIssueSchema)
+    .describe("Problems; EXIT_BLOCKED and OVER_LIMIT refuse a save, the rest are warnings"),
 });
 
 export type FloorPlanDto = z.infer<typeof FloorPlanSchema>;
-export type SetupLayoutDto = z.infer<typeof SetupLayoutSchema>;
+export type LayoutDto = z.infer<typeof LayoutSchema>;
 export type LayoutSummaryDto = z.infer<typeof LayoutSummarySchema>;
-export type SetupCapacityDto = z.infer<typeof SetupCapacitySchema>;
-export type SetupLayoutSaveInput = z.input<typeof SetupLayoutSaveInputSchema>;
-export type SetupLayoutCreateInput = z.input<typeof SetupLayoutCreateInputSchema>;
+export type LayoutSaveInput = z.input<typeof LayoutSaveInputSchema>;
+export type LayoutCreateInput = z.input<typeof LayoutCreateInputSchema>;
 export type FloorPlanSaveInput = z.input<typeof FloorPlanSaveInputSchema>;

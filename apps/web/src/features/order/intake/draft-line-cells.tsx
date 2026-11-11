@@ -16,13 +16,13 @@ function AddOnName({ row }: { row: DraftLineRow }) {
   );
 }
 
-/** The name, then setup, choices, needs, price override and note on a second row. */
+/** The name, then layout, choices, needs, price override and note on a second row. */
 export function LineNameCell({ row }: { row: DraftLineRow }) {
   const t = useTranslations("orderIntake.lines");
   const { details } = row;
   if (!details) return <AddOnName row={row} />;
   const parts = [
-    details.setup,
+    details.layout,
     ...details.choices.map(({ name, quantity }) =>
       quantity === null ? name : `${name} ${quantity}`,
     ),

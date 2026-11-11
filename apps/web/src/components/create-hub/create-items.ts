@@ -5,7 +5,6 @@ import {
   CalendarCheckIcon,
   CircleDotIcon,
   ClipboardListIcon,
-  LayoutGridIcon,
   ListIcon,
   ShapesIcon,
   TagIcon,
@@ -73,13 +72,6 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
     group: "settings",
     href: ROUTES.adminLists,
     icon: ListIcon,
-    permission: "configuration:write",
-  },
-  {
-    key: "setup",
-    group: "settings",
-    href: ROUTES.adminSetupsSection,
-    icon: LayoutGridIcon,
     permission: "configuration:write",
   },
   {

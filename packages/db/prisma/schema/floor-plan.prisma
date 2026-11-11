@@ -68,25 +68,36 @@ model FloorPlan {
   @@index([organizationId, status])
 }
 
-/// Setup layout – one way of furnishing an item in a setup (ADR 0099, 0102); an item may have
-/// several per setup. Tied to item and setup, not to `ItemSetup`, which `item.*` replaces as a set:
-/// a layout survives an item save, and a setup removed and added again gets its drawings back.
-/// Owned; `name` null = the setup's name; `version` counts saves.
+/// Layout – one way of furnishing a room (ADR 0099, 0102, 0103): a name, what it suits, a capacity
+/// and setup and teardown minutes, with an optional drawing. A room has several; order lines book
+/// room + layout. All columns are owned: `capacity` null = its seats; `setupMinutes` and
+/// `teardownMinutes` null = the item's, else its type's (ADR 0059 as amended by 0103); `name` is
+/// always written (nullable only for expand/contract); `setupId` is no longer written and is
+/// dropped in the next release. `version` counts saves.
+/// Trigger (ADR 0053): changing `setupMinutes` or `teardownMinutes` re-derives the holds of the
+/// lines that book it and have not ended (`sync_line_occupancy.sql`).
 model SetupLayout {
-  id             String         @id @default(cuid(2))
-  organizationId String
-  itemId         String
-  setupId        String
-  name           String?
-  note           String?
+  id              String         @id @default(cuid(2))
+  organizationId  String
+  itemId          String
+  setupId         String?
+  name            String?
+  /// What the layout is suited for, e.g. "Dinner with speeches, dance floor at the back".
+  description     String?
+  capacity        Int?
+  setupMinutes    Int?
+  teardownMinutes Int?
+  note            String?
   version        Int            @default(1)
   status         RecordStatus   @default(ACTIVE)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   createdBy      String?
   item           Item           @relation(fields: [itemId, organizationId], references: [id, organizationId])
-  setup          Setup          @relation(fields: [setupId, organizationId], references: [id, organizationId])
+  setup          Setup?         @relation(fields: [setupId, organizationId], references: [id, organizationId])
   elements       FloorElement[]
+  lines          Line[]
+  templateLines  OrderTemplateLine[]
 
   @@unique([id, organizationId])
   @@index([organizationId, itemId])
@@ -115,6 +126,9 @@ model FloorElement {
   seatsLeft      Int?
   /// DOOR, WINDOW: own opening angle; null = the kind's.
   swingDeg       Int?
+  /// DOOR, WINDOW in a floor plan: an emergency exit whose no-block zone every layout keeps clear
+  /// (ADR 0103, a hard limit).
+  emergencyExit  Boolean          @default(false)
   label          String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt

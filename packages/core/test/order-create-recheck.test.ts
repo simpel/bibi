@@ -75,11 +75,11 @@ describe("order.create: the re-check inside the transaction (ADR 0081 decision 1
     const lineRows = await context.db.line.count();
     const lines = [
       roomLine({ setup, from: 9, to: 10 }),
-      { ...roomLine({ setup, from: 10, to: 11 }), quantity: 2, setupId: "no-such-setup" },
+      { ...roomLine({ setup, from: 10, to: 11 }), quantity: 2, layoutId: "no-such-layout" },
     ];
     const result = await createWith({ setup, input: { lines } });
     expect(errorCode({ result })).toBe("VALIDATION");
-    expect(pathsOf({ result })).toEqual(["lines.1.setupId"]);
+    expect(pathsOf({ result })).toEqual(["lines.1.layoutId"]);
     expect(await orderCount({ context })).toBe(before);
     expect(await context.db.line.count()).toBe(lineRows);
   });

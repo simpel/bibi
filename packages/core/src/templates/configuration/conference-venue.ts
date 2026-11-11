@@ -14,15 +14,6 @@ export const conferenceVenueConfiguration: ConfigurationTemplate = {
     { name: "Severity", values: ["Intolerance", "Allergy", "Anaphylaxis"] },
     { name: "Accessibility", values: ["Wheelchair", "Hearing loop", "Guide dog"] },
   ],
-  setups: [
-    { name: "Theatre", changeoverMinutes: 15 },
-    { name: "Classroom", changeoverMinutes: 30 },
-    { name: "U-shape", changeoverMinutes: 30 },
-    { name: "Boardroom", changeoverMinutes: 20 },
-    { name: "Cabaret", changeoverMinutes: 40 },
-    { name: "Banquet", changeoverMinutes: 60 },
-    { name: "Reception", changeoverMinutes: 15 },
-  ],
   types: conferenceVenueTypes,
   responsibilities: [
     { name: "Sales", types: ["Bundle"] },

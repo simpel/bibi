@@ -16,6 +16,10 @@ loadEnvConfig(
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.config.ts");
 
 const config: NextConfig = {
+  // The Docker image ships only the traced files (`.next/standalone`), not node_modules or the build
+  // cache. Trace from the repo root so workspace packages and pnpm's store are included.
+  output: "standalone",
+  outputFileTracingRoot: resolve(import.meta.dirname, "../.."),
   // Workspace packages ship TypeScript sources (no build step).
   transpilePackages: [
     "@bibi/api",

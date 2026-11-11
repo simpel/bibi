@@ -19,7 +19,7 @@ export const STEP_FIELDS: Record<WizardStep, Fields> = {
     "defaultDurationMinutes",
     "setupMinutes",
     "teardownMinutes",
-    "setups",
+    "maxPeople",
     "parts",
     "customisationGroups",
   ],

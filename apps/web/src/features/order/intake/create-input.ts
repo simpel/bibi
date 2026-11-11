@@ -18,7 +18,7 @@ const date = ({ at }: { at: string | null }) => (at === null ? null : new Date(a
 export function toPreviewLine({ line }: { line: DraftLine }): PreviewDraftLine {
   return {
     ...{ entityTypeId: line.entityTypeId, name: line.name },
-    ...{ itemId: line.itemId, setupId: line.setupId, quantity: line.quantity },
+    ...{ itemId: line.itemId, layoutId: line.layoutId, quantity: line.quantity },
     ...{ startsAt: date({ at: line.startsAt }), endsAt: date({ at: line.endsAt }) },
     ...{ unitPriceMinor: line.unitPriceMinor, discountPercent: line.discountPercent },
     fields: line.fields,
@@ -112,7 +112,7 @@ function templateLine({ line, period }: { line: DraftLine; period: IntakePeriod 
   const to = line.endsAt ? new Date(line.endsAt).getTime() : period.endsAt.getTime();
   return {
     ...{ entityTypeId: line.entityTypeId, name: line.name },
-    ...{ itemId: line.itemId, setupId: line.setupId, quantity: line.quantity },
+    ...{ itemId: line.itemId, layoutId: line.layoutId, quantity: line.quantity },
     offsetMinutes: Math.max(0, Math.round((from - start) / MINUTE)),
     durationMinutes: Math.max(1, Math.round((to - from) / MINUTE)),
   };

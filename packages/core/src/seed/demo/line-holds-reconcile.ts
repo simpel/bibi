@@ -45,19 +45,19 @@ async function rebuildLineHolds({ context }: ReconcileContext): Promise<HoldRow[
       ...{ id: true, itemId: true, startsAt: true, endsAt: true, ...minutes },
       state: { select: { hold: true } },
       setup: { select: { changeoverMinutes: true } },
+      layout: { select: minutes },
       item: { select: { ...minutes, entityType: { select: minutes } } },
       allocations: HELD_ALLOCATIONS,
     },
   });
   return lines.flatMap(({ id: lineId, itemId, startsAt, endsAt, state, setup, item, ...rest }) => {
-    const { allocations, ...line } = rest;
+    const { allocations, layout, ...line } = rest;
     if (!itemId || !state || !startsAt || !endsAt) return [];
-    const buffers = effectiveBuffers({
-      line,
-      item,
-      type: item?.entityType ?? null,
-      changeoverMinutes: setup?.changeoverMinutes ?? null,
-    });
+    const buffers = effectiveBuffers({ line, layout, item, type: item?.entityType ?? null });
+    // A line saved before layouts (a setup, no layout) keeps the old rule in the trigger until it
+    // is saved again (ADR 0103): at least its setup's changeover.
+    const legacy = !layout && setup ? setup.changeoverMinutes : 0;
+    buffers.effectiveSetupMinutes = Math.max(buffers.effectiveSetupMinutes, legacy);
     return rowsOf({
       line: { lineId, itemId, holdKind: state.hold, startsAt, endsAt },
       setup: buffers.effectiveSetupMinutes,

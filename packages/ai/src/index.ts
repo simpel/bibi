@@ -114,7 +114,6 @@ export type {
   MemberWire,
   OccupancyWire,
   SearchHitWire,
-  SetupWire,
   SkillCardWire,
   SkillRow,
   VenueWire,

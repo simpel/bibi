@@ -43,7 +43,6 @@ import type {
   MemberWire,
   OccupancyWire,
   SearchHitWire,
-  SetupWire,
   VenueWire,
   VocabularyWire,
 } from "./wire-schemas";
@@ -113,8 +112,6 @@ export type ToolUiProps = BoardUiProps &
     "field-definition-card": { field: FieldDefinitionWire };
     "vocabulary-table": { items: VocabularyWire[]; nextCursor: string | null };
     "vocabulary-card": { vocabulary: VocabularyWire };
-    "setup-table": { items: SetupWire[]; nextCursor: string | null };
-    "setup-card": { setup: SetupWire };
     "responsibility-table": { items: ResponsibilityWire[]; nextCursor: string | null };
     "responsibility-card": { responsibility: ResponsibilityWire };
     "assignment-table": { items: AssignmentWire[]; nextCursor: string | null };

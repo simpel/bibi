@@ -1,7 +1,7 @@
 ---
 name: find-available-space
 description: "Find bookable items that fit a meeting or event: number of people, size, features, location. Use when the user asks which space or venue suits a group, e.g. 'a space for 40 with daylight in Göteborg'."
-allowed-tools: search item_list item_get entityType_list setup_list venue_list venue_get
+allowed-tools: search item_list item_get entityType_list venue_list venue_get
 metadata:
   title: "Find available space"
 ---
@@ -20,12 +20,13 @@ Goal: shortlist bookable items that fit the request and explain why each one fit
 3. Search broadly: call `search` with the request in the user's own words, restricted to
    `entityTypes: ["item"]`. Then call `item_list` with `capability: "BOOKABLE"` (optionally
    `venueId` or `entityTypeId`) to cover items that search missed.
-4. Filter strictly on hard requirements: a setup capacity (`setups[].capacity`, names from
-   `setup_list`) must be at least the participant count for the wanted setup (any setup if none
-   is named); other requirements are checked against the item's `fields`. Use `item_get` and
+4. Filter strictly on hard requirements: a layout's capacity (`layouts[].effectiveCapacity`)
+   must be at least the participant count, for a layout whose name or description matches the
+   wanted arrangement (any layout if none is named), and the room's `maxPeople` must allow it;
+   other requirements are checked against the item's `fields`. Use `item_get` and
    `venue_get` for details.
 5. Rank by fit: the smallest item that still fits comes first. Show at most five options with
-   capacity per setup, the relevant field values and the venue.
+   capacity per layout, the relevant field values and the venue.
 
 ## Availability
 

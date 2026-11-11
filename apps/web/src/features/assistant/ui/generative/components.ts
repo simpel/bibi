@@ -60,8 +60,6 @@ import { RunSheetDefinitionCardView } from "./run-sheet-definition-card-view";
 import { RunSheetDefinitionTableView } from "./run-sheet-definition-table-view";
 import { RunSheetTableView } from "./run-sheet-table-view";
 import { SearchResultsView } from "./search-results-view";
-import { SetupCardView } from "./setup-card-view";
-import { SetupTableView } from "./setup-table-view";
 import { SkillCardView } from "./skill-card-view";
 import { SkillTableView } from "./skill-table-view";
 import { StatusGridTableView } from "./status-grid-table-view";
@@ -120,8 +118,6 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "field-definition-card": FieldDefinitionCardView,
   "vocabulary-table": VocabularyTableView,
   "vocabulary-card": VocabularyCardView,
-  "setup-table": SetupTableView,
-  "setup-card": SetupCardView,
   "responsibility-table": ResponsibilityTableView,
   "responsibility-card": ResponsibilityCardView,
   "assignment-table": AssignmentTableView,

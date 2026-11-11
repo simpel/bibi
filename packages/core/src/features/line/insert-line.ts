@@ -9,6 +9,7 @@ import { syncAllocations } from "../line-allocation/sync-allocations";
 import type { LineRole } from "./line-role";
 import { checkLinePeriod, checkOrder, checkPlace } from "./line-rules";
 import { initialStateOf } from "./line-state";
+import { checkPeopleLimit } from "./people-limit";
 import type { LineCreateInput, LineRecord } from "./schema";
 import { recordFirstState } from "./state-history";
 import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
@@ -56,7 +57,14 @@ export async function insertLine({
     await loadTypeOfBase({ context, entityTypeId, base: "LINE" }),
     await checkOrder({ context, orderId: data.orderId }),
     checkLinePeriod(period),
-    await checkPlace({ context, orderId: data.orderId, itemId, setupId: data.setupId ?? null }),
+    await checkPlace({ context, orderId: data.orderId, itemId, layoutId: data.layoutId ?? null }),
+    await checkPeopleLimit({
+      ...{ context, orderId: data.orderId },
+      line: {
+        ...{ id: null, name: data.name, itemId, quantity: data.quantity ?? null },
+        ...{ parentLineId: data.parentLineId ?? null, role: data.role ?? null },
+      },
+    }),
   ]) {
     if (!check.ok) return check;
   }

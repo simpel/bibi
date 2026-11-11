@@ -22,7 +22,7 @@ export type ConfigurationTemplateResponsibility = { name: string; types: readonl
 
 /**
  * A starter configuration an organization can import and then edit freely (ADR 0021): lists,
- * setups, and types with capabilities and fields. Domain words live only in this data.
+ * and types with capabilities and fields. Domain words live only in this data.
  */
 export type ConfigurationTemplate = {
   key: string;
@@ -31,7 +31,6 @@ export type ConfigurationTemplate = {
   /** List templates imported as ordinary lists, e.g. `eu-14-allergens`. */
   listTemplates: readonly VocabularyTemplateKey[];
   lists: readonly { name: string; values: readonly string[] }[];
-  setups: readonly { name: string; changeoverMinutes: number }[];
   types: readonly ConfigurationTemplateType[];
   /** Example responsibilities (ADR 0034), imported with the importing member as default assignee. */
   responsibilities: readonly ConfigurationTemplateResponsibility[];

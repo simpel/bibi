@@ -9,6 +9,8 @@ export type FloorOpeningProps = {
   /** How far it opens in degrees; 0 = a sliding door or a fixed pane. */
   swingDeg: number;
   selected: boolean;
+  /** An emergency exit: the leaf is drawn green. */
+  emergencyExit?: boolean;
 };
 
 /** The leaf's free end after opening `swingDeg` from the wall, hinged at the left end. */
@@ -22,8 +24,18 @@ function leafEnd({ widthCm, swingDeg }: { widthCm: number; swingDeg: number }) {
  * A door breaks the wall and shows its leaf and swing; a window shows a pane in the wall and, if
  * it opens, its swing dashed.
  */
-export function FloorOpening({ kind, widthCm: w, swingDeg, selected }: FloorOpeningProps) {
-  const stroke = selected ? "stroke-primary" : "stroke-foreground";
+export function FloorOpening({
+  kind,
+  widthCm: w,
+  swingDeg,
+  selected,
+  emergencyExit = false,
+}: FloorOpeningProps) {
+  const stroke = selected
+    ? "stroke-primary"
+    : emergencyExit
+      ? "stroke-success"
+      : "stroke-foreground";
   const end = leafEnd({ widthCm: w, swingDeg });
   const arc =
     swingDeg > 0 ? `M ${w / 2} 0 A ${w} ${w} 0 0 1 ${end.x.toFixed(1)} ${end.y.toFixed(1)}` : null;

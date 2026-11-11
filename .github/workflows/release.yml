@@ -39,7 +39,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [web, mcp, worker]
+        # One image per entry: `target` is the stage in its Dockerfile, `app` the workspace it builds.
+        include:
+          - { image: web, file: docker/Dockerfile, target: web, app: web }
+          - { image: mcp, file: docker/Dockerfile, target: node, app: mcp }
+          - { image: worker, file: docker/Dockerfile, target: node, app: worker }
+          - { image: migrate, file: docker/Dockerfile, target: migrate, app: db }
+          # Cached so its layers (Postgres client, AWS CLI) keep their digests and the server pulls
+          # nothing new for it when only the app changed.
+          - { image: backup, file: docker/backup/Dockerfile, target: "", app: "", cache: true }
     steps:
       - uses: actions/checkout@v7
       - uses: docker/setup-buildx-action@v4
@@ -51,20 +59,24 @@ jobs:
       - id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ghcr.io/${{ github.repository }}-${{ matrix.app }}
+          images: ghcr.io/${{ github.repository }}-${{ matrix.image }}
           flavor: latest=false
           tags: type=sha,format=long,prefix=
       - uses: docker/build-push-action@v7
         with:
           context: .
-          file: docker/Dockerfile
+          file: ${{ matrix.file }}
+          target: ${{ matrix.target }}
           build-args: APP=${{ matrix.app }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # No layer cache: every release changes the source, so only the `pnpm install` layer (~20 s)
-          # could hit, while exporting the cache (mode=max) took ~6 of the web image's ~10 minutes.
+          cache-from: ${{ matrix.cache && format('type=gha,scope={0}', matrix.image) || '' }}
+          cache-to: ${{ matrix.cache && format('type=gha,scope={0},mode=max', matrix.image) || '' }}
+          # No layer cache for the app images: every release changes the source, so only the
+          # `pnpm install` layer (~20 s) could hit, while exporting the cache (mode=max) took ~6 of the
+          # web image's ~10 minutes.
 
   deploy:
     # Rolls out the SHA that publish-images just pushed (ADR 0013). Rollback: rollback.yml.

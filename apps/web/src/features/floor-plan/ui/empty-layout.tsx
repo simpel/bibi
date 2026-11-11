@@ -22,7 +22,7 @@ import {
 import { draftToDrawing } from "../lib/to-drawing";
 
 export type EmptyLayoutProps = {
-  setupName: string;
+  layoutName: string;
   room: Room;
   kinds: KindMap;
   fixed: readonly PlacedElement[];
@@ -31,7 +31,14 @@ export type EmptyLayoutProps = {
 };
 
 /** An empty layout's start: a people count and a picture of each template, or an empty room. */
-export function EmptyLayout({ setupName, room, kinds, fixed, onStart, onEmpty }: EmptyLayoutProps) {
+export function EmptyLayout({
+  layoutName,
+  room,
+  kinds,
+  fixed,
+  onStart,
+  onEmpty,
+}: EmptyLayoutProps) {
   const t = useTranslations("floorPlan.start");
   const id = useId();
   const [people, setPeople] = useState(30);
@@ -40,7 +47,7 @@ export function EmptyLayout({ setupName, room, kinds, fixed, onStart, onEmpty }:
     <div className="absolute inset-0 grid place-items-center bg-background/70 p-4">
       <Card className="w-full max-w-xl">
         <CardHeader>
-          <CardTitle>{t("title", { setup: setupName })}</CardTitle>
+          <CardTitle>{t("title", { name: layoutName })}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="flex items-center gap-2">

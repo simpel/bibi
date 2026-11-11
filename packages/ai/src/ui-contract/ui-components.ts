@@ -74,8 +74,6 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "field-definition-card",
   "vocabulary-table",
   "vocabulary-card",
-  "setup-table",
-  "setup-card",
   "responsibility-table",
   "responsibility-card",
   "assignment-table",

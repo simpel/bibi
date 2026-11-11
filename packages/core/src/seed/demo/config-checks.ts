@@ -75,7 +75,15 @@ async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> 
   const { config } = org;
   const { db } = context;
   const sum = ({ values }: { values: number[] }) => values.reduce((a, b) => a + b, 0);
-  const setups = config.items.map((item) => Object.keys(item.setups ?? {}).length);
+  const layouts = config.items.map((item) => Object.keys(item.layouts ?? {}).length);
+  const named = new Set(
+    config.items.flatMap((item) =>
+      Object.keys(item.layouts ?? {}).map((name) => `${item.name} ${name}`),
+    ),
+  );
+  const drawnOnly = (config.floorPlans ?? []).flatMap((plan) =>
+    plan.layouts.filter((layout) => !named.has(`${plan.item} ${layout.name}`)),
+  ).length;
   const templateValues = sum({
     values: config.listTemplates.map((key) => getTemplateListSize({ key })),
   });
@@ -91,7 +99,6 @@ async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> 
       actual: await db.vocabularyValue.count(),
       expected: templateValues + sum({ values: config.lists.map((list) => list.values.length) }),
     },
-    { what: "setups", actual: await db.setup.count(), expected: config.setups.length },
     {
       what: "responsibilities",
       actual: await db.responsibility.count(),
@@ -103,7 +110,11 @@ async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> 
       actual: await db.fieldDefinition.count(),
       expected: sum({ values: config.types.map((type) => type.fields?.length ?? 0) }),
     },
-    { what: "capacities", actual: await db.itemSetup.count(), expected: sum({ values: setups }) },
+    {
+      what: "layouts",
+      actual: await db.setupLayout.count(),
+      expected: sum({ values: layouts }) + drawnOnly,
+    },
   ];
 }
 

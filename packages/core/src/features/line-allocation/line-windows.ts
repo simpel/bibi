@@ -33,16 +33,17 @@ export async function lineWindows({ context, lineId }: LineWindowsInput) {
     where: { id: lineId },
     select: {
       ...{ startsAt: true, endsAt: true, ...minutes },
-      setup: { select: { changeoverMinutes: true } },
+      layout: { select: minutes },
       item: { select: { ...minutes, entityType: { select: minutes } } },
     },
   });
   if (!line?.startsAt || !line.endsAt) return null;
+  // ADR 0103: line → layout → item → type (the relation reads an archived layout too).
   const buffers = effectiveBuffers({
     line,
+    layout: line.layout,
     item: line.item,
     type: line.item?.entityType ?? null,
-    changeoverMinutes: line.setup?.changeoverMinutes ?? null,
   });
   return windowsOf({
     startsAt: line.startsAt,

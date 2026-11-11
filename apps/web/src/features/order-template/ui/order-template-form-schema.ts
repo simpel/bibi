@@ -4,12 +4,12 @@ import { NONE } from "@/components/form/option-select-field";
 import { numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 
-/** Raw values of one line row; the setup is carried over unseen and dropped with the item. */
+/** Raw values of one line row; the layout is carried over unseen and dropped with the item. */
 export type TemplateLineValues = {
   name: string;
   entityTypeId: string;
   itemId: string;
-  setupId: string;
+  layoutId: string;
   offsetMinutes: string;
   durationMinutes: string;
   /** Empty: the line counts the order's headcount (ADR 0052). */
@@ -45,7 +45,7 @@ export const orderTemplateFormSchema = formSchema({
       ...line,
       name: line.name.trim(),
       itemId: none({ value: line.itemId }),
-      setupId: line.itemId === NONE ? null : none({ value: line.setupId }),
+      layoutId: line.itemId === NONE ? null : none({ value: line.layoutId }),
       offsetMinutes: numberOrNull({ value: line.offsetMinutes }),
       durationMinutes: numberOrNull({ value: line.durationMinutes }),
       quantity: numberOrNull({ value: line.quantity }),
@@ -59,7 +59,7 @@ export const emptyLine = ({ entityTypeId }: { entityTypeId: string }): TemplateL
   name: "",
   entityTypeId,
   itemId: NONE,
-  setupId: "",
+  layoutId: "",
   offsetMinutes: "0",
   durationMinutes: "60",
   quantity: "",
@@ -86,7 +86,7 @@ export function orderTemplateFormDefaults({
       name: line.name,
       entityTypeId: line.entityTypeId,
       itemId: line.itemId ?? NONE,
-      setupId: line.setupId ?? "",
+      layoutId: line.layoutId ?? "",
       offsetMinutes: String(line.offsetMinutes),
       durationMinutes: String(line.durationMinutes),
       quantity: line.quantity === null ? "" : String(line.quantity),

@@ -44,7 +44,7 @@ const PreviewRowShape = {
   entityTypeId: z.string().describe("The line type"),
   name: z.string(),
   itemId: z.string().nullable(),
-  setupId: z.string().nullable(),
+  layoutId: z.string().nullable().describe("The layout of the item the line books (ADR 0103)"),
   startsAt: z.date().nullable().describe("Effective start; null for an untimed line"),
   endsAt: z.date().nullable().describe("Effective end; null for an untimed line"),
   quantity: z.number().int().nullable().describe("The line's own quantity; null = the headcount"),
@@ -109,7 +109,7 @@ export const OrderPreviewLinesOutputSchema = z.object({
   availabilityHidden: z
     .boolean()
     .describe(
-      "True without item:read: clashes, overlaps, setup capacity, pools and hours are left out",
+      "True without item:read: clashes, overlaps, layout capacity, pools and hours are left out",
     ),
   entries: z
     .array(PreviewEntrySchema)

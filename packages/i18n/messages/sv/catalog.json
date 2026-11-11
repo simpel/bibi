@@ -106,12 +106,10 @@
     "sections": {
       "price": "Pris",
       "bookable": "Bokning",
-      "setups": "Uppställningar",
       "parts": "Delar",
-      "customisations": "Anpassningar"
+      "customisations": "Anpassningar",
+      "layouts": "Möbleringar"
     },
-    "setupsHint": "Kapacitet, max antal personer, per uppställning. Lämna tomt för uppställningar som inte används.",
-    "noSetups": "Det finns inga uppställningar. Skapa dem under Uppställningar.",
     "priceUnits": {
       "PER_PERSON": "per person",
       "PER_UNIT": "per enhet",
@@ -126,7 +124,6 @@
     },
     "priceValue": "{amount} {unit}",
     "durationValue": "{minutes} min",
-    "capacityValue": "{name}: {capacity}",
     "parts": {
       "hint": "Artiklarna som ingår, med antal och tid räknat från starten.",
       "none": "Inga delar ännu.",
@@ -177,7 +174,7 @@
       "descriptions": {
         "type": "Välj artikeltyp. Typen avgör vilka fält artikeln har.",
         "details": "Namnge artikeln och fyll i typens fält.",
-        "setup": "Ange pris, bokning, upplägg och innehåll."
+        "setup": "Ange pris, bokning, personbegränsning och innehåll."
       }
     },
     "hours": {
@@ -187,8 +184,8 @@
       "followHint": "Stäng av alla dagar och ta bort alla undantag för att följa lokalens öppettider igen."
     },
     "layouts": "Möbleringar",
-    "capacityFromLayout": "{capacity} (från möbleringen)",
-    "capacityFromLayoutPlaceholder": "Från möbleringen"
+    "maxPeople": "Max antal personer",
+    "maxPeopleHint": "Det högsta antal personer rummet får rymma enligt lag, till exempel på grund av brandskydd och ventilation. Möbleringar och bokningar kan inte gå över det."
   },
   "itemState": {
     "flags": {
@@ -290,33 +287,6 @@
       "TEARDOWN": "Avveckling"
     }
   },
-  "setup": {
-    "singular": "Uppställning",
-    "plural": "Uppställningar",
-    "listDescription": "Hur ett rum kan ställas upp, t.ex. Bio, U-bord eller Mingel, och hur lång ställtid det kräver.",
-    "create": "Skapa uppställning",
-    "edit": "Redigera uppställning",
-    "createDescription": "Namnge uppställningen och ange ställtid.",
-    "editDescription": "Ändra namn och ställtid.",
-    "archive": "Arkivera uppställning",
-    "archiveConfirm": "Vill du arkivera uppställningen {name}?",
-    "archived": "Uppställningen har arkiverats.",
-    "created": "Uppställningen har skapats.",
-    "updated": "Uppställningen har uppdaterats.",
-    "empty": "Inga uppställningar ännu.",
-    "emptyDescription": "Skapa uppställningar som Bio, U-bord och Mingel.",
-    "saving": "Sparar uppställning…",
-    "archiving": "Arkiverar uppställning…",
-    "changeoverValue": "{minutes} min",
-    "fields": {
-      "name": "Namn",
-      "changeoverMinutes": "Ställtid (minuter)"
-    },
-    "columns": {
-      "name": "Namn",
-      "changeover": "Ställtid"
-    }
-  },
   "itemTypeGroup": {
     "singular": "Grupp",
     "plural": "Grupper",
@@ -399,7 +369,7 @@
       "BUNDLE": "Paket",
       "CUSTOMISATIONS": "Anpassningar",
       "BOOKABLE": "Bokningsbar",
-      "SETUPS": "Uppställningar"
+      "SETUPS": "Möbleringar"
     },
     "wizard": {
       "progress": "Steg",
@@ -664,7 +634,7 @@
     "dock": "Möbler",
     "add": "Lägg till {name}",
     "pieceName": "{kind} {label}, {seats, plural, one {# plats} other {# platser}}",
-    "drawingOf": "Möblering för {setup}",
+    "drawingOf": "Möblering {name}",
     "metres": "{value} m",
     "undo": "Ångra",
     "redo": "Gör om",
@@ -703,19 +673,20 @@
       "count": "{count, plural, one {# möbel} other {# möbler}}",
       "rotate": "Rotera 90° (R). Skift-klicka för 15°.",
       "duplicate": "Duplicera (Ctrl+D)",
-      "delete": "Ta bort (Del)"
+      "delete": "Ta bort (Del)",
+      "emergencyExit": "Nödutgång"
     },
     "summary": {
       "seats": "{count, plural, one {# plats} other {# platser}}",
       "seatsAndCapacity": "{count, plural, one {# plats} other {# platser}} · kapacitet {capacity}",
-      "warnings": "{count, plural, one {# varning} other {# varningar}}"
+      "warnings": "{count, plural, one {# varning} other {# varningar}}",
+      "limit": "Personbegränsning {max}",
+      "exitBlocked": "{count, plural, one {# möbel blockerar} other {# möbler blockerar}} en nödutgång. Det går inte att spara förrän du flyttat bort från utgången.",
+      "overLimit": "{capacity} personer är mer än rummets gräns på {max}. Det går inte att spara förrän kapaciteten är sänkt."
     },
     "menu": {
       "label": "Mer",
-      "capacity": "Kapacitet",
-      "typeCapacity": "Ange en kapacitet (nu {seats} från platserna)",
-      "editCapacity": "Ändra angiven kapacitet ({capacity})",
-      "useSeats": "Använd platserna ({seats})",
+      "editDetails": "Redigera möbleringens uppgifter",
       "startOver": "Börja om",
       "templates": {
         "rows": "Stolsrader",
@@ -724,11 +695,10 @@
       },
       "roomSize": "Redigera rummets storlek",
       "rectangle": "Gör väggarna till en rektangel",
-      "rename": "Byt namn på möblering",
       "delete": "Ta bort möblering"
     },
     "start": {
-      "title": "Börja möblera {setup}",
+      "title": "Starta möbleringen {name}",
       "people": "För hur många personer?",
       "templates": {
         "rows": "Stolsrader",
@@ -738,12 +708,6 @@
       "missingKind": "Finns inte bland era möbler",
       "empty": "Börja med ett tomt rum",
       "partial": "Bara {placed} av {wanted} får plats i rummet."
-    },
-    "capacityDialog": {
-      "title": "Ange en kapacitet",
-      "description": "Använd en angiven kapacitet i stället för de {seats} platserna, till exempel för stående gäster. Den sparas med möbleringen.",
-      "confirm": "Använd kapaciteten",
-      "field": "Kapacitet"
     },
     "roomDialog": {
       "title": "Redigera rummets storlek",
@@ -774,39 +738,47 @@
     "create": {
       "button": "Skapa möblering",
       "title": "Skapa möblering",
-      "description": "Ett rum kan möbleras på flera sätt i samma uppställning, till exempel Bankett 60 och Bankett 80. Uppställningens kapacitet är den största möbleringen.",
+      "description": "Ett rum kan möbleras på flera sätt, till exempel Bankett 60 och Bankett 80. Ange vad var och en passar för; kapacitet och tider anger du sedan.",
       "name": "Namn",
-      "setup": "Uppställning",
       "copyFrom": "Utgå från",
       "empty": "Ett tomt rum",
-      "created": "Möbleringen har skapats"
-    },
-    "renameDialog": {
-      "title": "Byt namn på möblering",
-      "field": "Namn",
-      "confirm": "Byt namn"
+      "created": "Möbleringen har skapats",
+      "descriptionLabel": "Passar för",
+      "descriptionPlaceholder": "Till exempel middag med tal"
     },
     "deleteDialog": {
       "title": "Ta bort {name}?",
-      "description": "Möbleringen och dess möbler tas bort. Uppställningens kapacitet kommer sedan från rummets andra möbleringar.",
+      "description": "Möbleringen och dess möbler tas bort.",
       "confirm": "Ta bort möblering",
       "deleted": "Möbleringen har tagits bort"
     },
     "noLayouts": {
       "title": "Inga möbleringar än",
-      "description": "Skapa en möblering för att rita hur rummet möbleras i en av sina uppställningar.",
-      "noSetups": "Ge artikeln en uppställning först (Redigera artikeln), skapa sedan dess möbleringar."
+      "description": "Skapa en möblering för att rita ett sätt att möblera rummet på."
     },
     "section": {
       "title": "Möbleringar",
       "floorPlan": "Planritning",
       "editLayouts": "Redigera möbleringar",
-      "noSetups": "Artikeln har inga uppställningar än.",
       "noLayouts": "Ingen möblering ritad än.",
-      "noCapacity": "ingen kapacitet",
-      "capacityTyped": "kapacitet {capacity}",
-      "capacityLargest": "upp till {capacity} (största möbleringen)",
-      "seats": "{count, plural, one {# plats} other {# platser}}"
+      "noCapacity": "Ingen kapacitet än",
+      "capacity": "Kapacitet {capacity}",
+      "maxPeople": "Personbegränsning: {count}"
+    },
+    "detailsDialog": {
+      "title": "Redigera möblering",
+      "description": "Sparas med möbleringen när du klickar på Spara.",
+      "name": "Namn",
+      "suits": "Passar för",
+      "suitsPlaceholder": "Till exempel middag med tal och dansgolv",
+      "capacity": "Kapacitet",
+      "capacityPlaceholder": "{seats} (från stolarna)",
+      "capacityHint": "Lämna tomt för att räkna stolarna i ritningen.",
+      "capacityLimit": "Lämna tomt för att räkna stolarna. Högst {max}, rummets personbegränsning.",
+      "setupMinutes": "Ställtid före (minuter)",
+      "teardownMinutes": "Nedplock efter (minuter)",
+      "roomsOwn": "Rummets",
+      "confirm": "Använd uppgifterna"
     }
   }
 }

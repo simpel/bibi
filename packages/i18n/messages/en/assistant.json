@@ -42,8 +42,7 @@
         "priceUnit": "Price unit",
         "vatRatePercent": "VAT (%)",
         "defaultDurationMinutes": "Default duration (min)",
-        "setups": "Setups",
-        "changeoverMinutes": "Changeover (min)",
+        "layouts": "Layouts",
         "setupMinutes": "Setup (min)",
         "teardownMinutes": "Teardown (min)",
         "entityTypeIds": "Item types (ids)",
@@ -137,7 +136,8 @@
         "depositId": "Deposit request",
         "invoiceId": "Invoice",
         "capacity": "Capacity",
-        "setupId": "Setup",
+        "layoutId": "Layout",
+        "maxPeople": "Maximum people",
         "status": "Status",
         "price": "Price",
         "memberId": "Member",
@@ -210,17 +210,14 @@
         "vocabulary_addValue": "Add list value",
         "vocabulary_updateValue": "Update list value",
         "vocabulary_archiveValue": "Archive list value",
-        "setup_create": "Create setup",
-        "setup_update": "Update setup",
-        "setup_archive": "Archive setup",
         "floorElementKind_create": "Create floor element",
         "floorElementKind_update": "Update floor element",
         "floorElementKind_archive": "Archive floor element",
         "floorElementKind_importTemplate": "Import floor element library",
         "floorPlan_save": "Save floor plan",
-        "setupLayout_create": "Create setup layout",
-        "setupLayout_save": "Save setup layout",
-        "setupLayout_archive": "Archive setup layout",
+        "layout_create": "Create layout",
+        "layout_save": "Save layout",
+        "layout_archive": "Archive layout",
         "responsibility_create": "Create responsibility",
         "responsibility_update": "Update responsibility",
         "responsibility_archive": "Archive responsibility",
@@ -397,7 +394,7 @@
         "columns": {
           "name": "Name",
           "price": "Price",
-          "setups": "Setups"
+          "layouts": "Layouts"
         },
         "priceUnit": {
           "PER_PERSON": "per person",
@@ -406,13 +403,13 @@
           "FLAT": "flat rate"
         },
         "duration": "{minutes} min",
-        "setupsCount": "{count, plural, one {# setup} other {# setups}}",
+        "layoutsCount": "{count, plural, one {# layout} other {# layouts}}",
         "partsCount": "{count, plural, one {# part} other {# parts}}",
         "customisationGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
         "sections": {
           "price": "Price",
           "bookable": "Booking",
-          "setups": "Setups",
+          "layouts": "Layouts",
           "parts": "Parts",
           "customisations": "Customisations"
         }
@@ -620,16 +617,6 @@
         "columns": {
           "name": "Name",
           "values": "List values"
-        }
-      },
-      "setup": {
-        "singular": "Setup",
-        "empty": "No setups found.",
-        "open": "Open setups",
-        "changeover": "Changeover {minutes} min",
-        "columns": {
-          "name": "Name",
-          "changeover": "Changeover"
         }
       },
       "priceList": {

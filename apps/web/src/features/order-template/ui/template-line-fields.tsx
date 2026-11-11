@@ -44,7 +44,7 @@ function LineWhatFields({ form, data, index }: LineFieldsProps) {
           hidden={data.itemsHidden}
           noneLabel={t("noItem")}
           onChange={() => {
-            form.setValue(lineName({ index, key: "setupId" }), "" as never);
+            form.setValue(lineName({ index, key: "layoutId" }), "" as never);
             form.setValue(lineName({ index, key: "options" }), [] as never);
           }}
         />

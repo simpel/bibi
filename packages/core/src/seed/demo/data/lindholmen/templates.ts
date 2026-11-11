@@ -12,7 +12,7 @@ export const lindholmenTemplates: readonly DemoOrderTemplate[] = [
     ...{ minGuests: 2, maxGuests: 6 },
     lines: [
       {
-        ...{ item: "Asperö", setup: "Boardroom", name: "Small meeting room" },
+        ...{ item: "Asperö", layout: "Boardroom", name: "Small meeting room" },
         ...{ offsetMinutes: 0, durationMinutes: 120 },
       },
       {
@@ -26,7 +26,7 @@ export const lindholmenTemplates: readonly DemoOrderTemplate[] = [
     ...{ minGuests: 4, maxGuests: 30 },
     lines: [
       {
-        ...{ item: "Öckerö", setup: "Cabaret", name: "Afternoon break room" },
+        ...{ item: "Öckerö", layout: "Cabaret", name: "Afternoon break room" },
         ...{ offsetMinutes: 0, durationMinutes: 180 },
       },
       {
@@ -42,7 +42,7 @@ export const lindholmenTemplates: readonly DemoOrderTemplate[] = [
     ...{ minGuests: 8, maxGuests: 16 },
     lines: [
       {
-        ...{ item: "Hönö", setup: "Cabaret", name: "Tasting room" },
+        ...{ item: "Hönö", layout: "Cabaret", name: "Tasting room" },
         ...{ offsetMinutes: 0, durationMinutes: 180 },
       },
       {

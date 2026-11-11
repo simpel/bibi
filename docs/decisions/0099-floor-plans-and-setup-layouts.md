@@ -2,7 +2,7 @@
 
 - **Date:** 2026-11-08
 - **Status:** Accepted
-- **Related:** 0021, 0026, 0051, 0052, 0056, 0059, 0063, 0003, 0007
+- **Related:** 0103 (amends this), 0021, 0026, 0051, 0052, 0056, 0059, 0063, 0003, 0007
 - **Spec:** `docs/specs/floor-plans-and-layouts.md`
 
 ## Context

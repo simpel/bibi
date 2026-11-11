@@ -1,54 +1,72 @@
+import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
 import { checkKinds, loadElements, replaceElements, toInput } from "./element-rows";
-import { checkNameFree, loadItemSetup, readLayout } from "./layout-read";
+import { checkHardLimits, checkNameFree, readLayout } from "./layout-read";
 import {
-  SetupLayoutCreateInputSchema,
-  SetupLayoutIdInputSchema,
-  SetupLayoutSaveInputSchema,
-  SetupLayoutSchema,
+  LayoutCreateInputSchema,
+  LayoutIdInputSchema,
+  LayoutSaveInputSchema,
+  LayoutSchema,
 } from "./layout-schema";
-import { checkVersion, raceLost } from "./plan-load";
+import { checkSetupsItem, checkVersion, raceLost } from "./plan-load";
 
-export const getSetupLayout = defineOperation({
-  name: "setupLayout.get",
+/** The saved layout, or `VALIDATION` that rolls the save back when it breaks a hard limit. */
+async function readChecked({ context, id }: { context: OperationContext; id: string }) {
+  const after = await readLayout({ context, id });
+  if (!after.ok) return after;
+  const pieceIds = after.value.elements.map((element) => element.id);
+  const limits = checkHardLimits({ layout: after.value, pieceIds });
+  // Returning an error from the handler rolls the transaction back (`execute`).
+  return limits.ok ? after : err({ error: limits.error });
+}
+
+export const getLayout = defineOperation({
+  name: "layout.get",
   kind: "query",
   description:
-    "One layout of an item (a named way of furnishing it in one setup): the pieces with their " +
-    "effective size and chairs, the plan they stand in (with its fixed elements, doors and " +
-    "windows), this layout's seats, the setup's capacity in the item (a typed capacity, else the " +
-    "largest layout's seats) and warnings (outside the walls, overlapping pieces, a blocked " +
-    "keep-clear area such as a door's swing).",
-  input: SetupLayoutIdInputSchema,
-  output: SetupLayoutSchema,
+    "One layout of a room (a named way of furnishing it, ADR 0103): what it suits, the pieces " +
+    "with their effective size and chairs, the plan they stand in (walls, doors, windows, " +
+    "emergency exits), its capacity (typed, else its seats), setup and teardown minutes, the " +
+    "room's people limit and problems. EXIT_BLOCKED and OVER_LIMIT are hard limits.",
+  input: LayoutIdInputSchema,
+  output: LayoutSchema,
   permission: "item:read",
   handler: ({ input, context }) => readLayout({ context, id: input.id }),
 });
 
-export const createSetupLayout = defineOperation({
-  name: "setupLayout.create",
+export const createLayout = defineOperation({
+  name: "layout.create",
   kind: "command",
   description:
-    "Create a named layout for one of an item's setups, e.g. Banquet 80 beside Banquet 60. It " +
-    "starts empty, or as a copy of the pieces and note of another layout of the same item " +
-    "(copyFromId). Names are unique within the item.",
-  input: SetupLayoutCreateInputSchema,
-  output: SetupLayoutSchema,
+    "Create a layout of a room, e.g. Banquet 80: a name, optionally what it suits, a typed " +
+    "capacity and setup and teardown minutes, empty or as a copy of another layout of the same " +
+    "room (copyFromId). Names are unique in the room; the capacity may not exceed the room's " +
+    "people limit.",
+  input: LayoutCreateInputSchema,
+  output: LayoutSchema,
   permission: "item:write",
   handler: async ({ input, context }) => {
-    const { itemId, setupId, name, copyFromId } = input;
-    const itemSetup = await loadItemSetup({ context, itemId, setupId });
-    if (!itemSetup.ok) return itemSetup;
+    const { itemId, name, copyFromId, ...fields } = input;
+    const checked = await checkSetupsItem({ context, itemId });
+    if (!checked.ok) return checked;
     const free = await checkNameFree({ context, itemId, name });
     if (!free.ok) return free;
     const source = copyFromId
       ? await context.db.setupLayout.findFirst({ where: { id: copyFromId, itemId } })
       : null;
     if (copyFromId && !source) return notFound({ entity: "Layout to copy" });
+    const pick = <K extends keyof typeof fields>({ key }: { key: K }) =>
+      fields[key] !== undefined ? (fields[key] ?? null) : (source?.[key] ?? null);
     const layout = await context.db.setupLayout.create({
       data: {
-        ...{ itemId, setupId, name, note: source?.note ?? null, version: 1 },
-        organizationId: context.organizationId,
+        ...{ itemId, name, version: 1, organizationId: context.organizationId },
+        description: pick({ key: "description" }),
+        capacity: pick({ key: "capacity" }),
+        setupMinutes: pick({ key: "setupMinutes" }),
+        teardownMinutes: pick({ key: "teardownMinutes" }),
+        note: source?.note ?? null,
       },
     });
     if (source) {
@@ -56,70 +74,70 @@ export const createSetupLayout = defineOperation({
       const elements = pieces.map((element) => toInput({ element }));
       await replaceElements({ context, parent: { setupLayoutId: layout.id }, elements });
     }
-    const after = await readLayout({ context, id: layout.id });
+    const after = await readChecked({ context, id: layout.id });
     if (after.ok) context.recordChange({ entityId: layout.id, after: after.value });
     return after;
   },
 });
 
-export const saveSetupLayout = defineOperation({
-  name: "setupLayout.save",
+export const saveLayout = defineOperation({
+  name: "layout.save",
   kind: "command",
   description:
     "Save a layout as a whole: the pieces (not fixed kinds) with position, rotation and their " +
-    "own size and chairs per side where they differ from the kind, and optionally a new name, " +
-    "the note and the setup's typed capacity in the item (null = the largest layout's seats). " +
-    "Pass the version you loaded; a newer saved version gives CONFLICT. Warnings never block.",
-  input: SetupLayoutSaveInputSchema,
-  output: SetupLayoutSchema,
+    "own size and chairs where they differ from the kind, and optionally its name, what it " +
+    "suits, typed capacity (null = its seats), setup and teardown minutes and note. Refused " +
+    "(VALIDATION) when it holds more people than the room allows or a piece stands in front of " +
+    "an emergency exit. Pass the version you loaded; a newer saved version gives CONFLICT.",
+  input: LayoutSaveInputSchema,
+  output: LayoutSchema,
   permission: "item:write",
   handler: async ({ input, context }) => {
-    const { id, expectedVersion, name, note, capacity, elements } = input;
+    const { id, expectedVersion, elements, name, ...fields } = input;
     const before = await readLayout({ context, id });
     if (!before.ok) return before;
-    const { itemId, setupId } = before.value;
     const version = checkVersion({ expected: expectedVersion, current: before.value.version });
     if (!version.ok) return version;
     if (name !== undefined) {
-      const free = await checkNameFree({ context, itemId, name, exceptId: id });
+      const free = await checkNameFree({
+        context,
+        itemId: before.value.itemId,
+        name,
+        exceptId: id,
+      });
       if (!free.ok) return free;
     }
     const kinds = await checkKinds({ context, elements, fixed: false });
     if (!kinds.ok) return kinds;
-    const data = {
-      version: before.value.version + 1,
-      ...(name === undefined ? {} : { name }),
-      ...(note === undefined ? {} : { note }),
-    };
+    const changed = Object.fromEntries(
+      Object.entries({ name, ...fields }).filter(([, value]) => value !== undefined),
+    );
     // The version in the where makes a concurrent save of the same version lose (CONFLICT).
     const moved = await context.db.setupLayout.updateMany({
       where: { id, version: before.value.version },
-      data,
+      data: { ...changed, version: before.value.version + 1 },
     });
     if (moved.count === 0) return raceLost();
     await replaceElements({ context, parent: { setupLayoutId: id }, elements });
-    if (capacity !== undefined) {
-      await context.db.itemSetup.updateMany({ where: { itemId, setupId }, data: { capacity } });
-    }
-    const after = await readLayout({ context, id });
+    const after = await readChecked({ context, id });
     if (after.ok) context.recordChange({ entityId: id, before: before.value, after: after.value });
     return after;
   },
 });
 
-export const archiveSetupLayout = defineOperation({
-  name: "setupLayout.archive",
+export const archiveLayout = defineOperation({
+  name: "layout.archive",
   kind: "command",
   description:
-    "Archive a layout. The setup's capacity then comes from the item's remaining layouts.",
-  input: SetupLayoutIdInputSchema,
-  output: SetupLayoutSchema,
+    "Archive a layout. Order lines that already book it keep it; new lines cannot pick it.",
+  input: LayoutIdInputSchema,
+  output: LayoutSchema,
   permission: "item:write",
   handler: async ({ input: { id }, context }) => {
     const before = await readLayout({ context, id });
     if (!before.ok) return before;
     await context.db.setupLayout.update({ where: { id }, data: { status: "ARCHIVED" } });
     context.recordChange({ entityId: id, before: before.value });
-    return before;
+    return ok({ value: before.value });
   },
 });

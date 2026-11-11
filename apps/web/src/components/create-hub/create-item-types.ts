@@ -11,7 +11,6 @@ export type CreateKey =
   | "skill"
   | "type"
   | "list"
-  | "setup"
   | "responsibility"
   | "runSheet"
   | "priceList"

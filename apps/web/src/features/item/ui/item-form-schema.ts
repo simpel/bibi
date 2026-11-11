@@ -66,14 +66,7 @@ function capabilityInput({ values, type }: Omit<ItemInputArgs, "specs">) {
       ? { defaultDurationMinutes: numberOrNull({ value: values.defaultDurationMinutes }) }
       : {}),
     ...(hasCapability({ type, capability: "SETUPS" })
-      ? {
-          setups: Object.entries(values.setups)
-            .filter(([id, capacity]) => capacity.trim() !== "" || values.layoutSetups.includes(id))
-            .map(([setupId, capacity]) => ({
-              setupId,
-              capacity: capacity.trim() === "" ? null : Number(capacity),
-            })),
-        }
+      ? { maxPeople: numberOrNull({ value: values.maxPeople }) }
       : {}),
     ...(hasCapability({ type, capability: "BUNDLE" })
       ? { parts: partsToInput({ parts: values.parts }) }

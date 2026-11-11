@@ -1,6 +1,6 @@
 import "server-only";
 import type { Result } from "@bibi/core";
-import { listItems, listSetups, listVenues, listVocabularies } from "@bibi/core";
+import { listItems, listVenues, listVocabularies } from "@bibi/core";
 import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { loadLinkTargets } from "@/server/load-link-targets";
 import { runOperation } from "@/server/run-operation";
@@ -20,10 +20,9 @@ export type LoadItemFormDataInput = {
 export async function loadItemFormData({
   customerId,
 }: LoadItemFormDataInput = {}): Promise<Result<ItemFormData>> {
-  const [types, vocabularies, setups, venues, parts] = await Promise.all([
+  const [types, vocabularies, venues, parts] = await Promise.all([
     loadEntityTypesOf({ base: "ITEM" }),
     runOperation({ operation: listVocabularies, input: { limit: LIMIT } }),
-    runOperation({ operation: listSetups, input: { limit: LIMIT } }),
     runOperation({ operation: listVenues, input: { limit: LIMIT } }),
     runOperation({
       operation: listItems,
@@ -32,7 +31,6 @@ export async function loadItemFormData({
   ]);
   if (!types.ok) return types;
   if (!vocabularies.ok) return vocabularies;
-  if (!setups.ok) return setups;
   if (!venues.ok && venues.error.code !== "FORBIDDEN") return venues;
   if (!parts.ok) return parts;
   const links = await loadLinkTargets({ types: types.value.items });
@@ -42,7 +40,6 @@ export async function loadItemFormData({
       types: types.value.items,
       vocabularies: vocabularies.value.items,
       links,
-      setups: setups.value.items,
       venues: venues.ok ? venues.value.items.map(({ id, name }) => ({ id, name })) : [],
       venuesHidden: !venues.ok,
       parts: parts.value.items.map(({ id, name }) => ({ id, name })),

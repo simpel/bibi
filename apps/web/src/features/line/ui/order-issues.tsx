@@ -14,7 +14,8 @@ type AlertKey =
   | "blocked"
   | "softOverlap"
   | "selfOverlap"
-  | "setupCapacity"
+  | "layoutCapacity"
+  | "maxPeople"
   | "poolShort"
   | "outsideHours";
 
@@ -39,8 +40,10 @@ function messageOf({ shown: { issue, line, other }, format }: MessageInput): Mes
       return { key: "softOverlap", values: { line, order, period } };
     case "SELF_OVERLAP":
       return { key: "selfOverlap", values: { line, other } };
-    case "SETUP_CAPACITY":
-      return { key: "setupCapacity", values: { line, capacity: issue.capacity ?? 0 } };
+    case "LAYOUT_CAPACITY":
+      return { key: "layoutCapacity", values: { line, capacity: issue.capacity ?? 0 } };
+    case "MAX_PEOPLE":
+      return { key: "maxPeople", values: { line, max: issue.capacity ?? 0 } };
     case "POOL_SHORT":
       return {
         key: "poolShort",
@@ -89,7 +92,7 @@ export async function OrderIssues({ orderId }: OrderIssuesProps) {
       <OpenChoiceAlerts orderId={orderId} />
       {shownIssues({ lines }).map((shown) => {
         const { key, values } = messageOf({ shown, format });
-        const hard = shown.issue.kind === "HARD_CLASH";
+        const hard = shown.issue.kind === "HARD_CLASH" || shown.issue.kind === "MAX_PEOPLE";
         const Icon = hard ? CircleAlertIcon : TriangleAlertIcon;
         return (
           <Alert key={shown.key} variant={hard ? "destructive" : "warning"}>

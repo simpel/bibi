@@ -12,7 +12,7 @@ export const PreviewDraftLineSchema = LineCreateInputSchema.pick({
   entityTypeId: true,
   name: true,
   itemId: true,
-  setupId: true,
+  layoutId: true,
   startsAt: true,
   endsAt: true,
   quantity: true,

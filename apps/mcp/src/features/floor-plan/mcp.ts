@@ -31,19 +31,19 @@ export const floorPlanMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Save floor plan of item ${text({ value: input.itemId })}`,
   }),
-  mcpTool({ operation: "setupLayout.get" }),
+  mcpTool({ operation: "layout.get" }),
   mcpTool({
-    operation: "setupLayout.create",
+    operation: "layout.create",
     summary: ({ input }) =>
       `Create layout "${text({ value: input.name })}" for item ${text({ value: input.itemId })}`,
   }),
   mcpTool({
-    operation: "setupLayout.save",
+    operation: "layout.save",
     idempotent: true,
     summary: ({ input }) => `Save layout ${text({ value: input.id })}`,
   }),
   mcpTool({
-    operation: "setupLayout.archive",
+    operation: "layout.archive",
     destructive: true,
     idempotent: true,
     summary: ({ input }) => `Archive layout ${text({ value: input.id })}`,

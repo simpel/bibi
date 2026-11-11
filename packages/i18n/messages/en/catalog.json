@@ -106,12 +106,10 @@
     "sections": {
       "price": "Price",
       "bookable": "Booking",
-      "setups": "Setups",
       "parts": "Parts",
-      "customisations": "Customisations"
+      "customisations": "Customisations",
+      "layouts": "Layouts"
     },
-    "setupsHint": "Capacity, max number of people, per setup. Leave empty for setups that are not used.",
-    "noSetups": "There are no setups. Create them under Setups.",
     "priceUnits": {
       "PER_PERSON": "per person",
       "PER_UNIT": "per unit",
@@ -126,7 +124,6 @@
     },
     "priceValue": "{amount} {unit}",
     "durationValue": "{minutes} min",
-    "capacityValue": "{name}: {capacity}",
     "parts": {
       "hint": "The items this item contains, with quantity and timing relative to its start.",
       "none": "No parts yet.",
@@ -177,7 +174,7 @@
       "descriptions": {
         "type": "Pick the item type. It decides which fields the item has.",
         "details": "Name the item and fill in the fields of its type.",
-        "setup": "Set the price, booking, setups and contents."
+        "setup": "Set the price, booking, people limit and contents."
       }
     },
     "hours": {
@@ -187,8 +184,8 @@
       "followHint": "Switch off every day and remove all exceptions to follow the venue's opening hours again."
     },
     "layouts": "Layouts",
-    "capacityFromLayout": "{capacity} (from the layout)",
-    "capacityFromLayoutPlaceholder": "From the layout"
+    "maxPeople": "Max number of people",
+    "maxPeopleHint": "The most people the room may hold by law, for example because of fire safety and ventilation. Layouts and bookings cannot go above it."
   },
   "itemState": {
     "flags": {
@@ -290,33 +287,6 @@
       "TEARDOWN": "Teardown"
     }
   },
-  "setup": {
-    "singular": "Setup",
-    "plural": "Setups",
-    "listDescription": "How a space can be set up, e.g. Cinema, U-shape or Mingle, and how long the changeover takes.",
-    "create": "Create setup",
-    "edit": "Edit setup",
-    "createDescription": "Name the setup and enter the changeover time.",
-    "editDescription": "Change the name and changeover time.",
-    "archive": "Archive setup",
-    "archiveConfirm": "Do you want to archive the setup {name}?",
-    "archived": "The setup has been archived.",
-    "created": "The setup has been created.",
-    "updated": "The setup has been updated.",
-    "empty": "No setups yet.",
-    "emptyDescription": "Create setups such as Cinema, U-shape and Mingle.",
-    "saving": "Saving setup…",
-    "archiving": "Archiving setup…",
-    "changeoverValue": "{minutes} min",
-    "fields": {
-      "name": "Name",
-      "changeoverMinutes": "Changeover time (minutes)"
-    },
-    "columns": {
-      "name": "Name",
-      "changeover": "Changeover"
-    }
-  },
   "itemTypeGroup": {
     "singular": "Group",
     "plural": "Groups",
@@ -399,7 +369,7 @@
       "BUNDLE": "Bundle",
       "CUSTOMISATIONS": "Customisations",
       "BOOKABLE": "Bookable",
-      "SETUPS": "Setups"
+      "SETUPS": "Layouts"
     },
     "wizard": {
       "progress": "Steps",
@@ -664,7 +634,7 @@
     "dock": "Furniture",
     "add": "Add {name}",
     "pieceName": "{kind} {label}, {seats, plural, one {# seat} other {# seats}}",
-    "drawingOf": "Layout for {setup}",
+    "drawingOf": "Layout {name}",
     "metres": "{value} m",
     "undo": "Undo",
     "redo": "Redo",
@@ -703,19 +673,20 @@
       "count": "{count, plural, one {# piece} other {# pieces}}",
       "rotate": "Rotate 90° (R). Shift-click for 15°.",
       "duplicate": "Duplicate (Ctrl+D)",
-      "delete": "Delete (Del)"
+      "delete": "Delete (Del)",
+      "emergencyExit": "Emergency exit"
     },
     "summary": {
       "seats": "{count, plural, one {# seat} other {# seats}}",
       "seatsAndCapacity": "{count, plural, one {# seat} other {# seats}} · capacity {capacity}",
-      "warnings": "{count, plural, one {# warning} other {# warnings}}"
+      "warnings": "{count, plural, one {# warning} other {# warnings}}",
+      "limit": "People limit {max}",
+      "exitBlocked": "{count, plural, one {# piece blocks} other {# pieces block}} an emergency exit. Save is refused until you move away from the exit.",
+      "overLimit": "{capacity} people is above this room's limit of {max}. Save is refused until the capacity is lowered."
     },
     "menu": {
       "label": "More",
-      "capacity": "Capacity",
-      "typeCapacity": "Type a capacity (now {seats} from the seats)",
-      "editCapacity": "Edit typed capacity ({capacity})",
-      "useSeats": "Use the seats ({seats})",
+      "editDetails": "Edit layout details",
       "startOver": "Start over",
       "templates": {
         "rows": "Rows of chairs",
@@ -724,11 +695,10 @@
       },
       "roomSize": "Edit the room's size",
       "rectangle": "Make the walls a rectangle",
-      "rename": "Rename layout",
       "delete": "Delete layout"
     },
     "start": {
-      "title": "Start the {setup} layout",
+      "title": "Start the {name} layout",
       "people": "For how many people?",
       "templates": {
         "rows": "Rows of chairs",
@@ -738,12 +708,6 @@
       "missingKind": "Not in your furniture",
       "empty": "Start with an empty room",
       "partial": "Only {placed} of {wanted} fit in this room."
-    },
-    "capacityDialog": {
-      "title": "Type a capacity",
-      "description": "Use a typed capacity instead of the {seats} seats, for example for standing guests. It is saved with the layout.",
-      "confirm": "Use this capacity",
-      "field": "Capacity"
     },
     "roomDialog": {
       "title": "Edit the room's size",
@@ -774,39 +738,47 @@
     "create": {
       "button": "Create layout",
       "title": "Create layout",
-      "description": "A room can be furnished several ways in the same setup, for example Banquet 60 and Banquet 80. The setup's capacity is its largest layout.",
+      "description": "A room can be furnished in several ways, for example Banquet 60 and Banquet 80. Say what each one suits; you set its capacity and times later.",
       "name": "Name",
-      "setup": "Setup",
       "copyFrom": "Start from",
       "empty": "An empty room",
-      "created": "Layout created"
-    },
-    "renameDialog": {
-      "title": "Rename layout",
-      "field": "Name",
-      "confirm": "Rename layout"
+      "created": "Layout created",
+      "descriptionLabel": "What it suits",
+      "descriptionPlaceholder": "For example dinner with speeches"
     },
     "deleteDialog": {
       "title": "Delete {name}?",
-      "description": "The layout and its furniture are removed. The setup's capacity then comes from the room's other layouts.",
+      "description": "The layout and its furniture are removed.",
       "confirm": "Delete layout",
       "deleted": "Layout deleted"
     },
     "noLayouts": {
       "title": "No layouts yet",
-      "description": "Create a layout to draw how the room is furnished in one of its setups.",
-      "noSetups": "Give the item a setup first (Edit the item), then create its layouts."
+      "description": "Create a layout to draw one way the room can be furnished."
     },
     "section": {
       "title": "Layouts",
       "floorPlan": "Floor plan",
       "editLayouts": "Edit layouts",
-      "noSetups": "The item has no setups yet.",
       "noLayouts": "No layout drawn yet.",
-      "noCapacity": "no capacity",
-      "capacityTyped": "capacity {capacity}",
-      "capacityLargest": "up to {capacity} (largest layout)",
-      "seats": "{count, plural, one {# seat} other {# seats}}"
+      "noCapacity": "No capacity yet",
+      "capacity": "Capacity {capacity}",
+      "maxPeople": "People limit: {count}"
+    },
+    "detailsDialog": {
+      "title": "Edit layout",
+      "description": "Saved with the layout when you click Save.",
+      "name": "Name",
+      "suits": "What it suits",
+      "suitsPlaceholder": "For example dinner with speeches and a dance floor",
+      "capacity": "Capacity",
+      "capacityPlaceholder": "{seats} (from the seats)",
+      "capacityHint": "Leave empty to count the chairs in the drawing.",
+      "capacityLimit": "Leave empty to count the chairs. At most {max}, the room's people limit.",
+      "setupMinutes": "Setup before (minutes)",
+      "teardownMinutes": "Teardown after (minutes)",
+      "roomsOwn": "The room's",
+      "confirm": "Use these details"
     }
   }
 }

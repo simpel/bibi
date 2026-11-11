@@ -133,7 +133,6 @@
     "customers": "Customers",
     "types": "Types",
     "lists": "Lists",
-    "setups": "Setups",
     "responsibilities": "Responsibilities",
     "runSheets": "Run sheets",
     "calendar": "Calendar",
@@ -308,10 +307,6 @@
         "title": "List",
         "description": "A value list, such as allergens or equipment."
       },
-      "setup": {
-        "title": "Setup",
-        "description": "A room layout such as theatre or boardroom."
-      },
       "responsibility": {
         "title": "Responsibility",
         "description": "What someone answers for, and who it defaults to."
@@ -346,7 +341,7 @@
     "inherits": {
       "none": "Default for the type's items, held around each booking of a bookable item. Empty = none.",
       "type": "Held around each booking of a bookable item. Empty = the item type's.",
-      "item": "Held around this booking. Empty = the item's, else its type's. The setup's changeover time is the least setup time."
+      "item": "Held around this booking. Empty = the layout's, else the item's, else its type's."
     },
     "inEffect": "In effect: {setup} min setup, {teardown} min teardown."
   },
@@ -576,10 +571,6 @@
         "types": {
           "label": "Types",
           "keywords": "items customers contacts fields capabilities rooms template"
-        },
-        "setups": {
-          "label": "Setups",
-          "keywords": "room layout capacity changeover space"
         },
         "groups": {
           "label": "Groups",

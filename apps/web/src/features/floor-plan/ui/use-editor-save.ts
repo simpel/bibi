@@ -1,28 +1,21 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
-import { saveFloorPlanAction, saveSetupLayoutAction } from "../actions";
+import { saveFloorPlanAction, saveLayoutAction } from "../actions";
 import { type DraftElement, toInput } from "../lib/draft";
+import type { LayoutFacts } from "../lib/layout-facts";
 import type { EditorRoom } from "./layout-editor";
 
 export type UseEditorSaveInput = {
   itemId: string;
-  layout: { id: string; name: string } | null;
+  layout: { id: string; facts: LayoutFacts } | null;
   room: EditorRoom;
   elements: readonly DraftElement[];
   version: number;
-  capacity: number | null;
 };
 
 /** Saves the open tab as a whole; the page renders again with what was stored. */
-export function useEditorSave({
-  itemId,
-  layout,
-  room,
-  elements,
-  version,
-  capacity,
-}: UseEditorSaveInput) {
+export function useEditorSave({ itemId, layout, room, elements, version }: UseEditorSaveInput) {
   const t = useTranslations("floorPlan");
   const common = useTranslations("common");
   const router = useRouter();
@@ -34,12 +27,11 @@ export function useEditorSave({
     if (layout) {
       const input = {
         id: layout.id,
-        name: layout.name,
         expectedVersion: version,
-        capacity,
+        ...layout.facts,
         elements: pieces,
       };
-      run({ action: () => saveSetupLayoutAction({ input }), messages, onSuccess });
+      run({ action: () => saveLayoutAction({ input }), messages, onSuccess });
       return;
     }
     const input = {

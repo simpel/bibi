@@ -1,41 +1,63 @@
-import { ok } from "../../errors/result";
+import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
-import { checkKinds, type KindShape, replaceElements } from "./element-rows";
+import { conflict } from "../../shared/errors";
+import { checkKinds, type KindShape, replaceElements, toPlaced } from "./element-rows";
 import type { FloorPoint } from "./footprint";
+import { layoutIssues } from "./layout-issues";
 import { loadLayoutSummaries } from "./layout-read";
 import {
   type FloorPlanDto,
   FloorPlanItemInputSchema,
   FloorPlanSaveInputSchema,
   FloorPlanSchema,
+  type LayoutSummaryDto,
 } from "./layout-schema";
-import { effectiveCapacity, layoutKey, loadLayoutSeats } from "./layout-seats";
 import { snapToWall } from "./openings";
 import { checkSetupsItem, checkVersion, loadPlanState, raceLost } from "./plan-load";
-import type { FloorElementInput } from "./schema";
+import type { FloorElementDto, FloorElementInput } from "./schema";
 import { isOpening } from "./seats";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-/** The plan, each setup's capacity in the item and every layout with its pieces. */
+/** The plan, the room's people limit and every layout with its pieces. */
 async function readPlan({ context, itemId }: Db & { itemId: string }): Promise<FloorPlanDto> {
-  const [plan, itemSetups, seats] = await Promise.all([
+  const [plan, item, layouts] = await Promise.all([
     loadPlanState({ context, itemId }),
-    context.db.itemSetup.findMany({
-      where: { itemId },
-      orderBy: [{ createdAt: "asc" }, { setupId: "asc" }],
-      select: { setupId: true, capacity: true },
-    }),
-    loadLayoutSeats({ context, itemIds: [itemId] }),
+    context.db.item.findFirst({ where: { id: itemId }, select: { maxPeople: true } }),
+    loadLayoutSummaries({ context, itemId }),
   ]);
-  const setups = itemSetups.map(({ setupId, capacity }) => {
-    const seatCount = seats.get(layoutKey({ itemId, setupId }))?.seatCount ?? null;
-    return { setupId, seatCount, capacity, ...effectiveCapacity({ capacity, seatCount }) };
+  return { ...plan, itemId, maxPeople: item?.maxPeople ?? null, layouts };
+}
+
+/**
+ * `CONFLICT` when an emergency exit of the new plan has a piece of an existing layout in its zone
+ * (ADR 0103): the exit cannot be marked or moved there until those layouts are cleared.
+ */
+function checkExitsClear({
+  fixed,
+  layouts,
+  outline,
+}: {
+  fixed: readonly FloorElementDto[];
+  layouts: readonly LayoutSummaryDto[];
+  outline: readonly FloorPoint[];
+}): Result<true> {
+  const placedFixed = fixed.map((element) => toPlaced({ element }));
+  const blocked = layouts.filter((layout) =>
+    layoutIssues({
+      outline,
+      fixed: placedFixed,
+      elements: layout.elements.map((element) => toPlaced({ element })),
+    }).some((issue) => issue.kind === "EXIT_BLOCKED"),
+  );
+  if (blocked.length === 0) return ok({ value: true });
+  const names = blocked.map((layout) => layout.name).join(", ");
+  const message = `Furniture in these layouts stands in front of an emergency exit: ${names}`;
+  return conflict({
+    message,
+    issues: blocked.map((layout) => ({ path: `layouts.${layout.id}`, message })),
   });
-  const setupOrder = setups.map((setup) => setup.setupId);
-  const layouts = await loadLayoutSummaries({ context, itemId, setupOrder });
-  return { ...plan, itemId, setups, layouts };
 }
 
 /** Doors and windows moved onto the nearest wall of the outline (ADR 0102). */
@@ -62,8 +84,8 @@ export const getFloorPlan = defineOperation({
   kind: "query",
   description:
     "The floor plan of an item with setups: size in centimetres, wall outline, fixed elements " +
-    "(doors, windows, pillars), per setup the item has its capacity (typed, else the largest " +
-    "layout's seats) and every layout with its pieces. " +
+    "(doors, windows with emergency exits, pillars), the room's people limit and every layout " +
+    "with its pieces and capacity. " +
     "Before anything is saved it is a 10 × 8 m rectangle with version 0.",
   input: FloorPlanItemInputSchema,
   output: FloorPlanSchema,
@@ -81,6 +103,7 @@ export const saveFloorPlan = defineOperation({
   description:
     "Save an item's floor plan as a whole: size, outline, minimum aisle and its fixed elements " +
     "(fixed kinds only). Doors and windows are moved onto the nearest wall and turned along it. " +
+    "Marking or moving an emergency exit so that an existing layout blocks it is CONFLICT. " +
     "Pass the version you loaded; a newer saved version gives CONFLICT.",
   input: FloorPlanSaveInputSchema,
   output: FloorPlanSchema,
@@ -111,6 +134,12 @@ export const saveFloorPlan = defineOperation({
     const placed = snapOpenings({ elements, kinds: kinds.value, outline: shape.outline });
     await replaceElements({ context, parent: { floorPlanId: plan.id }, elements: placed });
     const after = await readPlan({ context, itemId });
+    const exits = checkExitsClear({
+      fixed: after.elements,
+      layouts: after.layouts,
+      outline: after.outline,
+    });
+    if (!exits.ok) return exits;
     context.recordChange({ entityId: plan.id, before: before.id ? before : undefined, after });
     return ok({ value: after });
   },

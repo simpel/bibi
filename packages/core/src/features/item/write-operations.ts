@@ -10,7 +10,7 @@ import { insertItem } from "./insert-item";
 import { replaceCustomisationGroups } from "./item-customisation-groups";
 import { replaceParts } from "./item-parts";
 import { loadItemType } from "./item-rules";
-import { replaceSetups } from "./item-setups";
+import { checkPeopleLimitLowered } from "./people-limit";
 import { ItemCreateInputSchema, ItemSchema, ItemUpdateInputSchema } from "./schema";
 import { loadItem } from "./to-item-dto";
 import { itemUpdateConsequences } from "./update-consequences";
@@ -35,7 +35,8 @@ export const updateItem = defineOperation({
   kind: "command",
   description:
     "Update an item. Omitted properties are unchanged; `fields` is merged by key (null " +
-    "clears a value); `setups`, `parts` and `customisationGroups` each replace the whole set. " +
+    "clears a value); `parts` and `customisationGroups` each replace the whole set. A room's " +
+    "maxPeople may not go below a layout's capacity or an upcoming booking (CONFLICT). " +
     "The type cannot be changed.",
   input: ItemUpdateInputSchema,
   output: ItemSchema,
@@ -43,7 +44,7 @@ export const updateItem = defineOperation({
   embeddable: itemEmbeddable,
   consequences: itemUpdateConsequences,
   handler: async ({ input, context }) => {
-    const { id, fields: patch, setups, parts, customisationGroups, ...data } = input;
+    const { id, fields: patch, parts, customisationGroups, ...data } = input;
     const before = await loadItem({ context, id });
     if (!before) return notFound({ entity: "Item" });
     const type = await loadItemType({ context, entityTypeId: before.entityTypeId });
@@ -53,17 +54,24 @@ export const updateItem = defineOperation({
       type: type.value,
       itemId: id,
       customerId: before.customerId,
-      data: { ...data, setups, parts, customisationGroups },
+      data: { ...data, parts, customisationGroups },
       fields: patch ? mergeFields({ before: before.fields, patch }) : undefined,
     });
     if (!checked.ok) return checked;
+    if (data.maxPeople !== undefined && data.maxPeople !== null) {
+      const limit = await checkPeopleLimitLowered({
+        context,
+        itemId: id,
+        maxPeople: data.maxPeople,
+      });
+      if (!limit.ok) return limit;
+    }
     const json = checked.value ? toJson({ value: checked.value.fields }) : undefined;
     await context.db.item.update({
       where: { id },
       data: { ...data, ...(json ? { fields: json } : {}) },
     });
     await updateRecord({ context, id, change: { fields: json, links: checked.value?.links } });
-    if (setups) await replaceSetups({ context, itemId: id, setups });
     if (parts) await replaceParts({ context, itemId: id, parts });
     if (customisationGroups) {
       await replaceCustomisationGroups({ context, itemId: id, customisationGroups });

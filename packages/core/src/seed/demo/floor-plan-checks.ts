@@ -1,4 +1,4 @@
-import { getSetupLayout } from "../../features/floor-plan/layout-operations";
+import { getLayout } from "../../features/floor-plan/layout-operations";
 import { getFloorPlan } from "../../features/floor-plan/plan-operations";
 import { listItems } from "../../features/item/read-operations";
 import type { ExecuteContext } from "../../operations/context";
@@ -8,8 +8,8 @@ import type { DemoOrg } from "./types";
 export type CheckFloorPlansInput = { context: ExecuteContext; org: DemoOrg };
 
 /**
- * ADR 0099, 0102: every drawn layout exists by name and has no warnings, and a setup that uses
- * its seats has its largest layout's seat count as its effective capacity. Returns failures.
+ * ADR 0099, 0102, 0103: every drawn layout exists by name and has no problems, and one that uses
+ * its seats has its seat count as its capacity. Returns failure messages.
  */
 export async function checkDemoFloorPlans({
   context,
@@ -36,22 +36,17 @@ export async function checkDemoFloorPlans({
     for (const drawn of plan.layouts) {
       const summary = read.value.layouts.find((layout) => layout.name === drawn.name);
       const layout = summary
-        ? await execute({ operation: getSetupLayout, input: { id: summary.id }, context })
+        ? await execute({ operation: getLayout, input: { id: summary.id }, context })
         : null;
       if (!layout?.ok) {
         failures.push(`${org.slug}: ${plan.item} has no layout ${drawn.name}`);
         continue;
       }
-      const { issues, effectiveCapacity, capacitySource, setupId } = layout.value;
+      const { issues, effectiveCapacity, capacitySource, seatCount } = layout.value;
       if (issues.length > 0) {
-        failures.push(`${org.slug}: ${plan.item} ${drawn.name} has ${issues.length} warnings`);
+        failures.push(`${org.slug}: ${plan.item} ${drawn.name} has ${issues.length} problems`);
       }
-      const largest = Math.max(
-        ...read.value.layouts
-          .filter((each) => each.setupId === setupId)
-          .map((each) => each.seatCount),
-      );
-      if (drawn.useSeats && (capacitySource !== "LAYOUT" || effectiveCapacity !== largest)) {
+      if (drawn.useSeats && (capacitySource !== "LAYOUT" || effectiveCapacity !== seatCount)) {
         failures.push(
           `${org.slug}: ${plan.item} ${drawn.name} does not take its capacity from the seats`,
         );

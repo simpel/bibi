@@ -22,7 +22,7 @@ const asObject = ({ value }: { value: Json }): Record<string, Json> | null =>
     ? (value as Record<string, Json>)
     : null;
 
-/** The id property of an array entry (`setupId`, `itemId`, `id`), so entries match by it. */
+/** The id property of an array entry (`layoutId`, `itemId`, `id`), so entries match by it. */
 function keyOf({ entry }: { entry: Json }): string | null {
   const object = asObject({ value: entry });
   if (!object) return null;

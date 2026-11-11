@@ -1,39 +1,36 @@
 import { describe, expect, it } from "vitest";
 import {
   archiveFloorElementKind,
-  archiveSetupLayout,
+  archiveLayout,
   createItem,
-  createSetup,
-  createSetupLayout,
+  createLayout,
   type ExecuteContext,
   execute,
   getFloorPlan,
   getItem,
-  getSetupLayout,
+  getLayout,
   importFloorElementKinds,
   listFloorElementKinds,
   saveFloorPlan,
-  saveSetupLayout,
+  saveLayout,
+  updateItem,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { createRoomType } from "./item-helpers";
 
-type Setup = { context: ExecuteContext };
+type Ctx = { context: ExecuteContext };
 
-/** A room with two setups (one typed capacity, one empty) and the starter library. */
-async function room({ context }: Setup) {
+const RECTANGLE: [number, number][] = [
+  [0, 0],
+  [1000, 0],
+  [1000, 800],
+  [0, 800],
+];
+
+/** A 10 × 8 m room with a people limit and the starter library. */
+async function room({ context, maxPeople = 100 }: Ctx & { maxPeople?: number }) {
   const type = await createRoomType({ context });
-  const banquet = unwrap({
-    result: await execute({ operation: createSetup, input: { name: "Banquet" }, context }),
-  });
-  const theatre = unwrap({
-    result: await execute({ operation: createSetup, input: { name: "Theatre" }, context }),
-  });
-  const setups = [
-    { setupId: banquet.id, capacity: null },
-    { setupId: theatre.id, capacity: 120 },
-  ];
-  const input = { entityTypeId: type.id, name: "Sjöstugan", setups };
+  const input = { entityTypeId: type.id, name: "Sjöstugan", maxPeople };
   const item = unwrap({ result: await execute({ operation: createItem, input, context }) });
   const template = { template: "conference-banquet" as const };
   unwrap({
@@ -45,20 +42,37 @@ async function room({ context }: Setup) {
   const kind = ({ name }: { name: string }) => {
     const found = kinds.items.find((k) => k.name === name);
     if (!found) throw new Error(`kind ${name}`);
-    return found;
+    return found.id;
   };
-  return { item, banquet, theatre, kind };
+  return { item, kind };
 }
 
-type LayoutInput = Setup & { itemId: string; setupId: string; name: string };
+type LayoutInput = Ctx & { itemId: string; name: string; capacity?: number | null };
 
-/** A new empty layout of the setup in the item. */
-async function newLayout({ context, itemId, setupId, name }: LayoutInput) {
-  const input = { itemId, setupId, name };
-  return unwrap({ result: await execute({ operation: createSetupLayout, input, context }) });
+/** A new empty layout of the room. */
+async function newLayout({ context, ...input }: LayoutInput) {
+  return unwrap({ result: await execute({ operation: createLayout, input, context }) });
 }
 
-describe("floor plans and setup layouts (ADR 0099, 0102)", () => {
+/** The room's plan saved with these fixed pieces. */
+async function savePlan({
+  context,
+  itemId,
+  version,
+  elements,
+}: Ctx & {
+  itemId: string;
+  version: number;
+  elements: { kindId: string; xCm: number; yCm: number; emergencyExit?: boolean }[];
+}) {
+  const input = {
+    ...{ itemId, expectedVersion: version, widthCm: 1000, depthCm: 800 },
+    ...{ outline: RECTANGLE, minAisleCm: null, elements },
+  };
+  return execute({ operation: saveFloorPlan, input, context });
+}
+
+describe("floor plans and layouts (ADR 0099, 0102, 0103)", () => {
   it("imports the starter library once", async () => {
     const context = testContext();
     await room({ context });
@@ -72,120 +86,119 @@ describe("floor plans and setup layouts (ADR 0099, 0102)", () => {
     expect(again).toEqual({ created: 0, skipped: 13 });
   });
 
-  it("derives seats per side and capacity from the layout", async () => {
+  it("derives a layout's capacity from its seats unless one is typed", async () => {
     const context = testContext();
-    const { item, banquet, kind } = await room({ context });
-    const table = kind({ name: "Table 180 × 80" });
-    const drawn = await newLayout({ context, itemId: item.id, setupId: banquet.id, name: "A" });
+    const { item, kind } = await room({ context });
+    const drawn = await newLayout({ context, itemId: item.id, name: "Banquet" });
+    expect(drawn).toMatchObject({ seatCount: 0, effectiveCapacity: null, capacitySource: "NONE" });
     const saved = unwrap({
       result: await execute({
-        operation: saveSetupLayout,
+        operation: saveLayout,
         input: {
           id: drawn.id,
           expectedVersion: 1,
+          description: "Dinner with speeches",
+          setupMinutes: 45,
           elements: [
-            { kindId: kind({ name: "Round table Ø180" }).id, xCm: 300, yCm: 300 },
+            { kindId: kind({ name: "Round table Ø180" }), xCm: 300, yCm: 300 },
             // A long table shortened to 120 cm, two chairs on top, none below, one on each end.
             {
-              kindId: table.id,
-              xCm: 700,
-              yCm: 300,
-              widthCm: 120,
-              seatsTop: 2,
-              seatsBottom: 0,
-              seatsLeft: 1,
-              seatsRight: 1,
+              kindId: kind({ name: "Table 180 × 80" }),
+              ...{ xCm: 700, yCm: 300, widthCm: 120 },
+              ...{ seatsTop: 2, seatsBottom: 0, seatsLeft: 1, seatsRight: 1 },
             },
           ],
         },
         context,
       }),
     });
-    expect(saved.version).toBe(2);
-    expect(saved.elements[1]).toMatchObject({
-      effectiveWidthCm: 120,
-      effectiveDepthCm: 80,
-      effectiveSides: { top: 2, right: 1, bottom: 0, left: 1 },
-      seatCount: 4,
-    });
-    expect(saved.seatCount).toBe(14);
     expect(saved).toMatchObject({
-      capacity: null,
+      version: 2,
+      seatCount: 14,
       effectiveCapacity: 14,
       capacitySource: "LAYOUT",
+      description: "Dinner with speeches",
+      setupMinutes: 45,
     });
+    const typed = unwrap({
+      result: await execute({
+        operation: saveLayout,
+        input: { id: drawn.id, expectedVersion: 2, capacity: 12, elements: [] },
+        context,
+      }),
+    });
+    expect(typed).toMatchObject({ effectiveCapacity: 12, capacitySource: "MANUAL" });
     const read = unwrap({
       result: await execute({ operation: getItem, input: { id: item.id }, context }),
     });
-    expect(read.setups.find((s) => s.setupId === banquet.id)).toMatchObject({
-      effectiveCapacity: 14,
-    });
+    expect(read.layouts).toEqual([
+      { layoutId: drawn.id, name: "Banquet", effectiveCapacity: 12, capacitySource: "MANUAL" },
+    ]);
   });
 
-  it("refuses a stale version and the wrong kind of piece", async () => {
+  it("refuses a stale version, a taken name and the wrong kind of piece", async () => {
     const context = testContext();
-    const { item, theatre, kind } = await room({ context });
-    const drawn = await newLayout({ context, itemId: item.id, setupId: theatre.id, name: "A" });
+    const { item, kind } = await room({ context });
+    const drawn = await newLayout({ context, itemId: item.id, name: "A" });
+    await newLayout({ context, itemId: item.id, name: "B" });
     const base = { id: drawn.id, elements: [] };
     unwrap({
       result: await execute({
-        operation: saveSetupLayout,
+        operation: saveLayout,
         input: { ...base, expectedVersion: 1 },
         context,
       }),
     });
     const stale = await execute({
-      operation: saveSetupLayout,
+      operation: saveLayout,
       input: { ...base, expectedVersion: 1 },
       context,
     });
     expect(errorCode({ result: stale })).toBe("CONFLICT");
+    const taken = await execute({
+      operation: saveLayout,
+      input: { ...base, expectedVersion: 2, name: "b" },
+      context,
+    });
+    expect(errorCode({ result: taken })).toBe("CONFLICT");
     const door = await execute({
-      operation: saveSetupLayout,
+      operation: saveLayout,
       input: {
         ...base,
         expectedVersion: 2,
-        elements: [{ kindId: kind({ name: "Door" }).id, xCm: 0, yCm: 0 }],
+        elements: [{ kindId: kind({ name: "Door" }), xCm: 0, yCm: 0 }],
       },
       context,
     });
     expect(errorCode({ result: door })).toBe("VALIDATION");
   });
 
-  it("warns about pieces outside the walls and in front of a door", async () => {
+  it("snaps doors to a wall and warns about pieces outside the walls or in a door's swing", async () => {
     const context = testContext();
-    const { item, theatre, kind } = await room({ context });
-    unwrap({
-      result: await execute({
-        operation: saveFloorPlan,
-        input: {
-          itemId: item.id,
-          expectedVersion: 0,
-          widthCm: 1000,
-          depthCm: 800,
-          outline: [
-            [0, 0],
-            [1000, 0],
-            [1000, 800],
-            [0, 800],
-          ],
-          minAisleCm: null,
-          // Dropped near the bottom wall: it snaps onto the wall and swings into the room.
-          elements: [{ kindId: kind({ name: "Door" }).id, xCm: 500, yCm: 760 }],
-        },
+    const { item, kind } = await room({ context });
+    // Dropped near the bottom wall: it snaps onto the wall and swings into the room.
+    const plan = unwrap({
+      result: await savePlan({
         context,
+        itemId: item.id,
+        version: 0,
+        elements: [{ kindId: kind({ name: "Door" }), xCm: 500, yCm: 760 }],
       }),
     });
-    const drawn = await newLayout({ context, itemId: item.id, setupId: theatre.id, name: "A" });
+    expect(plan.elements[0]).toMatchObject({
+      ...{ xCm: 500, yCm: 800, rotationDeg: 180, shape: "DOOR" },
+      ...{ effectiveSwingDeg: 90, seatCount: 0, emergencyExit: false },
+    });
+    const drawn = await newLayout({ context, itemId: item.id, name: "A" });
     const layout = unwrap({
       result: await execute({
-        operation: saveSetupLayout,
+        operation: saveLayout,
         input: {
           id: drawn.id,
           expectedVersion: 1,
           elements: [
-            { kindId: kind({ name: "Buffet" }).id, xCm: 500, yCm: 700 },
-            { kindId: kind({ name: "Stage" }).id, xCm: 1000, yCm: 100 },
+            { kindId: kind({ name: "Buffet" }), xCm: 500, yCm: 720 },
+            { kindId: kind({ name: "Stage" }), xCm: 1000, yCm: 100 },
           ],
         },
         context,
@@ -195,102 +208,125 @@ describe("floor plans and setup layouts (ADR 0099, 0102)", () => {
       "KEEP_CLEAR",
       "OUTSIDE_OUTLINE",
     ]);
-    expect(layout).toMatchObject({ effectiveCapacity: 120, capacitySource: "MANUAL" });
-    const plan = unwrap({
-      result: await execute({ operation: getFloorPlan, input: { itemId: item.id }, context }),
-    });
-    expect(plan.version).toBe(1);
-    expect(plan.elements[0]).toMatchObject({
-      xCm: 500,
-      yCm: 800,
-      rotationDeg: 180,
-      shape: "DOOR",
-      effectiveSwingDeg: 90,
-      seatCount: 0,
-    });
-    expect(plan.setups).toHaveLength(2);
-    expect(plan.layouts).toHaveLength(1);
   });
 
-  it("keeps a kind that is in use and hides plans from other organizations", async () => {
+  it("refuses a layout that blocks an emergency exit, and an exit that a layout blocks", async () => {
     const context = testContext();
-    const { item, banquet, kind } = await room({ context });
-    const round = kind({ name: "Round table Ø180" });
-    const drawn = await newLayout({ context, itemId: item.id, setupId: banquet.id, name: "A" });
+    const { item, kind } = await room({ context });
+    const door = { kindId: kind({ name: "Door" }), xCm: 500, yCm: 800 };
+    unwrap({ result: await savePlan({ context, itemId: item.id, version: 0, elements: [door] }) });
+    const drawn = await newLayout({ context, itemId: item.id, name: "A" });
+    // 1.2 m from the wall: outside the door's 90 cm swing, inside an exit's 150 cm zone.
+    const buffet = { kindId: kind({ name: "Buffet" }), xCm: 500, yCm: 650 };
     unwrap({
       result: await execute({
-        operation: saveSetupLayout,
-        input: {
-          id: drawn.id,
-          expectedVersion: 1,
-          elements: [{ kindId: round.id, xCm: 300, yCm: 300 }],
-        },
+        operation: saveLayout,
+        input: { id: drawn.id, expectedVersion: 1, elements: [buffet] },
         context,
       }),
     });
-    const archived = await execute({
-      operation: archiveFloorElementKind,
-      input: { id: round.id },
+    const marked = await savePlan({
       context,
+      itemId: item.id,
+      version: 1,
+      elements: [{ ...door, emergencyExit: true }],
     });
-    expect(errorCode({ result: archived })).toBe("CONFLICT");
-    const other = testContext();
-    const foreign = await execute({
-      operation: getSetupLayout,
-      input: { id: drawn.id },
-      context: other,
-    });
-    expect(errorCode({ result: foreign })).toBe("NOT_FOUND");
-  });
-
-  it("takes a setup's capacity from its largest layout, copies, renames and archives", async () => {
-    const context = testContext();
-    const { item, banquet, kind } = await room({ context });
-    const round = kind({ name: "Round table Ø180" }).id;
-    const small = await newLayout({ context, itemId: item.id, setupId: banquet.id, name: "60" });
-    const tables = ({ count }: { count: number }) =>
-      Array.from({ length: count }, (_, index) => ({
-        kindId: round,
-        xCm: 150 + index * 250,
-        yCm: 300,
-      }));
+    expect(errorCode({ result: marked })).toBe("CONFLICT");
     unwrap({
       result: await execute({
-        operation: saveSetupLayout,
-        input: { id: small.id, expectedVersion: 1, elements: tables({ count: 2 }) },
+        operation: saveLayout,
+        input: { id: drawn.id, expectedVersion: 2, elements: [] },
+        context,
+      }),
+    });
+    unwrap({
+      result: await savePlan({
+        context,
+        itemId: item.id,
+        version: 1,
+        elements: [{ ...door, emergencyExit: true }],
+      }),
+    });
+    const blocked = await execute({
+      operation: saveLayout,
+      input: { id: drawn.id, expectedVersion: 3, elements: [buffet] },
+      context,
+    });
+    expect(errorCode({ result: blocked })).toBe("VALIDATION");
+    const kept = unwrap({
+      result: await execute({ operation: getLayout, input: { id: drawn.id }, context }),
+    });
+    expect(kept).toMatchObject({ version: 3, elements: [] });
+  });
+
+  it("holds a layout and the room to the people limit", async () => {
+    const context = testContext();
+    const { item } = await room({ context, maxPeople: 40 });
+    const over = await execute({
+      operation: createLayout,
+      input: { itemId: item.id, name: "Big", capacity: 41 },
+      context,
+    });
+    expect(errorCode({ result: over })).toBe("VALIDATION");
+    await newLayout({ context, itemId: item.id, name: "Classroom", capacity: 30 });
+    const lowered = await execute({
+      operation: updateItem,
+      input: { id: item.id, maxPeople: 25 },
+      context,
+    });
+    expect(errorCode({ result: lowered })).toBe("CONFLICT");
+    unwrap({
+      result: await execute({
+        operation: updateItem,
+        input: { id: item.id, maxPeople: 30 },
+        context,
+      }),
+    });
+  });
+
+  it("copies and archives layouts and hides them from other organizations", async () => {
+    const context = testContext();
+    const { item, kind } = await room({ context });
+    const round = kind({ name: "Round table Ø180" });
+    const small = await newLayout({ context, itemId: item.id, name: "60" });
+    unwrap({
+      result: await execute({
+        operation: saveLayout,
+        input: {
+          id: small.id,
+          expectedVersion: 1,
+          setupMinutes: 30,
+          elements: [{ kindId: round, xCm: 300, yCm: 300 }],
+        },
         context,
       }),
     });
     const copy = unwrap({
       result: await execute({
-        operation: createSetupLayout,
-        input: { itemId: item.id, setupId: banquet.id, name: "80", copyFromId: small.id },
+        operation: createLayout,
+        input: { itemId: item.id, name: "80", copyFromId: small.id },
         context,
       }),
     });
-    expect(copy.seatCount).toBe(20);
-    const big = unwrap({
-      result: await execute({
-        operation: saveSetupLayout,
-        input: { id: copy.id, expectedVersion: 1, elements: tables({ count: 3 }) },
-        context,
-      }),
-    });
-    expect(big).toMatchObject({ seatCount: 30, effectiveCapacity: 30, capacitySource: "LAYOUT" });
-    const taken = await execute({
-      operation: saveSetupLayout,
-      input: { id: copy.id, expectedVersion: 2, name: "60", elements: tables({ count: 3 }) },
+    expect(copy).toMatchObject({ seatCount: 10, setupMinutes: 30 });
+    const archived = await execute({
+      operation: archiveFloorElementKind,
+      input: { id: round },
       context,
     });
-    expect(errorCode({ result: taken })).toBe("CONFLICT");
+    expect(errorCode({ result: archived })).toBe("CONFLICT");
     unwrap({
-      result: await execute({ operation: archiveSetupLayout, input: { id: copy.id }, context }),
+      result: await execute({ operation: archiveLayout, input: { id: copy.id }, context }),
     });
-    const read = unwrap({
-      result: await execute({ operation: getItem, input: { id: item.id }, context }),
+    const plan = unwrap({
+      result: await execute({ operation: getFloorPlan, input: { itemId: item.id }, context }),
     });
-    expect(read.setups.find((s) => s.setupId === banquet.id)).toMatchObject({
-      effectiveCapacity: 20,
+    expect(plan.layouts.map((layout) => layout.name)).toEqual(["60"]);
+    const foreign = await execute({
+      operation: getLayout,
+      input: { id: small.id },
+      context: testContext(),
     });
+    expect(errorCode({ result: foreign })).toBe("NOT_FOUND");
   });
 });

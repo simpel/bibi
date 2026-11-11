@@ -8,8 +8,6 @@ import {
   FieldDefinitionWireSchema,
   ItemListWireSchema,
   ItemWireSchema,
-  SetupListWireSchema,
-  SetupWireSchema,
   VocabularyListWireSchema,
   VocabularyWireSchema,
 } from "./wire-schemas";
@@ -60,18 +58,8 @@ const vocabularyCard = uiEntry({
   schema: VocabularyWireSchema,
   toProps: ({ value }) => ({ vocabulary: value }),
 });
-const setupTable = uiEntry({
-  component: "setup-table",
-  schema: SetupListWireSchema,
-  toProps: ({ value }) => value,
-});
-const setupCard = uiEntry({
-  component: "setup-card",
-  schema: SetupWireSchema,
-  toProps: ({ value }) => ({ setup: value }),
-});
 
-/** Tool → component for the configurable domain (ADR 0021): items, types, fields, lists, setups. */
+/** Tool → component for the configurable domain (ADR 0021): items, types, fields, lists. */
 export const CONFIGURATION_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   item_list: itemTable,
   item_get: itemCard,
@@ -98,10 +86,5 @@ export const CONFIGURATION_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   vocabulary_addValue: vocabularyCard,
   vocabulary_updateValue: vocabularyCard,
   vocabulary_archiveValue: vocabularyCard,
-  setup_list: setupTable,
-  setup_get: setupCard,
-  setup_create: setupCard,
-  setup_update: setupCard,
-  setup_archive: setupCard,
   configuration_importTemplate: configurationImport,
 };
