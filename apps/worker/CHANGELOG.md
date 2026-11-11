@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.5](https://github.com/simpel/bibi/compare/@bibi/worker-v0.2.4...@bibi/worker-v0.2.5) (2026-11-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 0.4.0
+    * @bibi/core bumped to 2.0.0
+    * @bibi/db bumped to 2.0.0
+    * @bibi/logger bumped to 0.1.3
+
 ## [0.2.4](https://github.com/simpel/bibi/compare/@bibi/worker-v0.2.3...@bibi/worker-v0.2.4) (2026-11-09)
 
 

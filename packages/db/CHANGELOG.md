@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.0.0](https://github.com/simpel/bibi/compare/@bibi/db-v1.1.0...@bibi/db-v2.0.0) (2026-11-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* setup.* and setupLayout.* are replaced by layout.* on GraphQL, REST and MCP; lines, previews and templates take layoutId instead of setupId; items take maxPeople instead of setups.
+
+### Features
+
+* item type groups, with a tab per group on /items ([e717e88](https://github.com/simpel/bibi/commit/e717e8846deb77faf1166399c3303e784b879fa1))
+* payment providers as ports, with Swish, Visma and the full payment lifecycle ([#512](https://github.com/simpel/bibi/issues/512)) ([29b57e4](https://github.com/simpel/bibi/commit/29b57e49511134b6003365096ca64e747259ea42))
+* rooms have layouts instead of shared setups, with a people limit and emergency exits ([cb33bdf](https://github.com/simpel/bibi/commit/cb33bdf6dbad9ecd6c602781e7dc5b5bde4232b2))
+* several layouts per setup, doors and windows on walls, floor plan split from layouts ([1712a9d](https://github.com/simpel/bibi/commit/1712a9d04b2bd12d51b198af3d503007705104db))
+* several layouts per setup, doors and windows on walls, floor plan split from layouts ([1273331](https://github.com/simpel/bibi/commit/127333165e43e9e9fb0ef1fbe8722a3255bf0ab7))
+
+
+### Bug Fixes
+
+* slim production images and cap container memory ([df69148](https://github.com/simpel/bibi/commit/df6914833b27a343763747f4738357557ea2d2e7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 0.4.0
+
 ## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/db-v1.0.1...@bibi/db-v1.1.0) (2026-11-07)
 
 

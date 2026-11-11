@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/simpel/bibi/compare/@bibi/config-v0.3.0...@bibi/config-v0.4.0) (2026-11-11)
+
+
+### Features
+
+* payment providers as ports, with Swish, Visma and the full payment lifecycle ([#512](https://github.com/simpel/bibi/issues/512)) ([29b57e4](https://github.com/simpel/bibi/commit/29b57e49511134b6003365096ca64e747259ea42))
+
 ## [0.3.0](https://github.com/simpel/bibi/compare/@bibi/config-v0.2.0...@bibi/config-v0.3.0) (2026-11-06)
 
 
