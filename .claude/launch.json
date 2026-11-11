@@ -23,16 +23,6 @@
       "port": 3332
     },
     {
-      "name": "mcp",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "--filter",
-        "@bibi/mcp",
-        "dev"
-      ],
-      "port": 3331
-    },
-    {
       "name": "web-e2e",
       "runtimeExecutable": "env",
       "runtimeArgs": [

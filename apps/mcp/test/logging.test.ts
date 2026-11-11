@@ -3,8 +3,8 @@ import { createExecuteContext, grantAll, ok } from "@bibi/core";
 import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { createHttpServer } from "../src/http/create-http-server";
 import { fakeEmbed } from "./fake-embed";
+import { createHttpServer } from "./http-host";
 
 const organizationId = `org_${createId()}`;
 
@@ -24,7 +24,6 @@ const server = createHttpServer({
   resolveContext,
   embed: fakeEmbed,
   baseUrl: "http://localhost:3331",
-  authorizationServer: "http://localhost:3330/api/auth",
   allowedOrigins: ["http://localhost:3330"],
 });
 let url = "";

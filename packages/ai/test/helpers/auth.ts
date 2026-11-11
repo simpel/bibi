@@ -1,4 +1,4 @@
-import { getAuth, mcpResourceUrl } from "@bibi/auth";
+import { getAuth, linkMcpResource } from "@bibi/auth";
 import { signInByLink } from "@bibi/auth/testing";
 import { getEnv } from "@bibi/config";
 import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
@@ -48,10 +48,5 @@ export async function registerWebClient(): Promise<void> {
     update: { redirectUris },
     create: { id: createId(), clientId, createdAt: now, ...data },
   });
-  const resourceId = mcpResourceUrl();
-  await db.oauthClientResource.upsert({
-    where: { clientId_resourceId: { clientId, resourceId } },
-    update: {},
-    create: { id: createId(), clientId, resourceId, createdAt: now },
-  });
+  await linkMcpResource({ db, clientId });
 }

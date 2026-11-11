@@ -1,9 +1,9 @@
 # Multi-stage build, one target per image (built by release.yml):
 #   docker build --target web     --build-arg APP=web .
-#   docker build --target node    --build-arg APP=mcp|worker .
+#   docker build --target node    --build-arg APP=worker .
 #   docker build --target migrate --build-arg APP=db .
 # Runtime images hold only the files the app loads (Next's standalone output for web, docker/trace.mjs
-# for mcp and worker), never node_modules or build caches: a release must fit a small server's disk.
+# for the worker), never node_modules or build caches: a release must fit a small server's disk.
 FROM node:22-alpine AS base
 RUN corepack enable && apk add --no-cache libc6-compat openssl
 WORKDIR /app
@@ -42,15 +42,12 @@ FROM build AS build-node
 COPY docker/trace.mjs docker/trace.mjs
 RUN node docker/trace.mjs /deploy apps/${APP}/dist/*.js
 
-# mcp: /health on PORT. worker: no HTTP port; its compose service disables this check.
+# The worker has no HTTP port. MCP is served by the web image (ADR 0104).
 FROM runtime AS node
 ARG APP
 ENV APP=${APP}
 COPY --from=build-node /deploy .
-EXPOSE 3331
-HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=5 \
-  CMD sh -c 'if [ "$APP" = worker ]; then exit 0; fi; wget -q -O /dev/null "http://127.0.0.1:${PORT:-3331}/health"'
-CMD ["sh", "-c", "case \"$APP\" in mcp) exec node apps/mcp/dist/http.js;; worker) exec node apps/worker/dist/main.js;; esac"]
+CMD ["node", "apps/worker/dist/main.js"]
 
 # One-off `prisma migrate deploy` before a rollout: the schema, migrations and the Prisma CLI.
 FROM build AS build-migrate

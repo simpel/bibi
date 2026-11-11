@@ -9,19 +9,17 @@ import { defineConfig } from "@playwright/test";
 nextEnv.loadEnvConfig(resolve(process.cwd(), "../.."));
 
 const WEB_URL = process.env.WEB_URL ?? "http://localhost:3330";
-const MCP_URL = process.env.MCP_URL ?? "http://localhost:3331";
 const WEB_PORT = new URL(WEB_URL).port || "3330";
-const MCP_PORT = new URL(MCP_URL).port || "3331";
 
 // Preinstalled Chromium (sandbox) when present; otherwise Playwright's own browser (CI installs it).
 const PREINSTALLED_CHROMIUM = process.env.PW_CHROMIUM_PATH ?? "/opt/pw-browsers/chromium";
 const chromiumPath = existsSync(PREINSTALLED_CHROMIUM) ? PREINSTALLED_CHROMIUM : undefined;
 
 /**
- * E2E against a production build: `pnpm build` first (web and mcp), with DATABASE_URL,
- * BETTER_AUTH_SECRET, BETTER_AUTH_URL and WEB_OAUTH_CLIENT_ID set (see CLAUDE.md). Uses the
- * preinstalled Chromium (no `playwright install`). Servers already running on WEB_URL / MCP_URL
- * (default :3330 / :3331, per-worktree ports from the root `.env`) are reused.
+ * E2E against a production build: `pnpm --filter @bibi/web build` first, with DATABASE_URL,
+ * BETTER_AUTH_SECRET, BETTER_AUTH_URL and WEB_OAUTH_CLIENT_ID set (see CLAUDE.md). The web app also
+ * serves MCP (ADR 0104). Uses the preinstalled Chromium (no `playwright install`). A server already
+ * running on WEB_URL (default :3330, per-worktree ports from the root `.env`) is reused.
  *
  * The web server starts with `E2E_MOCK_MODEL=1`: the chat route then uses the scripted model in
  * `src/server/e2e-mock-model.ts` instead of a real LLM. The flag is ignored in production, and
@@ -46,20 +44,12 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: "node ../mcp/dist/http.js",
-      url: `${MCP_URL}/health`,
-      reuseExistingServer: true,
-      timeout: 60_000,
-      env: { ...process.env, MCP_URL, PORT: MCP_PORT } as Record<string, string>,
-    },
-    {
       command: "pnpm start",
       url: `${WEB_URL}/sv/login`,
       reuseExistingServer: true,
       timeout: 120_000,
       env: {
         ...process.env,
-        MCP_URL,
         WEB_PORT,
         NODE_ENV: "test",
         E2E_MOCK_MODEL: "1",

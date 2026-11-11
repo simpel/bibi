@@ -84,7 +84,6 @@ jobs:
       BETTER_AUTH_SECRET: ci-secret-ci-secret-ci-secret-123
       BETTER_AUTH_URL: http://localhost:3330
       WEB_URL: http://localhost:3330
-      MCP_URL: http://localhost:3331
       E2E_MOCK_MODEL: "1"
     steps:
       - uses: actions/checkout@v7
@@ -101,7 +100,6 @@ jobs:
         run: |
           pnpm --filter @bibi/web provision:oauth | tee provision.log
           grep -E '^WEB_OAUTH_CLIENT_ID=' provision.log >> "$GITHUB_ENV"
-      - run: pnpm --filter @bibi/mcp build
       - run: pnpm --filter @bibi/web build
       - name: Get Playwright version
         id: pw

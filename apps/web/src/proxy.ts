@@ -45,6 +45,7 @@ function createProxy({ intl }: CreateProxyInput) {
 export const proxy = createProxy({ intl: createMiddleware(routing) });
 
 export const config = {
-  // Everything except API routes, Next internals and files with an extension (incl. .well-known).
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  // Everything except API routes, MCP (`/mcp`, `/health`, ADR 0104), Next internals and files with an
+  // extension (incl. .well-known).
+  matcher: ["/((?!api|_next|_vercel|mcp$|health$|.*\\..*).*)"],
 };

@@ -42,7 +42,6 @@ jobs:
         # One image per entry: `target` is the stage in its Dockerfile, `app` the workspace it builds.
         include:
           - { image: web, file: docker/Dockerfile, target: web, app: web }
-          - { image: mcp, file: docker/Dockerfile, target: node, app: mcp }
           - { image: worker, file: docker/Dockerfile, target: node, app: worker }
           - { image: migrate, file: docker/Dockerfile, target: migrate, app: db }
           # Cached so its layers (Postgres client, AWS CLI) keep their digests and the server pulls

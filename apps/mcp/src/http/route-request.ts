@@ -1,19 +1,13 @@
 import type { EmbedFn } from "@bibi/core";
 import { handleMcpRequest, type ResolveContext } from "./handle-mcp-request";
-import {
-  MCP_ENDPOINT_PATH,
-  PROTECTED_RESOURCE_PATH,
-  protectedResourceMetadata,
-} from "./protected-resource";
+import { MCP_ENDPOINT_PATH, PROTECTED_RESOURCE_PATH } from "./protected-resource";
 
 export type RouteRequestInput = {
   request: Request;
   resolveContext: ResolveContext;
   embed: EmbedFn;
-  /** Public base URL of this server, e.g. `http://localhost:3331` (`MCP_URL`). */
+  /** Public MCP base URL (`MCP_URL`), e.g. `https://mcp.heybibi.se`. */
   baseUrl: string;
-  /** Issuer of the OAuth authorization server (Better Auth base URL incl. base path). */
-  authorizationServer: string;
 };
 
 export type JsonResponseInput = { status: number; body: unknown };
@@ -22,21 +16,18 @@ export function jsonResponse({ status, body }: JsonResponseInput): Response {
   return Response.json(body, { status });
 }
 
-/** `/mcp`, `/.well-known/oauth-protected-resource` and `/health`; everything else is 404. */
+/**
+ * `/mcp` and `/health`; everything else is 404. The protected-resource metadata
+ * (`/.well-known/oauth-protected-resource`) is served by Better Auth in the web app.
+ */
 export async function routeRequest({
   request,
   resolveContext,
   embed,
   baseUrl,
-  authorizationServer,
 }: RouteRequestInput): Promise<Response> {
   const { pathname } = new URL(request.url);
   if (pathname === "/health") return jsonResponse({ status: 200, body: { ok: true } });
-  if (pathname.startsWith(PROTECTED_RESOURCE_PATH)) {
-    const resource = new URL(MCP_ENDPOINT_PATH, baseUrl).toString();
-    const body = protectedResourceMetadata({ resource, authorizationServer });
-    return jsonResponse({ status: 200, body });
-  }
   if (pathname !== MCP_ENDPOINT_PATH) {
     return jsonResponse({ status: 404, body: { error: "Not found" } });
   }

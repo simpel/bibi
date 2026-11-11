@@ -1,18 +1,18 @@
-import { createServer, type Server } from "node:http";
 import { getLogger, withRequestLogging } from "@bibi/logger";
 import { corsHeaders, isOriginAllowed } from "./cors";
-import { sendWebResponse, toWebRequest } from "./node-adapter";
 import { jsonResponse, type RouteRequestInput, routeRequest } from "./route-request";
 
-export type CreateHttpServerInput = Omit<RouteRequestInput, "request"> & {
+export type CreateMcpHandlerInput = Omit<RouteRequestInput, "request"> & {
   /** Origins allowed to call from a browser (the web app). */
   allowedOrigins: readonly string[];
 };
 
+export type McpHandler = (request: Request) => Promise<Response>;
+
 type RespondInput = {
   request: Request;
   allowedOrigins: readonly string[];
-  rest: Omit<CreateHttpServerInput, "allowedOrigins">;
+  rest: Omit<CreateMcpHandlerInput, "allowedOrigins">;
 };
 
 async function respond({ request, allowedOrigins, rest }: RespondInput): Promise<Response> {
@@ -26,18 +26,19 @@ async function respond({ request, allowedOrigins, rest }: RespondInput): Promise
   });
 }
 
-/** Tiny `node:http` host adapting Node requests to Web `Request`/`Response`. */
-export function createHttpServer({ allowedOrigins, ...rest }: CreateHttpServerInput): Server {
+/**
+ * The MCP HTTP surface as one Web `Request` → `Response` function (ADR 0104): the web app mounts it
+ * at `/mcp` and `/health`. Origin check, CORS and request logging (surface `mcp`) included.
+ */
+export function createMcpHandler({ allowedOrigins, ...rest }: CreateMcpHandlerInput): McpHandler {
   const handle = withRequestLogging({
     surface: "mcp",
     handler: (request) => respond({ request, allowedOrigins, rest }),
   });
-  return createServer(async (req, res) => {
-    const request = toWebRequest({ req, baseUrl: rest.baseUrl });
+  return async (request) => {
     const response = await handle(request);
     const headers = new Headers(response.headers);
     for (const [name, value] of Object.entries(corsHeaders({ request }))) headers.set(name, value);
-    const { status, body } = response;
-    await sendWebResponse({ res, response: new Response(body, { status, headers }) });
-  });
+    return new Response(response.body, { status: response.status, headers });
+  };
 }

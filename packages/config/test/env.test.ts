@@ -20,6 +20,15 @@ describe("parseEnv", () => {
     expect(env.MAIL_FROM).toBe("Bibi <no-reply@bibi.local>");
   });
 
+  it("serves MCP from the web app's URL unless MCP_URL names its own host", () => {
+    const web = { ...base, WEB_URL: "https://app.heybibi.se" };
+    expect(parseEnv({ source: web }).MCP_URL).toBe("https://app.heybibi.se");
+    expect(parseEnv({ source: { ...web, MCP_URL: "" } }).MCP_URL).toBe("https://app.heybibi.se");
+    expect(parseEnv({ source: { ...web, MCP_URL: "https://mcp.heybibi.se" } }).MCP_URL).toBe(
+      "https://mcp.heybibi.se",
+    );
+  });
+
   it("leaves PUBLIC_URL unset unless a URL is given", () => {
     expect(parseEnv({ source: base }).PUBLIC_URL).toBeUndefined();
     expect(parseEnv({ source: { ...base, PUBLIC_URL: "" } }).PUBLIC_URL).toBeUndefined();

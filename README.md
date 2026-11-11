@@ -21,12 +21,12 @@ pnpm db:migrate                               # database migrations
 pnpm --filter @bibi/core seed:skills         # system skills (the assistant's skills)
 pnpm --filter @bibi/web provision:oauth      # creates the assistant's OAuth client, prints WEB_OAUTH_CLIENT_ID=...
 # put WEB_OAUTH_CLIENT_ID=<value> and AI_GATEWAY_API_KEY=<key> in .env
-pnpm dev                                      # web on :3330 and the MCP server on :3331
+pnpm dev                                      # web on :3330, MCP at :3330/mcp
 ```
 
 - Web: <http://localhost:3330> (create an account, create an organization, open the assistant with `⌘J` / `Ctrl+J`).
 - Mailpit (sign-in emails and magic links): <http://localhost:8025>.
-- MCP server: `http://localhost:3331/mcp` (see `apps/mcp/CLAUDE.md`).
+- MCP: `http://localhost:3330/mcp`, served by the web app (see `apps/mcp/CLAUDE.md`).
 - The assistant needs both `WEB_OAUTH_CLIENT_ID` (web and MCP read the same `.env`) and `AI_GATEWAY_API_KEY`. Without the key the rest of the app works, and semantic search uses a deterministic placeholder (outside production only). AI models (chat and embeddings) are selected via `/admin/ai-models` by a platform admin (see [ADR 0015](docs/decisions/0015-platform-admin.md)), not via env. Rerun `provision:oauth` if `WEB_URL` changes; the script is idempotent.
 
 Other commands:
@@ -57,8 +57,7 @@ Create `.env` in the repo root (there is no `.env.example` yet). The web app, th
 | `MAIL_INBOUND_DOMAIN` | Inbound subdomain for order reply addresses (`order-<id>@<domain>`) and organization inbox addresses; unset = no reply address and the webhook answers 503. DNS: `docs/runbooks/inbound-email.md` |
 | `AI_GATEWAY_API_KEY` | Key for Vercel AI Gateway (assistant and embeddings) |
 | `WEB_URL` | Base URL of the web app, e.g. `http://localhost:3330` |
-| `MCP_URL` | Base URL of the MCP server, e.g. `http://localhost:3331` |
-| `PORT` | Listening port for the MCP server (default 3331) |
+| `MCP_URL` | Public base URL of MCP and its OAuth resource; unset = `WEB_URL` (production: `https://mcp.<domain>`, routed to web) |
 | `WEB_OAUTH_CLIENT_ID` | The web app's first-party client for the assistant (from `provision:oauth`). Read by the web app and the MCP server; only that client may act as the AI actor |
 | `BIBI_API_KEY` | API key for MCP over stdio (`bib_...`) |
 | `NODE_ENV` | `production` disables dev fallbacks (placeholder embedding, E2E model) |

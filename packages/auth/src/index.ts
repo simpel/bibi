@@ -18,6 +18,7 @@ export {
   type GetFirstPartyAccessTokenInput,
   getFirstPartyAccessToken,
 } from "./first-party/get-first-party-access-token";
+export { type LinkMcpResourceInput, linkMcpResource } from "./first-party/link-mcp-resource";
 export { getAuth } from "./get-auth";
 export { findInvitationByCode } from "./invitations/find-invitation-by-code";
 export { invitationMailHook } from "./invitations/invitation-mail-hook";
@@ -50,7 +51,7 @@ export {
 } from "./platform/resolve-platform-context";
 export { type SetPlatformAdminInput, setPlatformAdmin } from "./platform/set-platform-admin";
 export { DISABLED_ADMIN_PATHS } from "./plugins/admin";
-export { ORG_CLAIM } from "./plugins/mcp";
+export { OAUTH_SCOPES, ORG_CLAIM } from "./plugins/mcp";
 export { type AuthSession, type RequireSessionInput, requireSession } from "./require-session";
 export { ACTOR_HEADER, CONVERSATION_HEADER } from "./resolve/ai-actor";
 export {

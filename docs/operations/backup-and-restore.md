@@ -52,7 +52,7 @@ CI runs this automatically (`.github/workflows/backup-restore.yml`): it builds t
 Repeat the test against production dumps after changing the backup setup, after a Postgres major upgrade, and at least quarterly.
 
 ## Restoring production
-1. Stop `web`, `mcp` (and the worker) so nothing writes during the restore.
+1. Stop `web` (it serves MCP too) and the worker so nothing writes during the restore.
 2. Download the dump you want and copy it into the postgres container.
 3. Recreate the database: `dropdb -U bibi bibi && createdb -U bibi bibi`.
 4. `pg_restore -U bibi -d bibi --no-owner --exit-on-error /tmp/bibi.dump`
