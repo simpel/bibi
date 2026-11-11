@@ -19,19 +19,19 @@ async function pricedOrder() {
   return setup;
 }
 
-const valueOf = async ({ context, id }: { context: ExecuteContext; id: string }) =>
+const billedValueOf = async ({ context, id }: { context: ExecuteContext; id: string }) =>
   unwrap({ result: await execute({ operation: getCustomer, input: { id }, context }) }).valueMinor;
 
 describe("customer value: billed so far", () => {
   it("counts nothing before a quote is accepted, then the accepted quote incl. VAT", async () => {
     const { context, order } = await pricedOrder();
     const id = order.customerId;
-    expect(await valueOf({ context, id })).toBe(0);
+    expect(await billedValueOf({ context, id })).toBe(0);
     const quote = await createTestQuote({ context, orderId: order.id });
     unwrap({ result: await execute({ operation: sendQuote, input: { id: quote.id }, context }) });
-    expect(await valueOf({ context, id })).toBe(0);
+    expect(await billedValueOf({ context, id })).toBe(0);
     unwrap({ result: await execute({ operation: acceptQuote, input: { id: quote.id }, context }) });
-    expect(await valueOf({ context, id })).toBe(quote.totalInclVatMinor);
+    expect(await billedValueOf({ context, id })).toBe(quote.totalInclVatMinor);
     const list = unwrap({
       result: await execute({ operation: listCustomers, input: { ids: [id] }, context }),
     });
@@ -44,6 +44,6 @@ describe("customer value: billed so far", () => {
       organizationId: context.organizationId,
       permissions: { customer: ["read"], order: ["read"] },
     });
-    expect(await valueOf({ context: reader, id: order.customerId })).toBeNull();
+    expect(await billedValueOf({ context: reader, id: order.customerId })).toBeNull();
   });
 });

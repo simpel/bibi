@@ -32,7 +32,13 @@
       "invoiceCity": "City",
       "invoiceCountry": "Country",
       "paymentTermsDays": "Payment terms (days)",
-      "creditLimit": "Credit limit (SEK)"
+      "creditLimit": "Credit limit (SEK)",
+      "buyerKind": "Business or private",
+      "organizationNumber": "Org. no."
+    },
+    "buyerKind": {
+      "BUSINESS": "Business",
+      "PRIVATE": "Private person"
     },
     "columns": {
       "name": "Name",
@@ -116,6 +122,9 @@
       "type": "Type",
       "customer": "Customer",
       "contact": "Contact person",
+      "buyerKind": "Business or private",
+      "buyerKindFromCustomer": "Same as the customer",
+      "buyerKindInherited": "{kind} (from the customer)",
       "note": "Booking note",
       "desiredStartsAt": "Desired start",
       "desiredEndsAt": "Desired end",

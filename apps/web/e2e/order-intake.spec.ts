@@ -58,6 +58,9 @@ test("flow B: a custom booking for a new customer that looks like an existing on
   // New customer from the title row: the name is checked for duplicates when it creates.
   await startNewCustomer({ page });
   await page.getByLabel(/^Customer name/).fill("KVARNBY DESIGN");
+  // Business or private is chosen on purpose (ADR 0106).
+  await page.getByRole("combobox", { name: "Business or private" }).click();
+  await page.getByRole("option", { name: "Business" }).click();
   await page.getByLabel(/^Contact name/).fill("Per Lind");
   await page.getByLabel(/^Contact email/).fill("per.lind@kvarnby-design.test");
   // The title row's Create customer stays beside the form; the form's own button creates.

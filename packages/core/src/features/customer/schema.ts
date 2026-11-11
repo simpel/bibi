@@ -4,6 +4,21 @@ import { RecordStatusSchema } from "../../shared/record-status";
 import { ContactCreateInputSchema } from "../contact/schema";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 
+/** Business or private (ADR 0106): what an order's money needs. Orders inherit the customer's. */
+export const BuyerKindSchema = z
+  .enum(["BUSINESS", "PRIVATE"])
+  .describe(
+    "BUSINESS: a company, agency or association, always invoiced in full. PRIVATE: a private " +
+      "person, who pays up front",
+  );
+
+const OrganizationNumberSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(32)
+  .describe("The organisation number, e.g. 556677-8899; sent with invoices");
+
 export const CustomerSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
@@ -11,6 +26,8 @@ export const CustomerSchema = z.object({
   name: z.string(),
   email: z.string().nullable(),
   phone: z.string().nullable(),
+  buyerKind: BuyerKindSchema,
+  organizationNumber: z.string().nullable(),
   invoiceStreetAddress: z.string().nullable(),
   invoicePostalCode: z.string().nullable(),
   invoiceCity: z.string().nullable(),
@@ -61,6 +78,10 @@ export const CustomerCreateInputSchema = z.object({
   name: z.string().trim().min(1).max(200).describe("The customer's name, e.g. a company name"),
   email: z.email().nullish(),
   phone: z.string().trim().max(50).nullish(),
+  buyerKind: BuyerKindSchema.default("BUSINESS").describe(
+    "Business or private; each order inherits it unless it sets its own. Default BUSINESS",
+  ),
+  organizationNumber: OrganizationNumberSchema.nullish(),
   invoiceStreetAddress: z.string().trim().max(200).nullish(),
   invoicePostalCode: z.string().trim().max(20).nullish(),
   invoiceCity: z.string().trim().max(100).nullish(),
@@ -92,6 +113,8 @@ export const CustomerUpdateInputSchema = CustomerCreateInputSchema.omit({
   .partial()
   .extend({
     id: z.string().min(1),
+    // Without a default: an update that omits it keeps the customer's.
+    buyerKind: BuyerKindSchema.optional(),
     fields: FieldValuesSchema.optional().describe(
       "Changed field values by key; other fields are kept. null clears a value.",
     ),
@@ -143,6 +166,7 @@ export const CustomerListOutputSchema = z.object({
   nextCursor: z.string().nullable(),
 });
 
+export type BuyerKind = z.infer<typeof BuyerKindSchema>;
 export type CustomerDto = z.infer<typeof CustomerSchema>;
 export type CustomerCreateInput = z.infer<typeof CustomerCreateInputSchema>;
 export type CustomerFirstContactInput = z.infer<typeof CustomerFirstContactInputSchema>;

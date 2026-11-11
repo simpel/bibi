@@ -90,10 +90,16 @@ export async function OrderDetails({ order, data }: OrderFactsProps) {
   const format = await getDateTimeFormat();
   const { money } = await getNumberFormat();
   const type = data.types.find(({ id }) => id === order.entityTypeId);
+  const kinds = await getTranslations("customer.buyerKind");
+  const kind = kinds(order.effectiveBuyerKind);
   const amount = ({ minor }: { minor: number | null }) =>
     minor === null ? EMPTY : money({ minor });
   const facts = [
     { label: fields("type"), value: type?.name ?? EMPTY },
+    {
+      label: fields("buyerKind"),
+      value: order.buyerKind ? kind : fields("buyerKindInherited", { kind }),
+    },
     ...(order.statusReason ? [{ label: fields("statusReason"), value: order.statusReason }] : []),
     { label: fields("budget"), value: amount({ minor: order.budgetMinor }) },
     { label: fields("estimatedValue"), value: amount({ minor: order.estimatedValueMinor }) },

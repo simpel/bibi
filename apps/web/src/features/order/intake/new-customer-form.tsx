@@ -20,6 +20,13 @@ type FieldsProps = { customerTypes: NamedOption[]; contactTypes: NamedOption[] }
 
 function NewCustomerFields({ form, customerTypes, contactTypes }: FieldsProps) {
   const t = useTranslations("orderIntake.who");
+  const fields = useTranslations("customer.fields");
+  const kinds = useTranslations("customer.buyerKind");
+  const business = form.watch("buyerKind") !== "PRIVATE";
+  const kindOptions = [
+    { id: "BUSINESS", name: kinds("BUSINESS") },
+    { id: "PRIVATE", name: kinds("PRIVATE") },
+  ];
   return (
     <div className="grid items-start gap-4 sm:grid-cols-2">
       <TextField form={form} name="name" label={t("customerName")} required />
@@ -29,6 +36,15 @@ function NewCustomerFields({ form, customerTypes, contactTypes }: FieldsProps) {
         label={t("customerType")}
         options={customerTypes}
       />
+      <OptionSelectField
+        control={form.control}
+        name="buyerKind"
+        label={fields("buyerKind")}
+        options={kindOptions}
+      />
+      {business ? (
+        <TextField form={form} name="organizationNumber" label={fields("organizationNumber")} />
+      ) : null}
       <TextField form={form} name="contact.name" label={t("contactName")} required />
       <EmailField form={form} name="contact.email" label={t("contactEmail")} required />
       {contactTypes.length > 1 ? (

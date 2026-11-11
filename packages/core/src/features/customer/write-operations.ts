@@ -25,7 +25,8 @@ export const createCustomer = defineOperation({
   kind: "command",
   description:
     "Create a customer of one of the organization's customer types. `fields` must match the " +
-    "type's own fields (e.g. org number). With `contact`, its first contact person is created " +
+    "type's own fields. `buyerKind` (BUSINESS or PRIVATE, default BUSINESS) is what its " +
+    "orders inherit; give `organizationNumber` for a business. With `contact`, its first contact person is created " +
     "in the same command (find it with contact.list by customerId).",
   input: CustomerCreateInputSchema,
   output: CustomerSchema,

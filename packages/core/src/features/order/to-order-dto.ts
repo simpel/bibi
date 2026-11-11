@@ -1,5 +1,5 @@
 import { getEnv } from "@bibi/config";
-import type { Order } from "@bibi/db";
+import type { BuyerKind, Order } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import {
   RECORD_LINKS_SELECT,
@@ -13,9 +13,13 @@ import { LATEST_STATUS_CHANGE, type LatestStatusChange } from "./status-history"
 
 type MainAssignment = { record: { assignments: { assigneeId: string | null }[] } };
 
+/** The customer's buyer kind, which the order inherits when it sets none (ADR 0106). */
+type CustomerKind = { customer: { buyerKind: BuyerKind } };
+
 export type OrderRow = Order &
   WithRecordLinks &
   MainAssignment &
+  CustomerKind &
   LatestStatusChange &
   LatestEstimate;
 
@@ -34,18 +38,20 @@ const MAIN_ASSIGNMENT = {
  */
 export const ORDER_INCLUDE = {
   record: { select: { ...RECORD_LINKS_SELECT, assignments: MAIN_ASSIGNMENT } },
+  customer: { select: { buyerKind: true } },
   ...LATEST_STATUS_CHANGE,
   ...LATEST_ESTIMATE,
 };
 
 export const toOrderDto = ({ row }: ToOrderDtoInput): OrderDto => {
-  const { record: _record, statusChanges, estimates, ...order } = row;
+  const { record: _record, customer, statusChanges, estimates, ...order } = row;
   const domain = getEnv().MAIL_INBOUND_DOMAIN;
   const inboundAddress = orderReplyAddress({ orderId: row.id, domain });
   const latest = statusChanges[0];
   return {
     ...order,
     assigneeId: row.record.assignments[0]?.assigneeId ?? null,
+    effectiveBuyerKind: row.buyerKind ?? customer.buyerKind,
     statusChangedAt: latest?.changedAt ?? row.createdAt,
     statusReason: latest?.reason ?? null,
     estimatedValueMinor: estimates[0]?.valueMinor ?? null,

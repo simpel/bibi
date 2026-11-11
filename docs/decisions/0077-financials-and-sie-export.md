@@ -2,6 +2,7 @@
 
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Amended by:** 0106 (the ledger provider issues every money document; Bibi numbers nothing, no SIE or own vouchers; orders are business or private)
 - **Related:** 0029 (invoicing), 0041 and 0036 (amended), 0050, 0051, 0052, 0056, 0057, 0064, 0071, 0079, 0080, 0087, 0093
 
 ## Context

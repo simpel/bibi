@@ -1,6 +1,7 @@
 import type { EntityTypeDto, OrderDto, OrderUpdateInput, VocabularyDto } from "@bibi/core";
 import { buildFieldsSchema, OrderCreateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
+import { NONE } from "@/components/form/option-select-field";
 import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsPatch, fieldsToInput } from "@/components/typed-fields/raw-fields";
 import { minorOrNull, numberOrNull } from "@/lib/blank";
@@ -30,6 +31,7 @@ export function orderFormSchema({ type, vocabularies, timeZone }: OrderSchemaInp
       entityTypeId: values.entityTypeId,
       customerId: values.customerId,
       contactId: values.contactId,
+      buyerKind: values.buyerKind === NONE ? null : values.buyerKind,
       desiredStartsAt: instant({ value: values.desiredStartsAt }),
       desiredEndsAt: instant({ value: values.desiredEndsAt }),
       estimatedHeadcount: numberOrNull({ value: values.estimatedHeadcount }),

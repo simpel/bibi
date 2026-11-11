@@ -1,7 +1,6 @@
 import type { DemoType } from "../../config-types";
 
 const languages = ["Swedish", "English", "German"];
-const orgnr = { name: "Org no.", kind: "TEXT" } as const;
 
 /** Lindholmen's own types (`docs/demo-seed.md`: item types and other types). */
 export const lindholmenTypes: readonly DemoType[] = [
@@ -116,19 +115,18 @@ export const lindholmenTypes: readonly DemoType[] = [
     base: "CUSTOMER",
     name: "Company",
     pluralName: "Companies",
-    fields: [orgnr, { name: "Framework agreement", kind: "BOOLEAN" }],
+    fields: [{ name: "Framework agreement", kind: "BOOLEAN" }],
   },
   {
     base: "CUSTOMER",
     name: "Public sector",
     pluralName: "Public sector",
     fields: [
-      orgnr,
       { name: "Peppol-ID", kind: "TEXT" },
       { name: "Requires case number", kind: "BOOLEAN" },
     ],
   },
-  { base: "CUSTOMER", name: "Association", pluralName: "Associations", fields: [orgnr] },
+  { base: "CUSTOMER", name: "Association", pluralName: "Associations" },
   {
     base: "CONTACT",
     name: "Contact person",

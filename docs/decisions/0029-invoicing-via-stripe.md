@@ -2,7 +2,7 @@
 
 - **Date:** 2026-10-15
 - **Status:** Accepted
-- **Amended by:** 0100 (providers as ports: one connection table, routes per method, payment attempts, refunds, credit notes)
+- **Amended by:** 0100 (providers as ports: one connection table, routes per method, payment attempts, refunds, credit notes), 0106 (the ledger provider issues every money document; Bibi numbers nothing, no SIE or own vouchers; orders are business or private)
 - **Related:** 0028, 0052, 0057, 0077 (SIE export), 0087 (Fortnox connection)
 
 ## Context

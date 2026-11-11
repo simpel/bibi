@@ -1,6 +1,5 @@
 import type { ConfigurationTemplateType } from "./configuration-template";
 
-const orgNumber = { name: "Org no.", kind: "TEXT" } as const;
 const allergens = { name: "Allergens", kind: "MULTI_CHOICE", list: "Allergens" } as const;
 
 /** The types of the "Conference venue" starter pack. */
@@ -54,12 +53,12 @@ export const conferenceVenueTypes: readonly ConfigurationTemplateType[] = [
     capabilities: ["PRICED", "BUNDLE", "CUSTOMISATIONS"],
     fields: [{ name: "Minimum quantity", kind: "NUMBER" }],
   },
-  { base: "CUSTOMER", name: "Company", pluralName: "Companies", fields: [orgNumber] },
+  { base: "CUSTOMER", name: "Company", pluralName: "Companies" },
   {
     base: "CUSTOMER",
     name: "Public sector",
     pluralName: "Public sector",
-    fields: [orgNumber, { name: "Peppol ID", kind: "TEXT" }],
+    fields: [{ name: "Peppol ID", kind: "TEXT" }],
   },
   {
     base: "ORDER",

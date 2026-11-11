@@ -445,8 +445,10 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 *MVP* · The company, agency, association or private person that buys. Has a type (base `CUSTOMER`) with custom fields, e.g. Company or Government agency.
 
 **Attributes**
-- type and custom fields (`fields` as JSON, e.g. org number, Peppol ID, framework agreement)
+- type and custom fields (`fields` as JSON, e.g. Peppol ID, framework agreement)
 - name
+- business or private (`buyerKind`, `BUSINESS` | `PRIVATE`, owned; the web forms make staff choose, the API defaults to `BUSINESS`): what its orders inherit ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md))
+- organisation number (`organizationNumber`, owned, optional, trimmed, ≤ 32): sent with invoices; required before a business customer is invoiced once invoicing moves to the ledger provider (ADR 0106, not built)
 - email, phone
 - invoice address (`invoiceStreetAddress`, `invoicePostalCode`, `invoiceCity`, `invoiceCountry`, default `SE`)
 - price lists (`PriceList.customerId`; archiving the customer is denied while it has an active price list)
@@ -492,6 +494,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - reference number (`reference`, sequential per organization)
 - type (the organization's own, base `ORDER`) and custom fields
 - customer and contact person (the contact must work at the customer; required for new orders and never cleared, ADR 0081; older orders may have none)
+- business or private (`buyerKind`, owned, `null` = the customer's) and the derived `effectiveBuyerKind` (its own, else the customer's), shown on the order page ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md))
 - booking note (`note`, optional, ≤ 4000 characters): notes for the whole booking (ADR 0081)
 - intake key (`intakeKey`, optional, owned, 1–100 characters, unique per organization): the client key of the `order.create` that made the order, so a repeated submit returns it (ADR 0081). Not on the order DTO: it belongs to the create call, not to the booking.
 - desired period (`desiredStartsAt`, `desiredEndsAt`, optional) – what the customer asked for; each line has its own time

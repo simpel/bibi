@@ -32,7 +32,13 @@
       "invoiceCity": "Ort",
       "invoiceCountry": "Land",
       "paymentTermsDays": "Betalningsvillkor (dagar)",
-      "creditLimit": "Kreditgräns (kr)"
+      "creditLimit": "Kreditgräns (kr)",
+      "buyerKind": "Företag eller privat",
+      "organizationNumber": "Org.nr"
+    },
+    "buyerKind": {
+      "BUSINESS": "Företag",
+      "PRIVATE": "Privatperson"
     },
     "columns": {
       "name": "Namn",
@@ -116,6 +122,9 @@
       "type": "Typ",
       "customer": "Kund",
       "contact": "Kontaktperson",
+      "buyerKind": "Företag eller privat",
+      "buyerKindFromCustomer": "Samma som kunden",
+      "buyerKindInherited": "{kind} (från kunden)",
       "note": "Anteckning för bokningen",
       "desiredStartsAt": "Önskad start",
       "desiredEndsAt": "Önskat slut",

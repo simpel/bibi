@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { RecordStatusSchema } from "../../shared/record-status";
+import { BuyerKindSchema } from "../customer/schema";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 import { LineSchema } from "../line/schema";
 import { OrderIntakeShape } from "./create-intake-schema";
@@ -16,6 +17,12 @@ export const OrderSchema = z.object({
   entityTypeId: z.string(),
   customerId: z.string(),
   contactId: z.string().nullable(),
+  buyerKind: BuyerKindSchema.nullable().describe(
+    "Business or private set on this order; null = it follows the customer's",
+  ),
+  effectiveBuyerKind: BuyerKindSchema.describe(
+    "Business or private for this order: its own, else the customer's (ADR 0106)",
+  ),
   /** The organization's own status (ADR 0043); the newest entry of its status history (ADR 0054). */
   statusId: z.string(),
   /** The main assignee's user id (assignment.list, responsibility null); null: nobody (ADR 0055). */
@@ -63,6 +70,9 @@ const OrderDetailsShape = {
     .describe(
       "Id of the contact person at the customer (contact.list); required and never cleared (ADR 0081)",
     ),
+  buyerKind: BuyerKindSchema.nullish().describe(
+    "Business or private for this order only; null or omitted = follow the customer's",
+  ),
   desiredStartsAt: z.coerce.date().nullish().describe("Desired start, ISO 8601"),
   desiredEndsAt: z.coerce.date().nullish().describe("Desired end (after the start), ISO 8601"),
   estimatedHeadcount: CountSchema.nullish().describe(

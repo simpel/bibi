@@ -62,6 +62,10 @@
             "question": "How much is a customer worth?",
             "answer": "Open Customers. The Value column shows how much each customer has been billed so far, including VAT.\nAn order counts once it has been invoiced, or once the customer has accepted its quote. Hover the question mark next to Value to see this explained."
           },
+          "businessOrPrivate": {
+            "question": "How do I mark a customer as a business or a private person?",
+            "answer": "When you create a customer, choose Business or Private person. For a business you can also fill in its org. no.\nEvery order follows its customer. To change it for a single order, click Edit on the order and pick Business or Private person under Business or private. Choose Same as the customer to go back."
+          },
           "createFromBoard": {
             "question": "Can I create an order from the pipeline board?",
             "answer": "Yes. At the bottom of the column where new orders start there is + Create order. It opens the same page as Create order in the menu, and the order lands in that first column."

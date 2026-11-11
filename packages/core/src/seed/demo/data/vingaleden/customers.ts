@@ -10,14 +10,19 @@ export const vingaledenCustomers: readonly DemoCustomer[] = [
   {
     name: "Hisingen Energi AB",
     type: "Company",
-    fields: { "Org no.": "556834-2210" },
+    organizationNumber: "556834-2210",
     contacts: [contact({ name: "Mats Olsson" })],
   },
-  { name: "Familjen Rask", type: "Private", contacts: [contact({ name: "Johan Rask" })] },
+  {
+    name: "Familjen Rask",
+    type: "Private",
+    buyerKind: "PRIVATE",
+    contacts: [contact({ name: "Johan Rask" })],
+  },
   {
     name: "Kvarnby Design AB",
     type: "Company",
-    fields: { "Org no.": "559012-7788" },
+    organizationNumber: "559012-7788",
     contacts: [contact({ name: "Linnea Kvist" })],
   },
 ];

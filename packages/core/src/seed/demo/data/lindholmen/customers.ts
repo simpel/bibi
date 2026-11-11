@@ -15,7 +15,8 @@ export const lindholmenCustomers: readonly DemoCustomer[] = [
   {
     name: "Nordkust Logistik AB",
     type: "Company",
-    fields: { "Org no.": "556712-3401", "Framework agreement": true },
+    organizationNumber: "556712-3401",
+    fields: { "Framework agreement": true },
     ...{ invoiceCity: "Göteborg", paymentTermsDays: 30 },
     priceList: { name: "Nordkust framework agreement", discountPercent: 15 },
     bundles: [nordkustBundle],
@@ -31,14 +32,14 @@ export const lindholmenCustomers: readonly DemoCustomer[] = [
   {
     name: "Hisingen Energi AB",
     type: "Company",
-    fields: { "Org no.": "556834-2210" },
+    organizationNumber: "556834-2210",
     contacts: [person({ name: "Mats Olsson", role: "Orderer" })],
   },
   {
     name: "Västra Sjukvårdsregionen",
     type: "Public sector",
+    organizationNumber: "232100-0131",
     fields: {
-      "Org no.": "232100-0131",
       "Peppol-ID": "0007:2321000131",
       "Requires case number": true,
     },
@@ -51,7 +52,7 @@ export const lindholmenCustomers: readonly DemoCustomer[] = [
   {
     name: "Kvarnby Design AB",
     type: "Company",
-    fields: { "Org no.": "559012-7788" },
+    organizationNumber: "559012-7788",
     contacts: [
       person({ name: "Linnea Kvist", role: "Orderer", email: "linnea.kvist@kvarnby.test" }),
     ],
@@ -59,19 +60,19 @@ export const lindholmenCustomers: readonly DemoCustomer[] = [
   {
     name: "Göta Advokatbyrå KB",
     type: "Company",
-    fields: { "Org no.": "969745-1120" },
+    organizationNumber: "969745-1120",
     contacts: [person({ name: "Henrik Strand", role: "Orderer" })],
   },
   {
     name: "Älvstrand Tech AB",
     type: "Company",
-    fields: { "Org no.": "559301-4455" },
+    organizationNumber: "559301-4455",
     contacts: [person({ name: "Amir Haddad", role: "Orderer" })],
   },
   {
     name: "Göteborgs Seglarsällskap",
     type: "Association",
-    fields: { "Org no.": "857209-6612" },
+    organizationNumber: "857209-6612",
     contacts: [person({ name: "Ulla Berg", role: "Organizer" })],
   },
   // A near-duplicate of Nordkust Logistik AB, registered separately by mistake: what

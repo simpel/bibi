@@ -2,6 +2,7 @@
 
 - **Date:** 2026-11-03
 - **Status:** Accepted
+- **Amended by:** 0106 (the ledger provider issues every money document; Bibi numbers nothing, no SIE or own vouchers; orders are business or private)
 - **Amends:** 0077, 0090
 - **Related:** 0051, 0052, 0057, 0059
 - **Spec:** `docs/specs/payments.md`

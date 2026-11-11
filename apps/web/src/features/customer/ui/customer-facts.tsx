@@ -30,6 +30,15 @@ export async function CustomerFacts(props: CustomerFactsProps) {
   const credit = customer.creditLimitMinor;
   const facts = [
     { label: t("fields.type"), value: type?.name ?? "–" },
+    { label: t("fields.buyerKind"), value: t(`buyerKind.${customer.buyerKind}`) },
+    ...(customer.buyerKind === "BUSINESS"
+      ? [
+          {
+            label: t("fields.organizationNumber"),
+            value: dash({ value: customer.organizationNumber }),
+          },
+        ]
+      : []),
     { label: t("fields.email"), value: dash({ value: customer.email }) },
     { label: t("fields.phone"), value: dash({ value: customer.phone }) },
     { label: t("invoiceAddress"), value: address.join(", ") },
