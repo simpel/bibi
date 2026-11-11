@@ -30,6 +30,7 @@ export const textLabels: DataTableTextLabels = {
   sortAscending: "Sort ascending",
   sortDescending: "Sort descending",
   clearSort: "Clear sorting",
+  columnHelp: (column: string) => `About ${column}`,
   dragColumn: (column) => `Move column ${column}`,
   dragInstructions: "Press space to pick up the column, arrow keys to move it, space to drop.",
   columnPickedUp: (column) => `Picked up column ${column}`,

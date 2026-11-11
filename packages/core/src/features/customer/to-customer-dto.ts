@@ -2,6 +2,7 @@ import type { Customer } from "@bibi/db";
 import { hasPermission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../records/record-links";
+import { type CustomerValues, customerValues } from "./customer-values";
 import type { CustomerDto } from "./schema";
 
 /**
@@ -19,9 +20,11 @@ export type ToCustomerDtoInput = {
   row: CustomerRow;
   /** The caller: `orderCount` is only filled when it may view orders (ADR 0050). */
   context: Pick<OperationContext, "permissions">;
+  /** From `customerValues`: `valueMinor` is null when it is null (no `payment:read`). */
+  values: CustomerValues;
 };
 
-export const toCustomerDto = ({ row, context }: ToCustomerDtoInput): CustomerDto => {
+export const toCustomerDto = ({ row, context, values }: ToCustomerDtoInput): CustomerDto => {
   const { _count, record: _record, ...customer } = row;
   const { permissions } = context;
   const ordersVisible = hasPermission({ permissions, permission: "order:read" });
@@ -29,8 +32,20 @@ export const toCustomerDto = ({ row, context }: ToCustomerDtoInput): CustomerDto
     ...customer,
     fields: recordFields({ row }),
     orderCount: ordersVisible ? _count.orders : null,
+    valueMinor: values ? (values.get(row.id) ?? 0) : null,
   };
 };
+
+export type ToCustomerDtosInput = {
+  rows: readonly CustomerRow[];
+  context: Pick<OperationContext, "db" | "permissions">;
+};
+
+/** Customer rows as DTOs, with all their values read in one batch. */
+export async function toCustomerDtos({ rows, context }: ToCustomerDtosInput) {
+  const values = await customerValues({ context, customerIds: rows.map((row) => row.id) });
+  return rows.map((row) => toCustomerDto({ row, context, values }));
+}
 
 export type LoadCustomerInput = {
   context: Pick<OperationContext, "db" | "permissions">;
@@ -43,5 +58,7 @@ export async function loadCustomer({
   id,
 }: LoadCustomerInput): Promise<CustomerDto | null> {
   const row = await context.db.customer.findFirst({ where: { id }, include: CUSTOMER_INCLUDE });
-  return row ? toCustomerDto({ row, context }) : null;
+  if (!row) return null;
+  const [customer] = await toCustomerDtos({ rows: [row], context });
+  return customer ?? null;
 }

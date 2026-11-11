@@ -452,6 +452,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - payment terms in days (`paymentTermsDays`, null = the organization's default)
 - credit limit (`creditLimitMinor` in minor units, null = no limit set)
 - order count (`orderCount`, derived: the customer's orders that are not archived)
+- value (`valueMinor`, derived, incl. VAT: billed so far, per active order its sent invoices less credit notes, else its accepted quote, as the order balance counts it; null without `payment:read`)
 
 **Relations**
 - `1:N` has → Contact

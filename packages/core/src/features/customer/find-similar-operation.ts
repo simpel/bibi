@@ -9,7 +9,7 @@ import {
   type SimilarReason,
 } from "./find-similar-schema";
 import { domainMatches, nameMatches } from "./similar-candidates";
-import { type CustomerRow, toCustomerDto } from "./to-customer-dto";
+import { type CustomerRow, toCustomerDtos } from "./to-customer-dto";
 
 /** The most suggestions returned; staff pick one or confirm the new customer. */
 const MAX_SUGGESTIONS = 5;
@@ -71,10 +71,11 @@ export const findSimilarCustomers = defineOperation({
   permission: "customer:read",
   handler: async ({ input, context }) => {
     const matches = await findMatches({ context, name: input.name, email: input.email });
-    const items: SimilarCustomer[] = matches.map(({ row, reasons }) => ({
-      customer: toCustomerDto({ row, context }),
-      reasons,
-    }));
+    const customers = await toCustomerDtos({ rows: matches.map(({ row }) => row), context });
+    const items: SimilarCustomer[] = matches.flatMap(({ reasons }, index) => {
+      const customer = customers[index];
+      return customer ? [{ customer, reasons }] : [];
+    });
     return ok({ value: { items } });
   },
 });

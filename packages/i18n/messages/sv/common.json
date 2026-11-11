@@ -18,6 +18,7 @@
       "sortAscending": "Sortera stigande",
       "sortDescending": "Sortera fallande",
       "clearSort": "Ta bort sortering",
+      "columnHelp": "Om {column}",
       "dragColumn": "Flytta kolumnen {column}",
       "dragInstructions": "Tryck på mellanslag för att lyfta kolumnen, flytta den med piltangenterna och tryck på mellanslag för att släppa den.",
       "columnPickedUp": "Lyfte kolumnen {column}",

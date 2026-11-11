@@ -16,7 +16,12 @@ import {
   CustomerListOutputSchema,
   CustomerSchema,
 } from "./schema";
-import { CUSTOMER_INCLUDE, type CustomerRow, loadCustomer, toCustomerDto } from "./to-customer-dto";
+import {
+  CUSTOMER_INCLUDE,
+  type CustomerRow,
+  loadCustomer,
+  toCustomerDtos,
+} from "./to-customer-dto";
 import { createCustomer, updateCustomer } from "./write-operations";
 
 type ListInput = { input: CustomerListInput; context: OperationContext };
@@ -62,7 +67,7 @@ export const listCustomers = defineOperation({
     }
     const rows = await listRows({ input, context });
     const page = paginate({ rows, limit: input.limit });
-    const items = page.items.map((row) => toCustomerDto({ row, context }));
+    const items = await toCustomerDtos({ rows: page.items, context });
     return ok({ value: { items, nextCursor: page.nextCursor } });
   },
 });

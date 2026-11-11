@@ -2,6 +2,7 @@ import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import type { OperationContext } from "../../operations/types";
 import { DUE_INCLUDE, invoiceDueMinor } from "../invoice/to-invoice-dto";
 import type { OrderBalanceDto, ReceivableKind, ReceivableSettlement } from "./balance-schema";
+import { billOf } from "./billed";
 import { paidByReceivable, settlementOf } from "./settlement";
 
 type Db = { context: Pick<OperationContext, "db"> };
@@ -60,24 +61,6 @@ function dueOf({ quotes, deposits, invoices }: Receivables): Due[] {
           ],
     ),
   ];
-}
-
-/** SENT invoices once the order is invoiced, else the ACCEPTED quote, else nothing. */
-function billOf({ quotes, invoices }: Receivables) {
-  const sent = invoices.filter((i) => i.status === "SENT");
-  if (sent.length > 0) {
-    // Credit notes reduce what is billed (ADR 0100); deducted deposits stay billed (ADR 0090).
-    const credited = ({ invoice }: { invoice: (typeof sent)[number] }) =>
-      invoice.creditNotes.reduce((s, c) => s + c.amountMinor, 0);
-    const billedMinor = sent.reduce(
-      (sum, i) => sum + i.totalInclVatMinor - credited({ invoice: i }),
-      0,
-    );
-    return { billedFrom: "INVOICE" as const, billedMinor };
-  }
-  const accepted = quotes.findLast((q) => q.quoteStatus === "ACCEPTED");
-  if (accepted) return { billedFrom: "QUOTE" as const, billedMinor: accepted.totalInclVatMinor };
-  return { billedFrom: "NONE" as const, billedMinor: 0 };
 }
 
 /**

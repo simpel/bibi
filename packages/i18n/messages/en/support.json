@@ -50,6 +50,10 @@
             "question": "How do I create an order?",
             "answer": "Click Create order, pick the customer and add the lines: rooms, food, activities. You can also ask the assistant to create it for you.\nFor smaller meetings you don't need a quote first. Create the order and send the payment straight away."
           },
+          "customerValue": {
+            "question": "How much is a customer worth?",
+            "answer": "Open Customers. The Value column shows how much each customer has been billed so far, including VAT.\nAn order counts once it has been invoiced, or once the customer has accepted its quote. Hover the question mark next to Value to see this explained."
+          },
           "createFromBoard": {
             "question": "Can I create an order from the pipeline board?",
             "answer": "Yes. At the bottom of the column where new orders start there is + Create order. It opens the same page as Create order in the menu, and the order lands in that first column."

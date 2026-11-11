@@ -50,6 +50,10 @@
             "question": "Hur skapar jag en bokning?",
             "answer": "Klicka på Skapa bokning, välj kund och lägg till raderna: lokaler, mat, aktiviteter. Du kan också be assistenten skapa den åt dig.\nFör mindre möten behöver du ingen offert först. Skapa bokningen och skicka betalningen direkt."
           },
+          "customerValue": {
+            "question": "Hur mycket är en kund värd?",
+            "answer": "Öppna Kunder. Kolumnen Värde visar hur mycket varje kund har fakturerats hittills, inklusive moms.\nEn order räknas när den har fakturerats, eller när kunden har accepterat offerten. Håll muspekaren över frågetecknet vid Värde för att se förklaringen."
+          },
           "createFromBoard": {
             "question": "Kan jag skapa en order direkt från tavlan?",
             "answer": "Ja. Längst ner i kolumnen där nya ordrar hamnar finns + Skapa bokning. Den öppnar samma sida som Skapa bokning i menyn, och ordern hamnar i den första kolumnen."

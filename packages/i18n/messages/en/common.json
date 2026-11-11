@@ -18,6 +18,7 @@
       "sortAscending": "Sort ascending",
       "sortDescending": "Sort descending",
       "clearSort": "Clear sorting",
+      "columnHelp": "About {column}",
       "dragColumn": "Move column {column}",
       "dragInstructions": "Press space to pick up the column, use the arrow keys to move it and press space to drop it.",
       "columnPickedUp": "Picked up column {column}",

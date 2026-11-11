@@ -38,7 +38,14 @@
       "name": "Name",
       "type": "Type",
       "city": "City",
-      "email": "Email"
+      "email": "Email",
+      "value": "Value",
+      "valueHelp": {
+        "title": "What is Value?",
+        "total": "How much this customer has been billed so far, including VAT.",
+        "order": "An order counts once it has been invoiced, or once the customer has accepted its quote.",
+        "lost": "Orders without an invoice or an accepted quote count as zero."
+      }
     }
   },
   "contact": {

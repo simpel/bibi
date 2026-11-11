@@ -3,6 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { flexRender, type Header } from "@tanstack/react-table";
 import { cn } from "../../lib/cn";
 import { TableHead } from "../table/table";
+import { DataTableColumnHelp } from "./data-table-column-help";
 import { isPinnedColumn } from "./data-table-order";
 import { pinnedCellClass } from "./data-table-pinned";
 import { DataTableSortButton } from "./data-table-sort-button";
@@ -27,6 +28,7 @@ function MovableHead<TData>({ header, title, labels }: DataTableHeadCellProps<TD
   // `aria-pressed` is for buttons; the cell stays a column header that can also be picked up.
   const { "aria-pressed": _pressed, ...attributes } = sortable.attributes;
   const content = flexRender(column.columnDef.header, header.getContext());
+  const meta = column.columnDef.meta;
   return (
     <TableHead
       ref={(node) => {
@@ -47,13 +49,18 @@ function MovableHead<TData>({ header, title, labels }: DataTableHeadCellProps<TD
         sortable.isDragging && "relative z-10 bg-muted shadow-sm",
       )}
     >
-      {column.getCanSort() ? (
-        <DataTableSortButton column={column} title={title} labels={labels}>
-          {content}
-        </DataTableSortButton>
-      ) : (
-        content
-      )}
+      <div className={cn("flex items-center gap-1", meta?.align === "right" && "justify-end")}>
+        {column.getCanSort() ? (
+          <DataTableSortButton column={column} title={title} labels={labels}>
+            {content}
+          </DataTableSortButton>
+        ) : (
+          content
+        )}
+        {meta?.help ? (
+          <DataTableColumnHelp label={labels.columnHelp(title)}>{meta.help}</DataTableColumnHelp>
+        ) : null}
+      </div>
     </TableHead>
   );
 }

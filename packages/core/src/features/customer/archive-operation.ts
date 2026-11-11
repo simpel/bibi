@@ -8,7 +8,7 @@ import { checkNotLinked } from "../field-definition/link-usage";
 import { archiveCustomerBundles, archiveCustomerOrders } from "./archive-cascades";
 import { customerEmbeddable } from "./embeddable";
 import { CustomerArchiveInputSchema, type CustomerDto, CustomerSchema } from "./schema";
-import { CUSTOMER_INCLUDE, loadCustomer, toCustomerDto } from "./to-customer-dto";
+import { CUSTOMER_INCLUDE, loadCustomer, toCustomerDtos } from "./to-customer-dto";
 
 type NotLinkedInput = {
   context: OperationContext;
@@ -110,7 +110,8 @@ export const archiveCustomer = defineOperation({
       include: CUSTOMER_INCLUDE,
     });
     await archiveRecords({ context, ids: [id] });
-    const customer = toCustomerDto({ row, context });
+    const [customer] = await toCustomerDtos({ rows: [row], context });
+    if (!customer) return notFound({ entity: "Customer" });
     context.recordChange({ entityType: "customer", entityId: id, before, after: customer });
     return ok({ value: customer });
   },

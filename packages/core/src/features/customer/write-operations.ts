@@ -12,7 +12,7 @@ import { mergeFields, validateFields } from "../field-definition/field-values";
 import { customerEmbeddable } from "./embeddable";
 import { createFirstContact } from "./first-contact";
 import { CustomerCreateInputSchema, CustomerSchema, CustomerUpdateInputSchema } from "./schema";
-import { CUSTOMER_INCLUDE, loadCustomer, toCustomerDto } from "./to-customer-dto";
+import { CUSTOMER_INCLUDE, loadCustomer, toCustomerDtos } from "./to-customer-dto";
 
 type ContactIdsInput = { db: ScopedDbClient; customerId: string };
 
@@ -57,7 +57,8 @@ export const createCustomer = defineOperation({
           include: CUSTOMER_INCLUDE,
         }),
     });
-    const customer = toCustomerDto({ row, context });
+    const [customer] = await toCustomerDtos({ rows: [row], context });
+    if (!customer) return notFound({ entity: "Customer" });
     context.recordChange({ entityId: row.id, after: customer });
     if (contact) {
       const first = await createFirstContact({ context, customerId: row.id, contact });
@@ -96,7 +97,8 @@ export const updateCustomer = defineOperation({
       data: { ...data, ...(json ? { fields: json } : {}) },
       include: CUSTOMER_INCLUDE,
     });
-    const customer = toCustomerDto({ row, context });
+    const [customer] = await toCustomerDtos({ rows: [row], context });
+    if (!customer) return notFound({ entity: "Customer" });
     context.recordChange({ entityId: id, before, after: customer });
     return ok({ value: customer });
   },

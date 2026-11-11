@@ -24,7 +24,7 @@ export * from "./features/contact/write-operations";
 export * from "./features/conversation/operations";
 export * from "./features/customer/archive-operation";
 export * from "./features/customer/operations";
-export { CUSTOMER_INCLUDE, toCustomerDto } from "./features/customer/to-customer-dto";
+export { CUSTOMER_INCLUDE, toCustomerDtos } from "./features/customer/to-customer-dto";
 export * from "./features/customer/write-operations";
 export * from "./features/deposit/operations";
 export * from "./features/entity-type/read-operations";

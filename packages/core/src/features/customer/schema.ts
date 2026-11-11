@@ -26,6 +26,15 @@ export const CustomerSchema = z.object({
       "Number of the customer's orders that are not archived; each blocks archiving it. " +
         "Null when the caller may not view orders",
     ),
+  valueMinor: z
+    .number()
+    .int()
+    .nullable()
+    .describe(
+      "What the customer is billed so far in minor units (1/100 kr) incl. VAT: per active order " +
+        "its sent invoices less credit notes, else its accepted quote; orders with neither count " +
+        "0. Null when the caller may not view payments",
+    ),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
