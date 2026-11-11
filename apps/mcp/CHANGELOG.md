@@ -1,5 +1,41 @@
 # Changelog
 
+## [2.0.0](https://github.com/simpel/bibi/compare/@bibi/mcp-v1.2.1...@bibi/mcp-v2.0.0) (2026-11-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* setup.* and setupLayout.* are replaced by layout.* on GraphQL, REST and MCP; lines, previews and templates take layoutId instead of setupId; items take maxPeople instead of setups.
+
+### Features
+
+* item type groups, with a tab per group on /items ([e717e88](https://github.com/simpel/bibi/commit/e717e8846deb77faf1166399c3303e784b879fa1))
+* rooms have layouts instead of shared setups, with a people limit and emergency exits ([cb33bdf](https://github.com/simpel/bibi/commit/cb33bdf6dbad9ecd6c602781e7dc5b5bde4232b2))
+* several layouts per setup, doors and windows on walls, floor plan split from layouts ([1712a9d](https://github.com/simpel/bibi/commit/1712a9d04b2bd12d51b198af3d503007705104db))
+* several layouts per setup, doors and windows on walls, floor plan split from layouts ([1273331](https://github.com/simpel/bibi/commit/127333165e43e9e9fb0ef1fbe8722a3255bf0ab7))
+
+
+### Bug Fixes
+
+* mcp declares prisma, now a runtime dependency of @bibi/db ([ef54a10](https://github.com/simpel/bibi/commit/ef54a10815ff1ddb01a52b04dbe97663254560fe))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 2.0.0
+    * @bibi/auth bumped to 0.6.2
+    * @bibi/config bumped to 0.4.0
+    * @bibi/core bumped to 2.0.0
+    * @bibi/db bumped to 2.0.0
+    * @bibi/graphql bumped to 2.0.0
+    * @bibi/logger bumped to 0.1.3
+    * @bibi/mail bumped to 0.5.2
+    * @bibi/storage bumped to 0.2.5
+  * devDependencies
+    * @bibi/api bumped to 2.0.0
+
 ## [1.2.1](https://github.com/simpel/bibi/compare/@bibi/mcp-v1.2.0...@bibi/mcp-v1.2.1) (2026-11-09)
 
 
