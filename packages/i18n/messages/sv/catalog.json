@@ -57,6 +57,13 @@
       "title": "Öppettider",
       "description": "Används för att varna när en bokning ligger utanför öppettiderna. Blockerar aldrig en bokning.",
       "empty": "Inga öppettider angivna. Bokningar kontrolleras inte mot öppettider."
+    },
+    "items": {
+      "showAll": "Visa alla artiklar",
+      "more": "+{count} till",
+      "pageTitle": "Artiklar på {venue}",
+      "pageDescription": "Alla artiklar på den här anläggningen.",
+      "typeDescription": "{type} på {venue}."
     }
   },
   "item": {
@@ -344,7 +351,9 @@
       "name": "Namn",
       "sections": "Avsnitt",
       "resourceKind": "Utrustning eller person",
-      "group": "Grupp"
+      "group": "Grupp",
+      "pluralName": "Namn i plural",
+      "pluralNamePlaceholder": "Konferensrum"
     },
     "resourceKinds": {
       "EQUIPMENT": "Utrustning",

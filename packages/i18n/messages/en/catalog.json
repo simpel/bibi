@@ -57,6 +57,13 @@
       "title": "Opening hours",
       "description": "Used to warn when a booking falls outside opening hours. It never blocks a booking.",
       "empty": "No opening hours set. Bookings are not checked against opening hours."
+    },
+    "items": {
+      "showAll": "Show all items",
+      "more": "+{count} more",
+      "pageTitle": "Items at {venue}",
+      "pageDescription": "Every item at this venue.",
+      "typeDescription": "{type} at {venue}."
     }
   },
   "item": {
@@ -344,7 +351,9 @@
       "name": "Name",
       "sections": "Sections",
       "resourceKind": "Equipment or person",
-      "group": "Group"
+      "group": "Group",
+      "pluralName": "Plural name",
+      "pluralNamePlaceholder": "Conference rooms"
     },
     "resourceKinds": {
       "EQUIPMENT": "Equipment",

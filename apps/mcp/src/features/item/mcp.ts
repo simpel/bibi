@@ -3,6 +3,7 @@ import { hoursSummary, mcpTool, text } from "../../tools/meta";
 export const itemMcpTools = [
   mcpTool({ operation: "item.list" }),
   mcpTool({ operation: "item.get" }),
+  mcpTool({ operation: "item.summary" }),
   mcpTool({ operation: "item.resolve" }),
   mcpTool({ operation: "item.freeUnits" }),
   mcpTool({

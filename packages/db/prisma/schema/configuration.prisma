@@ -40,6 +40,8 @@ model EntityType {
   organizationId   String
   base             EntityBase
   name             String
+  /// The name for several of them, e.g. "Conference rooms" (owned); null = use `name`.
+  pluralName       String?
   capabilities     ItemCapability[]
   /// Item types: where lines in an `expires` state fall when the order's `holdsUntil` passes.
   expiryStateId    String?

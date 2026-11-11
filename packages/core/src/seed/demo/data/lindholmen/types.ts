@@ -8,6 +8,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Conference room",
+    pluralName: "Conference rooms",
     states: "bookable",
     capabilities: ["BOOKABLE", "SETUPS", "PRICED"],
     // ADR 0059: a room's setup is at least this, or its setup's changeover when that is longer.
@@ -23,6 +24,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Dish",
+    pluralName: "Dishes",
     states: "food",
     fields: [
       { name: "Allergens", kind: "MULTI_CHOICE", list: "Allergens" },
@@ -32,6 +34,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Drink",
+    pluralName: "Drinks",
     states: "food",
     capabilities: ["PRICED"],
     fields: [
@@ -42,6 +45,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Meal",
+    pluralName: "Meals",
     states: "food",
     capabilities: ["PRICED", "BUNDLE", "CUSTOMISATIONS"],
     ...{ setupMinutes: 30, teardownMinutes: 15 },
@@ -52,6 +56,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Tour",
+    pluralName: "Tours",
     states: "other",
     capabilities: ["PRICED", "BUNDLE", "CUSTOMISATIONS", "BOOKABLE"],
     fields: [{ name: "Language", kind: "MULTI_CHOICE", options: languages }],
@@ -59,6 +64,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Guide",
+    pluralName: "Guides",
     states: "other",
     capabilities: ["BOOKABLE"],
     fields: [{ name: "Language", kind: "MULTI_CHOICE", options: languages }],
@@ -66,6 +72,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Equipment",
+    pluralName: "Equipment",
     states: "bookable",
     // ADR 0059: customisations on any item, e.g. who installs it.
     capabilities: ["BOOKABLE", "PRICED", "CUSTOMISATIONS"],
@@ -75,12 +82,14 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Service",
+    pluralName: "Services",
     states: "other",
     capabilities: ["PRICED"],
   },
   {
     base: "ITEM",
     name: "Wireless microphone",
+    pluralName: "Wireless microphones",
     states: "bookable",
     capabilities: ["BOOKABLE"],
     ...{ setupMinutes: 5, teardownMinutes: 5, pool: true },
@@ -90,6 +99,7 @@ export const lindholmenTypes: readonly DemoType[] = [
     // ADR 0059: staff are bookable items of a Person type, allocated to lines by demands.
     base: "ITEM",
     name: "Technician",
+    pluralName: "Technicians",
     states: "bookable",
     capabilities: ["BOOKABLE"],
     ...{ resourceKind: "PERSON", pool: true },
@@ -97,28 +107,32 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Bundle",
+    pluralName: "Bundles",
     capabilities: ["PRICED", "BUNDLE", "CUSTOMISATIONS"],
     fields: [{ name: "Minimum quantity", kind: "NUMBER" }],
   },
-  { base: "LINE", name: "Line" },
+  { base: "LINE", name: "Line", pluralName: "Lines" },
   {
     base: "CUSTOMER",
     name: "Company",
+    pluralName: "Companies",
     fields: [orgnr, { name: "Framework agreement", kind: "BOOLEAN" }],
   },
   {
     base: "CUSTOMER",
     name: "Public sector",
+    pluralName: "Public sector",
     fields: [
       orgnr,
       { name: "Peppol-ID", kind: "TEXT" },
       { name: "Requires case number", kind: "BOOLEAN" },
     ],
   },
-  { base: "CUSTOMER", name: "Association", fields: [orgnr] },
+  { base: "CUSTOMER", name: "Association", pluralName: "Associations", fields: [orgnr] },
   {
     base: "CONTACT",
     name: "Contact person",
+    pluralName: "Contact people",
     fields: [
       { name: "Role", kind: "CHOICE", options: ["Orderer", "Invoice recipient", "Organizer"] },
     ],
@@ -126,6 +140,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ORDER",
     name: "Conference",
+    pluralName: "Conferences",
     fields: [
       { name: "Purpose", kind: "TEXT" },
       { name: "Host", kind: "LINK", linkType: "Contact person" },
@@ -134,10 +149,16 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ORDER",
     name: "Event",
+    pluralName: "Events",
     fields: [
       { name: "Dresscode", kind: "CHOICE", list: "Dresscode" },
       { name: "Speaker/entertainment", kind: "TEXT" },
     ],
   },
-  { base: "ORDER", name: "Tour", fields: [{ name: "School class", kind: "BOOLEAN" }] },
+  {
+    base: "ORDER",
+    name: "Tour",
+    pluralName: "Tours",
+    fields: [{ name: "School class", kind: "BOOLEAN" }],
+  },
 ];

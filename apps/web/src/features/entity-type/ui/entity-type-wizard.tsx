@@ -28,6 +28,12 @@ export function EntityTypeWizard({ groups }: { groups: readonly GroupOption[] })
           <>
             <BaseSelectField control={form.control} />
             <TextField form={form} name="name" label={t("fields.name")} required />
+            <TextField
+              form={form}
+              name="pluralName"
+              label={t("fields.pluralName")}
+              placeholder={t("fields.pluralNamePlaceholder")}
+            />
           </>
         ) : (
           <ItemTypeFields form={form} groups={groups} />

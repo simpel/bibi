@@ -15,6 +15,8 @@ export const EntityTypeSchema = z.object({
   organizationId: z.string(),
   base: EntityBaseSchema,
   name: z.string(),
+  /** The name for several of them, e.g. "Conference rooms"; null = use `name`. */
+  pluralName: z.string().nullable(),
   capabilities: z.array(ItemCapabilitySchema),
   /** Item types: the state lines in an `expires` state fall to when `holdsUntil` passes. */
   expiryStateId: z.string().nullable(),
@@ -39,6 +41,18 @@ const NameSchema = z
   .max(100)
   .describe("Type name as staff see it, e.g. Conference room, Dish, Boat or Company");
 
+const PluralNameSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(100)
+  .nullable()
+  .optional()
+  .describe(
+    "The name for several of them, e.g. Conference rooms or Dishes, shown in lists and " +
+      "summaries; null = use the name",
+  );
+
 const GroupIdSchema = z
   .string()
   .min(1)
@@ -52,6 +66,7 @@ const TypeBufferInputShape = bufferMinutesInputShape({ inherits: "none (item typ
 export const EntityTypeCreateInputSchema = z.object({
   base: EntityBaseSchema,
   name: NameSchema,
+  pluralName: PluralNameSchema,
   capabilities: ItemCapabilitiesSchema.optional(),
   ...TypeBufferInputShape,
   resourceKind: ResourceKindSchema.optional().describe(
@@ -63,6 +78,7 @@ export const EntityTypeCreateInputSchema = z.object({
 export const EntityTypeUpdateInputSchema = z.object({
   id: z.string().min(1),
   name: NameSchema.optional(),
+  pluralName: PluralNameSchema,
   capabilities: ItemCapabilitiesSchema.optional().describe(
     "Replaces all capabilities. Switching one off while items have data for it is refused.",
   ),

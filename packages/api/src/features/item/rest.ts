@@ -8,6 +8,11 @@ export const itemRoutes = [
     path: "/venues/{venueId}/items",
     operationId: "itemListByVenue",
   }),
+  restRoute({
+    operation: "item.summary",
+    method: "GET",
+    path: "/venues/{venueId}/items/summary",
+  }),
   restRoute({ operation: "item.get", method: "GET", path: "/items/{id}" }),
   restRoute({ operation: "item.resolve", method: "GET", path: "/items/{id}/resolved" }),
   restRoute({ operation: "item.freeUnits", method: "GET", path: "/items/free-units" }),

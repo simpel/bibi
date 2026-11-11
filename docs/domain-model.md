@@ -184,6 +184,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Attributes**
 - base entity (`ITEM | CUSTOMER | CONTACT | ORDER | REQUIREMENT | LINE`)
 - name (e.g. Conference room, Dish, Boat, Bundle, Company, Conference) — unique per base entity
+- pluralName (owned, null = use the name): the name for several of them, e.g. Conference rooms, shown in lists and summaries
 - capabilities (`ITEM` only): `PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE`, `SETUPS` — `SETUPS` requires `BOOKABLE` (otherwise `VALIDATION`)
 - group (`groupId`, owned, `ITEM` only, nullable foreign key to ItemTypeGroup; `null` = ungrouped, `VALIDATION` on other bases): where `/items` lists the type's items (ADR 0101). An item's group is read through its type, never copied.
 

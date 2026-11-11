@@ -13,6 +13,8 @@ export type InsertEntityTypeInput = {
   context: OperationContext;
   base: EntityBase;
   name: string;
+  /** The name for several of them; null or omitted = use `name`. */
+  pluralName?: string | null | undefined;
   capabilities?: readonly ItemCapability[];
   /** Item types: default buffers (ADR 0059); null = none. */
   setupMinutes?: number | null;
@@ -46,6 +48,7 @@ export async function insertEntityType({
   context,
   base,
   name,
+  pluralName = null,
   capabilities = [],
   resourceKind,
   groupId = null,
@@ -62,7 +65,7 @@ export async function insertEntityType({
   }
   const row = await context.db.entityType.create({
     data: {
-      ...{ base, name, capabilities: [...capabilities], ...buffers },
+      ...{ base, name, pluralName, capabilities: [...capabilities], ...buffers },
       resourceKind: base === "ITEM" ? (resourceKind ?? "EQUIPMENT") : null,
       groupId,
       organizationId: context.organizationId,

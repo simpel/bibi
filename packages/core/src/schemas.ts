@@ -53,6 +53,7 @@ export * from "./features/item/list-schema";
 export * from "./features/item/pool-schema";
 export * from "./features/item/resolve-schema";
 export * from "./features/item/schema";
+export * from "./features/item/summary-schema";
 export * from "./features/item-demand/schema";
 export * from "./features/item-state/hold-kind";
 export * from "./features/item-state/schema";

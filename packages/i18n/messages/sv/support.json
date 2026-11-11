@@ -28,6 +28,14 @@
             "question": "Hur sorterar jag mina artiklar i grupper som Lokaler och Mat?",
             "answer": "Gå till Inställningar, öppna Typer och hitta Grupper. Skapa en grupp, öppna sedan en typ och välj dess grupp. Där kan du också byta namn på, ändra ordning på och arkivera grupper.\nArtiklar visar sedan en flik per grupp, så att lokaler, mat och tillval inte ligger blandade i en lista.\nNär du sätter upp Bibi skapar vi Lokaler, Mat & dryck och Tillval åt dig."
           },
+          "venueItems": {
+            "question": "Hur ser jag vad en anläggning har?",
+            "answer": "Öppna Anläggningar och välj en anläggning. Under Artiklar ser du hur många artiklar av varje typ den har, med de första namnen.\nKlicka på en typ för att se alla de artiklarna, eller på Visa alla artiklar för att se allt på anläggningen."
+          },
+          "pluralName": {
+            "question": "Var anger jag vad en typ heter i plural?",
+            "answer": "Gå till Inställningar, öppna Typer och välj en typ. Fyll i Namn i plural, till exempel Konferensrum, och klicka på Spara.\nBibi använder det där flera artiklar visas tillsammans, som artikelöversikten på en anläggning. Lämnar du det tomt används typens eget namn."
+          },
           "inviteColleagues": {
             "question": "Hur bjuder jag in mina kollegor?",
             "answer": "Gå till Administration → Medlemmar och bjud in dem via e-post. De får en länk som tar dem direkt in i er organisation.\nTio platser ingår i abonnemanget."

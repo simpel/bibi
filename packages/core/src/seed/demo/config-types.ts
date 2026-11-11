@@ -23,6 +23,8 @@ export type DemoField = {
 export type DemoType = {
   base: EntityBase;
   name: string;
+  /** The name for several of them, e.g. "Conference rooms". */
+  pluralName?: string;
   capabilities?: readonly ItemCapability[];
   fields?: readonly DemoField[];
   /** Item types: the states the type gets from a template (ADR 0044); default one "Active". */

@@ -33,6 +33,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "venue.archive", route: "/venues/[id]" },
   { operation: "item.list", route: "/items" },
   { operation: "item.get", route: "/items/[id]" },
+  { operation: "item.summary", route: "/venues/[id]" },
   // The expanded parts and inherited list values of a composed item (ADR 0021).
   { operation: "item.resolve", route: "/items/[id]" },
   { operation: "item.create", route: "/new/item" },

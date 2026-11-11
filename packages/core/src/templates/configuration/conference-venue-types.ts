@@ -8,6 +8,7 @@ export const conferenceVenueTypes: readonly ConfigurationTemplateType[] = [
   {
     base: "ITEM",
     name: "Conference room",
+    pluralName: "Conference rooms",
     capabilities: ["BOOKABLE", "SETUPS", "PRICED"],
     fields: [
       { name: "Floor", kind: "NUMBER" },
@@ -19,18 +20,21 @@ export const conferenceVenueTypes: readonly ConfigurationTemplateType[] = [
   {
     base: "ITEM",
     name: "Dish",
+    pluralName: "Dishes",
     capabilities: ["PRICED"],
     fields: [allergens, { name: "Diet", kind: "MULTI_CHOICE", list: "Diet" }],
   },
   {
     base: "ITEM",
     name: "Drink",
+    pluralName: "Drinks",
     capabilities: ["PRICED"],
     fields: [allergens, { name: "Alcoholic", kind: "BOOLEAN" }],
   },
   {
     base: "ITEM",
     name: "Meal",
+    pluralName: "Meals",
     capabilities: ["PRICED", "BUNDLE", "CUSTOMISATIONS"],
     fields: [
       { name: "Service style", kind: "CHOICE", options: ["Buffet", "Plated", "Finger food"] },
@@ -39,28 +43,37 @@ export const conferenceVenueTypes: readonly ConfigurationTemplateType[] = [
   {
     base: "ITEM",
     name: "Equipment",
+    pluralName: "Equipment",
     capabilities: ["BOOKABLE", "PRICED"],
     fields: [{ name: "Inventory number", kind: "TEXT" }],
   },
   {
     base: "ITEM",
     name: "Bundle",
+    pluralName: "Bundles",
     capabilities: ["PRICED", "BUNDLE", "CUSTOMISATIONS"],
     fields: [{ name: "Minimum quantity", kind: "NUMBER" }],
   },
-  { base: "CUSTOMER", name: "Company", fields: [orgNumber] },
+  { base: "CUSTOMER", name: "Company", pluralName: "Companies", fields: [orgNumber] },
   {
     base: "CUSTOMER",
     name: "Public sector",
+    pluralName: "Public sector",
     fields: [orgNumber, { name: "Peppol ID", kind: "TEXT" }],
   },
-  { base: "ORDER", name: "Conference", fields: [{ name: "Purpose", kind: "TEXT" }] },
-  { base: "LINE", name: "Meeting" },
-  { base: "LINE", name: "Break" },
-  { base: "LINE", name: "Meal" },
+  {
+    base: "ORDER",
+    name: "Conference",
+    pluralName: "Conferences",
+    fields: [{ name: "Purpose", kind: "TEXT" }],
+  },
+  { base: "LINE", name: "Meeting", pluralName: "Meetings" },
+  { base: "LINE", name: "Break", pluralName: "Breaks" },
+  { base: "LINE", name: "Meal", pluralName: "Meals" },
   {
     base: "REQUIREMENT",
     name: "Dietary requirement",
+    pluralName: "Dietary requirements",
     fields: [{ name: "Severity", kind: "CHOICE", list: "Severity" }],
   },
 ];

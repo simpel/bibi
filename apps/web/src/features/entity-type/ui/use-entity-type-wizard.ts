@@ -17,7 +17,7 @@ import {
 export type EntityTypeStep = "base" | "capabilities";
 
 const STEP_FIELDS = {
-  base: ["base", "name"],
+  base: ["base", "name", "pluralName"],
   capabilities: ["groupId", "resourceKind", "capabilities", "setupMinutes", "teardownMinutes"],
 } as const;
 
