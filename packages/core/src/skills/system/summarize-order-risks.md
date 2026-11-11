@@ -1,7 +1,7 @@
 ---
 name: summarize-order-risks
 description: "Review a planned order or event request against the item and venue data and list risks before confirming: capacity, missing facts, access and food & beverage details. Use when the user asks 'is this OK?', 'what could go wrong?' or wants a pre-order check."
-allowed-tools: item_get item_list entityType_list setup_list venue_get search
+allowed-tools: item_get item_list entityType_list layout_get venue_get search
 metadata:
   title: "Summarize order risks"
 ---
@@ -12,19 +12,21 @@ Goal: a short, prioritised risk list that a coordinator can act on before confir
 
 ## Gather facts
 
-- From the user: date and time, participant count, items or venue, setup, catering
+- From the user: date and time, participant count, items or venue, layout, catering
   (meals, special diets and allergies), technical needs and anyone outside the venue who needs a handoff.
-- From Bibi: use `item_get` / `item_list` and `venue_get` for setups with capacity, field
-  values, price and contact details. Use `entityType_list` to know what the item's fields mean
-  and `setup_list` for setup names. Use `search` if the user names an item or venue loosely.
+- From Bibi: use `item_get` / `item_list` and `venue_get` for a room's layouts with capacity, its
+  people limit, field values, price and contact details. Use `entityType_list` to know what the
+  item's fields mean and `layout_get` for a layout's setup and teardown time. Use `search` if the user names an item or venue loosely.
 
 ## Check
 
-1. Capacity: participants above the capacity of the wanted setup is a blocker; above 90 % of it
-   is a warning. An item with no setups listed cannot be verified.
+1. Capacity: participants above the room's people limit (`maxPeople`) cannot be booked;
+   above the capacity of the wanted layout is a blocker; above 90 % of it is a warning. A room
+   with no layouts cannot be verified.
 2. Missing data: required facts the item's type defines but the item leaves empty cannot be
    verified – flag them.
-3. Changeover: setups have a changeover time (`setup_list`); tight turnarounds are a warning.
+3. Changeover: layouts have a setup and teardown time (`layout_get`); tight turnarounds are a
+   warning.
 4. Access and comfort: check the item's own fields (floor, daylight, ...) only if the type has
    them. Upper floors without information about lifts are a question for the venue.
 5. Requirements: dietary needs and allergies are counts per order, never tied to a person

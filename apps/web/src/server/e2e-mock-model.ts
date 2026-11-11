@@ -12,7 +12,7 @@ import {
 } from "./e2e-mock-steps";
 
 /**
- * Script: "create venue <name>", "set capacity <itemId> <setupId> <n>",
+ * Script: "create venue <name>", "set max people <itemId> <n>",
  * "rename responsibility <id> <name>", "list venues", "list skills"; anything else
  * gets a canned reply.
  */
@@ -21,10 +21,10 @@ function respond({ prompt }: PromptInput): StreamResult {
   const text = lastUserText({ prompt }).trim();
   const create = /create venue (.+)/i.exec(text);
   if (create?.[1]) return toolStep({ toolName: "venue_create", input: { name: create[1].trim() } });
-  const capacity = /set capacity (\S+) (\S+) (\d+)/i.exec(text);
-  if (capacity?.[1] && capacity[2] && capacity[3]) {
-    const setups = [{ setupId: capacity[2], capacity: Number(capacity[3]) }];
-    return toolStep({ toolName: "item_update", input: { id: capacity[1], setups } });
+  const people = /set max people (\S+) (\d+)/i.exec(text);
+  if (people?.[1] && people[2]) {
+    const input = { id: people[1], maxPeople: Number(people[2]) };
+    return toolStep({ toolName: "item_update", input });
   }
   const rename = /rename responsibility (\S+) (.+)/i.exec(text);
   if (rename?.[1] && rename[2]) {

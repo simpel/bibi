@@ -1,7 +1,7 @@
 "use client";
 
-import type { SetupLayoutCreateInput } from "@bibi/core/schemas";
-import { SetupLayoutCreateInputSchema } from "@bibi/core/schemas";
+import type { LayoutCreateInput } from "@bibi/core/schemas";
+import { LayoutCreateInputSchema } from "@bibi/core/schemas";
 import {
   Button,
   Dialog,
@@ -25,44 +25,42 @@ import { formSchema } from "@/lib/form-schema";
 import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
-import { createSetupLayoutAction } from "../actions";
+import { createLayoutAction } from "../actions";
 import { layoutsRoute } from "../layouts-path";
 
-type Values = { itemId: string; setupId: string; name: string; copyFromId: string };
+type Values = { itemId: string; name: string; description: string; copyFromId: string };
 
 const createSchema = formSchema({
-  schema: SetupLayoutCreateInputSchema,
+  schema: LayoutCreateInputSchema,
   toInput: ({ values }: { values: Values }) => ({
     itemId: values.itemId,
-    setupId: values.setupId,
     name: values.name.trim(),
+    description: values.description.trim() || null,
     copyFromId: values.copyFromId === NONE ? undefined : values.copyFromId,
   }),
 });
 
 export type CreateLayoutButtonProps = {
   itemId: string;
-  /** The item's setups. */
-  setups: readonly NamedOption[];
   /** The item's layouts, to start from a copy. */
   layouts: readonly NamedOption[];
   /** The toolbar's small "+" instead of the empty state's full button. */
   compact?: boolean;
 };
 
-/** A small dialog: the new layout's name, its setup and, optionally, a layout to copy. */
-export function CreateLayoutButton({ itemId, setups, layouts, compact }: CreateLayoutButtonProps) {
+/** A small dialog: the new layout's name, what it suits and, optionally, a layout to copy. */
+export function CreateLayoutButton({ itemId, layouts, compact }: CreateLayoutButtonProps) {
   const t = useTranslations("floorPlan.create");
   const common = useTranslations("common");
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const form = useForm<Values, unknown, SetupLayoutCreateInput>({
+  const form = useForm<Values, unknown, LayoutCreateInput>({
     resolver: zodResolver(createSchema, useZodMessages()),
-    defaultValues: { itemId, setupId: setups[0]?.id ?? "", name: "", copyFromId: NONE },
+    defaultValues: { itemId, name: "", description: "", copyFromId: NONE },
   });
   const { submit, pending } = useFormAction({
     form,
-    action: ({ values }) => createSetupLayoutAction({ input: values }),
+    action: ({ values }) => createLayoutAction({ input: values }),
     messages: { pending: common("saving"), success: t("created") },
     onSuccess: ({ value }) => {
       setOpen(false);
@@ -92,11 +90,13 @@ export function CreateLayoutButton({ itemId, setups, layouts, compact }: CreateL
         <Form {...form}>
           <form onSubmit={submit} noValidate className="grid gap-4">
             <TextField form={form} name="name" label={t("name")} required />
-            <OptionSelectField
-              control={form.control}
-              name="setupId"
-              label={t("setup")}
-              options={setups}
+            <TextField
+              form={form}
+              name="description"
+              label={t("descriptionLabel")}
+              placeholder={t("descriptionPlaceholder")}
+              multiline
+              rows={2}
             />
             {layouts.length ? (
               <OptionSelectField

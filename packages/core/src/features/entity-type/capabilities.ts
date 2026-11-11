@@ -40,7 +40,7 @@ const DATA_COUNTS: Record<ItemCapability, (input: CountInput) => Promise<number>
   BOOKABLE: ({ context, entityTypeId }) =>
     context.db.item.count({ where: { entityTypeId, defaultDurationMinutes: { not: null } } }),
   SETUPS: ({ context, entityTypeId }) =>
-    context.db.itemSetup.count({ where: { item: { entityTypeId, status: "ACTIVE" } } }),
+    context.db.setupLayout.count({ where: { item: { entityTypeId, status: "ACTIVE" } } }),
   BUNDLE: ({ context, entityTypeId }) =>
     context.db.itemPart.count({ where: { parent: { entityTypeId, status: "ACTIVE" } } }),
   CUSTOMISATIONS: ({ context, entityTypeId }) =>

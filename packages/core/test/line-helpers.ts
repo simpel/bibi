@@ -1,10 +1,10 @@
-import { createLine, createSetup, type ExecuteContext, execute, updateItem } from "../src/index";
+import { createLayout, createLine, type ExecuteContext, execute } from "../src/index";
 import { createTypeWithField } from "./customer-helpers";
 import { unwrap } from "./helpers";
 import { createBookableItem, hours } from "./occupancy-helpers";
 import { createTestOrder, orderSetup } from "./order-helpers";
 
-/** An order, a line type with one TEXT field and a bookable room with a setup. */
+/** An order, a line type with one TEXT field and a bookable room with a layout (ADR 0103). */
 export async function programSetup() {
   const { context, type: orderType, customer } = await orderSetup();
   const order = await createTestOrder({
@@ -18,21 +18,14 @@ export async function programSetup() {
     name: "Meeting",
   });
   const room = await createBookableItem({ context });
-  const setup = unwrap({
+  const layout = unwrap({
     result: await execute({
-      operation: createSetup,
-      input: { name: "Theatre", changeoverMinutes: 60 },
+      operation: createLayout,
+      input: { itemId: room.id, name: "Theatre", capacity: 120, setupMinutes: 60 },
       context,
     }),
   });
-  unwrap({
-    result: await execute({
-      operation: updateItem,
-      input: { id: room.id, setups: [{ setupId: setup.id, capacity: 120 }] },
-      context,
-    }),
-  });
-  return { context, order, type, key, room, setup };
+  return { context, order, type, key, room, layout };
 }
 
 export type CreateTestLineInput = {
@@ -42,7 +35,8 @@ export type CreateTestLineInput = {
   from: number;
   to: number;
   itemId?: string;
-  setupId?: string;
+  layoutId?: string;
+  quantity?: number;
 };
 
 /**

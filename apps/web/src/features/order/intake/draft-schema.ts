@@ -19,7 +19,7 @@ const DraftLineSchema = z.object({
   entityTypeId: Id,
   name: z.string(),
   itemId: Id.nullable(),
-  setupId: Id.nullable(),
+  layoutId: Id.nullable(),
   startsAt: Instant.nullable(),
   endsAt: Instant.nullable(),
   quantity: Count.nullable(),

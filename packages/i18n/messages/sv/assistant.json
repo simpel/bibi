@@ -42,8 +42,7 @@
         "priceUnit": "Prisenhet",
         "vatRatePercent": "Moms (%)",
         "defaultDurationMinutes": "Standardlängd (min)",
-        "setups": "Uppställningar",
-        "changeoverMinutes": "Ställtid (min)",
+        "layouts": "Möbleringar",
         "setupMinutes": "Ställtid (min)",
         "teardownMinutes": "Nedplock (min)",
         "entityTypeIds": "Artikeltyper (id)",
@@ -137,7 +136,8 @@
         "depositId": "Förskott",
         "invoiceId": "Faktura",
         "capacity": "Kapacitet",
-        "setupId": "Uppställning",
+        "layoutId": "Möblering",
+        "maxPeople": "Max antal personer",
         "status": "Status",
         "price": "Pris",
         "memberId": "Medlem",
@@ -210,17 +210,14 @@
         "vocabulary_addValue": "Lägg till listvärde",
         "vocabulary_updateValue": "Ändra listvärde",
         "vocabulary_archiveValue": "Arkivera listvärde",
-        "setup_create": "Skapa uppställning",
-        "setup_update": "Ändra uppställning",
-        "setup_archive": "Arkivera uppställning",
         "floorElementKind_create": "Skapa golvelement",
         "floorElementKind_update": "Ändra golvelement",
         "floorElementKind_archive": "Arkivera golvelement",
         "floorElementKind_importTemplate": "Importera elementbibliotek",
         "floorPlan_save": "Spara planritning",
-        "setupLayout_create": "Skapa uppställningsritning",
-        "setupLayout_save": "Spara uppställningsritning",
-        "setupLayout_archive": "Arkivera uppställningsritning",
+        "layout_create": "Skapa möblering",
+        "layout_save": "Spara möblering",
+        "layout_archive": "Arkivera möblering",
         "responsibility_create": "Skapa ansvar",
         "responsibility_update": "Uppdatera ansvar",
         "responsibility_archive": "Arkivera ansvar",
@@ -397,7 +394,7 @@
         "columns": {
           "name": "Namn",
           "price": "Pris",
-          "setups": "Uppställningar"
+          "layouts": "Möbleringar"
         },
         "priceUnit": {
           "PER_PERSON": "per person",
@@ -406,13 +403,13 @@
           "FLAT": "fast pris"
         },
         "duration": "{minutes} min",
-        "setupsCount": "{count, plural, one {# uppställning} other {# uppställningar}}",
+        "layoutsCount": "{count, plural, one {# möblering} other {# möbleringar}}",
         "partsCount": "{count, plural, one {# del} other {# delar}}",
         "customisationGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
         "sections": {
           "price": "Pris",
           "bookable": "Bokning",
-          "setups": "Uppställningar",
+          "layouts": "Möbleringar",
           "parts": "Delar",
           "customisations": "Anpassningar"
         }
@@ -620,16 +617,6 @@
         "columns": {
           "name": "Namn",
           "values": "Listvärden"
-        }
-      },
-      "setup": {
-        "singular": "Uppställning",
-        "empty": "Inga uppställningar hittades.",
-        "open": "Öppna uppställningar",
-        "changeover": "Ställtid {minutes} min",
-        "columns": {
-          "name": "Namn",
-          "changeover": "Ställtid"
         }
       },
       "priceList": {

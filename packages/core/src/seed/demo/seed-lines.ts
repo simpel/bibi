@@ -14,7 +14,7 @@ export type SeedLinesInput = {
   context: ExecuteContext;
   orderId: string;
   /** Its `bundles` (ADR 0059), its `lines`, then its `alternatives` (ADR 0052). */
-  order: Pick<DemoOrder, "bundles" | "lines" | "alternatives">;
+  order: Pick<DemoOrder, "bundles" | "lines" | "alternatives"> & { headcount?: number };
   /** Local time `HH:MM` on the order's day → instant. */
   at: (input: { time: string }) => Date;
 };
@@ -35,6 +35,26 @@ async function overrideState({ context, line, lineId, item }: OverrideInput) {
   if (!state) return missing({ what: `state ${line.state} of ${line.item}` });
   const input = { lineId, stateId: state.id };
   return execute({ operation: changeLineState, input, context });
+}
+
+/**
+ * The line's own quantity: the data's, else, when the order has more people than the room may
+ * hold (ADR 0103, a hard limit), the room's limit, as a breakout room holds part of the group.
+ */
+function ownQuantity({
+  line,
+  headcount,
+  maxPeople,
+}: {
+  line: DemoLine;
+  headcount: number | undefined;
+  maxPeople: number | null;
+}) {
+  if (line.quantity !== undefined) return { quantity: line.quantity };
+  if (maxPeople !== null && headcount !== undefined && headcount > maxPeople) {
+    return { quantity: maxPeople };
+  }
+  return {};
 }
 
 /**
@@ -66,7 +86,7 @@ export async function seedDemoLines({
       ...(line.from && line.to
         ? { startsAt: at({ time: line.from }), endsAt: at({ time: line.to }) }
         : {}),
-      ...(line.quantity === undefined ? {} : { quantity: line.quantity }),
+      ...ownQuantity({ line, headcount: order.headcount, maxPeople: item.maxPeople }),
       ...(line.unitPriceKr === undefined ? {} : { unitPriceMinor: line.unitPriceKr * 100 }),
       ...{ setupMinutes: line.setupMinutes ?? null, teardownMinutes: line.teardownMinutes ?? null },
     };

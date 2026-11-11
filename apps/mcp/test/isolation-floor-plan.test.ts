@@ -18,24 +18,21 @@ describe("cross-organization isolation: floor plans and layouts", () => {
       name: "entityType_create",
       args: { base: "ITEM", name: "Secret room", capabilities: ["BOOKABLE", "SETUPS"] },
     });
-    const setup = await call({ client: a, name: "setup_create", args: { name: "Secret banquet" } });
     const item = await call({
       client: a,
       name: "item_create",
       args: {
         entityTypeId: type.data.id,
         name: "Secret hall",
-        setups: [{ setupId: setup.data.id, capacity: null }],
       },
     });
     expect(item.isError, JSON.stringify(item.data)).toBe(false);
     const itemId = item.data.id;
-    const setupId = setup.data.id;
     const id = kind.data.id;
     const layout = await call({
       client: a,
-      name: "setupLayout_create",
-      args: { itemId, setupId, name: "Secret banquet 80" },
+      name: "layout_create",
+      args: { itemId, name: "Secret banquet 80" },
     });
     expect(layout.isError, JSON.stringify(layout.data)).toBe(false);
     const layoutId = layout.data.id;
@@ -52,10 +49,10 @@ describe("cross-organization isolation: floor plans and layouts", () => {
       ["floorElementKind_archive", { id }],
       ["floorPlan_get", { itemId }],
       ["floorPlan_save", { itemId, ...WALLS, outline, expectedVersion: 0, elements: [] }],
-      ["setupLayout_get", { id: layoutId }],
-      ["setupLayout_save", { id: layoutId, expectedVersion: 1, elements: [] }],
-      ["setupLayout_archive", { id: layoutId }],
-      ["setupLayout_create", { itemId, setupId, name: "Intruder" }],
+      ["layout_get", { id: layoutId }],
+      ["layout_save", { id: layoutId, expectedVersion: 1, elements: [] }],
+      ["layout_archive", { id: layoutId }],
+      ["layout_create", { itemId, name: "Intruder" }],
     ] as const;
     for (const [name, args] of steps) {
       const result = await call({ client: b, name, args });
@@ -75,7 +72,7 @@ describe("cross-organization isolation: floor plans and layouts", () => {
     expect(ownKind.data.status).toBe("ACTIVE");
     const ownPlan = await call({ client: a, name: "floorPlan_get", args: { itemId } });
     expect(ownPlan.data.version, "plan unchanged").toBe(0);
-    const ownLayout = await call({ client: a, name: "setupLayout_get", args: { id: layoutId } });
+    const ownLayout = await call({ client: a, name: "layout_get", args: { id: layoutId } });
     expect(ownLayout.data.name, "layout unchanged").toBe("Secret banquet 80");
     expect(ownPlan.data.layouts.map((l: { id: string }) => l.id)).toEqual([layoutId]);
   });

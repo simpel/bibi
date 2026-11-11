@@ -9,7 +9,6 @@ import {
   MemberSchema,
   OccupancySchema,
   SearchHitSchema,
-  SetupSchema,
   SkillSchema,
   VenueSchema,
   VocabularySchema,
@@ -40,7 +39,6 @@ export const EntityTypeWireSchema = EntityTypeSchema.extend({
   fields: z.array(FieldDefinitionWireSchema),
 });
 export const VocabularyWireSchema = VocabularySchema.extend(isoDates);
-export const SetupWireSchema = SetupSchema.extend(isoDates);
 export const MemberWireSchema = MemberSchema.extend({ createdAt: z.string() });
 export const InvitationWireSchema = InvitationSchema.extend({
   createdAt: z.string(),
@@ -64,7 +62,6 @@ export const OccupancyListWireSchema = page({ item: OccupancyWireSchema });
 export const FieldDefinitionListWireSchema = page({ item: FieldDefinitionWireSchema });
 export const EntityTypeListWireSchema = page({ item: EntityTypeWireSchema });
 export const VocabularyListWireSchema = page({ item: VocabularyWireSchema });
-export const SetupListWireSchema = page({ item: SetupWireSchema });
 
 export const MemberListWireSchema = page({ item: MemberWireSchema });
 export const InvitationListWireSchema = page({ item: InvitationWireSchema });
@@ -73,13 +70,11 @@ export const AuditLogListWireSchema = page({ item: AuditLogWireSchema });
 export const ConfigurationImportWireSchema = z.object({
   created: z.object({
     vocabularies: z.array(VocabularyWireSchema),
-    setups: z.array(SetupWireSchema),
     entityTypes: z.array(EntityTypeWireSchema),
     responsibilities: z.array(ResponsibilityWireSchema),
   }),
   skipped: z.object({
     vocabularies: z.array(z.string()),
-    setups: z.array(z.string()),
     entityTypes: z.array(z.string()),
     responsibilities: z.array(z.string()),
   }),
@@ -131,7 +126,6 @@ export type OccupancyWire = z.infer<typeof OccupancyWireSchema>;
 export type FieldDefinitionWire = z.infer<typeof FieldDefinitionWireSchema>;
 export type EntityTypeWire = z.infer<typeof EntityTypeWireSchema>;
 export type VocabularyWire = z.infer<typeof VocabularyWireSchema>;
-export type SetupWire = z.infer<typeof SetupWireSchema>;
 export type MemberWire = z.infer<typeof MemberWireSchema>;
 export type InvitationWire = z.infer<typeof InvitationWireSchema>;
 export type AuditLogWire = z.infer<typeof AuditLogWireSchema>;

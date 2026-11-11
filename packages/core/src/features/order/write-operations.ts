@@ -13,7 +13,7 @@ import { recordEstimate } from "./estimate-history";
 import { OrderCreateInputSchema, OrderSchema, OrderUpdateInputSchema } from "./schema";
 import { titleAfterCreate } from "./title/generate-title";
 import { loadOrder, ORDER_INCLUDE, toOrderDto } from "./to-order-dto";
-import { checkOrderDetails } from "./update-rules";
+import { checkHeadcountChange, checkOrderDetails } from "./update-rules";
 
 export const createOrder = defineOperation({
   name: "order.create",
@@ -47,7 +47,8 @@ export const updateOrder = defineOperation({
     "Update an order's title, customer, contact, desired period, headcount, budget, estimated value " +
     "(each change is kept: order.estimateHistory), " +
     "holdsUntil (when its soft holds expire), the booking note or own " +
-    "fields. The contact can be changed but never cleared. Omitted properties are unchanged; " +
+    "fields. A headcount that puts a line counting it above its item's maxPeople is " +
+    "VALIDATION on that headcount. The contact can be changed but never cleared. Omitted properties are unchanged; " +
     "`fields` is merged by key (null clears a value). " +
     "The type cannot be changed, the status changes only with order.changeStatus and the " +
     "assignee with assignment.assign.",
@@ -58,8 +59,12 @@ export const updateOrder = defineOperation({
   handler: async ({ input: { id, fields: patch, estimatedValueMinor, ...data }, context }) => {
     const before = await loadOrder({ context, id });
     if (!before) return notFound({ entity: "Order" });
-    const details = await checkOrderDetails({ context, before, change: data });
-    if (!details.ok) return details;
+    for (const check of [
+      await checkOrderDetails({ context, before, change: data }),
+      await checkHeadcountChange({ context, before, change: data }),
+    ]) {
+      if (!check.ok) return check;
+    }
     let json: ReturnType<typeof toJson>;
     let links: LinkValue[] | undefined;
     if (patch) {

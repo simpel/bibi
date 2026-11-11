@@ -1,19 +1,14 @@
 import { floorElementKindOperations } from "./kind-operations";
-import {
-  archiveSetupLayout,
-  createSetupLayout,
-  getSetupLayout,
-  saveSetupLayout,
-} from "./layout-operations";
+import { archiveLayout, createLayout, getLayout, saveLayout } from "./layout-operations";
 import { getFloorPlan, saveFloorPlan } from "./plan-operations";
 
-/** Floor plans, setup layouts and the furniture library (ADR 0099, 0102). */
+/** Floor plans, layouts and the furniture library (ADR 0099, 0102, 0103). */
 export const floorPlanOperations = [
   ...floorElementKindOperations,
   getFloorPlan,
   saveFloorPlan,
-  getSetupLayout,
-  createSetupLayout,
-  saveSetupLayout,
-  archiveSetupLayout,
+  getLayout,
+  createLayout,
+  saveLayout,
+  archiveLayout,
 ];

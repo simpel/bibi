@@ -3,8 +3,8 @@ import { createClient, testContext } from "./helpers";
 
 const IMPORT =
   "mutation($i: ConfigurationImportTemplateInput!) { configurationImportTemplate(input: $i) { " +
-  "created { vocabularies { name } setups { name } entityTypes { name fields { name } } } " +
-  "skipped { vocabularies setups entityTypes } } }";
+  "created { vocabularies { name } entityTypes { name fields { name } } } " +
+  "skipped { vocabularies entityTypes } } }";
 
 describe("configurationImportTemplate", () => {
   it("imports the starter pack once, then skips everything", async () => {

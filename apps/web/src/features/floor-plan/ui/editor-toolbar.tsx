@@ -12,9 +12,11 @@ export type EditorToolbarProps = {
   tab: string;
   tabs: readonly LayoutTab[];
   /** What a new layout can be made from; null on the floor plan page. */
-  creating: { setups: readonly NamedOption[]; layouts: readonly NamedOption[] } | null;
+  creating: { layouts: readonly NamedOption[] } | null;
   dirty: boolean;
   canEdit: boolean;
+  /** A hard limit is exceeded: Save is refused until it is fixed (ADR 0103). */
+  blocked: boolean;
   save: EditorSave;
   draft: LayoutDraft;
 };
@@ -27,6 +29,7 @@ export function EditorToolbar({
   creating,
   dirty,
   canEdit,
+  blocked,
   save,
   draft,
 }: EditorToolbarProps) {
@@ -39,9 +42,7 @@ export function EditorToolbar({
         {tabs.length ? (
           <LayoutTabs itemId={itemId} tabs={tabs} current={tab} dirty={dirty} />
         ) : null}
-        {canEdit && creating?.setups.length ? (
-          <CreateLayoutButton itemId={itemId} {...creating} compact />
-        ) : null}
+        {canEdit && creating ? <CreateLayoutButton itemId={itemId} {...creating} compact /> : null}
       </div>
       {canEdit ? (
         <div className="flex items-center gap-1">
@@ -73,7 +74,7 @@ export function EditorToolbar({
             </TooltipTrigger>
             <TooltipContent>{t("redo")}</TooltipContent>
           </Tooltip>
-          <Button disabled={!dirty || save.pending} onClick={save.save}>
+          <Button disabled={!dirty || blocked || save.pending} onClick={save.save}>
             {dirty ? common("save") : t("savedState")}
           </Button>
         </div>

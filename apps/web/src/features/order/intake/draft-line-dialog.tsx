@@ -36,12 +36,12 @@ const initial = ({ model, line }: Pick<DraftLineDialogProps, "model" | "line">):
 
 type LineForInput = { line: DraftLine | null; item: CatalogItem | null; items: CatalogItem[] };
 
-/** An edited line moved to another item keeps its times and needs, not its setup or choices. */
+/** An edited line moved to another item keeps its times and needs, not its layout or choices. */
 function lineFor({ line, item, items }: LineForInput): DraftLine | null {
   if (!line || line.itemId === (item?.id ?? null)) return line;
   const before = items.find(({ id }) => id === line.itemId);
   const name = before && before.name === line.name && item ? item.name : line.name;
-  return { ...line, name, itemId: item?.id ?? null, setupId: null, options: [] };
+  return { ...line, name, itemId: item?.id ?? null, layoutId: null, options: [] };
 }
 
 type ChosenLineProps = DraftLineDialogProps & {

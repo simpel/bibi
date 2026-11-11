@@ -21,7 +21,7 @@ const CAPABILITY_KEYS: Record<string, ItemCapability> = {
   priceUnit: "PRICED",
   vatRatePercent: "PRICED",
   defaultDurationMinutes: "BOOKABLE",
-  setups: "SETUPS",
+  maxPeople: "SETUPS",
   parts: "BUNDLE",
   customisationGroups: "CUSTOMISATIONS",
 };

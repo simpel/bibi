@@ -4,9 +4,9 @@ import {
   getItem,
   ItemCustomisationGroupSchema,
   type ItemDto,
+  ItemLayoutSchema,
   ItemPartSchema,
   ItemSchema,
-  ItemSetupDtoSchema,
   listItems,
   saveItemAsBundle,
   updateItem,
@@ -18,17 +18,16 @@ import { pageType } from "../../schema/page";
 import { requirePermission } from "../../schema/require-permission";
 import { runOperation } from "../../schema/run-operation";
 import { EntityTypeRef } from "../entity-type/graphql";
-import { SetupRef } from "../setup/graphql";
 import { VenueRef } from "../venue/graphql";
 
-type ItemSetupDto = ItemDto["setups"][number];
+type ItemLayoutDto = ItemDto["layouts"][number];
 type ItemPartDto = ItemDto["parts"][number];
 type ItemCustomisationGroupDto = ItemDto["customisationGroups"][number];
 
-export const ItemSetupRef = objectFromSchema<ItemSetupDto>({
-  name: "ItemSetup",
-  schema: ItemSetupDtoSchema,
-  description: "Capacity of an item in one setup.",
+export const ItemLayoutRef = objectFromSchema<ItemLayoutDto>({
+  name: "ItemLayout",
+  schema: ItemLayoutSchema,
+  description: "One layout of a room with its effective capacity.",
 });
 
 export const ItemPartRef = objectFromSchema<ItemPartDto>({
@@ -47,16 +46,16 @@ export const ItemCustomisationGroupRef = objectFromSchema<ItemCustomisationGroup
 export const ItemRef = objectFromSchema<ItemDto>({
   name: "Item",
   schema: ItemSchema,
-  omit: ["organizationId", "setups", "parts", "customisationGroups"],
+  omit: ["organizationId", "layouts", "parts", "customisationGroups"],
   description: "Artikel – anything the organization sells or books, as defined by its item type.",
 });
 const ItemPageRef = pageType({ name: "ItemPage", item: ItemRef });
 
-builder.objectField(ItemRef, "setups", (t) =>
+builder.objectField(ItemRef, "layouts", (t) =>
   t.field({
-    type: [ItemSetupRef],
-    description: "Capacity per setup (SETUPS capability), largest first.",
-    resolve: (item) => item.setups,
+    type: [ItemLayoutRef],
+    description: "The room's layouts (SETUPS capability), largest first.",
+    resolve: (item) => item.layouts,
   }),
 );
 
@@ -132,18 +131,6 @@ builder.objectField(ItemRef, "entityType", (t) =>
     resolve: (item, _args, ctx) => {
       requirePermission({ ctx, permission: "configuration:read" });
       return ctx.loaders.entityType.load({ id: item.entityTypeId }) as never;
-    },
-  }),
-);
-
-builder.objectField(ItemSetupRef, "setup", (t) =>
-  t.field({
-    type: SetupRef,
-    nullable: true,
-    description: "The setup (null if archived).",
-    resolve: (itemSetup, _args, ctx) => {
-      requirePermission({ ctx, permission: "configuration:read" });
-      return ctx.loaders.setup.load({ id: itemSetup.setupId });
     },
   }),
 );

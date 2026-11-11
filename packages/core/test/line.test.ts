@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createEntityType,
-  createSetup,
+  createLayout,
   execute,
   getLine,
   listLines,
@@ -41,8 +41,8 @@ describe("line (ADR 0022)", () => {
     expect(list.items).toHaveLength(2);
   });
 
-  it("refuses an unknown type, order, item or setup", async () => {
-    const { context, order, type, room, setup } = await programSetup();
+  it("refuses an unknown type, order, item or layout", async () => {
+    const { context, order, type, room, layout } = await programSetup();
     const base = { context, orderId: order.id, entityTypeId: type.id, from: 9, to: 10 };
     const orderType = await createTypeWithField({ context, base: "ORDER", name: "Other" });
     const plainType = unwrap({
@@ -53,17 +53,25 @@ describe("line (ADR 0022)", () => {
       }),
     });
     const plain = await createTestItem({ context, entityTypeId: plainType.id, name: "Projector" });
+    const otherRoom = await createTestItem({
+      ...{ context, entityTypeId: room.entityTypeId, name: "Hönö" },
+    });
     const other = unwrap({
-      result: await execute({ operation: createSetup, input: { name: "Cabaret" }, context }),
+      result: await execute({
+        operation: createLayout,
+        input: { itemId: otherRoom.id, name: "Cabaret" },
+        context,
+      }),
     });
     const cases = [
       [{ entityTypeId: orderType.type.id }, "entityTypeId"],
       [{ orderId: "missing" }, "orderId"],
       [{ itemId: "missing" }, "itemId"],
-      // Any item can be a line's item, but only a bookable one has setups.
-      [{ itemId: plain.id, setupId: setup.id }, "itemId"],
-      [{ setupId: setup.id }, "setupId"],
-      [{ itemId: room.id, setupId: other.id }, "setupId"],
+      // Any item can be a line's item, but only a bookable one has layouts.
+      [{ itemId: plain.id, layoutId: layout.id }, "itemId"],
+      [{ layoutId: layout.id }, "layoutId"],
+      // Another room's layout is not this room's (ADR 0103).
+      [{ itemId: room.id, layoutId: other.id }, "layoutId"],
     ] as const;
     for (const [input, path] of cases) {
       const result = await createTestLine({ ...base, ...input });

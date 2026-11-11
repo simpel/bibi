@@ -10,7 +10,8 @@ const item: CatalogItem = {
     priceMinor: 25_000,
     priceUnit: "PER_PERSON",
     defaultDurationMinutes: null,
-    setups: [],
+    layouts: [],
+    maxPeople: null,
   },
   groups: [
     {

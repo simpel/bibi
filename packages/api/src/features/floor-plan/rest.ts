@@ -25,12 +25,12 @@ export const floorPlanRoutes = [
   }),
   restRoute({ operation: "floorPlan.get", method: "GET", path: "/items/{itemId}/floor-plan" }),
   restRoute({ operation: "floorPlan.save", method: "PUT", path: "/items/{itemId}/floor-plan" }),
-  restRoute({ operation: "setupLayout.create", method: "POST", path: "/setup-layouts" }),
-  restRoute({ operation: "setupLayout.get", method: "GET", path: "/setup-layouts/{id}" }),
-  restRoute({ operation: "setupLayout.save", method: "PUT", path: "/setup-layouts/{id}" }),
+  restRoute({ operation: "layout.create", method: "POST", path: "/layouts" }),
+  restRoute({ operation: "layout.get", method: "GET", path: "/layouts/{id}" }),
+  restRoute({ operation: "layout.save", method: "PUT", path: "/layouts/{id}" }),
   restRoute({
-    operation: "setupLayout.archive",
+    operation: "layout.archive",
     method: "POST",
-    path: "/setup-layouts/{id}/archive",
+    path: "/layouts/{id}/archive",
   }),
 ];

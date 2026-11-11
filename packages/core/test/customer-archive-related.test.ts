@@ -2,10 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   archiveCustomer,
   archiveItem,
-  archiveSetup,
+  archiveLayout,
   type ExecuteContext,
   execute,
   saveItemAsBundle,
+  updateLine,
 } from "../src/index";
 import { archiveContactsOf } from "./contact-archive-helpers";
 import { errorCode, unwrap } from "./helpers";
@@ -50,10 +51,10 @@ describe("customer.archive with bundles (#151)", () => {
 
 describe("archiving orders releases lines and rooms (#166, #145)", () => {
   it("frees the room after the customer cascade and archives the line", async () => {
-    const { context, order, type, room, setup } = await programSetup();
+    const { context, order, type, room, layout } = await programSetup();
     const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({
-      result: await createTestLine({ ...base, from: 10, to: 12, setupId: setup.id }),
+      result: await createTestLine({ ...base, from: 10, to: 12, layoutId: layout.id }),
     });
     const other = await createTestOrder({
       context,
@@ -83,18 +84,24 @@ describe("archiving orders releases lines and rooms (#166, #145)", () => {
   });
 });
 
-describe("item.archive and setup.archive with lines", () => {
-  it("are refused while an active line uses the item or the setup", async () => {
-    const { context, order, type, room, setup } = await programSetup();
+describe("item.archive and layout.archive with lines", () => {
+  it("refuses the item while a line uses it; an archived layout stays on its lines", async () => {
+    const { context, order, type, room, layout } = await programSetup();
     const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
-    unwrap({ result: await createTestLine({ ...base, from: 10, to: 12, setupId: setup.id }) });
+    const line = unwrap({
+      result: await createTestLine({ ...base, from: 10, to: 12, layoutId: layout.id }),
+    });
     const item = await execute({ operation: archiveItem, input: { id: room.id }, context });
     expect(errorCode({ result: item })).toBe("CONFLICT");
-    const archivedSetup = await execute({
-      operation: archiveSetup,
-      input: { id: setup.id },
+    const input = { id: layout.id };
+    unwrap({ result: await execute({ operation: archiveLayout, input, context }) });
+    const kept = await execute({
+      operation: updateLine,
+      input: { id: line.id, name: "Kept" },
       context,
     });
-    expect(errorCode({ result: archivedSetup })).toBe("CONFLICT");
+    expect(unwrap({ result: kept }).layoutId).toBe(layout.id);
+    const fresh = await createTestLine({ ...base, from: 14, to: 15, layoutId: layout.id });
+    expect(errorCode({ result: fresh })).toBe("VALIDATION");
   });
 });

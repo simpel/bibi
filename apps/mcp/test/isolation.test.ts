@@ -99,7 +99,7 @@ describe("cross-organization isolation", () => {
       name: "item_create",
       args: { entityTypeId: type.data.id, name: "Hemlig" },
     });
-    for (const name of ["entityType_list", "vocabulary_list", "item_list", "setup_list"]) {
+    for (const name of ["entityType_list", "vocabulary_list", "item_list"]) {
       expect((await call({ client: b, name })).data.items, name).toEqual([]);
     }
     for (const [name, id] of [

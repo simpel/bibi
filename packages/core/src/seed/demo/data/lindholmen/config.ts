@@ -1,7 +1,7 @@
 import type { DemoConfig } from "../../config-types";
 
-/** Lindholmen's lists and setups (`docs/demo-seed.md`, Configuration). */
-export const lindholmenLists: Pick<DemoConfig, "listTemplates" | "lists" | "setups"> = {
+/** Lindholmen's lists and layout setup minutes (`docs/demo-seed.md`, Configuration). */
+export const lindholmenLists: Pick<DemoConfig, "listTemplates" | "lists" | "layoutMinutes"> = {
   listTemplates: ["eu-14-allergens"],
   lists: [
     { name: "Diet", values: ["Vegetarian", "Vegan", "Halal", "Pork-free"] },
@@ -10,13 +10,14 @@ export const lindholmenLists: Pick<DemoConfig, "listTemplates" | "lists" | "setu
     { name: "View", values: ["River", "Courtyard", "None"] },
     { name: "Dresscode", values: ["Casual", "Blazer", "Dark suit"] },
   ],
-  setups: [
-    { name: "Theatre", changeoverMinutes: 15 },
-    { name: "Classroom", changeoverMinutes: 30 },
-    { name: "U-shape", changeoverMinutes: 30 },
-    { name: "Boardroom", changeoverMinutes: 20 },
-    { name: "Cabaret", changeoverMinutes: 40 },
-    { name: "Banquet", changeoverMinutes: 60 },
-    { name: "Reception", changeoverMinutes: 15 },
-  ],
+  /** ADR 0103: the setup minutes of every room's layout with this name. */
+  layoutMinutes: {
+    Theatre: 15,
+    Classroom: 30,
+    "U-shape": 30,
+    Boardroom: 20,
+    Cabaret: 40,
+    Banquet: 60,
+    Reception: 15,
+  },
 };

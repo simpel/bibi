@@ -11,7 +11,7 @@ type Lines = { lines: readonly OrderTemplateLineInput[] };
 type Known = {
   types: Set<string>;
   items: Set<string>;
-  setups: Set<string>;
+  layouts: Set<string>;
   groups: Map<string, DefaultsGroup[]>;
 };
 
@@ -23,7 +23,7 @@ const unique = ({ ids }: { ids: readonly (string | null | undefined)[] }) => [
 async function loadKnown({ context, lines }: Db & Lines): Promise<Known> {
   const typeIds = unique({ ids: lines.map((line) => line.entityTypeId) });
   const itemIds = unique({ ids: lines.map((line) => line.itemId) });
-  const [types, items, setups, groups] = await Promise.all([
+  const [types, items, layouts, groups] = await Promise.all([
     context.db.entityType.findMany({
       where: { id: { in: typeIds }, base: "LINE" },
       select: { id: true },
@@ -32,9 +32,9 @@ async function loadKnown({ context, lines }: Db & Lines): Promise<Known> {
       where: { id: { in: itemIds }, customerId: null },
       select: { id: true },
     }),
-    context.db.itemSetup.findMany({
+    context.db.setupLayout.findMany({
       where: { itemId: { in: itemIds } },
-      select: { itemId: true, setupId: true },
+      select: { id: true, itemId: true },
     }),
     context.db.itemCustomisationGroup.findMany({
       where: { itemId: { in: itemIds } },
@@ -47,7 +47,7 @@ async function loadKnown({ context, lines }: Db & Lines): Promise<Known> {
   return {
     types: new Set(types.map((type) => type.id)),
     items: new Set(items.map((item) => item.id)),
-    setups: new Set(setups.map((setup) => `${setup.itemId}:${setup.setupId}`)),
+    layouts: new Set(layouts.map((layout) => `${layout.itemId}:${layout.id}`)),
     groups: byItem,
   };
 }
@@ -87,13 +87,13 @@ function lineIssues({ lines, known }: IssuesInput): AppErrorIssue[] {
     if (line.itemId && !known.items.has(line.itemId)) {
       issues.push({ path: `${at}.itemId`, message: "Unknown item" });
     }
-    if (!line.setupId) continue;
+    if (!line.layoutId) continue;
     const message = !line.itemId
-      ? "A setup needs an item"
-      : known.setups.has(`${line.itemId}:${line.setupId}`)
+      ? "A layout needs an item"
+      : known.layouts.has(`${line.itemId}:${line.layoutId}`)
         ? null
-        : "The item has no such setup";
-    if (message) issues.push({ path: `${at}.setupId`, message });
+        : "The item has no such layout";
+    if (message) issues.push({ path: `${at}.layoutId`, message });
   }
   return issues;
 }
@@ -103,7 +103,7 @@ export type CheckTemplateLinesInput = Db & Lines;
 /**
  * Every line of a template points at records that exist and fit: an active line type, a
  * general item (a customer's own bundle belongs to that customer, not to a template), when
- * given one of that item's setups, and default choices that fit the item (ADR 0089).
+ * given one of that item's active layouts, and default choices that fit the item (ADR 0089).
  */
 export async function checkTemplateLines({
   context,

@@ -3,7 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { loadRecordLinks, withLinks } from "../../records/record-links";
 import { effectiveBuffers } from "../../shared/buffers";
 import { loadVenueZones } from "../../shared/time-zones";
-import { effectiveCapacity, layoutKey, loadLayoutSeats } from "../floor-plan/layout-seats";
+import { effectiveCapacity, loadLayoutFacts } from "../floor-plan/layout-seats";
 import type { ItemDto } from "./schema";
 
 type Db = Pick<OperationContext, "db">;
@@ -46,15 +46,10 @@ async function typeBuffers({ context, rows }: ToItemDtosInput) {
   return new Map(types.map(({ id, ...minutes }) => [id, minutes]));
 }
 
-/** Items with setup capacities (largest effective first, ADR 0099), parts (by offset) and customisation groups. */
+/** Items with their layouts (largest capacity first, ADR 0103), parts (by offset) and customisation groups. */
 export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<ItemDto[]> {
   const ids = rows.map((row) => row.id);
-  const setups = await context.db.itemSetup.findMany({
-    where: { itemId: { in: ids } },
-    orderBy: [{ setupId: "asc" }],
-    select: { itemId: true, setupId: true, capacity: true },
-  });
-  const seats = await loadLayoutSeats({ context, itemIds: ids });
+  const layouts = [...(await loadLayoutFacts({ context, itemIds: ids })).values()];
   const parts = await context.db.itemPart.findMany({
     where: { parentId: { in: ids } },
     orderBy: [{ offsetMinutes: "asc" }, { position: "asc" }],
@@ -68,12 +63,12 @@ export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<It
     ...effectiveBuffers({ item: row, type: types.get(row.entityTypeId) ?? null }),
     timeZone: zoneOf({ venueId: row.venueId }),
     fields: withLinks({ fields: row.fields, links: links.filter((l) => l.recordId === row.id) }),
-    setups: setups
-      .filter((setup) => setup.itemId === row.id)
-      .map(({ itemId, setupId, capacity }) => {
-        const seatCount = seats.get(layoutKey({ itemId, setupId }))?.seatCount ?? null;
-        return { setupId, capacity, ...effectiveCapacity({ capacity, seatCount }) };
-      })
+    layouts: layouts
+      .filter((layout) => layout.itemId === row.id)
+      .map(({ id, name, capacity, seatCount }) => ({
+        ...{ layoutId: id, name },
+        ...effectiveCapacity({ capacity, seatCount }),
+      }))
       .sort((a, b) => (b.effectiveCapacity ?? -1) - (a.effectiveCapacity ?? -1)),
     parts: parts
       .filter((part) => part.parentId === row.id)

@@ -10,7 +10,6 @@ export type TypeRef = { id: string; fields: ReadonlyMap<string, FieldRef> };
 /** Names → ids created during the seed, so data files can refer to rows by name. */
 export type DemoRefs = {
   lists: Map<string, { id: string; values: { id: string; name: string }[] }>;
-  setups: Map<string, string>;
   itemTypes: Map<string, TypeRef>;
   customerTypes: Map<string, TypeRef>;
   contactTypes: Map<string, TypeRef>;

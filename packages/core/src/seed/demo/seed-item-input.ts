@@ -4,21 +4,6 @@ import type { DemoItem, DemoPart } from "./config-types";
 import type { DemoRefs } from "./demo-refs";
 import { missing, resolveFields } from "./seed-fields";
 
-type SetupsInput = { item: DemoItem; refs: DemoRefs };
-
-function resolveSetups({
-  item,
-  refs,
-}: SetupsInput): Result<{ setupId: string; capacity: number | null }[]> {
-  const setups = [];
-  for (const [name, capacity] of Object.entries(item.setups ?? {})) {
-    const setupId = refs.setups.get(name);
-    if (!setupId) return missing({ what: `setup ${name}` });
-    setups.push({ setupId, capacity });
-  }
-  return ok({ value: setups });
-}
-
 type Part = {
   itemId: string;
   quantity: number;
@@ -85,14 +70,19 @@ export type ItemInputArgs = {
   seeded: ReadonlyMap<string, string>;
 };
 
+/** ADR 0103: the room's people limit, its own or its largest layout's capacity. */
+const peopleLimit = ({ item }: { item: DemoItem }) => {
+  const largest = Math.max(0, ...Object.values(item.layouts ?? {}));
+  const maxPeople = item.maxPeople ?? (largest > 0 ? largest : undefined);
+  return maxPeople === undefined ? {} : { maxPeople };
+};
+
 /** `item.create` (or `item.saveAsBundle`) input for one demo item, with names resolved to ids. */
 export function itemInput({ item, refs, venueId, seeded }: ItemInputArgs) {
   const type = refs.itemTypes.get(item.type);
   if (!type) return missing({ what: `item type ${item.type}` });
   const fields = resolveFields({ fields: item.fields, type });
   if (!fields.ok) return fields;
-  const setups = resolveSetups({ item, refs });
-  if (!setups.ok) return setups;
   const resolved = resolveParts({ parts: item.parts ?? [], seeded });
   if (!resolved.ok) return resolved;
   const groups = resolveGroups({ item, seeded });
@@ -106,7 +96,7 @@ export function itemInput({ item, refs, venueId, seeded }: ItemInputArgs) {
       ...(item.vatRatePercent === undefined ? {} : { vatRatePercent: item.vatRatePercent }),
       ...(item.durationMinutes ? { defaultDurationMinutes: item.durationMinutes } : {}),
       ...{ setupMinutes: item.setupMinutes ?? null, teardownMinutes: item.teardownMinutes ?? null },
-      ...(setups.value.length ? { setups: setups.value } : {}),
+      ...peopleLimit({ item }),
       ...(parts.length ? { parts } : {}),
       ...(customisationGroups.length ? { customisationGroups } : {}),
     },

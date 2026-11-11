@@ -2,7 +2,7 @@ import { effectiveQuantity } from "../../line/effective-values";
 import { clashIssues } from "./clash-issues";
 import { lineIssue, type PlanLineIssue } from "./issue-schema";
 import type { Availability } from "./load-availability";
-import { selfOverlaps, setupCapacity } from "./own-checks";
+import { layoutCapacity, maxPeople, selfOverlaps } from "./own-checks";
 import { lineBuffers, type PlanSources } from "./plan-sources";
 import { asTimed, type Period, type PlannedLine } from "./planned-line";
 import { poolShort } from "./pool-short";
@@ -47,16 +47,15 @@ function availabilityIssues({
           hard: state?.hold === "HARD",
         })
       : [];
+  const layout = line.layoutId ? sources.layouts.get(line.layoutId) : undefined;
   const capacity =
-    line.itemId && line.setupId
-      ? sources.capacities.get(`${line.itemId} ${line.setupId}`)
-      : undefined;
+    layout && layout.itemId === line.itemId ? (layout.effectiveCapacity ?? undefined) : undefined;
   const demands = line.itemId ? (availability.demands.get(line.itemId) ?? []) : [];
   const timed = asTimed({ line });
   const buffers = lineBuffers({ line, sources });
   const pool = timed ? poolShort({ line: timed, buffers, demands, rows: availability.rows }) : [];
   const hours = hoursIssues({ line, warning: availability.hours.get(key) });
-  return [...clashes, ...setupCapacity({ line, quantity, capacity }), ...pool, ...hours];
+  return [...clashes, ...layoutCapacity({ line, quantity, capacity }), ...pool, ...hours];
 }
 
 type HoursInput = {
@@ -78,7 +77,7 @@ const hoursIssues = ({ line, warning }: HoursInput): PlanLineIssue[] =>
 
 /**
  * One planned line's start state (ADR 0081 decision 8), effective quantity and issues. Without
- * availability only what the plan itself shows is reported (`SELF_OVERLAP`).
+ * availability only what the plan itself shows is reported (`SELF_OVERLAP`, `MAX_PEOPLE`).
  */
 export function evaluateLine({
   plan,
@@ -97,7 +96,10 @@ export function evaluateLine({
     ...{ quantity: line.quantity ?? null, order },
     parent: line.parent ?? null,
   });
-  const own = selfOverlaps({ lines: plan, periods, index });
+  const own = [
+    ...selfOverlaps({ lines: plan, periods, index }),
+    ...maxPeople({ line, quantity: quantity.value, item }),
+  ];
   const issues = availability
     ? availabilityIssues({
         ...{ line, state, quantity: quantity.value, availability },

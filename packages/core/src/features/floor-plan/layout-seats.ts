@@ -8,8 +8,8 @@ export type CapacitySource = "LAYOUT" | "MANUAL" | "NONE";
 export type EffectiveCapacityInput = { capacity: number | null; seatCount: number | null };
 
 /**
- * The capacity of an item in a setup (ADR 0099, 0102): a typed capacity wins, else the largest
- * layout's seats, else none. The only place this rule lives.
+ * The capacity of a layout (ADR 0099, 0103): a typed capacity wins, else its seats (a layout with
+ * no pieces has none), else none. The only place this rule lives.
  */
 export function effectiveCapacity({ capacity, seatCount }: EffectiveCapacityInput): {
   effectiveCapacity: number | null;
@@ -20,35 +20,55 @@ export function effectiveCapacity({ capacity, seatCount }: EffectiveCapacityInpu
   return { effectiveCapacity: null, capacitySource: "NONE" };
 }
 
-export const layoutKey = ({ itemId, setupId }: { itemId: string; setupId: string }) =>
-  `${itemId} ${setupId}`;
+/** What lines, plans and items need of a layout: its room, buffers and capacity. */
+export type LayoutFacts = {
+  id: string;
+  itemId: string;
+  name: string;
+  setupMinutes: number | null;
+  teardownMinutes: number | null;
+  /** This layout's seats; null when it has no pieces. */
+  seatCount: number | null;
+  capacity: number | null;
+  effectiveCapacity: number | null;
+};
 
-export type LayoutSeats = { seatCount: number };
+export type LoadLayoutFactsInput = Db & {
+  /** The layouts to read, by id. */
+  ids?: readonly string[];
+  /** Or every active layout of these items. */
+  itemIds?: readonly string[];
+  /** Include archived layouts (a line may still book one). */
+  archived?: boolean;
+};
 
-export type LoadLayoutSeatsInput = Db & { itemIds: readonly string[] };
-
-/**
- * The most seats of each item's layouts per setup, by `layoutKey` (ADR 0102: a setup holds as
- * many as its largest layout). A layout with no pieces counts for nothing. One query.
- */
-export async function loadLayoutSeats({
+/** Layouts by id with their effective capacity, in one query (ADR 0103). */
+export async function loadLayoutFacts({
   context,
+  ids,
   itemIds,
-}: LoadLayoutSeatsInput): Promise<Map<string, LayoutSeats>> {
-  if (itemIds.length === 0) return new Map();
-  const layouts = await context.db.setupLayout.findMany({
-    where: { itemId: { in: [...itemIds] } },
-    select: { itemId: true, setupId: true, elements: { include: ELEMENT_INCLUDE } },
+  archived = false,
+}: LoadLayoutFactsInput): Promise<Map<string, LayoutFacts>> {
+  if (!ids?.length && !itemIds?.length) return new Map();
+  const rows = await context.db.setupLayout.findMany({
+    where: {
+      ...(ids?.length ? { id: { in: [...ids] } } : { itemId: { in: [...(itemIds ?? [])] } }),
+      ...(archived ? { status: { in: ["ACTIVE", "ARCHIVED"] } } : {}),
+    },
+    orderBy: [{ name: "asc" }, { createdAt: "asc" }],
+    include: { elements: { include: ELEMENT_INCLUDE } },
   });
-  const seats = new Map<string, LayoutSeats>();
-  for (const layout of layouts) {
-    if (layout.elements.length === 0) continue;
-    const seatCount = layout.elements.reduce(
-      (sum, row) => sum + toElementDto({ row }).seatCount,
-      0,
-    );
-    const key = layoutKey(layout);
-    if (seatCount >= (seats.get(key)?.seatCount ?? -1)) seats.set(key, { seatCount });
-  }
-  return seats;
+  return new Map(
+    rows.map((row) => {
+      const seatCount = row.elements.length
+        ? row.elements.reduce((sum, element) => sum + toElementDto({ row: element }).seatCount, 0)
+        : null;
+      const { id, itemId, setupMinutes, teardownMinutes, capacity } = row;
+      const facts: LayoutFacts = {
+        ...{ id, itemId, name: row.name ?? "", setupMinutes, teardownMinutes, seatCount, capacity },
+        effectiveCapacity: effectiveCapacity({ capacity, seatCount }).effectiveCapacity,
+      };
+      return [id, facts];
+    }),
+  );
 }

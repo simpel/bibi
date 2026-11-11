@@ -421,9 +421,9 @@
       "perGuest": "One per guest: changes if the guest count changes.",
       "fixedAt": "Fixed at {quantity}.",
       "useGuests": "Use the guest count ({guests})",
-      "setup": "Setup",
-      "noSetup": "No setup",
-      "setupOption": "{name} (up to {capacity})",
+      "layout": "Layout",
+      "noLayout": "No layout",
+      "layoutOption": "{name} (up to {capacity})",
       "unitPrice": "Unit price",
       "discount": "Discount %",
       "needs": "Needs",
@@ -460,7 +460,8 @@
       "blocked": "Blocked {period}",
       "softOverlap": "{order} has it prebooked {period}",
       "selfOverlap": "Overlaps line {line} of this booking",
-      "setupCapacity": "More than the setup's {capacity}",
+      "layoutCapacity": "More than the layout's {capacity}",
+      "maxPeople": "The room allows at most {max} people; saving is refused",
       "poolShort": "{needed} needed, {free} free that day",
       "outsideHours": "Outside opening hours"
     },
@@ -625,7 +626,7 @@
     "plural": "Program",
     "create": "Add line",
     "edit": "Edit line",
-    "createDescription": "Add a row to the order's run schedule. With a room it is occupied for the period, plus the setup's changeover time. Leave the times empty for a line without time, e.g. a fee; empty quantity and price inherit the order's headcount and the price list or item.",
+    "createDescription": "Add a row to the order's run schedule. With a room it is occupied for the period, plus the layout's setup and teardown time. Leave the times empty for a line without time, e.g. a fee; empty quantity and price inherit the order's headcount and the price list or item.",
     "editDescription": "Change time, place, quantity, price or note. Moving it moves the occupancy. Leave the times empty for a line without time, e.g. a fee; leave quantity, price, discount and VAT empty to inherit the headcount, price list and item.",
     "archive": "Remove line",
     "archiveConfirm": "Do you want to remove \"{name}\" from the program? The room is released.",
@@ -641,14 +642,15 @@
     "noItem": "No room",
     "itemSearch": "Search rooms and bookable items",
     "noItemMatch": "No item matches.",
-    "noSetup": "No setup",
+    "noLayout": "No layout",
+    "layoutOption": "{name} (up to {capacity})",
     "fields": {
       "type": "Type",
       "name": "Name",
       "startsAt": "Starts",
       "endsAt": "Ends",
       "item": "Room or bookable item",
-      "setup": "Setup",
+      "layout": "Layout",
       "quantity": "Quantity",
       "note": "Internal note",
       "unitPrice": "Own unit price (kr)",
@@ -726,9 +728,13 @@
         "title": "Overlapping lines",
         "description": "{line} overlaps {other} on this order"
       },
-      "setupCapacity": {
-        "title": "Over the setup's capacity",
-        "description": "{line}: more than the setup's {capacity}"
+      "layoutCapacity": {
+        "title": "Over the layout's capacity",
+        "description": "{line}: more than the layout's {capacity}"
+      },
+      "maxPeople": {
+        "title": "Over the room's people limit",
+        "description": "{line}: the room allows at most {max} people; saving is refused"
       },
       "poolShort": {
         "title": "Not enough units",

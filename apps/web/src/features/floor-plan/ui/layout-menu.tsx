@@ -12,28 +12,22 @@ import { useTranslations } from "next-intl";
 import { TEMPLATES, type TemplateKey } from "../lib/layout-templates";
 
 export type LayoutMenuProps = {
-  /** Null on the floor plan tab, which has no capacity. */
-  capacity: { typed: number | null; seats: number } | null;
-  onTypeCapacity: () => void;
-  onUseSeats: () => void;
+  /** Layouts only: name, what it suits, capacity and setup and teardown minutes. */
+  onEditDetails: (() => void) | null;
   onTemplate: ((template: TemplateKey) => void) | null;
   onRoomSize: (() => void) | null;
   /** Floor plan only: straight walls again. */
   onRectangle: (() => void) | null;
-  /** Layouts only: rename (stored with the next Save) and delete. */
-  onRename: (() => void) | null;
+  /** Layouts only: delete. */
   onDelete: (() => void) | null;
 };
 
-/** What is rare: the capacity rule, starting over from a template, the room's size. */
+/** What is rare: the layout's details, starting over from a template, the room's size. */
 export function LayoutMenu({
-  capacity,
-  onTypeCapacity,
-  onUseSeats,
+  onEditDetails,
   onTemplate,
   onRoomSize,
   onRectangle,
-  onRename,
   onDelete,
 }: LayoutMenuProps) {
   const t = useTranslations("floorPlan.menu");
@@ -50,28 +44,12 @@ export function LayoutMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
-        {capacity ? (
-          <>
-            <DropdownMenuLabel>{t("capacity")}</DropdownMenuLabel>
-            {capacity.typed === null ? (
-              <DropdownMenuItem onSelect={onTypeCapacity}>
-                {t("typeCapacity", { seats: capacity.seats })}
-              </DropdownMenuItem>
-            ) : (
-              <>
-                <DropdownMenuItem onSelect={onTypeCapacity}>
-                  {t("editCapacity", { capacity: capacity.typed })}
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={onUseSeats}>
-                  {t("useSeats", { seats: capacity.seats })}
-                </DropdownMenuItem>
-              </>
-            )}
-          </>
+        {onEditDetails ? (
+          <DropdownMenuItem onSelect={onEditDetails}>{t("editDetails")}</DropdownMenuItem>
         ) : null}
         {onTemplate ? (
           <>
-            <DropdownMenuSeparator />
+            {onEditDetails ? <DropdownMenuSeparator /> : null}
             <DropdownMenuLabel>{t("startOver")}</DropdownMenuLabel>
             {TEMPLATES.map((template) => (
               <DropdownMenuItem key={template} onSelect={() => onTemplate(template)}>
@@ -86,12 +64,13 @@ export function LayoutMenu({
         {onRectangle ? (
           <DropdownMenuItem onSelect={onRectangle}>{t("rectangle")}</DropdownMenuItem>
         ) : null}
-        {onRename || onDelete ? <DropdownMenuSeparator /> : null}
-        {onRename ? <DropdownMenuItem onSelect={onRename}>{t("rename")}</DropdownMenuItem> : null}
         {onDelete ? (
-          <DropdownMenuItem destructive onSelect={onDelete}>
-            {t("delete")}
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem destructive onSelect={onDelete}>
+              {t("delete")}
+            </DropdownMenuItem>
+          </>
         ) : null}
       </DropdownMenuContent>
     </DropdownMenu>

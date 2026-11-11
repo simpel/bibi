@@ -133,7 +133,6 @@
     "customers": "Kunder",
     "types": "Typer",
     "lists": "Listor",
-    "setups": "Uppställningar",
     "responsibilities": "Ansvar",
     "runSheets": "Körscheman",
     "calendar": "Kalender",
@@ -308,10 +307,6 @@
         "title": "Lista",
         "description": "En värdelista, till exempel allergener eller utrustning."
       },
-      "setup": {
-        "title": "Upplägg",
-        "description": "En rumsuppställning som teater eller styrelserum."
-      },
       "responsibility": {
         "title": "Ansvar",
         "description": "Vad någon svarar för, och vem det går till som standard."
@@ -346,7 +341,7 @@
     "inherits": {
       "none": "Standard för typens artiklar, hålls runt varje bokning av en bokningsbar artikel. Tomt = ingen.",
       "type": "Hålls runt varje bokning av en bokningsbar artikel. Tomt = artikeltypens.",
-      "item": "Hålls runt bokningen. Tomt = artikelns, annars dess typs. Uppställningens ställtid är minsta ställtid."
+      "item": "Hålls runt bokningen. Tomt = möbleringens, annars artikelns, annars dess typs."
     },
     "inEffect": "Gäller nu: {setup} min ställtid, {teardown} min nedplock."
   },
@@ -576,10 +571,6 @@
         "types": {
           "label": "Typer",
           "keywords": "artiklar kunder kontakter fält förmågor rum mall"
-        },
-        "setups": {
-          "label": "Uppställningar",
-          "keywords": "rum möblering kapacitet ställtid lokal"
         },
         "groups": {
           "label": "Grupper",

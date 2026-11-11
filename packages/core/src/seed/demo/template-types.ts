@@ -1,11 +1,11 @@
 /**
- * A line of a predefined order (ADR 0043) in the demo data: an item by name, an optional setup
- * by name, minutes from the order's start, a quantity (none: the order's headcount, ADR 0052)
+ * A line of a predefined order (ADR 0043) in the demo data: an item by name, an optional layout
+ * of it by name, minutes from the order's start, a quantity (none: the order's headcount, ADR 0052)
  * and the choices it preselects, by option item name (ADR 0089).
  */
 export type DemoTemplateLine = {
   item: string;
-  setup?: string;
+  layout?: string;
   name: string;
   offsetMinutes: number;
   durationMinutes: number;

@@ -39,10 +39,8 @@ export type ItemFormValues = BufferFormValues & {
   priceUnit: PriceUnitValue;
   vatRatePercent: string;
   defaultDurationMinutes: string;
-  /** Capacity per setup id; "" = the setup is not used, unless it is in `layoutSetups`. */
-  setups: Record<string, string>;
-  /** Setups whose capacity is the layout's seats (ADR 0099): "" keeps them, a number types one. */
-  layoutSetups: string[];
+  /** SETUPS: the room's people limit ("" = none). */
+  maxPeople: string;
   parts: PartFormValue[];
   customisationGroups: CustomisationGroupFormValue[];
 };
@@ -55,12 +53,6 @@ const text = ({ value }: { value: number | string | null | undefined }) =>
 export type ItemDefaultsInput = { type: EntityTypeDto | undefined; item?: ItemDto | undefined };
 
 export function itemFormDefaults({ type, item }: ItemDefaultsInput): ItemFormValues {
-  const setups: Record<string, string> = {};
-  for (const { setupId, capacity } of item?.setups ?? [])
-    setups[setupId] = text({ value: capacity });
-  const layoutSetups = (item?.setups ?? [])
-    .filter((s) => s.capacity === null)
-    .map((s) => s.setupId);
   return {
     entityTypeId: type?.id ?? "",
     venueId: item?.venueId ?? NO_VENUE,
@@ -72,8 +64,7 @@ export function itemFormDefaults({ type, item }: ItemDefaultsInput): ItemFormVal
     vatRatePercent: text({ value: item?.vatRatePercent }),
     defaultDurationMinutes: text({ value: item?.defaultDurationMinutes }),
     ...bufferFormDefaults({ stored: item }),
-    setups,
-    layoutSetups,
+    maxPeople: text({ value: item?.maxPeople }),
     parts: (item?.parts ?? []).map((part) => ({
       itemId: part.itemId,
       quantity: String(part.quantity),

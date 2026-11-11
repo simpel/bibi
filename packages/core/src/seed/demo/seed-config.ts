@@ -2,7 +2,6 @@ import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import { createEntityType } from "../../features/entity-type/write-operations";
 import { createFieldDefinition } from "../../features/field-definition/write-operations";
-import { createSetup } from "../../features/setup/operations";
 import {
   createVocabulary,
   importVocabularyTemplate,
@@ -120,7 +119,7 @@ async function seedType({
   return ok({ value: { id: created.value.id, fields } });
 }
 
-/** Slice 2 of ADR 0025: lists, setups, types and fields, all via `execute` as SYSTEM. */
+/** Slice 2 of ADR 0025: lists, types and fields, all via `execute` as SYSTEM. */
 export async function seedDemoConfig({
   context,
   config,
@@ -130,17 +129,11 @@ export async function seedDemoConfig({
   if (!lists.ok) return lists;
   const refs: DemoRefs = {
     lists: new Map(lists.value.map((list) => [list.name, list])),
-    setups: new Map(),
     itemTypes: new Map(),
     customerTypes: new Map(),
     contactTypes: new Map(),
     orderTypes: new Map(),
   };
-  for (const setup of config.setups) {
-    const result = await execute({ operation: createSetup, input: setup, context });
-    if (!result.ok) return result;
-    refs.setups.set(setup.name, result.value.id);
-  }
   const groups = await seedItemTypeGroups({ context, types: config.types });
   if (!groups.ok) return groups;
   for (const type of config.types) {

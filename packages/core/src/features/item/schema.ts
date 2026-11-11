@@ -14,23 +14,15 @@ import {
 export const PRICE_UNITS = ["PER_PERSON", "PER_UNIT", "PER_HOUR", "FLAT"] as const;
 export const PriceUnitSchema = z.enum(PRICE_UNITS);
 
-export const ItemSetupSchema = z.object({
-  setupId: z.string().min(1),
-  capacity: z
-    .number()
-    .int()
-    .positive()
-    .max(100_000)
-    .nullable()
-    .describe("Max people in this setup; null = the seats of its drawn layout (ADR 0099)"),
-});
-
-export const ItemSetupDtoSchema = ItemSetupSchema.extend({
+/** One layout of a room as the item read carries it (ADR 0103), largest capacity first. */
+export const ItemLayoutSchema = z.object({
+  layoutId: z.string(),
+  name: z.string(),
   effectiveCapacity: z
     .number()
     .int()
     .nullable()
-    .describe("Derived: the typed capacity, else the layout's seats, else null"),
+    .describe("Derived: the layout's typed capacity, else its seats, else null"),
   capacitySource: z.enum(["LAYOUT", "MANUAL", "NONE"]),
 });
 
@@ -81,7 +73,8 @@ export const ItemSchema = z.object({
     .describe(
       "Derived (ADR 0064): the zone of the item's times, its venue's else the organization's",
     ),
-  setups: z.array(ItemSetupDtoSchema),
+  maxPeople: z.number().int().nullable().describe("SETUPS: the room's people limit; null = none"),
+  layouts: z.array(ItemLayoutSchema).describe("SETUPS: the room's layouts, largest first"),
   parts: z.array(ItemPartSchema),
   customisationGroups: z.array(ItemCustomisationGroupDtoSchema),
   status: RecordStatusSchema,
@@ -105,10 +98,14 @@ const Capability = {
     .positive()
     .max(7 * 24 * 60)
     .describe("BOOKABLE: default booking length in minutes"),
-  setups: z
-    .array(ItemSetupSchema)
-    .max(100)
-    .describe("SETUPS: capacity per setup. Replaces the whole set."),
+  maxPeople: z
+    .number()
+    .int()
+    .positive()
+    .max(100_000)
+    .describe(
+      "SETUPS: the most people the room may hold (fire safety, ventilation); a hard limit on its layouts and order lines",
+    ),
   parts: z
     .array(
       ItemPartSchema.extend({
@@ -135,7 +132,7 @@ export const ItemCreateInputSchema = z.object({
   vatRatePercent: Capability.vatRatePercent.nullish(),
   defaultDurationMinutes: Capability.defaultDurationMinutes.nullish(),
   ...bufferMinutesInputShape({ inherits: "the item type's" }),
-  setups: Capability.setups.optional(),
+  maxPeople: Capability.maxPeople.nullish(),
   parts: Capability.parts.optional(),
   customisationGroups: CustomisationGroupsInputSchema.optional(),
 });

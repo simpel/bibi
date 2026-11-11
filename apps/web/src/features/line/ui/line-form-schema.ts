@@ -47,7 +47,7 @@ export function lineFormSchema({ orderId, type, vocabularies, zones, line }: Lin
         startsAt: instant({ value: values.startsAt }),
         endsAt: instant({ value: values.endsAt }),
         itemId,
-        setupId: itemId ? picked({ value: values.setupId }) : null,
+        layoutId: itemId ? picked({ value: values.layoutId }) : null,
         ...bufferFormToInput({ values }),
         quantity: numberOrNull({ value: values.quantity }),
         unitPriceMinor: minorOrNull({ value: values.unitPrice }),

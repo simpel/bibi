@@ -1,5 +1,5 @@
 import "server-only";
-import { type EntityTypeDto, type ItemDto, listMembers, listSetups, type Result } from "@bibi/core";
+import { type EntityTypeDto, type ItemDto, listMembers, type Result } from "@bibi/core";
 import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { loadPickerItems } from "@/server/load-items-for-pickers";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
@@ -15,11 +15,10 @@ const active = <T extends { status: string }>({ rows }: { rows: T[] }) =>
 type ToCatalogInput = {
   item: ItemDto;
   types: ReadonlyMap<string, EntityTypeDto>;
-  setupNames: ReadonlyMap<string, string>;
   groups: ReadonlyMap<string, CatalogItem["groups"]>;
 };
 
-function toCatalogItem({ item, types, setupNames, groups }: ToCatalogInput): CatalogItem {
+function toCatalogItem({ item, types, groups }: ToCatalogInput): CatalogItem {
   const type = types.get(item.entityTypeId);
   return {
     ...{ id: item.id, name: item.name, timeZone: item.timeZone },
@@ -27,29 +26,27 @@ function toCatalogItem({ item, types, setupNames, groups }: ToCatalogInput): Cat
     typeName: type?.name ?? "",
     capabilities: type?.capabilities ?? [],
     defaultDurationMinutes: item.defaultDurationMinutes,
-    setups: item.setups.map(({ setupId, effectiveCapacity }) => ({
-      ...{ id: setupId, capacity: effectiveCapacity },
-      name: setupNames.get(setupId) ?? "–",
+    layouts: item.layouts.map(({ layoutId, name, effectiveCapacity }) => ({
+      ...{ id: layoutId, name, capacity: effectiveCapacity },
     })),
+    maxPeople: item.maxPeople,
     groups: groups.get(item.id) ?? [],
   };
 }
 
-/** The catalog's active items with their types, setups and option groups (one page each). */
+/** The catalog's active items with their types, layouts and option groups (one page each). */
 async function loadItems(): Promise<CatalogItem[] | null> {
-  const [items, types, setups, customisable] = await Promise.all([
+  const [items, types, customisable] = await Promise.all([
     loadPickerItems(),
     loadEntityTypesOf({ base: "ITEM" }),
-    runOperation({ operation: listSetups, input: { limit: LIMIT } }),
     loadCustomisableItems(),
   ]);
   if (!items.ok) return null;
   const byId = new Map((types.ok ? types.value.items : []).map((type) => [type.id, type]));
-  const setupNames = new Map((setups.ok ? setups.value.items : []).map((s) => [s.id, s.name]));
   const groups = new Map(customisable.map(({ itemId, groups: own }) => [itemId, own]));
   return active({ rows: items.value.items })
     .filter((item) => item.customerId === null)
-    .map((item) => toCatalogItem({ item, types: byId, setupNames, groups }));
+    .map((item) => toCatalogItem({ item, types: byId, groups }));
 }
 
 /**

@@ -14,22 +14,22 @@ export type LineItemFieldsProps = {
   quantity: number;
 };
 
-function SetupField({ form, item }: Omit<LineItemFieldsProps, "quantity">) {
+function LayoutField({ form, item }: Omit<LineItemFieldsProps, "quantity">) {
   const t = useTranslations("orderIntake.line");
-  if (!item || !hasCapability({ item, capability: "SETUPS" }) || item.setups.length === 0) {
+  if (!item || !hasCapability({ item, capability: "SETUPS" }) || item.layouts.length === 0) {
     return null;
   }
-  const options = item.setups.map(({ id, name, capacity }) => ({
+  const options = item.layouts.map(({ id, name, capacity }) => ({
     id,
-    name: capacity === null ? name : t("setupOption", { name, capacity }),
+    name: capacity === null ? name : t("layoutOption", { name, capacity }),
   }));
   return (
     <OptionSelectField
       control={form.control}
-      name="setupId"
-      label={t("setup")}
+      name="layoutId"
+      label={t("layout")}
       options={options}
-      noneLabel={t("noSetup")}
+      noneLabel={t("noLayout")}
     />
   );
 }
@@ -60,12 +60,12 @@ function PriceFields({ form, item }: Omit<LineItemFieldsProps, "quantity">) {
   );
 }
 
-/** Fields by the item's capabilities (ADR 0059): setup, choices per group and price. */
+/** Fields by the item's capabilities (ADR 0059): layout, choices per group and price. */
 export function LineItemFields({ form, item, quantity }: LineItemFieldsProps) {
   const groups = item && hasCapability({ item, capability: "CUSTOMISATIONS" }) ? item.groups : [];
   return (
     <>
-      <SetupField form={form} item={item} />
+      <LayoutField form={form} item={item} />
       {groups.map((group, index) =>
         group.split ? (
           <SplitGroupField key={group.name} {...{ form, index, group, quantity }} />

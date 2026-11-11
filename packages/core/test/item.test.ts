@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createEntityType,
   createItem,
-  createSetup,
+  createLayout,
   execute,
   getItem,
   listItems,
@@ -29,25 +29,15 @@ describe("items (ADR 0021)", () => {
     expect(priced.ok ? null : priced.error.issues[0]?.path).toBe("priceMinor");
     const plain = await execute({
       operation: createItem,
-      input: { entityTypeId: dish.id, name: "Kanelbulle", priceMinor: null, setups: [] },
+      input: { entityTypeId: dish.id, name: "Kanelbulle", priceMinor: null },
       context,
     });
     expect(errorCode({ result: plain })).toBeNull();
   });
 
-  it("replaces setup capacities as a set and filters by capability", async () => {
+  it("keeps a room's people limit, lists its layouts largest first and filters by capability", async () => {
     const context = testContext();
     const room = await createRoomType({ context });
-    const theatre = unwrap({
-      result: await execute({
-        operation: createSetup,
-        input: { name: "Theatre", changeoverMinutes: 15 },
-        context,
-      }),
-    });
-    const mingel = unwrap({
-      result: await execute({ operation: createSetup, input: { name: "Mingel" }, context }),
-    });
     const created = unwrap({
       result: await execute({
         operation: createItem,
@@ -56,42 +46,32 @@ describe("items (ADR 0021)", () => {
           name: "Vinga",
           priceMinor: 450_000,
           priceUnit: "PER_HOUR",
-          setups: [
-            { setupId: theatre.id, capacity: 220 },
-            { setupId: mingel.id, capacity: 250 },
-          ],
+          maxPeople: 250,
         },
         context,
       }),
     });
+    expect(created).toMatchObject({ maxPeople: 250, layouts: [] });
+    const layout = ({ name, capacity }: { name: string; capacity: number }) =>
+      execute({ operation: createLayout, input: { itemId: created.id, name, capacity }, context });
+    const theatre = unwrap({ result: await layout({ name: "Theatre", capacity: 220 }) });
+    const mingel = unwrap({ result: await layout({ name: "Mingel", capacity: 250 }) });
+    const read = unwrap({
+      result: await execute({ operation: getItem, input: { id: created.id }, context }),
+    });
     const manual = { capacitySource: "MANUAL" };
-    expect(created.setups).toEqual([
-      { setupId: mingel.id, capacity: 250, effectiveCapacity: 250, ...manual },
-      { setupId: theatre.id, capacity: 220, effectiveCapacity: 220, ...manual },
+    expect(read.layouts).toEqual([
+      { layoutId: mingel.id, name: "Mingel", effectiveCapacity: 250, ...manual },
+      { layoutId: theatre.id, name: "Theatre", effectiveCapacity: 220, ...manual },
     ]);
     const updated = unwrap({
       result: await execute({
         operation: updateItem,
-        input: { id: created.id, setups: [{ setupId: theatre.id, capacity: 200 }] },
+        input: { id: created.id, maxPeople: 260 },
         context,
       }),
     });
-    expect(updated.setups).toEqual([
-      { setupId: theatre.id, capacity: 200, effectiveCapacity: 200, ...manual },
-    ]);
-    expect(updated.priceMinor).toBe(450_000);
-    const twice = await execute({
-      operation: updateItem,
-      input: {
-        id: created.id,
-        setups: [
-          { setupId: theatre.id, capacity: 1 },
-          { setupId: theatre.id, capacity: 2 },
-        ],
-      },
-      context,
-    });
-    expect(errorCode({ result: twice })).toBe("VALIDATION");
+    expect(updated).toMatchObject({ maxPeople: 260, priceMinor: 450_000 });
     const bookable = unwrap({
       result: await execute({ operation: listItems, input: { capability: "BOOKABLE" }, context }),
     });

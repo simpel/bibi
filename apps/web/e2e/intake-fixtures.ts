@@ -64,17 +64,17 @@ type Types = Awaited<ReturnType<typeof createTypes>>;
 
 /** The package: a room line and a coffee line of 90 minutes, made for 8 to 20 guests. */
 async function createPackage({ page, types }: PageInput & { types: Types }) {
-  const setup = await rest({ page, method: "post", path: "/setups", data: { name: "Boardroom" } });
-  const setups = [{ setupId: setup.id, capacity: 30 }];
-  const roomData = { entityTypeId: types.room.id, name: "Linnea room", setups };
+  const roomData = { entityTypeId: types.room.id, name: "Linnea room" };
   const room = await rest({ page, method: "post", path: "/items", data: roomData });
+  const layoutData = { itemId: room.id, name: "Boardroom", capacity: 30 };
+  const layout = await rest({ page, method: "post", path: "/layouts", data: layoutData });
   const food = { entityTypeId: types.dish.id, name: ITEM };
   const coffee = await rest({ page, method: "post", path: "/items", data: food });
   const statuses = await rest({ page, method: "get", path: "/order-statuses" });
   const entry = statuses.items.find((status) => status.entry === true);
   const base = { entityTypeId: types.line.id, offsetMinutes: 0, durationMinutes: 90 };
   const lines = [
-    { ...base, name: "Tasting room", itemId: room.id, setupId: setup.id, quantity: 1 },
+    { ...base, name: "Tasting room", itemId: room.id, layoutId: layout.id, quantity: 1 },
     { ...base, name: "Coffee and tea", itemId: coffee.id, quantity: null },
   ];
   const data = {

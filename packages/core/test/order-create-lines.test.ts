@@ -20,7 +20,7 @@ describe("order.create with lines (ADR 0081 decision 9)", () => {
         setup,
         input: {
           lines: [
-            { ...roomLine({ setup, from: 9, to: 11 }), quantity: 1, setupId: null },
+            { ...roomLine({ setup, from: 9, to: 11 }), quantity: 1, layoutId: null },
             { entityTypeId: lineType.id, name: "Coffee", itemId: food.dish.id },
             { entityTypeId: lineType.id, name: "Welcome sign", unitPriceMinor: 5_000 },
           ],

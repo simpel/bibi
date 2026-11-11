@@ -2,7 +2,7 @@ import type { PlanLineIssue, PreviewLine } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
-/** How a line's availability shows: ✓, ⚠ (warnings) or ✕ (a hard clash). */
+/** How a line's availability shows: ✓, ⚠ (warnings) or ✕ (a hard clash or a refused headcount). */
 export type LineTone = "ok" | "warn" | "clash" | "unknown";
 
 /** The tone of a planned line; null (no preview yet) is unknown. */
@@ -12,7 +12,8 @@ export function lineTone({
   planned: Pick<PreviewLine, "issues"> | null | undefined;
 }): LineTone {
   if (!planned) return "unknown";
-  if (planned.issues.some(({ kind }) => kind === "HARD_CLASH")) return "clash";
+  if (planned.issues.some(({ kind }) => kind === "HARD_CLASH" || kind === "MAX_PEOPLE"))
+    return "clash";
   return planned.issues.length > 0 ? "warn" : "ok";
 }
 
@@ -43,8 +44,10 @@ export function useIssueText() {
         return t("softOverlap", { order, period });
       case "SELF_OVERLAP":
         return t("selfOverlap", { line: (issue.otherLineIndex ?? 0) + 1 });
-      case "SETUP_CAPACITY":
-        return t("setupCapacity", { capacity: issue.capacity ?? 0 });
+      case "LAYOUT_CAPACITY":
+        return t("layoutCapacity", { capacity: issue.capacity ?? 0 });
+      case "MAX_PEOPLE":
+        return t("maxPeople", { max: issue.capacity ?? 0 });
       case "POOL_SHORT":
         return t("poolShort", { needed: issue.needed ?? 0, free: issue.free ?? 0 });
       case "OUTSIDE_HOURS":

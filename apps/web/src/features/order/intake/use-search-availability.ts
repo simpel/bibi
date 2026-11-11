@@ -14,7 +14,7 @@ function probe({ item, start, lineTypeId }: ProbeInput): DraftLine {
   const end = new Date(start.getTime() + (minutes ? minutes * 60_000 : HOUR));
   return {
     ...{ key: item.id, entityTypeId: lineTypeId, name: item.name, itemId: item.id },
-    ...{ setupId: null, startsAt: start.toISOString(), endsAt: end.toISOString() },
+    ...{ layoutId: null, startsAt: start.toISOString(), endsAt: end.toISOString() },
     ...{ quantity: null, unitPriceMinor: null, discountPercent: null, note: null },
     ...{ options: [], needs: [], addOns: [], fields: {} },
   };

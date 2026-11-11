@@ -8,7 +8,6 @@ import { checkItem } from "./check-item";
 import { replaceCustomisationGroups } from "./item-customisation-groups";
 import { replaceParts } from "./item-parts";
 import { loadItemType } from "./item-rules";
-import { replaceSetups } from "./item-setups";
 import type { ItemCreateInput, ItemDto } from "./schema";
 import { loadItem } from "./to-item-dto";
 
@@ -21,7 +20,7 @@ export type InsertItemInput = {
 
 type ItemRowInput = {
   context: OperationContext;
-  data: Omit<ItemCreateInput, "fields" | "setups" | "parts" | "customisationGroups"> & {
+  data: Omit<ItemCreateInput, "fields" | "parts" | "customisationGroups"> & {
     customerId: string | null;
   };
   fields: CheckedFields;
@@ -43,10 +42,10 @@ const insertItemRow = ({ context, data, fields }: ItemRowInput) =>
       }),
   });
 
-/** Checks and creates an item with its setups, parts and customisation groups, and records it for audit. */
+/** Checks and creates an item with its parts and customisation groups, and records it for audit. */
 export async function insertItem({
   context,
-  input: { entityTypeId, fields, setups, parts, customisationGroups, ...data },
+  input: { entityTypeId, fields, parts, customisationGroups, ...data },
   customerId,
 }: InsertItemInput): Promise<Result<ItemDto>> {
   const type = await loadItemType({ context, entityTypeId });
@@ -55,7 +54,7 @@ export async function insertItem({
     context,
     type: type.value,
     customerId,
-    data: { ...data, setups, parts, customisationGroups },
+    data: { ...data, parts, customisationGroups },
     fields: fields ?? {},
   });
   if (!checked.ok) return checked;
@@ -64,7 +63,6 @@ export async function insertItem({
     data: { ...data, entityTypeId, customerId },
     fields: checked.value ?? { fields: {}, links: [] },
   });
-  if (setups) await replaceSetups({ context, itemId: row.id, setups });
   if (parts) await replaceParts({ context, itemId: row.id, parts });
   if (customisationGroups) {
     await replaceCustomisationGroups({ context, itemId: row.id, customisationGroups });

@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { describeFieldChange, visibleFields } from "./describe-change";
 
 describe("describeFieldChange", () => {
-  it("names the setup in the path and keeps the capacity numbers", () => {
+  it("names the layout in the path and keeps the capacity numbers", () => {
     const described = describeFieldChange({
-      change: { path: "setups.s1.capacity", before: 10, after: 12 },
+      change: { path: "layouts.s1.capacity", before: 10, after: 12 },
       names: { s1: "Boardroom" },
     });
     expect(described.segments).toEqual([
-      { kind: "field", key: "setups" },
+      { kind: "field", key: "layouts" },
       { kind: "text", text: "Boardroom" },
       { kind: "field", key: "capacity" },
     ]);

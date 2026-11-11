@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { BookableDisplay } from "./bookable-display";
 import { BundleDisplay } from "./bundle-display";
 import { CustomisationsDisplay } from "./customisations-display";
+import { LayoutsDisplay } from "./layouts-display";
 import { PricedDisplay } from "./priced-display";
-import { SetupsDisplay } from "./setups-display";
 
 const meta = {
   title: "Components/CapabilityDisplay",
@@ -55,17 +55,10 @@ export const Bookable: Story = {
   ),
 };
 
-export const Setups: Story = {
+export const Layouts: Story = {
   render: () => (
     <div className="w-[320px]">
-      <SetupsDisplay
-        title="Setups"
-        setups={[
-          { name: "Cinema", capacity: "80" },
-          { name: "U-table", capacity: "24" },
-          { name: "Boardroom", capacity: "16" },
-        ]}
-      />
+      <LayoutsDisplay title="Layouts" rows={[{ label: "Max number of people", value: "80" }]} />
     </div>
   ),
 };
@@ -95,13 +88,7 @@ export const GridOverview: Story = {
     <div className="w-[680px] grid gap-4 sm:grid-cols-2">
       <PricedDisplay title="Price" price="250 kr per person" vat="12 %" vatLabel="VAT" />
       <BookableDisplay title="Booking" duration="90 min" />
-      <SetupsDisplay
-        title="Setups"
-        setups={[
-          { name: "Cinema", capacity: "80" },
-          { name: "U-table", capacity: "24" },
-        ]}
-      />
+      <LayoutsDisplay title="Layouts" rows={[{ label: "Max number of people", value: "80" }]} />
       <BundleDisplay title="Parts" parts={["2 × Coffee", "1 × Sandwich"]} />
       <CustomisationsDisplay
         title="Customisations"

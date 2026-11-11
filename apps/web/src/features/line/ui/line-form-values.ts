@@ -4,14 +4,14 @@ import { NONE } from "@/components/form/option-select-field";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 import { toLocalInputValue } from "../../occupancy/ui/local-date-time";
 
-/** Raw values of the line form: inputs are strings, `NONE` = no item/setup. */
+/** Raw values of the line form: inputs are strings, `NONE` = no item/layout. */
 export type LineFormValues = BufferFormValues & {
   entityTypeId: string;
   name: string;
   startsAt: string;
   endsAt: string;
   itemId: string;
-  setupId: string;
+  layoutId: string;
   quantity: string;
   /** Overrides; empty = inherit (price list or item, item or venue). */
   unitPrice: string;
@@ -59,7 +59,7 @@ export function lineFormDefaults({
     startsAt: local({ date: period.start }),
     endsAt: local({ date: period.end }),
     itemId: line?.itemId ?? NONE,
-    setupId: line?.setupId ?? NONE,
+    layoutId: line?.layoutId ?? NONE,
     ...bufferFormDefaults({ stored: line }),
     quantity: text({ value: line?.quantity }),
     unitPrice: text({ value: line?.unitPriceMinor == null ? null : line.unitPriceMinor / 100 }),

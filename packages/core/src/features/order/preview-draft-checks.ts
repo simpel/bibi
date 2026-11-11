@@ -7,8 +7,8 @@ import type { PreviewDraftLine } from "./draft-line-schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-/** What a line and an add-on share for the checks; an add-on's type and setup are optional. */
-type Checked = Pick<PreviewDraftLine, "itemId" | "setupId" | "startsAt" | "endsAt"> & {
+/** What a line and an add-on share for the checks; an add-on's type and layout are optional. */
+type Checked = Pick<PreviewDraftLine, "itemId" | "layoutId" | "startsAt" | "endsAt"> & {
   entityTypeId?: string;
   name?: string;
 };
@@ -39,14 +39,14 @@ const entriesOf = ({ lines }: { lines: readonly PreviewDraftLine[] }): AtInput[]
 
 type RefsInput = Db & { lines: readonly PreviewDraftLine[]; customerId: string };
 
-/** The referenced line types, items and item setups that exist: three queries for every line. */
+/** The referenced line types, items and item layouts that exist: three queries for every line. */
 async function loadRefs({ context, lines, customerId }: RefsInput) {
   const entries = entriesOf({ lines }).map(({ entry }) => entry);
   const ids = ({ of }: { of: (entry: Checked) => string | null | undefined }) => [
     ...new Set(entries.flatMap((entry) => (of(entry) ? [of(entry) as string] : []))),
   ];
   const itemIds = ids({ of: (entry) => entry.itemId });
-  const [types, items, setups] = await Promise.all([
+  const [types, items, layouts] = await Promise.all([
     context.db.entityType.findMany({
       where: { id: { in: ids({ of: (entry) => entry.entityTypeId }) }, base: "LINE" },
       select: { id: true },
@@ -56,15 +56,15 @@ async function loadRefs({ context, lines, customerId }: RefsInput) {
       where: { id: { in: itemIds }, OR: [{ customerId: null }, { customerId }] },
       select: { id: true },
     }),
-    context.db.itemSetup.findMany({
-      where: { itemId: { in: itemIds }, setupId: { in: ids({ of: (entry) => entry.setupId }) } },
-      select: { itemId: true, setupId: true },
+    context.db.setupLayout.findMany({
+      where: { itemId: { in: itemIds }, id: { in: ids({ of: (entry) => entry.layoutId }) } },
+      select: { id: true, itemId: true },
     }),
   ]);
   return {
     types: new Set(types.map((type) => type.id)),
     items: new Set(items.map((item) => item.id)),
-    setups: new Set(setups.map((row) => `${row.itemId} ${row.setupId}`)),
+    layouts: new Set(layouts.map((row) => `${row.itemId} ${row.id}`)),
   };
 }
 
@@ -82,8 +82,8 @@ function refIssues({ entry, path, refs }: AtInput & { refs: Refs }): AppErrorIss
   if (entry.itemId && !refs.items.has(entry.itemId)) {
     issues.push(at({ field: "itemId", message: "Item not found or not allowed" }));
   }
-  if (entry.setupId && !(entry.itemId && refs.setups.has(`${entry.itemId} ${entry.setupId}`))) {
-    issues.push(at({ field: "setupId", message: "The item has no such setup" }));
+  if (entry.layoutId && !(entry.itemId && refs.layouts.has(`${entry.itemId} ${entry.layoutId}`))) {
+    issues.push(at({ field: "layoutId", message: "The item has no such layout" }));
   }
   if (!entry.name && !entry.itemId) {
     issues.push(at({ field: "name", message: "Give a name or an item" }));
@@ -96,7 +96,7 @@ export type CheckDraftLinesInput = RefsInput;
 /**
  * Draft lines and their add-ons (ADR 0088) are checked as `line.create` would check them,
  * without an order: the period, a line type of the organization, an item that is general or
- * the customer's own, a setup of that item, and a name or an item. Every problem is a
+ * the customer's own, an active layout of that item, and a name or an item. Every problem is a
  * `VALIDATION` issue at `lines.<index>.<field>` or `lines.<index>.addOns.<j>.<field>`.
  */
 export async function checkDraftLines({

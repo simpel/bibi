@@ -2,7 +2,7 @@
 
 - **Date:** 2026-11-10
 - **Status:** Accepted
-- **Related:** 0099 (amends decisions 2, 4 and 5), 0021, 0051, 0052
+- **Related:** 0103 (amends this), 0099 (amends decisions 2, 4 and 5), 0021, 0051, 0052
 - **Spec:** `docs/specs/floor-plans-and-layouts.md`
 
 ## Context

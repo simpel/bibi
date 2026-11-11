@@ -112,6 +112,12 @@ export const FloorElementInputSchema = z.object({
   seatsBottom: nullableCount.describe("RECT: own chairs on the bottom side; null = the kind's"),
   seatsLeft: nullableCount.describe("RECT: own chairs on the left end; null = the kind's"),
   swingDeg: swing.nullable().optional().describe("DOOR, WINDOW: own opening angle; null = kind's"),
+  emergencyExit: z
+    .boolean()
+    .optional()
+    .describe(
+      "DOOR, WINDOW in a floor plan: an emergency exit; every layout must keep the area in front of it clear",
+    ),
   label: z.string().trim().max(40).nullable().optional().describe("e.g. a table number"),
 });
 

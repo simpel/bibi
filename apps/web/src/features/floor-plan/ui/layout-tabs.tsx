@@ -5,8 +5,8 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Link, useRouter } from "@/lib/navigation";
 import { layoutsRoute } from "../layouts-path";
 
-/** One layout: its name, its setup's name when it differs, and its seats. */
-export type LayoutTab = { key: string; label: string; hint: string | null; seats: number };
+/** One layout: its name and its capacity. */
+export type LayoutTab = { key: string; label: string; capacity: number | null };
 
 export type LayoutTabsProps = {
   itemId: string;
@@ -36,10 +36,11 @@ export function LayoutTabs({ itemId, tabs, current, dirty }: LayoutTabsProps) {
               <TabsTrigger key={tab.key} value={tab.key} asChild className="flex-none gap-1.5">
                 <Link href={href} onClick={(event) => guard({ event, href })}>
                   {tab.label}
-                  {tab.hint && tab.hint !== tab.label ? (
-                    <span className="text-xs text-muted-foreground">{tab.hint}</span>
-                  ) : null}
-                  <span className="text-xs text-muted-foreground tabular-nums">{tab.seats}</span>
+                  {tab.capacity === null ? null : (
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {tab.capacity}
+                    </span>
+                  )}
                 </Link>
               </TabsTrigger>
             );

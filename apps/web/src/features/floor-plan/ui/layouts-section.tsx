@@ -1,4 +1,4 @@
-import { getFloorPlan, type LayoutSummaryDto, listSetups } from "@bibi/core";
+import { getFloorPlan, type LayoutSummaryDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { Button, FloorDrawing } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
@@ -19,18 +19,18 @@ function LayoutThumbnail({
   room,
   fixed,
   layout,
-  seatsLabel,
+  capacityLabel,
 }: {
   itemId: string;
   room: Room;
   fixed: ReturnType<typeof storedToDrawing>[];
   layout: LayoutSummaryDto;
-  seatsLabel: string;
+  capacityLabel: string;
 }) {
   return (
     <Link
       href={layoutsRoute({ itemId, layoutId: layout.id })}
-      className="group grid w-44 gap-1.5 rounded-lg border bg-card p-2 hover:border-primary"
+      className="group grid w-52 content-start gap-1.5 rounded-lg border bg-card p-2 hover:border-primary"
     >
       <FloorDrawing
         title={layout.name}
@@ -40,25 +40,24 @@ function LayoutThumbnail({
         className="aspect-[4/3] w-full"
       />
       <span className="truncate text-sm font-medium group-hover:text-primary">{layout.name}</span>
-      <span className="text-xs text-muted-foreground tabular-nums">{seatsLabel}</span>
+      <span className="text-xs text-muted-foreground tabular-nums">{capacityLabel}</span>
+      {layout.description ? (
+        <span className="line-clamp-2 text-xs text-muted-foreground">{layout.description}</span>
+      ) : null}
     </Link>
   );
 }
 
 /**
- * The item's layouts per setup as thumbnails (ADR 0102), with the setup's capacity: a typed one,
- * else its largest layout's seats.
+ * The room's layouts as thumbnails (ADR 0102, 0103): name, capacity and what each suits, with
+ * the room's people limit.
  */
 export async function LayoutsSection({ locale, itemId }: LayoutsSectionProps) {
   const t = await getTranslations("floorPlan.section");
-  const [plan, setups] = await Promise.all([
-    runOperation({ operation: getFloorPlan, input: { itemId } }),
-    runOperation({ operation: listSetups, input: { limit: 100 } }),
-  ]);
+  const plan = await runOperation({ operation: getFloorPlan, input: { itemId } });
   if (!plan.ok)
     return <ErrorState inline errorKey={handleLoadError({ error: plan.error, locale })} />;
-  const names = new Map(setups.ok ? setups.value.items.map((s) => [s.id, s.name]) : []);
-  const { widthCm, depthCm, outline } = plan.value;
+  const { widthCm, depthCm, outline, maxPeople, layouts } = plan.value;
   const room = { widthCm, depthCm, outline };
   const fixed = plan.value.elements.map((element) => storedToDrawing({ element }));
   return (
@@ -74,39 +73,26 @@ export async function LayoutsSection({ locale, itemId }: LayoutsSectionProps) {
           </Button>
         </div>
       </div>
-      {plan.value.setups.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("noSetups")}</p>
-      ) : null}
-      {plan.value.setups.map((setup) => {
-        const layouts = plan.value.layouts.filter((layout) => layout.setupId === setup.setupId);
-        return (
-          <div key={setup.setupId} className="grid gap-2">
-            <h3 className="text-sm font-semibold">
-              {names.get(setup.setupId) ?? "–"}
-              <span className="ml-2 font-normal text-muted-foreground">
-                {setup.effectiveCapacity === null
+      {maxPeople === null ? null : (
+        <p className="text-sm text-muted-foreground">{t("maxPeople", { count: maxPeople })}</p>
+      )}
+      {layouts.length ? (
+        <div className="flex flex-wrap gap-3">
+          {layouts.map((layout) => (
+            <LayoutThumbnail
+              key={layout.id}
+              {...{ itemId, room, fixed, layout }}
+              capacityLabel={
+                layout.effectiveCapacity === null
                   ? t("noCapacity")
-                  : t(setup.capacitySource === "MANUAL" ? "capacityTyped" : "capacityLargest", {
-                      capacity: setup.effectiveCapacity,
-                    })}
-              </span>
-            </h3>
-            {layouts.length ? (
-              <div className="flex flex-wrap gap-3">
-                {layouts.map((layout) => (
-                  <LayoutThumbnail
-                    key={layout.id}
-                    {...{ itemId, room, fixed, layout }}
-                    seatsLabel={t("seats", { count: layout.seatCount })}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">{t("noLayouts")}</p>
-            )}
-          </div>
-        );
-      })}
+                  : t("capacity", { capacity: layout.effectiveCapacity })
+              }
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">{t("noLayouts")}</p>
+      )}
     </section>
   );
 }

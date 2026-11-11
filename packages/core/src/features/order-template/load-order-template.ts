@@ -40,8 +40,8 @@ export const toOrderTemplateDto = ({
 }: ToOrderTemplateDtoInput): OrderTemplateDto => ({
   ...row,
   fields: withLinks({ fields: row.fields, links: _record.links }),
-  lines: row.lines.map(({ id, position, entityTypeId, name, itemId, setupId, ...rest }) => ({
-    ...{ id, position, entityTypeId, name, itemId, setupId },
+  lines: row.lines.map(({ id, position, entityTypeId, name, itemId, layoutId, ...rest }) => ({
+    ...{ id, position, entityTypeId, name, itemId, layoutId },
     offsetMinutes: rest.offsetMinutes,
     durationMinutes: rest.durationMinutes,
     quantity: rest.quantity,

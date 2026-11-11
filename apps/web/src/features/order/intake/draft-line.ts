@@ -32,7 +32,7 @@ export type DraftLine = {
   entityTypeId: string;
   name: string;
   itemId: string | null;
-  setupId: string | null;
+  layoutId: string | null;
   startsAt: string | null;
   endsAt: string | null;
   /** Null: one per guest, follows the headcount. */

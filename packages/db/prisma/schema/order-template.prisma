@@ -40,7 +40,10 @@ model OrderTemplateLine {
   entityTypeId    String
   name            String
   itemId          String?
+  /// No longer written (ADR 0103); dropped next release.
   setupId         String?
+  /// The layout of the item the created line books (ADR 0103).
+  layoutId        String?
   /// Minutes from the order's start to the line's start.
   offsetMinutes   Int
   durationMinutes Int
@@ -53,6 +56,7 @@ model OrderTemplateLine {
   entityType      EntityType                 @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   item            Item?                      @relation(fields: [itemId, organizationId], references: [id, organizationId])
   setup           Setup?                     @relation(fields: [setupId, organizationId], references: [id, organizationId])
+  layout          SetupLayout?               @relation(fields: [layoutId, organizationId], references: [id, organizationId])
   options         OrderTemplateLineOption[]
 
   @@unique([id, organizationId])

@@ -3,6 +3,7 @@ import {
   archiveItem,
   archiveOrderStatus,
   archiveOrderTemplate,
+  createLayout,
   execute,
   getOrderTemplate,
   listOrderTemplates,
@@ -44,6 +45,23 @@ describe("order templates (ADR 0043)", () => {
       "lines.0.entityTypeId",
       "lines.1.entityTypeId",
     ]);
+  });
+
+  it("books a layout of the line's item and refuses another item's layout (ADR 0103)", async () => {
+    const setup = await templateSetup();
+    const { context, room, food } = setup;
+    const input = { itemId: room.id, name: "Boardroom", capacity: 12 };
+    const layout = unwrap({ result: await execute({ operation: createLayout, input, context }) });
+    const [roomLine, dishLine] = roomAndDish({ setup });
+    if (!roomLine || !dishLine) throw new Error("No template lines");
+    const wrong = [roomLine, { ...dishLine, itemId: food.dish.id, layoutId: layout.id }];
+    const refused = await makeTemplate({ context, setup, lines: wrong });
+    expect(refused.ok ? [] : refused.error.issues.map((issue) => issue.path)).toEqual([
+      "lines.1.layoutId",
+    ]);
+    const booked = [{ ...roomLine, layoutId: layout.id }, dishLine];
+    const made = unwrap({ result: await makeTemplate({ context, setup, lines: booked }) });
+    expect(made.lines.map((line) => line.layoutId)).toEqual([layout.id, null]);
   });
 
   it("keeps the name unique among the active templates", async () => {

@@ -32,7 +32,7 @@ const order = (): ParityEntity => ({
   },
 });
 
-/** A line (ADR 0022) on the order, held in the bookable item with its setup. */
+/** A line (ADR 0022) on the order, held in the bookable item with its layout. */
 const line = (): ParityEntity => ({
   ...byId({
     name: "line",
@@ -57,7 +57,7 @@ const line = (): ParityEntity => ({
         startsAt: "2037-11-03T09:00:00.000Z",
         endsAt: "2037-11-03T11:00:00.000Z",
         itemId: made.item.id,
-        setupId: made.setup.id,
+        layoutId: made.layout.id,
         quantity: 40,
         unitPriceMinor: 120_000,
         discountPercent: 10,

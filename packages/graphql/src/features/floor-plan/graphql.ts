@@ -1,8 +1,8 @@
 import {
   archiveFloorElementKind,
-  archiveSetupLayout,
+  archiveLayout,
   createFloorElementKind,
-  createSetupLayout,
+  createLayout,
   type FloorElementDto,
   type FloorElementKindDto,
   FloorElementKindImportOutputSchema,
@@ -12,17 +12,16 @@ import {
   FloorPlanSchema,
   getFloorElementKind,
   getFloorPlan,
-  getSetupLayout,
+  getLayout,
   importFloorElementKinds,
+  type LayoutDto,
   LayoutIssueSchema,
+  LayoutSchema,
   type LayoutSummaryDto,
   LayoutSummarySchema,
   listFloorElementKinds,
-  SetupCapacitySchema,
-  type SetupLayoutDto,
-  SetupLayoutSchema,
   saveFloorPlan,
-  saveSetupLayout,
+  saveLayout,
   updateFloorElementKind,
 } from "@bibi/core";
 import type { z } from "zod";
@@ -32,9 +31,8 @@ import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
 
 type FloorElementSides = FloorElementDto["effectiveSides"];
-type FloorPlanShapeDto = SetupLayoutDto["plan"];
-type SetupCapacityDto = z.infer<typeof SetupCapacitySchema>;
-type LayoutIssueDto = SetupLayoutDto["issues"][number];
+type FloorPlanShapeDto = LayoutDto["plan"];
+type LayoutIssueDto = LayoutDto["issues"][number];
 
 export const FloorElementKindRef = objectFromSchema<FloorElementKindDto>({
   name: "FloorElementKind",
@@ -79,18 +77,11 @@ builder.objectField(FloorElementRef, "effectiveSides", (t) =>
   }),
 );
 
-export const SetupCapacityRef = objectFromSchema<SetupCapacityDto>({
-  name: "SetupCapacity",
-  schema: SetupCapacitySchema,
-  description:
-    "One setup's capacity in the item: seats drawn, typed capacity and the effective one.",
-});
-
 export const LayoutSummaryRef = objectFromSchema<LayoutSummaryDto>({
   name: "LayoutSummary",
   schema: LayoutSummarySchema,
   omit: ["elements"],
-  description: "One layout of an item: its name, version, seats drawn and pieces.",
+  description: "One layout of a room: its name, version, seats drawn, capacity and pieces.",
 });
 
 builder.objectField(LayoutSummaryRef, "elements", (t) =>
@@ -104,13 +95,14 @@ builder.objectField(LayoutSummaryRef, "elements", (t) =>
 export const LayoutIssueRef = objectFromSchema<LayoutIssueDto>({
   name: "LayoutIssue",
   schema: LayoutIssueSchema,
-  description: "A layout warning (it never blocks a save).",
+  description:
+    "A layout problem: EXIT_BLOCKED and OVER_LIMIT refuse a save, the rest are warnings.",
 });
 
 export const FloorPlanRef = objectFromSchema<FloorPlanDto>({
   name: "FloorPlan",
   schema: FloorPlanSchema,
-  omit: ["elements", "setups", "layouts"],
+  omit: ["elements", "layouts"],
   description:
     "An item's floor plan: walls (outline as [x, y] points in cm), fixed elements and layouts.",
 });
@@ -121,24 +113,17 @@ builder.objectField(FloorPlanRef, "elements", (t) =>
     resolve: (plan) => plan.elements,
   }),
 );
-builder.objectField(FloorPlanRef, "setups", (t) =>
-  t.field({
-    type: [SetupCapacityRef],
-    description: "One per setup the item has: its capacity.",
-    resolve: (plan) => plan.setups,
-  }),
-);
 builder.objectField(FloorPlanRef, "layouts", (t) =>
   t.field({
     type: [LayoutSummaryRef],
-    description: "Every layout of the item, by setup then name.",
+    description: "Every layout of the room, by name.",
     resolve: (plan) => plan.layouts,
   }),
 );
 
 const FloorPlanShapeRef = objectFromSchema<FloorPlanShapeDto>({
   name: "FloorPlanShape",
-  schema: SetupLayoutSchema.shape.plan,
+  schema: LayoutSchema.shape.plan,
   omit: ["elements"],
   description: "The floor plan a layout sits in.",
 });
@@ -150,27 +135,27 @@ builder.objectField(FloorPlanShapeRef, "elements", (t) =>
   }),
 );
 
-export const SetupLayoutRef = objectFromSchema<SetupLayoutDto>({
-  name: "SetupLayout",
-  schema: SetupLayoutSchema,
+export const LayoutRef = objectFromSchema<LayoutDto>({
+  name: "Layout",
+  schema: LayoutSchema,
   omit: ["elements", "plan", "issues"],
-  description: "One setup's layout of an item: the pieces, seats, capacity and warnings.",
+  description: "One layout of a room: the pieces, seats, capacity and warnings.",
 });
-builder.objectField(SetupLayoutRef, "elements", (t) =>
+builder.objectField(LayoutRef, "elements", (t) =>
   t.field({
     type: [FloorElementRef],
     description: "The layout's pieces.",
     resolve: (layout) => layout.elements,
   }),
 );
-builder.objectField(SetupLayoutRef, "plan", (t) =>
+builder.objectField(LayoutRef, "plan", (t) =>
   t.field({
     type: FloorPlanShapeRef,
     description: "The floor plan with its fixed elements.",
     resolve: (layout) => layout.plan,
   }),
 );
-builder.objectField(SetupLayoutRef, "issues", (t) =>
+builder.objectField(LayoutRef, "issues", (t) =>
   t.field({
     type: [LayoutIssueRef],
     description: "Warnings; they never block a save.",
@@ -194,7 +179,7 @@ mutationFromOperation({ operation: archiveFloorElementKind, type: FloorElementKi
 mutationFromOperation({ operation: importFloorElementKinds, type: FloorElementKindImportRef });
 fieldFromOperation({ operation: getFloorPlan, type: FloorPlanRef, name: "floorPlan" });
 mutationFromOperation({ operation: saveFloorPlan, type: FloorPlanRef });
-fieldFromOperation({ operation: getSetupLayout, type: SetupLayoutRef, name: "setupLayout" });
-mutationFromOperation({ operation: createSetupLayout, type: SetupLayoutRef });
-mutationFromOperation({ operation: saveSetupLayout, type: SetupLayoutRef });
-mutationFromOperation({ operation: archiveSetupLayout, type: SetupLayoutRef });
+fieldFromOperation({ operation: getLayout, type: LayoutRef, name: "layout" });
+mutationFromOperation({ operation: createLayout, type: LayoutRef });
+mutationFromOperation({ operation: saveLayout, type: LayoutRef });
+mutationFromOperation({ operation: archiveLayout, type: LayoutRef });

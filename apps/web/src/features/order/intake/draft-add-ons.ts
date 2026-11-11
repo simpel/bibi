@@ -21,7 +21,7 @@ export function addOnLine({ line, addOn }: AddOnLineInput): DraftLine {
   return {
     ...line,
     key: `${line.key}:${addOn.key}`,
-    ...{ name: addOn.name, itemId: addOn.itemId, setupId: null, quantity: addOn.quantity },
+    ...{ name: addOn.name, itemId: addOn.itemId, layoutId: null, quantity: addOn.quantity },
     startsAt: own ? addOn.startsAt : line.startsAt,
     endsAt: own ? addOn.endsAt : line.endsAt,
     ...{ unitPriceMinor: addOn.unitPriceMinor, discountPercent: null, note: null },

@@ -17,12 +17,10 @@ import type { ScopedDb } from "@bibi/db";
 import { type BatchLoader, createBatchLoader } from "./batch-loader";
 
 type VenueRow = NonNullable<Awaited<ReturnType<ScopedDb["venue"]["findFirst"]>>>;
-type SetupRow = NonNullable<Awaited<ReturnType<ScopedDb["setup"]["findFirst"]>>>;
 
 /** Graph-edge loaders. Permission is checked by the resolver; reads go through the org-scoped db. */
 export type Loaders = {
   venue: BatchLoader<VenueRow>;
-  setup: BatchLoader<SetupRow>;
   customer: BatchLoader<CustomerDto>;
   orderStatus: BatchLoader<OrderStatusDto>;
   itemState: BatchLoader<ItemStateDto>;
@@ -93,10 +91,6 @@ export function createLoaders({ db, permissions }: CreateLoadersInput): Loaders 
     venue: createBatchLoader({
       batch: async (ids) =>
         byId({ rows: await db.venue.findMany({ where: { id: { in: [...ids] } } }) }),
-    }),
-    setup: createBatchLoader({
-      batch: async (ids) =>
-        byId({ rows: await db.setup.findMany({ where: { id: { in: [...ids] } } }) }),
     }),
     customer: createBatchLoader({
       batch: async (ids) => {

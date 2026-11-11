@@ -1,44 +1,44 @@
 "use server";
 
 import {
-  archiveSetupLayout,
-  createSetupLayout,
+  archiveLayout,
+  createLayout,
   type FloorElementKindImportOutput,
   type FloorPlanDto,
   type FloorPlanSaveInput,
   importFloorElementKinds,
-  type SetupLayoutCreateInput,
-  type SetupLayoutDto,
-  type SetupLayoutSaveInput,
+  type LayoutCreateInput,
+  type LayoutDto,
+  type LayoutSaveInput,
   saveFloorPlan,
-  saveSetupLayout,
+  saveLayout,
 } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
 
-export type SaveSetupLayoutActionInput = { input: SetupLayoutSaveInput };
+export type SaveLayoutActionInput = { input: LayoutSaveInput };
 export type SaveFloorPlanActionInput = { input: FloorPlanSaveInput };
-export type CreateSetupLayoutActionInput = { input: SetupLayoutCreateInput };
-export type ArchiveSetupLayoutActionInput = { id: string };
+export type CreateLayoutActionInput = { input: LayoutCreateInput };
+export type ArchiveLayoutActionInput = { id: string };
 
-export async function saveSetupLayoutAction({
+export async function saveLayoutAction({
   input,
-}: SaveSetupLayoutActionInput): Promise<ActionResult<SetupLayoutDto>> {
-  return toActionResult({ result: await runOperation({ operation: saveSetupLayout, input }) });
+}: SaveLayoutActionInput): Promise<ActionResult<LayoutDto>> {
+  return toActionResult({ result: await runOperation({ operation: saveLayout, input }) });
 }
 
-export async function createSetupLayoutAction({
+export async function createLayoutAction({
   input,
-}: CreateSetupLayoutActionInput): Promise<ActionResult<SetupLayoutDto>> {
-  return toActionResult({ result: await runOperation({ operation: createSetupLayout, input }) });
+}: CreateLayoutActionInput): Promise<ActionResult<LayoutDto>> {
+  return toActionResult({ result: await runOperation({ operation: createLayout, input }) });
 }
 
-export async function archiveSetupLayoutAction({
+export async function archiveLayoutAction({
   id,
-}: ArchiveSetupLayoutActionInput): Promise<ActionResult<SetupLayoutDto>> {
+}: ArchiveLayoutActionInput): Promise<ActionResult<LayoutDto>> {
   return toActionResult({
-    result: await runOperation({ operation: archiveSetupLayout, input: { id } }),
+    result: await runOperation({ operation: archiveLayout, input: { id } }),
   });
 }
 

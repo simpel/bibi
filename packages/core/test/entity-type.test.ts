@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   archiveEntityType,
   createEntityType,
-  createSetup,
+  createLayout,
   execute,
   listEntityTypes,
   updateEntityType,
@@ -60,9 +60,6 @@ describe("entity types and capabilities (ADR 0021)", () => {
   it("refuses to switch a capability off while items have data for it", async () => {
     const context = testContext();
     const type = await createRoomType({ context });
-    const setup = unwrap({
-      result: await execute({ operation: createSetup, input: { name: "Theatre" }, context }),
-    });
     const item = await createTestItem({ context, entityTypeId: type.id, name: "Vinga" });
     type Capabilities = ("BOOKABLE" | "SETUPS" | "PRICED")[];
     const off = ({ capabilities }: { capabilities: Capabilities }) =>
@@ -73,7 +70,14 @@ describe("entity types and capabilities (ADR 0021)", () => {
     unwrap({
       result: await execute({
         operation: updateItem,
-        input: { id: item.id, priceMinor: 450_000, setups: [{ setupId: setup.id, capacity: 220 }] },
+        input: { id: item.id, priceMinor: 450_000, maxPeople: 220 },
+        context,
+      }),
+    });
+    unwrap({
+      result: await execute({
+        operation: createLayout,
+        input: { itemId: item.id, name: "Theatre", capacity: 220 },
         context,
       }),
     });

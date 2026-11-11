@@ -19,8 +19,10 @@ const OCCUPY_NOTE =
   "A line with an item starts in the item type's initial state (itemState.list). With a " +
   "bookable item it holds the item for the period as its state says (SOFT holds may overlap, " +
   "HARD holds block), with setup and teardown buffers of the same kind right before and after " +
-  "(setupMinutes and teardownMinutes, else the item's, else its type's; the setup's changeover " +
-  "time is the least setup); an overlap with another hard hold, buffer or block gives CONFLICT.";
+  "(setupMinutes and teardownMinutes, else the layout's, else the item's, else its type's); an " +
+  "overlap with another hard hold, buffer or block gives CONFLICT. layoutId books one of the " +
+  "item's layouts. More people (the effective quantity) than the item's maxPeople is " +
+  "VALIDATION at quantity.";
 
 export const createLine = defineOperation({
   name: "line.create",
@@ -46,7 +48,7 @@ export const updateLine = defineOperation({
   name: "line.update",
   kind: "command",
   description:
-    "Change a line: name, time, item, setup, quantity, price, discount, VAT or note. Omitted " +
+    "Change a line: name, time, item, layout, quantity, price, discount, VAT or note. Omitted " +
     "properties are unchanged and null clears an override (the line inherits again); `fields` " +
     "is merged by key (null clears a value). Clearing both times makes the line untimed, which " +
     "releases its hold. Moving it moves its occupancy, and moving a line moves its timed part, " +

@@ -5,7 +5,6 @@ export type CrumbLabelKey =
   | NavLabelKey
   | AdminKey
   | "skills"
-  | "setups"
   | "layouts"
   | "floorPlan"
   | "responsibilities"
@@ -47,7 +46,6 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   general: "general",
   types: "types",
   lists: "lists",
-  setups: "setups",
   layouts: "layouts",
   "floor-plan": "floorPlan",
   "run-sheets": "runSheets",

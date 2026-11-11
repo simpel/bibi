@@ -1,3 +1,4 @@
+import { overPeopleLimit, peopleLimitMessage } from "../../line/people-limit";
 import { lineIssue, type PlanLineIssue } from "./issue-schema";
 import { overlaps, type Period, type PlannedLine } from "./planned-line";
 
@@ -30,20 +31,37 @@ export function selfOverlaps({ lines, periods, index }: SelfOverlapsInput): Plan
   });
 }
 
-export type SetupCapacityInput = {
+export type LayoutCapacityInput = {
   line: PlannedLine;
   quantity: number | null;
   capacity: number | undefined;
 };
 
-/** `SETUP_CAPACITY`: the effective quantity is above the chosen setup's capacity on the item. */
-export function setupCapacity({ line, quantity, capacity }: SetupCapacityInput): PlanLineIssue[] {
+/** `LAYOUT_CAPACITY`: the effective quantity is above the chosen layout's capacity (ADR 0103). */
+export function layoutCapacity({ line, quantity, capacity }: LayoutCapacityInput): PlanLineIssue[] {
   if (capacity === undefined || quantity === null || quantity <= capacity) return [];
   return [
     lineIssue({
-      kind: "SETUP_CAPACITY",
-      message: `"${line.name}": ${quantity} is above the setup's capacity of ${capacity}`,
+      kind: "LAYOUT_CAPACITY",
+      message: `"${line.name}": ${quantity} is above the layout's capacity of ${capacity}`,
       capacity,
     }),
   ];
+}
+
+export type MaxPeopleInput = {
+  line: PlannedLine;
+  quantity: number | null;
+  item: { name: string; maxPeople: number | null } | undefined;
+};
+
+/** `MAX_PEOPLE`: more people than the item's limit, which saving the line refuses (ADR 0103). */
+export function maxPeople({ line, quantity, item }: MaxPeopleInput): PlanLineIssue[] {
+  const limit = item?.maxPeople ?? null;
+  if (!item || quantity === null || limit === null) return [];
+  if (!overPeopleLimit({ quantity, maxPeople: limit })) return [];
+  const message = peopleLimitMessage({
+    ...{ lineName: line.name, itemName: item.name, quantity, maxPeople: limit },
+  });
+  return [lineIssue({ kind: "MAX_PEOPLE", message, capacity: limit })];
 }

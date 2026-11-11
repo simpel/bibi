@@ -5,11 +5,11 @@ import { activeOccupancies, createTestLine, programSetup } from "./line-helpers"
 import { hours } from "./occupancy-helpers";
 
 describe("line occupancy (ADR 0022)", () => {
-  it("holds the item HARD (default state) plus SETUP changeover time", async () => {
-    const { context, order, type, room, setup } = await programSetup();
+  it("holds the item HARD (default state) plus the layout's SETUP buffer", async () => {
+    const { context, order, type, room, layout } = await programSetup();
     const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({
-      result: await createTestLine({ ...base, from: 10, to: 12, setupId: setup.id }),
+      result: await createTestLine({ ...base, from: 10, to: 12, layoutId: layout.id }),
     });
     const rows = await activeOccupancies({ context, lineId: item.id });
     expect(rows.map(({ type: kind, startsAt, endsAt }) => ({ kind, startsAt, endsAt }))).toEqual([
@@ -18,26 +18,26 @@ describe("line occupancy (ADR 0022)", () => {
     ]);
   });
 
-  it("refuses an overlap with CONFLICT, including the changeover time", async () => {
-    const { context, order, type, room, setup } = await programSetup();
+  it("refuses an overlap with CONFLICT, including the setup buffer", async () => {
+    const { context, order, type, room, layout } = await programSetup();
     const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     unwrap({ result: await createTestLine({ ...base, from: 10, to: 12 }) });
     expect(errorCode({ result: await createTestLine({ ...base, from: 11, to: 13 }) })).toBe(
       "CONFLICT",
     );
-    // Back to back is fine, but the setup's hour of changeover would overlap.
+    // Back to back is fine, but the layout's hour of setup would overlap.
     expect(errorCode({ result: await createTestLine({ ...base, from: 12, to: 14 }) })).toBeNull();
-    const clash = await createTestLine({ ...base, from: 14, to: 15, setupId: setup.id });
+    const clash = await createTestLine({ ...base, from: 14, to: 15, layoutId: layout.id });
     expect(errorCode({ result: clash })).toBe("CONFLICT");
     const count = await context.db.line.count({ where: { orderId: order.id } });
     expect(count).toBe(2);
   });
 
   it("moves the occupancy on update and releases it on archive", async () => {
-    const { context, order, type, room, setup } = await programSetup();
+    const { context, order, type, room, layout } = await programSetup();
     const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({
-      result: await createTestLine({ ...base, from: 10, to: 12, setupId: setup.id }),
+      result: await createTestLine({ ...base, from: 10, to: 12, layoutId: layout.id }),
     });
     const moved = { id: item.id, ...hours({ from: 14, to: 16 }) };
     unwrap({ result: await execute({ operation: updateLine, input: moved, context }) });
@@ -52,7 +52,7 @@ describe("line occupancy (ADR 0022)", () => {
     const updated = unwrap({
       result: await execute({ operation: updateLine, input: off, context }),
     });
-    expect(updated).toMatchObject({ itemId: null, setupId: null });
+    expect(updated).toMatchObject({ itemId: null, layoutId: null });
     expect(await activeOccupancies({ context, lineId: item.id })).toEqual([]);
     const input = { id: item.id };
     unwrap({ result: await execute({ operation: archiveLine, input, context }) });

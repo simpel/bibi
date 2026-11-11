@@ -421,9 +421,9 @@
       "perGuest": "En per gäst: ändras om antalet gäster ändras.",
       "fixedAt": "Fast {quantity}.",
       "useGuests": "Använd antalet gäster ({guests})",
-      "setup": "Möblering",
-      "noSetup": "Ingen möblering",
-      "setupOption": "{name} (upp till {capacity})",
+      "layout": "Möblering",
+      "noLayout": "Ingen möblering",
+      "layoutOption": "{name} (upp till {capacity})",
       "unitPrice": "Styckpris",
       "discount": "Rabatt %",
       "needs": "Behov",
@@ -460,7 +460,8 @@
       "blocked": "Blockerad {period}",
       "softOverlap": "{order} har den förbokad {period}",
       "selfOverlap": "Överlappar rad {line} i den här bokningen",
-      "setupCapacity": "Fler än möbleringens {capacity}",
+      "layoutCapacity": "Fler än möbleringens {capacity}",
+      "maxPeople": "Lokalen tillåter som mest {max} personer; det går inte att spara",
       "poolShort": "{needed} behövs, {free} lediga den dagen",
       "outsideHours": "Utanför öppettiderna"
     },
@@ -625,7 +626,7 @@
     "plural": "Program",
     "create": "Lägg till programpunkt",
     "edit": "Redigera programpunkt",
-    "createDescription": "Lägg till en rad i bokningens körschema. Med en lokal beläggs den under perioden, plus uppställningens ställtid. Lämna tiderna tomma för en rad utan tid, t.ex. en avgift; tomt antal och pris ärver bokningens antal gäster och prislistan eller artikeln.",
+    "createDescription": "Lägg till en rad i bokningens körschema. Med en lokal beläggs den under perioden, plus möbleringens ställ- och nedplockstid. Lämna tiderna tomma för en rad utan tid, t.ex. en avgift; tomt antal och pris ärver bokningens antal gäster och prislistan eller artikeln.",
     "editDescription": "Ändra tid, plats, antal, pris eller anteckning. Flyttas den flyttas också beläggningen. Lämna tiderna tomma för en rad utan tid, t.ex. en avgift; lämna antal, pris, rabatt och moms tomma för att ärva antal gäster, prislista och artikel.",
     "archive": "Ta bort programpunkt",
     "archiveConfirm": "Vill du ta bort \"{name}\" från programmet? Lokalen släpps.",
@@ -641,14 +642,15 @@
     "noItem": "Ingen lokal",
     "itemSearch": "Sök lokaler och bokningsbara artiklar",
     "noItemMatch": "Ingen artikel matchar.",
-    "noSetup": "Ingen uppställning",
+    "noLayout": "Ingen möblering",
+    "layoutOption": "{name} (upp till {capacity})",
     "fields": {
       "type": "Typ",
       "name": "Namn",
       "startsAt": "Börjar",
       "endsAt": "Slutar",
       "item": "Lokal eller bokningsbar artikel",
-      "setup": "Uppställning",
+      "layout": "Möblering",
       "quantity": "Antal",
       "note": "Intern anteckning",
       "unitPrice": "Eget styckpris (kr)",
@@ -726,9 +728,13 @@
         "title": "Överlappande rader",
         "description": "{line} överlappar {other} i denna bokning"
       },
-      "setupCapacity": {
-        "title": "Över uppställningens kapacitet",
-        "description": "{line}: fler än uppställningens {capacity}"
+      "layoutCapacity": {
+        "title": "Över möbleringens kapacitet",
+        "description": "{line}: fler än möbleringens {capacity}"
+      },
+      "maxPeople": {
+        "title": "Över lokalens personbegränsning",
+        "description": "{line}: lokalen tillåter som mest {max} personer; det går inte att spara"
       },
       "poolShort": {
         "title": "För få enheter",

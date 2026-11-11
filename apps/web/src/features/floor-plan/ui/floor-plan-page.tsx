@@ -33,6 +33,7 @@ export async function FloorPlanPage({ locale, itemId }: FloorPlanPageProps) {
         key={plan.version}
         itemId={itemId}
         layout={null}
+        maxPeople={plan.maxPeople}
         tabs={[]}
         creating={null}
         room={{ widthCm, depthCm, outline, minAisleCm }}

@@ -2,7 +2,7 @@
 
 - **Date:** 2026-10-20
 - **Status:** Accepted
-- **Related:** 0021 (amended), 0050 (amended), 0052 (amended), 0053 (amended), 0051, 0056, 0043, 0044
+- **Related:** 0103 (amends this), 0021 (amended), 0050 (amended), 0052 (amended), 0053 (amended), 0051, 0056, 0043, 0044
 - **Plan:** `docs/plans/type-capabilities-and-resources.md`
 
 ## Context

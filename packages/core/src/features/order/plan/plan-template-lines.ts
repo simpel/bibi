@@ -21,7 +21,7 @@ export function planTemplateLines({ template, startsAt }: PlanTemplateLinesInput
       startsAt: start,
       endsAt: new Date(start.getTime() + line.durationMinutes * MINUTE),
       itemId: line.itemId,
-      setupId: line.setupId,
+      layoutId: line.layoutId,
       quantity: line.quantity,
     };
   });

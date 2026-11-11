@@ -33,10 +33,10 @@ export const BufferMinutesShape = {
 };
 
 /**
- * Where an effective buffer comes from (ADR 0059): the line's own, the item's, the item type's,
- * or (setup only) the setup's changeover time when that is larger.
+ * Where an effective buffer comes from (ADR 0059, 0103): the line's own, its layout's, the
+ * item's or the item type's.
  */
-export const BufferSourceSchema = z.enum(["LINE", "ITEM", "TYPE", "SETUP"]);
+export const BufferSourceSchema = z.enum(["LINE", "LAYOUT", "ITEM", "TYPE"]);
 export type BufferSource = z.infer<typeof BufferSourceSchema>;
 
 const inherited = "Any source other than the record's own is inherited; null = no buffer";
@@ -46,12 +46,12 @@ export const EffectiveBuffersShape = {
   effectiveSetupMinutes: z
     .number()
     .int()
-    .describe("Setup in effect, minutes: line → item → type, at least the setup's changeover"),
+    .describe("Setup in effect, minutes: line → layout → item → type"),
   setupMinutesSource: BufferSourceSchema.nullable().describe(inherited),
   effectiveTeardownMinutes: z
     .number()
     .int()
-    .describe("Teardown in effect, minutes: line → item → type"),
+    .describe("Teardown in effect, minutes: line → layout → item → type"),
   teardownMinutesSource: BufferSourceSchema.nullable().describe(inherited),
 };
 
@@ -63,13 +63,11 @@ type Minutes = { setupMinutes: number | null; teardownMinutes: number | null };
 
 export type EffectiveBuffersInput = {
   line?: Minutes | null;
+  /** The layout the line books, if any (ADR 0103). */
+  layout?: Minutes | null;
   item: Minutes | null;
   type: Minutes | null;
-  /** The changeover time of the line's setup, if any. */
-  changeoverMinutes?: number | null;
 };
-
-type Sourced = { value: number; source: BufferSource | null };
 
 const firstSet = ({ levels }: { levels: readonly [BufferSource, number | null | undefined][] }) => {
   const found = levels.find(([, value]) => value !== null && value !== undefined);
@@ -77,28 +75,25 @@ const firstSet = ({ levels }: { levels: readonly [BufferSource, number | null | 
 };
 
 /**
- * ADR 0059: each buffer is the line's, else the item's, else the type's. The setup is the larger
- * of that and the setup's changeover time, never the sum (a tie keeps the inherited source).
- * The database trigger `sync_line_occupancy` applies the same rule to holds.
+ * ADR 0059 as amended by 0103: each buffer is the line's, else its layout's, else the item's,
+ * else the type's. The database trigger `sync_line_occupancy` applies the same rule to holds.
  */
 export function effectiveBuffers({
   line,
+  layout,
   item,
   type,
-  changeoverMinutes,
 }: EffectiveBuffersInput): EffectiveBuffers {
   const pick = ({ key }: { key: keyof Minutes }) =>
     firstSet({
       levels: [
         ["LINE", line?.[key]],
+        ["LAYOUT", layout?.[key]],
         ["ITEM", item?.[key]],
         ["TYPE", type?.[key]],
       ],
     });
-  const inheritedSetup = pick({ key: "setupMinutes" });
-  const changeover = changeoverMinutes ?? 0;
-  const setup: Sourced =
-    changeover > inheritedSetup.value ? { value: changeover, source: "SETUP" } : inheritedSetup;
+  const setup = pick({ key: "setupMinutes" });
   const teardown = pick({ key: "teardownMinutes" });
   return {
     ...{ effectiveSetupMinutes: setup.value, setupMinutesSource: setup.source },

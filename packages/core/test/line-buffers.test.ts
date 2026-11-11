@@ -19,9 +19,9 @@ const rowsOf = async ({ context, lineId }: { context: ExecuteContext; lineId: st
       row.endsAt.toISOString().slice(11, 16),
   );
 
-describe("setup and teardown buffers (ADR 0059)", () => {
-  it("inherits line → item → type and takes the larger of setup and changeover", async () => {
-    const { context, order, type, room, setup } = await programSetup();
+describe("setup and teardown buffers (ADR 0059, 0103)", () => {
+  it("inherits line → layout → item → type, the first value set wins", async () => {
+    const { context, order, type, room, layout } = await programSetup();
     const typeInput = { id: room.entityTypeId, setupMinutes: 30, teardownMinutes: 20 };
     unwrap({ result: await execute({ operation: updateEntityType, input: typeInput, context }) });
     const item = unwrap({
@@ -36,12 +36,13 @@ describe("setup and teardown buffers (ADR 0059)", () => {
     const line = unwrap({
       result: await createTestLine({
         ...{ context, orderId: order.id, entityTypeId: type.id, from: 10, to: 12 },
-        ...{ itemId: room.id, setupId: setup.id },
+        ...{ itemId: room.id, layoutId: layout.id },
       }),
     });
-    // The setup's changeover (60) is larger than the type's 30: it wins, the two never add up.
+    // The layout's 60 setup minutes win over the type's 30; it sets no teardown, so the item's.
     expect(line).toMatchObject({
-      ...{ effectiveSetupMinutes: 60, setupMinutesSource: "SETUP" },
+      layoutId: layout.id,
+      ...{ effectiveSetupMinutes: 60, setupMinutesSource: "LAYOUT" },
       ...{ effectiveTeardownMinutes: 15, teardownMinutesSource: "ITEM" },
     });
     expect(await rowsOf({ context, lineId: line.id })).toEqual([
@@ -83,6 +84,27 @@ describe("setup and teardown buffers (ADR 0059)", () => {
     expect(await rowsOf({ context, lineId: line.id })).toEqual([
       "SETUP:HARD 09:15-10:00",
       "HOLD:HARD 10:00-12:00",
+    ]);
+  });
+
+  it("takes the layout's minutes over the item's, and the item's without a layout", async () => {
+    const { context, order, type, room, layout } = await programSetup();
+    const itemInput = { id: room.id, setupMinutes: 45, teardownMinutes: 10 };
+    unwrap({ result: await execute({ operation: updateItem, input: itemInput, context }) });
+    const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
+    const booked = unwrap({
+      result: await createTestLine({ ...base, from: 10, to: 12, layoutId: layout.id }),
+    });
+    expect(booked).toMatchObject({
+      ...{ effectiveSetupMinutes: 60, setupMinutesSource: "LAYOUT" },
+      ...{ effectiveTeardownMinutes: 10, teardownMinutesSource: "ITEM" },
+    });
+    const bare = unwrap({ result: await createTestLine({ ...base, from: 14, to: 15 }) });
+    expect(bare).toMatchObject({ effectiveSetupMinutes: 45, setupMinutesSource: "ITEM" });
+    expect(await rowsOf({ context, lineId: booked.id })).toEqual([
+      "SETUP:HARD 09:00-10:00",
+      "HOLD:HARD 10:00-12:00",
+      "TEARDOWN:HARD 12:00-12:10",
     ]);
   });
 

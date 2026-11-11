@@ -4,8 +4,8 @@ import {
   createOccupancy,
   type ExecuteContext,
   execute,
+  saveLayout,
   updateItemState,
-  updateSetup,
 } from "../src/index";
 import { lineHoldsReconciliation } from "../src/seed/demo/line-holds-reconcile";
 import { runReconciliations } from "../src/seed/demo/reconcile";
@@ -15,7 +15,7 @@ import { hours } from "./occupancy-helpers";
 
 type Setup = Awaited<ReturnType<typeof programSetup>>;
 
-/** A line on the room with its setup: `[from, to)` on 1 November 2037, or in 2020 when `past`. */
+/** A line on the room with its layout: `[from, to)` on 1 November 2037, or in 2020 when `past`. */
 async function lineAt({
   setup,
   from,
@@ -31,7 +31,7 @@ async function lineAt({
   const period = hours({ from, to });
   const shift = past ? Date.UTC(2037, 10, 1) - Date.UTC(2020, 0, 1) : 0;
   const input = {
-    ...{ orderId: order.id, entityTypeId: type.id, itemId: room.id, setupId: setup.setup.id },
+    ...{ orderId: order.id, entityTypeId: type.id, itemId: room.id, layoutId: setup.layout.id },
     name: past ? "Past" : "Future",
     startsAt: new Date(period.startsAt.getTime() - shift),
     endsAt: new Date(period.endsAt.getTime() - shift),
@@ -48,7 +48,7 @@ const reconcile = ({ context }: { context: ExecuteContext }) =>
   runReconciliations({ context, checks: [lineHoldsReconciliation] });
 
 describe("line holds are a trigger-written projection (ADR 0053)", () => {
-  it("re-derives future setup buffers on a changeover change and refuses an overlap", async () => {
+  it("re-derives future setup buffers on a layout's minutes change and refuses an overlap", async () => {
     const setup = await programSetup();
     const { context, room } = setup;
     const past = await lineAt({ setup, from: 10, to: 12, past: true });
@@ -59,8 +59,11 @@ describe("line holds are a trigger-written projection (ADR 0053)", () => {
     ]);
     const block = { itemId: room.id, type: "MAINTENANCE" as const, ...hours({ from: 7, to: 8 }) };
     unwrap({ result: await execute({ operation: createOccupancy, input: block, context }) });
-    const longer = { id: setup.setup.id, changeoverMinutes: 90 };
-    unwrap({ result: await execute({ operation: updateSetup, input: longer, context }) });
+    const minutes = ({ setupMinutes, version }: { setupMinutes: number; version: number }) => ({
+      ...{ id: setup.layout.id, expectedVersion: version, setupMinutes, elements: [] },
+    });
+    const longer = minutes({ setupMinutes: 90, version: setup.layout.version });
+    unwrap({ result: await execute({ operation: saveLayout, input: longer, context }) });
     expect(await rowsOf({ context, lineId: future.id })).toEqual([
       "SETUP:HARD 08:30",
       "HOLD:HARD 10:00",
@@ -70,14 +73,14 @@ describe("line holds are a trigger-written projection (ADR 0053)", () => {
       "SETUP:HARD 09:00",
       "HOLD:HARD 10:00",
     ]);
-    const clash = { id: setup.setup.id, changeoverMinutes: 150 };
-    const refused = await execute({ operation: updateSetup, input: clash, context });
+    const clash = minutes({ setupMinutes: 150, version: setup.layout.version + 1 });
+    const refused = await execute({ operation: saveLayout, input: clash, context });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
     expect(refused.ok ? [] : refused.error.issues.map((issue) => issue.path)).toEqual([
       `lines.${future.id}`,
     ]);
-    const kept = await context.db.setup.findFirstOrThrow({ where: { id: setup.setup.id } });
-    expect(kept.changeoverMinutes).toBe(90);
+    const kept = await context.db.setupLayout.findFirstOrThrow({ where: { id: setup.layout.id } });
+    expect(kept.setupMinutes).toBe(90);
     expect(await reconcile({ context })).toEqual([]);
   });
 

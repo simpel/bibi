@@ -15,7 +15,8 @@ export type ToLineRecordInput = { row: LineRow };
 export const LINE_INCLUDE = { ...WITH_RECORD_LINKS, ...LATEST_STATE_CHANGE };
 
 export const toLineRecord = ({ row }: ToLineRecordInput): LineRecord => {
-  const { record: _record, stateChanges, ...line } = row;
+  // `setupId` is no longer read (ADR 0103): lines book a layout; the column goes next release.
+  const { record: _record, stateChanges, setupId: _setupId, ...line } = row;
   return {
     ...line,
     heldAt: stateChanges[0]?.changedAt ?? row.createdAt,

@@ -11,7 +11,6 @@ export type AdminSectionId =
   | "seatRequests"
   | "types"
   | "groups"
-  | "setups"
   | "lists"
   | "priceLists"
   | "orderStatuses"
@@ -43,7 +42,6 @@ export const ADMIN_SECTIONS: Record<AdminSectionId, { anchor: string; permission
   seatRequests: { anchor: "seat-requests", permission: "billing:read" },
   types: { anchor: "types", permission: "configuration:read" },
   groups: { anchor: "groups", permission: "configuration:read" },
-  setups: { anchor: "setups", permission: "configuration:read" },
   lists: { anchor: "lists", permission: "configuration:read" },
   priceLists: { anchor: "price-lists", permission: "priceList:read" },
   orderStatuses: { anchor: "statuses", permission: "pipeline:read" },

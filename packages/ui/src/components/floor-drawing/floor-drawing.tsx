@@ -1,6 +1,7 @@
 import { cva } from "class-variance-authority";
 import { type ComponentProps, type ReactNode, useId } from "react";
 import { cn } from "../../lib/cn";
+import { FloorExitZone } from "./floor-exit-zone";
 import { FloorOpening } from "./floor-opening";
 
 /** One chair: its centre and facing, in the element's own frame (centimetres, degrees). */
@@ -25,6 +26,8 @@ export type FloorDrawingElement = {
   keepClearCm: number | null;
   /** DOOR, WINDOW: how far it opens in degrees (0 or left out = it does not). */
   swingDeg?: number;
+  /** DOOR, WINDOW: an emergency exit, drawn green with its no-block zone in front of it. */
+  emergencyExit?: boolean;
   /** Accessible name of the piece, e.g. "Round table 3, 10 seats". */
   name: string;
   tone?: FloorDrawingTone;
@@ -130,12 +133,16 @@ export function FloorPiece({ element, interactive = false }: FloorPieceProps) {
       {element.seats.map((seat) => (
         <Chair key={`${seat.x} ${seat.y}`} seat={seat} />
       ))}
-      {element.shape === "DOOR" || element.shape === "WINDOW" ? (
+      {opening && element.emergencyExit ? (
+        <FloorExitZone widthCm={w} depthCm={d} swingDeg={element.swingDeg ?? 0} />
+      ) : null}
+      {opening ? (
         <FloorOpening
-          kind={element.shape}
+          kind={element.shape as "DOOR" | "WINDOW"}
           widthCm={w}
           swingDeg={element.swingDeg ?? 0}
           selected={tone === "selected" || tone === "warning"}
+          emergencyExit={element.emergencyExit}
         />
       ) : (
         <Body element={element} />

@@ -1,6 +1,6 @@
 import { isOpening } from "@bibi/core/schemas";
 import { Button, Separator, Tooltip, TooltipContent, TooltipTrigger } from "@bibi/ui";
-import { CopyIcon, RotateCwIcon, Trash2Icon } from "lucide-react";
+import { CopyIcon, DoorOpenIcon, RotateCwIcon, Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { CSSProperties, ReactNode } from "react";
 import { type DraftElement, effectiveOf, type KindMap } from "../lib/draft";
@@ -9,6 +9,7 @@ import {
   resetPiece,
   resizePiece,
   setAround,
+  setEmergencyExit,
   setSides,
   setSwing,
 } from "../lib/edit-pieces";
@@ -47,6 +48,8 @@ export type SelectionToolbarProps = {
   selected: readonly DraftElement[];
   kinds: KindMap;
   style: CSSProperties;
+  /** The floor plan: doors and windows can be marked as emergency exits (ADR 0103). */
+  exits?: boolean;
   onReplace: (element: DraftElement) => void;
   onRotate: (step: number) => void;
   onDuplicate: () => void;
@@ -58,6 +61,7 @@ export function SelectionToolbar({
   selected,
   kinds,
   style,
+  exits = false,
   onReplace,
   onRotate,
   onDuplicate,
@@ -114,6 +118,20 @@ export function SelectionToolbar({
               value={effective.swingDeg}
               onChange={(swingDeg) => onReplace(setSwing({ element: one, kinds, swingDeg }))}
             />
+          ) : null}
+          {opening && exits ? (
+            <Button
+              variant={one.emergencyExit ? "secondary" : "ghost"}
+              size="sm"
+              className={one.emergencyExit ? "text-success" : undefined}
+              aria-pressed={one.emergencyExit === true}
+              onClick={() =>
+                onReplace(setEmergencyExit({ element: one, emergencyExit: !one.emergencyExit }))
+              }
+            >
+              <DoorOpenIcon />
+              {t("selection.emergencyExit")}
+            </Button>
           ) : null}
           <Separator orientation="vertical" className="mx-1 h-5" />
         </>

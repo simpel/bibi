@@ -19,7 +19,7 @@ const day = ({ at }: { at: Date }) => at.toISOString().slice(0, 10);
  * teardown right after, as the trigger derives them.
  */
 async function blockedPeriod({ context, line }: Db & { line: TimedLine & { itemId: string } }) {
-  const [item, setup] = await Promise.all([
+  const [item, layout] = await Promise.all([
     context.db.item.findFirst({
       where: { id: line.itemId },
       select: {
@@ -27,14 +27,14 @@ async function blockedPeriod({ context, line }: Db & { line: TimedLine & { itemI
         entityType: { select: { setupMinutes: true, teardownMinutes: true } },
       },
     }),
-    line.setupId ? context.db.setup.findFirst({ where: { id: line.setupId } }) : null,
+    line.layoutId
+      ? context.db.setupLayout.findFirst({
+          where: { id: line.layoutId, status: { in: ["ACTIVE", "ARCHIVED"] } },
+          select: { setupMinutes: true, teardownMinutes: true },
+        })
+      : null,
   ]);
-  const buffers = effectiveBuffers({
-    line,
-    item,
-    type: item?.entityType ?? null,
-    changeoverMinutes: setup?.changeoverMinutes ?? null,
-  });
+  const buffers = effectiveBuffers({ line, layout, item, type: item?.entityType ?? null });
   return {
     startsAt: new Date(line.startsAt.getTime() - buffers.effectiveSetupMinutes * 60_000),
     endsAt: new Date(line.endsAt.getTime() + buffers.effectiveTeardownMinutes * 60_000),

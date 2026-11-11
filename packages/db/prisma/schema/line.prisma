@@ -2,10 +2,10 @@
 /// Its type (base `LINE`) decides its own fields. A line with an item has a state of the
 /// item's type (ADR 0044). With a bookable item in a `SOFT` or `HARD` state it holds a `HOLD`
 /// occupancy for `[startsAt, endsAt)` of the state's kind, plus a `SETUP` buffer right before
-/// and a `TEARDOWN` buffer right after when its effective minutes are above zero (ADR 0059: setup
-/// is the larger of the inherited `setupMinutes` and the setup's changeover time). All have
+/// and a `TEARDOWN` buffer right after when its effective minutes are above zero (ADR 0059, 0103:
+/// line, else layout, else item, else type). All have
 /// `lineId` set and follow the row. A database trigger writes them (ADR 0053,
-/// `packages/db/sql/sync_line_occupancy.sql`) on insert and on every change of item, setup,
+/// `packages/db/sql/sync_line_occupancy.sql`) on insert and on every change of item, layout, setup,
 /// buffer minutes, time, state, order or status; application code never does. An untimed line
 /// (no `startsAt`/`endsAt`, e.g. a fee) never holds and is not drawn on the calendar (ADR 0052).
 /// The price columns are overrides: null = inherit (price list, then item; VAT: item, then venue).
@@ -21,9 +21,12 @@ model Line {
   endsAt             DateTime?
   /// The bookable item (`BOOKABLE`) the line is held in, if any.
   itemId             String?
-  /// How the item is set up; one of the item's setups. Requires `itemId`.
+  /// No longer written (ADR 0103): kept for lines saved before `layoutId`; dropped next release.
   setupId            String?
-  /// Buffers before and after, in minutes (ADR 0059, owned); null = the item's, else its type's.
+  /// The layout of the item the line books (ADR 0103); one of the item's layouts. Requires `itemId`.
+  layoutId           String?
+  /// Buffers before and after, in minutes (ADR 0059, 0103, owned); null = the layout's, else the
+  /// item's, else its type's.
   setupMinutes       Int?
   teardownMinutes    Int?
   /// How many; null = the order's headcount (guaranteed if set, else estimated). On an option line
@@ -67,6 +70,7 @@ model Line {
   entityType         EntityType         @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   item               Item?              @relation(fields: [itemId, organizationId], references: [id, organizationId])
   setup              Setup?             @relation(fields: [setupId, organizationId], references: [id, organizationId])
+  layout             SetupLayout?       @relation(fields: [layoutId, organizationId], references: [id, organizationId])
   state              ItemState?         @relation(fields: [stateId, organizationId], references: [id, organizationId])
   requirements       Requirement[]
   occupancies        Occupancy[]

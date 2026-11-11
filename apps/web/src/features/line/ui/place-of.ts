@@ -9,11 +9,16 @@ export type PlaceOfInput = {
   hidden?: string | undefined;
 };
 
-/** "Room · Setup", or "–" without an item. */
-export const placeOf = ({ line: { itemId, setupId }, data, hidden }: PlaceOfInput) =>
+/** "Room · Layout", or "–" without an item. */
+export const placeOf = ({ line: { itemId, layoutId }, data, hidden }: PlaceOfInput) =>
   [
     nameOf({ options: data.items, id: itemId, hidden }),
-    setupId ? nameOf({ options: data.setups, id: setupId }) : null,
+    layoutId
+      ? nameOf({
+          options: data.items.find((item) => item.id === itemId)?.layouts ?? [],
+          id: layoutId,
+        })
+      : null,
   ]
     .filter(Boolean)
     .join(" · ");

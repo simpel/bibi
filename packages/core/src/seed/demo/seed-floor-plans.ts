@@ -4,11 +4,11 @@ import {
   importFloorElementKinds,
   listFloorElementKinds,
 } from "../../features/floor-plan/kind-operations";
-import { createSetupLayout, saveSetupLayout } from "../../features/floor-plan/layout-operations";
+import { createLayout, saveLayout } from "../../features/floor-plan/layout-operations";
 import { saveFloorPlan } from "../../features/floor-plan/plan-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import type { DemoConfig, DemoFloorPiece } from "./config-types";
+import type { DemoConfig, DemoFloorPiece, DemoLayout } from "./config-types";
 import type { DemoRefs } from "./demo-refs";
 import type { DemoCatalog } from "./seed-items";
 
@@ -32,6 +32,7 @@ type SeedElement = {
   label: string | null;
   seatsTop: number | null;
   seatsBottom: number | null;
+  emergencyExit: boolean;
 };
 
 function toElements({ pieces, kinds }: PiecesInput): Result<SeedElement[]> {
@@ -47,21 +48,75 @@ function toElements({ pieces, kinds }: PiecesInput): Result<SeedElement[]> {
       label: piece.label ?? null,
       seatsTop: piece.seatsTop ?? null,
       seatsBottom: piece.seatsBottom ?? null,
+      emergencyExit: piece.emergencyExit ?? false,
     });
   }
   return ok({ value: elements });
 }
 
+type Created = Map<string, { id: string; version: number }>;
+
+const keyOf = ({ itemId, name }: { itemId: string; name: string }) => `${itemId} ${name}`;
+
+/** ADR 0103: every room's layouts with their typed capacity and the name's setup minutes. */
+async function seedItemLayouts({
+  context,
+  config,
+  catalog,
+}: Omit<SeedFloorPlansInput, "refs">): Promise<Result<Created>> {
+  const created: Created = new Map();
+  for (const item of config.items) {
+    const itemId = catalog.items.get(item.name);
+    if (!itemId) continue;
+    for (const [name, capacity] of Object.entries(item.layouts ?? {})) {
+      const input = { itemId, name, capacity, setupMinutes: config.layoutMinutes[name] ?? null };
+      const layout = await execute({ operation: createLayout, input, context });
+      if (!layout.ok) return layout;
+      created.set(keyOf({ itemId, name }), layout.value);
+    }
+  }
+  return ok({ value: created });
+}
+
+type DrawInput = {
+  context: ExecuteContext;
+  itemId: string;
+  layout: DemoLayout;
+  kinds: ReadonlyMap<string, string>;
+  created: Created;
+  minutes: Readonly<Record<string, number>>;
+};
+
+/** Draws a demo layout into the room's layout of that name, created when it is new. */
+async function drawLayout({ context, itemId, layout, kinds, created, minutes }: DrawInput) {
+  const elements = toElements({ pieces: layout.pieces, kinds });
+  if (!elements.ok) return elements;
+  const existing = created.get(keyOf({ itemId, name: layout.name }));
+  const target = existing
+    ? ok({ value: existing })
+    : await execute({
+        operation: createLayout,
+        input: { itemId, name: layout.name, setupMinutes: minutes[layout.name] ?? null },
+        context,
+      });
+  if (!target.ok) return target;
+  const capacity = layout.useSeats ? { capacity: null } : {};
+  const { id, version } = target.value;
+  const input = { id, expectedVersion: version, ...capacity, elements: elements.value };
+  return execute({ operation: saveLayout, input, context });
+}
+
 /**
- * ADR 0099, 0102: the starter furniture library and the org's drawn rooms, through
- * `floorPlan.save`, `setupLayout.create` and `setupLayout.save` as SYSTEM.
+ * ADR 0099, 0102, 0103: every room's layouts, the starter furniture library and the drawn rooms,
+ * through `layout.create`, `floorPlan.save` and `layout.save` as SYSTEM.
  */
 export async function seedDemoFloorPlans({
   context,
   config,
-  refs,
   catalog,
 }: SeedFloorPlansInput): Promise<Result<true>> {
+  const created = await seedItemLayouts({ context, config, catalog });
+  if (!created.ok) return created;
   if (!config.floorPlans?.length) return ok({ value: true });
   const template = { template: "conference-banquet" as const };
   const imported = await execute({ operation: importFloorElementKinds, input: template, context });
@@ -86,31 +141,21 @@ export async function seedDemoFloorPlans({
       [0, depthCm],
     ];
     const input = {
-      itemId,
-      expectedVersion: 0,
-      widthCm,
-      depthCm,
-      outline,
-      minAisleCm: null,
-      elements: fixed.value,
+      ...{ itemId, expectedVersion: 0, widthCm, depthCm, outline },
+      ...{ minAisleCm: null, elements: fixed.value },
     };
     const saved = await execute({ operation: saveFloorPlan, input, context });
     if (!saved.ok) return saved;
     for (const layout of plan.layouts) {
-      const setupId = refs.setups.get(layout.setup);
-      if (!setupId) return missing({ what: `setup ${layout.setup}` });
-      const elements = toElements({ pieces: layout.pieces, kinds });
-      if (!elements.ok) return elements;
-      const created = await execute({
-        operation: createSetupLayout,
-        input: { itemId, setupId, name: layout.name },
+      const minutes = config.layoutMinutes;
+      const drawn = await drawLayout({
         context,
+        itemId,
+        layout,
+        kinds,
+        created: created.value,
+        minutes,
       });
-      if (!created.ok) return created;
-      const capacity = layout.useSeats ? { capacity: null } : {};
-      const { id, version } = created.value;
-      const input = { id, expectedVersion: version, ...capacity, elements: elements.value };
-      const drawn = await execute({ operation: saveSetupLayout, input, context });
       if (!drawn.ok) return drawn;
     }
   }

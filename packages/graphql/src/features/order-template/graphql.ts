@@ -17,7 +17,7 @@ export const OrderTemplateRef = objectFromSchema<OrderTemplateDto>({
   omit: ["organizationId"],
   description:
     "Order template – a predefined order: order type, start status, default field values and " +
-    "lines (item, setup, offset and duration from the order start, quantity).",
+    "lines (item, layout, offset and duration from the order start, quantity).",
 });
 const OrderTemplatePageRef = pageType({ name: "OrderTemplatePage", item: OrderTemplateRef });
 

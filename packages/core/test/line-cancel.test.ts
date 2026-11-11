@@ -7,10 +7,10 @@ import { statusByName } from "./order-status-helpers";
 
 describe("cancelling an order releases its lines' occupancy (ADR 0022)", () => {
   it("frees the item and the changeover for another order, keeping the line", async () => {
-    const { context, order, type, room, setup } = await programSetup();
+    const { context, order, type, room, layout } = await programSetup();
     const base = { context, orderId: order.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({
-      result: await createTestLine({ ...base, from: 10, to: 12, setupId: setup.id }),
+      result: await createTestLine({ ...base, from: 10, to: 12, layoutId: layout.id }),
     });
     const other = await createTestOrder({
       context,

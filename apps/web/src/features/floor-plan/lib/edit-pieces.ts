@@ -147,3 +147,12 @@ export const resetPiece = ({ element }: { element: DraftElement }): DraftElement
 
 export const isOverridden = ({ element }: { element: DraftElement }) =>
   Object.keys(NO_OVERRIDES).some((key) => element[key as keyof typeof NO_OVERRIDES] !== null);
+
+/** An opening marked, or no longer marked, as an emergency exit. */
+export const setEmergencyExit = ({
+  element,
+  emergencyExit,
+}: {
+  element: DraftElement;
+  emergencyExit: boolean;
+}): DraftElement => ({ ...element, emergencyExit });

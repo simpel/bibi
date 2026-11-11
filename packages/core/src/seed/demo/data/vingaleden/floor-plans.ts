@@ -12,7 +12,6 @@ export const vingaledenFloorPlans: readonly DemoFloorPlan[] = [
     layouts: [
       {
         name: "Seated",
-        setup: "Seated",
         useSeats: true,
         pieces: [200, 500, 800].flatMap((x, column) =>
           [160, 460].map((y, row) => ({ kind: round, x, y, label: String(row * 3 + column + 1) })),

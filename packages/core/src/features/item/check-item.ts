@@ -6,7 +6,6 @@ import type { CheckedFields } from "../field-definition/split-links";
 import { checkCustomisationGroups } from "./item-customisation-groups";
 import { checkParts } from "./item-parts";
 import { checkCapabilityData, checkVenue } from "./item-rules";
-import { checkSetups } from "./item-setups";
 import type { ItemUpdateInput } from "./schema";
 
 export type CheckItemInput = {
@@ -23,7 +22,7 @@ export type CheckItemInput = {
 
 /**
  * Everything `item.create` and `item.update` check before writing: capability data matches the
- * type, the venue, setups and parts exist (parts without cycles or excess depth), customisation
+ * type, the venue and parts exist (parts without cycles or excess depth), customisation
  * groups offer other items (ADR 0059), and field values pass the type's field schema.
  * Returns the validated field values (undefined when untouched).
  */
@@ -39,10 +38,6 @@ export async function checkItem({
   if (!capability.ok) return capability;
   const venue = await checkVenue({ context, venueId: data.venueId });
   if (!venue.ok) return venue;
-  if (data.setups) {
-    const setups = await checkSetups({ context, setups: data.setups });
-    if (!setups.ok) return setups;
-  }
   if (data.parts) {
     const parts = await checkParts({
       context,

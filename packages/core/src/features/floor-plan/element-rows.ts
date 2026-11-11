@@ -4,7 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 import type { PlacedElement } from "./footprint";
 import type { FloorElementDto, FloorElementInput } from "./schema";
-import { effectiveElement } from "./seats";
+import { effectiveElement, isOpening } from "./seats";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -16,9 +16,11 @@ export function toElementDto({ row }: { row: ElementRow }): FloorElementDto {
   const effective = effectiveElement({ element: row, kind: row.kind });
   const { id, kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label } = row;
   const { seats, seatsTop, seatsRight, seatsBottom, seatsLeft, swingDeg } = row;
+  // Only a door or window can be an exit.
+  const emergencyExit = row.emergencyExit && isOpening(effective);
   return {
     ...{ id, kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label },
-    ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft, swingDeg },
+    ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft, swingDeg, emergencyExit },
     shape: effective.shape,
     fixed: effective.fixed,
     keepClearCm: effective.keepClearCm,
@@ -46,14 +48,15 @@ export const toPlaced = ({ element }: { element: FloorElementDto }): PlacedEleme
   fixed: element.fixed,
   keepClearCm: element.keepClearCm,
   swingDeg: element.effectiveSwingDeg,
+  emergencyExit: element.emergencyExit,
 });
 
 /** A stored element as save input: its position and own overrides (for copying a layout). */
 export const toInput = ({ element }: { element: FloorElementDto }): FloorElementInput => {
   const { kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label, swingDeg } = element;
-  const { seats, seatsTop, seatsRight, seatsBottom, seatsLeft } = element;
+  const { seats, seatsTop, seatsRight, seatsBottom, seatsLeft, emergencyExit } = element;
   return {
-    ...{ kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label, swingDeg },
+    ...{ kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label, swingDeg, emergencyExit },
     ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft },
   };
 };
@@ -130,6 +133,7 @@ export async function replaceElements({ context, parent, elements }: ReplaceElem
       seatsBottom: element.seatsBottom ?? null,
       seatsLeft: element.seatsLeft ?? null,
       swingDeg: element.swingDeg ?? null,
+      emergencyExit: element.emergencyExit ?? false,
       label: element.label || null,
     })),
   });

@@ -79,7 +79,7 @@ export type DemoFieldValues = Readonly<
 
 /**
  * A demo item. Field values are given by field name; choice values by value or option name.
- * `setups` maps setup name → capacity, `parts` and `customisations` list earlier items by name. Prices are in kronor excl. VAT.
+ * `layouts` maps layout name → typed capacity (ADR 0103), `parts` and `customisations` list earlier items by name. Prices are in kronor excl. VAT.
  */
 export type DemoItem = {
   type: string;
@@ -89,7 +89,9 @@ export type DemoItem = {
   priceUnit?: (typeof PRICE_UNITS)[number];
   /** VAT in percent; left out = the venue's default (25 %). */
   vatRatePercent?: number;
-  setups?: Readonly<Record<string, number>>;
+  layouts?: Readonly<Record<string, number>>;
+  /** SETUPS: the room's people limit; left out = its largest layout's capacity (ADR 0103). */
+  maxPeople?: number;
   parts?: readonly DemoPart[];
   customisations?: readonly DemoCustomisationGroup[];
   /** BOOKABLE: default booking length in minutes. */
@@ -111,12 +113,14 @@ export type DemoFloorPiece = {
   /** Own chairs per side of a rectangular piece; left out = the kind's. */
   seatsTop?: number;
   seatsBottom?: number;
+  /** A door or window that is an emergency exit (ADR 0103). */
+  emergencyExit?: boolean;
 };
 
-/** One named layout of a setup (ADR 0102); `useSeats` clears the typed capacity so seats count. */
+/** A drawn layout (ADR 0102, 0103), by name: the item's layout of that name, or a new one.
+ * `useSeats` clears the typed capacity so the seats count. */
 export type DemoLayout = {
   name: string;
-  setup: string;
   pieces: readonly DemoFloorPiece[];
   useSeats?: boolean;
 };
@@ -136,7 +140,8 @@ export type DemoFloorPlan = {
 export type DemoConfig = {
   listTemplates: readonly VocabularyTemplateKey[];
   lists: readonly { name: string; values: readonly string[] }[];
-  setups: readonly { name: string; changeoverMinutes: number }[];
+  /** Layout name → its setup minutes in every room (ADR 0103, formerly the setup's changeover). */
+  layoutMinutes: Readonly<Record<string, number>>;
   types: readonly DemoType[];
   /** `timeZone` is the venue's own zone; left out = the organization's (ADR 0064). */
   venue: {

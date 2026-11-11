@@ -47,8 +47,8 @@ describe("cross-organization isolation: order statuses", () => {
   });
 });
 
-describe("cross-organization isolation: run sheets, setups and fields", () => {
-  it("hides run sheet definitions, setups and field definitions from another organization", async () => {
+describe("cross-organization isolation: run sheets and fields", () => {
+  it("hides run sheet definitions and field definitions from another organization", async () => {
     const context = testContext();
     const a = await connect({ context });
     const b = await connect({ context: testContext() });
@@ -63,7 +63,6 @@ describe("cross-organization isolation: run sheets, setups and fields", () => {
       name: "fieldDefinition_create",
       args: { entityTypeId: type.data.id, name: "Style", kind: "TEXT" },
     });
-    const setup = await call({ client: a, name: "setup_create", args: { name: "Secret theatre" } });
     const runSheet = await call({
       client: a,
       name: "runSheetDefinition_create",
@@ -72,7 +71,6 @@ describe("cross-organization isolation: run sheets, setups and fields", () => {
     expect(runSheet.isError, JSON.stringify(runSheet.data)).toBe(false);
     const cases = [
       ["runSheetDefinition", runSheet.data.id, { name: "Hacked" }],
-      ["setup", setup.data.id, { name: "Hacked" }],
       ["fieldDefinition", field.data.id, { name: "Hacked" }],
     ] as const;
     for (const [entity, id, patch] of cases) {
@@ -89,11 +87,10 @@ describe("cross-organization isolation: run sheets, setups and fields", () => {
     const graph = await call({
       client: b,
       name: "graphql_query",
-      args: { query: "query { runSheetDefinitions { items { id } } setups { items { id } } }" },
+      args: { query: "query { runSheetDefinitions { items { id } } }" },
     });
     expect(graph.data.data).toEqual({
       runSheetDefinitions: { items: [] },
-      setups: { items: [] },
     });
     const own = await call({
       client: a,

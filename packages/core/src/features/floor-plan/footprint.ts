@@ -9,6 +9,8 @@ export type PlacedElement = EffectiveElement & {
   xCm: number;
   yCm: number;
   rotationDeg: number;
+  /** A door or window marked as an emergency exit (ADR 0103). */
+  emergencyExit?: boolean;
 };
 
 export type ToWorldInput = { element: PlacedElement; x: number; y: number };
@@ -66,6 +68,27 @@ export function keepClearZone({ element }: { element: PlacedElement }): FloorPoi
     [half, d / 2],
     [half, d / 2 + keepClearCm],
     [-half, d / 2 + keepClearCm],
+  ].map(([x, y]) => toWorld({ element, x: x ?? 0, y: y ?? 0 }));
+}
+
+/** How deep an emergency exit's no-block zone reaches into the room at least (ADR 0103). */
+export const EXIT_ZONE_MIN_DEPTH_CM = 150;
+
+/**
+ * The no-block zone in front of an emergency exit (its local bottom side, into the room): as wide
+ * as the opening plus 20 cm on each side, at least 150 cm deep and never shallower than the
+ * door's swing. Null for anything that is not an exit.
+ */
+export function exitZone({ element }: { element: PlacedElement }): FloorPoint[] | null {
+  if (!element.emergencyExit) return null;
+  const { widthCm: w, depthCm: d } = element;
+  const depth = Math.max(EXIT_ZONE_MIN_DEPTH_CM, element.swingDeg > 0 ? w : 0);
+  const half = w / 2 + 20;
+  return [
+    [-half, d / 2],
+    [half, d / 2],
+    [half, d / 2 + depth],
+    [-half, d / 2 + depth],
   ].map(([x, y]) => toWorld({ element, x: x ?? 0, y: y ?? 0 }));
 }
 
