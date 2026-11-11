@@ -18,6 +18,9 @@ export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
   "select-organization",
   "onboarding",
   "api",
+  // Served by the web app outside the locale (ADR 0104).
+  "mcp",
+  "health",
   "_next",
   "_vercel",
   "sv",

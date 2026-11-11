@@ -2,7 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { getEnv } from "@bibi/config";
 import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
-import { getAuth, mcpResourceUrl } from "../src/index";
+import { getAuth, linkMcpResource, mcpResourceUrl } from "../src/index";
 import { OAUTH_SCOPES } from "../src/plugins/mcp";
 
 const REDIRECT_URI = "http://localhost:3330/oauth/callback";
@@ -33,12 +33,7 @@ export async function registerClient({ clientId = `client_${createId()}` }: Regi
       updatedAt: now,
     },
   });
-  const resourceId = mcpResourceUrl();
-  await db.oauthClientResource.upsert({
-    where: { clientId_resourceId: { clientId, resourceId } },
-    update: {},
-    create: { id: createId(), clientId, resourceId, createdAt: now },
-  });
+  await linkMcpResource({ db, clientId });
   return clientId;
 }
 

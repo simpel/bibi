@@ -6,7 +6,7 @@ const envSchema = z
   .object({
     DATABASE_URL: z.string().url(),
     /**
-     * Connections in this process's `pg` pool (ADR 0097). The sum over web, MCP and worker, plus
+     * Connections in this process's `pg` pool (ADR 0097). The sum over web and worker, plus
      * the notification `LISTEN` connection, stays below Postgres `max_connections`.
      */
     DATABASE_POOL_MAX: z.coerce.number().int().min(1).max(100).default(10),
@@ -81,11 +81,13 @@ const envSchema = z
     PUBLIC_URL: z.string().url().optional(),
     /** Address shown on the public `/support` page. Unset: the page points to the assistant and admins only. */
     SUPPORT_EMAIL: z.string().email().optional(),
-    MCP_URL: z.string().url().default("http://localhost:3331"),
+    /**
+     * Public base URL of MCP and its OAuth resource (`${MCP_URL}/mcp`), served by the web app
+     * (ADR 0104). In production its own host (`https://mcp.<domain>`); unset = `WEB_URL`.
+     */
+    MCP_URL: z.string().url().optional(),
     /** Storybook of `@bibi/ui` (`pnpm --filter @bibi/ui dev`), shown in the dev banner. */
     STORYBOOK_URL: z.string().url().default("http://localhost:3332"),
-    /** Listen port of `apps/mcp` (Streamable HTTP). */
-    PORT: z.coerce.number().int().min(1).max(65535).default(3331),
     /** API key used by the stdio MCP server (`apps/mcp`), resolved once at startup. */
     BIBI_API_KEY: z.string().min(1).optional(),
     /** OAuth client id of the web app (first-party); only it may act as `ai` actor. */
@@ -145,7 +147,7 @@ const envSchema = z
     }
   });
 
-export type Env = z.infer<typeof envSchema>;
+export type Env = z.output<typeof envSchema> & { MCP_URL: string };
 
 let cached: Env | undefined;
 
@@ -157,7 +159,8 @@ type ParseEnvInput = { source: Record<string, string | undefined> };
  */
 export function parseEnv({ source }: ParseEnvInput): Env {
   const present = Object.entries(source).filter(([, value]) => value !== "");
-  return envSchema.parse(Object.fromEntries(present));
+  const env = envSchema.parse(Object.fromEntries(present));
+  return { ...env, MCP_URL: env.MCP_URL ?? env.WEB_URL };
 }
 
 /** The only place in the codebase allowed to read `process.env`. */

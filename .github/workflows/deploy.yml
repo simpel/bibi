@@ -39,7 +39,7 @@ jobs:
         if: steps.cfg.outputs.configured == 'true'
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-          for app in web mcp worker migrate backup; do
+          for app in web worker migrate backup; do
             docker manifest inspect "ghcr.io/${GITHUB_REPOSITORY}-${app}:${SHA}" > /dev/null
           done
       - name: Open SSH tunnel to Coolify (its port is not public, ADR 0013)
@@ -68,7 +68,7 @@ jobs:
           fi
       - name: Set image tag and trigger rollout in Coolify
         if: steps.cfg.outputs.configured == 'true'
-        # One Coolify Docker Compose resource runs docker-compose.prod.yml (migrate, web, mcp, worker),
+        # One Coolify Docker Compose resource runs docker-compose.prod.yml (migrate, web, worker, backup); web also serves MCP (ADR 0104),
         # so setting IMAGE_TAG and redeploying rolls out every service on the same SHA.
         id: trigger
         run: |

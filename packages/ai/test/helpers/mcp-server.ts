@@ -1,8 +1,8 @@
 import type { AddressInfo } from "node:net";
 import { resolveExecuteContext } from "@bibi/auth";
-// The real apps/mcp HTTP host, imported by path: a package dependency would make a cycle
-// (apps/mcp depends on @bibi/ai for its embedder).
-import { createHttpServer } from "../../../../apps/mcp/src/http/create-http-server";
+// The real apps/mcp HTTP handler on a test host, imported by path: a package dependency would make
+// a cycle (apps/mcp depends on @bibi/ai for its embedder).
+import { createHttpServer } from "../../../../apps/mcp/test/http-host";
 import { createEmbed } from "../../src/embeddings/create-embed";
 
 export type RunningMcp = { url: string; close: () => Promise<void> };
@@ -13,7 +13,6 @@ export async function startMcpServer(): Promise<RunningMcp> {
     resolveContext: resolveExecuteContext,
     embed: createEmbed(),
     baseUrl: "http://localhost:3331",
-    authorizationServer: "http://localhost:3330/api/auth",
     allowedOrigins: [],
   });
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));

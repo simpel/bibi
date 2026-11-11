@@ -3,11 +3,12 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/http/create-mcp-handler.ts"
+  },
   "scripts": {
-    "dev": "tsx watch --env-file-if-exists=../../.env src/http.ts",
     "dev:stdio": "tsx --env-file-if-exists=../../.env src/stdio.ts",
     "build": "tsup",
-    "start": "node --env-file-if-exists=../../.env dist/http.js",
     "start:stdio": "node --env-file-if-exists=../../.env dist/stdio.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"

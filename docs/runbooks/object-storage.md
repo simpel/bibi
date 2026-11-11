@@ -39,7 +39,7 @@ In Coolify under the application resource environment variables, set:
 | `S3_ACCESS_KEY` | Generated S3 Access Key | `<access-key>` |
 | `S3_SECRET_KEY` | Generated S3 Secret Key | `<secret-key>` |
 
-Deploy the changes. The `web` and `mcp` containers inherit these variables via `x-app-env`.
+Deploy the changes. The `web` and `worker` containers inherit these variables via `x-app-env`.
 
 ---
 

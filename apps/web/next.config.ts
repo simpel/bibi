@@ -32,6 +32,7 @@ const config: NextConfig = {
     "@bibi/i18n",
     "@bibi/logger",
     "@bibi/mail",
+    "@bibi/mcp",
     "@bibi/ui",
   ],
   serverExternalPackages: ["pg", "nodemailer", "pino", "pino-pretty"],

@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "turbo run dev",
-    "dev:kill": "lsof -ti tcp:3330,3331,3332 -sTCP:LISTEN | xargs kill 2>/dev/null || true; rm -rf apps/web/.next",
+    "dev:kill": "lsof -ti tcp:3330,3332 -sTCP:LISTEN | xargs kill 2>/dev/null || true; rm -rf apps/web/.next",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "build": "turbo run build",

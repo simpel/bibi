@@ -4,8 +4,8 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { createId } from "@paralleldrive/cuid2";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { createHttpServer } from "../src/http/create-http-server";
 import { fakeEmbed } from "./fake-embed";
+import { createHttpServer } from "./http-host";
 
 type ResolveInput = { headers: Headers };
 
@@ -33,7 +33,6 @@ const server = createHttpServer({
   resolveContext,
   embed: fakeEmbed,
   baseUrl: "http://localhost:3331",
-  authorizationServer: "http://localhost:3330/api/auth",
   allowedOrigins: ["http://localhost:3330"],
 });
 let url = "";
@@ -72,14 +71,6 @@ describe("HTTP transport", () => {
     });
     expect(response.status).toBe(403);
     expect(response.headers.get("www-authenticate")).toBeNull();
-  });
-
-  it("serves RFC 9728 protected-resource metadata without credentials", async () => {
-    const response = await fetch(`${url}/.well-known/oauth-protected-resource`);
-    expect(await response.json()).toMatchObject({
-      resource: "http://localhost:3331/mcp",
-      authorization_servers: ["http://localhost:3330/api/auth"],
-    });
   });
 
   it("lists and calls tools through the SDK client with a valid resolver", async () => {

@@ -33,11 +33,11 @@ The server layer for the assistant (ADR 0007, 0008). Framework-independent: Web 
 
 ## Embeddings
 - `createEmbed()` = core `EmbedFn` via `embedMany` + AI Gateway with the model chosen in `/admin/ai-models` (`search.embedding`, no default: unchosen → `UNAVAILABLE`), batches of 96, `dimensions: 1536`, Zod check of the response (wrong number of dimensions → a clear `INTERNAL` error). Without `AI_GATEWAY_API_KEY`: a deterministic placeholder (warns once) if `NODE_ENV !== "production"`, otherwise an error. `isPlaceholderEmbed({ embed })`.
-- Wired in `apps/mcp/src/embed.ts`. Changing model: `pnpm --filter @bibi/ai reindex [--org <id>]` (`reindexAll`) re-embeds rows with a different `model` from stored text and indexes entities whose row is missing or out of date (content hash), e.g. after `search.index_failed` (ADR 0030).
+- Wired in `apps/web/src/server/embed.ts` (MCP is served by the web app, ADR 0104; `apps/mcp/src/embed.ts` for stdio). Changing model: `pnpm --filter @bibi/ai reindex [--org <id>]` (`reindexAll`) re-embeds rows with a different `model` from stored text and indexes entities whose row is missing or out of date (content hash), e.g. after `search.index_failed` (ADR 0030).
 
 ## Models
 - No models in env (a superadmin chooses them in `/admin/ai-models`). New AI feature: an entry in `AI_FEATURES` (core), `resolveAiModel({ feature })` where it runs, texts in `admin.aiModels.features`. Chat (`assistant.chat`) and embeddings (`search.embedding`) use what a superadmin chose (`resolveAiModel`, ADR 0015). Unchosen model → `UNAVAILABLE` (503) and `ai.modelNotConfigured` at error level. Errors in the stream (e.g. an unknown model at the gateway) are logged as `ai.streamFailed`.
 - `createChatHandler({ model })` and `createEmbed({ model })` are test/E2E seams only.
 
 ## Tests
-Vitest against a real Postgres, mocked model (`MockLanguageModelV4`, `MockEmbeddingModelV4`), no network calls. apps/mcp is started in-process via a path import (`test/helpers/mcp-server.ts`): a package dependency would create a cycle (`apps/mcp` depends on `@bibi/ai/embed`).
+Vitest against a real Postgres, mocked model (`MockLanguageModelV4`, `MockEmbeddingModelV4`), no network calls. apps/mcp's handler is started in-process on a test host via a path import (`test/helpers/mcp-server.ts`): a package dependency would create a cycle (`apps/mcp` depends on `@bibi/ai/embed`).

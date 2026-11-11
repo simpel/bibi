@@ -53,11 +53,10 @@ Creates `lindholmen-demo` and `vingaleden-demo`. Users are `firstname.lastname@<
 
 ```bash
 (cd apps/web && nohup pnpm dev > web.log 2>&1 &)      # :3330
-(cd apps/mcp && nohup pnpm dev > mcp.log 2>&1 &)      # :3331
 (cd apps/worker && nohup pnpm dev > worker.log 2>&1 &)
 ```
 
-Check: `curl -sL -o /dev/null -w '%{http_code} %{url_effective}\n' localhost:3330` gives `200 .../sv/login`. `curl localhost:3331/mcp` gives 405 (expected for GET). The first request compiles slowly.
+Check: `curl -sL -o /dev/null -w '%{http_code} %{url_effective}\n' localhost:3330` gives `200 .../sv/login`. `curl localhost:3330/mcp` gives 405 (expected for GET; MCP is served by web). The first request compiles slowly.
 
 ## 6. Sign in and screenshot
 

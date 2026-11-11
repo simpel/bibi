@@ -7,7 +7,7 @@ import { clearTokenCache } from "../src/first-party/token-cache";
 import {
   getAuth,
   getFirstPartyAccessToken,
-  mcpResourceUrl,
+  linkMcpResource,
   resolveExecuteContext,
 } from "../src/index";
 import { codeOf, createOrg, signUp } from "./helpers";
@@ -44,12 +44,7 @@ async function registerWebClient(): Promise<void> {
       updatedAt: now,
     },
   });
-  const resourceId = mcpResourceUrl();
-  await db.oauthClientResource.upsert({
-    where: { clientId_resourceId: { clientId, resourceId } },
-    update: {},
-    create: { id: createId(), clientId, resourceId, createdAt: now },
-  });
+  await linkMcpResource({ db, clientId });
 }
 
 const bearer = ({ token, extra = {} }: { token: string; extra?: Record<string, string> }) =>

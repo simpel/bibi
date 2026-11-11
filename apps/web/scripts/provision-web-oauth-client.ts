@@ -1,12 +1,12 @@
 import { resolve } from "node:path";
-import { mcpResourceUrl } from "@bibi/auth";
+import { linkMcpResource, mcpResourceUrl, OAUTH_SCOPES } from "@bibi/auth";
 import { getEnv } from "@bibi/config";
 import { type Db, getDb } from "@bibi/db";
 import nextEnv from "@next/env";
 import { createId } from "@paralleldrive/cuid2";
 
 /**
- * Provisions the first-party OAuth client the web assistant uses against apps/mcp (ADR 0005/0007):
+ * Provisions the first-party OAuth client the web assistant uses against MCP (ADR 0005/0007, 0104):
  * public client, PKCE, consent skipped, linked to the MCP resource. Idempotent: re-running
  * updates the redirect URI. Prints `WEB_OAUTH_CLIENT_ID=...` for `.env`.
  *
@@ -17,8 +17,6 @@ import { createId } from "@paralleldrive/cuid2";
  * the authorize response, so the redirect is never followed and no callback route exists.
  */
 const CLIENT_NAME = "Bibi Web Assistant";
-// Keep in sync with OAUTH_SCOPES in packages/auth/src/plugins/mcp.ts.
-const SCOPES = ["openid", "profile", "email", "offline_access"];
 
 type ProvisionInput = { db: Db; redirectUri: string };
 
@@ -44,7 +42,7 @@ const upsertClient = async ({ db, redirectUri }: ProvisionInput): Promise<string
     tokenEndpointAuthMethod: "none",
     grantTypes: ["authorization_code", "refresh_token"],
     responseTypes: ["code"],
-    scopes: SCOPES,
+    scopes: OAUTH_SCOPES,
     skipConsent: true,
     requirePKCE: true,
     updatedAt: now,
@@ -55,29 +53,6 @@ const upsertClient = async ({ db, redirectUri }: ProvisionInput): Promise<string
     create: { id: createId(), clientId, createdAt: now, ...data },
   });
   return clientId;
-};
-
-const linkMcpResource = async ({ db, clientId }: { db: Db; clientId: string }): Promise<void> => {
-  const resourceId = mcpResourceUrl();
-  const now = new Date();
-  const existing = await db.oauthResource.findFirst({ where: { identifier: resourceId } });
-  if (!existing) {
-    await db.oauthResource.create({
-      data: {
-        id: createId(),
-        identifier: resourceId,
-        name: "Bibi MCP",
-        allowedScopes: SCOPES,
-        createdAt: now,
-        updatedAt: now,
-      },
-    });
-  }
-  await db.oauthClientResource.upsert({
-    where: { clientId_resourceId: { clientId, resourceId } },
-    update: {},
-    create: { id: createId(), clientId, resourceId, createdAt: now },
-  });
 };
 
 async function main(): Promise<void> {

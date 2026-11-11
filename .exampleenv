@@ -38,8 +38,8 @@ MAIL_INBOUND_DOMAIN=
 # --- App URLs / ports ---
 
 WEB_URL=http://localhost:3330
-MCP_URL=http://localhost:3331
-PORT=3331
+# MCP is served by the web app (ADR 0104); unset = WEB_URL.
+MCP_URL=http://localhost:3330
 
 # --- AI (Vercel AI Gateway) ---
 

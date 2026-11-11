@@ -40,7 +40,7 @@
 - Web: Next.js (App Router), React.
 - Data: Prisma on Postgres with pgvector (Docker image `pgvector/pgvector`).
 - Auth: Better Auth with the organization plugin (multi-tenancy), API key plugin (REST, keys belong to the organization, ADR 0050) and OAuth plugin (MCP).
-- APIs: GraphQL via Pothos (Zod-derived types, no Prisma plugin), REST `/api/v1` with OpenAPI generated from operations, MCP server (`apps/mcp`).
+- APIs: GraphQL via Pothos (Zod-derived types, no Prisma plugin), REST `/api/v1` with OpenAPI generated from operations, MCP (`apps/mcp`, served by the web app at `/mcp`, ADR 0104).
 - AI: Vercel AI SDK via AI Gateway, provider-agnostic, Claude by default.
 - UI: Tailwind v4 (CSS-first tokens), cva, shadcn primitives and shadcn AI Elements (chat, message, prompt input, suggestion, confirmation, questionnaire), React Flow for the onboarding path (ADR 0045), Storybook for `packages/ui`.
 - i18n: next-intl, Swedish and English.
@@ -86,7 +86,7 @@
 
 ## Package layout
 - `apps/web`: the Next.js app (UI, server actions, `/api/chat`).
-- `apps/mcp`: MCP server, stdio and streamable HTTP.
+- `apps/mcp`: MCP server. Its streamable HTTP handler is mounted by the web app (`/mcp`, ADR 0104); alone it runs only over stdio.
 - `apps/worker`: pg-boss job scheduler and queue worker (ADR 0027). Jobs run core operations as SYSTEM.
 - `packages/core`: operations, Zod schemas, permissions and `AppError`/`Result`. The single source of truth for logic.
 - `packages/db`: Prisma schema, migrations and org-scoped client.
@@ -123,7 +123,7 @@
 - `pnpm --filter @bibi/core seed:skills`: seeds system skills.
 - `pnpm --filter @bibi/core seed:demo`: creates two demo organizations via core operations (spec: `docs/demo-seed.md`, built in slices per ADR 0025).
 - `pnpm --filter @bibi/web provision:oauth`: creates the assistant's OAuth client and prints `WEB_OAUTH_CLIENT_ID=...` (put it in `.env`, read by web and MCP).
-- `pnpm dev`: starts the web app (:3330), the MCP server (:3331) and Storybook (:3332) via Turborepo.
+- `pnpm dev`: starts the web app with MCP at `/mcp` (:3330) and Storybook (:3332) via Turborepo.
 - `pnpm wt:new <name> [--base <ref>] [--branch <branch>]`: a git worktree in `../bibi-worktrees/<name>` with its own database (`bibi_<name>`), ports (a block of ten from 3340 up) and `.env`. `pnpm wt:rm <name> [--force] [--delete-branch]` drops it, `pnpm wt:list` lists them. Scripts in `tools/worktree/` (Superset's `.superset/*.sh` just call them).
 - Tests load the root `.env` via `loadTestEnv()` (`@bibi/config/load-test-env`) in every `vitest.config.ts`, with `AI_GATEWAY_API_KEY` blanked: tests never call paid AI. `DATABASE_URL` is replaced by the test database: `TEST_DATABASE_URL` if set, else `<db>_test` (`bibi_test` in the main checkout, `bibi_<name>_test` in a worktree), so tests never write into the dev database.
 - `pnpm test:db`: creates the test database if missing and applies migrations (pgvector included). `pnpm test` runs it first (Turbo `@bibi/db#migrate:test`); run it yourself before `vitest` in a single package after a new migration.
