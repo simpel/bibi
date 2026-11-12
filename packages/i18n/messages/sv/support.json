@@ -209,6 +209,10 @@
           "cantSee": {
             "question": "Varför ser jag inte en sida eller en knapp?",
             "answer": "Troligen har du inte behörighet till den delen. Be en administratör i er organisation att ge dig behörighet under Administration → Medlemmar."
+          },
+          "findSettings": {
+            "question": "Var hittar jag inställningarna?",
+            "answer": "Klicka på Administration i sidomenyn. Startsidan visar alla inställningssidor du har tillgång till, grupperade i Organisation, Katalog, Bokningar samt Pengar och kopplingar.\nKlicka på ett kort för att öppna sidan, eller på en av delarna som står på kortet för att gå direkt dit."
           }
         }
       },

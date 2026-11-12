@@ -539,6 +539,9 @@
     "developersLink": "Developers"
   },
   "adminArea": {
+    "overview": {
+      "description": "Everything your organization sets up in Bibi. Pick a page, or jump straight to a part of it."
+    },
     "search": {
       "entries": {
         "timeZone": {
