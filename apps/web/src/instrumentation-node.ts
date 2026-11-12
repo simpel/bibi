@@ -32,7 +32,11 @@ export function registerLogging(): void {
 export function registerDevBanner(): void {
   if (!isDevEnvironment()) return;
   const { WEB_ORIGIN, MCP_ORIGIN, STORYBOOK_URL } = getEnv();
-  const services = devServices({ webUrl: WEB_ORIGIN, mcpUrl: MCP_ORIGIN, storybookUrl: STORYBOOK_URL });
+  const services = devServices({
+    webUrl: WEB_ORIGIN,
+    mcpUrl: MCP_ORIGIN,
+    storybookUrl: STORYBOOK_URL,
+  });
   process.stdout.write(formatDevBanner({ services }));
 }
 
