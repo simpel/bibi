@@ -14,11 +14,13 @@ import { ErrorState } from "@/components/states/error-state";
 import { RequestDeposit } from "@/features/deposit/ui/request-deposit";
 import { Link } from "@/lib/navigation";
 import { depositNewRoute } from "@/lib/routes";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { getNumberFormat } from "@/server/number-format";
 import { runOperation } from "@/server/run-operation";
 import { BalanceSummary } from "./balance-summary";
+import { ConnectLedgerNotice } from "./connect-ledger-notice";
 import { CreateInvoiceButton } from "./create-invoice-button";
 import { PaymentLinksProvider } from "./payment-links-context";
 import { PaymentList } from "./payment-list";
@@ -71,30 +73,35 @@ async function PaymentActions({ orderId, suggestion }: PaymentActionsProps) {
 /** What the order's customer owes and has paid, what it pays for, and new requests. */
 export async function OrderPayments({ locale, orderId, canRequest }: OrderPaymentsProps) {
   // Payment links need a connected provider that takes a payment method (ADR 0090, 0100).
-  const [t, dates, numbers, result, suggestion] = await Promise.all([
+  const [t, dates, numbers, result, suggestion, abilities] = await Promise.all([
     getTranslations("payment"),
     getDateTimeFormat(),
     getNumberFormat(),
     loadMoney({ orderId }),
     runOperation({ operation: suggestDepositAmount, input: { orderId } }),
+    getCallerAbilities(),
   ]);
   if (!result.ok && result.error.code === "FORBIDDEN") return null;
   if (!result.ok)
     return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   const { balance, deposits, invoices, payments } = result.value;
   const available = !suggestion.ok || suggestion.value.paymentLinksAvailable;
+  // Money needs a connected accounting system (ADR 0106): without one, say so instead.
+  const noLedger = suggestion.ok && !suggestion.value.ledgerConnected;
+  const canConnect = can({ abilities, permission: "integration:write" });
   return (
     <PaymentLinksProvider available={available}>
       <section data-slot="order-payments" className="grid grid-cols-1 gap-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl">{t("balance.title")}</h2>
-          {canRequest ? (
+          {canRequest && !noLedger ? (
             <PaymentActions
               orderId={orderId}
               suggestion={suggestion.ok ? suggestion.value : null}
             />
           ) : null}
         </div>
+        {canRequest && noLedger ? <ConnectLedgerNotice canConnect={canConnect} /> : null}
         <BalanceSummary balance={balance} numbers={numbers} />
         <h3 className="font-medium">{t("receivables")}</h3>
         <ReceivableList

@@ -78,6 +78,7 @@ describe("the deposit rule (ADR 0090)", () => {
       basis: "NONE",
       amountMinor: null,
       paymentLinksAvailable: true,
+      ledgerConnected: true,
     });
     const description = "Advance";
     const refused = await execute({

@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
 import { routedMethods } from "../payment/payment-preconditions";
+import { requireLedger } from "../payment/require-ledger";
 import type { PaymentSettingsDto } from "../payment-account/settings-schema";
 import { loadPaymentSettings } from "../payment-account/settings-store";
 import { checkLinesReadable } from "../quote/check-lines-readable";
@@ -52,11 +53,13 @@ export async function suggestDeposit({
   if (!order) return notFound({ entity: "Order" });
   const derived = (await deriveOrderLines({ context, orderIds: [orderId] })).get(orderId) ?? [];
   const { totalInclVatMinor } = quoteTotals({ lines: derived.map((d) => d.line) });
-  const [settings, card] = await Promise.all([
+  const [settings, card, ledger] = await Promise.all([
     loadPaymentSettings({ context }),
     routedMethods({ context }),
+    requireLedger({ context }),
   ]);
   const paymentLinksAvailable = card.ok && card.value.length > 0;
   const rule = depositFromRule({ totalMinor: totalInclVatMinor, settings });
-  return ok({ value: { totalInclVatMinor, ...rule, paymentLinksAvailable } });
+  const ledgerConnected = ledger.ok;
+  return ok({ value: { totalInclVatMinor, ...rule, paymentLinksAvailable, ledgerConnected } });
 }

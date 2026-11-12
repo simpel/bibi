@@ -532,6 +532,11 @@
       "note": "Anteckning, till exempel referens",
       "submit": "Registrera betalning",
       "done": "Betalningen har registrerats."
+    },
+    "ledger": {
+      "missing": "Koppla Fortnox eller Visma eEkonomi för att ta betalt. De gör varje faktura och förskottsfaktura, så förskott, fakturor och betallänkar kan skapas när ett av dem är kopplat.",
+      "askAdmin": "Inget bokföringssystem är kopplat, så förskott, fakturor och betallänkar kan inte skapas än. Be en administratör koppla Fortnox eller Visma eEkonomi.",
+      "connect": "Koppla bokföring"
     }
   },
   "deposit": {

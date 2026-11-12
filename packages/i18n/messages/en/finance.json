@@ -532,6 +532,11 @@
       "note": "Note, such as a reference",
       "submit": "Record payment",
       "done": "The payment has been recorded."
+    },
+    "ledger": {
+      "missing": "Connect Fortnox or Visma eEkonomi to take payments. They make every invoice and deposit invoice, so deposits, invoices and payment links can be created once one is connected.",
+      "askAdmin": "No accounting system is connected, so deposits, invoices and payment links cannot be created yet. Ask an admin to connect Fortnox or Visma eEkonomi.",
+      "connect": "Connect accounting"
     }
   },
   "deposit": {

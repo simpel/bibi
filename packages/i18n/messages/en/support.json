@@ -261,6 +261,10 @@
           "invoiceNumber": {
             "question": "Why does an invoice show no number?",
             "answer": "Fortnox or Visma eEkonomi gives every invoice, prepayment invoice and credit note its number when it is made there, and Bibi shows that number.\nUntil the accounting system has made it, the number shows as –. If it stays that way, open the order and choose **Refresh from Fortnox** (or Visma) on the invoice."
+          },
+          "needsAccounting": {
+            "question": "Why can't I create a deposit, invoice or payment link?",
+            "answer": "Bibi needs a connected accounting system to take money, since Fortnox or Visma eEkonomi makes every invoice and deposit invoice. Until one is connected, the order's Payments section says so instead of showing its buttons.\nAn admin connects one under Administration → Integrations and picks it for **Invoice** under Administration → Payments."
           }
         }
       }
