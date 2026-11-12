@@ -168,7 +168,7 @@ export function visibleAdminGroups({ permissions }: VisibleAdminInput): AdminGro
   })).filter((group) => group.pages.length > 0);
 }
 
-/** Where `/admin` opens: the first page the caller may view, or null when there is none. */
+/** The first page the caller may view, or null when there is none. */
 export function firstAdminHref({ permissions }: VisibleAdminInput): string | null {
   return visibleAdminGroups({ permissions })[0]?.pages[0]?.href ?? null;
 }

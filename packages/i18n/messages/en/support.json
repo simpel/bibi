@@ -209,6 +209,10 @@
           "cantSee": {
             "question": "Why can't I see a page or a button?",
             "answer": "You probably don't have access to that part. Ask an admin in your organization to give you access under Administration → Members."
+          },
+          "findSettings": {
+            "question": "Where do I find the settings?",
+            "answer": "Click Administration in the sidebar. The start page shows every settings page you have access to, grouped into Organization, Catalog, Orders and Money & connections.\nClick a card to open the page, or click one of the parts listed on it to jump straight there."
           }
         }
       },

@@ -1,15 +1,14 @@
 import { resolveLocale } from "@bibi/i18n";
-import { firstAdminHref } from "@/components/shell/admin-items";
-import { ErrorState } from "@/components/states/error-state";
-import { redirect } from "@/lib/navigation";
+import { setRequestLocale } from "next-intl/server";
+import { AdminOverview } from "@/components/admin/admin-overview";
+import { visibleAdminGroups } from "@/components/shell/admin-items";
 import { getCallerAbilities } from "@/server/caller-abilities";
 
-type AdminPageProps = { params: Promise<{ locale: string; org: string }> };
+type AdminPageProps = { params: Promise<{ locale: string }> };
 
-/** `/admin` has no page of its own: it opens the first page the caller may view. */
+/** `/admin` is the area's start page: every page the caller may view (the layout gates access). */
 export default async function AdminPage({ params }: AdminPageProps) {
-  const [{ locale, org }, { permissions }] = await Promise.all([params, getCallerAbilities()]);
-  const href = firstAdminHref({ permissions });
-  if (!href) return <ErrorState errorKey="forbidden" />;
-  redirect({ href, locale: resolveLocale({ value: locale }), org });
+  const [{ locale }, { permissions }] = await Promise.all([params, getCallerAbilities()]);
+  setRequestLocale(resolveLocale({ value: locale }));
+  return <AdminOverview groups={visibleAdminGroups({ permissions })} />;
 }
