@@ -42,7 +42,7 @@ Other commands:
 
 ### Environment variables
 
-Create `.env` in the repo root (there is no `.env.example` yet). The web app, the MCP server and the scripts read the same file.
+Copy `.exampleenv` to `.env` in the repo root and fill it in. The web app, the MCP server and the scripts read the same file.
 
 | Variable | Description |
 |---|---|

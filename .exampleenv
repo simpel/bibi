@@ -1,118 +1,96 @@
-# Rename to .env.example (tracked template) or copy to .env and fill in.
-
-# Read only through @bibi/config (never process.env in app code).
+# Copy to .env in the repo root and fill in. Web, worker, scripts and tests all read that one file.
+# Read only through @bibi/config (never process.env in app code). Production keys live in Coolify,
+# not here; every key the app reads must also be listed in docker-compose.prod.yml (x-app-env).
+# Use test values only: Stripe sandbox, Visma sandbox, the Swish simulator.
+# Empty `KEY=` lines are dropped when `pnpm wt:new` copies this file; a commented line is optional.
 
 # --- Database (docker compose: postgres) ---
-
 DATABASE_URL=postgresql://bibi:bibi@localhost:5432/bibi
-
-# Connections per process (web, mcp, worker each open one pool; ADR 0097). Default 10.
-
+# Connections per process (web and worker each open one pool; ADR 0097). Default 10.
 # DATABASE_POOL_MAX=10
 
-# --- Better Auth ---
-
-# Generate with: openssl rand -base64 32 (min 32 chars)
-
+# --- Auth (Better Auth) ---
+# openssl rand -base64 32
 BETTER_AUTH_SECRET=
 BETTER_AUTH_URL=http://localhost:3330
 
-# --- Mail (docker compose: mailpit; SMTP 1025, UI http://localhost:8025) ---
-
-SMTP_URL=smtp://localhost:1025
-MAIL_FROM=Bibi <no-reply@bibi.local>
-
-# Adapter (ADR 0012): smtp (default, uses SMTP_URL) or resend (production, needs RESEND_API_KEY).
-
-MAIL_PROVIDER=smtp
-RESEND_API_KEY=
-
-# Signing secret (whsec\_...) of the Resend email.received webhook.
-
-RESEND_WEBHOOK_SECRET=
-
-# Inbound subdomain for order reply addresses, e.g. in.heybibi.se (docs/runbooks/inbound-email.md).
-
-MAIL_INBOUND_DOMAIN=
-
-# --- App URLs / ports ---
-
+# --- URLs and ports ---
 WEB_URL=http://localhost:3330
 # MCP is served by the web app (ADR 0104); unset = WEB_URL.
 MCP_URL=http://localhost:3330
+# Public site on its own host (ADR 0073). Unset locally: one host serves everything.
+# PUBLIC_URL=
+# Dev server ports; `pnpm wt:new` sets them per worktree.
+# WEB_PORT=3330
+# STORYBOOK_PORT=3332
+# STORYBOOK_URL=http://localhost:3332
 
-# --- AI (Vercel AI Gateway) ---
+# --- Mail (docker compose: mailpit; SMTP 1025, inbox http://localhost:8025) ---
+SMTP_URL=smtp://localhost:1025
+MAIL_FROM=Bibi <no-reply@bibi.local>
+# smtp (default) or resend (needs RESEND_API_KEY; ADR 0012).
+MAIL_PROVIDER=smtp
+RESEND_API_KEY=
+# Signing secret (whsec_...) of the Resend inbound webhook.
+RESEND_WEBHOOK_SECRET=
+# Inbound subdomain for order reply addresses, e.g. in.heybibi.se (docs/runbooks/inbound-email.md).
+MAIL_INBOUND_DOMAIN=
+# Address shown on /support. Unset: the page points to the assistant and admins only.
+# SUPPORT_EMAIL=
 
-# Unset = deterministic placeholder embedder in dev; the chat model needs a real key.
-
-# Models are NOT configured here: a platform admin chooses them in /admin/ai-models (ADR 0015).
-
-AI_GATEWAY_API_KEY=
-
-# --- Assistant OAuth client ---
-
-# Printed by: pnpm --filter @bibi/web provision:oauth (read by web and mcp)
-
-WEB_OAUTH_CLIENT_ID=
-
-# --- Optional ---
-
-# API key for the stdio MCP server
-
-BIBI_API_KEY=
-
-# E2E only: scripted mock chat model. Ignored when NODE_ENV=production.
-
-E2E_MOCK_MODEL=false
-# E2E only: in-memory Stripe and Swish with unsigned test webhooks. Ignored when NODE_ENV=production.
-E2E_MEMORY_PROVIDERS=false
-
-# System log (ADR 0014). Level: trace|debug|info|warn|error|fatal|silent (default info, silent in tests).
-
-# Format: json|pretty (default json in production, pretty otherwise).
-
-LOG_LEVEL=
-LOG_FORMAT=
-
-# Days the SystemLog table (admin view) keeps rows. Default 30.
-
-SYSTEM_LOG_RETENTION_DAYS=
-
-# Days before personal values in AuditLog before/after are redacted by the worker (ADR 0032). Default 365.
-
-AUDIT_LOG_PSEUDONYMISE_AFTER_DAYS=
-PW_CHROMIUM_PATH=/Users/joelsanden/Library/Caches/ms-playwright/chromium-1223/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
-
-# Stripe Connect (ADR 0028): platform secret key and the platform account id. Payment operations
-
-# answer UNAVAILABLE until both are set.
-
-STRIPE_SECRET_KEY=
-STRIPE_PLATFORM_ACCOUNT_ID=
-
-# Signing secret of the webhook endpoint /api/webhooks/stripe (`stripe listen` prints one for dev).
-
-STRIPE_WEBHOOK_SECRET=
-
-# Bibi's application fee in basis points of each payment (250 = 2.5 %); empty = no fee.
-
-STRIPE_APPLICATION_FEE_BPS=
-
-# --- File storage (ADR 0063) ---
-
-# Adapter: disk or s3 (any S3-compatible service, needs the S3\_\* vars). Dev uses s3 against the
-
-# MinIO container in docker-compose.yml (`pnpm docker:up` creates the bucket); production uses
-
-# Hetzner Object Storage (docs/runbooks/object-storage.md).
-
+# --- File storage (ADR 0063; MinIO in docker compose, `pnpm docker:up` creates the bucket) ---
 STORAGE_DRIVER=s3
-
-# Disk adapter root (STORAGE_DRIVER=disk only); relative paths resolve from the repo root.
-
-STORAGE_DISK_DIR=./.storage
 S3_ENDPOINT=http://localhost:9100
 S3_REGION=us-east-1
 S3_BUCKET=bibi-files
 S3_ACCESS_KEY=bibi
 S3_SECRET_KEY=bibi-minio-dev
+# Disk adapter instead: STORAGE_DRIVER=disk and this root (relative to the repo).
+# STORAGE_DISK_DIR=./.storage
+
+# --- AI (Vercel AI Gateway) ---
+# Unset = placeholder embedder; the chat needs a real key. Models are chosen in /admin/ai-models.
+AI_GATEWAY_API_KEY=
+# Assistant OAuth client, printed by: pnpm --filter @bibi/web provision:oauth
+WEB_OAUTH_CLIENT_ID=
+# API key for the stdio MCP server (apps/mcp run on its own).
+# BIBI_API_KEY=
+
+# --- Integrations (ADR 0100). Venues connect their own accounts in Administration → Integrations;
+# these are Bibi's own app keys. A provider without its keys shows as Unavailable. ---
+# Seals integration tokens at rest (ADR 0087): openssl rand -base64 32. Unset: nothing can connect.
+INTEGRATION_SECRET_KEY=
+# Stripe Connect (ADR 0028), sandbox: sk_test_..., acct_..., and `stripe listen` prints the whsec_.
+STRIPE_SECRET_KEY=
+STRIPE_PLATFORM_ACCOUNT_ID=
+STRIPE_WEBHOOK_SECRET=
+# Bibi's fee in basis points of each payment (250 = 2.5 %). Unset: no fee.
+# STRIPE_APPLICATION_FEE_BPS=
+# Fortnox app (ADR 0087); redirect URI: <WEB_URL>/api/integrations/fortnox/callback.
+FORTNOX_CLIENT_ID=
+FORTNOX_CLIENT_SECRET=
+# Visma eEkonomi app (ADR 0100); redirect URI: <WEB_URL>/api/providers/visma/callback.
+VISMA_CLIENT_ID=
+VISMA_CLIENT_SECRET=
+VISMA_IDENTITY_URL=https://identity-sandbox.test.vismaonline.com
+VISMA_API_URL=https://eaccountingapi-sandbox.test.vismaonline.com
+# Swish: unset = the Merchant Swish Simulator. Production: https://cpc.getswish.net/swish-cpcapi.
+# SWISH_API_URL=
+
+# --- Logging (ADR 0014, 0031) ---
+# trace|debug|info|warn|error|fatal|silent (default info, silent in tests); json|pretty.
+# LOG_LEVEL=info
+# LOG_FORMAT=pretty
+# Better Stack log shipping; both or neither.
+# BETTER_STACK_HOST=
+# BETTER_STACK_SOURCE_TOKEN=
+# Days SystemLog keeps rows (default 30) and before AuditLog values are redacted (default 365).
+# SYSTEM_LOG_RETENTION_DAYS=30
+# AUDIT_LOG_PSEUDONYMISE_AFTER_DAYS=365
+
+# --- Tooling (not read by the app) ---
+# Separate test database; default <db>_test.
+# TEST_DATABASE_URL=
+# Coolify tunnel (tools/server/coolify-tunnel.sh): the server's IP and the local port.
+# COOLIFY_HOST=
+# COOLIFY_PORT=8000
