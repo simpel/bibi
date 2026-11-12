@@ -352,7 +352,7 @@
       "sections": "Avsnitt",
       "resourceKind": "Utrustning eller person",
       "group": "Grupp",
-      "pluralName": "Namn i plural",
+      "pluralName": "Pluralform",
       "pluralNamePlaceholder": "Konferensrum"
     },
     "resourceKinds": {

@@ -34,7 +34,7 @@
           },
           "pluralName": {
             "question": "Var anger jag vad en typ heter i plural?",
-            "answer": "Gå till Inställningar, öppna Typer och välj en typ. Fyll i Namn i plural, till exempel Konferensrum, och klicka på Spara.\nBibi använder det där flera artiklar visas tillsammans, som artikelöversikten på en anläggning. Lämnar du det tomt används typens eget namn."
+            "answer": "Gå till Inställningar, öppna Typer och välj en typ. Fyll i Pluralform, till exempel Konferensrum, och klicka på Spara.\nBibi använder det där flera artiklar visas tillsammans, som artikelöversikten på en anläggning. Lämnar du det tomt används typens eget namn."
           },
           "inviteColleagues": {
             "question": "Hur bjuder jag in mina kollegor?",
