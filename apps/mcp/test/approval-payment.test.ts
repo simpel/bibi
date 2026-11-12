@@ -36,7 +36,9 @@ async function setup() {
 
 /** The provider's webhook reporting the card checkout paid (ADR 0100). */
 async function settle({ context, reference }: { context: ExecuteContext; reference: string }) {
-  const connection = await context.db.providerConnection.findFirstOrThrow({});
+  const connection = await context.db.providerConnection.findFirstOrThrow({
+    where: { provider: "STRIPE" },
+  });
   const eventId = `evt_${createId()}`;
   const signal = {
     provider: connection.provider,
