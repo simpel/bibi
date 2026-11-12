@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.1](https://github.com/simpel/bibi/compare/@bibi/api-v3.0.0...@bibi/api-v3.0.1) (2026-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 4.0.0
+  * devDependencies
+    * @bibi/db bumped to 3.0.0
+
 ## [3.0.0](https://github.com/simpel/bibi/compare/@bibi/api-v2.0.0...@bibi/api-v3.0.0) (2026-11-12)
 
 

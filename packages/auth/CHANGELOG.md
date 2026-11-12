@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.4](https://github.com/simpel/bibi/compare/@bibi/auth-v0.6.3...@bibi/auth-v0.6.4) (2026-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 4.0.0
+    * @bibi/db bumped to 3.0.0
+    * @bibi/i18n bumped to 4.0.0
+    * @bibi/mail bumped to 0.5.4
+
 ## [0.6.3](https://github.com/simpel/bibi/compare/@bibi/auth-v0.6.2...@bibi/auth-v0.6.3) (2026-11-12)
 
 
