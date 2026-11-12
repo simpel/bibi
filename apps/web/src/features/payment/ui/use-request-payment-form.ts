@@ -19,7 +19,7 @@ export type RequestPaymentFormValues = {
 export type RequestPaymentFormOutput = z.infer<typeof PaymentCreateInputSchema>;
 
 /** The one receivable the payment settles (ADR 0057). */
-export type ReceivableTarget = { quoteId: string } | { depositId: string } | { invoiceId: string };
+export type ReceivableTarget = { depositId: string } | { invoiceId: string };
 
 /**
  * Core's `payment.create` schema; the amount is typed in kronor and sent in öre. Empty means the

@@ -12,18 +12,14 @@ import {
 } from "../src/index";
 import { testContext, unwrap } from "./helpers";
 import { addLine, addOnSetup } from "./line-add-on-helpers";
-import { activatePaymentAccount, paymentSetup } from "./payment-helpers";
+import { activatePaymentAccount, paymentSetup, sentDeposit } from "./payment-helpers";
 import { makeInvoiceable, moneySetup, sentTestQuote } from "./receivable-helpers";
 
 afterEach(() => {
   resetProviderAdapters();
 });
 
-type PayInput = { context: ExecuteContext } & (
-  | { quoteId: string }
-  | { invoiceId: string }
-  | { depositId: string }
-);
+type PayInput = { context: ExecuteContext } & ({ invoiceId: string } | { depositId: string });
 
 /** A CARD payment against the receivable and its public token. */
 async function tokenFor({ context, ...receivable }: PayInput) {
@@ -31,6 +27,22 @@ async function tokenFor({ context, ...receivable }: PayInput) {
   const payment = unwrap({ result: await execute({ operation: createPayment, input, context }) });
   const row = await getDb().payment.findUniqueOrThrow({ where: { id: payment.id } });
   return row.publicToken;
+}
+
+type LegacyInput = { context: ExecuteContext; orderId: string; quoteId: string };
+
+/**
+ * The token of a payment made against a quote before ADR 0106 (quotes are no longer paid
+ * directly): a deposit payment moved onto the quote, as such old rows look.
+ */
+async function legacyQuoteToken({ context, orderId, quoteId }: LegacyInput) {
+  const deposit = await sentDeposit({ context, orderId, amountMinor: 10_000 });
+  const token = await tokenFor({ context, depositId: deposit.id });
+  await getDb().payment.updateMany({
+    where: { publicToken: token },
+    data: { quoteId, depositId: null },
+  });
+  return token;
 }
 
 /** A sent quote: lunch with a coffee add-on and a snack sub-line frozen as an OPTION. */
@@ -45,13 +57,13 @@ async function quoteWithSubLines() {
     where: { quoteId: quote.id, lineId: option.id },
     data: { role: "OPTION" },
   });
-  return { context, quote };
+  return { context, quote, orderId: order.id };
 }
 
 describe("the public payment page lists what is paid for", () => {
-  it("shows the quote's frozen lines with sub-lines nested and its totals", async () => {
-    const { context, quote } = await quoteWithSubLines();
-    const token = await tokenFor({ context, quoteId: quote.id });
+  it("shows an old quote payment's frozen lines with sub-lines nested and its totals", async () => {
+    const { context, quote, orderId } = await quoteWithSubLines();
+    const token = await legacyQuoteToken({ context, orderId, quoteId: quote.id });
     const view = unwrap({ result: await getPublicPayment({ token }) });
     expect(view.lines.map(({ name, role, subLine }) => [name, role, subLine])).toEqual([
       ["Lunch", null, false],
@@ -94,8 +106,8 @@ describe("the public payment page lists what is paid for", () => {
   });
 
   it("does not read a token of another organization", async () => {
-    const { context, quote } = await quoteWithSubLines();
-    const token = await tokenFor({ context, quoteId: quote.id });
+    const { context, quote, orderId } = await quoteWithSubLines();
+    const token = await legacyQuoteToken({ context, orderId, quoteId: quote.id });
     const other = testContext();
     const result = await execute({
       operation: getPublicPaymentOperation,

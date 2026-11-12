@@ -1,6 +1,5 @@
 import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import { findProvider } from "../../providers/registry";
 import { resolveRoute } from "../../providers/resolve-route";
 import { conflict, notFound } from "../../shared/errors";
 import { fillBuyerReference } from "./buyer-reference";
@@ -9,7 +8,6 @@ import { moveInvoice } from "./move-invoice";
 import { type InvoiceDto, InvoiceIdInputSchema, InvoiceSchema } from "./schema";
 import { syncWithProvider } from "./sync-operation";
 import { invoiceFlags, loadInvoice } from "./to-invoice-dto";
-import { voidAtProvider } from "./void-at-provider";
 
 export { moveInvoice };
 
@@ -52,12 +50,14 @@ export const sendInvoice = defineOperation({
 
 type VoidCheckInput = { invoice: InvoiceDto };
 
-/** A paid or booked invoice is credited, never voided (ADR 0100). */
+/**
+ * A paid invoice, or one raised in the accounting system (which books it at once), is credited,
+ * never voided (ADR 0100, 0106).
+ */
 function checkNotBooked({ invoice }: VoidCheckInput): Result<true> {
   const credit = "credit it instead (invoice.credit)";
   if (invoice.paidMinor !== 0) return conflict({ message: `It has been paid; ${credit}` });
-  const ledger = invoice.provider ? findProvider({ key: invoice.provider })?.ledger : false;
-  if (ledger && invoice.providerReference) {
+  if (invoice.provider && invoice.providerReference) {
     return conflict({ message: `It is booked in ${invoice.provider}; ${credit}` });
   }
   return ok({ value: true });
@@ -67,12 +67,10 @@ export const voidInvoice = defineOperation({
   name: "invoice.void",
   kind: "command",
   description:
-    "Void a DRAFT or SENT invoice: it is no longer owed and the order can be invoiced again. An " +
-    "invoice raised at a provider is voided there too: if the provider refuses, the invoice is " +
-    "SENT again (the error says why); if it does not answer, the invoice stays VOID with " +
-    "voidPending true and Bibi retries every 15 minutes. Refused (CONFLICT) while a payment " +
-    "against it is PENDING, once anything is paid against it, or when it is booked in an " +
-    "accounting system: credit it with invoice.credit instead.",
+    "Void a DRAFT or SENT invoice: it is no longer owed and the order can be invoiced again. " +
+    "Refused (CONFLICT) while a payment against it is PENDING, once anything is paid against " +
+    "it, or once it is raised in the accounting system, which books it at once: credit it with " +
+    "invoice.credit instead (ADR 0106).",
   input: InvoiceIdInputSchema,
   output: InvoiceSchema,
   permission: "payment:write",
@@ -83,5 +81,4 @@ export const voidInvoice = defineOperation({
     if (!allowed.ok) return allowed;
     return moveInvoice({ context, id, to: "VOID" });
   },
-  external: ({ output, context }) => voidAtProvider({ context, invoice: output }),
 });

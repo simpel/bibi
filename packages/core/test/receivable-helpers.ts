@@ -11,15 +11,15 @@ import { addTestLines, createTestQuote, quoteSetup } from "./quote-helpers";
 
 /**
  * A quote setup (20 lunches at 250 kr + 12 % VAT = 5 600 kr) whose payment account is active,
- * with an in-memory payment provider.
+ * with an in-memory payment provider and, unless `ledger` is false, a memory accounting system.
  */
-export async function moneySetup() {
+export async function moneySetup({ ledger = true }: { ledger?: boolean } = {}) {
   const setup = await quoteSetup();
   const { context, order, lineType, lunch } = setup;
   const lines = [{ itemId: lunch.id }];
   await addTestLines({ context, orderId: order.id, lineTypeId: lineType.id, lines });
-  const { provider } = await activatePaymentAccount({ context });
-  return { ...setup, provider };
+  const account = await activatePaymentAccount({ context, ledger });
+  return { ...setup, provider: account.provider, ledger: account.ledger };
 }
 
 export type QuoteFlowInput = { context: ExecuteContext; orderId: string; accept?: boolean };

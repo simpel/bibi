@@ -48,19 +48,28 @@ const testCredentials: CredentialsConnectPort = {
     ok({ value: { externalAccountId: String(credentials.swishNumber) } }),
 };
 
+/** Credentials checked by nothing: the account is the account id (the memory ledger). */
+const testLedgerCredentials: CredentialsConnectPort = {
+  kind: "CREDENTIALS",
+  credentialsSchema: z.object({ account: z.string().min(1) }),
+  verify: async ({ credentials }) =>
+    ok({ value: { externalAccountId: String(credentials.account) } }),
+};
+
 /**
- * Replaces Stripe and Swish with in-memory providers for browser tests (`E2E_MEMORY_PROVIDERS`,
- * never in production; the web app checks that before it calls this). Stripe connects at once
- * (hosted onboarding reports ACTIVE), takes cards and raises invoices; its checkout link carries
- * the pay page in `back`, as Stripe's own checkout links back to it. Swish connects with any
- * number and shows a QR code. Both accept unsigned test deliveries on their webhook.
+ * Replaces Stripe, Swish and Visma with in-memory providers for browser tests
+ * (`E2E_MEMORY_PROVIDERS`, never in production; the web app checks that before it calls this).
+ * Stripe connects at once (hosted onboarding reports ACTIVE) and takes cards; its checkout link
+ * carries the pay page in `back`, as Stripe's own checkout links back to it. Swish connects with
+ * any number and shows a QR code. Visma, the accounting system money needs (ADR 0106), connects
+ * with any account, raises invoices and books payments taken in Bibi. Stripe and Swish accept
+ * unsigned test deliveries on their webhook.
  */
 export function installE2eProviders(): void {
   const stripe = createMemoryProvider({
     key: "STRIPE",
     connectKind: "HOSTED_ONBOARDING",
     methods: ["CARD"],
-    invoicing: true,
     signals: { webhook: testWebhook({ key: "STRIPE" }) },
   });
   stripe.accountStatus = "ACTIVE";
@@ -84,4 +93,13 @@ export function installE2eProviders(): void {
   setProcessProviderAdapter({ key: "STRIPE", adapter: stripe.adapter });
   const swishAdapter = { ...swish.adapter, connect: testCredentials };
   setProcessProviderAdapter({ key: "SWISH", adapter: swishAdapter });
+  const ledger = createMemoryProvider({
+    key: "VISMA",
+    connectKind: "HOSTED_ONBOARDING",
+    invoicing: true,
+    ledger: true,
+    registerPayment: true,
+  });
+  const ledgerAdapter = { ...ledger.adapter, connect: testLedgerCredentials };
+  setProcessProviderAdapter({ key: "VISMA", adapter: ledgerAdapter });
 }

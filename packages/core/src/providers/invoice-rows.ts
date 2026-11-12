@@ -1,5 +1,4 @@
-import { scaleParts } from "../accounting/sie4/sale";
-import { vatParts } from "../features/finance/account-map";
+import { scaleParts, vatParts } from "../features/finance/vat-parts";
 import type { InvoiceSnapshot, InvoiceSnapshotDeduction, InvoiceSnapshotLine } from "./types";
 
 /** One invoice row as accounting providers take it (ADR 0090): amounts in units, excl. VAT. */

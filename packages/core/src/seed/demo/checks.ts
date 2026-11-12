@@ -32,7 +32,7 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPip
  * moves the grid drives (`checkDemoGrid`), every line's effective price and inherited quantity
  * (`checkDemoPrices`, ADR 0052), the expanded bundles' part lines and per-rate VAT
  * (`checkDemoBundles`, ADR 0059), every line's setup and teardown buffers (`checkDemoBuffers`, ADR
- * 0059), the allocated units' holds (`checkDemoAllocations`, ADR 0059), the derived balances (`checkDemoPayments`, ADR 0057), the invoices and SIE export (`checkDemoFinance`, ADR 0077), the organization's and venue's zones (`checkDemoTimeZones`, ADR 0064), the claimed email domain (`checkDemoDomainJoin`, ADR 0078), the duplicate suggestions (`checkDemoSimilarCustomers`, ADR 0081), every projection against its owned data
+ * 0059), the allocated units' holds (`checkDemoAllocations`, ADR 0059), the derived balances (`checkDemoPayments`, ADR 0057), the invoices and revenue accounts (`checkDemoFinance`, ADR 0077), the organization's and venue's zones (`checkDemoTimeZones`, ADR 0064), the claimed email domain (`checkDemoDomainJoin`, ADR 0078), the duplicate suggestions (`checkDemoSimilarCustomers`, ADR 0081), every projection against its owned data
  * (`reconcileProjections`, ADR 0051), and every write was audited as SYSTEM. Returns failure messages.
  */
 export async function checkDemoOrg({

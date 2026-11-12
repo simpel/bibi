@@ -11,6 +11,7 @@ import {
   updatePaymentSettings,
 } from "../src/index";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
+import { connectLedger } from "./ledger-helpers";
 import { createTestOrder, orderSetup } from "./order-helpers";
 import { paymentSetup, sentDeposit } from "./payment-helpers";
 
@@ -91,6 +92,7 @@ describe("payment", () => {
       entityTypeId: type.id,
       customerId: customer.id,
     });
+    await connectLedger({ context });
     const { id: depositId } = await sentDeposit({ context, orderId: order.id });
     const result = await create({ context, depositId });
     expect(errorCode({ result })).toBe("CONFLICT");

@@ -60,8 +60,8 @@ export const recordManualPayment = defineOperation({
   kind: "command",
   description:
     "Record money the customer paid outside Bibi's providers, e.g. a bank transfer or cash " +
-    "(ADR 0100): a SUCCEEDED MANUAL payment against exactly one receivable (quoteId, depositId " +
-    "or invoiceId), at most its open balance. Once nothing is left open, the open card or Swish " +
+    "(ADR 0100): a SUCCEEDED MANUAL payment against exactly one receivable (depositId or " +
+    "invoiceId), at most its open balance. Once nothing is left open, the open card or Swish " +
     "attempts on it are closed at their providers. An invoice raised in an accounting system that " +
     "can book payments gets the payment booked there too; one that cannot refuses it with " +
     "CONFLICT: record it in that system instead.",

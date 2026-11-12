@@ -21,7 +21,7 @@ export type PipelineAndSalesInput = {
 
 /**
  * The pipeline, then customers and orders with their money and run sheets (ADR 0092), the deposit rule (ADR 0090), the
- * inbox (ADR 0085), then the accounts and the first SIE export (ADR 0077); without a pipeline (ADR 0044) only customers.
+ * inbox (ADR 0085), then the revenue accounts (ADR 0077); without a pipeline (ADR 0044) only customers.
  */
 export async function seedPipelineAndSales({ skipPipeline, ...input }: PipelineAndSalesInput) {
   if (!skipPipeline) {

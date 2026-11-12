@@ -23,7 +23,7 @@ afterEach(() => {
 
 describe("invoices in Fortnox (ADR 0090)", () => {
   it("raises the sent invoice with a deposit row and mirrors its payments", async () => {
-    const { context, order } = await moneySetup();
+    const { context, order } = await moneySetup({ ledger: false });
     const orderId = order.id;
     await connectFortnox({ context });
     const fake = installFakeInvoicing();
@@ -82,19 +82,19 @@ describe("invoices in Fortnox (ADR 0090)", () => {
   });
 
   it("refuses Fortnox as provider while Fortnox is not connected", async () => {
-    const { context, order } = await moneySetup();
+    const { context, order } = await moneySetup({ ledger: false });
     await execute({
       operation: updatePaymentSettings,
       input: { invoiceProvider: "FORTNOX" },
       context,
     });
     await makeInvoiceable({ context, statusId: order.statusId });
-    const draft = unwrap({
-      result: await execute({ operation: createInvoice, input: { orderId: order.id }, context }),
+    // Money needs the connected accounting system before any invoice is made (ADR 0106).
+    const refused = await execute({
+      operation: createInvoice,
+      input: { orderId: order.id },
+      context,
     });
-    const refused = await execute({ operation: sendInvoice, input: { id: draft.id }, context });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
-    const notThere = await execute({ operation: syncInvoice, input: { id: draft.id }, context });
-    expect(errorCode({ result: notThere })).toBe("CONFLICT");
   });
 });

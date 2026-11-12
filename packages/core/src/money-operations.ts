@@ -6,14 +6,9 @@ import {
 } from "./features/credit-note/operations";
 import { depositOperations } from "./features/deposit/operations";
 import {
-  createAccountingExport,
-  downloadAccountingExport,
   financeOperations,
   financeOverview,
-  getAccountingExport,
   getAccountingSettings,
-  listAccountingExports,
-  previewAccountingExport,
   updateAccountingSettings,
 } from "./features/finance/operations";
 import { applyIntegrationSignal } from "./features/integration/apply-signal-operation";
@@ -36,7 +31,6 @@ import {
   syncInvoice,
   voidInvoice,
 } from "./features/invoice/operations";
-import { retryVoids } from "./features/invoice/retry-voids-operation";
 import { paymentOperations } from "./features/payment/operations";
 import { retryRefunds } from "./features/payment/retry-refunds-operation";
 import {
@@ -67,25 +61,19 @@ export {
   applyInvoiceSignal,
   completeIntegrationConnect,
   connectIntegration,
-  createAccountingExport,
   createInvoice,
   creditInvoice,
   disconnectIntegration,
-  downloadAccountingExport,
   financeOverview,
-  getAccountingExport,
   getAccountingSettings,
   getCreditNote,
   getInvoice,
   invoiceOperations,
-  listAccountingExports,
   listCreditNotes,
   listIntegrations,
   listInvoices,
-  previewAccountingExport,
   refreshExpiringIntegrations,
   retryRefunds,
-  retryVoids,
   sendInvoice,
   startPaymentAttempt,
   startPublicAttempt,

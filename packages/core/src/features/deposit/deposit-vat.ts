@@ -1,5 +1,5 @@
-import { scaleParts } from "../../accounting/sie4/sale";
 import type { OperationContext } from "../../operations/types";
+import { scaleParts } from "../finance/vat-parts";
 import { deriveOrderLines } from "../quote/derive-lines";
 import type { VatRow } from "../quote/order-line-schema";
 

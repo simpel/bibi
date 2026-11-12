@@ -8,20 +8,30 @@ import {
   syncPaymentAccount,
 } from "../src/index";
 import { unwrap } from "./helpers";
+import { connectLedger } from "./ledger-helpers";
 import { createTestOrder, orderSetup } from "./order-helpers";
 import { installFakeGateway } from "./payment-account-helpers";
 
-export type ActivateInput = { context: ExecuteContext };
+export type ActivateInput = {
+  context: ExecuteContext;
+  /** Connect the memory accounting system (default); false when the test connects its own. */
+  ledger?: boolean;
+};
 
-/** Onboards the organization through the real operations with the operator faked as ACTIVE. */
-export async function activatePaymentAccount({ context }: ActivateInput) {
+/**
+ * Onboards the organization through the real operations with the operator faked as ACTIVE, and
+ * connects a memory accounting system for invoices (ADR 0106).
+ */
+export async function activatePaymentAccount({ context, ledger = true }: ActivateInput) {
   const gateway = installFakeGateway();
   gateway.accountStatus = "ACTIVE";
   unwrap({ result: await execute({ operation: startPaymentOnboarding, input: {}, context }) });
   const account = unwrap({
     result: await execute({ operation: syncPaymentAccount, input: {}, context }),
   });
-  return { ...account, provider: gateway };
+  // Money needs an accounting system that issues the documents (ADR 0106).
+  const books = ledger ? await connectLedger({ context }) : null;
+  return { ...account, provider: gateway, ledger: books };
 }
 
 export type SentDepositInput = { context: ExecuteContext; orderId: string; amountMinor?: number };

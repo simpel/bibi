@@ -84,10 +84,12 @@ async function invoiceFailures({ context, org }: CheckDemoProvidersInput) {
       }
     }
   }
+  // Every invoice is raised in the accounting system (ADR 0106); `provider` in the data files
+  // only picks which one when the organization has two.
   const ledger = wanted.filter((w) => w.provider);
   const raised = invoices.filter((i) => i.provider === "FORTNOX" || i.provider === "VISMA");
-  if (raised.length !== ledger.length) {
-    failures.push(`${org.slug}: ${raised.length} ledger invoices, expected ${ledger.length}`);
+  if (raised.length !== wanted.length) {
+    failures.push(`${org.slug}: ${raised.length} ledger invoices, expected ${wanted.length}`);
   }
   for (const invoice of raised) {
     if (!invoice.providerReference)
@@ -101,15 +103,9 @@ async function invoiceFailures({ context, org }: CheckDemoProvidersInput) {
     if (wrong.length > 0)
       failures.push(`${org.slug}: invoice ${invoice.number} paid outside its ledger`);
     const cards = invoice.payments.filter((p) => p.method === "CARD").length;
-    if (cards !== ledger.filter((w) => w.cardKr && w.provider === invoice.provider).length)
+    const wantedCards = ledger.filter((w) => w.cardKr && w.provider === invoice.provider).length;
+    if (ledger.length > 0 && cards !== wantedCards)
       failures.push(`${org.slug}: invoice ${invoice.number} has ${cards} registered card payments`);
-    const exported = await context.db.accountingExportEntry.count({
-      where: {
-        OR: [{ invoiceId: invoice.id }, { paymentId: { in: invoice.payments.map((p) => p.id) } }],
-      },
-    });
-    if (exported > 0)
-      failures.push(`${org.slug}: ledger invoice ${invoice.number} is in the SIE export`);
   }
   return failures;
 }

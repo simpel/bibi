@@ -125,11 +125,7 @@ erDiagram
   Invoice ||--o{ CreditNote : "is credited with"
   ProviderConnection ||--o{ Payment : "took"
   ProviderConnection ||--o{ Invoice : "raised"
-  CreditNote |o--o{ AccountingExportEntry : "is exported as"
-  AccountingExport ||--o{ AccountingExportEntry : "contains"
-  Invoice |o--o{ AccountingExportEntry : "is exported as"
-  Payment |o--o{ AccountingExportEntry : "is exported as"
-  PaymentRefund |o--o{ AccountingExportEntry : "is exported as"
+  ProviderConnection ||--o{ Deposit : "raised"
   EntityType |o--o| RevenueAccount : "maps revenue via"
   Item |o--o| RevenueAccount : "maps revenue via"
   Order }o--|| OrderStatus : "is in"
@@ -1036,20 +1032,20 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - amount and currency (`amountMinor` in minor units, ISO 4217)
 - provider (`Provider`, null for `MANUAL`) and the connection it was requested on
 - application fee (`applicationFeeMinor`, null = none), shown on each payment on the order page
-- the receivable it settles: exactly one of `quoteId`, `depositId`, `invoiceId` (check constraint)
+- the receivable it settles: exactly one of `quoteId`, `depositId`, `invoiceId` (check constraint); new payments take a deposit or an invoice, a quote is no longer paid directly ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md))
 - public token (`publicToken`, unique, 256 random bits): addresses the customer's payment page `/pay/<token>`; never in the DTO
 - paid at; note (staff's text on a manual payment)
 
 **Relations**
 - `N:1` Order is paid with this
-- `N:1` Quote is paid with this (a SENT or ACCEPTED one)
+- `N:1` Quote was paid with this (before ADR 0106)
 - `N:1` Deposit is paid with this
 - `N:1` Invoice is settled with this
 - `N:0..1` ProviderConnection took this
 - `1:N` is tried with → PaymentAttempt
 - `1:N` is refunded with → PaymentRefund
 
-> Operations: `payment.list` (per order, newest first), `payment.get` and `payment.balance` (`payment:read`); `payment.create({ quoteId | depositId | invoiceId, method?, amountMinor?, description? })`, `payment.cancel` and `payment.recordManual({ quoteId | depositId | invoiceId, amountMinor, paidAt, note? })` (`payment:write`); `payment.refund({ id, amountMinor?, reason? })` (`payment:refund`, manager and admin), on every surface. `create` takes exactly one receivable and prepares the first routed method at its provider after the commit (ADR 0058); the others start from the pay page (`payment.startAttempt`, SYSTEM only, scoped to the token). An attempt that fails or expires ends only the attempt; `cancel` ends a `PENDING` payment. Behaviour: `docs/specs/payments.md`.
+> Operations: `payment.list` (per order, newest first), `payment.get` and `payment.balance` (`payment:read`); `payment.create({ depositId | invoiceId, method?, amountMinor?, description? })`, `payment.cancel` and `payment.recordManual({ depositId | invoiceId, amountMinor, paidAt, note? })` (`payment:write`); `payment.refund({ id, amountMinor?, reason? })` (`payment:refund`, manager and admin), on every surface. `create` needs a connected accounting system (`CONFLICT` without one, ADR 0106), takes exactly one receivable and prepares the first routed method at its provider after the commit (ADR 0058); the others start from the pay page (`payment.startAttempt`, SYSTEM only, scoped to the token). An attempt that fails or expires ends only the attempt; `cancel` ends a `PENDING` payment. Behaviour: `docs/specs/payments.md`.
 
 > **Balance (ADR 0057):** `payment.balance({ orderId })` (`payment:read`) derives what the order owes in `packages/core/src/features/payment/settlement.ts` and `order-balance.ts`, the one module that computes money: paid per receivable = SUCCEEDED and REFUNDED payments minus their succeeded refunds; progress `OPEN`, `PARTLY_PAID`, `PAID` or `OVERPAID`; billed = the SENT invoices once invoiced (less credit notes), else the ACCEPTED quote; balance = billed minus everything paid on the order. Nothing is stored. GraphQL `orderBalance`, REST `GET /orders/{orderId}/balance`.
 
@@ -1150,7 +1146,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### AccountingSettings (`AccountingSettings`)
 
-*MVP* · The organization's accounts for the SIE export ([ADR 0077](decisions/0077-financials-and-sie-export.md)). One row per organization, created by the first save; until then the BAS defaults apply.
+*MVP* · The organization's accounts ([ADR 0077](decisions/0077-financials-and-sie-export.md)): the revenue accounts invoice rows post to in Fortnox or Visma. The receivable, clearing, fee, rounding and VAT accounts were for the SIE export, which is gone ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)); they go with its tables. One row per organization, created by the first save; until then the BAS defaults apply.
 
 > **Ownership:** owned every account number and `fiscalYearStartMonth`; nothing derived.
 
@@ -1181,38 +1177,9 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > Built as its own table; ADR 0077 first named columns on item type and item (see its addendum). Replaced as a set by `accountingSettings.update`.
 
-### AccountingExport (`AccountingExport`)
+### AccountingExport, AccountingExportEntry (removed)
 
-*MVP* · One SIE 4I file handed to the accounting program ([ADR 0077](decisions/0077-financials-and-sie-export.md)). A snapshot: the bytes are kept as written (codepage 437), so a re-download is identical. Never deleted.
-
-> **Ownership:** owned `number`, `fileName`, `fileBytes`, `voucherCount`, `periodStart` and `periodEnd`. The events it contains are its `AccountingExportEntry` rows.
-
-**Attributes**
-- number (per organization, highest + 1) and file name (`bibi-sie-NNNN.si`)
-- voucher count
-- reported range (`periodStart`, `periodEnd` exclusive; null on files made before ranges)
-- created at and by
-
-**Relations**
-- `1:N` contains → AccountingExportEntry
-
-> Operations: `accountingExport.preview` and `list|get` (`finance:read`); `accountingExport.create` and `download` (`finance:write`). `preview` and `create` take a range `{ from, to }`. `preview` shows what an export of the range would contain, how many earlier exports overlap it and its blockers (`ORG_NUMBER_MISSING`, `VAT_ACCOUNT_MISSING`, `NOTHING_TO_EXPORT`). `create` writes one voucher per invoice sent or voided, payment, fee and refund dated in the range, also those exported before, so a range can be exported again, with the file. `download` returns the file as base64. Web: Export SIE on the Financials page opens a dialog with the range, with the export history.
-
-### AccountingExportEntry (`AccountingExportEntry`)
-
-*MVP* · One accounting event that an export contained, append-only. Each event is exported once: unique per kind and source, also when two exports run at once.
-
-> **Ownership:** owned `kind` and the one source it points to. Nothing else.
-
-**Attributes**
-- kind: `INVOICE_SENT`, `INVOICE_VOID` (the reversal), `PAYMENT`, `FEE` or `REFUND`
-- source: exactly one invoice, payment or refund, as the kind says (check constraint)
-
-**Relations**
-- `N:1` AccountingExport contains this
-- `N:0..1` refers to → Invoice, CreditNote, Payment or PaymentRefund
-
-> Written by `accountingExport.create` with its export. No operation of its own.
+*Removed* ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)) · The SIE 4I export and its entries. The accounting system keeps the books, so Bibi writes no vouchers and no file. The tables stay, unread, until a later release drops them (expand/contract, ADR 0013); no operation reads or writes them.
 
 ### Financials overview (`finance.overview`)
 

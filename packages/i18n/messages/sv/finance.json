@@ -111,7 +111,7 @@
     "openFinancials": "Öppna ekonomi",
     "accounting": {
       "title": "Bokföring",
-      "description": "Konton som SIE-exporten bokför mot. Alla konton har ett standardvärde enligt BAS.",
+      "description": "Konton som fakturaraderna i Fortnox eller Visma bokförs mot. Alla konton har ett standardvärde enligt BAS.",
       "saved": "Bokföringsinställningarna har sparats.",
       "default": "Standard {account}",
       "usesDefault": "Tomt använder standardkontot för försäljning ({account})",
@@ -147,46 +147,6 @@
         "fiscalYearStartMonth": "Räkenskapsårets första månad"
       },
       "monthName": "{month, select, 1 {januari} 2 {februari} 3 {mars} 4 {april} 5 {maj} 6 {juni} 7 {juli} 8 {augusti} 9 {september} 10 {oktober} 11 {november} 12 {december} other {}}"
-    },
-    "export": {
-      "button": "Exportera SIE",
-      "title": "Exportera SIE",
-      "description": "Välj perioden som ska rapporteras. Filen innehåller alla verifikationer med datum i perioden, även sådana som redan exporterats, så en period kan exporteras flera gånger.",
-      "confirm": "Exportera och ladda ner",
-      "created": "Exporten har skapats.",
-      "downloading": "Förbereder filen…",
-      "downloaded": "Filen är klar.",
-      "download": "Ladda ner",
-      "history": "Exporthistorik",
-      "historyEmpty": "Inga exporter ännu.",
-      "exportNumber": "Export {number}",
-      "openToDownload": "Öppna ekonomi för att ladda ner",
-      "fileSize": "{bytes} byte",
-      "vouchers": "{count, plural, one {# verifikation} other {# verifikationer}}",
-      "fixOrganization": "Öppna organisationsinställningar",
-      "fixAccounting": "Öppna bokföringsinställningar",
-      "kinds": {
-        "INVOICE_SENT": "Fakturor skickade",
-        "INVOICE_VOID": "Fakturor makulerade",
-        "CREDIT_NOTE": "Kreditfakturor",
-        "PAYMENT": "Betalningar",
-        "FEE": "Avgifter",
-        "REFUND": "Återbetalningar"
-      },
-      "blockers": {
-        "ORG_NUMBER_MISSING": "Organisationsnummer saknas",
-        "VAT_ACCOUNT_MISSING": "Momskonto saknas för {detail}",
-        "NOTHING_TO_EXPORT": "Inget har datum i den här perioden"
-      },
-      "columns": {
-        "number": "Nummer",
-        "date": "Skapad",
-        "vouchers": "Verifikationer",
-        "fileName": "Filnamn",
-        "range": "Period"
-      },
-      "earlierExports": "{count, plural, one {# tidigare export överlappar perioden. Importeras båda dupliceras verifikationerna.} other {# tidigare exporter överlappar perioden. Importeras de tillsammans dupliceras verifikationerna.}}",
-      "previewFailed": "Perioden kunde inte läsas."
     },
     "kpi": {
       "invoiced": "Fakturerat",
@@ -255,7 +215,7 @@
     },
     "now": {
       "title": "Just nu",
-      "description": "Öppna och förfallna belopp och SIE-exporterna. Gäller oavsett perioden ovan."
+      "description": "Öppna och förfallna belopp. Gäller oavsett perioden ovan."
     },
     "outcomes": {
       "title": "Vunna och förlorade bokningar",

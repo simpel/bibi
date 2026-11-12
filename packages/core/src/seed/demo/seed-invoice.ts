@@ -84,11 +84,13 @@ async function payInLedger({ context, invoiceId, provider }: LedgerInput) {
   if (!fake) return missing({ what: `fake of ${provider}` });
   const read = await execute({ operation: getInvoice, input: { id: invoiceId }, context });
   if (!read.ok) return read;
-  fake.payments.push({
+  const document = read.value.providerReference ?? "";
+  const payment = {
     reference: `${provider.toLowerCase()}-pay-${read.value.number}`,
     amountMinor: read.value.amountDueMinor,
     paidAt: nowOf({ context }),
-  });
+  };
+  fake.paidOn.set(document, [...(fake.paidOn.get(document) ?? []), payment]);
   const synced = await execute({ operation: syncInvoice, input: { id: invoiceId }, context });
   return synced.ok ? ok({ value: true as const }) : synced;
 }

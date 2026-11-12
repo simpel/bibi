@@ -38,7 +38,6 @@ import "../features/calendar/graphql";
 import "../features/settings/graphql";
 import "../features/dashboard/graphql";
 import "../features/finance/graphql";
-import "../features/finance/export-graphql";
 import "../features/quote/graphql";
 import "../features/assignment/graphql";
 import "../features/inbound-email/graphql";

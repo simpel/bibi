@@ -102,7 +102,7 @@ export type DemoOrg = {
   orders: readonly DemoOrder[];
   /** How the generated orders fill the calendar (#488), for the density check. */
   density?: DemoDensity;
-  /** ADR 0077: the org number, revenue accounts per item type (by name) and one SIE export. */
+  /** ADR 0077: the org number and revenue accounts per item type (by name). */
   finance?: DemoFinance;
   /** ADR 0090: the deposit rule and invoice provider; none for an organization without one. */
   paymentSettings?: DemoPaymentSettings;

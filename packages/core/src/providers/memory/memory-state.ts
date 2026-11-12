@@ -22,6 +22,8 @@ export type MemoryState = {
   raised: InvoiceSnapshot[];
   /** What `listPayments` answers for any invoice. */
   payments: ProviderPayment[];
+  /** Payments booked on one document, by its provider reference (`registerPayment` adds here). */
+  paidOn: Map<string, ProviderPayment[]>;
   /** Port calls after the attempt (`refund:<ref>:<amount>`, `void:<ref>`, `credit:<ref>:<amount>`, `cancel:<ref>`, `register:<ref>:<amount>`). */
   portCalls: string[];
   /**
@@ -47,6 +49,7 @@ export const newMemoryState = (): MemoryState => ({
   charges: [],
   raised: [],
   payments: [],
+  paidOn: new Map(),
   portCalls: [],
   refunds: new Map(),
   refundOutcome: "SUCCEEDED",

@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import { DEFAULT_INVOICE_DAYS } from "../payment/request-charge";
+import { requireLedger } from "../payment/require-ledger";
 import { checkLinesReadable } from "../quote/check-lines-readable";
 import { checkPricedLines } from "../quote/check-priced-lines";
 import { deriveOrderLines } from "../quote/derive-lines";
@@ -53,7 +54,8 @@ export const createInvoice = defineOperation({
     "line needs a quantity and VAT. Paid deposits on the order are deducted (deductions, " +
     "amountDueMinor), as paid now (ADR 0090). The order's buyer's reference (its own, " +
     "else its contact's) is frozen on it; a customer that requires one is a VALIDATION error " +
-    "at buyerReference without it (ADR 0105). Send it (invoice.send) before requesting payment " +
+    "at buyerReference without it (ADR 0105). Needs a connected accounting system (Fortnox, " +
+    "Visma) that takes invoices (CONFLICT without one, ADR 0106). Send it (invoice.send) before requesting payment " +
     "(payment.create with invoiceId).",
   input: InvoiceCreateInputSchema,
   output: InvoiceSchema,
@@ -64,6 +66,8 @@ export const createInvoice = defineOperation({
     if (!readable.ok) return readable;
     const dueDate = await checkInvoiceable({ context, input });
     if (!dueDate.ok) return dueDate;
+    const ledger = await requireLedger({ context });
+    if (!ledger.ok) return ledger;
     const buyerReference = await invoiceBuyerReference({ context, orderId: input.orderId });
     if (!buyerReference.ok) return buyerReference;
     const derived =

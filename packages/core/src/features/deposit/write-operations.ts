@@ -6,6 +6,7 @@ import { nowOf } from "../../time/now";
 import { moveReceivable } from "../payment/move-receivable";
 import { loadChargeableOrder } from "../payment/payment-preconditions";
 import { receivableMoveDates } from "../payment/receivable-lifecycle";
+import { requireLedger } from "../payment/require-ledger";
 import type { ReceivableStatus } from "../payment/settlement-schema";
 import { creditDepositAtProvider, issueDepositInProvider, ledgerRouteOf } from "./deposit-provider";
 import { depositVatRows } from "./deposit-vat";
@@ -24,13 +25,16 @@ export const createDeposit = defineOperation({
     "Create a DRAFT deposit request on an order: a fixed amount with its own description, e.g. " +
     "an advance at confirmation. Send it (deposit.send) before requesting a payment against it " +
     "(payment.create with depositId). The order must not be in a closing status unless it is " +
-    "invoiceable.",
+    "invoiceable. Needs a connected accounting system (Fortnox, Visma) that takes invoices " +
+    "(CONFLICT without one, ADR 0106).",
   input: DepositCreateInputSchema,
   output: DepositSchema,
   permission: "payment:write",
   handler: async ({ input, context }) => {
     const order = await loadChargeableOrder({ context, orderId: input.orderId });
     if (!order.ok) return order;
+    const ledger = await requireLedger({ context });
+    if (!ledger.ok) return ledger;
     const { orderId, amountMinor } = input;
     const row = await context.db.deposit.create({
       data: {

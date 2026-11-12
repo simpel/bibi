@@ -3,6 +3,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { type Route, resolveRoute } from "../../providers/resolve-route";
 import { conflict, notFound } from "../../shared/errors";
+import { requireLedger } from "./require-ledger";
 import type { PaymentCreateMethod } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
@@ -68,7 +69,10 @@ async function chosenRoute({ context, method }: Db & { method: PaymentCreateMeth
   });
 }
 
-/** The chargeable order, its customer and the route the payment is first prepared on. */
+/**
+ * The chargeable order, its customer and the route the payment is first prepared on. Needs a
+ * connected accounting system (ADR 0106).
+ */
 export async function loadChargeTarget({
   context,
   orderId,
@@ -78,6 +82,8 @@ export async function loadChargeTarget({
   if (!order.ok) return order;
   const chosen = await chosenRoute({ context, method });
   if (!chosen.ok) return chosen;
+  const ledger = await requireLedger({ context });
+  if (!ledger.ok) return ledger;
   const customer = await context.db.customer.findFirst({
     where: { id: order.value.customerId, status: { in: ["ACTIVE", "ARCHIVED"] } },
   });

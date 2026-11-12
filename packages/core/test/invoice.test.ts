@@ -85,11 +85,13 @@ describe("an invoice is a frozen receivable of the order's lines (ADR 0052, 0057
     expect(errorCode({ result: blocked })).toBe("CONFLICT");
   });
 
-  it("keeps its send date when it is voided later (ADR 0077)", async () => {
-    const { context, order } = await invoiceable();
+  it("keeps its send date when it is voided before the accounting system raised it (ADR 0077)", async () => {
+    const { context, order, ledger } = await invoiceable();
     const invoice = unwrap({ result: await create({ context, orderId: order.id }) });
     const input = { id: invoice.id };
-    unwrap({ result: await execute({ operation: sendInvoice, input, context }) });
+    // Raising it failed, so nothing is booked yet and it can still be voided (ADR 0106).
+    ledger?.failing.add("issue");
+    await execute({ operation: sendInvoice, input, context });
     const sent = await context.db.invoice.findUniqueOrThrow({ where: input });
     unwrap({ result: await execute({ operation: voidInvoice, input, context }) });
     const voided = await context.db.invoice.findUniqueOrThrow({ where: input });

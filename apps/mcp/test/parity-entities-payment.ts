@@ -1,4 +1,5 @@
 import { installFakeStripe } from "./fake-stripe";
+import { connectLedger } from "./ledger";
 import { byId, type ParityEntity, tool } from "./parity-entities";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
@@ -24,20 +25,25 @@ export const paymentAccountEntity: ParityEntity = {
   },
 };
 
-/** How order money is taken (ADR 0090): the deposit rule and the invoice provider. */
+/**
+ * How order money is taken (ADR 0090): the deposit rule and the routes, with the memory
+ * accounting system money needs (ADR 0106) taking invoices.
+ */
 export const paymentSettingsEntity: ParityEntity = {
   name: "paymentSettings",
-  create: ({ mcp }) =>
-    tool({
+  create: async ({ mcp, context }) => {
+    await connectLedger({ context });
+    return tool({
       mcp,
       name: "paymentSettings_update",
       args: {
         depositPercent: 30,
         depositMinimumMinor: 500_000,
-        invoiceProvider: null,
+        invoiceProvider: "VISMA",
         paymentOperator: "STRIPE",
       },
-    }),
+    });
+  },
   viaMcp: ({ mcp }) => tool({ mcp, name: "paymentSettings_get", args: {} }),
   viaRest: ({ context }) => createRestClient({ context }).get({ path: "/payment-settings" }),
   viaGraph: async ({ context, keys }) => {
@@ -93,7 +99,7 @@ export function paymentEntity(): ParityEntity {
   };
 }
 
-/** The accounts of the SIE export (ADR 0077), with one item type mapped to its own account. */
+/** The accounts (ADR 0077), with one item type mapped to its own account. */
 export const accountingSettingsEntity: ParityEntity = {
   name: "accountingSettings",
   create: async ({ mcp }) => {
@@ -117,30 +123,7 @@ export const accountingSettingsEntity: ParityEntity = {
   },
 };
 
-/** An SIE export (ADR 0077) of the invoice once sent; needs the organization's number. */
-/** Yesterday to tomorrow, so the invoice sent in this test is inside the exported range. */
-const AROUND_NOW = {
-  from: new Date(Date.now() - 86_400_000).toISOString().slice(0, 10),
-  to: new Date(Date.now() + 86_400_000).toISOString().slice(0, 10),
-};
-
-export const accountingExportEntity = (): ParityEntity => ({
-  ...byId({
-    name: "accountingExport",
-    field: "accountingExport",
-    list: "accounting-exports",
-    createTool: "",
-    args: {},
-  }),
-  create: async ({ mcp, made }) => {
-    const profile = { orgNumber: "556000-0000", legalName: "Parity AB" };
-    await tool({ mcp, name: "organizationProfile_update", args: profile });
-    await tool({ mcp, name: "invoice_send", args: { id: made.invoice.id } });
-    return tool({ mcp, name: "accountingExport_create", args: AROUND_NOW });
-  },
-});
-
-/** A credit note of the invoice, once the export entity above has sent it (ADR 0100). */
+/** A credit note of the invoice, once sent and raised in the accounting system (ADR 0100). */
 export const creditNoteEntity = (): ParityEntity => ({
   ...byId({
     name: "creditNote",
@@ -151,6 +134,7 @@ export const creditNoteEntity = (): ParityEntity => ({
     nested: { lines: `{ ${LINE} }` },
   }),
   create: async ({ mcp, made }) => {
+    await tool({ mcp, name: "invoice_send", args: { id: made.invoice.id } });
     const args = { invoiceId: made.invoice.id, amountMinor: 10_000, reason: "Parity" };
     await tool({ mcp, name: "invoice_credit", args });
     const page = await tool({ mcp, name: "creditNote_list", args: { invoiceId: made.invoice.id } });
@@ -166,6 +150,5 @@ export const moneyEntities = (): ParityEntity[] => [
   invoiceEntity(),
   paymentEntity(),
   accountingSettingsEntity,
-  accountingExportEntity(),
   creditNoteEntity(),
 ];

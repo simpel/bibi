@@ -1,12 +1,11 @@
-import { execute, type Result, retryRefunds, retryVoids } from "@bibi/core";
+import { execute, type Result, retryRefunds } from "@bibi/core";
 import { getLogger } from "@bibi/logger";
 import { forEachOrganization } from "../for-each-organization";
 import type { JobDefinition } from "../job-definition";
 
 /**
  * Every 15 minutes, per organization as SYSTEM (ADR 0027, 0100): `payment.retryRefunds` resolves
- * refunds stuck PENDING at their provider, then `invoice.retryVoids` finishes voids the provider
- * did not confirm. One failing does not stop the other.
+ * refunds stuck PENDING at their provider.
  */
 export const paymentRefundRetryJob: JobDefinition = {
   name: "payment.refundRetry",
@@ -17,17 +16,11 @@ export const paymentRefundRetryJob: JobDefinition = {
       organizationIds,
       run: async ({ context }): Promise<Result<unknown>> => {
         const refunds = await execute({ operation: retryRefunds, input: {}, context });
-        const voids = await execute({ operation: retryVoids, input: {}, context });
-        if (refunds.ok && voids.ok) {
+        if (refunds.ok) {
           const fields = { organizationId: context.organizationId };
-          getLogger().debug({
-            event: "payment.refundRetryOrg",
-            ...fields,
-            refunds: refunds.value,
-            voids: voids.value,
-          });
+          getLogger().debug({ event: "payment.refundRetryOrg", ...fields, refunds: refunds.value });
         }
-        return refunds.ok ? voids : refunds;
+        return refunds;
       },
     });
     getLogger().info({ event: "payment.refundRetryRun", succeeded, failed });

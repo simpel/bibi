@@ -133,7 +133,8 @@ export function memoryInvoicing({ state, registerPayment }: MemoryInvoicingInput
         entry: `credit:${providerReference}:${amountMinor}`,
         value: { providerReference: `credit-${providerReference}-${createId()}`, url: null },
       }),
-    listPayments: async () => ok({ value: state.payments }),
+    listPayments: async ({ providerReference }) =>
+      ok({ value: [...state.payments, ...(state.paidOn.get(providerReference) ?? [])] }),
   };
   if (registerPayment) {
     port.registerPayment = async ({ providerReference, payment }) => {
@@ -144,7 +145,10 @@ export function memoryInvoicing({ state, registerPayment }: MemoryInvoicingInput
         entry: `register:${providerReference}:${payment.amountMinor}`,
         value: { providerReference: reference },
       });
-      if (done.ok) state.payments.push({ ...payment, reference });
+      if (done.ok) {
+        const booked = state.paidOn.get(providerReference) ?? [];
+        state.paidOn.set(providerReference, [...booked, { ...payment, reference }]);
+      }
       return done;
     };
   }

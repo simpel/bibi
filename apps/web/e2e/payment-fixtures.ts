@@ -15,9 +15,10 @@ export async function call({ page, method, path, data }: RestInput): Promise<Jso
 type PageInput = { page: Page };
 
 /**
- * Connects the in-memory Stripe and Swish the web server runs with under
+ * Connects the in-memory Stripe, Swish and Visma the web server runs with under
  * `E2E_MEMORY_PROVIDERS` (`installE2eProviders`): Stripe by hosted onboarding (ACTIVE at once),
- * Swish with a number. Returns Stripe's account id, which test deliveries name.
+ * Swish with a number, Visma (the accounting system money needs, ADR 0106) with an account.
+ * Returns Stripe's account id, which test deliveries name.
  */
 export async function connectProviders({ page }: PageInput): Promise<string> {
   await call({ page, method: "post", path: "/payment-account/onboarding", data: {} });
@@ -26,6 +27,13 @@ export async function connectProviders({ page }: PageInput): Promise<string> {
   // A Swish number belongs to one organization: a fresh one per run.
   const credentials = { swishNumber: `123${String(Date.now()).slice(-7)}` };
   await call({ page, method: "post", path: "/integrations/SWISH/connect", data: { credentials } });
+  const ledger = { account: `e2e-${Date.now()}` };
+  await call({
+    page,
+    method: "post",
+    path: "/integrations/VISMA/connect",
+    data: { credentials: ledger },
+  });
   return String(account.stripeAccountId);
 }
 

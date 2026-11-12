@@ -111,7 +111,7 @@
     "openFinancials": "Open financials",
     "accounting": {
       "title": "Accounting",
-      "description": "The accounts the SIE export books to. Every account has a BAS default.",
+      "description": "The accounts invoice rows in Fortnox or Visma post to. Every account has a BAS default.",
       "saved": "The accounting settings have been saved.",
       "default": "Default {account}",
       "usesDefault": "Empty uses the default revenue account ({account})",
@@ -147,46 +147,6 @@
         "fiscalYearStartMonth": "First month of the fiscal year"
       },
       "monthName": "{month, select, 1 {January} 2 {February} 3 {March} 4 {April} 5 {May} 6 {June} 7 {July} 8 {August} 9 {September} 10 {October} 11 {November} 12 {December} other {}}"
-    },
-    "export": {
-      "button": "Export SIE",
-      "title": "Export SIE",
-      "description": "Choose the range to report. The file holds every voucher dated in it, also those exported before, so a range can be exported again.",
-      "confirm": "Export and download",
-      "created": "The export has been created.",
-      "downloading": "Preparing the file…",
-      "downloaded": "The file is ready.",
-      "download": "Download",
-      "history": "Export history",
-      "historyEmpty": "No exports yet.",
-      "exportNumber": "Export {number}",
-      "openToDownload": "Open financials to download",
-      "fileSize": "{bytes} bytes",
-      "vouchers": "{count, plural, one {# voucher} other {# vouchers}}",
-      "fixOrganization": "Open organization settings",
-      "fixAccounting": "Open accounting settings",
-      "kinds": {
-        "INVOICE_SENT": "Invoices sent",
-        "INVOICE_VOID": "Invoices voided",
-        "CREDIT_NOTE": "Credit notes",
-        "PAYMENT": "Payments",
-        "FEE": "Fees",
-        "REFUND": "Refunds"
-      },
-      "blockers": {
-        "ORG_NUMBER_MISSING": "Organization number is missing",
-        "VAT_ACCOUNT_MISSING": "VAT account is missing for {detail}",
-        "NOTHING_TO_EXPORT": "Nothing dated in this range"
-      },
-      "columns": {
-        "number": "Number",
-        "date": "Created",
-        "vouchers": "Vouchers",
-        "fileName": "File name",
-        "range": "Range"
-      },
-      "earlierExports": "{count, plural, one {# earlier export overlaps this range. Importing both duplicates the vouchers.} other {# earlier exports overlap this range. Importing them together duplicates the vouchers.}}",
-      "previewFailed": "The range could not be read."
     },
     "kpi": {
       "invoiced": "Invoiced",
@@ -255,7 +215,7 @@
     },
     "now": {
       "title": "Right now",
-      "description": "Open and overdue money and the SIE exports. Not tied to the period above."
+      "description": "Open and overdue money. Not tied to the period above."
     },
     "outcomes": {
       "title": "Won and lost orders",

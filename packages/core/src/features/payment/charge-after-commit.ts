@@ -29,9 +29,9 @@ export async function startAtProvider({
   description,
   idempotencyKey,
 }: StartAtProviderInput): Promise<Result<AttemptRef>> {
-  const { quoteId, depositId, invoiceId } = row;
+  // A payment against a quote (before ADR 0106) can no longer start an attempt.
+  const { depositId, invoiceId } = row;
   const ids = {
-    quoteId: quoteId ?? undefined,
     depositId: depositId ?? undefined,
     invoiceId: invoiceId ?? undefined,
   };

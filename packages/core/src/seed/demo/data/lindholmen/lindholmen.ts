@@ -113,16 +113,16 @@ export const lindholmen: DemoOrg = {
       { type: "Drink", account: "3052" },
     ],
   },
-  // ADR 0090, 0100: a 30 % deposit, orders under 10 000 kr paid in full; card and invoices on
-  // Stripe, Swish on the venue's own Swish number.
-  providers: ["SWISH"],
+  // ADR 0090, 0100, 0106: a 30 % deposit, orders under 10 000 kr paid in full; card on Stripe,
+  // Swish on the venue's own Swish number, every invoice and prepayment invoice in Fortnox.
+  providers: ["SWISH", "FORTNOX"],
   paymentSettings: {
     depositPercent: 30,
     depositMinimumMinor: 1_000_000,
     routes: [
       { method: "CARD", provider: "STRIPE" },
       { method: "SWISH", provider: "SWISH" },
-      { method: "INVOICE", provider: "STRIPE" },
+      { method: "INVOICE", provider: "FORTNOX" },
     ],
   },
 };

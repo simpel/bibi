@@ -5,20 +5,17 @@ import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import type { Period } from "../lib/finance-period";
 import { CustomerFilter } from "./customer-filter";
-import { ExportSieButton } from "./export-sie-button";
 
 export type FinancialsToolbarProps = {
   period: Period;
   today: PlainDate;
   customers: readonly { id: string; name: string }[];
   customerId: string | undefined;
-  /** Set with `finance:write`: shows "Export SIE", which starts on this range. */
-  exportPeriod: Period | null;
 };
 
-/** The customer filter on the left; "Export SIE" and accounting settings on the right. */
+/** The customer filter on the left; the accounting settings on the right. */
 export function FinancialsToolbar(props: FinancialsToolbarProps) {
-  const { period, today, customers, customerId, exportPeriod } = props;
+  const { period, customers, customerId } = props;
   const t = useTranslations("finance");
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
@@ -28,7 +25,6 @@ export function FinancialsToolbar(props: FinancialsToolbarProps) {
         ) : null}
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        {exportPeriod ? <ExportSieButton period={exportPeriod} today={today} /> : null}
         <Button asChild variant="outline" size="sm">
           <Link href={ROUTES.adminAccounting}>{t("accountingSettings")}</Link>
         </Button>

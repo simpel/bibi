@@ -1,4 +1,3 @@
-import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 import { seedQuoteBasis } from "./seed-quote-basis";
@@ -52,45 +51,4 @@ describe("cross-organization isolation: financials", () => {
     const read = await call({ client: b, name: "accountingSettings_get", args: {} });
     expect(read.data).toMatchObject({ id: null, revenueAccount: "3001", revenueAccounts: [] });
   });
-
-  it("never shows or hands over one organization's SIE exports to another", async () => {
-    const a = await connect({ context: testContext() });
-    const b = await connect({ context: testContext() });
-    const id = await exportOf({ client: a });
-    for (const name of ["accountingExport_get", "accountingExport_download"]) {
-      const result = await call({ client: b, name, args: { id } });
-      expect(result.data.code, name).toBe("NOT_FOUND");
-    }
-    const theirs = await call({ client: b, name: "accountingExport_preview", args: RANGE });
-    expect(theirs.data.voucherCount).toBe(0);
-    const made = await call({ client: b, name: "accountingExport_create", args: RANGE });
-    expect(made.data.code).toBe("CONFLICT");
-    const list = await call({ client: b, name: "accountingExport_list", args: {} });
-    expect(list.data.items).toEqual([]);
-  });
 });
-
-/** A range around now: yesterday to tomorrow, so anything made in the test is inside it. */
-const DAY = 86_400_000;
-const isoDay = ({ offset }: { offset: number }) =>
-  new Date(Date.now() + offset * DAY).toISOString().slice(0, 10);
-const RANGE = { from: isoDay({ offset: -1 }), to: isoDay({ offset: 1 }) };
-
-/** Organization A invoices its quote basis and exports it; returns the export's id. */
-async function exportOf({ client }: { client: Client }): Promise<string> {
-  const profile = { orgNumber: "556000-0000", legalName: "A AB" };
-  await call({ client, name: "organizationProfile_update", args: profile });
-  const secret = await seedQuoteBasis({ client });
-  const order = await call({ client, name: "order_get", args: { id: secret.orderId } });
-  const status = { id: order.data.statusId, invoiceable: true };
-  await call({ client, name: "orderStatus_update", args: status });
-  const invoice = await call({
-    client,
-    name: "invoice_create",
-    args: { orderId: secret.orderId },
-  });
-  await call({ client, name: "invoice_send", args: { id: invoice.data.id } });
-  const made = await call({ client, name: "accountingExport_create", args: RANGE });
-  expect(made.isError, JSON.stringify(made.data)).toBe(false);
-  return made.data.id as string;
-}

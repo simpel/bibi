@@ -1,15 +1,11 @@
-import { previewAccountingExport } from "../../features/finance/export-operations";
 import type { ExecuteContext } from "../../operations/context";
-import { execute } from "../../operations/execute";
-import { demoExportRange } from "./finance-range";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoFinanceInput = { context: ExecuteContext; org: DemoOrg };
 
 /**
  * ADR 0077: every `money.invoice` order has one SENT invoice (paid in full when asked), the
- * mapped item types have their revenue accounts, and the first SIE export holds every voucher of its range (it can be exported again).
- * Returns failure messages.
+ * mapped item types have their revenue accounts. Returns failure messages.
  */
 export async function checkDemoFinance({ context, org }: CheckDemoFinanceInput) {
   const failures: string[] = [];
@@ -32,16 +28,6 @@ export async function checkDemoFinance({ context, org }: CheckDemoFinanceInput) 
   if (mapped !== org.finance.revenueAccounts.length) {
     failures.push(
       `${org.slug}: ${mapped} revenue accounts, expected ${org.finance.revenueAccounts.length}`,
-    );
-  }
-  const made = await context.db.accountingExport.findMany({ select: { voucherCount: true } });
-  const input = demoExportRange();
-  const preview = await execute({ operation: previewAccountingExport, input, context });
-  const inRange = preview.ok ? preview.value.voucherCount : -1;
-  if (made.length !== 1 || made[0]?.voucherCount !== inRange || inRange < 1) {
-    failures.push(
-      `${org.slug}: ${made.length} SIE exports of ${made[0]?.voucherCount} vouchers, ` +
-        `expected 1 holding the ${inRange} vouchers of ${input.from}–${input.to}`,
     );
   }
   return failures;

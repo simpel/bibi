@@ -299,7 +299,6 @@
         "billing_rejectSeat": "Decline a seat",
         "billing_remindAdmins": "Remind the admins to pay",
         "deposit_request": "Request deposit with payment link",
-        "accountingExport_create": "Create SIE export",
         "inboundMessage_markRead": "Mark message as read",
         "inboundMessage_markUnread": "Mark message as unread",
         "inboundMessage_delete": "Delete message",
@@ -938,7 +937,7 @@
       "organizationNumber": "Organization number",
       "connectedAt": "Connected",
       "takes": "Takes: {methods}",
-      "ledger": "{name} keeps the books for invoices raised there, so the SIE export leaves them out.",
+      "ledger": "{name} keeps the books for the invoices and prepayment invoices raised there.",
       "notConfigured": "{name} is not available on this server yet.",
       "hint": {
         "NOT_CONNECTED": "{name} is not connected.",

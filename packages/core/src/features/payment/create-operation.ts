@@ -8,8 +8,8 @@ export const createPayment = defineOperation({
   kind: "command",
   description:
     "Request a payment from the order's customer against one receivable (ADR 0057): a SENT " +
-    "or ACCEPTED quote (quoteId), a SENT deposit request (depositId) or a SENT invoice " +
-    "(invoiceId). The amount defaults to its open balance and may be lower for a partial " +
+    "deposit request (depositId) or a SENT invoice (invoiceId); a quote is not paid directly, " +
+    "accepting it leads to its deposit (ADR 0106). Needs a connected accounting system. The amount defaults to its open balance and may be lower for a partial " +
     "payment. The customer pays with any method routed to a connected provider (ADR 0100): a " +
     "card checkout link (paymentUrl) is prepared at once; a Swish request starts when the " +
     "customer opens the payment page. CONFLICT when no provider is connected for any method, " +

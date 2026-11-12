@@ -460,9 +460,9 @@
     "integrations": {
       "eyebrow": "Integrations",
       "title": "Fits the tools you already use",
-      "stripe": "Card payments and invoices",
+      "stripe": "Card payments",
       "fortnox": "Accounting",
-      "sie": "SIE 4I export for any accounting system"
+      "visma": "Accounting"
     },
     "cta": {
       "title": "Run your venue from one place",
@@ -627,7 +627,7 @@
         },
         "accounts": {
           "label": "Accounts",
-          "keywords": "chart of accounts bas vat revenue sie"
+          "keywords": "chart of accounts bas vat revenue"
         },
         "revenueAccounts": {
           "label": "Revenue per item type",
