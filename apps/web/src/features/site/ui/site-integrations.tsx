@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 const INTEGRATIONS = [
   { name: "Stripe", key: "stripe" },
   { name: "Fortnox", key: "fortnox" },
-  { name: "Visma eEkonomi", key: "visma" },
+  { name: "Spiris (Visma eEkonomi)", key: "visma" },
 ] as const;
 
 /** Only integrations that exist today (ADR 0028, 0087, 0100). */

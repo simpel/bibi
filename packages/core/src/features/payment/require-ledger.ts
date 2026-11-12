@@ -7,7 +7,7 @@ type Db = { context: Pick<OperationContext, "db"> };
 
 const NO_LEDGER =
   "Taking money needs a connected accounting system that issues the invoices. Connect Fortnox " +
-  "or Visma eEkonomi in Administration → Integrations and choose it for Invoice under " +
+  "or Spiris (Visma eEkonomi) in Administration → Integrations and choose it for Invoice under " +
   "Administration → Payments.";
 
 /**

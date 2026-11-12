@@ -71,11 +71,12 @@ STRIPE_WEBHOOK_SECRET=
 # Fortnox app (ADR 0087); redirect URI: <WEB_ORIGIN>/api/integrations/fortnox/callback.
 FORTNOX_CLIENT_ID=
 FORTNOX_CLIENT_SECRET=
-# Visma eEkonomi app (ADR 0100); redirect URI: <WEB_ORIGIN>/api/providers/visma/callback.
+# Spiris (Visma eEkonomi) partner client (ADR 0100); redirect URI: <WEB_ORIGIN>/api/providers/visma/callback.
+# Id and secret together; the hosts are required with them. The sandbox uses these production hosts with a sandbox client (docs/runbooks/visma.md).
 VISMA_CLIENT_ID=
 VISMA_CLIENT_SECRET=
-VISMA_IDENTITY_BASE_URL=https://identity-sandbox.test.vismaonline.com
-VISMA_API_BASE_URL=https://eaccountingapi-sandbox.test.vismaonline.com
+VISMA_IDENTITY_BASE_URL=https://identity.vismaonline.com
+VISMA_API_BASE_URL=https://eaccountingapi.vismaonline.com
 # Swish: unset = the Merchant Swish Simulator. Production: https://cpc.getswish.net/swish-cpcapi.
 # SWISH_API_BASE_URL=
 

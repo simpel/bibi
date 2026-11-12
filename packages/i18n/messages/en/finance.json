@@ -111,7 +111,7 @@
     "openFinancials": "Open financials",
     "accounting": {
       "title": "Accounting",
-      "description": "The accounts invoice rows in Fortnox or Visma post to. Every account has a BAS default.",
+      "description": "The accounts invoice rows in Fortnox or Spiris post to. Every account has a BAS default.",
       "saved": "The accounting settings have been saved.",
       "default": "Default {account}",
       "usesDefault": "Empty uses the default revenue account ({account})",
@@ -518,8 +518,8 @@
       "done": "The payment has been recorded."
     },
     "ledger": {
-      "missing": "Connect Fortnox or Visma eEkonomi to take payments. They make every invoice and deposit invoice, so deposits, invoices and payment links can be created once one is connected.",
-      "askAdmin": "No accounting system is connected, so deposits, invoices and payment links cannot be created yet. Ask an admin to connect Fortnox or Visma eEkonomi.",
+      "missing": "Connect Fortnox or Spiris to take payments. They make every invoice and deposit invoice, so deposits, invoices and payment links can be created once one is connected.",
+      "askAdmin": "No accounting system is connected, so deposits, invoices and payment links cannot be created yet. Ask an admin to connect Fortnox or Spiris.",
       "connect": "Connect accounting"
     }
   },
@@ -652,8 +652,8 @@
       "description": "Swish for merchants: the customer pays in the Swish app, with a QR code on a computer or straight on the phone."
     },
     "VISMA": {
-      "name": "Visma eEkonomi",
-      "description": "Accounting and invoicing. Invoices are raised in Visma eEkonomi, and payments booked there are mirrored back to Bibi."
+      "name": "Spiris (Visma eEkonomi)",
+      "description": "Accounting and invoicing. Invoices are raised in Spiris, and payments booked there are mirrored back to Bibi."
     }
   }
 }

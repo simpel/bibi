@@ -7,9 +7,13 @@ import { z } from "zod";
 const origin = z
   .string()
   .url()
-  .refine((value) => new URL(value).origin === value, "must be an origin: scheme://host[:port], no path");
+  .refine(
+    (value) => new URL(value).origin === value,
+    "must be an origin: scheme://host[:port], no path",
+  );
 
 const S3_REQUIRED = ["S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY"] as const;
+const VISMA_HOSTS = ["VISMA_IDENTITY_BASE_URL", "VISMA_API_BASE_URL"] as const;
 
 const envSchema = z
   .object({
@@ -64,13 +68,17 @@ const envSchema = z
     /** Fortnox app credentials (ADR 0087); both set or neither. Unset: Fortnox is not configured. */
     FORTNOX_CLIENT_ID: z.string().min(1).optional(),
     FORTNOX_CLIENT_SECRET: z.string().min(1).optional(),
-    /** Visma eEkonomi app credentials (ADR 0100); both set or neither. Unset: Visma is not configured. */
+    /**
+     * Spiris (Visma eEkonomi) partner client (ADR 0100): id and secret together, and both hosts
+     * with them. Unset: Visma is not configured. Sandbox and production share the hosts `https://identity.vismaonline.com` and
+     * `https://eaccountingapi.vismaonline.com`; the client decides which companies it reaches.
+     */
     VISMA_CLIENT_ID: z.string().min(1).optional(),
     VISMA_CLIENT_SECRET: z.string().min(1).optional(),
-    /** Visma Connect (OAuth) host; the sandbox is `https://identity-sandbox.test.vismaonline.com`. */
-    VISMA_IDENTITY_BASE_URL: z.string().url().default("https://identity.vismaonline.com"),
-    /** Visma eAccounting API root; the sandbox is `https://eaccountingapi-sandbox.test.vismaonline.com`. */
-    VISMA_API_BASE_URL: z.string().url().default("https://eaccountingapi.vismaonline.com"),
+    /** Visma Connect (OAuth) host. */
+    VISMA_IDENTITY_BASE_URL: z.string().url().optional(),
+    /** eAccounting API root, without `/v2`. */
+    VISMA_API_BASE_URL: z.string().url().optional(),
     /**
      * Swish for merchants API root (ADR 0100), up to and including `/swish-cpcapi`. Defaults to
      * Swish's Merchant Swish Simulator (MSS); production is `https://cpc.getswish.net/swish-cpcapi`.
@@ -139,6 +147,17 @@ const envSchema = z
   .refine((env) => Boolean(env.VISMA_CLIENT_ID) === Boolean(env.VISMA_CLIENT_SECRET), {
     message: "VISMA_CLIENT_ID and VISMA_CLIENT_SECRET must be set together",
     path: ["VISMA_CLIENT_SECRET"],
+  })
+  .superRefine((env, ctx) => {
+    if (!env.VISMA_CLIENT_ID) return;
+    for (const key of VISMA_HOSTS) {
+      if (!env[key])
+        ctx.addIssue({
+          code: "custom",
+          message: `${key} is required with VISMA_CLIENT_ID`,
+          path: [key],
+        });
+    }
   })
   .refine((env) => env.MAIL_PROVIDER !== "resend" || env.RESEND_API_KEY, {
     message: "RESEND_API_KEY is required when MAIL_PROVIDER=resend",

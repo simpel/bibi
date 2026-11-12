@@ -23,7 +23,9 @@ describe("parseEnv", () => {
   it("serves MCP from the web app's URL unless MCP_ORIGIN names its own host", () => {
     const web = { ...base, WEB_ORIGIN: "https://app.heybibi.se" };
     expect(parseEnv({ source: web }).MCP_ORIGIN).toBe("https://app.heybibi.se");
-    expect(parseEnv({ source: { ...web, MCP_ORIGIN: "" } }).MCP_ORIGIN).toBe("https://app.heybibi.se");
+    expect(parseEnv({ source: { ...web, MCP_ORIGIN: "" } }).MCP_ORIGIN).toBe(
+      "https://app.heybibi.se",
+    );
     expect(parseEnv({ source: { ...web, MCP_ORIGIN: "https://mcp.heybibi.se" } }).MCP_ORIGIN).toBe(
       "https://mcp.heybibi.se",
     );
@@ -32,9 +34,9 @@ describe("parseEnv", () => {
   it("leaves PUBLIC_ORIGIN unset unless a URL is given", () => {
     expect(parseEnv({ source: base }).PUBLIC_ORIGIN).toBeUndefined();
     expect(parseEnv({ source: { ...base, PUBLIC_ORIGIN: "" } }).PUBLIC_ORIGIN).toBeUndefined();
-    expect(parseEnv({ source: { ...base, PUBLIC_ORIGIN: "https://heybibi.se" } }).PUBLIC_ORIGIN).toBe(
-      "https://heybibi.se",
-    );
+    expect(
+      parseEnv({ source: { ...base, PUBLIC_ORIGIN: "https://heybibi.se" } }).PUBLIC_ORIGIN,
+    ).toBe("https://heybibi.se");
   });
 
   it("treats empty optional and defaulted vars as unset", () => {
@@ -66,6 +68,21 @@ describe("parseEnv storage", () => {
   it("requires the S3 settings when STORAGE_DRIVER=s3", () => {
     expect(() => parseEnv({ source: { ...base, STORAGE_DRIVER: "s3" } })).toThrow(/S3_BUCKET/);
   });
+
+  it("has no Visma hosts in code and requires them with the Visma client", () => {
+    const client = { VISMA_CLIENT_ID: "id", VISMA_CLIENT_SECRET: "secret" };
+    expect(parseEnv({ source: base }).VISMA_IDENTITY_BASE_URL).toBeUndefined();
+    expect(() => parseEnv({ source: { ...base, ...client } })).toThrow(/VISMA_IDENTITY_BASE_URL/);
+    const hosts = {
+      VISMA_IDENTITY_BASE_URL: "https://identity.vismaonline.com",
+      VISMA_API_BASE_URL: "https://eaccountingapi.vismaonline.com",
+    };
+    expect(parseEnv({ source: { ...base, ...hosts } }).VISMA_CLIENT_ID).toBeUndefined();
+    expect(parseEnv({ source: { ...base, ...client, ...hosts } }).VISMA_API_BASE_URL).toBe(
+      hosts.VISMA_API_BASE_URL,
+    );
+  });
+
   it("rejects an origin with a path or trailing slash", () => {
     for (const value of ["https://mcp.heybibi.se/mcp", "https://app.heybibi.se/"]) {
       expect(() => parseEnv({ source: { ...base, MCP_ORIGIN: value } })).toThrow();

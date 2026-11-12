@@ -111,7 +111,7 @@
     "openFinancials": "Öppna ekonomi",
     "accounting": {
       "title": "Bokföring",
-      "description": "Konton som fakturaraderna i Fortnox eller Visma bokförs mot. Alla konton har ett standardvärde enligt BAS.",
+      "description": "Konton som fakturaraderna i Fortnox eller Spiris bokförs mot. Alla konton har ett standardvärde enligt BAS.",
       "saved": "Bokföringsinställningarna har sparats.",
       "default": "Standard {account}",
       "usesDefault": "Tomt använder standardkontot för försäljning ({account})",
@@ -518,8 +518,8 @@
       "done": "Betalningen har registrerats."
     },
     "ledger": {
-      "missing": "Koppla Fortnox eller Visma eEkonomi för att ta betalt. De gör varje faktura och förskottsfaktura, så förskott, fakturor och betallänkar kan skapas när ett av dem är kopplat.",
-      "askAdmin": "Inget bokföringssystem är kopplat, så förskott, fakturor och betallänkar kan inte skapas än. Be en administratör koppla Fortnox eller Visma eEkonomi.",
+      "missing": "Koppla Fortnox eller Spiris för att ta betalt. De gör varje faktura och förskottsfaktura, så förskott, fakturor och betallänkar kan skapas när ett av dem är kopplat.",
+      "askAdmin": "Inget bokföringssystem är kopplat, så förskott, fakturor och betallänkar kan inte skapas än. Be en administratör koppla Fortnox eller Spiris.",
       "connect": "Koppla bokföring"
     }
   },
@@ -652,8 +652,8 @@
       "description": "Swish Handel: kunden betalar med Swish-appen, med QR-kod på datorn eller direkt i mobilen."
     },
     "VISMA": {
-      "name": "Visma eEkonomi",
-      "description": "Bokföring och fakturering. Fakturor skapas i Visma eEkonomi och betalningar som bokförs där speglas tillbaka till Bibi."
+      "name": "Spiris (Visma eEkonomi)",
+      "description": "Bokföring och fakturering. Fakturor skapas i Spiris och betalningar som bokförs där speglas tillbaka till Bibi."
     }
   }
 }
