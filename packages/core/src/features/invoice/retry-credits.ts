@@ -17,6 +17,8 @@ type ResolveInput = {
   call: Call;
   /** The credited document at the provider. */
   documentReference: string;
+  /** The document's credits already recorded, never the lost one. */
+  known: readonly string[];
   amountMinor: number;
   reason: string | null;
   idempotencyKey: string;
@@ -27,10 +29,15 @@ type ResolveInput = {
  * lost answer never credits twice. Without `creditStatus` it waits for staff. The new reference,
  * or null while it waits; `failed` on a definite refusal.
  */
-async function resolveCredit({ call, documentReference, ...credit }: ResolveInput) {
+async function resolveCredit({ call, documentReference, known, ...credit }: ResolveInput) {
   const { invoicing, auth } = call;
   if (!invoicing.creditStatus) return { outcome: "waiting" as Settled, reference: null };
-  const state = await invoicing.creditStatus({ auth, providerReference: documentReference });
+  const state = await invoicing.creditStatus({
+    auth,
+    providerReference: documentReference,
+    amountMinor: credit.amountMinor,
+    known,
+  });
   if (!state.ok) return { outcome: "waiting" as Settled, reference: null };
   if (state.value.status === "ISSUED") {
     return { outcome: "issued" as Settled, reference: state.value.providerReference };
@@ -52,7 +59,13 @@ async function retryCreditNotes({ context, outcome }: StepInput) {
   const before = new Date(nowOf({ context }).getTime() - CREDIT_RETRY_AFTER_MS);
   const notes = await context.db.creditNote.findMany({
     where: { status: "PENDING", createdAt: { lt: before }, provider: { not: null } },
-    include: { invoice: true },
+    include: {
+      invoice: {
+        include: {
+          creditNotes: { where: { status: "ISSUED" }, select: { providerReference: true } },
+        },
+      },
+    },
     orderBy: [{ createdAt: "asc" }, { id: "asc" }],
     take: BATCH,
   });
@@ -67,6 +80,7 @@ async function retryCreditNotes({ context, outcome }: StepInput) {
     const done = await resolveCredit({
       call: call.value,
       documentReference: invoice.providerReference,
+      known: invoice.creditNotes.flatMap((c) => (c.providerReference ? [c.providerReference] : [])),
       amountMinor: note.amountMinor,
       reason: note.reason,
       idempotencyKey: `bibi-credit-${note.id}`,
@@ -100,6 +114,7 @@ async function retryDepositCredits({ context, outcome }: StepInput) {
     const done = await resolveCredit({
       call: call.value,
       documentReference: deposit.providerReference,
+      known: [],
       amountMinor: deposit.amountMinor,
       reason: "Deposit voided",
       idempotencyKey: `bibi-deposit-void-${deposit.id}`,

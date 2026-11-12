@@ -3,6 +3,7 @@ import { conflict } from "../../shared/errors";
 import { invoiceRows } from "../invoice-rows";
 import type { InvoicingPort, ProviderAuth, ProviderPayment } from "../types";
 import { vismaNotConnected } from "./visma-config";
+import { findCredit } from "./visma-credits";
 import { findOrCreateCustomer } from "./visma-customers";
 import { createInvoice, creditRows, readInvoice } from "./visma-invoices";
 import { registerVismaPayment } from "./visma-payments";
@@ -84,6 +85,16 @@ export const vismaInvoicing: InvoicingPort = {
       creditedInvoiceId: providerReference,
     });
     return id.ok ? ok({ value: { providerReference: id.value, url: null } }) : id;
+  },
+  async creditStatus({ auth, providerReference, amountMinor, known }) {
+    const accessToken = tokenOf({ auth });
+    if (!accessToken.ok) return accessToken;
+    return findCredit({
+      accessToken: accessToken.value,
+      invoiceId: providerReference,
+      amountMinor,
+      known,
+    });
   },
   async registerPayment({ auth, providerReference, payment }) {
     const accessToken = tokenOf({ auth });
