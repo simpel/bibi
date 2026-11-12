@@ -14,3 +14,6 @@ packages/db/src/generated
 .DS_Store
 .storage
 .env.bak
+
+# Local HTTPS certificates written by `pnpm dev:https` (next dev --experimental-https)
+certificates/

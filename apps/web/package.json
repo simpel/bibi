@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev -p ${WEB_PORT:-3330}",
+    "dev:https": "WEB_ORIGIN=https://localhost:${WEB_PORT:-3330} BETTER_AUTH_URL=https://localhost:${WEB_PORT:-3330} next dev --experimental-https -p ${WEB_PORT:-3330}",
     "build": "next build",
     "start": "next start -p ${WEB_PORT:-3330}",
     "typecheck": "tsc --noEmit",

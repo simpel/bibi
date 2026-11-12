@@ -15,7 +15,7 @@ Decision: `docs/decisions/0100-payment-providers-as-ports.md`. Code: `packages/c
 ## Getting credentials (Spiris Partner Programme)
 The eAccounting API is not in the Visma Developer Portal (`oauth.developers.visma.com`, which serves Visma.net, Business NXT and Dinero). Credentials come from the Spiris Partner Programme.
 1. Sign up at `https://selfservice.developer.vismaonline.com/`, region Sweden (it cannot be changed later; one sandbox company per email address). Visma emails a sandbox client id, client secret and a sandbox company (log in at `https://www.vismaonline.com`).
-2. Ask `api@spiris.se` to register the redirect URIs, exact match and no fragments: `<WEB_ORIGIN>/api/providers/visma/callback` for each environment (production and `http://localhost:3330`). Give the client id, never the secret.
+2. Ask `api@spiris.se` to register the redirect URIs, exact match, HTTPS only, no fragments: `<WEB_ORIGIN>/api/providers/visma/callback` for each environment (production and `https://localhost:3330`). Give the client id, never the secret. Locally, run `pnpm dev:https` to connect Visma.
 3. Bibi requests `ea:api ea:sales offline_access`.
 4. When the sandbox checks below pass, ask `api@spiris.se` for production access.
 Docs: `https://developer.vismaonline.com/docs/authentication`.
