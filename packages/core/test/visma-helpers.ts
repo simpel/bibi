@@ -63,9 +63,10 @@ export const tokenJson = ({ n }: { n: number }) => ({
 
 /**
  * A Visma company with no customers or articles yet: lookups answer empty, creates answer ids,
- * and `invoice` is what GET of an invoice returns.
+ * and `invoice` is what GET of an invoice returns. Its codings book sales to 3001; with
+ * `advances`, codings at 25 and 12 % that book to 2420 come first (ADR 0106).
  */
-export function vismaCompany({ stub }: { stub: VismaStub }) {
+export function vismaCompany({ stub, advances = true }: { stub: VismaStub; advances?: boolean }) {
   const state = { invoice: { TotalAmount: 0, RemainingAmount: 0 }, created: 0 };
   stub.route = (call) => {
     const path = apiPath({ call });
@@ -75,12 +76,15 @@ export function vismaCompany({ stub }: { stub: VismaStub }) {
     if (path === "/termsofpayments") return { json: { Data: [{ Id: "t30", NumberOfDays: 30 }] } };
     if (path === "/units") return { json: { Data: [{ Id: "unit-st" }] } };
     if (path === "/articleaccountcodings") {
-      const coding = ({ rate }: { rate: number }) => ({
-        Id: `coding-${rate}`,
+      const coding = ({ rate, account }: { rate: number; account: number }) => ({
+        Id: `coding-${rate}-${account}`,
         VatRatePercent: rate / 100,
         IsActive: true,
+        DomesticSalesSubjectToVatAccountNumber: account,
       });
-      return { json: { Data: [coding({ rate: 25 }), coding({ rate: 12 }), coding({ rate: 6 })] } };
+      const advance = advances ? [25, 12].map((rate) => coding({ rate, account: 2420 })) : [];
+      const sales = [25, 12, 6].map((rate) => coding({ rate, account: 3001 }));
+      return { json: { Data: [...advance, ...sales] } };
     }
     if (call.method === "GET" && path.includes("$filter")) return { json: { Data: [] } };
     if (call.method === "POST") {

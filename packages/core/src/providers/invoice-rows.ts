@@ -11,6 +11,11 @@ export type ProviderInvoiceRow = {
   vatPercent: number;
   /** Revenue account, or the customer advances account for a deducted deposit. */
   accountNumber: number;
+  /**
+   * On the customer advances account (ADR 0093, 0106): a prepayment invoice's rows and a deducted
+   * deposit. Visma codes a row by its article, so these need an article coded to that account.
+   */
+  advance: boolean;
 };
 
 const units = ({ minor }: { minor: number }) => minor / 100;
@@ -27,6 +32,7 @@ function lineRows({ line }: { line: InvoiceSnapshotLine }): ProviderInvoiceRow[]
         discountPercent: line.discountPercent,
         vatPercent: line.vatRatePercent,
         accountNumber: account,
+        advance: false,
       },
     ];
   }
@@ -37,6 +43,7 @@ function lineRows({ line }: { line: InvoiceSnapshotLine }): ProviderInvoiceRow[]
     discountPercent: 0,
     vatPercent: row.vatRatePercent,
     accountNumber: account,
+    advance: false,
   }));
 }
 
@@ -51,7 +58,7 @@ type DeductionInput = { deduction: InvoiceSnapshotDeduction; account: number };
 function deductionRows({ deduction, account }: DeductionInput): ProviderInvoiceRow[] {
   const { description } = deduction;
   const parts = vatParts({ vatRows: deduction.vatRows });
-  const row = { quantity: -1, discountPercent: 0, accountNumber: account };
+  const row = { quantity: -1, discountPercent: 0, accountNumber: account, advance: true };
   if (parts.length === 0) {
     return [{ ...row, description, price: units({ minor: deduction.amountMinor }), vatPercent: 0 }];
   }
@@ -65,11 +72,14 @@ function deductionRows({ deduction, account }: DeductionInput): ProviderInvoiceR
 
 /**
  * The invoice as provider rows (ADR 0090, 0093): the frozen lines that count, then each deducted
- * deposit on the customer advances account, so revenue stays the lines'. Fortnox and Visma.
+ * deposit on the customer advances account, so revenue stays the lines'. A prepayment invoice's
+ * lines are on the advances account too, so they are advance rows. Fortnox and Visma.
  */
 export function invoiceRows({ invoice }: { invoice: InvoiceSnapshot }): ProviderInvoiceRow[] {
-  const sold = invoice.lines.flatMap((line) => lineRows({ line }));
   const account = Number(invoice.advancesAccount);
+  const sold = invoice.lines
+    .flatMap((line) => lineRows({ line }))
+    .map((row) => ({ ...row, advance: row.accountNumber === account }));
   const paid = invoice.deductions.flatMap((deduction) => deductionRows({ deduction, account }));
   return [...sold, ...paid];
 }

@@ -256,7 +256,7 @@
           },
           "visma": {
             "question": "Can I connect Bibi to Visma eEkonomi?",
-            "answer": "Yes. An admin chooses **Connect** on Visma eEkonomi under Administration → Integrations and signs in to Visma to approve the connection.\nThen pick Visma eEkonomi for **Invoice** under Administration → Payments, and invoices are made there with payments mirrored back to Bibi. Card and Swish payments taken in Bibi on a Visma invoice are booked in Visma too."
+            "answer": "Yes. An admin chooses **Connect** on Visma eEkonomi under Administration → Integrations and signs in to Visma to approve the connection.\nThen pick Visma eEkonomi for **Invoice** under Administration → Payments, and invoices are made there with payments mirrored back to Bibi. Card and Swish payments taken in Bibi on a Visma invoice are booked in Visma too.\nIn Visma, also create an account coding that books sales to customer advances (2420) for each VAT rate you sell at, under Settings → Account codings. Deposits and their deductions are booked there."
           },
           "prepayment": {
             "question": "What happens to a deposit when Fortnox or Visma makes our invoices?",

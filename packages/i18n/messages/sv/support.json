@@ -256,7 +256,7 @@
           },
           "visma": {
             "question": "Kan jag koppla Bibi till Visma eEkonomi?",
-            "answer": "Ja. En administratör väljer **Anslut** på Visma eEkonomi under Administration → Integrationer och loggar in i Visma för att godkänna kopplingen.\nVälj sedan Visma eEkonomi för **Faktura** under Administration → Betalningar, så skapas fakturorna där och betalningarna speglas tillbaka till Bibi. Kort- och Swishbetalningar som tas i Bibi på en Visma-faktura bokförs i Visma också."
+            "answer": "Ja. En administratör väljer **Anslut** på Visma eEkonomi under Administration → Integrationer och loggar in i Visma för att godkänna kopplingen.\nVälj sedan Visma eEkonomi för **Faktura** under Administration → Betalningar, så skapas fakturorna där och betalningarna speglas tillbaka till Bibi. Kort- och Swishbetalningar som tas i Bibi på en Visma-faktura bokförs i Visma också.\nSkapa också en artikelkontering i Visma som bokför försäljning på kundförskott (2420) för varje momssats ni säljer med, under Inställningar → Artikelkonteringar. Förskott och avdragen för dem bokförs där."
           },
           "prepayment": {
             "question": "Vad händer med ett förskott när Fortnox eller Visma gör våra fakturor?",

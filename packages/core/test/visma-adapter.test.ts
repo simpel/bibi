@@ -137,8 +137,23 @@ describe("Visma invoicing (ADR 0100)", () => {
       result: await visma().invoicing.issue({ auth, invoice: snapshot(), idempotencyKey: "inv1" }),
     });
     const posted = stub.calls.filter((c) => c.method === "POST").map((c) => apiPath({ call: c }));
-    expect(posted).toEqual(["/customers", "/articles", "/articles", "/customerinvoices"]);
-    expect(issued).toEqual({ providerReference: "id-4", url: null });
+    expect(posted).toEqual([
+      "/customers",
+      "/articles",
+      "/articles",
+      "/articles",
+      "/customerinvoices",
+    ]);
+    expect(issued).toEqual({ providerReference: "id-5", url: null });
+    // Revenue articles skip the advances codings; the deposit's article is coded to 2420 (ADR 0106).
+    const articles = stub.calls
+      .filter((c) => apiPath({ call: c }) === "/articles" && c.method === "POST")
+      .map((c) => JSON.parse(c.body ?? "{}"));
+    expect(articles).toMatchObject([
+      { Number: "BIBI-VAT25", CodingId: "coding-25-3001" },
+      { Number: "BIBI-VAT12", CodingId: "coding-12-3001" },
+      { Number: "BIBI-ADV12", CodingId: "coding-12-2420" },
+    ]);
     const customer = JSON.parse(
       stub.calls.find((c) => apiPath({ call: c }) === "/customers")?.body ?? "{}",
     );
@@ -157,7 +172,7 @@ describe("Visma invoicing (ADR 0100)", () => {
       YourReference: "KS-2026-114",
       IsCreditInvoice: false,
     });
-    // 25 % → article id-2, 12 % → article id-3; the bundle splits per rate, the deposit is quantity −1.
+    // 25 % → id-2, 12 % → id-3, the deposit at 12 % → advances article id-4; quantity −1.
     expect(body.Rows).toEqual([
       {
         LineNumber: 1,
@@ -185,13 +200,48 @@ describe("Visma invoicing (ADR 0100)", () => {
       },
       {
         LineNumber: 4,
-        ArticleId: "id-3",
+        ArticleId: "id-4",
         Text: "Advance",
         UnitPrice: 1000,
         Quantity: -1,
         DiscountPercentage: 0,
       },
     ]);
+  });
+
+  it("raises a prepayment invoice on the advances article", async () => {
+    const stub = stubVisma();
+    vismaCompany({ stub });
+    const line = {
+      name: "Deposit",
+      quantity: 1,
+      unitPriceMinor: 100_000,
+      discountPercent: 0,
+      vatRatePercent: 25,
+      vatRows: [{ vatRatePercent: 25, totalExclVatMinor: 100_000 }],
+      revenueAccount: "2420",
+    };
+    const invoice: InvoiceSnapshot = { ...snapshot(), deductions: [], lines: [line] };
+    unwrap({ result: await visma().invoicing.issue({ auth, invoice, idempotencyKey: "dep1" }) });
+    const article = stub.calls.find(
+      (c) => apiPath({ call: c }) === "/articles" && c.method === "POST",
+    );
+    expect(JSON.parse(article?.body ?? "{}")).toMatchObject({
+      Number: "BIBI-ADV25",
+      CodingId: "coding-25-2420",
+    });
+  });
+
+  it("asks for an advances coding when Visma has none at the rate", async () => {
+    const stub = stubVisma();
+    vismaCompany({ stub, advances: false });
+    const issued = await visma().invoicing.issue({
+      auth,
+      invoice: snapshot(),
+      idempotencyKey: "i",
+    });
+    expect(errorCode({ result: issued })).toBe("CONFLICT");
+    expect(issued.ok ? "" : issued.error.message).toContain("books sales to 2420");
   });
 
   it("refuses to void a booked invoice", async () => {
