@@ -26,9 +26,10 @@ export function matchesPaths({ paths, changed }) {
 export function selectChecks({ checks, mode, only, changed }) {
   if (mode === "only") return checks.filter((c) => only.includes(c.id));
   if (mode === "light") return checks.filter((c) => c.light);
-  const own = checks.filter((c) => !c.job);
-  if (mode === "all" || changed === null) return own;
-  return own.filter((c) => !c.paths || matchesPaths({ paths: c.paths, changed }));
+  // A check with its own CI job is skipped by --all (CI runs it there) but still runs locally.
+  if (mode === "all") return checks.filter((c) => !c.job);
+  if (changed === null) return checks;
+  return checks.filter((c) => !c.paths || matchesPaths({ paths: c.paths, changed }));
 }
 
 function git(args) {
