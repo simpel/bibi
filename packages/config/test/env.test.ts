@@ -83,6 +83,16 @@ describe("parseEnv storage", () => {
     );
   });
 
+  it("requires the Fortnox and Stripe hosts with their credentials, and has no Swish default", () => {
+    const fortnox = { FORTNOX_CLIENT_ID: "id", FORTNOX_CLIENT_SECRET: "secret" };
+    expect(() => parseEnv({ source: { ...base, ...fortnox } })).toThrow(/FORTNOX_API_BASE_URL/);
+    const stripe = { STRIPE_SECRET_KEY: "sk_test_x" };
+    expect(() => parseEnv({ source: { ...base, ...stripe } })).toThrow(/STRIPE_API_BASE_URL/);
+    const env = parseEnv({ source: base });
+    expect(env.STRIPE_API_BASE_URL).toBeUndefined();
+    expect(env.SWISH_API_BASE_URL).toBeUndefined();
+  });
+
   it("rejects an origin with a path or trailing slash", () => {
     for (const value of ["https://mcp.heybibi.se/mcp", "https://app.heybibi.se/"]) {
       expect(() => parseEnv({ source: { ...base, MCP_ORIGIN: value } })).toThrow();

@@ -30,6 +30,7 @@ export function useStripeEnv() {
   beforeEach(() => {
     Object.assign(getEnv(), {
       STRIPE_SECRET_KEY: "sk_test_x",
+      STRIPE_API_BASE_URL: "https://api.stripe.com",
       STRIPE_PLATFORM_ACCOUNT_ID: "acct_bibi",
     });
   });

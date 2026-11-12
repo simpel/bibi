@@ -12,7 +12,7 @@ export const SWISH_REQUEST_TTL_MS = 3 * 60 * 1000;
 export const SWISH_CURRENCY = "SEK";
 
 /** The API root up to and including `/swish-cpcapi`, without a trailing slash. */
-export const swishApiUrl = (): string => getEnv().SWISH_API_BASE_URL.replace(/\/+$/, "");
+export const swishApiUrl = (): string => (getEnv().SWISH_API_BASE_URL ?? "").replace(/\/+$/, "");
 
 export const swishCallbackUrl = (): string =>
   new URL(SWISH_CALLBACK_PATH, getEnv().WEB_ORIGIN).toString();

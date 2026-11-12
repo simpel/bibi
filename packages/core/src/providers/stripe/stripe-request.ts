@@ -4,7 +4,6 @@ import { err, ok, type Result } from "../../errors/result";
 
 /** Accounts v2 preview version (docs.stripe.com/connect/accounts-v2); v1 calls use it too. */
 export const STRIPE_API_VERSION = "2026-08-26.preview";
-const STRIPE_V2_URL = "https://api.stripe.com/v2";
 
 export type StripeRequestInput = {
   method: "GET" | "POST";
@@ -15,7 +14,8 @@ export type StripeRequestInput = {
 
 export type StripeFetchInput = {
   method: "GET" | "POST";
-  url: string;
+  /** Path from the API root, with its version: `/v1/refunds`, `/v2/core/accounts`. */
+  path: string;
   /** Extra headers, e.g. `Content-Type` or `Stripe-Account` for a direct charge. */
   headers?: Record<string, string>;
   body?: string;
@@ -50,12 +50,14 @@ function connectKey(): string | null {
 /** One Stripe call with the platform key (v1 or v2). Failures become `AppError`, never exceptions. */
 export async function stripeFetch({
   method,
-  url,
+  path,
   headers = {},
   body,
   idempotencyKey,
   secretKey,
 }: StripeFetchInput): Promise<Result<Record<string, unknown>>> {
+  const base = getEnv().STRIPE_API_BASE_URL;
+  if (!base) return unavailable({ message: "Stripe is not configured (STRIPE_API_BASE_URL)." });
   const key = secretKey ?? connectKey();
   if (!key) {
     return unavailable({
@@ -63,7 +65,7 @@ export async function stripeFetch({
     });
   }
   try {
-    const response = await fetch(url, {
+    const response = await fetch(`${base.replace(/\/+$/, "")}${path}`, {
       method,
       headers: {
         Authorization: `Bearer ${key}`,
@@ -93,7 +95,7 @@ export async function stripeRequest({
 }: StripeRequestInput): Promise<Result<Record<string, unknown>>> {
   return stripeFetch({
     method,
-    url: `${STRIPE_V2_URL}${path}`,
+    path: `/v2${path}`,
     idempotencyKey,
     ...(body === undefined
       ? {}

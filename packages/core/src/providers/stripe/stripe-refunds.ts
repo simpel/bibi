@@ -4,8 +4,6 @@ import type { ProviderAuth, RefundState, RefundStatusInput } from "../types";
 import { stripeBadResponse } from "./stripe-bad-response";
 import { stripeFetch } from "./stripe-request";
 
-const API = "https://api.stripe.com/v1";
-
 type RefInput = { auth: ProviderAuth; providerReference: string };
 
 const accountHeader = ({ auth }: { auth: ProviderAuth }) => ({
@@ -20,7 +18,7 @@ export async function paymentIntentOf({
   const kind = providerReference.startsWith("in_") ? "invoices" : "checkout/sessions";
   const read = await stripeFetch({
     method: "GET",
-    url: `${API}/${kind}/${encodeURIComponent(providerReference)}`,
+    path: `/v1/${kind}/${encodeURIComponent(providerReference)}`,
     headers: accountHeader({ auth }),
   });
   if (!read.ok) return read;
@@ -61,7 +59,7 @@ async function findByMetadata({
   const query = new URLSearchParams({ payment_intent: intent.value, limit: "100" });
   const listed = await stripeFetch({
     method: "GET",
-    url: `${API}/refunds?${query}`,
+    path: `/v1/refunds?${query}`,
     headers: accountHeader({ auth }),
   });
   if (!listed.ok) return listed;
@@ -81,7 +79,7 @@ export async function stripeRefundStatus({
   if (input.refundReference) {
     const read = await stripeFetch({
       method: "GET",
-      url: `${API}/refunds/${encodeURIComponent(input.refundReference)}`,
+      path: `/v1/refunds/${encodeURIComponent(input.refundReference)}`,
       headers: accountHeader({ auth: input.auth }),
     });
     if (!read.ok) return read;

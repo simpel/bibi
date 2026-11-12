@@ -13,7 +13,12 @@ const origin = z
   );
 
 const S3_REQUIRED = ["S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY"] as const;
-const VISMA_HOSTS = ["VISMA_IDENTITY_BASE_URL", "VISMA_API_BASE_URL"] as const;
+/** Each provider's hosts come only from env, required once its credentials are set. */
+const PROVIDER_HOSTS = {
+  STRIPE_SECRET_KEY: ["STRIPE_API_BASE_URL"],
+  FORTNOX_CLIENT_ID: ["FORTNOX_AUTH_BASE_URL", "FORTNOX_API_BASE_URL"],
+  VISMA_CLIENT_ID: ["VISMA_IDENTITY_BASE_URL", "VISMA_API_BASE_URL"],
+} as const;
 
 const envSchema = z
   .object({
@@ -51,6 +56,11 @@ const envSchema = z
       .string()
       .regex(/^[a-z0-9.-]+\.[a-z]{2,}$/i)
       .optional(),
+    /**
+     * Stripe API root without a version (`https://api.stripe.com`); calls add `/v1` or `/v2`.
+     * Required with `STRIPE_SECRET_KEY`; Bibi's own billing (key in `BillingConfig`) needs it too.
+     */
+    STRIPE_API_BASE_URL: z.string().url().optional(),
     /** Platform Stripe secret key (`sk_...`) for Connect (ADR 0028); payment operations are UNAVAILABLE without it. */
     STRIPE_SECRET_KEY: z.string().min(1).optional(),
     /** Id of Bibi's own Stripe platform account (`acct_...`), recorded on every connected account. */
@@ -68,6 +78,10 @@ const envSchema = z
     /** Fortnox app credentials (ADR 0087); both set or neither. Unset: Fortnox is not configured. */
     FORTNOX_CLIENT_ID: z.string().min(1).optional(),
     FORTNOX_CLIENT_SECRET: z.string().min(1).optional(),
+    /** Fortnox OAuth host (`https://apps.fortnox.se`); calls add `/oauth-v1/...`. Required with the client. */
+    FORTNOX_AUTH_BASE_URL: z.string().url().optional(),
+    /** Fortnox API host (`https://api.fortnox.se`); calls add `/3`. Required with the client. */
+    FORTNOX_API_BASE_URL: z.string().url().optional(),
     /**
      * Spiris (Visma eEkonomi) partner client (ADR 0100): id and secret together, and both hosts
      * with them. Unset: Visma is not configured. Sandbox and production share the hosts `https://identity.vismaonline.com` and
@@ -80,10 +94,11 @@ const envSchema = z
     /** eAccounting API root, without `/v2`. */
     VISMA_API_BASE_URL: z.string().url().optional(),
     /**
-     * Swish for merchants API root (ADR 0100), up to and including `/swish-cpcapi`. Defaults to
-     * Swish's Merchant Swish Simulator (MSS); production is `https://cpc.getswish.net/swish-cpcapi`.
+     * Swish for merchants API root (ADR 0100), up to and including `/swish-cpcapi`: the Merchant
+     * Swish Simulator `https://mss.cpc.getswish.net/swish-cpcapi`, production
+     * `https://cpc.getswish.net/swish-cpcapi`. Unset: Swish is not configured.
      */
-    SWISH_API_BASE_URL: z.string().url().default("https://mss.cpc.getswish.net/swish-cpcapi"),
+    SWISH_API_BASE_URL: z.string().url().optional(),
     /** Base64 32-byte key sealing integration tokens at rest (ADR 0087). Unset: no integration can connect. */
     INTEGRATION_SECRET_KEY: z
       .string()
@@ -149,14 +164,16 @@ const envSchema = z
     path: ["VISMA_CLIENT_SECRET"],
   })
   .superRefine((env, ctx) => {
-    if (!env.VISMA_CLIENT_ID) return;
-    for (const key of VISMA_HOSTS) {
-      if (!env[key])
+    for (const [credential, hosts] of Object.entries(PROVIDER_HOSTS)) {
+      if (!env[credential as keyof typeof PROVIDER_HOSTS]) continue;
+      for (const key of hosts) {
+        if (env[key]) continue;
         ctx.addIssue({
           code: "custom",
-          message: `${key} is required with VISMA_CLIENT_ID`,
+          message: `${key} is required with ${credential}`,
           path: [key],
         });
+      }
     }
   })
   .refine((env) => env.MAIL_PROVIDER !== "resend" || env.RESEND_API_KEY, {

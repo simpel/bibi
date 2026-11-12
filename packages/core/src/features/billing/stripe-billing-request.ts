@@ -2,8 +2,6 @@ import type { Result } from "../../errors/result";
 import { type FormParams, toStripeForm } from "../../providers/stripe/stripe-form-request";
 import { stripeFetch } from "../../providers/stripe/stripe-request";
 
-const STRIPE_V1_URL = "https://api.stripe.com/v1";
-
 export type BillingStripeRequestInput = {
   secretKey: string;
   method: "GET" | "POST";
@@ -24,7 +22,7 @@ export function billingStripeRequest({
   const query = method === "POST" || !form ? "" : `?${form}`;
   return stripeFetch({
     method,
-    url: `${STRIPE_V1_URL}${path}${query}`,
+    path: `/v1${path}${query}`,
     secretKey,
     idempotencyKey,
     ...(method === "POST"

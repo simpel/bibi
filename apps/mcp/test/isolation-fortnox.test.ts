@@ -3,13 +3,21 @@ import { getEnv } from "@bibi/config";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 
-const KEYS = ["FORTNOX_CLIENT_ID", "FORTNOX_CLIENT_SECRET", "INTEGRATION_SECRET_KEY"] as const;
+const KEYS = [
+  "FORTNOX_CLIENT_ID",
+  "FORTNOX_CLIENT_SECRET",
+  "FORTNOX_AUTH_BASE_URL",
+  "FORTNOX_API_BASE_URL",
+  "INTEGRATION_SECRET_KEY",
+] as const;
 const saved = Object.fromEntries(KEYS.map((key) => [key, getEnv()[key]]));
 
 beforeEach(() => {
   Object.assign(getEnv(), {
     FORTNOX_CLIENT_ID: "client-id",
     FORTNOX_CLIENT_SECRET: "client-secret",
+    FORTNOX_AUTH_BASE_URL: "https://apps.fortnox.se",
+    FORTNOX_API_BASE_URL: "https://api.fortnox.se",
     INTEGRATION_SECRET_KEY: randomBytes(32).toString("base64"),
   });
 });

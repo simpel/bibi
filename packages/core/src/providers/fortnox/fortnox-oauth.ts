@@ -4,10 +4,10 @@ import type { ExternalCompany, OauthConnectPort, OauthTokens } from "../connect-
 import { fortnoxAuthorizeUrl } from "./authorize-url";
 import {
   FORTNOX_REFRESH_TTL_MS,
-  FORTNOX_REVOKE_URL,
-  FORTNOX_TOKEN_URL,
   fortnoxCredentials,
   fortnoxRedirectUri,
+  fortnoxRevokeUrl,
+  fortnoxTokenUrl,
 } from "./fortnox-config";
 import {
   type FortnoxResponse,
@@ -62,7 +62,7 @@ export const fortnoxOauth: OauthConnectPort = {
       redirect_uri: redirectUri,
       code_verifier: codeVerifier,
     };
-    const sent = await fortnoxFormPost({ url: FORTNOX_TOKEN_URL, form });
+    const sent = await fortnoxFormPost({ url: fortnoxTokenUrl(), form });
     if (!sent.ok) return sent;
     if (sent.value.status !== 200) {
       return fortnoxRefused({ what: "the authorization code", response: sent.value });
@@ -71,7 +71,7 @@ export const fortnoxOauth: OauthConnectPort = {
   },
   async refresh({ refreshToken }) {
     const form = { grant_type: "refresh_token", refresh_token: refreshToken };
-    const sent = await fortnoxFormPost({ url: FORTNOX_TOKEN_URL, form });
+    const sent = await fortnoxFormPost({ url: fortnoxTokenUrl(), form });
     if (!sent.ok) return sent;
     if (isRefusedGrant({ response: sent.value })) return ok({ value: { kind: "refused" } });
     if (sent.value.status !== 200)
@@ -82,7 +82,7 @@ export const fortnoxOauth: OauthConnectPort = {
   },
   async revoke({ refreshToken }) {
     const form = { token_type_hint: "refresh_token", token: refreshToken };
-    const sent = await fortnoxFormPost({ url: FORTNOX_REVOKE_URL, form });
+    const sent = await fortnoxFormPost({ url: fortnoxRevokeUrl(), form });
     if (!sent.ok) return sent;
     if (sent.value.status !== 200)
       return fortnoxRefused({ what: "the revoke", response: sent.value });

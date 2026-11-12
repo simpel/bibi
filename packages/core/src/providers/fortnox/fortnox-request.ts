@@ -1,6 +1,6 @@
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
-import { FORTNOX_API_URL, fortnoxCredentials, fortnoxNotConfigured } from "./fortnox-config";
+import { fortnoxApiUrl, fortnoxCredentials, fortnoxNotConfigured } from "./fortnox-config";
 
 export type FortnoxResponse = { status: number; json: Record<string, unknown> };
 
@@ -56,7 +56,7 @@ export async function fortnoxGet({
   accessToken,
 }: FortnoxGetInput): Promise<Result<FortnoxResponse>> {
   try {
-    const response = await fetch(`${FORTNOX_API_URL}${path}`, {
+    const response = await fetch(`${fortnoxApiUrl()}${path}`, {
       headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
     });
     return ok({ value: { status: response.status, json: await readJson({ response }) } });
@@ -80,7 +80,7 @@ export async function fortnoxSend({
   body,
 }: FortnoxSendInput): Promise<Result<FortnoxResponse>> {
   try {
-    const response = await fetch(`${FORTNOX_API_URL}${path}`, {
+    const response = await fetch(`${fortnoxApiUrl()}${path}`, {
       method,
       headers: {
         Authorization: `Bearer ${accessToken}`,

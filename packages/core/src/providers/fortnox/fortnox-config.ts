@@ -2,10 +2,15 @@ import { getEnv } from "@bibi/config";
 import { AppError } from "../../errors/app-error";
 import { err } from "../../errors/result";
 
-export const FORTNOX_AUTH_URL = "https://apps.fortnox.se/oauth-v1/auth";
-export const FORTNOX_TOKEN_URL = "https://apps.fortnox.se/oauth-v1/token";
-export const FORTNOX_REVOKE_URL = "https://apps.fortnox.se/oauth-v1/revoke";
-export const FORTNOX_API_URL = "https://api.fortnox.se/3";
+const trim = ({ url }: { url: string }) => url.replace(/\/+$/, "");
+
+/** Hosts from env only (`""` while Fortnox is not configured; callers check `fortnoxCredentials`). */
+const authUrl = ({ path }: { path: string }) =>
+  `${trim({ url: getEnv().FORTNOX_AUTH_BASE_URL ?? "" })}/oauth-v1/${path}`;
+export const fortnoxAuthUrl = () => authUrl({ path: "auth" });
+export const fortnoxTokenUrl = () => authUrl({ path: "token" });
+export const fortnoxRevokeUrl = () => authUrl({ path: "revoke" });
+export const fortnoxApiUrl = () => `${trim({ url: getEnv().FORTNOX_API_BASE_URL ?? "" })}/3`;
 
 /** The company lookup and invoicing (ADR 0087, 0090); a scope change needs a reconnect. */
 export const FORTNOX_SCOPE = "companyinformation invoice customer payment";
@@ -20,8 +25,10 @@ export type FortnoxCredentials = { clientId: string; clientSecret: string };
 
 /** The app credentials, or null unless Fortnox and the sealing key are all configured. */
 export function fortnoxCredentials(): FortnoxCredentials | null {
-  const { FORTNOX_CLIENT_ID, FORTNOX_CLIENT_SECRET, INTEGRATION_SECRET_KEY } = getEnv();
+  const env = getEnv();
+  const { FORTNOX_CLIENT_ID, FORTNOX_CLIENT_SECRET, INTEGRATION_SECRET_KEY } = env;
   if (!FORTNOX_CLIENT_ID || !FORTNOX_CLIENT_SECRET || !INTEGRATION_SECRET_KEY) return null;
+  if (!env.FORTNOX_AUTH_BASE_URL || !env.FORTNOX_API_BASE_URL) return null;
   return { clientId: FORTNOX_CLIENT_ID, clientSecret: FORTNOX_CLIENT_SECRET };
 }
 
@@ -34,7 +41,8 @@ export const fortnoxNotConfigured = () =>
     error: new AppError({
       code: "UNAVAILABLE",
       message:
-        "Fortnox is not configured (FORTNOX_CLIENT_ID, FORTNOX_CLIENT_SECRET, INTEGRATION_SECRET_KEY).",
+        "Fortnox is not configured (FORTNOX_CLIENT_ID, FORTNOX_CLIENT_SECRET, FORTNOX_AUTH_BASE_URL, " +
+        "FORTNOX_API_BASE_URL, INTEGRATION_SECRET_KEY).",
     }),
   });
 

@@ -12,8 +12,8 @@ export const stripeAdapter: ProviderAdapter = {
   key: "STRIPE",
   ledger: false,
   isConfigured: () => {
-    const { STRIPE_SECRET_KEY, STRIPE_PLATFORM_ACCOUNT_ID } = getEnv();
-    return Boolean(STRIPE_SECRET_KEY && STRIPE_PLATFORM_ACCOUNT_ID);
+    const { STRIPE_SECRET_KEY, STRIPE_PLATFORM_ACCOUNT_ID, STRIPE_API_BASE_URL } = getEnv();
+    return Boolean(STRIPE_SECRET_KEY && STRIPE_PLATFORM_ACCOUNT_ID && STRIPE_API_BASE_URL);
   },
   connect: stripeConnect,
   collect: stripeCollect,

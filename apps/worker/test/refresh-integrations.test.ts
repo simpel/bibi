@@ -32,6 +32,8 @@ async function connectedOrganization() {
   Object.assign(getEnv(), {
     FORTNOX_CLIENT_ID: "client-id",
     FORTNOX_CLIENT_SECRET: "client-secret",
+    FORTNOX_AUTH_BASE_URL: "https://apps.fortnox.se",
+    FORTNOX_API_BASE_URL: "https://api.fortnox.se",
     INTEGRATION_SECRET_KEY: randomBytes(32).toString("base64"),
   });
   fake = createMemoryProvider({ key: "FORTNOX", connectKind: "OAUTH", invoicing: true });

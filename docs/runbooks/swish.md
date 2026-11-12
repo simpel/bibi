@@ -9,7 +9,7 @@ Decision: `docs/decisions/0100-payment-providers-as-ports.md`. Code: `packages/c
 - Callbacks are unsigned. Bibi trusts the body only for which request or refund to read, reads it again over mTLS with the venue's certificate, and applies what Swish reports.
 
 ## Environment
-- `SWISH_API_BASE_URL`: API root up to `/swish-cpcapi`. Default is the Merchant Swish Simulator (`https://mss.cpc.getswish.net/swish-cpcapi`); production is `https://cpc.getswish.net/swish-cpcapi`.
+- `SWISH_API_BASE_URL`: API root up to `/swish-cpcapi`, no default in code (unset: Swish is not offered). The Merchant Swish Simulator is `https://mss.cpc.getswish.net/swish-cpcapi` (`.exampleenv`); production is `https://cpc.getswish.net/swish-cpcapi`.
 - `INTEGRATION_SECRET_KEY`: required; Swish is not configured without it.
 - `WEB_ORIGIN` must be public HTTPS: the callback URL is `<WEB_ORIGIN>/api/providers/swish/webhook`, and Swish refuses a non-HTTPS callback (error RP03).
 

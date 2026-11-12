@@ -191,15 +191,15 @@ export const getBillingFinancials = definePlatformOperation({
 
     const key = secretKey.value;
     const [balanceRes, txnsRes, invoicesRes] = await Promise.all([
-      stripeFetch({ method: "GET", url: "https://api.stripe.com/v1/balance", secretKey: key }),
+      stripeFetch({ method: "GET", path: "/v1/balance", secretKey: key }),
       stripeFetch({
         method: "GET",
-        url: "https://api.stripe.com/v1/balance_transactions?limit=10",
+        path: "/v1/balance_transactions?limit=10",
         secretKey: key,
       }),
       stripeFetch({
         method: "GET",
-        url: "https://api.stripe.com/v1/invoices?limit=10",
+        path: "/v1/invoices?limit=10",
         secretKey: key,
       }),
     ]);

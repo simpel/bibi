@@ -1,4 +1,4 @@
-import { FORTNOX_AUTH_URL, FORTNOX_SCOPE, fortnoxRedirectUri } from "./fortnox-config";
+import { FORTNOX_SCOPE, fortnoxAuthUrl, fortnoxRedirectUri } from "./fortnox-config";
 
 export type FortnoxAuthorizeUrlInput = { clientId: string; state: string; codeChallenge: string };
 
@@ -22,5 +22,5 @@ export function fortnoxAuthorizeUrl({
     code_challenge: codeChallenge,
     code_challenge_method: "S256",
   });
-  return `${FORTNOX_AUTH_URL}?${params.toString()}`;
+  return `${fortnoxAuthUrl()}?${params.toString()}`;
 }

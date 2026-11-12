@@ -63,6 +63,8 @@ WEB_OAUTH_CLIENT_ID=
 # Seals integration tokens at rest (ADR 0087): openssl rand -base64 32. Unset: nothing can connect.
 INTEGRATION_SECRET_KEY=
 # Stripe Connect (ADR 0028), sandbox: sk_test_..., acct_..., and `stripe listen` prints the whsec_.
+# The API root is required with the key, and by Bibi's own billing; sandbox and live share it.
+STRIPE_API_BASE_URL=https://api.stripe.com
 STRIPE_SECRET_KEY=
 STRIPE_PLATFORM_ACCOUNT_ID=
 STRIPE_WEBHOOK_SECRET=
@@ -71,14 +73,17 @@ STRIPE_WEBHOOK_SECRET=
 # Fortnox app (ADR 0087); redirect URI: <WEB_ORIGIN>/api/integrations/fortnox/callback.
 FORTNOX_CLIENT_ID=
 FORTNOX_CLIENT_SECRET=
+FORTNOX_AUTH_BASE_URL=https://apps.fortnox.se
+FORTNOX_API_BASE_URL=https://api.fortnox.se
 # Spiris (Visma eEkonomi) partner client (ADR 0100); redirect URI: <WEB_ORIGIN>/api/providers/visma/callback.
 # Id and secret together; the hosts are required with them. The sandbox uses these production hosts with a sandbox client (docs/runbooks/visma.md).
 VISMA_CLIENT_ID=
 VISMA_CLIENT_SECRET=
 VISMA_IDENTITY_BASE_URL=https://identity.vismaonline.com
 VISMA_API_BASE_URL=https://eaccountingapi.vismaonline.com
-# Swish: unset = the Merchant Swish Simulator. Production: https://cpc.getswish.net/swish-cpcapi.
-# SWISH_API_BASE_URL=
+# Swish API root; this is the Merchant Swish Simulator. Production: https://cpc.getswish.net/swish-cpcapi.
+# Unset: Swish is not offered.
+SWISH_API_BASE_URL=https://mss.cpc.getswish.net/swish-cpcapi
 
 # --- Logging (ADR 0014, 0031) ---
 # trace|debug|info|warn|error|fatal|silent (default info, silent in tests); json|pretty.

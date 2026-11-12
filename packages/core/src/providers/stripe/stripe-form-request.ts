@@ -1,8 +1,6 @@
 import type { Result } from "../../errors/result";
 import { stripeFetch } from "./stripe-request";
 
-const STRIPE_V1_URL = "https://api.stripe.com/v1";
-
 export type FormValue = string | number | boolean | undefined | FormParams | FormValue[];
 export type FormParams = { [key: string]: FormValue };
 
@@ -51,7 +49,7 @@ export function stripeFormRequest({
 }: StripeFormRequestInput): Promise<Result<Record<string, unknown>>> {
   return stripeFetch({
     method: "POST",
-    url: `${STRIPE_V1_URL}${path}`,
+    path: `/v1${path}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       "Stripe-Account": connectedAccountId,

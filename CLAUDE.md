@@ -75,7 +75,7 @@
 - Functions take ONE typed object parameter, e.g. `fn({ a, b }: FnInput)`. No positional parameters.
 - Strict TypeScript. No `any`.
 - Zod at every boundary: HTTP, GraphQL arguments, MCP tool input, env and AI output.
-- Environment variables are read only via `@bibi/config`. Name a URL by how it is used: `*_URL` is used exactly as written; `*_ORIGIN` is `scheme://host[:port]` with no path (validated), and paths are built from it; `*_BASE_URL` is an API root the client adds endpoints to. Never append to a `*_URL`. Every key the app reads is in `.exampleenv` and in `docker-compose.prod.yml` (`pnpm env:check` keeps `.env` to it).
+- Environment variables are read only via `@bibi/config`. Name a URL by how it is used: `*_URL` is used exactly as written; `*_ORIGIN` is `scheme://host[:port]` with no path (validated), and paths are built from it; `*_BASE_URL` is an API root the client adds endpoints to. Never append to a `*_URL`. External hosts (provider APIs) come only from env, never as constants or schema defaults. Every key the app reads is in `.exampleenv` and in `docker-compose.prod.yml` (`pnpm env:check` keeps `.env` to it).
 - Errors are typed `AppError` and returned as `Result`. No thrown strings.
 - Log only via `getLogger()` from `@bibi/logger`, with a stable `event` (`<area>.<event>`). Never `console.*` (Biome `noConsole`). Never log input or output, passwords, tokens or full email addresses (`maskEmail`).
 - A new HTTP entry point is wrapped in `withRequestLogging({ surface, handler })`. Other entry points (CLI, jobs) run in `runWithLogContext`.
