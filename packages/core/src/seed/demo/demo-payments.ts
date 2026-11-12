@@ -75,8 +75,8 @@ function installFakes(): Installed {
       connectKind: "OAUTH",
       invoicing: true,
       ledger: true,
-      // Visma books card and Swish payments taken in Bibi (ADR 0100); Fortnox does not here.
-      registerPayment: key === "VISMA",
+      // Both book card and Swish payments taken in Bibi (ADR 0100, 0106).
+      registerPayment: true,
     });
     install({ key, fake: ledger });
     installed.push(key);

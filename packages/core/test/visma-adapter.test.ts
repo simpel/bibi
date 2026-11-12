@@ -21,7 +21,12 @@ const snapshot = (): InvoiceSnapshot => ({
   currency: "SEK",
   reference: "Order #1042, invoice #7",
   buyerReference: "KS-2026-114",
-  customer: { name: "Acme AB", email: "ap@acme.test" },
+  customer: {
+    name: "Acme AB",
+    email: "ap@acme.test",
+    organizationNumber: "556677-8899",
+    buyerKind: "BUSINESS",
+  },
   lines: [
     {
       name: "Conference room",
@@ -152,7 +157,7 @@ describe("Visma invoicing (ADR 0100)", () => {
       YourReference: "KS-2026-114",
       IsCreditInvoice: false,
     });
-    // 25 % → article id-2, 12 % → article id-3; the bundle splits per rate, the deposit is negative.
+    // 25 % → article id-2, 12 % → article id-3; the bundle splits per rate, the deposit is quantity −1.
     expect(body.Rows).toEqual([
       {
         LineNumber: 1,
@@ -182,8 +187,8 @@ describe("Visma invoicing (ADR 0100)", () => {
         LineNumber: 4,
         ArticleId: "id-3",
         Text: "Advance",
-        UnitPrice: -1000,
-        Quantity: 1,
+        UnitPrice: 1000,
+        Quantity: -1,
         DiscountPercentage: 0,
       },
     ]);

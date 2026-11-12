@@ -53,7 +53,8 @@ describe("invoices in Fortnox (ADR 0090)", () => {
     const raised = fake.raised[0];
     expect(raised && fortnoxRows({ invoice: raised }).at(-1)).toMatchObject({
       description: "Advance",
-      price: -1339.29,
+      quantity: -1,
+      price: 1339.29,
       vatPercent: 12,
     });
 

@@ -39,19 +39,25 @@ export type InsertPaymentInput = {
 export type GuardLedgerInput = {
   context: Pick<OperationContext, "db">;
   invoiceId: string | null;
+  depositId?: string | null;
 };
 
-/** An invoice booked in a ledger provider takes only payments it can book (ADR 0100). */
+/**
+ * An invoice or prepayment invoice booked in a ledger provider takes only payments it can book
+ * (ADR 0100, 0106).
+ */
 export async function guardLedgerInvoice({
   context,
   invoiceId,
+  depositId = null,
 }: GuardLedgerInput): Promise<Result<true>> {
-  if (!invoiceId) return ok({ value: true });
-  const invoice = await context.db.invoice.findFirst({
-    where: { id: invoiceId },
-    select: { provider: true },
-  });
-  return checkLedgerAccepts({ invoice: { provider: invoice?.provider ?? null } });
+  const select = { provider: true } as const;
+  const document = invoiceId
+    ? await context.db.invoice.findFirst({ where: { id: invoiceId }, select })
+    : depositId
+      ? await context.db.deposit.findFirst({ where: { id: depositId }, select })
+      : null;
+  return checkLedgerAccepts({ invoice: { provider: document?.provider ?? null } });
 }
 
 /**
@@ -68,7 +74,11 @@ export async function insertPayment({
   const { orderId, ref, currency } = receivable.value;
   const target = await loadChargeTarget({ context, orderId, method: input.method });
   if (!target.ok) return err({ error: target.error });
-  const guarded = await guardLedgerInvoice({ context, invoiceId: ref.invoiceId });
+  const guarded = await guardLedgerInvoice({
+    context,
+    invoiceId: ref.invoiceId,
+    depositId: ref.depositId,
+  });
   if (!guarded.ok) return guarded;
   const claimed = await claimReceivable({ context, ref });
   if (!claimed.ok) return claimed;

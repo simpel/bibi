@@ -125,7 +125,16 @@ export type InvoiceSnapshot = {
   reference: string;
   /** The buyer's reference (Er referens, ADR 0105), frozen on the invoice; null = none. */
   buyerReference: string | null;
-  customer: { name: string; email: string | null };
+  /**
+   * The buyer (ADR 0106): its kind for this order (the order's own, else the customer's) and, for a
+   * business, its organisation number; providers set both on the customer they create.
+   */
+  customer: {
+    name: string;
+    email: string | null;
+    organizationNumber: string | null;
+    buyerKind: "BUSINESS" | "PRIVATE";
+  };
   lines: readonly InvoiceSnapshotLine[];
   deductions: readonly InvoiceSnapshotDeduction[];
   advancesAccount: string;

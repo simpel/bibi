@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { InvoicingPort, ProviderAuth } from "../types";
 import { fortnoxApi } from "./fortnox-api";
 import { fortnoxNotConnected } from "./fortnox-config";
+import { registerFortnoxPayment } from "./fortnox-register-payment";
 import { fortnoxRows } from "./fortnox-rows";
 
 type Authed = { auth: ProviderAuth };
@@ -14,7 +15,7 @@ function tokenOf({ auth }: Authed): Result<string> {
 /**
  * Fortnox invoicing (ADR 0090, 0100): finds or creates the customer, creates the invoice from the
  * frozen rows, books it and emails it when the customer has an email; lists the payments booked on
- * it; cancels or credits it.
+ * it; registers card and Swish payments on it; cancels or credits it.
  */
 export const fortnoxInvoicing: InvoicingPort = {
   async issue({ auth, invoice }) {
@@ -58,6 +59,15 @@ export const fortnoxInvoicing: InvoicingPort = {
     });
     if (!credited.ok) return credited;
     return ok({ value: { providerReference: credited.value, url: null } });
+  },
+  async registerPayment({ auth, providerReference, payment }) {
+    const accessToken = tokenOf({ auth });
+    if (!accessToken.ok) return accessToken;
+    return registerFortnoxPayment({
+      accessToken: accessToken.value,
+      documentNumber: providerReference,
+      payment,
+    });
   },
   async listPayments({ auth, providerReference }) {
     const accessToken = tokenOf({ auth });

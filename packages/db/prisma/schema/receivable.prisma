@@ -33,14 +33,24 @@ model Deposit {
   sentAt          DateTime?
   /// When it was voided (owned, ADR 0077).
   voidedAt        DateTime?
+  /// Owned (ADR 0106): the ledger provider the INVOICE route chose when it was sent, and its
+  /// connection, where it is raised as a prepayment invoice; null = in Bibi only.
+  provider          Provider?
+  connectionId      String?
+  /// Mirror: the prepayment invoice's document number at the provider; null until raised there.
+  providerReference String?
+  /// Mirror: the provider's page for it, if it has one.
+  providerUrl       String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   createdBy       String?
   order          Order           @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  connection        ProviderConnection? @relation(fields: [connectionId, organizationId], references: [id, organizationId])
   payments        Payment[]
   deductions      InvoiceDeposit[]
 
   @@unique([id, organizationId])
+  @@unique([connectionId, providerReference])
   @@index([organizationId, orderId])
 }
 

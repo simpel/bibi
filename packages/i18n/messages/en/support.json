@@ -236,7 +236,7 @@
         "questions": {
           "fortnox": {
             "question": "Can I connect Bibi to Fortnox?",
-            "answer": "Yes. An admin connects Fortnox under Administration → Integrations and signs in to Fortnox to approve the connection."
+            "answer": "Yes. An admin connects Fortnox under Administration → Integrations and signs in to Fortnox to approve the connection.\nThen pick Fortnox for **Invoice** under Administration → Payments. Invoices are made there, and card and Swish payments taken in Bibi are booked on them in Fortnox too."
           },
           "otherAccounting": {
             "question": "We use another accounting system. What do we do?",
@@ -253,6 +253,10 @@
           "visma": {
             "question": "Can I connect Bibi to Visma eEkonomi?",
             "answer": "Yes. An admin chooses **Connect** on Visma eEkonomi under Administration → Integrations and signs in to Visma to approve the connection.\nThen pick Visma eEkonomi for **Invoice** under Administration → Payments, and invoices are made there with payments mirrored back to Bibi. Card and Swish payments taken in Bibi on a Visma invoice are booked in Visma too."
+          },
+          "prepayment": {
+            "question": "What happens to a deposit when Fortnox or Visma makes our invoices?",
+            "answer": "When you send a deposit request, it is also made as a prepayment invoice in Fortnox or Visma, with VAT. The deposit shows its number there.\nCard and Swish payments on the deposit are booked on that invoice. The final invoice then deducts the deposit.\nIf you void the deposit, Bibi credits the prepayment invoice for you."
           }
         }
       }

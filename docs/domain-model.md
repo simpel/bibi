@@ -1008,17 +1008,19 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · A deposit request: a fixed amount the customer pays in advance, with its own description ([ADR 0057](decisions/0057-money-balance-is-derived.md)). A payment for "something else" is a deposit request too.
 
-> **Ownership:** owned `description`, `amountMinor`, `currency`, `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt`, `voidedAt` (ADR 0077); snapshot `vatRows` (ADR 0093); derived `paidMinor`, `openMinor`, `progress` (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`, from its payments; never stored).
+> **Ownership:** owned `description`, `amountMinor`, `currency`, `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt`, `voidedAt` (ADR 0077), `provider` and `connectionId` (set by send from the INVOICE route when it goes to a ledger provider, ADR 0106) and the mirrors `providerReference`, `providerUrl`; snapshot `vatRows` (ADR 0093); derived `paidMinor`, `openMinor`, `progress` (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`, from its payments; never stored).
 
 **Attributes**
 - description, amount (fixed, set once), currency, due date
 - VAT per rate of the amount (`vatRows`, snapshot at create): the order's live priced lines scaled to the amount; empty = no VAT (no priced lines, or created before [ADR 0093](decisions/0093-vat-on-advance-payments.md))
 - status: `DRAFT → SENT → VOID` (a DRAFT may be voided too; VOID is final)
+- prepayment invoice ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)): sent while the INVOICE route goes to a ledger provider (Fortnox, Visma), it is raised there after the commit as a prepayment invoice, one row per VAT rate of `vatRows` excl. VAT on the advances account, with the order's buyer and buyer's reference (a customer that requires one refuses the send without it). `providerReference` is its document number there. Card, Swish and manual payments on it are booked on it there (`registerOnInvoice`); one whose raise failed is raised before its first payment is booked. Voiding it credits it there in full; a definite refusal makes it SENT again, an unanswered call keeps it VOID and logs `deposit.creditUnconfirmed`. Payments booked directly at the provider are not mirrored yet.
 
 **Relations**
 - `N:1` Order requires this
+- `N:0..1` ProviderConnection raised this
 - `1:N` is paid with → Payment
-- `N:1` Invoice offsets this – *later*
+- `1:N` is deducted by → InvoiceDeposit → Invoice (the final invoice deducts it as quantity −1 rows on the advances account)
 
 > Operations (`payment:read` to read, `payment:write` to change): `deposit.list` (per order, newest first), `deposit.get`, `deposit.create({ orderId, description, amountMinor, dueDate? })` (a DRAFT; the order must be chargeable: not in a `closes` status unless it is `invoiceable`), `deposit.send` (DRAFT → SENT; only a SENT deposit can be paid) and `deposit.void` (refused with `CONFLICT` while a payment against it is PENDING or anything paid has not been refunded). Every move claims the row on its current status, so a concurrent move or payment request gets `CONFLICT` instead of a lost update. On every surface; web on the order page (create at `/new/deposit?order=<id>`).
 

@@ -4,7 +4,13 @@ import type { ProviderInvoiceRow } from "../invoice-rows";
 /** One invoice row as Fortnox takes it (ADR 0090): amounts in currency units, excl. VAT. */
 export type FortnoxInvoiceRow = ProviderInvoiceRow;
 
-export type FortnoxCustomerInput = { name: string; email: string | null };
+export type FortnoxCustomerInput = {
+  name: string;
+  email: string | null;
+  /** A business's organisation number (ADR 0106); null for a private person. */
+  organizationNumber: string | null;
+  buyerKind: "BUSINESS" | "PRIVATE";
+};
 
 export type FortnoxInvoiceInput = {
   customerNumber: string;

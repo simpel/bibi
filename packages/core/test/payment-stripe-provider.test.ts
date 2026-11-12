@@ -102,7 +102,12 @@ describe("stripeCharges", () => {
           currency: "SEK",
           reference: "Order #7, invoice #1",
           buyerReference: null,
-          customer: { name: "Hisingen Energi AB", email: "billing@example.com" },
+          customer: {
+            name: "Hisingen Energi AB",
+            email: "billing@example.com",
+            organizationNumber: "556834-2210",
+            buyerKind: "BUSINESS",
+          },
           lines: [
             {
               name: "Lunch",

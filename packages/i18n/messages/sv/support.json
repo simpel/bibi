@@ -236,7 +236,7 @@
         "questions": {
           "fortnox": {
             "question": "Kan jag koppla Bibi till Fortnox?",
-            "answer": "Ja. En administratör kopplar Fortnox under Administration → Integrationer och loggar in i Fortnox för att godkänna kopplingen."
+            "answer": "Ja. En administratör kopplar Fortnox under Administration → Integrationer och loggar in i Fortnox för att godkänna kopplingen.\nVälj sedan Fortnox för **Faktura** under Administration → Betalningar. Fakturorna skapas där, och kort- och Swishbetalningar som tas i Bibi bokförs på dem i Fortnox också."
           },
           "otherAccounting": {
             "question": "Vi använder ett annat bokföringssystem. Hur gör vi?",
@@ -253,6 +253,10 @@
           "visma": {
             "question": "Kan jag koppla Bibi till Visma eEkonomi?",
             "answer": "Ja. En administratör väljer **Anslut** på Visma eEkonomi under Administration → Integrationer och loggar in i Visma för att godkänna kopplingen.\nVälj sedan Visma eEkonomi för **Faktura** under Administration → Betalningar, så skapas fakturorna där och betalningarna speglas tillbaka till Bibi. Kort- och Swishbetalningar som tas i Bibi på en Visma-faktura bokförs i Visma också."
+          },
+          "prepayment": {
+            "question": "Vad händer med ett förskott när Fortnox eller Visma gör våra fakturor?",
+            "answer": "När du skickar ett förskott skapas det också som en förskottsfaktura i Fortnox eller Visma, med moms. Förskottet visar fakturans nummer där.\nKort- och Swishbetalningar på förskottet bokförs på den fakturan. Slutfakturan drar sedan av förskottet.\nOm du makulerar förskottet krediterar Bibi förskottsfakturan åt dig."
           }
         }
       }

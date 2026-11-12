@@ -1,7 +1,12 @@
 import { z } from "zod";
 import { ok, type Result } from "../../errors/result";
 import { fortnoxGet, fortnoxRefused, fortnoxSend } from "./fortnox-request";
-import type { FortnoxApi, FortnoxInvoiceRow, FortnoxPayment } from "./fortnox-types";
+import type {
+  FortnoxApi,
+  FortnoxCustomerInput,
+  FortnoxInvoiceRow,
+  FortnoxPayment,
+} from "./fortnox-types";
 
 const CustomersSchema = z.object({
   Customers: z.array(z.object({ CustomerNumber: z.string() })).default([]),
@@ -43,13 +48,18 @@ const toPayment = ({ p }: { p: ListedPayment }): FortnoxPayment => ({
 
 type Authed = { accessToken: string };
 
-/** The first customer matching the email, else the name (Fortnox filters are exact). */
+/**
+ * The first customer matching the organisation number, else the email, else the name (Fortnox
+ * filters are exact).
+ */
 async function findCustomer({
   accessToken,
   name,
   email,
-}: Authed & { name: string; email: string | null }) {
+  organizationNumber,
+}: Authed & Omit<FortnoxCustomerInput, "buyerKind">) {
   const filters = [
+    organizationNumber ? `organisationnumber=${encodeURIComponent(organizationNumber)}` : null,
     email ? `email=${encodeURIComponent(email)}` : null,
     `name=${encodeURIComponent(name)}`,
   ];
@@ -65,11 +75,17 @@ async function findCustomer({
 
 /** Fortnox's invoicing API (ADR 0090): customers, invoices and their payments. */
 export const fortnoxApi: FortnoxApi = {
-  async findOrCreateCustomer({ accessToken, name, email }): Promise<Result<string>> {
-    const existing = await findCustomer({ accessToken, name, email });
+  async findOrCreateCustomer({ accessToken, buyerKind, ...customer }): Promise<Result<string>> {
+    const existing = await findCustomer({ accessToken, ...customer });
     if (!existing.ok || existing.value) return existing as Result<string>;
+    const { name, email, organizationNumber } = customer;
     const body = {
-      Customer: { Name: name, ...(email ? { Email: email, EmailInvoice: email } : {}) },
+      Customer: {
+        Name: name,
+        Type: buyerKind === "PRIVATE" ? "PRIVATE" : "COMPANY",
+        ...(organizationNumber ? { OrganisationNumber: organizationNumber } : {}),
+        ...(email ? { Email: email, EmailInvoice: email } : {}),
+      },
     };
     const sent = await fortnoxSend({ method: "POST", path: "/customers", accessToken, body });
     if (!sent.ok) return sent;

@@ -67,6 +67,7 @@ model ProviderConnection {
   payments            Payment[]
   attempts            PaymentAttempt[]
   invoices            Invoice[]
+  deposits            Deposit[]
   creditNotes         CreditNote[]
 
   @@unique([id, organizationId])

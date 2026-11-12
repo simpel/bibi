@@ -19,7 +19,11 @@ async function recordManual({ context, input }: RecordInput): Promise<Result<Pay
   const receivable = await loadReceivable({ context, input });
   if (!receivable.ok) return receivable;
   const { orderId, ref, currency, amountMinor } = receivable.value;
-  const guarded = await guardLedgerInvoice({ context, invoiceId: ref.invoiceId });
+  const guarded = await guardLedgerInvoice({
+    context,
+    invoiceId: ref.invoiceId,
+    depositId: ref.depositId,
+  });
   if (!guarded.ok) return guarded;
   const claimed = await claimReceivable({ context, ref });
   if (!claimed.ok) return claimed;

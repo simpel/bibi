@@ -10,6 +10,35 @@ import { asVatRows } from "../quote/order-line-schema";
 const day = ({ instant, timeZone }: { instant: Date; timeZone: string }) =>
   toIsoDate({ date: toZonedParts({ instant, timeZone }).date });
 
+/** The order's reference and its buyer as providers need them (ADR 0106). */
+export const ORDER_FOR_PROVIDER = {
+  reference: true,
+  buyerKind: true,
+  customer: { select: { name: true, email: true, organizationNumber: true, buyerKind: true } },
+} as const;
+
+type OrderForProvider = {
+  buyerKind: "BUSINESS" | "PRIVATE" | null;
+  customer: {
+    name: string;
+    email: string | null;
+    organizationNumber: string | null;
+    buyerKind: "BUSINESS" | "PRIVATE";
+  };
+};
+
+/** The buyer of the order: the customer with the order's effective kind (ADR 0106). */
+export function buyerOf({ order }: { order: OrderForProvider }): InvoiceSnapshot["customer"] {
+  const { customer } = order;
+  const buyerKind = order.buyerKind ?? customer.buyerKind;
+  return {
+    name: customer.name,
+    email: customer.email,
+    organizationNumber: buyerKind === "BUSINESS" ? customer.organizationNumber : null,
+    buyerKind,
+  };
+}
+
 export type LoadForProviderInput = { context: OperationContext; invoiceId: string };
 
 /** The invoice with what a provider needs: frozen lines, deductions, customer, connection. */
@@ -22,7 +51,7 @@ export function loadForProvider({ context, invoiceId }: LoadForProviderInput) {
         include: { item: { select: { entityTypeId: true } } },
       },
       deductions: { include: { deposit: { select: { description: true, vatRows: true } } } },
-      order: { select: { reference: true, customer: { select: { name: true, email: true } } } },
+      order: { select: ORDER_FOR_PROVIDER },
     },
   });
 }
@@ -46,7 +75,8 @@ export async function toInvoiceSnapshot({
   ]);
   const timeZone = zoneOf({ venue: null });
   const accountOf = revenueAccountResolver({ settings });
-  const { customer, reference } = invoice.order;
+  const { reference } = invoice.order;
+  const customer = buyerOf({ order: invoice.order });
   return {
     invoiceDate: day({ instant: invoice.sentAt ?? new Date(), timeZone }),
     dueDate: invoice.dueDate ? day({ instant: invoice.dueDate, timeZone }) : null,

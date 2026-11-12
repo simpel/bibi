@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PROVIDER_KEYS } from "../../providers/provider-keys";
 import { PageInputShape } from "../../shared/page-input";
 import { PAYMENT_AMOUNT_MAX_MINOR } from "../payment/schema";
 import { ReceivableStatusSchema, SettlementShape } from "../payment/settlement-schema";
@@ -24,6 +25,18 @@ export const DepositSchema = z.object({
   dueDate: z.date().nullable(),
   status: ReceivableStatusSchema.describe("DRAFT, SENT (payments can be requested) or VOID"),
   statusChangedAt: z.date(),
+  provider: z
+    .enum(PROVIDER_KEYS)
+    .nullable()
+    .describe(
+      "The accounting system it is raised in as a prepayment invoice (ADR 0106), chosen by the " +
+        "INVOICE route when it was sent; null = kept in Bibi",
+    ),
+  providerReference: z
+    .string()
+    .nullable()
+    .describe("The prepayment invoice's document number there; null until raised"),
+  providerUrl: z.string().nullable().describe("The provider's page for it, if any"),
   ...SettlementShape,
   createdAt: z.date(),
   updatedAt: z.date(),
