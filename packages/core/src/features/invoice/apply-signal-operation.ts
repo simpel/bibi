@@ -7,16 +7,26 @@ import { notFound } from "../../shared/errors";
 import { notifyPaymentReceived } from "../notification/follow-ups";
 import { closeOpenAttempts } from "../payment/close-attempts";
 import { PaymentStatusSchema } from "../payment/schema";
+import { applyDepositSignal } from "./deposit-signal";
 import { applyInvoicePaymentSignal } from "./invoice-payment-signal";
 import { moveInvoice } from "./move-invoice";
 
-const InvoiceSignalInputSchema = z.object({
-  invoiceId: z.string().min(1).describe("The invoice the signal is about"),
-  signal: ProviderSignalSchema,
-});
+const InvoiceSignalInputSchema = z
+  .object({
+    invoiceId: z.string().min(1).optional().describe("The invoice the signal is about"),
+    depositId: z
+      .string()
+      .min(1)
+      .optional()
+      .describe("Or the deposit whose prepayment invoice it is about (ADR 0106)"),
+    signal: ProviderSignalSchema,
+  })
+  .refine((input) => Boolean(input.invoiceId) !== Boolean(input.depositId), {
+    message: "Give exactly one of invoiceId and depositId",
+  });
 
 const InvoiceSignalResultSchema = z.object({
-  invoiceId: z.string(),
+  invoiceId: z.string().describe("The invoice, or the deposit, the signal was about"),
   orderId: z.string(),
   paymentId: z.string().nullable(),
   status: PaymentStatusSchema.nullable().describe("The payment's status; null for a void"),
@@ -38,11 +48,13 @@ export const applyInvoiceSignal = defineOperation({
   permission: "payment:write",
   approval: false,
   followUp: notifyPaymentReceived,
-  handler: async ({ input: { invoiceId, signal }, context }) => {
+  handler: async ({ input: { invoiceId, depositId, signal }, context }) => {
     if (context.actor.type !== "system") {
       const message = "Invoices are updated by the provider's events only";
       return err({ error: new AppError({ code: "FORBIDDEN", message }) });
     }
+    if (depositId) return applyDepositSignal({ context, depositId, signal });
+    if (!invoiceId) return notFound({ entity: "Invoice" });
     const row = await context.db.invoice.findFirst({ where: { id: invoiceId } });
     if (!row?.provider) return notFound({ entity: "Invoice" });
     const base = { invoiceId, orderId: row.orderId };

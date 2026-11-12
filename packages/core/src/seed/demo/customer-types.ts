@@ -6,6 +6,8 @@ export type DemoContact = {
   type: string;
   email?: string;
   phone?: string;
+  /** The reference this person orders under (ADR 0105). */
+  buyerReference?: string;
   fields?: DemoFieldValues;
 };
 
@@ -16,6 +18,8 @@ export type DemoCustomer = {
   /** Business or private (ADR 0106); omitted = BUSINESS. */
   buyerKind?: "BUSINESS" | "PRIVATE";
   organizationNumber?: string;
+  /** Invoices must carry the buyer's reference (ADR 0105). */
+  requiresBuyerReference?: boolean;
   fields?: DemoFieldValues;
   invoiceCity?: string;
   paymentTermsDays?: number;

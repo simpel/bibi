@@ -2,6 +2,7 @@ import { resetProviderAdapters } from "@bibi/core";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
+import { connectLedger } from "./ledger";
 import { seedOrder } from "./seed-order";
 
 afterEach(() => {
@@ -10,8 +11,10 @@ afterEach(() => {
 
 describe("cross-organization isolation: payments", () => {
   it("hides one organization's payments from another and refuses to charge its order", async () => {
-    const a = await connect({ context: testContext() });
+    const context = testContext();
+    const a = await connect({ context });
     const b = await connect({ context: testContext() });
+    await connectLedger({ context });
     const { id: orderId } = await seedOrder({ client: a });
     installFakeStripe({ status: "ACTIVE" });
     await call({ client: a, name: "paymentAccount_startOnboarding" });

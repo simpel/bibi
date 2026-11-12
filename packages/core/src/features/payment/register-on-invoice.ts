@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { findProvider } from "../../providers/registry";
 import { conflict } from "../../shared/errors";
+import { issueDepositInProvider } from "../deposit/deposit-provider";
 import { type ProviderInvoice, paymentKeyOf } from "../invoice/invoice-payment-signal";
 import { invoiceProviderCall } from "../invoice/invoice-provider";
 
@@ -27,20 +28,38 @@ export function checkLedgerAccepts({
 export type RegisterOnInvoiceInput = { context: OperationContext; paymentId: string };
 
 /**
- * Books a settled payment on the invoice it pays when that invoice lives in a ledger provider
- * that can register payments (ADR 0100), after the commit. The booking is kept as a SUCCEEDED
- * attempt under the same key the provider's own payment list uses, so a later sync finds it and
- * adds nothing. Anything else, or a payment already booked, is a no-op.
+ * The provider document the payment settles: its invoice, else its deposit's prepayment invoice
+ * (ADR 0106), raised first when sending it to the ledger failed earlier.
+ */
+async function documentOf({ context, paymentId }: RegisterOnInvoiceInput) {
+  const payment = await context.db.payment.findFirst({
+    where: { id: paymentId, status: "SUCCEEDED" },
+    include: { invoice: true, deposit: true },
+  });
+  if (!payment) return null;
+  if (payment.invoice) return { payment, invoice: payment.invoice };
+  const deposit = payment.deposit;
+  if (!deposit?.provider || deposit.providerReference) return { payment, invoice: deposit };
+  const issued = await issueDepositInProvider({ context, id: deposit.id });
+  if (!issued.ok) return { payment, invoice: deposit, error: issued };
+  const raised = await context.db.deposit.findFirst({ where: { id: deposit.id } });
+  return { payment, invoice: raised };
+}
+
+/**
+ * Books a settled payment on the invoice or prepayment invoice it pays when that document lives
+ * in a ledger provider that can register payments (ADR 0100, 0106), after the commit. The booking
+ * is kept as a SUCCEEDED attempt under the same key the provider's own payment list uses, so a
+ * later sync finds it and adds nothing. Anything else, or a payment already booked, is a no-op.
  */
 export async function registerOnInvoice({
   context,
   paymentId,
 }: RegisterOnInvoiceInput): Promise<Result<true>> {
-  const payment = await context.db.payment.findFirst({
-    where: { id: paymentId, status: "SUCCEEDED" },
-    include: { invoice: true },
-  });
-  const invoice = payment?.invoice;
+  const found = await documentOf({ context, paymentId });
+  if (found?.error) return found.error;
+  const payment = found?.payment;
+  const invoice = found?.invoice;
   if (!payment || !invoice?.provider || !invoice.providerReference) return ok({ value: true });
   if (payment.provider === invoice.provider) return ok({ value: true });
   const register = findProvider({ key: invoice.provider })?.invoicing?.registerPayment;

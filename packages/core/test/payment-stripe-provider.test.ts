@@ -1,7 +1,6 @@
 import { getEnv } from "@bibi/config";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { stripeCharges } from "../src/providers/stripe/stripe-charges";
-import { stripeInvoicing } from "../src/providers/stripe/stripe-invoicing";
 import { stripeRefundStatus } from "../src/providers/stripe/stripe-refunds";
 import { unwrap } from "./helpers";
 
@@ -80,59 +79,6 @@ describe("stripeCharges", () => {
     const input = { ...base, successUrl: "https://s", cancelUrl: "https://c" };
     unwrap({ result: await stripeCharges.createCheckout(input) });
     expect(calls[0]?.body.has("payment_intent_data[application_fee_amount]")).toBe(false);
-  });
-
-  it("creates, finalizes and sends an invoice on the connected account", async () => {
-    stubStripe({
-      responses: [
-        { id: "cus_1" },
-        { id: "in_1" },
-        { id: "ii_1" },
-        { id: "in_1", hosted_invoice_url: "https://invoice.stripe.com/i/in_1" },
-        { id: "in_1" },
-      ],
-    });
-    const invoice = unwrap({
-      result: await stripeInvoicing.issue({
-        auth: { externalAccountId: "acct_venue", accessToken: null },
-        idempotencyKey: "bibi-invoice-i1",
-        invoice: {
-          invoiceDate: "2026-11-09",
-          dueDate: "2026-12-09",
-          currency: "SEK",
-          reference: "Order #7, invoice #1",
-          customer: { name: "Hisingen Energi AB", email: "billing@example.com" },
-          lines: [
-            {
-              name: "Lunch",
-              quantity: 10,
-              unitPriceMinor: 10_000,
-              discountPercent: 0,
-              vatRatePercent: 12,
-              vatRows: [{ vatRatePercent: 12, totalExclVatMinor: 100_000 }],
-              revenueAccount: "3001",
-            },
-          ],
-          deductions: [],
-          advancesAccount: "2420",
-        },
-      }),
-    });
-    expect(invoice).toEqual({
-      providerReference: "in_1",
-      url: "https://invoice.stripe.com/i/in_1",
-    });
-    expect(calls.map(({ url }) => url.replace("https://api.stripe.com/v1", ""))).toEqual([
-      "/customers",
-      "/invoices",
-      "/invoiceitems",
-      "/invoices/in_1/finalize",
-      "/invoices/in_1/send",
-    ]);
-    expect(calls.every(({ headers }) => headers["Stripe-Account"] === "acct_venue")).toBe(true);
-    expect(calls[2]?.body.get("invoice")).toBe("in_1");
-    expect(calls[2]?.body.get("amount")).toBe("112000");
-    expect(new Set(calls.map(({ headers }) => headers["Idempotency-Key"])).size).toBe(5);
   });
 
   it("maps a refused request (4xx) to CONFLICT", async () => {

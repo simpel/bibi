@@ -121,10 +121,7 @@ export const lindholmenTypes: readonly DemoType[] = [
     base: "CUSTOMER",
     name: "Public sector",
     pluralName: "Public sector",
-    fields: [
-      { name: "Peppol-ID", kind: "TEXT" },
-      { name: "Requires case number", kind: "BOOLEAN" },
-    ],
+    fields: [{ name: "Peppol-ID", kind: "TEXT" }],
   },
   { base: "CUSTOMER", name: "Association", pluralName: "Associations" },
   {

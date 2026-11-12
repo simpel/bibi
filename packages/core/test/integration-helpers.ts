@@ -30,6 +30,8 @@ export function installFakeFortnox(): FakeFortnox {
     connectKind: "OAUTH",
     invoicing: true,
     ledger: true,
+    // Like the real adapter, it books card and Swish payments taken in Bibi (ADR 0106).
+    registerPayment: true,
   });
   fake.adapter.isConfigured = isConfigured;
   // Fortnox's own consent page and callback, so the authorize URL can be checked.

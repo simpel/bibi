@@ -1,5 +1,4 @@
-import { scaleParts } from "../accounting/sie4/sale";
-import { vatParts } from "../features/finance/account-map";
+import { scaleParts, vatParts } from "../features/finance/vat-parts";
 import type { InvoiceSnapshot, InvoiceSnapshotDeduction, InvoiceSnapshotLine } from "./types";
 
 /** One invoice row as accounting providers take it (ADR 0090): amounts in units, excl. VAT. */
@@ -44,23 +43,22 @@ function lineRows({ line }: { line: InvoiceSnapshotLine }): ProviderInvoiceRow[]
 type DeductionInput = { deduction: InvoiceSnapshotDeduction; account: number };
 
 /**
- * A deducted deposit as negative rows on the customer advances account (ADR 0093): one per VAT
- * rate of its split, priced excl. VAT, so the invoice's VAT is net of what was reported when the
- * deposit was paid. A deposit without a split is one row without VAT.
+ * A deducted deposit as rows of quantity −1 on the customer advances account (ADR 0093, 0106):
+ * one per VAT rate of its split, with a positive price excl. VAT, so the invoice's VAT is net of
+ * what was reported when the deposit was paid and the rows pass the e-invoice checks (Peppol
+ * refuses negative prices). A deposit without a split is one row without VAT.
  */
 function deductionRows({ deduction, account }: DeductionInput): ProviderInvoiceRow[] {
   const { description } = deduction;
   const parts = vatParts({ vatRows: deduction.vatRows });
-  const row = { quantity: 1, discountPercent: 0, accountNumber: account };
+  const row = { quantity: -1, discountPercent: 0, accountNumber: account };
   if (parts.length === 0) {
-    return [
-      { ...row, description, price: -units({ minor: deduction.amountMinor }), vatPercent: 0 },
-    ];
+    return [{ ...row, description, price: units({ minor: deduction.amountMinor }), vatPercent: 0 }];
   }
   return scaleParts({ parts, amountMinor: deduction.amountMinor }).map((part) => ({
     ...row,
     description: parts.length > 1 ? `${description} (${part.vatRatePercent} %)` : description,
-    price: -units({ minor: part.exclVatMinor }),
+    price: units({ minor: part.exclVatMinor }),
     vatPercent: part.vatRatePercent,
   }));
 }

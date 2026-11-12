@@ -77,21 +77,23 @@ async function invoiceFailures({ context, org }: CheckDemoProvidersInput) {
     for (const note of invoice.creditNotes) {
       const atProvider = invoice.provider !== null;
       if (note.status !== "ISSUED" || note.issuedAt === null) {
-        failures.push(`${org.slug}: credit note ${note.number} is ${note.status}`);
+        failures.push(`${org.slug}: credit note ${note.id} is ${note.status}`);
       }
       if (atProvider && !note.providerReference) {
-        failures.push(`${org.slug}: credit note ${note.number} has no provider reference`);
+        failures.push(`${org.slug}: credit note ${note.id} has no provider reference`);
       }
     }
   }
+  // Every invoice is raised in the accounting system (ADR 0106); `provider` in the data files
+  // only picks which one when the organization has two.
   const ledger = wanted.filter((w) => w.provider);
   const raised = invoices.filter((i) => i.provider === "FORTNOX" || i.provider === "VISMA");
-  if (raised.length !== ledger.length) {
-    failures.push(`${org.slug}: ${raised.length} ledger invoices, expected ${ledger.length}`);
+  if (raised.length !== wanted.length) {
+    failures.push(`${org.slug}: ${raised.length} ledger invoices, expected ${wanted.length}`);
   }
   for (const invoice of raised) {
     if (!invoice.providerReference)
-      failures.push(`${org.slug}: invoice ${invoice.number} has no reference`);
+      failures.push(`${org.slug}: invoice ${invoice.id} has no reference`);
     // A card payment counts only when the ledger provider booked it too (`registerPayment`).
     const wrong = invoice.payments.filter(
       (p) =>
@@ -99,17 +101,11 @@ async function invoiceFailures({ context, org }: CheckDemoProvidersInput) {
         !p.attempts.some((a) => a.provider === invoice.provider && a.status === "SUCCEEDED"),
     );
     if (wrong.length > 0)
-      failures.push(`${org.slug}: invoice ${invoice.number} paid outside its ledger`);
+      failures.push(`${org.slug}: invoice ${invoice.id} paid outside its ledger`);
     const cards = invoice.payments.filter((p) => p.method === "CARD").length;
-    if (cards !== ledger.filter((w) => w.cardKr && w.provider === invoice.provider).length)
-      failures.push(`${org.slug}: invoice ${invoice.number} has ${cards} registered card payments`);
-    const exported = await context.db.accountingExportEntry.count({
-      where: {
-        OR: [{ invoiceId: invoice.id }, { paymentId: { in: invoice.payments.map((p) => p.id) } }],
-      },
-    });
-    if (exported > 0)
-      failures.push(`${org.slug}: ledger invoice ${invoice.number} is in the SIE export`);
+    const wantedCards = ledger.filter((w) => w.cardKr && w.provider === invoice.provider).length;
+    if (ledger.length > 0 && cards !== wantedCards)
+      failures.push(`${org.slug}: invoice ${invoice.id} has ${cards} registered card payments`);
   }
   return failures;
 }

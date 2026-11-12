@@ -22,9 +22,8 @@ export const PaymentCancelInputSchema = z.object({
 const receivableId = ({ what }: { what: string }) =>
   z.string().min(1).optional().describe(`Id of the ${what} the money was paid against`);
 
-/** Exactly one of `quoteId`, `depositId` and `invoiceId` (checked by the handler). */
+/** Exactly one of `depositId` and `invoiceId` (checked by the handler, ADR 0106). */
 export const PaymentRecordManualInputSchema = z.object({
-  quoteId: receivableId({ what: "SENT or ACCEPTED quote" }),
   depositId: receivableId({ what: "SENT deposit request" }),
   invoiceId: receivableId({ what: "SENT invoice" }),
   amountMinor: z

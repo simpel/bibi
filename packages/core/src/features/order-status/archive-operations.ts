@@ -6,9 +6,14 @@ import { canView } from "../../shared/can-view";
 import { archiveStatus } from "./archive-status";
 import { OrderStatusArchiveInputSchema, OrderStatusSchema } from "./schema";
 
+/** Archiving moves every order in the status through the move checks in one transaction. */
+const ARCHIVE_TIMEOUT_MS = 30_000;
+
 export const archiveOrderStatus = defineOperation({
   name: "orderStatus.archive",
   kind: "command",
+  // Moves every order in the status in one transaction: a busy status needs more than 5 s.
+  transactionTimeoutMs: ARCHIVE_TIMEOUT_MS,
   description:
     "Archive an order status (statuses are never deleted). A status that holds orders needs " +
     "`targetStatusId`: its orders move there through the normal move checks (transition and " +
@@ -35,6 +40,7 @@ export const previewArchiveOrderStatus = defineOperation({
   name: "orderStatus.archivePreview",
   kind: "query",
   dryRun: true,
+  transactionTimeoutMs: ARCHIVE_TIMEOUT_MS,
   description:
     "Preview archiving an order status without changing anything: how many orders would move to " +
     "`targetStatusId`, how many status grid cells are cleared and every blocker (an order that may " +

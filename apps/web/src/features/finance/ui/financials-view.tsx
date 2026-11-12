@@ -1,12 +1,10 @@
 import type {
-  AccountingExportDto,
   DateTimeFormat,
   FinanceOverviewDto,
   NumberFormat,
   PlainDate,
 } from "@bibi/core/schemas";
 import { AgingCard } from "./aging-card";
-import { ExportHistory } from "./export-history";
 import { FinanceStatCards } from "./finance-stat-cards";
 import { FinancialsToolbar } from "./financials-toolbar";
 import { MonthlyChartCard } from "./monthly-chart-card";
@@ -17,7 +15,6 @@ import { VatCard } from "./vat-card";
 
 export type FinancialsViewProps = {
   overview: FinanceOverviewDto;
-  exports: AccountingExportDto[];
   today: PlainDate;
   dates: DateTimeFormat;
   numbers: NumberFormat;
@@ -32,14 +29,11 @@ export type FinancialsViewProps = {
  * full-width tables. A row holds cards of one kind; charts and tables never share one.
  */
 export function FinancialsView(props: FinancialsViewProps) {
-  const { overview, exports, today, dates, numbers, canWrite, customers, customerId } = props;
+  const { overview, today, dates, numbers, customers, customerId } = props;
   const period = { from: overview.from, to: overview.to };
   return (
     <div data-slot="financials" className="grid gap-6">
-      <FinancialsToolbar
-        {...{ period, today, customers, customerId }}
-        exportPeriod={canWrite ? period : null}
-      />
+      <FinancialsToolbar {...{ period, today, customers, customerId }} />
       <FinanceStatCards overview={overview} dates={dates} numbers={numbers} />
       <div className="grid gap-4 md:grid-cols-2">
         <MonthlyChartCard overview={overview} numbers={numbers} />
@@ -49,7 +43,6 @@ export function FinancialsView(props: FinancialsViewProps) {
       </div>
       <VatCard overview={overview} numbers={numbers} />
       <OverdueCard overview={overview} dates={dates} numbers={numbers} />
-      <ExportHistory exports={exports} dates={dates} canDownload={canWrite} />
     </div>
   );
 }

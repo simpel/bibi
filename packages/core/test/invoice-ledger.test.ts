@@ -16,7 +16,6 @@ import {
   updatePaymentSettings,
   voidInvoice,
 } from "../src/index";
-import { preview } from "./accounting-export-helpers";
 import { connectFortnox } from "./fortnox-invoicing-helpers";
 import { errorCode, unwrap } from "./helpers";
 import { useFortnoxEnv } from "./integration-helpers";
@@ -102,7 +101,7 @@ describe("an invoice booked in a ledger provider (ADR 0100)", () => {
     expect(page.items.map((p) => p.method)).toEqual(["MANUAL"]);
   });
 
-  it("mirrors its payments through the signal path, notifying once, and leaves them out of the SIE export", async () => {
+  it("mirrors its payments through the signal path, notifying once", async () => {
     const { context, fake, invoice, orderId } = await bookedInvoice().then((s) => ({
       ...s,
       orderId: s.order.id,
@@ -119,8 +118,5 @@ describe("an invoice booked in a ledger provider (ADR 0100)", () => {
     expect(items.map((item) => item.kind)).toEqual(["PAYMENT_RECEIVED"]);
     const mirrored = await context.db.payment.count({ where: { invoiceId: invoice.id } });
     expect(mirrored).toBe(1);
-    const view = await preview({ context });
-    expect(view.counts).toEqual([]);
-    expect(view.blockers.map((b) => b.code)).toContain("NOTHING_TO_EXPORT");
   });
 });

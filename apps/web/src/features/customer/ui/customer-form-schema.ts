@@ -34,6 +34,7 @@ export function customerFormSchema({ type, vocabularies }: CustomerSchemaInput) 
         buyerKind: values.buyerKind || undefined,
         organizationNumber:
           values.buyerKind === "PRIVATE" ? null : blankToNull({ value: values.organizationNumber }),
+        requiresBuyerReference: values.requiresBuyerReference,
         invoiceStreetAddress: blankToNull({ value: values.invoiceStreetAddress }),
         invoicePostalCode: blankToNull({ value: values.invoicePostalCode }),
         invoiceCity: blankToNull({ value: values.invoiceCity }),

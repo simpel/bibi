@@ -13,6 +13,8 @@ export type OrderFormValues = {
   contactId: string;
   /** Business or private for this order; `NONE` follows the customer's (ADR 0106). */
   buyerKind: string;
+  /** The buyer's reference for this order; empty follows the contact's (ADR 0105). */
+  buyerReference: string;
   desiredStartsAt: string;
   desiredEndsAt: string;
   estimatedHeadcount: string;
@@ -49,6 +51,7 @@ export function orderFormDefaults({ type, order, timeZone }: OrderDefaultsInput)
     customerId: order?.customerId ?? "",
     contactId: order?.contactId ?? "",
     buyerKind: order?.buyerKind ?? NONE,
+    buyerReference: order?.buyerReference ?? "",
     desiredStartsAt: local({ date: order?.desiredStartsAt }),
     desiredEndsAt: local({ date: order?.desiredEndsAt }),
     estimatedHeadcount: text({ value: order?.estimatedHeadcount }),

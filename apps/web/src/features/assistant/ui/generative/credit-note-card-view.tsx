@@ -24,7 +24,7 @@ export function CreditNoteCardView({ invoice }: CreditNoteCardViewProps) {
         <ul className="grid gap-1 text-sm">
           {invoice.creditNotes.map((note) => (
             <li key={note.id} className="flex flex-wrap justify-between gap-2">
-              <span>{t("noteNumber", { number: note.number })}</span>
+              <span>{t("noteNumber", { number: note.documentNumber ?? "–" })}</span>
               <span className="text-muted-foreground">
                 {numbers.money({ minor: note.amountMinor, currency: invoice.currency })} ·{" "}
                 {t(`status.${note.status}`)}

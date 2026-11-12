@@ -30,7 +30,6 @@ export * from "./features/field-definition/field-values-schema";
 export * from "./features/field-definition/fields-schema";
 export * from "./features/field-definition/schema";
 export * from "./features/file/schema";
-export * from "./features/finance/export-schema";
 export * from "./features/finance/schema";
 export * from "./features/finance/settings-schema";
 export * from "./features/floor-plan/footprint";

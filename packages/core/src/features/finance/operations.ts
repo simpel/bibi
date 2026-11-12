@@ -7,14 +7,6 @@ import { nowOf } from "../../time/now";
 import { parseIsoDate } from "../../time/plain-date";
 import { monthly, revenueByType, vatByRate } from "./aggregate";
 import { aging } from "./aging";
-import {
-  accountingExportOperations,
-  createAccountingExport,
-  downloadAccountingExport,
-  getAccountingExport,
-  listAccountingExports,
-  previewAccountingExport,
-} from "./export-operations";
 import { financeTrends } from "./finance-trends";
 import { loadCashInPeriod, loadInvoicedInPeriod, loadOpenInvoices } from "./load-facts";
 import { outcomes } from "./outcomes";
@@ -99,20 +91,10 @@ export const financeOverview = defineOperation({
   },
 });
 
-/** The financials and the accounts of their SIE export (ADR 0077). */
-export const financeOperations = [
-  financeOverview,
-  getAccountingSettings,
-  updateAccountingSettings,
-  ...accountingExportOperations,
-];
+/**
+ * The financials and the accounts provider rows post to (ADR 0077). The SIE export is gone: the
+ * accounting system keeps the books (ADR 0106).
+ */
+export const financeOperations = [financeOverview, getAccountingSettings, updateAccountingSettings];
 
-export {
-  createAccountingExport,
-  downloadAccountingExport,
-  getAccountingExport,
-  getAccountingSettings,
-  listAccountingExports,
-  previewAccountingExport,
-  updateAccountingSettings,
-};
+export { getAccountingSettings, updateAccountingSettings };

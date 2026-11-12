@@ -299,7 +299,6 @@
         "billing_rejectSeat": "Avböj en plats",
         "billing_remindAdmins": "Påminn admins om betalning",
         "deposit_request": "Begär förskott med betallänk",
-        "accountingExport_create": "Skapa SIE-export",
         "inboundMessage_markRead": "Markera meddelande som läst",
         "inboundMessage_markUnread": "Markera meddelande som oläst",
         "inboundMessage_delete": "Ta bort meddelande",
@@ -938,7 +937,7 @@
       "organizationNumber": "Organisationsnummer",
       "connectedAt": "Ansluten",
       "takes": "Tar emot: {methods}",
-      "ledger": "{name} sköter bokföringen för fakturor som skapas där, så de lämnas utanför SIE-exporten.",
+      "ledger": "{name} sköter bokföringen för fakturor och förskottsfakturor som skapas där.",
       "notConfigured": "{name} är inte tillgänglig ännu på den här servern.",
       "hint": {
         "NOT_CONNECTED": "{name} är inte ansluten.",

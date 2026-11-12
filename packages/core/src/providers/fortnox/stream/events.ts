@@ -1,5 +1,6 @@
 import { type Db, getDb } from "@bibi/db";
 import { z } from "zod";
+import { syncDepositWithProvider } from "../../../features/deposit/sync-deposit";
 import { applyInvoiceSignal } from "../../../features/invoice/apply-signal-operation";
 import { syncInvoice } from "../../../features/invoice/sync-operation";
 import { execute } from "../../../operations/execute";
@@ -20,6 +21,28 @@ export type FortnoxTopicEvent = z.infer<typeof FortnoxTopicEventSchema>;
 export type FortnoxEventOutcome = "applied" | "ignored" | "unmatched" | "failed";
 
 const PAYMENT_EVENTS = new Set(["invoicepayment-bookkeep-v1", "invoicepayment-deleted-v1"]);
+
+/**
+ * A payment event on a deposit's prepayment invoice (ADR 0106): its booked payments are read
+ * again. A cancelled prepayment invoice changes nothing (Bibi voids it with `deposit.void`).
+ */
+async function depositEvent({
+  context,
+  event,
+  documentNumber,
+}: {
+  context: ReturnType<typeof providerSystemContext>;
+  event: FortnoxTopicEvent;
+  documentNumber: string;
+}): Promise<FortnoxEventOutcome> {
+  const deposit = await context.db.deposit.findFirst({
+    where: { provider: "FORTNOX", providerReference: documentNumber },
+    select: { id: true },
+  });
+  if (!deposit || event.type === "invoice-cancelled-v1") return "ignored";
+  const done = await syncDepositWithProvider({ context, id: deposit.id });
+  return done.ok ? "applied" : "failed";
+}
 
 /** The invoice's document number the event is about, for the events Bibi acts on. */
 function documentOf({ event }: { event: FortnoxTopicEvent }): string | null {
@@ -52,7 +75,7 @@ export async function handleFortnoxEvent({
     where: { provider: "FORTNOX", providerReference: documentNumber },
     select: { id: true },
   });
-  if (!invoice) return "ignored";
+  if (!invoice) return depositEvent({ context, event, documentNumber });
   const done =
     event.type === "invoice-cancelled-v1"
       ? await execute({

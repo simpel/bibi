@@ -23,7 +23,7 @@ afterEach(() => {
 
 describe("invoices in Fortnox (ADR 0090)", () => {
   it("raises the sent invoice with a deposit row and mirrors its payments", async () => {
-    const { context, order } = await moneySetup();
+    const { context, order } = await moneySetup({ ledger: false });
     const orderId = order.id;
     await connectFortnox({ context });
     const fake = installFakeInvoicing();
@@ -47,13 +47,16 @@ describe("invoices in Fortnox (ADR 0090)", () => {
     const sent = unwrap({
       result: await execute({ operation: sendInvoice, input: { id: draft.id }, context }),
     });
-    expect(sent).toMatchObject({ provider: "FORTNOX", providerReference: "1" });
-    expect(fake.raised).toHaveLength(1);
+    // The deposit was raised first, as a prepayment invoice (ADR 0106).
+    expect(sent).toMatchObject({ provider: "FORTNOX", providerReference: "2" });
+    expect(fake.raised).toHaveLength(2);
+    expect(fake.raised[0]?.reference).toMatch(/, deposit$/);
     // The deposit carries the order's 12 % (ADR 0093): 1 500 kr = 1 339.29 + 160.71 VAT.
-    const raised = fake.raised[0];
+    const raised = fake.raised[1];
     expect(raised && fortnoxRows({ invoice: raised }).at(-1)).toMatchObject({
       description: "Advance",
-      price: -1339.29,
+      quantity: -1,
+      price: 1339.29,
       vatPercent: 12,
     });
 
@@ -69,7 +72,7 @@ describe("invoices in Fortnox (ADR 0090)", () => {
       result: await execute({ operation: listPayments, input: { orderId }, context }),
     });
     expect(page.items.filter((p) => p.provider === "FORTNOX")).toHaveLength(1);
-    expect(fake.raised).toHaveLength(1);
+    expect(fake.raised).toHaveLength(2);
 
     fake.payments = [];
     const reversed = unwrap({
@@ -79,19 +82,19 @@ describe("invoices in Fortnox (ADR 0090)", () => {
   });
 
   it("refuses Fortnox as provider while Fortnox is not connected", async () => {
-    const { context, order } = await moneySetup();
+    const { context, order } = await moneySetup({ ledger: false });
     await execute({
       operation: updatePaymentSettings,
       input: { invoiceProvider: "FORTNOX" },
       context,
     });
     await makeInvoiceable({ context, statusId: order.statusId });
-    const draft = unwrap({
-      result: await execute({ operation: createInvoice, input: { orderId: order.id }, context }),
+    // Money needs the connected accounting system before any invoice is made (ADR 0106).
+    const refused = await execute({
+      operation: createInvoice,
+      input: { orderId: order.id },
+      context,
     });
-    const refused = await execute({ operation: sendInvoice, input: { id: draft.id }, context });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
-    const notThere = await execute({ operation: syncInvoice, input: { id: draft.id }, context });
-    expect(errorCode({ result: notThere })).toBe("CONFLICT");
   });
 });

@@ -53,17 +53,17 @@ describe("the deposit rule (ADR 0090)", () => {
       choices: [
         { method: "CARD", providers: ["STRIPE"] },
         { method: "SWISH", providers: ["SWISH"] },
-        { method: "INVOICE", providers: ["STRIPE", "FORTNOX", "VISMA"] },
+        { method: "INVOICE", providers: ["FORTNOX", "VISMA"] },
       ],
       invoiceProvider: null,
       paymentOperator: null,
     });
     await execute({ operation: updatePaymentSettings, input: rule, context });
-    const input = { invoiceProvider: "STRIPE" as const };
+    const input = { invoiceProvider: "VISMA" as const };
     const saved = unwrap({
       result: await execute({ operation: updatePaymentSettings, input, context }),
     });
-    expect(saved).toMatchObject({ ...rule, invoiceProvider: "STRIPE" });
+    expect(saved).toMatchObject({ ...rule, invoiceProvider: "VISMA" });
     const manager = await testContext({ role: "manager", organizationId: context.organizationId });
     const refused = await execute({ operation: updatePaymentSettings, input, context: manager });
     expect(errorCode({ result: refused })).toBe("FORBIDDEN");

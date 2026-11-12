@@ -460,9 +460,9 @@
     "integrations": {
       "eyebrow": "Integrationer",
       "title": "Passar de verktyg ni redan använder",
-      "stripe": "Kortbetalningar och fakturor",
+      "stripe": "Kortbetalningar",
       "fortnox": "Bokföring",
-      "sie": "SIE 4I-export till valfritt bokföringssystem"
+      "visma": "Bokföring"
     },
     "cta": {
       "title": "Styr hela verksamheten från ett ställe",
@@ -627,7 +627,7 @@
         },
         "accounts": {
           "label": "Konton",
-          "keywords": "kontoplan bas moms intäkt sie"
+          "keywords": "kontoplan bas moms intäkt"
         },
         "revenueAccounts": {
           "label": "Intäktskonto per artikeltyp",

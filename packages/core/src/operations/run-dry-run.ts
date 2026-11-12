@@ -1,6 +1,7 @@
 import type { Result } from "../errors/result";
 import type { ExecuteContext } from "./context";
 import { parseWith } from "./parse-with";
+import { transactionOptions } from "./transaction-options";
 import type { AnyOperation } from "./types";
 
 export type RunDryRunInput = { operation: AnyOperation; input: unknown; context: ExecuteContext };
@@ -29,7 +30,7 @@ export async function runDryRun({
         context: { ...context, db: tx, recordChange: () => undefined },
       });
       throw new DryRunDone({ result });
-    });
+    }, transactionOptions({ operation }));
   } catch (error) {
     if (!(error instanceof DryRunDone)) throw error;
     if (!error.result.ok) return error.result;

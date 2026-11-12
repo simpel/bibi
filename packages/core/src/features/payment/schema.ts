@@ -99,9 +99,11 @@ export const PAYMENT_AMOUNT_MAX_MINOR = 1_000_000_000;
 const receivableId = ({ what }: { what: string }) =>
   z.string().min(1).optional().describe(`Id of the ${what} this payment settles`);
 
-/** Exactly one of `quoteId`, `depositId` and `invoiceId` (checked by the handler). */
+/**
+ * Exactly one of `depositId` and `invoiceId` (checked by the handler). A quote is not paid
+ * directly (ADR 0106): accepting it leads to its deposit.
+ */
 export const PaymentCreateInputSchema = z.object({
-  quoteId: receivableId({ what: "SENT or ACCEPTED quote (quote.list)" }),
   depositId: receivableId({ what: "SENT deposit request (deposit.list)" }),
   invoiceId: receivableId({ what: "SENT invoice (invoice.list)" }),
   method: PaymentCreateMethodSchema.optional().describe(

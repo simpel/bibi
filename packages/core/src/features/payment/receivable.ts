@@ -1,9 +1,8 @@
 import { ok, type Result } from "../../errors/result";
-import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
+import { documentNumberOf } from "../invoice/document-number";
 import { DUE_INCLUDE, invoiceDueMinor } from "../invoice/to-invoice-dto";
-import { checkReadable } from "../order/order-rules";
 import type { PaymentCreateInput } from "./schema";
 import type { ReceivableRef } from "./settlement";
 
@@ -22,27 +21,6 @@ export type Receivable = {
 const NONE: ReceivableRef = { quoteId: null, depositId: null, invoiceId: null };
 
 type FindInput = { context: Context; id: string };
-
-async function findQuote({ context, id }: FindInput): Promise<Result<Receivable>> {
-  const readable = checkReadable({ context, permission: "quote:read", path: "quoteId" });
-  if (!readable.ok) return readable;
-  const quote = await context.db.quote.findFirst({ where: { id }, include: { order: true } });
-  if (!quote) return notFound({ entity: "Quote" });
-  if (quote.quoteStatus !== "SENT" && quote.quoteStatus !== "ACCEPTED") {
-    return conflict({ message: `A ${quote.quoteStatus} quote cannot be paid` });
-  }
-  const { orderId, totalInclVatMinor: amountMinor, version } = quote;
-  const description = `Order #${quote.order.reference}, quote v${version}`;
-  return ok({
-    value: {
-      ref: { ...NONE, quoteId: id },
-      orderId,
-      amountMinor,
-      currency: DEFAULT_CURRENCY,
-      description,
-    },
-  });
-}
 
 async function findDeposit({ context, id }: FindInput): Promise<Result<Receivable>> {
   const deposit = await context.db.deposit.findFirst({ where: { id } });
@@ -63,9 +41,10 @@ async function findInvoice({ context, id }: FindInput): Promise<Result<Receivabl
   if (!invoice) return notFound({ entity: "Invoice" });
   if (invoice.status !== "SENT")
     return conflict({ message: `A ${invoice.status} invoice cannot be paid` });
-  const { orderId, currency, number } = invoice;
+  const { orderId, currency } = invoice;
   const amountMinor = invoiceDueMinor({ invoice, ...invoice });
-  const description = `Invoice #${number}`;
+  const shown = documentNumberOf({ ...invoice });
+  const description = shown ? `Invoice ${shown}` : "Invoice";
   return ok({
     value: { ref: { ...NONE, invoiceId: id }, orderId, amountMinor, currency, description },
   });
@@ -73,22 +52,24 @@ async function findInvoice({ context, id }: FindInput): Promise<Result<Receivabl
 
 export type LoadReceivableInput = {
   context: Context;
-  input: Pick<PaymentCreateInput, "quoteId" | "depositId" | "invoiceId">;
+  input: Pick<PaymentCreateInput, "depositId" | "invoiceId">;
 };
 
-/** The one receivable the request names (`VALIDATION` unless exactly one id is given). */
+/**
+ * The one receivable the request names (`VALIDATION` unless exactly one id is given). A quote is
+ * never paid directly: accepting it leads to its deposit (ADR 0106).
+ */
 export async function loadReceivable({
   context,
-  input: { quoteId, depositId, invoiceId },
+  input: { depositId, invoiceId },
 }: LoadReceivableInput): Promise<Result<Receivable>> {
-  const given = [quoteId, depositId, invoiceId].filter((id) => id !== undefined).length;
+  const given = [depositId, invoiceId].filter((id) => id !== undefined).length;
   if (given !== 1) {
-    const message = "Give exactly one of quoteId, depositId and invoiceId";
-    return invalid({ message, issues: [{ path: "quoteId", message }] });
+    const message = "Give exactly one of depositId and invoiceId";
+    return invalid({ message, issues: [{ path: "depositId", message }] });
   }
   if (depositId) return findDeposit({ context, id: depositId });
-  if (invoiceId) return findInvoice({ context, id: invoiceId });
-  return findQuote({ context, id: quoteId ?? "" });
+  return findInvoice({ context, id: invoiceId ?? "" });
 }
 
 export type ClaimReceivableInput = { context: Pick<OperationContext, "db">; ref: ReceivableRef };

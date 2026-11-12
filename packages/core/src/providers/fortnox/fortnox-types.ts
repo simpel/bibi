@@ -4,15 +4,23 @@ import type { ProviderInvoiceRow } from "../invoice-rows";
 /** One invoice row as Fortnox takes it (ADR 0090): amounts in currency units, excl. VAT. */
 export type FortnoxInvoiceRow = ProviderInvoiceRow;
 
-export type FortnoxCustomerInput = { name: string; email: string | null };
+export type FortnoxCustomerInput = {
+  name: string;
+  email: string | null;
+  /** A business's organisation number (ADR 0106); null for a private person. */
+  organizationNumber: string | null;
+  buyerKind: "BUSINESS" | "PRIVATE";
+};
 
 export type FortnoxInvoiceInput = {
   customerNumber: string;
   invoiceDate: string;
   dueDate: string | null;
   currency: string;
-  /** Bibi's own reference, shown on the invoice: `Order #<reference>, invoice #<number>`. */
-  yourOrderNumber: string;
+  /** Bibi's own reference, shown as ours: `Order #<reference>`. */
+  ourReference: string;
+  /** The buyer's reference (Er referens, ADR 0105); null = none. */
+  buyerReference: string | null;
   rows: FortnoxInvoiceRow[];
 };
 
@@ -35,6 +43,8 @@ export type FortnoxApi = {
   listPayments(input: FortnoxAuthed<{ documentNumber: string }>): Promise<Result<FortnoxPayment[]>>;
   /** Cancels an invoice Fortnox has not booked yet. */
   cancelInvoice(input: FortnoxAuthed<{ documentNumber: string }>): Promise<Result<true>>;
+  /** The credit invoice's document number when the invoice was credited, else null. */
+  creditOf(input: FortnoxAuthed<{ documentNumber: string }>): Promise<Result<string | null>>;
   /** Credits a booked invoice in full; returns the credit invoice's document number. */
   creditInvoice(input: FortnoxAuthed<{ documentNumber: string }>): Promise<Result<string>>;
 };

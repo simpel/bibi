@@ -17,7 +17,6 @@ import { demoSwishCredentials } from "./demo-payments";
 import { applyDemoSignal } from "./demo-signal";
 import type { DemoOrder } from "./order-types";
 import { seedOrderEstimates } from "./seed-estimates";
-import { missing } from "./seed-fields";
 import { seedInvoice } from "./seed-invoice";
 import type { DemoOrg, DemoProvider } from "./types";
 
@@ -72,16 +71,35 @@ async function seedDeposit({ context, order, orderId }: OrderMoneyInput): Promis
   return sent.ok ? ok({ value: true }) : sent;
 }
 
+type PaymentDepositInput = Ctx & { orderId: string; kr: number; description: string };
+
 /**
- * `money.paidKr`: a card payment against the accepted quote, then Stripe's paid signal as the
- * webhook would apply it, so it is SUCCEEDED (memory provider, no Stripe call).
+ * A SENT deposit for one demo payment: a quote is never paid directly, accepting it leads to its
+ * deposit (ADR 0106), raised in the accounting system as a prepayment invoice.
+ */
+async function paymentDeposit({
+  context,
+  orderId,
+  kr,
+  description,
+}: PaymentDepositInput): Promise<Result<string>> {
+  const input = { orderId, description, amountMinor: kr * 100 };
+  const draft = await execute({ operation: createDeposit, input, context });
+  if (!draft.ok) return draft;
+  const sent = await execute({ operation: sendDeposit, input: { id: draft.value.id }, context });
+  return sent.ok ? ok({ value: sent.value.id }) : sent;
+}
+
+/**
+ * `money.paidKr`: a card payment against a deposit, then Stripe's paid signal as the webhook would
+ * apply it, so it is SUCCEEDED (memory provider, no Stripe call).
  */
 async function seedPartialPayment({ context, order, orderId }: OrderMoneyInput) {
   const paidKr = order.money?.paidKr;
   if (!paidKr) return ok({ value: true as const });
-  const quote = await context.db.quote.findFirst({ where: { orderId, quoteStatus: "ACCEPTED" } });
-  if (!quote) return missing({ what: `accepted quote of order ${order.ref}` });
-  const input = { quoteId: quote.id, method: "CARD" as const, amountMinor: paidKr * 100 };
+  const deposit = await paymentDeposit({ context, orderId, kr: paidKr, description: "Card" });
+  if (!deposit.ok) return deposit;
+  const input = { depositId: deposit.value, method: "CARD" as const };
   const payment = await execute({ operation: createPayment, input, context });
   if (!payment.ok) return payment;
   const paymentId = payment.value.id;
@@ -110,23 +128,16 @@ async function seedLostRefund({
   return retried.ok ? ok({ value: true as const }) : retried;
 }
 
-type QuoteInput = OrderMoneyInput;
-
-async function acceptedQuote({ context, order, orderId }: QuoteInput) {
-  const quote = await context.db.quote.findFirst({ where: { orderId, quoteStatus: "ACCEPTED" } });
-  return quote ?? missing({ what: `accepted quote of order ${order.ref}` });
-}
-
 /**
- * `money.swishKr`: a Swish payment against the accepted quote. The customer picks Swish on the
- * pay page (`payment.startAttempt` by the public token); Swish's paid signal settles it (ADR 0100).
+ * `money.swishKr`: a Swish payment against a deposit. The customer picks Swish on the pay page
+ * (`payment.startAttempt` by the public token); Swish's paid signal settles it (ADR 0100).
  */
 async function seedSwishPayment({ context, order, orderId }: OrderMoneyInput) {
   const swishKr = order.money?.swishKr;
   if (!swishKr) return ok({ value: true as const });
-  const quote = await acceptedQuote({ context, order, orderId });
-  if ("ok" in quote) return quote;
-  const input = { quoteId: quote.id, method: "SWISH" as const, amountMinor: swishKr * 100 };
+  const deposit = await paymentDeposit({ context, orderId, kr: swishKr, description: "Swish" });
+  if (!deposit.ok) return deposit;
+  const input = { depositId: deposit.value, method: "SWISH" as const };
   const payment = await execute({ operation: createPayment, input, context });
   if (!payment.ok) return payment;
   const row = await context.db.payment.findFirstOrThrow({ where: { id: payment.value.id } });
@@ -139,14 +150,15 @@ async function seedSwishPayment({ context, order, orderId }: OrderMoneyInput) {
   return applyDemoSignal({ context, paymentId: row.id, kind: "attempt.succeeded" });
 }
 
-/** `money.manual`: a bank transfer staff recorded against the accepted quote (ADR 0100). */
+/** `money.manual`: a bank transfer staff recorded against a deposit (ADR 0100). */
 async function seedManualPayment({ context, order, orderId }: OrderMoneyInput) {
   const manual = order.money?.manual;
   if (!manual) return ok({ value: true as const });
-  const quote = await acceptedQuote({ context, order, orderId });
-  if ("ok" in quote) return quote;
+  const description = manual.note;
+  const deposit = await paymentDeposit({ context, orderId, kr: manual.kr, description });
+  if (!deposit.ok) return deposit;
   const input = {
-    quoteId: quote.id,
+    depositId: deposit.value,
     amountMinor: manual.kr * 100,
     paidAt: new Date(),
     note: manual.note,

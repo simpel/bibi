@@ -1,6 +1,9 @@
 import type { DateTimeFormat, FinanceAging, NumberFormat, VatByRate } from "@bibi/core/schemas";
 import { plainDayText } from "@/lib/time/plain-day";
 
+/** Shown for a document not yet numbered by the accounting system (ADR 0106). */
+const EMPTY_NUMBER = "–";
+
 export type OverdueRow = {
   invoiceId: string;
   invoiceLabel: string;
@@ -15,7 +18,7 @@ export type OverdueRow = {
 };
 
 export type OverdueLabels = {
-  invoice: (values: { number: number }) => string;
+  invoice: (values: { number: string }) => string;
   order: (values: { reference: number | null; title: string | null }) => string;
 };
 
@@ -41,7 +44,7 @@ export function overdueRows({
     const dueDate = new Date(row.dueDate).toISOString().slice(0, 10);
     return {
       invoiceId: row.invoiceId,
-      invoiceLabel: labels.invoice({ number: row.number }),
+      invoiceLabel: labels.invoice({ number: row.documentNumber ?? EMPTY_NUMBER }),
       orderId: row.orderId,
       orderLabel: labels.order({ reference: row.orderReference, title: row.orderTitle }),
       dueDateText: plainDayText({ day: dueDate, timeZone, dates }),

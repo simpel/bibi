@@ -4,10 +4,13 @@ import type { DemoOrg } from "./types";
 
 export type CheckDemoPaymentsInput = { context: ExecuteContext; org: DemoOrg };
 
-/** SUCCEEDED payments against quotes minus refunds per order, summed straight from the rows. */
+/**
+ * SUCCEEDED payments not against an invoice (deposits, and quotes before ADR 0106) minus refunds
+ * per order, summed straight from the rows.
+ */
 async function succeededByOrder({ context }: Pick<CheckDemoPaymentsInput, "context">) {
   const rows = await context.db.payment.findMany({
-    where: { status: { in: ["SUCCEEDED", "REFUNDED"] }, quoteId: { not: null } },
+    where: { status: { in: ["SUCCEEDED", "REFUNDED"] }, invoiceId: null },
     select: {
       orderId: true,
       amountMinor: true,
@@ -25,8 +28,8 @@ async function succeededByOrder({ context }: Pick<CheckDemoPaymentsInput, "conte
 /**
  * ADR 0057: every order with an accepted quote owes that quote's total minus its SUCCEEDED
  * payments, as derived by `payment.balance`; the demo's money (`order.money`) is there: one
- * SENT deposit request and a card, Swish and manual payment per spec, less the refund the retry
- * job settled. Returns failure messages.
+ * SENT deposit request per spec plus one per card, Swish and manual payment (each pays its own
+ * deposit, ADR 0106), less the refund the retry job settled. Returns failure messages.
  */
 export async function checkDemoPayments({ context, org }: CheckDemoPaymentsInput) {
   const failures: string[] = [];
@@ -46,7 +49,10 @@ export async function checkDemoPayments({ context, org }: CheckDemoPaymentsInput
   }
   const money = org.orders.flatMap((order) => (order.money ? [order.money] : []));
   const deposits = await context.db.deposit.count({ where: { status: "SENT" } });
-  const wanted = money.filter((m) => m.deposit).length;
+  const wanted = money.reduce(
+    (sum, m) => sum + [m.deposit, m.paidKr, m.swishKr, m.manual].filter(Boolean).length,
+    0,
+  );
   if (deposits !== wanted)
     failures.push(`${org.slug}: ${deposits} sent deposits, expected ${wanted}`);
   const total = money.reduce(

@@ -29,9 +29,10 @@ describe("creditNote.get and creditNote.list (ADR 0100)", () => {
         context,
       }),
     });
+    // Newest first; the accounting system numbers them, Bibi does not (ADR 0106).
     expect(byInvoice.items.map((n) => [n.number, n.amountMinor])).toEqual([
-      [2, 20_000],
-      [1, 10_000],
+      [null, 20_000],
+      [null, 10_000],
     ]);
     const first = byInvoice.items[1];
     expect(first).toMatchObject({ orderId: order.id, status: "ISSUED", reason: "Fewer guests" });

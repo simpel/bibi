@@ -126,14 +126,26 @@ export function memoryInvoicing({ state, registerPayment }: MemoryInvoicingInput
     },
     void: async ({ providerReference }) =>
       call({ state, name: "void", entry: `void:${providerReference}`, value: true as const }),
-    credit: async ({ providerReference, amountMinor }) =>
-      call({
+    credit: async ({ providerReference, amountMinor }) => {
+      const done = call({
         state,
         name: "credit",
         entry: `credit:${providerReference}:${amountMinor}`,
         value: { providerReference: `credit-${providerReference}-${createId()}`, url: null },
-      }),
-    listPayments: async () => ok({ value: state.payments }),
+      });
+      if (done.ok) state.credited.set(providerReference, done.value.providerReference);
+      return done;
+    },
+    creditStatus: async ({ providerReference }) => {
+      const credited = state.credited.get(providerReference);
+      return ok({
+        value: credited
+          ? { status: "ISSUED" as const, providerReference: credited }
+          : { status: "MISSING" as const },
+      });
+    },
+    listPayments: async ({ providerReference }) =>
+      ok({ value: [...state.payments, ...(state.paidOn.get(providerReference) ?? [])] }),
   };
   if (registerPayment) {
     port.registerPayment = async ({ providerReference, payment }) => {
@@ -144,7 +156,10 @@ export function memoryInvoicing({ state, registerPayment }: MemoryInvoicingInput
         entry: `register:${providerReference}:${payment.amountMinor}`,
         value: { providerReference: reference },
       });
-      if (done.ok) state.payments.push({ ...payment, reference });
+      if (done.ok) {
+        const booked = state.paidOn.get(providerReference) ?? [];
+        state.paidOn.set(providerReference, [...booked, { ...payment, reference }]);
+      }
       return done;
     };
   }

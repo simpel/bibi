@@ -37,7 +37,7 @@ async function connectVisma({ context }: { context: ExecuteContext }) {
 
 describe("Visma through the core operations (ADR 0100)", () => {
   it("connects, raises the sent invoice and mirrors payments on each poll", async () => {
-    const { context, order } = await moneySetup();
+    const { context, order } = await moneySetup({ ledger: false });
     const stub = stubVisma();
     const company = vismaCompany({ stub });
     const connected = await connectVisma({ context });
@@ -81,7 +81,7 @@ describe("Visma through the core operations (ADR 0100)", () => {
   });
 
   it("does not read a credit note as a payment", async () => {
-    const { context, order } = await moneySetup();
+    const { context, order } = await moneySetup({ ledger: false });
     const stub = stubVisma();
     const company = vismaCompany({ stub });
     await connectVisma({ context });
@@ -113,7 +113,7 @@ describe("Visma through the core operations (ADR 0100)", () => {
   });
 
   it("registers a payment taken in Bibi there and does not count it again on the poll", async () => {
-    const { context, order } = await moneySetup();
+    const { context, order } = await moneySetup({ ledger: false });
     const stub = stubVisma();
     const company = vismaCompany({ stub });
     await connectVisma({ context });
@@ -150,7 +150,7 @@ describe("Visma through the core operations (ADR 0100)", () => {
   });
 
   it("refreshes an expired access token through the shared lease before calling Visma", async () => {
-    const { context } = await moneySetup();
+    const { context } = await moneySetup({ ledger: false });
     const stub = stubVisma();
     vismaCompany({ stub });
     await connectVisma({ context });

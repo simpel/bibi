@@ -3,6 +3,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
+import { connectLedger } from "./ledger";
 import { seedOrder } from "./seed-order";
 
 afterEach(() => {
@@ -18,6 +19,7 @@ async function setup() {
     actor: { type: "ai", userId, conversationId: "conv_pay" },
   });
   const user = await connect({ context: base });
+  await connectLedger({ context: base });
   const { id: orderId, customerId } = await seedOrder({ client: user });
   const email = { id: customerId, email: "billing@example.com" };
   await call({ client: user, name: "customer_update", args: email });
@@ -34,7 +36,9 @@ async function setup() {
 
 /** The provider's webhook reporting the card checkout paid (ADR 0100). */
 async function settle({ context, reference }: { context: ExecuteContext; reference: string }) {
-  const connection = await context.db.providerConnection.findFirstOrThrow({});
+  const connection = await context.db.providerConnection.findFirstOrThrow({
+    where: { provider: "STRIPE" },
+  });
   const eventId = `evt_${createId()}`;
   const signal = {
     provider: connection.provider,

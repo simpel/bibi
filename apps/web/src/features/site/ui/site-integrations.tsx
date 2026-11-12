@@ -4,10 +4,10 @@ import { getTranslations } from "next-intl/server";
 const INTEGRATIONS = [
   { name: "Stripe", key: "stripe" },
   { name: "Fortnox", key: "fortnox" },
-  { name: "SIE", key: "sie" },
+  { name: "Visma eEkonomi", key: "visma" },
 ] as const;
 
-/** Only integrations that exist today (ADR 0028, 0077, 0087). */
+/** Only integrations that exist today (ADR 0028, 0087, 0100). */
 export async function SiteIntegrations() {
   const t = await getTranslations("site.integrations");
   return (

@@ -2,12 +2,11 @@ import { getEnv } from "@bibi/config";
 import type { ProviderAdapter } from "../types";
 import { stripeCollect } from "./stripe-collect";
 import { stripeConnect } from "./stripe-connect";
-import { stripeInvoicing } from "./stripe-invoicing";
 import { stripeWebhook } from "./stripe-webhook";
 
 /**
- * Stripe (ADR 0028, 0029, 0100): hosted onboarding of a Connect account, card checkouts, Stripe
- * Invoicing and webhook signals. Stripe keeps no books for the venue.
+ * Stripe (ADR 0028, 0100, 0106): hosted onboarding of a Connect account, card checkouts and
+ * webhook signals. Stripe keeps no books and raises no invoices: the accounting system does.
  */
 export const stripeAdapter: ProviderAdapter = {
   key: "STRIPE",
@@ -18,6 +17,5 @@ export const stripeAdapter: ProviderAdapter = {
   },
   connect: stripeConnect,
   collect: stripeCollect,
-  invoicing: stripeInvoicing,
   signals: { webhook: stripeWebhook },
 };

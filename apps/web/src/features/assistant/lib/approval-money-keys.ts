@@ -47,7 +47,6 @@ export const MONEY_OPERATION_KEYS = [
   "payment_recordManual",
   "accountingSettings_update",
   "paymentSettings_update",
-  "accountingExport_create",
   "billing_update",
   "billing_approveSeat",
   "billing_rejectSeat",

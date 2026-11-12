@@ -14,8 +14,6 @@ import { InvoiceLines } from "./invoice-lines";
 import { PaidOf } from "./paid-of";
 import { ReceivableActions } from "./receivable-actions";
 import { ReceivableBadges } from "./receivable-badges";
-import { RecordPaymentButton } from "./record-payment-button";
-import { RequestPaymentButton } from "./request-payment-button";
 import { SyncInvoiceButton } from "./sync-invoice-button";
 
 /** The viewer's formats, from the server (`getDateTimeFormat`, `getNumberFormat`). */
@@ -23,20 +21,17 @@ type Formats = { dates: DateTimeFormat; numbers: NumberFormat };
 
 type QuoteRowProps = { quote: ReceivableSettlement; canWrite: boolean } & Formats;
 
-/** A sent or accepted quote as a receivable: what is paid of its total. */
-function QuoteRow({ quote, canWrite, numbers }: QuoteRowProps) {
+/**
+ * A sent or accepted quote as a receivable: what is paid of its total. Read only: a quote is not
+ * paid directly, accepting it leads to its deposit (ADR 0106).
+ */
+function QuoteRow({ quote, numbers }: QuoteRowProps) {
   const t = useTranslations("payment");
   return (
     <li className="flex flex-wrap items-center gap-2 py-3 text-sm">
       <span className="font-medium">{t("quoteVersion")}</span>
       <PaidOf paidMinor={quote.paidMinor} amountMinor={quote.amountMinor} numbers={numbers} />
       <ReceivableBadges progress={quote.progress} />
-      {canWrite && quote.openMinor > 0 ? (
-        <div className="ml-auto flex gap-2">
-          <RequestPaymentButton target={{ quoteId: quote.id }} openMinor={quote.openMinor} />
-          <RecordPaymentButton target={{ quoteId: quote.id }} openMinor={quote.openMinor} />
-        </div>
-      ) : null}
     </li>
   );
 }
@@ -63,7 +58,7 @@ function InvoiceRow({ invoice, canWrite, ...formats }: InvoiceRowProps) {
   const t = useTranslations("invoice");
   const providers = useTranslations("providers");
   const { id, status, openMinor, canVoid } = invoice;
-  const confirm = t("voidConfirm", { number: invoice.number });
+  const confirm = t("voidConfirm", { number: invoice.documentNumber ?? "–" });
   const actions = canWrite ? (
     <>
       {invoice.canSync && invoice.provider ? (

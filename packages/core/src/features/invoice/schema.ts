@@ -14,7 +14,18 @@ export const InvoiceDeductionSchema = z.object({
 /** A credit note of the invoice (ADR 0100): what it credits incl. VAT. */
 export const InvoiceCreditNoteSchema = z.object({
   id: z.string(),
-  number: z.number().int().describe("The organization's credit note number"),
+  number: z
+    .number()
+    .int()
+    .nullable()
+    .describe("Bibi's own number from before ADR 0106; null since: see documentNumber"),
+  documentNumber: z
+    .string()
+    .nullable()
+    .describe(
+      "The number it carries: the accounting system's document number (ADR 0106), else Bibi's " +
+        "own from before; null until raised there",
+    ),
   amountMinor: z.number().int().describe("Credited incl. VAT, minor units"),
   status: z
     .enum(["PENDING", "ISSUED", "FAILED"])
@@ -29,7 +40,18 @@ export const InvoiceSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   orderId: z.string(),
-  number: z.number().int().describe("The organization's invoice number"),
+  number: z
+    .number()
+    .int()
+    .nullable()
+    .describe("Bibi's own number from before ADR 0106; null since: see documentNumber"),
+  documentNumber: z
+    .string()
+    .nullable()
+    .describe(
+      "The number it carries: the accounting system's document number (ADR 0106), else Bibi's " +
+        "own from before; null until raised there",
+    ),
   currency: z.string(),
   dueDate: z.date().nullable(),
   status: ReceivableStatusSchema.describe("DRAFT, SENT (payments can be requested) or VOID"),
@@ -39,6 +61,10 @@ export const InvoiceSchema = z.object({
     .number()
     .int()
     .describe("Sum of the frozen lines incl. VAT, minor units: the amount owed"),
+  buyerReference: z
+    .string()
+    .nullable()
+    .describe("The buyer's reference (Er referens) it carries, frozen at create (ADR 0105)"),
   lines: z.array(OrderLineSchema).describe("The order's priced lines, frozen at create"),
   deductions: z
     .array(InvoiceDeductionSchema)
@@ -114,15 +140,3 @@ export type InvoiceDto = z.infer<typeof InvoiceSchema>;
 export type InvoicePage = z.infer<typeof InvoiceListOutputSchema>;
 export type InvoiceCreateInput = z.infer<typeof InvoiceCreateInputSchema>;
 export type InvoiceIdInput = z.infer<typeof InvoiceIdInputSchema>;
-
-export const InvoiceRetryVoidsInputSchema = z.object({});
-
-/** What one run of the void retry did (ADR 0100). */
-export const InvoiceRetryVoidsOutputSchema = z.object({
-  due: z.number().int().describe("VOID invoices whose void the provider has not confirmed"),
-  voided: z.number().int().describe("Confirmed by the provider now"),
-  refused: z.number().int().describe("Refused by the provider: SENT again"),
-  waiting: z.number().int().describe("Still no answer; tried again on the next run"),
-});
-
-export type InvoiceRetryVoidsOutput = z.infer<typeof InvoiceRetryVoidsOutputSchema>;

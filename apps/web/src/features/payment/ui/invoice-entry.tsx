@@ -26,7 +26,7 @@ export function InvoiceEntry({ invoice, actions, dates: format, numbers }: Invoi
   const due = invoice.dueDate ? new Date(invoice.dueDate) : null;
   return (
     <article data-slot="invoice-entry" className="flex flex-wrap items-center gap-2 py-3 text-sm">
-      <span className="font-medium">{t("number", { number: invoice.number })}</span>
+      <span className="font-medium">{t("number", { number: invoice.documentNumber ?? "–" })}</span>
       <PaidOf
         numbers={numbers}
         paidMinor={invoice.paidMinor}

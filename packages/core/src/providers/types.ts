@@ -121,9 +121,20 @@ export type InvoiceSnapshot = {
   invoiceDate: string;
   dueDate: string | null;
   currency: string;
-  /** Bibi's own reference, shown on the invoice: `Order #<reference>, invoice #<number>`. */
+  /** Bibi's own reference, shown on the invoice as ours: `Order #<reference>` (ADR 0106). */
   reference: string;
-  customer: { name: string; email: string | null };
+  /** The buyer's reference (Er referens, ADR 0105), frozen on the invoice; null = none. */
+  buyerReference: string | null;
+  /**
+   * The buyer (ADR 0106): its kind for this order (the order's own, else the customer's) and, for a
+   * business, its organisation number; providers set both on the customer they create.
+   */
+  customer: {
+    name: string;
+    email: string | null;
+    organizationNumber: string | null;
+    buyerKind: "BUSINESS" | "PRIVATE";
+  };
   lines: readonly InvoiceSnapshotLine[];
   deductions: readonly InvoiceSnapshotDeduction[];
   advancesAccount: string;
@@ -158,6 +169,12 @@ export type ListPaymentsInput = AttemptRefInput & {
 
 export type RegisterPaymentInput = AttemptRefInput & { payment: ProviderPayment };
 
+/**
+ * Whether a credit of a document exists at the provider (a credit whose answer was lost): ISSUED
+ * with its reference, or MISSING (it never got there and may be sent again).
+ */
+export type CreditState = { status: "ISSUED"; providerReference: string } | { status: "MISSING" };
+
 /** Raising invoices in the provider (ADR 0100). Every call runs after the commit (ADR 0058). */
 export type InvoicingPort = {
   /** `idempotencyKey`: Bibi's invoice id, so a retried issue never raises it twice. */
@@ -165,6 +182,11 @@ export type InvoicingPort = {
   void(input: AttemptRefInput): Promise<Result<true>>;
   credit(input: CreditInput): Promise<Result<IssuedDocument>>;
   listPayments(input: ListPaymentsInput): Promise<Result<ProviderPayment[]>>;
+  /**
+   * Reads whether the document was credited (the credit retry, ADR 0100). Without it a credit
+   * whose answer was lost waits for staff, since a resend could credit twice.
+   */
+  creditStatus?(input: AttemptRefInput): Promise<Result<CreditState>>;
   /** Books a payment another provider took (card, Swish) on the provider's invoice. */
   registerPayment?(input: RegisterPaymentInput): Promise<Result<ProviderReference>>;
 };

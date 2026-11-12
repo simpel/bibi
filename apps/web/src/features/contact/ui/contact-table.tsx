@@ -10,7 +10,7 @@ import { useContactColumns } from "./use-contact-columns";
 
 export type ContactTableProps = { contacts: ContactDto[]; data: TypedFormData; access: RowAccess };
 
-/** Contact rows: name, type, email and phone, with edit and archive when allowed. */
+/** Contact rows: name, type, email, phone and buyer's reference, with edit and archive when allowed. */
 export function ContactTable({ contacts, data, access }: ContactTableProps) {
   const t = useTranslations("contact");
   const columns = useContactColumns<ContactDto>({

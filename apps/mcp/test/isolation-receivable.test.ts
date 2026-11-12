@@ -2,6 +2,7 @@ import { resetProviderAdapters } from "@bibi/core";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
+import { connectLedger } from "./ledger";
 import { seedOrder } from "./seed-order";
 import { seedQuoteBasis } from "./seed-quote-basis";
 
@@ -27,7 +28,9 @@ async function expectNotFound({
 
 describe("cross-organization isolation: receivables and balances (ADR 0057)", () => {
   it("hides one organization's deposits, invoices and balance from another", async () => {
-    const a = await connect({ context: testContext() });
+    const context = testContext();
+    const a = await connect({ context });
+    await connectLedger({ context });
     const b = await connect({ context: testContext() });
     const order = await seedOrder({ client: a });
     installFakeStripe({ status: "ACTIVE" });
@@ -68,7 +71,9 @@ describe("cross-organization isolation: receivables and balances (ADR 0057)", ()
   });
 
   it("refuses to credit another organization's sent invoice", async () => {
-    const a = await connect({ context: testContext() });
+    const context = testContext();
+    const a = await connect({ context });
+    await connectLedger({ context });
     const b = await connect({ context: testContext() });
     const { orderId } = await seedQuoteBasis({ client: a });
     const order = await call({ client: a, name: "order_get", args: { id: orderId } });

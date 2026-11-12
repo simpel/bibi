@@ -65,5 +65,8 @@ test("staff refund a card payment and credit an invoice from the order page", as
   await expect(page.getByText("Kreditfakturan har skapats.")).toBeVisible();
   await expect(invoiceRow.getByText(/krediterat/)).toBeVisible();
   const notes = await call({ page, method: "get", path: `/credit-notes?invoiceId=${invoice.id}` });
-  expect(notes.items).toEqual([expect.objectContaining({ status: "ISSUED", number: 1 })]);
+  // The accounting system numbers the credit note; Bibi does not (ADR 0106).
+  expect(notes.items).toEqual([
+    expect.objectContaining({ status: "ISSUED", number: null, documentNumber: expect.any(String) }),
+  ]);
 });

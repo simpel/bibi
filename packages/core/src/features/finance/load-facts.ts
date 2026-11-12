@@ -64,6 +64,7 @@ export async function loadOpenInvoices({ context, customerId }: Db) {
     select: {
       id: true,
       number: true,
+      providerReference: true,
       orderId: true,
       dueDate: true,
       totalInclVatMinor: true,

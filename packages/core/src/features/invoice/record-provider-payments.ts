@@ -6,7 +6,7 @@ import type { ProviderSignal } from "../../providers/signal";
 import { providerSystemContext } from "../../providers/system-context";
 import type { ProviderPayment } from "../../providers/types";
 import { applyInvoiceSignal } from "./apply-signal-operation";
-import { type ProviderInvoice, paymentKeyOf } from "./invoice-payment-signal";
+import { type ProviderInvoice, paymentKeyOf, paymentOwnerOf } from "./invoice-payment-signal";
 
 export type RecordProviderPaymentsInput = {
   context: Pick<OperationContext, "db" | "organizationId">;
@@ -25,7 +25,7 @@ async function storedReferences({
     where: {
       provider: invoice.provider,
       providerReference: { startsWith: prefix },
-      payment: { invoiceId: invoice.id, status: "SUCCEEDED", method: "INVOICE" },
+      payment: { ...paymentOwnerOf({ invoice }), status: "SUCCEEDED", method: "INVOICE" },
     },
     select: { providerReference: true },
   });
@@ -35,7 +35,8 @@ async function storedReferences({
 }
 
 /**
- * Mirrors the payments a provider booked on its invoice (ADR 0090, 0100) through the signal path:
+ * Mirrors the payments a provider booked on its invoice or prepayment invoice (ADR 0090, 0100,
+ * 0106) through the signal path:
  * each listed payment is an `invoice.payment_recorded` signal, each stored one the provider no
  * longer lists an `invoice.payment_removed` signal, each applied as SYSTEM by `invoice.applySignal`
  * (which notifies the order's people of a new payment).
@@ -67,7 +68,7 @@ export async function recordProviderPayments({
     });
   }
   for (const signal of signals) {
-    const input = { invoiceId: invoice.id, signal };
+    const input = { ...paymentOwnerOf({ invoice }), signal };
     const applied = await execute({ operation: applyInvoiceSignal, input, context: system });
     if (!applied.ok) return err({ error: applied.error });
   }

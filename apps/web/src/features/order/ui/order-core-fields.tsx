@@ -70,6 +70,12 @@ function CustomerFields({ form, data }: OrderCoreFieldsProps) {
         hidden={hidden}
       />
       <BuyerKindField form={form} />
+      <TextField
+        form={form}
+        name="buyerReference"
+        label={t("buyerReference")}
+        placeholder={t("buyerReferencePlaceholder")}
+      />
     </>
   );
 }

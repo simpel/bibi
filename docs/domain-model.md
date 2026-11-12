@@ -125,11 +125,7 @@ erDiagram
   Invoice ||--o{ CreditNote : "is credited with"
   ProviderConnection ||--o{ Payment : "took"
   ProviderConnection ||--o{ Invoice : "raised"
-  CreditNote |o--o{ AccountingExportEntry : "is exported as"
-  AccountingExport ||--o{ AccountingExportEntry : "contains"
-  Invoice |o--o{ AccountingExportEntry : "is exported as"
-  Payment |o--o{ AccountingExportEntry : "is exported as"
-  PaymentRefund |o--o{ AccountingExportEntry : "is exported as"
+  ProviderConnection ||--o{ Deposit : "raised"
   EntityType |o--o| RevenueAccount : "maps revenue via"
   Item |o--o| RevenueAccount : "maps revenue via"
   Order }o--|| OrderStatus : "is in"
@@ -449,6 +445,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - name
 - business or private (`buyerKind`, `BUSINESS` | `PRIVATE`, owned; the web forms make staff choose, the API defaults to `BUSINESS`): what its orders inherit ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md))
 - organisation number (`organizationNumber`, owned, optional, trimmed, ≤ 32): sent with invoices; required before a business customer is invoiced once invoicing moves to the ledger provider (ADR 0106, not built)
+- requires the buyer's reference (`requiresBuyerReference`, owned, default false): creating or sending an invoice for one of its orders without an effective reference is `VALIDATION` at `buyerReference`, and the order page warns ([ADR 0105](decisions/0105-buyer-reference-on-the-order.md))
 - email, phone
 - invoice address (`invoiceStreetAddress`, `invoicePostalCode`, `invoiceCity`, `invoiceCountry`, default `SE`)
 - price lists (`PriceList.customerId`; archiving the customer is denied while it has an active price list)
@@ -474,6 +471,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - name
 - email
 - phone
+- buyer's reference (`buyerReference`, owned, ≤ 50, null = none): the reference this person orders under; their orders without their own inherit it ([ADR 0105](decisions/0105-buyer-reference-on-the-order.md))
 - GDPR consent (not built yet)
 
 **Relations**
@@ -495,6 +493,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - type (the organization's own, base `ORDER`) and custom fields
 - customer and contact person (the contact must work at the customer; required for new orders and never cleared, ADR 0081; older orders may have none)
 - business or private (`buyerKind`, owned, `null` = the customer's) and the derived `effectiveBuyerKind` (its own, else the customer's), shown on the order page ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md))
+- buyer's reference (`buyerReference`, owned, ≤ 50, `null` = the contact's) and the derived `effectiveBuyerReference` with `buyerReferenceSource` (`ORDER` | `CONTACT` | null) and `buyerReferenceMissing` (the customer requires one and there is none) ([ADR 0105](decisions/0105-buyer-reference-on-the-order.md))
 - booking note (`note`, optional, ≤ 4000 characters): notes for the whole booking (ADR 0081)
 - intake key (`intakeKey`, optional, owned, 1–100 characters, unique per organization): the client key of the `order.create` that made the order, so a repeated submit returns it (ADR 0081). Not on the order DTO: it belongs to the create call, not to the booking.
 - desired period (`desiredStartsAt`, `desiredEndsAt`, optional) – what the customer asked for; each line has its own time
@@ -1005,17 +1004,19 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · A deposit request: a fixed amount the customer pays in advance, with its own description ([ADR 0057](decisions/0057-money-balance-is-derived.md)). A payment for "something else" is a deposit request too.
 
-> **Ownership:** owned `description`, `amountMinor`, `currency`, `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt`, `voidedAt` (ADR 0077); snapshot `vatRows` (ADR 0093); derived `paidMinor`, `openMinor`, `progress` (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`, from its payments; never stored).
+> **Ownership:** owned `description`, `amountMinor`, `currency`, `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt`, `voidedAt` (ADR 0077), `provider` and `connectionId` (set by send from the INVOICE route when it goes to a ledger provider, ADR 0106) and the mirrors `providerReference`, `providerUrl`; snapshot `vatRows` (ADR 0093); derived `paidMinor`, `openMinor`, `progress` (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`, from its payments; never stored).
 
 **Attributes**
 - description, amount (fixed, set once), currency, due date
 - VAT per rate of the amount (`vatRows`, snapshot at create): the order's live priced lines scaled to the amount; empty = no VAT (no priced lines, or created before [ADR 0093](decisions/0093-vat-on-advance-payments.md))
 - status: `DRAFT → SENT → VOID` (a DRAFT may be voided too; VOID is final)
+- prepayment invoice ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)): sent while the INVOICE route goes to a ledger provider (Fortnox, Visma), it is raised there after the commit as a prepayment invoice, one row per VAT rate of `vatRows` excl. VAT on the advances account, with the order's buyer and buyer's reference (a customer that requires one refuses the send without it). `providerReference` is its document number there. Card, Swish and manual payments on it are booked on it there (`registerOnInvoice`); one whose raise failed is raised before its first payment is booked. Voiding it credits it there in full; a definite refusal makes it SENT again, an unanswered call keeps it VOID with `creditPendingAt` (owned) set, and the worker's credit retry reads the credit there before it sends it again. Payments booked directly at the provider (a bank transfer) are mirrored onto the deposit as INVOICE payments by the provider's poll or stream, as for invoices.
 
 **Relations**
 - `N:1` Order requires this
+- `N:0..1` ProviderConnection raised this
 - `1:N` is paid with → Payment
-- `N:1` Invoice offsets this – *later*
+- `1:N` is deducted by → InvoiceDeposit → Invoice (the final invoice deducts it as quantity −1 rows on the advances account)
 
 > Operations (`payment:read` to read, `payment:write` to change): `deposit.list` (per order, newest first), `deposit.get`, `deposit.create({ orderId, description, amountMinor, dueDate? })` (a DRAFT; the order must be chargeable: not in a `closes` status unless it is `invoiceable`), `deposit.send` (DRAFT → SENT; only a SENT deposit can be paid) and `deposit.void` (refused with `CONFLICT` while a payment against it is PENDING or anything paid has not been refunded). Every move claims the row on its current status, so a concurrent move or payment request gets `CONFLICT` instead of a lost update. On every surface; web on the order page (create at `/new/deposit?order=<id>`).
 
@@ -1031,20 +1032,20 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - amount and currency (`amountMinor` in minor units, ISO 4217)
 - provider (`Provider`, null for `MANUAL`) and the connection it was requested on
 - application fee (`applicationFeeMinor`, null = none), shown on each payment on the order page
-- the receivable it settles: exactly one of `quoteId`, `depositId`, `invoiceId` (check constraint)
+- the receivable it settles: exactly one of `quoteId`, `depositId`, `invoiceId` (check constraint); new payments take a deposit or an invoice, a quote is no longer paid directly ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md))
 - public token (`publicToken`, unique, 256 random bits): addresses the customer's payment page `/pay/<token>`; never in the DTO
 - paid at; note (staff's text on a manual payment)
 
 **Relations**
 - `N:1` Order is paid with this
-- `N:1` Quote is paid with this (a SENT or ACCEPTED one)
+- `N:1` Quote was paid with this (before ADR 0106)
 - `N:1` Deposit is paid with this
 - `N:1` Invoice is settled with this
 - `N:0..1` ProviderConnection took this
 - `1:N` is tried with → PaymentAttempt
 - `1:N` is refunded with → PaymentRefund
 
-> Operations: `payment.list` (per order, newest first), `payment.get` and `payment.balance` (`payment:read`); `payment.create({ quoteId | depositId | invoiceId, method?, amountMinor?, description? })`, `payment.cancel` and `payment.recordManual({ quoteId | depositId | invoiceId, amountMinor, paidAt, note? })` (`payment:write`); `payment.refund({ id, amountMinor?, reason? })` (`payment:refund`, manager and admin), on every surface. `create` takes exactly one receivable and prepares the first routed method at its provider after the commit (ADR 0058); the others start from the pay page (`payment.startAttempt`, SYSTEM only, scoped to the token). An attempt that fails or expires ends only the attempt; `cancel` ends a `PENDING` payment. Behaviour: `docs/specs/payments.md`.
+> Operations: `payment.list` (per order, newest first), `payment.get` and `payment.balance` (`payment:read`); `payment.create({ depositId | invoiceId, method?, amountMinor?, description? })`, `payment.cancel` and `payment.recordManual({ depositId | invoiceId, amountMinor, paidAt, note? })` (`payment:write`); `payment.refund({ id, amountMinor?, reason? })` (`payment:refund`, manager and admin), on every surface. `create` needs a connected accounting system (`CONFLICT` without one, ADR 0106), takes exactly one receivable and prepares the first routed method at its provider after the commit (ADR 0058); the others start from the pay page (`payment.startAttempt`, SYSTEM only, scoped to the token). An attempt that fails or expires ends only the attempt; `cancel` ends a `PENDING` payment. Behaviour: `docs/specs/payments.md`.
 
 > **Balance (ADR 0057):** `payment.balance({ orderId })` (`payment:read`) derives what the order owes in `packages/core/src/features/payment/settlement.ts` and `order-balance.ts`, the one module that computes money: paid per receivable = SUCCEEDED and REFUNDED payments minus their succeeded refunds; progress `OPEN`, `PARTLY_PAID`, `PAID` or `OVERPAID`; billed = the SENT invoices once invoiced (less credit notes), else the ACCEPTED quote; balance = billed minus everything paid on the order. Nothing is stored. GraphQL `orderBalance`, REST `GET /orders/{orderId}/balance`.
 
@@ -1072,12 +1073,13 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · The invoice after delivery: a snapshot of the order's priced lines, like a sent quote ([ADR 0052](decisions/0052-the-line-is-the-booking.md), [ADR 0057](decisions/0057-money-balance-is-derived.md)). An order can be invoiced only in a status with the `invoiceable` flag.
 
-> **Ownership:** owned `number` (per organization, highest + 1), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); `voidPendingAt` (a void the provider has not confirmed, cleared by the retry job or the provider's signal, ADR 0100); `provider` and `connectionId` (set by send from the INVOICE route, ADR 0090, 0100) and the mirrors `providerReference` and `providerUrl`; snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments) and `amountDueMinor` (total less deductions and credit notes).
+> **Ownership:** owned `number` (Bibi's own, per organization, from before ADR 0106; null since, dropped in a later release), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); `voidPendingAt` (a void the provider has not confirmed, cleared by the retry job or the provider's signal, ADR 0100); `provider` and `connectionId` (set by send from the INVOICE route, ADR 0090, 0100) and the mirrors `providerReference` and `providerUrl`; snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments), `amountDueMinor` (total less deductions and credit notes) and `documentNumber` (the accounting system's number, else Bibi's old one).
 
 **Attributes**
-- invoice number, due date (given, else after the customer's payment terms, default 30 days)
+- number: the accounting system's document number (`documentNumber`); Bibi numbers nothing ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)). Due date (given, else after the customer's payment terms, default 30 days)
 - status: `DRAFT → SENT → VOID` (VOID is final)
 - totals of the frozen lines
+- buyer's reference (`buyerReference`, snapshot): the order's effective reference at create; a DRAFT without one takes the order's current one when sent. Sent to Fortnox as `YourReference` and `EDIYourElectronicReference`, to Visma as `YourReference`; Bibi's own reference goes in "Our reference" ([ADR 0105](decisions/0105-buyer-reference-on-the-order.md))
 - deducted deposits (`InvoiceDeposit`, snapshot at create) and the amount due: total incl. VAT minus them, which payments settle ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md))
 - provider (`Provider`, owned) and its connection: where the invoice was raised when it was sent (Stripe, Fortnox or Visma); null = in Bibi only
 - the provider's document number (`providerReference`, a mirror, unique per connection; null until raised there) and its page (`providerUrl`)
@@ -1109,7 +1111,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · A credit of an invoice ([ADR 0100](decisions/0100-payment-providers-as-ports.md)): the credited lines frozen as order lines like an invoice freezes its lines ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). It lowers the invoice's amount due and the order balance. Money already paid on the invoice is returned with `payment.refund`. Read with `creditNote.list` (by invoice or order) and `creditNote.get` (`payment:read`), created by `invoice.credit`.
 
-> **Ownership:** owned `number` (per organization, highest + 1), `reason`, `status` and where it was raised (`provider`, `connectionId`); snapshot its `OrderLine` rows, `amountMinor` (incl. VAT) and totals; mirror `providerReference` and `providerUrl`, and `issuedAt` (when it was confirmed: the date of its reversal voucher).
+> **Ownership:** owned `number` (Bibi's own from before ADR 0106; null since), `reason`, `status` and where it was raised (`provider`, `connectionId`); snapshot its `OrderLine` rows, `amountMinor` (incl. VAT) and totals; mirror `providerReference` and `providerUrl`, and `issuedAt` (when it was confirmed: the date of its reversal voucher).
 
 **Attributes**
 - number, reason, amount incl. VAT and totals of the frozen lines
@@ -1144,7 +1146,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### AccountingSettings (`AccountingSettings`)
 
-*MVP* · The organization's accounts for the SIE export ([ADR 0077](decisions/0077-financials-and-sie-export.md)). One row per organization, created by the first save; until then the BAS defaults apply.
+*MVP* · The organization's accounts ([ADR 0077](decisions/0077-financials-and-sie-export.md)): the revenue accounts invoice rows post to in Fortnox or Visma. The receivable, clearing, fee, rounding and VAT accounts were for the SIE export, which is gone ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)); they go with its tables. One row per organization, created by the first save; until then the BAS defaults apply.
 
 > **Ownership:** owned every account number and `fiscalYearStartMonth`; nothing derived.
 
@@ -1175,38 +1177,9 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > Built as its own table; ADR 0077 first named columns on item type and item (see its addendum). Replaced as a set by `accountingSettings.update`.
 
-### AccountingExport (`AccountingExport`)
+### AccountingExport, AccountingExportEntry (removed)
 
-*MVP* · One SIE 4I file handed to the accounting program ([ADR 0077](decisions/0077-financials-and-sie-export.md)). A snapshot: the bytes are kept as written (codepage 437), so a re-download is identical. Never deleted.
-
-> **Ownership:** owned `number`, `fileName`, `fileBytes`, `voucherCount`, `periodStart` and `periodEnd`. The events it contains are its `AccountingExportEntry` rows.
-
-**Attributes**
-- number (per organization, highest + 1) and file name (`bibi-sie-NNNN.si`)
-- voucher count
-- reported range (`periodStart`, `periodEnd` exclusive; null on files made before ranges)
-- created at and by
-
-**Relations**
-- `1:N` contains → AccountingExportEntry
-
-> Operations: `accountingExport.preview` and `list|get` (`finance:read`); `accountingExport.create` and `download` (`finance:write`). `preview` and `create` take a range `{ from, to }`. `preview` shows what an export of the range would contain, how many earlier exports overlap it and its blockers (`ORG_NUMBER_MISSING`, `VAT_ACCOUNT_MISSING`, `NOTHING_TO_EXPORT`). `create` writes one voucher per invoice sent or voided, payment, fee and refund dated in the range, also those exported before, so a range can be exported again, with the file. `download` returns the file as base64. Web: Export SIE on the Financials page opens a dialog with the range, with the export history.
-
-### AccountingExportEntry (`AccountingExportEntry`)
-
-*MVP* · One accounting event that an export contained, append-only. Each event is exported once: unique per kind and source, also when two exports run at once.
-
-> **Ownership:** owned `kind` and the one source it points to. Nothing else.
-
-**Attributes**
-- kind: `INVOICE_SENT`, `INVOICE_VOID` (the reversal), `PAYMENT`, `FEE` or `REFUND`
-- source: exactly one invoice, payment or refund, as the kind says (check constraint)
-
-**Relations**
-- `N:1` AccountingExport contains this
-- `N:0..1` refers to → Invoice, CreditNote, Payment or PaymentRefund
-
-> Written by `accountingExport.create` with its export. No operation of its own.
+*Removed* ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)) · The SIE 4I export and its entries. The accounting system keeps the books, so Bibi writes no vouchers and no file. The tables stay, unread, until a later release drops them (expand/contract, ADR 0013); no operation reads or writes them.
 
 ### Financials overview (`finance.overview`)
 

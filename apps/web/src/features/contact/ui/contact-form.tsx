@@ -17,7 +17,7 @@ export type ContactFormProps = {
   onDone: () => void;
 };
 
-/** Create (type picker first) or edit a contact person: name, email, phone, own fields. */
+/** Create (type picker first) or edit a contact person: name, email, phone, reference, own fields. */
 export function ContactForm({ customerId, data, contact, onDone }: ContactFormProps) {
   const common = useTranslations("common");
   const t = useTranslations("contact.fields");
@@ -43,6 +43,7 @@ export function ContactForm({ customerId, data, contact, onDone }: ContactFormPr
               <EmailField form={form} name="email" label={t("email")} />
               <PhoneField form={form} name="phone" label={t("phone")} />
             </div>
+            <TextField form={form} name="buyerReference" label={t("buyerReference")} />
             <TypeFields control={form.control} type={type} data={data} />
           </>
         ) : null}

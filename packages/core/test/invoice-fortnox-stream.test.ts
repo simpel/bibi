@@ -22,7 +22,7 @@ afterEach(() => {
 
 describe("the Fortnox Topics stream (ADR 0090)", () => {
   it("routes a payment event by tenant id and ignores invoices Bibi did not raise", async () => {
-    const { context, order } = await moneySetup();
+    const { context, order } = await moneySetup({ ledger: false });
     await connectFortnox({ context });
     const fake = installFakeInvoicing();
     const input = { invoiceProvider: "FORTNOX" as const };

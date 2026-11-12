@@ -86,14 +86,11 @@ async function writeCredit({ context, input }: WriteInput) {
     });
   }
   const atProvider = Boolean(invoice.providerReference) && raisedInProvider({ invoice });
-  // Credits of two invoices at once may take the same number: the unique key refuses the
-  // second with CONFLICT (as invoice numbers, ADR 0077), and a retry takes the next.
-  const top = await context.db.creditNote.aggregate({ _max: { number: true } });
+  // Bibi numbers nothing: the accounting system numbers the credit (ADR 0106).
   const note = await context.db.creditNote.create({
     data: {
       organizationId: context.organizationId,
       invoiceId: invoice.id,
-      number: (top._max.number ?? 0) + 1,
       currency: invoice.currency,
       amountMinor,
       totalExclVatMinor,

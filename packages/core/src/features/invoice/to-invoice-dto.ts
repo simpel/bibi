@@ -3,13 +3,17 @@ import type { OperationContext } from "../../operations/types";
 import { findProvider } from "../../providers/registry";
 import { paidByReceivable, settlementOf } from "../payment/settlement";
 import { toOrderLineDto } from "../quote/quote-view";
+import { documentNumberOf } from "./document-number";
 import type { InvoiceDto } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
 type DeductionRow = InvoiceDeposit & { deposit: { description: string } };
 
-type CreditRow = Pick<CreditNote, "id" | "number" | "amountMinor" | "status" | "createdAt">;
+type CreditRow = Pick<
+  CreditNote,
+  "id" | "number" | "providerReference" | "amountMinor" | "status" | "createdAt"
+>;
 
 export type InvoiceRow = Invoice & {
   lines: OrderLine[];
@@ -25,8 +29,15 @@ export const INVOICE_INCLUDE = {
     orderBy: [{ createdAt: "asc" as const }, { id: "asc" as const }],
   },
   creditNotes: {
-    select: { id: true, number: true, amountMinor: true, status: true, createdAt: true },
-    orderBy: [{ number: "asc" as const }],
+    select: {
+      id: true,
+      number: true,
+      providerReference: true,
+      amountMinor: true,
+      status: true,
+      createdAt: true,
+    },
+    orderBy: [{ createdAt: "asc" as const }, { id: "asc" as const }],
   },
 };
 
@@ -84,8 +95,10 @@ export async function toInvoiceDtos({ context, rows }: ToInvoiceDtosInput): Prom
       deductions: deductions.map(({ depositId, amountMinor, deposit }) => ({
         ...{ depositId, amountMinor, description: deposit.description },
       })),
-      creditNotes: creditNotes.map(({ id, number, amountMinor, status }) => ({
+      documentNumber: documentNumberOf({ ...row }),
+      creditNotes: creditNotes.map(({ id, number, providerReference, amountMinor, status }) => ({
         ...{ id, number, amountMinor, status },
+        documentNumber: documentNumberOf({ providerReference, number }),
       })),
       creditedMinor: live.reduce((sum, c) => sum + c.amountMinor, 0),
       amountDueMinor,

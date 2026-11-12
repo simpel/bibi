@@ -5,9 +5,4 @@ export const FINANCE_SURFACES: readonly WebSurface[] = [
   { operation: "finance.overview", route: "/data/[dashboard]/[from]/[to]" },
   { operation: "accountingSettings.get", route: "/admin/accounting" },
   { operation: "accountingSettings.update", route: "/admin/accounting" },
-  { operation: "accountingExport.preview", route: "/data/[dashboard]/[from]/[to]" },
-  { operation: "accountingExport.create", route: "/data/[dashboard]/[from]/[to]" },
-  { operation: "accountingExport.list", route: "/data/[dashboard]/[from]/[to]" },
-  { operation: "accountingExport.get", route: "/data/[dashboard]/[from]/[to]" },
-  { operation: "accountingExport.download", route: "/data/[dashboard]/[from]/[to]" },
 ];
