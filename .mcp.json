@@ -6,6 +6,10 @@
       "headers": {
         "Authorization": "Bearer ${BIBI_COOLIFY_TOKEN}"
       }
+    },
+    "stripe": {
+      "type": "http",
+      "url": "https://mcp.stripe.com"
     }
   }
 }
