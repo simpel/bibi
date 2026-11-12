@@ -27,7 +27,8 @@ export const createContact = defineOperation({
   kind: "command",
   description:
     "Create a contact person at an active customer, with one of the organization's contact " +
-    "types. `fields` must match the type's own fields (e.g. the person's role).",
+    "types. `fields` must match the type's own fields (e.g. the person's role). " +
+    "`buyerReference` is the reference this person orders under; their orders inherit it.",
   input: ContactCreateInputSchema,
   output: ContactSchema,
   permission: "customer:write",

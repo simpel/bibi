@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import { CheckField } from "@/components/form/check-field";
 import { EmailField } from "@/components/form/email-field";
 import { OptionSelectField } from "@/components/form/option-select-field";
 import { PhoneField } from "@/components/form/phone-field";
@@ -56,6 +57,7 @@ export function CustomerCoreFields({ form }: CustomerCoreFieldsProps) {
         />
         <TextField form={form} name="creditLimit" label={t("creditLimit")} type="number" />
       </div>
+      <CheckField form={form} name="requiresBuyerReference" label={t("requiresBuyerReference")} />
     </>
   );
 }

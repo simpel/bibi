@@ -539,6 +539,9 @@
     "developersLink": "Utvecklare"
   },
   "adminArea": {
+    "overview": {
+      "description": "Allt din organisation ställer in i Bibi. Välj en sida, eller gå direkt till en del av den."
+    },
     "search": {
       "entries": {
         "timeZone": {

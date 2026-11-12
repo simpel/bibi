@@ -36,7 +36,7 @@ export const ROUTES = {
   quotes: "/quotes",
   /** The welcome flow (ADR 0061); under an organization it is `/:org/welcome`. */
   welcome: "/welcome",
-  /** The administration area (ADR 0036): its own sidebar, opens on the first page the caller may see. */
+  /** The administration area (ADR 0036): its own sidebar, opens on a start page listing every page the caller may see. */
   admin: "/admin",
   adminGeneral: "/admin/general",
   adminMembers: "/admin/members",

@@ -17,6 +17,8 @@ export type ContactFormValues = {
   name: string;
   email: string;
   phone: string;
+  /** The reference this person orders under (ADR 0105); empty: none. */
+  buyerReference: string;
   fields: Record<string, RawFieldValue>;
 };
 
@@ -32,6 +34,7 @@ export const contactFormDefaults = ({
   name: contact?.name ?? "",
   email: contact?.email ?? "",
   phone: contact?.phone ?? "",
+  buyerReference: contact?.buyerReference ?? "",
   fields: rawFields({ type, stored: contact?.fields ?? {} }),
 });
 
@@ -52,6 +55,7 @@ export function contactFormSchema({ customerId, type, vocabularies }: ContactSch
       name: values.name.trim(),
       email: blankToNull({ value: values.email }),
       phone: blankToNull({ value: values.phone }),
+      buyerReference: blankToNull({ value: values.buyerReference }),
       fields: fieldsToInput({ values, specs }),
     }),
   });

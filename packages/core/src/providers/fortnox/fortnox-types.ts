@@ -11,8 +11,10 @@ export type FortnoxInvoiceInput = {
   invoiceDate: string;
   dueDate: string | null;
   currency: string;
-  /** Bibi's own reference, shown on the invoice: `Order #<reference>, invoice #<number>`. */
-  yourOrderNumber: string;
+  /** Bibi's own reference, shown as ours: `Order #<reference>, invoice #<number>`. */
+  ourReference: string;
+  /** The buyer's reference (Er referens, ADR 0105); null = none. */
+  buyerReference: string | null;
   rows: FortnoxInvoiceRow[];
 };
 

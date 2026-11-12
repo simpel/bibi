@@ -36,8 +36,10 @@ export type CreateInvoiceInput = Authed & {
   invoiceDate: string;
   dueDate: string | null;
   currency: string;
-  /** Bibi's reference shown on the invoice (`Order #..., invoice #...`). */
+  /** Bibi's reference shown on the invoice as ours (`Order #..., invoice #...`). */
   reference: string;
+  /** The buyer's reference (Er referens, ADR 0105); omitted or null = none. */
+  buyerReference?: string | null;
   rows: VismaRow[];
   /** For a credit invoice: the invoice it credits. */
   creditedInvoiceId?: string;
@@ -56,7 +58,8 @@ export function createInvoice({
     InvoiceDate: invoice.invoiceDate,
     ...(invoice.dueDate ? { DueDate: invoice.dueDate } : {}),
     CurrencyCode: invoice.currency,
-    YourReference: invoice.reference.slice(0, 50),
+    OurReference: invoice.reference.slice(0, 50),
+    ...(invoice.buyerReference ? { YourReference: invoice.buyerReference } : {}),
     RotReducedInvoicingType: 0,
     EuThirdParty: false,
     IsCreditInvoice: Boolean(invoice.creditedInvoiceId),

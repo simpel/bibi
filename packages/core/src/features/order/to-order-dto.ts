@@ -16,10 +16,14 @@ type MainAssignment = { record: { assignments: { assigneeId: string | null }[] }
 /** The customer's buyer kind, which the order inherits when it sets none (ADR 0106). */
 type CustomerKind = { customer: { buyerKind: BuyerKind } };
 
+/** The contact's buyer's reference, which the order inherits when it sets none (ADR 0105). */
+type ContactReference = { contact: { buyerReference: string | null } | null };
+
 export type OrderRow = Order &
   WithRecordLinks &
   MainAssignment &
   CustomerKind &
+  ContactReference &
   LatestStatusChange &
   LatestEstimate;
 
@@ -39,12 +43,22 @@ const MAIN_ASSIGNMENT = {
 export const ORDER_INCLUDE = {
   record: { select: { ...RECORD_LINKS_SELECT, assignments: MAIN_ASSIGNMENT } },
   customer: { select: { buyerKind: true } },
+  contact: { select: { buyerReference: true } },
   ...LATEST_STATUS_CHANGE,
   ...LATEST_ESTIMATE,
 };
 
+type EffectiveReferenceInput = { order: string | null; contact: string | null };
+
+/** The order's own buyer's reference, else its contact's, and where it came from (ADR 0105). */
+export function effectiveReference({ order, contact }: EffectiveReferenceInput) {
+  if (order) return { effectiveBuyerReference: order, buyerReferenceSource: "ORDER" as const };
+  if (contact) return { effectiveBuyerReference: contact, buyerReferenceSource: "CONTACT" as const };
+  return { effectiveBuyerReference: null, buyerReferenceSource: null };
+}
+
 export const toOrderDto = ({ row }: ToOrderDtoInput): OrderDto => {
-  const { record: _record, customer, statusChanges, estimates, ...order } = row;
+  const { record: _record, customer, contact, statusChanges, estimates, ...order } = row;
   const domain = getEnv().MAIL_INBOUND_DOMAIN;
   const inboundAddress = orderReplyAddress({ orderId: row.id, domain });
   const latest = statusChanges[0];
@@ -52,6 +66,7 @@ export const toOrderDto = ({ row }: ToOrderDtoInput): OrderDto => {
     ...order,
     assigneeId: row.record.assignments[0]?.assigneeId ?? null,
     effectiveBuyerKind: row.buyerKind ?? customer.buyerKind,
+    ...effectiveReference({ order: row.buyerReference, contact: contact?.buyerReference ?? null }),
     statusChangedAt: latest?.changedAt ?? row.createdAt,
     statusReason: latest?.reason ?? null,
     estimatedValueMinor: estimates[0]?.valueMinor ?? null,

@@ -32,6 +32,7 @@ export function orderFormSchema({ type, vocabularies, timeZone }: OrderSchemaInp
       customerId: values.customerId,
       contactId: values.contactId,
       buyerKind: values.buyerKind === NONE ? null : values.buyerKind,
+      buyerReference: values.buyerReference.trim() === "" ? null : values.buyerReference,
       desiredStartsAt: instant({ value: values.desiredStartsAt }),
       desiredEndsAt: instant({ value: values.desiredEndsAt }),
       estimatedHeadcount: numberOrNull({ value: values.estimatedHeadcount }),

@@ -52,6 +52,7 @@ export async function toInvoiceSnapshot({
     dueDate: invoice.dueDate ? day({ instant: invoice.dueDate, timeZone }) : null,
     currency: invoice.currency,
     reference: `Order #${reference}, invoice #${invoice.number}`,
+    buyerReference: invoice.buyerReference,
     customer,
     lines: invoice.lines
       .filter((line) => line.inTotal)

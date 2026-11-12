@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { RecordStatusSchema } from "../../shared/record-status";
+import { BuyerReferenceSchema } from "../contact/schema";
 import { BuyerKindSchema } from "../customer/schema";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 import { LineSchema } from "../line/schema";
@@ -23,6 +24,18 @@ export const OrderSchema = z.object({
   effectiveBuyerKind: BuyerKindSchema.describe(
     "Business or private for this order: its own, else the customer's (ADR 0106)",
   ),
+  buyerReference: z
+    .string()
+    .nullable()
+    .describe("The buyer's reference set on this order; null = it follows the contact's"),
+  effectiveBuyerReference: z
+    .string()
+    .nullable()
+    .describe("The reference invoices carry: the order's own, else its contact's (ADR 0105)"),
+  buyerReferenceSource: z
+    .enum(["ORDER", "CONTACT"])
+    .nullable()
+    .describe("Where effectiveBuyerReference comes from; null when there is none"),
   /** The organization's own status (ADR 0043); the newest entry of its status history (ADR 0054). */
   statusId: z.string(),
   /** The main assignee's user id (assignment.list, responsibility null); null: nobody (ADR 0055). */
@@ -72,6 +85,9 @@ const OrderDetailsShape = {
     ),
   buyerKind: BuyerKindSchema.nullish().describe(
     "Business or private for this order only; null or omitted = follow the customer's",
+  ),
+  buyerReference: BuyerReferenceSchema.nullish().describe(
+    "The buyer's reference for this order only, e.g. a case number; null or omitted = the contact's",
   ),
   desiredStartsAt: z.coerce.date().nullish().describe("Desired start, ISO 8601"),
   desiredEndsAt: z.coerce.date().nullish().describe("Desired end (after the start), ISO 8601"),

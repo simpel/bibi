@@ -19,6 +19,9 @@ model Customer {
   /// The organisation number, e.g. 556677-8899 (owned, ADR 0106); null = not given. Sent to the
   /// ledger provider and required before a business customer is invoiced.
   organizationNumber   String?
+  /// Owned (ADR 0105): its invoices must carry the buyer's reference (Er referens), e.g. a
+  /// public-sector buyer that routes invoices by it. Enforced when invoicing.
+  requiresBuyerReference Boolean   @default(false)
   /// Invoice address.
   invoiceStreetAddress String?
   invoicePostalCode    String?
@@ -59,6 +62,9 @@ model Contact {
   name           String
   email          String?
   phone          String?
+  /// The reference this person orders under (owned, ADR 0105), e.g. a case number or
+  /// beställar-ID; null = none. Orders without their own reference inherit it.
+  buyerReference String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
   fields         Json         @default("{}")
   status         RecordStatus @default(ACTIVE)

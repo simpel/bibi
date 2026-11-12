@@ -28,6 +28,9 @@ export const CustomerSchema = z.object({
   phone: z.string().nullable(),
   buyerKind: BuyerKindSchema,
   organizationNumber: z.string().nullable(),
+  requiresBuyerReference: z
+    .boolean()
+    .describe("Its invoices must carry the buyer's reference (order or contact)"),
   invoiceStreetAddress: z.string().nullable(),
   invoicePostalCode: z.string().nullable(),
   invoiceCity: z.string().nullable(),
@@ -82,6 +85,13 @@ export const CustomerCreateInputSchema = z.object({
     "Business or private; each order inherits it unless it sets its own. Default BUSINESS",
   ),
   organizationNumber: OrganizationNumberSchema.nullish(),
+  requiresBuyerReference: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Invoices must carry the buyer's reference, e.g. a public-sector buyer; invoicing an " +
+        "order without one is refused. Default false",
+    ),
   invoiceStreetAddress: z.string().trim().max(200).nullish(),
   invoicePostalCode: z.string().trim().max(20).nullish(),
   invoiceCity: z.string().trim().max(100).nullish(),
@@ -115,6 +125,7 @@ export const CustomerUpdateInputSchema = CustomerCreateInputSchema.omit({
     id: z.string().min(1),
     // Without a default: an update that omits it keeps the customer's.
     buyerKind: BuyerKindSchema.optional(),
+    requiresBuyerReference: z.boolean().optional(),
     fields: FieldValuesSchema.optional().describe(
       "Changed field values by key; other fields are kept. null clears a value.",
     ),

@@ -66,6 +66,10 @@
             "question": "How do I mark a customer as a business or a private person?",
             "answer": "When you create a customer, choose Business or Private person. For a business you can also fill in its org. no.\nEvery order follows its customer. To change it for a single order, click Edit on the order and pick Business or Private person under Business or private. Choose Same as the customer to go back."
           },
+          "buyerReference": {
+            "question": "How do I add the buyer's reference to an order?",
+            "answer": "Some buyers, often public agencies, need their own reference on every invoice, such as a case number. Open the contact person and fill in Buyer's reference. Their orders use it automatically.\nFor a single order, click Edit on the order and fill in Buyer's reference there instead.\nIf a customer always needs a reference, edit the customer and tick Invoices must carry the buyer's reference. Bibi then won't create an invoice for one of its orders until a reference is set."
+          },
           "createFromBoard": {
             "question": "Can I create an order from the pipeline board?",
             "answer": "Yes. At the bottom of the column where new orders start there is + Create order. It opens the same page as Create order in the menu, and the order lands in that first column."
@@ -205,6 +209,10 @@
           "cantSee": {
             "question": "Why can't I see a page or a button?",
             "answer": "You probably don't have access to that part. Ask an admin in your organization to give you access under Administration → Members."
+          },
+          "findSettings": {
+            "question": "Where do I find the settings?",
+            "answer": "Click Administration in the sidebar. The start page shows every settings page you have access to, grouped into Organization, Catalog, Orders and Money & connections.\nClick a card to open the page, or click one of the parts listed on it to jump straight there."
           }
         }
       },

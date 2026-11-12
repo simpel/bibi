@@ -92,6 +92,7 @@ export async function OrderDetails({ order, data }: OrderFactsProps) {
   const type = data.types.find(({ id }) => id === order.entityTypeId);
   const kinds = await getTranslations("customer.buyerKind");
   const kind = kinds(order.effectiveBuyerKind);
+  const reference = order.effectiveBuyerReference;
   const amount = ({ minor }: { minor: number | null }) =>
     minor === null ? EMPTY : money({ minor });
   const facts = [
@@ -100,6 +101,17 @@ export async function OrderDetails({ order, data }: OrderFactsProps) {
       label: fields("buyerKind"),
       value: order.buyerKind ? kind : fields("buyerKindInherited", { kind }),
     },
+    ...(reference
+      ? [
+          {
+            label: fields("buyerReference"),
+            value:
+              order.buyerReferenceSource === "CONTACT"
+                ? fields("buyerReferenceFromContact", { reference })
+                : reference,
+          },
+        ]
+      : []),
     ...(order.statusReason ? [{ label: fields("statusReason"), value: order.statusReason }] : []),
     { label: fields("budget"), value: amount({ minor: order.budgetMinor }) },
     { label: fields("estimatedValue"), value: amount({ minor: order.estimatedValueMinor }) },

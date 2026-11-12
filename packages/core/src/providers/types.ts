@@ -123,6 +123,8 @@ export type InvoiceSnapshot = {
   currency: string;
   /** Bibi's own reference, shown on the invoice: `Order #<reference>, invoice #<number>`. */
   reference: string;
+  /** The buyer's reference (Er referens, ADR 0105), frozen on the invoice; null = none. */
+  buyerReference: string | null;
   customer: { name: string; email: string | null };
   lines: readonly InvoiceSnapshotLine[];
   deductions: readonly InvoiceSnapshotDeduction[];

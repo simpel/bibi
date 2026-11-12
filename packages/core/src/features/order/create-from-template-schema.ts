@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { BuyerReferenceSchema } from "../contact/schema";
 import { OrderTitleInputSchema } from "./title/title-schema";
 
 export const OrderCreateFromTemplateInputSchema = z.object({
@@ -9,6 +10,9 @@ export const OrderCreateFromTemplateInputSchema = z.object({
     .string()
     .min(1)
     .describe("Id of the contact person at the customer (contact.list); required (ADR 0081)"),
+  buyerReference: BuyerReferenceSchema.nullish().describe(
+    "The buyer's reference for this order only, e.g. a case number; omitted = the contact's",
+  ),
   startsAt: z.coerce
     .date()
     .describe("When the order starts, ISO 8601; each line is timed from here"),

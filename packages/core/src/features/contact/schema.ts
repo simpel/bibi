@@ -3,6 +3,14 @@ import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 
+/** The buyer's reference (Er referens, ADR 0105): a case number or beställar-ID, ≤ 50. */
+export const BuyerReferenceSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(50)
+  .describe("The buyer's reference (case number, beställar-ID) their invoices must carry");
+
 export const ContactSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
@@ -11,6 +19,10 @@ export const ContactSchema = z.object({
   name: z.string(),
   email: z.string().nullable(),
   phone: z.string().nullable(),
+  buyerReference: z
+    .string()
+    .nullable()
+    .describe("The reference this person orders under; orders without their own inherit it"),
   fields: FieldValuesSchema,
   status: RecordStatusSchema,
   createdAt: z.date(),
@@ -24,6 +36,7 @@ export const ContactCreateInputSchema = z.object({
   name: z.string().trim().min(1).max(200).describe("The person's full name"),
   email: z.email().nullish(),
   phone: z.string().trim().max(50).nullish(),
+  buyerReference: BuyerReferenceSchema.nullish(),
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
 });
 

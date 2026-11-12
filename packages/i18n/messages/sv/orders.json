@@ -22,6 +22,7 @@
     "saving": "Sparar kund…",
     "archiving": "Arkiverar kund…",
     "invoiceAddress": "Fakturaadress",
+    "requiresBuyerReferenceYes": "Krävs på fakturor",
     "fields": {
       "type": "Typ",
       "name": "Namn",
@@ -34,7 +35,8 @@
       "paymentTermsDays": "Betalningsvillkor (dagar)",
       "creditLimit": "Kreditgräns (kr)",
       "buyerKind": "Företag eller privat",
-      "organizationNumber": "Org.nr"
+      "organizationNumber": "Org.nr",
+      "requiresBuyerReference": "Fakturor måste ha beställarens referens"
     },
     "buyerKind": {
       "BUSINESS": "Företag",
@@ -74,7 +76,8 @@
       "type": "Typ",
       "name": "Namn",
       "email": "E-post",
-      "phone": "Telefon"
+      "phone": "Telefon",
+      "buyerReference": "Beställarreferens"
     },
     "columns": {
       "name": "Namn",
@@ -125,6 +128,9 @@
       "buyerKind": "Företag eller privat",
       "buyerKindFromCustomer": "Samma som kunden",
       "buyerKindInherited": "{kind} (från kunden)",
+      "buyerReference": "Beställarreferens",
+      "buyerReferencePlaceholder": "Lämna tomt för kontaktpersonens",
+      "buyerReferenceFromContact": "{reference} (från kontaktpersonen)",
       "note": "Anteckning för bokningen",
       "desiredStartsAt": "Önskad start",
       "desiredEndsAt": "Önskat slut",

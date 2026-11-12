@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { findProvider } from "../../providers/registry";
 import { resolveRoute } from "../../providers/resolve-route";
 import { conflict, notFound } from "../../shared/errors";
+import { fillBuyerReference } from "./buyer-reference";
 import { raisedInProvider } from "./invoice-provider";
 import { moveInvoice } from "./move-invoice";
 import { type InvoiceDto, InvoiceIdInputSchema, InvoiceSchema } from "./schema";
@@ -21,13 +22,16 @@ export const sendInvoice = defineOperation({
     "in an accounting system (created, booked and emailed there; payments are " +
     "mirrored back) or the payment operator's invoicing (emailed with a pay link, providerUrl). " +
     "With no INVOICE route it is kept in Bibi for payments requested with payment.create. Any " +
-    "other starting status is a CONFLICT.",
+    "other starting status is a CONFLICT. An invoice without a buyer's reference takes the " +
+    "order's current one; a customer that requires one is a VALIDATION error without it.",
   input: InvoiceIdInputSchema,
   output: InvoiceSchema,
   permission: "payment:write",
   handler: async ({ input: { id }, context }) => {
     const route = await resolveRoute({ context, method: "INVOICE" });
     if (!route.ok) return route;
+    const referenced = await fillBuyerReference({ context, invoiceId: id });
+    if (!referenced.ok) return referenced;
     const sent = await moveInvoice({ context, id, to: "SENT" });
     if (!sent.ok || route.value === null || !route.value.adapter.invoicing) return sent;
     const { provider, connection } = route.value;
