@@ -47,10 +47,12 @@ describe("invoices in Fortnox (ADR 0090)", () => {
     const sent = unwrap({
       result: await execute({ operation: sendInvoice, input: { id: draft.id }, context }),
     });
-    expect(sent).toMatchObject({ provider: "FORTNOX", providerReference: "1" });
-    expect(fake.raised).toHaveLength(1);
+    // The deposit was raised first, as a prepayment invoice (ADR 0106).
+    expect(sent).toMatchObject({ provider: "FORTNOX", providerReference: "2" });
+    expect(fake.raised).toHaveLength(2);
+    expect(fake.raised[0]?.reference).toMatch(/, deposit$/);
     // The deposit carries the order's 12 % (ADR 0093): 1 500 kr = 1 339.29 + 160.71 VAT.
-    const raised = fake.raised[0];
+    const raised = fake.raised[1];
     expect(raised && fortnoxRows({ invoice: raised }).at(-1)).toMatchObject({
       description: "Advance",
       quantity: -1,
@@ -70,7 +72,7 @@ describe("invoices in Fortnox (ADR 0090)", () => {
       result: await execute({ operation: listPayments, input: { orderId }, context }),
     });
     expect(page.items.filter((p) => p.provider === "FORTNOX")).toHaveLength(1);
-    expect(fake.raised).toHaveLength(1);
+    expect(fake.raised).toHaveLength(2);
 
     fake.payments = [];
     const reversed = unwrap({
