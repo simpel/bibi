@@ -19,6 +19,10 @@ export {
   getFirstPartyAccessToken,
 } from "./first-party/get-first-party-access-token";
 export { type LinkMcpResourceInput, linkMcpResource } from "./first-party/link-mcp-resource";
+export {
+  type ProvisionAssistantClientInput,
+  provisionAssistantClient,
+} from "./first-party/provision-assistant-client";
 export { getAuth } from "./get-auth";
 export { findInvitationByCode } from "./invitations/find-invitation-by-code";
 export { invitationMailHook } from "./invitations/invitation-mail-hook";

@@ -4,10 +4,11 @@ import { mcp } from "@better-auth/mcp";
 import type { Db } from "@bibi/db";
 import { jwt } from "better-auth/plugins";
 import { memberOrganization } from "../member-organization";
+import { OAUTH_SCOPES } from "../oauth-scopes";
 import { mcpResourceUrl } from "../urls";
 
 /** Scopes MCP clients may request (Better Auth defaults). */
-export const OAUTH_SCOPES = ["openid", "profile", "email", "offline_access"];
+export { OAUTH_SCOPES };
 
 /** Claim carrying the organization the token was granted for (active org at consent). */
 export const ORG_CLAIM = "bibi_org";

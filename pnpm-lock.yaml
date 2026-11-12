@@ -441,6 +441,9 @@ importers:
 
   apps/worker:
     dependencies:
+      '@bibi/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@bibi/config':
         specifier: workspace:*
         version: link:../../packages/config

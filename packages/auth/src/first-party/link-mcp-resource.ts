@@ -1,6 +1,6 @@
 import type { Db } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
-import { OAUTH_SCOPES } from "../plugins/mcp";
+import { OAUTH_SCOPES } from "../oauth-scopes";
 import { mcpResourceUrl } from "../urls";
 
 export type LinkMcpResourceInput = { db: Db; clientId: string };

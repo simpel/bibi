@@ -53,7 +53,7 @@ Images on GHCR are public, so the server needs no registry login. A new image na
    - Keys and Tokens > API tokens: create a token with *deploy* and *write*. Copy the resource UUID from its URL.
 5. **GitHub** (Settings > Environments > production): add the secrets and variables listed above.
 6. **Verify**: push to `main` (or re-run the last CI) and watch the `deploy` job go green.
-7. The assistant's OAuth client (`WEB_OAUTH_CLIENT_ID`) cannot be provisioned from the prod image yet: `provision:oauth` needs `tsx`, a dev dependency. Until that is fixed the assistant is off in production; everything else works.
+7. The assistant: set `WEB_OAUTH_CLIENT_ID` to an id you choose (e.g. `bibi-web-assistant`) and `AI_GATEWAY_API_KEY`, then deploy. The worker creates or updates that OAuth client on every start (`assistant.clientProvisioned` in its log); unset, the assistant is off and everything else works.
 
 ## Coolify access and updates
 - The admin UI is never exposed publicly: reach it through `ssh -L 8000:localhost:8000 -L 6001:localhost:6001 -L 6002:localhost:6002 root@<server>`.
