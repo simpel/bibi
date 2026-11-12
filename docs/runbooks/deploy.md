@@ -57,7 +57,7 @@ Images on GHCR are public, so the server needs no registry login. A new image na
 
 ## Coolify access and updates
 - The admin UI is never exposed publicly: reach it through `ssh -L 8000:localhost:8000 -L 6001:localhost:6001 -L 6002:localhost:6002 root@<server>`.
-- Claude Code reaches Coolify's MCP server through the same tunnel: `.mcp.json` names `bibi-coolify` at http://localhost:8000/mcp with `Authorization: Bearer ${BIBI_COOLIFY_TOKEN}`. Open the tunnel and export `BIBI_COOLIFY_TOKEN` before starting Claude Code; without them the server just fails to connect. Create that token in the Coolify team that holds only Bibi, with read and deploy but not root: a token sees everything in its team.
+- Claude Code reaches Coolify's MCP server through the same tunnel. It is a personal admin tool, so it is registered per person in local scope (stored in `~/.claude.json`, never in the repo): `claude mcp add --scope local --transport http bibi-coolify http://localhost:8000/mcp --header "Authorization: Bearer <token>"`. Open the tunnel before starting Claude Code; without it the server just fails to connect. Create that token in the Coolify team that holds only Bibi, with read and deploy but not root: a token sees everything in its team. The repo has no `.mcp.json`: put no MCP token in a committed file.
 - Few administrators, 2FA on, API tokens scoped and rotated.
 - Update routine: check Coolify releases weekly, apply the latest 4.x promptly after a security advisory, take a backup (including Coolify's own instance data) first, then verify a deploy afterwards.
 
