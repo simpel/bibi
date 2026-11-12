@@ -12,8 +12,14 @@ export type InvoiceProviderCall = {
   connection: ProviderConnection;
 };
 
+/** What a provider call needs: inside `external`, or a job's SYSTEM context outside one. */
+export type ProviderCallContext = Pick<
+  OperationContext,
+  "db" | "organizationId" | "now" | "actor" | "permissions"
+>;
+
 export type ProviderCallInput = {
-  context: OperationContext;
+  context: ProviderCallContext;
   invoice: Pick<Invoice, "provider" | "connectionId">;
 };
 

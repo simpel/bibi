@@ -86,7 +86,7 @@ async function payInLedger({ context, invoiceId, provider }: LedgerInput) {
   if (!read.ok) return read;
   const document = read.value.providerReference ?? "";
   const payment = {
-    reference: `${provider.toLowerCase()}-pay-${read.value.number}`,
+    reference: `${provider.toLowerCase()}-pay-${read.value.id}`,
     amountMinor: read.value.amountDueMinor,
     paidAt: nowOf({ context }),
   };

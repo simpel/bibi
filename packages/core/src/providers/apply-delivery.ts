@@ -61,6 +61,18 @@ async function applyToInvoice({ context, signal }: InOrganization): Promise<Resu
     const input = { invoiceId: invoice.id, signal };
     return done({ result: await execute({ operation: applyInvoiceSignal, input, context }) });
   }
+  // Or a deposit's prepayment invoice there (ADR 0106).
+  const deposit =
+    connection && signal.documentReference
+      ? await context.db.deposit.findFirst({
+          where: { connectionId: connection.id, providerReference: signal.documentReference },
+          select: { id: true },
+        })
+      : null;
+  if (deposit) {
+    const input = { depositId: deposit.id, signal };
+    return done({ result: await execute({ operation: applyInvoiceSignal, input, context }) });
+  }
   const kind = AS_ATTEMPT[signal.kind as keyof typeof AS_ATTEMPT];
   if (!kind) return ok({ value: true });
   const input = { ...signal, kind };

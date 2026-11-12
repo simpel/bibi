@@ -1,7 +1,9 @@
+import { getLogger } from "@bibi/logger";
 import { err, ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
+import { isAmbiguous } from "../payment/refund-at-provider";
 import { invoiceProviderCall } from "./invoice-provider";
 import type { InvoiceDto } from "./schema";
 import { loadInvoice } from "./to-invoice-dto";
@@ -10,7 +12,9 @@ export type CreditAtProviderInput = { context: OperationContext; invoice: Invoic
 
 /**
  * Raises the invoice's PENDING credit notes at the provider the invoice lives in, after the commit
- * (ADR 0058): ISSUED with the provider's reference, or FAILED (it then credits nothing).
+ * (ADR 0058): ISSUED with the provider's reference, or FAILED on a definite refusal (it then
+ * credits nothing). An unanswered call keeps it PENDING (`invoice.creditUnconfirmed`): the money
+ * may be credited there, and the credit retry reads it there before it sends anything again.
  */
 export async function creditAtProvider({
   context,
@@ -34,6 +38,10 @@ export async function creditAtProvider({
           })
         : call;
       if (!credited.ok) {
+        if (isAmbiguous({ error: credited.error })) {
+          getLogger().warn({ event: "invoice.creditUnconfirmed", creditNoteId: note.id });
+          return err({ error: credited.error });
+        }
         await context.db.creditNote.update({ where: { id: note.id }, data: { status: "FAILED" } });
         return err({ error: credited.error });
       }

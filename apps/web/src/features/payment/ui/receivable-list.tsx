@@ -58,7 +58,7 @@ function InvoiceRow({ invoice, canWrite, ...formats }: InvoiceRowProps) {
   const t = useTranslations("invoice");
   const providers = useTranslations("providers");
   const { id, status, openMinor, canVoid } = invoice;
-  const confirm = t("voidConfirm", { number: invoice.number });
+  const confirm = t("voidConfirm", { number: invoice.documentNumber ?? "–" });
   const actions = canWrite ? (
     <>
       {invoice.canSync && invoice.provider ? (

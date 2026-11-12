@@ -111,6 +111,11 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
    */
   dryRun?: boolean;
   /**
+   * How long its transaction may run, in milliseconds; omitted = Prisma's default (5 s). Only for
+   * a bulk command that moves many records in one transaction (archiving a status).
+   */
+  transactionTimeoutMs?: number;
+  /**
    * What the command affects beyond its own fields, read before it runs (ADR 0049), e.g. quote
    * lines that keep an old price. Shown on the approval card; method syntax as for `handler`.
    */

@@ -7,6 +7,7 @@ import { FEATURE_SPECS, parseFeature } from "../permissions/features";
 import { authorize } from "./authorize";
 import type { ExecuteContext } from "./context";
 import { parseWith } from "./parse-with";
+import { transactionOptions } from "./transaction-options";
 import type { AnyOperation, RecordedChange } from "./types";
 
 export type PreviewChangeInput = {
@@ -62,7 +63,7 @@ async function dryChanges({ operation, input, context }: PreviewChangeInput) {
         context: { ...context, db: tx, recordChange },
       });
       throw new PreviewDone({ result, changes });
-    });
+    }, transactionOptions({ operation }));
   } catch (error) {
     if (!(error instanceof PreviewDone)) throw error;
     return error.result.ok ? ok({ value: error.changes }) : error.result;

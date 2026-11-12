@@ -75,12 +75,11 @@ export const createInvoice = defineOperation({
     const priced = checkPricedLines({ lines: derived, what: "An invoice" });
     if (!priced.ok) return priced;
     const lines = derived.map((d) => d.line);
-    const top = await context.db.invoice.aggregate({ _max: { number: true } });
+    // Bibi numbers nothing: the accounting system does when it is raised (ADR 0106).
     const row = await context.db.invoice.create({
       data: {
         organizationId: context.organizationId,
         orderId: input.orderId,
-        number: (top._max.number ?? 0) + 1,
         dueDate: dueDate.value,
         buyerReference: buyerReference.value,
         ...quoteTotals({ lines }),

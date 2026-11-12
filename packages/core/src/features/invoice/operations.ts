@@ -28,7 +28,7 @@ export const listInvoices = defineOperation({
     const rows = await context.db.invoice.findMany({
       where: { orderId },
       include: INVOICE_INCLUDE,
-      orderBy: [{ number: "desc" }, { id: "desc" }],
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       ...pageArgs({ limit, cursor }),
     });
     const page = paginate({ rows, limit });

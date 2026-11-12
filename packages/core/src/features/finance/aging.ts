@@ -1,3 +1,4 @@
+import { documentNumberOf } from "../invoice/document-number";
 import type { OpenInvoice } from "./load-facts";
 import type { FinanceAging } from "./schema";
 
@@ -39,7 +40,7 @@ export function aging({ open, now, referenceOf, titleOf }: AgingInput): FinanceA
     .slice(0, OVERDUE_LISTED)
     .map(({ row, days }) => ({
       invoiceId: row.id,
-      number: row.number,
+      documentNumber: documentNumberOf({ ...row }),
       orderId: row.orderId,
       orderReference: referenceOf({ reference: row.order.reference }),
       orderTitle: titleOf({ title: row.order.title }),

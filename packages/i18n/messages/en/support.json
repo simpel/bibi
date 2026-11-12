@@ -257,6 +257,10 @@
           "prepayment": {
             "question": "What happens to a deposit when Fortnox or Visma makes our invoices?",
             "answer": "When you send a deposit request, it is also made as a prepayment invoice in Fortnox or Visma, with VAT. The deposit shows its number there.\nCard and Swish payments on the deposit are booked on that invoice. The final invoice then deducts the deposit.\nIf you void the deposit, Bibi credits the prepayment invoice for you."
+          },
+          "invoiceNumber": {
+            "question": "Why does an invoice show no number?",
+            "answer": "Fortnox or Visma eEkonomi gives every invoice, prepayment invoice and credit note its number when it is made there, and Bibi shows that number.\nUntil the accounting system has made it, the number shows as –. If it stays that way, open the order and choose **Refresh from Fortnox** (or Visma) on the invoice."
           }
         }
       }

@@ -36,7 +36,7 @@ export type CreateInvoiceInput = Authed & {
   invoiceDate: string;
   dueDate: string | null;
   currency: string;
-  /** Bibi's reference shown on the invoice as ours (`Order #..., invoice #...`). */
+  /** Bibi's reference shown on the invoice as ours (`Order #...`). */
   reference: string;
   /** The buyer's reference (Er referens, ADR 0105); omitted or null = none. */
   buyerReference?: string | null;

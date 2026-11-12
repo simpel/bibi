@@ -14,7 +14,18 @@ export const InvoiceDeductionSchema = z.object({
 /** A credit note of the invoice (ADR 0100): what it credits incl. VAT. */
 export const InvoiceCreditNoteSchema = z.object({
   id: z.string(),
-  number: z.number().int().describe("The organization's credit note number"),
+  number: z
+    .number()
+    .int()
+    .nullable()
+    .describe("Bibi's own number from before ADR 0106; null since: see documentNumber"),
+  documentNumber: z
+    .string()
+    .nullable()
+    .describe(
+      "The number it carries: the accounting system's document number (ADR 0106), else Bibi's " +
+        "own from before; null until raised there",
+    ),
   amountMinor: z.number().int().describe("Credited incl. VAT, minor units"),
   status: z
     .enum(["PENDING", "ISSUED", "FAILED"])
@@ -29,7 +40,18 @@ export const InvoiceSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   orderId: z.string(),
-  number: z.number().int().describe("The organization's invoice number"),
+  number: z
+    .number()
+    .int()
+    .nullable()
+    .describe("Bibi's own number from before ADR 0106; null since: see documentNumber"),
+  documentNumber: z
+    .string()
+    .nullable()
+    .describe(
+      "The number it carries: the accounting system's document number (ADR 0106), else Bibi's " +
+        "own from before; null until raised there",
+    ),
   currency: z.string(),
   dueDate: z.date().nullable(),
   status: ReceivableStatusSchema.describe("DRAFT, SENT (payments can be requested) or VOID"),

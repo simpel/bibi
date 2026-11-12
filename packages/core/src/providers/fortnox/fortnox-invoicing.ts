@@ -69,6 +69,20 @@ export const fortnoxInvoicing: InvoicingPort = {
       payment,
     });
   },
+  async creditStatus({ auth, providerReference }) {
+    const accessToken = tokenOf({ auth });
+    if (!accessToken.ok) return accessToken;
+    const credit = await fortnoxApi.creditOf({
+      accessToken: accessToken.value,
+      documentNumber: providerReference,
+    });
+    if (!credit.ok) return credit;
+    return ok({
+      value: credit.value
+        ? { status: "ISSUED" as const, providerReference: credit.value }
+        : { status: "MISSING" as const },
+    });
+  },
   async listPayments({ auth, providerReference }) {
     const accessToken = tokenOf({ auth });
     if (!accessToken.ok) return accessToken;

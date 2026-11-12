@@ -2,6 +2,7 @@ import { ok, type Result } from "../errors/result";
 import type { ExecuteContext } from "./context";
 import { parseWith } from "./parse-with";
 import { Rollback } from "./rollback";
+import { transactionOptions } from "./transaction-options";
 import type { AnyOperation, RecordedChange } from "./types";
 import { writeAudit } from "./write-audit";
 
@@ -29,7 +30,7 @@ export async function runCommand({
       if (!parsed.ok) throw new Rollback({ result: parsed });
       await writeAudit({ db: tx, operation, actor: context.actor, changes, output: parsed.value });
       return parsed.value;
-    });
+    }, transactionOptions({ operation }));
     return ok({ value });
   } catch (error) {
     if (error instanceof Rollback) return error.result;

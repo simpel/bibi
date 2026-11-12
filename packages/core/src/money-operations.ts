@@ -31,6 +31,7 @@ import {
   syncInvoice,
   voidInvoice,
 } from "./features/invoice/operations";
+import { retryCredits } from "./features/invoice/retry-credits";
 import { paymentOperations } from "./features/payment/operations";
 import { retryRefunds } from "./features/payment/retry-refunds-operation";
 import {
@@ -73,6 +74,7 @@ export {
   listIntegrations,
   listInvoices,
   refreshExpiringIntegrations,
+  retryCredits,
   retryRefunds,
   sendInvoice,
   startPaymentAttempt,

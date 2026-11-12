@@ -29,7 +29,7 @@ type Values = { amount: string; reason: string };
 type Output = z.infer<typeof InvoiceCreditInputSchema>;
 
 export type CreditInvoiceButtonProps = {
-  invoice: { id: string; number: number; amountDueMinor: number; currency: string };
+  invoice: { id: string; documentNumber: string | null; amountDueMinor: number; currency: string };
 };
 
 type CreditFormProps = CreditInvoiceButtonProps & { onDone: () => void };
@@ -93,7 +93,7 @@ export function CreditInvoiceButton({ invoice }: CreditInvoiceButtonProps) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{t("title", { number: invoice.number })}</DialogTitle>
+            <DialogTitle>{t("title", { number: invoice.documentNumber ?? "–" })}</DialogTitle>
             <DialogDescription>{t("description")}</DialogDescription>
           </DialogHeader>
           <CreditForm invoice={invoice} onDone={() => setOpen(false)} />

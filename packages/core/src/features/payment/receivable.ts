@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
+import { documentNumberOf } from "../invoice/document-number";
 import { DUE_INCLUDE, invoiceDueMinor } from "../invoice/to-invoice-dto";
 import type { PaymentCreateInput } from "./schema";
 import type { ReceivableRef } from "./settlement";
@@ -40,9 +41,10 @@ async function findInvoice({ context, id }: FindInput): Promise<Result<Receivabl
   if (!invoice) return notFound({ entity: "Invoice" });
   if (invoice.status !== "SENT")
     return conflict({ message: `A ${invoice.status} invoice cannot be paid` });
-  const { orderId, currency, number } = invoice;
+  const { orderId, currency } = invoice;
   const amountMinor = invoiceDueMinor({ invoice, ...invoice });
-  const description = `Invoice #${number}`;
+  const shown = documentNumberOf({ ...invoice });
+  const description = shown ? `Invoice ${shown}` : "Invoice";
   return ok({
     value: { ref: { ...NONE, invoiceId: id }, orderId, amountMinor, currency, description },
   });

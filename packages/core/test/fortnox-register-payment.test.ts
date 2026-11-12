@@ -30,7 +30,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("Fortnox registers card and Swish payments (ADR 0106)", () => {
+describe("Fortnox registers payments and reads credits (ADR 0100, 0106)", () => {
   it("creates the invoice payment and bookkeeps it", async () => {
     const calls = stubFortnox({
       respond: ({ method }) =>
@@ -67,5 +67,19 @@ describe("Fortnox registers card and Swish payments (ADR 0106)", () => {
     if (done.ok) return;
     expect(done.error.code).toBe("UNAVAILABLE");
     expect(done.error.message).toContain("Closed period");
+  });
+  it("reads whether an invoice was credited (the credit retry)", async () => {
+    const lookup = fortnoxInvoicing.creditStatus;
+    if (!lookup) throw new Error("no creditStatus");
+    stubFortnox({
+      respond: () => ({ status: 200, json: { Invoice: { CreditInvoiceReference: "1042" } } }),
+    });
+    const credited = await lookup({ auth, providerReference: "1007" });
+    expect(unwrap({ result: credited })).toEqual({ status: "ISSUED", providerReference: "1042" });
+    stubFortnox({
+      respond: () => ({ status: 200, json: { Invoice: { CreditInvoiceReference: "0" } } }),
+    });
+    const none = await lookup({ auth, providerReference: "1007" });
+    expect(unwrap({ result: none })).toEqual({ status: "MISSING" });
   });
 });

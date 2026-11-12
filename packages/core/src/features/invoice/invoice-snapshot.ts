@@ -81,7 +81,7 @@ export async function toInvoiceSnapshot({
     invoiceDate: day({ instant: invoice.sentAt ?? new Date(), timeZone }),
     dueDate: invoice.dueDate ? day({ instant: invoice.dueDate, timeZone }) : null,
     currency: invoice.currency,
-    reference: `Order #${reference}, invoice #${invoice.number}`,
+    reference: `Order #${reference}`,
     buyerReference: invoice.buyerReference,
     customer,
     lines: invoice.lines

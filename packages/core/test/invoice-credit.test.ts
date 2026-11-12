@@ -7,6 +7,7 @@ import {
   getOrderBalance,
   listPayments,
   resetProviderAdapters,
+  retryCredits,
   sendInvoice,
   voidInvoice,
 } from "../src/index";
@@ -44,7 +45,7 @@ const credit = ({
 }) => execute({ operation: creditInvoice, input, context });
 
 describe("invoices raised in the accounting system (ADR 0100, 0106)", () => {
-  it("numbers concurrent credit notes one after the other, never failing INTERNAL", async () => {
+  it("credits concurrently, each credit numbered by the accounting system, never failing INTERNAL", async () => {
     const { context, invoice } = await raisedInvoice();
     const results = await Promise.all(
       [1, 2, 3].map(() => credit({ context, invoiceId: invoice.id, amountMinor: 100_000 })),
@@ -55,7 +56,8 @@ describe("invoices raised in the accounting system (ADR 0100, 0106)", () => {
       "ok",
     ]);
     const notes = await context.db.creditNote.findMany({ where: { invoiceId: invoice.id } });
-    expect(notes.map((note) => note.number).sort()).toEqual([1, 2, 3]);
+    expect(notes.map((note) => note.number)).toEqual([null, null, null]);
+    expect(new Set(notes.map((note) => note.providerReference)).size).toBe(3);
   });
 
   it("issues the invoice and records its payment from the provider's signal once", async () => {
@@ -96,7 +98,12 @@ describe("invoices raised in the accounting system (ADR 0100, 0106)", () => {
     });
     expect(credited).toMatchObject({ creditedMinor: 112_000, amountDueMinor: 448_000 });
     expect(credited.creditNotes).toEqual([
-      expect.objectContaining({ number: 1, amountMinor: 112_000, status: "ISSUED" }),
+      expect.objectContaining({
+        number: null,
+        documentNumber: expect.stringMatching(/^credit-1-/),
+        amountMinor: 112_000,
+        status: "ISSUED",
+      }),
     ]);
     expect(fake.portCalls).toEqual(["credit:1:112000"]);
     expect(unwrap({ result: await balance() }).balanceMinor).toBe(448_000);
@@ -109,10 +116,50 @@ describe("invoices raised in the accounting system (ADR 0100, 0106)", () => {
 
   it("marks a credit the provider refused FAILED: it credits nothing", async () => {
     const { context, fake, invoice } = await raisedInvoice();
-    fake.failing.add("credit");
+    fake.refusing.add("credit");
     const refused = await credit({ context, invoiceId: invoice.id, amountMinor: 1_000 });
-    expect(errorCode({ result: refused })).toBe("UNAVAILABLE");
+    expect(errorCode({ result: refused })).toBe("CONFLICT");
     const note = await context.db.creditNote.findFirstOrThrow({ where: { invoiceId: invoice.id } });
     expect(note.status).toBe("FAILED");
+  });
+
+  it("keeps an unanswered credit PENDING and the retry reads it there before sending it again", async () => {
+    const { context, fake, invoice } = await raisedInvoice();
+    fake.failing.add("credit");
+    const lost = await credit({ context, invoiceId: invoice.id, amountMinor: 1_000 });
+    expect(errorCode({ result: lost })).toBe("UNAVAILABLE");
+    const pending = await context.db.creditNote.findFirstOrThrow({
+      where: { invoiceId: invoice.id },
+    });
+    expect(pending.status).toBe("PENDING");
+    // Too early: nothing is read yet.
+    expect(unwrap({ result: await retryCredits({ context }) })).toEqual({
+      issued: 0,
+      failed: 0,
+      waiting: 0,
+    });
+    const later = { ...context, now: () => new Date(Date.now() + 20 * 60_000) };
+    // The provider never got it: it is sent again, once.
+    expect(unwrap({ result: await retryCredits({ context: later }) })).toMatchObject({
+      issued: 1,
+    });
+    const note = await context.db.creditNote.findFirstOrThrow({ where: { id: pending.id } });
+    expect(note).toMatchObject({ status: "ISSUED" });
+    expect(fake.portCalls).toEqual([`credit:1:1000`]);
+    expect(unwrap({ result: await retryCredits({ context: later }) })).toMatchObject({
+      issued: 0,
+    });
+  });
+
+  it("settles a credit the provider made though its answer was lost, without crediting twice", async () => {
+    const { context, fake, invoice } = await raisedInvoice();
+    fake.failing.add("credit");
+    await credit({ context, invoiceId: invoice.id, amountMinor: 1_000 });
+    fake.credited.set("1", "credit-made-there");
+    const later = { ...context, now: () => new Date(Date.now() + 20 * 60_000) };
+    unwrap({ result: await retryCredits({ context: later }) });
+    const note = await context.db.creditNote.findFirstOrThrow({ where: { invoiceId: invoice.id } });
+    expect(note).toMatchObject({ status: "ISSUED", providerReference: "credit-made-there" });
+    expect(fake.portCalls).toEqual([]);
   });
 });

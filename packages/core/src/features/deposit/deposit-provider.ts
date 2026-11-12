@@ -7,7 +7,11 @@ import { resolveRoute } from "../../providers/resolve-route";
 import { notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
 import { invoiceBuyerReference } from "../invoice/buyer-reference";
-import { invoiceProviderCall, raisedInProvider } from "../invoice/invoice-provider";
+import {
+  invoiceProviderCall,
+  type ProviderCallContext,
+  raisedInProvider,
+} from "../invoice/invoice-provider";
 import { isAmbiguous } from "../payment/refund-at-provider";
 import { loadDepositForProvider, toDepositSnapshot } from "./deposit-snapshot";
 
@@ -33,7 +37,7 @@ export async function ledgerRouteOf({
   return ok({ value: { provider: value.provider, connectionId: value.connection.id } });
 }
 
-export type DepositAtProviderInput = { context: OperationContext; id: string };
+export type DepositAtProviderInput = { context: ProviderCallContext; id: string };
 
 /**
  * Raises a SENT deposit routed to a ledger provider as a prepayment invoice there (ADR 0106) and
@@ -76,7 +80,8 @@ async function rollBack({ context, id }: DepositAtProviderInput) {
 /**
  * `deposit.void` after the commit (ADR 0100, 0106): a prepayment invoice booked in a ledger is
  * credited in full there. A definite refusal makes the deposit SENT again; an unanswered call
- * keeps it VOID and says so, since crediting twice would be worse than checking once.
+ * keeps it VOID with `creditPendingAt` set, and the credit retry reads the credit there before it
+ * sends it again (crediting twice would be worse than checking once).
  */
 export async function creditDepositAtProvider({
   context,
@@ -99,8 +104,12 @@ export async function creditDepositAtProvider({
   if (credited.ok) return ok({ value: true });
   const log = { depositId: id, err: credited.error };
   if (isAmbiguous({ error: credited.error })) {
+    await context.db.deposit.updateMany({
+      where: { id, creditPendingAt: null },
+      data: { creditPendingAt: nowOf({ context }) },
+    });
     getLogger().warn({ event: "deposit.creditUnconfirmed", ...log });
-    const message = `${deposit.provider} did not confirm the credit of the prepayment invoice; the deposit stays void, check it in ${deposit.provider}`;
+    const message = `${deposit.provider} did not confirm the credit of the prepayment invoice; the deposit stays void and Bibi checks it there again`;
     return err({ error: new AppError({ code: "UNAVAILABLE", message, cause: credited.error }) });
   }
   await rollBack({ context, id });

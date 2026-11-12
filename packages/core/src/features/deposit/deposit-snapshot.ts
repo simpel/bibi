@@ -8,6 +8,7 @@ import { toIsoDate } from "../../time/plain-date";
 import { toZonedParts } from "../../time/zoned-time";
 import { loadAccountingSettings } from "../finance/load-settings";
 import { invoiceBuyerReference } from "../invoice/buyer-reference";
+import type { ProviderCallContext } from "../invoice/invoice-provider";
 import { buyerOf, ORDER_FOR_PROVIDER } from "../invoice/invoice-snapshot";
 import { asVatRows } from "../quote/order-line-schema";
 
@@ -61,7 +62,7 @@ export function loadDepositForProvider({ context, id }: LoadDepositForProviderIn
   });
 }
 
-export type ToDepositSnapshotInput = { context: OperationContext; deposit: DepositRow };
+export type ToDepositSnapshotInput = { context: ProviderCallContext; deposit: DepositRow };
 
 /**
  * The deposit as the ledger provider raises it, as a prepayment invoice (ADR 0106): its VAT split

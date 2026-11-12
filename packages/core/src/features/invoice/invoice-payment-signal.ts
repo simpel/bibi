@@ -7,9 +7,18 @@ import { PAYMENT_INCLUDE, type PaymentRow, toPaymentDto } from "../payment/to-pa
 
 type Context = Pick<OperationContext, "db" | "organizationId" | "actor" | "recordChange">;
 
+/**
+ * A document raised in a provider whose payments it books: an invoice, or a deposit's prepayment
+ * invoice (`kind: "deposit"`, ADR 0106).
+ */
 export type ProviderInvoice = Pick<Invoice, "id" | "orderId" | "currency" | "connectionId"> & {
   provider: ProviderKey;
+  kind?: "invoice" | "deposit";
 };
+
+/** The payment column that points at the document. */
+export const paymentOwnerOf = ({ invoice }: { invoice: Pick<ProviderInvoice, "id" | "kind"> }) =>
+  invoice.kind === "deposit" ? { depositId: invoice.id } : { invoiceId: invoice.id };
 
 export type PaymentKeyInput = {
   invoice: ProviderInvoice;
@@ -36,7 +45,7 @@ export async function findBookedPayment({ context, invoice, signal }: SignalInpu
     where: {
       provider: invoice.provider,
       providerReference: key,
-      payment: { invoiceId: invoice.id },
+      payment: paymentOwnerOf({ invoice }),
     },
     select: { paymentId: true },
   });
@@ -54,7 +63,7 @@ async function createBooked({ context, invoice, signal, key }: SignalInput & { k
   const { provider, connectionId } = invoice;
   const created = await context.db.payment.create({
     data: {
-      ...{ organizationId, orderId: invoice.orderId, invoiceId: invoice.id },
+      ...{ organizationId, orderId: invoice.orderId, ...paymentOwnerOf({ invoice }) },
       ...{ method: "INVOICE", provider, connectionId, currency: invoice.currency },
       status: "SUCCEEDED",
       amountMinor: signal.amountMinor ?? 0,

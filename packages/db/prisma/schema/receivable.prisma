@@ -41,6 +41,9 @@ model Deposit {
   providerReference String?
   /// Mirror: the provider's page for it, if it has one.
   providerUrl       String?
+  /// Owned (ADR 0100, 0106): set when crediting the prepayment invoice on void ended without an
+  /// answer; the refund retry job reads the credit there and clears it. Null = nothing pending.
+  creditPendingAt   DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   createdBy       String?
@@ -63,8 +66,9 @@ model Invoice {
   id                String                  @id @default(cuid(2))
   organizationId    String
   orderId          String
-  /// Per organization, highest + 1; the unique index refuses a concurrent duplicate.
-  number            Int
+  /// Bibi's own number from before ADR 0106 (per organization); null since: the accounting
+  /// system numbers it (`providerReference`). Dropped in a later release.
+  number            Int?
   /// ISO 4217, upper case.
   currency          String                  @default("SEK")
   dueDate           DateTime?
@@ -120,8 +124,9 @@ model CreditNote {
   id                String              @id @default(cuid(2))
   organizationId    String
   invoiceId         String
-  /// Per organization, highest + 1.
-  number            Int
+  /// Bibi's own number from before ADR 0106; null since: the accounting system numbers it.
+  /// Dropped in a later release.
+  number            Int?
   /// ISO 4217, upper case.
   currency          String              @default("SEK")
   /// What it credits incl. VAT, minor units (snapshot).

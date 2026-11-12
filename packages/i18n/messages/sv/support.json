@@ -257,6 +257,10 @@
           "prepayment": {
             "question": "Vad händer med ett förskott när Fortnox eller Visma gör våra fakturor?",
             "answer": "När du skickar ett förskott skapas det också som en förskottsfaktura i Fortnox eller Visma, med moms. Förskottet visar fakturans nummer där.\nKort- och Swishbetalningar på förskottet bokförs på den fakturan. Slutfakturan drar sedan av förskottet.\nOm du makulerar förskottet krediterar Bibi förskottsfakturan åt dig."
+          },
+          "invoiceNumber": {
+            "question": "Varför har en faktura inget nummer?",
+            "answer": "Fortnox eller Visma eEkonomi ger varje faktura, förskottsfaktura och kreditfaktura sitt nummer när den skapas där, och Bibi visar det numret.\nTills bokföringssystemet har skapat den visas numret som –. Om det inte ändras öppnar du ordern och väljer **Uppdatera från Fortnox** (eller Visma) på fakturan."
           }
         }
       }

@@ -151,6 +151,19 @@ export const fortnoxApi: FortnoxApi = {
       return fortnoxRefused({ what: "the cancel", response: sent.value });
     return ok({ value: true });
   },
+  async creditOf({ accessToken, documentNumber }): Promise<Result<string | null>> {
+    const found = await fortnoxGet({
+      path: `/invoices/${encodeURIComponent(documentNumber)}`,
+      accessToken,
+    });
+    if (!found.ok) return found;
+    const parsed = CreditSchema.partial().safeParse(found.value.json);
+    if (found.value.status !== 200 || !parsed.success) {
+      return fortnoxRefused({ what: "the invoice lookup", response: found.value });
+    }
+    const reference = parsed.data.Invoice?.CreditInvoiceReference;
+    return ok({ value: reference && reference !== "0" ? reference : null });
+  },
   async creditInvoice({ accessToken, documentNumber }): Promise<Result<string>> {
     const path = `/invoices/${encodeURIComponent(documentNumber)}/credit`;
     const sent = await fortnoxSend({ method: "PUT", path, accessToken });

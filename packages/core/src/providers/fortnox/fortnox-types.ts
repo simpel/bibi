@@ -17,7 +17,7 @@ export type FortnoxInvoiceInput = {
   invoiceDate: string;
   dueDate: string | null;
   currency: string;
-  /** Bibi's own reference, shown as ours: `Order #<reference>, invoice #<number>`. */
+  /** Bibi's own reference, shown as ours: `Order #<reference>`. */
   ourReference: string;
   /** The buyer's reference (Er referens, ADR 0105); null = none. */
   buyerReference: string | null;
@@ -43,6 +43,8 @@ export type FortnoxApi = {
   listPayments(input: FortnoxAuthed<{ documentNumber: string }>): Promise<Result<FortnoxPayment[]>>;
   /** Cancels an invoice Fortnox has not booked yet. */
   cancelInvoice(input: FortnoxAuthed<{ documentNumber: string }>): Promise<Result<true>>;
+  /** The credit invoice's document number when the invoice was credited, else null. */
+  creditOf(input: FortnoxAuthed<{ documentNumber: string }>): Promise<Result<string | null>>;
   /** Credits a booked invoice in full; returns the credit invoice's document number. */
   creditInvoice(input: FortnoxAuthed<{ documentNumber: string }>): Promise<Result<string>>;
 };

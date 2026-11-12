@@ -28,7 +28,10 @@ export const FinanceMonthSchema = z.object({
 
 export const OverdueInvoiceSchema = z.object({
   invoiceId: z.string().describe("invoice.get"),
-  number: z.number().int(),
+  documentNumber: z
+    .string()
+    .nullable()
+    .describe("The accounting system's document number, else Bibi's own from before ADR 0106"),
   orderId: z.string().describe("order.get"),
   orderReference: z.number().int().nullable().describe("null without order:read"),
   orderTitle: z.string().nullable().describe("null without order:read or a title"),
