@@ -112,7 +112,7 @@
 - Not all work needs an issue. Build it with the `implement` skill. Never push to `main` (it is protected): ship with `pnpm ship`, which opens a pull request that auto-merges once CI is green. Don't wait for it. Why: ADR 0098.
 - **Build from the spec; ADRs only gate costly-to-reverse moves.** A feature needs no ADR. A decision that meets the ADR bar gets a one-page ADR first (Proposed, accepted by the user before building).
 - Work that adds or changes data or behaviour updates the demo seed and is not done until `seed:demo` runs from an empty database with green checks. Run `seed:demo` once at the end of a batch, not after each small change, and skip it when nothing touches data or behaviour.
-- **No browser checks.** Do not open the browser, take screenshots or start a preview to verify UI changes; the user checks visually. Verify with `node tools/ci/verify.mjs` (scoped to changed files), typecheck, lint and tests. Use the browser only when asked, or to debug a runtime error you cannot find from code (console and network reads, not screenshots).
+- **No browser checks.** Do not open the browser, take screenshots or start a preview to verify UI changes; the user checks visually. Verify with `pnpm check` (scoped to changed packages). Use the browser only when asked, or to debug a runtime error you cannot find from code (console and network reads, not screenshots).
 - Batch UI changes: make several edits, let the user review them in one pass, then fix from their notes.
 - **Document user-facing features on `/support`.** A change that adds or changes something users see adds or edits its question under `support.topics` in `packages/i18n/messages/{sv,en}/support.json` in the same change (the page reads topics and questions in file order, no code needed); a bigger flow also updates its step-by-step guide under `support.guides`. API, GraphQL and MCP changes go to `/developers` (`docs.json`). Write it like customer service: the question as a user would ask it, a friendly answer of two to four short sentences that says where to click, `\n` between paragraphs. No internal words (ADRs, permission keys, code names, "operation"), and only what is built, never what is planned.
 
@@ -129,8 +129,8 @@
 - `pnpm test:db`: creates the test database if missing and applies migrations (pgvector included). `pnpm test` runs it first (Turbo `@bibi/db#migrate:test`); run it yourself before `vitest` in a single package after a new migration.
 - `pnpm --filter @bibi/core cleanup:test-orgs`: opt-in dry run listing organizations left by old test runs in the dev database; `-- --yes` deletes them. Organizations with a real member are kept.
 - `pnpm lint`: Biome check.
-- `node tools/ci/verify.mjs [--all | --light | --only <id>]`: the checks CI runs (lint, structure, typecheck, migrate, test, build), defined once in `tools/ci/checks.json`; by default scoped to the files you changed (`build` only when apps or shared packages changed).
-- `pnpm ship [--footer <text>]`: ships the commits `origin/main` lacks as a pull request with auto-merge (ADR 0098).
+- `pnpm check`: lint and structure, then typecheck, test, build and Storybook for the packages changed against `main` (Turborepo `--affected`). CI runs the same Turborepo tasks for everything, with build in the e2e job.
+- `pnpm ship`: pushes `HEAD` to `ship/<sha>` and opens a pull request with auto-merge (ADR 0098).
 - `pnpm check:structure`: checks exports, barrel files, parameter objects, time/number rules, server render boundaries and feature files.
 - `pnpm typecheck`: TypeScript for all packages.
 - `pnpm test`: Vitest and the parity test.

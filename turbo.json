@@ -2,19 +2,32 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [".env"],
   "tasks": {
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
     "build": {
-      "dependsOn": ["^build", "@bibi/db#generate"],
+      "dependsOn": ["transit", "^build", "@bibi/db#generate"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "build-storybook": {
+      "dependsOn": ["transit"],
+      "outputs": ["storybook-static/**"]
+    },
+    "//#lint": {
+      "cache": false
+    },
+    "//#check:structure": {
+      "cache": false
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
     "typecheck": {
-      "dependsOn": ["^build", "@bibi/db#generate"]
+      "dependsOn": ["transit", "^build", "@bibi/db#generate"]
     },
     "test": {
-      "dependsOn": ["^build", "@bibi/db#generate", "@bibi/db#migrate:test"],
+      "dependsOn": ["transit", "^build", "@bibi/db#generate", "@bibi/db#migrate:test"],
       "cache": false
     },
     "generate": {

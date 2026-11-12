@@ -31,12 +31,17 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # The checks (lint, structure, typecheck, migrate, test) are defined once in tools/ci/checks.json and
-      # run locally by the implement skill before it commits. build runs in e2e, storybook in its own job.
-      - run: node tools/ci/verify.mjs --all
+      # Turbo runs the tasks in parallel; the cache skips typecheck in packages unchanged since the last run.
+      - uses: actions/cache@v6
+        with:
+          path: .turbo/cache
+          key: turbo-check-${{ github.sha }}
+          restore-keys: turbo-check-
+      # Build runs in e2e, storybook in its own job. --continue reports every failing task, not only the first.
+      - run: pnpm exec turbo run lint check:structure typecheck test --continue
 
   tools:
-    # The check runner and the time rule have their own tests (no database needed).
+    # The time rule has its own tests (no database needed).
     if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     runs-on: ubuntu-latest
     steps:
@@ -44,7 +49,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22
-      - run: node --test tools/ci/verify.test.mjs tools/ci/ship.test.mjs tools/lib/time-rules.test.mjs
+      - run: node --test tools/lib/time-rules.test.mjs
 
   storybook:
     # A broken story fails the build (ADR 0002).
@@ -58,7 +63,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: node tools/ci/verify.mjs --only storybook
+      - run: pnpm exec turbo run build-storybook --filter=@bibi/ui
 
   e2e:
     # Playwright against a production build with the scripted model (ADR 0002, 0007).
@@ -101,7 +106,7 @@ jobs:
           pnpm --filter @bibi/web provision:oauth | tee provision.log
           grep -E '^WEB_OAUTH_CLIENT_ID=' provision.log >> "$GITHUB_ENV"
       # The full build (web, mcp, worker); e2e runs against the web build, so check does not build again.
-      - run: node tools/ci/verify.mjs --only build
+      - run: pnpm build
       - name: Get Playwright version
         id: pw
         run: echo "version=$(pnpm --filter @bibi/web exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"

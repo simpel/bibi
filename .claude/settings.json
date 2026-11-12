@@ -3,7 +3,7 @@
     "allow": [
       "Bash(git status:*)",
       "Bash(git diff:*)",
-      "Bash(node tools/ci/verify.mjs:*)",
+      "Bash(pnpm check:*)",
       "Bash(git log:*)",
       "Bash(git fetch:*)",
       "Bash(git show:*)",
