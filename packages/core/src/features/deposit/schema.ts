@@ -92,6 +92,12 @@ export const DepositSuggestionSchema = z.object({
       "True when the organization's own Stripe account is active, so /pay links can be sent. " +
         "Without it deposit.request and card payments are unavailable (ADR 0090)",
     ),
+  ledgerConnected: z
+    .boolean()
+    .describe(
+      "True when an accounting system (Fortnox, Visma) is connected and takes invoices. Without " +
+        "it no deposit, invoice or payment link can be made (ADR 0106)",
+    ),
 });
 
 export const DepositRequestInputSchema = DepositCreateInputSchema.extend({

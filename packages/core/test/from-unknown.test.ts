@@ -21,6 +21,14 @@ describe("fromUnknown with Postgres codes behind P2039", () => {
     expect(error.code).toBe("VALIDATION");
   });
 
+  it("maps a deadlock (40P01), a serialization failure (40001) and P2034 to CONFLICT", () => {
+    for (const postgresCode of ["40P01", "40001"]) {
+      const error = fromUnknown({ error: prismaError({ code: "P2039", postgresCode }) });
+      expect(error.code).toBe("CONFLICT");
+    }
+    expect(fromUnknown({ error: prismaError({ code: "P2034" }) }).code).toBe("CONFLICT");
+  });
+
   it("falls back to INTERNAL for an unrecognised nested code", () => {
     const error = fromUnknown({ error: prismaError({ code: "P2039", postgresCode: "99999" }) });
     expect(error.code).toBe("INTERNAL");

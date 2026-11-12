@@ -11,6 +11,7 @@ const PRISMA_CODES: Record<string, Mapped> = {
   P2025: { code: "NOT_FOUND", message: "Record not found" },
   P2002: { code: "CONFLICT", message: "Unique constraint violated" },
   P2003: { code: "VALIDATION", message: "Referenced record does not exist" },
+  P2034: { code: "CONFLICT", message: "Changed at the same time by someone else: try again" },
 };
 
 /**
@@ -20,6 +21,10 @@ const PRISMA_CODES: Record<string, Mapped> = {
 const POSTGRES_CODES: Record<string, Mapped> = {
   "23P01": { code: "CONFLICT", message: "Overlaps an existing record" },
   "23514": { code: "VALIDATION", message: "Check constraint violated" },
+  // A deadlock or serialization failure: two writes raced (two bookings of one slot) and
+  // Postgres let one through. The other is a conflict to retry, not a bug.
+  "40P01": { code: "CONFLICT", message: "Changed at the same time by someone else: try again" },
+  "40001": { code: "CONFLICT", message: "Changed at the same time by someone else: try again" },
 };
 
 type KnownError = InstanceType<typeof Prisma.PrismaClientKnownRequestError>;

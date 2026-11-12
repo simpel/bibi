@@ -261,6 +261,10 @@
           "invoiceNumber": {
             "question": "Varför har en faktura inget nummer?",
             "answer": "Fortnox eller Visma eEkonomi ger varje faktura, förskottsfaktura och kreditfaktura sitt nummer när den skapas där, och Bibi visar det numret.\nTills bokföringssystemet har skapat den visas numret som –. Om det inte ändras öppnar du ordern och väljer **Uppdatera från Fortnox** (eller Visma) på fakturan."
+          },
+          "needsAccounting": {
+            "question": "Varför kan jag inte skapa förskott, faktura eller betallänk?",
+            "answer": "Bibi behöver ett kopplat bokföringssystem för att ta betalt, eftersom Fortnox eller Visma eEkonomi gör varje faktura och förskottsfaktura. Tills ett är kopplat visar orderns betalningsdel det i stället för knapparna.\nEn administratör kopplar ett under Administration → Integrationer och väljer det för **Faktura** under Administration → Betalningar."
           }
         }
       }
