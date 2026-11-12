@@ -13,3 +13,4 @@ test-results
 packages/db/src/generated
 .DS_Store
 .storage
+.env.bak
