@@ -823,7 +823,8 @@
       "PENDING": "Waiting for approval",
       "CONNECTED": "Connected",
       "EXPIRED": "Needs reconnecting",
-      "DISCONNECTED": "Disconnected"
+      "DISCONNECTED": "Disconnected",
+      "UNAVAILABLE": "Unavailable"
     },
     "notice": {
       "connected": "{name} is connected.",
@@ -936,7 +937,8 @@
         "PENDING": "The connection to {name} was started but is not finished. Continue to complete it.",
         "CONNECTED": "{name} is connected and used where Payments settings say so.",
         "EXPIRED": "{name} needs more from you or no longer accepts the connection. Reconnect to restore it.",
-        "DISCONNECTED": "{name} is disconnected. Connect again to use it."
+        "DISCONNECTED": "{name} is disconnected. Connect again to use it.",
+        "UNAVAILABLE": "{name} is connected, but this server is not set up for {name} yet, so nothing can go through it."
       }
     },
     "connectForm": {

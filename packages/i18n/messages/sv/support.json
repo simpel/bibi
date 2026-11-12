@@ -269,6 +269,10 @@
           "needsAccounting": {
             "question": "Varför kan jag inte skapa förskott, faktura eller betallänk?",
             "answer": "Bibi behöver ett kopplat bokföringssystem för att ta betalt, eftersom Fortnox eller Visma eEkonomi gör varje faktura och förskottsfaktura. Tills ett är kopplat visar orderns betalningsdel det i stället för knapparna.\nEn administratör kopplar ett under Administration → Integrationer och väljer det för **Faktura** under Administration → Betalningar."
+          },
+          "unavailable": {
+            "question": "Varför står det Inte tillgänglig på en anslutning?",
+            "answer": "Tjänsten är ansluten till er organisation, men Bibi är inte inställt för att prata med den ännu, så betalningar och fakturor kan inte gå via den just nu.\nNi behöver inte göra något med själva anslutningen. Kontakta oss så slår vi på den."
           }
         }
       }

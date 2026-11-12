@@ -823,7 +823,8 @@
       "PENDING": "Väntar på godkännande",
       "CONNECTED": "Ansluten",
       "EXPIRED": "Behöver anslutas igen",
-      "DISCONNECTED": "Frånkopplad"
+      "DISCONNECTED": "Frånkopplad",
+      "UNAVAILABLE": "Inte tillgänglig"
     },
     "notice": {
       "connected": "{name} är ansluten.",
@@ -936,7 +937,8 @@
         "PENDING": "Anslutningen till {name} är påbörjad men inte klar. Fortsätt för att slutföra den.",
         "CONNECTED": "{name} är ansluten och används där inställningarna under Betalningar säger det.",
         "EXPIRED": "{name} behöver mer från er eller godtar inte längre anslutningen. Anslut igen för att återställa den.",
-        "DISCONNECTED": "{name} är frånkopplad. Anslut igen för att använda den."
+        "DISCONNECTED": "{name} är frånkopplad. Anslut igen för att använda den.",
+        "UNAVAILABLE": "{name} är ansluten, men den här servern är inte inställd för {name} ännu, så inget kan gå via den."
       }
     },
     "connectForm": {

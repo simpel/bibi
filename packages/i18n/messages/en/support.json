@@ -269,6 +269,10 @@
           "needsAccounting": {
             "question": "Why can't I create a deposit, invoice or payment link?",
             "answer": "Bibi needs a connected accounting system to take money, since Fortnox or Visma eEkonomi makes every invoice and deposit invoice. Until one is connected, the order's Payments section says so instead of showing its buttons.\nAn admin connects one under Administration → Integrations and picks it for **Invoice** under Administration → Payments."
+          },
+          "unavailable": {
+            "question": "Why does a connection say Unavailable?",
+            "answer": "The service is connected to your organization, but Bibi is not set up to talk to it yet, so payments and invoices cannot go through it for now.\nYou do not need to do anything with the connection itself. Contact us and we will turn it on."
           }
         }
       }

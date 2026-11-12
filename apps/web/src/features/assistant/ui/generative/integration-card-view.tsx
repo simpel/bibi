@@ -28,7 +28,7 @@ export function IntegrationCardView({ items, authorizeUrl }: IntegrationCardView
                 ? `: ${t("company", { company: item.companyName, number: item.organizationNumber })}`
                 : null}
             </span>
-            <IntegrationStatusBadge status={item.status} />
+            <IntegrationStatusBadge status={item.status} configured={item.configured} />
             {item.configured ? null : (
               <span className="basis-full text-muted-foreground">{t("unavailable")}</span>
             )}

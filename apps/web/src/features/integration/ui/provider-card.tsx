@@ -12,7 +12,7 @@ import { getTranslations } from "next-intl/server";
 import { ConnectProviderButton } from "./connect-provider-button";
 import { DisconnectProviderButton } from "./disconnect-provider-button";
 import { IntegrationNotice, type IntegrationOutcome } from "./integration-notice";
-import { IntegrationStatusBadge } from "./integration-status-badge";
+import { IntegrationStatusBadge, isConnectionUsable } from "./integration-status-badge";
 import { RefreshProviderButton } from "./refresh-provider-button";
 
 export type ProviderCardProps = {
@@ -59,6 +59,7 @@ export async function ProviderCard({
   ]);
   const { provider, status, configured, capabilities } = connection;
   const name = providers(`${provider}.name`);
+  const usable = isConnectionUsable({ status, configured });
   const facts = [
     { label: t("company"), value: connection.companyName },
     { label: t("organizationNumber"), value: connection.organizationNumber },
@@ -78,12 +79,12 @@ export async function ProviderCard({
         </CardTitle>
         <CardDescription>{providers(`${provider}.description`)}</CardDescription>
         <CardAction>
-          <IntegrationStatusBadge status={status} />
+          <IntegrationStatusBadge status={status} configured={configured} />
         </CardAction>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground">
         {outcome ? <IntegrationNotice outcome={outcome} name={name} /> : null}
-        <p>{t(`hint.${status}`, { name })}</p>
+        <p>{usable ? t(`hint.${status}`, { name }) : t("hint.UNAVAILABLE", { name })}</p>
         {takes ? <p>{t("takes", { methods: takes })}</p> : null}
         {capabilities.ledger ? <p>{t("ledger", { name })}</p> : null}
         {facts.length > 0 ? (
@@ -96,7 +97,7 @@ export async function ProviderCard({
             ))}
           </dl>
         ) : null}
-        {configured ? null : <p>{t("notConfigured", { name })}</p>}
+        {configured || !usable ? null : <p>{t("notConfigured", { name })}</p>}
         {canEdit ? (
           <div className="flex flex-wrap gap-2">
             <ProviderActions connection={connection} name={name} />
