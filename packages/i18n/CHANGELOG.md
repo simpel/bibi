@@ -1,5 +1,26 @@
 # Changelog
 
+## [4.0.0](https://github.com/simpel/bibi/compare/@bibi/i18n-v3.0.0...@bibi/i18n-v4.0.0) (2026-11-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* invoices and credit notes no longer carry number or voidPending, and accountingSettings no longer has the SIE-only accounts or fiscalYearStartMonth.
+
+### Features
+
+* Visma books prepayments and their deductions on customer advances ([03aa6b2](https://github.com/simpel/bibi/commit/03aa6b20efbd9eeba3aa3a27ace81859558f07e5))
+
+
+### Bug Fixes
+
+* a connection the server cannot use shows Unavailable, not Connected ([b8aae04](https://github.com/simpel/bibi/commit/b8aae04a1bddc1d6735495dea159a58f9a390c94))
+
+
+### Code Refactoring
+
+* drop Bibi's own document numbers, the void retry and the SIE export tables ([5baa33b](https://github.com/simpel/bibi/commit/5baa33bda035e9db22a75323638da60fa421d94d))
+
 ## [3.0.0](https://github.com/simpel/bibi/compare/@bibi/i18n-v2.0.0...@bibi/i18n-v3.0.0) (2026-11-12)
 
 
