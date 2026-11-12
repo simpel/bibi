@@ -17,6 +17,8 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "check:structure": "node tools/check-structure.mjs",
+    "env:check": "node tools/env-sync.mjs --check",
+    "env:sync": "node tools/env-sync.mjs",
     "check": "turbo run lint check:structure --continue && turbo run typecheck test build build-storybook --affected --continue",
     "db:migrate": "pnpm --filter @bibi/db migrate",
     "test:db": "pnpm --filter @bibi/db migrate:test",
