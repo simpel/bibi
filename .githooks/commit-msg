@@ -1,0 +1,8 @@
+#!/bin/sh
+# Commit titles are Conventional Commits, which release-please reads to version each package (ADR 0060, 0107).
+title=$(head -n 1 "$1")
+case "$title" in Merge*|Revert*|fixup!*|squash!*) exit 0 ;; esac
+if ! printf '%s' "$title" | grep -Eq '^(feat|fix|docs|refactor|test|ci|chore|perf|build|style|revert)(\([a-z0-9/-]+\))?!?: .+'; then
+  echo "commit-msg: the title must be <type>: <summary>, e.g. 'fix: ...' (ADR 0060). Got: $title" >&2
+  exit 1
+fi

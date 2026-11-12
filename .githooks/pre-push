@@ -1,0 +1,6 @@
+#!/bin/sh
+# Pushes go straight to main, and this hook is the gate before them (ADR 0107). CI runs build, e2e and Storybook
+# after the push. Tests need Postgres up (docker compose up -d).
+set -e
+pnpm exec turbo run lint check:structure --continue --output-logs=errors-only
+pnpm exec turbo run typecheck test --affected --continue --output-logs=errors-only

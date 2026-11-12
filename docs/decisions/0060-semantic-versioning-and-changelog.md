@@ -13,7 +13,7 @@
 2. Conventional Commits drive the bump per package, by the files a commit touches. `fix:` is a patch, `feat:` a minor, `!` or a `BREAKING CHANGE:` footer a major (a minor while `0.x`). Other types do not release.
 3. Dependents follow. A package is patch-bumped when a workspace dependency it uses is released.
 4. release-please runs on every push to `main` and keeps one release PR that bumps versions and changelogs. Merging it creates `@bibi/<name>-vX.Y.Z` tags and GitHub releases. Nobody edits versions or changelogs by hand.
-5. Commit titles must be conventional. PR titles are checked in CI.
+5. Commit titles must be conventional. The commit-msg hook checks them (ADR 0107).
 
 ## Consequences
 - A deploy still ships a SHA. Tags label SHAs already on `main`.

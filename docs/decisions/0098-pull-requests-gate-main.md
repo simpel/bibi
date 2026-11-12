@@ -1,7 +1,7 @@
 # 0098 – Pull requests with auto-merge gate main
 
 - **Date:** 2026-11-07
-- **Status:** Accepted
+- **Status:** Superseded by 0107
 - **Supersedes:** 0070 in part (no pull requests, no branch protection, local checks as the gate) and 0075 in part ("commits straight to `main`")
 - **Related:** 0060 (versioning from Conventional Commits)
 

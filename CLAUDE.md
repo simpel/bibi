@@ -109,7 +109,7 @@
 - The main agent owns integration and the parity test. Subagents must not change each other's packages until the main agent has integrated.
 
 ## Work flow
-- Not all work needs an issue. Build it with the `implement` skill. Never push to `main` (it is protected): ship with `pnpm ship`, which opens a pull request that auto-merges once CI is green. Don't wait for it. Why: ADR 0098.
+- Not all work needs an issue. Build it with the `implement` skill. Commit and push straight to `main`; the pre-push hook runs lint, structure, typecheck and the affected tests, and CI runs build and e2e after. Never skip the hook. A red `main` is fixed before anything else. Why: ADR 0107.
 - **Build from the spec; ADRs only gate costly-to-reverse moves.** A feature needs no ADR. A decision that meets the ADR bar gets a one-page ADR first (Proposed, accepted by the user before building).
 - Work that adds or changes data or behaviour updates the demo seed and is not done until `seed:demo` runs from an empty database with green checks. Run `seed:demo` once at the end of a batch, not after each small change, and skip it when nothing touches data or behaviour.
 - **No browser checks.** Do not open the browser, take screenshots or start a preview to verify UI changes; the user checks visually. Verify with `pnpm check` (scoped to changed packages). Use the browser only when asked, or to debug a runtime error you cannot find from code (console and network reads, not screenshots).
@@ -130,7 +130,6 @@
 - `pnpm --filter @bibi/core cleanup:test-orgs`: opt-in dry run listing organizations left by old test runs in the dev database; `-- --yes` deletes them. Organizations with a real member are kept.
 - `pnpm lint`: Biome check.
 - `pnpm check`: lint and structure, then typecheck, test, build and Storybook for the packages changed against `main` (Turborepo `--affected`). CI runs the same Turborepo tasks for everything, with build in the e2e job.
-- `pnpm ship`: pushes `HEAD` to `ship/<sha>` and opens a pull request with auto-merge (ADR 0098).
 - `pnpm check:structure`: checks exports, barrel files, parameter objects, time/number rules, server render boundaries and feature files.
 - `pnpm typecheck`: TypeScript for all packages.
 - `pnpm test`: Vitest and the parity test.
