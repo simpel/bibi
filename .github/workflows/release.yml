@@ -2,9 +2,11 @@ name: Release
 # Semantic versioning from Conventional Commits (ADR 0060). On every push to main, release-please opens or updates a
 # release PR that bumps the version in every package.json and writes CHANGELOG.md. Merging that PR creates the
 # vX.Y.Z git tag and the GitHub release, which triggers the publish-images and deploy jobs to production.
+# Run it by hand on main (workflow_dispatch) to build and deploy main's head without a new release.
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   release-please:
@@ -31,7 +33,7 @@ jobs:
 
   publish-images:
     needs: release-please
-    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    if: ${{ needs.release-please.outputs.releases_created == 'true' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -80,7 +82,7 @@ jobs:
   deploy:
     # Rolls out the SHA that publish-images just pushed (ADR 0013). Rollback: rollback.yml.
     needs: [release-please, publish-images]
-    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    if: ${{ needs.release-please.outputs.releases_created == 'true' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') }}
     permissions:
       contents: read
       packages: read
