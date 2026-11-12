@@ -45,7 +45,9 @@ export function swishCertificate({ issuedTo }: { issuedTo: string }): string {
       subject,
     ];
     execFileSync("openssl", req, { stdio: "ignore" });
-    const pkcs12 = ["pkcs12", "-export", "-inkey", key, "-in", cert, "-out", p12];
+    // AES, not the RC2 that LibreSSL (macOS) picks by default and Node's OpenSSL 3 refuses.
+    const ciphers = ["-keypbe", "AES-256-CBC", "-certpbe", "AES-256-CBC", "-macalg", "sha256"];
+    const pkcs12 = ["pkcs12", "-export", ...ciphers, "-inkey", key, "-in", cert, "-out", p12];
     execFileSync("openssl", [...pkcs12, "-passout", "pass:swish"], { stdio: "ignore" });
     const base64 = readFileSync(p12).toString("base64");
     certificates.set(issuedTo, base64);
