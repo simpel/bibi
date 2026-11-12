@@ -45,6 +45,8 @@ export type CreateAccountInput = {
   displayName: string;
   country: string;
   contactEmail?: string | undefined;
+  /** The account this one replaces because the provider no longer knows it; keeps the create idempotent per replacement. */
+  replaces?: string | undefined;
 };
 export type OnboardingLinkInput = {
   externalAccountId: string;
@@ -62,6 +64,7 @@ export type VerifyCredentialsInput = { credentials: Record<string, unknown> };
 export type HostedOnboardingPort = {
   kind: "HOSTED_ONBOARDING";
   createAccount(input: CreateAccountInput): Promise<Result<ExternalAccount>>;
+  /** NOT_FOUND when the provider no longer knows the account or the platform lost access to it. */
   onboardingLink(input: OnboardingLinkInput): Promise<Result<OnboardingLink>>;
   status(input: ExternalAccount): Promise<Result<AccountStatusOutcome>>;
 };

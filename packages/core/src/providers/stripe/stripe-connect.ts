@@ -1,9 +1,10 @@
 import { getEnv } from "@bibi/config";
 import { z } from "zod";
-import { ok } from "../../errors/result";
+import { AppError } from "../../errors/app-error";
+import { err, ok, type Result } from "../../errors/result";
 import type { HostedOnboardingPort } from "../connect-types";
 import { stripeBadResponse as badResponse } from "./stripe-bad-response";
-import { stripeRequest } from "./stripe-request";
+import { type StripeRefusal, stripeRequest } from "./stripe-request";
 
 const AccountSchema = z.object({
   id: z.string(),
@@ -22,6 +23,25 @@ const AccountSchema = z.object({
 
 const AccountLinkSchema = z.object({ url: z.string(), expires_at: z.string() });
 
+const ACCOUNT_GONE = /no such account|does not have access to account/i;
+
+/**
+ * A refusal because Stripe no longer knows the account, or the platform lost access to it (closed,
+ * unlinked, or another platform's id), becomes NOT_FOUND so onboarding can start a fresh one.
+ * Matched narrowly: a 403 for a key missing a permission must stay a plain refusal.
+ */
+function accountGone<T>({ result }: { result: Result<T> }): Result<T> {
+  if (result.ok || result.error.code !== "CONFLICT") return result;
+  const refusal = result.error.cause as StripeRefusal | undefined;
+  const gone =
+    refusal?.status === 404 ||
+    refusal?.code === "account_invalid" ||
+    ACCOUNT_GONE.test(result.error.message);
+  if (!gone) return result;
+  const { message, cause } = result.error;
+  return err({ error: new AppError({ code: "NOT_FOUND", message, cause }) });
+}
+
 function capabilityToStatus({ status }: { status: string | undefined }) {
   if (status === "active") return "CONNECTED" as const;
   if (status === "restricted") return "RESTRICTED" as const;
@@ -34,11 +54,12 @@ function capabilityToStatus({ status }: { status: string | undefined }) {
  */
 export const stripeConnect: HostedOnboardingPort = {
   kind: "HOSTED_ONBOARDING",
-  async createAccount({ organizationId, displayName, country, contactEmail }) {
+  async createAccount({ organizationId, displayName, country, contactEmail, replaces }) {
+    const key = `bibi-connected-account-${organizationId}${replaces ? `-replaces-${replaces}` : ""}`;
     const result = await stripeRequest({
       method: "POST",
       path: "/core/accounts",
-      idempotencyKey: `bibi-connected-account-${organizationId}`,
+      idempotencyKey: key,
       body: {
         display_name: displayName,
         ...(contactEmail ? { contact_email: contactEmail } : {}),
@@ -84,7 +105,7 @@ export const stripeConnect: HostedOnboardingPort = {
         },
       },
     });
-    if (!result.ok) return result;
+    if (!result.ok) return accountGone({ result });
     const parsed = AccountLinkSchema.safeParse(result.value);
     if (!parsed.success) return badResponse({ what: "account link" });
     return ok({ value: { url: parsed.data.url, expiresAt: new Date(parsed.data.expires_at) } });

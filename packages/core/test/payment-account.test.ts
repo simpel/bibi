@@ -69,6 +69,38 @@ describe("paymentAccount", () => {
     expect(await context.db.providerConnection.count()).toBe(1);
   });
 
+  it("replaces a stored account Stripe no longer knows, once (ADR 0090)", async () => {
+    const context = testContext();
+    const first = unwrap({ result: await start({ context }) });
+    const gone = first.stripeAccountId;
+    const realLink = gateway.onboarding.onboardingLink;
+    const replaced: (string | undefined)[] = [];
+    const realCreate = gateway.onboarding.createAccount;
+    gateway.onboarding.createAccount = async (input) => {
+      replaced.push(input.replaces);
+      return realCreate(input);
+    };
+    gateway.onboarding.onboardingLink = async (input) =>
+      input.externalAccountId === gone
+        ? err({ error: new AppError({ code: "NOT_FOUND", message: "No such account" }) })
+        : realLink(input);
+    const again = unwrap({ result: await start({ context }) });
+    expect(again.id).toBe(first.id);
+    expect(again.stripeAccountId).not.toBe(gone);
+    expect(again.onboardingUrl).toContain(again.stripeAccountId);
+    expect(replaced).toEqual([gone]);
+  });
+
+  it("does not replace the account on any other refusal", async () => {
+    const context = testContext();
+    const first = unwrap({ result: await start({ context }) });
+    gateway.onboarding.onboardingLink = async () =>
+      err({ error: new AppError({ code: "CONFLICT", message: "Stripe refused" }) });
+    expect(errorCode({ result: await start({ context }) })).toBe("CONFLICT");
+    const row = await context.db.providerConnection.findFirst({});
+    expect(row?.externalAccountId).toBe(first.stripeAccountId);
+  });
+
   it("syncs the status from Stripe", async () => {
     const context = testContext();
     unwrap({ result: await start({ context }) });
