@@ -25,8 +25,15 @@ test("--all runs everything except checks that have their own CI job", () => {
     "typecheck",
     "migrate",
     "test",
-    "build",
   ]);
+});
+
+test("auto mode still runs job checks locally", () => {
+  const picked = ids(
+    selectChecks({ checks, mode: "auto", only: [], changed: ["packages/ui/src/a.tsx"] }),
+  );
+  assert.ok(picked.includes("build"));
+  assert.ok(picked.includes("storybook"));
 });
 
 test("--only runs exactly the named checks, also a job check", () => {
