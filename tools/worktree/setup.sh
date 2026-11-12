@@ -35,10 +35,10 @@ if ! is_main_checkout; then
   set_env WEB_PORT "$WEB_PORT"
   set_env STORYBOOK_PORT "$STORYBOOK_PORT"
   set_env STORYBOOK_URL "http://localhost:$STORYBOOK_PORT"
-  set_env WEB_URL "http://localhost:$WEB_PORT"
+  set_env WEB_ORIGIN "http://localhost:$WEB_PORT"
   set_env BETTER_AUTH_URL "http://localhost:$WEB_PORT"
   # MCP is served by the web app (ADR 0104).
-  set_env MCP_URL "http://localhost:$WEB_PORT"
+  set_env MCP_ORIGIN "http://localhost:$WEB_PORT"
 fi
 
 pnpm install --frozen-lockfile

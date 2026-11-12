@@ -8,12 +8,12 @@ Run with a scripted model (`E2E_MOCK_MODEL=1`), never a paid AI call.
 - Build `pnpm --filter @bibi/web build` (it serves MCP too, ADR 0104).
 - Set `DATABASE_URL`, `BETTER_AUTH_SECRET` (>= 32 characters), `BETTER_AUTH_URL=http://localhost:3330` and `WEB_OAUTH_CLIENT_ID`, then run `pnpm --filter @bibi/web test:e2e`.
 - `playwright.config.ts` starts the web app (`pnpm start`, :3330, MCP at `/mcp`) with `E2E_MOCK_MODEL=1` and `NODE_ENV=test` (`next start` otherwise sets `production`, where the flag is ignored). A server that is already running is reused.
-- The port comes from `WEB_URL` in the root `.env` (default 3330). Worktrees from `pnpm wt:new` get their own ports and database via `tools/worktree/setup.sh`; `dev` and `start` read `WEB_PORT`.
+- The port comes from `WEB_ORIGIN` in the root `.env` (default 3330). Worktrees from `pnpm wt:new` get their own ports and database via `tools/worktree/setup.sh`; `dev` and `start` read `WEB_PORT`.
 - `E2E_SCREENSHOTS_DIR=<dir>` enables `screenshots.spec.ts` (light/dark, desktop/mobile).
 
 ## CI (`e2e` job in `.github/workflows/ci.yml`)
 - Postgres and Mailpit services, `db:migrate`, `seed:skills`, `provision:oauth` (its `WEB_OAUTH_CLIENT_ID` line goes to `$GITHUB_ENV`), builds of mcp and web, Playwright's Chromium (cached in `~/.cache/ms-playwright`, no `PW_CHROMIUM_PATH` there), then `test:e2e`.
-- Required variables: `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `WEB_URL`, `MCP_URL`, `WEB_OAUTH_CLIENT_ID`, `E2E_MOCK_MODEL=1`.
+- Required variables: `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `WEB_ORIGIN`, `MCP_ORIGIN`, `WEB_OAUTH_CLIENT_ID`, `E2E_MOCK_MODEL=1`.
 - With `CI` set the HTML report goes to `apps/web/playwright-report`, uploaded as an artifact together with `test-results` (traces).
 - The `storybook` job runs `pnpm --filter @bibi/ui build-storybook`.
 

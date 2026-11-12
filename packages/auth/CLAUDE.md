@@ -35,7 +35,7 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: magic link (the only web sign-in; 
 ## First-party token (`src/first-party/`)
 - `getFirstPartyAccessToken({ client, headers, caller })` → `Result<string>`: an MCP token for the user behind the session cookie, issued to one of Bibi's own OAuth clients. Runs authorization code + PKCE **in-process** through `getAuth().handler` (authorize with only the `cookie` header, then `/oauth2/token`). No custom signing, no browser round trip.
 - `client` is a key in `FIRST_PARTY_CLIENTS` (`first-party/clients.ts`, not exported): `clientId` (from config), `scope` (`openid`, no refresh token), `redirectPath` (must be registered on the client but is never followed: the code is read from the authorize response) and `allowsAiActor`. A new client (⌘K, scheduled skills, integrations) = one entry here + provisioning with `skipConsent`.
-- Today only `assistant` exists: `WEB_OAUTH_CLIENT_ID`, redirect `${WEB_URL}/api/assistant/oauth/callback` (`provision:oauth`), `allowsAiActor: true`.
+- Today only `assistant` exists: `WEB_OAUTH_CLIENT_ID`, redirect `${WEB_ORIGIN}/api/assistant/oauth/callback` (`provision:oauth`), `allowsAiActor: true`.
 - The token gets `bibi_org` = the session's active org and `azp` = the client's id. Cached per process, key (client, user, org) where user+org come from `resolveExecuteContext`; max 1000 entries, renewed 2 min before expiry (15 min).
 - Trust boundary: whoever has the session cookie can already do everything the token allows. The `assistant` token only *additionally* gives the AI mode, which is more limited (commands become proposals). `approval_confirm` is called with the same token but **without** AI headers, and only when the user has clicked Approve.
 - Exports: `getFirstPartyAccessToken` + the types `GetFirstPartyAccessToken`, `GetFirstPartyAccessTokenInput`, `FirstPartyClient`. Server code (`node:crypto`, the Better Auth server): never import in client components.
@@ -46,7 +46,7 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: magic link (the only web sign-in; 
 - `apiKey.create` refuses the AI actor: the secret must never enter a conversation.
 
 ## OAuth/MCP
-- Tokens are JWTs with `aud` = `${MCP_URL}/mcp`, `iss` = `${BETTER_AUTH_URL}/api/auth`, 15 min lifetime. Only `authorization_code` + `refresh_token` (no `client_credentials`). DPoP-bound and opaque tokens are rejected.
+- Tokens are JWTs with `aud` = `${MCP_ORIGIN}/mcp`, `iss` = `${BETTER_AUTH_URL}/api/auth`, 15 min lifetime. Only `authorization_code` + `refresh_token` (no `client_credentials`). DPoP-bound and opaque tokens are rejected.
 - If the session has no active org, the user is sent to `/welcome` (pick, join or create, ADR 0061) before consent. The web app needs the pages `/login`, `/oauth/consent`, `/welcome`, `/accept-invitation/[id]`.
 - Users may not create OAuth clients via the API. The web client is provisioned by ops and its id is set in `WEB_OAUTH_CLIENT_ID`.
 

@@ -26,7 +26,7 @@ export function fortnoxCredentials(): FortnoxCredentials | null {
 }
 
 export function fortnoxRedirectUri(): string {
-  return new URL(FORTNOX_CALLBACK_PATH, getEnv().WEB_URL).toString();
+  return new URL(FORTNOX_CALLBACK_PATH, getEnv().WEB_ORIGIN).toString();
 }
 
 export const fortnoxNotConfigured = () =>

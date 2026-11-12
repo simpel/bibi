@@ -8,12 +8,12 @@ export const dynamic = "force-dynamic";
 
 /** The public site's front page in every locale; the app host has nothing to list. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { PUBLIC_URL } = getEnv();
+  const { PUBLIC_ORIGIN } = getEnv();
   const host = (await headers()).get("host") ?? "";
-  if (!PUBLIC_URL || !isPublicHost({ host, publicUrl: PUBLIC_URL })) return [];
-  const languages = Object.fromEntries(routing.locales.map((l) => [l, `${PUBLIC_URL}/${l}`]));
+  if (!PUBLIC_ORIGIN || !isPublicHost({ host, publicUrl: PUBLIC_ORIGIN })) return [];
+  const languages = Object.fromEntries(routing.locales.map((l) => [l, `${PUBLIC_ORIGIN}/${l}`]));
   return routing.locales.map((locale) => ({
-    url: `${PUBLIC_URL}/${locale}`,
+    url: `${PUBLIC_ORIGIN}/${locale}`,
     alternates: { languages },
   }));
 }

@@ -17,8 +17,8 @@ type DocsTranslator = {
 
 /** `{{webUrl}}` and `{{mcpUrl}}` in docs markdown become this deployment's URLs. */
 function fillUrls({ text }: { text: string }): string {
-  const { WEB_URL, MCP_URL } = getEnv();
-  return text.replaceAll("{{webUrl}}", WEB_URL).replaceAll("{{mcpUrl}}", MCP_URL);
+  const { WEB_ORIGIN, MCP_ORIGIN } = getEnv();
+  return text.replaceAll("{{webUrl}}", WEB_ORIGIN).replaceAll("{{mcpUrl}}", MCP_ORIGIN);
 }
 
 /** Title, lead and markdown body of a docs page. Bodies are read raw (no ICU parsing). */

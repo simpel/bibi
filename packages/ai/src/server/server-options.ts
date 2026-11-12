@@ -19,7 +19,7 @@ export type AssistantServerOptions = {
   resolveContext: ResolveContext;
   /** MCP token for the user; default `getFirstPartyAccessToken({ client: "assistant" })`. */
   getAccessToken?: GetAccessToken;
-  /** MCP endpoint; default `${MCP_URL}/mcp`. */
+  /** MCP endpoint; default `${MCP_ORIGIN}/mcp`. */
   mcpUrl?: string;
   /** Embedder for search indexing of the app's own writes; default `createEmbed()`. */
   embed?: EmbedFn;

@@ -37,19 +37,19 @@ export function restHandler(): Handler {
 }
 
 /**
- * `/mcp` and `/health`: the MCP server over Streamable HTTP (ADR 0104). `MCP_URL` is its public
+ * `/mcp` and `/health`: the MCP server over Streamable HTTP (ADR 0104). `MCP_ORIGIN` is its public
  * base URL and OAuth resource, in production its own host routed to this app.
  */
 export function mcpHandler(): Handler {
   if (!holder.__bibiMcp) {
     // Installs the file store and text extraction ports that MCP tools reach through core.
     ensureOperations();
-    const { MCP_URL, WEB_URL } = getEnv();
+    const { MCP_ORIGIN, WEB_ORIGIN } = getEnv();
     holder.__bibiMcp = createMcpHandler({
       resolveContext: resolveExecuteContext,
       embed,
-      baseUrl: MCP_URL,
-      allowedOrigins: [new URL(WEB_URL).origin],
+      baseUrl: MCP_ORIGIN,
+      allowedOrigins: [new URL(WEB_ORIGIN).origin],
     });
   }
   return holder.__bibiMcp;

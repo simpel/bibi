@@ -22,7 +22,7 @@ async function registerWebClient(): Promise<void> {
   const db = getDb();
   const clientId = getEnv().WEB_OAUTH_CLIENT_ID ?? "";
   const redirectUris = [
-    new URL("/api/assistant/oauth/callback", getEnv().WEB_URL).toString(),
+    new URL("/api/assistant/oauth/callback", getEnv().WEB_ORIGIN).toString(),
     "http://localhost:3330/oauth/callback",
   ];
   const now = new Date();

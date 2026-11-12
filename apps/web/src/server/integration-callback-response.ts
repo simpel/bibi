@@ -19,9 +19,9 @@ function localeOf({ request }: { request: Request }): Locale {
   return match ? resolveLocale({ value: decodeURIComponent(match[1] ?? "") }) : DEFAULT_LOCALE;
 }
 
-/** On the app host (`WEB_URL`), not `request.url`: behind the proxy that is the container's address. */
+/** On the app host (`WEB_ORIGIN`), not `request.url`: behind the proxy that is the container's address. */
 function redirectTo({ request, path }: RedirectInput): Response {
-  const url = new URL(`/${localeOf({ request })}${path}`, getEnv().WEB_URL);
+  const url = new URL(`/${localeOf({ request })}${path}`, getEnv().WEB_ORIGIN);
   return Response.redirect(url, 302);
 }
 

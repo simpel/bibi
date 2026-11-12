@@ -14,7 +14,7 @@ const WEBHOOK_PATH = "/api/webhooks/stripe-billing";
 
 /** The app's own webhook URL when it is https; Stripe calls nothing else (locally: stripe listen). */
 function webhookUrl(): string | null {
-  const url = `${getEnv().WEB_URL.replace(/\/$/, "")}${WEBHOOK_PATH}`;
+  const url = `${getEnv().WEB_ORIGIN.replace(/\/$/, "")}${WEBHOOK_PATH}`;
   return url.startsWith("https://") ? url : null;
 }
 

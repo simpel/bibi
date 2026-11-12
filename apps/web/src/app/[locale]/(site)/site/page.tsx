@@ -9,7 +9,7 @@ type SiteRouteProps = { params: Promise<{ locale: string }> };
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: SiteRouteProps): Promise<Metadata> {
-  const { PUBLIC_URL } = getEnv();
+  const { PUBLIC_ORIGIN } = getEnv();
   const locale = resolveLocale({ value: (await params).locale });
   const t = await getTranslations({ locale, namespace: "site" });
   const common = await getTranslations({ locale, namespace: "common" });
@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: SiteRouteProps): Promise<Meta
     description,
     openGraph: { siteName: common("appName"), title, description, type: "website", locale },
     twitter: { card: "summary_large_image", title, description },
-    ...(PUBLIC_URL
-      ? { metadataBase: new URL(PUBLIC_URL), alternates: { canonical: `/${locale}` } }
+    ...(PUBLIC_ORIGIN
+      ? { metadataBase: new URL(PUBLIC_ORIGIN), alternates: { canonical: `/${locale}` } }
       : {}),
   };
 }
@@ -30,6 +30,6 @@ export async function generateMetadata({ params }: SiteRouteProps): Promise<Meta
 export default async function SiteRoute({ params }: SiteRouteProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
-  const appUrl = new URL(getEnv().WEB_URL).origin;
+  const appUrl = new URL(getEnv().WEB_ORIGIN).origin;
   return <SitePage locale={locale} appUrl={appUrl} />;
 }

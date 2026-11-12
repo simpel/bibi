@@ -6,7 +6,7 @@ export type RouteRequestInput = {
   request: Request;
   resolveContext: ResolveContext;
   embed: EmbedFn;
-  /** Public MCP base URL (`MCP_URL`), e.g. `https://mcp.heybibi.se`. */
+  /** Public MCP base URL (`MCP_ORIGIN`), e.g. `https://mcp.heybibi.se`. */
   baseUrl: string;
 };
 

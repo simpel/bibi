@@ -14,12 +14,14 @@ DATABASE_URL=postgresql://bibi:bibi@localhost:5432/bibi
 BETTER_AUTH_SECRET=
 BETTER_AUTH_URL=http://localhost:3330
 
-# --- URLs and ports ---
-WEB_URL=http://localhost:3330
-# MCP is served by the web app (ADR 0104); unset = WEB_URL.
-MCP_URL=http://localhost:3330
+# --- Origins and ports. *_ORIGIN is scheme://host[:port] with no path; *_URL is used as written;
+# *_BASE_URL is an API root. ---
+WEB_ORIGIN=http://localhost:3330
+# MCP's origin; its endpoint is <MCP_ORIGIN>/mcp, served by the web app (ADR 0104). Unset = WEB_ORIGIN.
+# Production: https://mcp.heybibi.se
+# MCP_ORIGIN=
 # Public site on its own host (ADR 0073). Unset locally: one host serves everything.
-# PUBLIC_URL=
+# PUBLIC_ORIGIN=
 # Dev server ports; `pnpm wt:new` sets them per worktree.
 # WEB_PORT=3330
 # STORYBOOK_PORT=3332
@@ -66,16 +68,16 @@ STRIPE_PLATFORM_ACCOUNT_ID=
 STRIPE_WEBHOOK_SECRET=
 # Bibi's fee in basis points of each payment (250 = 2.5 %). Unset: no fee.
 # STRIPE_APPLICATION_FEE_BPS=
-# Fortnox app (ADR 0087); redirect URI: <WEB_URL>/api/integrations/fortnox/callback.
+# Fortnox app (ADR 0087); redirect URI: <WEB_ORIGIN>/api/integrations/fortnox/callback.
 FORTNOX_CLIENT_ID=
 FORTNOX_CLIENT_SECRET=
-# Visma eEkonomi app (ADR 0100); redirect URI: <WEB_URL>/api/providers/visma/callback.
+# Visma eEkonomi app (ADR 0100); redirect URI: <WEB_ORIGIN>/api/providers/visma/callback.
 VISMA_CLIENT_ID=
 VISMA_CLIENT_SECRET=
-VISMA_IDENTITY_URL=https://identity-sandbox.test.vismaonline.com
-VISMA_API_URL=https://eaccountingapi-sandbox.test.vismaonline.com
+VISMA_IDENTITY_BASE_URL=https://identity-sandbox.test.vismaonline.com
+VISMA_API_BASE_URL=https://eaccountingapi-sandbox.test.vismaonline.com
 # Swish: unset = the Merchant Swish Simulator. Production: https://cpc.getswish.net/swish-cpcapi.
-# SWISH_API_URL=
+# SWISH_API_BASE_URL=
 
 # --- Logging (ADR 0014, 0031) ---
 # trace|debug|info|warn|error|fatal|silent (default info, silent in tests); json|pretty.

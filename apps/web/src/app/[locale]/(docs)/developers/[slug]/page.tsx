@@ -5,7 +5,7 @@ import { DEVELOPER_PAGES, findDeveloperPage } from "@/features/docs/pages";
 import { loadDocText } from "@/features/docs/server/doc-text";
 import { DeveloperPage } from "@/features/docs/ui/developer-page";
 
-/** Developer text embeds runtime URLs (`WEB_URL`, `MCP_URL`), so it is rendered per request. */
+/** Developer text embeds runtime URLs (`WEB_ORIGIN`, `MCP_ORIGIN`), so it is rendered per request. */
 export const dynamic = "force-dynamic";
 
 type DeveloperRouteProps = { params: Promise<{ locale: string; slug: string }> };

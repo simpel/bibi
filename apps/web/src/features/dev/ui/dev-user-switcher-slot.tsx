@@ -15,8 +15,8 @@ export async function DevUserSwitcherSlot() {
     listDevPlatformAdmins(),
     getAuth().api.getSession({ headers: await headers() }),
   ]);
-  const { WEB_URL, MCP_URL, STORYBOOK_URL } = getEnv();
-  const services = devServices({ webUrl: WEB_URL, mcpUrl: MCP_URL, storybookUrl: STORYBOOK_URL });
+  const { WEB_ORIGIN, MCP_ORIGIN, STORYBOOK_URL } = getEnv();
+  const services = devServices({ webUrl: WEB_ORIGIN, mcpUrl: MCP_ORIGIN, storybookUrl: STORYBOOK_URL });
   return (
     <DevUserSwitcher
       users={users}

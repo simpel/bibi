@@ -3,13 +3,13 @@ import { getDb } from "@bibi/db";
 
 type OrgInput = { organizationId: string };
 
-/** The organization's base URL in the web app (`WEB_URL/<slug>`). */
+/** The organization's base URL in the web app (`WEB_ORIGIN/<slug>`). */
 async function orgBase({ organizationId }: OrgInput) {
   const organization = await getDb().organization.findUnique({
     where: { id: organizationId },
     select: { slug: true },
   });
-  return `${getEnv().WEB_URL}/${encodeURIComponent(organization?.slug ?? "")}`;
+  return `${getEnv().WEB_ORIGIN}/${encodeURIComponent(organization?.slug ?? "")}`;
 }
 
 export type CheckoutUrlsInput = OrgInput & { returnTo: string };

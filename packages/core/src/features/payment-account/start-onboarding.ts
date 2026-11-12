@@ -60,6 +60,6 @@ export async function onboardingReturnUrls({ organizationId }: OnboardingReturnU
     select: { slug: true },
   });
   const slug = encodeURIComponent(organization?.slug ?? "");
-  const url = `${getEnv().WEB_URL}/${slug}/admin/integrations`;
+  const url = `${getEnv().WEB_ORIGIN}/${slug}/admin/integrations`;
   return { returnUrl: url, refreshUrl: url };
 }

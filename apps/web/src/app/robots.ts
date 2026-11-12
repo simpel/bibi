@@ -7,10 +7,10 @@ export const dynamic = "force-dynamic";
 
 /** The public site may be indexed (ADR 0073); the app and every other host may not. */
 export default async function robots(): Promise<MetadataRoute.Robots> {
-  const { PUBLIC_URL } = getEnv();
+  const { PUBLIC_ORIGIN } = getEnv();
   const host = (await headers()).get("host") ?? "";
-  if (!PUBLIC_URL || !isPublicHost({ host, publicUrl: PUBLIC_URL })) {
+  if (!PUBLIC_ORIGIN || !isPublicHost({ host, publicUrl: PUBLIC_ORIGIN })) {
     return { rules: { userAgent: "*", disallow: "/" } };
   }
-  return { rules: { userAgent: "*", allow: "/" }, sitemap: `${PUBLIC_URL}/sitemap.xml` };
+  return { rules: { userAgent: "*", allow: "/" }, sitemap: `${PUBLIC_ORIGIN}/sitemap.xml` };
 }

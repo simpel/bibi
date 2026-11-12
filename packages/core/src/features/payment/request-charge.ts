@@ -50,7 +50,7 @@ export function requestCharge({
   applicationFeeMinor,
 }: RequestChargeInput): Promise<Result<AttemptRef>> {
   // The public payment page (ADR 0028) lives at /pay/<publicToken>; the provider returns there.
-  const pageUrl = `${getEnv().WEB_URL}/pay/${publicToken}`;
+  const pageUrl = `${getEnv().WEB_ORIGIN}/pay/${publicToken}`;
   const { name, email, paymentTermsDays } = target.customer;
   return collect.startAttempt({
     auth,

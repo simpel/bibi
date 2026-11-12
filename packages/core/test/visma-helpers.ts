@@ -36,10 +36,10 @@ export function useVismaEnv() {
     Object.assign(getEnv(), {
       VISMA_CLIENT_ID: "bibi-client",
       VISMA_CLIENT_SECRET: "bibi-secret",
-      VISMA_IDENTITY_URL: "https://identity.visma.test",
-      VISMA_API_URL: "https://api.visma.test",
+      VISMA_IDENTITY_BASE_URL: "https://identity.visma.test",
+      VISMA_API_BASE_URL: "https://api.visma.test",
       INTEGRATION_SECRET_KEY: randomBytes(32).toString("base64"),
-      WEB_URL: "https://bibi.test",
+      WEB_ORIGIN: "https://bibi.test",
     });
   });
   afterEach(() => {

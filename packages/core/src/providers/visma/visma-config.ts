@@ -23,8 +23,8 @@ export const VISMA_POLL_INTERVAL_MS = 15 * 60 * 1000;
 
 const trim = ({ url }: { url: string }) => url.replace(/\/+$/, "");
 
-export const vismaIdentityUrl = () => trim({ url: getEnv().VISMA_IDENTITY_URL });
-export const vismaApiUrl = () => `${trim({ url: getEnv().VISMA_API_URL })}/v2`;
+export const vismaIdentityUrl = () => trim({ url: getEnv().VISMA_IDENTITY_BASE_URL });
+export const vismaApiUrl = () => `${trim({ url: getEnv().VISMA_API_BASE_URL })}/v2`;
 
 /** The app credentials, or null unless Visma and the sealing key are all configured. */
 export function vismaClient(): OauthClient | null {
@@ -34,7 +34,7 @@ export function vismaClient(): OauthClient | null {
 }
 
 export const vismaRedirectUri = (): string =>
-  new URL(VISMA_CALLBACK_PATH, getEnv().WEB_URL).toString();
+  new URL(VISMA_CALLBACK_PATH, getEnv().WEB_ORIGIN).toString();
 
 export const vismaNotConfigured = () =>
   err({

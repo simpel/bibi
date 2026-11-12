@@ -96,8 +96,8 @@ export function useSwishEnv() {
   beforeEach(() => {
     Object.assign(getEnv(), {
       INTEGRATION_SECRET_KEY: randomBytes(32).toString("base64"),
-      WEB_URL: "https://bibi.test",
-      SWISH_API_URL: "https://mss.swish.test/swish-cpcapi",
+      WEB_ORIGIN: "https://bibi.test",
+      SWISH_API_BASE_URL: "https://mss.swish.test/swish-cpcapi",
     });
   });
   afterEach(() => {

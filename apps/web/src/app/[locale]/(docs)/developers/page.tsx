@@ -3,7 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 import { DEVELOPER_PAGES } from "@/features/docs/pages";
 import { DeveloperPage } from "@/features/docs/ui/developer-page";
 
-/** Developer text embeds runtime URLs (`WEB_URL`, `MCP_URL`), so it is rendered per request. */
+/** Developer text embeds runtime URLs (`WEB_ORIGIN`, `MCP_ORIGIN`), so it is rendered per request. */
 export const dynamic = "force-dynamic";
 
 type DevelopersHomeProps = { params: Promise<{ locale: string }> };

@@ -7,7 +7,7 @@ The server layer for the assistant (ADR 0007, 0008). Framework-independent: Web 
 2. Body (Zod `ChatRequestSchema`): only the **last** message (the user's text) is used. Earlier turns are read from the database (`message.list` as the user), so the client cannot forge history.
 3. Conversation: `conversation.get` or `conversation.create` (title = first line, max 80 characters) via core `execute` as the user.
 4. Token: `getFirstPartyAccessToken({ client: "assistant" })` from `@bibi/auth` (token for the user, active org, `azp` = the web client).
-5. MCP client against `${MCP_URL}/mcp` with `Authorization: Bearer`, `x-bibi-actor: ai`, `x-bibi-conversation-id`. Tools = `tools/list` for the AI actor (+ local `skill_search`/`load_skill`). `approval_confirm` is never visible (the server hides it, and it is filtered again here).
+5. MCP client against `${MCP_ORIGIN}/mcp` with `Authorization: Bearer`, `x-bibi-actor: ai`, `x-bibi-conversation-id`. Tools = `tools/list` for the AI actor (+ local `skill_search`/`load_skill`). `approval_confirm` is never visible (the server hides it, and it is filtered again here).
 6. The USER message is saved with core `message.append` as the user.
 7. `streamText` (limits: 8 steps, 4096 tokens, 120 s total/60 s per step; `ASSISTANT_LIMITS`) → UI message stream (SSE).
 8. When the stream ends (also on error/abort: a copy is drained): the ASSISTANT message is saved via MCP `message_append` as the AI actor (audit `AI` + conversation), then the MCP client is **always** closed.

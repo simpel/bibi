@@ -24,10 +24,10 @@ The MCP server (ADR 0003, 0007). Thin adapter: all logic and permissions live in
 
 ## HTTP
 - `createMcpHandler` (`src/http/create-mcp-handler.ts`): one Web `Request` → `Response` function with the origin check, CORS and request logging (surface `mcp`). The web app mounts it at `app/mcp/route.ts` (`server/handlers.ts`); no MCP process or container exists (ADR 0104). Stateless Streamable HTTP, one server + transport per call.
-- `POST /mcp` – authenticates with `@bibi/auth` `resolveExecuteContext({ headers })` (session, API key `bib_…`, OAuth bearer). Missing/invalid login → 401 with `WWW-Authenticate: Bearer resource_metadata="<MCP_URL>/.well-known/oauth-protected-resource"`; FORBIDDEN → 403.
-- `GET /.well-known/oauth-protected-resource` (RFC 9728) is answered by Better Auth in the web app: `resource` = `<MCP_URL>/mcp`, `authorization_servers` = `BETTER_AUTH_URL` + `/api/auth`.
-- `MCP_URL` is the public MCP base URL and the OAuth resource (tokens are audience-bound to `<MCP_URL>/mcp`): `https://mcp.<domain>` in production, routed to the web container; unset = `WEB_URL`. A changed `MCP_URL` needs `provision:oauth` once (it registers the resource).
-- `GET /health` (a web route beside `/mcp`). Other methods on `/mcp` → 405. Browser calls (header `Origin`) are allowed only from `WEB_URL`; CORS preflight is supported.
+- `POST /mcp` – authenticates with `@bibi/auth` `resolveExecuteContext({ headers })` (session, API key `bib_…`, OAuth bearer). Missing/invalid login → 401 with `WWW-Authenticate: Bearer resource_metadata="<MCP_ORIGIN>/.well-known/oauth-protected-resource"`; FORBIDDEN → 403.
+- `GET /.well-known/oauth-protected-resource` (RFC 9728) is answered by Better Auth in the web app: `resource` = `<MCP_ORIGIN>/mcp`, `authorization_servers` = `BETTER_AUTH_URL` + `/api/auth`.
+- `MCP_ORIGIN` is the public MCP origin (no path); the endpoint and OAuth resource are `<MCP_ORIGIN>/mcp` (tokens are audience-bound to `<MCP_ORIGIN>/mcp`): `https://mcp.<domain>` in production, routed to the web container; unset = `WEB_ORIGIN`. A changed `MCP_ORIGIN` needs `provision:oauth` once (it registers the resource).
+- `GET /health` (a web route beside `/mcp`). Other methods on `/mcp` → 405. Browser calls (header `Origin`) are allowed only from `WEB_ORIGIN`; CORS preflight is supported.
 
 ## Connecting a client
 - HTTP (Inspector): `npx @modelcontextprotocol/inspector`, choose Streamable HTTP, URL `http://localhost:3330/mcp`, header `Authorization: Bearer bib_<api-key>` (or OAuth).
@@ -41,7 +41,7 @@ The MCP server (ADR 0003, 0007). Thin adapter: all logic and permissions live in
   `src/stdio.ts` resolves the key once at startup (stdout is the protocol, logging goes to stderr).
 
 ## Environment variables (all via `@bibi/config`)
-`DATABASE_URL`, `BETTER_AUTH_SECRET` (signs approval tokens), `BETTER_AUTH_URL`, `MCP_URL`, `WEB_URL`, `BIBI_API_KEY` (stdio only), `WEB_OAUTH_CLIENT_ID` (AI actor).
+`DATABASE_URL`, `BETTER_AUTH_SECRET` (signs approval tokens), `BETTER_AUTH_URL`, `MCP_ORIGIN`, `WEB_ORIGIN`, `BIBI_API_KEY` (stdio only), `WEB_OAUTH_CLIENT_ID` (AI actor).
 
 ## Scripts
 `dev:stdio`, `build` (tsup → `dist/stdio.js`, workspace packages are bundled, npm packages are external and listed in package.json), `start:stdio`, `typecheck`, `test`. HTTP runs in `pnpm --filter @bibi/web dev`.

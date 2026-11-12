@@ -20,19 +20,19 @@ describe("parseEnv", () => {
     expect(env.MAIL_FROM).toBe("Bibi <no-reply@bibi.local>");
   });
 
-  it("serves MCP from the web app's URL unless MCP_URL names its own host", () => {
-    const web = { ...base, WEB_URL: "https://app.heybibi.se" };
-    expect(parseEnv({ source: web }).MCP_URL).toBe("https://app.heybibi.se");
-    expect(parseEnv({ source: { ...web, MCP_URL: "" } }).MCP_URL).toBe("https://app.heybibi.se");
-    expect(parseEnv({ source: { ...web, MCP_URL: "https://mcp.heybibi.se" } }).MCP_URL).toBe(
+  it("serves MCP from the web app's URL unless MCP_ORIGIN names its own host", () => {
+    const web = { ...base, WEB_ORIGIN: "https://app.heybibi.se" };
+    expect(parseEnv({ source: web }).MCP_ORIGIN).toBe("https://app.heybibi.se");
+    expect(parseEnv({ source: { ...web, MCP_ORIGIN: "" } }).MCP_ORIGIN).toBe("https://app.heybibi.se");
+    expect(parseEnv({ source: { ...web, MCP_ORIGIN: "https://mcp.heybibi.se" } }).MCP_ORIGIN).toBe(
       "https://mcp.heybibi.se",
     );
   });
 
-  it("leaves PUBLIC_URL unset unless a URL is given", () => {
-    expect(parseEnv({ source: base }).PUBLIC_URL).toBeUndefined();
-    expect(parseEnv({ source: { ...base, PUBLIC_URL: "" } }).PUBLIC_URL).toBeUndefined();
-    expect(parseEnv({ source: { ...base, PUBLIC_URL: "https://heybibi.se" } }).PUBLIC_URL).toBe(
+  it("leaves PUBLIC_ORIGIN unset unless a URL is given", () => {
+    expect(parseEnv({ source: base }).PUBLIC_ORIGIN).toBeUndefined();
+    expect(parseEnv({ source: { ...base, PUBLIC_ORIGIN: "" } }).PUBLIC_ORIGIN).toBeUndefined();
+    expect(parseEnv({ source: { ...base, PUBLIC_ORIGIN: "https://heybibi.se" } }).PUBLIC_ORIGIN).toBe(
       "https://heybibi.se",
     );
   });
@@ -65,5 +65,11 @@ describe("parseEnv storage", () => {
 
   it("requires the S3 settings when STORAGE_DRIVER=s3", () => {
     expect(() => parseEnv({ source: { ...base, STORAGE_DRIVER: "s3" } })).toThrow(/S3_BUCKET/);
+  });
+  it("rejects an origin with a path or trailing slash", () => {
+    for (const value of ["https://mcp.heybibi.se/mcp", "https://app.heybibi.se/"]) {
+      expect(() => parseEnv({ source: { ...base, MCP_ORIGIN: value } })).toThrow();
+      expect(() => parseEnv({ source: { ...base, WEB_ORIGIN: value } })).toThrow();
+    }
   });
 });

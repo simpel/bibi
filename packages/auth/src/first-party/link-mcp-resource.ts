@@ -6,7 +6,7 @@ import { mcpResourceUrl } from "../urls";
 export type LinkMcpResourceInput = { db: Db; clientId: string };
 
 /**
- * Registers the MCP resource (`${MCP_URL}/mcp`, ADR 0104) if missing and links the client to it, so
+ * Registers the MCP resource (`${MCP_ORIGIN}/mcp`, ADR 0104) if missing and links the client to it, so
  * the client's tokens are audience-bound to MCP. Idempotent. Used by `provision:oauth` and tests.
  */
 export async function linkMcpResource({ db, clientId }: LinkMcpResourceInput): Promise<void> {

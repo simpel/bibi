@@ -9,7 +9,7 @@ import { createId } from "@paralleldrive/cuid2";
 const AUTH_TEST_REDIRECT = "http://localhost:3330/oauth/callback";
 /** Same default as `provision:oauth` and `@bibi/auth` (assistant token minting). */
 const assistantRedirectUri = () =>
-  new URL("/api/assistant/oauth/callback", getEnv().WEB_URL).toString();
+  new URL("/api/assistant/oauth/callback", getEnv().WEB_ORIGIN).toString();
 
 export type TestUser = { userId: string; organizationId: string; cookies: Headers };
 

@@ -37,7 +37,7 @@ export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
     basePath: AUTH_BASE_PATH,
-    trustedOrigins: [env.WEB_URL, env.MCP_URL],
+    trustedOrigins: [env.WEB_ORIGIN, env.MCP_ORIGIN],
     ...HARDENING,
     ...(withoutDatabase ? {} : { database: prismaAdapter(db, { provider: "postgresql" }) }),
     // Magic link only (ADR 0005, addendum 2026-11-06).

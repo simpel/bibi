@@ -6,7 +6,7 @@ import { findGuidePage, GUIDE_PAGES, guideHref } from "@/features/docs/pages";
 import { loadDocText } from "@/features/docs/server/doc-text";
 import { DocArticle } from "@/features/docs/ui/doc-article";
 
-/** Guide text embeds runtime URLs (`WEB_URL`, `MCP_URL`), so it is rendered per request. */
+/** Guide text embeds runtime URLs (`WEB_ORIGIN`, `MCP_ORIGIN`), so it is rendered per request. */
 export const dynamic = "force-dynamic";
 
 type GuidePageProps = { params: Promise<{ locale: string; slug: string }> };

@@ -21,7 +21,7 @@ export type GetFirstPartyAccessToken = (
 ) => Promise<Result<string>>;
 
 /**
- * OAuth access token for `${MCP_URL}/mcp`, issued to a first-party client for the user behind
+ * OAuth access token for `${MCP_ORIGIN}/mcp`, issued to a first-party client for the user behind
  * the session cookie: authorization code + PKCE run in-process through Better Auth (no browser
  * round-trip, no custom signing). The token carries `bibi_org` = the session's active org and
  * `azp` = the client; whether it may act as the AI actor is the client's `allowsAiActor` flag.

@@ -26,7 +26,7 @@ Add the subdomain as a domain in Resend (EU region, see the ADR 0012 addendum), 
 ## Webhook
 
 1. In Resend, add a webhook for the event `email.received` with the URL
-   `https://<WEB_URL host>/api/webhooks/resend`.
+   `https://<WEB_ORIGIN host>/api/webhooks/resend`.
 2. Copy its signing secret (`whsec_...`) into `RESEND_WEBHOOK_SECRET`.
 3. Set `MAIL_INBOUND_DOMAIN` to the inbound subdomain and `RESEND_API_KEY` (the API key must be
    allowed to read received emails).

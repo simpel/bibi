@@ -107,7 +107,7 @@ jobs:
       - name: Health gate
         if: steps.cfg.outputs.configured == 'true'
         run: |
-          for url in "${{ vars.WEB_URL }}/api/health" "${{ vars.MCP_URL }}/health"; do
+          for url in "${{ vars.WEB_ORIGIN }}/api/health" "${{ vars.MCP_ORIGIN }}/health"; do
             ok=false
             for i in $(seq 1 60); do
               if curl -fsS --max-time 5 "$url" > /dev/null; then ok=true; break; fi

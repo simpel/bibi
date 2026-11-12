@@ -12,7 +12,7 @@ import { createId } from "@paralleldrive/cuid2";
  *
  *   pnpm --filter @bibi/web provision:oauth [--redirect-uri <url>]
  *
- * The redirect URI (default `${WEB_URL}/api/assistant/oauth/callback`) only has to be registered:
+ * The redirect URI (default `${WEB_ORIGIN}/api/assistant/oauth/callback`) only has to be registered:
  * `getFirstPartyAccessToken` runs authorization code + PKCE in-process and reads the code from
  * the authorize response, so the redirect is never followed and no callback route exists.
  */
@@ -23,7 +23,7 @@ type ProvisionInput = { db: Db; redirectUri: string };
 const parseRedirectUri = ({ args }: { args: string[] }): string => {
   const flag = args.indexOf("--redirect-uri");
   const given = flag >= 0 ? args[flag + 1] : undefined;
-  return given ?? new URL("/api/assistant/oauth/callback", getEnv().WEB_URL).toString();
+  return given ?? new URL("/api/assistant/oauth/callback", getEnv().WEB_ORIGIN).toString();
 };
 
 const resolveClientId = async ({ db }: { db: Db }): Promise<string> => {

@@ -8,8 +8,8 @@ import { defineConfig } from "@playwright/test";
 // Default import: Playwright loads this file as native ESM, where @next/env (CJS) has no named exports.
 nextEnv.loadEnvConfig(resolve(process.cwd(), "../.."));
 
-const WEB_URL = process.env.WEB_URL ?? "http://localhost:3330";
-const WEB_PORT = new URL(WEB_URL).port || "3330";
+const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:3330";
+const WEB_PORT = new URL(WEB_ORIGIN).port || "3330";
 
 // Preinstalled Chromium (sandbox) when present; otherwise Playwright's own browser (CI installs it).
 const PREINSTALLED_CHROMIUM = process.env.PW_CHROMIUM_PATH ?? "/opt/pw-browsers/chromium";
@@ -19,7 +19,7 @@ const chromiumPath = existsSync(PREINSTALLED_CHROMIUM) ? PREINSTALLED_CHROMIUM :
  * E2E against a production build: `pnpm --filter @bibi/web build` first, with DATABASE_URL,
  * BETTER_AUTH_SECRET, BETTER_AUTH_URL and WEB_OAUTH_CLIENT_ID set (see CLAUDE.md). The web app also
  * serves MCP (ADR 0104). Uses the preinstalled Chromium (no `playwright install`). A server already
- * running on WEB_URL (default :3330, per-worktree ports from the root `.env`) is reused.
+ * running on WEB_ORIGIN (default :3330, per-worktree ports from the root `.env`) is reused.
  *
  * The web server starts with `E2E_MOCK_MODEL=1`: the chat route then uses the scripted model in
  * `src/server/e2e-mock-model.ts` instead of a real LLM. The flag is ignored in production, and
@@ -34,7 +34,7 @@ export default defineConfig({
     ? [["list"], ["html", { open: "never", outputFolder: "playwright-report" }]]
     : [["list"]],
   use: {
-    baseURL: WEB_URL,
+    baseURL: WEB_ORIGIN,
     locale: "sv-SE",
     trace: "retain-on-failure",
     launchOptions: {
@@ -45,7 +45,7 @@ export default defineConfig({
   webServer: [
     {
       command: "pnpm start",
-      url: `${WEB_URL}/sv/login`,
+      url: `${WEB_ORIGIN}/sv/login`,
       reuseExistingServer: true,
       timeout: 120_000,
       env: {

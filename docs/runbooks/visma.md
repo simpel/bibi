@@ -10,12 +10,12 @@ Decision: `docs/decisions/0100-payment-providers-as-ports.md`. Code: `packages/c
 
 ## Environment
 - `VISMA_CLIENT_ID`, `VISMA_CLIENT_SECRET`: both or neither. Unset: Visma is not offered.
-- `VISMA_IDENTITY_URL` (default `https://identity.vismaonline.com`) and `VISMA_API_URL` (default `https://eaccountingapi.vismaonline.com`). Sandbox: `https://identity-sandbox.test.vismaonline.com` and `https://eaccountingapi-sandbox.test.vismaonline.com`.
+- `VISMA_IDENTITY_BASE_URL` (default `https://identity.vismaonline.com`) and `VISMA_API_BASE_URL` (default `https://eaccountingapi.vismaonline.com`). Sandbox: `https://identity-sandbox.test.vismaonline.com` and `https://eaccountingapi-sandbox.test.vismaonline.com`.
 - `INTEGRATION_SECRET_KEY`: required.
 
 ## Developer portal
 1. Register an app at the Visma Developer Portal with the eAccounting API, scopes `ea:api`, `ea:sales` and `offline_access`.
-2. Redirect URI: `<WEB_URL>/api/providers/visma/callback` (one per environment, exact match).
+2. Redirect URI: `<WEB_ORIGIN>/api/providers/visma/callback` (one per environment, exact match).
 3. Ask Visma for a sandbox company to test against, and set the sandbox URLs above.
 
 ## Before going live (check in the sandbox)

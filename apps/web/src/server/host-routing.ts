@@ -12,7 +12,7 @@ export type ResolveHostActionInput = {
   search: string;
   /** The public site's URL (ADR 0073). Unset: one host serves everything. */
   publicUrl: string | undefined;
-  /** The app's URL (`WEB_URL`). */
+  /** The app's URL (`WEB_ORIGIN`). */
   webUrl: string;
 };
 

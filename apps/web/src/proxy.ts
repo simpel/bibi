@@ -11,15 +11,15 @@ type HostRoutingInput = { request: NextRequest };
 
 /** The public site and the app live on different hosts (ADR 0073); null = no host rule applies. */
 function routeByHost({ request }: HostRoutingInput): NextResponse | null {
-  const { PUBLIC_URL, WEB_URL } = getEnv();
+  const { PUBLIC_ORIGIN, WEB_ORIGIN } = getEnv();
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "";
   const { pathname, search } = request.nextUrl;
   const action = resolveHostAction({
     host,
     pathname,
     search,
-    publicUrl: PUBLIC_URL,
-    webUrl: WEB_URL,
+    publicUrl: PUBLIC_ORIGIN,
+    webUrl: WEB_ORIGIN,
   });
   if (action.type === "redirect") return NextResponse.redirect(action.url, 308);
   if (action.type === "rewrite") return NextResponse.rewrite(new URL(action.pathname, request.url));

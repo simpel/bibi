@@ -11,7 +11,7 @@
 
 ## Decision
 1. **The web app serves MCP over Streamable HTTP** at `/mcp`, with `/health` beside it. The handler stays in `apps/mcp` (`createMcpHandler`) and is mounted by a Next route, the same way `@bibi/api` and `@bibi/graphql` are.
-2. **`MCP_URL` stays the public MCP base URL and the OAuth resource** (tokens are audience-bound to `${MCP_URL}/mcp`). In production it stays `https://mcp.<domain>`, now routed to the web container, so connected clients keep their grants. Unset, it defaults to `WEB_URL`.
+2. **`MCP_ORIGIN` stays the public MCP origin, and `${MCP_ORIGIN}/mcp` the OAuth resource** (tokens are audience-bound to `${MCP_ORIGIN}/mcp`). In production it stays `https://mcp.<domain>`, now routed to the web container, so connected clients keep their grants. Unset, it defaults to `WEB_ORIGIN`.
 3. **`apps/mcp` runs on its own only over stdio** (Claude Desktop with an API key). There is no MCP container or image.
 4. **Separation later is a deploy setting, not a rewrite:** when machine traffic needs isolating from staff traffic, run a second copy of the web image and point the API and MCP hosts at it.
 
@@ -21,5 +21,5 @@
 
 ## Consequences
 - Heavy MCP traffic shares the web process with staff pages, as REST already did.
-- Coolify routes `mcp.<domain>` to the web service's port (`docs/runbooks/deploy.md`); the deploy gate keeps checking `${MCP_URL}/health`.
+- Coolify routes `mcp.<domain>` to the web service's port (`docs/runbooks/deploy.md`); the deploy gate keeps checking `${MCP_ORIGIN}/health`.
 - The single-use approval tokens are tracked per web process; more than one web instance needs a shared store (unchanged from before).

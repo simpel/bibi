@@ -6,7 +6,7 @@ export type FirstPartyClientConfig = {
   /** Requested scope. `openid` only: no refresh token, tokens are re-minted when they expire. */
   scope: string;
   /**
-   * Registered redirect URI path on `WEB_URL`. Never followed: the code is read server-side
+   * Registered redirect URI path on `WEB_ORIGIN`. Never followed: the code is read server-side
    * from the authorize response, so no page has to exist there.
    */
   redirectPath: string;

@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+/**
+ * An origin (`scheme://host[:port]`, no path or trailing slash). Paths are built from it, so a
+ * `*_ORIGIN` must never carry one; a full URL used as-is is a `*_URL`.
+ */
+const origin = z
+  .string()
+  .url()
+  .refine((value) => new URL(value).origin === value, "must be an origin: scheme://host[:port], no path");
+
 const S3_REQUIRED = ["S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY"] as const;
 
 const envSchema = z
@@ -59,33 +68,33 @@ const envSchema = z
     VISMA_CLIENT_ID: z.string().min(1).optional(),
     VISMA_CLIENT_SECRET: z.string().min(1).optional(),
     /** Visma Connect (OAuth) host; the sandbox is `https://identity-sandbox.test.vismaonline.com`. */
-    VISMA_IDENTITY_URL: z.string().url().default("https://identity.vismaonline.com"),
+    VISMA_IDENTITY_BASE_URL: z.string().url().default("https://identity.vismaonline.com"),
     /** Visma eAccounting API root; the sandbox is `https://eaccountingapi-sandbox.test.vismaonline.com`. */
-    VISMA_API_URL: z.string().url().default("https://eaccountingapi.vismaonline.com"),
+    VISMA_API_BASE_URL: z.string().url().default("https://eaccountingapi.vismaonline.com"),
     /**
      * Swish for merchants API root (ADR 0100), up to and including `/swish-cpcapi`. Defaults to
      * Swish's Merchant Swish Simulator (MSS); production is `https://cpc.getswish.net/swish-cpcapi`.
      */
-    SWISH_API_URL: z.string().url().default("https://mss.cpc.getswish.net/swish-cpcapi"),
+    SWISH_API_BASE_URL: z.string().url().default("https://mss.cpc.getswish.net/swish-cpcapi"),
     /** Base64 32-byte key sealing integration tokens at rest (ADR 0087). Unset: no integration can connect. */
     INTEGRATION_SECRET_KEY: z
       .string()
       .refine((value) => Buffer.from(value, "base64").length === 32, "must be 32 bytes, base64")
       .optional(),
     AI_GATEWAY_API_KEY: z.string().optional(),
-    WEB_URL: z.string().url().default("http://localhost:3330"),
+    WEB_ORIGIN: origin.default("http://localhost:3330"),
     /**
-     * Public site on its own host (ADR 0073), e.g. `https://heybibi.se`, while `WEB_URL` is the app host.
+     * Public site on its own host (ADR 0073), e.g. `https://heybibi.se`, while `WEB_ORIGIN` is the app host.
      * Unset: one host serves everything and the public site is only reachable at `/<locale>/site`.
      */
-    PUBLIC_URL: z.string().url().optional(),
+    PUBLIC_ORIGIN: origin.optional(),
     /** Address shown on the public `/support` page. Unset: the page points to the assistant and admins only. */
     SUPPORT_EMAIL: z.string().email().optional(),
     /**
-     * Public base URL of MCP and its OAuth resource (`${MCP_URL}/mcp`), served by the web app
-     * (ADR 0104). In production its own host (`https://mcp.<domain>`); unset = `WEB_URL`.
+     * Public origin of MCP; its endpoint and OAuth resource are `${MCP_ORIGIN}/mcp`, served by the web app
+     * (ADR 0104). In production its own host (`https://mcp.<domain>`); unset = `WEB_ORIGIN`.
      */
-    MCP_URL: z.string().url().optional(),
+    MCP_ORIGIN: origin.optional(),
     /** Storybook of `@bibi/ui` (`pnpm --filter @bibi/ui dev`), shown in the dev banner. */
     STORYBOOK_URL: z.string().url().default("http://localhost:3332"),
     /** API key used by the stdio MCP server (`apps/mcp`), resolved once at startup. */
@@ -147,7 +156,7 @@ const envSchema = z
     }
   });
 
-export type Env = z.output<typeof envSchema> & { MCP_URL: string };
+export type Env = z.output<typeof envSchema> & { MCP_ORIGIN: string };
 
 let cached: Env | undefined;
 
@@ -160,7 +169,7 @@ type ParseEnvInput = { source: Record<string, string | undefined> };
 export function parseEnv({ source }: ParseEnvInput): Env {
   const present = Object.entries(source).filter(([, value]) => value !== "");
   const env = envSchema.parse(Object.fromEntries(present));
-  return { ...env, MCP_URL: env.MCP_URL ?? env.WEB_URL };
+  return { ...env, MCP_ORIGIN: env.MCP_ORIGIN ?? env.WEB_ORIGIN };
 }
 
 /** The only place in the codebase allowed to read `process.env`. */

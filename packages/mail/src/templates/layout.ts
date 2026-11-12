@@ -33,7 +33,7 @@ export function renderEmailLayout({
   preheader,
 }: EmailLayoutInput): string {
   const env = getEnv();
-  const webUrl = env.WEB_URL.replace(/\/+$/, "");
+  const webUrl = env.WEB_ORIGIN.replace(/\/+$/, "");
   const logoUrl = `${webUrl}/wordmark.png`;
   const homeUrl = `${webUrl}/${locale}`;
   const catalog = getCatalog({ locale }) as unknown as {

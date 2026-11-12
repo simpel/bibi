@@ -11,7 +11,7 @@ export type McpCaller =
 export type ConnectMcpInput = {
   accessToken: string;
   caller: McpCaller;
-  /** MCP endpoint; default `${MCP_URL}/mcp`. */
+  /** MCP endpoint; default `${MCP_ORIGIN}/mcp`. */
   url?: string;
 };
 

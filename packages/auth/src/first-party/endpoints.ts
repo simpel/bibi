@@ -20,6 +20,6 @@ export function resolveClient({ client }: ResolveClientInput): Result<ResolvedCl
   const clientId = config.clientId();
   if (!clientId)
     return err({ error: new AppError({ code: "INTERNAL", message: config.missingHint }) });
-  const redirectUri = new URL(config.redirectPath, getEnv().WEB_URL).toString();
+  const redirectUri = new URL(config.redirectPath, getEnv().WEB_ORIGIN).toString();
   return ok({ value: { clientId, redirectUri, scope: config.scope } });
 }
