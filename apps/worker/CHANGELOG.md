@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.0.0](https://github.com/simpel/bibi/compare/@bibi/worker-v0.2.5...@bibi/worker-v1.0.0) (2026-11-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* accountingExport.* and paying a quote (quoteId) are removed from REST, GraphQL and MCP, and money operations need a connected accounting system.
+
+### Features
+
+* Bibi numbers nothing, deposits mirror payments booked in the ledger, and unanswered credits are retried ([318826f](https://github.com/simpel/bibi/commit/318826f2be3d48afa8bb54ef8ee587a2e11b0755))
+* money needs a connected Fortnox or Visma; quote payments, Stripe Invoicing and the SIE export go ([6c6586e](https://github.com/simpel/bibi/commit/6c6586e127b2be5bb8324985961098a1a46a56bf))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 3.0.0
+    * @bibi/db bumped to 2.1.0
+
 ## [0.2.5](https://github.com/simpel/bibi/compare/@bibi/worker-v0.2.4...@bibi/worker-v0.2.5) (2026-11-11)
 
 

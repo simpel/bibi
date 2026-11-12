@@ -1,5 +1,27 @@
 # Changelog
 
+## [3.0.0](https://github.com/simpel/bibi/compare/@bibi/api-v2.0.0...@bibi/api-v3.0.0) (2026-11-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* accountingExport.* and paying a quote (quoteId) are removed from REST, GraphQL and MCP, and money operations need a connected accounting system.
+
+### Features
+
+* money needs a connected Fortnox or Visma; quote payments, Stripe Invoicing and the SIE export go ([6c6586e](https://github.com/simpel/bibi/commit/6c6586e127b2be5bb8324985961098a1a46a56bf))
+* venue items summary with per-type subpages and plural type names ([a1384fc](https://github.com/simpel/bibi/commit/a1384fc1ef3f7056ce8907e0768114faa3ce0fe5))
+* venue items summary with per-type subpages and plural type names ([b135d0e](https://github.com/simpel/bibi/commit/b135d0ea8081b17a14b59eec83918ae59c7d2fdd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 3.0.0
+  * devDependencies
+    * @bibi/db bumped to 2.1.0
+
 ## [2.0.0](https://github.com/simpel/bibi/compare/@bibi/api-v1.1.2...@bibi/api-v2.0.0) (2026-11-11)
 
 

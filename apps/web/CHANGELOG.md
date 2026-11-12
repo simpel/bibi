@@ -1,5 +1,49 @@
 # Changelog
 
+## [3.0.0](https://github.com/simpel/bibi/compare/@bibi/web-v2.0.0...@bibi/web-v3.0.0) (2026-11-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* accountingExport.* and paying a quote (quoteId) are removed from REST, GraphQL and MCP, and money operations need a connected accounting system.
+
+### Features
+
+* /admin is a start page listing every settings page the caller may view ([6ac2144](https://github.com/simpel/bibi/commit/6ac2144fe37f0cc85f799d9cc44a543364f68c6c))
+* /admin is a start page listing every settings page the caller may view ([dad13f9](https://github.com/simpel/bibi/commit/dad13f973497691962f4d5fed96d9940288d8978))
+* Bibi numbers nothing, deposits mirror payments booked in the ledger, and unanswered credits are retried ([318826f](https://github.com/simpel/bibi/commit/318826f2be3d48afa8bb54ef8ee587a2e11b0755))
+* buyer's reference on contact and order, required per customer, frozen on the invoice ([ce0c178](https://github.com/simpel/bibi/commit/ce0c178032580eb14a5cf0ad8ed0822a3ac9765b))
+* customers and orders are business or private, with the org no. as a column ([3ccc5a1](https://github.com/simpel/bibi/commit/3ccc5a1a4d183002a2e306f876a60250a3140bf7))
+* customers list shows each customer's billed value ([4668f16](https://github.com/simpel/bibi/commit/4668f1690ca79fb9460d8402b28edc633387b073))
+* deposits are prepayment invoices in Fortnox or Visma, and Fortnox books card and Swish payments ([2b6e5d8](https://github.com/simpel/bibi/commit/2b6e5d8b1676704364f152860caf4e622a36a435))
+* money needs a connected Fortnox or Visma; quote payments, Stripe Invoicing and the SIE export go ([6c6586e](https://github.com/simpel/bibi/commit/6c6586e127b2be5bb8324985961098a1a46a56bf))
+* the order page says to connect Fortnox or Visma before money can be taken ([198c451](https://github.com/simpel/bibi/commit/198c4510c267553c063f2388958341f0107550b7))
+* the order page says to connect Fortnox or Visma before money can be taken ([9ce50db](https://github.com/simpel/bibi/commit/9ce50db8e92a665e961c325574c9f50f5e63b521))
+* venue items summary with per-type subpages and plural type names ([a1384fc](https://github.com/simpel/bibi/commit/a1384fc1ef3f7056ce8907e0768114faa3ce0fe5))
+* venue items summary with per-type subpages and plural type names ([b135d0e](https://github.com/simpel/bibi/commit/b135d0ea8081b17a14b59eec83918ae59c7d2fdd))
+
+
+### Bug Fixes
+
+* the payments e2e test reads the credit note's number from the accounting system ([e5ef63b](https://github.com/simpel/bibi/commit/e5ef63bd74fb63cfa1f165cb2574a92221a41642))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 3.0.0
+    * @bibi/api bumped to 3.0.0
+    * @bibi/auth bumped to 0.6.3
+    * @bibi/core bumped to 3.0.0
+    * @bibi/db bumped to 2.1.0
+    * @bibi/graphql bumped to 3.0.0
+    * @bibi/i18n bumped to 3.0.0
+    * @bibi/mail bumped to 0.5.3
+    * @bibi/mcp bumped to 3.0.0
+    * @bibi/storage bumped to 0.2.6
+    * @bibi/ui bumped to 2.1.0
+
 ## [2.0.0](https://github.com/simpel/bibi/compare/@bibi/web-v1.5.0...@bibi/web-v2.0.0) (2026-11-11)
 
 

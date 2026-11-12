@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.0](https://github.com/simpel/bibi/compare/@bibi/ui-v2.0.0...@bibi/ui-v2.1.0) (2026-11-12)
+
+
+### Features
+
+* customers list shows each customer's billed value ([4668f16](https://github.com/simpel/bibi/commit/4668f1690ca79fb9460d8402b28edc633387b073))
+* venue items summary with per-type subpages and plural type names ([a1384fc](https://github.com/simpel/bibi/commit/a1384fc1ef3f7056ce8907e0768114faa3ce0fe5))
+
 ## [2.0.0](https://github.com/simpel/bibi/compare/@bibi/ui-v1.2.0...@bibi/ui-v2.0.0) (2026-11-11)
 
 
