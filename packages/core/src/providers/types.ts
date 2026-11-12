@@ -175,6 +175,13 @@ export type RegisterPaymentInput = AttemptRefInput & { payment: ProviderPayment 
  */
 export type CreditState = { status: "ISSUED"; providerReference: string } | { status: "MISSING" };
 
+export type CreditStatusInput = AttemptRefInput & {
+  /** What the lost credit credits incl. VAT: tells it apart from other credits of the document. */
+  amountMinor: number;
+  /** References of the document's credits Bibi already recorded; never the lost one. */
+  known: readonly string[];
+};
+
 /** Raising invoices in the provider (ADR 0100). Every call runs after the commit (ADR 0058). */
 export type InvoicingPort = {
   /** `idempotencyKey`: Bibi's invoice id, so a retried issue never raises it twice. */
@@ -186,7 +193,7 @@ export type InvoicingPort = {
    * Reads whether the document was credited (the credit retry, ADR 0100). Without it a credit
    * whose answer was lost waits for staff, since a resend could credit twice.
    */
-  creditStatus?(input: AttemptRefInput): Promise<Result<CreditState>>;
+  creditStatus?(input: CreditStatusInput): Promise<Result<CreditState>>;
   /** Books a payment another provider took (card, Swish) on the provider's invoice. */
   registerPayment?(input: RegisterPaymentInput): Promise<Result<ProviderReference>>;
 };

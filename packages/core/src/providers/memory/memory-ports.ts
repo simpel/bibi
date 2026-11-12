@@ -136,8 +136,9 @@ export function memoryInvoicing({ state, registerPayment }: MemoryInvoicingInput
       if (done.ok) state.credited.set(providerReference, done.value.providerReference);
       return done;
     },
-    creditStatus: async ({ providerReference }) => {
-      const credited = state.credited.get(providerReference);
+    creditStatus: async ({ providerReference, known }) => {
+      const found = state.credited.get(providerReference);
+      const credited = found && !known.includes(found) ? found : undefined;
       return ok({
         value: credited
           ? { status: "ISSUED" as const, providerReference: credited }

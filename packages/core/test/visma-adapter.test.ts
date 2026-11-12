@@ -267,4 +267,33 @@ describe("Visma invoicing (ADR 0100)", () => {
       PaymentCurrencyAmount: 500,
     });
   });
+  it("finds a lost credit by its invoice and amount, never one already recorded", async () => {
+    const stub = stubVisma();
+    stub.route = () => ({
+      json: {
+        Data: [
+          { Id: "credit-old", TotalAmount: -1120 },
+          { Id: "credit-lost", TotalAmount: -1120 },
+          { Id: "credit-other", TotalAmount: -500 },
+        ],
+      },
+    });
+    const lookup = visma().invoicing.creditStatus;
+    if (!lookup) throw new Error("no creditStatus");
+    const found = await lookup({
+      auth,
+      providerReference: "inv",
+      amountMinor: 112_000,
+      known: ["credit-old"],
+    });
+    expect(unwrap({ result: found })).toEqual({
+      status: "ISSUED",
+      providerReference: "credit-lost",
+    });
+    expect(apiPath({ call: stub.calls[0] as NonNullable<(typeof stub.calls)[0]> })).toBe(
+      "/customerinvoices?$filter=CreditedInvoiceId eq inv",
+    );
+    const none = await lookup({ auth, providerReference: "inv", amountMinor: 1, known: [] });
+    expect(unwrap({ result: none })).toEqual({ status: "MISSING" });
+  });
 });

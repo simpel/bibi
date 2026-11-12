@@ -74,12 +74,17 @@ describe("Fortnox registers payments and reads credits (ADR 0100, 0106)", () => 
     stubFortnox({
       respond: () => ({ status: 200, json: { Invoice: { CreditInvoiceReference: "1042" } } }),
     });
-    const credited = await lookup({ auth, providerReference: "1007" });
+    const credited = await lookup({
+      auth,
+      providerReference: "1007",
+      amountMinor: 100_000,
+      known: [],
+    });
     expect(unwrap({ result: credited })).toEqual({ status: "ISSUED", providerReference: "1042" });
     stubFortnox({
       respond: () => ({ status: 200, json: { Invoice: { CreditInvoiceReference: "0" } } }),
     });
-    const none = await lookup({ auth, providerReference: "1007" });
+    const none = await lookup({ auth, providerReference: "1007", amountMinor: 100_000, known: [] });
     expect(unwrap({ result: none })).toEqual({ status: "MISSING" });
   });
 });
