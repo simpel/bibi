@@ -6,6 +6,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks",
     "dev": "turbo run dev",
     "dev:kill": "lsof -ti tcp:3330,3332 -sTCP:LISTEN | xargs kill 2>/dev/null || true; rm -rf apps/web/.next",
     "docker:up": "docker compose up -d",
@@ -16,7 +17,7 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "check:structure": "node tools/check-structure.mjs",
-    "ship": "node tools/ci/ship.mjs",
+    "check": "turbo run lint check:structure --continue && turbo run typecheck test build build-storybook --affected --continue",
     "db:migrate": "pnpm --filter @bibi/db migrate",
     "test:db": "pnpm --filter @bibi/db migrate:test",
     "db:generate": "pnpm --filter @bibi/db generate",

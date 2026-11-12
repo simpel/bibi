@@ -1,11 +1,11 @@
 ---
 name: implement
-description: Implement a piece of work in bibi and ship it to main through a pull request with auto-merge (`pnpm ship`), alone or with parallel subagents for larger work. Use for any feature, bugfix, tech debt, test, docs or codemod request. Specs describe behaviour; ADRs gate only costly-to-reverse decisions. Why: ADR 0070, 0075, 0098.
+description: Implement a piece of work in bibi and push it straight to main behind the pre-push hook, alone or with parallel subagents for larger work. Use for any feature, bugfix, tech debt, test, docs or codemod request. Specs describe behaviour; ADRs gate only costly-to-reverse decisions. Why: ADR 0070, 0075, 0107.
 ---
 
 # Implement
 
-One piece of work, one commit, shipped with `pnpm ship`: a pull request that merges into `main` by itself once CI is green (ADR 0098). No order is needed. CI is the gate, but a red PR is yours to fix, so run the checks first.
+One piece of work, one commit, pushed straight to `main` (ADR 0107). No order is needed. The pre-push hook gates the push; CI runs build and e2e after it, and a red `main` is yours to fix first.
 
 Every run works in its own worktree with its own environment: a fresh `.env`, database (`bibi_<name>`, test database `bibi_<name>_test`) and port block. Never build in the main checkout; it may hold the user's own work.
 
@@ -28,7 +28,7 @@ Decide before you build. The test is how many independent pieces there are, not 
 - **Pick the model per piece** (root `CLAUDE.md`, "Working with subagents"): Sonnet by default; Opus for auth, tenancy scoping, `packages/core` operations, MCP auth and the approval flow; Haiku for mechanical work (i18n strings, boilerplate, doc sync).
 - **Brief each one fully:** the worktree path it works in, the part it owns and the ADR behind it, the files and package `CLAUDE.md` to read, the core API you built, and what done looks like. A subagent edits only its own package, never commits or pushes, and reports the files it changed and anything left open.
 - **For a second opinion** on a change in core, db, auth or MCP, start one Opus subagent with the diff and the tenancy rules in section 5. Give it the diff, not your conclusions.
-- **You own the rest:** integration, the parity and isolation tests, `verify.mjs`, the commit and the push.
+- **You own the rest:** integration, the parity and isolation tests, `pnpm check`, the commit and the push.
 
 ## 4. Build by kind of work
 - **Feature:** core first, adapters in the same change (ADR 0003). Order: Prisma schema and migration → core operation(s) → GraphQL, REST, MCP → web (`web-surfaces.ts`) and generative UI (`tool-ui-registry.ts`) → i18n (sv and en) → seed data → docs.
@@ -51,17 +51,16 @@ Decide before you build. The test is how many independent pieces there are, not 
 - **Out of scope:** never fix it here. Tell the user in the report.
 
 ## 6. Verify
-- `node tools/ci/verify.mjs` runs the CI checks scoped to your changes (lint, structure, typecheck, migrate, test, build). Docs only: `--light`. All green before you commit.
+- `pnpm check` runs lint and structure, then typecheck, test, build and Storybook for the packages your branch changed (Turborepo `--affected`, uncommitted files included). All green before you commit.
 - Seed or schema changed: `pnpm --filter @bibi/core seed:demo` from an empty database, checks green.
 - Change in core, db, auth or MCP: reread the diff for scoping, permissions, audit and isolation (the tenancy rules above), or have an Opus subagent do it (section 3), and fix what you find.
 - A test that fails only under load and passes alone is flaky: rerun it once, and tell the user if it stays flaky.
 
 ## 7. Commit and push
 - One commit: `<type>: <summary>`. The type comes from the kind of work: Feature `feat`, Bugfix `fix`, Tech debt and Codemod `refactor`, Docs `docs`, Test `test` (ADR 0060). Body: what changed and why in a few lines, then the Co-Authored-By line.
-- Never push to `main`; it is protected. Ship with `pnpm ship -- --footer "🤖 Generated with [Claude Code](https://claude.com/claude-code)"`. It pushes `HEAD` to `ship/<slug>-<sha>`, opens a PR titled with your commit's subject and turns on auto-merge. PR CI tests the merge with the current `main`, so no rebase is needed first.
-- Don't wait for CI. In the desktop app, bind the PR (`ccd_pr` tools) and turn on Auto-fix, so a red run wakes you. Otherwise check it once at the start of your next piece of work: `gh pr list -R simpel/bibi --author @me`.
-- A red PR: fix it in the main checkout, commit, and push the fix to the same branch with `git push origin HEAD:refs/heads/<branch>`. The PR updates and merges once green.
-- The PR may carry other sessions' unshipped commits from the shared checkout. If one of them is what fails, fix it too and say so in the report.
+- Push: `git pull --rebase --autostash origin main && git push origin HEAD:main`. The pre-push hook runs lint, structure, typecheck and the affected tests; never skip it with `--no-verify`. The commit-msg hook rejects a title that is not a Conventional Commit.
+- The hook checks the shared working tree, so another session's uncommitted file can fail it. Fix what is yours; for theirs, tell the user rather than skipping the hook.
+- Don't wait for CI. Check `main` once at the start of your next piece of work: `gh run list -R simpel/bibi -w CI -b main -L 1`. A red `main` is fixed before anything else, whoever broke it.
 - Remove the worktree from the main checkout: `pnpm wt:rm <name> --delete-branch`. It drops both databases and frees the port block. When you stop without pushing, keep the worktree and tell the user its path.
 
 ## 8. Report
