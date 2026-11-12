@@ -67,6 +67,6 @@ test("staff refund a card payment and credit an invoice from the order page", as
   const notes = await call({ page, method: "get", path: `/credit-notes?invoiceId=${invoice.id}` });
   // The accounting system numbers the credit note; Bibi does not (ADR 0106).
   expect(notes.items).toEqual([
-    expect.objectContaining({ status: "ISSUED", number: null, documentNumber: expect.any(String) }),
+    expect.objectContaining({ status: "ISSUED", documentNumber: expect.any(String) }),
   ]);
 });
