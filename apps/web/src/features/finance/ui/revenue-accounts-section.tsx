@@ -32,7 +32,6 @@ export async function RevenueAccountsSection({
         rows={rows}
         settings={settings}
         types={types}
-        grouped={false}
         emptyText={t("emptyRevenue")}
         canEdit={canEdit}
         scope="revenue"

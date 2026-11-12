@@ -44,7 +44,7 @@ const paymentSettings = uiEntry({
 const accountingSettings = uiEntry({
   component: "setting-cards",
   schema: AccountingSettingsSchema,
-  toProps: ({ value }) => view({ keys: ["fiscalYear", "accounts"], accounting: value }),
+  toProps: ({ value }) => view({ keys: ["accounts"], accounting: value }),
 });
 const domainJoin = uiEntry({
   component: "setting-cards",

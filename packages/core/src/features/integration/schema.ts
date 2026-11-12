@@ -39,7 +39,7 @@ export const IntegrationCapabilitiesSchema = z.object({
     .array(z.enum(PAYMENT_METHODS))
     .describe("The payment methods it can take (CARD, SWISH, INVOICE); routes pick among these"),
   invoicing: z.boolean().describe("It raises invoices (an INVOICE route can point to it)"),
-  ledger: z.boolean().describe("It keeps the books for what it invoices; the SIE export skips it"),
+  ledger: z.boolean().describe("It keeps the books for what it invoices (ADR 0106)"),
 });
 
 /** One provider's connection for the organization (ADR 0087). Tokens never appear here. */

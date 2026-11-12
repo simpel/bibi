@@ -25,8 +25,6 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   ["KnownMember", ["updatedAt", "createdBy"]],
   // A refund (ADR 0077, 0100): `initiatedBy` is who started it in Bibi (null when the provider reported it).
   ["PaymentRefund", ["createdBy"]],
-  // Append-only (ADR 0077): which events an export contained; its export records who made it.
-  ["AccountingExportEntry", ["updatedAt", "createdBy"]],
   ["OrderEstimate", ["createdAt", "updatedAt", "createdBy"]],
   // Derived search index, rebuilt from its entity; not authored by anyone.
   ["Embedding", ["createdBy"]],
@@ -115,7 +113,6 @@ export const CREATED_BY_MODELS = new Set<string>([
   "PaymentSettings",
   "BillingAccount",
   "RevenueAccount",
-  "AccountingExport",
   "Conversation",
   "Message",
   "Skill",

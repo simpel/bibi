@@ -20,7 +20,6 @@ export type AccountsTableProps = {
   rows: AccountRow[];
   settings: AccountingSettingsDto;
   types: ItemTypeOption[];
-  grouped: boolean;
   emptyText: string;
   /** Without `finance:write` there is no actions column. */
   canEdit: boolean;
@@ -30,12 +29,11 @@ export type AccountsTableProps = {
   onSaved?: (input: { value: AccountingSettingsDto }) => void;
 };
 
-type QualifiersInput = { rows: AccountRow[]; labels: AccountLabels; grouped: boolean };
+type QualifiersInput = { rows: AccountRow[]; labels: AccountLabels };
 
-function useAccountQualifiers({ rows, labels, grouped }: QualifiersInput) {
+function useAccountQualifiers({ rows, labels }: QualifiersInput) {
   const t = useTranslations("finance.accounting");
   return useMemo<TableQualifier<AccountRow>[]>(() => {
-    const groups = Array.from(new Set(rows.flatMap((row) => labels.group(row) ?? [])));
     return [
       {
         key: "name",
@@ -44,17 +42,6 @@ function useAccountQualifiers({ rows, labels, grouped }: QualifiersInput) {
         pick: labels.name,
         options: rows.map(labels.name),
       },
-      ...(grouped
-        ? [
-            {
-              key: "group",
-              label: t("columns.group"),
-              hint: groups.join(", "),
-              pick: labels.group,
-              options: groups,
-            },
-          ]
-        : []),
       {
         key: "account",
         label: t("columns.account"),
@@ -63,7 +50,7 @@ function useAccountQualifiers({ rows, labels, grouped }: QualifiersInput) {
         options: rows.map((row) => row.value),
       },
     ];
-  }, [t, rows, labels, grouped]);
+  }, [t, rows, labels]);
 }
 
 /** A list of accounts with search, filters and an edit action per row. */
@@ -72,7 +59,6 @@ export function AccountsTable({
   rows,
   settings,
   types,
-  grouped,
   emptyText,
   canEdit,
   scope,
@@ -80,17 +66,16 @@ export function AccountsTable({
 }: AccountsTableProps) {
   const [editing, setEditing] = useState<AccountRow | null>(null);
   const labels = useAccountLabels({ types });
-  const qualifiers = useAccountQualifiers({ rows, labels, grouped });
+  const qualifiers = useAccountQualifiers({ rows, labels });
   const view = useClientTableView({
     rows,
     qualifiers,
-    getSearchText: (row) => `${labels.name(row)} ${labels.group(row) ?? ""} ${row.value}`,
+    getSearchText: (row) => `${labels.name(row)} ${row.value}`,
     totalLabel: (count) => `${count}`,
     ...(scope ? { scope } : {}),
   });
   const columns = useAccountColumns({
     labels,
-    grouped,
     ...(canEdit
       ? { renderActions: (row) => <AccountRowActions row={row} onEdit={setEditing} /> }
       : {}),

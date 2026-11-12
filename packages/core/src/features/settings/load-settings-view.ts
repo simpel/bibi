@@ -20,7 +20,6 @@ const GROUP_OF: Record<
   domainJoin: { group: "organization", feature: "configuration" },
   paymentMethods: { group: "payment", feature: "paymentAccount" },
   deposit: { group: "payment", feature: "paymentAccount" },
-  fiscalYear: { group: "accounting", feature: "finance" },
   accounts: { group: "accounting", feature: "finance" },
   seats: { group: "seats", feature: "billing" },
 };

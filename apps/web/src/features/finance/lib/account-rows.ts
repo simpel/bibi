@@ -1,7 +1,7 @@
 import type { AccountingSettingsDto } from "@bibi/core/schemas";
 import type { Path } from "react-hook-form";
 import {
-  ACCOUNT_GROUPS,
+  ACCOUNT_KEYS,
   type AccountingFormValues,
   type AccountKey,
   type ItemTypeOption,
@@ -14,13 +14,11 @@ export type AccountTarget =
 
 export type AccountRow = { id: string; target: AccountTarget; value: string };
 
-export type AccountRowGroup = "accounts" | "vat";
-
 export type FixedRowsInput = { settings: AccountingSettingsDto };
 
-/** The fixed accounts (including output VAT), in the order the form used to show them. */
+/** The fixed accounts, in the order the form shows them. */
 export function accountRows({ settings }: FixedRowsInput): AccountRow[] {
-  return [...ACCOUNT_GROUPS.accounts, ...ACCOUNT_GROUPS.vat].map((key) => ({
+  return ACCOUNT_KEYS.map((key) => ({
     id: `account:${key}`,
     target: { kind: "account", key },
     value: settings[key],
@@ -49,12 +47,6 @@ export function typesWithoutAccount({ settings, types }: TypeRowsInput): ItemTyp
     ),
   );
   return types.filter(({ id }) => !taken.has(id));
-}
-
-export type RowGroupInput = { key: AccountKey };
-
-export function rowGroup({ key }: RowGroupInput): AccountRowGroup {
-  return (ACCOUNT_GROUPS.vat as readonly AccountKey[]).includes(key) ? "vat" : "accounts";
 }
 
 export type TargetFieldInput = { target: AccountTarget; types: ItemTypeOption[] };

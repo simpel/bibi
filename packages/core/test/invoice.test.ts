@@ -41,7 +41,6 @@ describe("an invoice is a frozen receivable of the order's lines (ADR 0052, 0057
     const invoice = unwrap({ result: await create({ context, orderId: order.id }) });
     // Bibi numbers nothing (ADR 0106): the accounting system does when it raises it.
     expect(invoice).toMatchObject({
-      number: null,
       documentNumber: null,
       status: "DRAFT",
       totalInclVatMinor: 560_000,
@@ -61,7 +60,7 @@ describe("an invoice is a frozen receivable of the order's lines (ADR 0052, 0057
       result: await execute({ operation: voidInvoice, input: { id: invoice.id }, context }),
     });
     const next = unwrap({ result: await create({ context, orderId: order.id }) });
-    expect(next).toMatchObject({ number: null, totalInclVatMinor: 140_000 });
+    expect(next).toMatchObject({ documentNumber: null, totalInclVatMinor: 140_000 });
   });
 
   it("is billed once sent, settled by payments and not voided while paid", async () => {

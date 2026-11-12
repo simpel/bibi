@@ -13,9 +13,9 @@ export const getAccountingSettings = defineOperation({
   entityType: "accountingSettings",
   kind: "query",
   description:
-    "Read the accounts the SIE export posts to: receivables, payment clearing, customer " +
-    "advances, fees, rounding, default revenue, output VAT per rate, the fiscal year's first " +
-    "month and the revenue account of each mapped item type or item. BAS defaults until saved.",
+    "Read the accounts rows raised in the accounting system post to: customer advances " +
+    "(deposits), default revenue and the revenue account of each mapped item type or item. " +
+    "BAS defaults until saved.",
   input: AccountingSettingsGetInputSchema,
   output: AccountingSettingsSchema,
   permission: "finance:read",
@@ -27,7 +27,8 @@ export const updateAccountingSettings = defineOperation({
   entityType: "accountingSettings",
   kind: "command",
   description:
-    "Change the accounts the SIE export posts to (four-digit account numbers). Omitted fields " +
+    "Change the accounts rows raised in the accounting system post to (four-digit account " +
+    "numbers). Omitted fields " +
     "keep their value. revenueAccounts, when given, replaces every item type and item mapping.",
   input: AccountingSettingsUpdateInputSchema,
   output: AccountingSettingsSchema,

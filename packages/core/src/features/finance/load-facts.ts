@@ -63,7 +63,6 @@ export async function loadOpenInvoices({ context, customerId }: Db) {
     where: { status: "SENT", ...orderOf({ customerId }) },
     select: {
       id: true,
-      number: true,
       providerReference: true,
       orderId: true,
       dueDate: true,

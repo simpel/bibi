@@ -13,17 +13,12 @@ export const CreditNoteSchema = z.object({
   organizationId: z.string(),
   invoiceId: z.string().describe("The invoice it credits"),
   orderId: z.string().describe("The order of the invoice it credits"),
-  number: z
-    .number()
-    .int()
-    .nullable()
-    .describe("Bibi's own number from before ADR 0106; null since: see documentNumber"),
   documentNumber: z
     .string()
     .nullable()
     .describe(
-      "The number it carries: the accounting system's document number (ADR 0106), else Bibi's " +
-        "own from before; null until raised there",
+      "The number it carries: the accounting system's document number (ADR 0106); null until " +
+        "raised there",
     ),
   currency: z.string(),
   amountMinor: z.number().int().describe("What it credits incl. VAT, minor units"),

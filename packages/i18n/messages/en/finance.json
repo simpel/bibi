@@ -124,29 +124,13 @@
       "pickType": "Item type",
       "columns": {
         "name": "Name",
-        "group": "Group",
         "account": "Account"
       },
       "readOnly": "You can view these settings but not change them.",
-      "groups": {
-        "accounts": "Accounts",
-        "vat": "Output VAT",
-        "fiscalYear": "Fiscal year",
-        "revenueByType": "Revenue per item type"
-      },
       "fields": {
-        "receivableAccount": "Receivables",
-        "clearingAccount": "Payments on their way",
         "advancesAccount": "Customer advances",
-        "feesAccount": "Payment fees",
-        "roundingAccount": "Rounding",
-        "revenueAccount": "Revenue (default)",
-        "vat25Account": "Output VAT 25 %",
-        "vat12Account": "Output VAT 12 %",
-        "vat6Account": "Output VAT 6 %",
-        "fiscalYearStartMonth": "First month of the fiscal year"
-      },
-      "monthName": "{month, select, 1 {January} 2 {February} 3 {March} 4 {April} 5 {May} 6 {June} 7 {July} 8 {August} 9 {September} 10 {October} 11 {November} 12 {December} other {}}"
+        "revenueAccount": "Revenue (default)"
+      }
     },
     "kpi": {
       "invoiced": "Invoiced",
@@ -595,7 +579,6 @@
     "deducted": "{amount} in paid deposits deducted",
     "inProvider": "In {name} #{reference}",
     "notInProvider": "Not yet in {name}",
-    "voidPending": "Voiding in {name} not confirmed yet, Bibi is retrying",
     "credited": "{amount} credited",
     "credit": {
       "action": "Credit",

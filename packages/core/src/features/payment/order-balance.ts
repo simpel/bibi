@@ -30,7 +30,7 @@ async function receivablesOf({ context, orderId, withQuotes }: OrderBalanceInput
     context.db.deposit.findMany({ where: { orderId }, orderBy: { createdAt: "asc" } }),
     context.db.invoice.findMany({
       where: { orderId },
-      orderBy: { number: "asc" },
+      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
       include: DUE_INCLUDE,
     }),
   ]);

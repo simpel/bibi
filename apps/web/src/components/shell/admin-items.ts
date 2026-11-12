@@ -139,7 +139,7 @@ export const ADMIN_GROUPS: readonly AdminGroup[] = [
         key: "accounting",
         icon: ReceiptTextIcon,
         href: ROUTES.adminAccounting,
-        ids: ["fiscalYear", "accounts", "revenueAccounts"],
+        ids: ["accounts", "revenueAccounts"],
       }),
       page({
         key: "integrations",

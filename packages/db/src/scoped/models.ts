@@ -75,8 +75,6 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "PaymentSettings",
   "BillingAccount",
   "RevenueAccount",
-  "AccountingExport",
-  "AccountingExportEntry",
   "Deposit",
   "Invoice",
   "InvoiceDeposit",

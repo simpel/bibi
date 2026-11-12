@@ -4,26 +4,15 @@ import type {
   RevenueAccountDto,
 } from "@bibi/core/schemas";
 
-/** The fixed accounts, in the groups the form shows them. */
-export const ACCOUNT_GROUPS = {
-  accounts: [
-    "receivableAccount",
-    "clearingAccount",
-    "advancesAccount",
-    "feesAccount",
-    "roundingAccount",
-    "revenueAccount",
-  ],
-  vat: ["vat25Account", "vat12Account", "vat6Account"],
-} as const;
+/** The fixed accounts rows raised in the accounting system post to (ADR 0106). */
+export const ACCOUNT_KEYS = ["advancesAccount", "revenueAccount"] as const;
 
-export type AccountKey = (typeof ACCOUNT_GROUPS)[keyof typeof ACCOUNT_GROUPS][number];
+export type AccountKey = (typeof ACCOUNT_KEYS)[number];
 
 export type TypeAccount = { entityTypeId: string; account: string };
 
 /** Raw form values: every input is a string; an empty type account uses the default revenue account. */
 export type AccountingFormValues = Record<AccountKey, string> & {
-  fiscalYearStartMonth: string;
   typeAccounts: TypeAccount[];
 };
 
@@ -37,16 +26,8 @@ export function toFormValues({ settings, types }: ToFormValuesInput): Accounting
     account: settings.revenueAccounts.find((row) => row.entityTypeId === id)?.account ?? "",
   }));
   return {
-    receivableAccount: settings.receivableAccount,
-    clearingAccount: settings.clearingAccount,
     advancesAccount: settings.advancesAccount,
-    feesAccount: settings.feesAccount,
-    roundingAccount: settings.roundingAccount,
     revenueAccount: settings.revenueAccount,
-    vat25Account: settings.vat25Account,
-    vat12Account: settings.vat12Account,
-    vat6Account: settings.vat6Account,
-    fiscalYearStartMonth: String(settings.fiscalYearStartMonth),
     typeAccounts,
   };
 }
@@ -63,15 +44,14 @@ export function keptRevenueRows({ settings, types }: KeptRowsInput): RevenueAcco
 
 export type ToUpdateInput = { values: AccountingFormValues; kept: RevenueAccountDto[] };
 
-/** The full update: every account, the month and the complete revenue mapping set. */
+/** The full update: every account and the complete revenue mapping set. */
 export function toUpdateInput({ values, kept }: ToUpdateInput): AccountingSettingsUpdateInput {
-  const { typeAccounts, fiscalYearStartMonth, ...accounts } = values;
+  const { typeAccounts, ...accounts } = values;
   const rows = typeAccounts
     .filter(({ account }) => account.trim() !== "")
     .map(({ entityTypeId, account }) => ({ entityTypeId, itemId: null, account }));
   return {
     ...accounts,
-    fiscalYearStartMonth: Number(fiscalYearStartMonth),
     revenueAccounts: [...kept, ...rows],
   };
 }

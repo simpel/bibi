@@ -11,7 +11,7 @@ import { toActionResult } from "@/server/to-action-result";
 
 export type UpdateAccountingSettingsActionInput = { input: AccountingSettingsUpdateInput };
 
-/** `/admin/accounting`: the accounts, the fiscal year and the revenue accounts (ADR 0077). */
+/** `/admin/accounting`: the accounts and the revenue accounts (ADR 0077). */
 export async function updateAccountingSettingsAction({
   input,
 }: UpdateAccountingSettingsActionInput): Promise<ActionResult<AccountingSettingsDto>> {

@@ -4,7 +4,6 @@ import { defineOperation } from "../../operations/define-operation";
 import { invalid, notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
-import { documentNumberOf } from "../invoice/document-number";
 import { toOrderLineDto } from "../quote/quote-view";
 import {
   type CreditNoteDto,
@@ -26,7 +25,7 @@ const toCreditNoteDto = ({ row }: { row: CreditNoteRow }): CreditNoteDto => {
   const { lines, invoice, ...note } = row;
   return {
     ...note,
-    documentNumber: documentNumberOf({ ...note }),
+    documentNumber: note.providerReference,
     orderId: invoice.orderId,
     lines: lines.map((line) => toOrderLineDto({ row: line })),
   };

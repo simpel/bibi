@@ -53,7 +53,7 @@ export function listProviders(): ProviderAdapter[] {
   });
 }
 
-/** The providers that keep the books for what they invoice (ADR 0100): the SIE export skips them. */
+/** The providers that keep the books for what they invoice (ADR 0100, 0106). */
 export function ledgerProviderKeys(): ProviderKey[] {
   return listProviders().flatMap((adapter) => (adapter.ledger ? [adapter.key] : []));
 }

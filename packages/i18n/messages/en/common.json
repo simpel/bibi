@@ -624,10 +624,6 @@
           "label": "Deposits",
           "keywords": "advance percent minimum amount"
         },
-        "fiscalYear": {
-          "label": "Fiscal year",
-          "keywords": "accounting year start month"
-        },
         "accounts": {
           "label": "Accounts",
           "keywords": "chart of accounts bas vat revenue"

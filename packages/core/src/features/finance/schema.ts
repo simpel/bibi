@@ -31,7 +31,7 @@ export const OverdueInvoiceSchema = z.object({
   documentNumber: z
     .string()
     .nullable()
-    .describe("The accounting system's document number, else Bibi's own from before ADR 0106"),
+    .describe("The accounting system's document number; null until raised there"),
   orderId: z.string().describe("order.get"),
   orderReference: z.number().int().nullable().describe("null without order:read"),
   orderTitle: z.string().nullable().describe("null without order:read or a title"),

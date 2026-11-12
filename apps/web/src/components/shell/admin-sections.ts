@@ -22,7 +22,6 @@ export type AdminSectionId =
   | "responsibilities"
   | "paymentMethods"
   | "deposit"
-  | "fiscalYear"
   | "accounts"
   | "revenueAccounts"
   | "providers"
@@ -53,7 +52,6 @@ export const ADMIN_SECTIONS: Record<AdminSectionId, { anchor: string; permission
   responsibilities: { anchor: "responsibilities", permission: "responsibility:read" },
   paymentMethods: { anchor: "payment-methods", permission: "paymentAccount:read" },
   deposit: { anchor: "deposit", permission: "paymentAccount:read" },
-  fiscalYear: { anchor: "fiscal-year", permission: "finance:read" },
   accounts: { anchor: "accounts", permission: "finance:read" },
   revenueAccounts: { anchor: "revenue-accounts", permission: "finance:read" },
   providers: { anchor: "providers", permission: "integration:read" },

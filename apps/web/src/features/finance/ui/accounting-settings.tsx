@@ -10,12 +10,11 @@ import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { accountRows } from "../lib/account-rows";
 import { AccountsTable } from "./accounts-table";
-import { FiscalYearSetting } from "./fiscal-year-setting";
 import { RevenueAccountsSection } from "./revenue-accounts-section";
 
 export type AccountingSettingsProps = { locale: Locale; show: ReadonlySet<AdminSectionId> };
 
-/** `/admin/accounting`: the accounts the SIE export books to (ADR 0077 decision 4). */
+/** `/admin/accounting`: the accounts rows raised in the accounting system post to (ADR 0077, 0106). */
 export async function AccountingSettings({ locale, show }: AccountingSettingsProps) {
   const [t, abilities, settingsResult, itemTypes] = await Promise.all([
     getTranslations("finance.accounting"),
@@ -34,7 +33,6 @@ export async function AccountingSettings({ locale, show }: AccountingSettingsPro
     ) : null;
     return (
       <>
-        {show.has("fiscalYear") ? <AdminSection section="fiscalYear">{state}</AdminSection> : null}
         {show.has("accounts") ? <AdminSection section="accounts">{state}</AdminSection> : null}
         {show.has("revenueAccounts") ? (
           <AdminSection section="revenueAccounts">{state}</AdminSection>
@@ -47,7 +45,6 @@ export async function AccountingSettings({ locale, show }: AccountingSettingsPro
   const canEdit = can({ abilities, permission: "finance:write" });
   return (
     <>
-      {show.has("fiscalYear") ? <FiscalYearSetting settings={settings} canEdit={canEdit} /> : null}
       {show.has("accounts") ? (
         <AdminSection section="accounts">
           <AccountsTable
@@ -55,7 +52,6 @@ export async function AccountingSettings({ locale, show }: AccountingSettingsPro
             rows={accountRows({ settings })}
             settings={settings}
             types={types}
-            grouped
             emptyText={t("empty")}
             canEdit={canEdit}
           />

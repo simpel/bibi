@@ -46,7 +46,6 @@ model Payment {
   attempts            PaymentAttempt[]
   refunds             PaymentRefund[]
   notifications       Notification[]
-  exportEntries       AccountingExportEntry[]
 
   @@unique([id, organizationId])
   @@index([organizationId, orderId])
@@ -145,7 +144,6 @@ model PaymentRefund {
   createdAt          DateTime                @default(now())
   updatedAt          DateTime                @updatedAt
   payment            Payment                 @relation(fields: [paymentId, organizationId], references: [id, organizationId])
-  exportEntries      AccountingExportEntry[]
 
   @@unique([id, organizationId])
   @@unique([paymentId, providerReference])

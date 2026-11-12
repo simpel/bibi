@@ -16,9 +16,6 @@ const orderChildren = ({ db, where }: ScopeInput) => [
   // Messages point at their endpoint and order; endpoints at a type and a package (ADR 0085).
   db.inboundMessage.deleteMany({ where }),
   db.inboundEndpoint.deleteMany({ where }),
-  // SIE exports point at invoices, payments and refunds (ADR 0077); refunds at their payment.
-  db.accountingExportEntry.deleteMany({ where }),
-  db.accountingExport.deleteMany({ where }),
   db.revenueAccount.deleteMany({ where }),
   db.accountingSettings.deleteMany({ where }),
   db.paymentSettings.deleteMany({ where }),

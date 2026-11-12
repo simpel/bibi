@@ -109,7 +109,7 @@ export const accountingSettingsEntity: ParityEntity = {
       args: { base: "ITEM", name: "Parity rooms", capabilities: ["PRICED"] },
     });
     const revenueAccounts = [{ entityTypeId: type.id, itemId: null, account: "3041" }];
-    const args = { revenueAccount: "3002", fiscalYearStartMonth: 7, revenueAccounts };
+    const args = { revenueAccount: "3002", advancesAccount: "2421", revenueAccounts };
     return tool({ mcp, name: "accountingSettings_update", args });
   },
   viaMcp: ({ mcp }) => tool({ mcp, name: "accountingSettings_get", args: {} }),

@@ -1073,7 +1073,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · The invoice after delivery: a snapshot of the order's priced lines, like a sent quote ([ADR 0052](decisions/0052-the-line-is-the-booking.md), [ADR 0057](decisions/0057-money-balance-is-derived.md)). An order can be invoiced only in a status with the `invoiceable` flag.
 
-> **Ownership:** owned `number` (Bibi's own, per organization, from before ADR 0106; null since, dropped in a later release), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); `voidPendingAt` (a void the provider has not confirmed, cleared by the retry job or the provider's signal, ADR 0100); `provider` and `connectionId` (set by send from the INVOICE route, ADR 0090, 0100) and the mirrors `providerReference` and `providerUrl`; snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments), `amountDueMinor` (total less deductions and credit notes) and `documentNumber` (the accounting system's number, else Bibi's old one).
+> **Ownership:** owned `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); `provider` and `connectionId` (set by send from the INVOICE route, ADR 0090, 0100) and the mirrors `providerReference` and `providerUrl`; snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments), `amountDueMinor` (total less deductions and credit notes) and `documentNumber` (the accounting system's number, `providerReference`).
 
 **Attributes**
 - number: the accounting system's document number (`documentNumber`); Bibi numbers nothing ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)). Due date (given, else after the customer's payment terms, default 30 days)
@@ -1097,7 +1097,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### InvoiceDeposit (`InvoiceDeposit`)
 
-*MVP* · A paid deposit a final invoice deducts ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)). Written by `invoice.create` for every deposit of the order that is not VOID and has something paid, at what is paid on it then; a deposit paid later is not deducted (void and recreate the invoice). Revenue and VAT stay the invoice lines'; the SIE export moves exactly these amounts from customer advances to receivables and reverses the VAT reported when the deposit was paid, split by the deposit's `vatRows` (ADR 0077, 0093).
+*MVP* · A paid deposit a final invoice deducts ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md)). Written by `invoice.create` for every deposit of the order that is not VOID and has something paid, at what is paid on it then; a deposit paid later is not deducted (void and recreate the invoice). Revenue and VAT stay the invoice lines'; the invoice's deduction rows move exactly these amounts from customer advances in the accounting system, split by the deposit's `vatRows` (ADR 0093, 0106).
 
 > **Ownership:** snapshot every column, never changed afterwards.
 
@@ -1111,10 +1111,10 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · A credit of an invoice ([ADR 0100](decisions/0100-payment-providers-as-ports.md)): the credited lines frozen as order lines like an invoice freezes its lines ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). It lowers the invoice's amount due and the order balance. Money already paid on the invoice is returned with `payment.refund`. Read with `creditNote.list` (by invoice or order) and `creditNote.get` (`payment:read`), created by `invoice.credit`.
 
-> **Ownership:** owned `number` (Bibi's own from before ADR 0106; null since), `reason`, `status` and where it was raised (`provider`, `connectionId`); snapshot its `OrderLine` rows, `amountMinor` (incl. VAT) and totals; mirror `providerReference` and `providerUrl`, and `issuedAt` (when it was confirmed: the date of its reversal voucher).
+> **Ownership:** owned `reason`, `status` and where it was raised (`provider`, `connectionId`); snapshot its `OrderLine` rows, `amountMinor` (incl. VAT) and totals; mirror `providerReference` and `providerUrl`, and `issuedAt` (when it was confirmed: the date of its reversal voucher).
 
 **Attributes**
-- number, reason, amount incl. VAT and totals of the frozen lines
+- number (`documentNumber`, the accounting system's), reason, amount incl. VAT and totals of the frozen lines
 - status: `PENDING` (waiting for the provider), `ISSUED` or `FAILED` (credits nothing); in Bibi only it is `ISSUED` at once
 - provider, connection and the provider's reference and page
 
@@ -1122,7 +1122,6 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` Invoice is credited with this
 - `1:N` credits → OrderLine
 - `N:0..1` ProviderConnection raised this
-- `N:0..1` AccountingExportEntry is exported as a CREDIT_NOTE (only when Bibi keeps the books)
 
 > Written only by `invoice.credit({ invoiceId, lineIds? | amountMinor?, reason? })` (`payment:write`), on every surface; at most what is still due.
 
@@ -1140,20 +1139,17 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Relations**
 - `N:1` Payment is refunded with this
-- `N:0..1` AccountingExportEntry is exported as a REFUND
 
 > Written by `payment.refund` and by `payment.applySignal` (SYSTEM) for a refund the provider reports on its own. The reconciliation check `payment refunds` verifies that a payment is `REFUNDED` exactly when its succeeded refunds cover its amount and never exceed it.
 
 ### AccountingSettings (`AccountingSettings`)
 
-*MVP* · The organization's accounts ([ADR 0077](decisions/0077-financials-and-sie-export.md)): the revenue accounts invoice rows post to in Fortnox or Visma. The receivable, clearing, fee, rounding and VAT accounts were for the SIE export, which is gone ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)); they go with its tables. One row per organization, created by the first save; until then the BAS defaults apply.
+*MVP* · The organization's accounts ([ADR 0077](decisions/0077-financials-and-sie-export.md)): the accounts invoice and prepayment rows post to in Fortnox or Visma ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)); the SIE export's other accounts are gone. One row per organization, created by the first save; until then the BAS defaults apply.
 
-> **Ownership:** owned every account number and `fiscalYearStartMonth`; nothing derived.
+> **Ownership:** owned every account number; nothing derived.
 
 **Attributes**
-- receivables (1510), payment clearing (1580), customer advances (2420), payment provider fees (6570), rounding (3740) and default revenue (3001)
-- output VAT per rate: 25 % (2611), 12 % (2621) and 6 % (2631)
-- first month of the fiscal year (1 to 12)
+- customer advances (2420), where deposits post until invoiced, and default revenue (3001)
 
 **Relations**
 - `1:1` Organization has one (`organizationId`, unique)
@@ -1176,10 +1172,6 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:0..1` Item maps revenue through this
 
 > Built as its own table; ADR 0077 first named columns on item type and item (see its addendum). Replaced as a set by `accountingSettings.update`.
-
-### AccountingExport, AccountingExportEntry (removed)
-
-*Removed* ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)) · The SIE 4I export and its entries. The accounting system keeps the books, so Bibi writes no vouchers and no file. The tables stay, unread, until a later release drops them (expand/contract, ADR 0013); no operation reads or writes them.
 
 ### Financials overview (`finance.overview`)
 

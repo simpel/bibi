@@ -624,10 +624,6 @@
           "label": "Förskott",
           "keywords": "förskott procent minimibelopp"
         },
-        "fiscalYear": {
-          "label": "Räkenskapsår",
-          "keywords": "bokföringsår startmånad"
-        },
         "accounts": {
           "label": "Konton",
           "keywords": "kontoplan bas moms intäkt"

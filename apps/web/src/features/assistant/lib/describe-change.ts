@@ -12,7 +12,6 @@ export type DescribedValue =
   | { kind: "empty" }
   | { kind: "money"; minor: number }
   | { kind: "yesNo"; value: boolean }
-  | { kind: "month"; month: number }
   | { kind: "text"; text: string };
 
 export type DescribedChange = {
@@ -43,7 +42,6 @@ function describeValue({
   if (value === undefined || value === null || value === "") return { kind: "empty" };
   if (typeof value === "number" && path.endsWith("Minor")) return { kind: "money", minor: value };
   if (typeof value === "boolean") return { kind: "yesNo", value };
-  if (typeof value === "number" && path.endsWith("Month")) return { kind: "month", month: value };
   if (typeof value === "string") return { kind: "text", text: names[value] ?? value };
   if (Array.isArray(value)) {
     const items = value.map((item) =>

@@ -3,19 +3,7 @@ import { type AccountingSettingsDto, DEFAULT_ACCOUNTS } from "./settings-schema"
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-const SETTINGS_SELECT = {
-  id: true,
-  receivableAccount: true,
-  clearingAccount: true,
-  advancesAccount: true,
-  feesAccount: true,
-  roundingAccount: true,
-  revenueAccount: true,
-  vat25Account: true,
-  vat12Account: true,
-  vat6Account: true,
-  fiscalYearStartMonth: true,
-} as const;
+const SETTINGS_SELECT = { id: true, advancesAccount: true, revenueAccount: true } as const;
 
 /** The organization's accounts, or the BAS defaults before the first save (ADR 0077). */
 export async function loadAccountingSettings({ context }: Db): Promise<AccountingSettingsDto> {
@@ -26,6 +14,6 @@ export async function loadAccountingSettings({ context }: Db): Promise<Accountin
       orderBy: { createdAt: "asc" },
     }),
   ]);
-  const fixed = row ?? { id: null, ...DEFAULT_ACCOUNTS, fiscalYearStartMonth: 1 };
+  const fixed = row ?? { id: null, ...DEFAULT_ACCOUNTS };
   return { ...fixed, revenueAccounts: mappings };
 }

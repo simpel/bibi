@@ -62,7 +62,7 @@ export type ToSnapshotInput = { context: OperationContext; invoice: LoadedInvoic
 
 /**
  * The frozen invoice as a provider raises it (ADR 0052, 0100): the lines that count with the
- * revenue account the SIE export posts them to (ADR 0077), the deducted deposits on the customer
+ * revenue account they post to (ADR 0077), the deducted deposits on the customer
  * advances account, and the dates in the organization's zone.
  */
 export async function toInvoiceSnapshot({

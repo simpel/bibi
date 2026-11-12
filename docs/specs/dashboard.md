@@ -13,7 +13,7 @@ Spec for `/data/{dashboard}/{from}/{to}` (ADR 0041, 0079, 0080, 0086). One page,
 | Stat cards: invoiced and received (sums), outstanding and overdue (snapshots) | `trends` | `payment:read` |
 | Invoiced and received per month; won and lost per month | `monthly`, `outcomes` | `payment:read`, `quote:read` |
 | Invoiced per type; open invoices by age (today) | `revenueByType`, `aging` | `payment:read` |
-| VAT per rate, the most overdue invoices, the SIE exports (tables) | `vatByRate`, `aging.overdue`, `accountingExport.list` | `payment:read`, `finance:read` |
+| VAT per rate, the most overdue invoices (tables) | `vatByRate`, `aging.overdue` | `payment:read`, `finance:read` |
 
 Polarity: invoiced and received up is good; outstanding and overdue down is good. Outstanding at an instant = what was open then on invoices sent by then (payments by `paidAt`, refunds by `refundedAt`); overdue = the same, a whole day past the due date.
 

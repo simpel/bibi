@@ -43,11 +43,6 @@ describe("settings in the change table", () => {
     });
     expect(join.before).toEqual({ kind: "yesNo", value: true });
     expect(join.after).toEqual({ kind: "yesNo", value: false });
-    const month = describeFieldChange({
-      change: { path: "fiscalYearStartMonth", before: 1, after: 7 },
-      names: {},
-    });
-    expect(month.after).toEqual({ kind: "month", month: 7 });
   });
 
   it("leaves a new record's bookkeeping out, but keeps it on an update", () => {

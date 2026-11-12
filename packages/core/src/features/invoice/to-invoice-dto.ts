@@ -3,7 +3,6 @@ import type { OperationContext } from "../../operations/types";
 import { findProvider } from "../../providers/registry";
 import { paidByReceivable, settlementOf } from "../payment/settlement";
 import { toOrderLineDto } from "../quote/quote-view";
-import { documentNumberOf } from "./document-number";
 import type { InvoiceDto } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
@@ -12,7 +11,7 @@ type DeductionRow = InvoiceDeposit & { deposit: { description: string } };
 
 type CreditRow = Pick<
   CreditNote,
-  "id" | "number" | "providerReference" | "amountMinor" | "status" | "createdAt"
+  "id" | "providerReference" | "amountMinor" | "status" | "createdAt"
 >;
 
 export type InvoiceRow = Invoice & {
@@ -31,7 +30,6 @@ export const INVOICE_INCLUDE = {
   creditNotes: {
     select: {
       id: true,
-      number: true,
       providerReference: true,
       amountMinor: true,
       status: true,
@@ -85,7 +83,7 @@ export type ToInvoiceDtosInput = Db & { rows: readonly InvoiceRow[] };
 export async function toInvoiceDtos({ context, rows }: ToInvoiceDtosInput): Promise<InvoiceDto[]> {
   const orderIds = [...new Set(rows.map((row) => row.orderId))];
   const paid = await paidByReceivable({ context, orderIds });
-  return rows.map(({ lines, deductions, creditNotes, voidPendingAt, ...row }) => {
+  return rows.map(({ lines, deductions, creditNotes, ...row }) => {
     const live = creditNotes.filter((c) => c.status !== "FAILED");
     const amountDueMinor = invoiceDueMinor({ invoice: row, deductions, creditNotes: live });
     const settlement = settlementOf({ paid, id: row.id, amountMinor: amountDueMinor });
@@ -95,14 +93,13 @@ export async function toInvoiceDtos({ context, rows }: ToInvoiceDtosInput): Prom
       deductions: deductions.map(({ depositId, amountMinor, deposit }) => ({
         ...{ depositId, amountMinor, description: deposit.description },
       })),
-      documentNumber: documentNumberOf({ ...row }),
-      creditNotes: creditNotes.map(({ id, number, providerReference, amountMinor, status }) => ({
-        ...{ id, number, amountMinor, status },
-        documentNumber: documentNumberOf({ providerReference, number }),
+      documentNumber: row.providerReference,
+      creditNotes: creditNotes.map(({ id, providerReference, amountMinor, status }) => ({
+        ...{ id, amountMinor, status },
+        documentNumber: providerReference,
       })),
       creditedMinor: live.reduce((sum, c) => sum + c.amountMinor, 0),
       amountDueMinor,
-      voidPending: voidPendingAt !== null,
       ...settlement,
       ...invoiceFlags({ invoice: { ...row, ...settlement, amountDueMinor } }),
     };

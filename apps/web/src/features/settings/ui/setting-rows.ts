@@ -1,4 +1,4 @@
-import { AccountsSettingRow, FiscalYearSettingRow } from "./accounting-setting-rows";
+import { AccountsSettingRow } from "./accounting-setting-rows";
 import { DomainJoinSettingRow, TimeZoneSettingRow } from "./organization-setting-rows";
 import { DepositSettingRow, PaymentMethodsSettingRow } from "./payment-setting-rows";
 import { SeatsSettingRow } from "./seats-setting-row";
@@ -13,7 +13,6 @@ export const SETTING_ROWS: SettingRowRegistry = {
   domainJoin: DomainJoinSettingRow,
   paymentMethods: PaymentMethodsSettingRow,
   deposit: DepositSettingRow,
-  fiscalYear: FiscalYearSettingRow,
   accounts: AccountsSettingRow,
   seats: SeatsSettingRow,
 };

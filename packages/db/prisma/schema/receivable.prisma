@@ -58,17 +58,14 @@ model Deposit {
 }
 
 /// Invoice – a frozen receivable (ADR 0052, 0057): the order's priced lines snapshotted as
-/// `OrderLine` rows when it is created, like a sent quote, with their totals. Owned: number, due
-/// date, lifecycle `status`. Snapshot: lines and totals. Derived: what is paid and its progress.
+/// `OrderLine` rows when it is created, like a sent quote, with their totals. Owned: due date,
+/// lifecycle `status`. Bibi numbers nothing: `providerReference` is its number (ADR 0106). Snapshot: lines and totals. Derived: what is paid and its progress.
 /// At most one invoice per order is not VOID (partial unique index in the migration). Never
 /// deleted: `status` is its lifecycle.
 model Invoice {
   id                String                  @id @default(cuid(2))
   organizationId    String
   orderId          String
-  /// Bibi's own number from before ADR 0106 (per organization); null since: the accounting
-  /// system numbers it (`providerReference`). Dropped in a later release.
-  number            Int?
   /// ISO 4217, upper case.
   currency          String                  @default("SEK")
   dueDate           DateTime?
@@ -78,10 +75,6 @@ model Invoice {
   sentAt            DateTime?
   /// When it was voided (owned, ADR 0077): the date of a reversal voucher.
   voidedAt          DateTime?
-  /// Owned (ADR 0051, 0100): set when voiding at the provider ended without an answer, so the
-  /// VOID is not confirmed there yet; the refund retry job (`invoice.retryVoids`) or the
-  /// provider's `invoice.voided` signal clears it. Null = nothing pending.
-  voidPendingAt     DateTime?
   /// Sums of the frozen lines in minor units (snapshot).
   totalExclVatMinor Int
   totalInclVatMinor Int
@@ -103,19 +96,17 @@ model Invoice {
   connection        ProviderConnection?     @relation(fields: [connectionId, organizationId], references: [id, organizationId])
   lines             OrderLine[]
   payments          Payment[]
-  exportEntries     AccountingExportEntry[]
   /// Paid deposits this invoice deducts (snapshot at create, ADR 0090).
   deductions        InvoiceDeposit[]
   creditNotes       CreditNote[]
 
   @@unique([id, organizationId])
-  @@unique([organizationId, number])
   @@unique([connectionId, providerReference])
   @@index([organizationId, orderId])
 }
 
 /// CreditNote – a credit of an invoice (ADR 0052, 0100): the credited lines snapshotted as
-/// `OrderLine` rows, like an invoice freezes its lines, with their totals. Owned: number, reason,
+/// `OrderLine` rows, like an invoice freezes its lines, with their totals. Owned: reason,
 /// `status` (PENDING until the provider confirmed it, then ISSUED, or FAILED) and where it was
 /// raised (`provider`, `connectionId`). Snapshot: lines and totals; `amountMinor` is what it
 /// credits incl. VAT. Mirrors: `providerReference`, `providerUrl`. Written by `invoice.credit`
@@ -124,9 +115,6 @@ model CreditNote {
   id                String              @id @default(cuid(2))
   organizationId    String
   invoiceId         String
-  /// Bibi's own number from before ADR 0106; null since: the accounting system numbers it.
-  /// Dropped in a later release.
-  number            Int?
   /// ISO 4217, upper case.
   currency          String              @default("SEK")
   /// What it credits incl. VAT, minor units (snapshot).
@@ -148,10 +136,8 @@ model CreditNote {
   invoice           Invoice             @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
   connection        ProviderConnection? @relation(fields: [connectionId, organizationId], references: [id, organizationId])
   lines             OrderLine[]
-  exportEntries     AccountingExportEntry[]
 
   @@unique([id, organizationId])
-  @@unique([organizationId, number])
   @@unique([connectionId, providerReference])
   @@index([organizationId, invoiceId])
 }

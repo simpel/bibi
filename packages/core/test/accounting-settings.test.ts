@@ -22,18 +22,18 @@ describe("accounting settings (ADR 0077)", () => {
     const before = unwrap({
       result: await execute({ operation: getAccountingSettings, input: {}, context }),
     });
-    expect(before).toMatchObject({ id: null, receivableAccount: "1510", vat12Account: "2621" });
+    expect(before).toMatchObject({ id: null, advancesAccount: "2420", revenueAccount: "3001" });
     const type = await itemType({ context });
     const revenueAccounts = [{ entityTypeId: type.id, itemId: null, account: "3041" }];
     const saved = unwrap({
-      result: await update({ context, input: { feesAccount: "6064", revenueAccounts } }),
+      result: await update({ context, input: { revenueAccount: "3041", revenueAccounts } }),
     });
     expect(saved).toMatchObject({
-      feesAccount: "6064",
-      receivableAccount: "1510",
+      revenueAccount: "3041",
+      advancesAccount: "2420",
       revenueAccounts,
     });
-    const kept = unwrap({ result: await update({ context, input: { roundingAccount: "3741" } }) });
+    const kept = unwrap({ result: await update({ context, input: { advancesAccount: "2421" } }) });
     expect(kept.revenueAccounts).toEqual(revenueAccounts);
     const cleared = unwrap({ result: await update({ context, input: { revenueAccounts: [] } }) });
     expect(cleared.revenueAccounts).toEqual([]);
@@ -48,7 +48,7 @@ describe("accounting settings (ADR 0077)", () => {
       { entityTypeId: type.id, itemId: null, account: "3042" },
     ];
     for (const input of [
-      { feesAccount: "65" },
+      { advancesAccount: "24" },
       { revenueAccounts: both },
       { revenueAccounts: twice },
     ]) {

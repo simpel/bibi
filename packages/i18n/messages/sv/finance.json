@@ -124,29 +124,13 @@
       "pickType": "Artikeltyp",
       "columns": {
         "name": "Namn",
-        "group": "Grupp",
         "account": "Konto"
       },
       "readOnly": "Du kan se de här inställningarna men inte ändra dem.",
-      "groups": {
-        "accounts": "Konton",
-        "vat": "Utgående moms",
-        "fiscalYear": "Räkenskapsår",
-        "revenueByType": "Intäktskonto per artikeltyp"
-      },
       "fields": {
-        "receivableAccount": "Kundfordringar",
-        "clearingAccount": "Betalningar på väg",
         "advancesAccount": "Förskott från kunder",
-        "feesAccount": "Betalavgifter",
-        "roundingAccount": "Öresavrundning",
-        "revenueAccount": "Försäljning (standard)",
-        "vat25Account": "Utgående moms 25 %",
-        "vat12Account": "Utgående moms 12 %",
-        "vat6Account": "Utgående moms 6 %",
-        "fiscalYearStartMonth": "Räkenskapsårets första månad"
-      },
-      "monthName": "{month, select, 1 {januari} 2 {februari} 3 {mars} 4 {april} 5 {maj} 6 {juni} 7 {juli} 8 {augusti} 9 {september} 10 {oktober} 11 {november} 12 {december} other {}}"
+        "revenueAccount": "Försäljning (standard)"
+      }
     },
     "kpi": {
       "invoiced": "Fakturerat",
@@ -595,7 +579,6 @@
     "deducted": "{amount} i betalda förskott avdraget",
     "inProvider": "I {name} #{reference}",
     "notInProvider": "Ännu inte i {name}",
-    "voidPending": "Makuleringen i {name} är inte bekräftad än, Bibi försöker igen",
     "credited": "{amount} krediterat",
     "credit": {
       "action": "Kreditera",

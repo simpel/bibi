@@ -56,7 +56,6 @@ describe("invoices raised in the accounting system (ADR 0100, 0106)", () => {
       "ok",
     ]);
     const notes = await context.db.creditNote.findMany({ where: { invoiceId: invoice.id } });
-    expect(notes.map((note) => note.number)).toEqual([null, null, null]);
     expect(new Set(notes.map((note) => note.providerReference)).size).toBe(3);
   });
 
@@ -99,7 +98,6 @@ describe("invoices raised in the accounting system (ADR 0100, 0106)", () => {
     expect(credited).toMatchObject({ creditedMinor: 112_000, amountDueMinor: 448_000 });
     expect(credited.creditNotes).toEqual([
       expect.objectContaining({
-        number: null,
         documentNumber: expect.stringMatching(/^credit-1-/),
         amountMinor: 112_000,
         status: "ISSUED",
