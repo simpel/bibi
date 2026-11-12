@@ -51,7 +51,7 @@ export const updateEntityType = defineOperation({
   name: "entityType.update",
   kind: "command",
   description:
-    "Rename a type, replace its capabilities, set an item type's expiry state (where lines in " +
+    "Rename a type (name, pluralName), replace its capabilities, set an item type's expiry state (where lines in " +
     "an expiring state fall when the order's holdsUntil passes) or its default setup and " +
     "teardown minutes (held around bookings; a hard hold that would then collide is CONFLICT) " +
     "or its group (groupId, ADR 0101; null leaves it ungrouped). " +

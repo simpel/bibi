@@ -5,7 +5,7 @@ import {
   type ItemStateDto,
   type OrderStatusDto,
   type PermissionSet,
-  toCustomerDto,
+  toCustomerDtos,
   toItemStateDto,
   toOrderStatusDto,
   type VocabularyDto,
@@ -96,7 +96,7 @@ export function createLoaders({ db, permissions }: CreateLoadersInput): Loaders 
       batch: async (ids) => {
         const where = { id: { in: [...ids] } };
         const rows = await db.customer.findMany({ where, include: CUSTOMER_INCLUDE });
-        return byId({ rows: rows.map((row) => toCustomerDto({ row, context: { permissions } })) });
+        return byId({ rows: await toCustomerDtos({ rows, context: { db, permissions } }) });
       },
     }),
     orderStatus: createBatchLoader({ batch: (ids) => loadOrderStatuses({ db, ids }) }),

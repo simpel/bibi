@@ -32,13 +32,26 @@
       "invoiceCity": "Ort",
       "invoiceCountry": "Land",
       "paymentTermsDays": "Betalningsvillkor (dagar)",
-      "creditLimit": "Kreditgräns (kr)"
+      "creditLimit": "Kreditgräns (kr)",
+      "buyerKind": "Företag eller privat",
+      "organizationNumber": "Org.nr"
+    },
+    "buyerKind": {
+      "BUSINESS": "Företag",
+      "PRIVATE": "Privatperson"
     },
     "columns": {
       "name": "Namn",
       "type": "Typ",
       "city": "Ort",
-      "email": "E-post"
+      "email": "E-post",
+      "value": "Värde",
+      "valueHelp": {
+        "title": "Vad är Värde?",
+        "total": "Hur mycket kunden har fakturerats hittills, inklusive moms.",
+        "order": "En order räknas när den har fakturerats, eller när kunden har accepterat offerten.",
+        "lost": "Ordrar utan faktura eller accepterad offert räknas som noll."
+      }
     }
   },
   "contact": {
@@ -109,6 +122,9 @@
       "type": "Typ",
       "customer": "Kund",
       "contact": "Kontaktperson",
+      "buyerKind": "Företag eller privat",
+      "buyerKindFromCustomer": "Samma som kunden",
+      "buyerKindInherited": "{kind} (från kunden)",
       "note": "Anteckning för bokningen",
       "desiredStartsAt": "Önskad start",
       "desiredEndsAt": "Önskat slut",

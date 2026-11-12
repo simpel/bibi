@@ -32,13 +32,26 @@
       "invoiceCity": "City",
       "invoiceCountry": "Country",
       "paymentTermsDays": "Payment terms (days)",
-      "creditLimit": "Credit limit (SEK)"
+      "creditLimit": "Credit limit (SEK)",
+      "buyerKind": "Business or private",
+      "organizationNumber": "Org. no."
+    },
+    "buyerKind": {
+      "BUSINESS": "Business",
+      "PRIVATE": "Private person"
     },
     "columns": {
       "name": "Name",
       "type": "Type",
       "city": "City",
-      "email": "Email"
+      "email": "Email",
+      "value": "Value",
+      "valueHelp": {
+        "title": "What is Value?",
+        "total": "How much this customer has been billed so far, including VAT.",
+        "order": "An order counts once it has been invoiced, or once the customer has accepted its quote.",
+        "lost": "Orders without an invoice or an accepted quote count as zero."
+      }
     }
   },
   "contact": {
@@ -109,6 +122,9 @@
       "type": "Type",
       "customer": "Customer",
       "contact": "Contact person",
+      "buyerKind": "Business or private",
+      "buyerKindFromCustomer": "Same as the customer",
+      "buyerKindInherited": "{kind} (from the customer)",
       "note": "Booking note",
       "desiredStartsAt": "Desired start",
       "desiredEndsAt": "Desired end",

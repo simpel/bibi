@@ -94,6 +94,14 @@ export function venueRoute({ id }: IdRouteInput): string {
   return `${ROUTES.venues}/${encodeURIComponent(id)}`;
 }
 
+export type VenueItemsRouteInput = { id: string; typeId?: string | undefined };
+
+/** A venue's items, all or of one item type: `/venues/<id>/items[/<typeId>]`. */
+export function venueItemsRoute({ id, typeId }: VenueItemsRouteInput): string {
+  const all = `${venueRoute({ id })}/items`;
+  return typeId ? `${all}/${encodeURIComponent(typeId)}` : all;
+}
+
 export function customerRoute({ id }: IdRouteInput): string {
   return `${ROUTES.customers}/${encodeURIComponent(id)}`;
 }

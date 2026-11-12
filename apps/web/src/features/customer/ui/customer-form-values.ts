@@ -7,6 +7,9 @@ export type CustomerFormValues = {
   name: string;
   email: string;
   phone: string;
+  /** Empty on create, so staff choose business or private on purpose (ADR 0106). */
+  buyerKind: "" | "BUSINESS" | "PRIVATE";
+  organizationNumber: string;
   invoiceStreetAddress: string;
   invoicePostalCode: string;
   invoiceCity: string;
@@ -33,6 +36,8 @@ export function customerFormDefaults({
     name: customer?.name ?? "",
     email: text({ value: customer?.email }),
     phone: text({ value: customer?.phone }),
+    buyerKind: customer?.buyerKind ?? "",
+    organizationNumber: text({ value: customer?.organizationNumber }),
     invoiceStreetAddress: text({ value: customer?.invoiceStreetAddress }),
     invoicePostalCode: text({ value: customer?.invoicePostalCode }),
     invoiceCity: text({ value: customer?.invoiceCity }),

@@ -6,6 +6,9 @@
 export const READ_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   item_freeUnits:
     "a list of unit names with the prepick; shown as JSON until the allocation UI (#384)",
+  item_summary:
+    "item counts per type for one venue; the venue page shows them as its items summary; " +
+    "JSON in chat",
   skill_export: "SKILL.md text; shown as code/JSON",
   order_export: "versioned JSON document for handover; shown as code/JSON",
   customer_findSimilar:

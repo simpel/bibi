@@ -28,6 +28,14 @@
             "question": "How do I sort my items into groups like Spaces and Food?",
             "answer": "Go to Settings, open Types and find Groups. Create a group, then open a type and pick its group. You can rename, reorder and archive groups there.\nItems then shows one tab per group, so rooms, food and extras are no longer mixed in one list.\nWhen you set up Bibi, we create Spaces, Food & drink and Extras for you."
           },
+          "venueItems": {
+            "question": "How do I see what a venue has?",
+            "answer": "Open Venues and pick a venue. Under Items you see how many items of each type it has, with the first few names.\nClick a type to see all of those items, or Show all items to see everything at the venue."
+          },
+          "pluralName": {
+            "question": "Where do I set what a type is called in plural?",
+            "answer": "Go to Settings, open Types and pick a type. Fill in Plural name, for example Conference rooms, and click Save.\nBibi uses it where several items are listed together, like the items summary on a venue. Left empty, the type's own name is used."
+          },
           "inviteColleagues": {
             "question": "How do I invite my colleagues?",
             "answer": "Go to Administration → Members and invite them by email. They get a link that takes them straight into your organization.\nTen seats are included in the subscription."
@@ -49,6 +57,14 @@
           "createOrder": {
             "question": "How do I create an order?",
             "answer": "Click Create order, pick the customer and add the lines: rooms, food, activities. You can also ask the assistant to create it for you.\nFor smaller meetings you don't need a quote first. Create the order and send the payment straight away."
+          },
+          "customerValue": {
+            "question": "How much is a customer worth?",
+            "answer": "Open Customers. The Value column shows how much each customer has been billed so far, including VAT.\nAn order counts once it has been invoiced, or once the customer has accepted its quote. Hover the question mark next to Value to see this explained."
+          },
+          "businessOrPrivate": {
+            "question": "How do I mark a customer as a business or a private person?",
+            "answer": "When you create a customer, choose Business or Private person. For a business you can also fill in its org. no.\nEvery order follows its customer. To change it for a single order, click Edit on the order and pick Business or Private person under Business or private. Choose Same as the customer to go back."
           },
           "createFromBoard": {
             "question": "Can I create an order from the pipeline board?",

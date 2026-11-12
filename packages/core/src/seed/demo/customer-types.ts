@@ -13,6 +13,9 @@ export type DemoContact = {
 export type DemoCustomer = {
   name: string;
   type: string;
+  /** Business or private (ADR 0106); omitted = BUSINESS. */
+  buyerKind?: "BUSINESS" | "PRIVATE";
+  organizationNumber?: string;
   fields?: DemoFieldValues;
   invoiceCity?: string;
   paymentTermsDays?: number;

@@ -20,6 +20,8 @@ model Order {
   /// A contact person at the customer. Required for new orders and never cleared (core, ADR 0081);
   /// nullable because older orders may have none.
   contactId           String?
+  /// Business or private for this order (owned, ADR 0106); null = inherit the customer's.
+  buyerKind           BuyerKind?
   statusId            String
   /// The period the customer asked for; each line has its own time.
   desiredStartsAt     DateTime?

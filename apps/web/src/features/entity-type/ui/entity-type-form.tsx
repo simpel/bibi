@@ -39,7 +39,8 @@ const save = ({ entityType, values, withGroup }: SaveInput) =>
   entityType
     ? updateEntityTypeAction({
         input: {
-          ...{ id: entityType.id, name: values.name, capabilities: values.capabilities },
+          ...{ id: entityType.id, name: values.name, pluralName: values.pluralName },
+          ...{ capabilities: values.capabilities },
           ...{ resourceKind: values.resourceKind },
           ...{ setupMinutes: values.setupMinutes, teardownMinutes: values.teardownMinutes },
           ...(withGroup ? { groupId: values.groupId } : {}),
@@ -70,6 +71,12 @@ export function EntityTypeForm({ entityType, onDone, groups }: EntityTypeFormPro
       <form onSubmit={submit} noValidate className="grid gap-4">
         {entityType ? null : <BaseSelectField control={form.control} />}
         <TextField form={form} name="name" label={t("fields.name")} required />
+        <TextField
+          form={form}
+          name="pluralName"
+          label={t("fields.pluralName")}
+          placeholder={t("fields.pluralNamePlaceholder")}
+        />
         {form.watch("base") === "ITEM" ? <ItemTypeFields form={form} groups={groups} /> : null}
         <div className="flex justify-end gap-2">
           {onDone ? (

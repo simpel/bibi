@@ -28,6 +28,25 @@ function TitleField({ form }: { form: Form }) {
   );
 }
 
+/** Business or private for this order only; by default it follows the customer (ADR 0106). */
+function BuyerKindField({ form }: { form: Form }) {
+  const t = useTranslations("order.fields");
+  const kinds = useTranslations("customer.buyerKind");
+  const options = [
+    { id: "BUSINESS", name: kinds("BUSINESS") },
+    { id: "PRIVATE", name: kinds("PRIVATE") },
+  ];
+  return (
+    <OptionSelectField
+      control={form.control}
+      name="buyerKind"
+      label={t("buyerKind")}
+      options={options}
+      noneLabel={t("buyerKindFromCustomer")}
+    />
+  );
+}
+
 /** Customer and a contact person who works there (the list follows the customer). */
 function CustomerFields({ form, data }: OrderCoreFieldsProps) {
   const { customers, contacts, customersHidden: hidden } = data;
@@ -50,6 +69,7 @@ function CustomerFields({ form, data }: OrderCoreFieldsProps) {
         options={ofCustomer}
         hidden={hidden}
       />
+      <BuyerKindField form={form} />
     </>
   );
 }

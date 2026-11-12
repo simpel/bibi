@@ -58,6 +58,7 @@ const NAMES = [
   "item.list",
   "item.resolve",
   "item.saveAsBundle",
+  "item.summary",
   "item.update",
   "member.assignRole",
   "member.cancelInvitation",

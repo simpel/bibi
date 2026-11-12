@@ -149,7 +149,7 @@ Setup and teardown minutes are the type's defaults (ADR 0059); an item or a line
 ### Other types
 | Base entity | Types and fields |
 |---|---|
-| Customer | Company (Org no., Framework agreement yes/no) · Public sector (Org no., Peppol-ID, Requires case number yes/no) · Association (Org no.) |
+| Customer | Company (Framework agreement yes/no) · Public sector (Peppol-ID, Requires case number yes/no) · Association. Every customer is a business with its org no. in `organizationNumber` (ADR 0106) |
 | Contact | Contact person (Role: choice Orderer, Invoice recipient, Organizer) |
 | Order | Conference (Purpose, Host: link to a Contact person) · Event (Dresscode: choice Dresscode, Speaker/entertainment) · Tour (School class yes/no) |
 | Requirement | Dietary requirement (vocabulary Allergens or Diet, field Severity) · Accessibility (vocabulary Accessibility) |
@@ -483,7 +483,7 @@ Layouts belong to boats (see Catalog); setup minutes by layout name: Seated 10, 
 | Add-on | `PRICED` | – |
 
 ### Other types, statuses, item states and run sheets
-- Customer: Company (Org no.) · Private (no fields).
+- Customer: Company · Private (no fields). Companies are businesses with their org no. in `organizationNumber`; Familjen Rask is private (ADR 0106).
 - Contact: Contact person (no fields).
 - Order: Charter · Round trip.
 - Requirement: Accessibility (vocabulary Accessibility) · Life jacket (vocabulary Life jacket).

@@ -25,6 +25,7 @@ export const customerEmbeddable: Embeddable<IndexedCustomer> = {
       entity.entityType.name,
       entity.email,
       entity.phone,
+      entity.organizationNumber,
       [entity.invoiceStreetAddress, entity.invoicePostalCode, entity.invoiceCity]
         .filter(Boolean)
         .join(", "),

@@ -17,6 +17,8 @@ import { formSchema } from "@/lib/form-schema";
 export type EntityTypeFormValues = BufferFormValues & {
   base: EntityBase;
   name: string;
+  /** The name for several of them; empty = use the name. */
+  pluralName: string;
   capabilities: ItemCapability[];
   /** Item types: Equipment or Person (ADR 0059). */
   resourceKind: ResourceKind;
@@ -38,6 +40,7 @@ export function entityTypeFormToInput({ values }: EntityTypeFormInput) {
   return {
     base: values.base,
     name: values.name.trim(),
+    pluralName: values.pluralName.trim() || null,
     capabilities: item ? values.capabilities : undefined,
     resourceKind: item ? values.resourceKind : undefined,
     groupId: item ? (values.groupId === NO_GROUP ? null : values.groupId) : undefined,
@@ -58,6 +61,7 @@ export function entityTypeFormDefaults({
   return {
     base: entityType?.base ?? "ITEM",
     name: entityType?.name ?? "",
+    pluralName: entityType?.pluralName ?? "",
     capabilities: entityType?.capabilities ?? [],
     resourceKind: entityType?.resourceKind ?? "EQUIPMENT",
     groupId: entityType?.groupId ?? NO_GROUP,

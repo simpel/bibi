@@ -90,6 +90,8 @@ export type NumberColumnInput<TData> = {
   cell?: (row: TData) => ReactNode;
   align?: "left" | "right";
   enableSorting?: boolean;
+  /** Explains the column in a hover card behind a help icon in the header. */
+  help?: ReactNode;
 };
 
 /**
@@ -102,10 +104,12 @@ export function numberColumn<TData>({
   cell,
   align = "left",
   enableSorting,
+  help,
 }: NumberColumnInput<TData>): ColumnDef<TData> {
   return {
     id,
     header: align === "right" ? () => <div className="text-right">{header}</div> : header,
+    meta: { align, ...(help ? { help } : {}) },
     ...(enableSorting !== undefined ? { enableSorting } : {}),
     accessorFn: getValue,
     cell: ({ row }) => (

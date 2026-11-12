@@ -54,7 +54,7 @@ function useCustomerQualifiers({
   );
 }
 
-/** Customer rows: name (link to the detail page), type, city, email and sticky actions. */
+/** Customer rows: name (link to the detail page), type, city, email, value and sticky actions. */
 export function CustomerTable({ customers, types, canEdit = false }: CustomerTableProps) {
   const t = useTranslations("customer");
   const common = useTranslations("common");

@@ -1,5 +1,12 @@
+/// Whether a customer buys as a business or a private person (ADR 0106). It decides what an
+/// order's money needs: a business always gets a full invoice, a private person pays up front.
+enum BuyerKind {
+  BUSINESS
+  PRIVATE
+}
+
 /// Customer – the organization (company, agency, association, private person) that buys
-/// (ADR 0022). Its type (base `CUSTOMER`) decides its own fields, e.g. org number or Peppol ID.
+/// (ADR 0022). Its type (base `CUSTOMER`) decides its own fields.
 model Customer {
   id                   String       @id
   organizationId       String
@@ -7,6 +14,11 @@ model Customer {
   name                 String
   email                String?
   phone                String?
+  /// Business or private (owned, ADR 0106); each order inherits it unless it sets its own.
+  buyerKind            BuyerKind    @default(BUSINESS)
+  /// The organisation number, e.g. 556677-8899 (owned, ADR 0106); null = not given. Sent to the
+  /// ledger provider and required before a business customer is invoiced.
+  organizationNumber   String?
   /// Invoice address.
   invoiceStreetAddress String?
   invoicePostalCode    String?

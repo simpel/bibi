@@ -88,6 +88,7 @@ async function seedType({
 }: TypeInput): Promise<Result<TypeRef>> {
   const input = {
     ...{ base: type.base, name: type.name, capabilities: [...(type.capabilities ?? [])] },
+    ...(type.pluralName ? { pluralName: type.pluralName } : {}),
     ...{ setupMinutes: type.setupMinutes ?? null, teardownMinutes: type.teardownMinutes ?? null },
     ...(type.resourceKind ? { resourceKind: type.resourceKind } : {}),
     ...(type.base === "ITEM" ? { groupId: groups.get(groupOfDemoType({ type })) ?? null } : {}),

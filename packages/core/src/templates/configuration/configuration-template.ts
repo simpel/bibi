@@ -13,6 +13,8 @@ export type ConfigurationTemplateField = {
 export type ConfigurationTemplateType = {
   base: EntityBase;
   name: string;
+  /** The name for several of them, e.g. "Conference rooms". */
+  pluralName?: string;
   capabilities?: readonly ItemCapability[];
   fields?: readonly ConfigurationTemplateField[];
 };

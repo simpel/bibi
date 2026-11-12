@@ -1,4 +1,5 @@
 import type { EntityTypeDto, OrderDto } from "@bibi/core";
+import { NONE } from "@/components/form/option-select-field";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 import { toLocalInputValue } from "../../occupancy/ui/local-date-time";
 
@@ -10,6 +11,8 @@ export type OrderFormValues = {
   customerId: string;
   /** A contact id; required (empty until picked). */
   contactId: string;
+  /** Business or private for this order; `NONE` follows the customer's (ADR 0106). */
+  buyerKind: string;
   desiredStartsAt: string;
   desiredEndsAt: string;
   estimatedHeadcount: string;
@@ -45,6 +48,7 @@ export function orderFormDefaults({ type, order, timeZone }: OrderDefaultsInput)
     entityTypeId: type?.id ?? "",
     customerId: order?.customerId ?? "",
     contactId: order?.contactId ?? "",
+    buyerKind: order?.buyerKind ?? NONE,
     desiredStartsAt: local({ date: order?.desiredStartsAt }),
     desiredEndsAt: local({ date: order?.desiredEndsAt }),
     estimatedHeadcount: text({ value: order?.estimatedHeadcount }),

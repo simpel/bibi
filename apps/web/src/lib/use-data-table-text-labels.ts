@@ -8,6 +8,7 @@ export function useDataTableTextLabels(): DataTableTextLabels {
     sortAscending: t("sortAscending"),
     sortDescending: t("sortDescending"),
     clearSort: t("clearSort"),
+    columnHelp: (column) => t("columnHelp", { column }),
     dragColumn: (column) => t("dragColumn", { column }),
     dragInstructions: t("dragInstructions"),
     columnPickedUp: (column) => t("columnPickedUp", { column }),

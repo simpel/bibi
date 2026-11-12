@@ -7,8 +7,12 @@ import {
   ItemLayoutSchema,
   ItemPartSchema,
   ItemSchema,
+  type ItemSummaryDto,
+  ItemSummaryOutputSchema,
+  ItemSummaryTypeSchema,
   listItems,
   saveItemAsBundle,
+  summarizeItems,
   updateItem,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
@@ -51,6 +55,29 @@ export const ItemRef = objectFromSchema<ItemDto>({
 });
 const ItemPageRef = pageType({ name: "ItemPage", item: ItemRef });
 
+type ItemSummaryTypeDto = ItemSummaryDto["types"][number];
+
+const ItemSummaryTypeRef = objectFromSchema<ItemSummaryTypeDto>({
+  name: "ItemSummaryType",
+  schema: ItemSummaryTypeSchema,
+  description: "Item count of one item type in a venue, with the first few names.",
+});
+
+const ItemSummaryRef = objectFromSchema<ItemSummaryDto>({
+  name: "ItemSummary",
+  schema: ItemSummaryOutputSchema,
+  omit: ["types"],
+  description: "A venue's items counted per item type.",
+});
+
+builder.objectField(ItemSummaryRef, "types", (t) =>
+  t.field({
+    type: [ItemSummaryTypeRef],
+    description: "One entry per item type, most items first.",
+    resolve: (summary) => summary.types,
+  }),
+);
+
 builder.objectField(ItemRef, "layouts", (t) =>
   t.field({
     type: [ItemLayoutRef],
@@ -89,6 +116,7 @@ builder.objectField(ItemPartRef, "item", (t) =>
 
 fieldFromOperation({ operation: listItems, type: ItemPageRef, name: "items" });
 fieldFromOperation({ operation: getItem, type: ItemRef, name: "item" });
+fieldFromOperation({ operation: summarizeItems, type: ItemSummaryRef, name: "itemSummary" });
 mutationFromOperation({ operation: createItem, type: ItemRef });
 mutationFromOperation({ operation: updateItem, type: ItemRef });
 mutationFromOperation({ operation: archiveItem, type: ItemRef });
