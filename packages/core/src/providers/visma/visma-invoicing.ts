@@ -62,6 +62,7 @@ export const vismaInvoicing: InvoicingPort = {
       dueDate: invoice.dueDate,
       currency: invoice.currency,
       reference: invoice.reference,
+      buyerReference: invoice.buyerReference,
       rows: rows.value,
     });
     return id.ok ? ok({ value: { providerReference: id.value, url: null } }) : id;

@@ -8,6 +8,7 @@ import { checkPricedLines } from "../quote/check-priced-lines";
 import { deriveOrderLines } from "../quote/derive-lines";
 import { writeOrderLines } from "../quote/freeze-lines";
 import { quoteTotals } from "../quote/line-totals";
+import { invoiceBuyerReference } from "./buyer-reference";
 import { deductPaidDeposits } from "./deduct-deposits";
 import { type InvoiceCreateInput, InvoiceCreateInputSchema, InvoiceSchema } from "./schema";
 import { loadInvoice } from "./to-invoice-dto";
@@ -50,7 +51,9 @@ export const createInvoice = defineOperation({
     "with totals and the organization's next invoice number, as a DRAFT. The order's status " +
     "must be invoiceable and the order must have no other invoice that is not VOID. Each " +
     "line needs a quantity and VAT. Paid deposits on the order are deducted (deductions, " +
-    "amountDueMinor), as paid now (ADR 0090). Send it (invoice.send) before requesting payment " +
+    "amountDueMinor), as paid now (ADR 0090). The order's buyer's reference (its own, " +
+    "else its contact's) is frozen on it; a customer that requires one is a VALIDATION error " +
+    "at buyerReference without it (ADR 0105). Send it (invoice.send) before requesting payment " +
     "(payment.create with invoiceId).",
   input: InvoiceCreateInputSchema,
   output: InvoiceSchema,
@@ -61,6 +64,8 @@ export const createInvoice = defineOperation({
     if (!readable.ok) return readable;
     const dueDate = await checkInvoiceable({ context, input });
     if (!dueDate.ok) return dueDate;
+    const buyerReference = await invoiceBuyerReference({ context, orderId: input.orderId });
+    if (!buyerReference.ok) return buyerReference;
     const derived =
       (await deriveOrderLines({ context, orderIds: [input.orderId] })).get(input.orderId) ?? [];
     const priced = checkPricedLines({ lines: derived, what: "An invoice" });
@@ -73,6 +78,7 @@ export const createInvoice = defineOperation({
         orderId: input.orderId,
         number: (top._max.number ?? 0) + 1,
         dueDate: dueDate.value,
+        buyerReference: buyerReference.value,
         ...quoteTotals({ lines }),
         createdBy: context.actor.userId,
       },

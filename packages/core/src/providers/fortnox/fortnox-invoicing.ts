@@ -33,7 +33,8 @@ export const fortnoxInvoicing: InvoicingPort = {
       invoiceDate: invoice.invoiceDate,
       dueDate: invoice.dueDate,
       currency: invoice.currency,
-      yourOrderNumber: invoice.reference,
+      ourReference: invoice.reference,
+      buyerReference: invoice.buyerReference,
       rows: fortnoxRows({ invoice }),
     });
     if (!raised.ok) return raised;

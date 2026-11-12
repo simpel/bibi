@@ -39,13 +39,11 @@ export const lindholmenCustomers: readonly DemoCustomer[] = [
     name: "Västra Sjukvårdsregionen",
     type: "Public sector",
     organizationNumber: "232100-0131",
-    fields: {
-      "Peppol-ID": "0007:2321000131",
-      "Requires case number": true,
-    },
+    requiresBuyerReference: true,
+    fields: { "Peppol-ID": "0007:2321000131" },
     ...{ invoiceCity: "Vänersborg", paymentTermsDays: 30 },
     contacts: [
-      person({ name: "Eva Sund", role: "Organizer" }),
+      { ...person({ name: "Eva Sund", role: "Organizer" }), buyerReference: "VSR-2026-0412" },
       person({ name: "Ekonomienheten", role: "Invoice recipient" }),
     ],
   },

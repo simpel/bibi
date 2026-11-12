@@ -39,6 +39,9 @@ export async function CustomerFacts(props: CustomerFactsProps) {
           },
         ]
       : []),
+    ...(customer.requiresBuyerReference
+      ? [{ label: t("fields.requiresBuyerReference"), value: t("requiresBuyerReferenceYes") }]
+      : []),
     { label: t("fields.email"), value: dash({ value: customer.email }) },
     { label: t("fields.phone"), value: dash({ value: customer.phone }) },
     { label: t("invoiceAddress"), value: address.join(", ") },

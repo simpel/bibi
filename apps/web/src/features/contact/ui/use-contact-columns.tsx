@@ -6,7 +6,7 @@ import { customerRoute } from "@/lib/routes";
 
 export type ContactRow = Pick<
   ContactDto,
-  "id" | "customerId" | "name" | "entityTypeId" | "email" | "phone"
+  "id" | "customerId" | "name" | "entityTypeId" | "email" | "phone" | "buyerReference"
 >;
 
 export type UseContactColumnsInput<TRow extends ContactRow> = {
@@ -49,6 +49,11 @@ export function useContactColumns<TRow extends ContactRow>({
     ...typeColumn,
     { id: "email", header: t("email"), accessorFn: (c) => c.email ?? "–" },
     { id: "phone", header: t("phone"), accessorFn: (c) => c.phone ?? "–" },
+    {
+      id: "buyerReference",
+      header: t("buyerReference"),
+      accessorFn: (c) => c.buyerReference ?? "–",
+    },
     ...actionColumn,
   ];
 }

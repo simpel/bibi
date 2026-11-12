@@ -86,7 +86,14 @@ export const fortnoxApi: FortnoxApi = {
         InvoiceDate: invoice.invoiceDate,
         ...(invoice.dueDate ? { DueDate: invoice.dueDate } : {}),
         Currency: invoice.currency,
-        YourOrderNumber: invoice.yourOrderNumber,
+        OurReference: invoice.ourReference.slice(0, 50),
+        // The buyer's reference in both slots: e-invoices route by the electronic one (ADR 0105).
+        ...(invoice.buyerReference
+          ? {
+              YourReference: invoice.buyerReference,
+              EDIInformation: { EDIYourElectronicReference: invoice.buyerReference },
+            }
+          : {}),
         InvoiceRows: invoice.rows.map((row) => toRow({ row })),
       },
     };

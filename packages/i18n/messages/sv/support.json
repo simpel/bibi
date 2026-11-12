@@ -66,6 +66,10 @@
             "question": "Hur anger jag om en kund är ett företag eller en privatperson?",
             "answer": "När du skapar en kund väljer du Företag eller Privatperson. För ett företag kan du också fylla i organisationsnumret.\nVarje bokning följer sin kund. Vill du ändra det för en enda bokning klickar du på Redigera på bokningen och väljer Företag eller Privatperson under Företag eller privat. Välj Samma som kunden för att gå tillbaka."
           },
+          "buyerReference": {
+            "question": "Hur lägger jag till beställarens referens på en order?",
+            "answer": "Vissa beställare, ofta myndigheter, behöver sin egen referens på varje faktura, till exempel ett diarienummer. Öppna kontaktpersonen och fyll i Beställarreferens. Personens ordrar använder den automatiskt.\nFör en enskild order klickar du på Redigera på ordern och fyller i Beställarreferens där i stället.\nOm en kund alltid behöver en referens redigerar du kunden och kryssar i Fakturor måste ha beställarens referens. Då skapar Bibi ingen faktura för kundens ordrar förrän en referens finns."
+          },
           "createFromBoard": {
             "question": "Kan jag skapa en order direkt från tavlan?",
             "answer": "Ja. Längst ner i kolumnen där nya ordrar hamnar finns + Skapa bokning. Den öppnar samma sida som Skapa bokning i menyn, och ordern hamnar i den första kolumnen."

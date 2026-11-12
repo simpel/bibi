@@ -71,6 +71,8 @@ model Invoice {
   /// Sums of the frozen lines in minor units (snapshot).
   totalExclVatMinor Int
   totalInclVatMinor Int
+  /// Snapshot (ADR 0105): the order's effective buyer's reference when the invoice was created.
+  buyerReference    String?
   /// Owned (ADR 0090, 0100): the provider the INVOICE route chose when it was sent, and its
   /// connection; null = in Bibi only (the customer pays through a payment Bibi requests).
   provider          Provider?

@@ -101,6 +101,7 @@ describe("stripeCharges", () => {
           dueDate: "2026-12-09",
           currency: "SEK",
           reference: "Order #7, invoice #1",
+          buyerReference: null,
           customer: { name: "Hisingen Energi AB", email: "billing@example.com" },
           lines: [
             {

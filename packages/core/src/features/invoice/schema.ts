@@ -39,6 +39,10 @@ export const InvoiceSchema = z.object({
     .number()
     .int()
     .describe("Sum of the frozen lines incl. VAT, minor units: the amount owed"),
+  buyerReference: z
+    .string()
+    .nullable()
+    .describe("The buyer's reference (Er referens) it carries, frozen at create (ADR 0105)"),
   lines: z.array(OrderLineSchema).describe("The order's priced lines, frozen at create"),
   deductions: z
     .array(InvoiceDeductionSchema)

@@ -22,6 +22,8 @@ model Order {
   contactId           String?
   /// Business or private for this order (owned, ADR 0106); null = inherit the customer's.
   buyerKind           BuyerKind?
+  /// The buyer's reference for this order (owned, ADR 0105); null = inherit the contact's.
+  buyerReference      String?
   statusId            String
   /// The period the customer asked for; each line has its own time.
   desiredStartsAt     DateTime?

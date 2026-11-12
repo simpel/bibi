@@ -22,6 +22,7 @@
     "saving": "Saving customer…",
     "archiving": "Archiving customer…",
     "invoiceAddress": "Invoice address",
+    "requiresBuyerReferenceYes": "Required on invoices",
     "fields": {
       "type": "Type",
       "name": "Name",
@@ -34,7 +35,8 @@
       "paymentTermsDays": "Payment terms (days)",
       "creditLimit": "Credit limit (SEK)",
       "buyerKind": "Business or private",
-      "organizationNumber": "Org. no."
+      "organizationNumber": "Org. no.",
+      "requiresBuyerReference": "Invoices must carry the buyer's reference"
     },
     "buyerKind": {
       "BUSINESS": "Business",
@@ -74,13 +76,15 @@
       "type": "Type",
       "name": "Name",
       "email": "Email",
-      "phone": "Phone"
+      "phone": "Phone",
+      "buyerReference": "Buyer's reference"
     },
     "columns": {
       "name": "Name",
       "type": "Type",
       "email": "Email",
-      "phone": "Phone"
+      "phone": "Phone",
+      "buyerReference": "Buyer's reference"
     },
     "card": {
       "phone": "Phone",
@@ -125,6 +129,10 @@
       "buyerKind": "Business or private",
       "buyerKindFromCustomer": "Same as the customer",
       "buyerKindInherited": "{kind} (from the customer)",
+      "buyerReference": "Buyer's reference",
+      "buyerReferencePlaceholder": "Leave empty to use the contact person's",
+      "buyerReferenceFromContact": "{reference} (from the contact person)",
+      "buyerReferenceMissing": "Missing – the customer requires it on invoices",
       "note": "Booking note",
       "desiredStartsAt": "Desired start",
       "desiredEndsAt": "Desired end",

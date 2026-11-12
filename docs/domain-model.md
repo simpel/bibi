@@ -449,6 +449,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - name
 - business or private (`buyerKind`, `BUSINESS` | `PRIVATE`, owned; the web forms make staff choose, the API defaults to `BUSINESS`): what its orders inherit ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md))
 - organisation number (`organizationNumber`, owned, optional, trimmed, ≤ 32): sent with invoices; required before a business customer is invoiced once invoicing moves to the ledger provider (ADR 0106, not built)
+- requires the buyer's reference (`requiresBuyerReference`, owned, default false): creating or sending an invoice for one of its orders without an effective reference is `VALIDATION` at `buyerReference`, and the order page warns ([ADR 0105](decisions/0105-buyer-reference-on-the-order.md))
 - email, phone
 - invoice address (`invoiceStreetAddress`, `invoicePostalCode`, `invoiceCity`, `invoiceCountry`, default `SE`)
 - price lists (`PriceList.customerId`; archiving the customer is denied while it has an active price list)
@@ -474,6 +475,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - name
 - email
 - phone
+- buyer's reference (`buyerReference`, owned, ≤ 50, null = none): the reference this person orders under; their orders without their own inherit it ([ADR 0105](decisions/0105-buyer-reference-on-the-order.md))
 - GDPR consent (not built yet)
 
 **Relations**
@@ -495,6 +497,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - type (the organization's own, base `ORDER`) and custom fields
 - customer and contact person (the contact must work at the customer; required for new orders and never cleared, ADR 0081; older orders may have none)
 - business or private (`buyerKind`, owned, `null` = the customer's) and the derived `effectiveBuyerKind` (its own, else the customer's), shown on the order page ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md))
+- buyer's reference (`buyerReference`, owned, ≤ 50, `null` = the contact's) and the derived `effectiveBuyerReference` with `buyerReferenceSource` (`ORDER` | `CONTACT` | null) and `buyerReferenceMissing` (the customer requires one and there is none) ([ADR 0105](decisions/0105-buyer-reference-on-the-order.md))
 - booking note (`note`, optional, ≤ 4000 characters): notes for the whole booking (ADR 0081)
 - intake key (`intakeKey`, optional, owned, 1–100 characters, unique per organization): the client key of the `order.create` that made the order, so a repeated submit returns it (ADR 0081). Not on the order DTO: it belongs to the create call, not to the booking.
 - desired period (`desiredStartsAt`, `desiredEndsAt`, optional) – what the customer asked for; each line has its own time
@@ -1078,6 +1081,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - invoice number, due date (given, else after the customer's payment terms, default 30 days)
 - status: `DRAFT → SENT → VOID` (VOID is final)
 - totals of the frozen lines
+- buyer's reference (`buyerReference`, snapshot): the order's effective reference at create; a DRAFT without one takes the order's current one when sent. Sent to Fortnox as `YourReference` and `EDIYourElectronicReference`, to Visma as `YourReference`; Bibi's own reference goes in "Our reference" ([ADR 0105](decisions/0105-buyer-reference-on-the-order.md))
 - deducted deposits (`InvoiceDeposit`, snapshot at create) and the amount due: total incl. VAT minus them, which payments settle ([ADR 0090](decisions/0090-order-money-through-the-venues-own-providers.md))
 - provider (`Provider`, owned) and its connection: where the invoice was raised when it was sent (Stripe, Fortnox or Visma); null = in Bibi only
 - the provider's document number (`providerReference`, a mirror, unique per connection; null until raised there) and its page (`providerUrl`)

@@ -34,7 +34,7 @@ async function checkStartStatus({ context, template }: Omit<CreateInput, "input"
 
 /** The template's lines planned from the start, through the one path `order.create` uses. */
 async function create({ context, template, input }: CreateInput): Promise<Result<OrderDto>> {
-  const { startsAt, headcount, customerId, contactId, assigneeId, title } = input;
+  const { startsAt, headcount, customerId, contactId, assigneeId, title, buyerReference } = input;
   const plan = planTemplateLines({ template, startsAt });
   const statusd = await checkStartStatus({ context, template });
   if (!statusd.ok) return statusd;
@@ -50,6 +50,7 @@ async function create({ context, template, input }: CreateInput): Promise<Result
     })),
     input: {
       ...{ entityTypeId: template.entityTypeId, customerId, contactId, assigneeId, title },
+      buyerReference,
       fields: template.fields,
       estimatedHeadcount: headcount,
       ...{ desiredStartsAt: startsAt, desiredEndsAt: plan.endsAt },

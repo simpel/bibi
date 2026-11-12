@@ -79,6 +79,20 @@ export async function OrderKeyFacts({ order, data }: OrderKeyFactsProps) {
   return <KeyFacts facts={shown} />;
 }
 
+type ReferenceInput = {
+  order: OrderDto;
+  fields: Awaited<ReturnType<typeof getTranslations<"order.fields">>>;
+};
+
+/** The buyer's reference and where it comes from, or a warning when the customer requires one. */
+function referenceValue({ order, fields }: ReferenceInput) {
+  const reference = order.effectiveBuyerReference;
+  if (reference === null) return fields("buyerReferenceMissing");
+  return order.buyerReferenceSource === "CONTACT"
+    ? fields("buyerReferenceFromContact", { reference })
+    : reference;
+}
+
 /**
  * The rest of the order, lower on the page: type, money, holds, own fields and the note. Left
  * out when none is set.
@@ -92,6 +106,7 @@ export async function OrderDetails({ order, data }: OrderFactsProps) {
   const type = data.types.find(({ id }) => id === order.entityTypeId);
   const kinds = await getTranslations("customer.buyerKind");
   const kind = kinds(order.effectiveBuyerKind);
+  const reference = order.effectiveBuyerReference;
   const amount = ({ minor }: { minor: number | null }) =>
     minor === null ? EMPTY : money({ minor });
   const facts = [
@@ -100,6 +115,9 @@ export async function OrderDetails({ order, data }: OrderFactsProps) {
       label: fields("buyerKind"),
       value: order.buyerKind ? kind : fields("buyerKindInherited", { kind }),
     },
+    ...(reference || order.buyerReferenceMissing
+      ? [{ label: fields("buyerReference"), value: referenceValue({ order, fields }) }]
+      : []),
     ...(order.statusReason ? [{ label: fields("statusReason"), value: order.statusReason }] : []),
     { label: fields("budget"), value: amount({ minor: order.budgetMinor }) },
     { label: fields("estimatedValue"), value: amount({ minor: order.estimatedValueMinor }) },

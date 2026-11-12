@@ -149,7 +149,7 @@ Setup and teardown minutes are the type's defaults (ADR 0059); an item or a line
 ### Other types
 | Base entity | Types and fields |
 |---|---|
-| Customer | Company (Framework agreement yes/no) · Public sector (Peppol-ID, Requires case number yes/no) · Association. Every customer is a business with its org no. in `organizationNumber` (ADR 0106) |
+| Customer | Company (Framework agreement yes/no) · Public sector (Peppol-ID) · Association. Every customer is a business with its org no. in `organizationNumber` (ADR 0106); Public sector customers set `requiresBuyerReference` (ADR 0105) |
 | Contact | Contact person (Role: choice Orderer, Invoice recipient, Organizer) |
 | Order | Conference (Purpose, Host: link to a Contact person) · Event (Dresscode: choice Dresscode, Speaker/entertainment) · Tour (School class yes/no) |
 | Requirement | Dietary requirement (vocabulary Allergens or Diet, field Severity) · Accessibility (vocabulary Accessibility) |
@@ -303,7 +303,7 @@ Contact persons have the type Contact person; the role in parentheses is its Rol
 |---|---|---|---|
 | Nordkust Logistik AB | Company (framework agreement) | Karin Wallin (orderer), Fakturor Nordkust (invoice recipient) | Nordkust framework agreement: −15% on everything |
 | Hisingen Energi AB | Company | Mats Olsson | – |
-| Västra Sjukvårdsregionen | Public sector (Peppol, case number) | Eva Sund, Ekonomienheten | – |
+| Västra Sjukvårdsregionen | Public sector (Peppol, requires buyer's reference) | Eva Sund (reference VSR-2026-0412), Ekonomienheten | – |
 | Kvarnby Design AB | Company | Linnea Kvist | – |
 | Göta Advokatbyrå KB | Company | Henrik Strand | – |
 | Älvstrand Tech AB | Company | Amir Haddad | – |

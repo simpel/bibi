@@ -20,6 +20,7 @@ const snapshot = (): InvoiceSnapshot => ({
   dueDate: "2026-12-09",
   currency: "SEK",
   reference: "Order #1042, invoice #7",
+  buyerReference: "KS-2026-114",
   customer: { name: "Acme AB", email: "ap@acme.test" },
   lines: [
     {
@@ -147,7 +148,8 @@ describe("Visma invoicing (ADR 0100)", () => {
       InvoiceDate: "2026-11-09",
       DueDate: "2026-12-09",
       CurrencyCode: "SEK",
-      YourReference: "Order #1042, invoice #7",
+      OurReference: "Order #1042, invoice #7",
+      YourReference: "KS-2026-114",
       IsCreditInvoice: false,
     });
     // 25 % → article id-2, 12 % → article id-3; the bundle splits per rate, the deposit is negative.
