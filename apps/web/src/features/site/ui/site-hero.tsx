@@ -1,4 +1,4 @@
-import { Badge, Button, PageContainer } from "@bibi/ui";
+import { Button, PageContainer } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { OrderMockup } from "./mockups/order-mockup";
 import { SiteActions } from "./site-actions";
@@ -15,9 +15,6 @@ export async function SiteHero({ locale, appUrl }: SiteHeroProps) {
         <div className="absolute left-1/2 top-[-8rem] size-[32rem] -translate-x-[10%] rounded-full bg-chart-3/20 blur-3xl" />
       </div>
       <PageContainer className="relative flex flex-col items-center gap-8 pt-32 text-center sm:pt-40">
-        <Badge variant="outline" className="bg-background/60 px-3 py-1">
-          {t("hero.badge")}
-        </Badge>
         <h1 className="max-w-4xl text-balance text-5xl leading-[1.05] sm:text-6xl lg:text-7xl">
           {t("heading")}
         </h1>
