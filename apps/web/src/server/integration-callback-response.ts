@@ -8,7 +8,7 @@ import { providerKeyOf } from "./provider-key";
 import { runOperation } from "./run-operation";
 import { getSessionState } from "./session";
 
-export type IntegrationOutcome = "connected" | "denied" | "expired" | "failed";
+export type IntegrationOutcome = "connected" | "denied" | "expired" | "notReady" | "failed";
 
 type RedirectInput = { request: Request; path: string };
 
@@ -35,6 +35,8 @@ async function complete({ provider, code, state }: CompleteInput) {
   });
   if (result.ok) return "connected" as const;
   if (result.error.code === "UNAUTHENTICATED") return "unauthenticated" as const;
+  // The provider's company is not set up yet (e.g. its startup guide): only the admin can fix it.
+  if (result.error.code === "CONFLICT") return "notReady" as const;
   return result.error.code === "VALIDATION" ? ("expired" as const) : ("failed" as const);
 }
 

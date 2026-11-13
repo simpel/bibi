@@ -830,6 +830,7 @@
       "connected": "{name} is connected.",
       "denied": "The connection was not approved at {name}, so nothing was connected.",
       "expired": "The approval took too long or came from somewhere else. Start the connection again.",
+      "notReady": "{name} is not ready to connect yet. Sign in to {name}, finish setting up the company (a new company starts with a setup guide), then connect again.",
       "failed": "{name} could not be connected. Try again in a moment."
     },
     "apiKeysCard": {
@@ -930,12 +931,11 @@
       "organizationNumber": "Organization number",
       "connectedAt": "Connected",
       "takes": "Takes: {methods}",
-      "ledger": "{name} keeps the books for the invoices and prepayment invoices raised there.",
       "notConfigured": "{name} is not available on this server yet.",
       "hint": {
         "NOT_CONNECTED": "{name} is not connected.",
         "PENDING": "The connection to {name} was started but is not finished. Continue to complete it.",
-        "CONNECTED": "{name} is connected and used where Payments settings say so.",
+        "CONNECTED": "Used where the Payments settings say so.",
         "EXPIRED": "{name} needs more from you or no longer accepts the connection. Reconnect to restore it.",
         "DISCONNECTED": "{name} is disconnected. Connect again to use it.",
         "UNAVAILABLE": "{name} is connected, but this server is not set up for {name} yet, so nothing can go through it."

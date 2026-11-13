@@ -56,3 +56,23 @@ export function vismaRefused({ what, response }: { what: string; response: Visma
 
 /** An OData string literal: single quotes doubled. */
 export const odataString = ({ value }: { value: string }) => `'${value.replace(/'/g, "''")}'`;
+
+/** Spiris's codes for a company it will not serve yet: startup guide not finished (4003), inactive (4004). */
+const NOT_READY_CODES = new Set([4003, 4004]);
+
+/** Whether Visma refused because the company itself is not set up, which only the venue can fix. */
+export function isCompanyNotReady({ response }: { response: VismaResponse }): boolean {
+  if (response.status !== 403) return false;
+  const json = (response.json ?? {}) as { ErrorCode?: unknown; Message?: unknown };
+  if (typeof json.ErrorCode === "number" && NOT_READY_CODES.has(json.ErrorCode)) return true;
+  return /startup guide|not active/i.test(String(json.Message ?? ""));
+}
+
+/** CONFLICT: the admin finishes the company in Spiris (its startup guide), then connects again. */
+export const companyNotReady = () =>
+  err({
+    error: new AppError({
+      code: "CONFLICT",
+      message: "The Visma company is not active, or its startup guide is not finished.",
+    }),
+  });

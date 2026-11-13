@@ -40,7 +40,7 @@ export function DisconnectProviderButton({ connection, name }: DisconnectProvide
         });
   return (
     <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
+      <Button variant="destructive" onClick={() => setOpen(true)}>
         {t("disconnect")}
       </Button>
       <ConfirmDialog

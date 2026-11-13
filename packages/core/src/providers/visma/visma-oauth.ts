@@ -11,7 +11,7 @@ import {
   vismaNotConfigured,
   vismaRedirectUri,
 } from "./visma-config";
-import { vismaCall, vismaRefused } from "./visma-request";
+import { companyNotReady, isCompanyNotReady, vismaCall, vismaRefused } from "./visma-request";
 
 const NAME = "Visma";
 
@@ -83,6 +83,7 @@ export const vismaOauth: OauthConnectPort = {
     if (!sent.ok) return sent;
     const parsed = CompanySchema.safeParse(sent.value.json);
     if (sent.value.status !== 200 || !parsed.success) {
+      if (isCompanyNotReady({ response: sent.value })) return companyNotReady();
       return vismaRefused({ what: "the company lookup", response: sent.value });
     }
     const { Name, CorporateIdentityNumber } = parsed.data;

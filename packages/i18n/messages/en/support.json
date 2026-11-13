@@ -256,7 +256,7 @@
           },
           "visma": {
             "question": "Can I connect Bibi to Spiris (Visma eEkonomi)?",
-            "answer": "Yes. An admin chooses **Connect** on Spiris under Administration → Integrations and signs in to Visma to approve the connection.\nThen pick Spiris for **Invoice** under Administration → Payments, and invoices are made there with payments mirrored back to Bibi. Card and Swish payments taken in Bibi on a Spiris invoice are booked in Spiris too.\nIn Spiris, also create an account coding that books sales to customer advances (2420) for each VAT rate you sell at, under Settings → Account codings. Deposits and their deductions are booked there."
+            "answer": "Yes. An admin chooses **Connect** on Spiris under Administration → Integrations and signs in to Visma to approve the connection.\nThen pick Spiris for **Invoice** under Administration → Payments, and invoices are made there with payments mirrored back to Bibi. Card and Swish payments taken in Bibi on a Spiris invoice are booked in Spiris too.\nIn Spiris, also create an account coding that books sales to customer advances (2420) for each VAT rate you sell at, under Settings → Account codings. Deposits and their deductions are booked there.\nIf Bibi says Spiris is not ready to connect, sign in to Spiris, finish the company's startup guide, then choose **Connect** again."
           },
           "prepayment": {
             "question": "What happens to a deposit when Fortnox or Spiris makes our invoices?",

@@ -830,6 +830,7 @@
       "connected": "{name} är ansluten.",
       "denied": "Anslutningen godkändes inte hos {name}, så ingenting anslöts.",
       "expired": "Godkännandet tog för lång tid eller kom från ett annat håll. Starta anslutningen igen.",
+      "notReady": "{name} är inte redo att anslutas än. Logga in i {name}, gör klart inställningarna för företaget (ett nytt företag börjar med en startguide) och anslut sedan igen.",
       "failed": "Det gick inte att ansluta {name}. Försök igen om en stund."
     },
     "apiKeysCard": {
@@ -930,12 +931,11 @@
       "organizationNumber": "Organisationsnummer",
       "connectedAt": "Ansluten",
       "takes": "Tar emot: {methods}",
-      "ledger": "{name} sköter bokföringen för fakturor och förskottsfakturor som skapas där.",
       "notConfigured": "{name} är inte tillgänglig ännu på den här servern.",
       "hint": {
         "NOT_CONNECTED": "{name} är inte ansluten.",
         "PENDING": "Anslutningen till {name} är påbörjad men inte klar. Fortsätt för att slutföra den.",
-        "CONNECTED": "{name} är ansluten och används där inställningarna under Betalningar säger det.",
+        "CONNECTED": "Används där inställningarna under Betalningar säger det.",
         "EXPIRED": "{name} behöver mer från er eller godtar inte längre anslutningen. Anslut igen för att återställa den.",
         "DISCONNECTED": "{name} är frånkopplad. Anslut igen för att använda den.",
         "UNAVAILABLE": "{name} är ansluten, men den här servern är inte inställd för {name} ännu, så inget kan gå via den."

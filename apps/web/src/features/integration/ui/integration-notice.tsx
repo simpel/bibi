@@ -1,17 +1,26 @@
-import { Card, CardContent } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 
-export const INTEGRATION_OUTCOMES = ["connected", "denied", "expired", "failed"] as const;
+export const INTEGRATION_OUTCOMES = [
+  "connected",
+  "denied",
+  "expired",
+  "notReady",
+  "failed",
+] as const;
 export type IntegrationOutcome = (typeof INTEGRATION_OUTCOMES)[number];
 
 export type IntegrationNoticeProps = { outcome: IntegrationOutcome; name: string };
 
-/** What happened when a provider sent the admin back (`?provider=&outcome=`, ADR 0087, 0100). */
+/**
+ * Why connecting failed when a provider sent the admin back (`?provider=&outcome=`, ADR 0087,
+ * 0100): one line in the card, no box. A success shows nothing: the status and company say it.
+ */
 export async function IntegrationNotice({ outcome, name }: IntegrationNoticeProps) {
+  if (outcome === "connected") return null;
   const t = await getTranslations("integration.notice");
   return (
-    <Card role="status" className="shadow-none">
-      <CardContent className="text-sm text-foreground">{t(outcome, { name })}</CardContent>
-    </Card>
+    <p role="status" className="text-destructive">
+      {t(outcome, { name })}
+    </p>
   );
 }

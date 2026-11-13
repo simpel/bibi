@@ -256,7 +256,7 @@
           },
           "visma": {
             "question": "Kan jag koppla Bibi till Spiris (Visma eEkonomi)?",
-            "answer": "Ja. En administratör väljer **Anslut** på Spiris under Administration → Integrationer och loggar in i Visma för att godkänna kopplingen.\nVälj sedan Spiris för **Faktura** under Administration → Betalningar, så skapas fakturorna där och betalningarna speglas tillbaka till Bibi. Kort- och Swishbetalningar som tas i Bibi på en Spiris-faktura bokförs i Spiris också.\nSkapa också en artikelkontering i Spiris som bokför försäljning på kundförskott (2420) för varje momssats ni säljer med, under Inställningar → Artikelkonteringar. Förskott och avdragen för dem bokförs där."
+            "answer": "Ja. En administratör väljer **Anslut** på Spiris under Administration → Integrationer och loggar in i Visma för att godkänna kopplingen.\nVälj sedan Spiris för **Faktura** under Administration → Betalningar, så skapas fakturorna där och betalningarna speglas tillbaka till Bibi. Kort- och Swishbetalningar som tas i Bibi på en Spiris-faktura bokförs i Spiris också.\nSkapa också en artikelkontering i Spiris som bokför försäljning på kundförskott (2420) för varje momssats ni säljer med, under Inställningar → Artikelkonteringar. Förskott och avdragen för dem bokförs där.\nOm Bibi säger att Spiris inte är redo att anslutas: logga in i Spiris, gör klart företagets startguide och välj sedan **Anslut** igen."
           },
           "prepayment": {
             "question": "Vad händer med ett förskott när Fortnox eller Spiris gör våra fakturor?",

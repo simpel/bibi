@@ -20,20 +20,23 @@ export type ProviderCardProps = {
   canEdit: boolean;
   /** The connect date, written on the server in the user's format. */
   connectedOn: string | null;
-  /** What happened when this provider sent the admin back, shown inside its card. */
+  /** What happened when this provider sent the admin back; only a failure is shown. */
   outcome: IntegrationOutcome | null;
 };
 
 type ProviderActionsProps = Pick<ProviderCardProps, "connection"> & { name: string };
 
-/** The actions the connection's status allows: connect or reconnect, refresh, disconnect. */
+/**
+ * The actions the connection's status allows: connect, or reconnect only once the connection is
+ * lost or unfinished (a working one has nothing to reconnect), refresh, disconnect.
+ */
 function ProviderActions({ connection, name }: ProviderActionsProps) {
   const { status, connectKind } = connection;
   const live = status !== "NOT_CONNECTED" && status !== "DISCONNECTED";
   const hostedOpen = connectKind === "HOSTED_ONBOARDING" && live && status !== "CONNECTED";
   return (
     <>
-      {status === "CONNECTED" && connectKind === "HOSTED_ONBOARDING" ? null : (
+      {status === "CONNECTED" ? null : (
         <ConnectProviderButton connection={connection} name={name} />
       )}
       {hostedOpen ? <RefreshProviderButton /> : null}
@@ -86,7 +89,6 @@ export async function ProviderCard({
         {outcome ? <IntegrationNotice outcome={outcome} name={name} /> : null}
         <p>{usable ? t(`hint.${status}`, { name }) : t("hint.UNAVAILABLE", { name })}</p>
         {takes ? <p>{t("takes", { methods: takes })}</p> : null}
-        {capabilities.ledger ? <p>{t("ledger", { name })}</p> : null}
         {facts.length > 0 ? (
           <dl className="grid gap-1 text-foreground">
             {facts.map((fact) => (

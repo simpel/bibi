@@ -127,6 +127,16 @@ describe("Visma OAuth (ADR 0100)", () => {
     });
     expect(stub.calls[0]?.headers.Authorization).toBe("Bearer a");
   });
+
+  it("tells a company that has not finished its startup guide from an outage", async () => {
+    const stub = stubVisma();
+    stub.route = () => ({ status: 403, json: { ErrorCode: 4003, Message: "Startup guide" } });
+    const notReady = await visma().oauth.describeCompany({ accessToken: "a" });
+    expect(errorCode({ result: notReady })).toBe("CONFLICT");
+    stub.route = () => ({ status: 500, json: {} });
+    const down = await visma().oauth.describeCompany({ accessToken: "a" });
+    expect(errorCode({ result: down })).toBe("UNAVAILABLE");
+  });
 });
 
 describe("Visma invoicing (ADR 0100)", () => {
