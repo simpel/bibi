@@ -930,12 +930,12 @@
       "company": "Company",
       "organizationNumber": "Organization number",
       "connectedAt": "Connected",
-      "takes": "Takes: {methods}",
+      "takes": "Can handle: {methods}",
       "notConfigured": "{name} is not available on this server yet.",
       "hint": {
         "NOT_CONNECTED": "{name} is not connected.",
         "PENDING": "The connection to {name} was started but is not finished. Continue to complete it.",
-        "CONNECTED": "Used where the Payments settings say so.",
+        "CONNECTED": "Choose which service handles each payment method under Administration → Payments.",
         "EXPIRED": "{name} needs more from you or no longer accepts the connection. Reconnect to restore it.",
         "DISCONNECTED": "{name} is disconnected. Connect again to use it.",
         "UNAVAILABLE": "{name} is connected, but this server is not set up for {name} yet, so nothing can go through it."

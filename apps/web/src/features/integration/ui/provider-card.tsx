@@ -87,8 +87,8 @@ export async function ProviderCard({
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground">
         {outcome ? <IntegrationNotice outcome={outcome} name={name} /> : null}
-        <p>{usable ? t(`hint.${status}`, { name }) : t("hint.UNAVAILABLE", { name })}</p>
         {takes ? <p>{t("takes", { methods: takes })}</p> : null}
+        <p>{usable ? t(`hint.${status}`, { name }) : t("hint.UNAVAILABLE", { name })}</p>
         {facts.length > 0 ? (
           <dl className="grid gap-1 text-foreground">
             {facts.map((fact) => (

@@ -930,12 +930,12 @@
       "company": "Företag",
       "organizationNumber": "Organisationsnummer",
       "connectedAt": "Ansluten",
-      "takes": "Tar emot: {methods}",
+      "takes": "Kan hantera: {methods}",
       "notConfigured": "{name} är inte tillgänglig ännu på den här servern.",
       "hint": {
         "NOT_CONNECTED": "{name} är inte ansluten.",
         "PENDING": "Anslutningen till {name} är påbörjad men inte klar. Fortsätt för att slutföra den.",
-        "CONNECTED": "Används där inställningarna under Betalningar säger det.",
+        "CONNECTED": "Välj vilken tjänst som hanterar varje betalsätt under Administration → Betalningar.",
         "EXPIRED": "{name} behöver mer från er eller godtar inte längre anslutningen. Anslut igen för att återställa den.",
         "DISCONNECTED": "{name} är frånkopplad. Anslut igen för att använda den.",
         "UNAVAILABLE": "{name} är ansluten, men den här servern är inte inställd för {name} ännu, så inget kan gå via den."

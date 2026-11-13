@@ -3,19 +3,26 @@ import type { DemoOrg } from "./types";
 
 export type CheckDemoProvidersInput = { context: ExecuteContext; org: DemoOrg };
 
-/** ADR 0100: every provider the data files connect is CONNECTED, and nothing else but Stripe. */
+/**
+ * ADR 0100: every provider the data files connect was connected (it has its company or account)
+ * and is DISCONNECTED at the end of the seed, and nothing else but Stripe.
+ */
 async function connectionFailures({ context, org }: CheckDemoProvidersInput) {
   const rows = await context.db.providerConnection.findMany({
-    select: { provider: true, status: true, externalAccountId: true },
+    select: { provider: true, status: true, externalAccountId: true, disconnectedAt: true },
   });
   const hasMoney = org.orders.some((order) => order.money);
   const wanted = new Set<string>([...(hasMoney ? ["STRIPE"] : []), ...(org.providers ?? [])]);
   const failures: string[] = [];
   for (const provider of wanted) {
     const row = rows.find((r) => r.provider === provider);
-    if (row?.status !== "CONNECTED") {
-      failures.push(`${org.slug}: ${provider} is ${row?.status ?? "not connected"}`);
-    } else if (!row.externalAccountId && provider !== "FORTNOX" && provider !== "VISMA") {
+    const done =
+      provider === "STRIPE" ? Boolean(row?.disconnectedAt) : row?.status === "DISCONNECTED";
+    if (!done) {
+      failures.push(
+        `${org.slug}: ${provider} is ${row?.status ?? "not connected"}, not disconnected`,
+      );
+    } else if (!row?.externalAccountId && provider !== "FORTNOX" && provider !== "VISMA") {
       failures.push(`${org.slug}: ${provider} has no account id`);
     }
   }
