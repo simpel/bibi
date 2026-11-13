@@ -55,20 +55,24 @@ export async function ProviderCard({
   connectedOn,
   outcome,
 }: ProviderCardProps) {
-  const [t, providers, methods] = await Promise.all([
+  const [t, providers] = await Promise.all([
     getTranslations("integration.card"),
     getTranslations("providers"),
-    getTranslations("payment.method"),
   ]);
-  const { provider, status, configured, capabilities } = connection;
+  const { provider, status, configured } = connection;
   const name = providers(`${provider}.name`);
   const usable = isConnectionUsable({ status, configured });
+  // A working connection needs no sentence: the badge and the company facts say it.
+  const hint = !usable
+    ? t("hint.UNAVAILABLE", { name })
+    : status === "CONNECTED"
+      ? null
+      : t(`hint.${status}`, { name });
   const facts = [
     { label: t("company"), value: connection.companyName },
     { label: t("organizationNumber"), value: connection.organizationNumber },
     { label: t("connectedAt"), value: connectedOn },
   ].filter((fact) => status === "CONNECTED" && fact.value);
-  const takes = capabilities.methods.map((method) => methods(method)).join(", ");
   return (
     <Card
       data-slot="provider-card"
@@ -87,8 +91,7 @@ export async function ProviderCard({
       </CardHeader>
       <CardContent className="grid gap-3 text-sm text-muted-foreground">
         {outcome ? <IntegrationNotice outcome={outcome} name={name} /> : null}
-        {takes ? <p>{t("takes", { methods: takes })}</p> : null}
-        <p>{usable ? t(`hint.${status}`, { name }) : t("hint.UNAVAILABLE", { name })}</p>
+        {hint ? <p>{hint}</p> : null}
         {facts.length > 0 ? (
           <dl className="grid gap-1 text-foreground">
             {facts.map((fact) => (
