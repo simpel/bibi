@@ -916,6 +916,7 @@
       "connect": "Connect",
       "reconnect": "Reconnect",
       "continueOnboarding": "Continue onboarding",
+      "howToConnect": "How to connect",
       "connecting": "Preparing the connection to {name}…",
       "redirecting": "Opening {name}…",
       "refresh": "Refresh status",

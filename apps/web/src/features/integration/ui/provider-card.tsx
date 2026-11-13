@@ -13,6 +13,7 @@ import { ConnectProviderButton } from "./connect-provider-button";
 import { DisconnectProviderButton } from "./disconnect-provider-button";
 import { IntegrationNotice, type IntegrationOutcome } from "./integration-notice";
 import { IntegrationStatusBadge, isConnectionUsable } from "./integration-status-badge";
+import { ProviderHelpLink } from "./provider-help-link";
 import { RefreshProviderButton } from "./refresh-provider-button";
 
 export type ProviderCardProps = {
@@ -27,21 +28,29 @@ export type ProviderCardProps = {
 type ProviderActionsProps = Pick<ProviderCardProps, "connection"> & { name: string };
 
 /**
- * The actions the connection's status allows: connect, or reconnect only once the connection is
- * lost or unfinished (a working one has nothing to reconnect), refresh, disconnect.
+ * The actions the connection's status allows. Connected: only disconnect. Otherwise "How to
+ * connect" on the left and the primary connect (or reconnect, continue) on the right.
  */
 function ProviderActions({ connection, name }: ProviderActionsProps) {
   const { status, connectKind } = connection;
   const live = status !== "NOT_CONNECTED" && status !== "DISCONNECTED";
   const hostedOpen = connectKind === "HOSTED_ONBOARDING" && live && status !== "CONNECTED";
+  if (status === "CONNECTED") {
+    return (
+      <div className="flex flex-wrap gap-2">
+        <DisconnectProviderButton connection={connection} name={name} />
+      </div>
+    );
+  }
   return (
-    <>
-      {status === "CONNECTED" ? null : (
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <ProviderHelpLink provider={connection.provider} />
+      <div className="flex flex-wrap gap-2">
+        {live ? <DisconnectProviderButton connection={connection} name={name} /> : null}
+        {hostedOpen ? <RefreshProviderButton /> : null}
         <ConnectProviderButton connection={connection} name={name} />
-      )}
-      {hostedOpen ? <RefreshProviderButton /> : null}
-      {live ? <DisconnectProviderButton connection={connection} name={name} /> : null}
-    </>
+      </div>
+    </div>
   );
 }
 
@@ -103,11 +112,7 @@ export async function ProviderCard({
           </dl>
         ) : null}
         {configured || !usable ? null : <p>{t("notConfigured", { name })}</p>}
-        {canEdit ? (
-          <div className="flex flex-wrap gap-2">
-            <ProviderActions connection={connection} name={name} />
-          </div>
-        ) : null}
+        {canEdit ? <ProviderActions connection={connection} name={name} /> : null}
       </CardContent>
     </Card>
   );

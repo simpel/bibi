@@ -32,6 +32,7 @@ import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { connectIntegrationAction } from "../actions";
+import { ProviderHelpLink } from "./provider-help-link";
 
 type Values = Record<string, string>;
 type Output = z.infer<typeof IntegrationConnectInputSchema>;
@@ -146,6 +147,7 @@ export function ConnectFormDialog({
               ),
             )}
             <DialogFooter>
+              <ProviderHelpLink provider={provider} className="sm:mr-auto" />
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 {common("cancel")}
               </Button>

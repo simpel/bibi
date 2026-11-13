@@ -916,6 +916,7 @@
       "connect": "Anslut",
       "reconnect": "Anslut igen",
       "continueOnboarding": "Fortsätt registreringen",
+      "howToConnect": "Så ansluter du",
       "connecting": "Förbereder anslutningen till {name}…",
       "redirecting": "Öppnar {name}…",
       "refresh": "Uppdatera status",

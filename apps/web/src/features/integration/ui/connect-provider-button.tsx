@@ -58,11 +58,7 @@ export function ConnectProviderButton({ connection, name }: ConnectProviderButto
   };
   return (
     <>
-      <Button
-        variant={label === "connect" ? "default" : "outline"}
-        disabled={!connection.configured || pending}
-        onClick={start}
-      >
+      <Button disabled={!connection.configured || pending} onClick={start}>
         {t(label)}
       </Button>
       {connection.connectKind === "CREDENTIALS" ? (
