@@ -25,5 +25,6 @@ Docs: `https://developer.vismaonline.com/docs/authentication`.
 - That `/articleaccountcodings` reports `VatRatePercent` as a fraction (0.25) that it names a coding's sales accounts in `DomesticSalesSubjectToVatAccountNumber` and `DomesticSalesVatExemptAccountNumber`, that a venue can create a coding that books to 2420, and that an invoice row on `BIBI-ADV25` books to 2420 with output VAT.
 - Whether a credit invoice lowers the original's `RemainingAmount`: Bibi assumes it does and subtracts its issued credit notes; if it does not, a credited invoice would show less paid than it is.
 - Sending the invoice by email (`SentType`), not done yet: staff send it from Visma.
-- That the identity server accepts PKCE (`code_challenge`, S256): Visma's docs do not mention it.
+- PKCE (`code_challenge`, S256): checked in the sandbox (2026-11-13), the identity server accepts it.
+- A new company must finish Spiris's startup guide first: until then the company lookup answers 403 (`ForbiddenRequestException`) and connecting fails.
 - Refresh tokens: the docs give two years; Bibi assumes 30 days and refreshes early, which is harmless.
