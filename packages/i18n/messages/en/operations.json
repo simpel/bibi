@@ -286,6 +286,12 @@
       "hold": "Hold",
       "hard": "Hard (blocks)",
       "soft": "Soft (prebooked)"
+    },
+    "create": {
+      "from": "From",
+      "to": "To",
+      "createOrder": "Create order",
+      "ask": "Ask the assistant"
     }
   },
   "runSheet": {

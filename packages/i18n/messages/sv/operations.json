@@ -286,6 +286,12 @@
       "hold": "Hållning",
       "hard": "Hård (blockerar)",
       "soft": "Mjuk (preliminär)"
+    },
+    "create": {
+      "from": "Från",
+      "to": "Till",
+      "createOrder": "Skapa bokning",
+      "ask": "Fråga assistenten"
     }
   },
   "runSheet": {

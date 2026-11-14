@@ -3,7 +3,7 @@
 Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, not built yet. Orders, statuses and line states: `docs/specs/orders-statuses-and-states.md`. Entities: `docs/domain-model.md`. The click prototype shows every state below: https://claude.ai/artifact/Hmdk44ucTDo135fGNbeqqH
 
 ## The page
-- `/new/order`, permission `order:write`, opened from the create hub, the order list and an inbox message (`?fromMessage=<id>`).
+- `/new/order`, permission `order:write`, opened from the create hub, the order list, an inbox message (`?fromMessage=<id>`) and a free slot on the calendar (`?slot=<item>&date=&from=&to=`, see "Starting from the calendar").
 - **The open step is in the path**: `/new/order` (step 1, the start), `/new/order/when`, `/new/order/package`, `/new/order/custom` (only for a custom booking), `/new/order/choices` (only while the intake has the choices step), `/new/order/review`. `/new/order/message` is step 1 with the paste dialog open (see "Reading a message"), not a step; once the dialog closes the path becomes the open step's (`?fromMessage=` kept, the dialog's path replaced, not pushed). An unknown step is not found; the older `?start=message` redirects to `/new/order/message`.
   - Every step change (Next, Back, Change, a step completed by itself) adds a history entry without reloading the page, so the browser's Back and Forward move between steps. A step the intake cannot open yet opens the first step still missing input, and the URL follows.
   - A reload restores the state: past the start (or on an inbox message's intake, whose draft is its own) the local draft is restored without asking and opens the URL's step, or the first step still missing input (e.g. `/when` without a customer opens step 1).
@@ -12,7 +12,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
   - A done step collapses to a one-line summary with **Change**, which reopens it and keeps later answers.
   - Values that came from a message say "from email" while they are still what the message said.
 - Nothing is written until **Create**, except a customer or contact created in step 1.
-- **Local draft**: the page keeps the unfinished intake in the browser, per organization and member, written on every change once a customer is chosen or a message was read. On the next visit to plain `/new/order` a banner above the first step offers "Continue the draft for <customer> (<date>, <guests> guests)?" with Continue and Discard. A created order clears it. Drafts stored before the paste dialog (version 2, possibly open on the old step 0) still load, opening step 1; drafts from before add-ons (version 3) load with none (ADR 0088).
+- **Local draft**: the page keeps the unfinished intake in the browser, per organization and member, written on every change once a customer is chosen or a message was read. On the next visit to plain `/new/order` a banner above the first step offers "Continue the draft for <customer> (<date>, <guests> guests)?" with Continue and Discard. An inbox message's intake and each calendar slot's intake keep a draft of their own, so several drafts can exist side by side; a slot's draft is offered again when the same slot is picked. A created order clears it. Drafts stored before the paste dialog (version 2, possibly open on the old step 0) still load, opening step 1; drafts from before add-ons (version 3) load with none (ADR 0088).
 
 ## Reading a message (the paste dialog)
 - The sidebar's New order menu has **From a message**, which opens `/new/order/message`: step 1 with a dialog over it. An inbox message's New order opens the same path with `?fromMessage=<id>`, the text area prefilled with the message. Without a model for `order.intakeDraft` the menu entry is hidden and the path just opens step 1.
@@ -26,6 +26,14 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
 - **What the assistant read**: a small button by the message banner opens each field with its value and its quote from the message. Guessed values are marked.
 - Every guessed value becomes an open question in step 4.
 - If extraction fails (`UNAVAILABLE`), the dialog says reading isn't available and offers **Fill in by hand**, which closes it.
+
+## Starting from the calendar
+- Drawing a free slot on a resource's row of `/calendar` opens a dialog (not the assistant): the resource as title, the day, **From** and **To** to adjust (a To at or before From ends the next day; equal is refused), **Create order**, **Ask the assistant** and Cancel.
+- **Ask the assistant** keeps the earlier behaviour: the chat opens with "Book <resource> on <date> at <time>." in the composer.
+- **Create order** opens `/new/order?slot=<item>&date=<day>&from=<HH:mm>&to=<HH:mm>`. A slot that does not parse is ignored and the plain intake opens. The query stays while the step path changes.
+  - Step 1 opens as usual. Step 2 is prefilled with the day and times (none completed); the guests are still typed.
+  - Step 3 lists only the active packages with a line that books the slot's resource. With none, the empty state says no package books this resource and points to Custom booking.
+  - A new custom booking starts with one line of the resource over the order's period (the first line type), as quick-add would make it. Without `item:read`, or for an item no longer in the catalog, it starts empty.
 
 ## 1 · Who
 - **Customer, required.** A search (name) whose list stays closed until the field is focused, then shows only the 5 most recent customers while empty (`customer.list` with `recent`), and matches plus **+ New customer** while typing.

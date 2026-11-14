@@ -7,7 +7,7 @@ import type { IntakeWhen } from "./intake-state";
 /** Raw values of step 2: a plain day, two wall times and the guests as typed. */
 export type WhenFormValues = { date: string; from: string; to: string; guests: string };
 
-const TimeOfDaySchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
+export const TimeOfDaySchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 
 /**
  * Step 2's rules: the day and times core's preview takes once converted at the edge (ADR 0064),

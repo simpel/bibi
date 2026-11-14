@@ -92,6 +92,12 @@ describe("completing step 3", () => {
     expect(completion({ ...oneOff, newKey: counter() }).lines).toEqual([]);
   });
 
+  it("starts a new custom booking with the given lines", () => {
+    const oneOff = { review: null, pick: { kind: "ONE_OFF" } as const, period, entry: null };
+    const customLines = [draftFixture({ key: "slot" })];
+    expect(completion({ ...oneOff, newKey: counter(), customLines }).lines).toBe(customLines);
+  });
+
   it("keeps the lines for the same pick and replaces them for another", () => {
     const same = completion({ review, pick: pkg, period, entry, newKey: counter() });
     expect(same.lines).toBe(review.lines);

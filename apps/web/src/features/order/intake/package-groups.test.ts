@@ -8,6 +8,7 @@ const option = ({ id }: { id: string }): PackageOption => ({
   minGuests: null,
   maxGuests: null,
   lineNames: [],
+  itemIds: [],
   entityTypeId: "tt",
   fields: {},
 });

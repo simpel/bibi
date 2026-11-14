@@ -15,6 +15,7 @@ import { Suspense, use, useCallback, useEffect, useMemo, useState } from "react"
 import { useAssistant } from "@/features/assistant/state/assistant-context";
 import { OrderSheet } from "@/features/order/sheet/ui/order-sheet";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
+import { type PickedSlot, SlotCreateDialog } from "./slot-create-dialog";
 import { useCalendarText } from "./use-calendar-text";
 import { useLoadedBookings } from "./use-loaded-bookings";
 
@@ -76,7 +77,10 @@ function keepInPath({ from, to }: { from: string; to: string }) {
   window.history.replaceState(window.history.state, "", `${path}/${from}/${to}`);
 }
 
-/** The availability calendar on the page: loads days as it scrolls, opens orders, books. */
+/**
+ * The availability calendar on the page: loads days as it scrolls, opens orders, and a drawn
+ * free slot opens a dialog to create an order from it.
+ */
 export function CalendarView(props: CalendarViewProps) {
   const { assets, load, range, today, openingHours } = props;
   const t = useTranslations("calendar");
@@ -87,6 +91,12 @@ export function CalendarView(props: CalendarViewProps) {
   const { bookings, values, failed, onRangeChange, seed } = useLoadedBookings({ range });
   const onShownChange = useCallback(keepInPath, []);
   const [open, setOpen] = useState<AssetBooking | null>(null);
+  const [picked, setPicked] = useState<PickedSlot | null>(null);
+  const ask = ({ slot }: { slot: PickedSlot }) => {
+    setPicked(null);
+    const time = `${slot.start}–${slot.end}`;
+    prefill({ text: t("bookPrompt", { space: slot.asset.name, date: slot.date, time }) });
+  };
   return (
     <CalendarLabelsProvider labels={labels}>
       <Suspense fallback={null}>
@@ -102,10 +112,9 @@ export function CalendarView(props: CalendarViewProps) {
           {...(openingHours ? { openingHours } : {})}
           selectedId={open?.id}
           onOpen={setOpen}
-          onAdd={({ asset, date, start, end }) =>
-            prefill({ text: t("bookPrompt", { space: asset.name, date, time: `${start}–${end}` }) })
-          }
+          onAdd={setPicked}
         />
+        <SlotCreateDialog slot={picked} onClose={() => setPicked(null)} onAsk={ask} />
         <OrderSheet orderId={open?.orderId ?? null} onClose={() => setOpen(null)} />
         <CalendarFooter bookings={bookings} failed={failed} />
       </div>

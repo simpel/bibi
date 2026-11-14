@@ -14,6 +14,7 @@ import { getSessionState } from "@/server/session";
 import type { CustomerOption } from "../customer/actions";
 import type { IntakeCatalog } from "./intake/catalog";
 import { draftKey } from "./intake/intake-draft";
+import type { IntakeSlot } from "./intake/intake-slot";
 import type { PackageOption } from "./intake/package-groups";
 import { loadIntakeCatalog } from "./load-intake-catalog";
 
@@ -31,6 +32,8 @@ export type IntakeData = {
   draftKey: string;
   /** Items, types, need values and members for step 4 and the line dialog. */
   catalog: IntakeCatalog;
+  /** The calendar slot the intake starts from, or null (spec "Starting from the calendar"). */
+  slot: IntakeSlot | null;
 };
 
 const typesOf = ({ base }: { base: "CUSTOMER" | "CONTACT" }) => loadEntityTypesOf({ base });
@@ -46,6 +49,7 @@ const toPackage = ({ template }: { template: OrderTemplateDto }): PackageOption 
   entityTypeId: template.entityTypeId,
   fields: template.fields,
   lineNames: template.lines.map(({ name }) => name),
+  itemIds: template.lines.flatMap(({ itemId }) => (itemId ? [itemId] : [])),
 });
 
 /** A refusal for a list the page can work without counts as an empty list. */
@@ -79,6 +83,7 @@ export async function loadIntakeData(): Promise<Result<IntakeData>> {
       canCreatePackage: can({ abilities, permission: "template:write" }),
       draftKey: draftKey({ organizationId, userId: abilities.userId ?? "" }),
       catalog: catalog.value,
+      slot: null,
     },
   };
 }

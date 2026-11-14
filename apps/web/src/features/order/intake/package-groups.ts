@@ -11,6 +11,8 @@ export type PackageOption = {
   fields: Record<string, unknown>;
   /** Its lines' names in order, for the card's summary. */
   lineNames: string[];
+  /** The items its lines book: the calendar's resource filters by them. */
+  itemIds: string[];
 };
 
 export type PackageCardData = { option: PackageOption; entry: PreviewEntry };

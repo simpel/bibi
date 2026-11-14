@@ -5,8 +5,9 @@ import { InlineLoadError } from "@/components/states/inline-load-error";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { Completion } from "./complete-step";
 import { CustomBookingButton } from "./custom-booking-button";
+import type { DraftLine, NewKey } from "./draft-line";
 import { FollowUpDialog } from "./follow-up-dialog";
-import { periodOf } from "./intake-period";
+import { type IntakePeriod, periodOf } from "./intake-period";
 import type { IntakePick, IntakeWhen, IntakeWho } from "./intake-state";
 import { NoPackages } from "./no-packages";
 import { PackageActions } from "./package-actions";
@@ -38,9 +39,13 @@ export type PackageStepProps = {
   onPick: (input: { pick: IntakePick; when?: IntakeWhen }) => void;
   onUnpick: () => void;
   onNext: (input: Completion) => void;
+  /** The lines a new custom booking starts with (the calendar slot's resource). */
+  customLines: (input: { period: IntakePeriod; newKey: NewKey }) => DraftLine[];
+  /** Started from a calendar slot: the packages are only those that book its resource. */
+  fromSlot: boolean;
 };
 
-type BodyProps = Pick<PackageStepProps, "when" | "pick" | "packages" | "timeZone"> & {
+type BodyProps = Pick<PackageStepProps, "when" | "pick" | "packages" | "timeZone" | "fromSlot"> & {
   suggestedId: string | null;
   preview: PackagePreview;
   onPackage: (input: { card: PackageCardData }) => void;
@@ -51,7 +56,7 @@ function PreviewBody({ when, timeZone, preview, ...props }: BodyProps) {
   const dates = useDateTimeFormat();
   const period = periodOf({ when, timeZone });
   const span = period ? dates.dateTimeRange({ start: period.startsAt, end: period.endsAt }) : "";
-  if (props.packages.length === 0) return <NoPackages />;
+  if (props.packages.length === 0) return <NoPackages fromSlot={props.fromSlot} />;
   if (preview.status === "loading") return <Skeleton className="h-32 w-full" />;
   if (preview.status === "error") return <InlineLoadError errorKey={preview.errorKey} />;
   if (preview.status !== "ready") return null;

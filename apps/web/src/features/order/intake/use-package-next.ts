@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { type Completion, completion, replacesLines } from "./complete-step";
-import { periodOf } from "./intake-period";
+import type { DraftLine, NewKey } from "./draft-line";
+import { type IntakePeriod, periodOf } from "./intake-period";
 import type { IntakePick, IntakeWhen } from "./intake-state";
 import type { IntakeReview } from "./review-state";
 import type { PackagePreview } from "./use-package-preview";
@@ -13,6 +14,8 @@ export type UsePackageNextInput = {
   preview: PackagePreview;
   onPick: (input: { pick: IntakePick }) => void;
   onNext: (input: Completion) => void;
+  /** The lines a new custom booking starts with (the calendar slot's resource). */
+  customLines: (input: { period: IntakePeriod; newKey: NewKey }) => DraftLine[];
 };
 
 /** The picked package's entry in the preview; null for a custom booking or while it loads. */
@@ -36,6 +39,7 @@ export function usePackageNext({
   preview,
   onPick,
   onNext,
+  customLines,
 }: UsePackageNextInput) {
   const [pending, setPending] = useState<IntakePick | null>(null);
   const entry = entryOf({ pick, preview });
@@ -47,7 +51,8 @@ export function usePackageNext({
     if (!period || (next.kind === "PACKAGE" && !found)) return;
     if (next.kind === "ONE_OFF") onPick({ pick: next });
     const newKey = () => crypto.randomUUID();
-    onNext(completion({ review, pick: next, period, entry: found, newKey }));
+    const custom = next.kind === "ONE_OFF" ? customLines({ period, newKey }) : [];
+    onNext(completion({ review, pick: next, period, entry: found, newKey, customLines: custom }));
   };
   const ask = ({ next }: { next: IntakePick }) =>
     replacesLines({ review, pick: next }) > 0 ? setPending(next) : finish({ next });

@@ -74,6 +74,10 @@
             "question": "Kan jag skapa en order direkt från tavlan?",
             "answer": "Ja. Längst ner i kolumnen där nya ordrar hamnar finns + Skapa bokning. Den öppnar samma sida som Skapa bokning i menyn, och ordern hamnar i den första kolumnen."
           },
+          "createFromCalendar": {
+            "question": "Kan jag skapa en order från en ledig tid i kalendern?",
+            "answer": "Ja. Dra över en ledig tid på en resurs rad i kalendern. En dialog visar resursen och dagen, och du kan justera tiderna.\nVälj Skapa bokning för att öppna ordersidan med datum och tider ifyllda. Bara mallar som innehåller resursen visas, och en egen bokning börjar med den. Fråga assistenten öppnar chatten med samma tid i stället."
+          },
           "holds": {
             "question": "Vad är skillnaden mellan preliminär och definitiv bokning av en lokal?",
             "answer": "En preliminär bokning håller en lokal åt en kund som inte har bestämt sig än. Andra ser den, och den har ett sista datum så att lokalen inte blir blockerad för alltid.\nEn definitiv bokning blockerar lokalen helt. Vilka statusar som ger preliminär eller definitiv bokning ställer er administratör in."

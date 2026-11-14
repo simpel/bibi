@@ -4,6 +4,7 @@ import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
 import { choiceKeysOf } from "./choice-lines";
 import { PackageStep } from "./package-step";
 import { type StepsProps, sectionProps } from "./section-props";
+import { slotLines } from "./slot-lines";
 import { StepBack } from "./step-back";
 
 /**
@@ -28,6 +29,8 @@ export function PackageSection({ data, state, dispatch, summaries }: StepsProps)
       pickSummary={summaries.pick}
       onPick={(input) => dispatch({ type: "pick", ...input })}
       onUnpick={() => dispatch({ type: "unpick" })}
+      fromSlot={data.slot !== null}
+      customLines={({ period, newKey }) => slotLines({ data, period, newKey })}
       onNext={(done) => {
         // A one-off builds its lines in review: no choices step (ADR 0089).
         const items = pick?.kind === "PACKAGE" ? data.catalog.items : [];

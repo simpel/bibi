@@ -320,6 +320,8 @@
       },
       "none": "Inga mallar ännu",
       "noneDescription": "Gör en egen bokning, eller skapa en mall att återanvända.",
+      "noneForSlot": "Ingen mall bokar den här resursen",
+      "noneForSlotDescription": "Gör en egen bokning: den börjar med resursen du valde i kalendern.",
       "createPackage": "Skapa mall",
       "picked": "Valt: {summary}",
       "tabs": {

@@ -74,6 +74,10 @@
             "question": "Can I create an order from the pipeline board?",
             "answer": "Yes. At the bottom of the column where new orders start there is + Create order. It opens the same page as Create order in the menu, and the order lands in that first column."
           },
+          "createFromCalendar": {
+            "question": "Can I create an order from a free time in the calendar?",
+            "answer": "Yes. Drag over a free time on a resource's row in the calendar. A dialog shows the resource and day, and you can adjust the times.\nChoose Create order to open the order page with the date and times filled in. Only packages that include that resource are shown, and a custom booking starts with it. Ask the assistant opens the chat with the same time instead."
+          },
           "holds": {
             "question": "What is the difference between a soft and a hard hold?",
             "answer": "A soft hold reserves a room for a customer who hasn't decided yet. Others can see it, and it has an expiry date so the room doesn't stay blocked forever.\nA hard hold blocks the room completely. Which statuses give a soft or a hard hold is set up by your admin."

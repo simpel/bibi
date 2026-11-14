@@ -320,6 +320,8 @@
       },
       "none": "No packages yet",
       "noneDescription": "Make a custom booking, or create a package to reuse.",
+      "noneForSlot": "No package books this resource",
+      "noneForSlotDescription": "Make a custom booking: it starts with the resource you picked in the calendar.",
       "createPackage": "Create package",
       "picked": "Picked: {summary}",
       "tabs": {
