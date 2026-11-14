@@ -1,5 +1,9 @@
 export const ROUTES = {
   home: "/",
+  /** The assistant, full width (ADR 0110); `/` is My work. */
+  assistant: "/assistant",
+  /** My work for a range of days: `/my-work/{from}/{to}`; `/` is today. */
+  myWork: "/my-work",
   /** Opens the active organization (or welcome, or login); `/` is the public front page (ADR 0073). */
   app: "/select-organization",
   chats: "/chats",

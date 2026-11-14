@@ -30,6 +30,7 @@ import { lineAllocationRoutes } from "./features/line-allocation/rest";
 import { memberRoutes } from "./features/member/rest";
 import { memberProfileRoutes } from "./features/member-profile/rest";
 import { messageRoutes } from "./features/message/rest";
+import { myWorkRoutes } from "./features/my-work/rest";
 import { notificationRoutes } from "./features/notification/rest";
 import { notificationPreferenceRoutes } from "./features/notification-preference/rest";
 import { oauthGrantRoutes } from "./features/oauth-grant/rest";
@@ -68,6 +69,7 @@ const boardRoutes = [
   ...calendarRoutes,
   ...settingsRoutes,
   ...dashboardRoutes,
+  ...myWorkRoutes,
   ...financeRoutes,
   ...boardCrudRoutes,
   ...boardPhaseRoutes,

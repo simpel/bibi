@@ -1,7 +1,7 @@
 # 0035 – Chat-first navigation
 
 - **Date:** 2026-10-17
-- **Status:** Accepted
+- **Status:** Accepted; amended by 0110 (`/` is My work, the assistant is on `/assistant`)
 - **Amends:** 0007 (the assistant becomes the home of the app, not only a side panel)
 
 ## Context

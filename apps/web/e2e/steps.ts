@@ -125,9 +125,9 @@ export async function signUpWithOrganization({ page, name }: PageInput & { name:
   await createOrganization({ page, name });
 }
 
-/** Opens the assistant, which lives on the start page. */
+/** Opens the assistant on `/assistant` (ADR 0110). */
 export async function openAssistant({ page }: PageInput) {
-  await gotoApp({ page, path: "/" });
+  await gotoApp({ page, path: "/assistant" });
   await expect(page.locator(PANEL)).toBeVisible();
 }
 

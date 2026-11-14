@@ -35,6 +35,7 @@ import { MemberCardView } from "./member-card-view";
 import { MemberProfileCardView } from "./member-profile-card-view";
 import { MemberTableView } from "./member-table-view";
 import { MONEY_COMPONENTS } from "./money-components";
+import { MyWorkView } from "./my-work-view";
 import { NotificationListView } from "./notification-list-view";
 import { OccupancyCardView } from "./occupancy-card-view";
 import { OccupancyTableView } from "./occupancy-table-view";
@@ -112,6 +113,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "notification-list": NotificationListView,
   ...MONEY_COMPONENTS,
   "dashboard-summary": DashboardSummaryView,
+  "my-work": MyWorkView,
   "entity-type-table": EntityTypeTableView,
   "entity-type-card": EntityTypeCardView,
   "field-definition-table": FieldDefinitionTableView,

@@ -73,6 +73,7 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   userPreference: "self",
   notification: "self",
   notificationPreference: "self",
+  myWork: "self",
   userSettings: "self",
   profile: "self",
   workingHours: "self",

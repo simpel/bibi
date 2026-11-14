@@ -7,15 +7,15 @@ export type UseConversationActionsInput = {
   startNew: () => void;
   openConversation: AssistantContextValue["selectConversation"];
   sendMessage: (input: { text: string }) => Promise<void>;
-  goHome: () => void;
+  openAssistant: () => void;
 };
 
-/** New conversation, the ⌘K one-shot `ask` and opening a stored conversation on the start page. */
+/** New conversation, the ⌘K one-shot `ask` and opening a stored conversation on the assistant page. */
 export function useConversationActions({
   startNew,
   openConversation,
   sendMessage,
-  goHome,
+  openAssistant,
 }: UseConversationActionsInput) {
   const newConversation = useCallback(() => {
     startNew();
@@ -23,18 +23,18 @@ export function useConversationActions({
   const ask = useCallback(
     ({ text }: { text: string }) => {
       startNew();
-      goHome();
+      openAssistant();
       void sendMessage({ text });
     },
-    [startNew, goHome, sendMessage],
+    [startNew, openAssistant, sendMessage],
   );
   const selectConversation = useCallback(
     async ({ id }: { id: string }) => {
       const errorKey = await openConversation({ id });
-      if (!errorKey) goHome();
+      if (!errorKey) openAssistant();
       return errorKey;
     },
-    [openConversation, goHome],
+    [openConversation, openAssistant],
   );
   return { newConversation, ask, selectConversation };
 }

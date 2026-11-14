@@ -84,7 +84,15 @@ function withoutOrg({ value }: { value: Json }): Json {
  * entities' commands) and change sets (a batch of other commands, ADR 0049): no rows of their own
  * to create and read back through each surface.
  */
-const VIEWS = new Set(["search", "pipeline", "finance", "pipelineSetup", "changeSet", "settings"]);
+const VIEWS = new Set([
+  "search",
+  "pipeline",
+  "finance",
+  "pipelineSetup",
+  "changeSet",
+  "settings",
+  "myWork",
+]);
 
 function coreEntityTypes(): string[] {
   return [

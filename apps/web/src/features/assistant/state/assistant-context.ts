@@ -9,17 +9,17 @@ import type { ComposerDraft } from "./use-prefill";
 export type AssistantContextValue = {
   session: ReturnType<typeof useAssistantChat>;
   conversations: ReturnType<typeof useConversations>;
-  /** Navigates to the start page, where the assistant lives. */
-  goHome: () => void;
-  /** ⌘K hand-off: a fresh conversation with this one question; goes to the start page. */
+  /** Navigates to the assistant page (ADR 0110). */
+  openAssistant: () => void;
+  /** ⌘K hand-off: a fresh conversation with this one question; goes to the assistant page. */
   ask: (input: { text: string }) => void;
-  /** A fresh conversation with this text in the message box, not sent; goes to the start page. */
+  /** A fresh conversation with this text in the message box, not sent; goes to the assistant page. */
   prefill: (input: { text: string }) => void;
   /** The latest prefilled text for the composer. */
   draft: ComposerDraft | null;
   /** Starts an empty conversation (created on the first message). */
   newConversation: () => void;
-  /** Opens a stored conversation on the start page; resolves to an error key when it cannot be loaded. */
+  /** Opens a stored conversation on the assistant page; resolves to an error key when it cannot be loaded. */
   selectConversation: (input: { id: string }) => Promise<ErrorKey | null>;
 };
 

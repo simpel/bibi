@@ -3,15 +3,15 @@ import { setRequestLocale } from "next-intl/server";
 import { AssistantHome } from "@/features/assistant/ui/assistant-home";
 import { pageTitle } from "@/lib/page-metadata";
 
-type HomePageProps = { params: Promise<{ locale: string }> };
+type AssistantPageProps = { params: Promise<{ locale: string }> };
 
-export async function generateMetadata({ params }: HomePageProps) {
+export async function generateMetadata({ params }: AssistantPageProps) {
   const { locale } = await params;
   return pageTitle({ locale, namespace: "nav", key: "assistant" });
 }
 
-/** The app's home is the assistant, full width (ADR 0035). */
-export default async function HomePage({ params }: HomePageProps) {
+/** The assistant, full width (ADR 0035, moved off `/` by ADR 0110). */
+export default async function AssistantPage({ params }: AssistantPageProps) {
   setRequestLocale(resolveLocale({ value: (await params).locale }));
   return <AssistantHome />;
 }

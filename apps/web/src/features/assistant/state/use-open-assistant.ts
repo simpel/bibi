@@ -4,8 +4,8 @@ import { useCallback } from "react";
 import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
-/** Navigates to the start page, where the assistant lives (ADR 0035). */
-export function useGoHome() {
+/** Navigates to the assistant page (ADR 0110). */
+export function useOpenAssistant() {
   const router = useRouter();
-  return useCallback(() => router.push(ROUTES.home), [router]);
+  return useCallback(() => router.push(ROUTES.assistant), [router]);
 }

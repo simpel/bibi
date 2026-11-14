@@ -5,18 +5,18 @@ import { useCallback, useState } from "react";
 /** Text put into the composer for the user to edit and send; `id` changes on every prefill. */
 export type ComposerDraft = { id: number; text: string };
 
-export type UsePrefillInput = { newConversation: () => void; goHome: () => void };
+export type UsePrefillInput = { newConversation: () => void; openAssistant: () => void };
 
 /** Opens a fresh conversation with `text` in the message box, unsent (e.g. the calendar's empty slot). */
-export function usePrefill({ newConversation, goHome }: UsePrefillInput) {
+export function usePrefill({ newConversation, openAssistant }: UsePrefillInput) {
   const [draft, setDraft] = useState<ComposerDraft | null>(null);
   const prefill = useCallback(
     ({ text }: { text: string }) => {
       newConversation();
-      goHome();
+      openAssistant();
       setDraft((previous) => ({ id: (previous?.id ?? 0) + 1, text }));
     },
-    [newConversation, goHome],
+    [newConversation, openAssistant],
   );
   return { draft, prefill };
 }

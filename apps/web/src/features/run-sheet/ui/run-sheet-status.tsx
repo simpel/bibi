@@ -23,7 +23,7 @@ export type RunSheetStatusProps = {
   dates: DateTimeFormat;
 };
 
-const BADGE_VARIANTS: Record<RunSheetStatusEnum, BadgeProps["variant"]> = {
+export const RUN_SHEET_BADGE_VARIANTS: Record<RunSheetStatusEnum, BadgeProps["variant"]> = {
   DRAFT: "secondary",
   BLOCKED: "destructive",
   PENDING: "outline",
@@ -49,7 +49,7 @@ export function RunSheetStatus({ runSheet, dates: format }: RunSheetStatusProps)
 
   return (
     <div data-slot="run-sheet-status" className="flex flex-wrap items-center gap-2 text-sm">
-      <Badge variant={BADGE_VARIANTS[status]}>
+      <Badge variant={RUN_SHEET_BADGE_VARIANTS[status]}>
         {t(`status.${status.toLowerCase()}` as Parameters<typeof t>[0])}
       </Badge>
       <Badge variant="outline" className="tabular-nums">

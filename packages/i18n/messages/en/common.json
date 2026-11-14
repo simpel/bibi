@@ -126,6 +126,7 @@
     "validationUnmapped": "Could not save: {message}"
   },
   "nav": {
+    "myWork": "My work",
     "billing": "Billing",
     "dashboard": "Data",
     "pipeline": "Pipeline",

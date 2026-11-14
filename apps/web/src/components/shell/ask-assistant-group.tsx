@@ -11,7 +11,7 @@ export type AskAssistantGroupProps = {
 
 /**
  * "Ask assistant": free text + Enter sends a one-shot question (new conversation) and goes to
- * the start page where it is answered. The item's cmdk `value` is the query itself so it scores best and is preselected,
+ * the assistant page where it is answered. The item's cmdk `value` is the query itself so it scores best and is preselected,
  * and `forceMount` keeps it visible whatever the navigation filter says.
  */
 export function AskAssistantGroup({ query, onAsk }: AskAssistantGroupProps) {

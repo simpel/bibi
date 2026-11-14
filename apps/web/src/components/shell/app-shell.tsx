@@ -18,7 +18,7 @@ export type AppShellProps = {
 
 /**
  * Authenticated layout: shadcn sidebar, top bar and content; the assistant itself lives on the
- * start page. The live notification state wraps it all, for the bell and the list (ADR 0094).
+ * assistant page. The live notification state wraps it all, for the bell and the list (ADR 0094).
  */
 export function AppShell({ organizationId, user, access, counts, children }: AppShellProps) {
   return (
