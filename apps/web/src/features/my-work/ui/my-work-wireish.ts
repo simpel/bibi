@@ -12,10 +12,14 @@ export type MyWorkTodoWireish = {
   expiringHolds: Dated<Item<MyWorkTodo["expiringHolds"]>, "holdsUntil">[];
   quotes: Datable<Dated<Item<MyWorkTodo["quotes"]>, "sentAt">, "validUntil">[] | null;
   messages: Dated<Item<MyWorkTodo["messages"]>, "latestAt">[] | null;
+  totals: MyWorkTodo["totals"];
 };
 
 /** The caller's work as the page or the assistant's card has it, so both share the panels. */
-export type MyWorkWireish = Pick<MyWork, "from" | "to" | "timeZone" | "truncated"> & {
+export type MyWorkWireish = Pick<
+  MyWork,
+  "from" | "to" | "timeZone" | "page" | "limit" | "rowsTotal"
+> & {
   rows: MyWorkRowWireish[] | null;
   todo: MyWorkTodoWireish;
 };

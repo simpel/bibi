@@ -1,3 +1,4 @@
+import { INBOX_ROUTE } from "@/lib/inbox-routes";
 import { orderRoute, quoteRoute, ROUTES } from "@/lib/routes";
 import type { MyWorkTodoWireish } from "../ui/my-work-wireish";
 
@@ -68,4 +69,31 @@ export function todoRows({
     at: time({ value: row.latestAt }),
   }));
   return [...runSheets, ...holds, ...quotes, ...messages].sort((a, b) => a.at - b.at);
+}
+
+export type TodoMore = {
+  key: string;
+  href: string;
+  count: number;
+  part: "runSheets" | "expiringHolds" | "quotes" | "messages";
+};
+
+/** For each To do part with more than it lists, how many more and where the full list is. */
+export function todoMore({ todo }: { todo: MyWorkTodoWireish }): TodoMore[] {
+  const shown = {
+    runSheets: todo.runSheets?.length ?? 0,
+    expiringHolds: todo.expiringHolds.length,
+    quotes: todo.quotes?.length ?? 0,
+    messages: todo.messages?.length ?? 0,
+  };
+  const hrefs = {
+    runSheets: `${ROUTES.runSheets}?q=${encodeURIComponent("involves:me is:current is:unsent")}`,
+    expiringHolds: ROUTES.orders,
+    quotes: ROUTES.quotes,
+    messages: INBOX_ROUTE,
+  };
+  return (["runSheets", "expiringHolds", "quotes", "messages"] as const).flatMap((part) => {
+    const count = (todo.totals[part] ?? 0) - shown[part];
+    return count > 0 ? [{ key: part, part, href: hrefs[part], count }] : [];
+  });
 }

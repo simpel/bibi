@@ -27,7 +27,9 @@ describe("cross-organization isolation: my work", () => {
       expiringHolds: [],
       quotes: [],
       messages: [],
+      totals: { runSheets: 0, expiringHolds: 0, quotes: 0, messages: 0 },
     });
+    expect(theirs.data.rowsTotal).toBe(0);
     expect(theirs.data.unreadNotifications).toBe(0);
     expect(theirs.data.notifications).toEqual([]);
   });

@@ -2,7 +2,8 @@ import type { DateTimeFormat } from "@bibi/core/schemas";
 import { Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { AttentionRow } from "@/features/dashboard/ui/attention-row";
-import { todoRows } from "../lib/todo-rows";
+import { Link } from "@/lib/navigation";
+import { todoMore, todoRows } from "../lib/todo-rows";
 import type { MyWorkWireish } from "./my-work-wireish";
 
 export type MyWorkTodoProps = {
@@ -45,6 +46,15 @@ export function MyWorkTodo({ work, dates }: MyWorkTodoProps) {
             ))}
           </ul>
         )}
+        {todoMore({ todo: work.todo }).map((more) => (
+          <Link
+            key={more.key}
+            href={more.href}
+            className="mt-2 block text-sm font-medium hover:underline"
+          >
+            {t(`more.${more.part}`, { count: more.count })}
+          </Link>
+        ))}
       </CardContent>
     </Card>
   );

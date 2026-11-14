@@ -20,7 +20,8 @@ const as = ({ context, userId }: { context: ExecuteContext; userId: string }) =>
   now: () => AT_SETUP_DAY,
 });
 
-const view = ({ context, input = DAY }: { context: ExecuteContext; input?: typeof DAY }) =>
+type ViewInput = { from: string; to: string; page?: number; limit?: number };
+const view = ({ context, input = DAY }: { context: ExecuteContext; input?: ViewInput }) =>
   execute({ operation: viewMyWork, input, context });
 
 type Assign = {
@@ -96,6 +97,21 @@ describe("myWork.view (spec: home)", () => {
       result: await view({ context: as({ context, userId: anna }), input: next }),
     });
     expect(other.rows).toEqual([]);
+  });
+
+  it("pages the rows and counts every to do part", async () => {
+    const { context, anna, runSheet } = await setup();
+    const me = as({ context, userId: anna });
+    const first = unwrap({
+      result: await view({ context: me, input: { ...DAY, page: 1, limit: 1 } }),
+    });
+    expect(first).toMatchObject({ page: 1, limit: 1, rowsTotal: 1 });
+    expect(first.rows).toEqual([expect.objectContaining({ runSheetId: runSheet.id })]);
+    const second = unwrap({
+      result: await view({ context: me, input: { ...DAY, page: 2, limit: 1 } }),
+    });
+    expect(second).toMatchObject({ rows: [], rowsTotal: 1 });
+    expect(first.todo.totals).toEqual({ runSheets: 1, expiringHolds: 0, quotes: 0, messages: 0 });
   });
 
   it("refuses a period longer than 14 days and an API key", async () => {

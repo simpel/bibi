@@ -301,7 +301,6 @@
       "title": "My run sheets",
       "description": "What to prepare, run and set up, from every run sheet that concerns you.",
       "empty": "Nothing on your run sheets in this period.",
-      "truncated": "Showing the first {count} rows.",
       "dayCount": "{count, plural, one {# thing} other {# things}}",
       "untimed": "All day",
       "changed": "Changed",
@@ -334,7 +333,13 @@
       "quoteDetail": "Sent {sent}",
       "quoteValid": "Sent {sent} · valid until {valid}",
       "messages": "{count, plural, one {# unread message} other {# unread messages}} on {order}",
-      "messagesDetail": "Latest {date}"
+      "messagesDetail": "Latest {date}",
+      "more": {
+        "runSheets": "See all {count, plural, one {# more run sheet} other {# more run sheets}} to send",
+        "expiringHolds": "See {count, plural, one {# more order} other {# more orders}} with holds running out",
+        "quotes": "See {count, plural, one {# more quote} other {# more quotes}} waiting",
+        "messages": "See {count, plural, one {# more order} other {# more orders}} with unread messages"
+      }
     },
     "changes": {
       "title": "What changed",
@@ -343,6 +348,12 @@
     },
     "card": {
       "open": "Open My work"
+    },
+    "pages": {
+      "label": "Run sheet pages",
+      "range": "{first}–{last} of {total}",
+      "previous": "Previous",
+      "next": "Next"
     }
   },
   "occupancy": {

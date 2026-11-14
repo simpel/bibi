@@ -9,6 +9,7 @@ import {
   MyWorkRowSchema,
   MyWorkRunSheetTaskSchema,
   type MyWorkTodo,
+  MyWorkTodoSchema,
   viewMyWork,
 } from "@bibi/core";
 import type { z } from "zod";
@@ -58,6 +59,12 @@ const HoldRef = objectFromSchema<ExpiringHold>({
   description: "An order of the caller's whose expiring holds run out soon.",
 });
 
+const TotalsRef = objectFromSchema<MyWorkTodo["totals"]>({
+  name: "MyWorkTodoTotals",
+  schema: MyWorkTodoSchema.shape.totals,
+  description: "How many of each To do part there are; each list holds at most five.",
+});
+
 const TodoRef = builder.objectRef<MyWorkTodo>("MyWorkTodo").implement({
   description: "What the caller must act on. Parts the caller may not read are null.",
   fields: (t) => ({
@@ -65,6 +72,7 @@ const TodoRef = builder.objectRef<MyWorkTodo>("MyWorkTodo").implement({
     expiringHolds: t.field({ type: [HoldRef], resolve: (todo) => todo.expiringHolds }),
     quotes: t.field({ type: [QuoteRef], nullable: true, resolve: (todo) => todo.quotes }),
     messages: t.field({ type: [MessagesRef], nullable: true, resolve: (todo) => todo.messages }),
+    totals: t.field({ type: TotalsRef, resolve: (todo) => todo.totals }),
   }),
 });
 
@@ -75,7 +83,9 @@ const MyWorkRef = builder.objectRef<MyWork>("MyWork").implement({
     to: t.exposeString("to"),
     timeZone: t.exposeString("timeZone"),
     rows: t.field({ type: [RowRef], nullable: true, resolve: (work) => work.rows }),
-    truncated: t.exposeBoolean("truncated"),
+    page: t.exposeInt("page"),
+    limit: t.exposeInt("limit"),
+    rowsTotal: t.exposeInt("rowsTotal"),
     todo: t.field({ type: TodoRef, resolve: (work) => work.todo }),
     unreadNotifications: t.exposeInt("unreadNotifications"),
     notifications: t.field({ type: [NotificationRef], resolve: (work) => work.notifications }),

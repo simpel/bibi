@@ -301,7 +301,6 @@
       "title": "Mina körscheman",
       "description": "Vad du ska förbereda, hålla i och ställa i ordning, från alla körscheman som rör dig.",
       "empty": "Inget på dina körscheman under perioden.",
-      "truncated": "Visar de första {count} raderna.",
       "dayCount": "{count, plural, one {# sak} other {# saker}}",
       "untimed": "Hela dagen",
       "changed": "Ändrad",
@@ -334,7 +333,13 @@
       "quoteDetail": "Skickad {sent}",
       "quoteValid": "Skickad {sent} · giltig till {valid}",
       "messages": "{count, plural, one {# oläst meddelande} other {# olästa meddelanden}} på {order}",
-      "messagesDetail": "Senast {date}"
+      "messagesDetail": "Senast {date}",
+      "more": {
+        "runSheets": "Visa {count, plural, one {# körschema till} other {# körscheman till}} att skicka",
+        "expiringHolds": "Visa {count, plural, one {# bokning till} other {# bokningar till}} där preliminärbokningar går ut",
+        "quotes": "Visa {count, plural, one {# offert till} other {# offerter till}} som väntar",
+        "messages": "Visa {count, plural, one {# bokning till} other {# bokningar till}} med olästa meddelanden"
+      }
     },
     "changes": {
       "title": "Vad som har ändrats",
@@ -343,6 +348,12 @@
     },
     "card": {
       "open": "Öppna Mitt arbete"
+    },
+    "pages": {
+      "label": "Sidor med körschemarader",
+      "range": "{first}–{last} av {total}",
+      "previous": "Föregående",
+      "next": "Nästa"
     }
   },
   "occupancy": {

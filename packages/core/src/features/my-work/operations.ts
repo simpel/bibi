@@ -30,11 +30,12 @@ export const viewMyWork = defineOperation({
   name: "myWork.view",
   kind: "query",
   description:
-    "The caller's own work for a period of days (at most 14): every item row of the current run " +
-    "sheets that concern them, by time (what to prepare, run or set up), with each row's counts, " +
-    "status and why it concerns them; what they must act on (run sheets to send or unblock, holds " +
-    "running out, quotes waiting on the customer, unread customer messages on their orders); and " +
-    "their latest unread notifications. Concerns = main assignee or follower of the order, " +
+    "The caller's own work for a period of days (at most 14). Rows: the item rows of the current " +
+    "run sheets that concern them (what to prepare, run or set up), by time, one page at a time " +
+    "(page, limit; rowsTotal counts all), each with its counts, status and why it concerns them. " +
+    "Todo: what they must act on (run sheets to send or unblock, holds running out, quotes waiting " +
+    "on the customer, unread customer messages on their orders), at most 5 of each with totals. " +
+    "Also their latest unread notifications. Concerns = main assignee or follower of the order, " +
     "assignee or follower of the run sheet's responsibility, staffed on the line, assignee or " +
     "follower of the line's item, or recipient of the run sheet. Rows are null without " +
     "runSheet:read, quotes without quote:read, messages without inbox:read.",
@@ -67,7 +68,9 @@ export const viewMyWork = defineOperation({
     const concerns = await concernsOf({ context, userId: user.value, window: reach });
     const window = { start: period.start, end: period.end };
     const [rows, todo, unread, latest] = await Promise.all([
-      canView({ context, feature: "runSheet" }) ? myRows({ context, concerns, window }) : null,
+      canView({ context, feature: "runSheet" })
+        ? myRows({ context, concerns, window, page: input.page, limit: input.limit })
+        : null,
       todoOf({ context, concerns, ahead, horizon }),
       countUnread({ context, recipientUserId: user.value }),
       context.db.notification.findMany({
@@ -80,7 +83,7 @@ export const viewMyWork = defineOperation({
       value: {
         ...{ from: input.from, to: input.to, timeZone: horizon.timeZone },
         rows: rows?.rows ?? null,
-        truncated: rows?.truncated ?? false,
+        ...{ page: input.page, limit: input.limit, rowsTotal: rows?.total ?? 0 },
         todo,
         unreadNotifications: unread,
         notifications: latest.map((row) => toNotificationDto({ row, context })),

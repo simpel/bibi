@@ -8,11 +8,14 @@ import {
   type RunSheetRow,
 } from "../run-sheet/schema";
 import { type Concerns, type ConcernWindow, sortReasons } from "./concerns";
-import { type ConcernReason, MY_WORK_ROW_LIMIT, type MyWorkRow } from "./schema";
+import type { ConcernReason, MyWorkRow } from "./schema";
 
 type Context = Pick<OperationContext, "db" | "permissions">;
 
 export type RowsInput = { context: Context; concerns: Concerns; window: ConcernWindow };
+
+/** `page` from 1, `limit` rows per page; the order is stable so pages never overlap. */
+export type RowsPageInput = RowsInput & { page: number; limit: number };
 
 /** Current run sheet versions of open orders with a line or a start inside the window. */
 function loadCurrent({ context, window }: Omit<RowsInput, "concerns">) {
@@ -127,12 +130,19 @@ function rowsOf({ sheet, concerns, window, context }: RowsInput & { sheet: Loade
 /**
  * What the member prepares, runs or sets up in the window: the item rows of every current run
  * sheet that concerns them, by time (spec: home). A row of a run sheet that does not concern the
- * member as a whole still shows when its own line does (staffed, or an item they own).
+ * member as a whole still shows when its own line does (staffed, or an item they own). Paged in
+ * memory: the rows come from run sheet snapshots, already bounded to the window.
  */
-export async function myRows({ context, concerns, window }: RowsInput) {
+export async function myRows({ context, concerns, window, page, limit }: RowsPageInput) {
   const sheets = await loadCurrent({ context, window });
   const rows = sheets
     .flatMap((sheet) => rowsOf({ sheet, concerns, window, context }))
-    .sort((a, b) => a.at.getTime() - b.at.getTime() || a.reference - b.reference);
-  return { rows: rows.slice(0, MY_WORK_ROW_LIMIT), truncated: rows.length > MY_WORK_ROW_LIMIT };
+    .sort(
+      (a, b) =>
+        a.at.getTime() - b.at.getTime() ||
+        a.reference - b.reference ||
+        `${a.runSheetId}:${a.key}`.localeCompare(`${b.runSheetId}:${b.key}`),
+    );
+  const start = (page - 1) * limit;
+  return { rows: rows.slice(start, start + limit), total: rows.length };
 }

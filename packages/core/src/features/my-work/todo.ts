@@ -4,7 +4,12 @@ import { expiringHolds } from "../dashboard/attention";
 import type { DashboardHorizon } from "../dashboard/horizon";
 import { deriveRunSheetStatus } from "../run-sheet/schema";
 import { ACTING_REASONS, type Concerns, type ConcernWindow, sortReasons } from "./concerns";
-import type { ConcernReason, MyWorkMessages, MyWorkTodo } from "./schema";
+import {
+  type ConcernReason,
+  MY_WORK_TODO_LIMIT,
+  type MyWorkMessages,
+  type MyWorkTodo,
+} from "./schema";
 
 type Context = Pick<OperationContext, "db" | "permissions">;
 
@@ -162,5 +167,18 @@ export async function todoOf({
     canView({ context, feature: "quote" }) ? waitingQuotes({ context, orderIds }) : null,
     canView({ context, feature: "inbox" }) ? unreadMessages({ context, orderIds }) : null,
   ]);
-  return { runSheets, expiringHolds: holds, quotes, messages };
+  const first = <T>({ list }: { list: T[] | null }) =>
+    list ? list.slice(0, MY_WORK_TODO_LIMIT) : null;
+  return {
+    runSheets: first({ list: runSheets }),
+    expiringHolds: holds.slice(0, MY_WORK_TODO_LIMIT),
+    quotes: first({ list: quotes }),
+    messages: first({ list: messages }),
+    totals: {
+      runSheets: runSheets?.length ?? null,
+      expiringHolds: holds.length,
+      quotes: quotes?.length ?? null,
+      messages: messages?.length ?? null,
+    },
+  };
 }

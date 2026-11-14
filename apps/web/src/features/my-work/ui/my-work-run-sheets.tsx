@@ -4,16 +4,19 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { dayGroups } from "../lib/day-groups";
+import { MyWorkPager } from "./my-work-pager";
 import { MyWorkRow } from "./my-work-row";
 import type { MyWorkWireish } from "./my-work-wireish";
 
 export type MyWorkRunSheetsProps = {
-  work: Pick<MyWorkWireish, "rows" | "timeZone" | "truncated">;
+  work: Pick<MyWorkWireish, "rows" | "timeZone" | "page" | "limit" | "rowsTotal">;
   dates: DateTimeFormat;
+  /** The link to another page of rows; without it (the assistant's card) no page controls show. */
+  pageHref?: (input: { page: number }) => string;
 };
 
 /** The main section: every run sheet row that concerns the caller, a heading per day (ADR 0110). */
-export function MyWorkRunSheets({ work, dates }: MyWorkRunSheetsProps) {
+export function MyWorkRunSheets({ work, dates, pageHref }: MyWorkRunSheetsProps) {
   const t = useTranslations("myWork.rows");
   const { rows, timeZone } = work;
   if (rows === null) return null;
@@ -49,9 +52,7 @@ export function MyWorkRunSheets({ work, dates }: MyWorkRunSheetsProps) {
             </ul>
           </section>
         ))}
-        {work.truncated ? (
-          <p className="text-xs text-muted-foreground">{t("truncated", { count: rows.length })}</p>
-        ) : null}
+        <MyWorkPager work={work} pageHref={pageHref} />
         <Link href={ROUTES.runSheets} className="text-sm font-medium hover:underline">
           {t("all")}
         </Link>

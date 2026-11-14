@@ -8,8 +8,10 @@ import { RUN_SHEET_STATUSES } from "../run-sheet/schema";
 export const MY_WORK_MAX_DAYS = 14;
 /** To do looks at least this many days ahead, whatever the period. */
 export const MY_WORK_TODO_DAYS = 7;
-/** At most this many run sheet rows; `truncated` says when more matched. */
-export const MY_WORK_ROW_LIMIT = 300;
+/** Run sheet rows per page unless the caller asks for another `limit`. */
+export const MY_WORK_PAGE_SIZE = 25;
+/** Each To do part lists at most this many, soonest first; `totals` counts them all. */
+export const MY_WORK_TODO_LIMIT = 5;
 /** The latest unread notifications shown under "What changed". */
 export const MY_WORK_NOTIFICATION_LIMIT = 6;
 
@@ -18,6 +20,14 @@ export const MyWorkInputSchema = z.object({
   to: PlainDateStringSchema.describe(
     `Last day, YYYY-MM-DD (inclusive); at most ${MY_WORK_MAX_DAYS} days after from`,
   ),
+  page: z.number().int().min(1).max(10_000).default(1).describe("Page of run sheet rows, from 1"),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(100)
+    .default(MY_WORK_PAGE_SIZE)
+    .describe("Run sheet rows per page"),
 });
 export type MyWorkInput = z.infer<typeof MyWorkInputSchema>;
 
@@ -127,6 +137,14 @@ export const MyWorkTodoSchema = z.object({
     .array(MyWorkMessagesSchema)
     .nullable()
     .describe("Unread customer messages on the caller's orders; needs inbox:read"),
+  totals: z
+    .object({
+      runSheets: z.number().int().nullable(),
+      expiringHolds: z.number().int(),
+      quotes: z.number().int().nullable(),
+      messages: z.number().int().nullable(),
+    })
+    .describe(`How many of each there are; each list holds at most ${MY_WORK_TODO_LIMIT}`),
 });
 
 export const MyWorkSchema = z.object({
@@ -136,8 +154,15 @@ export const MyWorkSchema = z.object({
   rows: z
     .array(MyWorkRowSchema)
     .nullable()
-    .describe("Run sheet rows in the period that concern the caller, by time; needs runSheet:read"),
-  truncated: z.boolean().describe(`More than ${MY_WORK_ROW_LIMIT} rows matched`),
+    .describe(
+      "One page of the run sheet rows in the period that concern the caller, by time; needs runSheet:read",
+    ),
+  page: z.number().int().describe("The page of rows returned, from 1"),
+  limit: z.number().int().describe("Rows per page"),
+  rowsTotal: z
+    .number()
+    .int()
+    .describe("Rows in the period across all pages; 0 without runSheet:read"),
   todo: MyWorkTodoSchema,
   unreadNotifications: z.number().int(),
   notifications: z.array(NotificationSchema).describe("The latest unread notifications"),
