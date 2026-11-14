@@ -132,7 +132,7 @@
       "readOnly": "Du kan se de här inställningarna men inte ändra dem.",
       "fields": {
         "advancesAccount": "Förskott från kunder",
-        "revenueAccount": "Försäljning (standard)"
+        "revenueAccount": "Försäljning (grundkonto)"
       }
     },
     "kpi": {

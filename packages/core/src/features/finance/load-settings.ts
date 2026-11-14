@@ -10,7 +10,7 @@ export async function loadAccountingSettings({ context }: Db): Promise<Accountin
   const [row, mappings] = await Promise.all([
     context.db.accountingSettings.findFirst({ select: SETTINGS_SELECT }),
     context.db.revenueAccount.findMany({
-      select: { entityTypeId: true, itemId: true, account: true },
+      select: { entityTypeId: true, itemId: true, account: true, isDefault: true },
       orderBy: { createdAt: "asc" },
     }),
   ]);

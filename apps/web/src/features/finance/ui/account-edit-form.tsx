@@ -1,4 +1,4 @@
-import type { AccountingSettingsDto } from "@bibi/core/schemas";
+import { type AccountingSettingsDto, effectiveRevenueAccount } from "@bibi/core/schemas";
 import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { AccountTarget } from "../lib/account-rows";
@@ -36,7 +36,7 @@ export function AccountEditForm({ settings, types, choices, ...rest }: AccountEd
             control={form.control}
             target={current}
             types={types}
-            defaultAccount={settings.revenueAccount}
+            defaultAccount={effectiveRevenueAccount({ settings })}
           />
         ) : null}
         <DialogFooter>

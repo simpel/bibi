@@ -132,7 +132,7 @@
       "readOnly": "You can view these settings but not change them.",
       "fields": {
         "advancesAccount": "Customer advances",
-        "revenueAccount": "Revenue (default)"
+        "revenueAccount": "Revenue (base account)"
       }
     },
     "kpi": {

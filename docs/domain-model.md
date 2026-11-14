@@ -1159,13 +1159,14 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### RevenueAccount (`RevenueAccount`)
 
-*MVP* · The revenue account of one item type or one item. An item's row wins over its type's, which wins over `AccountingSettings.revenueAccount`. No row means inherit: nothing is copied ([ADR 0051](decisions/0051-single-source-of-truth.md)).
+*MVP* · The revenue account of one item type or one item. An item's row wins over its type's, which wins over the default revenue account: the account of the row marked default, else `AccountingSettings.revenueAccount` ([ADR 0109](decisions/0109-one-default-revenue-row.md)). No row means inherit: nothing is copied ([ADR 0051](decisions/0051-single-source-of-truth.md)).
 
-> **Ownership:** owned `account`. The inheritance is derived on read.
+> **Ownership:** owned `account` and `isDefault`. The inheritance is derived on read.
 
 **Attributes**
 - account number
 - item type or item: exactly one of them (check constraint)
+- default: at most one row per organization is the default revenue account (partial unique index)
 
 **Relations**
 - `N:0..1` EntityType maps revenue through this

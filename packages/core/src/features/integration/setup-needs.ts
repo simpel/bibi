@@ -1,6 +1,7 @@
 import type { OperationContext } from "../../operations/types";
 import type { SetupNeeds } from "../../providers/types";
 import { loadAccountingSettings } from "../finance/load-settings";
+import { effectiveRevenueAccount } from "../finance/settings-schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -20,7 +21,10 @@ export async function loadSetupNeeds({ context }: Db): Promise<SetupNeeds> {
       distinct: ["vatRatePercent"],
     }),
   ]);
-  const revenue = [settings.revenueAccount, ...settings.revenueAccounts.map((map) => map.account)];
+  const revenue = [
+    effectiveRevenueAccount({ settings }),
+    ...settings.revenueAccounts.map((map) => map.account),
+  ];
   const rates = items.flatMap((item) =>
     item.vatRatePercent === null ? [] : [item.vatRatePercent],
   );

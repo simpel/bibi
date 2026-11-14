@@ -21,12 +21,16 @@ model AccountingSettings {
 /// `entityTypeId` and `itemId` (check constraint). An item's row wins over its type's, which wins
 /// over `AccountingSettings.revenueAccount` (null = inherit, ADR 0051: no row, no copy). Owned by
 /// the finance feature, replaced as a set by `accountingSettings.update` and audited there.
+/// `isDefault` (owned, ADR 0109) marks the row whose account is the default revenue account; at
+/// most one per organization (partial unique index `RevenueAccount_one_default` in the migration,
+/// which Prisma cannot express).
 model RevenueAccount {
   id             String      @id @default(cuid(2))
   organizationId String
   entityTypeId   String?
   itemId         String?
   account        String
+  isDefault      Boolean     @default(false)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
   createdBy      String?

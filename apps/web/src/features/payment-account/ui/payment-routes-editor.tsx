@@ -30,16 +30,32 @@ export function PaymentRoutesEditor({
   const t = useTranslations("paymentSettings.routes");
   const providers = useTranslations("providers");
   const methods = useTranslations("payment.method");
-  const nameOf = ({ provider }: { provider: ProviderKey }) =>
-    connected && !connected.includes(provider)
-      ? t("notConnected", { name: providers(`${provider}.name`) })
-      : providers(`${provider}.name`);
-  const optionsOf = ({ method }: { method: Method }): AutoSaveOption<Choice>[] => [
-    { value: "AUTO", label: t("automatic") },
-    ...(settings.choices.find((choice) => choice.method === method)?.providers ?? []).map(
-      (provider) => ({ value: provider, label: nameOf({ provider }) }),
-    ),
-  ];
+  const isConnected = ({ provider }: { provider: ProviderKey }) =>
+    !connected || connected.includes(provider);
+  /**
+   * Only a connected service can be picked. A saved route to one that is not connected any more
+   * stays visible so the field shows what is saved, but cannot be chosen again.
+   */
+  const optionsOf = ({
+    method,
+    saved,
+  }: {
+    method: Method;
+    saved: ProviderKey | null;
+  }): AutoSaveOption<Choice>[] => {
+    const capable = settings.choices.find((choice) => choice.method === method)?.providers ?? [];
+    const listed = saved && !capable.includes(saved) ? [...capable, saved] : capable;
+    return [
+      { value: "AUTO", label: t("automatic") },
+      ...listed.flatMap((provider) => {
+        const name = providers(`${provider}.name`);
+        if (isConnected({ provider })) return [{ value: provider, label: name }];
+        return provider === saved
+          ? [{ value: provider, label: t("notConnected", { name }), disabled: true }]
+          : [];
+      }),
+    ];
+  };
   return (
     <div className="grid gap-4">
       {settings.routes.map((route) => (
@@ -47,7 +63,7 @@ export function PaymentRoutesEditor({
           key={route.method}
           label={methods(route.method)}
           value={route.provider ?? ("AUTO" satisfies Choice)}
-          options={optionsOf({ method: route.method })}
+          options={optionsOf({ method: route.method, saved: route.provider })}
           canEdit={canEdit}
           save={({ value }) =>
             updatePaymentSettingsAction({

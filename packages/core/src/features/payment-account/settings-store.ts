@@ -1,8 +1,9 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { isUsable } from "../../providers/connections";
 import type { ProviderKey } from "../../providers/provider-keys";
 import { findProvider, listProviders, takesMethod } from "../../providers/registry";
-import { invalid } from "../../shared/errors";
+import { conflict, invalid } from "../../shared/errors";
 import {
   type PaymentRoute,
   type PaymentSettingsDto,
@@ -83,6 +84,33 @@ async function saveRoute({ context, route: { method, provider } }: RouteInput): 
   });
 }
 
+type ConnectedInput = {
+  context: Pick<OperationContext, "db">;
+  routes: readonly PaymentRoute[];
+};
+
+/**
+ * A route can only name a provider that is connected now; clearing one (Automatic) always works.
+ * Stricter than `resolveRoute`, which refuses at use: a venue can no longer save a route to a
+ * service it has not connected.
+ */
+async function checkRoutesConnected({ context, routes }: ConnectedInput): Promise<Result<true>> {
+  const wanted = routes.flatMap(({ provider }) => (provider ? [provider] : []));
+  if (wanted.length === 0) return ok({ value: true });
+  const rows = await context.db.providerConnection.findMany({
+    where: { provider: { in: wanted } },
+  });
+  for (const provider of wanted) {
+    const row = rows.find((found) => found.provider === provider) ?? null;
+    if (!isUsable({ row })) {
+      return conflict({
+        message: `${provider} is not connected. Connect it in Administration → Integrations first.`,
+      });
+    }
+  }
+  return ok({ value: true });
+}
+
 export type SavePaymentSettingsInput = {
   context: Pick<OperationContext, "db" | "organizationId" | "recordChange">;
   data: PaymentSettingsUpdateInput;
@@ -96,6 +124,8 @@ export async function savePaymentSettings({
   const routes = requestedRoutes({ data });
   const checked = checkRoutes({ routes });
   if (!checked.ok) return checked;
+  const connected = await checkRoutesConnected({ context, routes });
+  if (!connected.ok) return connected;
   const before = await loadPaymentSettings({ context });
   const { invoiceProvider: _i, paymentOperator: _p, routes: _r, ...rule } = data;
   const row = await context.db.paymentSettings.upsert({

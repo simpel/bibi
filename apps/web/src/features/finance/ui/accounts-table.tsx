@@ -28,8 +28,6 @@ export type AccountsTableProps = {
   canEdit: boolean;
   /** A second table on the page keeps its own search and page in the URL. */
   scope?: string;
-  /** Rows can be made the default revenue account (the per-item-type table). */
-  defaultable?: boolean;
   /** After a save; without it the page refreshes. The assistant's card keeps the new value. */
   onSaved?: (input: { value: AccountingSettingsDto }) => void;
 };
@@ -67,7 +65,6 @@ export function AccountsTable({
   emptyText,
   canEdit,
   scope,
-  defaultable = false,
   onSaved,
 }: AccountsTableProps) {
   const t = useTranslations("finance.accounting");
@@ -75,12 +72,22 @@ export function AccountsTable({
   const router = useRouter();
   const { run } = useToastAction();
   const [editing, setEditing] = useState<AccountRow | null>(null);
-  const isDefault = ({ row }: { row: AccountRow }) =>
-    defaultable && row.target.kind === "type" && row.value === settings.revenueAccount;
-  // The default revenue account is the account of the chosen row (`accountingSettings.update`).
+  // Switching the default moves the one flag (ADR 0109): to this type's row, or off every row so
+  // the base revenue account is the default again.
   const setDefault = ({ row }: { row: AccountRow }) =>
     run({
-      action: () => updateAccountingSettingsAction({ input: { revenueAccount: row.value } }),
+      action: () =>
+        updateAccountingSettingsAction({
+          input: {
+            revenueAccounts: settings.revenueAccounts.map((mapped) => ({
+              ...mapped,
+              isDefault:
+                row.target.kind === "type" &&
+                mapped.itemId === null &&
+                mapped.entityTypeId === row.target.entityTypeId,
+            })),
+          },
+        }),
       messages: { pending: common("saving"), success: t("defaultSaved", { account: row.value }) },
       onSuccess: ({ value }) => {
         if (onSaved) onSaved({ value });
@@ -88,9 +95,9 @@ export function AccountsTable({
       },
     });
   const defaultOf = ({ row }: { row: AccountRow }) =>
-    defaultable
+    row.canBeDefault
       ? {
-          isDefault: isDefault({ row }),
+          isDefault: row.isDefault,
           onSetDefault: (target: AccountRow) => setDefault({ row: target }),
         }
       : undefined;
@@ -105,7 +112,7 @@ export function AccountsTable({
   });
   const columns = useAccountColumns({
     labels,
-    isDefault: (row) => isDefault({ row }),
+    isDefault: (row) => row.isDefault,
     ...(canEdit
       ? {
           onEdit: setEditing,

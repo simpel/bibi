@@ -17,7 +17,7 @@ Current behaviour. Why: ADR 0100 (providers as ports), which amends 0028 (Stripe
 - Money stays with the venue: the venue is the merchant on its own Stripe account (direct charges, never destination charges; accounts are created with the Accounts v2 API) and its own Swish number. Bibi never holds order money. Bibi's application fee is stored per payment and shown to the venue.
 
 ## Routes
-- `PaymentMethodRoute` maps a method (`CARD`, `SWISH`, `INVOICE`) to one provider. No row = the first connected provider that can take the method (registry order); a route to a provider that is not connected is `CONFLICT`, never a silent switch (`resolveRoute`). A provider takes `INVOICE` when it has an invoicing port: Fortnox and Visma.
+- `PaymentMethodRoute` maps a method (`CARD`, `SWISH`, `INVOICE`) to one provider. No row = the first connected provider that can take the method (registry order); a route to a provider that is not connected is `CONFLICT`, never a silent switch (`resolveRoute`). Saving a route to a provider that is not connected is refused too (`paymentSettings.update`), and the Payment methods page offers only connected services; a saved route whose provider is disconnected later stays visible and cannot be picked again. A provider takes `INVOICE` when it has an invoicing port: Fortnox and Visma.
 - `paymentSettings.get|update` (`paymentAccount:read|write`) hold the deposit rule and one route per method; `choices` lists the providers that can take each. The deprecated `invoiceProvider` and `paymentOperator` fields read and write the INVOICE and CARD routes.
 - Settings → Payments shows the routing; connecting and disconnecting happens under Settings → Integrations.
 

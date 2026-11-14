@@ -12,16 +12,30 @@ export type AccountTarget =
   | { kind: "account"; key: AccountKey }
   | { kind: "type"; entityTypeId: string };
 
-export type AccountRow = { id: string; target: AccountTarget; value: string };
+/**
+ * One table row. `isDefault`: its account is the default revenue account (ADR 0109); exactly one
+ * row on the page is. `canBeDefault`: the base revenue account and every type row can be.
+ */
+export type AccountRow = {
+  id: string;
+  target: AccountTarget;
+  value: string;
+  isDefault: boolean;
+  canBeDefault: boolean;
+};
 
 export type FixedRowsInput = { settings: AccountingSettingsDto };
 
 /** The fixed accounts, in the order the form shows them. */
 export function accountRows({ settings }: FixedRowsInput): AccountRow[] {
+  const defaultIsRow = settings.revenueAccounts.some((row) => row.isDefault);
   return ACCOUNT_KEYS.map((key) => ({
     id: `account:${key}`,
     target: { kind: "account", key },
     value: settings[key],
+    // The base revenue account is the default while no type row is (ADR 0109).
+    isDefault: key === "revenueAccount" && !defaultIsRow,
+    canBeDefault: key === "revenueAccount",
   }));
 }
 
@@ -30,11 +44,19 @@ export type TypeRowsInput = { settings: AccountingSettingsDto; types: ItemTypeOp
 /** One row per item type that has its own revenue account. */
 export function typeRows({ settings, types }: TypeRowsInput): AccountRow[] {
   return types.flatMap(({ id }) => {
-    const account = settings.revenueAccounts.find(
+    const found = settings.revenueAccounts.find(
       (row) => row.entityTypeId === id && row.itemId === null,
-    )?.account;
-    return account
-      ? [{ id: `type:${id}`, target: { kind: "type", entityTypeId: id } as const, value: account }]
+    );
+    return found
+      ? [
+          {
+            id: `type:${id}`,
+            target: { kind: "type", entityTypeId: id } as const,
+            value: found.account,
+            isDefault: found.isDefault,
+            canBeDefault: true,
+          },
+        ]
       : [];
   });
 }

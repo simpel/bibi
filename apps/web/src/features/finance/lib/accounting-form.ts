@@ -9,7 +9,8 @@ export const ACCOUNT_KEYS = ["advancesAccount", "revenueAccount"] as const;
 
 export type AccountKey = (typeof ACCOUNT_KEYS)[number];
 
-export type TypeAccount = { entityTypeId: string; account: string };
+/** `isDefault` rides along so editing an account never moves the default (ADR 0109). */
+export type TypeAccount = { entityTypeId: string; account: string; isDefault: boolean };
 
 /** Raw form values: every input is a string; an empty type account uses the default revenue account. */
 export type AccountingFormValues = Record<AccountKey, string> & {
@@ -21,10 +22,10 @@ export type ItemTypeOption = { id: string; name: string };
 export type ToFormValuesInput = { settings: AccountingSettingsDto; types: ItemTypeOption[] };
 
 export function toFormValues({ settings, types }: ToFormValuesInput): AccountingFormValues {
-  const typeAccounts = types.map(({ id }) => ({
-    entityTypeId: id,
-    account: settings.revenueAccounts.find((row) => row.entityTypeId === id)?.account ?? "",
-  }));
+  const typeAccounts = types.map(({ id }) => {
+    const row = settings.revenueAccounts.find((found) => found.entityTypeId === id);
+    return { entityTypeId: id, account: row?.account ?? "", isDefault: row?.isDefault ?? false };
+  });
   return {
     advancesAccount: settings.advancesAccount,
     revenueAccount: settings.revenueAccount,
@@ -49,7 +50,12 @@ export function toUpdateInput({ values, kept }: ToUpdateInput): AccountingSettin
   const { typeAccounts, ...accounts } = values;
   const rows = typeAccounts
     .filter(({ account }) => account.trim() !== "")
-    .map(({ entityTypeId, account }) => ({ entityTypeId, itemId: null, account }));
+    .map(({ entityTypeId, account, isDefault }) => ({
+      entityTypeId,
+      itemId: null,
+      account,
+      isDefault,
+    }));
   return {
     ...accounts,
     revenueAccounts: [...kept, ...rows],

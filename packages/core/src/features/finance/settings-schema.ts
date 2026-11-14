@@ -31,6 +31,13 @@ export const RevenueAccountSchema = z.object({
   entityTypeId: z.string().min(1).nullable().describe("An item type (entityType.list base ITEM)"),
   itemId: z.string().min(1).nullable().describe("An item (item.list); wins over its type"),
   account: AccountNumberSchema,
+  isDefault: z
+    .boolean()
+    .default(false)
+    .describe(
+      "The default revenue account is this row's account (at most one row; ADR 0109). When no " +
+        "row is the default, revenueAccount is. Omitted = false.",
+    ),
 });
 
 const RevenueAccountInputSchema = RevenueAccountSchema.refine(
@@ -55,9 +62,20 @@ export const AccountingSettingsUpdateInputSchema = z
     revenueAccounts: z
       .array(RevenueAccountInputSchema)
       .max(500)
+      .refine((rows) => rows.filter((row) => row.isDefault).length <= 1, {
+        message: "Only one revenue account can be the default",
+      })
       .optional()
       .describe("Replaces every revenue account mapping; omit to keep them"),
   });
+
+/**
+ * The default revenue account (ADR 0109): the account of the row marked default, else the base
+ * account `revenueAccount`. Used by an item and a type that name none.
+ */
+export function effectiveRevenueAccount({ settings }: { settings: AccountingSettingsDto }): string {
+  return settings.revenueAccounts.find((row) => row.isDefault)?.account ?? settings.revenueAccount;
+}
 
 export type RevenueAccountDto = z.infer<typeof RevenueAccountSchema>;
 export type AccountingSettingsDto = z.infer<typeof AccountingSettingsSchema>;

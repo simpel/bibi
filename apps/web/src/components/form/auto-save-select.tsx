@@ -7,7 +7,8 @@ import type { ActionResult } from "@/lib/action-result";
 import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 
-export type AutoSaveOption<V extends string> = { value: V; label: string };
+/** `disabled`: shown (it may be the saved value) but not pickable. */
+export type AutoSaveOption<V extends string> = { value: V; label: string; disabled?: boolean };
 
 export type AutoSaveSelectProps<V extends string, R> = {
   label: string;
@@ -68,7 +69,7 @@ export function AutoSaveSelect<V extends string, R>({
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
+            <SelectItem key={option.value} value={option.value} disabled={option.disabled ?? false}>
               {option.label}
             </SelectItem>
           ))}

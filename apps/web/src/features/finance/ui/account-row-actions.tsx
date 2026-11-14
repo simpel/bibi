@@ -12,26 +12,18 @@ export type AccountRowActionsProps = {
   row: AccountRow;
   /** Opens the edit dialog; it lives in the table so a context menu and a row click open it too. */
   onEdit: (row: AccountRow) => void;
-  /** Present on the revenue-per-type table: a menu with Edit and Set as default. */
+  /** Present for the base revenue account and every type row: Set as default. */
   defaultAction?: DefaultAction | undefined;
 };
 
-/** The actions of one row: the edit button, or a menu of Edit and Set as default. */
+/** The actions of one row: a menu of Edit and, where it can be the default, Set as default. */
 export function AccountRowActions({ row, onEdit, defaultAction }: AccountRowActionsProps) {
   const t = useTranslations("finance.accounting");
   const common = useTranslations("common");
-  if (!defaultAction) {
-    return (
-      <DataTableRowActions
-        label={common("actions")}
-        primary={[{ label: t("edit"), icon: PencilIcon, onClick: () => onEdit(row) }]}
-      />
-    );
-  }
   return (
     <DataTableRowActions label={common("actions")}>
       <DropdownMenuItem onSelect={() => onEdit(row)}>{t("edit")}</DropdownMenuItem>
-      {defaultAction.isDefault ? null : (
+      {!defaultAction || defaultAction.isDefault ? null : (
         <DropdownMenuItem onSelect={() => defaultAction.onSetDefault(row)}>
           {t("setDefault")}
         </DropdownMenuItem>

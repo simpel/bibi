@@ -39,8 +39,8 @@ export const paymentSettingsEntity: ParityEntity = {
       args: {
         depositPercent: 30,
         depositMinimumMinor: 500_000,
+        // Only a connected service can be a route; the memory ledger is, Stripe is not here.
         invoiceProvider: "VISMA",
-        paymentOperator: "STRIPE",
       },
     });
   },
@@ -116,7 +116,7 @@ export const accountingSettingsEntity: ParityEntity = {
   viaRest: ({ context }) => createRestClient({ context }).get({ path: "/accounting-settings" }),
   viaGraph: async ({ context, keys }) => {
     const fields = keys.map((key) =>
-      key === "revenueAccounts" ? "revenueAccounts { entityTypeId itemId account }" : key,
+      key === "revenueAccounts" ? "revenueAccounts { entityTypeId itemId account isDefault }" : key,
     );
     const query = `query { accountingSettings { ${fields.join(" ")} } }`;
     return (await gqlQuery({ context, query, variables: {} })).accountingSettings;

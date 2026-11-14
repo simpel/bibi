@@ -158,12 +158,35 @@ describe("routing by method (ADR 0100)", () => {
     });
     setProviderAdapter({ key: "SWISH", adapter: fake.adapter });
     const routes = [{ method: "CARD" as const, provider: "SWISH" as const }];
+    // Saving refuses a service that is not connected (the Payment methods page offers none).
+    const notConnected = await execute({
+      operation: updatePaymentSettings,
+      input: { routes },
+      context,
+    });
+    expect(errorCode({ result: notConnected })).toBe("CONFLICT");
+    const { organizationId } = context;
+    await context.db.providerConnection.upsert({
+      where: { organizationId_provider: { organizationId, provider: "SWISH" } },
+      create: {
+        organizationId,
+        provider: "SWISH",
+        status: "CONNECTED",
+        externalAccountId: `swish-${organizationId}`,
+        connectedAt: new Date(),
+      },
+      update: { status: "CONNECTED", disconnectedAt: null },
+    });
     const saved = unwrap({
       result: await execute({ operation: updatePaymentSettings, input: { routes }, context }),
     });
     expect(saved.routes).toContainEqual({ method: "CARD", provider: "SWISH" });
     expect(saved.paymentOperator).toBe("SWISH");
-    // Never a silent switch to the connected card provider.
+    // Disconnected later: never a silent switch to the connected card provider.
+    await context.db.providerConnection.updateMany({
+      where: { provider: "SWISH" },
+      data: { status: "DISCONNECTED", disconnectedAt: new Date() },
+    });
     const input = { depositId, amountMinor: 100_000 };
     const refused = await execute({ operation: createPayment, input, context });
     expect(errorCode({ result: refused })).toBe("CONFLICT");

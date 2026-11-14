@@ -11,6 +11,7 @@ import {
   updatePaymentSettings,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
+import { connectLedger } from "./ledger-helpers";
 import { moneySetup } from "./receivable-helpers";
 
 afterEach(() => {
@@ -59,6 +60,8 @@ describe("the deposit rule (ADR 0090)", () => {
       paymentOperator: null,
     });
     await execute({ operation: updatePaymentSettings, input: rule, context });
+    // A route can only name a service that is connected (the memory ledger stands in for Visma).
+    await connectLedger({ context });
     const input = { invoiceProvider: "VISMA" as const };
     const saved = unwrap({
       result: await execute({ operation: updatePaymentSettings, input, context }),

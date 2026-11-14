@@ -70,12 +70,15 @@ describe("cross-organization isolation: payments", () => {
 
 describe("cross-organization isolation: payment settings", () => {
   it("keeps one organization's deposit rule out of another's settings", async () => {
-    const a = await connect({ context: testContext() });
+    const contextA = testContext();
+    const a = await connect({ context: contextA });
     const b = await connect({ context: testContext() });
+    // A route can only name a connected service; the memory ledger stands in for Visma.
+    await connectLedger({ context: contextA });
     const saved = await call({
       client: a,
       name: "paymentSettings_update",
-      args: { depositPercent: 40, invoiceProvider: "FORTNOX" },
+      args: { depositPercent: 40, invoiceProvider: "VISMA" },
     });
     expect(saved.isError, JSON.stringify(saved.data)).toBe(false);
     const read = await call({ client: b, name: "paymentSettings_get", args: {} });
@@ -86,6 +89,6 @@ describe("cross-organization isolation: payment settings", () => {
       invoiceProvider: null,
     });
     const own = await call({ client: a, name: "paymentSettings_get", args: {} });
-    expect(own.data).toMatchObject({ depositPercent: 40, invoiceProvider: "FORTNOX" });
+    expect(own.data).toMatchObject({ depositPercent: 40, invoiceProvider: "VISMA" });
   });
 });

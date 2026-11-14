@@ -1,4 +1,4 @@
-import type { AccountingSettingsDto } from "./settings-schema";
+import { type AccountingSettingsDto, effectiveRevenueAccount } from "./settings-schema";
 
 /** An order line as a provider row reads it: its item (and type) and its frozen VAT rows. */
 export type SoldLine = {
@@ -9,7 +9,7 @@ export type SoldLine = {
 
 export type RevenueAccountOf = (input: { line: SoldLine }) => string;
 
-/** The revenue account of a line: the item's, else its type's, else the default (null = inherit). */
+/** The revenue account of a line: the item's, else its type's, else the default (ADR 0109). */
 export function revenueAccountResolver({
   settings,
 }: {
@@ -21,8 +21,9 @@ export function revenueAccountResolver({
     if (row.itemId) byItem.set(row.itemId, row.account);
     if (row.entityTypeId) byType.set(row.entityTypeId, row.account);
   }
+  const fallback = effectiveRevenueAccount({ settings });
   return ({ line }) =>
     (line.itemId ? byItem.get(line.itemId) : undefined) ??
     (line.item ? byType.get(line.item.entityTypeId) : undefined) ??
-    settings.revenueAccount;
+    fallback;
 }
