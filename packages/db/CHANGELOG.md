@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.1.0](https://github.com/simpel/bibi/compare/@bibi/db-v3.0.0...@bibi/db-v3.1.0) (2026-11-14)
+
+
+### Features
+
+* one accounting system at a time, an account check at the provider, and Integrations grouped by purpose ([ff39f82](https://github.com/simpel/bibi/commit/ff39f821a550af566e0d9992d19d441f1aa12647))
+* one default revenue account row, and payment routes only to connected services ([5c744cf](https://github.com/simpel/bibi/commit/5c744cf6a04e99518fc981bff572a69de70fe2be))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 1.0.0
+
 ## [3.0.0](https://github.com/simpel/bibi/compare/@bibi/db-v2.1.0...@bibi/db-v3.0.0) (2026-11-12)
 
 

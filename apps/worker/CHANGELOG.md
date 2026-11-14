@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.0.0](https://github.com/simpel/bibi/compare/@bibi/worker-v1.0.1...@bibi/worker-v2.0.0) (2026-11-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* environments with Stripe or Fortnox credentials must set their hosts (values in .exampleenv); Swish needs SWISH_API_BASE_URL.
+
+### Features
+
+* the worker provisions the assistant's OAuth client on start ([02b63fc](https://github.com/simpel/bibi/commit/02b63fc1c528c569dcd2fd2331ecff5d7ef402dd))
+
+
+### Code Refactoring
+
+* provider hosts come only from env ([04217ec](https://github.com/simpel/bibi/commit/04217ec38875dfe08b1db28ff0bb54c5409d0a3b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/auth bumped to 1.0.0
+    * @bibi/config bumped to 1.0.0
+    * @bibi/core bumped to 5.0.0
+    * @bibi/db bumped to 3.1.0
+    * @bibi/logger bumped to 0.1.4
+
 ## [1.0.1](https://github.com/simpel/bibi/compare/@bibi/worker-v1.0.0...@bibi/worker-v1.0.1) (2026-11-12)
 
 

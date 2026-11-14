@@ -1,5 +1,41 @@
 # Changelog
 
+## [5.0.0](https://github.com/simpel/bibi/compare/@bibi/core-v4.0.0...@bibi/core-v5.0.0) (2026-11-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* environments with Stripe or Fortnox credentials must set their hosts (values in .exampleenv); Swish needs SWISH_API_BASE_URL.
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written
+
+### Features
+
+* a provider card says when the company is not ready to connect, and shows reconnect only when the connection is lost ([8feeaec](https://github.com/simpel/bibi/commit/8feeaec5175190de64a200479f78b7c715b67c18))
+* one accounting system at a time, an account check at the provider, and Integrations grouped by purpose ([ff39f82](https://github.com/simpel/bibi/commit/ff39f821a550af566e0d9992d19d441f1aa12647))
+* one default revenue account row, and payment routes only to connected services ([5c744cf](https://github.com/simpel/bibi/commit/5c744cf6a04e99518fc981bff572a69de70fe2be))
+* the demo seed leaves its fake providers disconnected, and a provider card says what it can handle ([6e6069b](https://github.com/simpel/bibi/commit/6e6069bce9bf517715c2e239e3442324b6ff1d92))
+
+
+### Bug Fixes
+
+* connecting Stripe again starts a fresh account when Stripe no longer knows the stored one ([730d9dd](https://github.com/simpel/bibi/commit/730d9dd686145c25b30de3d489ad07f2749e390f))
+* Visma eEkonomi is named Spiris and its hosts come only from env ([87caa43](https://github.com/simpel/bibi/commit/87caa4337d9eed9c269fc2fc1c76ded14259b6d9))
+
+
+### Code Refactoring
+
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written ([fbe4bc3](https://github.com/simpel/bibi/commit/fbe4bc3da34e4a086596117490a929ffb606a06f))
+* provider hosts come only from env ([04217ec](https://github.com/simpel/bibi/commit/04217ec38875dfe08b1db28ff0bb54c5409d0a3b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 1.0.0
+    * @bibi/db bumped to 3.1.0
+    * @bibi/logger bumped to 0.1.4
+
 ## [4.0.0](https://github.com/simpel/bibi/compare/@bibi/core-v3.0.0...@bibi/core-v4.0.0) (2026-11-12)
 
 

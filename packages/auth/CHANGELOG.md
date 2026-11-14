@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.0.0](https://github.com/simpel/bibi/compare/@bibi/auth-v0.6.4...@bibi/auth-v1.0.0) (2026-11-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written
+
+### Features
+
+* the worker provisions the assistant's OAuth client on start ([02b63fc](https://github.com/simpel/bibi/commit/02b63fc1c528c569dcd2fd2331ecff5d7ef402dd))
+
+
+### Code Refactoring
+
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written ([fbe4bc3](https://github.com/simpel/bibi/commit/fbe4bc3da34e4a086596117490a929ffb606a06f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 1.0.0
+    * @bibi/core bumped to 5.0.0
+    * @bibi/db bumped to 3.1.0
+    * @bibi/i18n bumped to 4.1.0
+    * @bibi/logger bumped to 0.1.4
+    * @bibi/mail bumped to 1.0.0
+
 ## [0.6.4](https://github.com/simpel/bibi/compare/@bibi/auth-v0.6.3...@bibi/auth-v0.6.4) (2026-11-12)
 
 

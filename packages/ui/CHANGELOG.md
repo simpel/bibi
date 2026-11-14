@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.1](https://github.com/simpel/bibi/compare/@bibi/ui-v2.1.0...@bibi/ui-v2.1.1) (2026-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @bibi/config bumped to 1.0.0
+
 ## [2.1.0](https://github.com/simpel/bibi/compare/@bibi/ui-v2.0.0...@bibi/ui-v2.1.0) (2026-11-12)
 
 

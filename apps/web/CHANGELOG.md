@@ -1,5 +1,57 @@
 # Changelog
 
+## [5.0.0](https://github.com/simpel/bibi/compare/@bibi/web-v4.0.0...@bibi/web-v5.0.0) (2026-11-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written
+
+### Features
+
+* a connected provider card shows only its status, company and actions ([12390a2](https://github.com/simpel/bibi/commit/12390a2e882ad929505a9d5e7eede9ad463b458d))
+* a free calendar slot opens a dialog to create an order from it ([884054a](https://github.com/simpel/bibi/commit/884054a26f58e6760de24992d08cf9be3b39f7ab))
+* a provider card and the Swish dialog link to the provider's own guide under How to connect ([e92e56b](https://github.com/simpel/bibi/commit/e92e56b91bc19d542de8b5ada3167b2e1fe6d67d))
+* a provider card says when the company is not ready to connect, and shows reconnect only when the connection is lost ([8feeaec](https://github.com/simpel/bibi/commit/8feeaec5175190de64a200479f78b7c715b67c18))
+* How to connect opens a guide with what each provider needs first ([7c6bddb](https://github.com/simpel/bibi/commit/7c6bddbf3f7527d388aeba240034dfeeb3c20c3f))
+* one accounting system at a time, an account check at the provider, and Integrations grouped by purpose ([ff39f82](https://github.com/simpel/bibi/commit/ff39f821a550af566e0d9992d19d441f1aa12647))
+* one default revenue account row, and payment routes only to connected services ([5c744cf](https://github.com/simpel/bibi/commit/5c744cf6a04e99518fc981bff572a69de70fe2be))
+* pnpm dev:https runs the web app on https://localhost:3330 ([6c72c49](https://github.com/simpel/bibi/commit/6c72c496d812e08422662a10d12bce479ae46c09))
+* revenue accounts per item type open from the name, with a menu to set the default and a Default badge ([53c011e](https://github.com/simpel/bibi/commit/53c011e04a3b8bcff062de079e3c6f4394402877))
+* the demo seed leaves its fake providers disconnected, and a provider card says what it can handle ([6e6069b](https://github.com/simpel/bibi/commit/6e6069bce9bf517715c2e239e3442324b6ff1d92))
+* the front page hero drops its badge ([a58781a](https://github.com/simpel/bibi/commit/a58781ade8fda7da4073b20be7f66d91d6002ccb))
+* the worker provisions the assistant's OAuth client on start ([02b63fc](https://github.com/simpel/bibi/commit/02b63fc1c528c569dcd2fd2331ecff5d7ef402dd))
+
+
+### Bug Fixes
+
+* HTTPS dev mode serves MCP over HTTPS and trusts the local certificate ([0348eb1](https://github.com/simpel/bibi/commit/0348eb1d7eae5240ee79ec97379e7562f505da42))
+* Visma eEkonomi is named Spiris and its hosts come only from env ([87caa43](https://github.com/simpel/bibi/commit/87caa4337d9eed9c269fc2fc1c76ded14259b6d9))
+
+
+### Code Refactoring
+
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written ([fbe4bc3](https://github.com/simpel/bibi/commit/fbe4bc3da34e4a086596117490a929ffb606a06f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 5.0.0
+    * @bibi/api bumped to 3.1.0
+    * @bibi/auth bumped to 1.0.0
+    * @bibi/config bumped to 1.0.0
+    * @bibi/core bumped to 5.0.0
+    * @bibi/db bumped to 3.1.0
+    * @bibi/graphql bumped to 3.1.0
+    * @bibi/i18n bumped to 4.1.0
+    * @bibi/logger bumped to 0.1.4
+    * @bibi/mail bumped to 1.0.0
+    * @bibi/mcp bumped to 5.0.0
+    * @bibi/storage bumped to 0.2.8
+    * @bibi/ui bumped to 2.1.1
+
 ## [4.0.0](https://github.com/simpel/bibi/compare/@bibi/web-v3.0.0...@bibi/web-v4.0.0) (2026-11-12)
 
 
