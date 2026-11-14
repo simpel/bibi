@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.4](https://github.com/simpel/bibi/compare/@bibi/logger-v0.1.3...@bibi/logger-v0.1.4) (2026-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 1.0.0
+
 ## [0.1.3](https://github.com/simpel/bibi/compare/@bibi/logger-v0.1.2...@bibi/logger-v0.1.3) (2026-11-11)
 
 

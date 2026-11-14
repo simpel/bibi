@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.0](https://github.com/simpel/bibi/compare/@bibi/config-v0.4.0...@bibi/config-v1.0.0) (2026-11-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* environments with Stripe or Fortnox credentials must set their hosts (values in .exampleenv); Swish needs SWISH_API_BASE_URL.
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written
+
+### Bug Fixes
+
+* Visma eEkonomi is named Spiris and its hosts come only from env ([87caa43](https://github.com/simpel/bibi/commit/87caa4337d9eed9c269fc2fc1c76ded14259b6d9))
+
+
+### Code Refactoring
+
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written ([fbe4bc3](https://github.com/simpel/bibi/commit/fbe4bc3da34e4a086596117490a929ffb606a06f))
+* provider hosts come only from env ([04217ec](https://github.com/simpel/bibi/commit/04217ec38875dfe08b1db28ff0bb54c5409d0a3b))
+
 ## [0.4.0](https://github.com/simpel/bibi/compare/@bibi/config-v0.3.0...@bibi/config-v0.4.0) (2026-11-11)
 
 

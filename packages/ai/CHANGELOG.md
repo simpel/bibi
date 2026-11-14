@@ -1,5 +1,32 @@
 # Changelog
 
+## [5.0.0](https://github.com/simpel/bibi/compare/@bibi/ai-v4.0.0...@bibi/ai-v5.0.0) (2026-11-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written
+
+### Features
+
+* one accounting system at a time, an account check at the provider, and Integrations grouped by purpose ([ff39f82](https://github.com/simpel/bibi/commit/ff39f821a550af566e0d9992d19d441f1aa12647))
+
+
+### Code Refactoring
+
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written ([fbe4bc3](https://github.com/simpel/bibi/commit/fbe4bc3da34e4a086596117490a929ffb606a06f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/auth bumped to 1.0.0
+    * @bibi/config bumped to 1.0.0
+    * @bibi/core bumped to 5.0.0
+    * @bibi/db bumped to 3.1.0
+    * @bibi/logger bumped to 0.1.4
+
 ## [4.0.0](https://github.com/simpel/bibi/compare/@bibi/ai-v3.0.0...@bibi/ai-v4.0.0) (2026-11-12)
 
 

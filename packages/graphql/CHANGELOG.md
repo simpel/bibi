@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.1.0](https://github.com/simpel/bibi/compare/@bibi/graphql-v3.0.1...@bibi/graphql-v3.1.0) (2026-11-14)
+
+
+### Features
+
+* one accounting system at a time, an account check at the provider, and Integrations grouped by purpose ([ff39f82](https://github.com/simpel/bibi/commit/ff39f821a550af566e0d9992d19d441f1aa12647))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 5.0.0
+    * @bibi/db bumped to 3.1.0
+    * @bibi/logger bumped to 0.1.4
+  * devDependencies
+    * @bibi/config bumped to 1.0.0
+
 ## [3.0.1](https://github.com/simpel/bibi/compare/@bibi/graphql-v3.0.0...@bibi/graphql-v3.0.1) (2026-11-12)
 
 
