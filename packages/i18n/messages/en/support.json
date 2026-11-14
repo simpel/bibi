@@ -273,6 +273,10 @@
           "unavailable": {
             "question": "Why does a connection say Unavailable?",
             "answer": "The service is connected to your organization, but Bibi is not set up to talk to it yet, so payments and invoices cannot go through it for now.\nYou do not need to do anything with the connection itself. Contact us and we will turn it on."
+          },
+          "accounts": {
+            "question": "Which account do my invoices book to, and how do I change it?",
+            "answer": "Under **Administration → Accounting** you choose the accounts your invoices book to. **Revenue per item type** gives each type its own account; types without one use the default revenue account.\nTo change the default, open the **…** menu on a row and choose **Set as default**: that row's account becomes the default and the row shows a **Default** badge. Click a name to change its account.\nAfter connecting your accounting system, its card under **Integrations** lists any account it is missing."
           }
         }
       }

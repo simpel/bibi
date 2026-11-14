@@ -7,6 +7,9 @@ import { PersistedDataTable } from "@/components/data-table/persisted-data-table
 import { TableFilterBar } from "@/components/data-table/table-filter-bar";
 import type { TableQualifier } from "@/components/data-table/table-filter-query";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
+import { useRouter } from "@/lib/navigation";
+import { useToastAction } from "@/lib/use-toast-action";
+import { updateAccountingSettingsAction } from "../actions";
 import type { AccountRow } from "../lib/account-rows";
 import type { ItemTypeOption } from "../lib/accounting-form";
 import { AccountDialog } from "./account-dialog";
@@ -25,6 +28,8 @@ export type AccountsTableProps = {
   canEdit: boolean;
   /** A second table on the page keeps its own search and page in the URL. */
   scope?: string;
+  /** Rows can be made the default revenue account (the per-item-type table). */
+  defaultable?: boolean;
   /** After a save; without it the page refreshes. The assistant's card keeps the new value. */
   onSaved?: (input: { value: AccountingSettingsDto }) => void;
 };
@@ -62,9 +67,33 @@ export function AccountsTable({
   emptyText,
   canEdit,
   scope,
+  defaultable = false,
   onSaved,
 }: AccountsTableProps) {
+  const t = useTranslations("finance.accounting");
+  const common = useTranslations("common");
+  const router = useRouter();
+  const { run } = useToastAction();
   const [editing, setEditing] = useState<AccountRow | null>(null);
+  const isDefault = ({ row }: { row: AccountRow }) =>
+    defaultable && row.target.kind === "type" && row.value === settings.revenueAccount;
+  // The default revenue account is the account of the chosen row (`accountingSettings.update`).
+  const setDefault = ({ row }: { row: AccountRow }) =>
+    run({
+      action: () => updateAccountingSettingsAction({ input: { revenueAccount: row.value } }),
+      messages: { pending: common("saving"), success: t("defaultSaved", { account: row.value }) },
+      onSuccess: ({ value }) => {
+        if (onSaved) onSaved({ value });
+        else router.refresh();
+      },
+    });
+  const defaultOf = ({ row }: { row: AccountRow }) =>
+    defaultable
+      ? {
+          isDefault: isDefault({ row }),
+          onSetDefault: (target: AccountRow) => setDefault({ row: target }),
+        }
+      : undefined;
   const labels = useAccountLabels({ types });
   const qualifiers = useAccountQualifiers({ rows, labels });
   const view = useClientTableView({
@@ -76,8 +105,14 @@ export function AccountsTable({
   });
   const columns = useAccountColumns({
     labels,
+    isDefault: (row) => isDefault({ row }),
     ...(canEdit
-      ? { renderActions: (row) => <AccountRowActions row={row} onEdit={setEditing} /> }
+      ? {
+          onEdit: setEditing,
+          renderActions: (row: AccountRow) => (
+            <AccountRowActions row={row} onEdit={setEditing} defaultAction={defaultOf({ row })} />
+          ),
+        }
       : {}),
   });
   return (
@@ -91,7 +126,9 @@ export function AccountsTable({
         {...(canEdit
           ? {
               onRowClick: setEditing,
-              rowMenu: (row: AccountRow) => <AccountRowMenu row={row} onEdit={setEditing} />,
+              rowMenu: (row: AccountRow) => (
+                <AccountRowMenu row={row} onEdit={setEditing} defaultAction={defaultOf({ row })} />
+              ),
             }
           : {})}
         emptyText={emptyText}

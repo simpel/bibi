@@ -273,6 +273,10 @@
           "unavailable": {
             "question": "Varför står det Inte tillgänglig på en anslutning?",
             "answer": "Tjänsten är ansluten till er organisation, men Bibi är inte inställt för att prata med den ännu, så betalningar och fakturor kan inte gå via den just nu.\nNi behöver inte göra något med själva anslutningen. Kontakta oss så slår vi på den."
+          },
+          "accounts": {
+            "question": "Vilket konto bokförs mina fakturor på, och hur ändrar jag det?",
+            "answer": "Under **Administration → Bokföring** väljer ni vilka konton fakturorna bokförs på. **Intäkter per artikeltyp** ger varje typ ett eget konto; typer utan eget konto använder standardkontot för försäljning.\nFör att byta standard öppnar du menyn **…** på en rad och väljer **Gör till standard**: radens konto blir standard och raden får märket **Standard**. Klicka på ett namn för att ändra dess konto.\nNär ni har anslutit ert bokföringssystem listar dess kort under **Integrationer** de konton som saknas."
           }
         }
       }

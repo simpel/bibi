@@ -35,6 +35,7 @@ export async function RevenueAccountsSection({
         emptyText={t("emptyRevenue")}
         canEdit={canEdit}
         scope="revenue"
+        defaultable
       />
     </AdminSection>
   );
