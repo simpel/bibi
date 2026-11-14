@@ -8,6 +8,7 @@ import { startPaymentOnboardingAction } from "@/features/payment-account/actions
 import { useToastAction } from "@/lib/use-toast-action";
 import { connectIntegrationAction } from "../actions";
 import { ConnectFormDialog } from "./connect-form-dialog";
+import type { ProviderGuide } from "./how-to-connect-button";
 
 export type ConnectProviderButtonProps = {
   connection: Pick<
@@ -16,6 +17,8 @@ export type ConnectProviderButtonProps = {
   >;
   /** The provider's name in the viewer's language. */
   name: string;
+  /** Shown in the credentials form, so what to prepare is one click away there too. */
+  guide: ProviderGuide | null;
 };
 
 type Label = "connect" | "reconnect" | "continueOnboarding";
@@ -31,7 +34,7 @@ function labelOf({ connection }: Pick<ConnectProviderButtonProps, "connection">)
  * Connects a provider the way its data says (ADR 0100): OAuth and hosted onboarding send the
  * browser to the provider's page; credentials open a form for what the provider asks for.
  */
-export function ConnectProviderButton({ connection, name }: ConnectProviderButtonProps) {
+export function ConnectProviderButton({ connection, name, guide }: ConnectProviderButtonProps) {
   const t = useTranslations("integration.card");
   const { run, pending } = useToastAction();
   const [open, setOpen] = useState(false);
@@ -68,6 +71,7 @@ export function ConnectProviderButton({ connection, name }: ConnectProviderButto
           provider={connection.provider}
           fields={connection.credentialFields}
           name={name}
+          guide={guide}
         />
       ) : null}
     </>

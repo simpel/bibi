@@ -916,7 +916,6 @@
       "connect": "Connect",
       "reconnect": "Reconnect",
       "continueOnboarding": "Continue onboarding",
-      "howToConnect": "How to connect",
       "connecting": "Preparing the connection to {name}…",
       "redirecting": "Opening {name}…",
       "refresh": "Refresh status",
@@ -938,6 +937,51 @@
         "EXPIRED": "{name} needs more from you or no longer accepts the connection. Reconnect to restore it.",
         "DISCONNECTED": "{name} is disconnected. Connect again to use it.",
         "UNAVAILABLE": "{name} is connected, but this server is not set up for {name} yet, so nothing can go through it."
+      }
+    },
+    "guide": {
+      "howToConnect": "How to connect",
+      "beforeYouStart": "Before you start",
+      "openGuide": "Open the guide at {name}",
+      "providers": {
+        "STRIPE": {
+          "title": "Connect Stripe",
+          "intro": "Card payments go straight to your own Stripe account. Bibi sends you to Stripe to create or connect it.",
+          "needs": {
+            "1": "Your business details: legal name, organisation number, address and what you sell. Stripe checks them.",
+            "2": "The person who represents the business, with an ID document, since Stripe must verify who owns and runs it.",
+            "3": "A bank account for payouts.",
+            "4": "Stripe may need a few minutes or days to approve the account. Card payments work once it has. Come back and choose Refresh status to see where it stands."
+          }
+        },
+        "SWISH": {
+          "title": "Connect Swish",
+          "intro": "Customers pay in the Swish app. Bibi uses your own Swish for merchants agreement, so the money goes straight to your Swish number.",
+          "needs": {
+            "1": "A Swish Handel (Swish for merchants) agreement with your bank. The bank gives you a Swish number for businesses, starting with 123.",
+            "2": "A client certificate for that number: a .p12 file from the Swish certificate portal, and the passphrase you chose when you made it. The certificate owner signs in there with Swedish BankID.",
+            "3": "The certificate must belong to the number you enter. Bibi checks this and refuses a certificate issued to another number.",
+            "4": "A certificate is valid for two years. Before it expires, make a new one and connect again."
+          }
+        },
+        "FORTNOX": {
+          "title": "Connect Fortnox",
+          "intro": "Bibi raises invoices and books payments in your Fortnox company. You approve the connection in Fortnox, and Bibi never sees your password.",
+          "needs": {
+            "1": "A Fortnox company where you sign in as an administrator. Only an administrator can approve the connection.",
+            "2": "An integration licence for the company. Fortnox sells it as an add-on, and an administrator turns it on under user administration in Fortnox.",
+            "3": "Bibi sends you to Fortnox, you sign in and approve, and you come back here."
+          }
+        },
+        "VISMA": {
+          "title": "Connect Spiris (Visma eEkonomi)",
+          "intro": "Bibi raises invoices and books payments in your Spiris company. You approve the connection in Spiris, and Bibi never sees your password.",
+          "needs": {
+            "1": "A Spiris company that is active and has finished its startup guide. Until then Spiris refuses the connection.",
+            "2": "A user who can sign in to that company and approve the connection.",
+            "3": "Before you take deposits: an account coding in Spiris that books sales to customer advances (2420), one per VAT rate you sell at, under Settings → Account codings."
+          }
+        }
       }
     },
     "connectForm": {

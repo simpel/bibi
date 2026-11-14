@@ -916,7 +916,6 @@
       "connect": "Anslut",
       "reconnect": "Anslut igen",
       "continueOnboarding": "Fortsätt registreringen",
-      "howToConnect": "Så ansluter du",
       "connecting": "Förbereder anslutningen till {name}…",
       "redirecting": "Öppnar {name}…",
       "refresh": "Uppdatera status",
@@ -938,6 +937,51 @@
         "EXPIRED": "{name} behöver mer från er eller godtar inte längre anslutningen. Anslut igen för att återställa den.",
         "DISCONNECTED": "{name} är frånkopplad. Anslut igen för att använda den.",
         "UNAVAILABLE": "{name} är ansluten, men den här servern är inte inställd för {name} ännu, så inget kan gå via den."
+      }
+    },
+    "guide": {
+      "howToConnect": "Så ansluter du",
+      "beforeYouStart": "Innan du börjar",
+      "openGuide": "Öppna guiden hos {name}",
+      "providers": {
+        "STRIPE": {
+          "title": "Anslut Stripe",
+          "intro": "Kortbetalningar går direkt till ert eget Stripe-konto. Bibi skickar er till Stripe för att skapa eller ansluta det.",
+          "needs": {
+            "1": "Företagets uppgifter: juridiskt namn, organisationsnummer, adress och vad ni säljer. Stripe kontrollerar dem.",
+            "2": "Personen som företräder företaget, med legitimation, eftersom Stripe måste verifiera vem som äger och driver det.",
+            "3": "Ett bankkonto för utbetalningar.",
+            "4": "Stripe kan behöva några minuter eller dagar för att godkänna kontot. Kortbetalningar fungerar när det är godkänt. Kom tillbaka och välj Uppdatera status för att se hur långt det har kommit."
+          }
+        },
+        "SWISH": {
+          "title": "Anslut Swish",
+          "intro": "Kunden betalar i Swish-appen. Bibi använder ert eget avtal för Swish för handlare, så pengarna går direkt till ert Swish-nummer.",
+          "needs": {
+            "1": "Ett avtal om Swish Handel (Swish för handlare) med er bank. Banken ger er ett Swish-nummer för företag som börjar på 123.",
+            "2": "Ett klientcertifikat för det numret: en .p12-fil från Swish certifikatsportal och lösenfrasen ni valde när ni skapade det. Certifikatägaren loggar in där med svenskt BankID.",
+            "3": "Certifikatet måste höra till numret ni anger. Bibi kontrollerar det och nekar ett certifikat som utfärdats till ett annat nummer.",
+            "4": "Ett certifikat gäller i två år. Skapa ett nytt innan det går ut och anslut igen."
+          }
+        },
+        "FORTNOX": {
+          "title": "Anslut Fortnox",
+          "intro": "Bibi skapar fakturor och bokför betalningar i ert Fortnox-företag. Ni godkänner anslutningen i Fortnox, och Bibi ser aldrig ert lösenord.",
+          "needs": {
+            "1": "Ett Fortnox-företag där ni loggar in som administratör. Bara en administratör kan godkänna anslutningen.",
+            "2": "En integrationslicens för företaget. Fortnox säljer den som tillägg, och en administratör slår på den under användaradministration i Fortnox.",
+            "3": "Bibi skickar er till Fortnox, ni loggar in och godkänner, och kommer sedan tillbaka hit."
+          }
+        },
+        "VISMA": {
+          "title": "Anslut Spiris (Visma eEkonomi)",
+          "intro": "Bibi skapar fakturor och bokför betalningar i ert Spiris-företag. Ni godkänner anslutningen i Spiris, och Bibi ser aldrig ert lösenord.",
+          "needs": {
+            "1": "Ett Spiris-företag som är aktivt och har gjort klart sin startguide. Innan dess nekar Spiris anslutningen.",
+            "2": "En användare som kan logga in i företaget och godkänna anslutningen.",
+            "3": "Innan ni tar emot förskott: en kontering i Spiris som bokför försäljning på kundförskott (2420), en per momssats ni säljer med, under Inställningar i Spiris."
+          }
+        }
       }
     },
     "connectForm": {

@@ -9,11 +9,12 @@ import {
   ProviderLogo,
 } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { loadProviderGuide } from "../server/provider-guide";
 import { ConnectProviderButton } from "./connect-provider-button";
 import { DisconnectProviderButton } from "./disconnect-provider-button";
+import { HowToConnectButton, type ProviderGuide } from "./how-to-connect-button";
 import { IntegrationNotice, type IntegrationOutcome } from "./integration-notice";
 import { IntegrationStatusBadge, isConnectionUsable } from "./integration-status-badge";
-import { ProviderHelpLink } from "./provider-help-link";
 import { RefreshProviderButton } from "./refresh-provider-button";
 
 export type ProviderCardProps = {
@@ -25,13 +26,17 @@ export type ProviderCardProps = {
   outcome: IntegrationOutcome | null;
 };
 
-type ProviderActionsProps = Pick<ProviderCardProps, "connection"> & { name: string };
+type ProviderActionsProps = Pick<ProviderCardProps, "connection"> & {
+  name: string;
+  /** Not read for a connected provider: it has nothing left to set up. */
+  guide: ProviderGuide | null;
+};
 
 /**
  * The actions the connection's status allows. Connected: only disconnect. Otherwise "How to
  * connect" on the left and the primary connect (or reconnect, continue) on the right.
  */
-function ProviderActions({ connection, name }: ProviderActionsProps) {
+function ProviderActions({ connection, name, guide }: ProviderActionsProps) {
   const { status, connectKind } = connection;
   const live = status !== "NOT_CONNECTED" && status !== "DISCONNECTED";
   const hostedOpen = connectKind === "HOSTED_ONBOARDING" && live && status !== "CONNECTED";
@@ -44,11 +49,11 @@ function ProviderActions({ connection, name }: ProviderActionsProps) {
   }
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
-      <ProviderHelpLink provider={connection.provider} />
+      {guide ? <HowToConnectButton guide={guide} /> : <span />}
       <div className="flex flex-wrap gap-2">
         {live ? <DisconnectProviderButton connection={connection} name={name} /> : null}
         {hostedOpen ? <RefreshProviderButton /> : null}
-        <ConnectProviderButton connection={connection} name={name} />
+        <ConnectProviderButton connection={connection} name={name} guide={guide} />
       </div>
     </div>
   );
@@ -71,6 +76,7 @@ export async function ProviderCard({
   const { provider, status, configured } = connection;
   const name = providers(`${provider}.name`);
   const usable = isConnectionUsable({ status, configured });
+  const guide = status === "CONNECTED" ? null : await loadProviderGuide({ provider, name });
   // A working connection needs no sentence: the badge and the company facts say it.
   const hint = !usable
     ? t("hint.UNAVAILABLE", { name })
@@ -112,7 +118,7 @@ export async function ProviderCard({
           </dl>
         ) : null}
         {configured || !usable ? null : <p>{t("notConfigured", { name })}</p>}
-        {canEdit ? <ProviderActions connection={connection} name={name} /> : null}
+        {canEdit ? <ProviderActions connection={connection} name={name} guide={guide} /> : null}
       </CardContent>
     </Card>
   );

@@ -32,7 +32,7 @@ import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { connectIntegrationAction } from "../actions";
-import { ProviderHelpLink } from "./provider-help-link";
+import { HowToConnectButton, type ProviderGuide } from "./how-to-connect-button";
 
 type Values = Record<string, string>;
 type Output = z.infer<typeof IntegrationConnectInputSchema>;
@@ -88,6 +88,7 @@ export type ConnectFormDialogProps = {
   provider: IntegrationProvider;
   fields: readonly CredentialField[];
   name: string;
+  guide: ProviderGuide | null;
 };
 
 /**
@@ -100,6 +101,7 @@ export function ConnectFormDialog({
   provider,
   fields,
   name,
+  guide,
 }: ConnectFormDialogProps) {
   const t = useTranslations("integration.connectForm");
   const common = useTranslations("common");
@@ -147,7 +149,7 @@ export function ConnectFormDialog({
               ),
             )}
             <DialogFooter>
-              <ProviderHelpLink provider={provider} className="sm:mr-auto" />
+              {guide ? <HowToConnectButton guide={guide} className="sm:mr-auto" /> : null}
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 {common("cancel")}
               </Button>
