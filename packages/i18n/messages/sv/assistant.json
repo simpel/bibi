@@ -817,7 +817,10 @@
   },
   "integration": {
     "title": "Integrationer",
-    "description": "Koppla Bibi till betaltjänster och bokföringssystem som organisationen redan använder.",
+    "description": "Anslut Bibi till tjänsterna bakom era fakturor och betalningar. Varje avsnitt har ett eget syfte.",
+    "ledgerDescription": "Fakturor, förskottsfakturor och kreditnotor skapas i ert bokföringssystem, och betalningar som bokförs där kommer tillbaka till Bibi. Ni använder ett bokföringssystem i taget.",
+    "paymentsDescription": "Ta emot kortbetalningar med ert eget Stripe-konto och Swish-betalningar med ert eget Swish-nummer.",
+    "ledgerSwitch": "{connected} sköter er bokföring. För att använda {others} i stället kopplar ni först från {connected}. Fakturor som redan skapats där ligger kvar där.",
     "status": {
       "NOT_CONNECTED": "Inte ansluten",
       "PENDING": "Väntar på godkännande",
@@ -937,6 +940,24 @@
         "EXPIRED": "{name} behöver mer från er eller godtar inte längre anslutningen. Anslut igen för att återställa den.",
         "DISCONNECTED": "{name} är frånkopplad. Anslut igen för att använda den.",
         "UNAVAILABLE": "{name} är ansluten, men den här servern är inte inställd för {name} ännu, så inget kan gå via den."
+      },
+      "disconnectLedgerConfirm": "Bibi glömmer anslutningen till {name} och slutar använda den. Fakturor som redan skapats i {name} ligger kvar där, och Bibi läser inte längre in betalningar på dem. Ni kan ansluta {name} igen senare, eller ett annat bokföringssystem."
+    },
+    "setup": {
+      "heading": "Konton",
+      "never": "Bibi har inte kontrollerat kontona i {name} än.",
+      "ok": "Alla konton som Bibi bokför på finns i {name}.",
+      "check": "Kontrollera konton",
+      "recheck": "Kontrollera igen",
+      "checking": "Kontrollerar kontona i {name}…",
+      "checkedToast": "Kontona i {name} har kontrollerats.",
+      "checked": "Kontrollerat {date}",
+      "changeInBibi": "Ändra kontona i Bibi",
+      "issues": {
+        "ACCOUNT_MISSING": "Konto {account} finns inte i kontoplanen i {name}, eller är inaktivt. Fakturor som använder det misslyckas. Lägg till det i {name} eller välj ett annat konto i Bibi.",
+        "ADVANCES_CODING_MISSING": "{name} saknar en kontering vid {vat} % moms som bokför på kundförskottskontot {account}. Förskott med den momssatsen misslyckas. Lägg till en i {name}.",
+        "REVENUE_CODING_MISSING": "{name} saknar en intäktskontering vid {vat} % moms. Fakturor med den momssatsen misslyckas. Lägg till en i {name}.",
+        "ACCOUNT_NOT_CODED": "Ingen kontering i {name} bokför på konto {account}, så de raderna bokförs på standardkonteringen i {name}. Lägg till en kontering för kontot i {name} om ni vill att de bokförs där."
       }
     },
     "guide": {

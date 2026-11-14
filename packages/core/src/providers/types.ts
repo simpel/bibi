@@ -1,7 +1,7 @@
 import type { Db } from "@bibi/db";
 import type { Result } from "../errors/result";
 import type { ConnectPort } from "./connect-types";
-import type { PaymentMethodKey, ProviderKey } from "./provider-keys";
+import type { PaymentMethodKey, ProviderKey, SetupIssueCode } from "./provider-keys";
 import type { ProviderSignal } from "./signal";
 
 export type * from "./connect-types";
@@ -182,6 +182,24 @@ export type CreditStatusInput = AttemptRefInput & {
   known: readonly string[];
 };
 
+/** The accounts and VAT rates Bibi books with, which a ledger provider must be set up for. */
+export type SetupNeeds = {
+  advancesAccount: string;
+  /** The default revenue account and every mapped one, once each. */
+  revenueAccounts: readonly string[];
+  /** The VAT rates of the organization's items, once each. */
+  vatRates: readonly number[];
+};
+
+/** One thing a setup check found missing at the provider (ADR 0108). */
+export type SetupIssue = {
+  code: SetupIssueCode;
+  account: string | null;
+  vatPercent: number | null;
+};
+
+export type CheckSetupInput = { auth: ProviderAuth; needs: SetupNeeds };
+
 /** Raising invoices in the provider (ADR 0100). Every call runs after the commit (ADR 0058). */
 export type InvoicingPort = {
   /** `idempotencyKey`: Bibi's invoice id, so a retried issue never raises it twice. */
@@ -196,6 +214,11 @@ export type InvoicingPort = {
   creditStatus?(input: CreditStatusInput): Promise<Result<CreditState>>;
   /** Books a payment another provider took (card, Swish) on the provider's invoice. */
   registerPayment?(input: RegisterPaymentInput): Promise<Result<ProviderReference>>;
+  /**
+   * Reads whether the provider is set up for the accounts Bibi books to (ADR 0108). Reading
+   * only: nothing is created. Without it the provider has nothing to check.
+   */
+  checkSetup?(input: CheckSetupInput): Promise<Result<SetupIssue[]>>;
 };
 
 /** A verified inbound delivery: its event id and what it means for Bibi. */

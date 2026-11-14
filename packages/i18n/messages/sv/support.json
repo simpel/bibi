@@ -244,7 +244,7 @@
           },
           "otherAccounting": {
             "question": "Vi använder ett annat bokföringssystem. Hur gör vi?",
-            "answer": "Bibi fungerar med Fortnox och Spiris, som gör era fakturor och sköter bokföringen. Koppla ett av dem under Administration → Integrationer.\nAndra bokföringssystem stöds inte än. Berätta vilket ni använder så tittar vi på det."
+            "answer": "Bibi fungerar med Fortnox och Spiris, som gör era fakturor och sköter bokföringen. Koppla ett av dem under Administration → Integrationer.\nNi använder ett bokföringssystem i taget. För att byta kopplar ni från det första; fakturor som redan skapats där ligger kvar. När ni har anslutit kontrollerar Bibi att kontona den bokför på finns i ert system och listar det som saknas på kortet.\nAndra bokföringssystem stöds inte än. Berätta vilket ni använder så tittar vi på det."
           },
           "paymentMethods": {
             "question": "Kan jag välja vilken tjänst som tar emot kort-, Swish- och fakturabetalningar?",

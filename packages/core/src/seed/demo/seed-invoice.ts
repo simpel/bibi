@@ -10,6 +10,7 @@ import { updatePaymentSettings } from "../../features/payment-account/settings-o
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { nowOf } from "../../time/now";
+import { ensureDemoLedger } from "./demo-connect";
 import { demoFake } from "./demo-payments";
 import { applyDemoSignal } from "./demo-signal";
 import type { DemoInvoice, DemoOrder } from "./order-types";
@@ -125,6 +126,8 @@ export async function seedInvoice({
   const dueDate = new Date(now.getTime() + wanted.dueDay * DAY_MS);
   const input = { orderId, dueDate };
   if (wanted.provider) {
+    const ledger = await ensureDemoLedger({ context, provider: wanted.provider });
+    if (!ledger.ok) return ledger;
     const routed = await routeInvoices({ context, provider: wanted.provider });
     if (!routed.ok) return routed;
   }

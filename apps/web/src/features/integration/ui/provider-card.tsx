@@ -16,12 +16,15 @@ import { HowToConnectButton, type ProviderGuide } from "./how-to-connect-button"
 import { IntegrationNotice, type IntegrationOutcome } from "./integration-notice";
 import { IntegrationStatusBadge, isConnectionUsable } from "./integration-status-badge";
 import { RefreshProviderButton } from "./refresh-provider-button";
+import { SetupChecks } from "./setup-checks";
 
 export type ProviderCardProps = {
   connection: IntegrationConnectionDto;
   canEdit: boolean;
   /** The connect date, written on the server in the user's format. */
   connectedOn: string | null;
+  /** When the accounts were last checked, in the user's format. */
+  checkedOn: string | null;
   /** What happened when this provider sent the admin back; only a failure is shown. */
   outcome: IntegrationOutcome | null;
 };
@@ -67,13 +70,14 @@ export async function ProviderCard({
   connection,
   canEdit,
   connectedOn,
+  checkedOn,
   outcome,
 }: ProviderCardProps) {
   const [t, providers] = await Promise.all([
     getTranslations("integration.card"),
     getTranslations("providers"),
   ]);
-  const { provider, status, configured } = connection;
+  const { provider, status, configured, capabilities } = connection;
   const name = providers(`${provider}.name`);
   const usable = isConnectionUsable({ status, configured });
   const guide = status === "CONNECTED" ? null : await loadProviderGuide({ provider, name });
@@ -116,6 +120,14 @@ export async function ProviderCard({
               </div>
             ))}
           </dl>
+        ) : null}
+        {status === "CONNECTED" && capabilities.ledger ? (
+          <SetupChecks
+            connection={connection}
+            name={name}
+            checkedOn={checkedOn}
+            canEdit={canEdit}
+          />
         ) : null}
         {configured || !usable ? null : <p>{t("notConfigured", { name })}</p>}
         {canEdit ? <ProviderActions connection={connection} name={name} guide={guide} /> : null}

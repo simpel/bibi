@@ -1,4 +1,9 @@
-import { completeIntegrationConnect, type ExecuteContext, execute } from "../src/index";
+import {
+  completeIntegrationConnect,
+  disconnectIntegration,
+  type ExecuteContext,
+  execute,
+} from "../src/index";
 import { unwrap } from "./helpers";
 import {
   type FakeFortnox,
@@ -15,9 +20,20 @@ export function installFakeInvoicing(): FakeFortnox {
   return lastFakeFortnox() ?? installFakeFortnox();
 }
 
-/** Connects Fortnox through the real operations with Fortnox faked (ADR 0087). */
+/**
+ * Connects Fortnox through the real operations with Fortnox faked (ADR 0087). One accounting
+ * system at a time (ADR 0108): the memory ledger a money setup connects (Visma) is disconnected
+ * first, as a venue that switches would.
+ */
 export async function connectFortnox({ context }: { context: ExecuteContext }) {
   installFakeFortnox();
+  unwrap({
+    result: await execute({
+      operation: disconnectIntegration,
+      input: { provider: "VISMA" },
+      context,
+    }),
+  });
   const session = { ...context, credential: "session" as const };
   const { state } = await startFortnox({ context: session });
   const input = { provider: "FORTNOX" as const, code: "code", state };

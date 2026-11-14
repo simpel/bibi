@@ -26,7 +26,7 @@ const entries: SearchableEntry[] = [
   entry({
     overrides: { id: "timeZone", label: "Tidszon", keywords: "klocka", anchor: "time-zone" },
   }),
-  entry({ overrides: { id: "providers", label: "Stripe", keywords: "kort betalning" } }),
+  entry({ overrides: { id: "ledger", label: "Stripe", keywords: "kort betalning" } }),
   entry({ overrides: { id: "accounts", label: "Konton", keywords: "moms bas" } }),
 ];
 

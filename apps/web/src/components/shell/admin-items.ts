@@ -145,7 +145,7 @@ export const ADMIN_GROUPS: readonly AdminGroup[] = [
         key: "integrations",
         icon: PlugIcon,
         href: ROUTES.adminIntegrations,
-        ids: ["providers", "apiKeys"],
+        ids: ["ledger", "paymentProviders", "apiKeys"],
       }),
     ],
   },

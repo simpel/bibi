@@ -10,6 +10,7 @@ import { getProvider } from "../../providers/registry";
 import { conflict, invalid } from "../../shared/errors";
 import { nowOf } from "../../time/now";
 import { configuredOauthPort } from "./oauth-provider";
+import { checkOneLedger } from "./one-ledger";
 import {
   type IntegrationConnectInput,
   IntegrationConnectInputSchema,
@@ -120,7 +121,9 @@ export const connectIntegration = defineOperation({
     "connection keeps working until the new approval replaces it. CREDENTIALS: pass " +
     "`credentials` (its credentialFields); after the change is committed they are checked with " +
     "the provider and stored sealed, never returned; the assistant may not pass them (FORBIDDEN: " +
-    "the admin enters them on the settings page). HOSTED_ONBOARDING is paymentAccount.startOnboarding (CONFLICT here).",
+    "the admin enters them on the settings page). A venue keeps the books in one accounting " +
+    "system at a time: connecting a second one is CONFLICT until the first is disconnected. " +
+    "HOSTED_ONBOARDING is paymentAccount.startOnboarding (CONFLICT here).",
   input: IntegrationConnectInputSchema,
   output: IntegrationConnectOutputSchema,
   permission: "integration:write",
@@ -134,6 +137,8 @@ export const connectIntegration = defineOperation({
     }
     const adapter = getProvider({ key: input.provider });
     if (!adapter.ok) return adapter;
+    const single = await checkOneLedger({ context, provider: input.provider });
+    if (!single.ok) return single;
     const { connect } = adapter.value;
     if (connect.kind === "OAUTH") return startOauth({ input, context });
     if (connect.kind === "CREDENTIALS") {

@@ -4,6 +4,7 @@ import { fortnoxApi } from "./fortnox-api";
 import { fortnoxNotConnected } from "./fortnox-config";
 import { registerFortnoxPayment } from "./fortnox-register-payment";
 import { fortnoxRows } from "./fortnox-rows";
+import { checkFortnoxSetup } from "./fortnox-setup";
 
 type Authed = { auth: ProviderAuth };
 
@@ -18,6 +19,11 @@ function tokenOf({ auth }: Authed): Result<string> {
  * it; registers card and Swish payments on it; cancels or credits it.
  */
 export const fortnoxInvoicing: InvoicingPort = {
+  async checkSetup({ auth, needs }) {
+    const accessToken = tokenOf({ auth });
+    if (!accessToken.ok) return accessToken;
+    return checkFortnoxSetup({ accessToken: accessToken.value, needs });
+  },
   async issue({ auth, invoice }) {
     const accessToken = tokenOf({ auth });
     if (!accessToken.ok) return accessToken;

@@ -1,3 +1,4 @@
+import { Prisma } from "@bibi/db";
 import { getLogger } from "@bibi/logger";
 import { openSecret } from "../../crypto/secret-box";
 import { ok, type Result } from "../../errors/result";
@@ -69,6 +70,9 @@ export const disconnectIntegration = defineOperation({
         oauthStateHash: null,
         codeVerifierSealed: null,
         oauthStartedAt: null,
+        // What the last check found is about the connection that ends here (ADR 0108).
+        setupCheckedAt: null,
+        setupIssues: Prisma.DbNull,
       },
     });
     const after = toIntegrationDto({ row, organizationId, provider });

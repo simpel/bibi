@@ -27,6 +27,7 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "integration.list", route: "/admin/integrations" },
   { operation: "integration.connect", route: "/admin/integrations" },
   { operation: "integration.disconnect", route: "/admin/integrations" },
+  { operation: "integration.checkSetup", route: "/admin/integrations" },
   { operation: "apiKey.list", route: "/admin/api-keys" },
   { operation: "apiKey.create", route: "/admin/api-keys" },
   { operation: "apiKey.revoke", route: "/admin/api-keys" },

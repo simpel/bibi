@@ -4,7 +4,7 @@ Decision: `docs/decisions/0100-payment-providers-as-ports.md`. Code: `packages/c
 
 ## What it does
 - An admin connects the venue's Visma eEkonomi (eAccounting) company in Settings → Integrations (OAuth with PKCE, scopes `ea:api ea:sales offline_access`). Tokens are sealed under `INTEGRATION_SECRET_KEY` and refreshed through the shared lease (`providers/oauth/`).
-- Sending an invoice routed to Visma finds the customer (by email, then name) or creates it, and raises a booked customer invoice from Bibi's frozen rows. Each VAT rate uses one Bibi revenue article (`BIBI-VAT25`, `BIBI-VAT12`, ...) that Bibi creates on first use with the company's account coding for that rate that books to revenue. Prepayment invoices and deducted deposits use one advances article per rate (`BIBI-ADV25`, ...) on the coding at that rate that books sales to the advances account (2420): the venue creates that coding in Visma (Settings → Account codings) once per VAT rate it sells at. Deducted deposits are rows of quantity −1 per VAT rate.
+- Sending an invoice routed to Visma finds the customer (by email, then name) or creates it, and raises a booked customer invoice from Bibi's frozen rows. A revenue row uses one Bibi article per VAT rate and account, created on first use (ADR 0108): `BIBI-VAT25-3010` coded to the company's coding at that rate that books to the row's own revenue account (Administration → Accounting in Bibi), else `BIBI-VAT25` on the first coding at that rate that books to revenue, so an account the company has no coding for still invoices. Prepayment invoices and deducted deposits use one advances article per rate (`BIBI-ADV25`, ...) on the coding at that rate that books sales to the advances account (2420): the venue creates that coding in Visma (Settings → Account codings) once per VAT rate it sells at. Deducted deposits are rows of quantity −1 per VAT rate.
 - A booked Visma invoice cannot be voided; credit it in Bibi (a credit invoice referencing the original, scaled per row for a partial credit).
 - Visma pushes nothing: the worker's `provider.poll` job runs every 15 minutes and syncs every SENT Visma invoice. What has been paid is derived from the invoice's total and remaining amount, less Bibi's issued credit notes on it (a credit invoice lowers the remaining amount too, and is not a payment).
 
@@ -17,8 +17,11 @@ The eAccounting API is not in the Visma Developer Portal (`oauth.developers.vism
 1. Sign up at `https://selfservice.developer.vismaonline.com/`, region Sweden (it cannot be changed later; one sandbox company per email address). Visma emails a sandbox client id, client secret and a sandbox company (log in at `https://www.vismaonline.com`).
 2. Ask `api@spiris.se` to register the redirect URIs, exact match, HTTPS only, no fragments: `<WEB_ORIGIN>/api/providers/visma/callback` for each environment (production and `https://localhost:3330`). Give the client id, never the secret. Locally, run `pnpm dev:https` to connect Visma.
 3. Bibi requests `ea:api ea:sales offline_access`.
-4. When the sandbox checks below pass, ask `api@spiris.se` for production access.
+4. When the sandbox checks below pass, ask `api@spiris.se` for production access. Granted 2026-11-14: set the production client id and secret in Coolify (`VISMA_CLIENT_ID`, `VISMA_CLIENT_SECRET`); the hosts are the same.
 Docs: `https://developer.vismaonline.com/docs/authentication`.
+
+## Account check
+One accounting system at a time (ADR 0108). When Spiris connects, and on **Check accounts** on its card (`integration.checkSetup`), Bibi reads `/articleaccountcodings` and stores what is missing on the connection: at each VAT rate of the organization's items a coding that books to revenue and one that books to the advances account, and for each mapped revenue account a coding that books to it (without one, its rows use the default coding). Reading only; nothing is created.
 
 ## Before going live (check in the sandbox)
 - Required fields for customers (Bibi sends `-` as invoice city and postal code) and customer invoices.

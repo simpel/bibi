@@ -9,6 +9,12 @@ export const integrationRoutes = [
     successStatus: 200,
   }),
   restRoute({
+    operation: "integration.checkSetup",
+    method: "POST",
+    path: "/integrations/{provider}/check-setup",
+    successStatus: 200,
+  }),
+  restRoute({
     operation: "integration.disconnect",
     method: "POST",
     path: "/integrations/{provider}/disconnect",

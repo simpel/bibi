@@ -37,7 +37,7 @@ export default async function IntegrationsPage({ params, searchParams }: PagePro
   const { title, show } = await loadAdminPage({ key: "integrations" });
   return (
     <AdminSections title={title}>
-      {show.has("providers") ? (
+      {show.has("ledger") || show.has("paymentProviders") ? (
         <IntegrationPanel locale={locale} returned={returnedOf({ provider, outcome })} />
       ) : null}
       {show.has("apiKeys") ? <ApiKeySection locale={locale} /> : null}

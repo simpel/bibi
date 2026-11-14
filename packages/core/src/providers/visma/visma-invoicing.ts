@@ -8,6 +8,7 @@ import { findOrCreateCustomer } from "./visma-customers";
 import { createInvoice, creditRows, readInvoice } from "./visma-invoices";
 import { registerVismaPayment } from "./visma-payments";
 import { toVismaRows } from "./visma-rows";
+import { checkVismaSetup } from "./visma-setup";
 
 const tokenOf = ({ auth }: { auth: ProviderAuth }): Result<string> =>
   auth.accessToken ? ok({ value: auth.accessToken }) : vismaNotConnected();
@@ -48,6 +49,11 @@ export function derivedPayments({
  * polling subtracts what Bibi registered, so it is never counted twice (see `derivedPayments`).
  */
 export const vismaInvoicing: InvoicingPort = {
+  async checkSetup({ auth, needs }) {
+    const accessToken = tokenOf({ auth });
+    if (!accessToken.ok) return accessToken;
+    return checkVismaSetup({ accessToken: accessToken.value, needs });
+  },
   async issue({ auth, invoice }) {
     const accessToken = tokenOf({ auth });
     if (!accessToken.ok) return accessToken;

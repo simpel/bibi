@@ -11,7 +11,7 @@ import { useToastAction } from "@/lib/use-toast-action";
 import { disconnectIntegrationAction } from "../actions";
 
 export type DisconnectProviderButtonProps = {
-  connection: Pick<IntegrationConnectionDto, "provider" | "connectKind">;
+  connection: Pick<IntegrationConnectionDto, "provider" | "connectKind" | "capabilities">;
   name: string;
 };
 
@@ -25,6 +25,12 @@ export function DisconnectProviderButton({ connection, name }: DisconnectProvide
   const [open, setOpen] = useState(false);
   const { run, pending } = useToastAction();
   const hosted = connection.connectKind === "HOSTED_ONBOARDING";
+  // A ledger keeps the invoices it raised; Bibi stops reading their payments (ADR 0108).
+  const confirmKey = hosted
+    ? "disconnectHostedConfirm"
+    : connection.capabilities.ledger
+      ? "disconnectLedgerConfirm"
+      : "disconnectConfirm";
   const messages = { pending: t("disconnecting", { name }), success: t("disconnected", { name }) };
   const onSuccess = () => {
     setOpen(false);
@@ -47,7 +53,7 @@ export function DisconnectProviderButton({ connection, name }: DisconnectProvide
         open={open}
         onOpenChange={setOpen}
         title={t("disconnectTitle", { name })}
-        description={t(hosted ? "disconnectHostedConfirm" : "disconnectConfirm", { name })}
+        description={t(confirmKey, { name })}
         confirmLabel={t("disconnect")}
         pending={pending}
         onConfirm={disconnect}

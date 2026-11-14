@@ -613,9 +613,13 @@
           "label": "Ansvar",
           "keywords": "kökschef mottagare ansvarig"
         },
-        "providers": {
-          "label": "Anslutningar",
-          "keywords": "stripe fortnox swish visma betaltjänst bokföring koppla integration"
+        "ledger": {
+          "label": "Fakturering och bokföring",
+          "keywords": "fortnox visma spiris bokföring faktura ansluta integration"
+        },
+        "paymentProviders": {
+          "label": "Kort och Swish",
+          "keywords": "stripe swish kort betalning ansluta integration"
         },
         "deposit": {
           "label": "Förskott",

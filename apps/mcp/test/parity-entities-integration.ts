@@ -116,6 +116,9 @@ const integrationConnection: ParityEntity = {
     field: "integrations",
     create: async ({ mcp }) => {
       configureFortnox();
+      // One accounting system at a time (ADR 0108): another entity may have connected the memory
+      // ledger (Visma) in this organization, so switch from it as a venue would.
+      await tool({ mcp, name: "integration_disconnect", args: { provider: "VISMA" } });
       const started = await tool({
         mcp,
         name: "integration_connect",

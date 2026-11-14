@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  checkIntegrationSetup,
   connectIntegration,
   disconnectIntegration,
   type IntegrationConnectInput,
@@ -19,6 +20,17 @@ export async function connectIntegrationAction({
   input,
 }: ConnectIntegrationActionInput): Promise<ActionResult<IntegrationConnectOutput>> {
   return toActionResult({ result: await runOperation({ operation: connectIntegration, input }) });
+}
+
+export type CheckIntegrationSetupActionInput = { provider: IntegrationProvider };
+
+/** Reads the accounting system again and stores what it finds (ADR 0108). */
+export async function checkIntegrationSetupAction({
+  provider,
+}: CheckIntegrationSetupActionInput): Promise<ActionResult<IntegrationConnectionDto>> {
+  return toActionResult({
+    result: await runOperation({ operation: checkIntegrationSetup, input: { provider } }),
+  });
 }
 
 export type DisconnectIntegrationActionInput = { provider: IntegrationProvider };

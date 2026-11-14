@@ -13,6 +13,7 @@ import {
 } from "./features/finance/operations";
 import { applyIntegrationSignal } from "./features/integration/apply-signal-operation";
 import {
+  checkIntegrationSetup,
   completeIntegrationConnect,
   connectIntegration,
   disconnectIntegration,
@@ -60,6 +61,7 @@ export const moneyOperations = [
 export {
   applyIntegrationSignal,
   applyInvoiceSignal,
+  checkIntegrationSetup,
   completeIntegrationConnect,
   connectIntegration,
   createInvoice,

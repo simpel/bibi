@@ -7,6 +7,7 @@ import { uiEntry } from "./ui-entry";
 export const IntegrationWireSchema = IntegrationConnectionSchema.extend({
   connectedAt: z.string().nullable(),
   updatedAt: z.string().nullable(),
+  setupCheckedAt: z.string().nullable(),
 });
 
 export type IntegrationWire = z.infer<typeof IntegrationWireSchema>;
@@ -27,5 +28,6 @@ const integrationOne = uiEntry({
 export const INTEGRATION_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   integration_list: integrationList,
   integration_connect: integrationOne,
+  integration_checkSetup: integrationOne,
   integration_disconnect: integrationOne,
 };

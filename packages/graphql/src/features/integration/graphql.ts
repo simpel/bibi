@@ -1,4 +1,5 @@
 import {
+  checkIntegrationSetup,
   connectIntegration,
   disconnectIntegration,
   type IntegrationConnectionDto,
@@ -35,4 +36,5 @@ const IntegrationListRef = builder
 
 fieldFromOperation({ operation: listIntegrations, type: IntegrationListRef, name: "integrations" });
 mutationFromOperation({ operation: connectIntegration, type: IntegrationConnectStartRef });
+mutationFromOperation({ operation: checkIntegrationSetup, type: IntegrationConnectionRef });
 mutationFromOperation({ operation: disconnectIntegration, type: IntegrationConnectionRef });

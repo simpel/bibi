@@ -613,9 +613,13 @@
           "label": "Responsibilities",
           "keywords": "head of kitchen recipient responsible"
         },
-        "providers": {
-          "label": "Connections",
-          "keywords": "stripe fortnox swish visma payment service accounting connect integration"
+        "ledger": {
+          "label": "Invoicing and bookkeeping",
+          "keywords": "fortnox visma spiris accounting invoice books connect integration"
+        },
+        "paymentProviders": {
+          "label": "Card and Swish",
+          "keywords": "stripe swish card payment connect integration"
         },
         "deposit": {
           "label": "Deposits",

@@ -152,16 +152,20 @@ describe("Visma invoicing (ADR 0100)", () => {
       "/articles",
       "/articles",
       "/articles",
+      "/articles",
       "/customerinvoices",
     ]);
-    expect(issued).toEqual({ providerReference: "id-5", url: null });
-    // Revenue articles skip the advances codings; the deposit's article is coded to 2420 (ADR 0106).
+    expect(issued).toEqual({ providerReference: "id-6", url: null });
+    // A row books to its own account when the company has a coding for it (3001: BIBI-VAT25-3001),
+    // else to the default coding at its rate (3002 has none); the deposit's article is coded to
+    // 2420 and never to a revenue coding (ADR 0106, 0108).
     const articles = stub.calls
       .filter((c) => apiPath({ call: c }) === "/articles" && c.method === "POST")
       .map((c) => JSON.parse(c.body ?? "{}"));
     expect(articles).toMatchObject([
-      { Number: "BIBI-VAT25", CodingId: "coding-25-3001" },
+      { Number: "BIBI-VAT25-3001", CodingId: "coding-25-3001" },
       { Number: "BIBI-VAT12", CodingId: "coding-12-3001" },
+      { Number: "BIBI-VAT25", CodingId: "coding-25-3001" },
       { Number: "BIBI-ADV12", CodingId: "coding-12-2420" },
     ]);
     const customer = JSON.parse(
@@ -182,7 +186,8 @@ describe("Visma invoicing (ADR 0100)", () => {
       YourReference: "KS-2026-114",
       IsCreditInvoice: false,
     });
-    // 25 % → id-2, 12 % → id-3, the deposit at 12 % → advances article id-4; quantity −1.
+    // 25 % on 3001 → id-2, 12 % → id-3, 25 % on 3002 (default coding) → id-4, the deposit at 12 %
+    // → advances article id-5; quantity −1.
     expect(body.Rows).toEqual([
       {
         LineNumber: 1,
@@ -202,7 +207,7 @@ describe("Visma invoicing (ADR 0100)", () => {
       },
       {
         LineNumber: 3,
-        ArticleId: "id-2",
+        ArticleId: "id-4",
         Text: "Lunch package (25 %)",
         UnitPrice: 100,
         Quantity: 1,
@@ -210,13 +215,38 @@ describe("Visma invoicing (ADR 0100)", () => {
       },
       {
         LineNumber: 4,
-        ArticleId: "id-4",
+        ArticleId: "id-5",
         Text: "Advance",
         UnitPrice: 1000,
         Quantity: -1,
         DiscountPercentage: 0,
       },
     ]);
+  });
+
+  it("reuses an existing article without reading the codings, and falls back when they fail", async () => {
+    const stub = stubVisma();
+    vismaCompany({ stub });
+    const base = stub.route;
+    const exact = "BIBI-VAT25-3001";
+    stub.route = (call) => {
+      const path = apiPath({ call });
+      if (path === "/articleaccountcodings") return { status: 500 };
+      if (call.method === "GET" && path.startsWith("/articles?$filter")) {
+        return { json: { Data: path.includes(exact) ? [] : [{ Id: "art-default" }] } };
+      }
+      return base(call);
+    };
+    const invoice: InvoiceSnapshot = {
+      ...snapshot(),
+      deductions: [],
+      lines: [snapshot().lines[0] as InvoiceSnapshot["lines"][number]],
+    };
+    unwrap({ result: await visma().invoicing.issue({ auth, invoice, idempotencyKey: "i1" }) });
+    const posted = stub.calls.filter((c) => c.method === "POST").map((c) => apiPath({ call: c }));
+    expect(posted).not.toContain("/articles");
+    const rows = JSON.parse(stub.calls.at(-1)?.body ?? "{}").Rows;
+    expect(rows[0].ArticleId).toBe("art-default");
   });
 
   it("raises a prepayment invoice on the advances article", async () => {
@@ -355,5 +385,45 @@ describe("Visma invoicing (ADR 0100)", () => {
     );
     const none = await lookup({ auth, providerReference: "inv", amountMinor: 1, known: [] });
     expect(unwrap({ result: none })).toEqual({ status: "MISSING" });
+  });
+});
+
+describe("Visma setup check (ADR 0108)", () => {
+  const needs = { advancesAccount: "2420", revenueAccounts: ["3001", "3099"], vatRates: [25, 12] };
+  const check = ({ input }: { input: typeof needs }) => {
+    const port = visma().invoicing;
+    if (!port.checkSetup) throw new Error("Visma has no setup check");
+    return port.checkSetup({ auth, needs: input });
+  };
+
+  it("finds no issue when codings book to the advances and revenue accounts", async () => {
+    const stub = stubVisma();
+    vismaCompany({ stub });
+    const found = unwrap({
+      result: await check({ input: { ...needs, revenueAccounts: ["3001"] } }),
+    });
+    expect(found).toEqual([]);
+  });
+
+  it("names a missing advances coding per rate and a revenue account no coding books to", async () => {
+    const stub = stubVisma();
+    vismaCompany({ stub, advances: false });
+    const found = unwrap({ result: await check({ input: needs }) });
+    expect(found).toEqual([
+      { code: "ADVANCES_CODING_MISSING", account: "2420", vatPercent: 25 },
+      { code: "ADVANCES_CODING_MISSING", account: "2420", vatPercent: 12 },
+      { code: "ACCOUNT_NOT_CODED", account: "3099", vatPercent: null },
+    ]);
+  });
+
+  it("reports a rate with no revenue coding at all", async () => {
+    const stub = stubVisma();
+    vismaCompany({ stub });
+    const found = unwrap({
+      result: await check({ input: { ...needs, revenueAccounts: ["3001"], vatRates: [25, 0] } }),
+    });
+    expect(found).toEqual(
+      expect.arrayContaining([{ code: "REVENUE_CODING_MISSING", account: null, vatPercent: 0 }]),
+    );
   });
 });

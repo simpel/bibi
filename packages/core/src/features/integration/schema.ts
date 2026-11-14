@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PAYMENT_METHODS, PROVIDER_KEYS } from "../../providers/provider-keys";
+import { PAYMENT_METHODS, PROVIDER_KEYS, SETUP_ISSUE_CODES } from "../../providers/provider-keys";
 
 export const IntegrationProviderSchema = z
   .enum(PROVIDER_KEYS)
@@ -42,6 +42,21 @@ export const IntegrationCapabilitiesSchema = z.object({
   ledger: z.boolean().describe("It keeps the books for what it invoices (ADR 0106)"),
 });
 
+/** One thing the last setup check found at the accounting system (ADR 0108). */
+export const SetupIssueSchema = z.object({
+  code: z
+    .enum(SETUP_ISSUE_CODES)
+    .describe(
+      "ACCOUNT_MISSING: an account Bibi books to is not in the system's chart (or inactive). " +
+        "ADVANCES_CODING_MISSING: no account coding at `vatPercent` books to the advances " +
+        "account `account`, so deposits there fail. REVENUE_CODING_MISSING: no revenue coding at " +
+        "`vatPercent`, so invoices at that rate fail. ACCOUNT_NOT_CODED: no coding books to the " +
+        "mapped revenue account `account`, so its rows use the system's default coding.",
+    ),
+  account: z.string().nullable(),
+  vatPercent: z.number().nullable(),
+});
+
 /** One provider's connection for the organization (ADR 0087). Tokens never appear here. */
 export const IntegrationConnectionSchema = z.object({
   id: z.string().nullable().describe("Null while NOT_CONNECTED (no row yet)."),
@@ -62,6 +77,16 @@ export const IntegrationConnectionSchema = z.object({
   organizationNumber: z.string().nullable(),
   connectedAt: z.date().nullable(),
   updatedAt: z.date().nullable(),
+  setupCheckedAt: z
+    .date()
+    .nullable()
+    .describe(
+      "When integration.checkSetup last read the provider's accounts; null before the first " +
+        "check, while not CONNECTED and for a provider with nothing to check.",
+    ),
+  setupIssues: z
+    .array(SetupIssueSchema)
+    .describe("What the last check found missing; [] when it found nothing or never ran."),
 });
 
 export const IntegrationListInputSchema = z.object({});
@@ -94,6 +119,8 @@ export const IntegrationConnectOutputSchema = IntegrationConnectionSchema.extend
 
 export const IntegrationDisconnectInputSchema = z.object({ provider: IntegrationProviderSchema });
 
+export const IntegrationCheckSetupInputSchema = z.object({ provider: IntegrationProviderSchema });
+
 export const IntegrationCompleteConnectInputSchema = z.object({
   provider: IntegrationProviderSchema,
   code: z.string().min(1).max(2048),
@@ -117,6 +144,7 @@ export type IntegrationConnectionDto = z.infer<typeof IntegrationConnectionSchem
 export type IntegrationConnectInput = z.infer<typeof IntegrationConnectInputSchema>;
 export type IntegrationConnectOutput = z.infer<typeof IntegrationConnectOutputSchema>;
 export type IntegrationDisconnectInput = z.infer<typeof IntegrationDisconnectInputSchema>;
+export type IntegrationCheckSetupInput = z.infer<typeof IntegrationCheckSetupInputSchema>;
 export type IntegrationCompleteConnectInput = z.infer<typeof IntegrationCompleteConnectInputSchema>;
 export type IntegrationRefreshExpiringOutput = z.infer<
   typeof IntegrationRefreshExpiringOutputSchema

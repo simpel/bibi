@@ -1,7 +1,5 @@
 import { ok, type Result } from "../../errors/result";
 import { createDeposit, sendDeposit } from "../../features/deposit/write-operations";
-import { completeIntegrationConnect } from "../../features/integration/complete-connect-operation";
-import { connectIntegration } from "../../features/integration/connect-operation";
 import { createPayment } from "../../features/payment/create-operation";
 import { recordManualPayment } from "../../features/payment/record-manual-operation";
 import { refundPayment } from "../../features/payment/refund-operation";
@@ -13,34 +11,21 @@ import {
 } from "../../features/payment-account/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { demoSwishCredentials } from "./demo-payments";
+import { ledgerProviderKeys } from "../../providers/registry";
+import { connectDemoOauth, connectDemoSwish } from "./demo-connect";
 import { applyDemoSignal } from "./demo-signal";
 import type { DemoOrder } from "./order-types";
 import { seedOrderEstimates } from "./seed-estimates";
 import { seedInvoice } from "./seed-invoice";
-import type { DemoOrg, DemoProvider } from "./types";
+import type { DemoOrg } from "./types";
 
 type Ctx = { context: ExecuteContext };
-
-/** Swish: the number and certificate are entered, then checked after the commit (ADR 0100). */
-async function connectSwish({ context }: Ctx) {
-  const input = { provider: "SWISH" as const, credentials: demoSwishCredentials(context) };
-  return execute({ operation: connectIntegration, input, context });
-}
-
-/** An OAuth provider: the consent page's state comes back as the callback would bring it. */
-async function connectOauth({ context, provider }: Ctx & { provider: DemoProvider }) {
-  const started = await execute({ operation: connectIntegration, input: { provider }, context });
-  if (!started.ok) return started;
-  const state = new URL(started.value.authorizeUrl ?? "").searchParams.get("state") ?? "";
-  const callback = { ...context, credential: "session" as const };
-  const input = { provider, code: `demo-${provider}`, state };
-  return execute({ operation: completeIntegrationConnect, input, context: callback });
-}
 
 /**
  * The organization's providers (ADR 0100) when an order has money: Stripe's account, then each
  * provider of `org.providers`, all memory fakes (`withDemoPayments`), no call leaves the seed.
+ * Only the first accounting system connects here (ADR 0108); an invoice that needs another one
+ * switches to it (`ensureDemoLedger`).
  */
 export async function activateDemoPayments({ context, org }: Ctx & { org: DemoOrg }) {
   if (!org.orders.some((order) => order.money)) return ok({ value: true as const });
@@ -48,11 +33,17 @@ export async function activateDemoPayments({ context, org }: Ctx & { org: DemoOr
   if (!started.ok) return started;
   const synced = await execute({ operation: syncPaymentAccount, input: {}, context });
   if (!synced.ok) return synced;
+  const ledgers = new Set<string>(ledgerProviderKeys());
+  let ledgerConnected = false;
   for (const provider of org.providers ?? []) {
+    if (ledgers.has(provider)) {
+      if (ledgerConnected) continue;
+      ledgerConnected = true;
+    }
     const connected =
       provider === "SWISH"
-        ? await connectSwish({ context })
-        : await connectOauth({ context, provider });
+        ? await connectDemoSwish({ context })
+        : await connectDemoOauth({ context, provider });
     if (!connected.ok) return connected;
   }
   return ok({ value: true as const });

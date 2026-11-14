@@ -24,7 +24,8 @@ export type AdminSectionId =
   | "deposit"
   | "accounts"
   | "revenueAccounts"
-  | "providers"
+  | "ledger"
+  | "paymentProviders"
   | "apiKeys";
 
 /**
@@ -54,6 +55,7 @@ export const ADMIN_SECTIONS: Record<AdminSectionId, { anchor: string; permission
   deposit: { anchor: "deposit", permission: "paymentAccount:read" },
   accounts: { anchor: "accounts", permission: "finance:read" },
   revenueAccounts: { anchor: "revenue-accounts", permission: "finance:read" },
-  providers: { anchor: "providers", permission: "integration:read" },
+  ledger: { anchor: "ledger", permission: "integration:read" },
+  paymentProviders: { anchor: "payment-providers", permission: "integration:read" },
   apiKeys: { anchor: "api-keys", permission: "apiKey:read" },
 };

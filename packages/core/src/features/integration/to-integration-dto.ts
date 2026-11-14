@@ -1,12 +1,14 @@
 import type { ProviderConnection } from "@bibi/db";
+import { z } from "zod";
 import { PAYMENT_METHODS, type ProviderKey } from "../../providers/provider-keys";
 import { findProvider, takesMethod } from "../../providers/registry";
 import type { ProviderAdapter } from "../../providers/types";
 import { connectFieldsOf } from "./connect-fields";
-import type {
-  IntegrationCapabilities,
-  IntegrationConnectionDto,
-  IntegrationStatus,
+import {
+  type IntegrationCapabilities,
+  type IntegrationConnectionDto,
+  type IntegrationStatus,
+  SetupIssueSchema,
 } from "./schema";
 
 export type ToIntegrationDtoInput = {
@@ -28,6 +30,17 @@ function capabilitiesOf({ adapter }: { adapter: ProviderAdapter | null }): Integ
   if (!adapter) return { methods: [], invoicing: false, ledger: false };
   const methods = PAYMENT_METHODS.filter((method) => takesMethod({ adapter, method }));
   return { methods, invoicing: Boolean(adapter.invoicing), ledger: adapter.ledger };
+}
+
+const SetupIssuesSchema = z.array(SetupIssueSchema);
+
+/** The last setup check, only while the connection works; stored JSON that no longer parses reads as none. */
+function setupOf({ row, status }: { row: ProviderConnection; status: IntegrationStatus }) {
+  const issues = SetupIssuesSchema.safeParse(row.setupIssues);
+  if (status !== "CONNECTED" || !row.setupCheckedAt || !issues.success) {
+    return { setupCheckedAt: null, setupIssues: [] };
+  }
+  return { setupCheckedAt: row.setupCheckedAt, setupIssues: issues.data };
 }
 
 /** No row means the provider was never connected. Sealed secrets and OAuth state stay out. */
@@ -54,15 +67,19 @@ export function toIntegrationDto({
       organizationNumber: null,
       connectedAt: null,
       updatedAt: null,
+      setupCheckedAt: null,
+      setupIssues: [],
     };
   }
+  const status = statusOf({ row });
   return {
     id: row.id,
     ...shape,
-    status: statusOf({ row }),
+    status,
     companyName: row.externalCompanyName,
     organizationNumber: row.externalOrgNumber,
     connectedAt: row.connectedAt,
     updatedAt: row.updatedAt,
+    ...setupOf({ row, status }),
   };
 }

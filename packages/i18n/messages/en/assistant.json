@@ -817,7 +817,10 @@
   },
   "integration": {
     "title": "Integrations",
-    "description": "Connect Bibi to the payment services and accounting systems your organization already uses.",
+    "description": "Connect Bibi to the services behind your invoices and payments. Each section is one purpose.",
+    "ledgerDescription": "Invoices, deposit invoices and credit notes are made in your accounting system, and payments booked there come back to Bibi. You use one accounting system at a time.",
+    "paymentsDescription": "Take card payments with your own Stripe account and Swish payments with your own Swish number.",
+    "ledgerSwitch": "{connected} keeps your books. To use {others} instead, disconnect {connected} first. Invoices already raised there stay there.",
     "status": {
       "NOT_CONNECTED": "Not connected",
       "PENDING": "Waiting for approval",
@@ -937,6 +940,24 @@
         "EXPIRED": "{name} needs more from you or no longer accepts the connection. Reconnect to restore it.",
         "DISCONNECTED": "{name} is disconnected. Connect again to use it.",
         "UNAVAILABLE": "{name} is connected, but this server is not set up for {name} yet, so nothing can go through it."
+      },
+      "disconnectLedgerConfirm": "Bibi forgets the connection to {name} and stops using it. Invoices already raised in {name} stay there, and Bibi no longer reads their payments from it. You can connect {name} again later, or another accounting system."
+    },
+    "setup": {
+      "heading": "Accounts",
+      "never": "Bibi has not checked the accounts in {name} yet.",
+      "ok": "Every account Bibi books to is set up in {name}.",
+      "check": "Check accounts",
+      "recheck": "Check again",
+      "checking": "Checking the accounts in {name}…",
+      "checkedToast": "The accounts in {name} have been checked.",
+      "checked": "Checked {date}",
+      "changeInBibi": "Change the accounts in Bibi",
+      "issues": {
+        "ACCOUNT_MISSING": "Account {account} is not in the chart of accounts in {name}, or is inactive. Invoices that use it fail. Add it in {name}, or choose another account in Bibi.",
+        "ADVANCES_CODING_MISSING": "{name} has no account coding at {vat} % VAT that books to the advances account {account}. Deposits at that rate fail. Add one in {name}.",
+        "REVENUE_CODING_MISSING": "{name} has no revenue account coding at {vat} % VAT. Invoices at that rate fail. Add one in {name}.",
+        "ACCOUNT_NOT_CODED": "No account coding in {name} books to account {account}, so those rows use the default coding in {name}. Add a coding for it in {name} if you want them booked there."
       }
     },
     "guide": {
