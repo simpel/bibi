@@ -1,7 +1,7 @@
 import { ChatView } from "./chat-view";
 
 /**
- * The assistant as the home page (ADR 0035). The session lives in the shell, so a question asked
+ * The assistant page (ADR 0035; on `/assistant` since ADR 0110). The session lives in the shell, so a question asked
  * from ⌘K elsewhere continues here. A full page: it fills the viewport below the top bar (the
  * shell drops its padding and width cap for it).
  */

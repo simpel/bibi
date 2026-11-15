@@ -126,6 +126,7 @@
     "validationUnmapped": "Kunde inte spara: {message}"
   },
   "nav": {
+    "myWork": "Mitt arbete",
     "billing": "Fakturering",
     "dashboard": "Data",
     "pipeline": "Pipeline",

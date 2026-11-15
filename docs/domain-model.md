@@ -1191,6 +1191,12 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > Operation: `finance.overview({ from, to, customerId? })` (`finance:read`; at most 24 months). Invoiced, received, aging, revenue and trends need `payment:read`, won and lost `quote:read`; a part the caller may not read is null. Web: the Financials dashboard, `/data/{dashboard}/{from}/{to}` (ADR 0086).
 
+### My work (`myWork.view`)
+
+*MVP* · The signed-in member's start page for a range of at most 14 days, as a read model ([ADR 0110](decisions/0110-my-work-as-the-start-page.md)): the item rows of every current run sheet version that concerns the member, by time, with their counts, status, changes since sent and why they concern the member; what the member must act on (run sheets to send or unblock, expiring holds, quotes waiting, unread customer messages on their orders); and their latest unread notifications. "Concerns me" is derived from assignments, default responsibilities, staff item links, line allocations, item assignments and run sheet recipients. Nothing is stored. Spec: `docs/specs/home.md`.
+
+> Operation: `myWork.view({ from, to })` (`self:read`; at most 14 days). Rows need `runSheet:read`, quotes `quote:read`, messages `inbox:read`, customer names `customer:read`; a part the caller may not read is null. Web: `/` and `/my-work/{from}/{to}`.
+
 ### Dashboard (`dashboard.summary`)
 
 *MVP* · The Workload tab of the dashboard for a range, as a read model ([ADR 0086](decisions/0086-one-dashboard-with-tabs-and-trend-cards.md)): open orders and their value per open status now with the count's trend over the range (replayed from `OrderStatusChange`), what needs attention now (holds expiring within 7 days, unsent run sheets for orders in the next 28 days, overdue invoices), orders scheduled in the range, utilisation per bookable item type over the range and accepted quotes not invoiced per event month in the range. Nothing is stored. Spec: `docs/specs/dashboard.md`.

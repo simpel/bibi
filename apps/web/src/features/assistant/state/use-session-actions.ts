@@ -7,17 +7,20 @@ import { usePrefill } from "./use-prefill";
 
 export type UseSessionActionsInput = {
   session: ReturnType<typeof useAssistantChat>;
-  goHome: () => void;
+  openAssistant: () => void;
 };
 
 /** New, ask, prefill and select on top of the chat session, as one stable object. */
-export function useSessionActions({ session, goHome }: UseSessionActionsInput) {
+export function useSessionActions({ session, openAssistant }: UseSessionActionsInput) {
   const actions = useConversationActions({
     startNew: session.startNew,
     openConversation: session.openConversation,
     sendMessage: async ({ text }) => session.chat.sendMessage({ text }),
-    goHome,
+    openAssistant,
   });
-  const { draft, prefill } = usePrefill({ newConversation: actions.newConversation, goHome });
+  const { draft, prefill } = usePrefill({
+    newConversation: actions.newConversation,
+    openAssistant,
+  });
   return useMemo(() => ({ ...actions, draft, prefill }), [actions, draft, prefill]);
 }

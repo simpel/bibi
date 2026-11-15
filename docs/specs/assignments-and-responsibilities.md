@@ -20,6 +20,10 @@ Current behaviour. Why: ADR 0034 (responsibilities are not roles), 0055 (derived
 - Rows reference the subject's `Record` (`recordId`, composite FK, ADR 0056) while the API keeps `subjectType`/`subjectId`; `checkSlot` checks the record exists with that base.
 - Assignee and followers must be members (`VALIDATION`). All commands are audited and exist on every surface.
 
+## Concerns me
+- Something concerns a member (My work, ADR 0110) when they are: main assignee or follower of the order (`ASSIGNEE`, `FOLLOWER`); assignee or follower of a responsibility on it, chosen or by default, minus an explicit unfollow (`RESPONSIBILITY`, `RESPONSIBILITY_FOLLOWER`); staffed on a line, because one of their linked staff items is the line's item or fills one of its allocations (`STAFFED`); assignee or follower of a line's item (`ITEM`); or a recipient of a run sheet version (`RECIPIENT`).
+- It is derived on read in one place (`my-work/concerns.ts`), never stored. Members act on `ASSIGNEE`, `RESPONSIBILITY` and `STAFFED`; the rest are need-to-know.
+
 ## Rules that use assignments
 - A move into a status with an `ASSIGNEE` gate (ADR 0067) needs the order's main assignee (derived). Responsibility assignments are never required, but an unassigned one is shown as a warning.
 - `order.list` filters by `assigneeId` and `followerId`.

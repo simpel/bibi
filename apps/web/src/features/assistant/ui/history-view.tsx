@@ -12,7 +12,7 @@ import { type EditingConversation, HistoryList } from "./history-list";
 /** Full-page conversation history: open, rename and archive earlier conversations, or start a new one. */
 export function HistoryView() {
   const t = useTranslations("assistant.history");
-  const { conversations, newConversation, goHome } = useAssistant();
+  const { conversations, newConversation, openAssistant } = useAssistant();
   const { items, loading, errorKey, refresh } = conversations;
   const [editing, setEditing] = useState<EditingConversation>(null);
   useEffect(() => void refresh(), [refresh]);
@@ -20,7 +20,7 @@ export function HistoryView() {
     editing?.mode === "archive" ? items.find((item) => item.id === editing.id) : undefined;
   const startNew = () => {
     newConversation();
-    goHome();
+    openAssistant();
   };
   return (
     <section className="grid gap-4" data-slot="assistant-history">

@@ -22,6 +22,7 @@ import { lineAllocationOperations } from "./features/line-allocation/operations"
 import { memberOperations } from "./features/member/operations";
 import { memberProfileOperations } from "./features/member-profile/operations";
 import { messageOperations } from "./features/message/operations";
+import { myWorkOperations } from "./features/my-work/operations";
 import { oauthGrantOperations } from "./features/oauth-grant/operations";
 import { occupancyOperations } from "./features/occupancy/operations";
 import { orderOperations } from "./features/order/operations";
@@ -54,6 +55,7 @@ export type CreateCoreOperationsInput = { embed: EmbedFn };
 const pipelineGroupOperations = [
   ...pipelineOperations,
   ...dashboardOperations,
+  ...myWorkOperations,
   ...pipelineSetupOperations,
   ...changeSetOperations,
 ];

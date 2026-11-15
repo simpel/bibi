@@ -21,10 +21,12 @@ export type WebSurface = {
   component?: string;
 };
 
-/** The assistant (conversation history, rename, archive, chat) lives on the start page. */
-const PANEL = { route: "/" } as const;
+/** The assistant (conversation history, rename, archive, chat) lives on `/assistant` (ADR 0110). */
+const PANEL = { route: "/assistant" } as const;
 export const WEB_SURFACES: readonly WebSurface[] = [
   ...PIPELINE_SURFACES,
+  // The start page: the caller's own work (ADR 0110).
+  { operation: "myWork.view", route: "/" },
   { operation: "calendar.range", route: "/calendar" },
   { operation: "venue.list", route: "/venues" },
   { operation: "venue.get", route: "/venues/[id]" },

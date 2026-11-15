@@ -7,10 +7,10 @@ import { ROUTES } from "@/lib/routes";
 
 const RECENT_LIMIT = 5;
 
-export type RecentConversationsProps = { onHome: boolean };
+export type RecentConversationsProps = { onAssistant: boolean };
 
 /** The latest five conversations and a link to all of them; opening one loads it on the assistant home (ADR 0035). */
-export function RecentConversations({ onHome }: RecentConversationsProps) {
+export function RecentConversations({ onAssistant }: RecentConversationsProps) {
   const t = useTranslations("nav");
   const { conversations, session, selectConversation } = useAssistant();
   const { items, refresh } = conversations;
@@ -23,7 +23,7 @@ export function RecentConversations({ onHome }: RecentConversationsProps) {
       </SidebarGroupLabel>
       <SidebarMenu className="gap-0.5">
         {items.slice(0, RECENT_LIMIT).map(({ id, title }) => {
-          const current = onHome && id === session.conversationId;
+          const current = onAssistant && id === session.conversationId;
           return (
             <SidebarMenuItem key={id} className="min-w-0">
               <SidebarMenuButton

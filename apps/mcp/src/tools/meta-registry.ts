@@ -25,6 +25,7 @@ import { lineAllocationMcpTools } from "../features/line-allocation/mcp";
 import { memberMcpTools } from "../features/member/mcp";
 import { memberProfileMcpTools } from "../features/member-profile/mcp";
 import { messageMcpTools } from "../features/message/mcp";
+import { myWorkMcpTools } from "../features/my-work/mcp";
 import { notificationMcpTools } from "../features/notification/mcp";
 import { notificationPreferenceMcpTools } from "../features/notification-preference/mcp";
 import { oauthGrantMcpTools } from "../features/oauth-grant/mcp";
@@ -72,6 +73,7 @@ const boardMcpTools = [
   ...calendarMcpTools,
   ...settingsMcpTools,
   ...dashboardMcpTools,
+  ...myWorkMcpTools,
   ...financeMcpTools,
   ...boardCrudMcpTools,
   ...boardPhaseMcpTools,

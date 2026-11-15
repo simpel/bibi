@@ -6,13 +6,13 @@ import { Link, usePathname } from "@/lib/navigation";
 import { buildCrumbs } from "./breadcrumb-model";
 import { useCrumbNames } from "./crumb-names";
 
-/** Where the user is, from the path (detail pages name their crumb with `CrumbName`); the start page (the assistant) shows "Assistant". */
+/** Where the user is, from the path (detail pages name their crumb with `CrumbName`); the start page (My work, ADR 0110) shows "My work". */
 export function Breadcrumb() {
   const t = useTranslations("nav");
   const { names } = useCrumbNames();
   const crumbs = buildCrumbs({ pathname: usePathname() });
   if (crumbs.length === 0) {
-    return <span className="truncate text-sm font-medium">{t("assistant")}</span>;
+    return <span className="truncate text-sm font-medium">{t("myWork")}</span>;
   }
   return (
     <nav aria-label={t("breadcrumb")} className="min-w-0">

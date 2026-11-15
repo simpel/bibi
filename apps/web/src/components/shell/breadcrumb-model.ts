@@ -14,6 +14,7 @@ export type CrumbLabelKey =
   | "profile"
   | "quotes"
   | "chats"
+  | "assistant"
   | "new"
   | "apiKeys"
   | "permissions"
@@ -29,6 +30,8 @@ export type CrumbLabelKey =
 
 const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   chats: "chats",
+  assistant: "assistant",
+  "my-work": "myWork",
   pipeline: "pipeline",
   dashboard: "dashboard",
   data: "dashboard",
@@ -116,7 +119,7 @@ const NEW_PARENTS: Record<string, string> = {
 };
 
 /** Pages whose later segments are a period, not a page (`/calendar/{from}/{to}`, ADR 0064). */
-const PERIOD_PAGES = new Set(["calendar"]);
+const PERIOD_PAGES = new Set(["calendar", "my-work"]);
 
 /** Segments whose next segment is a tab of the same page (`/items/{id}/layouts/{tab}`, ADR 0099). */
 const TAB_SEGMENTS = new Set(["layouts"]);

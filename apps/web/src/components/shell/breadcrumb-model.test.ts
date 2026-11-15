@@ -44,6 +44,15 @@ describe("buildCrumbs", () => {
     ]);
   });
 
+  it("shows My work's period as one crumb and the assistant as its own page", () => {
+    expect(buildCrumbs({ pathname: "/my-work/2026-11-14/2026-11-20" })).toEqual([
+      { href: "/my-work", labelKey: "myWork" },
+    ]);
+    expect(buildCrumbs({ pathname: "/assistant" })).toEqual([
+      { href: "/assistant", labelKey: "assistant" },
+    ]);
+  });
+
   it("shows data with its tab for dashboards while omitting the period", () => {
     expect(buildCrumbs({ pathname: "/data" })).toEqual([{ href: "/data", labelKey: "dashboard" }]);
     expect(buildCrumbs({ pathname: "/data/forecast" })).toEqual([

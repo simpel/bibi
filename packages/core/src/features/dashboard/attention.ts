@@ -13,10 +13,20 @@ type Input = { context: Context; horizon: DashboardHorizon };
 /** The line filter `order.expireHolds` acts on: active lines in an expiring state. */
 const EXPIRING_LINE = { status: "ACTIVE", state: { status: "ACTIVE", expires: true } } as const;
 
+export type ExpiringHoldsInput = Input & {
+  /** Only these orders (My work: the member's own); absent = every order. */
+  orderIds?: string[] | undefined;
+};
+
 /** Open orders whose expiring holds fall before `warnEnd`, soonest first (ADR 0044). */
-async function expiringHolds({ context, horizon }: Input): Promise<ExpiringHold[]> {
+export async function expiringHolds({
+  context,
+  horizon,
+  orderIds,
+}: ExpiringHoldsInput): Promise<ExpiringHold[]> {
   const orders = await context.db.order.findMany({
     where: {
+      ...(orderIds ? { id: { in: orderIds } } : {}),
       status: "ACTIVE",
       orderStatus: { closes: false },
       holdsUntil: { gte: horizon.start, lt: horizon.warnEnd },

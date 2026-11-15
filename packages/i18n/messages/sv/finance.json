@@ -278,6 +278,84 @@
       "noHistoricalData": "Inte tillräckligt med historiska data för att beräkna framtida takt."
     }
   },
+  "myWork": {
+    "title": "Mitt arbete",
+    "description": "Det som rör dig: vad du ska förbereda, hålla i och ställa i ordning, vad du behöver göra och vad som har ändrats.",
+    "periods": {
+      "label": "Period",
+      "today": "Idag",
+      "tomorrow": "Imorgon",
+      "week": "Den här veckan"
+    },
+    "ask": {
+      "label": "Fråga Bibi",
+      "placeholder": "Vad behöver jag göra före lunch?",
+      "submit": "Fråga",
+      "suggestions": {
+        "unsent": "Vilka av mina körscheman är inte skickade än?",
+        "changed": "Vad har ändrats på mina bokningar idag?",
+        "needs": "Vilka av dagens rätter har allergenträffar?"
+      }
+    },
+    "rows": {
+      "title": "Mina körscheman",
+      "description": "Vad du ska förbereda, hålla i och ställa i ordning, från alla körscheman som rör dig.",
+      "empty": "Inget på dina körscheman under perioden.",
+      "dayCount": "{count, plural, one {# sak} other {# saker}}",
+      "untimed": "Hela dagen",
+      "changed": "Ändrad",
+      "added": "Ny",
+      "wholeOrder": "hela bokningen",
+      "contains": "innehåller",
+      "all": "Alla körscheman"
+    },
+    "reasons": {
+      "ASSIGNEE": "Din bokning",
+      "RESPONSIBILITY": "Ditt ansvar",
+      "STAFFED": "Du är bokad",
+      "ITEM": "Din artikel",
+      "FOLLOWER": "Följer",
+      "RESPONSIBILITY_FOLLOWER": "Följer",
+      "RECIPIENT": "Skickat till dig"
+    },
+    "todo": {
+      "title": "Att göra",
+      "empty": "Inget att göra.",
+      "runSheet": {
+        "DRAFT": "Skicka {runSheet} för {order}",
+        "REVISION_PENDING": "Skicka om {runSheet} för {order}",
+        "BLOCKED": "Lös blockeringen i {runSheet} för {order}"
+      },
+      "runSheetDetail": "Version {version} · börjar {date}",
+      "hold": "Preliminärbokningar på {order} går ut {date}",
+      "holdDetail": "{count, plural, one {# rad hålls} other {# rader hålls}}",
+      "quote": "Offerten för {order} väntar på kunden",
+      "quoteDetail": "Skickad {sent}",
+      "quoteValid": "Skickad {sent} · giltig till {valid}",
+      "messages": "{count, plural, one {# oläst meddelande} other {# olästa meddelanden}} på {order}",
+      "messagesDetail": "Senast {date}",
+      "more": {
+        "runSheets": "Visa {count, plural, one {# körschema till} other {# körscheman till}} att skicka",
+        "expiringHolds": "Visa {count, plural, one {# bokning till} other {# bokningar till}} där preliminärbokningar går ut",
+        "quotes": "Visa {count, plural, one {# offert till} other {# offerter till}} som väntar",
+        "messages": "Visa {count, plural, one {# bokning till} other {# bokningar till}} med olästa meddelanden"
+      }
+    },
+    "changes": {
+      "title": "Vad som har ändrats",
+      "empty": "Inga olästa notiser.",
+      "all": "Alla notiser"
+    },
+    "card": {
+      "open": "Öppna Mitt arbete"
+    },
+    "pages": {
+      "label": "Sidor med körschemarader",
+      "range": "{first}–{last} av {total}",
+      "previous": "Föregående",
+      "next": "Nästa"
+    }
+  },
   "occupancy": {
     "singular": "Beläggning",
     "plural": "Beläggning",

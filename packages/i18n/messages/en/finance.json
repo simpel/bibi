@@ -278,6 +278,84 @@
       "noHistoricalData": "Not enough historical data to compute forward run rate."
     }
   },
+  "myWork": {
+    "title": "My work",
+    "description": "What concerns you: what to prepare, run and set up, what to act on and what changed.",
+    "periods": {
+      "label": "Period",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "week": "This week"
+    },
+    "ask": {
+      "label": "Ask Bibi",
+      "placeholder": "What do I need to do before lunch?",
+      "submit": "Ask",
+      "suggestions": {
+        "unsent": "Which of my run sheets are not sent yet?",
+        "changed": "What changed on my orders today?",
+        "needs": "Which of today's dishes have allergen matches?"
+      }
+    },
+    "rows": {
+      "title": "My run sheets",
+      "description": "What to prepare, run and set up, from every run sheet that concerns you.",
+      "empty": "Nothing on your run sheets in this period.",
+      "dayCount": "{count, plural, one {# thing} other {# things}}",
+      "untimed": "All day",
+      "changed": "Changed",
+      "added": "New",
+      "wholeOrder": "whole order",
+      "contains": "contains",
+      "all": "All run sheets"
+    },
+    "reasons": {
+      "ASSIGNEE": "Your order",
+      "RESPONSIBILITY": "Your responsibility",
+      "STAFFED": "You are booked",
+      "ITEM": "Your item",
+      "FOLLOWER": "Following",
+      "RESPONSIBILITY_FOLLOWER": "Following",
+      "RECIPIENT": "Sent to you"
+    },
+    "todo": {
+      "title": "To do",
+      "empty": "Nothing to act on.",
+      "runSheet": {
+        "DRAFT": "Send {runSheet} for {order}",
+        "REVISION_PENDING": "Send {runSheet} for {order} again",
+        "BLOCKED": "Unblock {runSheet} for {order}"
+      },
+      "runSheetDetail": "Version {version} · starts {date}",
+      "hold": "Holds on {order} run out {date}",
+      "holdDetail": "{count, plural, one {# line held} other {# lines held}}",
+      "quote": "Quote for {order} waits on the customer",
+      "quoteDetail": "Sent {sent}",
+      "quoteValid": "Sent {sent} · valid until {valid}",
+      "messages": "{count, plural, one {# unread message} other {# unread messages}} on {order}",
+      "messagesDetail": "Latest {date}",
+      "more": {
+        "runSheets": "See all {count, plural, one {# more run sheet} other {# more run sheets}} to send",
+        "expiringHolds": "See {count, plural, one {# more order} other {# more orders}} with holds running out",
+        "quotes": "See {count, plural, one {# more quote} other {# more quotes}} waiting",
+        "messages": "See {count, plural, one {# more order} other {# more orders}} with unread messages"
+      }
+    },
+    "changes": {
+      "title": "What changed",
+      "empty": "No unread notifications.",
+      "all": "All notifications"
+    },
+    "card": {
+      "open": "Open My work"
+    },
+    "pages": {
+      "label": "Run sheet pages",
+      "range": "{first}–{last} of {total}",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
   "occupancy": {
     "singular": "Occupancy",
     "plural": "Occupancy",

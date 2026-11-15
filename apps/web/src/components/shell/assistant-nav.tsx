@@ -19,13 +19,13 @@ import { isActive } from "./sidebar-link";
 export function AssistantNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
-  const { newConversation, session, goHome } = useAssistant();
-  const onHome = isActive({ pathname, href: ROUTES.home });
+  const { newConversation, session, openAssistant } = useAssistant();
+  const onAssistant = isActive({ pathname, href: ROUTES.assistant });
   const startNew = () => {
     newConversation();
-    goHome();
+    openAssistant();
   };
-  const fresh = onHome && !session.conversationId;
+  const fresh = onAssistant && !session.conversationId;
   return (
     <nav aria-label={t("assistant")} className="min-w-0">
       <SidebarGroup>
@@ -45,7 +45,7 @@ export function AssistantNav() {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroupContent>
-        <RecentConversations onHome={onHome} />
+        <RecentConversations onAssistant={onAssistant} />
       </SidebarGroup>
     </nav>
   );
