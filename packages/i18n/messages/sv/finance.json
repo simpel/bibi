@@ -322,6 +322,12 @@
     },
     "card": {
       "open": "Öppna Mitt arbete"
+    },
+    "search": {
+      "placeholder": "Sök i mitt arbete",
+      "status": "Status",
+      "customer": "Kund",
+      "place": "Plats"
     }
   },
   "occupancy": {

@@ -7,6 +7,7 @@ import { pageTitle } from "@/lib/page-metadata";
 
 type MyWorkRouteProps = {
   params: Promise<{ locale: string; org: string; from: string; to: string }>;
+  searchParams: Promise<{ q?: string | string[] }>;
 };
 
 export async function generateMetadata({ params }: MyWorkRouteProps) {
@@ -15,12 +16,14 @@ export async function generateMetadata({ params }: MyWorkRouteProps) {
 }
 
 /** The member's own work from `{from}` to `{to}`, inclusive (ADR 0064, 0110). */
-export default async function MyWorkRoute({ params }: MyWorkRouteProps) {
+export default async function MyWorkRoute({ params, searchParams }: MyWorkRouteProps) {
   const { org, from, to, ...rest } = await params;
   const locale = resolveLocale({ value: rest.locale });
   setRequestLocale(locale);
   const today = await myWorkToday();
   const canonical = canonicalMyWorkHref({ from, to, today });
   if (canonical) redirect({ href: canonical, locale, org });
-  return <MyWorkPage locale={locale} from={from} to={to} today={today} />;
+  const { q } = await searchParams;
+  const search = typeof q === "string" ? q : undefined;
+  return <MyWorkPage locale={locale} from={from} to={to} today={today} q={search} />;
 }

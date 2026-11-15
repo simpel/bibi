@@ -322,6 +322,12 @@
     },
     "card": {
       "open": "Open My work"
+    },
+    "search": {
+      "placeholder": "Search my work",
+      "status": "Status",
+      "customer": "Customer",
+      "place": "Place"
     }
   },
   "occupancy": {

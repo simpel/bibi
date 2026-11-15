@@ -9,17 +9,27 @@ import { ROUTES } from "@/lib/routes";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { filterMyWork } from "../lib/my-work-query";
 import { MyWorkLater } from "./my-work-later";
+import { MyWorkSearch } from "./my-work-search";
 import { MyWorkTimeline } from "./my-work-timeline";
 
-export type MyWorkPageProps = { locale: Locale; from: string; to: string; today: string };
+export type MyWorkPageProps = {
+  locale: Locale;
+  from: string;
+  to: string;
+  today: string;
+  /** The search (`?q=`): free text and `status:`, `customer:`, `place:`. */
+  q?: string | undefined;
+};
 
 /**
  * The start page (ADR 0110, spec: home): a timeline of every order that concerns the signed-in
  * member in Today, This week, Next week and Later, one card per order per day. One read on load
- * (`myWork.view`, today to the end of next week); Later reads on as the member scrolls.
+ * (`myWork.view`, today to the end of next week); Later reads on as the member scrolls. The
+ * search (`?q=`) filters both, as on the tables.
  */
-export async function MyWorkPage({ locale, from, to, today }: MyWorkPageProps) {
+export async function MyWorkPage({ locale, from, to, today, q }: MyWorkPageProps) {
   const [t, dates, result] = await Promise.all([
     getTranslations({ locale, namespace: "myWork" }),
     getDateTimeFormat(),
@@ -35,6 +45,13 @@ export async function MyWorkPage({ locale, from, to, today }: MyWorkPageProps) {
     );
   }
   const linkClass = "text-sm font-medium hover:underline";
+  const all = result.value.cards;
+  const labels = {
+    status: t("search.status"),
+    customer: t("search.customer"),
+    place: t("search.place"),
+  };
+  const cards = all ? filterMyWork({ cards: all, q, labels }) : null;
   return (
     <SimplePage>
       <div data-slot="my-work" className="mx-auto grid w-full max-w-2xl gap-6">
@@ -44,12 +61,13 @@ export async function MyWorkPage({ locale, from, to, today }: MyWorkPageProps) {
             {t("backToToday")}
           </Link>
         ) : null}
+        {all ? <MyWorkSearch q={q} cards={all} /> : null}
         <MyWorkTimeline
-          work={result.value}
+          work={{ ...result.value, cards }}
           dates={dates}
           later={
             result.value.cards ? (
-              <MyWorkLater next={result.value.next} timeZone={result.value.timeZone} />
+              <MyWorkLater next={result.value.next} timeZone={result.value.timeZone} q={q} />
             ) : null
           }
         />

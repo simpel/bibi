@@ -6,13 +6,13 @@ import type { CalendarLine } from "../availability-calendar/calendar-types";
  * `::before`, so it keeps the card's radius and works over translucent backgrounds.
  */
 const STRIPED =
-  "relative border-transparent before:pointer-events-none before:absolute before:inset-0 before:z-20 before:rounded-[inherit] before:p-0.5 before:content-[''] before:[mask:linear-gradient(#000_0_0)_content-box_exclude,linear-gradient(#000_0_0)] before:[background:repeating-linear-gradient(135deg,var(--stripe)_0_6px,transparent_6px_10px)]";
+  "relative border-0 before:pointer-events-none before:absolute before:inset-0 before:z-20 before:rounded-[inherit] before:p-0.5 before:content-[''] before:[mask:linear-gradient(#000_0_0)_content-box_exclude,linear-gradient(#000_0_0)] before:[background:repeating-linear-gradient(135deg,var(--stripe)_0_6px,transparent_6px_10px)]";
 
 /**
  * The state a booking or order card is in, carried by its outline so every card reads the same:
  * `conflict` (blocked by another hold or a need match) and `action` (the viewer has something to
- * do) as a striped outline; a card in a normal state has no outline, its header's wash carries
- * it: `live` (happening now), `tentative` (soft holds only: dashed and hatched, as on the
+ * do) as a striped outline; a card in a normal state has no outline, its header's wash and
+ * edge in the status colour carry it: `live` (happening now), `tentative` (soft holds only: dashed and hatched, as on the
  * calendar), `confirmed`, `done` (over, dimmed) and `following` (told, not asked: lighter).
  */
 export const bookingToneVariants = cva("", {
@@ -20,12 +20,13 @@ export const bookingToneVariants = cva("", {
     tone: {
       conflict: `${STRIPED} [--stripe:var(--destructive)]`,
       action: `${STRIPED} [--stripe:var(--warning)]`,
-      live: "border-transparent",
+      live: "border-0",
       tentative:
         "border-dashed border-muted-foreground/60 shadow-none bg-[repeating-linear-gradient(135deg,transparent_0_7px,var(--muted)_7px_8px)]",
-      confirmed: "border-transparent",
-      done: "border-transparent opacity-60 shadow-none",
-      following: "bg-transparent shadow-none",
+      confirmed: "border-0",
+      done: "border-0 opacity-60 shadow-none",
+      // No fill, so it keeps a plain edge; drawn inside so the header's edge covers it.
+      following: "border-0 inset-ring inset-ring-border bg-transparent shadow-none",
     },
   },
   defaultVariants: { tone: "confirmed" },

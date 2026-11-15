@@ -7,18 +7,25 @@ import { InlineLoadError } from "@/components/states/inline-load-error";
 import { type ErrorKey, errorKeyForCode } from "@/lib/error-key";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { loadMyWorkAction } from "../actions";
+import { filterMyWork } from "../lib/my-work-query";
 import { windowFrom } from "../lib/my-work-window";
 import { MyWorkDays } from "./my-work-days";
 import type { MyWorkCardWireish } from "./my-work-wireish";
 
-export type MyWorkLaterProps = { next: string | null; timeZone: string };
+export type MyWorkLaterProps = { next: string | null; timeZone: string; q?: string | undefined };
 
 /**
  * Later, read on as the member scrolls: each time the end of the list comes into view, the next
- * window from the first day with a card (`next`) is read and its cards added (spec: home).
+ * window from the first day with a card (`next`) is read and its cards added (spec: home), shown
+ * through the page's search.
  */
-export function MyWorkLater({ next, timeZone }: MyWorkLaterProps) {
+export function MyWorkLater({ next, timeZone, q }: MyWorkLaterProps) {
   const t = useTranslations("myWork");
+  const labels = {
+    status: t("search.status"),
+    customer: t("search.customer"),
+    place: t("search.place"),
+  };
   const dates = useDateTimeFormat();
   const [cards, setCards] = useState<MyWorkCardWireish[]>([]);
   const [cursor, setCursor] = useState(next);
@@ -46,7 +53,12 @@ export function MyWorkLater({ next, timeZone }: MyWorkLaterProps) {
 
   return (
     <>
-      <MyWorkDays cards={cards} now={new Date()} timeZone={timeZone} dates={dates} />
+      <MyWorkDays
+        cards={filterMyWork({ cards, q, labels })}
+        now={new Date()}
+        timeZone={timeZone}
+        dates={dates}
+      />
       <InlineLoadError errorKey={error} />
       <div
         ref={end}

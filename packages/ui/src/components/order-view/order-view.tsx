@@ -88,9 +88,17 @@ function Body(props: OrderViewProps) {
   );
 }
 
-/** The status colour as a subtle wash behind a card's header. */
-const statusTint = ({ color }: { color: string }) =>
-  `color-mix(in oklch, ${color} 16%, transparent)`;
+const mix = ({ color, percent }: { color: string; percent: number }) =>
+  `color-mix(in oklch, ${color} ${percent}%, transparent)`;
+
+/** The status colour as a subtle wash behind a card's header, edged on its outer sides. */
+const statusHeader = ({ color }: { color: string }) => {
+  const edge = mix({ color, percent: 40 });
+  return {
+    backgroundColor: mix({ color, percent: 16 }),
+    boxShadow: `inset 1px 1px 0 ${edge}, inset -1px 0 0 ${edge}`,
+  };
+};
 
 /**
  * The bare card: the header (washed in its status colour when it has a tone, else by the tone;
@@ -106,16 +114,12 @@ function BareOrderView({ actions, ...props }: OrderViewProps & { actions: ReactN
           "flex items-start justify-between gap-2",
           tone
             ? cn(
-                "-mx-3.5 -mt-3.5 px-3.5 pt-3 pb-2.5",
+                "-mx-3.5 -mt-3.5 rounded-t-xl px-3.5 pt-3 pb-2.5",
                 status?.color ? null : bookingTintVariants({ tone }),
               )
             : "border-b border-border/60 pb-2",
         )}
-        style={
-          tone && status?.color
-            ? { backgroundColor: statusTint({ color: status.color }) }
-            : undefined
-        }
+        style={tone && status?.color ? statusHeader({ color: status.color }) : undefined}
       >
         <Header {...props} />
         {actions}
