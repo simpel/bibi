@@ -1,5 +1,42 @@
 # Changelog
 
+## [5.0.0](https://github.com/simpel/bibi/compare/@bibi/mcp-v4.0.0...@bibi/mcp-v5.0.0) (2026-11-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* environments with Stripe or Fortnox credentials must set their hosts (values in .exampleenv); Swish needs SWISH_API_BASE_URL.
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written
+
+### Features
+
+* My work is the start page, the assistant moves to /assistant ([#533](https://github.com/simpel/bibi/issues/533)) ([8b66a4f](https://github.com/simpel/bibi/commit/8b66a4fb45e49e383b0674a428cb5f2120c70c47))
+* one accounting system at a time, an account check at the provider, and Integrations grouped by purpose ([ff39f82](https://github.com/simpel/bibi/commit/ff39f821a550af566e0d9992d19d441f1aa12647))
+* one default revenue account row, and payment routes only to connected services ([5c744cf](https://github.com/simpel/bibi/commit/5c744cf6a04e99518fc981bff572a69de70fe2be))
+
+
+### Code Refactoring
+
+* env URLs are named by use: *_ORIGIN, *_BASE_URL, *_URL as written ([fbe4bc3](https://github.com/simpel/bibi/commit/fbe4bc3da34e4a086596117490a929ffb606a06f))
+* provider hosts come only from env ([04217ec](https://github.com/simpel/bibi/commit/04217ec38875dfe08b1db28ff0bb54c5409d0a3b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 5.0.0
+    * @bibi/auth bumped to 1.0.0
+    * @bibi/config bumped to 1.0.0
+    * @bibi/core bumped to 5.0.0
+    * @bibi/db bumped to 3.1.0
+    * @bibi/graphql bumped to 3.1.0
+    * @bibi/logger bumped to 0.1.4
+    * @bibi/mail bumped to 1.0.0
+    * @bibi/storage bumped to 0.2.8
+  * devDependencies
+    * @bibi/api bumped to 3.1.0
+
 ## [4.0.0](https://github.com/simpel/bibi/compare/@bibi/mcp-v3.0.0...@bibi/mcp-v4.0.0) (2026-11-12)
 
 

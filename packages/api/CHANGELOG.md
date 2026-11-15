@@ -1,5 +1,24 @@
 # Changelog
 
+## [3.1.0](https://github.com/simpel/bibi/compare/@bibi/api-v3.0.1...@bibi/api-v3.1.0) (2026-11-15)
+
+
+### Features
+
+* My work is the start page, the assistant moves to /assistant ([#533](https://github.com/simpel/bibi/issues/533)) ([8b66a4f](https://github.com/simpel/bibi/commit/8b66a4fb45e49e383b0674a428cb5f2120c70c47))
+* one accounting system at a time, an account check at the provider, and Integrations grouped by purpose ([ff39f82](https://github.com/simpel/bibi/commit/ff39f821a550af566e0d9992d19d441f1aa12647))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 5.0.0
+    * @bibi/logger bumped to 0.1.4
+  * devDependencies
+    * @bibi/config bumped to 1.0.0
+    * @bibi/db bumped to 3.1.0
+
 ## [3.0.1](https://github.com/simpel/bibi/compare/@bibi/api-v3.0.0...@bibi/api-v3.0.1) (2026-11-12)
 
 
