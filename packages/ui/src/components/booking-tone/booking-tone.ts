@@ -2,24 +2,17 @@ import { cva, type VariantProps } from "class-variance-authority";
 import type { CalendarLine } from "../availability-calendar/calendar-types";
 
 /**
- * A striped outline for a card with an issue: a 2px ring of stripes drawn by a masked
- * `::before`, so it keeps the card's radius and works over translucent backgrounds.
- */
-const STRIPED =
-  "relative border-0 before:pointer-events-none before:absolute before:inset-0 before:z-20 before:rounded-[inherit] before:p-0.5 before:content-[''] before:[mask:linear-gradient(#000_0_0)_content-box_exclude,linear-gradient(#000_0_0)] before:[background:repeating-linear-gradient(135deg,var(--stripe)_0_6px,transparent_6px_10px)]";
-
-/**
- * The state a booking or order card is in, carried by its outline so every card reads the same:
- * `conflict` (blocked by another hold or a need match) and `action` (the viewer has something to
- * do) as a striped outline; a card in a normal state has no outline, its header's wash and
- * edge in the status colour carry it: `live` (happening now), `tentative` (soft holds only: dashed and hatched, as on the
- * calendar), `confirmed`, `done` (over, dimmed) and `following` (told, not asked: lighter).
+ * The state a booking or order card is in, the same on every card. The header carries the status
+ * colour and an issue is said with an icon (`issueOfTone`), never by the outline: `conflict`
+ * (blocked: an error icon) and `action` (something to fix: a warning triangle) have no outline,
+ * like `live`, `confirmed` and `done` (over, dimmed); `tentative` (soft holds only) is dashed and
+ * hatched as on the calendar and `following` (told, not asked) keeps a plain inner edge.
  */
 export const bookingToneVariants = cva("", {
   variants: {
     tone: {
-      conflict: `${STRIPED} [--stripe:var(--destructive)]`,
-      action: `${STRIPED} [--stripe:var(--warning)]`,
+      conflict: "border-0",
+      action: "border-0",
       live: "border-0",
       tentative:
         "border-dashed border-muted-foreground/60 shadow-none bg-[repeating-linear-gradient(135deg,transparent_0_7px,var(--muted)_7px_8px)]",
@@ -55,3 +48,9 @@ export type ToneOfLineInput = { line: Pick<CalendarLine, "state" | "blocked"> };
 /** A calendar booking's tone: blocked by a hard hold is a conflict, soft is tentative. */
 export const toneOfLine = ({ line }: ToneOfLineInput): BookingTone =>
   line.blocked ? "conflict" : line.state.hold === "soft" ? "tentative" : "confirmed";
+
+export type CardIssue = "error" | "warning";
+
+/** The issue icon a tone shows in a card's header: blocked is an error, to fix a warning. */
+export const issueOfTone = ({ tone }: { tone: BookingTone | undefined }): CardIssue | null =>
+  tone === "conflict" ? "error" : tone === "action" ? "warning" : null;

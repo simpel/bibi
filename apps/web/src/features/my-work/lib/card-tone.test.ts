@@ -20,10 +20,11 @@ describe("cardTone (spec: home)", () => {
     expect(tone({ flags: [{ kind: "RUN_SHEET", runSheetStatus: "BLOCKED" }] })).toBe("conflict");
   });
 
-  it("asks only a member who acts", () => {
+  it("warns about an open flag whether the member acts or follows", () => {
     const flags = [{ kind: "QUOTE_WAITING" as const, runSheetStatus: null }];
     expect(tone({ flags })).toBe("action");
-    expect(tone({ reasons: ["FOLLOWER"], flags })).toBe("following");
+    expect(tone({ reasons: ["FOLLOWER"], flags })).toBe("action");
+    expect(tone({ reasons: ["FOLLOWER"] })).toBe("following");
   });
 
   it("follows the clock: live inside the span, done after it", () => {

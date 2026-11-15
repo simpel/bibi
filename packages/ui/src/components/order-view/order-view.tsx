@@ -1,6 +1,7 @@
+import { OctagonAlertIcon, TriangleAlertIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "../../lib/cn";
-import { type BookingTone, bookingTintVariants } from "../booking-tone/booking-tone";
+import { type BookingTone, bookingTintVariants, issueOfTone } from "../booking-tone/booking-tone";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../card/card";
 import { StatusBadge } from "../data-table/data-table-column-helpers";
 import { type OrderViewFact, OrderViewFacts } from "./order-view-facts";
@@ -45,9 +46,19 @@ export type OrderViewProps = {
   className?: string;
 };
 
-function Header({ title, reference, eyebrow, subtitle, bare }: OrderViewProps) {
+/** An error (blocked) or a warning (something to fix) before a card's title. */
+function IssueIcon({ tone }: { tone: BookingTone | undefined }) {
+  const issue = issueOfTone({ tone });
+  if (!issue) return null;
+  const Icon = issue === "error" ? OctagonAlertIcon : TriangleAlertIcon;
+  const color = issue === "error" ? "text-destructive" : "text-warning";
+  return <Icon aria-hidden className={cn("mr-1 mb-0.5 inline size-4 align-middle", color)} />;
+}
+
+function Header({ title, reference, eyebrow, subtitle, bare, tone }: OrderViewProps) {
   const heading = (
     <>
+      <IssueIcon tone={tone} />
       <span>{title}</span>
       {reference ? (
         <span className="ml-1.5 font-normal text-muted-foreground tabular-nums">{reference}</span>

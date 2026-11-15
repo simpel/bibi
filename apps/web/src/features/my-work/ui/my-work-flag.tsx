@@ -1,5 +1,6 @@
 import type { DateTimeFormat } from "@bibi/core/schemas";
 import { Badge } from "@bibi/ui";
+import { OctagonAlertIcon, TriangleAlertIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
 import { orderRoute, quoteRoute, ROUTES } from "@/lib/routes";
@@ -37,7 +38,12 @@ export function MyWorkFlag({ flag, orderId, timeZone, dates }: MyWorkFlagProps) 
   const red = flag.kind === "HARD_CLASH" || flag.runSheetStatus === "BLOCKED";
   return (
     <Badge asChild variant={red ? "destructive" : "warning"}>
-      <Link href={hrefOf({ flag, orderId })} className="hover:underline">
+      <Link href={hrefOf({ flag, orderId })} className="gap-1 hover:underline">
+        {red ? (
+          <OctagonAlertIcon aria-hidden className="size-3" />
+        ) : (
+          <TriangleAlertIcon aria-hidden className="size-3" />
+        )}
         {label}
       </Link>
     </Badge>

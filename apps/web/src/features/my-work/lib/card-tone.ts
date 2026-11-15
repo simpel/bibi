@@ -19,8 +19,8 @@ const isConflict = ({ flag }: { flag: CardToneInput["card"]["flags"][number] }) 
   flag.kind === "HARD_CLASH" || flag.runSheetStatus === "BLOCKED";
 
 /**
- * The card's tone (spec: home), strongest first: conflict, action (the member acts and a flag is
- * open), live (now inside its span), done (over), then following (need-to-know only), tentative
+ * The card's tone (spec: home), strongest first: conflict, action (a flag is open, whether the
+ * member acts or follows), live (now inside its span), done (over), then following (need-to-know only), tentative
  * (soft holds only) or confirmed.
  */
 export function cardTone({ card, now }: CardToneInput): BookingTone {
@@ -28,7 +28,7 @@ export function cardTone({ card, now }: CardToneInput): BookingTone {
   const ends = new Date(card.endsAt).getTime();
   const acting = card.reasons.some((reason) => ACTING.has(reason));
   if (card.flags.some((flag) => isConflict({ flag }))) return "conflict";
-  if (acting && card.flags.length > 0) return "action";
+  if (card.flags.length > 0) return "action";
   if (starts <= now.getTime() && now.getTime() < ends) return "live";
   if (ends <= now.getTime()) return "done";
   if (!acting) return "following";
