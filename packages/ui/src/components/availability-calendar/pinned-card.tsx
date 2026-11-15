@@ -2,9 +2,10 @@
 
 import { Maximize2Icon, Minimize2Icon, SquareArrowOutUpRightIcon, XIcon } from "lucide-react";
 import { cn } from "../../lib/cn";
-import { bookingToneVariants, toneOfHold } from "../booking-tone/booking-tone";
+import { type BookingTone, bookingToneVariants, toneOfLine } from "../booking-tone/booking-tone";
 import { Button } from "../button/button";
 import { CalendarHoverDetails } from "../cursor-hover/cursor-hover-details";
+import type { OrderViewFact } from "../order-view/order-view-facts";
 import { formatDay } from "./calendar-dates";
 import { useCalendarLabels } from "./calendar-labels";
 import type { PinnedBookingsProps } from "./pinned-bookings";
@@ -87,6 +88,15 @@ function MinimizedHeader(props: PinnedCardProps) {
   );
 }
 
+type PinnedToneInput = { booking: PinnedBooking; facts: readonly OrderViewFact[] | undefined };
+
+/** The booking's own tone; open issues on its order ask for attention unless it already clashes. */
+function pinnedTone({ booking, facts }: PinnedToneInput): BookingTone {
+  const tone = toneOfLine({ line: booking });
+  const issues = facts?.some((fact) => fact.key === "issues" && fact.tone === "warning");
+  return tone !== "conflict" && issues ? "action" : tone;
+}
+
 /**
  * A pinned booking in the tray: shares the unified layout with calendar hover cards.
  * Minimized, it keeps only the client and value; expanded, it shows the full unified card.
@@ -101,7 +111,7 @@ export function PinnedCard(props: PinnedCardProps) {
       className={cn(
         "shrink-0 rounded-xl border bg-popover/95 p-3.5 text-xs text-popover-foreground shadow-2xl backdrop-blur-md transition-all",
         minimized ? "w-56 p-3" : "w-[23.5rem] max-w-[calc(100vw-2rem)]",
-        bookingToneVariants({ tone: toneOfHold({ hold: booking.state.hold }) }),
+        bookingToneVariants({ tone: pinnedTone({ booking, facts: extraFacts }) }),
       )}
     >
       {minimized ? (

@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import type { CalendarHold } from "../availability-calendar/calendar-types";
+import type { CalendarLine } from "../availability-calendar/calendar-types";
 
 /**
  * The state a booking or order card is in, carried by its outline so every card reads the same:
@@ -25,6 +25,8 @@ export const bookingToneVariants = cva("", {
 
 export type BookingTone = NonNullable<VariantProps<typeof bookingToneVariants>["tone"]>;
 
-/** The tone a booking has from its hold alone: soft is tentative, anything else confirmed. */
-export const toneOfHold = ({ hold }: { hold: CalendarHold | undefined }): BookingTone =>
-  hold === "soft" ? "tentative" : "confirmed";
+export type ToneOfLineInput = { line: Pick<CalendarLine, "state" | "blocked"> };
+
+/** A calendar booking's tone: blocked by a hard hold is a conflict, soft is tentative. */
+export const toneOfLine = ({ line }: ToneOfLineInput): BookingTone =>
+  line.blocked ? "conflict" : line.state.hold === "soft" ? "tentative" : "confirmed";

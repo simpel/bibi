@@ -15,10 +15,10 @@ Current behaviour. Why: ADR 0110. Operation: `myWork.view` (`self:read`, a view 
 
 ## Tone
 - Every booking and order card carries its state as its outline (`bookingToneVariants` in `@bibi/ui`), the same on My work, the pinned calendar card and the calendar hover card.
-- Strongest first: **conflict** (red: a hard-hold clash or a blocked run sheet), **action** (amber: the member acts and a flag is open), **live** (now inside the span), **done** (over, dimmed), **following** (need-to-know only: no fill or shadow), **tentative** (soft holds only: dashed and hatched, as on the calendar), **confirmed**. The calendar cards use the hold alone (tentative or confirmed).
+- Strongest first: **conflict** (red: a hard-hold clash or a blocked run sheet), **action** (amber: the member acts and a flag is open), **live** (now inside the span), **done** (over, dimmed), **following** (need-to-know only: no fill or shadow), **tentative** (soft holds only: dashed and hatched, as on the calendar), **confirmed**. On the calendar a booking is conflict when a hard hold overlaps its soft hold on the same item (`markBlocked`), else tentative or confirmed by its hold; a pinned card is action while its order has open issues. A hover card is never taller than the room on screen: it scrolls inside.
 
 ## Concerns me
 Defined in `docs/specs/assignments-and-responsibilities.md` ("Concerns me"). A member acts on `ASSIGNEE`, `RESPONSIBILITY` and `STAFFED`; a follower is told, not asked, so their cards carry no action flags.
 
 ## Not built
-- Untimed lines (no place on a timeline), orders without lines, prep lead times, the responsibility's own name on the card, a hard-hold clash on the calendar's hover and pinned cards.
+- Untimed lines (no place on a timeline), orders without lines, prep lead times, the responsibility's own name on the card.

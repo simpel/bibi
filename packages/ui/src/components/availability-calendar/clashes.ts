@@ -107,3 +107,15 @@ export function clashesWith<Line extends CalendarLine>({
     return to > from ? [{ line: other, from, to }] : [];
   });
 }
+
+/**
+ * The lines with `blocked` set on each soft hold that a hard hold on the same asset overlaps
+ * (ADR 0044: the hard hold wins). Lines on one asset and day only.
+ */
+export function markBlocked<Line extends CalendarLine>({ lines }: { lines: readonly Line[] }) {
+  return lines.map((line) => {
+    if (line.state.hold !== "soft") return line;
+    const blocked = clashesWith({ line, lines }).some((clash) => clash.line.state.hold === "hard");
+    return blocked ? { ...line, blocked } : line;
+  });
+}
