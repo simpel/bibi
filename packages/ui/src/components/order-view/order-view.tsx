@@ -91,14 +91,10 @@ function Body(props: OrderViewProps) {
 const mix = ({ color, percent }: { color: string; percent: number }) =>
   `color-mix(in oklch, ${color} ${percent}%, transparent)`;
 
-/** The status colour as a subtle wash behind a card's header, edged on its outer sides. */
-const statusHeader = ({ color }: { color: string }) => {
-  const edge = mix({ color, percent: 40 });
-  return {
-    backgroundColor: mix({ color, percent: 16 }),
-    boxShadow: `inset 1px 1px 0 ${edge}, inset -1px 0 0 ${edge}`,
-  };
-};
+/** The status colour as a subtle wash behind a card's header, out to the card's edge. */
+const statusHeader = ({ color }: { color: string }) => ({
+  backgroundColor: mix({ color, percent: 16 }),
+});
 
 /**
  * The bare card: the header (washed in its status colour when it has a tone, else by the tone;
