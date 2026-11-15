@@ -1,6 +1,6 @@
 import type { Db } from "@bibi/db";
 import { deleteOrganizations } from "./delete-organizations";
-import { DEMO_ORGS } from "./seed-demo";
+import { DEMO_ORG_SLUGS } from "./seed-demo";
 
 /** Reserved test domains (RFC 2606/6761): tests sign up users here, people never do. */
 const TEST_EMAIL_ENDINGS = [
@@ -25,13 +25,13 @@ export type CleanupTestLeftoversInput = TestLeftoversInput & { dryRun: boolean }
 export type CleanupTestLeftoversOutput = { organizations: number; users: number };
 
 /**
- * Organizations that tests left behind: not a canonical demo slug (`DEMO_ORGS`), and every member
+ * Organizations that tests left behind: not a canonical demo slug (`DEMO_ORG_SLUGS`), and every member
  * (if any) has an email on a reserved test domain. An organization with one real member is kept.
  */
 export async function findTestLeftoverOrgs({ db }: TestLeftoversInput): Promise<string[]> {
   const orgs = await db.organization.findMany({
     where: {
-      slug: { notIn: DEMO_ORGS.map((org) => org.slug) },
+      slug: { notIn: [...DEMO_ORG_SLUGS] },
       members: { every: { user: testEmail } },
     },
     select: { id: true },

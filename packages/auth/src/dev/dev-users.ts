@@ -1,6 +1,6 @@
 import { getEnv } from "@bibi/config";
 import { SUPERADMIN_ROLE } from "@bibi/core";
-import { DEMO_ORGS } from "@bibi/core/seed/demo";
+import { DEMO_ORG_SLUGS } from "@bibi/core/seed/demo";
 import { getDb } from "@bibi/db";
 
 /** Seeded demo users have `@<slug>.bibi.test` addresses (reserved TLD, docs/demo-seed.md). */
@@ -20,7 +20,7 @@ export function isDevEnvironment(): boolean {
 }
 
 /**
- * Seeded dev users of the demo organizations (`DEMO_ORGS`), grouped by organization, oldest
+ * Seeded dev users of the demo organizations (`DEMO_ORG_SLUGS`), grouped by organization, oldest
  * membership first, then the users they have invited (role `invited`, ADR 0078), who belong
  * nowhere yet. Copies that test runs leave in the dev database (same names, suffixed slugs) are
  * left out. Empty outside dev.
@@ -30,7 +30,7 @@ export async function listDevUsers(): Promise<DevUser[]> {
   const members = await getDb().member.findMany({
     where: {
       user: { email: { endsWith: DEV_EMAIL_SUFFIX } },
-      organization: { slug: { in: DEMO_ORGS.map((org) => org.slug) } },
+      organization: { slug: { in: [...DEMO_ORG_SLUGS] } },
     },
     orderBy: [{ organization: { name: "asc" } }, { createdAt: "asc" }],
     select: {
@@ -53,7 +53,7 @@ async function listDevInvitees(): Promise<DevUser[]> {
     where: {
       status: "pending",
       email: { endsWith: DEV_EMAIL_SUFFIX },
-      organization: { slug: { in: DEMO_ORGS.map((org) => org.slug) } },
+      organization: { slug: { in: [...DEMO_ORG_SLUGS] } },
     },
     orderBy: { createdAt: "asc" },
     select: { email: true, organization: { select: { name: true } } },

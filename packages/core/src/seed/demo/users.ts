@@ -2,9 +2,9 @@ import type { Db } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import type { OrganizationCreator } from "../../organization/claim-creator-domain";
 import { ADMIN_ROLE } from "../../permissions/fixed-roles";
-import type { DemoOrg, DemoUser } from "./types";
+import type { DemoOrgIdentity, DemoUser } from "./types";
 
-export type DemoEmailDomainInput = { org: DemoOrg };
+export type DemoEmailDomainInput = { org: DemoOrgIdentity };
 
 /** `lindholmen-demo.bibi.test`: reserved TLD, so mail never leaves Mailpit. */
 export function demoEmailDomain({ org }: DemoEmailDomainInput): string {
@@ -18,14 +18,14 @@ const toAscii = ({ value }: { value: string }): string =>
     .toLowerCase()
     .replace(/[^a-z]+/g, ".");
 
-export type DemoEmailInput = { org: DemoOrg; user: Pick<DemoUser, "name"> };
+export type DemoEmailInput = { org: DemoOrgIdentity; user: Pick<DemoUser, "name"> };
 
 /** "Peter Sjoberg" → `peter.sjoberg@lindholmen-demo.bibi.test` (sign in with magic link or code). */
 export function demoEmail({ org, user }: DemoEmailInput): string {
   return `${toAscii({ value: user.name })}@${demoEmailDomain({ org })}`;
 }
 
-export type BootstrapDemoOrgInput = { db: Db; org: DemoOrg };
+export type BootstrapDemoOrgInput = { db: Db; org: DemoOrgIdentity };
 
 /** Member id per user name, for `member.assignRole`. */
 export type DemoMembers = Map<string, string>;
@@ -60,7 +60,7 @@ export async function bootstrapDemoOrg({ db, org }: BootstrapDemoOrgInput) {
   return { organizationId, members, userIds };
 }
 
-export type DemoCreatorInput = { org: DemoOrg; userIds: DemoUserIds };
+export type DemoCreatorInput = { org: DemoOrgIdentity; userIds: DemoUserIds };
 
 /** The first admin, standing in for whoever signed up and created the organization (ADR 0078). */
 export function demoCreator({ org, userIds }: DemoCreatorInput): OrganizationCreator | undefined {

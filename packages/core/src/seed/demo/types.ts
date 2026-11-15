@@ -78,13 +78,17 @@ export type DemoStaffLink = {
   items: readonly string[];
 };
 
-/** Everything ADR 0025 seeds for one organization so far (`docs/demo-seed.md`). */
-export type DemoOrg = {
+/** What every seeded organization has: the Better Auth rows and the profile's zone (ADR 0064). */
+export type DemoOrgIdentity = {
   slug: string;
   name: string;
   /** The organization's IANA zone (ADR 0064): order-level times and the venue default. */
   timeZone: string;
   users: readonly DemoUser[];
+};
+
+/** Everything ADR 0025 seeds for one organization so far (`docs/demo-seed.md`). */
+export type DemoOrg = DemoOrgIdentity & {
   config: DemoConfig;
   /** Slice 2: what each person answers for, with covered item types and default people. */
   responsibilities: readonly DemoResponsibility[];

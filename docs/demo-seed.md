@@ -4,6 +4,7 @@ Specification for `pnpm --filter @bibi/core seed:demo` (ADR 0025). Two fictional
 
 - **Lindholmen Experience Center**: conferences, exhibition and restaurant. Uses everything: vocabularies with allergens, run sheets to the kitchen, bundles, item states and a status grid.
 - **Vingaleden Archipelago Tours**: boat tours in the Gothenburg archipelago. No food, no allergens, other statuses and other requirements.
+- **Kvarnby Manor** (`kvarnby-demo`): has just signed up and set up nothing. One admin, Ida Wallin (`ida.wallin@kvarnby-demo.bibi.test`), and only what `provisionOrganization` gives a real sign-up: the profile (`Europe/Stockholm`), the default order statuses and grid, inbox endpoints, and the first setup `PENDING`, so signing in opens the welcome setup (ADR 0061). No items, customers or orders. Seeded after the other two (`seed-blank-org.ts`, data in `data/kvarnby/`); its check asserts setup `PENDING`, one member and no items or orders. The mega admin is its admin too, and the dev user switcher lists it. Tests that pass their own `orgs` skip it.
 
 All dates are relative to the day of the run: `D` = today, `D+3` = in three days. Times are local time in the zone `effectiveTimeZone` resolves (ADR 0064): order-level times (`desired*`, `holdsUntil`) in the organization's zone, lines in their venue's.
 

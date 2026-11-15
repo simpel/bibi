@@ -1,9 +1,9 @@
 import type { Db } from "@bibi/db";
 import { deleteOrganizations } from "./delete-organizations";
-import type { DemoOrg } from "./types";
+import type { DemoOrgIdentity } from "./types";
 import { demoEmailDomain } from "./users";
 
-export type ResetDemoOrgInput = { db: Db; org: DemoOrg };
+export type ResetDemoOrgInput = { db: Db; org: DemoOrgIdentity };
 
 /**
  * Deletes one demo organization and everything it owns, plus its demo users, so the seed can

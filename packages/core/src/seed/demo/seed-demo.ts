@@ -3,6 +3,7 @@ import { ok, type Result } from "../../errors/result";
 import { createExecuteContext } from "../../operations/context";
 import { provisionOrganization } from "../../organization/provision";
 import { grantAll } from "../../permissions/permission-set";
+import { kvarnby } from "./data/kvarnby/kvarnby";
 import { lindholmen } from "./data/lindholmen/lindholmen";
 import { vingaleden } from "./data/vingaleden/vingaleden";
 import { refuseProduction } from "./guard";
@@ -10,6 +11,7 @@ import { postSeedLogging } from "./post-seed";
 import { resetDemoOrg } from "./reset";
 import { runPlatformSeed } from "./run-platform-seed";
 import { seedAcrossOrganizations } from "./seed-across-organizations";
+import { seedBlankOrg } from "./seed-blank-org";
 import { seedDemoConfig } from "./seed-config";
 import { seedDemoFloorPlans } from "./seed-floor-plans";
 import { seedDemoItems } from "./seed-items";
@@ -25,6 +27,9 @@ import { bootstrapDemoOrg, demoCreator } from "./users";
 /** The demo organizations, in seed order (`docs/demo-seed.md`). */
 export const DEMO_ORGS: readonly DemoOrg[] = [lindholmen, vingaleden];
 
+/** Every slug `seed:demo` owns: the demo organizations and the blank Kvarnby Manor. */
+export const DEMO_ORG_SLUGS: readonly string[] = [...DEMO_ORGS, kvarnby].map((org) => org.slug);
+
 export type SeedDemoInput = {
   db?: Db;
   orgs?: readonly DemoOrg[];
@@ -32,6 +37,8 @@ export type SeedDemoInput = {
   skipPipeline?: boolean;
   /** The mega admin (superadmin, admin of every org); on by default for the demo orgs only. */
   megaAdmin?: boolean;
+  /** Kvarnby Manor, an organization with no setup yet; on by default for the demo orgs only. */
+  blankOrg?: boolean;
 };
 
 export type SeedDemoOutput = { organizations: { slug: string; organizationId: string }[] };
@@ -132,6 +139,7 @@ export async function seedDemo({
   orgs = DEMO_ORGS,
   skipPipeline = false,
   megaAdmin = orgs === DEMO_ORGS,
+  blankOrg = orgs === DEMO_ORGS,
 }: SeedDemoInput = {}): Promise<Result<SeedDemoOutput>> {
   const allowed = refuseProduction();
   if (!allowed.ok) return allowed;
@@ -143,6 +151,11 @@ export async function seedDemo({
   }
   const across = await seedAcrossOrganizations({ db, orgs, organizations });
   if (!across.ok) return across;
+  if (blankOrg) {
+    const blank = await seedBlankOrg({ db });
+    if (!blank.ok) return blank;
+    organizations.push(blank.value);
+  }
   if (megaAdmin) {
     const organizationIds = organizations.map(({ organizationId }) => organizationId);
     const platform = await runPlatformSeed({ db, organizationIds });
