@@ -52,6 +52,8 @@ export type CalendarLine = {
   teardownMinutes: number;
   state: CalendarState;
   quantity: number;
+  /** A soft hold another hard hold or block on the same asset overlaps (ADR 0044): it loses. */
+  blocked?: boolean;
   /** Set on the parts of a bundle; the bundle line frames them. */
   parentId?: string;
   /** Staff and equipment allocations: never on customer documents (ADR 0059). */

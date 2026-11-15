@@ -7,7 +7,7 @@ import {
   toZonedParts,
 } from "@bibi/core/schemas";
 import { loadOrganizationTimeZone } from "@/server/time-zones";
-import { myWorkHref } from "./lib/my-work-periods";
+import { myWorkHref, windowFrom } from "./lib/my-work-window";
 
 const DAY_KEY = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -22,7 +22,7 @@ export async function myWorkToday(): Promise<string> {
 
 /**
  * The canonical link when `/my-work/{from}/{to}` is not two valid days in order within
- * `MY_WORK_MAX_DAYS`, or is today alone (`/`); `undefined` when the path is canonical.
+ * `MY_WORK_MAX_DAYS`, or is the window from today (`/`); `undefined` when the path is canonical.
  */
 export function canonicalMyWorkHref({
   from,
@@ -34,10 +34,11 @@ export function canonicalMyWorkHref({
   today: string;
 }) {
   if (!isDay({ value: from }) || !isDay({ value: to }) || from > to)
-    return myWorkHref({ from: today, to: today, today });
+    return myWorkHref({ ...windowFrom({ from: today }), today });
   const last = toIsoDate({
     date: addDays({ date: parseIsoDate({ value: from }), days: MY_WORK_MAX_DAYS - 1 }),
   });
   if (to > last) return myWorkHref({ from, to: last, today });
-  return from === today && to === today ? myWorkHref({ from, to, today }) : undefined;
+  const start = windowFrom({ from: today });
+  return from === start.from && to === start.to ? myWorkHref({ from, to, today }) : undefined;
 }

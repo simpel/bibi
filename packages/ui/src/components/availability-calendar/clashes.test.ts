@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CalendarLine, CalendarWindow } from "./calendar-types";
-import { freeSlotAt, freeSpanAt } from "./clashes";
+import { freeSlotAt, freeSpanAt, markBlocked } from "./clashes";
 
 const WINDOW: CalendarWindow = { from: 480, to: 1080 };
 
@@ -72,5 +72,33 @@ describe("freeSpanAt", () => {
   it("returns null when anchored inside an existing booking", () => {
     const lines = [line({ start: "09:00", end: "10:00" })];
     expect(freeSpanAt({ lines, anchor: 540, target: 660, window: WINDOW })).toBeNull();
+  });
+});
+
+describe("markBlocked (ADR 0044)", () => {
+  const soft = ({ id, start, end }: { id: string; start: string; end: string }): CalendarLine => {
+    const base = line({ id, start, end });
+    return { ...base, state: { ...base.state, name: "Prebooked", hold: "soft" } };
+  };
+
+  it("blocks a soft hold a hard hold overlaps, and only that", () => {
+    const lines = [
+      line({ id: "hard", start: "09:00", end: "13:00" }),
+      soft({ id: "under", start: "10:00", end: "12:00" }),
+      soft({ id: "after", start: "13:00", end: "14:00" }),
+    ];
+    expect(markBlocked({ lines }).map((l) => [l.id, Boolean(l.blocked)])).toEqual([
+      ["hard", false],
+      ["under", true],
+      ["after", false],
+    ]);
+  });
+
+  it("never blocks soft holds that only overlap each other", () => {
+    const lines = [
+      soft({ id: "a", start: "10:00", end: "12:00" }),
+      soft({ id: "b", start: "11:00", end: "13:00" }),
+    ];
+    expect(markBlocked({ lines }).some((l) => l.blocked)).toBe(false);
   });
 });

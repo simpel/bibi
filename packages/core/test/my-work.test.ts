@@ -3,6 +3,7 @@ import {
   assignAssignment,
   type ExecuteContext,
   execute,
+  followAssignment,
   generateRunSheet,
   sendRunSheet,
   viewMyWork,
@@ -10,7 +11,9 @@ import {
 import { AT_SETUP_DAY } from "./dashboard-helpers";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { memberUser } from "./order-helpers";
+import { bookRoom, previewSetup } from "./preview-helpers";
 import { runSheetSetup } from "./run-sheet-helpers";
+import { addLine } from "./status-grid-helpers";
 
 const DAY = { from: "2037-11-01", to: "2037-11-01" };
 
@@ -20,7 +23,7 @@ const as = ({ context, userId }: { context: ExecuteContext; userId: string }) =>
   now: () => AT_SETUP_DAY,
 });
 
-type ViewInput = { from: string; to: string; page?: number; limit?: number };
+type ViewInput = { from: string; to: string };
 const view = ({ context, input = DAY }: { context: ExecuteContext; input?: ViewInput }) =>
   execute({ operation: viewMyWork, input, context });
 
@@ -51,67 +54,88 @@ async function setup() {
 }
 
 describe("myWork.view (spec: home)", () => {
-  it("lists the run sheet's rows of the day for the order's assignee, with counts and why", async () => {
-    const { context, anna, runSheet, held } = await setup();
+  it("gives the order's assignee a card for the day, with places, hold and the run sheet to send", async () => {
+    const { context, anna, runSheet, order } = await setup();
     const work = unwrap({ result: await view({ context: as({ context, userId: anna }) }) });
-    expect(work.rows).toEqual([
+    expect(work.now).toEqual(AT_SETUP_DAY);
+    expect(work.cards).toEqual([
       expect.objectContaining({
-        key: held.id,
-        runSheetId: runSheet.id,
-        runSheetName: "Kitchen order",
-        status: "DRAFT",
-        timed: true,
+        key: `${order.id}:2037-11-01`,
+        orderId: order.id,
+        day: "2037-11-01",
+        dayIndex: 1,
+        dayCount: 1,
+        places: ["Älvsalen"],
         reasons: ["ASSIGNEE"],
-        needs: [expect.objectContaining({ quantity: 5, scope: "ORDER", blocking: false })],
+        flags: [
+          expect.objectContaining({
+            kind: "RUN_SHEET",
+            runSheetId: runSheet.id,
+            runSheetName: "Kitchen order",
+            runSheetStatus: "DRAFT",
+          }),
+        ],
       }),
-    ]);
-    expect(work.todo.runSheets).toEqual([
-      expect.objectContaining({ runSheetId: runSheet.id, status: "DRAFT", reason: "ASSIGNEE" }),
     ]);
   });
 
-  it("shows nothing to a member it does not concern, and a responsibility's rows once assigned", async () => {
+  it("shows nothing to a member it does not concern, and the card once they own a responsibility", async () => {
     const { context, order, definition } = await setup();
     const erik = await memberUser({ context, name: "Erik Lund" });
     const before = unwrap({ result: await view({ context: as({ context, userId: erik }) }) });
-    expect(before.rows).toEqual([]);
+    expect(before.cards).toEqual([]);
     const { responsibilityId } = definition;
     unwrap({
       result: await assign({ context, orderId: order.id, assigneeId: erik, responsibilityId }),
     });
     const after = unwrap({ result: await view({ context: as({ context, userId: erik }) }) });
-    expect(after.rows).toEqual([expect.objectContaining({ reasons: ["RESPONSIBILITY"] })]);
-    expect(after.todo.runSheets).toEqual([expect.objectContaining({ reason: "RESPONSIBILITY" })]);
+    expect(after.cards).toEqual([
+      expect.objectContaining({
+        reasons: ["RESPONSIBILITY"],
+        flags: [expect.objectContaining({ kind: "RUN_SHEET" })],
+      }),
+    ]);
   });
 
-  it("drops the run sheet from to do once sent, and leaves out other days", async () => {
+  it("tells a follower without asking: the card has no flags", async () => {
+    const { context, order } = await setup();
+    const eva = await memberUser({ context, name: "Eva Holm" });
+    const input = { subjectType: "ORDER" as const, subjectId: order.id, userId: eva };
+    unwrap({ result: await execute({ operation: followAssignment, input, context }) });
+    const work = unwrap({ result: await view({ context: as({ context, userId: eva }) }) });
+    expect(work.cards).toEqual([expect.objectContaining({ reasons: ["FOLLOWER"], flags: [] })]);
+  });
+
+  it("drops the run sheet flag once sent, and leaves out other days", async () => {
     const { context, anna, runSheet } = await setup();
     unwrap({
       result: await execute({ operation: sendRunSheet, input: { id: runSheet.id }, context }),
     });
     const sent = unwrap({ result: await view({ context: as({ context, userId: anna }) }) });
-    expect(sent.todo.runSheets).toEqual([]);
-    expect(sent.rows).toEqual([expect.objectContaining({ status: "PENDING" })]);
+    expect(sent.cards).toEqual([expect.objectContaining({ flags: [] })]);
     const next = { from: "2037-11-02", to: "2037-11-02" };
     const other = unwrap({
       result: await view({ context: as({ context, userId: anna }), input: next }),
     });
-    expect(other.rows).toEqual([]);
+    expect(other.cards).toEqual([]);
   });
 
-  it("pages the rows and counts every to do part", async () => {
-    const { context, anna, runSheet } = await setup();
-    const me = as({ context, userId: anna });
-    const first = unwrap({
-      result: await view({ context: me, input: { ...DAY, page: 1, limit: 1 } }),
-    });
-    expect(first).toMatchObject({ page: 1, limit: 1, rowsTotal: 1 });
-    expect(first.rows).toEqual([expect.objectContaining({ runSheetId: runSheet.id })]);
-    const second = unwrap({
-      result: await view({ context: me, input: { ...DAY, page: 2, limit: 1 } }),
-    });
-    expect(second).toMatchObject({ rows: [], rowsTotal: 1 });
-    expect(first.todo.totals).toEqual({ runSheets: 1, expiringHolds: 0, quotes: 0, messages: 0 });
+  it("flags a soft hold another order's hard hold overlaps", async () => {
+    const setup = await previewSetup();
+    const { context, room } = setup;
+    const order = await setup.newOrder();
+    await addLine({ setup, orderId: order.id, itemId: room.id, from: 9 });
+    const other = await bookRoom({ setup, from: 10, hard: true });
+    const anna = await memberUser({ context, name: "Anna Berg" });
+    unwrap({ result: await assign({ context, orderId: order.id, assigneeId: anna }) });
+    const work = unwrap({ result: await view({ context: as({ context, userId: anna }) }) });
+    expect(work.cards).toEqual([
+      expect.objectContaining({
+        orderId: order.id,
+        hold: "SOFT",
+        flags: [expect.objectContaining({ kind: "HARD_CLASH", reference: other.order.reference })],
+      }),
+    ]);
   });
 
   it("refuses a period longer than 14 days and an API key", async () => {

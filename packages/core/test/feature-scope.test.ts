@@ -65,8 +65,7 @@ const OUTPUT_EXCEPTIONS: Readonly<Record<string, string>> = {
   "runSheet:programItemName":
     "run sheet rows are a snapshot copied with program:read at generate time",
   "dashboard:customerName": "a view read model (ADR 0071, 0080), null without customer:read",
-  "myWork:runSheetName": "a view read model (ADR 0071, 0110), rows null without runSheet:read",
-  "myWork:itemName": "a run sheet row's snapshot (ADR 0110), rows null without runSheet:read",
+  "myWork:runSheetName": "a view read model (ADR 0071, 0110), flags only with runSheet:read",
   "myWork:customerName": "a view read model (ADR 0071, 0110), null without customer:read",
   "notification:runSheetName":
     "a snapshot copied for a recipient who may read run sheets (ADR 0094)",

@@ -22,7 +22,7 @@
           },
           "myWork": {
             "question": "What do I see when I log in?",
-            "answer": "You land on **My work**. It lists what you prepare, run and set up from every run sheet that concerns you, with a heading per day, and next to it what you need to do, like run sheets to send or holds running out.\nSwitch between **Today**, **Tomorrow** and **This week** at the top. Below you see your unread notifications under **What changed**."
+            "answer": "You land on **My work**: a timeline of every booking that concerns you, from today and two weeks ahead, with one card per booking and day.\nThe outline tells you its state: red when something blocks it, yellow when you have something to do, dashed when it is only preliminary, and faded once it is over. Click the chip at the bottom of a card to go straight to what needs doing, and **Later** for the following weeks."
           },
           "exampleOrders": {
             "question": "What are the example orders on my board?",

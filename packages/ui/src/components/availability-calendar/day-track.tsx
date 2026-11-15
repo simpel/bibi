@@ -7,7 +7,7 @@ import { CalendarSpan } from "./calendar-span";
 import { percentIn, toMinutes } from "./calendar-time";
 import type { AssetBooking, CalendarAsset, CalendarWindow } from "./calendar-types";
 import { ClashCards } from "./clash-cards";
-import { clashesOf, clashesWith } from "./clashes";
+import { clashesOf, clashesWith, markBlocked } from "./clashes";
 import { HourRules } from "./time-axis";
 
 /** One sub-lane is 2.25rem; a row with a clash grows a lane per overlapping booking. */
@@ -132,7 +132,8 @@ function Bookings({ bookings, window, lane, selectedId, onOpen, withHours, asset
 }
 
 /** One asset's day: its bookings across the open hours, clashes behind them. */
-export function DayTrack({ asset, date, withHours, onAdd, ...props }: DayTrackProps) {
+export function DayTrack({ asset, date, withHours, onAdd, ...rest }: DayTrackProps) {
+  const props = { ...rest, bookings: markBlocked({ lines: rest.bookings }) };
   return (
     <>
       {withHours ? <HourRules window={props.window} /> : null}

@@ -2,13 +2,9 @@ import {
   AttentionSchema,
   DashboardSummarySchema,
   ExpiringHoldSchema,
-  MyWorkMessagesSchema,
-  MyWorkQuoteSchema,
-  MyWorkRowSchema,
-  MyWorkRunSheetTaskSchema,
+  MyWorkCardSchema,
+  MyWorkFlagSchema,
   MyWorkSchema,
-  MyWorkTodoSchema,
-  NotificationWireSchema,
   ScheduledSchema,
   UnsentRunSheetSchema,
 } from "@bibi/core/schemas";
@@ -31,18 +27,16 @@ export type DashboardSummaryWire = z.infer<typeof DashboardSummaryWireSchema>;
 
 /** JSON form of the caller's start page as tool results carry it (dates = ISO strings). */
 export const MyWorkWireSchema = MyWorkSchema.extend({
-  rows: z
-    .array(MyWorkRowSchema.extend({ at: z.string(), endsAt: z.string().nullable() }))
+  now: z.string(),
+  cards: z
+    .array(
+      MyWorkCardSchema.extend({
+        startsAt: z.string(),
+        endsAt: z.string(),
+        flags: z.array(MyWorkFlagSchema.extend({ at: z.string().nullable() })),
+      }),
+    )
     .nullable(),
-  todo: MyWorkTodoSchema.extend({
-    runSheets: z.array(MyWorkRunSheetTaskSchema.extend({ startsAt: z.string() })).nullable(),
-    expiringHolds: z.array(ExpiringHoldWireSchema),
-    quotes: z
-      .array(MyWorkQuoteSchema.extend({ sentAt: z.string(), validUntil: z.string().nullable() }))
-      .nullable(),
-    messages: z.array(MyWorkMessagesSchema.extend({ latestAt: z.string() })).nullable(),
-  }),
-  notifications: z.array(NotificationWireSchema),
 });
 
 export type MyWorkWire = z.infer<typeof MyWorkWireSchema>;
