@@ -249,15 +249,32 @@
     "navigate": "Navigera",
     "actions": "Åtgärder",
     "venuesGroup": "Anläggningar",
-    "goToVenues": "Gå till anläggningar",
     "createVenue": "Skapa anläggning",
     "openVenue": "Öppna {name}",
-    "goToItems": "Gå till artiklar",
     "createItem": "Skapa artikel",
     "assistant": "Assistent",
     "askAssistant": "Fråga assistenten: ”{query}”",
     "openAssistant": "Öppna assistenten",
-    "settings": "Inställningar"
+    "settings": "Inställningar",
+    "createOrder": "Skapa bokning",
+    "createCustomer": "Skapa kund",
+    "createRunSheet": "Skapa körschema",
+    "prefixes": {
+      "heading": "Sök i",
+      "reference": "Öppna en bokning via dess nummer",
+      "order": "Sök bokningar",
+      "customer": "Sök kunder",
+      "venue": "Sök anläggningar",
+      "item": "Sök artiklar"
+    },
+    "lookup": {
+      "heading": "Resultat",
+      "open": "Öppna {name}",
+      "order": "Visa bokningar som matchar ”{query}”",
+      "customer": "Visa kunder som matchar ”{query}”",
+      "venue": "Visa anläggningar som matchar ”{query}”",
+      "item": "Visa artiklar som matchar ”{query}”"
+    }
   },
   "search": {
     "placeholder": "Sök anläggningar, artiklar och mer...",

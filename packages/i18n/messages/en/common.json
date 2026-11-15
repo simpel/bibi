@@ -249,15 +249,32 @@
     "navigate": "Navigate",
     "actions": "Actions",
     "venuesGroup": "Venues",
-    "goToVenues": "Go to venues",
     "createVenue": "Create venue",
     "openVenue": "Open {name}",
-    "goToItems": "Go to items",
     "createItem": "Create item",
     "assistant": "Assistant",
     "askAssistant": "Ask the assistant: “{query}”",
     "openAssistant": "Open the assistant",
-    "settings": "Settings"
+    "settings": "Settings",
+    "createOrder": "Create order",
+    "createCustomer": "Create customer",
+    "createRunSheet": "Create run sheet",
+    "prefixes": {
+      "heading": "Search in",
+      "reference": "Open an order by its number",
+      "order": "Search orders",
+      "customer": "Search customers",
+      "venue": "Search venues",
+      "item": "Search items"
+    },
+    "lookup": {
+      "heading": "Results",
+      "open": "Open {name}",
+      "order": "Show orders matching “{query}”",
+      "customer": "Show customers matching “{query}”",
+      "venue": "Show venues matching “{query}”",
+      "item": "Show items matching “{query}”"
+    }
   },
   "search": {
     "placeholder": "Search venues, items and more...",
