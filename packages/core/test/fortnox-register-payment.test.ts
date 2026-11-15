@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fortnoxInvoicing } from "../src/providers/fortnox/fortnox-invoicing";
 import { unwrap } from "./helpers";
+import { useFortnoxEnv } from "./integration-helpers";
 
 type Call = { url: string; method: string; body?: string };
 
@@ -31,6 +32,9 @@ afterEach(() => {
 });
 
 describe("Fortnox registers payments and reads credits (ADR 0100, 0106)", () => {
+  // The client builds its URLs from FORTNOX_API_BASE_URL; set it here, not from the local .env.
+  useFortnoxEnv();
+
   it("creates the invoice payment and bookkeeps it", async () => {
     const calls = stubFortnox({
       respond: ({ method }) =>
