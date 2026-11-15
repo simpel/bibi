@@ -32,7 +32,7 @@ export function MyWorkDays({ cards, now, timeZone, dates, dayHeadings = true }: 
         </h3>
       ) : null}
       {dayCards.map((card) => (
-        <MyWorkCard key={card.key} card={card} now={now} timeZone={timeZone} dates={dates} />
+        <MyWorkCard key={card.key} card={card} now={now} timeZone={timeZone} />
       ))}
     </div>
   ));

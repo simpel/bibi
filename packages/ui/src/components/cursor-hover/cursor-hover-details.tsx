@@ -2,6 +2,7 @@
 
 import { ClockIcon, MapPinIcon, TriangleAlertIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { cn } from "../../lib/cn";
 import { AppLink } from "../app-link/app-link";
 import {
   type CalendarLabels,
@@ -15,6 +16,7 @@ import type {
 } from "../availability-calendar/calendar-types";
 import { type PinnedBooking, usePins } from "../availability-calendar/pins-context";
 import { Badge } from "../badge/badge";
+import type { BookingTone } from "../booking-tone/booking-tone";
 import { OrderView, type OrderViewFact, type OrderViewMetaRow } from "../order-view/order-view";
 import { BookingStats, bookingFacts, openable } from "./booking-extras";
 import { cleanTitle } from "./clean-title";
@@ -50,6 +52,12 @@ export type CalendarHoverDetailsProps = {
   detailed?: boolean;
   /** Facts after the booking's, e.g. the order's assignee and totals. */
   extraFacts?: readonly OrderViewFact[];
+  /** No facts list, e.g. a collapsed card on My work. */
+  hideFacts?: boolean;
+  /** The card's state as a wash behind the header (`OrderView` bare). */
+  tone?: BookingTone | undefined;
+  /** The title link covers the whole card, which needs `group relative` (hover underlines it). */
+  stretchTitle?: boolean;
 };
 
 function formatDateHeader({ dateStr }: { dateStr?: string }): string | undefined {
@@ -107,16 +115,19 @@ function deriveSubtitle({
   return undefined;
 }
 
-const titleLinkClass =
+const TITLE_LINK =
   "text-left underline-offset-2 outline-none hover:underline focus-visible:underline";
+const stretchedClass = "after:absolute after:inset-0 after:content-[''] group-hover:underline";
 
 type TitleLinkProps = {
   title: string;
   href?: string | undefined;
   onOpen?: (() => void) | undefined;
+  stretch?: boolean | undefined;
 };
 
-function TitleLink({ title, href, onOpen }: TitleLinkProps) {
+function TitleLink({ title, href, onOpen, stretch }: TitleLinkProps) {
+  const titleLinkClass = cn(TITLE_LINK, stretch && stretchedClass);
   if (onOpen) {
     return (
       <button type="button" onClick={onOpen} className={titleLinkClass}>
@@ -229,9 +240,11 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
       </>
     ) : undefined);
 
-  const facts: OrderViewFact[] = booking ? contactFacts({ booking, labels }) : [];
-  if (props.detailed && booking && labels) facts.push(...bookingFacts({ booking, labels }));
-  facts.push(...(props.extraFacts ?? []));
+  const facts: OrderViewFact[] =
+    booking && !props.hideFacts ? contactFacts({ booking, labels }) : [];
+  if (props.detailed && booking && labels && !props.hideFacts)
+    facts.push(...bookingFacts({ booking, labels }));
+  if (!props.hideFacts) facts.push(...(props.extraFacts ?? []));
   const shownFacts = props.detailed ? openable({ facts, onOpen }) : facts;
 
   // The detailed card shows time and place as stats instead.
@@ -247,7 +260,10 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
     <OrderView
       bare
       eyebrow={props.detailed && booking && labels ? undefined : dateStr}
-      title={<TitleLink href={href} onOpen={onOpen} title={displayTitle} />}
+      title={
+        <TitleLink href={href} onOpen={onOpen} title={displayTitle} stretch={props.stretchTitle} />
+      }
+      tone={props.tone}
       reference={orderRef}
       subtitle={sub}
       status={state ?? null}

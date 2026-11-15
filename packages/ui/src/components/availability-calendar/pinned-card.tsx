@@ -105,13 +105,14 @@ export function PinnedCard(props: PinnedCardProps) {
   const { booking, minimized, onOpen, formatDate, useExtraFacts } = props;
   const extraFacts = useExtraFacts?.({ booking, enabled: !minimized });
   const dateStr = formatDay({ date: booking.date, format: formatDate, year: true });
+  const tone = pinnedTone({ booking, facts: extraFacts });
 
   return (
     <div
       className={cn(
-        "shrink-0 rounded-xl border bg-popover/95 p-3.5 text-xs text-popover-foreground shadow-2xl backdrop-blur-md transition-all",
+        "shrink-0 overflow-hidden rounded-xl border bg-popover/95 p-3.5 text-xs text-popover-foreground shadow-2xl backdrop-blur-md transition-all",
         minimized ? "w-56 p-3" : "w-[23.5rem] max-w-[calc(100vw-2rem)]",
-        bookingToneVariants({ tone: pinnedTone({ booking, facts: extraFacts }) }),
+        bookingToneVariants({ tone }),
       )}
     >
       {minimized ? (
@@ -123,6 +124,7 @@ export function PinnedCard(props: PinnedCardProps) {
           onOpen={onOpen}
           detailed
           extraFacts={extraFacts}
+          tone={tone}
           headerActions={<Controls {...props} />}
         />
       )}

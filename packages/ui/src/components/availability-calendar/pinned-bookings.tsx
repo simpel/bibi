@@ -49,7 +49,7 @@ export function PinnedBookings({ children, labels, storageKey, ...tray }: Pinned
     <PinsContext.Provider value={api}>
       {children}
       <CalendarLabelsProvider labels={labels}>
-        <PinnedTray pins={pins} onClose={api.toggle} {...tray} />
+        <PinnedTray pins={pins} onClose={api.toggle} storageKey={storageKey} {...tray} />
       </CalendarLabelsProvider>
     </PinsContext.Provider>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useStoredState } from "../../lib/use-stored-state";
 import { useCalendarLabels } from "./calendar-labels";
 import type { PinnedBookingsProps } from "./pinned-bookings";
 import { PinnedCard } from "./pinned-card";
@@ -12,23 +12,27 @@ export type PinnedTrayProps = Pick<
 > & {
   pins: readonly PinnedBooking[];
   onClose: (input: { booking: PinnedBooking }) => void;
+  /** Kept with the pins, so a reload keeps a shrunk card shrunk. */
+  storageKey?: string | undefined;
 };
+
+const NONE: readonly string[] = [];
 
 /**
  * The pinned bookings along the bottom, side by side in the order they were pinned, so two
  * clients, days or offers can be read together. They stay on every page; a card can shrink to
  * its client and value, and only its X takes it off.
  */
-export function PinnedTray({ pins, onOpen, onClose, ...card }: PinnedTrayProps) {
+export function PinnedTray({ pins, onOpen, onClose, storageKey, ...card }: PinnedTrayProps) {
   const labels = useCalendarLabels();
-  const [minimized, setMinimized] = useState<ReadonlySet<string>>(new Set());
+  const [minimized, setMinimized] = useStoredState<readonly string[]>({
+    key: storageKey ? `${storageKey}:minimized` : undefined,
+    initial: NONE,
+    storage: "session",
+  });
   if (!pins.length) return null;
   const flip = ({ id }: { id: string }) =>
-    setMinimized((set) => {
-      const next = new Set(set);
-      if (!next.delete(id)) next.add(id);
-      return next;
-    });
+    setMinimized((ids) => (ids.includes(id) ? ids.filter((one) => one !== id) : [...ids, id]));
   return (
     <section
       aria-label={labels.pinned}
@@ -39,7 +43,7 @@ export function PinnedTray({ pins, onOpen, onClose, ...card }: PinnedTrayProps) 
           <PinnedCard
             key={booking.id}
             booking={booking}
-            minimized={minimized.has(booking.id)}
+            minimized={minimized.includes(booking.id)}
             onMinimize={() => flip({ id: booking.id })}
             onClose={() => onClose({ booking })}
             onOpen={onOpen ? () => onOpen(booking) : undefined}

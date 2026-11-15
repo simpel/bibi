@@ -1,48 +1,75 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
+import type { PinnedBooking } from "../availability-calendar/pins-context";
 import { Badge } from "../badge/badge";
 import type { BookingTone } from "../booking-tone/booking-tone";
-import { OrderDayCard } from "./order-day-card";
+import { OrderDayCard, type OrderDayCardProps } from "./order-day-card";
+
+const booking: PinnedBooking = {
+  id: "order_1042:2026-11-16",
+  orderId: "order_1042",
+  name: "HR offsite",
+  type: "",
+  place: "Älvrummet",
+  assetId: "order_1042:2026-11-16",
+  assetName: "Älvrummet",
+  date: "2026-11-16",
+  start: "09:00",
+  end: "16:30",
+  setupMinutes: 0,
+  teardownMinutes: 0,
+  state: {
+    name: "Confirmed",
+    color: "var(--chart-1)",
+    ink: "var(--primary-foreground)",
+    hold: "hard",
+  },
+  quantity: 1,
+  order: "1042",
+  reference: "1042",
+  customer: "Volvo Cars",
+  headcount: 48,
+};
 
 const facts = [
-  { label: "Guests", value: "48" },
-  { label: "When", preheader: "Day 2 of 3", value: "09:00–16:30" },
-  { label: "Where", value: "Älvrummet", truncate: true },
+  { key: "assignee", label: "Assigned to", value: "Johan Ek" },
+  { key: "total", label: "Total excl. VAT", value: "48 200,00 kr" },
+  { key: "issues", label: "Issues", value: "1", tone: "warning" as const },
 ];
+
+/** The card with its own expand state, as on My work. */
+function Card(props: Omit<OrderDayCardProps, "expanded" | "onToggle">) {
+  const [expanded, setExpanded] = useState(false);
+  return <OrderDayCard {...props} expanded={expanded} onToggle={() => setExpanded(!expanded)} />;
+}
 
 const meta = {
   title: "Components/OrderDayCard",
-  component: OrderDayCard,
+  component: Card,
   args: {
-    title: "HR offsite",
-    reference: "#1042",
-    subtitle: "Volvo Cars · Kitchen",
+    booking,
     href: "/orders/1042",
-    status: { name: "Confirmed", color: "var(--chart-1)" },
-    facts,
     tone: "confirmed",
+    date: "Day 2 of 3",
+    subtitle: "Volvo Cars · Your responsibility",
+    facts,
   },
   decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
-} satisfies Meta<typeof OrderDayCard>;
+} satisfies Meta<typeof Card>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Confirmed: Story = {};
 
-/** The member has something to do: the most urgent flag and how many more. */
+/** The member has something to do: the most urgent flag in the bottom row. */
 export const Action: Story = {
-  args: {
-    tone: "action",
-    flag: <Badge variant="warning">Kitchen order changed</Badge>,
-    more: "+2",
-  },
+  args: { tone: "action", footer: <Badge variant="warning">Kitchen order changed</Badge> },
 };
 
 export const Conflict: Story = {
-  args: { tone: "conflict", flag: <Badge variant="destructive">Room blocked by #1049</Badge> },
+  args: { tone: "conflict", footer: <Badge variant="destructive">Room blocked by #1049</Badge> },
 };
-
-export const Live: Story = { args: { tone: "live", live: "Live" } };
 
 const TONES: BookingTone[] = [
   "conflict",
@@ -54,12 +81,12 @@ const TONES: BookingTone[] = [
   "following",
 ];
 
-/** Every tone, as the start page's timeline shows them. */
+/** Every tone: the outline and the header's wash, as the start page shows them. */
 export const AllTones: Story = {
   render: (args) => (
     <div className="grid gap-3">
       {TONES.map((tone) => (
-        <OrderDayCard key={tone} {...args} tone={tone} subtitle={`Volvo Cars · ${tone}`} />
+        <Card key={tone} {...args} tone={tone} subtitle={`Volvo Cars · ${tone}`} />
       ))}
     </div>
   ),

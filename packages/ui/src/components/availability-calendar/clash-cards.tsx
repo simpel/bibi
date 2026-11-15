@@ -49,6 +49,7 @@ export function ClashCards({ bookings, stretch, onOpen }: ClashCardsProps) {
             key={booking.id}
             booking={booking}
             onOpen={onOpen ? () => onOpen(booking) : undefined}
+            detailed
           />
         ))}
       </div>

@@ -25,6 +25,22 @@ export const bookingToneVariants = cva("", {
 
 export type BookingTone = NonNullable<VariantProps<typeof bookingToneVariants>["tone"]>;
 
+/** The same state as a subtle wash behind a card's header, edge to edge. */
+export const bookingTintVariants = cva("", {
+  variants: {
+    tone: {
+      conflict: "bg-destructive/10",
+      action: "bg-warning/15",
+      live: "bg-success/10",
+      tentative: "bg-muted-foreground/10",
+      confirmed: "bg-muted/70",
+      done: "bg-muted/70",
+      following: "bg-transparent",
+    } satisfies Record<BookingTone, string>,
+  },
+  defaultVariants: { tone: "confirmed" },
+});
+
 export type ToneOfLineInput = { line: Pick<CalendarLine, "state" | "blocked"> };
 
 /** A calendar booking's tone: blocked by a hard hold is a conflict, soft is tentative. */

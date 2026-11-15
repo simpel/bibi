@@ -18,6 +18,7 @@ export {
   PinnedBookings,
   type UseExtraFactsInput,
 } from "./components/availability-calendar/pinned-bookings";
+export type { PinnedBooking } from "./components/availability-calendar/pins-context";
 export * from "./components/avatar/avatar";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge/badge";
 export * from "./components/bar-charts/bar-charts";
@@ -164,3 +165,4 @@ export * from "./components/website-input/website-input";
 export * from "./components/wordmark/wordmark";
 export { cn } from "./lib/cn";
 export * from "./lib/countries";
+export * from "./lib/use-stored-state";

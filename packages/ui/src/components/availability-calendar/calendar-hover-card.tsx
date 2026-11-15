@@ -32,15 +32,16 @@ export function CalendarHoverCard({
   className,
   ...details
 }: CalendarHoverCardProps) {
-  const cardContent = content ?? card ?? <CalendarHoverDetails {...details} />;
   const line = details.booking ?? details.line;
+  const tone = line ? toneOfLine({ line }) : undefined;
+  const cardContent = content ?? card ?? <CalendarHoverDetails detailed tone={tone} {...details} />;
   return (
     <CursorHoverCard
       disabled={disabled}
       content={cardContent}
       asChild={asChild}
       className={className}
-      tone={line ? toneOfLine({ line }) : undefined}
+      tone={tone}
     >
       {children}
     </CursorHoverCard>

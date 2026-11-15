@@ -70,7 +70,7 @@ export function BookingStats({
       onSelect: onOpen,
     });
   }
-  return <KeyFacts size="sm" facts={facts} className="border-y border-border/60 py-2" />;
+  return <KeyFacts size="sm" facts={facts} />;
 }
 
 /** The booking's buffers, for the expanded pinned card. */

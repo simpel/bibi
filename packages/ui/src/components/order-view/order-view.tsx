@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "../../lib/cn";
+import { type BookingTone, bookingTintVariants } from "../booking-tone/booking-tone";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../card/card";
 import { StatusBadge } from "../data-table/data-table-column-helpers";
 import { type OrderViewFact, OrderViewFacts } from "./order-view-facts";
@@ -36,6 +37,11 @@ export type OrderViewProps = {
   headerActions?: ReactNode;
   /** No card chrome, for popovers and trays that bring their own surface. */
   bare?: boolean;
+  /**
+   * In `bare`, the card's state as a subtle wash behind the header, edge to edge: the surface
+   * must have `p-3.5` and clip its corners (`overflow-hidden`).
+   */
+  tone?: BookingTone | undefined;
   className?: string;
 };
 
@@ -66,22 +72,50 @@ function Header({ title, reference, eyebrow, subtitle, bare }: OrderViewProps) {
 }
 
 function Body(props: OrderViewProps) {
-  const { highlight, meta, facts, hidden = "–", notes, warnings, bare, status } = props;
-  const divided = bare ? "border-t border-border/60 pt-2" : "";
+  const { highlight, meta, facts, hidden = "–", notes, warnings } = props;
   return (
     <>
       {highlight}
-      {meta?.length ? <OrderViewMeta rows={meta} status={bare ? status : null} /> : null}
+      {meta?.length ? <OrderViewMeta rows={meta} status={null} /> : null}
       {notes ? (
         <p className="border-t border-border/60 pt-1.5 text-muted-foreground italic leading-relaxed">
           {notes}
         </p>
       ) : null}
-      {facts?.length ? (
-        <OrderViewFacts facts={facts} hidden={hidden} className={divided} bare={bare} />
-      ) : null}
+      {facts?.length ? <OrderViewFacts facts={facts} hidden={hidden} /> : null}
       {warnings ? <div className="flex flex-wrap gap-1 pt-1">{warnings}</div> : null}
     </>
+  );
+}
+
+/**
+ * The bare card: the header (tinted by `tone`, else ruled off), then each part under one thin
+ * rule, never two, and nothing under the last.
+ */
+function BareOrderView({ actions, ...props }: OrderViewProps & { actions: ReactNode }) {
+  const { highlight, meta, facts, hidden = "–", notes, warnings, footer, tone, status } = props;
+  return (
+    <div data-slot="order-view" className={cn("grid text-xs", props.className)}>
+      <div
+        className={cn(
+          "flex items-start justify-between gap-2",
+          tone
+            ? cn("-mx-3.5 -mt-3.5 px-3.5 pt-3 pb-2.5", bookingTintVariants({ tone }))
+            : "border-b border-border/60 pb-2",
+        )}
+      >
+        <Header {...props} />
+        {actions}
+      </div>
+      <div className="grid divide-y divide-border/60 *:py-2 *:last:pb-0">
+        {highlight}
+        {meta?.length ? <OrderViewMeta rows={meta} status={status} /> : null}
+        {notes ? <p className="text-muted-foreground italic leading-relaxed">{notes}</p> : null}
+        {facts?.length ? <OrderViewFacts facts={facts} hidden={hidden} bare /> : null}
+        {warnings ? <div className="flex flex-wrap gap-1">{warnings}</div> : null}
+        {footer ? <div>{footer}</div> : null}
+      </div>
+    </div>
   );
 }
 
@@ -95,24 +129,13 @@ export function OrderView(props: OrderViewProps) {
     ) : null;
   const actions =
     badge || headerActions ? (
-      <div className="flex shrink-0 items-center gap-1">
+      <div className="relative z-10 flex shrink-0 items-center gap-1">
         {badge}
         {headerActions}
       </div>
     ) : null;
 
-  if (bare) {
-    return (
-      <div data-slot="order-view" className={cn("grid gap-2 text-xs", className)}>
-        <div className="flex items-start justify-between gap-2">
-          <Header {...props} />
-          {actions}
-        </div>
-        <Body {...props} />
-        {footer ? <div className="border-t border-border/60 pt-1.5">{footer}</div> : null}
-      </div>
-    );
-  }
+  if (bare) return <BareOrderView {...props} actions={actions} />;
 
   return (
     <Card data-slot="order-view" className={cn("shadow-none", className)}>

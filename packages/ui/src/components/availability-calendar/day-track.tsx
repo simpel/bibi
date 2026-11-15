@@ -1,5 +1,6 @@
 "use client";
 
+import { toneOfLine } from "../booking-tone/booking-tone";
 import { CalendarHoverDetails } from "../cursor-hover/cursor-hover-details";
 import { AddSlot } from "./add-slot";
 import { useCalendarLabels } from "./calendar-labels";
@@ -84,6 +85,8 @@ function BookingCard({
       <CalendarHoverDetails
         booking={itemBooking}
         onOpen={onOpen ? () => onOpen(itemBooking) : undefined}
+        detailed
+        tone={toneOfLine({ line: itemBooking })}
       />
     );
   }
