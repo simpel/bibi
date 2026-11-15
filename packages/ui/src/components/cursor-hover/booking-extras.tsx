@@ -33,7 +33,10 @@ export type BookingStatsInput = BookingExtrasInput & {
   resource?: string | undefined;
 };
 
-/** The booking's figures as tiny stats: what it is worth and, when detailed, what, when, where. */
+/**
+ * The booking's figures as tiny stats: what it is worth and, when detailed, its order number,
+ * guests, when and where.
+ */
 export function BookingStats({
   booking,
   labels,
@@ -45,9 +48,14 @@ export function BookingStats({
 }: BookingStatsInput) {
   const { pinCard } = labels;
   const hasValue = Boolean(booking.value);
-  const hasMore = detailed && Boolean(time || resource || booking.headcount);
+  const reference = detailed ? (booking.reference ?? booking.order) : undefined;
+  const hasMore = detailed && Boolean(reference || time || resource || booking.headcount);
   if (!hasValue && !hasMore) return null;
   const facts: KeyFact[] = [];
+  if (reference) {
+    const value = reference.startsWith("#") ? reference : `#${reference}`;
+    facts.push({ label: pinCard.order, value, onSelect: onOpen });
+  }
   if (booking.value) {
     facts.push({
       label: pinCard.value,

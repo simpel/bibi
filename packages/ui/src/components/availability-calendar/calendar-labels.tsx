@@ -78,6 +78,8 @@ export type CalendarLabels = {
     guests: string;
     value: string;
     exclVat: string;
+    /** The order number stat. */
+    order: string;
     hold: string;
     minutes: (input: { count: number }) => string;
     seeOrder: string;

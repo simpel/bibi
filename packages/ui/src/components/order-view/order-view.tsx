@@ -88,8 +88,13 @@ function Body(props: OrderViewProps) {
   );
 }
 
+/** The status colour as a subtle wash behind a card's header. */
+const statusTint = ({ color }: { color: string }) =>
+  `color-mix(in oklch, ${color} 16%, transparent)`;
+
 /**
- * The bare card: the header (tinted by `tone`, else ruled off), then each part under one thin
+ * The bare card: the header (washed in its status colour when it has a tone, else by the tone;
+ * without a tone ruled off), then each part under one thin
  * rule, never two, and nothing under the last.
  */
 function BareOrderView({ actions, ...props }: OrderViewProps & { actions: ReactNode }) {
@@ -100,9 +105,17 @@ function BareOrderView({ actions, ...props }: OrderViewProps & { actions: ReactN
         className={cn(
           "flex items-start justify-between gap-2",
           tone
-            ? cn("-mx-3.5 -mt-3.5 px-3.5 pt-3 pb-2.5", bookingTintVariants({ tone }))
+            ? cn(
+                "-mx-3.5 -mt-3.5 px-3.5 pt-3 pb-2.5",
+                status?.color ? null : bookingTintVariants({ tone }),
+              )
             : "border-b border-border/60 pb-2",
         )}
+        style={
+          tone && status?.color
+            ? { backgroundColor: statusTint({ color: status.color }) }
+            : undefined
+        }
       >
         <Header {...props} />
         {actions}

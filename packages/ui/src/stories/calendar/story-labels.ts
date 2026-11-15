@@ -81,6 +81,7 @@ export const STORY_LABELS: CalendarLabels = {
     guests: "Guests",
     value: "Value",
     exclVat: "excl. VAT",
+    order: "Order",
     hold: "Hold",
     minutes: ({ count }) => `${count} min`,
     seeOrder: "See order",

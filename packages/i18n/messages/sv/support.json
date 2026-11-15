@@ -22,7 +22,7 @@
           },
           "myWork": {
             "question": "Vad ser jag när jag loggar in?",
-            "answer": "Du landar på **Mitt arbete**: en tidslinje över alla bokningar som rör dig, uppdelad i **I dag**, **Den här veckan**, **Nästa vecka** och **Senare**, med ett kort per bokning och dag. Scrolla nedåt så läses senare veckor in av sig själva.\nKantlinjen visar läget: röd när något blockerar, gul när du har något att göra, streckad när bokningen bara är preliminär och blekt när den är över. Klicka på ett kort för att öppna bokningen, eller på etiketten längst ned för att gå direkt till det som behöver göras."
+            "answer": "Du landar på **Mitt arbete**: en tidslinje över alla bokningar som rör dig, uppdelad i **I dag**, **Den här veckan**, **Nästa vecka** och **Senare**, med ett kort per bokning och dag. Scrolla nedåt så läses senare veckor in av sig själva.\nKortets överdel har samma färg som bokningens status, så du ser direkt om den är bekräftad, har fått en offert och så vidare. En randig röd kant betyder att något blockerar, randig gul att du har något att göra, streckad att bokningen bara är preliminär, och ett blekt kort är över. Klicka på ett kort för att öppna bokningen, eller på etiketten längst ned för att gå direkt till det som behöver göras."
           },
           "exampleOrders": {
             "question": "Vad är exempelbokningarna på min tavla?",

@@ -243,6 +243,7 @@
       "guests": "Gäster",
       "value": "Värde",
       "exclVat": "exkl. moms",
+      "order": "Order",
       "hold": "Reservation",
       "minutes": "{count} min",
       "seeOrder": "Visa bokningen",
