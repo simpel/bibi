@@ -225,6 +225,10 @@
           "findSettings": {
             "question": "Where do I find the settings?",
             "answer": "Click Administration in the sidebar. The start page shows every settings page you have access to, grouped into Organization, Catalog, Orders and Money & connections.\nClick a card to open the page, or click one of the parts listed on it to jump straight there."
+          },
+          "collapseSidebar": {
+            "question": "Can I make the sidebar smaller?",
+            "answer": "Yes. Click the panel button at the top left, next to the page title, and the sidebar shrinks to a column of icons. Hover over an icon to see its name.\nA red dot on the Inbox icon means there are open messages. Click the button again to show the full sidebar."
           }
         }
       },

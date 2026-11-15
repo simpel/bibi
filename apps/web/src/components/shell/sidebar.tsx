@@ -26,18 +26,27 @@ export type AppSidebarProps = {
  * The app's shadcn sidebar (ADR 0036): the assistant on top, then the daily work in collapsible
  * Work and Catalog groups; the Administration entry, the superadmin card (sidebar-06) and the
  * account at the bottom. Inside `/admin/*` the middle swaps to the administration area's own
- * groups. A sheet on mobile, hidden or shown with the top bar's trigger.
+ * groups. A sheet on mobile; on desktop the top bar's trigger collapses it to icons, each with a
+ * tooltip.
  */
 export function AppSidebar({ organizationId, user, access }: AppSidebarProps) {
   const common = useTranslations("common");
   const nav = useTranslations("nav");
   const shell = useTranslations("shell");
   return (
-    <Sidebar mobileTitle={nav("openMenu")} mobileDescription={nav("openMenu")}>
+    <Sidebar collapsible="icon" mobileTitle={nav("openMenu")} mobileDescription={nav("openMenu")}>
       <SidebarHeader className="flex flex-col items-stretch gap-2">
-        <Wordmark size="lg" className="my-4" name={common("appName")}>
-          {common("appName")}
-        </Wordmark>
+        <Wordmark
+          size="lg"
+          className="my-4 group-data-[collapsible=icon]:hidden"
+          label={common("appName")}
+        />
+        <Wordmark
+          size="md"
+          variant="initial"
+          className="mx-auto my-5 hidden group-data-[collapsible=icon]:block"
+          label={common("appName")}
+        />
         <SidebarMode admin={null}>
           <NewOrderButton access={access} />
         </SidebarMode>

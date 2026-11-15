@@ -2,7 +2,7 @@
 
 import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactElement } from "react";
 import { cn } from "../../lib/cn";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip/tooltip";
 import { useSidebar } from "./sidebar-context";
@@ -33,6 +33,28 @@ export type SidebarMenuButtonProps = ComponentProps<"button"> &
     tooltip?: string | ComponentProps<typeof TooltipContent>;
   };
 
+export type SidebarTooltipProps = {
+  tooltip: string | ComponentProps<typeof TooltipContent>;
+  children: ReactElement;
+};
+
+/** A tooltip to the right of a sidebar control, shown only while the sidebar is collapsed to icons. */
+export function SidebarTooltip({ tooltip, children }: SidebarTooltipProps) {
+  const { isMobile, state } = useSidebar();
+  const tooltipProps = typeof tooltip === "string" ? { children: tooltip } : tooltip;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent
+        side="right"
+        align="center"
+        hidden={state !== "collapsed" || isMobile}
+        {...tooltipProps}
+      />
+    </Tooltip>
+  );
+}
+
 export function SidebarMenuButton({
   asChild = false,
   isActive = false,
@@ -43,8 +65,6 @@ export function SidebarMenuButton({
   ...props
 }: SidebarMenuButtonProps) {
   const Comp = asChild ? Slot.Root : "button";
-  const { isMobile, state } = useSidebar();
-
   const button = (
     <Comp
       data-slot="sidebar-menu-button"
@@ -56,17 +76,5 @@ export function SidebarMenuButton({
     />
   );
   if (!tooltip) return button;
-
-  const tooltipProps = typeof tooltip === "string" ? { children: tooltip } : tooltip;
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>{button}</TooltipTrigger>
-      <TooltipContent
-        side="right"
-        align="center"
-        hidden={state !== "collapsed" || isMobile}
-        {...tooltipProps}
-      />
-    </Tooltip>
-  );
+  return <SidebarTooltip tooltip={tooltip}>{button}</SidebarTooltip>;
 }

@@ -8,9 +8,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@bibi/ui";
 import { ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { type ReactNode, useState } from "react";
 import { Link } from "@/lib/navigation";
 import { NavBadge } from "./nav-badge";
 import type { NavItem } from "./nav-items";
@@ -63,7 +65,21 @@ export function NavGroup({ heading, items, current, defaultOpen = true }: NavGro
     (item) => item.href === current || item.children?.some((child) => child.href === current),
   );
   return (
-    <Collapsible defaultOpen={defaultOpen || containsActive} className="group/collapsible">
+    <HeadedNavGroup heading={heading} defaultOpen={defaultOpen || containsActive}>
+      {links}
+    </HeadedNavGroup>
+  );
+}
+
+type HeadedNavGroupProps = { heading: string; defaultOpen: boolean; children: ReactNode };
+
+/** Collapsed to icons the heading is gone, so a closed group still shows its icons then. */
+function HeadedNavGroup({ heading, defaultOpen, children: links }: HeadedNavGroupProps) {
+  const { state, isMobile } = useSidebar();
+  const [open, setOpen] = useState(defaultOpen);
+  const iconsOnly = state === "collapsed" && !isMobile;
+  return (
+    <Collapsible open={open || iconsOnly} onOpenChange={setOpen} className="group/collapsible">
       <SidebarGroup>
         <SidebarGroupLabel asChild>
           <CollapsibleTrigger>

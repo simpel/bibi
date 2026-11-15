@@ -4,6 +4,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  SidebarTooltip,
 } from "@bibi/ui";
 import { ChevronDownIcon, MailIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -24,20 +25,31 @@ export function NewOrderButton({ access }: NewOrderButtonProps) {
   const t = useTranslations("nav");
   if (!canPermission({ permissions: access.permissions, permission: "order:write" })) return null;
   const main = (
-    <Button asChild className="flex-1 justify-start">
-      <Link href={ROUTES.orderNew}>
-        <PlusIcon />
-        {t("newOrder")}
-      </Link>
-    </Button>
+    <SidebarTooltip tooltip={t("newOrder")}>
+      <Button
+        asChild
+        className="flex-1 justify-start group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:flex-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0"
+      >
+        <Link href={ROUTES.orderNew} aria-label={t("newOrder")}>
+          <PlusIcon />
+          <span className="group-data-[collapsible=icon]:hidden">{t("newOrder")}</span>
+        </Link>
+      </Button>
+    </SidebarTooltip>
   );
   if (!access.canDraftFromMessage) return <div className="flex">{main}</div>;
   return (
     <div className="flex gap-px">
-      <div className="flex flex-1 [&>*]:rounded-r-none">{main}</div>
+      <div className="flex flex-1 group-data-[collapsible=icon]:flex-none [&>*]:rounded-r-none group-data-[collapsible=icon]:[&>*]:rounded-r-md">
+        {main}
+      </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size="icon" className="rounded-l-none" aria-label={t("newOrderOptions")}>
+          <Button
+            size="icon"
+            className="rounded-l-none group-data-[collapsible=icon]:hidden"
+            aria-label={t("newOrderOptions")}
+          >
             <ChevronDownIcon />
           </Button>
         </DropdownMenuTrigger>
