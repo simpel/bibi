@@ -2,7 +2,7 @@
 
 import type { CalendarLabels } from "../availability-calendar/calendar-labels";
 import type { AssetBooking } from "../availability-calendar/calendar-types";
-import { PinnedValue } from "../availability-calendar/pinned-facts";
+import { ColorSwatch } from "../color-swatch/color-swatch";
 import { type KeyFact, KeyFacts } from "../key-facts/key-facts";
 import type { OrderViewFact } from "../order-view/order-view";
 
@@ -23,7 +23,7 @@ export function openable({
 }
 
 export type BookingStatsInput = BookingExtrasInput & {
-  /** Adds quantity, time and the booked thing to the value. */
+  /** Only the detailed card shows stats. */
   detailed: boolean;
   time?: string | undefined;
   /** Makes every stat open the booking's order. */
@@ -34,8 +34,8 @@ export type BookingStatsInput = BookingExtrasInput & {
 };
 
 /**
- * The booking's figures as tiny stats: what it is worth and, when detailed, its order number,
- * guests, when and where.
+ * The booking's figures as tiny stats when detailed: its state (colour and name), guests, when
+ * and where. Its value is not one: the order's total is among the facts.
  */
 export function BookingStats({
   booking,
@@ -47,29 +47,23 @@ export function BookingStats({
   onOpen,
 }: BookingStatsInput) {
   const { pinCard } = labels;
-  const hasValue = Boolean(booking.value);
-  const reference = detailed ? (booking.reference ?? booking.order) : undefined;
-  const hasMore = detailed && Boolean(reference || time || resource || booking.headcount);
-  if (!hasValue && !hasMore) return null;
+  if (!detailed) return null;
   const facts: KeyFact[] = [];
-  if (reference) {
-    const value = reference.startsWith("#") ? reference : `#${reference}`;
-    facts.push({ label: pinCard.order, value, onSelect: onOpen });
+  const { state } = booking;
+  if (state.name) {
+    const value = (
+      <span className="inline-flex items-center gap-1.5">
+        <ColorSwatch color={state.color} />
+        {state.name}
+      </span>
+    );
+    facts.push({ label: pinCard.state, value, onSelect: onOpen });
   }
-  if (booking.value) {
-    facts.push({
-      label: pinCard.value,
-      value: <PinnedValue booking={booking} />,
-      title: pinCard.exclVat,
-      onSelect: onOpen,
-    });
-  }
-  if (detailed && booking.headcount) {
+  if (booking.headcount) {
     facts.push({ label: pinCard.guests, value: booking.headcount, onSelect: onOpen });
   }
-  if (detailed && time)
-    facts.push({ label: pinCard.when, preheader: date, value: time, onSelect: onOpen });
-  if (detailed && resource) {
+  if (time) facts.push({ label: pinCard.when, preheader: date, value: time, onSelect: onOpen });
+  if (resource) {
     facts.push({
       label: pinCard.where,
       value: resource,
@@ -78,7 +72,7 @@ export function BookingStats({
       onSelect: onOpen,
     });
   }
-  return <KeyFacts size="sm" facts={facts} />;
+  return facts.length > 0 ? <KeyFacts size="sm" facts={facts} /> : null;
 }
 
 /** The booking's buffers, for the expanded pinned card. */

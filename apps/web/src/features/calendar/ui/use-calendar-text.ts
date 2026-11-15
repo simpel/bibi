@@ -80,7 +80,9 @@ function bookingText({ t, number }: TextInput) {
     pinCard: {
       ...{ when: t("pinCard.when"), where: t("pinCard.where"), state: t("pinCard.state") },
       ...{ guests: t("pinCard.guests"), value: t("pinCard.value"), exclVat: t("pinCard.exclVat") },
-      ...{ hold: t("pinCard.hold"), order: t("pinCard.order") },
+      hold: t("pinCard.hold"),
+      openIssues: ({ count }: { count: string }) =>
+        t("pinCard.openIssues", { count: Number(count) }),
       minutes: ({ count }: { count: number }) => t("pinCard.minutes", { count }),
       seeOrder: t("pinCard.seeOrder"),
       minimize: ({ name }: { name: string }) => t("pinCard.minimize", { name }),

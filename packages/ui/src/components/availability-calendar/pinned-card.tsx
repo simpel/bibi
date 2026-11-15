@@ -2,7 +2,7 @@
 
 import { Maximize2Icon, Minimize2Icon, SquareArrowOutUpRightIcon, XIcon } from "lucide-react";
 import { cn } from "../../lib/cn";
-import { type BookingTone, bookingToneVariants, toneOfLine } from "../booking-tone/booking-tone";
+import { bookingToneVariants, type CardIssue, toneOfLine } from "../booking-tone/booking-tone";
 import { Button } from "../button/button";
 import { CalendarHoverDetails } from "../cursor-hover/cursor-hover-details";
 import type { OrderViewFact } from "../order-view/order-view-facts";
@@ -88,13 +88,16 @@ function MinimizedHeader(props: PinnedCardProps) {
   );
 }
 
-type PinnedToneInput = { booking: PinnedBooking; facts: readonly OrderViewFact[] | undefined };
+type PinnedIssuesInput = {
+  facts: readonly OrderViewFact[] | undefined;
+  openIssues: (input: { count: string }) => string;
+};
 
-/** The booking's own tone; open issues on its order ask for attention unless it already clashes. */
-function pinnedTone({ booking, facts }: PinnedToneInput): BookingTone {
-  const tone = toneOfLine({ line: booking });
-  const issues = facts?.some((fact) => fact.key === "issues" && fact.tone === "warning");
-  return tone !== "conflict" && issues ? "action" : tone;
+/** The order's open issues as a warning badge, once its facts are loaded. */
+function pinnedIssues({ facts, openIssues }: PinnedIssuesInput): CardIssue[] {
+  const fact = facts?.find((item) => item.key === "issues" && item.tone === "warning");
+  if (!fact || typeof fact.value !== "string") return [];
+  return [{ key: "open-issues", level: "warning", label: openIssues({ count: fact.value }) }];
 }
 
 /**
@@ -105,7 +108,9 @@ export function PinnedCard(props: PinnedCardProps) {
   const { booking, minimized, onOpen, formatDate, useExtraFacts } = props;
   const extraFacts = useExtraFacts?.({ booking, enabled: !minimized });
   const dateStr = formatDay({ date: booking.date, format: formatDate, year: true });
-  const tone = pinnedTone({ booking, facts: extraFacts });
+  const labels = useCalendarLabels();
+  const issues = pinnedIssues({ facts: extraFacts, openIssues: labels.pinCard.openIssues });
+  const tone = toneOfLine({ line: booking });
 
   return (
     <div
@@ -125,6 +130,7 @@ export function PinnedCard(props: PinnedCardProps) {
           detailed
           extraFacts={extraFacts}
           tone={tone}
+          issues={issues}
           headerActions={<Controls {...props} />}
         />
       )}

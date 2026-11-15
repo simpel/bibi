@@ -78,9 +78,9 @@ export type CalendarLabels = {
     guests: string;
     value: string;
     exclVat: string;
-    /** The order number stat. */
-    order: string;
     hold: string;
+    /** A warning badge for the order's open issues, e.g. "1 open issue". */
+    openIssues: (input: { count: string }) => string;
     minutes: (input: { count: number }) => string;
     seeOrder: string;
     minimize: (input: { name: string }) => string;

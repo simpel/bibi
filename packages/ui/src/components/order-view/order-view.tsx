@@ -1,7 +1,8 @@
 import { OctagonAlertIcon, TriangleAlertIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "../../lib/cn";
-import { type BookingTone, bookingTintVariants, issueOfTone } from "../booking-tone/booking-tone";
+import { Badge } from "../badge/badge";
+import type { CardIssue } from "../booking-tone/booking-tone";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../card/card";
 import { StatusBadge } from "../data-table/data-table-column-helpers";
 import { type OrderViewFact, OrderViewFacts } from "./order-view-facts";
@@ -38,27 +39,26 @@ export type OrderViewProps = {
   headerActions?: ReactNode;
   /** No card chrome, for popovers and trays that bring their own surface. */
   bare?: boolean;
-  /**
-   * In `bare`, the card's state as a subtle wash behind the header, edge to edge: the surface
-   * must have `p-3.5` and clip its corners (`overflow-hidden`).
-   */
-  tone?: BookingTone | undefined;
+  /** What is wrong, as error or warning badges on their own row above the title. */
+  issues?: readonly CardIssue[] | undefined;
   className?: string;
 };
 
-/** An error (blocked) or a warning (something to fix) before a card's title. */
-function IssueIcon({ tone }: { tone: BookingTone | undefined }) {
-  const issue = issueOfTone({ tone });
-  if (!issue) return null;
-  const Icon = issue === "error" ? OctagonAlertIcon : TriangleAlertIcon;
-  const color = issue === "error" ? "text-destructive" : "text-warning";
-  return <Icon aria-hidden className={cn("mr-1 mb-0.5 inline size-4 align-middle", color)} />;
+/** An issue in words: red with a stop sign when it blocks, amber with a triangle to fix. */
+function IssueBadge({ issue }: { issue: CardIssue }) {
+  const error = issue.level === "error";
+  const Icon = error ? OctagonAlertIcon : TriangleAlertIcon;
+  return (
+    <Badge variant={error ? "destructive" : "warning"} className="gap-1">
+      <Icon aria-hidden className="size-3" />
+      {issue.label}
+    </Badge>
+  );
 }
 
-function Header({ title, reference, eyebrow, subtitle, bare, tone }: OrderViewProps) {
+function Header({ title, reference, eyebrow, subtitle, bare }: OrderViewProps) {
   const heading = (
     <>
-      <IssueIcon tone={tone} />
       <span>{title}</span>
       {reference ? (
         <span className="ml-1.5 font-normal text-muted-foreground tabular-nums">{reference}</span>
@@ -99,35 +99,17 @@ function Body(props: OrderViewProps) {
   );
 }
 
-/**
- * The status colour as a subtle wash behind a card's header, out to the card's edge. Solid (mixed
- * into the card colour), so an edge drawn under it never shows through.
- */
-const statusHeader = ({ color }: { color: string }) => ({
-  backgroundColor: `color-mix(in oklch, ${color} 16%, var(--card))`,
-});
-
-/**
- * The bare card: the header (washed in its status colour when it has a tone, else by the tone;
- * without a tone ruled off), then each part under one thin
- * rule, never two, and nothing under the last.
- */
-function BareOrderView({ actions, ...props }: OrderViewProps & { actions: ReactNode }) {
-  const { highlight, meta, facts, hidden = "–", notes, warnings, footer, tone, status } = props;
+/** The bare card: the header ruled off, then each part under one thin rule, nothing under the last. */
+function BareOrderView({
+  actions,
+  issueRow,
+  ...props
+}: OrderViewProps & { actions: ReactNode; issueRow: ReactNode }) {
+  const { highlight, meta, facts, hidden = "–", notes, warnings, footer, status } = props;
   return (
     <div data-slot="order-view" className={cn("grid text-xs", props.className)}>
-      <div
-        className={cn(
-          "flex items-start justify-between gap-2",
-          tone
-            ? cn(
-                "-mx-3.5 -mt-3.5 rounded-t-xl px-3.5 pt-3 pb-2.5",
-                status?.color ? null : bookingTintVariants({ tone }),
-              )
-            : "border-b border-border/60 pb-2",
-        )}
-        style={tone && status?.color ? statusHeader({ color: status.color }) : undefined}
-      >
+      {issueRow ? <div className="pb-2">{issueRow}</div> : null}
+      <div className="flex items-start justify-between gap-2 border-b border-border/60 pb-2">
         <Header {...props} />
         {actions}
       </div>
@@ -145,25 +127,36 @@ function BareOrderView({ actions, ...props }: OrderViewProps & { actions: ReactN
 
 /** One order at a glance (`order.view`): status, party, people, program totals and balance. */
 export function OrderView(props: OrderViewProps) {
-  const { footer, headerActions, bare, className, status, meta } = props;
+  const { footer, headerActions, bare, className, status, meta, issues } = props;
   // In `bare` the badge sits on the first meta row, unless there is none.
   const badge =
     status && (!bare || !meta?.length) ? (
       <StatusBadge label={status.name} color={status.color} />
     ) : null;
+  // Issues get their own row above the title, so the title row keeps its width.
+  const issueRow = issues?.length ? (
+    <div data-slot="order-view-issues" className="relative z-10 flex flex-wrap gap-1">
+      {issues.map((issue) => (
+        <IssueBadge key={issue.key} issue={issue} />
+      ))}
+    </div>
+  ) : null;
   const actions =
     badge || headerActions ? (
-      <div className="relative z-10 flex shrink-0 items-center gap-1">
+      <div className="relative z-10 flex shrink-0 flex-wrap items-center justify-end gap-1">
         {badge}
         {headerActions}
       </div>
     ) : null;
 
-  if (bare) return <BareOrderView {...props} actions={actions} />;
+  if (bare) return <BareOrderView {...props} actions={actions} issueRow={issueRow} />;
 
   return (
     <Card data-slot="order-view" className={cn("shadow-none", className)}>
-      <CardHeader className="flex-row items-start justify-between gap-2 p-4 pb-2">
+      {issueRow ? <div className="px-4 pt-4">{issueRow}</div> : null}
+      <CardHeader
+        className={cn("flex-row items-start justify-between gap-2 p-4 pb-2", issueRow && "pt-2")}
+      >
         <Header {...props} />
         {actions}
       </CardHeader>

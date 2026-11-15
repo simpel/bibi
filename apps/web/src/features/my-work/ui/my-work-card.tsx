@@ -8,7 +8,7 @@ import { orderRoute } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { cardTone } from "../lib/card-tone";
 import { toBooking } from "../lib/to-booking";
-import { MyWorkFlag } from "./my-work-flag";
+import { useFlagIssues } from "./my-work-flag";
 import type { MyWorkCardWireish } from "./my-work-wireish";
 
 /** Everything about the order when the card is expanded (its day is already on the card). */
@@ -27,8 +27,8 @@ export type MyWorkCardProps = { card: MyWorkCardWireish; now: Date | string; tim
 
 /**
  * One order on one day, the same card as the pinned and hover calendar cards (spec: home): its
- * tone as the outline and the header's wash, pin and expand at the top right, the most urgent
- * flag at the bottom. Expanding loads the order's facts; a reload keeps it expanded.
+ * flags as error and warning badges in the header, its state as the first stat, Live at the
+ * bottom. Expanding loads the order's facts; a reload keeps it expanded.
  */
 export function MyWorkCard({ card, now, timeZone }: MyWorkCardProps) {
   const t = useTranslations("myWork");
@@ -42,12 +42,12 @@ export function MyWorkCard({ card, now, timeZone }: MyWorkCardProps) {
   const facts = useOrderFacts({ orderId: card.orderId, enabled: expanded, keys: EXPANDED });
   const tone = cardTone({ card, now: new Date(now) });
   const [reason] = card.reasons;
-  const [flag, ...rest] = card.flags;
+  const issues = useFlagIssues({ flags: card.flags, timeZone, dates });
   const live = tone === "live";
   return (
     <CalendarLabelsProvider labels={labels}>
       <OrderDayCard
-        booking={toBooking({ card, timeZone })}
+        booking={toBooking({ card, timeZone, issues })}
         href={orderRoute({ id: card.orderId })}
         tone={tone}
         date={
@@ -62,21 +62,11 @@ export function MyWorkCard({ card, now, timeZone }: MyWorkCardProps) {
         onToggle={() => setExpanded(!expanded)}
         facts={facts}
         footer={
-          live || flag ? (
-            <div className="flex flex-wrap items-center gap-2">
-              {live ? (
-                <span className="inline-flex items-center gap-1.5 font-semibold text-[10px] text-success uppercase tracking-wide">
-                  <span aria-hidden className="size-1.5 animate-pulse rounded-full bg-success" />
-                  {t("live")}
-                </span>
-              ) : null}
-              {flag ? (
-                <MyWorkFlag flag={flag} orderId={card.orderId} timeZone={timeZone} dates={dates} />
-              ) : null}
-              {rest.length > 0 ? (
-                <span className="text-muted-foreground">{t("more", { count: rest.length })}</span>
-              ) : null}
-            </div>
+          live ? (
+            <span className="inline-flex items-center gap-1.5 font-semibold text-[10px] text-success uppercase tracking-wide">
+              <span aria-hidden className="size-1.5 animate-pulse rounded-full bg-success" />
+              {t("live")}
+            </span>
           ) : undefined
         }
       />

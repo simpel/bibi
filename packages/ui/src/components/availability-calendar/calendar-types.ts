@@ -1,3 +1,4 @@
+import type { CardIssue } from "../booking-tone/booking-tone";
 /**
  * Who reads the calendar. Internal = venue staff (holds, states, buffers, staffing). External =
  * the customer (only what they bought, at the times they were sold).
@@ -54,6 +55,8 @@ export type CalendarLine = {
   quantity: number;
   /** A soft hold another hard hold or block on the same asset overlaps (ADR 0044): it loses. */
   blocked?: boolean;
+  /** What is wrong, said in words, as badges in the card's header (blocked adds its own). */
+  issues?: readonly CardIssue[];
   /** Set on the parts of a bundle; the bundle line frames them. */
   parentId?: string;
   /** Staff and equipment allocations: never on customer documents (ADR 0059). */

@@ -16,7 +16,7 @@ import type {
 } from "../availability-calendar/calendar-types";
 import { type PinnedBooking, usePins } from "../availability-calendar/pins-context";
 import { Badge } from "../badge/badge";
-import type { BookingTone } from "../booking-tone/booking-tone";
+import type { BookingTone, CardIssue } from "../booking-tone/booking-tone";
 import { OrderView, type OrderViewFact, type OrderViewMetaRow } from "../order-view/order-view";
 import { BookingStats, bookingFacts, openable } from "./booking-extras";
 import { cleanTitle } from "./clean-title";
@@ -54,8 +54,10 @@ export type CalendarHoverDetailsProps = {
   extraFacts?: readonly OrderViewFact[];
   /** No facts list, e.g. a collapsed card on My work. */
   hideFacts?: boolean;
-  /** The card's state as a wash behind the header (`OrderView` bare). */
+  /** The card's tone; its surface draws the outline (`bookingToneVariants`), not this. */
   tone?: BookingTone | undefined;
+  /** Issues besides the booking's own (`issues`, and blocked), as badges on a row above the title. */
+  issues?: readonly CardIssue[] | undefined;
   /** The title link covers the whole card, which needs `group relative` (hover underlines it). */
   stretchTitle?: boolean;
 };
@@ -256,6 +258,17 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
     meta.push({ key: "place", icon: MapPinIcon, text: place });
   }
 
+  // The detailed card shows its state as the first stat, not as a badge.
+  const statsShowState = Boolean(props.detailed && booking && labels);
+  // Blocked says so unless the booking's own issues already name what blocks it.
+  const own = booking?.issues ?? [];
+  const saysBlocked = own.some((issue) => issue.level === "error");
+  const blocked: CardIssue[] =
+    booking?.blocked && labels && !saysBlocked
+      ? [{ key: "blocked", level: "error", label: labels.blocked }]
+      : [];
+  const issues = [...blocked, ...own, ...(props.issues ?? [])];
+
   return (
     <OrderView
       bare
@@ -263,10 +276,10 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
       title={
         <TitleLink href={href} onOpen={onOpen} title={displayTitle} stretch={props.stretchTitle} />
       }
-      tone={props.tone}
+      issues={issues}
       reference={orderRef}
       subtitle={sub}
-      status={state ?? null}
+      status={statsShowState ? null : (state ?? null)}
       meta={meta}
       notes={notes}
       highlight={

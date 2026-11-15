@@ -1,5 +1,5 @@
 import { toZonedParts } from "@bibi/core/schemas";
-import type { PinnedBooking } from "@bibi/ui";
+import type { CardIssue, PinnedBooking } from "@bibi/ui";
 import type { MyWorkCardWireish } from "../ui/my-work-wireish";
 
 const HOLDS = { HARD: "hard", SOFT: "soft" } as const;
@@ -9,14 +9,19 @@ const clock = ({ instant, timeZone }: { instant: Date | string; timeZone: string
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 };
 
-export type ToBookingInput = { card: MyWorkCardWireish; timeZone: string };
+export type ToBookingInput = {
+  card: MyWorkCardWireish;
+  timeZone: string;
+  /** The card's flags in words, shown as badges in its header. */
+  issues?: readonly CardIssue[];
+};
 
 /**
  * A My work card as a calendar booking, so it renders and pins like one (spec: home): the order's
  * day as the span, its places as the asset, its status as the state with the day's hold, blocked
  * when a hard hold overlaps it. No value: My work shows no money.
  */
-export function toBooking({ card, timeZone }: ToBookingInput): PinnedBooking {
+export function toBooking({ card, timeZone, issues }: ToBookingInput): PinnedBooking {
   const place = card.places?.join(", ") || null;
   return {
     id: card.key,
@@ -38,6 +43,7 @@ export function toBooking({ card, timeZone }: ToBookingInput): PinnedBooking {
       hold: card.hold ? HOLDS[card.hold] : "none",
     },
     blocked: card.flags.some((flag) => flag.kind === "HARD_CLASH"),
+    ...(issues?.length ? { issues } : {}),
     quantity: 1,
     order: String(card.reference),
     reference: String(card.reference),
