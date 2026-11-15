@@ -1,4 +1,5 @@
 import { AppError, err, ok, type Result } from "@bibi/core";
+import { getLogger } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
 import { getAuth } from "../get-auth";
@@ -16,15 +17,43 @@ const RedirectBodySchema = z
   .object({ url: z.string().min(1) })
   .or(z.object({ redirect: z.string() }));
 
-const failed = ({ message }: { message: string }) =>
+const ErrorBodySchema = z.object({ error: z.string().min(1) });
+
+/** What the authorize endpoint answered: where it redirects, or the OAuth error it gave. */
+type AuthorizeOutcome = { target: string | null; error: string | null };
+
+const signInRequired = ({ message }: { message: string }) =>
   err({ error: new AppError({ code: "UNAUTHENTICATED", message }) });
 
-const redirectTarget = async ({ response }: { response: Response }): Promise<string | null> => {
+const redirectInBody = ({ body }: { body: unknown }): string | null => {
+  const parsed = RedirectBodySchema.safeParse(body);
+  if (!parsed.success) return null;
+  return "url" in parsed.data ? parsed.data.url : parsed.data.redirect;
+};
+
+const readOutcome = async ({ response }: { response: Response }): Promise<AuthorizeOutcome> => {
   const location = response.headers.get("location");
-  if (location) return location;
-  const body = RedirectBodySchema.safeParse(await response.json().catch(() => null));
-  if (!body.success) return null;
-  return "url" in body.data ? body.data.url : body.data.redirect;
+  const body: unknown = location ? null : await response.json().catch(() => null);
+  const target = location ?? redirectInBody({ body });
+  const queryError = target ? new URL(target, "http://localhost").searchParams.get("error") : null;
+  const bodyError = ErrorBodySchema.safeParse(body);
+  return { target, error: queryError ?? (bodyError.success ? bodyError.data.error : null) };
+};
+
+/**
+ * The provider refused the client itself (redirect URI not registered, resource not linked):
+ * a server misconfiguration, not the user's session, so it is INTERNAL and logged.
+ */
+const clientRefused = ({ error, client }: { error: string; client: ResolvedClient }) => {
+  getLogger().error({
+    event: "auth.firstPartyAuthorizeFailed",
+    oauthError: error,
+    clientId: client.clientId,
+    redirectUri: client.redirectUri,
+    resource: mcpResourceUrl(),
+  });
+  const message = `The first-party OAuth client was refused (${error}); check its provisioning`;
+  return err({ error: new AppError({ code: "INTERNAL", message }) });
 };
 
 /**
@@ -38,7 +67,7 @@ export async function authorizeCode({
   challenge,
 }: AuthorizeCodeInput): Promise<Result<string>> {
   const cookie = headers.get("cookie");
-  if (!cookie) return failed({ message: "Sign in required" });
+  if (!cookie) return signInRequired({ message: "Sign in required" });
   const { clientId, redirectUri, scope } = client;
   const query = new URLSearchParams({
     response_type: "code",
@@ -52,11 +81,10 @@ export async function authorizeCode({
   });
   const url = authEndpoint({ path: `/oauth2/authorize?${query}` });
   const response = await getAuth().handler(new Request(url, { headers: { cookie } }));
-  const target = await redirectTarget({ response });
+  const { target, error } = await readOutcome({ response });
   const parsed = target ? new URL(target, redirectUri) : null;
   const code = parsed?.searchParams.get("code");
-  if (!parsed || !code || !parsed.toString().startsWith(redirectUri)) {
-    return failed({ message: "Could not authorize the first-party client for this session" });
-  }
-  return ok({ value: code });
+  if (parsed && code && parsed.toString().startsWith(redirectUri)) return ok({ value: code });
+  if (error) return clientRefused({ error, client });
+  return signInRequired({ message: "Could not authorize the first-party client for this session" });
 }

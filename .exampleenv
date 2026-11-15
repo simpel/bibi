@@ -15,7 +15,8 @@ BETTER_AUTH_SECRET=
 BETTER_AUTH_URL=http://localhost:3330
 
 # --- Origins and ports. *_ORIGIN is scheme://host[:port] with no path; *_URL is used as written;
-# *_BASE_URL is an API root. ---
+# *_BASE_URL is an API root. Local https: set WEB_ORIGIN and BETTER_AUTH_URL to https://localhost:3330
+# and `pnpm dev` serves https (mkcert); needed for providers that only redirect to https (Visma). ---
 WEB_ORIGIN=http://localhost:3330
 # MCP's origin; its endpoint is <MCP_ORIGIN>/mcp, served by the web app (ADR 0104). Unset = WEB_ORIGIN.
 # Production: https://mcp.heybibi.se

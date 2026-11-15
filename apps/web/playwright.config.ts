@@ -35,6 +35,8 @@ export default defineConfig({
     : [["list"]],
   use: {
     baseURL: WEB_ORIGIN,
+    // A local https dev server (mkcert) is reused as is; CI runs on http.
+    ignoreHTTPSErrors: true,
     locale: "sv-SE",
     trace: "retain-on-failure",
     launchOptions: {

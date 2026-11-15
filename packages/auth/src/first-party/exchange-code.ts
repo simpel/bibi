@@ -1,4 +1,5 @@
 import { AppError, err, ok, type Result } from "@bibi/core";
+import { getLogger } from "@bibi/logger";
 import { z } from "zod";
 import { getAuth } from "../get-auth";
 import { mcpResourceUrl } from "../urls";
@@ -31,8 +32,14 @@ export async function exchangeCode({
   const response = await getAuth().handler(request);
   const parsed = TokenResponseSchema.safeParse(await response.json().catch(() => null));
   if (!response.ok || !parsed.success) {
+    // The code was just issued for a valid session, so a refusal here is server-side.
+    getLogger().error({
+      event: "auth.firstPartyTokenFailed",
+      status: response.status,
+      clientId: client.clientId,
+    });
     const message = "First-party token request failed";
-    return err({ error: new AppError({ code: "UNAUTHENTICATED", message }) });
+    return err({ error: new AppError({ code: "INTERNAL", message }) });
   }
   const expiresAt = Date.now() + parsed.data.expires_in * 1000;
   return ok({ value: { accessToken: parsed.data.access_token, expiresAt } });

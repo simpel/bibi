@@ -113,6 +113,33 @@ describe("getFirstPartyAccessToken (assistant)", () => {
       }),
     ).toBe("UNAUTHENTICATED");
   });
+
+  it("fails INTERNAL, not sign-in, when the client is registered for another origin", async () => {
+    clearTokenCache();
+    const user = await signUp();
+    const organizationId = await createOrg({ headers: user.headers });
+    const caller = { userId: user.userId, organizationId };
+    const db = getDb();
+    const clientId = getEnv().WEB_OAUTH_CLIENT_ID ?? "";
+    const before = await db.oauthClient.findUniqueOrThrow({ where: { clientId } });
+    await db.oauthClient.update({
+      where: { clientId },
+      data: { redirectUris: ["https://elsewhere.example.test/api/assistant/oauth/callback"] },
+    });
+    try {
+      const result = await getFirstPartyAccessToken({
+        client: "assistant",
+        headers: user.headers,
+        caller,
+      });
+      expect(codeOf({ result })).toBe("INTERNAL");
+    } finally {
+      await db.oauthClient.update({
+        where: { clientId },
+        data: { redirectUris: before.redirectUris },
+      });
+    }
+  });
 });
 
 describe("AI actor is a property of the first-party client", () => {
