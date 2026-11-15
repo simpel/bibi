@@ -1,94 +1,45 @@
 import {
-  type ExpiringHold,
-  ExpiringHoldSchema,
   type MyWork,
-  MyWorkMessagesSchema,
-  MyWorkNeedSchema,
-  MyWorkQuoteSchema,
-  type MyWorkRow,
-  MyWorkRowSchema,
-  MyWorkRunSheetTaskSchema,
-  type MyWorkTodo,
-  MyWorkTodoSchema,
+  type MyWorkCard,
+  MyWorkCardSchema,
+  type MyWorkFlag,
+  MyWorkFlagSchema,
   viewMyWork,
 } from "@bibi/core";
-import type { z } from "zod";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
-import { NotificationRef } from "../notification/graphql";
 
-type Need = z.infer<typeof MyWorkNeedSchema>;
-type Task = z.infer<typeof MyWorkRunSheetTaskSchema>;
-type Quote = z.infer<typeof MyWorkQuoteSchema>;
-type Messages = z.infer<typeof MyWorkMessagesSchema>;
+type Status = NonNullable<MyWorkCard["status"]>;
 
-const NeedRef = objectFromSchema<Need>({
-  name: "MyWorkNeed",
-  schema: MyWorkNeedSchema,
-  description: "A count on a run sheet row, for the line or the whole order.",
+const FlagRef = objectFromSchema<MyWorkFlag>({
+  name: "MyWorkFlag",
+  schema: MyWorkFlagSchema,
+  description: "Something on a card to look at, most urgent first.",
 });
-const RowRef = objectFromSchema<MyWorkRow>({
-  name: "MyWorkRow",
-  schema: MyWorkRowSchema,
-  omit: ["needs"],
-  description: "One thing to prepare, run or set up: an item row of a current run sheet.",
+const StatusRef = builder.objectRef<Status>("MyWorkStatus").implement({
+  description: "The order's status as the organization names and colours it.",
+  fields: (t) => ({ name: t.exposeString("name"), color: t.exposeString("color") }),
 });
-builder.objectField(RowRef, "needs", (t) =>
-  t.field({ type: [NeedRef], resolve: (row) => row.needs }),
-);
-
-const TaskRef = objectFromSchema<Task>({
-  name: "MyWorkRunSheetTask",
-  schema: MyWorkRunSheetTaskSchema,
-  description: "A run sheet to send or unblock.",
+const CardRef = objectFromSchema<MyWorkCard>({
+  name: "MyWorkCard",
+  schema: MyWorkCardSchema,
+  omit: ["status", "flags"],
+  description: "One order on one day it has lines that concern the caller.",
 });
-const QuoteRef = objectFromSchema<Quote>({
-  name: "MyWorkQuote",
-  schema: MyWorkQuoteSchema,
-  description: "A sent quote waiting on the customer.",
-});
-const MessagesRef = objectFromSchema<Messages>({
-  name: "MyWorkMessages",
-  schema: MyWorkMessagesSchema,
-  description: "Unread customer messages on one order.",
-});
-const HoldRef = objectFromSchema<ExpiringHold>({
-  name: "MyWorkExpiringHold",
-  schema: ExpiringHoldSchema,
-  description: "An order of the caller's whose expiring holds run out soon.",
-});
-
-const TotalsRef = objectFromSchema<MyWorkTodo["totals"]>({
-  name: "MyWorkTodoTotals",
-  schema: MyWorkTodoSchema.shape.totals,
-  description: "How many of each To do part there are; each list holds at most five.",
-});
-
-const TodoRef = builder.objectRef<MyWorkTodo>("MyWorkTodo").implement({
-  description: "What the caller must act on. Parts the caller may not read are null.",
-  fields: (t) => ({
-    runSheets: t.field({ type: [TaskRef], nullable: true, resolve: (todo) => todo.runSheets }),
-    expiringHolds: t.field({ type: [HoldRef], resolve: (todo) => todo.expiringHolds }),
-    quotes: t.field({ type: [QuoteRef], nullable: true, resolve: (todo) => todo.quotes }),
-    messages: t.field({ type: [MessagesRef], nullable: true, resolve: (todo) => todo.messages }),
-    totals: t.field({ type: TotalsRef, resolve: (todo) => todo.totals }),
-  }),
-});
+builder.objectFields(CardRef, (t) => ({
+  status: t.field({ type: StatusRef, nullable: true, resolve: (card) => card.status }),
+  flags: t.field({ type: [FlagRef], resolve: (card) => card.flags }),
+}));
 
 const MyWorkRef = builder.objectRef<MyWork>("MyWork").implement({
-  description: "The caller's own work for a period of days (spec: home).",
+  description: "The caller's own timeline for a period of days (spec: home).",
   fields: (t) => ({
     from: t.exposeString("from"),
     to: t.exposeString("to"),
     timeZone: t.exposeString("timeZone"),
-    rows: t.field({ type: [RowRef], nullable: true, resolve: (work) => work.rows }),
-    page: t.exposeInt("page"),
-    limit: t.exposeInt("limit"),
-    rowsTotal: t.exposeInt("rowsTotal"),
-    todo: t.field({ type: TodoRef, resolve: (work) => work.todo }),
-    unreadNotifications: t.exposeInt("unreadNotifications"),
-    notifications: t.field({ type: [NotificationRef], resolve: (work) => work.notifications }),
+    now: t.field({ type: "DateTime", resolve: (work) => work.now }),
+    cards: t.field({ type: [CardRef], nullable: true, resolve: (work) => work.cards }),
   }),
 });
 

@@ -6,39 +6,29 @@ import { requireUser } from "../../shared/require-user";
 import { addDays, compareDates, parseIsoDate } from "../../time/plain-date";
 import { resolveHorizon } from "../dashboard/horizon";
 import { periodOf } from "../finance/period";
-import { toNotificationDto } from "../notification/to-notification-dto";
-import { countUnread } from "../notification/unread";
+import { myCards } from "./cards";
 import { concernsOf } from "./concerns";
-import { myRows } from "./rows";
-import {
-  MY_WORK_MAX_DAYS,
-  MY_WORK_NOTIFICATION_LIMIT,
-  MY_WORK_TODO_DAYS,
-  MyWorkInputSchema,
-  MyWorkSchema,
-} from "./schema";
-import { todoOf } from "./todo";
-
-const DAY_MS = 86_400_000;
+import { MY_WORK_MAX_DAYS, MyWorkInputSchema, MyWorkSchema } from "./schema";
 
 /**
- * The caller's start page (spec: home): what concerns them in a period of days. A view read model
- * (ADR 0071) over the caller's own work: run sheet rows need `runSheet:read`, quotes
- * `quote:read`, customer messages `inbox:read`, customer names `customer:read`.
+ * The caller's start page (spec: home): a timeline of the orders that concern them, one card per
+ * order per day. A view read model (ADR 0071) over the caller's own work: cards need
+ * `order:read`, the customer `customer:read`, the status `pipeline:read`, places `item:read`
+ * and each flag its feature's `read`.
  */
 export const viewMyWork = defineOperation({
   name: "myWork.view",
   kind: "query",
   description:
-    "The caller's own work for a period of days (at most 14). Rows: the item rows of the current " +
-    "run sheets that concern them (what to prepare, run or set up), by time, one page at a time " +
-    "(page, limit; rowsTotal counts all), each with its counts, status and why it concerns them. " +
-    "Todo: what they must act on (run sheets to send or unblock, holds running out, quotes waiting " +
-    "on the customer, unread customer messages on their orders), at most 5 of each with totals. " +
-    "Also their latest unread notifications. Concerns = main assignee or follower of the order, " +
-    "assignee or follower of the run sheet's responsibility, staffed on the line, assignee or " +
-    "follower of the line's item, or recipient of the run sheet. Rows are null without " +
-    "runSheet:read, quotes without quote:read, messages without inbox:read.",
+    "The caller's own timeline for a period of days (at most 14): one card per order per day it " +
+    "has timed lines that concern them, by start. Each card has the order, customer, status, " +
+    "the day's span, guests, bookable places, its strongest hold (HARD, SOFT or null), why it " +
+    "concerns them and flags, most urgent first: HARD_CLASH (a soft hold overlapped by another " +
+    "order's hard hold), and, only where the caller acts on the order, RUN_SHEET (not sent, " +
+    "changed or blocked), HOLD_EXPIRES, QUOTE_WAITING and UNREAD_MESSAGES. Concerns = main " +
+    "assignee or follower of the order, assignee or follower of a responsibility on it, staffed " +
+    "on a line, assignee or follower of a line's item, or recipient of a run sheet. Cards are " +
+    "null without order:read.",
   input: MyWorkInputSchema,
   output: MyWorkSchema,
   permission: "self:read",
@@ -56,37 +46,22 @@ export const viewMyWork = defineOperation({
     }
     const horizon = await resolveHorizon({ context });
     const period = periodOf({ from, to, timeZone: horizon.timeZone });
-    const aheadEnd = Math.max(
-      period.end.getTime(),
-      horizon.now.getTime() + MY_WORK_TODO_DAYS * DAY_MS,
-    );
-    const ahead = { start: horizon.start, end: new Date(aheadEnd) };
-    const reach = {
-      start: new Date(Math.min(period.start.getTime(), ahead.start.getTime())),
-      end: ahead.end,
-    };
-    const concerns = await concernsOf({ context, userId: user.value, window: reach });
     const window = { start: period.start, end: period.end };
-    const [rows, todo, unread, latest] = await Promise.all([
-      canView({ context, feature: "runSheet" })
-        ? myRows({ context, concerns, window, page: input.page, limit: input.limit })
-        : null,
-      todoOf({ context, concerns, ahead, horizon }),
-      countUnread({ context, recipientUserId: user.value }),
-      context.db.notification.findMany({
-        where: { recipientUserId: user.value, readAt: null },
-        orderBy: { createdAt: "desc" },
-        take: MY_WORK_NOTIFICATION_LIMIT,
-      }),
-    ]);
+    const cards = canView({ context, feature: "order" })
+      ? await myCards({
+          context,
+          concerns: await concernsOf({ context, userId: user.value, window }),
+          window,
+          horizon,
+        })
+      : null;
     return ok({
       value: {
-        ...{ from: input.from, to: input.to, timeZone: horizon.timeZone },
-        rows: rows?.rows ?? null,
-        ...{ page: input.page, limit: input.limit, rowsTotal: rows?.total ?? 0 },
-        todo,
-        unreadNotifications: unread,
-        notifications: latest.map((row) => toNotificationDto({ row, context })),
+        from: input.from,
+        to: input.to,
+        timeZone: horizon.timeZone,
+        now: horizon.now,
+        cards,
       },
     });
   },

@@ -2,6 +2,7 @@
 
 import { Maximize2Icon, Minimize2Icon, SquareArrowOutUpRightIcon, XIcon } from "lucide-react";
 import { cn } from "../../lib/cn";
+import { bookingToneVariants, toneOfHold } from "../booking-tone/booking-tone";
 import { Button } from "../button/button";
 import { CalendarHoverDetails } from "../cursor-hover/cursor-hover-details";
 import { formatDay } from "./calendar-dates";
@@ -100,6 +101,7 @@ export function PinnedCard(props: PinnedCardProps) {
       className={cn(
         "shrink-0 rounded-xl border bg-popover/95 p-3.5 text-xs text-popover-foreground shadow-2xl backdrop-blur-md transition-all",
         minimized ? "w-56 p-3" : "w-[23.5rem] max-w-[calc(100vw-2rem)]",
+        bookingToneVariants({ tone: toneOfHold({ hold: booking.state.hold }) }),
       )}
     >
       {minimized ? (

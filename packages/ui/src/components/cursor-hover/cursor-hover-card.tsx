@@ -2,6 +2,7 @@
 
 import { type ComponentProps, type ReactNode, useState } from "react";
 import { cn } from "../../lib/cn";
+import { type BookingTone, bookingToneVariants } from "../booking-tone/booking-tone";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../hover-card/hover-card";
 
 export type CursorHoverCardProps = {
@@ -13,6 +14,8 @@ export type CursorHoverCardProps = {
   side?: ComponentProps<typeof HoverCardContent>["side"];
   align?: ComponentProps<typeof HoverCardContent>["align"];
   sideOffset?: number;
+  /** The card's state as its outline, as on every booking card. */
+  tone?: BookingTone;
 };
 
 /**
@@ -28,6 +31,7 @@ export function CursorHoverCard({
   side = "top",
   align = "center",
   sideOffset = 8,
+  tone,
 }: CursorHoverCardProps) {
   const [open, setOpen] = useState(false);
 
@@ -56,6 +60,7 @@ export function CursorHoverCard({
         avoidCollisions={true}
         className={cn(
           "w-[23.5rem] max-w-[calc(100vw-2rem)] rounded-xl border bg-popover/95 p-3.5 text-popover-foreground shadow-2xl backdrop-blur-md",
+          tone ? bookingToneVariants({ tone }) : null,
           className,
         )}
       >

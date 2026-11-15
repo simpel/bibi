@@ -11,7 +11,7 @@
 - What a member must do is already in the data: current run sheet versions, assignments and default responsibilities (ADR 0055), staff item links, notifications (ADR 0094).
 
 ## Decision
-1. `/:org` is **My work**: the signed-in member's run sheet rows per day, what they must act on and their unread notifications, for today, tomorrow or this week (`/my-work/{from}/{to}`, ADR 0064). It asks the assistant from a prompt box.
+1. `/:org` is **My work**: a timeline from today of every order that concerns the signed-in member, one card per order per day, its state as the card's outline (`/my-work/{from}/{to}`, ADR 0064; amended 2026-11-15 by the user's decision: it replaced the run sheet rows, To do, What changed and the prompt box).
 2. The assistant moves to `/:org/assistant`. ⌘K, "Ask about this", "Create chat" and the sidebar's conversations open it there; nothing else about it changes.
 3. One view read model, `myWork.view` (`self:read`, ADR 0071), serves the page and the assistant (MCP tool and card). Each part keeps its feature's `read` gate.
 4. "Concerns me" is derived on read, never stored: main assignee or follower of the order, assignee or follower of the run sheet's responsibility (chosen or default, minus an unfollow), staffed on the line through a linked staff item, assignee or follower of the line's item, or recipient of the run sheet. To do counts only where the member acts: assignee, responsibility owner, staffed.

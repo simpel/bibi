@@ -21,16 +21,6 @@ describe("cross-organization isolation: my work", () => {
 
     const theirs = await call({ client: b, name: "myWork_view", args: thisWeek() });
     expect(theirs.isError, JSON.stringify(theirs.data)).toBe(false);
-    expect(theirs.data.rows).toEqual([]);
-    expect(theirs.data.todo).toEqual({
-      runSheets: [],
-      expiringHolds: [],
-      quotes: [],
-      messages: [],
-      totals: { runSheets: 0, expiringHolds: 0, quotes: 0, messages: 0 },
-    });
-    expect(theirs.data.rowsTotal).toBe(0);
-    expect(theirs.data.unreadNotifications).toBe(0);
-    expect(theirs.data.notifications).toEqual([]);
+    expect(theirs.data.cards).toEqual([]);
   });
 });

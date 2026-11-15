@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { toneOfHold } from "../booking-tone/booking-tone";
 import { CursorHoverCard } from "../cursor-hover/cursor-hover-card";
 import {
   CalendarHoverDetails,
@@ -32,12 +33,14 @@ export function CalendarHoverCard({
   ...details
 }: CalendarHoverCardProps) {
   const cardContent = content ?? card ?? <CalendarHoverDetails {...details} />;
+  const hold = details.booking?.state.hold ?? details.line?.state.hold;
   return (
     <CursorHoverCard
       disabled={disabled}
       content={cardContent}
       asChild={asChild}
       className={className}
+      tone={hold ? toneOfHold({ hold }) : undefined}
     >
       {children}
     </CursorHoverCard>
