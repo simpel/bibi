@@ -138,6 +138,16 @@ describe("myWork.view (spec: home)", () => {
     ]);
   });
 
+  it("points to the next day with a card after the period, and to none after the last", async () => {
+    const { context, anna } = await setup();
+    const me = as({ context, userId: anna });
+    const before = { from: "2037-10-20", to: "2037-10-25" };
+    const early = unwrap({ result: await view({ context: me, input: before }) });
+    expect(early).toMatchObject({ cards: [], next: "2037-11-01" });
+    const day = unwrap({ result: await view({ context: me }) });
+    expect(day.next).toBeNull();
+  });
+
   it("refuses a period longer than 14 days and an API key", async () => {
     const { context, anna } = await setup();
     const long = { from: "2037-11-01", to: "2037-11-15" };

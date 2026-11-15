@@ -22,7 +22,7 @@
           },
           "myWork": {
             "question": "What do I see when I log in?",
-            "answer": "You land on **My work**: a timeline of every booking that concerns you, from today and two weeks ahead, with one card per booking and day.\nThe outline tells you its state: red when something blocks it, yellow when you have something to do, dashed when it is only preliminary, and faded once it is over. Click the chip at the bottom of a card to go straight to what needs doing, and **Later** for the following weeks."
+            "answer": "You land on **My work**: a timeline of every booking that concerns you, in **Today**, **This week**, **Next week** and **Later**, with one card per booking and day. Scroll down and later weeks load on their own.\nThe outline tells you its state: red when something blocks it, yellow when you have something to do, dashed when it is only preliminary, and faded once it is over. Click a card to open the booking, or the chip at the bottom to go straight to what needs doing."
           },
           "exampleOrders": {
             "question": "What are the example orders on my board?",

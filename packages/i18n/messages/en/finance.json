@@ -281,10 +281,16 @@
   "myWork": {
     "title": "My work",
     "description": "Everything that concerns you, today and ahead.",
-    "empty": "Nothing that concerns you in these days.",
-    "later": "Later",
+    "sections": {
+      "today": "Today",
+      "thisWeek": "This week",
+      "nextWeek": "Next week",
+      "later": "Later"
+    },
+    "emptyToday": "Nothing that concerns you today.",
+    "end": "Nothing more ahead.",
+    "loading": "Loading more",
     "backToToday": "Back to today",
-    "range": "{from} – {to}",
     "facts": {
       "guests": "Guests",
       "when": "When",

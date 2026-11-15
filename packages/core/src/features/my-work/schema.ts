@@ -97,6 +97,9 @@ export const MyWorkSchema = z.object({
   to: PlainDateStringSchema,
   timeZone: z.string(),
   now: z.date().describe("The instant the cards were read at, for live and done"),
+  next: PlainDateStringSchema.nullable().describe(
+    "The first day after `to` (within a year) with a card, to read on from; null when none",
+  ),
   cards: z
     .array(MyWorkCardSchema)
     .nullable()

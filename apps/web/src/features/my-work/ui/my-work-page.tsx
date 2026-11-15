@@ -9,14 +9,15 @@ import { ROUTES } from "@/lib/routes";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { laterHref } from "../lib/my-work-window";
+import { MyWorkLater } from "./my-work-later";
 import { MyWorkTimeline } from "./my-work-timeline";
 
 export type MyWorkPageProps = { locale: Locale; from: string; to: string; today: string };
 
 /**
  * The start page (ADR 0110, spec: home): a timeline of every order that concerns the signed-in
- * member, one card per order per day, from `from` to `to`. One read: `myWork.view`.
+ * member in Today, This week, Next week and Later, one card per order per day. One read on load
+ * (`myWork.view`, today to the end of next week); Later reads on as the member scrolls.
  */
 export async function MyWorkPage({ locale, from, to, today }: MyWorkPageProps) {
   const [t, dates, result] = await Promise.all([
@@ -43,10 +44,15 @@ export async function MyWorkPage({ locale, from, to, today }: MyWorkPageProps) {
             {t("backToToday")}
           </Link>
         ) : null}
-        <MyWorkTimeline work={result.value} dates={dates} />
-        <Link href={laterHref({ to, today })} className={linkClass}>
-          {t("later")}
-        </Link>
+        <MyWorkTimeline
+          work={result.value}
+          dates={dates}
+          later={
+            result.value.cards ? (
+              <MyWorkLater next={result.value.next} timeZone={result.value.timeZone} />
+            ) : null
+          }
+        />
       </div>
     </SimplePage>
   );

@@ -1,7 +1,8 @@
+import type { Prisma } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { toIsoDate } from "../../time/plain-date";
 import { toZonedParts } from "../../time/zoned-time";
-import type { Concerns, ConcernWindow } from "./concerns";
+import { type Concerns, type ConcernWindow, concernsOf } from "./concerns";
 
 type Context = Pick<OperationContext, "db">;
 
@@ -18,21 +19,27 @@ export function concernedOrderIds({ concerns }: { concerns: Concerns }): Set<str
 
 export type LinesInput = { context: Context; concerns: Concerns; window: ConcernWindow };
 
+/** Timed lines in the window of open orders that concern the member, as a `where`. */
+function dayLinesWhere({ concerns, window }: Omit<LinesInput, "context">): Prisma.LineWhereInput {
+  return {
+    status: "ACTIVE",
+    startsAt: { gte: window.start, lt: window.end },
+    endsAt: { not: null },
+    order: { status: "ACTIVE", orderStatus: { closes: false } },
+    OR: [
+      { orderId: { in: [...concernedOrderIds({ concerns })] } },
+      { id: { in: [...concerns.lines.keys()] } },
+    ],
+  };
+}
+
 /**
  * Timed lines in the window of open orders that concern the member: every line of an order that
  * concerns them as a whole, else only the lines that do (staffed, an item they own).
  */
 export function loadDayLines({ context, concerns, window }: LinesInput) {
-  const orderIds = [...concernedOrderIds({ concerns })];
-  const lineIds = [...concerns.lines.keys()];
   return context.db.line.findMany({
-    where: {
-      status: "ACTIVE",
-      startsAt: { gte: window.start, lt: window.end },
-      endsAt: { not: null },
-      order: { status: "ACTIVE", orderStatus: { closes: false } },
-      OR: [{ orderId: { in: orderIds } }, { id: { in: lineIds } }],
-    },
+    where: dayLinesWhere({ concerns, window }),
     orderBy: [{ startsAt: "asc" }, { id: "asc" }],
     select: {
       ...{ id: true, orderId: true, itemId: true, startsAt: true, endsAt: true },
@@ -46,6 +53,23 @@ export function loadDayLines({ context, concerns, window }: LinesInput) {
       },
     },
   });
+}
+
+/** How far ahead `next` looks for the member's next card. */
+const NEXT_REACH_MS = 366 * 86_400_000;
+
+export type NextDayInput = { context: Context; userId: string; after: Date; timeZone: string };
+
+/** The first day from `after` (within a year) that has a card for the member, or null. */
+export async function nextCardDay({ context, userId, after, timeZone }: NextDayInput) {
+  const window = { start: after, end: new Date(after.getTime() + NEXT_REACH_MS) };
+  const concerns = await concernsOf({ context, userId, window });
+  const first = await context.db.line.findFirst({
+    where: dayLinesWhere({ concerns, window }),
+    orderBy: [{ startsAt: "asc" }, { id: "asc" }],
+    select: { startsAt: true },
+  });
+  return first?.startsAt ? dayOf({ instant: first.startsAt, timeZone }) : null;
 }
 export type DayLine = Awaited<ReturnType<typeof loadDayLines>>[number];
 

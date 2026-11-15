@@ -24,7 +24,7 @@ export type OrderDayCardProps = Pick<OrderViewProps, "reference" | "subtitle" | 
 function Footer({ live, flag, more }: Pick<OrderDayCardProps, "live" | "flag" | "more">) {
   if (!live && !flag) return null;
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="relative z-10 flex flex-wrap items-center gap-2">
       {live ? (
         <span className="inline-flex items-center gap-1.5 font-semibold text-[10px] text-success uppercase tracking-wide">
           <span aria-hidden className="size-1.5 animate-pulse rounded-full bg-success" />
@@ -40,7 +40,9 @@ function Footer({ live, flag, more }: Pick<OrderDayCardProps, "live" | "flag" | 
 /**
  * One order on one day of a timeline, in the pinned calendar card's layout (`OrderView` bare):
  * name and reference, the subtitle, the status badge top right, the stat row and, only when
- * there is one, the flag. The outline carries the card's tone (`bookingToneVariants`).
+ * there is one, the flag. The whole card opens the order (the title link stretches over it, so
+ * hovering the card underlines the title); the flag stays its own link above it. The outline
+ * carries the card's tone (`bookingToneVariants`).
  */
 export function OrderDayCard({
   title,
@@ -57,7 +59,7 @@ export function OrderDayCard({
       data-slot="order-day-card"
       data-tone={tone}
       className={cn(
-        "rounded-xl border bg-card p-3.5 text-card-foreground shadow-sm transition-colors hover:border-foreground/30",
+        "group relative cursor-pointer rounded-xl border bg-card p-3.5 text-card-foreground shadow-sm transition-colors hover:border-foreground/30",
         bookingToneVariants({ tone }),
         props.className,
       )}
@@ -67,7 +69,7 @@ export function OrderDayCard({
         title={
           <AppLink
             href={href}
-            className="underline-offset-2 outline-none hover:underline focus-visible:underline"
+            className="underline-offset-2 outline-none after:absolute after:inset-0 after:rounded-xl group-hover:underline focus-visible:underline"
           >
             {title}
           </AppLink>

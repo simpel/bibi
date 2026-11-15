@@ -40,6 +40,7 @@ const MyWorkRef = builder.objectRef<MyWork>("MyWork").implement({
     timeZone: t.exposeString("timeZone"),
     now: t.field({ type: "DateTime", resolve: (work) => work.now }),
     cards: t.field({ type: [CardRef], nullable: true, resolve: (work) => work.cards }),
+    next: t.exposeString("next", { nullable: true }),
   }),
 });
 

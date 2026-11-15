@@ -8,6 +8,7 @@ import { resolveHorizon } from "../dashboard/horizon";
 import { periodOf } from "../finance/period";
 import { myCards } from "./cards";
 import { concernsOf } from "./concerns";
+import { nextCardDay } from "./lines";
 import { MY_WORK_MAX_DAYS, MyWorkInputSchema, MyWorkSchema } from "./schema";
 
 /**
@@ -25,7 +26,8 @@ export const viewMyWork = defineOperation({
     "the day's span, guests, bookable places, its strongest hold (HARD, SOFT or null), why it " +
     "concerns them and flags, most urgent first: HARD_CLASH (a soft hold overlapped by another " +
     "order's hard hold), and, only where the caller acts on the order, RUN_SHEET (not sent, " +
-    "changed or blocked), HOLD_EXPIRES, QUOTE_WAITING and UNREAD_MESSAGES. Concerns = main " +
+    "changed or blocked), HOLD_EXPIRES, QUOTE_WAITING and UNREAD_MESSAGES. `next` is the first " +
+    "later day with a card, to read on from. Concerns = main " +
     "assignee or follower of the order, assignee or follower of a responsibility on it, staffed " +
     "on a line, assignee or follower of a line's item, or recipient of a run sheet. Cards are " +
     "null without order:read.",
@@ -47,14 +49,20 @@ export const viewMyWork = defineOperation({
     const horizon = await resolveHorizon({ context });
     const period = periodOf({ from, to, timeZone: horizon.timeZone });
     const window = { start: period.start, end: period.end };
-    const cards = canView({ context, feature: "order" })
-      ? await myCards({
-          context,
-          concerns: await concernsOf({ context, userId: user.value, window }),
-          window,
-          horizon,
-        })
-      : null;
+    const readable = canView({ context, feature: "order" });
+    const [cards, next] = readable
+      ? await Promise.all([
+          concernsOf({ context, userId: user.value, window }).then((concerns) =>
+            myCards({ context, concerns, window, horizon }),
+          ),
+          nextCardDay({
+            context,
+            userId: user.value,
+            after: window.end,
+            timeZone: horizon.timeZone,
+          }),
+        ])
+      : [null, null];
     return ok({
       value: {
         from: input.from,
@@ -62,6 +70,7 @@ export const viewMyWork = defineOperation({
         timeZone: horizon.timeZone,
         now: horizon.now,
         cards,
+        next,
       },
     });
   },

@@ -281,10 +281,16 @@
   "myWork": {
     "title": "Mitt arbete",
     "description": "Allt som rör dig, i dag och framåt.",
-    "empty": "Inget som rör dig de här dagarna.",
-    "later": "Senare",
+    "sections": {
+      "today": "I dag",
+      "thisWeek": "Den här veckan",
+      "nextWeek": "Nästa vecka",
+      "later": "Senare"
+    },
+    "emptyToday": "Inget som rör dig i dag.",
+    "end": "Inget mer framåt.",
+    "loading": "Läser in fler",
     "backToToday": "Tillbaka till i dag",
-    "range": "{from} – {to}",
     "facts": {
       "guests": "Gäster",
       "when": "När",

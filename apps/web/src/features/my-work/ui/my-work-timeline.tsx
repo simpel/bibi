@@ -1,42 +1,54 @@
 import type { DateTimeFormat } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
-import { MyWorkCard } from "./my-work-card";
+import type { ReactNode } from "react";
+import { MY_WORK_SECTIONS, type MyWorkSection, sectionOf } from "../lib/my-work-window";
+import { MyWorkDays } from "./my-work-days";
 import type { MyWorkCardWireish, MyWorkWireish } from "./my-work-wireish";
 
-export type MyWorkTimelineProps = { work: MyWorkWireish; dates: DateTimeFormat };
+export type MyWorkTimelineProps = {
+  work: MyWorkWireish;
+  dates: DateTimeFormat;
+  /** Read on as the member scrolls, at the end of Later (the start page only). */
+  later?: ReactNode;
+};
 
-/** Cards (already by start) split into their days, in order. */
-function byDay({ cards }: { cards: MyWorkCardWireish[] }) {
-  const days: { day: string; cards: MyWorkCardWireish[] }[] = [];
-  for (const card of cards) {
-    const last = days.at(-1);
-    if (last?.day === card.day) last.cards.push(card);
-    else days.push({ day: card.day, cards: [card] });
-  }
-  return days;
-}
-
-/** The start page's timeline: a heading per day, the day's cards under it (spec: home). */
-export function MyWorkTimeline({ work, dates }: MyWorkTimelineProps) {
+/**
+ * The start page's timeline in four parts, Today, This week, Next week and Later, each with its
+ * days and cards (spec: home). Today always shows; an empty part otherwise does not.
+ */
+export function MyWorkTimeline({ work, dates, later }: MyWorkTimelineProps) {
   const t = useTranslations("myWork");
   const { cards, timeZone } = work;
   if (cards === null) return null;
-  if (cards.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
   const now = new Date(work.now);
+  const parts = new Map<MyWorkSection, MyWorkCardWireish[]>();
+  for (const card of cards) {
+    const section = sectionOf({ day: card.day, today: work.from });
+    parts.set(section, [...(parts.get(section) ?? []), card]);
+  }
   return (
-    <div data-slot="my-work-timeline" className="grid gap-6">
-      {byDay({ cards }).map(({ day, cards: dayCards }) => (
-        <section key={day} className="grid gap-3">
-          <h2 className="border-b pb-1.5 font-serif text-lg">
-            {dates.date({ instant: dayCards[0]?.startsAt ?? day, timeZone, weekday: "long" })}
-          </h2>
-          <div className="grid gap-3">
-            {dayCards.map((card) => (
-              <MyWorkCard key={card.key} card={card} now={now} timeZone={timeZone} dates={dates} />
-            ))}
-          </div>
-        </section>
-      ))}
+    <div data-slot="my-work-timeline" className="grid gap-8">
+      {MY_WORK_SECTIONS.map((section) => {
+        const list = parts.get(section) ?? [];
+        const shown = section === "today" || list.length > 0 || (section === "later" && later);
+        if (!shown) return null;
+        return (
+          <section key={section} className="grid gap-4">
+            <h2 className="border-b pb-1.5 font-serif text-xl">{t(`sections.${section}`)}</h2>
+            {section === "today" && list.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t("emptyToday")}</p>
+            ) : null}
+            <MyWorkDays
+              cards={list}
+              now={now}
+              timeZone={timeZone}
+              dates={dates}
+              dayHeadings={section !== "today"}
+            />
+            {section === "later" ? later : null}
+          </section>
+        );
+      })}
     </div>
   );
 }
