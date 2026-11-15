@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { buildQueryCatalog } from "@/components/query-search/lib/query-catalog";
-import { PeopleQuickFilters } from "@/components/query-search/people-quick-filters";
 import { QuerySearch } from "@/components/query-search/query-search";
+import { PEOPLE_VIEWS } from "@/components/saved-views/lib/saved-views";
+import { SavedViews } from "@/components/saved-views/saved-views";
 import { ROUTES } from "@/lib/routes";
 import type { RunSheetListData } from "../load-run-sheet-list-data";
 import type { loadRunSheetQuery } from "../load-run-sheet-query";
@@ -13,7 +14,7 @@ export type RunSheetSearchBarProps = {
   data: RunSheetListData;
 };
 
-/** The quick filters and the search, with the names the search offers. */
+/** The member's views and the search, with the names the search offers. */
 export async function RunSheetSearchBar({ q, query, data }: RunSheetSearchBarProps) {
   const t = await getTranslations("runSheet.list");
   const { vocabulary, texts } = query;
@@ -26,7 +27,13 @@ export async function RunSheetSearchBar({ q, query, data }: RunSheetSearchBarPro
   };
   return (
     <div className="flex flex-wrap items-center justify-between gap-4">
-      <PeopleQuickFilters pathname={ROUTES.runSheets} q={q} vocabulary={vocabulary} />
+      <SavedViews
+        listId="run-sheets"
+        defaults={PEOPLE_VIEWS}
+        pathname={ROUTES.runSheets}
+        q={q}
+        vocabulary={vocabulary}
+      />
       <QuerySearch
         value={q}
         label={t("search")}

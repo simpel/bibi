@@ -93,7 +93,27 @@
       "read": "Lästa"
     },
     "deleting": "Tar bort…",
-    "open": "Öppna"
+    "open": "Öppna",
+    "savedViews": {
+      "label": "Vyer",
+      "options": "Alternativ för vyer",
+      "save": "Spara vy",
+      "name": "Namn",
+      "rename": "Byt namn på ”{name}”",
+      "renameTitle": "Byt namn på vy",
+      "delete": "Radera ”{name}”",
+      "deleteDescription": "Vyn ”{name}” raderas för dig. Inga bokningar eller andra uppgifter ändras.",
+      "deleteConfirm": "Radera vy",
+      "remove": "Ta bort ”{name}”",
+      "removeDescription": "”{name}” tas bort från dina vyer. Återställ vyer tar tillbaka den.",
+      "removeConfirm": "Ta bort vy",
+      "reset": "Återställ vyer",
+      "saved": "Vyn sparad",
+      "renamed": "Vyn har bytt namn",
+      "deleted": "Vyn raderad",
+      "removed": "Vyn borttagen",
+      "resetDone": "Vyerna återställda"
+    }
   },
   "errors": {
     "generic": "Något gick fel. Försök igen.",

@@ -2,6 +2,8 @@ import { viewMyWork } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { SimplePage } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { buildTableQuery } from "@/components/data-table/table-filter-query";
+import { SavedViews } from "@/components/saved-views/saved-views";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { Link } from "@/lib/navigation";
@@ -9,7 +11,8 @@ import { ROUTES } from "@/lib/routes";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { filterMyWork } from "../lib/my-work-query";
+import { filterMyWork, myWorkQualifiers } from "../lib/my-work-query";
+import { myWorkHref } from "../lib/my-work-window";
 import { MyWorkLater } from "./my-work-later";
 import { MyWorkSearch } from "./my-work-search";
 import { MyWorkTimeline } from "./my-work-timeline";
@@ -61,7 +64,19 @@ export async function MyWorkPage({ locale, from, to, today, q }: MyWorkPageProps
             {t("backToToday")}
           </Link>
         ) : null}
-        {all ? <MyWorkSearch q={q} cards={all} /> : null}
+        {all ? (
+          <MyWorkSearch q={q} cards={all}>
+            <SavedViews
+              listId="my-work"
+              defaults={["all"]}
+              pathname={myWorkHref({ from, to, today })}
+              q={q}
+              vocabulary={
+                buildTableQuery({ qualifiers: myWorkQualifiers({ cards: all, labels }) }).vocabulary
+              }
+            />
+          </MyWorkSearch>
+        ) : null}
         <MyWorkTimeline
           work={{ ...result.value, cards }}
           dates={dates}

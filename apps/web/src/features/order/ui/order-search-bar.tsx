@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { buildQueryCatalog } from "@/components/query-search/lib/query-catalog";
-import { PeopleQuickFilters } from "@/components/query-search/people-quick-filters";
 import { QuerySearch } from "@/components/query-search/query-search";
+import { PEOPLE_VIEWS } from "@/components/saved-views/lib/saved-views";
+import { SavedViews } from "@/components/saved-views/saved-views";
 import { ROUTES } from "@/lib/routes";
 import type { loadOrderQuery } from "../load-order-query";
 
@@ -19,7 +20,7 @@ export type OrderSearchBarProps = {
   data: Data;
 };
 
-/** The quick filters and the search, with the names the search offers (statuses, types, contacts). */
+/** The member's views and the search, with the names the search offers (statuses, types, contacts). */
 export async function OrderSearchBar({ q, query, data }: OrderSearchBarProps) {
   const t = await getTranslations("order");
   const { vocabulary, texts } = query;
@@ -30,7 +31,13 @@ export async function OrderSearchBar({ q, query, data }: OrderSearchBarProps) {
   };
   return (
     <div className="flex flex-wrap items-center justify-between gap-4">
-      <PeopleQuickFilters pathname={ROUTES.orders} q={q} vocabulary={vocabulary} />
+      <SavedViews
+        listId="orders"
+        defaults={PEOPLE_VIEWS}
+        pathname={ROUTES.orders}
+        q={q}
+        vocabulary={vocabulary}
+      />
       <QuerySearch
         value={q}
         label={t("search")}

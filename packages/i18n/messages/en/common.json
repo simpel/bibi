@@ -93,7 +93,27 @@
       "read": "Read"
     },
     "deleting": "Deleting…",
-    "open": "Open"
+    "open": "Open",
+    "savedViews": {
+      "label": "Views",
+      "options": "View options",
+      "save": "Save view",
+      "name": "Name",
+      "rename": "Rename “{name}”",
+      "renameTitle": "Rename view",
+      "delete": "Delete “{name}”",
+      "deleteDescription": "The view “{name}” is deleted for you. No bookings or other data change.",
+      "deleteConfirm": "Delete view",
+      "remove": "Remove “{name}”",
+      "removeDescription": "“{name}” is removed from your views. Reset views brings it back.",
+      "removeConfirm": "Remove view",
+      "reset": "Reset views",
+      "saved": "View saved",
+      "renamed": "View renamed",
+      "deleted": "View deleted",
+      "removed": "View removed",
+      "resetDone": "Views reset"
+    }
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",

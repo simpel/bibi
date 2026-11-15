@@ -24,6 +24,10 @@
             "question": "What do I see when I log in?",
             "answer": "You land on **My work**: a timeline of every booking that concerns you, in **Today**, **This week**, **Next week** and **Later**, with one card per booking and day. Scroll down and later weeks load on their own. Use the search box at the top to find a booking by name, customer or number, or type **status:**, **customer:** or **place:** to filter.\nThe top of each card has the colour of the booking's status, so you see at a glance whether it is confirmed, sent as a quote and so on. A red stop sign before the title means something blocks the booking, and a yellow warning triangle that something needs fixing; the label at the bottom says what. A dashed outline means it is only preliminary, and a faded card is over. Click a card to open the booking, or the chip at the bottom to go straight to what needs doing."
           },
+          "savedViews": {
+            "question": "Can I save a search so I don't have to type it again?",
+            "answer": "Yes. Type your search on **Orders**, **Run sheets** or **My work** and click **Save view** next to the buttons on the left. Give it a name and it shows up as a button you can click any time.\nTo rename or delete a view, click it, then open the **…** menu next to the buttons. You can remove the built-in views **All**, **Assigned to me** and **Following** the same way, and **Reset views** brings them back. Your views are only yours and don't change what your colleagues see."
+          },
           "exampleOrders": {
             "question": "What are the example orders on my board?",
             "answer": "When you finish setting up Bibi, we add three example orders so your board isn't empty: a meeting, a conference and a dinner. They all belong to the customer Example Company Ltd and use the types you chose.\nClick around in them, edit them and move them as you like.\nWhen you're done, open Example Company Ltd under Customers, archive the contact person Anna Example, then archive the customer with Also archive all orders for this customer ticked."
