@@ -18,6 +18,7 @@ import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
 import { checkDemoInbox } from "./inbox-checks";
 import { checkDemoIntakeCreate } from "./intake-create-checks";
+import { checkDemoNeedsYou } from "./needs-you-checks";
 import { checkDemoNotifications } from "./notification-checks";
 import { checkDemoOptionQuantities } from "./option-quantity-checks";
 import { checkDemoOrders } from "./order-checks";
@@ -67,6 +68,7 @@ export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoFinance,
   checkDemoDensity,
   checkDemoDashboard,
+  checkDemoNeedsYou,
   checkDemoInbox,
   checkDemoRunSheets,
 ];

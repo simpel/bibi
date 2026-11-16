@@ -328,6 +328,46 @@
       "status": "Status",
       "customer": "Kund",
       "place": "Plats"
+    },
+    "needsYou": {
+      "title": "Behöver dig",
+      "empty": "Inget behöver dig just nu.",
+      "due": "Senast",
+      "since": "Sedan",
+      "groups": {
+        "BLOCKED": "Blockerat",
+        "LATE": "Försenat",
+        "TODAY": "I dag",
+        "SOON": "Snart",
+        "WAITING": "Väntar på kunden"
+      },
+      "actions": {
+        "runSheet": "Öppna körschema",
+        "quote": "Öppna offert",
+        "inbox": "Öppna inkorgen",
+        "order": "Öppna bokning"
+      },
+      "tasks": {
+        "HARD_CLASH": "Lös dubbelbokningen av {line} med #{reference}",
+        "HARD_CLASH_BLOCK": "Flytta {line} från en spärr i kalendern",
+        "RUN_SHEET_BLOCKED": "Lös det som blockerar {runSheet}",
+        "LINE_ISSUE": {
+          "HARD_CLASH": "Lös dubbelbokningen av {line}",
+          "SOFT_OVERLAP": "Kontrollera överlappande bokning av {line}",
+          "SELF_OVERLAP": "Lös överlappande rader på {line}",
+          "LAYOUT_CAPACITY": "Få plats med gästerna i {line}",
+          "MAX_PEOPLE": "Minska antalet gäster på {line}",
+          "POOL_SHORT": "Fyll bristen på {line}",
+          "OUTSIDE_HOURS": "Kontrollera öppettiderna för {line}"
+        },
+        "RUN_SHEET_UNSENT": "Skicka {runSheet}",
+        "UNCONFIRMED": "Bekräfta eller släpp {count, plural, one {# preliminärbokning} other {# preliminärbokningar}}",
+        "HOLD_EXPIRES": "Bekräfta eller förläng preliminärbokningen",
+        "UNREAD_MESSAGES": "Svara på {count, plural, one {# meddelande} other {# meddelanden}}",
+        "PAYMENT_OVERDUE": "Följ upp {amount} som är förfallet",
+        "NOT_CLOSED": "Stäng bokningen",
+        "QUOTE_WAITING": "Följ upp offerten"
+      }
     }
   },
   "occupancy": {

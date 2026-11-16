@@ -328,6 +328,46 @@
       "status": "Status",
       "customer": "Customer",
       "place": "Place"
+    },
+    "needsYou": {
+      "title": "Needs you",
+      "empty": "Nothing needs you right now.",
+      "due": "Due",
+      "since": "Since",
+      "groups": {
+        "BLOCKED": "Blocked",
+        "LATE": "Late",
+        "TODAY": "Today",
+        "SOON": "Soon",
+        "WAITING": "Waiting on customer"
+      },
+      "actions": {
+        "runSheet": "Open run sheet",
+        "quote": "Open quote",
+        "inbox": "Open inbox",
+        "order": "Open order"
+      },
+      "tasks": {
+        "HARD_CLASH": "Fix double booking on {line} with #{reference}",
+        "HARD_CLASH_BLOCK": "Move {line} off a calendar block",
+        "RUN_SHEET_BLOCKED": "Unblock {runSheet}",
+        "LINE_ISSUE": {
+          "HARD_CLASH": "Fix double booking on {line}",
+          "SOFT_OVERLAP": "Check overlapping booking on {line}",
+          "SELF_OVERLAP": "Fix overlapping lines on {line}",
+          "LAYOUT_CAPACITY": "Fit the guests in {line}",
+          "MAX_PEOPLE": "Lower the guests on {line}",
+          "POOL_SHORT": "Fill the shortfall on {line}",
+          "OUTSIDE_HOURS": "Check opening hours for {line}"
+        },
+        "RUN_SHEET_UNSENT": "Send {runSheet}",
+        "UNCONFIRMED": "Confirm or release {count, plural, one {# soft hold} other {# soft holds}}",
+        "HOLD_EXPIRES": "Confirm or extend the hold",
+        "UNREAD_MESSAGES": "Answer {count, plural, one {# message} other {# messages}}",
+        "PAYMENT_OVERDUE": "Follow up {amount} overdue",
+        "NOT_CLOSED": "Close the order",
+        "QUOTE_WAITING": "Follow up the quote"
+      }
     }
   },
   "occupancy": {

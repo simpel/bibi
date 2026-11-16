@@ -24,3 +24,8 @@
 ## Consequences
 - Sign-in, the welcome flow and `ROUTES.home` lead to My work; e2e opens the assistant on `/assistant`.
 - Prep lead times (bake at 09:00 for a 14:00 serving), verbs per run sheet and ticking rows off are not modelled; rows show at the line's start.
+
+## Amendment 2026-11-16 (Accepted: the user's decision, 2026-11-16)
+- **Context:** the timeline answers "what am I part of", not "what must I do". Action flags sit small on cards, spread over two weeks; double bookings, overdue money and orders left open do not show at all.
+- **Decision:** My work opens with **Needs you**, derived tasks grouped Blocked, Late, Today, Soon and Waiting on customer, above the timeline; one new view read model `myWork.tasks` (spec: home). Tasks are derived on read, never stored, so decision 4 and the rejected stored task list stand. "Late" is a fixed lead before the order's first line start (24 h for run sheets, 48 h for soft holds), a past `dueDate` on money, or an order whose lines have ended and whose status does not close.
+- **Rejected:** flags on cards only (today's page: easy to miss); a stored, tickable task list (drifts from run sheets and holds, ADR 0051); per-organization leads now (no data on what venues need; add when a venue asks).

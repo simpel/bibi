@@ -27,6 +27,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   ...PIPELINE_SURFACES,
   // The start page: the caller's own work (ADR 0110).
   { operation: "myWork.view", route: "/" },
+  { operation: "myWork.tasks", route: "/" },
   { operation: "calendar.range", route: "/calendar" },
   { operation: "venue.list", route: "/venues" },
   { operation: "venue.get", route: "/venues/[id]" },

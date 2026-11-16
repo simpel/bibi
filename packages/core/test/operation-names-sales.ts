@@ -73,6 +73,7 @@ export const MONEY_NAMES = [
   "payment.refund",
   "dashboard.summary",
   "myWork.view",
+  "myWork.tasks",
   "finance.overview",
   "accountingSettings.get",
   "accountingSettings.update",

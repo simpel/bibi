@@ -62,6 +62,7 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "deposit-card",
   "dashboard-summary",
   "my-work",
+  "my-work-tasks",
   "finance-overview",
   "invoice-table",
   "invoice-card",

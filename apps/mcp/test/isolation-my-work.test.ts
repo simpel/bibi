@@ -23,4 +23,18 @@ describe("cross-organization isolation: my work", () => {
     expect(theirs.isError, JSON.stringify(theirs.data)).toBe(false);
     expect(theirs.data.cards).toEqual([]);
   });
+
+  it("never asks the same person in another organization to act on one organization's orders", async () => {
+    const actor = { type: "user" as const, userId: `user_isolation_tasks_${Date.now()}` };
+    const a = await connect({ context: testContext({ actor }) });
+    const b = await connect({ context: testContext({ actor }) });
+    await seedOrder({ client: a });
+
+    const own = await call({ client: a, name: "myWork_tasks", args: {} });
+    expect(own.isError, JSON.stringify(own.data)).toBe(false);
+
+    const theirs = await call({ client: b, name: "myWork_tasks", args: {} });
+    expect(theirs.isError, JSON.stringify(theirs.data)).toBe(false);
+    expect(theirs.data.tasks).toEqual([]);
+  });
 });

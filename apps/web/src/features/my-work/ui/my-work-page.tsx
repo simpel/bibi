@@ -1,4 +1,4 @@
-import { viewMyWork } from "@bibi/core";
+import { viewMyTasks, viewMyWork } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { SimplePage } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
@@ -10,12 +10,14 @@ import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
+import { getNumberFormat } from "@/server/number-format";
 import { runOperation } from "@/server/run-operation";
 import { filterMyWork, myWorkQualifiers } from "../lib/my-work-query";
 import { myWorkHref } from "../lib/my-work-window";
 import { MyWorkLater } from "./my-work-later";
 import { MyWorkSearch } from "./my-work-search";
 import { MyWorkTimeline } from "./my-work-timeline";
+import { NeedsYou } from "./needs-you";
 
 export type MyWorkPageProps = {
   locale: Locale;
@@ -27,16 +29,20 @@ export type MyWorkPageProps = {
 };
 
 /**
- * The start page (ADR 0110, spec: home): a timeline of every order that concerns the signed-in
- * member in Today, This week, Next week and Later, one card per order per day. One read on load
- * (`myWork.view`, today to the end of next week); Later reads on as the member scrolls. The
- * search (`?q=`) filters both, as on the tables.
+ * The start page (ADR 0110, spec: home): Needs you (what the member must act on, today's window
+ * only), then a timeline of every order that concerns them in Today, This week, Next week and
+ * Later, one card per order per day. Two reads in parallel on load (`myWork.tasks`,
+ * `myWork.view` today to the end of next week); Later reads on as the member scrolls. The search
+ * (`?q=`) filters the timeline, as on the tables.
  */
 export async function MyWorkPage({ locale, from, to, today, q }: MyWorkPageProps) {
-  const [t, dates, result] = await Promise.all([
+  const startPage = from === today;
+  const [t, dates, numbers, result, tasks] = await Promise.all([
     getTranslations({ locale, namespace: "myWork" }),
     getDateTimeFormat(),
+    getNumberFormat(),
     runOperation({ operation: viewMyWork, input: { from, to } }),
+    startPage ? runOperation({ operation: viewMyTasks, input: {} }) : null,
   ]);
   const header = <PageHeader title={t("title")} description={t("description")} />;
   if (!result.ok) {
@@ -59,7 +65,11 @@ export async function MyWorkPage({ locale, from, to, today, q }: MyWorkPageProps
     <SimplePage>
       <div data-slot="my-work" className="mx-auto grid w-full max-w-2xl gap-6">
         {header}
-        {from !== today ? (
+        {tasks?.ok ? <NeedsYou tasks={tasks.value.tasks} numbers={numbers} /> : null}
+        {tasks && !tasks.ok ? (
+          <ErrorState inline errorKey={handleLoadError({ error: tasks.error, locale })} />
+        ) : null}
+        {!startPage ? (
           <Link href={ROUTES.home} className={linkClass}>
             {t("backToToday")}
           </Link>

@@ -4,6 +4,10 @@ import {
   MyWorkCardSchema,
   type MyWorkFlag,
   MyWorkFlagSchema,
+  type MyWorkTask,
+  MyWorkTaskSchema,
+  type MyWorkTasks,
+  viewMyTasks,
   viewMyWork,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
@@ -45,3 +49,20 @@ const MyWorkRef = builder.objectRef<MyWork>("MyWork").implement({
 });
 
 fieldFromOperation({ operation: viewMyWork, type: MyWorkRef, name: "myWork" });
+
+const TaskRef = objectFromSchema<MyWorkTask>({
+  name: "MyWorkTask",
+  schema: MyWorkTaskSchema,
+  description: "One thing the caller must act on (spec: home, Needs you).",
+});
+
+const MyWorkTasksRef = builder.objectRef<MyWorkTasks>("MyWorkTasks").implement({
+  description: "What the caller must act on now, grouped and by due (spec: home).",
+  fields: (t) => ({
+    now: t.field({ type: "DateTime", resolve: (tasks) => tasks.now }),
+    timeZone: t.exposeString("timeZone"),
+    tasks: t.field({ type: [TaskRef], nullable: true, resolve: (tasks) => tasks.tasks }),
+  }),
+});
+
+fieldFromOperation({ operation: viewMyTasks, type: MyWorkTasksRef, name: "myWorkTasks" });

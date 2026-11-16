@@ -70,6 +70,7 @@ export * from "./features/member/schema";
 export * from "./features/member-profile/schema";
 export * from "./features/message/schema";
 export * from "./features/my-work/schema";
+export * from "./features/my-work/tasks-schema";
 export * from "./features/notification/list-schema";
 export * from "./features/notification/schema";
 export * from "./features/notification-preference/schema";

@@ -1,6 +1,40 @@
 # My work (the start page)
 
-Current behaviour. Why: ADR 0110. Operation: `myWork.view` (`self:read`, a view read model, ADR 0071).
+Current behaviour. Why: ADR 0110 (amended 2026-11-16). Operations: `myWork.view` and `myWork.tasks` (both `self:read`, view read models, ADR 0071).
+
+## Needs you
+My work answers "what must I do", not only "what am I part of". The page opens with **Needs you**, a list of tasks the member must act on, above the timeline. A task is derived on read from data that already exists (run sheets, holds, line issues, quotes, messages, receivables, statuses), never stored (ADR 0110 rejected a stored task list), and it is gone when the data no longer calls for it.
+
+### Page
+- Order: **Needs you**, then **Today** and the rest of the timeline as below. `/my-work/{from}/{to}` shows the timeline only.
+- One row per task: a sentence that starts with the verb ("Send Kitchen order", "Fix double booking on Hall A with #1042", "Confirm or release 2 soft holds"), the order's reference, title and customer, when it is due (`RelativeTime`; "Since" for Waiting on customer) and one button that opens the place to act: the run sheet, the quote, the inbox, else the order. The sentence opens the order.
+- Rows sit in groups, in this order, each group shown only when it has rows: **Blocked** (red, stop sign), **Late** (due before now), **Today** (due later today in the organization's zone), **Soon** (due after today, through the end of next week) and **Waiting on customer** (nothing to do yet but follow up). Inside a group, soonest due first, then by reference.
+- Empty: a single line, "Nothing needs you right now", and the timeline below.
+- The assistant's `myWork_tasks` tool renders the same list (generative UI component in `@bibi/ui`).
+
+### Tasks
+Who gets a task: the member who acts (see "Concerns me"). Run sheet tasks go to the order's main assignee and to the assignee or follower of the run sheet's responsibility; every other task to the order's main assignee. Each kind needs its feature's `read`, or it is left out. Due times use two fixed leads until prep lead times are modelled: **run sheet lead** 24 h and **confirm lead** 48 h before the order's first line start.
+
+| Kind | When | Due | Group | Needs |
+|---|---|---|---|---|
+| `HARD_CLASH` | `line.issues` finds another order's hard hold, a buffer or a block overlapping a line still to come, one task per line | the line's start | Blocked | `program:read`, `item:read` |
+| `RUN_SHEET_BLOCKED` | the current run sheet is blocked | first line start − run sheet lead | Blocked | `runSheet:read` |
+| `LINE_ISSUE` | an active line still to come has an issue from `line.issues` (self-overlap, over capacity, people limit, pool shortfall, outside hours; another soft hold is not one), one task per line and issue | the line's start | by due | `program:read`; availability `item:read` |
+| `RUN_SHEET_UNSENT` | the current run sheet is not sent, or changed since it was sent | first line start − run sheet lead | by due | `runSheet:read` |
+| `UNCONFIRMED` | the order still has lines in an `expires` (soft) state within the confirm lead of its first line start | first line start − confirm lead | by due | `order:read` |
+| `HOLD_EXPIRES` | `holdsUntil` falls within 7 days and lines are still in an `expires` state | `holdsUntil` | by due | `order:read` |
+| `UNREAD_MESSAGES` | unread customer messages on the order, one task with the count | now (Today) | by due | `inbox:read` |
+| `PAYMENT_OVERDUE` | a sent invoice with money open a day or more past its `dueDate` (as Financials counts it), one task per invoice | `dueDate` | Late | `finance:read`, `payment:read` |
+| `NOT_CLOSED` | every active line ended within the last 30 days, and the status does not `close` | the last line's end | by due | `pipeline:read` |
+| `QUOTE_WAITING` | a sent quote waits on the customer | when it was sent | Waiting on customer | `quote:read` |
+
+- Horizon: tasks whose due falls through the end of next week, plus every task already due. `HOLD_EXPIRES` keeps its own 7 days, `NOT_CLOSED` its 30. The line checks run on at most 40 orders, soonest first.
+- A task never repeats a parent's: an order with `UNCONFIRMED` shows no `HOLD_EXPIRES`; a blocked run sheet shows no `RUN_SHEET_UNSENT`.
+- The card flags on the timeline keep reading as now; run sheet, hold, quote and message tasks reuse the cards' flag queries, while clashes come from `line.issues`.
+
+### Operation
+- `myWork.tasks` (`self:read`, query, view read model): no input but an optional `kinds` filter; output `{ now, timeZone, tasks: Task[] | null }`, null without `order:read`. A task carries `key`, `kind`, `group`, `dueAt`, the order (`orderId`, `reference`, `title`, `customerName` behind `customer:read`), and where they apply `runSheetId`, `runSheetName`, `lineId`, `lineName`, `issueKind`, `otherReference`, `quoteId`, `invoiceId`, `amountMinor` and `count`. Web, GraphQL (`myWorkTasks`), REST (`GET /my-work/tasks`) and MCP (`myWork_tasks`, its own card) (ADR 0003).
+- The start page reads `myWork.tasks` and `myWork.view` in one `Promise.all` (ADR 0097); `/my-work/{from}/{to}` reads only the timeline.
 
 ## Page
 - A timeline of every order that concerns the member (below), today and ahead, nothing else, in four parts: **Today**, **This week** (the rest of it, weeks start on Monday), **Next week** and **Later**. Today always shows (with a line when empty); another part shows only when it has cards. A heading per day in the organization's zone inside each part, the day's cards under it by start.
@@ -17,11 +51,12 @@ Current behaviour. Why: ADR 0110. Operation: `myWork.view` (`self:read`, a view 
 ## Tone
 - A search box above the timeline filters it as on the tables (`?q=`): free text over title, customer, number, status and places, and the qualifiers `status:`, `customer:` and `place:`. The server filters the first read; Later filters what it reads on.
 - Saved views sit left of the search, as on Orders and Run sheets: buttons that each open a search. A member saves the current search under a name, renames or deletes their own views and removes built-in ones (My work has only All; Orders and Run sheets also Assigned to me and Following); Reset views puts the built-in ones back. A view is lit when its search is the one in effect, compared in canonical words. Views are personal: a user preference `views.<organizationId>.<listId>` holding the ordered list (`SavedViewsSchema`), no row meaning the built-in views.
-- Every booking and order card has a plain header ruled off from its body. Its issues are said in words as badges in the header: red with a stop sign when something blocks it (a hard hold clash, a blocked run sheet), amber with a triangle when something needs fixing (any open flag on My work, whether the member acts or follows; open issues on a pinned card). The outline never carries an issue: a soft hold is dashed, a card you only follow keeps a plain inner edge, the rest have none. The detailed card's stats are its state (colour and name), guests, when and where; the booking's value is not a stat, the order's total is among the facts. The same on My work, the pinned calendar card and the calendar hover card.
-- Strongest first: **conflict** (red: a hard-hold clash or a blocked run sheet), **action** (amber: the member acts and a flag is open), **live** (now inside the span), **done** (over, dimmed), **following** (need-to-know only: no fill or shadow), **tentative** (soft holds only: dashed and hatched, as on the calendar), **confirmed**. On the calendar a booking is conflict when a hard hold overlaps its soft hold on the same item (`markBlocked`), else tentative or confirmed by its hold; a pinned card is action while its order has open issues. A hover card is never taller than the room on screen: it scrolls inside.
+- Every booking and order card has a plain header ruled off from its body. Its issues are said in words as badges on their own row above the title, pushing the rest down: red with a stop sign when something blocks it (a hard hold clash, a blocked run sheet), amber with a triangle when something needs fixing (any open flag on My work, whether the member acts or follows; open issues on a pinned card). Hovering or focusing a badge explains what it means and what to do. The surface never carries an issue. An order the member chose to follow (Follow on the order's title row) reads Following in its subtitle; a responsibility they follow, often by default, is their work and reads Your responsibility. The detailed card's stats are its state (a badge filled with its colour, no dot), guests, when and where; the booking's value is not a stat, the order's total is among the facts. The same on My work, the pinned calendar card and the calendar hover card.
+- Each fact has its own cue, and a card shows every cue that applies (no ranking, so one never hides another): **soft** (soft holds only) is a dashed border with hatching, as on the calendar; **following** (only an order the member chose to follow; work that reaches them by a responsibility, an item or a run sheet is theirs) has no fill or shadow and a plain inner edge, unless a dashed border already draws the edge; **done** (over) is dimmed. Blocks (a hard-hold clash, a blocked run sheet) and needs fixing (an open flag) are the header's red and amber badges; **live** (now inside the span) is the pulsing Live in the footer. A card with none of these is the plain card. So a followed soft hold is dashed, hatched and unfilled, and a followed clash is unfilled with a red badge. On the calendar a booking is soft by its hold and a hard hold overlapping its soft hold on the same item (`markBlocked`) is a red badge; a pinned card shows its order's open issues as an amber badge. A hover card is never taller than the room on screen: it scrolls inside.
 
 ## Concerns me
-Defined in `docs/specs/assignments-and-responsibilities.md` ("Concerns me"). A member acts on `ASSIGNEE`, `RESPONSIBILITY` and `STAFFED`; a follower is told, not asked, so their cards carry no action flags.
+Defined in `docs/specs/assignments-and-responsibilities.md` ("Concerns me"). A member acts on `ASSIGNEE`, `RESPONSIBILITY` and `STAFFED`, and on the run sheets of a responsibility they follow (`RESPONSIBILITY_FOLLOWER`, often by default): that is their work. Someone who only followed the order (`FOLLOWER`) is told, not asked, so their cards carry no action flags.
 
 ## Not built
 - Untimed lines (no place on a timeline), orders without lines, prep lead times, the responsibility's own name on the card.
+- Needs you: a count on the sidebar's My work entry (the live counts, ADR 0094, would derive every task on each page), per-organization leads, tasks for a line item's assignee, deposits, ticking off run sheet rows, snoozing or dismissing a task, unassigned orders and responsibilities as tasks for a manager.

@@ -29,7 +29,7 @@ function acts({ concerns, orderId, responsibilityId }: ActsInput) {
 type ActsInput = { concerns: Concerns; orderId: string; responsibilityId: string };
 
 /** Current run sheets of the orders not sent, changed since sent or blocked, that the member acts on. */
-async function runSheetFlags({ context, concerns, orderIds }: OrderFlagsInput) {
+export async function runSheetFlags({ context, concerns, orderIds }: OrderFlagsInput) {
   const sheets = await context.db.runSheet.findMany({
     where: { current: true, publishedAt: null, fulfilledAt: null, orderId: { in: orderIds } },
     orderBy: [{ blocked: "desc" }, { createdAt: "asc" }],
@@ -49,7 +49,7 @@ async function runSheetFlags({ context, concerns, orderIds }: OrderFlagsInput) {
 }
 
 /** Sent quotes still waiting on the customer, oldest first. */
-async function quoteFlags({ context, orderIds }: Omit<OrderFlagsInput, "concerns">) {
+export async function quoteFlags({ context, orderIds }: Omit<OrderFlagsInput, "concerns">) {
   const quotes = await context.db.quote.findMany({
     where: { status: "ACTIVE", quoteStatus: "SENT", orderId: { in: orderIds } },
     orderBy: { statusChangedAt: "asc" },
@@ -62,7 +62,7 @@ async function quoteFlags({ context, orderIds }: Omit<OrderFlagsInput, "concerns
 }
 
 /** Unread customer messages, one flag per order with the count. */
-async function messageFlags({ context, orderIds }: Omit<OrderFlagsInput, "concerns">) {
+export async function messageFlags({ context, orderIds }: Omit<OrderFlagsInput, "concerns">) {
   const counts = await context.db.inboundMessage.groupBy({
     by: ["orderId"],
     where: { status: "ACTIVE", readAt: null, orderId: { in: orderIds } },
@@ -73,7 +73,7 @@ async function messageFlags({ context, orderIds }: Omit<OrderFlagsInput, "concer
   );
 }
 
-type OrderFlagsInput = { context: Context; concerns: Concerns; orderIds: string[] };
+export type OrderFlagsInput = { context: Context; concerns: Concerns; orderIds: string[] };
 
 /**
  * The order-wide flags (spec: home), by order: run sheets where the member is the order's

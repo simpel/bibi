@@ -10,6 +10,9 @@ import { myCards } from "./cards";
 import { concernsOf } from "./concerns";
 import { nextCardDay } from "./lines";
 import { MY_WORK_MAX_DAYS, MyWorkInputSchema, MyWorkSchema } from "./schema";
+import { resolveTaskWindow } from "./task-window";
+import { myTasks } from "./tasks";
+import { MyWorkTasksInputSchema, MyWorkTasksSchema } from "./tasks-schema";
 
 /**
  * The caller's start page (spec: home): a timeline of the orders that concern them, one card per
@@ -76,4 +79,38 @@ export const viewMyWork = defineOperation({
   },
 });
 
-export const myWorkOperations = [viewMyWork];
+/**
+ * Needs you (spec: home): what the caller must act on now, derived on read (ADR 0110). A view
+ * read model (ADR 0071): tasks need `order:read`, and each kind its feature's `read`.
+ */
+export const viewMyTasks = defineOperation({
+  name: "myWork.tasks",
+  kind: "query",
+  description:
+    "What the caller must act on, grouped BLOCKED, LATE (due before now), TODAY, SOON (due by " +
+    "the end of next week) and WAITING (on the customer), by due then reference. Kinds: " +
+    "HARD_CLASH (another order's hard hold or a block overlaps a line), RUN_SHEET_BLOCKED, " +
+    "LINE_ISSUE (a planning issue on a line, e.g. over capacity, outside hours), RUN_SHEET_UNSENT " +
+    "(not sent or changed since sent; due 24 h before the order's first line), UNCONFIRMED " +
+    "(soft holds; due 48 h before the first line), HOLD_EXPIRES (within 7 days), " +
+    "UNREAD_MESSAGES, PAYMENT_OVERDUE (an invoice past its due date), NOT_CLOSED (every line " +
+    "ended in the last 30 days, the status does not close) and QUOTE_WAITING. Order-wide tasks " +
+    "reach the order's main assignee; run sheet tasks also the owner or follower of its " +
+    "responsibility. Tasks are null without order:read.",
+  input: MyWorkTasksInputSchema,
+  output: MyWorkTasksSchema,
+  permission: "self:read",
+  handler: async ({ input, context }) => {
+    const user = requireUser({ context });
+    if (!user.ok) return user;
+    const window = await resolveTaskWindow({ context });
+    const all = canView({ context, feature: "order" })
+      ? await myTasks({ context, userId: user.value, window })
+      : null;
+    const kinds = input.kinds ? new Set(input.kinds) : null;
+    const tasks = all && kinds ? all.filter((task) => kinds.has(task.kind)) : all;
+    return ok({ value: { now: window.now, timeZone: window.timeZone, tasks } });
+  },
+});
+
+export const myWorkOperations = [viewMyWork, viewMyTasks];

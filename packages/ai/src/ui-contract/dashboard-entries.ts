@@ -5,6 +5,8 @@ import {
   MyWorkCardSchema,
   MyWorkFlagSchema,
   MyWorkSchema,
+  MyWorkTaskSchema,
+  MyWorkTasksSchema,
   ScheduledSchema,
   UnsentRunSheetSchema,
 } from "@bibi/core/schemas";
@@ -41,6 +43,14 @@ export const MyWorkWireSchema = MyWorkSchema.extend({
 
 export type MyWorkWire = z.infer<typeof MyWorkWireSchema>;
 
+/** JSON form of Needs you as tool results carry it (dates = ISO strings). */
+export const MyWorkTasksWireSchema = MyWorkTasksSchema.extend({
+  now: z.string(),
+  tasks: z.array(MyWorkTaskSchema.extend({ dueAt: z.string() })).nullable(),
+});
+
+export type MyWorkTasksWire = z.infer<typeof MyWorkTasksWireSchema>;
+
 /** Tool → component for the dashboard (ADR 0079, 0080, 0086) and the caller's own work. */
 export const DASHBOARD_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   dashboard_summary: uiEntry({
@@ -52,5 +62,10 @@ export const DASHBOARD_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
     component: "my-work",
     schema: MyWorkWireSchema,
     toProps: ({ value }) => ({ work: value }),
+  }),
+  myWork_tasks: uiEntry({
+    component: "my-work-tasks",
+    schema: MyWorkTasksWireSchema,
+    toProps: ({ value }) => ({ tasks: value }),
   }),
 };

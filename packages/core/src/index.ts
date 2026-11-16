@@ -70,6 +70,7 @@ export { prefillMemberProfile } from "./features/member-profile/prefill-contact"
 export * from "./features/message/operations";
 export * from "./features/my-work/operations";
 export * from "./features/my-work/schema";
+export * from "./features/my-work/tasks-schema";
 export * from "./features/oauth-grant/operations";
 export * from "./features/occupancy/operations";
 export * from "./features/occupancy/write-operations";

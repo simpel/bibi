@@ -22,7 +22,11 @@
           },
           "myWork": {
             "question": "What do I see when I log in?",
-            "answer": "You land on **My work**: a timeline of every booking that concerns you, in **Today**, **This week**, **Next week** and **Later**, with one card per booking and day. Scroll down and later weeks load on their own. Use the search box at the top to find a booking by name, customer or number, or type **status:**, **customer:** or **place:** to filter.\nEach card shows its status first among its figures. When something is wrong, a badge at the top says what: red with a stop sign when something blocks the booking, yellow with a triangle when something needs fixing. A dashed outline means it is only preliminary, and a faded card is over. Click a card to open the booking, or the chip at the bottom to go straight to what needs doing."
+            "answer": "You land on **My work**. At the top, **Needs you** lists what you have to do. Below it is a timeline of every booking that concerns you, in **Today**, **This week**, **Next week** and **Later**, with one card per booking and day. Scroll down and later weeks load on their own. Use the search box above the timeline to find a booking by name, customer or number, or type **status:**, **customer:** or **place:** to filter.\nEach card shows its status first among its figures. When something is wrong, a badge at the top says what: red with a stop sign when something blocks the booking, yellow with a triangle when something needs fixing. A dashed outline means it is only preliminary, and a faded card is over. Click a card to open the booking, or the chip at the bottom to go straight to what needs doing."
+          },
+          "needsYou": {
+            "question": "What is in Needs you?",
+            "answer": "**Needs you** at the top of My work lists what you have to do on your bookings: double bookings to fix, run sheets to send, preliminary bookings to confirm or release, messages to answer, invoices that are overdue and bookings that are over but not closed. Each row has a button that takes you straight to where you fix it.\nRows are grouped as **Blocked**, **Late**, **Today**, **Soon** and **Waiting on customer**. A run sheet is due a day before the booking starts, and preliminary bookings two days before. A row disappears by itself once it is done."
           },
           "commandBar": {
             "question": "How do I quickly find an order or a customer?",
