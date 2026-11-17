@@ -138,6 +138,8 @@ export { type ProvisionOrganizationInput, provisionOrganization } from "./organi
 export * from "./permissions/fixed-roles";
 export * from "./permissions/permission-set";
 export * from "./permissions/presets";
+export * from "./permissions/record-scope";
+export * from "./permissions/resolve-subject";
 export * from "./platform/ai-settings/resolve-ai-model";
 export * from "./platform/billing/schema";
 export { type CreatePlatformContextInput, createPlatformContext } from "./platform/context";

@@ -1,8 +1,8 @@
-import { applyOverrides, ok, parseMemberRole, type Result } from "@bibi/core";
+import { ok, parseMemberRole, type Result, resolveSubjectAccess } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { z } from "zod";
 import { getAuth } from "../get-auth";
 import { forbidden, unauthenticated } from "./errors";
-import { loadSubjectOverrides } from "./load-overrides";
 import type { Principal } from "./principal";
 
 const KeyMetadataSchema = z.object({ role: z.string().min(1), createdBy: z.string().min(1) });
@@ -22,15 +22,12 @@ export async function principalFromApiKey({ key }: FromApiKeyInput): Promise<Res
   if (!metadata.success) return forbidden({ message: "API key has no preset" });
   const organizationId = result.key.referenceId;
   const apiKeyId = result.key.id;
-  const role = parseMemberRole({ role: metadata.data.role });
-  const overrides = await loadSubjectOverrides({
-    organizationId,
-    subjectType: "API_KEY",
-    subjectId: apiKeyId,
+  const preset = parseMemberRole({ role: metadata.data.role });
+  const access = await resolveSubjectAccess({
+    ...{ db: getDb(), organizationId, subjectKind: "apiKey", subjectId: apiKeyId, preset },
   });
-  const permissions = applyOverrides({ preset: role, overrides });
-  const roles = role ? [role] : [];
+  const roles = preset ? [preset] : [];
   return ok({
-    value: { userId: null, apiKeyId, organizationId, roles, permissions, aiAllowed: false },
+    value: { userId: null, apiKeyId, organizationId, roles, ...access, aiAllowed: false },
   });
 }

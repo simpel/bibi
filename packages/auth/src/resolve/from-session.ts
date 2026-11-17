@@ -2,7 +2,7 @@ import { ok, type Result } from "@bibi/core";
 import { getAuth } from "../get-auth";
 import type { AuthSession } from "../require-session";
 import { forbidden, unauthenticated } from "./errors";
-import { loadMembership } from "./membership";
+import { loadMembership, memberAccess } from "./membership";
 import type { Principal } from "./principal";
 
 export type FromSessionInput = {
@@ -22,7 +22,7 @@ export async function principalFromSession({
   const organizationId = session.session.activeOrganizationId;
   if (!organizationId) return forbidden({ message: "No active organization on the session" });
   const membership = await loadMembership({ userId, organizationId });
-  const roles = membership?.roles ?? null;
-  const permissions = membership?.permissions ?? {};
-  return ok({ value: { userId, organizationId, roles, permissions, aiAllowed: false } });
+  return ok({
+    value: { userId, organizationId, ...memberAccess({ membership }), aiAllowed: false },
+  });
 }

@@ -7,7 +7,7 @@ import { ORG_CLAIM } from "../plugins/mcp";
 import { mcpResourceUrl } from "../urls";
 import { forbidden, unauthenticated } from "./errors";
 import { isGrantRevoked } from "./grant-revocation";
-import { loadMembership } from "./membership";
+import { loadMembership, memberAccess } from "./membership";
 import type { Principal } from "./principal";
 
 const ClaimsSchema = z.object({
@@ -51,7 +51,5 @@ export async function principalFromAccessToken({
   const membership = await loadMembership({ userId, organizationId });
   // Only registry clients flagged `allowsAiActor` (the assistant) may act as the AI actor.
   const aiAllowed = clientAllowsAiActor({ clientId: azp });
-  const roles = membership?.roles ?? null;
-  const permissions = membership?.permissions ?? {};
-  return ok({ value: { userId, organizationId, roles, permissions, aiAllowed } });
+  return ok({ value: { userId, organizationId, ...memberAccess({ membership }), aiAllowed } });
 }

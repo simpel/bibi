@@ -29,3 +29,29 @@ model PermissionOverride {
   @@unique([organizationId, subjectType, subjectId, feature, action])
   @@index([organizationId, subjectType, subjectId, status])
 }
+
+/// Which records of a root a subject sees (ADR 0113): every one, or only those it is related to.
+enum RecordScope {
+  ALL
+  RELATED
+}
+
+/// RecordScopeOverride (ADR 0113) – a member who sees only the records of a root (`order`) they are
+/// related to (`RecordRelation`), instead of the default `ALL`. Only the difference is stored;
+/// resetting archives the row. Core refuses `RELATED` for the admin preset and for API keys and
+/// ignores such rows when resolving, like locked permission overrides.
+model RecordScopeOverride {
+  id             String            @id @default(cuid(2))
+  organizationId String
+  subjectType    PermissionSubject
+  subjectId      String
+  root           String
+  scope          RecordScope
+  status         RecordStatus      @default(ACTIVE)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  createdBy      String?
+
+  @@unique([organizationId, subjectType, subjectId, root])
+  @@index([organizationId, subjectType, subjectId, status])
+}

@@ -1,10 +1,10 @@
 import { hasPermission, type Permission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
-import { applyOverrides, type PermissionOverride } from "../../permissions/overrides";
+import { resolveSubjectsAccess } from "../../permissions/resolve-subject";
 import { parseMemberRole } from "../member/member-roles";
 import type { NotificationKind } from "./schema";
 
-type Db = { context: Pick<OperationContext, "db"> };
+type Db = { context: Pick<OperationContext, "db" | "organizationId"> };
 
 export type ReachableInput = Db & {
   userIds: readonly string[];
@@ -13,24 +13,9 @@ export type ReachableInput = Db & {
   needs: readonly Permission[];
 };
 
-/** The members' active permission overrides, by member id. */
-async function overridesByMember({ context, memberIds }: Db & { memberIds: string[] }) {
-  const rows = await context.db.permissionOverride.findMany({
-    where: { subjectType: "MEMBER", subjectId: { in: memberIds }, status: "ACTIVE" },
-  });
-  const byMember = new Map<string, PermissionOverride[]>();
-  for (const row of rows) {
-    const effect = row.effect === "ALLOW" ? "allow" : "deny";
-    const list = byMember.get(row.subjectId) ?? [];
-    list.push({ feature: row.feature, action: row.action, effect } as PermissionOverride);
-    byMember.set(row.subjectId, list);
-  }
-  return byMember;
-}
-
 /**
  * Who of `userIds` is told (ADR 0094): members of the organization who did not turn the kind
- * off and who may still see the subject (their preset plus overrides, as `packages/auth` resolves).
+ * off and who may still see the subject (their preset plus overrides, through the same `resolveSubjectsAccess` as `packages/auth`).
  */
 export async function reachableRecipients({ context, userIds, kind, needs }: ReachableInput) {
   if (userIds.length === 0) return [];
@@ -42,12 +27,19 @@ export async function reachableRecipients({ context, userIds, kind, needs }: Rea
     }),
   ]);
   const disabled = new Set(off.map((row) => row.userId));
-  const overrides = await overridesByMember({ context, memberIds: members.map((m) => m.id) });
+  const access = await resolveSubjectsAccess({
+    db: context.db,
+    organizationId: context.organizationId,
+    subjectKind: "member",
+    subjects: members.map((member) => ({
+      id: member.id,
+      preset: parseMemberRole({ role: member.role }),
+    })),
+  });
   return members
     .filter((member) => !disabled.has(member.userId))
     .filter((member) => {
-      const preset = parseMemberRole({ role: member.role });
-      const permissions = applyOverrides({ preset, overrides: overrides.get(member.id) ?? [] });
+      const permissions = access.get(member.id)?.permissions ?? {};
       return needs.every((permission) => hasPermission({ permissions, permission }));
     })
     .map((member) => member.userId);

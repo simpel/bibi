@@ -12,6 +12,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["RunSheetDefinition", "ACTIVE"],
   ["Responsibility", "ACTIVE"],
   ["PermissionOverride", "ACTIVE"],
+  ["RecordScopeOverride", "ACTIVE"],
   ["Assignment", "ACTIVE"],
   ["RecordRelation", "ACTIVE"],
   ["Record", "ACTIVE"],
