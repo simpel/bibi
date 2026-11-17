@@ -97,7 +97,12 @@ describe("a deposit is a prepayment invoice in the ledger (ADR 0106)", () => {
     unwrap({ result: await execute({ operation: sendDeposit, input: { id: draft.id }, context }) });
     const paidAt = new Date();
     fake.paidOn.set("1", [{ reference: "bank-1", amountMinor: 150_000, paidAt }]);
-    const swept = unwrap({ result: await sweepProviderInvoices({ provider: "FORTNOX" }) });
+    const swept = unwrap({
+      result: await sweepProviderInvoices({
+        provider: "FORTNOX",
+        organizationId: context.organizationId,
+      }),
+    });
     expect(swept.synced).toBeGreaterThanOrEqual(1);
     const deposit = unwrap({
       result: await execute({ operation: getDeposit, input: { id: draft.id }, context }),
@@ -108,7 +113,12 @@ describe("a deposit is a prepayment invoice in the ledger (ADR 0106)", () => {
       { method: "INVOICE", provider: "FORTNOX", status: "SUCCEEDED" },
     ]);
     // Read again: nothing new.
-    unwrap({ result: await sweepProviderInvoices({ provider: "FORTNOX" }) });
+    unwrap({
+      result: await sweepProviderInvoices({
+        provider: "FORTNOX",
+        organizationId: context.organizationId,
+      }),
+    });
     expect(await context.db.payment.count({ where: { depositId: draft.id } })).toBe(1);
   });
 

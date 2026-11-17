@@ -64,7 +64,12 @@ describe("Visma through the core operations (ADR 0100)", () => {
 
     const poll = findProvider({ key: "VISMA" })?.signals?.poll;
     company.invoice = { TotalAmount: 5600, RemainingAmount: 2600 };
-    unwrap({ result: (await poll?.run({})) ?? { ok: false, error: new Error("no poll") } });
+    unwrap({
+      result: (await poll?.run({ organizationId: context.organizationId })) ?? {
+        ok: false,
+        error: new Error("no poll"),
+      },
+    });
     const partly = await context.db.invoice.findUniqueOrThrow({ where: { id: draft.id } });
     const payments = await context.db.payment.findMany({
       where: { invoiceId: draft.id, status: "SUCCEEDED" },
@@ -73,7 +78,12 @@ describe("Visma through the core operations (ADR 0100)", () => {
     expect(partly.status).toBe("SENT");
 
     company.invoice = { TotalAmount: 5600, RemainingAmount: 0 };
-    unwrap({ result: (await poll?.run({})) ?? { ok: false, error: new Error("no poll") } });
+    unwrap({
+      result: (await poll?.run({ organizationId: context.organizationId })) ?? {
+        ok: false,
+        error: new Error("no poll"),
+      },
+    });
     const settled = await context.db.payment.findMany({
       where: { invoiceId: draft.id, status: "SUCCEEDED" },
     });
@@ -103,11 +113,21 @@ describe("Visma through the core operations (ADR 0100)", () => {
     // Visma lowers what is left to pay by the credit: no money arrived.
     const poll = findProvider({ key: "VISMA" })?.signals?.poll;
     company.invoice = { TotalAmount: 5600, RemainingAmount: 4600 };
-    unwrap({ result: (await poll?.run({})) ?? { ok: false, error: new Error("no poll") } });
+    unwrap({
+      result: (await poll?.run({ organizationId: context.organizationId })) ?? {
+        ok: false,
+        error: new Error("no poll"),
+      },
+    });
     const none = await context.db.payment.count({ where: { invoiceId: draft.id } });
     expect(none).toBe(0);
     company.invoice = { TotalAmount: 5600, RemainingAmount: 600 };
-    unwrap({ result: (await poll?.run({})) ?? { ok: false, error: new Error("no poll") } });
+    unwrap({
+      result: (await poll?.run({ organizationId: context.organizationId })) ?? {
+        ok: false,
+        error: new Error("no poll"),
+      },
+    });
     const paid = await context.db.payment.findMany({ where: { invoiceId: draft.id } });
     expect(paid.map((p) => p.amountMinor)).toEqual([400_000]);
   });
@@ -134,11 +154,21 @@ describe("Visma through the core operations (ADR 0100)", () => {
     // Visma lowers what is left to pay by the registered payment: nothing new arrived.
     const poll = findProvider({ key: "VISMA" })?.signals?.poll;
     company.invoice = { TotalAmount: 5600, RemainingAmount: 4000 };
-    unwrap({ result: (await poll?.run({})) ?? { ok: false, error: new Error("no poll") } });
+    unwrap({
+      result: (await poll?.run({ organizationId: context.organizationId })) ?? {
+        ok: false,
+        error: new Error("no poll"),
+      },
+    });
     const only = await context.db.payment.findMany({ where: { invoiceId: draft.id } });
     expect(only.map((p) => p.method)).toEqual(["MANUAL"]);
     company.invoice = { TotalAmount: 5600, RemainingAmount: 0 };
-    unwrap({ result: (await poll?.run({})) ?? { ok: false, error: new Error("no poll") } });
+    unwrap({
+      result: (await poll?.run({ organizationId: context.organizationId })) ?? {
+        ok: false,
+        error: new Error("no poll"),
+      },
+    });
     const paid = await context.db.payment.findMany({
       where: { invoiceId: draft.id },
       orderBy: { createdAt: "asc" },

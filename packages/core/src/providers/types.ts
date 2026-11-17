@@ -250,7 +250,8 @@ export type StreamPort = {
   catchUp(input: StreamCatchUpInput): Promise<Result<PollOutcome>>;
 };
 
-export type PollRunInput = { db?: Db };
+/** `organizationId` limits the run to one organization (tests); absent = every organization. */
+export type PollRunInput = { db?: Db; organizationId?: string };
 export type PollOutcome = { organizations: number; synced: number };
 
 /** A scheduled pull for providers without push (ADR 0100); the worker calls `run` every interval. */

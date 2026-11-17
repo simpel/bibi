@@ -7,7 +7,12 @@ import { execute } from "../operations/execute";
 import type { ProviderKey } from "./provider-keys";
 import { providerSystemContext } from "./system-context";
 
-export type SweepProviderInvoicesInput = { provider: ProviderKey; db?: Db };
+/** `organizationId` limits the sweep to one organization (tests); absent = every organization. */
+export type SweepProviderInvoicesInput = {
+  provider: ProviderKey;
+  db?: Db;
+  organizationId?: string;
+};
 export type SweepOutcome = { organizations: number; synced: number };
 
 /**
@@ -19,13 +24,15 @@ export type SweepOutcome = { organizations: number; synced: number };
 export async function sweepProviderInvoices({
   provider,
   db = getDb(),
+  organizationId: only,
 }: SweepProviderInvoicesInput): Promise<Result<SweepOutcome>> {
   const where = { status: "SENT" as const, provider };
+  const scope = only ? { ...where, organizationId: only } : where;
   const select = { organizationId: true } as const;
   const order = { organizationId: "asc" } as const;
   const [withInvoices, withDeposits] = await Promise.all([
-    db.invoice.findMany({ where, distinct: ["organizationId"], select, orderBy: order }),
-    db.deposit.findMany({ where, distinct: ["organizationId"], select, orderBy: order }),
+    db.invoice.findMany({ where: scope, distinct: ["organizationId"], select, orderBy: order }),
+    db.deposit.findMany({ where: scope, distinct: ["organizationId"], select, orderBy: order }),
   ]);
   const owners = [...new Set([...withInvoices, ...withDeposits].map((o) => o.organizationId))];
   const outcome = { organizations: owners.length, synced: 0 };

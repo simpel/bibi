@@ -18,7 +18,12 @@ export const vismaAdapter: ProviderAdapter = {
     poll: {
       intervalMs: VISMA_POLL_INTERVAL_MS,
       // `invoice.sync` on every SENT Visma invoice reads what Visma received (derived payments).
-      run: ({ db }) => sweepProviderInvoices({ provider: "VISMA", ...(db ? { db } : {}) }),
+      run: ({ db, organizationId }) =>
+        sweepProviderInvoices({
+          provider: "VISMA",
+          ...(db ? { db } : {}),
+          ...(organizationId ? { organizationId } : {}),
+        }),
     },
   },
 };
