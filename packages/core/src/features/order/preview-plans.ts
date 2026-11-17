@@ -37,7 +37,11 @@ async function templatePlans({
   templateIds,
   startsAt,
 }: TemplatesInput): Promise<Result<PreviewPlan[]>> {
-  const readable = checkReadable({ context, permission: "orderTemplate:read", path: "templateIds" });
+  const readable = checkReadable({
+    context,
+    permission: "orderTemplate:read",
+    path: "templateIds",
+  });
   if (!readable.ok) return readable;
   const rows = await context.db.orderTemplate.findMany({
     where: { id: { in: [...new Set(templateIds)] } },
