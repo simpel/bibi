@@ -1,6 +1,6 @@
 import type { Board, BoardPhase, Prisma } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
-import { visibleBoardWhere } from "./access";
+import { viewerCan, visibleBoardWhere } from "./access";
 import type { BoardDto, BoardPhaseDto } from "./schema";
 
 /** Prisma `include` for a phase's active statuses, in status order. */
@@ -40,19 +40,19 @@ export function toBoardPhaseDto({ row }: { row: PhaseRow }): BoardPhaseDto {
   return { ...phase, statusIds: statuses.map(({ statusId }) => statusId) };
 }
 
-/** `context` is the caller, for fields that depend on who reads the view. */
-export type BoardDtoInput = { row: BoardRow; context: Pick<OperationContext, "actor"> };
+type Viewer = { context: Pick<OperationContext, "actor" | "permissions"> };
 
-export function toBoardDto({ row }: BoardDtoInput): BoardDto {
+export function toBoardDto({ row, context }: Viewer & { row: BoardRow }): BoardDto {
   const { position: _position, shares, phases, ...board } = row;
   return {
     ...board,
+    viewerCan: viewerCan({ context, board }),
     sharedWithUserIds: shares.map(({ userId }) => userId),
     phases: phases.map((phase) => toBoardPhaseDto({ row: phase })),
   };
 }
 
-type Db = { context: Pick<OperationContext, "db" | "actor"> };
+type Db = { context: Pick<OperationContext, "db" | "actor" | "permissions"> };
 
 /** One active board the caller sees (ADR 0111) with its phases, or `null`. */
 export async function loadBoard({ context, id }: Db & { id: string }) {

@@ -1,6 +1,7 @@
 import "server-only";
 import {
   type BoardDto,
+  getBoard,
   listBoards,
   listCustomers,
   listMembers,
@@ -44,6 +45,8 @@ export type PipelineData = {
   moveGates: Record<string, Record<string, TransitionGate[]>>;
   /** Customer id → name; empty when the caller may not view customers (ADR 0050). */
   customerNames: Record<string, string>;
+  /** Member user id → name, for the cards' assignees; empty when the lookup fails. */
+  memberNames: Record<string, string>;
   /** Members to share the view with, by name (the caller left out). */
   members: ShareMember[];
   access: BoardAccess;
@@ -74,7 +77,7 @@ async function loadCustomerNames({ board, abilities }: CustomerNamesInput) {
 
 export type LoadPipelineDataInput = { boardId?: string | undefined };
 
-/** The chosen board (default: the default view), the views, statuses, transitions and names. */
+/** The chosen board (default: the default view), the views, statuses, transitions and the names. */
 export async function loadPipelineData({
   boardId,
 }: LoadPipelineDataInput): Promise<Result<PipelineData>> {
@@ -86,6 +89,12 @@ export async function loadPipelineData({
     getCallerAbilities(),
   ]);
   if (!board.ok) return board;
+  // The shown view is fetched by id: it may fall outside the switcher's first page.
+  const shownId = board.value.boardId;
+  const shown = shownId
+    ? await runOperation({ operation: getBoard, input: { id: shownId } })
+    : null;
+  if (shown && !shown.ok) return shown;
   if (!boards.ok) return boards;
   if (!statuses.ok) return statuses;
   const transitions = Object.fromEntries(
@@ -98,14 +107,11 @@ export async function loadPipelineData({
     ]),
   );
   const customerNames = await loadCustomerNames({ board: board.value, abilities });
-  const shown = boards.value.items.find(({ id }) => id === board.value.boardId);
-  const edit = shown ? !shown.isDefault || can({ abilities, permission: "board:write" }) : false;
-  const owner = shown?.ownerId != null && shown.ownerId === abilities.userId;
-  const manage =
-    shown !== undefined &&
-    !shown.isDefault &&
-    (owner || can({ abilities, permission: "board:delete" }));
-  // Member names label the share list; a failed lookup only leaves it empty.
+  // Member names are labels on every screen (ADR 0050); a failed lookup only hides avatars.
+  const memberNames = members.ok
+    ? Object.fromEntries(members.value.items.map(({ userId, name }) => [userId, name]))
+    : {};
+  const { edit, manage } = shown?.ok ? shown.value.viewerCan : { edit: false, manage: false };
   const shareMembers = members.ok
     ? members.value.items
         .filter(({ userId }) => userId !== abilities.userId)
@@ -121,6 +127,9 @@ export async function loadPipelineData({
   const value = { board: board.value, boards: boards.value.items, statuses: statuses.value.items };
   return {
     ok: true,
-    value: { ...value, transitions, moveGates, customerNames, members: shareMembers, access },
+    value: {
+      ...value,
+      ...{ transitions, moveGates, customerNames, memberNames, members: shareMembers, access },
+    },
   };
 }

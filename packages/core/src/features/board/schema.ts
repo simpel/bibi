@@ -66,6 +66,13 @@ export type BoardPhaseDto = z.infer<typeof BoardPhaseSchema>;
 export type BoardPhaseCreateInput = z.infer<typeof BoardPhaseCreateInputSchema>;
 
 /** A pipeline view of orders (ADR 0067, 0111): a name, a filter, its sharing and its phases (columns). */
+export const BoardViewerCanSchema = z.object({
+  edit: z.boolean().describe("The caller may edit its name and columns"),
+  manage: z
+    .boolean()
+    .describe("The caller may change its sharing or archive it (never the default view)"),
+});
+
 export const BoardSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
@@ -88,6 +95,7 @@ export const BoardSchema = z.object({
     .describe("Only orders this member (user id) is the main assignee of; null for everyone"),
   /** The board's active phases in order, each with its statuses. */
   phases: z.array(BoardPhaseSchema),
+  viewerCan: BoardViewerCanSchema.describe("What the calling user or key may do with this view"),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -133,6 +141,7 @@ export const BoardShareInputSchema = z.object({
     .describe("Members (user ids) to share with; replaces the current list, the owner is skipped"),
 });
 
+export type BoardViewerCan = z.infer<typeof BoardViewerCanSchema>;
 export type BoardDto = z.infer<typeof BoardSchema>;
 export type BoardCreateInput = z.infer<typeof BoardCreateInputSchema>;
 export type BoardUpdateInput = z.infer<typeof BoardUpdateInputSchema>;

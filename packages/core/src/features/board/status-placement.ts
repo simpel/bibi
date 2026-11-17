@@ -5,7 +5,10 @@ import { loadAnyBoard, loadBoard } from "./load-board";
 import { insertPhase, mirrorStatuses, openStatusEnd, placeStatus } from "./phase-layout";
 
 type Ctx = {
-  context: Pick<OperationContext, "db" | "organizationId" | "recordChange" | "actor">;
+  context: Pick<
+    OperationContext,
+    "db" | "organizationId" | "recordChange" | "actor" | "permissions"
+  >;
 };
 
 /** The default board's name; boards are data, so staff rename it like any other. */

@@ -51,7 +51,7 @@ function MoveToMenu({ orderStatus, phaseId, phases, onMove }: MoveToProps) {
 }
 
 /**
- * A chip's menu. "Move to" is the board's (`board:write`); editing and archiving a status change
+ * A chip's menu. "Move to" is the view's (anyone who may edit it, ADR 0111); editing and archiving a status change
  * the flow for everyone and show only with `pipeline:write` / `pipeline:delete` (ADR 0076).
  */
 export function StatusChipMenu(props: StatusChipMenuProps) {

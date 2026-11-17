@@ -3,7 +3,7 @@ import { ROUTES } from "@/lib/routes";
 export type PipelineHrefInput = {
   /** The board to show; omitted for the default (first) board. */
   boardId?: string | null | undefined;
-  /** Customize mode: columns flip to their settings (needs `board:write`, ADR 0076). */
+  /** Customize mode: columns flip to their settings (for everyone who may edit the view, ADR 0111). */
   customize?: boolean;
 };
 

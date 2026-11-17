@@ -3,7 +3,7 @@ import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import { hasPermission, type Permission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
-import type { BoardDto } from "./schema";
+import type { BoardDto, BoardViewerCan } from "./schema";
 
 type Viewer = { context: Pick<OperationContext, "actor"> };
 
@@ -49,4 +49,15 @@ export function checkBoardManage({ context, board }: BoardAccessInput): Result<t
   const owner = board.ownerId !== null && board.ownerId === context.actor.userId;
   if (owner || may({ context, permission: "board:delete" })) return ok({ value: true });
   return forbidden({ message: "Only the view's owner changes its sharing or archives it" });
+}
+
+/**
+ * What the caller may do with a view they see, from the same rules the commands enforce, so
+ * clients never re-implement them. The default view has no sharing and is never archived.
+ */
+export function viewerCan({ context, board }: BoardAccessInput): BoardViewerCan {
+  return {
+    edit: checkBoardEdit({ context, board }).ok,
+    manage: !board.isDefault && checkBoardManage({ context, board }).ok,
+  };
 }
