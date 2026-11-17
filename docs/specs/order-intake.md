@@ -61,7 +61,7 @@ Behaviour spec for ADR 0081 (with 0082, 0084, 0085, 0088, 0089), all Accepted, n
 | Needs adjusting (<n>) | At least one hard clash, outside the guest range, or past the requested end. Each card's notes say which. |
 
 - **Custom booking** (sv "Egen bokning"), an outline button under the tabs with "Put the booking together line by line". It opens the build step.
-- **Title-row action**: **Create package** (its create page; with `template:write`).
+- **Title-row action**: **Create package** (its create page; with `orderTemplate:write`).
 - **A suggested package** (from a message) is marked "★ Suggested from the email", preselected, and its tab is the open one.
 - **Picking a package** that needs a follow-up opens a dialog, one question at a time ("question 1 of 3"):
   1. **Guests outside the range**: "Lower/Raise the booking to <n> guests", or "Keep <n> guests (lines over capacity are flagged)".

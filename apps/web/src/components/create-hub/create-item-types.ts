@@ -14,6 +14,7 @@ export type CreateKey =
   | "responsibility"
   | "runSheet"
   | "priceList"
+  | "package"
   | "orderStatus"
   | "member";
 

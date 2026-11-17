@@ -27,7 +27,7 @@ export const listOrderTemplates = defineOperation({
     "order.createFromTemplate.",
   input: OrderTemplateListInputSchema,
   output: OrderTemplateListOutputSchema,
-  permission: "template:read",
+  permission: "orderTemplate:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.orderTemplate.findMany({
       orderBy: [{ name: "asc" }, { id: "asc" }],
@@ -45,7 +45,7 @@ export const getOrderTemplate = defineOperation({
   description: "Get one predefined order (template) by id, with its lines.",
   input: OrderTemplateIdInputSchema,
   output: OrderTemplateSchema,
-  permission: "template:read",
+  permission: "orderTemplate:read",
   handler: async ({ input, context }) => {
     const template = await loadOrderTemplate({ context, id: input.id });
     return template ? ok({ value: template }) : notFound({ entity: "Order template" });
@@ -66,7 +66,7 @@ export const createOrderTemplate = defineOperation({
     `values and lines. ${LINE_NOTE}`,
   input: OrderTemplateCreateInputSchema,
   output: OrderTemplateSchema,
-  permission: "template:write",
+  permission: "orderTemplate:write",
   handler: async ({ input, context }) => {
     const { lines, fields: _fields, ...data } = input;
     const taken = await nameTaken({ context, name: data.name });
@@ -90,7 +90,7 @@ export const updateOrderTemplate = defineOperation({
     `the whole set when given. Orders already made from it are not changed. ${LINE_NOTE}`,
   input: OrderTemplateUpdateInputSchema,
   output: OrderTemplateSchema,
-  permission: "template:write",
+  permission: "orderTemplate:write",
   handler: async ({ input: { id, lines, fields, ...data }, context }) => {
     const before = await loadOrderTemplate({ context, id });
     if (!before) return notFound({ entity: "Order template" });
@@ -123,7 +123,7 @@ export const archiveOrderTemplate = defineOperation({
     "Archive (soft-delete) a predefined order. Orders already made from it are not changed.",
   input: OrderTemplateIdInputSchema,
   output: OrderTemplateSchema,
-  permission: "template:delete",
+  permission: "orderTemplate:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await loadOrderTemplate({ context, id });
     if (!before) return notFound({ entity: "Order template" });

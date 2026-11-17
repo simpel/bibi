@@ -64,7 +64,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   billing: "billing",
   accounting: "accounting",
   "item-states": "itemStates",
-  "order-templates": "orderTemplates",
+  packages: "orderTemplates",
   notifications: "notifications",
   mothership: "platformAdmin",
   organizations: "organizations",
@@ -96,7 +96,6 @@ const NO_DETAIL_SETTINGS = new Set([
   "pipeline",
   "price-lists",
   "run-sheets",
-  "order-templates",
   "responsibilities",
   "item-states",
 ]);
@@ -115,7 +114,7 @@ const NEW_PARENTS: Record<string, string> = {
   "price-list": "admin/price-lists",
   "order-status": "admin/pipeline",
   "item-state": "admin/item-states",
-  "order-template": "admin/order-templates",
+  "order-template": "packages",
 };
 
 /** Pages whose later segments are a period, not a page (`/calendar/{from}/{to}`, ADR 0064). */

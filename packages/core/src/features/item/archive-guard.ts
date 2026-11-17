@@ -61,7 +61,7 @@ export async function checkItemsUnused({ context, items }: ItemsInUseInput): Pro
   });
   if (templated > 0) {
     const message = `${what} is used by ${templated} predefined order lines`;
-    return inUseConflict({ context, feature: "template", message });
+    return inUseConflict({ context, feature: "orderTemplate", message });
   }
   return ok({ value: true });
 }

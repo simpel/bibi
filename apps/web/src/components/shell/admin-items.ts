@@ -2,7 +2,6 @@ import type { Permission, PermissionSet } from "@bibi/core";
 import {
   Building2Icon,
   ClipboardListIcon,
-  CopyPlusIcon,
   CreditCardIcon,
   GitBranchIcon,
   ListIcon,
@@ -27,7 +26,6 @@ export type AdminKey =
   | "lists"
   | "priceLists"
   | "orderFlow"
-  | "orderTemplates"
   | "runSheets"
   | "payments"
   | "accounting"
@@ -111,12 +109,6 @@ export const ADMIN_GROUPS: readonly AdminGroup[] = [
         icon: GitBranchIcon,
         href: ROUTES.adminPipeline,
         ids: ["orderStatuses", "flowRules", "statusGrid", "itemStates"],
-      }),
-      page({
-        key: "orderTemplates",
-        icon: CopyPlusIcon,
-        href: ROUTES.adminOrderTemplates,
-        ids: ["orderTemplates"],
       }),
       page({
         key: "runSheets",

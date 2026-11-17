@@ -78,6 +78,10 @@
             "question": "How do I create an order?",
             "answer": "Click Create order, pick the customer and add the lines: rooms, food, activities. You can also ask the assistant to create it for you.\nFor smaller meetings you don't need a quote first. Create the order and send the payment straight away."
           },
+          "packages": {
+            "question": "Where do I make a package, and who can?",
+            "answer": "Open **Packages** under Catalog in the left menu and choose **Create package**. Give it a name, the order type and start status, then add its lines.\nManagers and admins can create, edit and archive packages, and everyone can use them when they create an order. An admin can give a member access too, under their permissions."
+          },
           "customerValue": {
             "question": "How much is a customer worth?",
             "answer": "Open Customers. The Value column shows how much each customer has been billed so far, including VAT.\nAn order counts once it has been invoiced, or once the customer has accepted its quote. Hover the question mark next to Value to see this explained."

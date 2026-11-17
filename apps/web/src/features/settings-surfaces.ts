@@ -57,11 +57,6 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "itemState.archivePreview", route: "/admin/item-states" },
   { operation: "itemState.reorder", route: "/admin/item-states" },
   { operation: "itemState.setTransitions", route: "/admin/item-states" },
-  { operation: "orderTemplate.list", route: "/admin/order-templates" },
-  { operation: "orderTemplate.get", route: "/admin/order-templates" },
-  { operation: "orderTemplate.create", route: "/new/order-template" },
-  { operation: "orderTemplate.update", route: "/admin/order-templates/[id]/update" },
-  { operation: "orderTemplate.archive", route: "/admin/order-templates" },
   // Every user's own connected OAuth/MCP clients.
   { operation: "oauthGrant.list", route: "/profile" },
   { operation: "oauthGrant.revoke", route: "/profile" },

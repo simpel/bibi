@@ -12,7 +12,7 @@ import { ArchiveOrderTemplateDialog } from "./archive-order-template-dialog";
 
 /** The update page of one row. */
 export const orderTemplateEditHref = ({ id }: { id: string }) =>
-  updateRoute({ detail: listItemRoute({ list: ROUTES.adminOrderTemplates, id }) });
+  updateRoute({ detail: listItemRoute({ list: ROUTES.packages, id }) });
 
 export type OrderTemplateRowActionsProps = { template: OrderTemplateDto; access: RowAccess };
 

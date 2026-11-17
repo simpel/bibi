@@ -24,9 +24,9 @@ export type IntakeData = {
   recent: CustomerOption[];
   customerTypes: NamedOption[];
   contactTypes: NamedOption[];
-  /** Every active package, for step 3; empty without `template:read`. */
+  /** Every active package, for step 3; empty without `orderTemplate:read`. */
   packages: PackageOption[];
-  /** `template:write`: step 3 offers Create package. */
+  /** `orderTemplate:write`: step 3 offers Create package. */
   canCreatePackage: boolean;
   /** Where this member's draft for this organization is kept in the browser. */
   draftKey: string;
@@ -80,7 +80,7 @@ export async function loadIntakeData(): Promise<Result<IntakeData>> {
       packages: itemsOr({ result: templates })
         .filter(({ status }) => status === "ACTIVE")
         .map((template) => toPackage({ template })),
-      canCreatePackage: can({ abilities, permission: "template:write" }),
+      canCreatePackage: can({ abilities, permission: "orderTemplate:write" }),
       draftKey: draftKey({ organizationId, userId: abilities.userId ?? "" }),
       catalog: catalog.value,
       slot: null,

@@ -78,6 +78,10 @@
             "question": "Hur skapar jag en bokning?",
             "answer": "Klicka på Skapa bokning, välj kund och lägg till raderna: lokaler, mat, aktiviteter. Du kan också be assistenten skapa den åt dig.\nFör mindre möten behöver du ingen offert först. Skapa bokningen och skicka betalningen direkt."
           },
+          "packages": {
+            "question": "Var skapar jag en mall, och vem får göra det?",
+            "answer": "Öppna **Mallar** under Katalog i vänstermenyn och välj **Skapa mall**. Ge den ett namn, en bokningstyp och en startstatus och lägg sedan till raderna.\nChefer och administratörer kan skapa, ändra och arkivera mallar, och alla kan använda dem när de skapar en bokning. En administratör kan också ge en medlem behörighet under medlemmens behörigheter."
+          },
           "customerValue": {
             "question": "Hur mycket är en kund värd?",
             "answer": "Öppna Kunder. Kolumnen Värde visar hur mycket varje kund har fakturerats hittills, inklusive moms.\nEn order räknas när den har fakturerats, eller när kunden har accepterat offerten. Håll muspekaren över frågetecknet vid Värde för att se förklaringen."

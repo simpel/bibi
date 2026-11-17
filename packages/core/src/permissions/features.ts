@@ -42,6 +42,8 @@ export const FEATURE_SPECS = {
   item: { group: "catalog", actions: all },
   venue: { group: "catalog", actions: all },
   priceList: { group: "catalog", actions: all },
+  // Packages (ADR 0112): daily sales work, apart from run sheet definitions (`template`).
+  orderTemplate: { group: "catalog", actions: all },
   configuration: { group: "setup", actions: all },
   pipeline: { group: "setup", actions: all },
   board: { group: "setup", actions: all },
@@ -82,6 +84,7 @@ export const ALWAYS_VISIBLE_FEATURES: readonly Feature[] = [
   "pipeline",
   "board",
   "template",
+  "orderTemplate",
   "responsibility",
   "member",
 ];

@@ -17,7 +17,6 @@ export type AdminSectionId =
   | "flowRules"
   | "statusGrid"
   | "itemStates"
-  | "orderTemplates"
   | "runSheets"
   | "responsibilities"
   | "paymentMethods"
@@ -48,7 +47,6 @@ export const ADMIN_SECTIONS: Record<AdminSectionId, { anchor: string; permission
   flowRules: { anchor: "flow-rules", permission: "pipeline:write" },
   statusGrid: { anchor: "status-grid", permission: "pipeline:read" },
   itemStates: { anchor: "item-states", permission: "pipeline:read" },
-  orderTemplates: { anchor: "order-templates", permission: "template:read" },
   runSheets: { anchor: "run-sheets", permission: "template:read" },
   responsibilities: { anchor: "responsibilities", permission: "responsibility:read" },
   paymentMethods: { anchor: "payment-methods", permission: "paymentAccount:read" },

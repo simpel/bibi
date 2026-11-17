@@ -12,7 +12,7 @@ export const BASE_FEATURE: Readonly<Record<RecordBase, Feature>> = {
   CUSTOMER: "customer",
   CONTACT: "customer",
   ORDER: "order",
-  ORDER_TEMPLATE: "template",
+  ORDER_TEMPLATE: "orderTemplate",
   LINE: "program",
   REQUIREMENT: "program",
 };

@@ -335,6 +335,10 @@
         "title": "Price list",
         "description": "Prices that override the item prices."
       },
+      "package": {
+        "title": "Package",
+        "description": "Ready-made lines for a small meeting, to create orders in one step."
+      },
       "skill": {
         "title": "Skill",
         "description": "Reusable behaviour for the assistant."
@@ -639,10 +643,6 @@
         "itemStates": {
           "label": "Item states",
           "keywords": "line state item status"
-        },
-        "orderTemplates": {
-          "label": "Packages",
-          "keywords": "predefined orders package template"
         },
         "runSheets": {
           "label": "Run sheets",

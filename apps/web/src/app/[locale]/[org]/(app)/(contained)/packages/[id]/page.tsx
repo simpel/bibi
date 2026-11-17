@@ -7,7 +7,7 @@ type PageProps = { params: Promise<{ locale: string; org: string; id: string }> 
 export default async function OrderTemplateRedirect({ params }: PageProps) {
   const { locale, org, id } = await params;
   redirect({
-    href: `${ROUTES.adminOrderTemplates}/${encodeURIComponent(id)}/update`,
+    href: `${ROUTES.packages}/${encodeURIComponent(id)}/update`,
     locale: resolveLocale({ value: locale }),
     org,
   });

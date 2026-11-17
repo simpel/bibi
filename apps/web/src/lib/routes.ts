@@ -16,6 +16,8 @@ export const ROUTES = {
   skills: "/skills",
   skillNew: "/new/skill",
   items: "/items",
+  /** Packages (order templates), daily sales work under Catalog (ADR 0112). */
+  packages: "/packages",
   create: "/new",
   itemNew: "/new/item",
   typeNew: "/new/type",
@@ -52,7 +54,6 @@ export const ROUTES = {
   adminPriceLists: "/admin/price-lists",
   adminPipeline: "/admin/pipeline",
   adminItemStates: "/admin/item-states",
-  adminOrderTemplates: "/admin/order-templates",
   adminRunSheets: "/admin/run-sheets",
   adminResponsibilities: "/admin/responsibilities",
   adminPayments: "/admin/payments",

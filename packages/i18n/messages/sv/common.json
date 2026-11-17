@@ -335,6 +335,10 @@
         "title": "Prislista",
         "description": "Priser som går före artiklarnas priser."
       },
+      "package": {
+        "title": "Mall",
+        "description": "Färdiga rader för ett mindre möte, så att bokningen skapas i ett steg."
+      },
       "skill": {
         "title": "Skill",
         "description": "Återanvändbart beteende för assistenten."
@@ -639,10 +643,6 @@
         "itemStates": {
           "label": "Artikelstatusar",
           "keywords": "radstatus artikel status"
-        },
-        "orderTemplates": {
-          "label": "Mallar",
-          "keywords": "fördefinierade bokningar paket mall"
         },
         "runSheets": {
           "label": "Körscheman",

@@ -10,7 +10,7 @@ export const OrderIntakeShape = {
     .describe(
       "The package (orderTemplate.list) the lines came from, for provenance only: the first " +
         "status change is recorded with trigger TEMPLATE. Its fields and lines are not applied; " +
-        "send the reviewed `lines`. Needs template:read",
+        "send the reviewed `lines`. Needs orderTemplate:read",
     ),
   lines: z
     .array(CreateDraftLineSchema)

@@ -6,6 +6,7 @@ import {
   CalendarRangeIcon,
   ClipboardListIcon,
   ContactIcon,
+  CopyPlusIcon,
   HouseIcon,
   InboxIcon,
   KanbanIcon,
@@ -30,6 +31,7 @@ export type NavLabelKey =
   | "customers"
   | "items"
   | "venues"
+  | "orderTemplates"
   | "members"
   | "apiKeys"
   | "admin";
@@ -138,6 +140,14 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       icon: BuildingIcon,
       audience: "everyone",
       permission: "venue:read",
+    },
+    // Packages are daily sales work, not administration (ADR 0112).
+    {
+      href: ROUTES.packages,
+      labelKey: "orderTemplates",
+      icon: CopyPlusIcon,
+      audience: "everyone",
+      permission: "orderTemplate:read",
     },
   ],
   admin: [

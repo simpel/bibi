@@ -41,7 +41,7 @@ export function useOrderTemplateForm({ data, template }: UseOrderTemplateFormInp
       },
     }),
   });
-  const back = () => router.push(ROUTES.adminOrderTemplates);
+  const back = () => router.push(ROUTES.packages);
   const { submit, pending } = useFormAction({
     form,
     action: ({ values }) => save({ template, values }),

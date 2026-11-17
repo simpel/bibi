@@ -24,7 +24,7 @@ export default async function UpdateOrderTemplatePage({ params }: UpdateOrderTem
   setRequestLocale(locale);
   return (
     <SimplePage>
-      <PermissionGate permission="template:write">
+      <PermissionGate permission="orderTemplate:write">
         <OrderTemplateUpdate locale={locale} id={id} />
       </PermissionGate>
     </SimplePage>

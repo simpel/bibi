@@ -27,7 +27,7 @@ async function attempt({ setup, input, permissions }: TryInput): Promise<Refusal
 const BASE: PermissionSet = { order: ["write"], customer: ["read"] };
 
 describe("order.create: permissions of the parts given (ADR 0081, 0050)", () => {
-  it("needs program:write for lines, item:read for items and options, template:read", async () => {
+  it("needs program:write for lines, item:read for items and options, orderTemplate:read", async () => {
     const setup = await createSetup();
     const template = unwrap({ result: await makeTemplate({ context: setup.context, setup }) });
     const free = { entityTypeId: setup.lineType.id, name: "Sign" };

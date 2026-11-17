@@ -5,7 +5,7 @@ import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
 export type PackageActionsProps = {
-  /** `template:write`: the package create page is offered. */
+  /** `orderTemplate:write`: the package create page is offered. */
   canCreatePackage: boolean;
 };
 

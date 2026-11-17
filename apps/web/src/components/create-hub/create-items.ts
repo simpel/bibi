@@ -5,6 +5,7 @@ import {
   CalendarCheckIcon,
   CircleDotIcon,
   ClipboardListIcon,
+  CopyPlusIcon,
   ListIcon,
   ShapesIcon,
   TagIcon,
@@ -52,6 +53,13 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
     href: ROUTES.priceListNew,
     icon: TagIcon,
     permission: "priceList:write",
+  },
+  {
+    key: "package",
+    group: "catalog",
+    href: ROUTES.orderTemplateNew,
+    icon: CopyPlusIcon,
+    permission: "orderTemplate:write",
   },
   {
     key: "skill",

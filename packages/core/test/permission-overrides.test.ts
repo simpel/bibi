@@ -11,6 +11,13 @@ describe("presets and overrides (ADR 0050)", () => {
     expect(PRESET_PERMISSIONS.admin.member).toEqual(["read", "write", "delete"]);
   });
 
+  it("lets managers make packages but leaves run sheet definitions with admins (ADR 0112)", () => {
+    expect(PRESET_PERMISSIONS.manager.orderTemplate).toEqual(["read", "write", "delete"]);
+    expect(PRESET_PERMISSIONS.member.orderTemplate).toEqual(["read"]);
+    expect(PRESET_PERMISSIONS.manager.template).toEqual(["read"]);
+    expect(PRESET_PERMISSIONS.admin.template).toEqual(["read", "write", "delete"]);
+  });
+
   it("adds allow and removes deny on top of the preset", () => {
     const effective = applyOverrides({
       preset: "member",

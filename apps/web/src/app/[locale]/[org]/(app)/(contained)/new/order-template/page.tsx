@@ -17,7 +17,7 @@ export default async function NewOrderTemplatePage({ params }: NewOrderTemplateP
   setRequestLocale(locale);
   return (
     <SimplePage>
-      <PermissionGate permission="template:write">
+      <PermissionGate permission="orderTemplate:write">
         <OrderTemplateCreate locale={locale} />
       </PermissionGate>
     </SimplePage>

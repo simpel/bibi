@@ -79,7 +79,7 @@ export const createOrderFromTemplate = defineOperation({
   handler: async ({ input, context }) => {
     const readable = checkReadable({
       context,
-      permission: "template:read",
+      permission: "orderTemplate:read",
       path: "templateId",
     });
     if (!readable.ok) return readable;
