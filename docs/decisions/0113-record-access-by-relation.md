@@ -29,6 +29,10 @@
 - An `order:all` permission action: mixes capability with record selection.
 - Deriving relations on read: needs id lists or one query per responsibility; no correct, fast predicate exists without the projection.
 
+## Amendment (2026-11-17, the user's decision: "do the longterm best solution")
+- Decision 5 is enforced per client, not per `where`: Prisma copies query arguments before an extension sees them, so a marked `where` cannot be recognised. The plain scoped client refuses record-scoped models; `context.records` applies the caller's scope (top level and list relations, and refuses a single-record hop it cannot filter); `context.engine({ purpose })` sees every row, and each use is in a reviewed snapshot.
+- Postgres row-level security follows as a second layer once every query declares its intent, after a measured spike on the heaviest pages (ADR 0097): it also covers raw SQL and code outside core.
+
 ## Consequences
 - New tables `RecordScopeOverride` and `RecordRelation` with triggers; `AuditLog` gains `orderId` and `boardId` so audit rows follow the record they describe.
 - About 450 queries are converted; enforcement turns on per model, so main stays green. Guard tests cover markers, declarations, a same-organization behaviour suite per operation and an allowlist of every engine read.

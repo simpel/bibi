@@ -33,7 +33,9 @@ Target behaviour, being built in phases. Why: ADR 0113. Capability is `docs/spec
 - `UNAUTHENTICATED`: no principal. `FORBIDDEN`: a missing capability, never naming a record. `NOT_FOUND`: missing, archived or outside the caller's access. `VALIDATION`: input only.
 
 ## Enforcement
-- Every query on a record-scoped model, and every relation hop into one, carries `visibleWhere` (the caller's access) or `allRecordsWhere` with a purpose (`capacity`, `integrity`, `configuration`, `derivation`, `system`). The scoped client refuses a query with neither.
+- Every query on a record-scoped model, and every relation hop into one, goes through a client that says its intent. The plain `context.db` refuses them. `context.records` adds the caller's scope to the query and to list relations (`include`, `select`, `_count`, relation filters) and refuses a single-record hop it cannot filter. `context.engine({ purpose })` sees every row for a named purpose (`capacity`, `integrity`, `configuration`, `derivation`, `system`); every use is in a snapshot test.
+- The two raw SQL paths (`$findRecords`, `$searchEmbeddings`) take the scope as an argument.
+- Postgres row-level security is a planned second layer, built after a measured spike.
 - Operations declare scoped ids they take and return (`records` on `defineOperation`); execute checks the input ids before the handler.
 - Guards: marker tests in `packages/db`, a declaration test in core, a same-organization behaviour suite with a coverage test over every operation, and a snapshot of every `allRecordsWhere` call.
 
