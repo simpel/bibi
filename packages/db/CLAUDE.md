@@ -9,6 +9,7 @@ Prisma 7 (the `prisma-client` generator, driver adapter `@prisma/adapter-pg`) ag
 - `src/scoped/` – `scopedDb` (tenant protection). `src/embeddings/` – raw SQL for the search index.
 
 ## Rules
+- Only `packages/core` and `packages/auth` import `@bibi/db` at runtime; elsewhere only types, or a file listed with its reason in `DB_IMPORT_EXEMPTIONS` (`tools/lib/import-rules.mjs`, `check:structure`). Why: ADR 0113.
 - Business code **always** uses `scopedDb({ organizationId })`, never `getDb()`/`createDb()` directly.
   - Forces `organizationId` on all reads/writes (where, create, upsert) and removes attempts to change it.
   - Hides `status = ARCHIVED` on reads/updates unless you filter on `status` yourself.

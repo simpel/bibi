@@ -49,7 +49,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22
-      - run: node --test tools/lib/time-rules.test.mjs
+      - run: node --test tools/lib/time-rules.test.mjs tools/lib/import-rules.test.mjs
 
   storybook:
     # A broken story fails the build (ADR 0002).

@@ -2,13 +2,15 @@
 // Structure check for Bibi. Run with `pnpm check:structure` from the repo root.
 // Checks apps/* and packages/*: default export only in Next files/config/stories,
 // barrel files only as packages/*/src/index.ts, raw date APIs only in the time
-// module (ADR 0064), one typed object parameter per function, and feature folders
+// module (ADR 0064), `@bibi/db` runtime imports only in db/core/auth (ADR 0113),
+// one typed object parameter per function, and feature folders
 // with required files. Exits with code 1 on failure. See tools/lib/ for the rules.
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkFeatures } from "./lib/features.mjs";
 import { checkFile } from "./lib/file-rules.mjs";
+import { checkDbImport } from "./lib/import-rules.mjs";
 import { checkNumber } from "./lib/number-rules.mjs";
 import { analyzeParams } from "./lib/params.mjs";
 import { listPackageDirs, walkSources } from "./lib/scan.mjs";
@@ -40,6 +42,7 @@ export function runChecks({ root }) {
         ...analyzeParams({ relPath, content }),
         ...checkTime({ relPath, content }),
         ...checkNumber({ relPath, content }),
+        ...checkDbImport({ relPath, content }),
       ];
       for (const message of messages) problems.push({ file: relPath, message });
     }
