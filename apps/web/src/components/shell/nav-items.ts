@@ -10,8 +10,11 @@ import {
   InboxIcon,
   KanbanIcon,
   LayoutDashboardIcon,
+  ListIcon,
   type LucideIcon,
+  ShapesIcon,
   ShieldCheckIcon,
+  TagIcon,
 } from "lucide-react";
 import { INBOX_ROUTE } from "@/lib/inbox-routes";
 import { ROUTES } from "@/lib/routes";
@@ -30,6 +33,9 @@ export type NavLabelKey =
   | "customers"
   | "items"
   | "venues"
+  | "types"
+  | "lists"
+  | "priceLists"
   | "members"
   | "apiKeys"
   | "admin";
@@ -138,6 +144,28 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       icon: BuildingIcon,
       audience: "everyone",
       permission: "venue:read",
+    },
+    // The catalog's configuration, for members who may view it (their pages sit under /admin).
+    {
+      href: ROUTES.adminTypes,
+      labelKey: "types",
+      icon: ShapesIcon,
+      audience: "everyone",
+      permission: "configuration:read",
+    },
+    {
+      href: ROUTES.adminLists,
+      labelKey: "lists",
+      icon: ListIcon,
+      audience: "everyone",
+      permission: "configuration:read",
+    },
+    {
+      href: ROUTES.adminPriceLists,
+      labelKey: "priceLists",
+      icon: TagIcon,
+      audience: "everyone",
+      permission: "priceList:read",
     },
   ],
   admin: [

@@ -172,6 +172,7 @@
       "option": "option in {group}"
     },
     "wizard": {
+      "createType": "Create type",
       "progress": "Steps",
       "steps": {
         "type": "Type",

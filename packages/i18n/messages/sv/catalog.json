@@ -172,6 +172,7 @@
       "option": "alternativ i {group}"
     },
     "wizard": {
+      "createType": "Skapa typ",
       "progress": "Steg",
       "steps": {
         "type": "Typ",

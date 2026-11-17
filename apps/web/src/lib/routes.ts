@@ -19,6 +19,8 @@ export const ROUTES = {
   create: "/new",
   itemNew: "/new/item",
   typeNew: "/new/type",
+  /** Create an item type from the item create page; saving goes back to it with the new type. */
+  typeNewForItem: "/new/type?for=item",
   venueNew: "/new/venue",
   customerNew: "/new/customer",
   runSheetNew: "/new/run-sheet",

@@ -21,8 +21,20 @@ const STEP_FIELDS = {
   capabilities: ["groupId", "resourceKind", "capabilities", "setupMinutes", "teardownMinutes"],
 } as const;
 
+export type UseEntityTypeWizardInput = {
+  /** Opened from the item create page: an item type goes back there, already picked. */
+  forItem: boolean;
+};
+
+type DoneHrefInput = { forItem: boolean; id: string; base: string };
+
+function doneHref({ forItem, id, base }: DoneHrefInput): string {
+  if (forItem && base === "ITEM") return `${ROUTES.itemNew}?type=${encodeURIComponent(id)}`;
+  return `${ROUTES.adminTypes}/${id}`;
+}
+
 /** Form and steps of the create-type wizard; only item types have the capabilities step. */
-export function useEntityTypeWizard() {
+export function useEntityTypeWizard({ forItem }: UseEntityTypeWizardInput) {
   const t = useTranslations("entityType");
   const router = useRouter();
   const form = useForm<EntityTypeFormValues, unknown, EntityTypeFormOutput>({
@@ -33,7 +45,8 @@ export function useEntityTypeWizard() {
     form,
     action: ({ values }) => createEntityTypeAction({ input: values }),
     messages: { pending: t("saving"), success: t("created") },
-    onSuccess: ({ value }) => router.push(`${ROUTES.adminTypes}/${value.id}`),
+    onSuccess: ({ value }) =>
+      router.push(doneHref({ forItem, id: value.id, base: form.getValues("base") })),
   });
   const steps: EntityTypeStep[] =
     form.watch("base") === "ITEM" ? ["base", "capabilities"] : ["base"];

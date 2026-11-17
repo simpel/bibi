@@ -10,10 +10,15 @@ import type { ItemFormData } from "./item-form-data";
 import { ItemWizardBody } from "./item-wizard-body";
 import { useItemWizard } from "./use-item-wizard";
 
-export type ItemWizardProps = { data: ItemFormData; typeId?: string | undefined };
+export type ItemWizardProps = {
+  data: ItemFormData;
+  typeId?: string | undefined;
+  /** The caller may create item types: the type step links to creating one. */
+  canCreateType: boolean;
+};
 
 /** Create an item one step at a time: type, then its details, then price and other capabilities. */
-export function ItemWizard({ data, typeId }: ItemWizardProps) {
+export function ItemWizard({ data, typeId, canCreateType }: ItemWizardProps) {
   const t = useTranslations("item");
   const router = useRouter();
   const wizard = useItemWizard({ data, typeId, onDone: () => router.push(ROUTES.items) });
@@ -25,7 +30,14 @@ export function ItemWizard({ data, typeId }: ItemWizardProps) {
       <form onSubmit={wizard.submit} noValidate className="grid max-w-2xl gap-6">
         <WizardProgress steps={labels} index={index} label={t("wizard.progress")} />
         <p className="text-sm text-muted-foreground">{t(`wizard.descriptions.${step}`)}</p>
-        <ItemWizardBody form={form} step={step} type={type} data={data} typeOf={wizard.typeOf} />
+        <ItemWizardBody
+          form={form}
+          step={step}
+          type={type}
+          data={data}
+          typeOf={wizard.typeOf}
+          canCreateType={canCreateType}
+        />
         <WizardFooter
           first={first}
           last={isLast}

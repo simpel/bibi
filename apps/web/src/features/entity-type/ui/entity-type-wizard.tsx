@@ -12,12 +12,20 @@ import type { GroupOption } from "./group-select-field";
 import { ItemTypeFields } from "./item-type-fields";
 import { useEntityTypeWizard } from "./use-entity-type-wizard";
 
+export type EntityTypeWizardProps = {
+  groups: readonly GroupOption[];
+  /** Opened from the item create page: back and save return there. */
+  forItem: boolean;
+};
+
 /** Create a type step by step: base and name, then (item types) capabilities; fields come next. */
-export function EntityTypeWizard({ groups }: { groups: readonly GroupOption[] }) {
+export function EntityTypeWizard({ groups, forItem }: EntityTypeWizardProps) {
   const t = useTranslations("entityType");
   const router = useRouter();
-  const { form, steps, step, index, isLast, pending, next, submit, setIndex } =
-    useEntityTypeWizard();
+  const { form, steps, step, index, isLast, pending, next, submit, setIndex } = useEntityTypeWizard(
+    { forItem },
+  );
+  const backHref = forItem ? ROUTES.itemNew : ROUTES.adminTypes;
   const labels = steps.map((id) => ({ id, label: t(`wizard.steps.${id}`) }));
   return (
     <Form {...form}>
@@ -43,7 +51,7 @@ export function EntityTypeWizard({ groups }: { groups: readonly GroupOption[] })
           last={isLast}
           pending={pending}
           canSave
-          onBack={() => (index === 0 ? router.push(ROUTES.adminTypes) : setIndex(index - 1))}
+          onBack={() => (index === 0 ? router.push(backHref) : setIndex(index - 1))}
           onNext={next}
         />
       </form>
