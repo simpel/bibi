@@ -52,7 +52,10 @@
     },
     "done": {
       "title": "Thank you!",
-      "finishing": "Finishing your payment…"
+      "finishing": "Finishing your payment…",
+      "paid": "Your subscription is active. Everything you have set up is right where you left it.",
+      "paidInTrial": "Your plan is set. Nothing is charged until your free trial ends.",
+      "continue": "Continue to Bibi"
     },
     "settings": {
       "planTitle": "Plan",

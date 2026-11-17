@@ -258,7 +258,7 @@
           },
           "trialLeft": {
             "question": "Hur många dagar är kvar av vår provperiod?",
-            "answer": "Kortet längst ned i menyn räknar ned dagarna som är kvar av era 14 gratisdagar.\nEn admin klickar på **Välj en plan** där för att välja månads- eller årsplan och betala med kort eller ett annat sätt som Stripe erbjuder. Inget dras förrän provperioden är slut."
+            "answer": "Kortet längst ned i menyn räknar ned dagarna som är kvar av era 14 gratisdagar.\nEn admin klickar på **Välj en plan** där för att välja månads- eller årsplan och betala med kort eller ett annat sätt som Stripe erbjuder. Inget dras förrän provperioden är slut.\nNär du har betalat kommer du till en tacksida; klicka på **Fortsätt till Bibi** för att fortsätta där du var."
           },
           "afterTrial": {
             "question": "Vad händer när provperioden är slut?",

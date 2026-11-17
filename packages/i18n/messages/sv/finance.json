@@ -52,7 +52,10 @@
     },
     "done": {
       "title": "Tack!",
-      "finishing": "Slutför din betalning…"
+      "finishing": "Slutför din betalning…",
+      "paid": "Ditt abonnemang är aktivt. Allt du har satt upp finns kvar precis där du lämnade det.",
+      "paidInTrial": "Din plan är vald. Inget dras förrän din provperiod är slut.",
+      "continue": "Fortsätt till Bibi"
     },
     "settings": {
       "planTitle": "Plan",

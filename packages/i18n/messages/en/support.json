@@ -258,7 +258,7 @@
           },
           "trialLeft": {
             "question": "How many days are left of our free trial?",
-            "answer": "The card at the bottom of the menu counts down the days left of your 14 free days.\nAn admin clicks **Pick a plan** on it to choose monthly or yearly and pay by card or another method Stripe offers. Nothing is charged until the trial ends."
+            "answer": "The card at the bottom of the menu counts down the days left of your 14 free days.\nAn admin clicks **Pick a plan** on it to choose monthly or yearly and pay by card or another method Stripe offers. Nothing is charged until the trial ends.\nAfter paying you land on a thank-you page; click **Continue to Bibi** to carry on where you were."
           },
           "afterTrial": {
             "question": "What happens when the trial ends?",
