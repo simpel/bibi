@@ -12,12 +12,14 @@ import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { getNumberFormat } from "@/server/number-format";
 import { runOperation } from "@/server/run-operation";
+import { countDue } from "../lib/count-due";
 import { filterMyWork, myWorkQualifiers } from "../lib/my-work-query";
 import { myWorkHref } from "../lib/my-work-window";
 import { MyWorkLater } from "./my-work-later";
 import { MyWorkSearch } from "./my-work-search";
 import { MyWorkTimeline } from "./my-work-timeline";
 import { NeedsYou } from "./needs-you";
+import { SyncMyWorkDue } from "./sync-my-work-due";
 
 export type MyWorkPageProps = {
   locale: Locale;
@@ -66,6 +68,7 @@ export async function MyWorkPage({ locale, from, to, today, q }: MyWorkPageProps
       <div data-slot="my-work" className="mx-auto grid w-full max-w-2xl gap-6">
         {header}
         {tasks?.ok ? <NeedsYou tasks={tasks.value.tasks} numbers={numbers} /> : null}
+        {tasks?.ok ? <SyncMyWorkDue count={countDue({ tasks: tasks.value.tasks })} /> : null}
         {tasks && !tasks.ok ? (
           <ErrorState inline errorKey={handleLoadError({ error: tasks.error, locale })} />
         ) : null}

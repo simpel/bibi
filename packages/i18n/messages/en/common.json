@@ -164,6 +164,7 @@
     "orders": "Orders",
     "inbox": "Inbox",
     "inboxOpen": "{count, plural, one {# open message} other {# open messages}}",
+    "myWorkDue": "{count, plural, one {# task due now} other {# tasks due now}}",
     "skills": "Skills",
     "settings": "Settings",
     "openMenu": "Open menu",

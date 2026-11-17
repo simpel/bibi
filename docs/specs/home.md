@@ -10,6 +10,7 @@ My work answers "what must I do", not only "what am I part of". The page opens w
 - One row per task: a sentence that starts with the verb ("Send Kitchen order", "Fix double booking on Hall A with #1042", "Confirm or release 2 soft holds"), the order's reference, title and customer, when it is due (`RelativeTime`; "Since" for Waiting on customer) and one button that opens the place to act: the run sheet, the quote, the inbox, else the order. The sentence opens the order.
 - Rows sit in groups, in this order, each group shown only when it has rows: **Blocked** (red, stop sign), **Late** (due before now), **Today** (due later today in the organization's zone), **Soon** (due after today, through the end of next week) and **Waiting on customer** (nothing to do yet but follow up). Inside a group, soonest due first, then by reference.
 - Empty: a single line, "Nothing needs you right now", and the timeline below.
+- Sidebar: the My work entry carries a red count of the tasks in Blocked, Late and Today (a red dot when the sidebar is collapsed to icons), nothing at zero. The shell reads it once with its other live counts (ADR 0094, not on the stream) and the My work page refreshes it each time it renders, so the badge matches the list.
 - The assistant's `myWork_tasks` tool renders the same list (generative UI component in `@bibi/ui`).
 
 ### Tasks
@@ -59,4 +60,4 @@ Defined in `docs/specs/assignments-and-responsibilities.md` ("Concerns me"). A m
 
 ## Not built
 - Untimed lines (no place on a timeline), orders without lines, prep lead times, the responsibility's own name on the card.
-- Needs you: a count on the sidebar's My work entry (the live counts, ADR 0094, would derive every task on each page), per-organization leads, tasks for a line item's assignee, deposits, ticking off run sheet rows, snoozing or dismissing a task, unassigned orders and responsibilities as tasks for a manager.
+- Needs you: per-organization leads, tasks for a line item's assignee, deposits, ticking off run sheet rows, snoozing or dismissing a task, unassigned orders and responsibilities as tasks for a manager.

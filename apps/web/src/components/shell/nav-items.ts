@@ -53,7 +53,7 @@ export type NavItem = {
   badge?: NavBadgeKind;
 };
 
-export type NavBadgeKind = "inbox";
+export type NavBadgeKind = "inbox" | "myWork";
 
 export type NavGroupId = "primary" | "work" | "catalog" | "admin";
 
@@ -64,7 +64,13 @@ export type NavGroupId = "primary" | "work" | "catalog" | "admin";
 export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
   primary: [
     // The start page: what concerns the signed-in member (ADR 0110).
-    { href: ROUTES.home, labelKey: "myWork", icon: HouseIcon, audience: "everyone" },
+    {
+      href: ROUTES.home,
+      labelKey: "myWork",
+      icon: HouseIcon,
+      audience: "everyone",
+      badge: "myWork",
+    },
     {
       href: ROUTES.pipeline,
       labelKey: "pipeline",

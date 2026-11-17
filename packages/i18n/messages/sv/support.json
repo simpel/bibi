@@ -26,7 +26,7 @@
           },
           "needsYou": {
             "question": "Vad står under Behöver dig?",
-            "answer": "**Behöver dig** överst på Mitt arbete listar det du behöver göra med dina bokningar: dubbelbokningar att lösa, körscheman att skicka, preliminärbokningar att bekräfta eller släppa, meddelanden att svara på, fakturor som har förfallit och bokningar som är över men inte stängda. Varje rad har en knapp som tar dig direkt dit du löser det.\nRaderna är grupperade i **Blockerat**, **Försenat**, **I dag**, **Snart** och **Väntar på kunden**. Ett körschema ska skickas senast en dag innan bokningen börjar, och preliminärbokningar bekräftas senast två dagar innan. En rad försvinner av sig själv när den är klar."
+            "answer": "**Behöver dig** överst på Mitt arbete listar det du behöver göra med dina bokningar: dubbelbokningar att lösa, körscheman att skicka, preliminärbokningar att bekräfta eller släppa, meddelanden att svara på, fakturor som har förfallit och bokningar som är över men inte stängda. Varje rad har en knapp som tar dig direkt dit du löser det.\nRaderna är grupperade i **Blockerat**, **Försenat**, **I dag**, **Snart** och **Väntar på kunden**. Ett körschema ska skickas senast en dag innan bokningen börjar, och preliminärbokningar bekräftas senast två dagar innan. En rad försvinner av sig själv när den är klar. Den röda siffran vid **Mitt arbete** i menyn räknar det som är blockerat, försenat eller ska göras i dag."
           },
           "commandBar": {
             "question": "Hur hittar jag snabbt en bokning eller en kund?",

@@ -164,6 +164,7 @@
     "orders": "Bokningar",
     "inbox": "Inkorg",
     "inboxOpen": "{count, plural, one {# öppet meddelande} other {# öppna meddelanden}}",
+    "myWorkDue": "{count, plural, one {# uppgift att göra nu} other {# uppgifter att göra nu}}",
     "skills": "Färdigheter",
     "settings": "Inställningar",
     "openMenu": "Öppna meny",

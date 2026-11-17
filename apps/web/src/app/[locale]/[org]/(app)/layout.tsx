@@ -36,7 +36,7 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
   if (payHref) redirect({ href: payHref, locale, org: organizationSlug });
   const { id, name, email } = session.user;
   // Only decide which sidebar links show (ADR 0036); `/admin/*` and `/admin` check again.
-  const counts = loadLiveCounts().catch(() => ({ unread: 0, inboxOpen: null }));
+  const counts = loadLiveCounts().catch(() => ({ unread: 0, inboxOpen: null, myWorkDue: null }));
   const [platformAdmin, abilities, preferences, canDraftFromMessage] = await Promise.all([
     isPlatformAdmin({ userId: id }),
     getCallerAbilities(),

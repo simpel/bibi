@@ -6,6 +6,10 @@ export type NotificationLive = {
   unread: number;
   /** Open inbox messages (ADR 0085), live too; null without `inbox:read`. */
   inboxOpen: number | null;
+  /** Needs you tasks due now (spec: home); null without `order:read`. Not on the stream. */
+  myWorkDue: number | null;
+  /** The My work page's fresh count, so the badge matches the list it shows. */
+  setMyWorkDue: (count: number | null) => void;
   /** Bumps when the stream moves the count, i.e. something changed elsewhere. */
   changed: number;
   /** The caller's latest read state change, for lists to apply locally. */
@@ -17,6 +21,8 @@ export type NotificationLive = {
 export const NotificationLiveContext = createContext<NotificationLive>({
   unread: 0,
   inboxOpen: null,
+  myWorkDue: null,
+  setMyWorkDue: () => {},
   changed: 0,
   mark: null,
   applyMark: () => {},

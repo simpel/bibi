@@ -26,7 +26,7 @@
           },
           "needsYou": {
             "question": "What is in Needs you?",
-            "answer": "**Needs you** at the top of My work lists what you have to do on your bookings: double bookings to fix, run sheets to send, preliminary bookings to confirm or release, messages to answer, invoices that are overdue and bookings that are over but not closed. Each row has a button that takes you straight to where you fix it.\nRows are grouped as **Blocked**, **Late**, **Today**, **Soon** and **Waiting on customer**. A run sheet is due a day before the booking starts, and preliminary bookings two days before. A row disappears by itself once it is done."
+            "answer": "**Needs you** at the top of My work lists what you have to do on your bookings: double bookings to fix, run sheets to send, preliminary bookings to confirm or release, messages to answer, invoices that are overdue and bookings that are over but not closed. Each row has a button that takes you straight to where you fix it.\nRows are grouped as **Blocked**, **Late**, **Today**, **Soon** and **Waiting on customer**. A run sheet is due a day before the booking starts, and preliminary bookings two days before. A row disappears by itself once it is done. The red number on **My work** in the menu counts what is blocked, late or due today."
           },
           "commandBar": {
             "question": "How do I quickly find an order or a customer?",

@@ -16,6 +16,8 @@ export type ShellUser = { name: string; email: string };
 
 /**
  * The shell's server-rendered counts (ADR 0094), kept live by the stream: the bell's unread
- * notifications and the inbox badge (null without `inbox:read`).
+ * notifications and the inbox badge (null without `inbox:read`). `myWorkDue` is the My work
+ * badge (Needs you tasks due now, null without `order:read`); the stream does not carry it, the
+ * My work page refreshes it.
  */
-export type ShellCounts = { unread: number; inboxOpen: number | null };
+export type ShellCounts = { unread: number; inboxOpen: number | null; myWorkDue: number | null };

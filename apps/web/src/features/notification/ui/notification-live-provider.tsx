@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import type { ShellCounts } from "@/components/shell/shell-types";
 import type { NotificationMark } from "../lib/apply-mark";
 import { type NotificationLive, NotificationLiveContext } from "./notification-live-context";
 import { useArrivalToasts } from "./use-arrival-toasts";
@@ -18,13 +19,14 @@ import { useNotificationStream } from "./use-notification-stream";
 export type NotificationLiveProviderProps = {
   organizationId: string;
   /** The counts the server is still reading; the stream sends them again on connect. */
-  counts: Promise<{ unread: number; inboxOpen: number | null }>;
+  counts: Promise<ShellCounts>;
   children: ReactNode;
 };
 
 /**
  * Holds the unread count for the bell and the list, and the inbox's open count for the sidebar
- * (ADR 0094). The stream moves it; a mark the
+ * (ADR 0094), and the My work badge (seeded by the server, refreshed by the My work page). The
+ * stream moves it; a mark the
  * caller made moves it first, so the stream's echo of the same count is not a change. What just
  * came in (a notification, an inbox message) is also toasted.
  */
@@ -35,6 +37,8 @@ export function NotificationLiveProvider({
 }: NotificationLiveProviderProps) {
   const [state, setState] = useState({ unread: 0, changed: 0 });
   const [inboxOpen, setInboxOpen] = useState<number | null>(null);
+  const [myWorkDue, setMyWorkDue] = useState<number | null>(null);
+  const pageDue = useRef(false);
   const [mark, setMark] = useState<NotificationMark | null>(null);
   const streamed = useRef(false);
   const toasts = useArrivalToasts();
@@ -57,15 +61,21 @@ export function NotificationLiveProvider({
     setState((current) => ({ ...current, unread }));
     setMark({ ids, read, at: new Date() });
   }, []);
-  const seed = useCallback<SeedCountsProps["onSeed"]>(({ unread, inboxOpen: open }) => {
+  const seed = useCallback<SeedCountsProps["onSeed"]>(({ unread, inboxOpen: open, myWorkDue }) => {
+    // The My work page's count is newer than the server's first read.
+    if (!pageDue.current) setMyWorkDue(myWorkDue);
     // The stream's counts are newer than the server's first read.
     if (streamed.current) return;
     setState((current) => ({ ...current, unread }));
     setInboxOpen(open);
   }, []);
+  const refreshDue = useCallback((count: number | null) => {
+    pageDue.current = true;
+    setMyWorkDue(count);
+  }, []);
   const value = useMemo(
-    () => ({ ...state, inboxOpen, mark, applyMark }),
-    [state, inboxOpen, mark, applyMark],
+    () => ({ ...state, inboxOpen, myWorkDue, setMyWorkDue: refreshDue, mark, applyMark }),
+    [state, inboxOpen, myWorkDue, refreshDue, mark, applyMark],
   );
   return (
     <NotificationLiveContext value={value}>
@@ -79,7 +89,7 @@ export function NotificationLiveProvider({
 
 type SeedCountsProps = {
   counts: NotificationLiveProviderProps["counts"];
-  onSeed: (input: { unread: number; inboxOpen: number | null }) => void;
+  onSeed: (input: ShellCounts) => void;
 };
 
 /** Unwraps the server's counts (`use`) and hands them to the provider once they are read. */
