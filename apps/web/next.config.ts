@@ -36,6 +36,8 @@ const config: NextConfig = {
     "@bibi/ui",
   ],
   serverExternalPackages: ["pg", "nodemailer", "pino", "pino-pretty"],
+  // Agent-driven upgrades stay on security releases.
+  experimental: { agentUpgrade: "security" },
   // `/docs` was split into `/support` (staff) and `/developers`; old links keep working.
   async redirects() {
     const moves = [
