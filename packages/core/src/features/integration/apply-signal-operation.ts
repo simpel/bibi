@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { AppError } from "../../errors/app-error";
-import { err, ok } from "../../errors/result";
+import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { PROVIDER_KEYS } from "../../providers/provider-keys";
 import { findProvider } from "../../providers/registry";
@@ -31,13 +30,10 @@ export const applyIntegrationSignal = defineOperation({
   input: ConnectionSignalSchema,
   output: ConnectionSignalResultSchema,
   permission: "integration:write",
+  systemOnly: true,
   entityType: "integrationConnection",
   approval: false,
   handler: async ({ input, context }) => {
-    if (context.actor.type !== "system") {
-      const message = "Connections are updated by the provider's events only";
-      return err({ error: new AppError({ code: "FORBIDDEN", message }) });
-    }
     const before = await context.db.providerConnection.findFirst({
       where: { provider: input.provider, externalAccountId: input.externalAccountId },
     });

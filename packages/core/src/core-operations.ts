@@ -1,3 +1,4 @@
+import { AppError } from "./errors/app-error";
 import { alternativeGroupOperations } from "./features/alternative-group/operations";
 import { apiKeyOperations } from "./features/api-key/operations";
 import { assignmentOperations } from "./features/assignment/operations";
@@ -126,7 +127,16 @@ export function findStaticOperation({ name }: { name: string }): AnyOperation | 
   return byName.get(name);
 }
 
-/** Every operation core ships; adapters register this list so surfaces stay in parity. */
+/**
+ * Every operation core ships; adapters register this list so surfaces stay in parity. A
+ * `systemOnly` operation is never in it: no surface may expose what only the system runs.
+ */
 export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyOperation[] {
-  return [...staticOperations(), createSearchOperation({ embed })];
+  const operations = [...staticOperations(), createSearchOperation({ embed })];
+  const systemOnly = operations.find((operation) => operation.systemOnly);
+  if (systemOnly) {
+    const message = `System-only operation "${systemOnly.name}" must not reach the surfaces`;
+    throw new AppError({ code: "INTERNAL", message });
+  }
+  return operations;
 }

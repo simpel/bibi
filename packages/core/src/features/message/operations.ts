@@ -21,8 +21,8 @@ export const listMessages = defineOperation({
   name: "message.list",
   kind: "query",
   description:
-    "List the messages of one of your conversations in order (oldest first). Parts follow the " +
-    "AI SDK UIMessage parts shape.",
+    "List the messages of one of your conversations in order (oldest first); with " +
+    "assistant:read (oversight) also other users'. Parts follow the AI SDK UIMessage parts shape.",
   input: MessageListInputSchema,
   output: MessageListOutputSchema,
   permission: "self:read",

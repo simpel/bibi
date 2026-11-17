@@ -28,7 +28,8 @@ export const listSkills = defineOperation({
   kind: "query",
   description:
     "List skills you can use: SYSTEM skills shipped with Bibi, your organization's skills and " +
-    "your personal ones. Filter by scope, status (e.g. PUBLISHED) and text.",
+    "your own personal ones (never other users' personal skills). Filter by scope, status " +
+    "(e.g. PUBLISHED) and text.",
   input: SkillListInputSchema,
   output: SkillListOutputSchema,
   permission: "self:read",
@@ -51,7 +52,9 @@ export const listSkills = defineOperation({
 export const getSkill = defineOperation({
   name: "skill.get",
   kind: "query",
-  description: "Get one skill by id, including its instructions, allowed tools and resources.",
+  description:
+    "Get one skill by id, including its instructions, allowed tools and resources. Another " +
+    "user's personal skill is not found.",
   input: SkillIdInputSchema,
   output: SkillSchema,
   permission: "self:read",
@@ -64,7 +67,9 @@ export const getSkill = defineOperation({
 export const exportSkill = defineOperation({
   name: "skill.export",
   kind: "query",
-  description: "Export a skill as a SKILL.md document (YAML frontmatter + markdown).",
+  description:
+    "Export a skill as a SKILL.md document (YAML frontmatter + markdown). Another user's " +
+    "personal skill is not found.",
   input: SkillIdInputSchema,
   output: SkillExportOutputSchema,
   permission: "self:read",

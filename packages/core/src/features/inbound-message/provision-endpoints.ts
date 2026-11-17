@@ -1,7 +1,6 @@
 import { type Db, getDb } from "@bibi/db";
 import { getLogger } from "@bibi/logger";
-import { AppError } from "../../errors/app-error";
-import { err, ok, type Result } from "../../errors/result";
+import { ok, type Result } from "../../errors/result";
 import type { ExecuteContext } from "../../operations/context";
 import { defineOperation } from "../../operations/define-operation";
 import { execute } from "../../operations/execute";
@@ -23,13 +22,10 @@ export const provisionInboundEndpoints = defineOperation({
   input: InboundEndpointProvisionInputSchema,
   output: InboundEndpointListOutputSchema,
   permission: "configuration:write",
+  systemOnly: true,
   approval: false,
   aiAllowed: false,
   handler: async ({ input: { emailLocalPart }, context }) => {
-    if (context.actor.type !== "system") {
-      const message = "Endpoints are provisioned by the system only";
-      return err({ error: new AppError({ code: "FORBIDDEN", message }) });
-    }
     const existing = await context.db.inboundEndpoint.findMany({ select: { channel: true } });
     const has = new Set(existing.map((row) => row.channel));
     const wanted = [

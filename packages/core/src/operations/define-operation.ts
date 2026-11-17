@@ -11,6 +11,7 @@ export const OPERATION_NAME_PATTERN = /^[a-z][a-zA-Z0-9]*(\.[a-z][a-zA-Z0-9]*)*$
 export function defineOperation<I extends z.ZodType, O extends z.ZodType>({
   approval,
   aiAllowed,
+  systemOnly,
   entityType,
   untrustedOutput,
   ...definition
@@ -23,6 +24,7 @@ export function defineOperation<I extends z.ZodType, O extends z.ZodType>({
     ...definition,
     approval: approval ?? definition.kind === "command",
     aiAllowed: aiAllowed ?? true,
+    systemOnly: systemOnly ?? false,
     untrustedOutput: untrustedOutput ?? false,
     entityType: entityType ?? definition.name.split(".")[0] ?? definition.name,
   });

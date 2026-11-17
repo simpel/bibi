@@ -1,5 +1,4 @@
-import { AppError } from "../../errors/app-error";
-import { err, ok, type Result } from "../../errors/result";
+import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { invalid, notFound } from "../../shared/errors";
@@ -43,13 +42,10 @@ export const receiveInboundMessage = defineOperation({
   input: InboundMessageReceiveInputSchema,
   output: InboundMessageSchema,
   permission: "inbox:write",
+  systemOnly: true,
   approval: false,
   aiAllowed: false,
   handler: async ({ input, context }) => {
-    if (context.actor.type !== "system") {
-      const message = "Received messages are stored by channel adapters only";
-      return err({ error: new AppError({ code: "FORBIDDEN", message }) });
-    }
     const { channel, externalId, details, ...fields } = input;
     const known = await context.db.inboundMessage.findFirst({ where: { channel, externalId } });
     if (known) return ok({ value: toInboundMessageDto({ row: known }) });

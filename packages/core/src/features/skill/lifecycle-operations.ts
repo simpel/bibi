@@ -25,8 +25,8 @@ export const publishSkill = defineOperation({
   name: "skill.publish",
   kind: "command",
   description:
-    "Publish a skill so the assistant offers it. Organization skills need an org admin; " +
-    "personal skills are published by their owner.",
+    "Publish a skill so the assistant offers it. Every user may call it for their own personal " +
+    "skills; organization skills also need assistant:write. SYSTEM skills are read-only.",
   input: SkillIdInputSchema,
   output: SkillSchema,
   permission: "self:write",
@@ -37,7 +37,9 @@ export const publishSkill = defineOperation({
 export const archiveSkill = defineOperation({
   name: "skill.archive",
   kind: "command",
-  description: "Archive (soft-delete) a skill. Archived skills are hidden and free their slug.",
+  description:
+    "Archive (soft-delete) a skill. Archived skills are hidden and free their slug. Your own " +
+    "personal skills only; organization skills also need assistant:write. SYSTEM skills are read-only.",
   input: SkillIdInputSchema,
   output: SkillSchema,
   permission: "self:write",

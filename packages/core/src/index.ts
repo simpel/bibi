@@ -125,6 +125,10 @@ export * from "./features/vocabulary/read-operations";
 export * from "./features/vocabulary/value-operations";
 export * from "./features/vocabulary/write-operations";
 export * from "./money-operations";
+export {
+  type CheckPermissionInput,
+  checkPermission,
+} from "./operations/check-permission";
 export * from "./operations/context";
 export { defineOperation } from "./operations/define-operation";
 export { type AfterCommitHook, type AfterCommitInput, execute } from "./operations/execute";

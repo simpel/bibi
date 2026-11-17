@@ -1,5 +1,4 @@
 import { type Db, getDb } from "@bibi/db";
-import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import { createExecuteContext } from "../../operations/context";
 import { defineOperation } from "../../operations/define-operation";
@@ -141,14 +140,11 @@ export const startPaymentAttempt = defineOperation({
   input: PaymentStartAttemptInputSchema,
   output: PaymentAttemptSchema,
   permission: "payment:write",
+  systemOnly: true,
   approval: false,
   aiAllowed: false,
   entityType: "payment",
   handler: async ({ input, context }) => {
-    if (context.actor.type !== "system") {
-      const message = "Attempts start from the public payment page only";
-      return err({ error: new AppError({ code: "FORBIDDEN", message }) });
-    }
     return openAttempt({ context, input });
   },
   external: ({ input, output, context }) => startNew({ context, input, output }),

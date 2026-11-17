@@ -106,6 +106,12 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
    */
   aiAllowed?: boolean;
   /**
+   * Only the system may run it (provider webhooks, worker jobs, the public pay page): `authorize`
+   * refuses every other actor with FORBIDDEN, and it is never in `createCoreOperations`, so no
+   * surface (web, GraphQL, REST, MCP) exposes it. Defaults to false.
+   */
+  systemOnly?: boolean;
+  /**
    * A query that runs a command's logic inside a transaction that is always rolled back, so it
    * can report what the command would do (and what would block it) without changing anything.
    */
@@ -133,11 +139,12 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
   untrustedOutput?: boolean;
 };
 
+/** Optional in a definition, always set on the defined operation. */
+type DefaultedKey = "approval" | "aiAllowed" | "systemOnly" | "entityType" | "untrustedOutput";
+
 export type Operation<I extends z.ZodType = z.ZodType, O extends z.ZodType = z.ZodType> = Readonly<
-  Required<
-    Pick<OperationDefinition<I, O>, "approval" | "aiAllowed" | "entityType" | "untrustedOutput">
-  > &
-    Omit<OperationDefinition<I, O>, "approval" | "aiAllowed" | "entityType" | "untrustedOutput">
+  Required<Pick<OperationDefinition<I, O>, DefaultedKey>> &
+    Omit<OperationDefinition<I, O>, DefaultedKey>
 >;
 
 /** Erased operation type for registries and adapters. */

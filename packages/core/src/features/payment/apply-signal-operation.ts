@@ -1,6 +1,5 @@
 import { getLogger } from "@bibi/logger";
-import { AppError } from "../../errors/app-error";
-import { err, ok } from "../../errors/result";
+import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
@@ -29,13 +28,10 @@ export const applyPaymentSignal = defineOperation({
   input: PaymentSignalSchema,
   output: PaymentSignalResultSchema,
   permission: "payment:write",
+  systemOnly: true,
   approval: false,
   followUp: notifyPaymentReceived,
   handler: async ({ input, context }) => {
-    if (context.actor.type !== "system") {
-      const message = "Payments are updated by the provider's webhook only";
-      return err({ error: new AppError({ code: "FORBIDDEN", message }) });
-    }
     const found = await findSignalledPayment({ context, signal: input });
     if (!found) return notFound({ entity: "Payment" });
     const { payment: before, attempt } = found;

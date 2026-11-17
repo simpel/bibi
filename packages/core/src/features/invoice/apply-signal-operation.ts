@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { AppError } from "../../errors/app-error";
-import { err, ok } from "../../errors/result";
+import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { ProviderSignalSchema } from "../../providers/signal";
 import { notFound } from "../../shared/errors";
@@ -46,13 +45,10 @@ export const applyInvoiceSignal = defineOperation({
   input: InvoiceSignalInputSchema,
   output: InvoiceSignalResultSchema,
   permission: "payment:write",
+  systemOnly: true,
   approval: false,
   followUp: notifyPaymentReceived,
   handler: async ({ input: { invoiceId, depositId, signal }, context }) => {
-    if (context.actor.type !== "system") {
-      const message = "Invoices are updated by the provider's events only";
-      return err({ error: new AppError({ code: "FORBIDDEN", message }) });
-    }
     if (depositId) return applyDepositSignal({ context, depositId, signal });
     if (!invoiceId) return notFound({ entity: "Invoice" });
     const row = await context.db.invoice.findFirst({ where: { id: invoiceId } });

@@ -1,5 +1,4 @@
-import { AppError } from "../../errors/app-error";
-import { err, ok, type Result } from "../../errors/result";
+import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { ExternalInput, OperationContext } from "../../operations/types";
 import { refreshConnection } from "../../providers/oauth/refresh-connection";
@@ -56,14 +55,11 @@ export const refreshExpiringIntegrations = defineOperation({
   input: IntegrationRefreshExpiringInputSchema,
   output: IntegrationRefreshExpiringOutputSchema,
   permission: "integration:write",
+  systemOnly: true,
   entityType: "integrationConnection",
   approval: false,
   aiAllowed: false,
   handler: async ({ context }) => {
-    if (context.actor.type !== "system") {
-      const message = "Connections are refreshed by the worker only";
-      return err({ error: new AppError({ code: "FORBIDDEN", message }) });
-    }
     const due = (await dueConnections({ context })).length;
     return ok({ value: { due, refreshed: 0, expired: 0 } });
   },

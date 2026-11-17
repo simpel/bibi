@@ -15,7 +15,7 @@ export const shareSkill = defineOperation({
   kind: "command",
   description:
     "Share one of your personal skills with the organization: copies it as an ORGANIZATION " +
-    "skill (DRAFT) and keeps your personal original. Needs an org admin.",
+    "skill (DRAFT) and keeps your personal original. Needs assistant:write.",
   input: SkillShareInputSchema,
   output: SkillSchema,
   permission: "assistant:write",
@@ -45,7 +45,7 @@ export const importSkill = defineOperation({
   kind: "command",
   description:
     "Import a SKILL.md (YAML frontmatter name, description, allowed-tools + markdown body) as " +
-    "a DRAFT skill. PERSONAL by default; ORGANIZATION needs an org admin.",
+    "a DRAFT skill. PERSONAL by default; ORGANIZATION also needs assistant:write.",
   input: SkillImportInputSchema,
   output: SkillSchema,
   permission: "self:write",

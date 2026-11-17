@@ -1,7 +1,6 @@
 import { getDb, type PaymentRefund } from "@bibi/db";
 import { getLogger } from "@bibi/logger";
-import { AppError } from "../../errors/app-error";
-import { err, ok, type Result } from "../../errors/result";
+import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { execute } from "../../operations/execute";
 import type { ExternalInput, OperationContext } from "../../operations/types";
@@ -127,14 +126,11 @@ export const retryRefunds = defineOperation({
   input: PaymentRetryRefundsInputSchema,
   output: PaymentRetryRefundsOutputSchema,
   permission: "payment:refund",
+  systemOnly: true,
   entityType: "payment",
   approval: false,
   aiAllowed: false,
   handler: async ({ context }) => {
-    if (context.actor.type !== "system") {
-      const message = "Stuck refunds are retried by the worker only";
-      return err({ error: new AppError({ code: "FORBIDDEN", message }) });
-    }
     const due = (await dueRefunds({ context })).length;
     return ok({ value: { due, settled: 0, resent: 0, waiting: 0 } });
   },

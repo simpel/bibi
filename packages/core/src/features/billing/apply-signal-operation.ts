@@ -25,13 +25,10 @@ export const applyBillingSignal = defineOperation({
   input: BillingSignalSchema,
   output: BillingSignalResultSchema,
   permission: "billing:write",
+  systemOnly: true,
   approval: false,
   aiAllowed: false,
   handler: async ({ input, context }) => {
-    if (context.actor.type !== "system") {
-      const message = "Subscriptions are updated by the Stripe webhook only";
-      return err({ error: new AppError({ code: "FORBIDDEN", message }) });
-    }
     const fetched = await getBillingGateway().getSubscription(input);
     if (!fetched.ok) return err({ error: fetched.error });
     if (fetched.value.organizationId !== context.organizationId) {

@@ -57,7 +57,8 @@ export const moneyOperations = [
 ];
 
 // The invoice and financials operations reach the package index through here (its size limit).
-// SYSTEM-only operations (provider signals, the public pay page) are exported but not registered.
+// `systemOnly` operations (provider signals, worker jobs, the public pay page) are exported but
+// never registered: `createCoreOperations` refuses them.
 export {
   applyIntegrationSignal,
   applyInvoiceSignal,

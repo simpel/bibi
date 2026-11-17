@@ -105,7 +105,7 @@ describe("conversation operations", () => {
     expect(errorCode({ result: own })).toBeNull();
     const system = testContext({ actor: { type: "system", userId: null } });
     const ownerless = await execute({ operation: createConversation, input: {}, context: system });
-    expect(errorCode({ result: ownerless })).toBe("VALIDATION");
+    expect(errorCode({ result: ownerless })).toBe("FORBIDDEN");
   });
 
   it("does not require approval for the assistant's own bookkeeping, but does for archive", () => {

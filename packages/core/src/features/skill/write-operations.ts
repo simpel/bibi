@@ -16,7 +16,7 @@ export const createSkill = defineOperation({
   kind: "command",
   description:
     "Create a skill (reusable assistant instructions) as a DRAFT. PERSONAL by default; " +
-    "ORGANIZATION skills need an org admin.",
+    "ORGANIZATION skills also need assistant:write.",
   input: SkillCreateInputSchema,
   output: SkillSchema,
   permission: "self:write",
@@ -37,7 +37,8 @@ export const updateSkill = defineOperation({
   kind: "command",
   description:
     "Update a skill's content. Omitted fields are unchanged; any change bumps the version. " +
-    "SYSTEM skills are read-only.",
+    "Your own personal skills only; organization skills also need assistant:write. SYSTEM " +
+    "skills are read-only.",
   input: SkillUpdateInputSchema,
   output: SkillSchema,
   permission: "self:write",

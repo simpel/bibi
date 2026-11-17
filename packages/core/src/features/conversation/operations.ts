@@ -2,6 +2,7 @@ import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { paginate } from "../../shared/paginate";
+import { requireUser } from "../../shared/require-user";
 import { canReadAllConversations, findConversation } from "./access";
 import { conversationEmbeddable } from "./embeddable";
 import {
@@ -20,8 +21,8 @@ export const listConversations = defineOperation({
   name: "conversation.list",
   kind: "query",
   description:
-    "List your assistant conversations, most recently active first. Org admins can pass " +
-    "allUsers=true to include other users' conversations.",
+    "List your own assistant conversations, most recently active first. allUsers=true " +
+    "includes other users' conversations and needs assistant:read (oversight).",
   input: ConversationListInputSchema,
   output: ConversationListOutputSchema,
   permission: "self:read",
@@ -44,7 +45,9 @@ export const listConversations = defineOperation({
 export const getConversation = defineOperation({
   name: "conversation.get",
   kind: "query",
-  description: "Get one of your conversations by id (without messages; use message.list).",
+  description:
+    "Get one of your conversations by id (without messages; use message.list). With " +
+    "assistant:read (oversight) also other users' conversations.",
   input: ConversationIdInputSchema,
   output: ConversationSchema,
   permission: "self:read",
@@ -65,11 +68,9 @@ export const createConversation = defineOperation({
   approval: false,
   embeddable: conversationEmbeddable,
   handler: async ({ input, context }) => {
-    const userId = context.actor.userId;
-    if (!userId) {
-      const message = "A conversation needs a user owner";
-      return err({ error: new AppError({ code: "VALIDATION", message }) });
-    }
+    const user = requireUser({ context });
+    if (!user.ok) return user;
+    const userId = user.value;
     const conversation = await context.db.conversation.create({
       data: { title: input.title, ownerUserId: userId, organizationId: "" },
     });
@@ -81,7 +82,7 @@ export const createConversation = defineOperation({
 export const renameConversation = defineOperation({
   name: "conversation.rename",
   kind: "command",
-  description: "Rename one of your conversations.",
+  description: "Rename one of your own conversations (the owner only).",
   input: ConversationRenameInputSchema,
   output: ConversationSchema,
   permission: "self:write",
@@ -102,7 +103,9 @@ export const renameConversation = defineOperation({
 export const archiveConversation = defineOperation({
   name: "conversation.archive",
   kind: "command",
-  description: "Archive (soft-delete) a conversation. Owners and org admins can archive.",
+  description:
+    "Archive (soft-delete) one of your conversations. With assistant:read (oversight) also " +
+    "other users' conversations.",
   input: ConversationIdInputSchema,
   output: ConversationSchema,
   permission: "self:write",
