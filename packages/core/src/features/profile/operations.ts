@@ -22,7 +22,7 @@ export const getProfile = defineOperation({
   kind: "query",
   description:
     "Read the caller's own profile (first name, last name, phone, avatar key), shared across " +
-    "organizations. `complete` is true once names, phone and working hours are set.",
+    "organizations. `complete` is true once names and phone are set.",
   input: ProfileGetInputSchema,
   output: ProfileSchema,
   permission: "self:read",

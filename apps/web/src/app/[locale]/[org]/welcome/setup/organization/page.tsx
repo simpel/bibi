@@ -6,7 +6,9 @@ import { OrganizationForm } from "@/features/welcome/ui/setup/organization-form"
 import { organizationDefaults } from "@/features/welcome/ui/setup/organization-schema";
 import { welcomeProgress } from "@/features/welcome/ui/welcome-progress";
 import { WelcomeStepFrame } from "@/features/welcome/ui/welcome-step-frame";
+import { Link } from "@/lib/navigation";
 import { pageTitle } from "@/lib/page-metadata";
+import { ROUTES } from "@/lib/routes";
 import { requireReadySession } from "@/server/guard";
 import { runOperation } from "@/server/run-operation";
 
@@ -22,7 +24,10 @@ export async function generateMetadata({ params }: OrganizationStepProps) {
   });
 }
 
-/** Legal, contact and address data; optionally the first venue at the same address. */
+/**
+ * Legal, contact and address data; optionally the first venue at the same address. A text link
+ * under the form leads to joining an existing organization instead.
+ */
 export default async function OrganizationStep({ params }: OrganizationStepProps) {
   const { locale: raw, org } = await params;
   const locale = resolveLocale({ value: raw });
@@ -47,6 +52,11 @@ export default async function OrganizationStep({ params }: OrganizationStepProps
         defaults={defaults}
         canCreateVenue={venues.ok && venues.value.items.length === 0}
       />
+      <p className="text-center text-sm">
+        <Link href={ROUTES.welcome} className="text-muted-foreground underline">
+          {t("joinInstead")}
+        </Link>
+      </p>
     </WelcomeStepFrame>
   );
 }

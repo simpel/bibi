@@ -36,7 +36,6 @@ export const WELCOME_NAMESPACES = [
   "auth",
   "role",
   "timeZone",
-  "hours",
 ] as const satisfies readonly MessageNamespace[];
 
 /** Namespaces required by client components under `[org]/billing`. */

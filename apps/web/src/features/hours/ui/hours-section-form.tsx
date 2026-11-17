@@ -18,6 +18,8 @@ export type HoursSectionFormProps = {
   emptyText: string;
   /** Shown under the summary or editor, e.g. how to follow the venue again. */
   hint?: string;
+  /** Dated exceptions are edited and shown too (default); a member's working hours have none. */
+  withExceptions?: boolean;
   save: (input: HoursPattern) => Promise<ActionResult<unknown>>;
 };
 
@@ -27,6 +29,7 @@ export function HoursSectionForm({
   canEdit,
   emptyText,
   hint,
+  withExceptions = true,
   save,
 }: HoursSectionFormProps) {
   const { form, submit, pending, editing, setEditing, empty } = useHoursSectionForm({
@@ -37,11 +40,11 @@ export function HoursSectionForm({
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-3">
-        {editing ? <HoursWeekEditor form={form} withExceptions /> : null}
+        {editing ? <HoursWeekEditor form={form} withExceptions={withExceptions} /> : null}
         {!editing && !empty ? (
           <div className="grid gap-3">
             <HoursSummary rows={rows} />
-            <HoursExceptionsSummary rows={exceptions} />
+            {withExceptions ? <HoursExceptionsSummary rows={exceptions} /> : null}
           </div>
         ) : null}
         {!editing && empty ? <p className="text-sm text-muted-foreground">{emptyText}</p> : null}

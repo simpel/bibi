@@ -14,14 +14,13 @@ export type LoadProfileInput = { context: Pick<OperationContext, "db">; userId: 
 
 /**
  * The user's profile with `complete` derived on read (ADR 0061): first name, last name and phone
- * set and at least one working day. Without a row every field is null.
+ * set (working hours are optional). Without a row every field is null.
  */
 export async function loadProfile({ context, userId }: LoadProfileInput): Promise<ProfileDto> {
-  const [row, days] = await Promise.all([
-    context.db.userProfile.findUnique({ where: { userId }, select: PROFILE_SELECT }),
-    // Working days are kept per organization (#449): the ones here make the profile complete.
-    context.db.hoursDay.count({ where: { memberProfile: { member: { userId } } } }),
-  ]);
+  const row = await context.db.userProfile.findUnique({
+    where: { userId },
+    select: PROFILE_SELECT,
+  });
   const named = Boolean(row?.firstName && row.lastName && row.phone);
   return {
     id: row?.id ?? null,
@@ -30,6 +29,6 @@ export async function loadProfile({ context, userId }: LoadProfileInput): Promis
     phone: row?.phone ?? null,
     avatarKey: row?.avatarKey ?? null,
     locale: row?.locale === "en" ? "en" : "sv",
-    complete: named && days > 0,
+    complete: named,
   };
 }

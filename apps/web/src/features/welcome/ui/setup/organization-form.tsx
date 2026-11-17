@@ -47,7 +47,7 @@ export function OrganizationForm({ org, name, defaults, canCreateVenue }: Organi
       <form onSubmit={submit} noValidate className="grid gap-4">
         <OrganizationFields form={form} canCreateVenue={canCreateVenue} />
         <WelcomeStepActions
-          back={{ href: welcomePath({ step: "hours" }), org }}
+          back={{ href: welcomePath({ step: "profile" }), org }}
           pending={pending}
           aside={<SkipSetupButton org={org} />}
         />

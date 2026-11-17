@@ -1,4 +1,4 @@
-import { getUserSettings } from "@bibi/core";
+import { getUserSettings, getWorkingHours } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/states/page-header";
 import { NotificationPreferencesSection } from "@/features/notification/ui/notification-preferences-section";
 import { OauthGrantSection } from "@/features/oauth-grant/ui/oauth-grant-section";
 import { DisplayFormatForm } from "@/features/user-settings/ui/display-format-form";
+import { WorkingHoursForm } from "@/features/working-hours/ui/working-hours-form";
 import { runOperation } from "@/server/run-operation";
 import { ProfileNameForm } from "./profile-name-form";
 import { ProfileSectionNav } from "./profile-section-nav";
@@ -42,13 +43,14 @@ const NO_FORMATS = {
 };
 
 /**
- * Profile page body: name, email (read-only), formats, notifications, sessions and
+ * Profile page body: name, email (read-only), working hours, formats, notifications, sessions and
  * connected apps, with an in-page nav.
  */
 export async function ProfileView({ name, email, locale }: ProfileViewProps) {
-  const [t, settings] = await Promise.all([
+  const [t, settings, hours] = await Promise.all([
     getTranslations("profile"),
     runOperation({ operation: getUserSettings, input: {} }),
+    runOperation({ operation: getWorkingHours, input: {} }),
   ]);
   return (
     <div className="grid max-w-4xl grid-cols-[minmax(0,1fr)] gap-6 md:grid-cols-[10rem_minmax(0,1fr)] md:items-start">
@@ -59,6 +61,9 @@ export async function ProfileView({ name, email, locale }: ProfileViewProps) {
       <div className="grid min-w-0 gap-6">
         <ProfileCard id="details" title={t("details")}>
           <ProfileNameForm name={name} email={email} />
+        </ProfileCard>
+        <ProfileCard id="hours" title={t("hoursTitle")} description={t("hoursDescription")}>
+          <WorkingHoursForm days={hours.ok ? hours.value.days : []} />
         </ProfileCard>
         <ProfileCard id="display" title={t("displayTitle")} description={t("displayDescription")}>
           <DisplayFormatForm formats={settings.ok ? settings.value : NO_FORMATS} />

@@ -20,12 +20,9 @@ export async function nameOrganization({ page, name }: WelcomePageInput & { name
   return slug;
 }
 
-/** Profile (prefilled from the sign-up name) and the default working hours (ADR 0061). */
+/** Profile, prefilled from the sign-up name (ADR 0061); working hours wait for the profile page. */
 export async function completeProfile({ page, slug }: WelcomePageInput & { slug: string }) {
   await expect(page).toHaveURL(new RegExp(`/sv/${slug}/welcome/profile$`), { timeout: 15_000 });
   await page.getByLabel("Telefon").fill("+46 70 123 45 67");
-  await page.getByRole("button", { name: "Fortsätt" }).click();
-  await expect(page).toHaveURL(new RegExp(`/sv/${slug}/welcome/hours$`));
-  await expect(page.getByText("Måndag–Fredag")).toBeVisible();
   await page.getByRole("button", { name: "Fortsätt" }).click();
 }

@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { execute, getProfile, setWorkingHours, updateProfile } from "../src/index";
-import { DEFAULT_WORKING_HOURS } from "../src/schemas";
+import { execute, getProfile, updateProfile } from "../src/index";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
 import { addTestMemberWithUser, testOrg } from "./org-helpers";
 
@@ -25,7 +24,7 @@ describe("profile (ADR 0061)", () => {
     });
   });
 
-  it("saves trimmed names, is complete only with working hours, and keeps users apart", async () => {
+  it("saves trimmed names, is complete without working hours, and keeps users apart", async () => {
     const org = await testOrg();
     const { userId } = await addTestMemberWithUser({ context: org, role: "member" });
     const actor = { type: "user" as const, userId };
@@ -33,10 +32,7 @@ describe("profile (ADR 0061)", () => {
     const saved = unwrap({
       result: await execute({ operation: updateProfile, input: NAMES, context: a }),
     });
-    expect(saved).toMatchObject({ firstName: "Ada", lastName: "Lovelace", complete: false });
-    const days = [...DEFAULT_WORKING_HOURS];
-    unwrap({ result: await execute({ operation: setWorkingHours, input: { days }, context: a }) });
-    expect((await read({ context: a })).complete).toBe(true);
+    expect(saved).toMatchObject({ firstName: "Ada", lastName: "Lovelace", complete: true });
     expect((await read({ context: peer({ of: a }) })).id).toBeNull();
     const audit = await a.db.auditLog.findMany({ where: { entityId: saved.id ?? "" } });
     expect(audit.map((row) => row.operation)).toEqual(["profile.update"]);

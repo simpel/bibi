@@ -5,7 +5,7 @@ import { loadWelcomeState } from "./load-welcome-state";
 
 /**
  * Whether the app layout must send the member to `/:org/welcome` first (ADR 0061): an open
- * profile or hours step, or a pending setup they can do. The waiting page ("done") does not
+ * profile step, or a pending setup they can do. The waiting page ("done") does not
  * block the app. On any error the app opens, so a broken read never locks members out.
  */
 export async function mustWelcomeFirst(): Promise<boolean> {

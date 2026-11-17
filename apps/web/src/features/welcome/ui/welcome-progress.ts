@@ -3,7 +3,6 @@ import type { WelcomeState } from "../load-welcome-state";
 
 const SETUP_ORDER: readonly WelcomeStep[] = [
   "profile",
-  "hours",
   "setup/organization",
   "setup/kind",
   "setup/spaces",
@@ -17,8 +16,8 @@ export type WelcomeProgressInput = {
   state: Pick<WelcomeState, "canSetup" | "organization">;
 };
 
-/** "Step n of m": 2 steps for a member, 8 for whoever sets up a pending organization. */
+/** "Step n of m": 1 step for a member, 7 for whoever sets up a pending organization. */
 export function welcomeProgress({ step, state }: WelcomeProgressInput) {
   const setup = state.canSetup && state.organization.setupStatus === "PENDING";
-  return { step: SETUP_ORDER.indexOf(step) + 1, total: setup ? SETUP_ORDER.length : 2 };
+  return { step: SETUP_ORDER.indexOf(step) + 1, total: setup ? SETUP_ORDER.length : 1 };
 }

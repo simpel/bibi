@@ -86,14 +86,11 @@
       "avatarTooLarge": "The photo is larger than 2 MB",
       "avatarWrongType": "Use a PNG, JPEG or WebP image"
     },
-    "hours": {
-      "title": "Your working hours",
-      "description": "Used to show when you are available. You can change them later in your profile."
-    },
     "setup": {
       "organization": {
         "title": "About {organization}",
         "description": "Shown on quotes and invoices.",
+        "joinInstead": "Join an existing organization instead",
         "legalName": "Legal name",
         "orgNumber": "Organization number",
         "streetAddress": "Street address",

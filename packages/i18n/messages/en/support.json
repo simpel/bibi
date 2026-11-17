@@ -52,6 +52,10 @@
             "question": "Where do I set what a type is called in plural?",
             "answer": "Go to Settings, open Types and pick a type. Fill in Plural name, for example Conference rooms, and click Save.\nBibi uses it where several items are listed together, like the items summary on a venue. Left empty, the type's own name is used."
           },
+          "joinInstead": {
+            "question": "I started creating an organization, but my team already uses Bibi. What do I do?",
+            "answer": "On the first setup step, click Join an existing organization instead under the form. You can then accept an invitation, enter an invite code or pick an organization you already belong to."
+          },
           "inviteColleagues": {
             "question": "How do I invite my colleagues?",
             "answer": "Go to Administration → Members and invite them by email. They get a link that takes them straight into your organization.\nTen seats are included in the subscription."
@@ -233,6 +237,10 @@
           "findSettings": {
             "question": "Where do I find the settings?",
             "answer": "Click Administration in the sidebar. The start page shows every settings page you have access to, grouped into Organization, Catalog, Orders and Money & connections.\nClick a card to open the page, or click one of the parts listed on it to jump straight there."
+          },
+          "workingHours": {
+            "question": "Where do I set my working hours?",
+            "answer": "Click your name at the bottom of the sidebar and choose Profile. Under Working hours, choose Change, set the days and times you work and choose Save.\nYou can change them whenever your week changes."
           },
           "collapseSidebar": {
             "question": "Can I make the sidebar smaller?",

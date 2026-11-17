@@ -3,15 +3,16 @@ import { type NextWelcomeStepInput, nextWelcomeStep, welcomePath } from "./welco
 
 const done: NextWelcomeStepInput = {
   profileComplete: true,
-  hoursSet: true,
   setupStatus: "COMPLETED",
   canSetup: true,
 };
 
 describe("nextWelcomeStep (ADR 0061)", () => {
-  it("asks everyone for the profile, then the hours", () => {
-    expect(nextWelcomeStep({ ...done, profileComplete: false, hoursSet: false })).toBe("profile");
-    expect(nextWelcomeStep({ ...done, hoursSet: false })).toBe("hours");
+  it("asks everyone for the profile first", () => {
+    expect(nextWelcomeStep({ ...done, profileComplete: false })).toBe("profile");
+    expect(nextWelcomeStep({ ...done, profileComplete: false, setupStatus: "PENDING" })).toBe(
+      "profile",
+    );
   });
 
   it("sends a member who can set up a pending organization through the setup", () => {

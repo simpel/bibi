@@ -11,7 +11,7 @@ export const ProfileSchema = z.object({
   phone: z.string().nullable(),
   avatarKey: z.string().nullable().describe("Storage key of the avatar from file.upload"),
   locale: z.enum(["sv", "en"]).default("sv").describe("Preferred UI and email language"),
-  complete: z.boolean().describe("First name, last name and phone are set and working hours exist"),
+  complete: z.boolean().describe("First name, last name and phone are set"),
 });
 
 export const ProfileGetInputSchema = z.object({});

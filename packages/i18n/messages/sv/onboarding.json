@@ -86,14 +86,11 @@
       "avatarTooLarge": "Fotot är större än 2 MB",
       "avatarWrongType": "Använd en PNG-, JPEG- eller WebP-bild"
     },
-    "hours": {
-      "title": "Dina arbetstider",
-      "description": "Visar när du är tillgänglig. Du kan ändra dem senare i din profil."
-    },
     "setup": {
       "organization": {
         "title": "Om {organization}",
         "description": "Visas på offerter och fakturor.",
+        "joinInstead": "Gå med i en befintlig organisation i stället",
         "legalName": "Juridiskt namn",
         "orgNumber": "Organisationsnummer",
         "streetAddress": "Gatuadress",

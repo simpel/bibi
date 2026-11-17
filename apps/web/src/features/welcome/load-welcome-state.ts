@@ -1,12 +1,5 @@
 import "server-only";
-import {
-  getProfile,
-  getWorkingHours,
-  type OrganizationProfileDto,
-  type ProfileDto,
-  type Result,
-  type WorkingHoursDto,
-} from "@bibi/core";
+import { getProfile, type OrganizationProfileDto, type ProfileDto, type Result } from "@bibi/core";
 import { cache } from "react";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { loadOrganizationProfile } from "@/server/load-organization-profile";
@@ -15,7 +8,6 @@ import { nextWelcomeStep, type WelcomeStep } from "./lib/welcome-step";
 
 export type WelcomeState = {
   profile: ProfileDto;
-  hours: WorkingHoursDto;
   organization: OrganizationProfileDto;
   /** The member may do the setup (`pipeline:write`, ADR 0061). */
   canSetup: boolean;
@@ -25,23 +17,20 @@ export type WelcomeState = {
 
 /** Everything the welcome router and its pages decide on, read through core (ADR 0010). */
 export const loadWelcomeState = cache(async (): Promise<Result<WelcomeState>> => {
-  const [profile, hours, organization, abilities] = await Promise.all([
+  const [profile, organization, abilities] = await Promise.all([
     runOperation({ operation: getProfile, input: {} }),
-    runOperation({ operation: getWorkingHours, input: {} }),
     loadOrganizationProfile(),
     getCallerAbilities(),
   ]);
   if (!profile.ok) return profile;
-  if (!hours.ok) return hours;
   if (!organization.ok) return organization;
   const canSetup = can({ abilities, permission: "pipeline:write" });
   const { firstName, lastName, phone } = profile.value;
   const next = nextWelcomeStep({
     profileComplete: Boolean(firstName && lastName && phone),
-    hoursSet: hours.value.days.length > 0,
     setupStatus: organization.value.setupStatus,
     canSetup,
   });
-  const value = { profile: profile.value, hours: hours.value, organization: organization.value };
+  const value = { profile: profile.value, organization: organization.value };
   return { ok: true, value: { ...value, canSetup, next } };
 });

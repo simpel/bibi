@@ -1,6 +1,7 @@
 /** The profile page's sections, in page order: each card's anchor id and its nav label key. */
 export const PROFILE_SECTIONS = [
   { id: "details", label: "details" },
+  { id: "hours", label: "hoursTitle" },
   { id: "display", label: "displayTitle" },
   { id: "notifications", label: "notificationsTitle" },
   { id: "sessions", label: "sessionsTitle" },

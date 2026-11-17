@@ -52,6 +52,10 @@
             "question": "Var anger jag vad en typ heter i plural?",
             "answer": "Gå till Inställningar, öppna Typer och välj en typ. Fyll i Pluralform, till exempel Konferensrum, och klicka på Spara.\nBibi använder det där flera artiklar visas tillsammans, som artikelöversikten på en anläggning. Lämnar du det tomt används typens eget namn."
           },
+          "joinInstead": {
+            "question": "Jag började skapa en organisation, men mitt team använder redan Bibi. Vad gör jag?",
+            "answer": "Klicka på Gå med i en befintlig organisation i stället under formuläret i första steget av uppsättningen. Där kan du tacka ja till en inbjudan, ange en inbjudningskod eller välja en organisation du redan tillhör."
+          },
           "inviteColleagues": {
             "question": "Hur bjuder jag in mina kollegor?",
             "answer": "Gå till Administration → Medlemmar och bjud in dem via e-post. De får en länk som tar dem direkt in i er organisation.\nTio platser ingår i abonnemanget."
@@ -233,6 +237,10 @@
           "findSettings": {
             "question": "Var hittar jag inställningarna?",
             "answer": "Klicka på Administration i sidomenyn. Startsidan visar alla inställningssidor du har tillgång till, grupperade i Organisation, Katalog, Bokningar samt Pengar och kopplingar.\nKlicka på ett kort för att öppna sidan, eller på en av delarna som står på kortet för att gå direkt dit."
+          },
+          "workingHours": {
+            "question": "Var anger jag mina arbetstider?",
+            "answer": "Klicka på ditt namn längst ner i sidomenyn och välj Profil. Under Arbetstider väljer du Ändra, fyller i dagarna och tiderna du arbetar och väljer Spara.\nDu kan ändra dem när din vecka ändras."
           },
           "collapseSidebar": {
             "question": "Kan jag göra sidomenyn mindre?",

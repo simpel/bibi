@@ -11,7 +11,7 @@ Locale prefix (`/sv`, `/en`) omitted.
 ├─ pick / accept ────────────► /:org/welcome
 └─ /welcome/new                name + slug → creates the org (you are admin) → /:org/welcome
 /:org/welcome                  router only (server redirect)
-├─ profile incomplete ───────► /:org/welcome/profile, then /:org/welcome/hours
+├─ profile incomplete ───────► /:org/welcome/profile
 ├─ setup PENDING
 │   ├─ pipeline:write ───────► /:org/welcome/setup/organization
 │   │                          /:org/welcome/setup/kind
@@ -70,12 +70,12 @@ Locale prefix (`/sv`, `/en`) omitted.
 ## Profile (per user, entered once)
 
 - **`profile`:** first name and last name (prefilled by splitting the sign-up name), phone (required), and an optional avatar (png, jpeg or webp, at most 2 MB; initials when there is none).
-- **`hours`:** shows "Mon–Fri 08:00–17:00, lunch 12:00–13:00" with Change and Continue. Change opens a weekday editor (start, end, break) on the same page. Continue saves.
-- The profile is complete when first name, last name and phone are set and at least one working-hours row exists.
+- The profile is complete when first name, last name and phone are set.
+- Working hours are not part of the flow. Each member sets them later under **Working hours** on `/:org/profile` (summary with Change; empty until saved, the editor then suggests Mon–Fri 08:00–17:00 with lunch 12:00–13:00).
 
 ## Setup (per organization)
 
-- **`organization`:** legal name, org number, street address, postal code, city, country (default SE), website, contact email and phone. The checkbox "This address is also our first venue" is on by default and creates a venue.
+- **`organization`:** legal name, org number, street address, postal code, city, country (default SE), website, contact email and phone. The checkbox "This address is also our first venue" is on by default and creates a venue. A text link under the form, "Join an existing organization instead", opens `/welcome`.
 - **`kind`:** a grid of the 8 venue kinds, plus a "Start empty" link that skips to review.
 - **`spaces` / `food` / `extras`:** the kind's item types as checkboxes, with "+ Add another". A note says more can be added later in Settings → Types.
 - **`review`:** a short "You're all set" summary (organization name, the chosen kind and how many types), then Activate (`pipelineSetup.activate`, `actor=user`). It shows no statuses, states or grid: the kind's flow sets them silently. Activate also creates one item type group per step that has at least one chosen type (names from `welcome.groups.*` in the user's language, in step order: spaces, food, extras) and puts each type in its step's group (ADR 0101). "Start empty" and "Skip for now" create no groups. Activate sets the setup status to `COMPLETED`, creates the example orders (below) and opens the pipeline board (`/:org/pipeline`).

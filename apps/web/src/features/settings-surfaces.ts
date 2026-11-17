@@ -65,6 +65,9 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   // Every user's own connected OAuth/MCP clients.
   { operation: "oauthGrant.list", route: "/profile" },
   { operation: "oauthGrant.revoke", route: "/profile" },
+  // The user's own working hours in this organization.
+  { operation: "workingHours.get", route: "/profile" },
+  { operation: "workingHours.set", route: "/profile" },
   // The user's own date and clock format.
   { operation: "userSettings.get", route: "/profile" },
   { operation: "userSettings.update", route: "/profile" },
