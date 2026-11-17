@@ -15,9 +15,16 @@ export async function registerClient({ clientId = `client_${createId()}` }: Regi
   await getAuth().$context;
   const db = getDb();
   const now = new Date();
+  // Another test may have provisioned the same client (the web app's) with only its own redirect
+  // URI; add this flow's so the result does not depend on test order.
+  const existing = await db.oauthClient.findUnique({
+    where: { clientId },
+    select: { redirectUris: true },
+  });
+  const redirectUris = [...new Set([...(existing?.redirectUris ?? []), REDIRECT_URI])];
   await db.oauthClient.upsert({
     where: { clientId },
-    update: {},
+    update: { redirectUris },
     create: {
       id: createId(),
       clientId,
