@@ -16,7 +16,6 @@ import {
   type OrganizationStepValues,
 } from "./organization-schema";
 import { saveOrganizationStep } from "./save-organization-step";
-import { SkipSetupButton } from "./skip-setup-button";
 
 export type OrganizationFormProps = {
   org: string;
@@ -49,7 +48,6 @@ export function OrganizationForm({ org, name, defaults, canCreateVenue }: Organi
         <WelcomeStepActions
           back={{ href: welcomePath({ step: "profile" }), org }}
           pending={pending}
-          aside={<SkipSetupButton org={org} />}
         />
       </form>
     </Form>

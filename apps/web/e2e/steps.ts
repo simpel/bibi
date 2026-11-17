@@ -39,13 +39,17 @@ export async function signIn({ page, email }: PageInput & { email: string }) {
 }
 
 /**
- * Creates an organization through the welcome flow (ADR 0061): name, profile, hours, then
- * "Skip for now" on the setup, so the steps that follow start from the empty venue list.
+ * Creates an organization through the welcome flow (ADR 0061): name, profile, the organization
+ * step without a first venue, then "Skip for now" on the kind step, so the steps that follow
+ * start from the empty venue list.
  */
 export async function createOrganization({ page, name }: PageInput & { name: string }) {
   const slug = await nameOrganization({ page, name });
   await completeProfile({ page, slug });
   await expect(page).toHaveURL(new RegExp(`/sv/${slug}/welcome/setup/organization$`));
+  await page.getByLabel("Den här adressen är också vår första anläggning").uncheck();
+  await page.getByRole("button", { name: "Fortsätt" }).click();
+  await expect(page).toHaveURL(new RegExp(`/sv/${slug}/welcome/setup/kind$`));
   await page.getByRole("button", { name: "Hoppa över just nu" }).click();
   await expect(page).toHaveURL(new RegExp(`/sv/${slug}/pipeline$`));
   await gotoApp({ page, path: "/venues" });
