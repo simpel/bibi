@@ -35,7 +35,7 @@ export const BOARD_NAMES = [
   "board.create",
   "board.get",
   "board.list",
-  "board.reorder",
+  "board.share",
   "board.update",
   "boardPhase.archive",
   "boardPhase.create",

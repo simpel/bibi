@@ -65,13 +65,22 @@ export const BoardPhaseMoveStatusInputSchema = z.object({
 export type BoardPhaseDto = z.infer<typeof BoardPhaseSchema>;
 export type BoardPhaseCreateInput = z.infer<typeof BoardPhaseCreateInputSchema>;
 
-/** A saved view of orders (ADR 0067): a name, a filter and its phases (columns). */
+/** A pipeline view of orders (ADR 0067, 0111): a name, a filter, its sharing and its phases (columns). */
 export const BoardSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   name: z.string(),
-  /** Order among the organization's boards; the first is the default. */
-  position: z.number().int(),
+  isDefault: z
+    .boolean()
+    .describe("The organization's default view: shared with everyone, configured by managers"),
+  ownerId: z
+    .string()
+    .nullable()
+    .describe("The member (user id) whose view this is; null for the default view"),
+  sharedWithOrganization: z.boolean().describe("Everyone in the organization sees and edits it"),
+  sharedWithUserIds: z
+    .array(z.string())
+    .describe("Members (user ids) it is shared with, besides its owner"),
   entityTypeId: z.string().nullable().describe("Only orders of this type; null for every type"),
   assigneeId: z
     .string()
@@ -90,7 +99,7 @@ const NameSchema = z
   .trim()
   .min(1)
   .max(64)
-  .describe("Board name as staff see it, e.g. Sales or Ops");
+  .describe("View name as staff see it, e.g. Sales or My week");
 
 const FilterShape = {
   entityTypeId: z.string().min(1).nullable().optional().describe("Order type filter; null clears"),
@@ -114,10 +123,17 @@ export const BoardListOutputSchema = z.object({
   nextCursor: z.string().nullable(),
 });
 
-export const BoardReorderInputSchema = z.object({
-  ids: z.array(z.string().min(1)).min(1).describe("Every active board id, in the new order"),
+export const BoardShareInputSchema = z.object({
+  id: z.string().min(1),
+  organization: z.boolean().describe("Share with everyone in the organization"),
+  userIds: z
+    .array(z.string().min(1))
+    .max(200)
+    .default([])
+    .describe("Members (user ids) to share with; replaces the current list, the owner is skipped"),
 });
 
 export type BoardDto = z.infer<typeof BoardSchema>;
 export type BoardCreateInput = z.infer<typeof BoardCreateInputSchema>;
 export type BoardUpdateInput = z.infer<typeof BoardUpdateInputSchema>;
+export type BoardShareInput = z.input<typeof BoardShareInputSchema>;

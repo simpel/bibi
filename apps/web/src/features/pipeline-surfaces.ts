@@ -15,7 +15,7 @@ export const PIPELINE_SURFACES: readonly WebSurface[] = [
   { operation: "board.get", ...PIPELINE },
   { operation: "board.create", ...PIPELINE },
   { operation: "board.update", ...PIPELINE },
-  { operation: "board.reorder", ...PIPELINE },
+  { operation: "board.share", ...PIPELINE },
   { operation: "board.archive", ...PIPELINE },
   { operation: "boardPhase.create", ...PIPELINE },
   { operation: "boardPhase.update", ...PIPELINE },

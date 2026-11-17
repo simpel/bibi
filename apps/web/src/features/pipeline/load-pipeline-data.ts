@@ -3,6 +3,7 @@ import {
   type BoardDto,
   listBoards,
   listCustomers,
+  listMembers,
   listOrderStatuses,
   type OrderStatusDto,
   type PipelineBoard,
@@ -14,20 +15,26 @@ import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-a
 import { runOperation } from "@/server/run-operation";
 
 /**
- * What the caller may do in customize mode (ADR 0076): `write` and `remove` are the board's own
- * (`board:write`, `board:delete`); `configure` and `removeStatus` change the flow for everyone
+ * What the caller may do with the board shown (ADR 0076, 0111): `write` edits its name and
+ * columns (everyone who sees a view; the default view needs `board:write`), `remove` removes a
+ * column (the same), `manage` changes its sharing and archives it (its owner or `board:delete`,
+ * never the default view); `configure` and `removeStatus` change the flow for everyone
  * (`pipeline:write`, `pipeline:delete`).
  */
 export type BoardAccess = {
   write: boolean;
   remove: boolean;
+  manage: boolean;
   configure: boolean;
   removeStatus: boolean;
 };
 
+/** A member a view can be shared with. */
+export type ShareMember = { userId: string; name: string };
+
 export type PipelineData = {
   board: PipelineBoard;
-  /** The organization's boards in order (the first is the default), for the switcher. */
+  /** The views the caller sees, the default first, then by name, for the switcher. */
   boards: BoardDto[];
   /** Every active order status (customize mode places them and opens their dialogs). */
   statuses: OrderStatusDto[];
@@ -37,6 +44,8 @@ export type PipelineData = {
   moveGates: Record<string, Record<string, TransitionGate[]>>;
   /** Customer id → name; empty when the caller may not view customers (ADR 0050). */
   customerNames: Record<string, string>;
+  /** Members to share the view with, by name (the caller left out). */
+  members: ShareMember[];
   access: BoardAccess;
 };
 
@@ -65,14 +74,15 @@ async function loadCustomerNames({ board, abilities }: CustomerNamesInput) {
 
 export type LoadPipelineDataInput = { boardId?: string | undefined };
 
-/** The chosen board (default: the first), the boards, statuses, transitions and names. */
+/** The chosen board (default: the default view), the views, statuses, transitions and names. */
 export async function loadPipelineData({
   boardId,
 }: LoadPipelineDataInput): Promise<Result<PipelineData>> {
-  const [board, boards, statuses, abilities] = await Promise.all([
+  const [board, boards, statuses, members, abilities] = await Promise.all([
     runOperation({ operation: pipelineBoard, input: boardId ? { boardId } : {} }),
     runOperation({ operation: listBoards, input: { limit: LIMIT } }),
     runOperation({ operation: listOrderStatuses, input: { limit: LIMIT } }),
+    runOperation({ operation: listMembers, input: { limit: LIMIT } }),
     getCallerAbilities(),
   ]);
   if (!board.ok) return board;
@@ -88,12 +98,29 @@ export async function loadPipelineData({
     ]),
   );
   const customerNames = await loadCustomerNames({ board: board.value, abilities });
+  const shown = boards.value.items.find(({ id }) => id === board.value.boardId);
+  const edit = shown ? !shown.isDefault || can({ abilities, permission: "board:write" }) : false;
+  const owner = shown?.ownerId != null && shown.ownerId === abilities.userId;
+  const manage =
+    shown !== undefined &&
+    !shown.isDefault &&
+    (owner || can({ abilities, permission: "board:delete" }));
+  // Member names label the share list; a failed lookup only leaves it empty.
+  const shareMembers = members.ok
+    ? members.value.items
+        .filter(({ userId }) => userId !== abilities.userId)
+        .map(({ userId, name }) => ({ userId, name }))
+    : [];
   const access = {
-    write: can({ abilities, permission: "board:write" }),
-    remove: can({ abilities, permission: "board:delete" }),
+    write: edit,
+    remove: edit,
+    manage,
     configure: can({ abilities, permission: "pipeline:write" }),
     removeStatus: can({ abilities, permission: "pipeline:delete" }),
   };
   const value = { board: board.value, boards: boards.value.items, statuses: statuses.value.items };
-  return { ok: true, value: { ...value, transitions, moveGates, customerNames, access } };
+  return {
+    ok: true,
+    value: { ...value, transitions, moveGates, customerNames, members: shareMembers, access },
+  };
 }

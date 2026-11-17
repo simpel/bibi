@@ -53,7 +53,7 @@ export const BOARD_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   board_get: boardCard,
   board_create: boardCard,
   board_update: boardCard,
-  board_reorder: boardList,
+  board_share: boardCard,
   board_archive: boardCard,
   boardPhase_create: phaseCard,
   boardPhase_update: phaseCard,

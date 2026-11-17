@@ -1,33 +1,42 @@
 import type { z } from "zod";
 import { ok } from "../../errors/result";
-import type { HandlerInput } from "../../operations/types";
+import type { HandlerInput, OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import { checkBoardFilter } from "./check-filter";
+import { loadEditableBoard } from "./editable";
 import { loadBoard } from "./load-board";
 import { mirrorStatuses } from "./phase-layout";
-import { type BoardCreateInputSchema, BoardSchema, type BoardUpdateInputSchema } from "./schema";
+import type { BoardCreateInputSchema, BoardUpdateInputSchema } from "./schema";
 
 const nameTaken = ({ name }: { name: string }) =>
-  conflict({ message: `A board named "${name}" exists` });
+  conflict({ message: `You already have a view named "${name}"` });
+
+type NameInput = {
+  context: Pick<OperationContext, "db">;
+  name: string;
+  ownerId: string | null;
+  isDefault: boolean;
+  exceptId?: string;
+};
+
+/** A view's name is unique per owner; the default view counts as everyone's (ADR 0111). */
+async function nameUsed({ context, name, ownerId, isDefault, exceptId }: NameInput) {
+  const owners = isDefault ? {} : { OR: [{ ownerId }, { isDefault: true }] };
+  const where = { name, ...owners, ...(exceptId ? { id: { not: exceptId } } : {}) };
+  return (await context.db.board.count({ where })) > 0;
+}
 
 export const createBoardHandler = async ({
   input,
   context,
 }: HandlerInput<z.infer<typeof BoardCreateInputSchema>>) => {
   const { name, entityTypeId = null, assigneeId = null } = input;
-  if (await context.db.board.findFirst({ where: { name } })) return nameTaken({ name });
+  const ownerId = context.actor.userId;
+  if (await nameUsed({ context, name, ownerId, isDefault: false })) return nameTaken({ name });
   const filter = await checkBoardFilter({ context, entityTypeId, assigneeId });
   if (!filter.ok) return filter;
-  const last = await context.db.board.findFirst({ orderBy: { position: "desc" } });
-  const row = await context.db.board.create({
-    data: {
-      organizationId: context.organizationId,
-      name,
-      entityTypeId,
-      assigneeId,
-      position: last ? last.position + 1 : 0,
-    },
-  });
+  const data = { organizationId: context.organizationId, name, entityTypeId, assigneeId, ownerId };
+  const row = await context.db.board.create({ data });
   await mirrorStatuses({ context, boardId: row.id });
   const board = await loadBoard({ context, id: row.id });
   if (!board) return notFound({ entity: "Board" });
@@ -39,12 +48,15 @@ export const updateBoardHandler = async ({
   input: { id, ...data },
   context,
 }: HandlerInput<z.infer<typeof BoardUpdateInputSchema>>) => {
-  const before = await loadBoard({ context, id });
-  if (!before) return notFound({ entity: "Board" });
+  const editable = await loadEditableBoard({ context, id });
+  if (!editable.ok) return editable;
+  const before = editable.value;
   const { name } = data;
   if (name !== undefined && name !== before.name) {
-    const other = await context.db.board.findFirst({ where: { name, id: { not: id } } });
-    if (other) return nameTaken({ name });
+    const { ownerId, isDefault } = before;
+    if (await nameUsed({ context, name, ownerId, isDefault, exceptId: id })) {
+      return nameTaken({ name });
+    }
   }
   const { entityTypeId, assigneeId } = data;
   const filter = await checkBoardFilter({ context, entityTypeId, assigneeId });

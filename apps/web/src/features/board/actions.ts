@@ -7,6 +7,7 @@ import {
   type BoardDto,
   type BoardPhaseCreateInput,
   type BoardPhaseDto,
+  type BoardShareInput,
   type BoardUpdateInput,
   createBoard,
   createBoardPhase,
@@ -15,7 +16,7 @@ import {
   type OrderStatusCreateInput,
   type OrderStatusDto,
   reorderBoardPhases,
-  reorderBoards,
+  shareBoard,
   updateBoard,
   updateBoardPhase,
 } from "@bibi/core";
@@ -23,7 +24,6 @@ import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
 
-type BoardPage = { items: BoardDto[]; nextCursor: string | null };
 export type IdActionInput = { id: string };
 export type PhaseUpdateInput = { id: string; name?: string };
 export type MoveStatusInput = { boardId: string; statusId: string; phaseId: string | null };
@@ -49,15 +49,13 @@ export async function archiveBoardAction({ id }: IdActionInput): Promise<ActionR
   return toActionResult({ result });
 }
 
-/** `board.reorder`; the first board is the default one. */
-export async function reorderBoardsAction({
-  ids,
+/** `board.share`: who sees and edits the view (ADR 0111). */
+export async function shareBoardAction({
+  input,
 }: {
-  ids: string[];
-}): Promise<ActionResult<BoardPage>> {
-  return toActionResult({
-    result: await runOperation({ operation: reorderBoards, input: { ids } }),
-  });
+  input: BoardShareInput;
+}): Promise<ActionResult<BoardDto>> {
+  return toActionResult({ result: await runOperation({ operation: shareBoard, input }) });
 }
 
 export async function createBoardPhaseAction({

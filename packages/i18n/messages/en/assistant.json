@@ -277,7 +277,7 @@
         "organizationProfile_setDomainJoin": "Turn domain join on or off",
         "board_create": "Create board",
         "board_update": "Update board",
-        "board_reorder": "Reorder boards",
+        "board_share": "Share board",
         "board_archive": "Archive board",
         "boardPhase_create": "Add board column",
         "boardPhase_update": "Update board column",

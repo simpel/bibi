@@ -98,6 +98,10 @@
             "question": "Kan jag skapa en order direkt från tavlan?",
             "answer": "Ja. Längst ner i kolumnen där nya ordrar hamnar finns + Skapa bokning. Den öppnar samma sida som Skapa bokning i menyn, och ordern hamnar i den första kolumnen."
           },
+          "pipelineViews": {
+            "question": "Kan jag göra en egen pipeline-tavla och dela den?",
+            "answer": "Under **Pipeline** väljer du **Skapa tavla** högst upp och ger den ett namn. Den börjar med varje status som en kolumn, och bara du ser den. Välj **Anpassa** för att gruppera eller ta bort kolumner.\nVälj **Dela** för att dela den: slå på **Alla i organisationen**, eller kryssa i de kollegor som ska se den. Alla du delar med kan ändra namn och kolumner; bara du kan ändra vem den delas med eller arkivera den. Organisationens standardtavla delas med alla, och bara chefer ändrar den."
+          },
           "createFromCalendar": {
             "question": "Kan jag skapa en order från en ledig tid i kalendern?",
             "answer": "Ja. Dra över en ledig tid på en resurs rad i kalendern. En dialog visar resursen och dagen, och du kan justera tiderna.\nVälj Skapa bokning för att öppna ordersidan med datum och tider ifyllda. Bara mallar som innehåller resursen visas, och en egen bokning börjar med den. Fråga assistenten öppnar chatten med samma tid i stället."

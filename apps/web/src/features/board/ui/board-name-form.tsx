@@ -44,8 +44,8 @@ export function BoardNameForm({ board, onDone }: BoardNameFormProps) {
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-3">
         <TextField form={form} name="name" label={t("fields.name")} required />
-        <Button type="submit" size="sm" className="justify-self-end" disabled={pending}>
-          {common("save")}
+        <Button type="submit" className="justify-self-end" disabled={pending}>
+          {board ? common("save") : t("create")}
         </Button>
       </form>
     </Form>

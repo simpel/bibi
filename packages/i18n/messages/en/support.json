@@ -98,6 +98,10 @@
             "question": "Can I create an order from the pipeline board?",
             "answer": "Yes. At the bottom of the column where new orders start there is + Create order. It opens the same page as Create order in the menu, and the order lands in that first column."
           },
+          "pipelineViews": {
+            "question": "Can I make my own pipeline board and share it?",
+            "answer": "On **Pipeline**, choose **Create board** at the top and give it a name. It starts with every status as a column, and only you see it. Choose **Configure** to group or remove columns.\nTo share it, choose **Share**: turn on **Everyone in the organization**, or tick the colleagues who should see it. Everyone you share it with can change its name and columns; only you can change who it's shared with or archive it. The organization's default board is shared with everyone, and only managers change it."
+          },
           "createFromCalendar": {
             "question": "Can I create an order from a free time in the calendar?",
             "answer": "Yes. Drag over a free time on a resource's row in the calendar. A dialog shows the resource and day, and you can adjust the times.\nChoose Create order to open the order page with the date and times filled in. Only packages that include that resource are shown, and a custom booking starts with it. Ask the assistant opens the chat with the same time instead."

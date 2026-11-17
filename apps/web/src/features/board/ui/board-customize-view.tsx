@@ -26,14 +26,20 @@ export function BoardCustomizeView({ data, boardId }: BoardCustomizeViewProps) {
   const flip = useFlipIn();
   const labels = useCustomizeLabels();
   const cards = kanbanCards({ board, customerNames: data.customerNames });
-  const isDefault = boards[0]?.id === boardId;
+  const isDefault = boards.find(({ id }) => id === boardId)?.isDefault ?? false;
   const done = () =>
     flip.flipOut({
       onFlipped: () => router.push(pipelineHref({ boardId: isDefault ? null : boardId })),
     });
   return (
     <>
-      <BoardCustomizeToolbar boards={boards} boardId={boardId} access={access} onDone={done} />
+      <BoardCustomizeToolbar
+        boards={boards}
+        boardId={boardId}
+        access={access}
+        members={data.members}
+        onDone={done}
+      />
       <div className="min-h-0 flex-1">
         <KanbanCustomizeBoard
           phases={layout.phases}

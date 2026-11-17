@@ -45,9 +45,9 @@ async function boardFailures({
 }
 
 /**
- * ADR 0067: the boards and phases match the data files (the default board has a phase per
- * status, `pipeline.boards` add theirs), every status is in at most one phase per board, and every
- * seeded order shows in exactly one column of each board that has a phase for its status.
+ * ADR 0067, 0111: the only board is the default view, shared with everyone, with a phase per
+ * status; every status is in at most one phase, and every seeded order shows in exactly one
+ * column.
  */
 export async function checkDemoBoardLayout({
   context,
@@ -56,16 +56,13 @@ export async function checkDemoBoardLayout({
   const listed = await execute({ operation: listBoards, input: { limit: 100 }, context });
   if (!listed.ok) return [`${org.slug}: board.list failed: ${listed.error.message}`];
   const boards = listed.value.items;
-  const extra = org.pipeline.boards ?? [];
   const failures: string[] = [];
-  const expected = 1 + extra.length;
-  if (boards.length !== expected) {
-    failures.push(`${org.slug}: ${boards.length} boards, expected ${expected}`);
+  const [first] = boards;
+  if (boards.length !== 1 || !first?.isDefault || !first.sharedWithOrganization) {
+    failures.push(`${org.slug}: expected only the default view, shared with everyone`);
   }
   const phases = boards.reduce((sum, board) => sum + board.phases.length, 0);
-  const expectedPhases =
-    org.pipeline.statuses.statuses.length +
-    extra.reduce((sum, board) => sum + board.phases.length, 0);
+  const expectedPhases = org.pipeline.statuses.statuses.length;
   if (phases !== expectedPhases) {
     failures.push(`${org.slug}: ${phases} board phases, expected ${expectedPhases}`);
   }

@@ -82,6 +82,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "BoardPhase",
   "ItemTypeGroup",
   "BoardPhaseStatus",
+  "BoardShare",
   "ItemState",
   "ItemStateTransition",
   "StatusStateRule",

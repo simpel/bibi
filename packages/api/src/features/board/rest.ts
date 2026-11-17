@@ -22,5 +22,5 @@ export const boardRoutes = [
   restRoute({ operation: "board.create", method: "POST", path: BASE }),
   restRoute({ operation: "board.update", method: "PATCH", path: `${BASE}/{id}` }),
   restRoute({ operation: "board.archive", method: "DELETE", path: `${BASE}/{id}` }),
-  restRoute({ operation: "board.reorder", method: "PUT", path: `${BASE}/order` }),
+  restRoute({ operation: "board.share", method: "PUT", path: `${BASE}/{id}/sharing` }),
 ];

@@ -1,10 +1,12 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
-import { loadBoard } from "./load-board";
+import { loadAnyBoard, loadBoard } from "./load-board";
 import { insertPhase, mirrorStatuses, openStatusEnd, placeStatus } from "./phase-layout";
 
-type Ctx = { context: Pick<OperationContext, "db" | "organizationId" | "recordChange"> };
+type Ctx = {
+  context: Pick<OperationContext, "db" | "organizationId" | "recordChange" | "actor">;
+};
 
 /** The default board's name; boards are data, so staff rename it like any other. */
 const DEFAULT_BOARD_NAME = "Pipeline";
@@ -15,18 +17,23 @@ async function auditedOnBoard({
   boardId,
   change,
 }: Ctx & { boardId: string; change: () => Promise<unknown> }) {
-  const before = await loadBoard({ context, id: boardId });
+  const before = await loadAnyBoard({ context, id: boardId });
   await change();
-  const after = await loadBoard({ context, id: boardId });
+  const after = await loadAnyBoard({ context, id: boardId });
   context.recordChange({ entityType: "board", entityId: boardId, before, after });
 }
 
-/** A first board, mirroring every active status (the new one included). */
+/** The default view (ADR 0111), mirroring every active status (the new one included). */
 async function createDefaultBoard({ context }: Ctx) {
-  const data = { organizationId: context.organizationId, name: DEFAULT_BOARD_NAME, position: 0 };
+  const data = {
+    organizationId: context.organizationId,
+    name: DEFAULT_BOARD_NAME,
+    isDefault: true,
+    sharedWithOrganization: true,
+  };
   const board = await context.db.board.create({ data });
   await mirrorStatuses({ context, boardId: board.id });
-  const after = await loadBoard({ context, id: board.id });
+  const after = await loadAnyBoard({ context, id: board.id });
   context.recordChange({ entityType: "board", entityId: board.id, after });
 }
 
@@ -55,7 +62,8 @@ export async function placeNewStatus({
 }: PlaceNewStatusInput): Promise<Result<true>> {
   if (phaseId) {
     const phase = await context.db.boardPhase.findFirst({ where: { id: phaseId } });
-    if (!phase) {
+    // A phase of a view the caller does not see is unknown to them (ADR 0111).
+    if (!phase || !(await loadBoard({ context, id: phase.boardId }))) {
       const message = "Unknown board phase";
       return invalid({ message, issues: [{ path: "phaseId", message }] });
     }
@@ -64,7 +72,7 @@ export async function placeNewStatus({
     await auditedOnBoard({ context, boardId, change });
     return ok({ value: true });
   }
-  const board = await context.db.board.findFirst({ orderBy: [{ position: "asc" }, { id: "asc" }] });
+  const board = await context.db.board.findFirst({ where: { isDefault: true } });
   if (!board) {
     await createDefaultBoard({ context });
     return ok({ value: true });

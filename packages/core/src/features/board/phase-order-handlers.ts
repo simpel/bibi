@@ -2,10 +2,10 @@ import type { z } from "zod";
 import { ok } from "../../errors/result";
 import type { HandlerInput } from "../../operations/types";
 import { invalid, notFound } from "../../shared/errors";
+import { loadEditableBoard } from "./editable";
 import { loadBoard } from "./load-board";
 import { placeStatus, setPhasePositions } from "./phase-layout";
 import type { BoardPhaseMoveStatusInputSchema, BoardPhaseReorderInputSchema } from "./schema";
-import { BoardSchema } from "./schema";
 
 const problem = ({ path, message }: { path: string; message: string }) =>
   invalid({ message, issues: [{ path, message }] });
@@ -14,8 +14,9 @@ export const reorderBoardPhasesHandler = async ({
   input: { boardId, ids },
   context,
 }: HandlerInput<z.infer<typeof BoardPhaseReorderInputSchema>>) => {
-  const before = await loadBoard({ context, id: boardId });
-  if (!before) return notFound({ entity: "Board" });
+  const editable = await loadEditableBoard({ context, id: boardId });
+  if (!editable.ok) return editable;
+  const before = editable.value;
   const known = new Set(before.phases.map((phase) => phase.id));
   const complete = ids.length === known.size && new Set(ids).size === ids.length;
   if (!complete || ids.some((id) => !known.has(id))) {
@@ -32,8 +33,9 @@ export const moveBoardPhaseStatusHandler = async ({
   input: { boardId, statusId, phaseId },
   context,
 }: HandlerInput<z.infer<typeof BoardPhaseMoveStatusInputSchema>>) => {
-  const before = await loadBoard({ context, id: boardId });
-  if (!before) return notFound({ entity: "Board" });
+  const editable = await loadEditableBoard({ context, id: boardId });
+  if (!editable.ok) return editable;
+  const before = editable.value;
   if (!(await context.db.orderStatus.findFirst({ where: { id: statusId } }))) {
     return problem({ path: "statusId", message: "Unknown or archived order status" });
   }

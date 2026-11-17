@@ -5,7 +5,8 @@ const STATUS = { name: "Open", color: "#22c55e" } as const;
 
 describe("cross-organization isolation: boards and phases", () => {
   it("hides one organization's boards and phases and refuses its ids in another's", async () => {
-    const a = await connect({ context: testContext() });
+    const aContext = testContext();
+    const a = await connect({ context: aContext });
     const b = await connect({ context: testContext() });
     const status = await call({ client: a, name: "orderStatus_create", args: STATUS });
     const board = await call({ client: a, name: "board_create", args: { name: "Secret board" } });
@@ -30,6 +31,7 @@ describe("cross-organization isolation: boards and phases", () => {
       ["board_get", { id: board.data.id }],
       ["board_update", { id: board.data.id, name: "Hacked" }],
       ["board_archive", { id: board.data.id }],
+      ["board_share", { id: board.data.id, organization: true }],
       ["boardPhase_create", { boardId: board.data.id, name: "X" }],
       ["boardPhase_update", { id: phase.data.id, name: "Hacked" }],
       ["boardPhase_archive", { id: phase.data.id }],
@@ -44,7 +46,7 @@ describe("cross-organization isolation: boards and phases", () => {
       expect(result.data.code, name).toBe("NOT_FOUND");
     }
     const foreign = [
-      ["board_reorder", { ids: [board.data.id, own.data.id] }],
+      ["board_share", { id: own.data.id, organization: false, userIds: [aContext.actor.userId] }],
       [
         "boardPhase_moveStatus",
         { boardId: own.data.id, statusId: status.data.id, phaseId: phase.data.id },

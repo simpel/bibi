@@ -11,7 +11,7 @@ import {
   listBoards,
   moveBoardPhaseStatus,
   reorderBoardPhases,
-  reorderBoards,
+  shareBoard,
   updateBoard,
   updateBoardPhase,
 } from "@bibi/core";
@@ -39,8 +39,8 @@ export const BoardRef = objectFromSchema<BoardDto>({
   schema: BoardSchema,
   omit: ["organizationId", "phases"],
   description:
-    "Board – a saved view of orders: a name, an optional type and assignee filter and its " +
-    "phases (columns). The first board is the default.",
+    "Board – a pipeline view of orders: a name, an optional type and assignee filter, who it " +
+    "is shared with and its phases (columns). Listed default view first, then by name.",
 });
 const BoardPageRef = pageType({ name: "BoardPage", item: BoardRef });
 
@@ -57,6 +57,6 @@ fieldFromOperation({ operation: getBoard, type: BoardRef, name: "board" });
 mutationFromOperation({ operation: createBoard, type: BoardRef });
 mutationFromOperation({ operation: updateBoard, type: BoardRef });
 mutationFromOperation({ operation: archiveBoard, type: BoardRef });
-mutationFromOperation({ operation: reorderBoards, type: BoardPageRef });
+mutationFromOperation({ operation: shareBoard, type: BoardRef });
 mutationFromOperation({ operation: reorderBoardPhases, type: BoardRef });
 mutationFromOperation({ operation: moveBoardPhaseStatus, type: BoardRef });

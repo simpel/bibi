@@ -9,7 +9,7 @@ import { archiveBoardAction } from "../actions";
 
 export type ArchiveBoardButtonProps = { board: { id: string; name: string } };
 
-/** `board.archive`, then customize mode on the default board. The last board cannot go. */
+/** `board.archive`, then customize mode on the default view, which cannot be archived. */
 export function ArchiveBoardButton({ board }: ArchiveBoardButtonProps) {
   const t = useTranslations("board");
   const router = useRouter();

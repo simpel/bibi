@@ -26,8 +26,8 @@ export const pipelineBoard = defineOperation({
   name: "pipeline.board",
   kind: "query",
   description:
-    "A board of orders (ADR 0041, 0067): `boardId` picks the board (board.list), default the " +
-    "first. One column per phase of the board, each listing its order statuses (one drop zone " +
+    "A board of orders (ADR 0041, 0067): `boardId` picks a view the caller sees (board.list), " +
+    "default the organization's default view. One column per phase of the board, each listing its order statuses (one drop zone " +
     "each), and one card per order in the phase of its status; orders whose status is on no " +
     "phase are only counted (`unmappedCount`). The board's filter applies; `assigneeId` and " +
     "`entityTypeId` replace it. Orders in closing statuses appear only for " +
@@ -50,7 +50,7 @@ export const createBoardPhase = defineOperation({
     "board, so each listed status leaves its current phase on this board. Orders are unchanged.",
   input: BoardPhaseCreateInputSchema,
   output: BoardPhaseSchema,
-  permission: "board:write",
+  permission: "board:read",
   handler: createBoardPhaseHandler,
 });
 
@@ -60,7 +60,7 @@ export const updateBoardPhase = defineOperation({
   description: "Rename a board phase (column). Its statuses and orders are unchanged.",
   input: BoardPhaseUpdateInputSchema,
   output: BoardPhaseSchema,
-  permission: "board:write",
+  permission: "board:read",
   handler: updateBoardPhaseHandler,
 });
 
@@ -72,7 +72,7 @@ export const archiveBoardPhase = defineOperation({
     "boardPhase.moveStatus to keep them on it); orders and statuses are unchanged.",
   input: BoardPhaseIdInputSchema,
   output: BoardPhaseSchema,
-  permission: "board:delete",
+  permission: "board:read",
   handler: archiveBoardPhaseHandler,
 });
 
@@ -84,7 +84,7 @@ export const reorderBoardPhases = defineOperation({
     "the board once, in the new order. Returns the board.",
   input: BoardPhaseReorderInputSchema,
   output: BoardSchema,
-  permission: "board:write",
+  permission: "board:read",
   // Audited on the board whose column order changes.
   entityType: "board",
   handler: reorderBoardPhasesHandler,
@@ -99,7 +99,7 @@ export const moveBoardPhaseStatus = defineOperation({
     "the board shows them changes. Returns the board.",
   input: BoardPhaseMoveStatusInputSchema,
   output: BoardSchema,
-  permission: "board:write",
+  permission: "board:read",
   // Audited on the board whose layout changes.
   entityType: "board",
   handler: moveBoardPhaseStatusHandler,

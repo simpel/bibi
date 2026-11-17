@@ -6,7 +6,6 @@ import {
 import { createOrderStatus, updateOrderStatus } from "../../features/order-status/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { seedDemoBoards } from "./seed-boards";
 import { seedDefaultBoard } from "./seed-default-board";
 import { seedDemoGrid } from "./seed-grid";
 import type { DemoPipeline } from "./types";
@@ -72,11 +71,5 @@ export async function seedDemoPipeline({
   if (!placed.ok) return placed;
   const moves = await setMoveRules({ ...input, ids: created.value });
   if (!moves.ok) return moves;
-  const boards = await seedDemoBoards({
-    context,
-    boards: pipeline.boards ?? [],
-    statusIds: created.value,
-  });
-  if (!boards.ok) return boards;
   return seedDemoGrid({ context, cells: pipeline.cells });
 }

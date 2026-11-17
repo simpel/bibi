@@ -4,24 +4,21 @@ import type { HandlerInput } from "../../operations/types";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
-import { loadBoard, toBoardDto, WITH_PHASES } from "./load-board";
-import {
-  type BoardIdInputSchema,
-  type BoardListInputSchema,
-  BoardListOutputSchema,
-  BoardSchema,
-} from "./schema";
+import { visibleBoardWhere } from "./access";
+import { BOARD_ORDER, loadBoard, toBoardDto, WITH_PHASES } from "./load-board";
+import type { BoardIdInputSchema, BoardListInputSchema } from "./schema";
 
 export const listBoardsHandler = async ({
   input,
   context,
 }: HandlerInput<z.infer<typeof BoardListInputSchema>>) => {
   const rows = await context.db.board.findMany({
-    orderBy: [{ position: "asc" }, { id: "asc" }],
+    where: visibleBoardWhere({ context }),
+    orderBy: BOARD_ORDER,
     include: WITH_PHASES,
     ...pageArgs(input),
   });
-  const boards = rows.map((row) => toBoardDto({ row }));
+  const boards = rows.map((row) => toBoardDto({ row, context }));
   return ok({ value: paginate({ rows: boards, limit: input.limit }) });
 };
 

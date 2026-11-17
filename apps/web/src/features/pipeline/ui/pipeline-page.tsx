@@ -11,7 +11,7 @@ import { PipelineBoardView } from "./pipeline-board-view";
 export type PipelinePageProps = {
   locale: Locale;
   boardId?: string | undefined;
-  /** `?mode=customize`; shown only to callers with `board:write`. */
+  /** `?mode=customize`; shown only to callers who may edit the view (ADR 0111). */
   customize: boolean;
 };
 
@@ -32,7 +32,8 @@ export async function PipelinePage({ locale, boardId, customize }: PipelinePageP
       <PipelineToolbar
         boards={boards}
         boardId={board.boardId}
-        canConfigure={access.write}
+        access={access}
+        members={data.value.members}
         totals={<BoardTotals board={board} />}
       />
       {access.write && board.unmappedCount > 0 ? (

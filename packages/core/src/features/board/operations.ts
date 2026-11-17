@@ -1,24 +1,30 @@
 import { defineOperation } from "../../operations/define-operation";
-import { archiveBoardHandler, reorderBoardsHandler } from "./order-handlers";
+import { archiveBoardHandler, shareBoardHandler } from "./order-handlers";
 import { getBoardHandler, listBoardsHandler } from "./read-handlers";
 import {
   BoardCreateInputSchema,
   BoardIdInputSchema,
   BoardListInputSchema,
   BoardListOutputSchema,
-  BoardReorderInputSchema,
   BoardSchema,
+  BoardShareInputSchema,
   BoardUpdateInputSchema,
 } from "./schema";
 import { createBoardHandler, updateBoardHandler } from "./write-handlers";
 
+/**
+ * Pipeline views (ADR 0067, 0111). Every member sees boards (`board:read`) and makes their own
+ * views, so the commands run on `board:read` and the handler checks the view: who sees it, the
+ * default view (`board:write`) and the owner (`board:delete` for anyone else's).
+ */
 export const listBoards = defineOperation({
   name: "board.list",
   kind: "query",
   description:
-    "List the organization's boards (saved views of orders, ADR 0067) in order; the first is the " +
-    "default. Each board has its filter (order type, assignee) and its phases (columns) left to " +
-    "right, each with the order status ids it shows. A status in no phase is not on that board.",
+    "List the pipeline views (boards, ADR 0067, 0111) the caller sees: the default view first, " +
+    "then by name. The caller sees the default view, views shared with the organization, their " +
+    "own and those shared with them. Each has its filter (order type, assignee), its sharing and " +
+    "its phases (columns) left to right, each with the order status ids it shows.",
   input: BoardListInputSchema,
   output: BoardListOutputSchema,
   permission: "board:read",
@@ -28,7 +34,9 @@ export const listBoards = defineOperation({
 export const getBoard = defineOperation({
   name: "board.get",
   kind: "query",
-  description: "Get one board by id, with its filter and its phases and their order status ids.",
+  description:
+    "Get one pipeline view by id, with its filter, sharing and phases and their order status " +
+    "ids. A view the caller does not see is NOT_FOUND.",
   input: BoardIdInputSchema,
   output: BoardSchema,
   permission: "board:read",
@@ -39,13 +47,13 @@ export const createBoard = defineOperation({
   name: "board.create",
   kind: "command",
   description:
-    "Create a board: a saved view of orders with an optional filter (order type, main " +
-    "assignee). It is placed last and starts with one phase (column) per active order status, " +
-    "open statuses first; group them with boardPhase.create, boardPhase.moveStatus and " +
-    "boardPhase.archive.",
+    "Create a pipeline view owned by the caller, private until shared (board.share), with an " +
+    "optional filter (order type, main assignee). It starts with one phase (column) per active " +
+    "order status, open statuses first; group them with boardPhase.create, boardPhase.moveStatus " +
+    "and boardPhase.archive. The name is unique among the caller's views.",
   input: BoardCreateInputSchema,
   output: BoardSchema,
-  permission: "board:write",
+  permission: "board:read",
   handler: createBoardHandler,
 });
 
@@ -53,44 +61,47 @@ export const updateBoard = defineOperation({
   name: "board.update",
   kind: "command",
   description:
-    "Rename a board or change its filter (entityTypeId, assigneeId; null clears a filter). " +
-    "Its phases are unchanged.",
+    "Rename a pipeline view or change its filter (entityTypeId, assigneeId; null clears a " +
+    "filter). Everyone who sees a view may; the default view needs board:write. Its phases are " +
+    "unchanged.",
   input: BoardUpdateInputSchema,
   output: BoardSchema,
-  permission: "board:write",
+  permission: "board:read",
   handler: updateBoardHandler,
 });
 
-export const reorderBoards = defineOperation({
-  name: "board.reorder",
+export const shareBoard = defineOperation({
+  name: "board.share",
   kind: "command",
   description:
-    "Set the order of the boards: pass every active board id once, in the new order. The first " +
-    "board is the default one.",
-  input: BoardReorderInputSchema,
-  output: BoardListOutputSchema,
-  permission: "board:write",
-  handler: reorderBoardsHandler,
+    "Set who a pipeline view is shared with: the whole organization (`organization`) and/or " +
+    "specific members (`userIds`, replacing the list). Only the view's owner or a holder of " +
+    "board:delete may. The default view is always shared with everyone (CONFLICT).",
+  input: BoardShareInputSchema,
+  output: BoardSchema,
+  permission: "board:read",
+  handler: shareBoardHandler,
 });
 
 export const archiveBoard = defineOperation({
   name: "board.archive",
   kind: "command",
   description:
-    "Archive a board and its phases (boards are never deleted). Orders and statuses are " +
-    "unchanged: a board is only a view. The organization's last board cannot be archived (CONFLICT).",
+    "Archive a pipeline view and its phases (views are never deleted). Only its owner or a " +
+    "holder of board:delete may. Orders and statuses are unchanged: a view is only a view. The " +
+    "default view cannot be archived (CONFLICT).",
   input: BoardIdInputSchema,
   output: BoardSchema,
-  permission: "board:delete",
+  permission: "board:read",
   handler: archiveBoardHandler,
 });
 
-/** Every board operation (ADR 0067); handlers live in the sibling files. */
+/** Every board operation (ADR 0067, 0111); handlers live in the sibling files. */
 export const boardOperations = [
   listBoards,
   getBoard,
   createBoard,
   updateBoard,
-  reorderBoards,
+  shareBoard,
   archiveBoard,
 ];

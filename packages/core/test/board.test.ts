@@ -79,12 +79,14 @@ describe("boards and phases (ADR 0067)", () => {
     expect(removed.phases.some((p) => p.statusIds.includes(statusId))).toBe(false);
   });
 
-  it("creates boards mirroring the statuses, keeps the last one, and checks the filter", async () => {
+  it("creates views mirroring the statuses, keeps the default one, and checks the filter", async () => {
     const { context, type } = await orderSetup();
     const first = await defaultBoard({ context });
+    expect(first).toMatchObject({ isDefault: true, sharedWithOrganization: true, ownerId: null });
     const input = { name: "Ops", entityTypeId: type.id };
     const ops = unwrap({ result: await execute({ operation: createBoard, input, context }) });
     expect(names({ board: ops })).toEqual(names({ board: first }));
+    expect(ops).toMatchObject({ isDefault: false, ownerId: context.actor.userId });
     const bad = { id: ops.id, assigneeId: "user_not_a_member" };
     expect(
       errorCode({ result: await execute({ operation: updateBoard, input: bad, context }) }),
@@ -94,15 +96,19 @@ describe("boards and phases (ADR 0067)", () => {
     expect(errorCode({ result: last })).toBe("CONFLICT");
   });
 
-  it("needs board:write to change a board, which managers have and members do not (ADR 0076)", async () => {
+  it("lets members create views but only managers configure the default one (ADR 0111)", async () => {
     const { context } = await orderSetup();
-    const create = ({ access }: { access: "read" | "write" }) =>
-      execute({
-        operation: createBoard,
-        input: { name: `Mine ${access}` },
-        context: peer({ of: context, access }),
-      });
-    expect(errorCode({ result: await create({ access: "read" }) })).toBe("FORBIDDEN");
-    expect(errorCode({ result: await create({ access: "write" }) })).toBeNull();
+    const member = peer({ of: context, access: "read" });
+    const input = { name: "Mine" };
+    expect(
+      errorCode({ result: await execute({ operation: createBoard, input, context: member }) }),
+    ).toBeNull();
+    const board = await defaultBoard({ context });
+    const rename = ({ on }: { on: ExecuteContext }) =>
+      execute({ operation: updateBoard, input: { id: board.id, name: "Renamed" }, context: on });
+    expect(errorCode({ result: await rename({ on: member }) })).toBe("FORBIDDEN");
+    expect(
+      errorCode({ result: await rename({ on: peer({ of: context, access: "write" }) }) }),
+    ).toBeNull();
   });
 });

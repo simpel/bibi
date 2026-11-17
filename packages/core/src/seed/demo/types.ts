@@ -47,20 +47,13 @@ export type DemoGridCell = { orderStatus: string; type: string; state: string };
  * An organization's pipeline (ADR 0043, 0044): its statuses with flags and transitions (the shape of
  * a status template) and the grid cells by name. Item states come from the item types' templates.
  */
-/** A phase (column) of a demo board: a name and the statuses it shows, by status name. */
-export type DemoBoardPhase = { name: string; statuses: readonly string[] };
-
-/** An extra board (ADR 0067): its phases left to right; statuses in no phase are off the board. */
-export type DemoBoard = { name: string; phases: readonly DemoBoardPhase[] };
-
 /**
- * The statuses, the grid and the boards beyond the default "Pipeline" board that
- * `orderStatus.create` keeps (one phase per status).
+ * The statuses and the grid; the only board is the default pipeline view, one phase per status
+ * (ADR 0111).
  */
 export type DemoPipeline = {
   statuses: OrderStatusTemplate;
   cells: readonly DemoGridCell[];
-  boards?: readonly DemoBoard[];
   /**
    * Statuses that only allow some moves (ADR 0076), by name; every other status lets an order
    * move to any status. The gates are the template's `gatesIn`, from any status.

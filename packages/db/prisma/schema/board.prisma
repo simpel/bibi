@@ -1,28 +1,58 @@
 // Boards (ADR 0067): saved views over the organization's orders. A board owns no order data; its
 // phases are its columns and group order statuses, one phase per status per board.
 
-/// Board – a saved view of orders, e.g. Sales or Ops. Owned: `name`, `position` and the filter
-/// (`entityTypeId`, `assigneeId`, both optional). The first active board by `position` is the
-/// default; a new status without a phase gets its own phase there (ADR 0067).
+/// Board – a pipeline view of orders, e.g. Sales or Ops. Owned: `name`, the filter (`entityTypeId`,
+/// `assigneeId`, both optional), `isDefault`, `ownerId` and `sharedWithOrganization` (ADR 0067, 0111).
+/// One active board per organization is the default (partial unique index `Board_one_default`): it
+/// is shared with everyone and has no owner. Any other board is its owner's view, shared with the
+/// organization and/or with members through `BoardShare`. A new status without a phase gets its
+/// own phase on the default board.
 model Board {
-  id             String             @id @default(cuid(2))
-  organizationId String
-  name           String
-  position       Int                @default(0)
+  id                     String             @id @default(cuid(2))
+  organizationId         String
+  name                   String
+  /// Unused since ADR 0111 (views are listed default first, then by name); dropped in a later release.
+  position               Int                @default(0)
+  /// The organization's one default view (ADR 0111).
+  isDefault              Boolean            @default(false)
+  /// The member (user id) whose view this is; null for the default view and for views made by an
+  /// API key or SYSTEM.
+  ownerId                String?
+  /// Everyone in the organization sees and edits it.
+  sharedWithOrganization Boolean            @default(false)
   /// Filter: only orders of this type; null for every type.
-  entityTypeId   String?
+  entityTypeId           String?
   /// Filter: only orders this member (user id) is the main assignee of; null for everyone.
-  assigneeId     String?
-  status         RecordStatus       @default(ACTIVE)
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-  createdBy      String?
-  entityType     EntityType?        @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  phases         BoardPhase[]
-  phaseStatuses  BoardPhaseStatus[]
+  assigneeId             String?
+  status                 RecordStatus       @default(ACTIVE)
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  createdBy              String?
+  entityType             EntityType?        @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  phases                 BoardPhase[]
+  phaseStatuses          BoardPhaseStatus[]
+  shares                 BoardShare[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status, position])
+  @@index([organizationId, ownerId])
+}
+
+/// Board share – a member (user id) a view is shared with (join row, ADR 0056, 0111). Replaced as a
+/// whole by `board.share`; the owner is never a row. Hard-deleted: a share has no history of its own,
+/// the board's audit log keeps it.
+model BoardShare {
+  id             String   @id @default(cuid(2))
+  organizationId String
+  boardId        String
+  userId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      String?
+  board          Board    @relation(fields: [boardId, organizationId], references: [id, organizationId])
+
+  @@unique([boardId, userId])
+  @@index([organizationId, userId])
 }
 
 /// Board phase – one column of a board. Owned: `name`, `position` (no colour: only statuses are colour-coded). Its statuses are
@@ -49,18 +79,18 @@ model BoardPhase {
 /// most one phase per board (`@@unique([boardId, statusId])`); with none it is not on that board.
 /// Replaced through `boardPhase.moveStatus` and audited on the board.
 model BoardPhaseStatus {
-  id             String       @id @default(cuid(2))
+  id             String      @id @default(cuid(2))
   organizationId String
   boardId        String
   phaseId        String
   statusId       String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
   createdBy      String?
-  board          Board        @relation(fields: [boardId, organizationId], references: [id, organizationId])
+  board          Board       @relation(fields: [boardId, organizationId], references: [id, organizationId])
   /// Through the board too, so a row's `boardId` is always its phase's board.
-  phase          BoardPhase   @relation(fields: [phaseId, boardId, organizationId], references: [id, boardId, organizationId])
-  orderStatus   OrderStatus @relation(fields: [statusId, organizationId], references: [id, organizationId])
+  phase          BoardPhase  @relation(fields: [phaseId, boardId, organizationId], references: [id, boardId, organizationId])
+  orderStatus    OrderStatus @relation(fields: [statusId, organizationId], references: [id, organizationId])
 
   @@unique([boardId, statusId])
   @@index([organizationId, phaseId])

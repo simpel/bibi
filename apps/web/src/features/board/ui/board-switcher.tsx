@@ -13,17 +13,17 @@ import { pipelineHref } from "@/features/pipeline/lib/pipeline-href";
 import { Link } from "@/lib/navigation";
 
 export type BoardSwitcherProps = {
-  boards: readonly Pick<BoardDto, "id" | "name">[];
+  boards: readonly Pick<BoardDto, "id" | "name" | "isDefault">[];
   /** The board shown. */
   boardId: string | null;
   /** Keep customize mode when switching. */
   customize?: boolean;
 };
 
-/** Picks the board to show (ADR 0067); the first board is the default. Everyone can switch. */
+/** Picks the view to show (ADR 0067, 0111): the default first, then the caller's other views. */
 export function BoardSwitcher({ boards, boardId, customize = false }: BoardSwitcherProps) {
   const t = useTranslations("board");
-  const current = boards.find((board) => board.id === boardId) ?? boards[0];
+  const current = boards.find((board) => board.id === boardId) ?? boards.find((b) => b.isDefault);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,11 +33,11 @@ export function BoardSwitcher({ boards, boardId, customize = false }: BoardSwitc
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        {boards.map((board, index) => (
+        {boards.map((board) => (
           <DropdownMenuItem key={board.id} asChild>
-            <Link href={pipelineHref({ boardId: index === 0 ? null : board.id, customize })}>
+            <Link href={pipelineHref({ boardId: board.isDefault ? null : board.id, customize })}>
               {board.name}
-              {index === 0 ? (
+              {board.isDefault ? (
                 <Badge variant="secondary" className="ml-auto">
                   {t("default")}
                 </Badge>

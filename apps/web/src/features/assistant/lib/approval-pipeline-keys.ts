@@ -86,7 +86,7 @@ export const PIPELINE_OPERATION_KEYS = [
   "lineAllocation_assign",
   "board_create",
   "board_update",
-  "board_reorder",
+  "board_share",
   "board_archive",
   "boardPhase_create",
   "boardPhase_update",

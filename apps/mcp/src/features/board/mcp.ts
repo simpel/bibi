@@ -62,8 +62,12 @@ export const boardCrudMcpTools = [
     summary: ({ input }) => `Archive board ${text({ value: input.id })}`,
   }),
   mcpTool({
-    operation: "board.reorder",
+    operation: "board.share",
     idempotent: true,
-    summary: ({ input }) => `Reorder boards: ${list({ value: input.ids })}`,
+    summary: ({ input }) =>
+      `Share board ${text({ value: input.id })} with ` +
+        [input.organization ? "the whole organization" : "", list({ value: input.userIds })]
+          .filter(Boolean)
+          .join(" and ") || `Make board ${text({ value: input.id })} private`,
   }),
 ];

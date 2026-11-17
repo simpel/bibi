@@ -47,6 +47,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "BoardPhase",
   "ItemTypeGroup",
   "BoardPhaseStatus",
+  "BoardShare",
   "ItemState",
   "ItemStateTransition",
   "StatusStateRule",

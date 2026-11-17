@@ -1,34 +1,39 @@
 import type { BoardDto } from "@bibi/core/schemas";
 import { Button } from "@bibi/ui";
-import { CheckIcon, PlusIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { pipelineHref } from "@/features/pipeline/lib/pipeline-href";
-import type { BoardAccess } from "@/features/pipeline/load-pipeline-data";
+import type { BoardAccess, ShareMember } from "@/features/pipeline/load-pipeline-data";
 import { useRouter } from "@/lib/navigation";
-import { useToastAction } from "@/lib/use-toast-action";
-import { reorderBoardsAction } from "../actions";
 import { ArchiveBoardButton } from "./archive-board-button";
 import { BoardNameForm } from "./board-name-form";
 import { BoardSwitcher } from "./board-switcher";
-import { FormPopover } from "./form-popover";
+import { CreateBoardButton, ShareBoardButton } from "./board-view-buttons";
+import { FormDialog } from "./form-dialog";
 
 export type BoardCustomizeToolbarProps = {
   boards: readonly BoardDto[];
   boardId: string;
   access: BoardAccess;
+  members: readonly ShareMember[];
   onDone: () => void;
 };
 
-type NameButtonsProps = { board: BoardDto | undefined };
-
-/** Rename this board, or name a new one and customize it. */
-function BoardNameButtons({ board }: NameButtonsProps) {
+/** Customize mode's toolbar: switch, rename, create, share and archive the view, and Done. */
+export function BoardCustomizeToolbar({
+  boards,
+  boardId,
+  access,
+  members,
+  onDone,
+}: BoardCustomizeToolbarProps) {
   const t = useTranslations("board");
   const router = useRouter();
+  const board = boards.find((candidate) => candidate.id === boardId);
   return (
-    <>
+    <div className="flex flex-wrap items-center gap-2">
+      <BoardSwitcher boards={boards} boardId={boardId} customize />
       {board ? (
-        <FormPopover label={t("rename")} title={t("rename")}>
+        <FormDialog label={t("rename")} title={t("rename")}>
           {({ close }) => (
             <BoardNameForm
               board={board}
@@ -38,50 +43,11 @@ function BoardNameButtons({ board }: NameButtonsProps) {
               }}
             />
           )}
-        </FormPopover>
+        </FormDialog>
       ) : null}
-      <FormPopover label={t("create")} title={t("create")} icon={<PlusIcon aria-hidden />}>
-        {({ close }) => (
-          <BoardNameForm
-            onDone={({ value }) => {
-              close();
-              router.push(pipelineHref({ boardId: value.id, customize: true }));
-            }}
-          />
-        )}
-      </FormPopover>
-    </>
-  );
-}
-
-/** Customize mode's toolbar: switch, rename, new, default and archive board, and Done. */
-export function BoardCustomizeToolbar({
-  boards,
-  boardId,
-  access,
-  onDone,
-}: BoardCustomizeToolbarProps) {
-  const t = useTranslations("board");
-  const router = useRouter();
-  const { run, pending } = useToastAction();
-  const board = boards.find((candidate) => candidate.id === boardId) ?? boards[0];
-  const ids = boards.map((candidate) => candidate.id);
-  const makeDefault = () =>
-    run({
-      action: () => reorderBoardsAction({ ids: [boardId, ...ids.filter((id) => id !== boardId)] }),
-      messages: { pending: t("saving"), success: t("madeDefault") },
-      onSuccess: () => router.refresh(),
-    });
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <BoardSwitcher boards={boards} boardId={boardId} customize />
-      <BoardNameButtons board={board} />
-      {ids[0] !== boardId ? (
-        <Button variant="outline" size="sm" disabled={pending} onClick={makeDefault}>
-          {t("makeDefault")}
-        </Button>
-      ) : null}
-      {access.remove && board && boards.length > 1 ? <ArchiveBoardButton board={board} /> : null}
+      <CreateBoardButton />
+      {access.manage && board ? <ShareBoardButton board={board} members={members} /> : null}
+      {access.manage && board ? <ArchiveBoardButton board={board} /> : null}
       <Button size="sm" className="ml-auto" onClick={onDone}>
         <CheckIcon aria-hidden />
         {t("done")}

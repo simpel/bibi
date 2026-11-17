@@ -2,13 +2,13 @@ import type { z } from "zod";
 import { ok } from "../../errors/result";
 import type { HandlerInput } from "../../operations/types";
 import { invalid, notFound } from "../../shared/errors";
+import { loadEditableBoard, loadEditablePhase } from "./editable";
 import { loadBoardPhase } from "./load-board";
 import { insertPhase, placeStatus } from "./phase-layout";
-import {
-  type BoardPhaseCreateInputSchema,
-  type BoardPhaseIdInputSchema,
-  BoardPhaseSchema,
-  type BoardPhaseUpdateInputSchema,
+import type {
+  BoardPhaseCreateInputSchema,
+  BoardPhaseIdInputSchema,
+  BoardPhaseUpdateInputSchema,
 } from "./schema";
 
 const unknownStatus = () => {
@@ -21,8 +21,8 @@ export const createBoardPhaseHandler = async ({
   context,
 }: HandlerInput<z.infer<typeof BoardPhaseCreateInputSchema>>) => {
   const { boardId, name, statusIds } = input;
-  const board = await context.db.board.findFirst({ where: { id: boardId } });
-  if (!board) return notFound({ entity: "Board" });
+  const board = await loadEditableBoard({ context, id: boardId });
+  if (!board.ok) return board;
   const unique = [...new Set(statusIds)];
   const found = await context.db.orderStatus.count({ where: { id: { in: unique } } });
   if (found !== unique.length) return unknownStatus();
@@ -39,8 +39,9 @@ export const updateBoardPhaseHandler = async ({
   input: { id, ...data },
   context,
 }: HandlerInput<z.infer<typeof BoardPhaseUpdateInputSchema>>) => {
-  const before = await loadBoardPhase({ context, id });
-  if (!before) return notFound({ entity: "Board phase" });
+  const editable = await loadEditablePhase({ context, id });
+  if (!editable.ok) return editable;
+  const before = editable.value;
   await context.db.boardPhase.update({ where: { id }, data });
   const after = await loadBoardPhase({ context, id });
   if (!after) return notFound({ entity: "Board phase" });
@@ -52,8 +53,9 @@ export const archiveBoardPhaseHandler = async ({
   input: { id },
   context,
 }: HandlerInput<z.infer<typeof BoardPhaseIdInputSchema>>) => {
-  const before = await loadBoardPhase({ context, id });
-  if (!before) return notFound({ entity: "Board phase" });
+  const editable = await loadEditablePhase({ context, id });
+  if (!editable.ok) return editable;
+  const before = editable.value;
   await context.db.boardPhaseStatus.deleteMany({ where: { phaseId: id } });
   await context.db.boardPhase.update({ where: { id }, data: { status: "ARCHIVED" } });
   const after = { ...before, statusIds: [], status: "ARCHIVED" as const };

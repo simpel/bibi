@@ -133,6 +133,7 @@ erDiagram
   OrderStatus ||--o{ OrderStatusTransition : "to"
   OrderStatus ||--o{ OrderStatusGate : "is guarded by"
   Board ||--o{ BoardPhase : "has"
+  Board ||--o{ BoardShare : "is shared through"
   BoardPhase ||--o{ BoardPhaseStatus : "shows"
   OrderStatus ||--o{ BoardPhaseStatus : "is shown in"
   EntityType |o--o{ Board : "filters"
@@ -329,21 +330,23 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 ### Board (`Board`), BoardPhase (`BoardPhase`) and BoardPhaseStatus (`BoardPhaseStatus`)
 
-*MVP* · A board is a saved view of the organization's orders; its phases are its columns and group order statuses ([ADR 0067](decisions/0067-order-statuses-boards-and-gates.md), spec `docs/specs/boards.md`). A board owns no order data.
+*MVP* · A board is a pipeline view of the organization's orders; its phases are its columns and group order statuses ([ADR 0067](decisions/0067-order-statuses-boards-and-gates.md), [ADR 0111](decisions/0111-shared-pipeline-views.md), spec `docs/specs/boards.md`). A board owns no order data. One is the organization's default view; the others are members' own views, shared with the organization or with specific members (`BoardShare`).
 
 **Attributes**
-- Board: name, order (`position`; the first active board is the default), optional filter on order type (`entityTypeId`) and main assignee (`assigneeId`), archived
+- Board: name, `isDefault` (one per organization), owner (`ownerId`, a member; none for the default view), `sharedWithOrganization`, optional filter on order type (`entityTypeId`) and main assignee (`assigneeId`), archived (`position` is unused and dropped in a later release)
+- BoardShare: a join row, one member a view is shared with; unique per board and member
 - BoardPhase: name, order within its board, archived (no colour: only statuses are colour-coded)
 - BoardPhaseStatus: a join row, one status in one phase; unique per board and status, so a status is in at most one phase per board and a status in none is not on that board
 
 **Relations**
 - `1:N` Board has → BoardPhase
+- `1:N` Board is shared through → BoardShare
 - `1:N` BoardPhase shows → BoardPhaseStatus; `N:1` BoardPhaseStatus is → OrderStatus
 - `N:1` Board filters → EntityType (optional)
 
-> Every organization has at least one board; `orderStatus.create` takes only a name and a colour (flags are set with `orderStatus.update`) and leaves a new status on no board until it is moved onto one, unless given a `phaseId`; a template import gives each imported status its own phase on the default board. Archiving a status removes it from every board and archives a phase it leaves empty; archiving a phase or a board never changes orders or statuses. The last board cannot be archived (`CONFLICT`).
+> Every organization has at least one board; `orderStatus.create` takes only a name and a colour (flags are set with `orderStatus.update`) and leaves a new status on no board until it is moved onto one, unless given a `phaseId`; a template import gives each imported status its own phase on the default board. Archiving a status removes it from every board and archives a phase it leaves empty; archiving a phase or a board never changes orders or statuses. The default view cannot be archived or made private (`CONFLICT`). A caller sees the default view, views shared with the organization, their own and those shared with them; everyone who sees a view edits it (the default view needs `board:write`), and only its owner or a holder of `board:delete` shares or archives it.
 
-> Operations (`pipeline:read` to read, `pipeline:write|delete` to change): `board.list|get|create|update|reorder|archive`, `boardPhase.create|update|archive|reorder|moveStatus`; `pipeline.board` reads one board's columns and cards. Web: the customize mode of `/pipeline`.
+> Operations (`board:read`, checked per view in the handler, ADR 0111): `board.list|get|create|update|share|archive`, `boardPhase.create|update|archive|reorder|moveStatus`; `pipeline.board` reads one board's columns and cards. Web: the customize mode of `/pipeline`.
 
 ### ItemState (`ItemState`) with flags and transitions
 
