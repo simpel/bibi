@@ -13,6 +13,7 @@ Current behaviour. Why: ADR 0050 (presets and overrides), 0034 (fixed roles), 00
 - `read` can be denied on any feature except the shared vocabulary (`ALWAYS_VISIBLE_FEATURES`: `configuration`, `pipeline`, `board`, `template`, `orderTemplate`, `responsibility`, `member`), because type, status and list names and colleagues' names are labels on every screen. Pages, navigation, tools and the assistant follow the effective permissions.
 - Roles are resolved live from `member` on every request (one extra indexed query), so role changes and overrides apply at once. `packages/auth` resolves; core owns the model.
 - Anti-escalation: nobody gives a role above their own or changes or removes a member above them; invitations and API keys can carry any fixed role up to the caller's own. The organization always keeps one admin (`checkAdminKept`, `CONFLICT`).
+- Removing a member leaves no relation behind, in the same transaction: their explicit assignments and follows are dropped (a row left with no choice is archived), shares with them are deleted, their unshared views are archived and their shared views pass to the remover; it is `CONFLICT` naming the responsibilities while they are a default assignee or default follower (`features/member/release-relations.ts`).
 - The platform role `superadmin` is separate (ADR 0015), outside presets and overrides, and grants nothing inside an organization by itself.
 
 ## API keys

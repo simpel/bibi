@@ -5,6 +5,7 @@ import { paginate } from "../../shared/paginate";
 import { cancelInvitation, inviteMember, listInvitations } from "./invitation-operations";
 import { memberListWhere } from "./list-where";
 import { parseMemberRole } from "./member-roles";
+import { checkNoDefaults, releaseAssignments, releaseBoards } from "./release-relations";
 import { checkAdminKept, checkRemovable } from "./removal-guard";
 import { checkCanGrantRole, checkCanManageMember } from "./role-access";
 import {
@@ -115,6 +116,9 @@ export const removeMember = defineOperation({
     const member = toMemberDto({ row });
     const removable = await checkRemovable({ context, role: member.role });
     if (!removable.ok) return removable;
+    const userId = member.userId;
+    const free = await checkNoDefaults({ context, userId });
+    if (!free.ok) return free;
     await context.db.member.delete({ where: { id: input.id } });
     context.recordChange({ entityId: member.id, before: member });
     // Their permission overrides go with the membership (ADR 0050); API keys stay.
@@ -122,6 +126,9 @@ export const removeMember = defineOperation({
       where: { subjectType: "MEMBER", subjectId: member.id, status: "ACTIVE" },
       data: { status: "ARCHIVED" },
     });
+    // No relation outlives the membership: assignments, follows and views.
+    await releaseAssignments({ context, userId });
+    await releaseBoards({ context, userId });
     return ok({ value: member });
   },
 });
