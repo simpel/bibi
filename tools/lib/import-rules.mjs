@@ -35,7 +35,10 @@ function typeOnly({ keyword, clause }) {
   if (keyword) return true;
   const named = clause.match(/^\{([\s\S]*)\}$/);
   if (!named) return false;
-  const names = named[1].split(",").map((name) => name.trim()).filter(Boolean);
+  const names = named[1]
+    .split(",")
+    .map((name) => name.trim())
+    .filter(Boolean);
   return names.length > 0 && names.every((name) => name.startsWith("type "));
 }
 
