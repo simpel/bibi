@@ -127,6 +127,14 @@ export type {
 } from "./records/types";
 export { ORG_SCOPED_MODELS, UNSCOPED_MODELS, USER_SCOPED_MODELS } from "./scoped/models";
 export { PLATFORM_SCOPE } from "./scoped/platform-scope";
+export {
+  ENGINE_PURPOSES,
+  type EnginePurpose,
+  type RecordIntent,
+  type RecordPredicates,
+  withRecordIntent,
+} from "./scoped/record-intent";
+export { RECORD_SCOPED_MODELS } from "./scoped/record-scoped-models";
 export { ScopeViolationError } from "./scoped/scope-violation";
 export {
   type ScopedDb,

@@ -1,4 +1,5 @@
 import { APPEND_ONLY_MODELS, TRIGGER_ONLY_MODELS } from "./append-only-models";
+import { applyRecordScope } from "./apply-record-scope";
 import { applyUserScope } from "./apply-user-scope";
 import { CREATED_BY_MODELS } from "./conventions";
 import { ORG_SCOPED_MODELS, USER_SCOPED_MODELS } from "./models";
@@ -55,7 +56,12 @@ export function applyScope({
   organizationId,
   actorId,
 }: ApplyScopeInput): Args {
-  const input: Args = { ...((args as Args | undefined) ?? {}) };
+  // Record access first (ADR 0113): it reads and strips the declared intent.
+  const input: Args = applyRecordScope({
+    model,
+    operation,
+    args: (args as Args | undefined) ?? {},
+  });
   if (USER_SCOPED_MODELS.has(model)) {
     return applyUserScope({ model, operation, args: input, actorId });
   }

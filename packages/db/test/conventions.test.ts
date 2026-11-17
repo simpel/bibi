@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { fieldOf, readSchemaModels } from "../scripts/read-schema";
 import { APPEND_ONLY_MODELS } from "../src/scoped/append-only-models";
 import {
   APP_ID_MODELS,
@@ -9,7 +10,6 @@ import {
 import { HARD_DELETE_MODELS } from "../src/scoped/hard-delete-models";
 import { ORG_SCOPED_MODELS, UNSCOPED_MODELS } from "../src/scoped/models";
 import { SOFT_DELETE_MODELS } from "../src/scoped/soft-delete-models";
-import { fieldOf, readSchemaModels } from "./read-schema";
 
 const models = readSchemaModels();
 const orgScoped = models.filter((model) => ORG_SCOPED_MODELS.has(model.name));

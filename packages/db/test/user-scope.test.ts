@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { fieldOf, readSchemaModels } from "../scripts/read-schema";
 import { applyScope } from "../src/scoped/apply-scope";
 import { USER_SCOPED_MODELS } from "../src/scoped/models";
 import { ScopeViolationError } from "../src/scoped/scope-violation";
 import { SYSTEM_ACTOR_ID } from "../src/scoped/system-actor";
-import { fieldOf, readSchemaModels } from "./read-schema";
 
 const scope = { model: "UserPreference", organizationId: "org-a", actorId: "user-a" };
 

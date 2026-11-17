@@ -8,6 +8,7 @@
   },
   "scripts": {
     "generate": "prisma generate",
+    "gen:relations": "node scripts/gen-relation-map.ts",
     "migrate": "prisma migrate deploy",
     "migrate:test": "node src/migrate-test-cli.ts",
     "migrate:dev": "prisma migrate dev",
