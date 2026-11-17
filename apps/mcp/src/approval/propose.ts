@@ -2,10 +2,10 @@ import {
   type AnyOperation,
   appError,
   type ChangePreview,
+  checkPermission,
   type ExecuteContext,
   err,
   fromZodError,
-  hasPermission,
   ok,
   previewChange,
   type Result,
@@ -45,10 +45,14 @@ function checkProposal({ operation, args, context }: CheckInput) {
     return err({ error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }) });
   const parsed = operation.input.safeParse(args);
   if (!parsed.success) return err({ error: fromZodError({ error: parsed.error }) });
-  if (!hasPermission({ permissions: context.permissions, permission: operation.permission })) {
-    const message = `Missing permission ${operation.permission}`;
-    return err({ error: appError({ code: "FORBIDDEN", message }) });
-  }
+  // Core's gate, so a proposal is refused exactly when `execute` would refuse it after approval.
+  const allowed = checkPermission({
+    context,
+    permission: operation.permission,
+    subject: operation.name,
+    aiAllowed: operation.aiAllowed,
+  });
+  if (!allowed.ok) return err({ error: allowed.error });
   return ok({ value: { userId, input: parsed.data as unknown } });
 }
 
