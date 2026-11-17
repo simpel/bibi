@@ -36,7 +36,19 @@
       "remind": "Påminn din admin",
       "reminding": "Skickar en påminnelse…",
       "reminded": "Era admins har fått veta. Tack för knuffen!",
-      "alreadyReminded": "Era admins har redan blivit påminda. De är snart med er."
+      "alreadyReminded": "Era admins har redan blivit påminda. De är snart med er.",
+      "trialTitle": "Välj en plan",
+      "trialDescription": "Betala nu så fortsätter ni utan avbrott. Inget dras förrän provperioden är slut.",
+      "notNow": "Inte nu"
+    },
+    "trial": {
+      "title": "Provperiod",
+      "daysLeft": "{count, plural, one {# dag kvar} other {# dagar kvar}}",
+      "hoursLeft": "{count, plural, one {# timme kvar} other {# timmar kvar}}",
+      "tooltip": "Provperiod: {left}",
+      "barLabel": "Kvar av provperioden",
+      "pickPlan": "Välj en plan",
+      "askAdmin": "En admin väljer en plan för att fortsätta använda Bibi efter provperioden."
     },
     "done": {
       "title": "Tack!",

@@ -7,6 +7,8 @@ import {
   Wordmark,
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import type { TrialCountdown } from "@/features/billing/lib/trial-countdown";
+import { TrialCountdownCard } from "@/features/billing/ui/trial-countdown-card";
 import { AdminNav } from "./admin-nav";
 import { AssistantNav } from "./assistant-nav";
 import { NewOrderButton } from "./new-order-button";
@@ -20,6 +22,7 @@ export type AppSidebarProps = {
   organizationId: string;
   user: ShellUser;
   access: ShellAccess;
+  trial: TrialCountdown | null;
 };
 
 /**
@@ -27,9 +30,9 @@ export type AppSidebarProps = {
  * Work and Catalog groups; the Administration entry, the superadmin card (sidebar-06) and the
  * account at the bottom. Inside `/admin/*` the middle swaps to the administration area's own
  * groups. A sheet on mobile; on desktop the top bar's trigger collapses it to icons, each with a
- * tooltip.
+ * tooltip. While the free trial runs, its countdown sits above the account.
  */
-export function AppSidebar({ organizationId, user, access }: AppSidebarProps) {
+export function AppSidebar({ organizationId, user, access, trial }: AppSidebarProps) {
   const common = useTranslations("common");
   const nav = useTranslations("nav");
   const shell = useTranslations("shell");
@@ -72,6 +75,7 @@ export function AppSidebar({ organizationId, user, access }: AppSidebarProps) {
             <SidebarNav groups={["admin"]} access={access} headings={false} />
           </nav>
         </SidebarMode>
+        {trial ? <TrialCountdownCard trial={trial} /> : null}
         {access.platformAdmin ? <PlatformAdminCard /> : null}
         <UserMenu user={user} organizationId={organizationId} />
       </SidebarFooter>

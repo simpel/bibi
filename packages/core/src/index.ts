@@ -15,6 +15,7 @@ export * from "./features/assignment/write-operations";
 export * from "./features/audit-log/operations";
 export * from "./features/billing/gateway-registry";
 export * from "./features/billing/operations";
+export { BILLING_PLAN } from "./features/billing/plan";
 export * from "./features/board/operations";
 export * from "./features/calendar/operations";
 export * from "./features/change-set/operations";

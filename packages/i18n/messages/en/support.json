@@ -256,6 +256,10 @@
             "question": "What does Bibi cost?",
             "answer": "9 990 SEK a month excluding VAT, with 10 seats included. Extra seats cost 49 SEK a month each. Pay yearly and you get 10 % off."
           },
+          "trialLeft": {
+            "question": "How many days are left of our free trial?",
+            "answer": "The card at the bottom of the menu counts down the days left of your 14 free days.\nAn admin clicks **Pick a plan** on it to choose monthly or yearly and pay by card or another method Stripe offers. Nothing is charged until the trial ends."
+          },
           "afterTrial": {
             "question": "What happens when the trial ends?",
             "answer": "After 14 days Bibi asks for payment before you can continue. Nothing you created is lost, it is all there when payment is in place."

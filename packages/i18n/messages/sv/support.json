@@ -256,6 +256,10 @@
             "question": "Vad kostar Bibi?",
             "answer": "9 990 kr i månaden exklusive moms, med 10 platser inkluderade. Extra platser kostar 49 kr i månaden styck. Betalar ni per år får ni 10 % rabatt."
           },
+          "trialLeft": {
+            "question": "Hur många dagar är kvar av vår provperiod?",
+            "answer": "Kortet längst ned i menyn räknar ned dagarna som är kvar av era 14 gratisdagar.\nEn admin klickar på **Välj en plan** där för att välja månads- eller årsplan och betala med kort eller ett annat sätt som Stripe erbjuder. Inget dras förrän provperioden är slut."
+          },
           "afterTrial": {
             "question": "Vad händer när provperioden är slut?",
             "answer": "Efter 14 dagar ber Bibi om betalning innan ni kan fortsätta. Inget ni har skapat försvinner, allt finns kvar när betalningen är på plats."

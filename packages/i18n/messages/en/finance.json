@@ -36,7 +36,19 @@
       "remind": "Remind your admin",
       "reminding": "Sending a reminder…",
       "reminded": "Your admins have been told. Thanks for the nudge!",
-      "alreadyReminded": "Your admins have already been reminded. They'll be with you soon."
+      "alreadyReminded": "Your admins have already been reminded. They'll be with you soon.",
+      "trialTitle": "Pick a plan",
+      "trialDescription": "Pay now and keep going without a break. Nothing is charged until your free trial ends.",
+      "notNow": "Not now"
+    },
+    "trial": {
+      "title": "Free trial",
+      "daysLeft": "{count, plural, one {# day left} other {# days left}}",
+      "hoursLeft": "{count, plural, one {# hour left} other {# hours left}}",
+      "tooltip": "Free trial: {left}",
+      "barLabel": "Free trial left",
+      "pickPlan": "Pick a plan",
+      "askAdmin": "An admin picks a plan to keep Bibi going after the trial."
     },
     "done": {
       "title": "Thank you!",
