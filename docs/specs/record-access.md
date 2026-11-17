@@ -1,6 +1,6 @@
 # Record access
 
-Target behaviour, not built yet. Why: ADR 0113 (Proposed). Capability is `docs/specs/permissions.md`; this spec covers which records a caller sees.
+Target behaviour, being built in phases. Why: ADR 0113. Capability is `docs/specs/permissions.md`; this spec covers which records a caller sees.
 
 ## Scope
 - Each member has a scope per root. The only root is `order`. Values: `all` (default for every preset) and `related`.

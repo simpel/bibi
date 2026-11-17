@@ -1,7 +1,7 @@
 # 0113 – Record access by relation
 
 - **Date:** 2026-11-17
-- **Status:** Proposed
+- **Status:** Accepted (the user's decision, 2026-11-17: involved = creator, assignee, follower; totals count visible orders; `related` refused for admins and API keys)
 - **Amends:** 0050 (a record scope beside capability), 0055 (derived relations become a database projection), 0111 §3 (API keys see only shared views)
 - **Related:** 0004, 0034, 0051, 0071, 0097
 - **Spec:** `docs/specs/record-access.md`
