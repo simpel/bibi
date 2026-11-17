@@ -18,6 +18,7 @@ model Responsibility {
   /// Members (user ids) who follow it by default.
   defaultFollowers  ResponsibilityDefaultFollower[]
   assignments       Assignment[]
+  relations         RecordRelation[]
   /// Run sheet definitions that go to this responsibility.
   runSheetDefinitions  RunSheetDefinition[]
   /// Run sheet versions generated for this responsibility.

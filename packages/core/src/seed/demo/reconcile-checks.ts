@@ -2,12 +2,14 @@ import { lineStateReconciliation, orderStatusReconciliation } from "./history-re
 import { lineHoldsReconciliation } from "./line-holds-reconcile";
 import { type ReconcileContext, runReconciliations } from "./reconcile";
 import { recordReconciliation } from "./record-reconciliation";
+import { recordRelationsReconciliation } from "./record-relations-reconcile";
 import { paymentRefundReconciliation } from "./refund-reconcile";
 import { runSheetCurrentReconciliation } from "./run-sheet-current-reconcile";
 
 export const RECONCILIATIONS = [
   lineHoldsReconciliation,
   recordReconciliation,
+  recordRelationsReconciliation,
   orderStatusReconciliation,
   lineStateReconciliation,
   paymentRefundReconciliation,

@@ -89,6 +89,8 @@ model Line {
 
   @@unique([id, organizationId])
   @@index([organizationId, orderId, startsAt])
+  /// Lines of an item: record relations (ADR 0113) re-derive the orders of an item whose type changes.
+  @@index([organizationId, itemId])
   @@index([organizationId, entityTypeId])
   @@index([organizationId, stateId])
   @@index([organizationId, alternativeGroupId])

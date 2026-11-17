@@ -13,6 +13,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["Responsibility", "ACTIVE"],
   ["PermissionOverride", "ACTIVE"],
   ["Assignment", "ACTIVE"],
+  ["RecordRelation", "ACTIVE"],
   ["Record", "ACTIVE"],
   ["Item", "ACTIVE"],
   ["ItemDemand", "ACTIVE"],

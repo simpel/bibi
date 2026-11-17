@@ -1,4 +1,4 @@
-import { APPEND_ONLY_MODELS } from "./append-only-models";
+import { APPEND_ONLY_MODELS, TRIGGER_ONLY_MODELS } from "./append-only-models";
 import { applyUserScope } from "./apply-user-scope";
 import { CREATED_BY_MODELS } from "./conventions";
 import { ORG_SCOPED_MODELS, USER_SCOPED_MODELS } from "./models";
@@ -63,6 +63,9 @@ export function applyScope({
     throw new ScopeViolationError({ model, operation, reason: "model is not org-scoped" });
   }
   const mutates = UPDATE_OPERATIONS.has(operation) || DELETE_OPERATIONS.has(operation);
+  if (TRIGGER_ONLY_MODELS.has(model) && !READ_OPERATIONS.has(operation)) {
+    throw new ScopeViolationError({ model, operation, reason: "model is written by triggers" });
+  }
   if (APPEND_ONLY_MODELS.has(model) && (mutates || operation === "upsert")) {
     throw new ScopeViolationError({ model, operation, reason: "model is append-only" });
   }

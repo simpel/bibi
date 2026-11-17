@@ -28,6 +28,8 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   ["OrderEstimate", ["createdAt", "updatedAt", "createdBy"]],
   // Derived search index, rebuilt from its entity; not authored by anyone.
   ["Embedding", ["createdBy"]],
+  // Trigger projection (ADR 0113): derived from assignments and responsibilities, not authored.
+  ["RecordRelation", ["createdBy"]],
   // Better Auth tables (shape owned by Better Auth); `inviterId` records the inviter.
   ["Member", ["updatedAt", "createdBy"]],
   ["Invitation", ["updatedAt", "createdBy"]],

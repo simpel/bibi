@@ -40,6 +40,8 @@ model Record {
   /// `LINK` values of other records that point to this one.
   linkedFrom     RecordLink[]    @relation("RecordLinkTarget")
   assignments    Assignment[]
+  /// Who is related to this record (ADR 0113), written only by triggers.
+  relations      RecordRelation[]
   embedding      Embedding[]
 
   @@unique([id, organizationId])

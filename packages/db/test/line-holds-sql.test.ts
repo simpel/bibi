@@ -11,6 +11,7 @@ const SQL_FILES = [
   "sync_user_name.sql",
   "notify_notification.sql",
   "notify_inbox.sql",
+  "sync_record_relations.sql",
 ] as const;
 
 /** The latest migration that applies one trigger SQL file. */

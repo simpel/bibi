@@ -9,6 +9,12 @@ export const DOMAIN_HISTORY_MODELS = [
   "OrderEstimate",
 ] as const;
 
+/**
+ * Projections written only by database triggers (ADR 0053, 0113): `scopedDb` reads them and
+ * refuses every write, so application code cannot drift from the trigger's derivation.
+ */
+export const TRIGGER_ONLY_MODELS = new Set<string>(["RecordRelation"]);
+
 /** Append-only models: no update/delete/upsert through `scopedDb`. */
 export const APPEND_ONLY_MODELS = new Set<string>([
   "AuditLog",

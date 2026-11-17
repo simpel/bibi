@@ -56,6 +56,7 @@ The parity core: every capability is defined **once** as an operation and then e
 
 ## Assignments and responsibilities (ADR 0034, 0055, 0056)
 - Assignment rows store only explicit choices. Applicable responsibilities, default assignees and default followers are derived on read (`deriveAssignment`). Never create or archive rows when lines change.
+- Who is related to an order (creator, assignees, followers, chosen or default) is the trigger projection `RecordRelation` (ADR 0113, `sync_record_relations.sql`). Read it, never write it; the `record-relations` reconciliation compares it with `listSubjectAssignments`.
 - Rows reference the subject's `Record` (`recordId`, composite FK) while the API keeps `subjectType`/`subjectId`.
 - Id lists on responsibilities and run sheet definitions are join rows: read and write them through the `*-rows.ts` helpers, never as JSON.
 

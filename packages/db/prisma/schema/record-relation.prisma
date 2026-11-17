@@ -1,0 +1,43 @@
+/// How a principal is related to a record (ADR 0113).
+enum RecordRelationKind {
+  /// Created it (`Record.createdBy`, orders only; never SYSTEM).
+  CREATOR
+  /// Answers for one of its slots: the main one or a responsibility's.
+  ASSIGNEE
+  /// Follows one of its slots (need to know).
+  FOLLOWER
+}
+
+/// Whether a relation was chosen on the record or comes from a responsibility's defaults (ADR 0055).
+enum RecordRelationSource {
+  EXPLICIT
+  DEFAULT
+}
+
+/// RecordRelation – who is related to an order or item, and how (ADR 0113): the creator, every
+/// slot's assignee and followers, chosen or by a responsibility's default. A projection written
+/// ONLY by database triggers (`packages/db/sql/sync_record_relations.sql`), never by application
+/// code; checked by the `record-relations` reconciliation. Rows that no longer hold are ARCHIVED
+/// and reactivated. Record access (`related` scope) is one indexed EXISTS on it.
+model RecordRelation {
+  id               String               @id @default(cuid(2))
+  organizationId   String
+  recordId         String
+  /// A user id (an API key id when a key created the order).
+  principalId      String
+  relation         RecordRelationKind
+  /// The responsibility slot; null for the main slot and for `CREATOR`.
+  responsibilityId String?
+  source           RecordRelationSource
+  status           RecordStatus         @default(ACTIVE)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  record           Record               @relation(fields: [recordId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  responsibility   Responsibility?      @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  // A main-slot row (no responsibility) is kept unique by a partial index in the migration.
+  @@unique([recordId, principalId, relation, responsibilityId])
+  @@index([organizationId, principalId, relation, status])
+  @@index([organizationId, responsibilityId])
+}
