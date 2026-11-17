@@ -118,6 +118,6 @@ describe("chained demands (ADR 0059)", () => {
     };
     const input = { id: allocation?.id ?? "", unitId: setup.technicians.ids[1] ?? "" };
     const refused = await execute({ operation: assignLineAllocation, input, context });
-    expect(errorCode({ result: refused })).toBe("VALIDATION");
+    expect(errorCode({ result: refused })).toBe("FORBIDDEN");
   });
 });

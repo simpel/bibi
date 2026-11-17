@@ -64,7 +64,7 @@ describe("order.previewLines: access and input (ADR 0071, 0081)", () => {
       context: blind,
       input: { customerId: setup.customerId, ...PERIOD, lines },
     });
-    expect(errorCode({ result: refused })).toBe("VALIDATION");
+    expect(errorCode({ result: refused })).toBe("FORBIDDEN");
   });
 
   it("needs exactly one of templateIds and lines, and a period that ends after it starts", async () => {

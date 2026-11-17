@@ -54,7 +54,7 @@ describe("order.create from an inbox message (ADR 0081, 0085)", () => {
       },
       context: withPermissions({ of: context, permissions }),
     });
-    expect(errorCode({ result })).toBe("VALIDATION");
+    expect(errorCode({ result })).toBe("FORBIDDEN");
   });
 });
 

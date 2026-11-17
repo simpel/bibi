@@ -107,7 +107,7 @@ describe("line.expandBundle (ADR 0059)", () => {
     const blind = testContext({ organizationId: context.organizationId, permissions });
     const refused = await expand({ context: blind, ...base });
     expect(refused.ok ? null : [refused.error.code, refused.error.issues]).toEqual([
-      "VALIDATION",
+      "FORBIDDEN",
       [{ path: "itemId", message: "Missing permission item:read" }],
     ]);
   });

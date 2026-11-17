@@ -1,4 +1,5 @@
-import { ok, type Result } from "../../errors/result";
+import { AppError } from "../../errors/app-error";
+import { err, ok, type Result } from "../../errors/result";
 import { hasPermission, type Permission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
@@ -13,13 +14,13 @@ export type CheckReadableInput = {
 };
 
 /**
- * A referenced record may only be set by a caller who may read it (`VALIDATION` on the field).
+ * A referenced record may only be set by a caller who may read it (`FORBIDDEN`, with the field as the issue `path`).
  * Checked before the lookup, so a caller without read access cannot probe which ids exist.
  */
 export function checkReadable({ context, permission, path }: CheckReadableInput): Result<true> {
   if (hasPermission({ permissions: context.permissions, permission })) return ok({ value: true });
   const message = `Missing permission ${permission}`;
-  return invalid({ message, issues: [{ path, message }] });
+  return err({ error: new AppError({ code: "FORBIDDEN", message, issues: [{ path, message }] }) });
 }
 
 export type CheckDesiredPeriodInput = {

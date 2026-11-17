@@ -25,6 +25,11 @@ The parity core: every capability is defined **once** as an operation and then e
 - `AppError` codes: `NOT_FOUND | FORBIDDEN | UNAUTHENTICATED | VALIDATION | CONFLICT | INTERNAL | UNAVAILABLE` (503: the feature lacks configuration, e.g. an AI model). Build them with `shared/errors.ts` (`notFound`, `conflict`, `invalid`).
 - Surfaces map with `toHttpStatus`, `toGraphqlExtensions`, `toMcpError`; no custom mappings.
 - Data other users own returns `NOT_FOUND`, not `FORBIDDEN`, so existence does not leak.
+- `UNAUTHENTICATED`: no principal.
+- `FORBIDDEN`: a missing capability only (`<feature>:<action>`). Never use it for a record, so it never reveals one. A caller-only operation without a user uses `requireUser`.
+- `NOT_FOUND`: a record that is missing, archived or out of the caller's scope.
+- `VALIDATION`: input shape or meaning only. Never authorization.
+- A referenced record the caller may not read (`checkReadable`) is `FORBIDDEN` with the input field as the issue `path`.
 
 ## Feature folders (`src/features/<entity>/`)
 - Fixed filenames: `schema.ts`, `operations.ts`, `embeddable.ts`. Adapters (`graphql.ts`, `rest.ts`, `mcp.ts`, `ui/`) are added by their surface. New entity: `pnpm gen entity`.

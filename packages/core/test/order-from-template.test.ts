@@ -99,6 +99,6 @@ describe("order.createFromTemplate (ADR 0043)", () => {
       input: { templateId: template.id, ...party, startsAt, headcount: 8 },
       context: writer,
     });
-    expect(errorCode({ result: refused })).toBe("VALIDATION");
+    expect(errorCode({ result: refused })).toBe("FORBIDDEN");
   });
 });

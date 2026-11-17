@@ -107,6 +107,6 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
     expect(errorCode({ result: foreign })).toBe("NOT_FOUND");
     const blind = { ...owner, permissions: { ...owner.permissions, configuration: [] } };
     const refused = await execute({ operation: previewPipelineSetup, input, context: blind });
-    expect(errorCode({ result: refused })).toBe("VALIDATION");
+    expect(errorCode({ result: refused })).toBe("FORBIDDEN");
   });
 });

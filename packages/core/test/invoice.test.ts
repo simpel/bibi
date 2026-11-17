@@ -106,7 +106,7 @@ describe("an invoice is a frozen receivable of the order's lines (ADR 0052, 0057
     const permissions = { ...grantAll({}), program: [] };
     const blind = testContext({ organizationId: context.organizationId, permissions });
     expect(errorCode({ result: await create({ context: blind, orderId: order.id }) })).toBe(
-      "VALIDATION",
+      "FORBIDDEN",
     );
     const invoice = unwrap({ result: await create({ context, orderId: order.id }) });
     const stranger = testContext();

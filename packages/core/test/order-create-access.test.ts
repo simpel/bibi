@@ -47,7 +47,7 @@ describe("order.create: permissions of the parts given (ADR 0081, 0050)", () => 
     ];
     for (const [input, permissions, path] of cases) {
       expect(await attempt({ setup, input, permissions })).toEqual({
-        code: "VALIDATION",
+        code: "FORBIDDEN",
         paths: [path],
       });
     }

@@ -66,7 +66,7 @@ describe("order referenced ids (ADR 0004)", () => {
     // Contacts are part of the customer feature (ADR 0050).
     const noCustomer = { ...context, permissions: { ...all, customer: [] } };
     expect(await refusal({ context: noCustomer, input: base })).toMatchObject({
-      code: "VALIDATION",
+      code: "FORBIDDEN",
       path: "customerId",
     });
     const order = await createTestOrder({ context, ...base });
@@ -82,6 +82,6 @@ describe("order referenced ids (ADR 0004)", () => {
       input: { contactId: second.id },
       orderId: order.id,
     });
-    expect(update).toMatchObject({ code: "VALIDATION", path: "contactId" });
+    expect(update).toMatchObject({ code: "FORBIDDEN", path: "contactId" });
   });
 });

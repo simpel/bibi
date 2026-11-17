@@ -66,7 +66,7 @@ describe("the EMAIL channel into the inbox (ADR 0085)", () => {
       input: { orderId: "any" },
       context: withPermissions({ of: context, permissions: { inbox: ["read"] } }),
     });
-    expect(errorCode({ result })).toBe("VALIDATION");
+    expect(errorCode({ result })).toBe("FORBIDDEN");
   });
 });
 
@@ -133,7 +133,7 @@ describe("handling the inbox", () => {
     const input = { id: message.id, orderId: "nope" };
     const member = peer({ of: context, access: "read" });
     const denied = await execute({ operation: attachInboundMessage, input, context: member });
-    expect(errorCode({ result: denied })).toBe("VALIDATION");
+    expect(errorCode({ result: denied })).toBe("FORBIDDEN");
     const unknown = await execute({ operation: attachInboundMessage, input, context });
     expect(errorCode({ result: unknown })).toBe("VALIDATION");
   });

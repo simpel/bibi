@@ -1,6 +1,6 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import { invalid } from "../../shared/errors";
+import { requireUser } from "../../shared/require-user";
 import { checkSubject } from "./check-slot";
 import { listMineAssignments } from "./list-mine";
 import { listSubjectAssignments } from "./list-subject";
@@ -41,9 +41,9 @@ export const listMyAssignments = defineOperation({
   output: AssignmentListMineOutputSchema,
   permission: "order:read",
   handler: async ({ input: { kind, subjectType, ...pageInput }, context }) => {
-    const userId = context.actor.userId;
-    if (!userId) return invalid({ message: "assignment.listMine needs a signed-in member" });
-    const page = { context, userId, kind, subjectType, ...pageInput };
+    const user = requireUser({ context });
+    if (!user.ok) return user;
+    const page = { context, userId: user.value, kind, subjectType, ...pageInput };
     return ok({ value: await listMineAssignments(page) });
   },
 });

@@ -15,7 +15,7 @@ describe("quotes and the lines they copy (ADR 0050, feature scope)", () => {
     for (const feature of ["item", "program"]) {
       const blind = { ...context, permissions: blindTo({ feature }) };
       const denied = await execute({ operation: sendQuote, input, context: blind });
-      expect(errorCode({ result: denied })).toBe("VALIDATION");
+      expect(errorCode({ result: denied })).toBe("FORBIDDEN");
       if (!denied.ok) expect(denied.error.message).toBe(`Missing permission ${feature}:read`);
     }
     const sent = unwrap({ result: await execute({ operation: sendQuote, input, context }) });

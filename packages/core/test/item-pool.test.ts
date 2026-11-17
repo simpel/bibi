@@ -103,7 +103,7 @@ describe("item.freeUnits (ADR 0059, pool targets)", () => {
       permissions: { item: ["read"] },
     });
     const denied = await run({ context: noOrders, entityTypeId: type.id });
-    expect(errorCode({ result: denied })).toBe("VALIDATION");
+    expect(errorCode({ result: denied })).toBe("FORBIDDEN");
     const noItems = testContext({
       organizationId: context.organizationId,
       permissions: { order: ["read"] },

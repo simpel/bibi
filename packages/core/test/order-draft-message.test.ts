@@ -41,7 +41,7 @@ describe("orderDraft.fromMessage from an inbox message (ADR 0084, 0085)", () => 
     const other = testContext();
     expect(errorCode({ result: await draft({ context: other, input }) })).toBe("NOT_FOUND");
     const noInbox = { ...setup.context, permissions: { order: ["write"] as const } };
-    expect(errorCode({ result: await draft({ context: noInbox, input }) })).toBe("VALIDATION");
+    expect(errorCode({ result: await draft({ context: noInbox, input }) })).toBe("FORBIDDEN");
   });
 
   it("takes form fields as given and leaves what does not parse to the model", () => {
