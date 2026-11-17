@@ -1,5 +1,6 @@
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
-import { execute, getProfile, updateProfile } from "../src/index";
+import { execute, getProfile, setProfileLocale, updateProfile } from "../src/index";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
 import { addTestMemberWithUser, testOrg } from "./org-helpers";
 
@@ -36,6 +37,21 @@ describe("profile (ADR 0061)", () => {
     expect((await read({ context: peer({ of: a }) })).id).toBeNull();
     const audit = await a.db.auditLog.findMany({ where: { entityId: saved.id ?? "" } });
     expect(audit.map((row) => row.operation)).toEqual(["profile.update"]);
+  });
+
+  it("sets the language before a profile exists, prefilled from the sign-up name", async () => {
+    const org = await testOrg();
+    const name = "Grace Brewster Hopper";
+    const { userId } = await addTestMemberWithUser({ context: org, role: "member", name });
+    const actor = { type: "user" as const, userId };
+    const a = testContext({ organizationId: org.organizationId, access: "read", actor });
+    const input = { locale: "en" as const };
+    const saved = unwrap({
+      result: await execute({ operation: setProfileLocale, input, context: a }),
+    });
+    expect(saved).toMatchObject({ firstName: "Grace", lastName: "Brewster Hopper", locale: "en" });
+    const user = await getDb().user.findUnique({ where: { id: userId }, select: { name: true } });
+    expect(user?.name).toBe(name);
   });
 
   it("accepts only the caller's own avatar key and keeps it when omitted", async () => {

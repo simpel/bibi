@@ -18,9 +18,7 @@ async function ensureCustomer({ context }: { context: Context }): Promise<Result
   const db = getDb();
   const [organization, user] = await Promise.all([
     db.organization.findUnique({ where: { id: context.organizationId }, select: { name: true } }),
-    context.actor.userId
-      ? db.user.findUnique({ where: { id: context.actor.userId }, select: { email: true } })
-      : null,
+    context.db.$callerUser(),
   ]);
   const created = await getBillingGateway().createCustomer({
     organizationId: context.organizationId,

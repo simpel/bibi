@@ -124,11 +124,9 @@ export const setProfileLocale = defineOperation({
         data: { locale: input.locale },
       });
     } else {
-      const dbUser = await context.db.user.findUnique({
-        where: { id: userId },
-        select: { name: true },
-      });
-      const parts = (dbUser?.name ?? "").trim().split(/\s+/);
+      // Prefill from the sign-up name: an empty profile name would blank it (sync_user_name).
+      const caller = await context.db.$callerUser();
+      const parts = (caller?.name ?? "").trim().split(/\s+/);
       const firstName = parts[0] || "";
       const lastName = parts.slice(1).join(" ") || "";
       await context.db.userProfile.create({

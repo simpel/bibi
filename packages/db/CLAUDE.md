@@ -18,6 +18,7 @@ Prisma 7 (the `prisma-client` generator, driver adapter `@prisma/adapter-pg`) ag
   - `SOFT_DELETE_DEFAULTS` controls the default `status` filter per model (Skill: `not ARCHIVED`, others `ACTIVE`).
   - `GLOBAL_READ_MODELS` (Skill): reads see org rows **plus** global rows (`organizationId` null = SYSTEM skills) via an `AND: [{ OR: [{ organizationId }, { organizationId: null }] }]` on top of the caller's `where`. Writes remain locked to the org, so SYSTEM rows can never be created/changed/deleted via `scopedDb` (only via the dedicated seeder in core with `getDb()`).
   - Per-user rules (private conversations, personal skills) live in core, not in the client: `scopedDb` only knows the organization.
+  - The global `User` row is refused; read the acting user's own name and email with `$callerUser()` (null for SYSTEM and API keys), never `getDb().user`.
   - `AuditLog` and `Message` are append-only. `$queryRaw`/`$executeRaw` are hidden; search/index goes via `$searchEmbeddings`, `$upsertEmbedding`, `$deleteEmbedding`.
   - Relations within an org are also enforced in the database with a composite FK (`Item(venueId, organizationId) → Venue(id, organizationId)`). Do the same for new relations.
   - `BoardPhaseStatus` is a join row (`@@unique([boardId, statusId])`): replace a status's phase by delete and create, never by id list or JSON (ADR 0056, 0067).

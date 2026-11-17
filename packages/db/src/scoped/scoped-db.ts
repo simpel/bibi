@@ -15,6 +15,7 @@ import { revokeOauthGrant } from "../oauth-grants/revoke-oauth-grant";
 import type { ListOauthGrantsInput, RevokeOauthGrantInput } from "../oauth-grants/types";
 import { findRecords } from "../records/find-records";
 import type { FindRecordsInput } from "../records/types";
+import { readCallerUser } from "../users/caller-user";
 import { applyScope } from "./apply-scope";
 import { PLATFORM_SCOPE } from "./platform-scope";
 import { ScopeViolationError } from "./scope-violation";
@@ -62,6 +63,8 @@ function extend({ organizationId, actorId, db }: Required<ScopedDbInput>) {
         listOauthGrants({ ...input, db, organizationId }),
       $revokeOauthGrant: (input: Scoped<RevokeOauthGrantInput>) =>
         revokeOauthGrant({ ...input, db, organizationId }),
+      // The global `User` row is refused above; the actor may read only their own.
+      $callerUser: () => readCallerUser({ db, actorId }),
     },
   });
 }
