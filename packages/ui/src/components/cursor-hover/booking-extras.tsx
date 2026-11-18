@@ -2,7 +2,7 @@
 
 import type { CalendarLabels } from "../availability-calendar/calendar-labels";
 import type { AssetBooking } from "../availability-calendar/calendar-types";
-import { ColorSwatch } from "../color-swatch/color-swatch";
+import { StatusBadge } from "../data-table/data-table-column-helpers";
 import { type KeyFact, KeyFacts } from "../key-facts/key-facts";
 import type { OrderViewFact } from "../order-view/order-view";
 
@@ -34,7 +34,7 @@ export type BookingStatsInput = BookingExtrasInput & {
 };
 
 /**
- * The booking's figures as tiny stats when detailed: its state (colour and name), guests, when
+ * The booking's figures as tiny stats when detailed: its state (a badge in its colour), guests, when
  * and where. Its value is not one: the order's total is among the facts.
  */
 export function BookingStats({
@@ -49,14 +49,12 @@ export function BookingStats({
   const { pinCard } = labels;
   if (!detailed) return null;
   const facts: KeyFact[] = [];
-  const { state } = booking;
-  if (state.name) {
-    const value = (
-      <span className="inline-flex items-center gap-1.5">
-        <ColorSwatch color={state.color} />
-        {state.name}
-      </span>
-    );
+  const { state, status } = booking;
+  if (status) {
+    const value = <StatusBadge tinted label={status.name} color={status.color} />;
+    facts.push({ label: pinCard.status, value, onSelect: onOpen });
+  } else if (state.name) {
+    const value = <StatusBadge tinted label={state.name} color={state.color} />;
     facts.push({ label: pinCard.state, value, onSelect: onOpen });
   }
   if (booking.headcount) {

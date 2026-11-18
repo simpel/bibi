@@ -1,6 +1,7 @@
 "use client";
 
 import { KanbanCustomizeBoard } from "@bibi/ui";
+import { useTranslations } from "next-intl";
 import { kanbanCards } from "@/features/pipeline/lib/kanban-model";
 import { pipelineHref } from "@/features/pipeline/lib/pipeline-href";
 import type { PipelineData } from "@/features/pipeline/load-pipeline-data";
@@ -25,7 +26,11 @@ export function BoardCustomizeView({ data, boardId }: BoardCustomizeViewProps) {
   const layout = useBoardLayout({ boardId, phases: customizePhases({ board }) });
   const flip = useFlipIn();
   const labels = useCustomizeLabels();
-  const cards = kanbanCards({ board, customerNames: data.customerNames });
+  const cards = kanbanCards({
+    board,
+    customerNames: data.customerNames,
+    memberNames: data.memberNames,
+  });
   const isDefault = boards.find(({ id }) => id === boardId)?.isDefault ?? false;
   const done = () =>
     flip.flipOut({
@@ -40,7 +45,7 @@ export function BoardCustomizeView({ data, boardId }: BoardCustomizeViewProps) {
         members={data.members}
         onDone={done}
       />
-      <div className="min-h-0 flex-1">
+      <div data-tour="board-customize.columns" className="min-h-0 flex-1">
         <KanbanCustomizeBoard
           phases={layout.phases}
           statuses={customizeChips({ board, statuses })}

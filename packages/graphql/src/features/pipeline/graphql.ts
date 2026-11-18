@@ -1,12 +1,16 @@
 import {
+  type OrderCue,
+  OrderCueSchema,
   type PipelineBoard,
   type PipelineCard,
   PipelineCardSchema,
   type PipelineColumn,
   PipelineColumnSchema,
+  type PipelineCues,
   type PipelineStatus,
   PipelineStatusSchema,
   pipelineBoard,
+  pipelineCues,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation } from "../../schema/from-operation";
@@ -52,3 +56,18 @@ const PipelineBoardRef = builder.objectRef<PipelineBoard>("PipelineBoard").imple
 });
 
 fieldFromOperation({ operation: pipelineBoard, type: PipelineBoardRef, name: "pipelineBoard" });
+
+const OrderCueRef = objectFromSchema<OrderCue>({
+  name: "OrderCue",
+  schema: OrderCueSchema,
+  description: "An order's card cues: preliminary, only followed, and what blocks or needs fixing.",
+});
+
+const PipelineCuesRef = builder.objectRef<PipelineCues>("PipelineCues").implement({
+  description: "Card cues for a set of orders, e.g. one page of the order table.",
+  fields: (t) => ({
+    cues: t.field({ type: [OrderCueRef], resolve: (result) => result.cues }),
+  }),
+});
+
+fieldFromOperation({ operation: pipelineCues, type: PipelineCuesRef, name: "pipelineCues" });

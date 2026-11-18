@@ -37,12 +37,13 @@ export function OrderStatusMenu({ order, statuses }: OrderStatusMenuProps) {
   const [target, setTarget] = useState<string | null>(null);
   const targets = statusTargets({ order, statuses });
   const label = <OrderStatusLabel statuses={statuses} id={order.statusId} />;
-  if (targets.length === 0) return label;
+  if (targets.length === 0)
+    return <OrderStatusLabel statuses={statuses} id={order.statusId} badge />;
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" aria-label={t("changeStatus")}>
+          <Button variant="outline" aria-label={t("changeStatus")} data-tour="order.status">
             {label}
             <ChevronDownIcon />
           </Button>

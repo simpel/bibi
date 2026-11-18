@@ -2,9 +2,8 @@ import { type Db, getDb } from "@bibi/db";
 import { getLogger } from "@bibi/logger";
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
-import { createExecuteContext } from "../../operations/context";
+import { createSystemContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { grantAll } from "../../permissions/permission-set";
 import { applyBillingSignal } from "./apply-signal-operation";
 import { type BillingAction, type BillingEvent, toBillingAction } from "./billing-event";
 
@@ -26,11 +25,8 @@ async function apply({ db, action }: { db: Db; action: BillingAction }): Promise
   const organizationId = await organizationOf({ db, action });
   if (!organizationId)
     return err({ error: new AppError({ code: "NOT_FOUND", message: "No customer" }) });
-  const context = createExecuteContext({
+  const context = createSystemContext({
     organizationId,
-    roles: [],
-    permissions: grantAll({}),
-    actor: { type: "system", userId: null },
     db,
   });
   const input = { subscriptionId: action.subscriptionId };

@@ -8,6 +8,10 @@ import { createContext, useContext } from "react";
  */
 export const QuietToolsContext = createContext<readonly string[]>([]);
 
+/** Tools no chat shows as cards: loading a skill is plumbing, the answer that follows is the result. */
+const ALWAYS_QUIET: readonly string[] = ["load_skill"];
+
 export function useQuietTools(): readonly string[] {
-  return useContext(QuietToolsContext);
+  const quiet = useContext(QuietToolsContext);
+  return quiet.length === 0 ? ALWAYS_QUIET : [...ALWAYS_QUIET, ...quiet];
 }

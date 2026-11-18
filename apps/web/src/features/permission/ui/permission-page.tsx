@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
+import { PageTour } from "@/components/tour/page-tour";
 import { FormPageShell } from "@/components/wizard/form-page-shell";
 import { assignableRoles, canManageMember } from "@/features/member/assignable-roles";
 import { apiKeyRoute, memberRoute, ROUTES } from "@/lib/routes";
@@ -56,19 +57,24 @@ export async function PermissionPage({ locale, subjectType, subjectId }: Permiss
       description={t(isMember ? "memberDescription" : "apiKeyDescription")}
     >
       <CrumbName href={detailHref} name={name} />
-      <PresetForm
-        {...subject}
-        preset={preset}
-        name={name}
-        roles={assignableRoles({ caller: abilities.role })}
-        disabled={!canChangePreset({ abilities, isMember, preset })}
-      />
-      <PermissionForm
-        key={preset ?? "none"}
-        {...subject}
-        preset={presetPermissions({ preset })}
-        effective={effective}
-      />
+      <div data-tour="permissions.preset">
+        <PresetForm
+          {...subject}
+          preset={preset}
+          name={name}
+          roles={assignableRoles({ caller: abilities.role })}
+          disabled={!canChangePreset({ abilities, isMember, preset })}
+        />
+      </div>
+      <div data-tour="permissions.grid">
+        <PermissionForm
+          key={preset ?? "none"}
+          {...subject}
+          preset={presetPermissions({ preset })}
+          effective={effective}
+        />
+      </div>
+      <PageTour tour="permissions" />
     </FormPageShell>
   );
 }

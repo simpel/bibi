@@ -1,6 +1,7 @@
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
+import { PageTour } from "@/components/tour/page-tour";
 import { FormPageShell } from "@/components/wizard/form-page-shell";
 import { ROUTES } from "@/lib/routes";
 import { handleLoadError } from "@/server/load-error";
@@ -24,6 +25,7 @@ export async function RunSheetDefinitionCreate({ locale }: RunSheetDefinitionCre
       description={t("createDescription")}
     >
       <RunSheetDefinitionWizard options={options.value} />
+      <PageTour tour="run-sheet-definition" />
     </FormPageShell>
   );
 }

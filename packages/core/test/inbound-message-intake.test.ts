@@ -1,6 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 import {
+  ALL_RECORDS,
   applyOverrides,
   createExecuteContext,
   createOrder,
@@ -65,6 +66,8 @@ describe("inboundMessage.submit (the API channel)", () => {
       organizationId: context.organizationId,
       roles: [],
       permissions: { inbox: ["submit"] },
+      preset: null,
+      scopes: ALL_RECORDS,
       actor: { type: "apiKey", userId: null, apiKeyId: `key_${createId()}` },
     });
     const input = { endpointId: api.id, subject: "Tasting", text: "A tasting for 14 on the 21st" };

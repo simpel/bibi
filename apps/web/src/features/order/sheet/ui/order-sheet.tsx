@@ -8,8 +8,9 @@ import {
   SheetHeader,
   SheetTitle,
   Skeleton,
+  StatusBadge,
 } from "@bibi/ui";
-import { SquareArrowOutUpRightIcon } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { OrderDayList } from "@/features/line/ui/order-day-list";
 import { ProgramTable } from "@/features/line/ui/program-table";
@@ -28,22 +29,48 @@ export type OrderSheetProps = {
 /** Read-only: no line can be changed here, so every row action is off. */
 const READ_ONLY = { canEdit: false, canRemove: false, canChangeState: false, canAllocate: false };
 
-/** The order's days in the calendar, then its lines with their amounts. */
+/** The way to the order page: everything else about the order is there, and it can be changed. */
+function OpenOrder({ id, size = "default" }: { id: string; size?: "default" | "sm" }) {
+  const t = useTranslations("orderSheet");
+  return (
+    <Button asChild size={size}>
+      <Link href={orderRoute({ id })}>
+        {t("open")}
+        <ArrowRightIcon aria-hidden />
+      </Link>
+    </Button>
+  );
+}
+
+/** The order page's Program card, read only: its days in the calendar, then the lines. */
+function SheetProgram({ program }: { program: NonNullable<OrderSheetData["program"]> }) {
+  const t = useTranslations("line");
+  return (
+    <section className="grid grid-cols-1 gap-4">
+      <h2 className="text-xl">{t("plural")}</h2>
+      <div className="overflow-hidden rounded-xl border bg-card">
+        <OrderDayList {...program.days} joined />
+        {program.lines.length === 0 ? (
+          <p className="border-t p-4 text-muted-foreground text-sm">{t("empty")}</p>
+        ) : (
+          <ProgramTable {...program} access={READ_ONLY} flush />
+        )}
+      </div>
+    </section>
+  );
+}
+
+/** The key facts and the program as on the order page, then the way there. */
 function SheetBody({ data }: { data: OrderSheetData }) {
   const t = useTranslations("orderSheet");
-  const { program } = data;
   return (
-    <div className="grid grid-cols-1 gap-6 px-4 pb-6">
-      <OrderSheetFactsRow {...data} />
-      {program ? (
-        <>
-          <OrderDayList {...program.days} />
-          <section className="grid grid-cols-1 gap-2" aria-label={t("lines")}>
-            <h3 className="text-sm text-muted-foreground">{t("lines")}</h3>
-            <ProgramTable {...program} access={READ_ONLY} />
-          </section>
-        </>
-      ) : null}
+    <div className="grid grid-cols-1 gap-8 px-4 pb-6">
+      <OrderSheetFactsRow facts={data} />
+      {data.program ? <SheetProgram program={data.program} /> : null}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-muted/40 p-4">
+        <p className="text-muted-foreground text-sm">{t("moreOnPage")}</p>
+        <OpenOrder id={data.id} />
+      </div>
     </div>
   );
 }
@@ -58,27 +85,33 @@ function SheetHead({ state }: { state: OrderSheetState }) {
       </SheetHeader>
     );
   }
-  const { id, title, reference } = state.data;
+  const { id, title, reference, status } = state.data;
+  // As the order page's title: the name with its number, the status on the right.
   return (
     <SheetHeader className="flex-row flex-wrap items-start justify-between gap-3 pr-12">
-      <div className="grid gap-1">
-        <SheetTitle className="text-xl">{title ?? t("untitled", { reference })}</SheetTitle>
-        <SheetDescription>{t("reference", { reference })}</SheetDescription>
-      </div>
-      <Button asChild size="sm" variant="outline">
-        <Link href={orderRoute({ id })}>
-          <SquareArrowOutUpRightIcon aria-hidden />
-          {t("details")}
+      <SheetTitle className="font-serif text-2xl leading-tight">
+        <Link href={orderRoute({ id })} className="underline-offset-4 hover:underline">
+          {title ?? t("untitled", { reference })}
         </Link>
-      </Button>
+        <span className="ml-2 font-normal text-base text-muted-foreground tabular-nums">
+          {t("reference", { reference })}
+        </span>
+      </SheetTitle>
+      <SheetDescription className="sr-only">{t("description")}</SheetDescription>
+      <div className="flex items-center gap-2">
+        {status ? (
+          <StatusBadge label={status.name} color={status.color} className="h-8 px-3 text-sm" />
+        ) : null}
+        <OpenOrder id={id} size="sm" />
+      </div>
     </SheetHeader>
   );
 }
 
 /**
- * Overview to detail, read only: an order opened from the pipeline or the calendar shows its
- * title, its people, its days in the calendar and its lines beside the board. Details leaves
- * for the order page, where it can be changed.
+ * Overview to detail, read only: an order opened from the pipeline or the calendar shows the top
+ * of its order page beside the board (title, number and status, the key facts, the program).
+ * Open order, at the top and the bottom, leads to the page, where it can be changed.
  */
 export function OrderSheet({ orderId, onClose }: OrderSheetProps) {
   const state = useOrderSheet({ orderId });

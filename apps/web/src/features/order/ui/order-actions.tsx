@@ -11,16 +11,16 @@ export type OrderActionsProps = {
   abilities: CallerAbilities;
 };
 
-/** The edit button (own page) of the order page, each by its permission. */
+/** The Edit button (own page) of the order page; the page is the order, so it only says Edit, each by its permission. */
 export async function OrderActions({ order, abilities }: OrderActionsProps) {
-  const t = await getTranslations("order");
+  const common = await getTranslations("common");
   return (
     <>
       {can({ abilities, permission: "order:write" }) ? (
         <Button asChild>
           <Link href={updateRoute({ detail: orderRoute({ id: order.id }) })}>
             <PencilIcon />
-            {t("edit")}
+            {common("edit")}
           </Link>
         </Button>
       ) : null}

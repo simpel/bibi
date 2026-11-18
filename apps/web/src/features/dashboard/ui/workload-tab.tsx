@@ -1,5 +1,7 @@
 import { dashboardSummary } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
+import { getTranslations } from "next-intl/server";
+import { HelpTip } from "@/components/help/help-tip";
 import { ErrorState } from "@/components/states/error-state";
 import type { Period } from "@/features/finance/lib/finance-period";
 import { getDateTimeFormat } from "@/server/date-time-format";
@@ -18,9 +20,10 @@ export type WorkloadTabProps = { locale: Locale; period: Period };
  * orders in the range, then utilisation beside what is booked and not yet invoiced.
  */
 export async function WorkloadTab({ locale, period }: WorkloadTabProps) {
-  const [numbers, dates, result] = await Promise.all([
+  const [numbers, dates, help, result] = await Promise.all([
     getNumberFormat(),
     getDateTimeFormat(),
+    getTranslations({ locale, namespace: "helpHints" }),
     runOperation({ operation: dashboardSummary, input: period }),
   ]);
   if (!result.ok)
@@ -28,6 +31,9 @@ export async function WorkloadTab({ locale, period }: WorkloadTabProps) {
   const summary = result.value;
   return (
     <div data-slot="workload" className="grid gap-6">
+      <HelpTip id="dashboard" title={help("dashboard.title")}>
+        {help("dashboard.body")}
+      </HelpTip>
       <StatusStatCards summary={summary} dates={dates} numbers={numbers} />
       <div className="grid gap-4 md:grid-cols-2">
         <AttentionPanel summary={summary} dates={dates} numbers={numbers} />

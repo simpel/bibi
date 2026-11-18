@@ -352,6 +352,8 @@
       "listSkills": "Vilka färdigheter finns?"
     },
     "history": {
+      "search": "Sök chattar",
+      "noMatches": "Inga chattar matchar sökningen.",
       "title": "Tidigare konversationer",
       "new": "Skapa konversation",
       "empty": "Inga konversationer ännu.",

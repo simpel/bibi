@@ -21,6 +21,10 @@ export type RunSheetStatusProps = {
   runSheet: RunSheetStatusValue;
   /** The viewer's date and time format: `getDateTimeFormat()` on the server, the hook in a client card. */
   dates: DateTimeFormat;
+  /** Leave out the published and done times, when stat cards show them. */
+  hideDates?: boolean;
+  /** Leave out the version badge, when the page shows which version it is another way. */
+  hideVersion?: boolean;
 };
 
 export const RUN_SHEET_BADGE_VARIANTS: Record<RunSheetStatusEnum, BadgeProps["variant"]> = {
@@ -35,7 +39,12 @@ export const RUN_SHEET_BADGE_VARIANTS: Record<RunSheetStatusEnum, BadgeProps["va
  * Operational status badge (Draft, Blocked, Pending, Revision pending, Fulfilled),
  * version and timestamps.
  */
-export function RunSheetStatus({ runSheet, dates: format }: RunSheetStatusProps) {
+export function RunSheetStatus({
+  runSheet,
+  dates: format,
+  hideDates = false,
+  hideVersion = false,
+}: RunSheetStatusProps) {
   const t = useTranslations("runSheet");
   const rawPublished = runSheet.publishedAt ?? runSheet.sentAt;
   const published = rawPublished ? new Date(rawPublished) : null;
@@ -52,10 +61,12 @@ export function RunSheetStatus({ runSheet, dates: format }: RunSheetStatusProps)
       <Badge variant={RUN_SHEET_BADGE_VARIANTS[status]}>
         {t(`status.${status.toLowerCase()}` as Parameters<typeof t>[0])}
       </Badge>
-      <Badge variant="outline" className="tabular-nums">
-        {t("version", { version: runSheet.version })}
-      </Badge>
-      {fulfilled ? (
+      {hideVersion ? null : (
+        <Badge variant="outline" className="tabular-nums">
+          {t("version", { version: runSheet.version })}
+        </Badge>
+      )}
+      {hideDates ? null : fulfilled ? (
         <span className="text-muted-foreground text-xs">
           {t("fulfilledAt", { when: format.dateTime({ instant: fulfilled }) })}
         </span>

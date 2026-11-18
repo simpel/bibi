@@ -1,5 +1,6 @@
 import type { Row } from "@tanstack/react-table";
 import type { ReactNode } from "react";
+import type { CardSurface } from "../booking-tone/booking-tone";
 import { TableBody, TableCell, TableRow } from "../table/table";
 import { DataTableRow } from "./data-table-row";
 
@@ -10,6 +11,7 @@ export type DataTableBodyProps<TData> = {
   onRowClick?: (row: TData) => void;
   rowMenu?: (row: TData) => ReactNode;
   rowClassName?: (row: TData) => string | undefined;
+  rowSurface?: ((row: TData) => CardSurface | undefined) | undefined;
   selectedRowId?: string;
 };
 
@@ -35,6 +37,7 @@ export function DataTableBody<TData>(props: DataTableBodyProps<TData>) {
           onRowClick={props.onRowClick}
           menu={props.rowMenu}
           rowClassName={props.rowClassName}
+          rowSurface={props.rowSurface}
         />
       ))}
     </TableBody>

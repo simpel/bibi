@@ -39,7 +39,8 @@ async function resolve({
 }: ResolveInput): Promise<Result<ExecuteContext>> {
   const principal = await resolvePrincipal({ headers, session, credential });
   if (!principal.ok) return principal;
-  const { userId, apiKeyId, organizationId, roles, permissions, aiAllowed } = principal.value;
+  const { userId, apiKeyId, organizationId, roles, aiAllowed } = principal.value;
+  const { permissions, preset, scopes } = principal.value;
   if (roles === null) return forbidden({ message: "Not a member of the organization" });
   const actor = buildActor({ headers, userId, apiKeyId, aiAllowed });
   if (!actor.ok) return actor;
@@ -49,6 +50,8 @@ async function resolve({
       actor: actor.value,
       roles,
       permissions,
+      preset,
+      scopes,
       credential: credential.kind,
     }),
   });

@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useTranslations } from "next-intl";
 import { LineForm } from "./line-form";
 import type { ProgramFormData } from "./program-form-data";
+import type { ItemLock } from "./program-item-field";
 
 export type LineDialogProps = {
   data: ProgramFormData;
@@ -12,6 +13,7 @@ export type LineDialogProps = {
   line?: LineDto | undefined;
   /** Create mode: the top-level line the new line is an add-on of (ADR 0088). */
   parent?: LineDto | undefined;
+  itemLock?: ItemLock;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };

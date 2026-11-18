@@ -6,7 +6,6 @@ import {
   type CalendarAsset,
   type CalendarDayValue,
   CalendarLabelsProvider,
-  CalendarLegend,
   type CalendarState,
   type CalendarWindow,
 } from "@bibi/ui";
@@ -15,6 +14,7 @@ import { Suspense, use, useCallback, useEffect, useMemo, useState } from "react"
 import { useAssistant } from "@/features/assistant/state/assistant-context";
 import { OrderSheet } from "@/features/order/sheet/ui/order-sheet";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
+import { AppCalendarLegend } from "./app-calendar-legend";
 import { type PickedSlot, SlotCreateDialog } from "./slot-create-dialog";
 import { useCalendarText } from "./use-calendar-text";
 import { useLoadedBookings } from "./use-loaded-bookings";
@@ -49,10 +49,15 @@ function CalendarFooter({ bookings, failed }: { bookings: AssetBooking[]; failed
   const t = useTranslations("calendar");
   const legend = useMemo(() => legendOf({ bookings }), [bookings]);
   return (
-    <div className="grid shrink-0 gap-2 border-t px-4 py-2.5 sm:px-6">
-      {failed ? <p className="text-sm text-destructive">{t("loadFailed")}</p> : null}
-      <CalendarLegend states={legend.states} withBlocked={legend.blocked} />
-    </div>
+    <>
+      {failed ? (
+        <p className="shrink-0 px-4 py-2.5 text-sm text-destructive sm:px-6">{t("loadFailed")}</p>
+      ) : null}
+      {/* The states come with the streamed bookings: show it once, complete, not growing. */}
+      {bookings.length > 0 ? (
+        <AppCalendarLegend states={legend.states} withBlocked={legend.blocked} />
+      ) : null}
+    </>
   );
 }
 

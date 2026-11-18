@@ -21,10 +21,12 @@ export async function StatusGridEditor({ locale }: StatusGridEditorProps) {
   return (
     <AdminSection section="statusGrid" description={t("description")}>
       {data.ok ? (
-        <StatusGridTable
-          {...data.value}
-          canEdit={can({ abilities, permission: "pipeline:write" })}
-        />
+        <div data-tour="admin-pipeline.grid">
+          <StatusGridTable
+            {...data.value}
+            canEdit={can({ abilities, permission: "pipeline:write" })}
+          />
+        </div>
       ) : (
         <ErrorState errorKey={handleLoadError({ error: data.error, locale })} inline />
       )}

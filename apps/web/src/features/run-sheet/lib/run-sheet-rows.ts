@@ -20,6 +20,8 @@ export type RunSheetRow = {
   current: boolean;
   blocked: boolean;
   status: RunSheetStatus;
+  /** Formatted time it was last updated. */
+  updatedAt: string;
   /** Formatted time it was published, null while it has not been. */
   publishedAt: string | null;
   /** Formatted time it was marked fulfilled/done. */
@@ -62,6 +64,7 @@ export function toRunSheetRows({
       current: item.current,
       blocked: item.blocked,
       status: deriveRunSheetStatus(item),
+      updatedAt: format.dateTime({ instant: item.updatedAt }),
       publishedAt: item.publishedAt ? format.dateTime({ instant: item.publishedAt }) : null,
       fulfilledAt: item.fulfilledAt ? format.dateTime({ instant: item.fulfilledAt }) : null,
       sentAt: item.publishedAt ? format.dateTime({ instant: item.publishedAt }) : null,

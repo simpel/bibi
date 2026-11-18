@@ -1,5 +1,4 @@
 import { resolveLocale } from "@bibi/i18n";
-import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { loadOrder } from "@/features/order/load-order";
 import { OrderDetail } from "@/features/order/ui/order-detail";
@@ -23,9 +22,5 @@ export default async function OrderPage({ params }: OrderPageProps) {
   const { locale: rawLocale, id } = await params;
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
-  return (
-    <SimplePage>
-      <OrderDetail locale={locale} id={id} />
-    </SimplePage>
-  );
+  return <OrderDetail locale={locale} id={id} />;
 }

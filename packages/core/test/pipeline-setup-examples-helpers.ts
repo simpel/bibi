@@ -1,6 +1,7 @@
 import { draftFromPreset } from "../src/features/pipeline-setup/draft-from-templates";
 import type { PipelineCreateExamplesInput } from "../src/features/pipeline-setup/examples-schema";
 import {
+  ALL_RECORDS,
   activatePipelineSetup,
   createExecuteContext,
   type ExecuteContext,
@@ -22,6 +23,8 @@ export async function setUpOrg({ preset }: { preset: SetupPresetKey }): Promise<
     organizationId,
     roles: ["admin"],
     permissions: PRESET_PERMISSIONS.admin,
+    preset: "admin",
+    scopes: ALL_RECORDS,
     actor: { type: "user", userId },
   });
   const input = draftFromPreset({ key: preset, existingTypes: [] });

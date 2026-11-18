@@ -1,8 +1,7 @@
 import { getEnv } from "@bibi/config";
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
-import { createExecuteContext } from "../../operations/context";
-import { grantAll } from "../../permissions/permission-set";
+import { createSystemContext } from "../../operations/context";
 import { notFound } from "../../shared/errors";
 import { notify } from "./notify";
 import { orderFacts } from "./order-people";
@@ -34,11 +33,8 @@ export async function sendTestNotification({
   if (getEnv().NODE_ENV === "production") {
     return err({ error: new AppError({ code: "FORBIDDEN", message: "Dev only" }) });
   }
-  const context = createExecuteContext({
+  const context = createSystemContext({
     organizationId,
-    roles: [],
-    permissions: grantAll({}),
-    actor: { type: "system", userId: null },
   });
   const count = await context.db.order.count();
   const order = await context.db.order.findFirst({

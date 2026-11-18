@@ -74,6 +74,16 @@ describe("cross-organization isolation: order creation", () => {
     const boardA = await call({ client: a, name: "pipeline_board" });
     expect(boardA.data.cards.map((card: { id: string }) => card.id)).toContain(id);
   });
+
+  it("reads no cues for another organization's orders", async () => {
+    const a = await connect({ context: testContext() });
+    const b = await connect({ context: testContext() });
+    const { id } = await seedOrder({ client: a });
+    const cuesB = await call({ client: b, name: "pipeline_cues", args: { orderIds: [id] } });
+    expect(cuesB.data.cues).toEqual([]);
+    const cuesA = await call({ client: a, name: "pipeline_cues", args: { orderIds: [id] } });
+    expect(cuesA.data.cues.map((cue: { orderId: string }) => cue.orderId)).toEqual([id]);
+  });
 });
 
 describe("cross-organization isolation: order statuses and audit log", () => {

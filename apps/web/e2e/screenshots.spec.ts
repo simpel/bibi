@@ -85,7 +85,9 @@ for (const mode of MODES) {
     await gotoApp({ page, path: "/venues" });
     await shot({ page, mode, name: "venues" });
     await page.keyboard.press("Control+k");
-    await page.getByPlaceholder("Sök eller skriv ett kommando...").fill("which rooms are there");
+    await page
+      .getByPlaceholder("Sök, kör ett kommando eller fråga assistenten...")
+      .fill("which rooms are there");
     await shot({ page, mode, name: "command-bar" });
     await page.keyboard.press("Escape");
     await assistantShots({ page, mode });

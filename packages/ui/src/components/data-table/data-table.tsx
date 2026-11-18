@@ -41,6 +41,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
               onRowClick={props.onRowClick}
               rowMenu={props.rowMenu}
               rowClassName={props.rowClassName}
+              rowSurface={props.rowSurface}
               selectedRowId={props.selectedRowId}
             />
             <DataTableFooter groups={table.getFooterGroups()} />

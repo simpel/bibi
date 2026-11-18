@@ -1,5 +1,7 @@
 import type { PlainDate } from "@bibi/core/schemas";
 import type { Locale } from "@bibi/i18n";
+import { getTranslations } from "next-intl/server";
+import { HelpTip } from "@/components/help/help-tip";
 import { ErrorState } from "@/components/states/error-state";
 import { BookedAheadCard } from "@/features/dashboard/ui/booked-ahead-card";
 import type { Period } from "@/features/finance/lib/finance-period";
@@ -18,9 +20,10 @@ export type ForecastTabProps = {
 };
 
 export async function ForecastTab({ locale, period, today, customerId }: ForecastTabProps) {
-  const [numbers, dates, result] = await Promise.all([
+  const [numbers, dates, help, result] = await Promise.all([
     getNumberFormat(),
     getDateTimeFormat(),
+    getTranslations({ locale, namespace: "helpHints" }),
     loadForecastData({ period, today, customerId }),
   ]);
 
@@ -33,6 +36,9 @@ export async function ForecastTab({ locale, period, today, customerId }: Forecas
 
   return (
     <div data-slot="forecast" className="grid gap-6">
+      <HelpTip id="forecast" title={help("forecast.title")}>
+        {help("forecast.body")}
+      </HelpTip>
       <ForecastStatCards data={result.value} currency={currency} numbers={numbers} dates={dates} />
       <div className="grid gap-4 md:grid-cols-2">
         <ForecastProjectionCard

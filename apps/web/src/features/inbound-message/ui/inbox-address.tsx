@@ -3,6 +3,7 @@ import { ADMIN_ROLE } from "@bibi/core/schemas";
 import { Alert, AlertDescription, Button } from "@bibi/ui";
 import { AlertCircleIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { HelpHint } from "@/components/help/help-hint";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
@@ -30,12 +31,14 @@ export async function InboxAddress({ isAdmin: passedIsAdmin }: InboxAddressProps
 
   if (address) {
     return (
-      <p className="text-sm text-muted-foreground">
-        {t.rich("address", {
-          address,
-          code: (chunks) => <code className="text-foreground">{chunks}</code>,
-        })}
-      </p>
+      <HelpHint id="inbox-address">
+        <p className="py-0.5 text-xs text-muted-foreground">
+          {t.rich("address", {
+            address,
+            code: (chunks) => <code className="text-foreground">{chunks}</code>,
+          })}
+        </p>
+      </HelpHint>
     );
   }
 

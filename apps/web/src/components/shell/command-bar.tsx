@@ -18,13 +18,13 @@ export type CommandBarProps = { permissions: PermissionSet };
 
 /**
  * ⌘K command bar: navigation, quick actions and settings sections the caller's `permissions`
- * allow, plus "Ask assistant" for natural language (ADR 0007). Free text + Enter hands a one-shot question to the
- * assistant on the assistant page. A prefix searches a list instead (`#34`, `customer:acme`,
- * `status:Lead`, see `parseCommandQuery`).
+ * allow, plus the assistant (ADR 0007). Free text that matches a command runs it; free text that
+ * matches none starts a chat with it on the assistant page. A prefix searches a list instead
+ * (`#34`, `customer:acme`, `status:Lead`, see `parseCommandQuery`).
  */
 export function CommandBar({ permissions }: CommandBarProps) {
   const t = useTranslations("commandBar");
-  const { ask, openAssistant } = useAssistant();
+  const { ask, newConversation, openAssistant } = useAssistant();
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [query, setQuery] = useState("");
@@ -41,9 +41,13 @@ export function CommandBar({ permissions }: CommandBarProps) {
   const venues = useVenueShortcuts({ enabled: loaded, permissions });
   const onAsk = ({ text }: { text: string }) => {
     if (text) ask({ text });
-    else openAssistant();
+    else {
+      newConversation();
+      openAssistant();
+    }
     close();
   };
+  const typed = query.trim().length > 0;
   const lookup = parseCommandQuery({ query });
   const go = ({ href }: { href: string }) => {
     router.push(href);
@@ -60,8 +64,8 @@ export function CommandBar({ permissions }: CommandBarProps) {
       >
         <CommandInput placeholder={t("placeholder")} value={query} onValueChange={setQuery} />
         <CommandList>
-          {query.trim() ? null : <CommandEmpty>{t("empty")}</CommandEmpty>}
-          <AskAssistantGroup query={query} onAsk={onAsk} />
+          {typed ? null : <CommandEmpty>{t("empty")}</CommandEmpty>}
+          {typed ? null : <AskAssistantGroup query={query} onAsk={onAsk} />}
           {lookup ? (
             <LookupCommandGroup query={lookup} permissions={permissions} onGo={go} />
           ) : (
@@ -73,6 +77,7 @@ export function CommandBar({ permissions }: CommandBarProps) {
               onPrefix={setQuery}
             />
           )}
+          {typed ? <AskAssistantGroup query={query} onAsk={onAsk} /> : null}
         </CommandList>
       </CommandDialog>
     </>

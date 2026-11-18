@@ -57,7 +57,8 @@ async function assignmentFacts({ items, members, followers, t }: FactsInput) {
     ...parts.map((part) => {
       const name = nameOf({ options: names, id: part.responsibilityId });
       const who = nameOf({ options: members, id: part.assigneeId });
-      const origin = part.assigneeSource === "DEFAULT" ? ` (${t("defaultFrom", { name })})` : "";
+      // The row is already labelled with the responsibility, so the default says only that.
+      const origin = part.assigneeSource === "DEFAULT" ? ` (${t("byDefault")})` : "";
       const node = (
         <>
           <PersonName options={members} id={part.assigneeId} description={name} />
@@ -69,14 +70,13 @@ async function assignmentFacts({ items, members, followers, t }: FactsInput) {
   ];
 }
 
-/** Who answers for the subject and who follows it (ADR 0034), with assign and follow. */
+/** Who answers for the subject and who follows it (ADR 0034), with assign; Follow is on the title row. */
 export async function AssignmentSection({ locale, subject, members }: AssignmentSectionProps) {
   const [t, abilities, result] = await Promise.all([
     getTranslations("assignment"),
     getCallerAbilities(),
     runOperation({ operation: listAssignments, input: subject }),
   ]);
-  const { userId } = abilities;
   if (!result.ok && result.error.code === "FORBIDDEN") return null;
   if (!result.ok)
     return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
@@ -92,14 +92,8 @@ export async function AssignmentSection({ locale, subject, members }: Assignment
     <section className="grid gap-3">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-xl">{t("title")}</h2>
-        {can({ abilities, permission: "order:write" }) ? (
-          <AssignmentActions
-            subject={subject}
-            assigneeId={assigneeId}
-            members={members}
-            userId={userId}
-            following={userId !== null && followerIds.includes(userId)}
-          />
+        {can({ abilities, permission: "order:write" }) && members.length > 0 ? (
+          <AssignmentActions subject={subject} assigneeId={assigneeId} members={members} />
         ) : null}
       </div>
       <FactList facts={facts} />

@@ -26,23 +26,24 @@ export async function RunSheetSection({ locale, order }: RunSheetSectionProps) {
       return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   }
   if (!definitions.ok || !runSheets.ok) return null;
+  // Versions are made when the order changes, so a type with none does not apply (yet): not shown.
+  const panels = definitions.value.items.flatMap((definition) => {
+    const runSheet = runSheets.value.items.find(
+      (item) => item.runSheetDefinitionId === definition.id,
+    );
+    return runSheet ? [{ definition, runSheet }] : [];
+  });
   return (
     <section className="grid grid-cols-1 gap-4">
       <h2 className="text-xl">{t("plural")}</h2>
-      {definitions.value.items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("empty")}</p>
+      {panels.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{t("noneForOrder")}</p>
       ) : (
-        definitions.value.items.map((definition) => (
+        panels.map(({ definition, runSheet }) => (
           <RunSheetPanel
             key={definition.id}
-            orderId={order.id}
             definition={definition}
-            runSheet={
-              runSheets.value.items.find(
-                (runSheet) => runSheet.runSheetDefinitionId === definition.id,
-              ) ?? null
-            }
-            canGenerate={can({ abilities, permission: "runSheet:write" })}
+            runSheet={runSheet}
             canSend={can({ abilities, permission: "runSheet:write" })}
           />
         ))

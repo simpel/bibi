@@ -1,4 +1,4 @@
-import { PageContainer, PageSection } from "@bibi/ui";
+import { PageBand } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { ADMIN_SECTIONS, type AdminSectionId } from "@/components/shell/admin-sections";
@@ -22,19 +22,22 @@ export function AdminSection({ section, description, actions, children }: AdminS
   const t = useTranslations("adminArea.search.entries");
   const { anchor } = ADMIN_SECTIONS[section];
   return (
-    <PageSection id={anchor} aria-labelledby={`${anchor}-title`} className="scroll-mt-14">
-      <PageContainer className="grid gap-6 py-8 sm:py-10">
-        <header className="grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
-          <div className="grid min-w-0 gap-1">
-            <h2 id={`${anchor}-title`} className="text-2xl">
-              {t(`${section}.label`)}
-            </h2>
-            {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
-          </div>
-          {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
-        </header>
-        {children}
-      </PageContainer>
-    </PageSection>
+    <PageBand
+      id={anchor}
+      aria-labelledby={`${anchor}-title`}
+      className="scroll-mt-14"
+      containerClassName="gap-6"
+    >
+      <header className="grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="grid min-w-0 gap-1">
+          <h2 id={`${anchor}-title`} className="text-2xl">
+            {t(`${section}.label`)}
+          </h2>
+          {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
+        </div>
+        {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
+      </header>
+      {children}
+    </PageBand>
   );
 }

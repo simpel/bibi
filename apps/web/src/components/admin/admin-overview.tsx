@@ -1,4 +1,4 @@
-import { Card, PageContainer, PageSection } from "@bibi/ui";
+import { Card, PageBand } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { AdminGroup, AdminPage } from "@/components/shell/admin-items";
 import { adminSectionHref } from "@/components/shell/admin-search-index";
@@ -18,27 +18,21 @@ export function AdminOverview({ groups }: AdminOverviewProps) {
   const nav = useTranslations("nav");
   const t = useTranslations("adminArea.overview");
   return (
-    <PageSection>
-      <PageContainer className="grid gap-10 py-8 sm:py-10">
-        <PageHeader title={nav("admin")} description={t("description")} />
-        {groups.map((group) => (
-          <section
-            key={group.id}
-            aria-labelledby={`admin-group-${group.id}`}
-            className="grid gap-4"
-          >
-            <h2 id={`admin-group-${group.id}`} className="text-xl">
-              {nav(`adminGroups.${group.id}`)}
-            </h2>
-            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {group.pages.map((page) => (
-                <AdminOverviewCard key={page.key} page={page} />
-              ))}
-            </ul>
-          </section>
-        ))}
-      </PageContainer>
-    </PageSection>
+    <PageBand containerClassName="gap-10">
+      <PageHeader title={nav("admin")} description={t("description")} />
+      {groups.map((group) => (
+        <section key={group.id} aria-labelledby={`admin-group-${group.id}`} className="grid gap-4">
+          <h2 id={`admin-group-${group.id}`} className="text-xl">
+            {nav(`adminGroups.${group.id}`)}
+          </h2>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {group.pages.map((page) => (
+              <AdminOverviewCard key={page.key} page={page} />
+            ))}
+          </ul>
+        </section>
+      ))}
+    </PageBand>
   );
 }
 

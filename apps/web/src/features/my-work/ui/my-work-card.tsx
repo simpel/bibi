@@ -6,7 +6,7 @@ import { useCalendarText } from "@/features/calendar/ui/use-calendar-text";
 import { useOrderFacts } from "@/features/order/ui/use-order-facts";
 import { orderRoute } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
-import { cardTone } from "../lib/card-tone";
+import { cardSurface, isLive } from "../lib/card-surface";
 import { toBooking } from "../lib/to-booking";
 import { useFlagIssues } from "./my-work-flag";
 import type { MyWorkCardWireish } from "./my-work-wireish";
@@ -27,8 +27,8 @@ export type MyWorkCardProps = { card: MyWorkCardWireish; now: Date | string; tim
 
 /**
  * One order on one day, the same card as the pinned and hover calendar cards (spec: home): its
- * flags as error and warning badges in the header, its state as the first stat, Live at the
- * bottom. Expanding loads the order's facts; a reload keeps it expanded.
+ * flags as error and warning badges by the icons, its status as the first stat, Live as a green
+ * badge by the icons with a green shimmering ring. Expanding loads the order's facts; a reload keeps it expanded.
  */
 export function MyWorkCard({ card, now, timeZone }: MyWorkCardProps) {
   const t = useTranslations("myWork");
@@ -40,16 +40,16 @@ export function MyWorkCard({ card, now, timeZone }: MyWorkCardProps) {
     initial: false,
   });
   const facts = useOrderFacts({ orderId: card.orderId, enabled: expanded, keys: EXPANDED });
-  const tone = cardTone({ card, now: new Date(now) });
+  const at = new Date(now);
   const [reason] = card.reasons;
   const issues = useFlagIssues({ flags: card.flags, timeZone, dates });
-  const live = tone === "live";
+  const live = isLive({ card, now: at });
   return (
     <CalendarLabelsProvider labels={labels}>
       <OrderDayCard
         booking={toBooking({ card, timeZone, issues })}
         href={orderRoute({ id: card.orderId })}
-        tone={tone}
+        surface={cardSurface({ card, now: at })}
         date={
           card.dayCount > 1
             ? t("dayOf", { index: card.dayIndex, count: card.dayCount })
@@ -61,14 +61,7 @@ export function MyWorkCard({ card, now, timeZone }: MyWorkCardProps) {
         expanded={expanded}
         onToggle={() => setExpanded(!expanded)}
         facts={facts}
-        footer={
-          live ? (
-            <span className="inline-flex items-center gap-1.5 font-semibold text-[10px] text-success uppercase tracking-wide">
-              <span aria-hidden className="size-1.5 animate-pulse rounded-full bg-success" />
-              {t("live")}
-            </span>
-          ) : undefined
-        }
+        live={live ? t("live") : undefined}
       />
     </CalendarLabelsProvider>
   );

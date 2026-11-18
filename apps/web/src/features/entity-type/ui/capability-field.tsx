@@ -23,7 +23,7 @@ export function CapabilityField({ control, settings }: CapabilityFieldProps) {
         <FormItem>
           <FormLabel>{t("fields.sections")}</FormLabel>
           <FormDescription>{t("sectionsHint")}</FormDescription>
-          <div className="grid gap-3">
+          <div data-tour="item-type.sections" className="grid gap-3">
             {ITEM_CAPABILITIES.map((capability) => {
               const required = CAPABILITY_REQUIRES[capability];
               const on = field.value.includes(capability);

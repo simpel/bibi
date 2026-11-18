@@ -6,15 +6,17 @@ import type { LineStateOption } from "./line-state-option";
 /** One layout of a room: its name and capacity (null = unknown). */
 export type LayoutOption = NamedOption & { capacity: number | null };
 
-/** A bookable item with its layouts, its venue's zone and its list price (shown in the picker). */
-export type BookableOption = NamedOption & {
-  layouts: LayoutOption[];
+/** An item a line can hold: its venue's zone, list price and type (the picker's group). */
+export type ItemOption = NamedOption & {
   timeZone: string;
   priceMinor: number | null;
   priceUnit: ItemDto["priceUnit"];
   entityTypeId: string;
   typeName?: string;
 };
+
+/** A bookable item (a room, equipment) with its layouts. */
+export type BookableOption = ItemOption & { layouts: LayoutOption[] };
 
 /** A `BUNDLE` item with its venue's zone (ADR 0064). */
 export type BundleOption = NamedOption & { timeZone: string };
@@ -39,6 +41,8 @@ export type CustomisableItem = {
  */
 export type ProgramFormData = TypedFormData & {
   items: BookableOption[];
+  /** The items that are not booked (a dish, a drink): a line can hold them, they have no place. */
+  otherItems: ItemOption[];
   /** The caller may not view items: their names show as hidden and the picker is disabled. */
   itemsHidden: boolean;
   /** `BUNDLE` items that can be added as a bundle line with its parts (ADR 0059). */

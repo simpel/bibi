@@ -12,7 +12,7 @@ export function PhaseFront({ phase, cards }: PhaseFrontProps) {
   return (
     <KanbanColumnFace column={phase} count={inPhase.length} emptyLabel={t("emptyColumn")}>
       {inPhase.map((card) => (
-        <div key={card.id} className="rounded-lg border bg-card p-3 shadow-xs">
+        <div key={card.id} className="rounded-xl border bg-card p-3 shadow-sm">
           <PipelineCardContent card={card} />
         </div>
       ))}

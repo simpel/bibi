@@ -57,6 +57,7 @@ function clockText({ format }: TextInput) {
 function bookingText({ t, number }: TextInput) {
   return {
     ...{ client: t("client"), internal: t("internal"), blocked: t("blocked") },
+    blockedDetail: t("blockedDetail"),
     notSold: t("notSold"),
     guests: ({ count }: { count: number }) => t("guests", { count }),
     guestsHere: ({ count }: { count?: number }) =>
@@ -79,6 +80,9 @@ function bookingText({ t, number }: TextInput) {
     pinned: t("pinned"),
     pinCard: {
       ...{ when: t("pinCard.when"), where: t("pinCard.where"), state: t("pinCard.state") },
+      status: t("pinCard.status"),
+      tentative: t("pinCard.tentative"),
+      tentativeDetail: t("pinCard.tentativeDetail"),
       ...{ guests: t("pinCard.guests"), value: t("pinCard.value"), exclVat: t("pinCard.exclVat") },
       hold: t("pinCard.hold"),
       openIssues: ({ count }: { count: string }) =>

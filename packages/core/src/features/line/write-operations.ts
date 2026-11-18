@@ -53,7 +53,8 @@ export const updateLine = defineOperation({
     "is merged by key (null clears a value). Clearing both times makes the line untimed, which " +
     "releases its hold. Moving it moves its occupancy, and moving a line moves its timed part, " +
     "option and add-on lines by the same delta (a line with part or option lines keeps its " +
-    "item, ADR 0059, 0088). An add-on's parent cannot be changed. " +
+    "item, and so does a part or option line itself: choose options on its parent instead; ADR " +
+    "0059, 0088). An add-on's parent cannot be changed. " +
     OCCUPY_NOTE,
   input: LineUpdateInputSchema,
   output: LineSchema,

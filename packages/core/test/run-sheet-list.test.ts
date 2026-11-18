@@ -8,11 +8,10 @@ import { runSheetSetup, type SetupResult, setCount } from "./run-sheet-helpers";
 
 type Context = SetupResult["context"];
 
-/** Two versions of the kitchen order: v1, then v2 after the count changed. */
+/** Two versions of the kitchen order: v1 when it is defined, v2 after the count changed. */
 async function setup() {
   const base = await runSheetSetup();
   const { context, count, order, definition } = base;
-  unwrap({ result: await setCount({ context, id: count.id, quantity: 7 }) });
   unwrap({ result: await setCount({ context, id: count.id, quantity: 9 }) });
   const johan = await memberUser({ context, name: "Johan Ek" });
   const asJohan = testContext({

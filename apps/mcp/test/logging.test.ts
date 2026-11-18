@@ -1,5 +1,5 @@
 import type { AddressInfo } from "node:net";
-import { createExecuteContext, grantAll, ok } from "@bibi/core";
+import { ALL_RECORDS, createExecuteContext, grantAll, ok } from "@bibi/core";
 import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -15,6 +15,8 @@ async function resolveContext() {
       organizationId,
       roles: ["admin"],
       permissions: grantAll({}),
+      preset: "admin",
+      scopes: ALL_RECORDS,
       actor,
     }),
   });

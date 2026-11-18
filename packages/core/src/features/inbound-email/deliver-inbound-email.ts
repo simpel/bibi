@@ -1,9 +1,8 @@
 import { type Db, getDb } from "@bibi/db";
 import { getLogger, maskEmail } from "@bibi/logger";
 import { ok, type Result } from "../../errors/result";
-import { createExecuteContext } from "../../operations/context";
+import { createSystemContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { grantAll } from "../../permissions/permission-set";
 import { receiveInboundMessage } from "../inbound-message/receive-operation";
 import type { InboundMessageDto } from "../inbound-message/schema";
 import { toInboundMessageDto } from "../inbound-message/to-inbound-message-dto";
@@ -29,11 +28,8 @@ export type DeliverInboundEmailOutput =
   | { status: "unmatched" };
 
 const systemContext = ({ db, organizationId }: { db: Db; organizationId: string }) =>
-  createExecuteContext({
+  createSystemContext({
     organizationId,
-    roles: [],
-    permissions: grantAll({}),
-    actor: { type: "system", userId: null },
     db,
   });
 

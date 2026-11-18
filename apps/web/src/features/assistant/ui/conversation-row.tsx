@@ -29,16 +29,28 @@ export function ConversationRow({
     <li
       data-slot="conversation-row"
       data-active={active || undefined}
-      className="flex items-center gap-1 rounded-md px-2 py-1.5 hover:bg-accent data-[active]:bg-accent"
+      className="group flex items-center gap-1 rounded-md px-2 py-1.5 hover:bg-accent data-[active]:bg-accent"
     >
       <button type="button" onClick={onOpen} className="grid min-w-0 flex-1 text-left">
         <span className="truncate text-sm font-medium">{conversation.title}</span>
         <span className="text-xs text-muted-foreground">{updated}</span>
       </button>
-      <Button variant="ghost" size="icon" aria-label={t("rename")} onClick={onRename}>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={t("rename")}
+        onClick={onRename}
+        className="md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
+      >
         <PencilIcon />
       </Button>
-      <Button variant="ghost" size="icon" aria-label={t("archive")} onClick={onArchive}>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={t("archive")}
+        onClick={onArchive}
+        className="md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
+      >
         <ArchiveIcon />
       </Button>
     </li>

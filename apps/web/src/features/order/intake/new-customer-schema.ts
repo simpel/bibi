@@ -22,7 +22,7 @@ export type NewCustomerOutput = CustomerCreateInput;
 
 /** Core's create schema with the contact and business-or-private required, as step 1 asks. */
 export const newCustomerSchema = formSchema({
-  schema: CustomerCreateInputSchema.extend({
+  schema: CustomerCreateInputSchema.safeExtend({
     buyerKind: BuyerKindSchema,
     contact: CustomerFirstContactInputSchema,
   }),

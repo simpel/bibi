@@ -1,6 +1,5 @@
 "use client";
 
-import { toneOfLine } from "../booking-tone/booking-tone";
 import { CalendarHoverDetails } from "../cursor-hover/cursor-hover-details";
 import { AddSlot } from "./add-slot";
 import { useCalendarLabels } from "./calendar-labels";
@@ -86,7 +85,6 @@ function BookingCard({
         booking={itemBooking}
         onOpen={onOpen ? () => onOpen(itemBooking) : undefined}
         detailed
-        tone={toneOfLine({ line: itemBooking })}
       />
     );
   }
@@ -126,6 +124,8 @@ function Bookings({ bookings, window, lane, selectedId, onOpen, withHours, asset
         bufferClassName="inset-y-2"
         selected={booking.id === selectedId}
         card={<BookingCard booking={booking} bookings={bookings} onOpen={onOpen} asset={asset} />}
+        // A clash card holds several bookings: a plain frame, its red header says the clash.
+        cardSurface={clashesWith({ line: booking, lines: bookings }).length ? {} : undefined}
         onSelect={onOpen ? () => onOpen(booking) : undefined}
       >
         {() => <BlockLabel booking={booking} />}

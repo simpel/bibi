@@ -14,6 +14,7 @@ import {
 } from "./choose-options-schema";
 import { expandLineBundle } from "./expand-operation";
 import { followLineStatus } from "./follow-status-operation";
+import { checkLineHours } from "./hours-check-operation";
 import { lineIssues } from "./issues-operation";
 import { LineListInputSchema, LineListOutputSchema } from "./list-schema";
 import { LineIdInputSchema, LineSchema } from "./schema";
@@ -101,13 +102,14 @@ export const chooseLineOptions = defineOperation({
 });
 
 /** The order-scoped reads, defined in their own files. */
-export { lineAmounts, lineIssues };
+export { checkLineHours, lineAmounts, lineIssues };
 
 export const lineOperations = [
   listLines,
   getLine,
   lineAmounts,
   lineIssues,
+  checkLineHours,
   createLine,
   expandLineBundle,
   chooseLineOptions,

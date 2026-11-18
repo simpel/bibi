@@ -55,7 +55,7 @@ describe("orderDayOf", () => {
       block({ id: "elsewhere", itemId: "hall" }),
     ];
     const day = orderDayOf({ ...base, lines, blocks });
-    expect(day).toMatchObject({ startMinute: 8 * 60, endMinute: 20 * 60 });
+    expect(day).toMatchObject({ startMinute: 10 * 60, endMinute: 13 * 60 });
     expect(
       day.rows.map(({ id, blocks: bars }) => [id, bars.map((bar) => [bar.id, bar.tone])]),
     ).toEqual([
@@ -84,6 +84,29 @@ describe("orderDayOf", () => {
     expect(otherSoft?.details?.state).toEqual({ name: "Prebooked", color: "#f59e0b" });
 
     expect(ownLine?.href).toBe("/orders/mine");
+  });
+
+  it("falls back to 08–20 when no line of the order is timed that day", () => {
+    expect(orderDayOf({ ...base, lines: [], blocks: [block({})] })).toMatchObject({
+      startMinute: 8 * 60,
+      endMinute: 20 * 60,
+    });
+  });
+
+  it("rounds the window out to whole hours", () => {
+    const lines = [
+      {
+        id: "l",
+        name: "Fika",
+        itemId: "room",
+        startsAt: new Date(Date.UTC(2037, 10, 1, 9, 30)),
+        endsAt: new Date(Date.UTC(2037, 10, 1, 10, 15)),
+      },
+    ];
+    expect(orderDayOf({ ...base, lines, blocks: [] })).toMatchObject({
+      startMinute: 9 * 60,
+      endMinute: 11 * 60,
+    });
   });
 
   it("widens the window to a line past midnight", () => {

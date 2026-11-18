@@ -10,8 +10,6 @@ import { useTranslations } from "next-intl";
 import type { TrialCountdown } from "@/features/billing/lib/trial-countdown";
 import { TrialCountdownCard } from "@/features/billing/ui/trial-countdown-card";
 import { AdminNav } from "./admin-nav";
-import { AssistantNav } from "./assistant-nav";
-import { NewOrderButton } from "./new-order-button";
 import { PlatformAdminCard } from "./platform-admin-card";
 import type { ShellAccess, ShellUser } from "./shell-types";
 import { SidebarMode } from "./sidebar-mode";
@@ -26,7 +24,7 @@ export type AppSidebarProps = {
 };
 
 /**
- * The app's shadcn sidebar (ADR 0036): the assistant on top, then the daily work in collapsible
+ * The app's shadcn sidebar (ADR 0036): My work on top, then the daily work in collapsible
  * Work and Catalog groups; the Administration entry, the superadmin card (sidebar-06) and the
  * account at the bottom. Inside `/admin/*` the middle swaps to the administration area's own
  * groups. A sheet on mobile; on desktop the top bar's trigger collapses it to icons, each with a
@@ -50,9 +48,6 @@ export function AppSidebar({ organizationId, user, access, trial }: AppSidebarPr
           className="mx-auto my-5 hidden group-data-[collapsible=icon]:block"
           label={common("appName")}
         />
-        <SidebarMode admin={null}>
-          <NewOrderButton access={access} />
-        </SidebarMode>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMode
@@ -62,7 +57,6 @@ export function AppSidebar({ organizationId, user, access, trial }: AppSidebarPr
             </nav>
           }
         >
-          <AssistantNav />
           <nav aria-label={shell("mainNavigation")}>
             <SidebarNav groups={["primary"]} access={access} headings={false} />
             <SidebarNav groups={["work", "catalog"]} access={access} headings />

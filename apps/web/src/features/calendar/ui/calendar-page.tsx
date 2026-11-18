@@ -3,6 +3,7 @@ import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
+import { PageTour } from "@/components/tour/page-tour";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { handleLoadError } from "@/server/load-error";
@@ -61,5 +62,10 @@ export async function CalendarPage({ locale, from, to }: CalendarPageProps) {
       </div>
     );
   }
-  return <CalendarView {...{ range, today, openingHours }} assets={assets.value} load={load} />;
+  return (
+    <>
+      <CalendarView {...{ range, today, openingHours }} assets={assets.value} load={load} />
+      <PageTour tour="calendar" />
+    </>
+  );
 }

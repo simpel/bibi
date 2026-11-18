@@ -352,6 +352,8 @@
       "listSkills": "Which skills are available?"
     },
     "history": {
+      "search": "Search chats",
+      "noMatches": "No chats match your search.",
       "title": "Earlier conversations",
       "new": "Create conversation",
       "empty": "No conversations yet.",

@@ -130,6 +130,7 @@
     "invalidCode": "The code is invalid or has expired.",
     "tooManyRequests": "Too many attempts. Wait a moment and try again.",
     "invalidEmail": "Enter a valid email address.",
+    "invalidPostalCode": "Enter a valid postal code for the country, e.g. 412 50.",
     "invalidNumber": "Enter a valid number.",
     "tooLong": "The text is too long.",
     "tooShort": "The value is too small.",
@@ -168,7 +169,7 @@
     "skills": "Skills",
     "settings": "Settings",
     "openMenu": "Open menu",
-    "commandBar": "Command bar",
+    "commandBar": "Search or ask the assistant",
     "members": "Members",
     "orderStatuses": "Statuses",
     "payments": "Payments",
@@ -244,8 +245,8 @@
   },
   "commandBar": {
     "title": "Command bar",
-    "description": "Navigate or run a quick action.",
-    "placeholder": "Search or type a command...",
+    "description": "Navigate, run a quick action or ask the assistant.",
+    "placeholder": "Search, run a command or ask the assistant...",
     "empty": "No commands found.",
     "navigate": "Navigate",
     "actions": "Actions",
@@ -254,8 +255,8 @@
     "openVenue": "Open {name}",
     "createItem": "Create item",
     "assistant": "Assistant",
-    "askAssistant": "Ask the assistant: “{query}”",
-    "openAssistant": "Open the assistant",
+    "askAssistant": "Ask Bibi: “{query}”",
+    "createChat": "Create chat",
     "settings": "Settings",
     "createOrder": "Create order",
     "createCustomer": "Create customer",
@@ -381,13 +382,7 @@
   "buffers": {
     "legend": "Setup and teardown",
     "setupMinutes": "Setup before (minutes)",
-    "teardownMinutes": "Teardown after (minutes)",
-    "inherits": {
-      "none": "Default for the type's items, held around each booking of a bookable item. Empty = none.",
-      "type": "Held around each booking of a bookable item. Empty = the item type's.",
-      "item": "Held around this booking. Empty = the layout's, else the item's, else its type's."
-    },
-    "inEffect": "In effect: {setup} min setup, {teardown} min teardown."
+    "teardownMinutes": "Teardown after (minutes)"
   },
   "timeZone": {
     "placeholder": "Choose a time zone",
@@ -684,6 +679,194 @@
           "label": "Payment methods",
           "keywords": "card swish invoice payment service stripe fortnox visma"
         }
+      }
+    }
+  },
+  "cardLegend": {
+    "title": "Cards:",
+    "following": {
+      "name": "Following",
+      "text": "You follow it, someone else owns it"
+    },
+    "done": {
+      "name": "Past",
+      "text": "The event has already taken place. The card is dimmed"
+    },
+    "blocked": {
+      "name": "Blocked",
+      "text": "Red badge and dashed border: something blocks it, for example a double booking"
+    },
+    "fix": {
+      "name": "Needs fixing",
+      "text": "Amber badge and dashed border: something needs fixing, for example a preliminary booking about to expire"
+    },
+    "live": {
+      "name": "Live",
+      "text": "Happening now. The card gets a green border with a light slowly running round it"
+    }
+  },
+  "helpHint": {
+    "dismiss": "Hide this help for good"
+  },
+  "helpHints": {
+    "assistantApproval": {
+      "title": "The assistant proposes, you decide",
+      "text": "Nothing changes until you approve. The proposal is only valid for a short time, and once it runs out you can ask the assistant to propose it again."
+    },
+    "dashboard": {
+      "title": "How to read Workload",
+      "body": "Needs attention lists preliminary bookings that expire within 7 days, run sheets not yet sent for orders starting within 28 days and invoices past their due date. Utilisation is the share of the items' open hours that is booked in the period, and overlapping bookings count once. The order counts on the cards are neutral: more open orders is neither good nor bad."
+    },
+    "forecast": {
+      "title": "Actual and projected",
+      "body": "Confirmed bookings are accepted quotes not yet invoiced, by event month. The projection extends your average monthly invoicing over the past six months. Expected invoiced is the higher of the two, and the pipeline is the value of open orders, so it is not a promise."
+    },
+    "calendar-legend": {
+      "hard": {
+        "name": "Solid",
+        "text": "Booked, the place is blocked for others"
+      },
+      "soft": {
+        "name": "Striped",
+        "text": "Booked preliminarily, can be released"
+      },
+      "badge": {
+        "name": "Red",
+        "text": "Clashes with another booking"
+      }
+    },
+    "setup-preview-legend": {
+      "solid": {
+        "name": "Solid",
+        "title": "Booked: the place is blocked for others"
+      },
+      "hatched": {
+        "name": "Striped",
+        "title": "Booked preliminarily: can be released"
+      },
+      "outline": {
+        "name": "Outline",
+        "title": "Not booked: the place is free"
+      }
+    }
+  },
+  "tour": {
+    "replay": "Show the page tour",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "progress": "Step {current} of {total}",
+    "my-work": {
+      "search": {
+        "title": "Find what you need",
+        "body": "Search by status, customer or place, and save a view you come back to often."
+      },
+      "timeline": {
+        "title": "Your work, day by day",
+        "body": "Every order you are involved in, grouped into Today, This week, Next week and Later. Open a card to go to its order."
+      }
+    },
+    "calendar": {
+      "toolbar": {
+        "title": "Choose the period",
+        "body": "Move through time, zoom, and filter which spaces you see."
+      },
+      "grid": {
+        "title": "Bookings on a timeline",
+        "body": "Each row is a space. Solid bars are booked and block the space, striped ones are held and can be released, and a red mark means a clash. Click a booking to open its order, or click a free slot to start a new booking."
+      }
+    },
+    "pipeline": {
+      "toolbar": {
+        "title": "Boards",
+        "body": "Switch between boards or create your own. The totals show what is on the board you are looking at."
+      },
+      "board": {
+        "title": "Orders by phase",
+        "body": "Each column is a phase. Drag an order to another column to move it. If the column holds several statuses, you choose which one."
+      }
+    },
+    "order": {
+      "status": {
+        "title": "Move the order along",
+        "body": "Change the status here. Only the statuses allowed from the current one are listed, and some ask for a reason or an assignee first."
+      },
+      "program": {
+        "title": "The program",
+        "body": "The rooms, food and activities of the order, day by day. Add a line or a whole bundle, and see what is held or booked."
+      },
+      "needs": {
+        "title": "Needs and run sheets",
+        "body": "Counts of what the guests need are matched against your items, and the run sheets for the kitchen and others are made from them."
+      },
+      "details": {
+        "title": "Details and people",
+        "body": "The type, budget and your own fields, plus who is responsible and who follows the order."
+      },
+      "money": {
+        "title": "Quotes and payments",
+        "body": "Send quotes, ask for payment and follow what has been paid."
+      }
+    },
+    "run-sheet": {
+      "facts": {
+        "title": "Who it is for and when",
+        "body": "The order this run sheet belongs to and when it takes place. Open the order from here."
+      },
+      "status": {
+        "title": "Status and sending",
+        "body": "A run sheet starts as a draft. Publish it to send it to the responsibility, which can then mark it as done."
+      },
+      "tasks": {
+        "title": "What to deliver",
+        "body": "Every row to deliver, with when, what, where and how many. A star marks what changed since the last published version."
+      },
+      "needs": {
+        "title": "What is needed",
+        "body": "The counted needs, matched against your items."
+      },
+      "versions": {
+        "title": "Versions and history",
+        "body": "When the order changes, a new version is made. Only the current version should be used. The older versions and what has happened to this one are listed here."
+      }
+    },
+    "admin-pipeline": {
+      "flow": {
+        "title": "Flow rules",
+        "body": "May move to lists the statuses an order can move to from here. If nothing is restricted, an order can move to any status. Gates show what an order needs to move into a status, such as a reason, an assignee or an accepted quote. Click a row to edit them."
+      },
+      "grid": {
+        "title": "The status grid",
+        "body": "The rows are the order statuses and the columns are the item types. Each cell sets the reservation a line of that type gets when its order enters the status. Choose Keep to leave the lines as they are."
+      }
+    },
+    "permissions": {
+      "preset": {
+        "title": "The role",
+        "body": "The role gives a starting set of permissions. Everything below is measured from it."
+      },
+      "grid": {
+        "title": "Allow or deny",
+        "body": "Allow or deny single permissions here, and they beat the role. Deny read on a feature and it disappears for the person. Changes save as you make them."
+      }
+    },
+    "item-type": {
+      "sections": {
+        "title": "What the sections do",
+        "body": "Each section you switch on adds a whole part to every item of this type: Pricing adds price and VAT, Availability makes the item bookable, Room layouts adds capacity per layout, Bundle lets it contain other items and Customisations adds option groups. You can add more later, but a section cannot be switched off while items have data in it."
+      }
+    },
+    "run-sheet-definition": {
+      "build": {
+        "title": "How a run sheet is built",
+        "body": "The types you pick give the rows and the fields give the columns. Lists count the needs, and the responsibility receives the run sheet when it is published."
+      }
+    },
+    "board-customize": {
+      "columns": {
+        "title": "Customize the board",
+        "body": "The columns are phases and the chips in a column are the statuses it shows. Drag chips and columns to move them. A status that is in no column is not shown on the board."
       }
     }
   }

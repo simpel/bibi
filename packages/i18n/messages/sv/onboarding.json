@@ -354,7 +354,6 @@
       },
       "calendar": "Hållningar under bokningens liv",
       "slot": "{status}: {state}",
-      "legend": "Fylld: hård hållning. Randig: mjuk hållning. Kontur: ingen hållning.",
       "status": "Bokningsstatus",
       "empty": "Inga bokningsstatusar.",
       "released": "Släppt",

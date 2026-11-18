@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
   applyPaymentSignal,
-  createExecuteContext,
+  createSystemContext,
   execute,
   listNotifications,
   PRESET_PERMISSIONS,
@@ -23,11 +23,9 @@ describe("payment notifications (ADR 0094)", () => {
     });
     const assigneeId = main.assigneeId ?? "";
     await makeReaders({ context, userIds: [assigneeId] });
-    const system = createExecuteContext({
+    const system = createSystemContext({
       organizationId: context.organizationId,
-      roles: [],
       permissions: { payment: ["write"] },
-      actor: { type: "system", userId: null },
     });
     const signal = {
       provider: "STRIPE" as const,
@@ -81,11 +79,9 @@ describe("payment notifications (ADR 0094)", () => {
         providerReference: `cs_second_${payment.id}`,
       },
     });
-    const system = createExecuteContext({
+    const system = createSystemContext({
       organizationId: context.organizationId,
-      roles: [],
       permissions: { payment: ["write"] },
-      actor: { type: "system", userId: null },
     });
     const paid = ({ reference }: { reference: string }) =>
       execute({

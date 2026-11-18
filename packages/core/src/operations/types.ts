@@ -2,7 +2,9 @@ import type { ScopedDbClient } from "@bibi/db";
 import type { z } from "zod";
 import type { Consequence } from "../change-preview/schema";
 import type { Result } from "../errors/result";
+import type { FixedRole } from "../permissions/fixed-roles";
 import type { PermissionSet } from "../permissions/permission-set";
+import type { RecordScopes } from "../permissions/record-scope";
 import type { Embeddable } from "../search/embeddable";
 import type { Permission } from "./permission";
 
@@ -44,6 +46,13 @@ export type OperationContext = {
   roles: readonly string[];
   /** What the caller may do, resolved from `roles` by `packages/auth` (ADR 0034). */
   permissions: PermissionSet;
+  /**
+   * The caller's preset, their rank for anti-escalation (ADR 0050); `roles` is display only.
+   * `null` for SYSTEM, a non-member or an unknown stored role.
+   */
+  preset: FixedRole | null;
+  /** Which records of each root the caller sees (ADR 0113); SYSTEM and API keys see all. */
+  scopes: RecordScopes;
   /** The credential the caller presented; set by `resolveExecuteContext` (ADR 0005). */
   credential?: CredentialKind;
   /** Commands call this so audit rows carry entity id and before/after state. */

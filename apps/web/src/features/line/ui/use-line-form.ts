@@ -9,6 +9,7 @@ import { type LineFormOutput, lineFormSchema, toLineUpdate } from "./line-form-s
 import { type LineFormValues, lineFormDefaults } from "./line-form-values";
 import { lineTimeZone } from "./line-time-zone";
 import type { ProgramFormData } from "./program-form-data";
+import { useHoursConfirm } from "./use-hours-confirm";
 
 export type UseLineFormInput = {
   data: ProgramFormData;
@@ -55,7 +56,8 @@ export function useLineForm({ data, orderId, startsAt, line, parent, onDone }: U
     resolver,
     defaultValues: lineFormDefaults({ type: initial, line, parent, startsAt, timeZone }),
   });
-  const { submit, pending } = useFormAction({
+  const hours = useHoursConfirm({ line });
+  const { run, pending } = useFormAction({
     form,
     action: ({ values }) =>
       save({ line, parent, values, type: typeOf({ id: values.entityTypeId }) }),
@@ -68,5 +70,14 @@ export function useLineForm({ data, orderId, startsAt, line, parent, onDone }: U
       if (error.code === "CONFLICT") form.setError("itemId", { message: t("occupied") });
     },
   });
-  return { form, submit, pending, typeOf };
+  // Outside the hours that apply, the save waits for the user's yes in a dialog.
+  const submit = form.handleSubmit(async (values) => {
+    if (await hours.check({ values })) run({ values });
+  });
+  const confirmOutsideHours = () => {
+    if (!hours.waiting) return;
+    run({ values: hours.waiting.values });
+    hours.cancel();
+  };
+  return { form, submit, pending, typeOf, hours, confirmOutsideHours };
 }

@@ -15,7 +15,11 @@ import type { CalendarAudience, CalendarState } from "./calendar-types";
 const mix = ({ color, percent }: { color: string; percent: number }) =>
   `color-mix(in oklch, ${color} ${percent}%, transparent)`;
 
-const hatch = ({ color }: { color: string }) =>
+/**
+ * The preliminary (soft hold) hatch, the one pattern for soft holds everywhere: calendar marks,
+ * cards, table rows and legends.
+ */
+export const softHatch = ({ color }: { color: string }) =>
   `repeating-linear-gradient(135deg, ${mix({ color, percent: 32 })} 0 5px, ${mix({ color, percent: 10 })} 5px 10px)`;
 
 /**
@@ -42,7 +46,7 @@ export function markStyle({
   }
   if (state.hold === "soft") {
     return {
-      backgroundImage: hatch({ color: state.color }),
+      backgroundImage: softHatch({ color: state.color }),
       borderColor: state.color,
       borderStyle: "dashed",
       color: "var(--foreground)",
@@ -77,7 +81,7 @@ export function dotStyle({
   if (state.hold === "hard") return { backgroundColor: state.color };
   if (state.hold === "soft") {
     return {
-      backgroundImage: hatch({ color: state.color }),
+      backgroundImage: softHatch({ color: state.color }),
       border: `1.5px dashed ${state.color}`,
     };
   }

@@ -4,15 +4,16 @@ import { OptionSelectField } from "@/components/form/option-select-field";
 import type { LineFormOutput } from "./line-form-schema";
 import type { LineFormValues } from "./line-form-values";
 import type { ProgramFormData } from "./program-form-data";
-import { ProgramItemField } from "./program-item-field";
+import { type ItemLock, ProgramItemField } from "./program-item-field";
 
 export type ProgramPlaceFieldsProps = {
   form: UseFormReturn<LineFormValues, unknown, LineFormOutput>;
   data: ProgramFormData;
+  itemLock?: ItemLock;
 };
 
 /** The bookable item (searchable, full width), then one of its layouts (only when it has any). */
-export function ProgramPlaceFields({ form, data }: ProgramPlaceFieldsProps) {
+export function ProgramPlaceFields({ form, data, itemLock }: ProgramPlaceFieldsProps) {
   const t = useTranslations("line");
   const itemId = form.watch("itemId");
   const layouts = (data.items.find((item) => item.id === itemId)?.layouts ?? []).map(
@@ -23,7 +24,7 @@ export function ProgramPlaceFields({ form, data }: ProgramPlaceFieldsProps) {
   );
   return (
     <>
-      <ProgramItemField form={form} data={data} />
+      <ProgramItemField form={form} data={data} itemLock={itemLock} />
       {layouts.length > 0 ? (
         <OptionSelectField
           control={form.control}

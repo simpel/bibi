@@ -1,4 +1,4 @@
-import { createExecuteContext, grantAll } from "@bibi/core";
+import { ALL_RECORDS, createExecuteContext, grantAll } from "@bibi/core";
 import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { handler, newOrgId } from "./helpers";
@@ -41,6 +41,8 @@ describe("REST request logging (ADR 0014)", () => {
       organizationId: org,
       roles: ["admin"],
       permissions: grantAll({}),
+      preset: "admin",
+      scopes: ALL_RECORDS,
       actor,
     });
     const [row] = await db.auditLog.findMany();

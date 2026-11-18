@@ -82,6 +82,7 @@ export function AvailabilityGrid({
 }: AvailabilityGridProps) {
   return (
     <div
+      data-slot="calendar-grid"
       ref={timeline.scrollerRef}
       onScroll={timeline.onScroll}
       className={cn("touch-pan-x touch-pan-y overflow-auto overscroll-contain", className)}

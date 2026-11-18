@@ -1,26 +1,12 @@
 "use server";
 
-import {
-  fulfillRunSheet,
-  generateRunSheet,
-  publishRunSheet,
-  type RunSheetDto,
-  type RunSheetGenerateInput,
-  unfulfillRunSheet,
-} from "@bibi/core";
+import { fulfillRunSheet, publishRunSheet, type RunSheetDto, unfulfillRunSheet } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
 
-export type GenerateRunSheetActionInput = { input: RunSheetGenerateInput };
 export type RunSheetIdActionInput = { id: string };
 export type SendRunSheetActionInput = RunSheetIdActionInput;
-
-export async function generateRunSheetAction({
-  input,
-}: GenerateRunSheetActionInput): Promise<ActionResult<RunSheetDto>> {
-  return toActionResult({ result: await runOperation({ operation: generateRunSheet, input }) });
-}
 
 export async function publishRunSheetAction({
   id,

@@ -12,6 +12,7 @@ import {
   KanbanIcon,
   LayoutDashboardIcon,
   type LucideIcon,
+  MessageSquareIcon,
   ShieldCheckIcon,
 } from "lucide-react";
 import { INBOX_ROUTE } from "@/lib/inbox-routes";
@@ -19,6 +20,7 @@ import { ROUTES } from "@/lib/routes";
 
 export type NavLabelKey =
   | "myWork"
+  | "assistant"
   | "dashboard"
   | "pipeline"
   | "calendar"
@@ -72,6 +74,14 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       icon: HouseIcon,
       audience: "everyone",
       badge: "myWork",
+    },
+    // The assistant, full width (ADR 0110); ⌘K also starts a chat.
+    {
+      href: ROUTES.assistant,
+      labelKey: "assistant",
+      icon: MessageSquareIcon,
+      audience: "everyone",
+      permission: "assistant:read",
     },
     {
       href: ROUTES.pipeline,

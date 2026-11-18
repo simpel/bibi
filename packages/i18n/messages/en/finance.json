@@ -320,7 +320,7 @@
       "STAFFED": "You are booked",
       "ITEM": "Your item",
       "FOLLOWER": "Following",
-      "RESPONSIBILITY_FOLLOWER": "Following",
+      "RESPONSIBILITY_FOLLOWER": "Your responsibility",
       "RECIPIENT": "Sent to you"
     },
     "flags": {
@@ -344,6 +344,18 @@
       "customer": "Customer",
       "place": "Place"
     },
+    "flagDetails": {
+      "HARD_CLASH": "Booking #{reference} holds the same room or item hard at this time, so this order can't be confirmed. Move the time or talk to whoever owns #{reference}.",
+      "HARD_CLASH_BLOCK": "The room or item is blocked on the calendar at this time, for example for maintenance. Move the time or remove the block.",
+      "RUN_SHEET": {
+        "DRAFT": "{runSheet} hasn't been sent to the team yet. Open it and send it so they can prepare.",
+        "REVISION_PENDING": "The order changed after {runSheet} was sent. Send it again so the team works from the latest version.",
+        "BLOCKED": "{runSheet} can't be sent until what blocks it is fixed. Open it to see what's missing."
+      },
+      "HOLD_EXPIRES": "The preliminary booking is released {date} unless the order moves on. Confirm it or extend the hold.",
+      "QUOTE_WAITING": "The customer hasn't answered the quote sent {date}. Follow up or change the quote.",
+      "UNREAD_MESSAGES": "{count, plural, one {A message on this order hasn't been read.} other {# messages on this order haven't been read.}} Open the order to read and answer."
+    },
     "needsYou": {
       "title": "Needs you",
       "empty": "Nothing needs you right now.",
@@ -355,12 +367,6 @@
         "TODAY": "Today",
         "SOON": "Soon",
         "WAITING": "Waiting on customer"
-      },
-      "actions": {
-        "runSheet": "Open run sheet",
-        "quote": "Open quote",
-        "inbox": "Open inbox",
-        "order": "Open order"
       },
       "tasks": {
         "HARD_CLASH": "Fix double booking on {line} with #{reference}",
@@ -586,7 +592,6 @@
     "paidOf": "{paid} paid of {amount}",
     "receivables": "What the customer pays for",
     "noReceivables": "Nothing to pay for yet: send a quote, request a deposit or create an invoice.",
-    "quoteVersion": "Quote",
     "balance": {
       "title": "Balance",
       "billed": "Billed",

@@ -34,6 +34,8 @@ export type CalendarLabels = {
   client: string;
   internal: string;
   blocked: string;
+  /** Why a card is blocked and what to do, on hover of its Blocked badge. */
+  blockedDetail: string;
   notSold: string;
   guests: (input: { count: number }) => string;
   /** Where the guests are on an order's lanes: "Guests here", or with how many. */
@@ -75,6 +77,11 @@ export type CalendarLabels = {
     when: string;
     where: string;
     state: string;
+    /** The order's status, beside the line's state. */
+    status: string;
+    /** The amber badge of a preliminary (soft hold) booking, and what to do about it. */
+    tentative: string;
+    tentativeDetail: string;
     guests: string;
     value: string;
     exclVat: string;

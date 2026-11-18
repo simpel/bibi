@@ -1,11 +1,10 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
-  createExecuteContext,
   createPayment,
+  createSystemContext,
   type ExecuteContext,
   execute,
   getPayment,
-  grantAll,
   refundPayment,
   resetProviderAdapters,
   retryRefunds,
@@ -37,11 +36,8 @@ async function paidPayment() {
 
 /** The worker's run, `minutes` after now. */
 const retry = ({ context, minutes }: { context: ExecuteContext; minutes: number }) => {
-  const system = createExecuteContext({
+  const system = createSystemContext({
     organizationId: context.organizationId,
-    roles: [],
-    permissions: grantAll({}),
-    actor: { type: "system", userId: null },
   });
   const now = () => new Date(Date.now() + minutes * MINUTE);
   return execute({ operation: retryRefunds, input: {}, context: { ...system, now } });

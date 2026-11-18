@@ -4,8 +4,10 @@ import { useTranslations } from "next-intl";
 import { rawFields } from "@/components/typed-fields/raw-fields";
 import { TypeFields } from "@/components/typed-fields/type-fields";
 import { TypeSelectField } from "@/components/typed-fields/type-select-field";
+import { OutsideHoursDialog } from "./outside-hours-dialog";
 import { ProgramCoreFields } from "./program-core-fields";
 import type { ProgramFormData } from "./program-form-data";
+import type { ItemLock } from "./program-item-field";
 import { useLineForm } from "./use-line-form";
 
 export type LineFormProps = {
@@ -15,14 +17,19 @@ export type LineFormProps = {
   line?: LineDto | undefined;
   /** Create mode: the line the new one is an add-on of (ADR 0088). */
   parent?: LineDto | undefined;
+  /** Why the edited line's item cannot change, if it cannot. */
+  itemLock?: ItemLock;
   onDone: () => void;
 };
 
 /** Create (type first) or edit a line, then the type's fields. */
-export function LineForm({ line, ...props }: LineFormProps) {
+export function LineForm({ line, itemLock, ...props }: LineFormProps) {
   const common = useTranslations("common");
   const t = useTranslations("line");
-  const { form, submit, pending, typeOf } = useLineForm({ ...props, line });
+  const { form, submit, pending, typeOf, hours, confirmOutsideHours } = useLineForm({
+    ...props,
+    line,
+  });
   const { data, onDone } = props;
   const type = typeOf({ id: form.watch("entityTypeId") });
   return (
@@ -38,7 +45,9 @@ export function LineForm({ line, ...props }: LineFormProps) {
             }
           />
         )}
-        {type ? <ProgramCoreFields form={form} data={data} line={line} /> : null}
+        {type ? (
+          <ProgramCoreFields form={form} data={data} line={line} itemLock={itemLock} />
+        ) : null}
         {type ? <TypeFields control={form.control} type={type} data={data} /> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>
@@ -49,6 +58,12 @@ export function LineForm({ line, ...props }: LineFormProps) {
           </Button>
         </DialogFooter>
       </form>
+      <OutsideHoursDialog
+        kind={hours.waiting?.kind ?? null}
+        pending={pending}
+        onConfirm={confirmOutsideHours}
+        onCancel={hours.cancel}
+      />
     </Form>
   );
 }

@@ -8,6 +8,11 @@ import {
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from "@bibi/ui";
 import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -17,7 +22,27 @@ import type { ProgramAccess } from "./program-row-actions";
 
 export type ProgramDialogType = "edit" | "addOn" | "options" | "units" | "archive" | null;
 
+/** The menu parts a row's actions are drawn with: the right-click menu or the row's "…" menu. */
+const KITS = {
+  context: {
+    Item: ContextMenuItem,
+    Separator: ContextMenuSeparator,
+    Sub: ContextMenuSub,
+    SubTrigger: ContextMenuSubTrigger,
+    SubContent: ContextMenuSubContent,
+  },
+  dropdown: {
+    Item: DropdownMenuItem,
+    Separator: DropdownMenuSeparator,
+    Sub: DropdownMenuSub,
+    SubTrigger: DropdownMenuSubTrigger,
+    SubContent: DropdownMenuSubContent,
+  },
+};
+
 export type ProgramRowMenuProps = {
+  /** `context` for the right-click menu, `dropdown` for the row's "…" button; same actions. */
+  kit: keyof typeof KITS;
   line: LineDto;
   data: ProgramFormData;
   access: ProgramAccess;
@@ -37,10 +62,11 @@ const customisableOf = ({ line, data }: Pick<ProgramRowMenuProps, "line" | "data
     : undefined;
 
 /**
- * Full right-click context menu for an order line row.
- * Edit comes first, followed by add-on, options, units, state changes, and archive.
+ * Every action on an order line, the same in the right-click menu and the row's "…" menu: edit
+ * first, then add-on, options, units, state changes, and remove last.
  */
 export function ProgramRowMenu({
+  kit,
   line,
   data,
   access,
@@ -49,6 +75,7 @@ export function ProgramRowMenu({
   onFollowStatus,
 }: ProgramRowMenuProps) {
   const t = useTranslations("line");
+  const { Item, Separator, Sub, SubTrigger, SubContent } = KITS[kit];
   const customisable = access.canEdit ? customisableOf({ line, data }) : undefined;
   const canAllocate = access.canAllocate && line.itemId !== null && line.startsAt !== null;
 
@@ -64,59 +91,51 @@ export function ProgramRowMenu({
   return (
     <>
       {access.canEdit ? (
-        <ContextMenuItem onSelect={() => onOpenDialog({ line, dialog: "edit" })}>
+        <Item onSelect={() => onOpenDialog({ line, dialog: "edit" })}>
           <PencilIcon className="mr-2 size-4" />
           {t("edit")}
-        </ContextMenuItem>
+        </Item>
       ) : null}
 
       {canAddOn({ line, access }) ? (
-        <ContextMenuItem onSelect={() => onOpenDialog({ line, dialog: "addOn" })}>
-          {t("addAddOn")}
-        </ContextMenuItem>
+        <Item onSelect={() => onOpenDialog({ line, dialog: "addOn" })}>{t("addAddOn")}</Item>
       ) : null}
 
       {customisable ? (
-        <ContextMenuItem onSelect={() => onOpenDialog({ line, dialog: "options" })}>
-          {t("chooseOptions")}
-        </ContextMenuItem>
+        <Item onSelect={() => onOpenDialog({ line, dialog: "options" })}>{t("chooseOptions")}</Item>
       ) : null}
 
       {canAllocate ? (
-        <ContextMenuItem onSelect={() => onOpenDialog({ line, dialog: "units" })}>
-          {t("units")}
-        </ContextMenuItem>
+        <Item onSelect={() => onOpenDialog({ line, dialog: "units" })}>{t("units")}</Item>
       ) : null}
 
       {access.canChangeState && targets.length > 0 ? (
-        <ContextMenuSub>
-          <ContextMenuSubTrigger>{t("changeState")}</ContextMenuSubTrigger>
-          <ContextMenuSubContent>
+        <Sub>
+          <SubTrigger>{t("changeState")}</SubTrigger>
+          <SubContent>
             {targets.map((state: LineStateOption) => (
-              <ContextMenuItem
+              <Item
                 key={state.id}
                 onSelect={() => onStateChange({ lineId: line.id, stateId: state.id })}
               >
                 <ColorSwatch color={state.color} />
                 <span>{state.name}</span>
-              </ContextMenuItem>
+              </Item>
             ))}
-          </ContextMenuSubContent>
-        </ContextMenuSub>
+          </SubContent>
+        </Sub>
       ) : null}
 
       {line.stateOverridden && access.canChangeState ? (
-        <ContextMenuItem onSelect={() => onFollowStatus({ lineId: line.id })}>
-          {t("followStatus")}
-        </ContextMenuItem>
+        <Item onSelect={() => onFollowStatus({ lineId: line.id })}>{t("followStatus")}</Item>
       ) : null}
 
       {access.canRemove ? (
         <>
-          <ContextMenuSeparator />
-          <ContextMenuItem destructive onSelect={() => onOpenDialog({ line, dialog: "archive" })}>
+          <Separator />
+          <Item destructive onSelect={() => onOpenDialog({ line, dialog: "archive" })}>
             {t("archive")}
-          </ContextMenuItem>
+          </Item>
         </>
       ) : null}
     </>

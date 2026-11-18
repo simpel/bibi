@@ -1,5 +1,7 @@
 import type { Locale } from "@bibi/i18n";
+import { AppCardLegend } from "@/components/card-legend/app-card-legend";
 import { ErrorState } from "@/components/states/error-state";
+import { PageTour } from "@/components/tour/page-tour";
 import { BoardCustomizeView } from "@/features/board/ui/board-customize-view";
 import { PipelineToolbar } from "@/features/board/ui/pipeline-toolbar";
 import { UnmappedBanner } from "@/features/board/ui/unmapped-banner";
@@ -24,29 +26,35 @@ export async function PipelinePage({ locale, boardId, customize }: PipelinePageP
     return (
       <div className="flex min-h-0 flex-1 flex-col gap-3 p-3">
         <BoardCustomizeView data={data.value} boardId={board.boardId} />
+        <PageTour tour="board-customize" />
       </div>
     );
   }
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 p-3">
-      <PipelineToolbar
-        boards={boards}
-        boardId={board.boardId}
-        access={access}
-        members={data.value.members}
-        totals={<BoardTotals board={board} />}
-      />
+      <div data-tour="pipeline.toolbar">
+        <PipelineToolbar
+          boards={boards}
+          boardId={board.boardId}
+          access={access}
+          members={data.value.members}
+          totals={<BoardTotals board={board} />}
+        />
+      </div>
+      {board.cards.length > 0 ? <AppCardLegend /> : null}
       {access.write && board.unmappedCount > 0 ? (
         <UnmappedBanner count={board.unmappedCount} boardId={board.boardId} />
       ) : null}
-      <div className="min-h-0 flex-1">
+      <div data-tour="pipeline.board" className="min-h-0 flex-1">
         <PipelineBoardView
           board={board}
           transitions={data.value.transitions}
           moveGates={data.value.moveGates}
           customerNames={data.value.customerNames}
+          memberNames={data.value.memberNames}
         />
       </div>
+      <PageTour tour="pipeline" />
     </div>
   );
 }

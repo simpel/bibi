@@ -28,6 +28,13 @@ h6 {
   font-weight: 400;
 }
 
+/* The angle the live border's light sits at; registered so the browser can animate it. */
+@property --live-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 /* A stat card's trend line draws in from the left when it mounts (ADR 0086). */
 @keyframes stat-line-draw {
   from {

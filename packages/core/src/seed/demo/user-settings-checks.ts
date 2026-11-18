@@ -3,6 +3,7 @@ import { getUserSettings } from "../../features/user-settings/operations";
 import { createExecuteContext, type ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { grantAll } from "../../permissions/permission-set";
+import { ALL_RECORDS } from "../../permissions/record-scope";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoUserSettingsInput = { context: ExecuteContext; org: DemoOrg };
@@ -37,6 +38,8 @@ export async function checkDemoUserSettings({
       organizationId: context.organizationId,
       roles: [],
       permissions: grantAll({}),
+      preset: "admin",
+      scopes: ALL_RECORDS,
       actor: { type: "user", userId: member.userId },
     });
     const settings = await execute({ operation: getUserSettings, input: {}, context: own });

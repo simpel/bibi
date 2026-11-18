@@ -26,12 +26,13 @@ export function selectColumn<TData>({
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(value === true)}
       />
     ),
-    cell: ({ row }) => (
-      <Checkbox
-        aria-label={labels.selectRow}
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(value === true)}
-      />
-    ),
+    cell: ({ row }) =>
+      row.getCanSelect() ? (
+        <Checkbox
+          aria-label={labels.selectRow}
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(value === true)}
+        />
+      ) : null,
   };
 }

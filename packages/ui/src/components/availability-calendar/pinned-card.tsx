@@ -2,8 +2,14 @@
 
 import { Maximize2Icon, Minimize2Icon, SquareArrowOutUpRightIcon, XIcon } from "lucide-react";
 import { cn } from "../../lib/cn";
-import { bookingToneVariants, type CardIssue, toneOfLine } from "../booking-tone/booking-tone";
+import {
+  attentionOf,
+  type CardIssue,
+  cardSurfaceProps,
+  surfaceOfLine,
+} from "../booking-tone/booking-tone";
 import { Button } from "../button/button";
+import { CompactCardHeader } from "../compact-card-header/compact-card-header";
 import { CalendarHoverDetails } from "../cursor-hover/cursor-hover-details";
 import type { OrderViewFact } from "../order-view/order-view-facts";
 import { formatDay } from "./calendar-dates";
@@ -72,19 +78,11 @@ function Controls({ booking, minimized, onMinimize, onClose, onOpen }: PinnedCar
 function MinimizedHeader(props: PinnedCardProps) {
   const { booking } = props;
   return (
-    <div className="relative min-h-[1.75rem]">
-      <div className="pr-16">
-        <p className="truncate font-semibold text-xs leading-snug text-foreground">
-          {booking.customer ?? booking.name}
-        </p>
-        {booking.value ? (
-          <PinnedValue booking={booking} className="text-[11px] text-muted-foreground mt-0.5" />
-        ) : null}
-      </div>
-      <div className="absolute top-0 right-0 flex items-center gap-1">
-        <Controls {...props} />
-      </div>
-    </div>
+    <CompactCardHeader
+      title={booking.customer ?? booking.name}
+      subtitle={booking.value ? <PinnedValue booking={booking} /> : undefined}
+      actions={<Controls {...props} />}
+    />
   );
 }
 
@@ -110,14 +108,23 @@ export function PinnedCard(props: PinnedCardProps) {
   const dateStr = formatDay({ date: booking.date, format: formatDate, year: true });
   const labels = useCalendarLabels();
   const issues = pinnedIssues({ facts: extraFacts, openIssues: labels.pinCard.openIssues });
-  const tone = toneOfLine({ line: booking });
+  const look = cardSurfaceProps({
+    surface: {
+      ...surfaceOfLine({ line: booking }),
+      attention: attentionOf({
+        issues: [...(booking.issues ?? []), ...(issues ?? [])],
+        blocked: booking.blocked,
+        tentative: booking.state.hold === "soft",
+      }),
+    },
+  });
 
   return (
     <div
       className={cn(
         "shrink-0 overflow-hidden rounded-xl border bg-popover/95 p-3.5 text-xs text-popover-foreground shadow-2xl backdrop-blur-md transition-all",
         minimized ? "w-56 p-3" : "w-[23.5rem] max-w-[calc(100vw-2rem)]",
-        bookingToneVariants({ tone }),
+        look.className,
       )}
     >
       {minimized ? (
@@ -129,7 +136,6 @@ export function PinnedCard(props: PinnedCardProps) {
           onOpen={onOpen}
           detailed
           extraFacts={extraFacts}
-          tone={tone}
           issues={issues}
           headerActions={<Controls {...props} />}
         />

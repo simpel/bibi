@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { PageTour } from "@/components/tour/page-tour";
 import { loadEntityType } from "@/features/entity-type/load-entity-type";
 import { FieldSection } from "@/features/field-definition/ui/field-section";
 import { loadItemTypeGroups } from "@/features/item-type-group/load-item-type-groups";
@@ -34,6 +35,7 @@ export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
   return (
     <div className="grid gap-6">
       <CrumbName href={`/admin/types/${id}`} name={entityType.name} />
+      <PageTour tour="item-type" />
       <div className="grid gap-4">
         <Link
           href={ROUTES.adminTypes}

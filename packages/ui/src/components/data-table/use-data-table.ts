@@ -47,7 +47,10 @@ export function useDataTable<TData, TValue>({ props }: { props: DataTableProps<T
     onSortingChange: sorting.onSortingChange,
     manualSorting: props.manualSorting ?? false,
     enableMultiSort: false,
-    enableRowSelection: selectable ?? false,
+    enableRowSelection:
+      selectable && props.canSelectRow
+        ? (row) => props.canSelectRow?.(row.original) ?? true
+        : (selectable ?? false),
     onRowSelectionChange: (updater) =>
       setRowSelection(typeof updater === "function" ? updater(rowSelection) : updater),
     defaultColumn: { sortingFn: (rowA, rowB, columnId) => compareRows({ rowA, rowB, columnId }) },

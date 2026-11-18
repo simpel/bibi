@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { getEnv } from "@bibi/config";
 import {
+  ALL_RECORDS,
   completeIntegrationConnect,
   connectIntegration,
   createExecuteContext,
@@ -45,6 +46,8 @@ async function connectedOrganization() {
       organizationId: id,
       roles: ["admin"],
       permissions: PRESET_PERMISSIONS.admin,
+      preset: "admin",
+      scopes: ALL_RECORDS,
       actor: { type: "user", userId: `user_${createId()}` },
     }),
     credential: "session" as const,

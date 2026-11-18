@@ -3,10 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   applyBillingSignal,
   type BillingSubscription,
-  createExecuteContext,
+  createSystemContext,
   execute,
   getBillingAccess,
-  grantAll,
   openBillingPortal,
   remindBillingAdmins,
   startBillingCheckout,
@@ -26,11 +25,8 @@ const checkout = ({ context }: { context: Context }) =>
   });
 
 const asSystem = ({ context }: { context: Context }) =>
-  createExecuteContext({
+  createSystemContext({
     organizationId: context.organizationId,
-    roles: [],
-    permissions: grantAll({}),
-    actor: { type: "system", userId: null },
   });
 
 const subscriptionFor = async ({ context, status }: { context: Context; status: string }) => {

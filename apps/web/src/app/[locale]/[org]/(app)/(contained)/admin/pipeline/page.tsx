@@ -2,6 +2,7 @@ import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { AdminSections } from "@/components/admin/admin-sections";
 import { loadAdminPage } from "@/components/admin/load-admin-page";
+import { PageTour } from "@/components/tour/page-tour";
 import { ItemStateList } from "@/features/item-state/ui/item-state-list";
 import { OrderStatusList } from "@/features/order-status/ui/order-status-list";
 import { pageTitle } from "@/lib/page-metadata";
@@ -21,6 +22,7 @@ export default async function OrderFlowPage({ params }: PageProps) {
     <AdminSections title={title}>
       <OrderStatusList locale={locale} show={show} />
       {show.has("itemStates") ? <ItemStateList locale={locale} /> : null}
+      <PageTour tour="admin-pipeline" />
     </AdminSections>
   );
 }

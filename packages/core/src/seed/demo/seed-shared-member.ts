@@ -7,6 +7,7 @@ import { DEFAULT_WORKING_HOURS } from "../../features/profile/working-hours-sche
 import { createExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { grantAll } from "../../permissions/permission-set";
+import { ALL_RECORDS } from "../../permissions/record-scope";
 import type { DemoOrg } from "./types";
 import { demoEmail } from "./users";
 
@@ -41,6 +42,8 @@ const asUser = ({
     organizationId,
     roles: [],
     permissions: grantAll({}),
+    preset: "admin",
+    scopes: ALL_RECORDS,
     actor: { type: "user", userId },
     db,
   });

@@ -18,7 +18,8 @@ export type ToBookingInput = {
 
 /**
  * A My work card as a calendar booking, so it renders and pins like one (spec: home): the order's
- * day as the span, its places as the asset, its status as the state with the day's hold, blocked
+ * day as the span, its places as the asset, the day's hold as its state (drawn as the time's mark; the order's
+ * status apart, in its own colour), blocked
  * when a hard hold overlaps it. No value: My work shows no money.
  */
 export function toBooking({ card, timeZone, issues }: ToBookingInput): PinnedBooking {
@@ -37,11 +38,12 @@ export function toBooking({ card, timeZone, issues }: ToBookingInput): PinnedBoo
     setupMinutes: 0,
     teardownMinutes: 0,
     state: {
-      name: card.status?.name ?? "",
-      color: card.status?.color ?? "var(--muted-foreground)",
+      name: "",
+      color: "var(--muted-foreground)",
       ink: "var(--primary-foreground)",
       hold: card.hold ? HOLDS[card.hold] : "none",
     },
+    status: card.status,
     blocked: card.flags.some((flag) => flag.kind === "HARD_CLASH"),
     ...(issues?.length ? { issues } : {}),
     quantity: 1,

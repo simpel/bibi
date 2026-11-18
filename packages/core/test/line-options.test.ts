@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { execute, getLine, listLines } from "../src/index";
+import { execute, getLine, listLines, updateLine } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { choose, optionsSetup, picks } from "./line-options-helpers";
 import { createTestQuote } from "./quote-helpers";
@@ -16,6 +16,24 @@ describe("line.chooseOptions (ADR 0059)", () => {
     // A normal group's option has no quantity of its own: its parent's (ADR 0082).
     expect(items[0]).toMatchObject({ name: "Our technician", quantity: null });
     expect(items[0]).toMatchObject({ effectiveQuantity: 1, quantitySource: "PARENT_LINE" });
+  });
+
+  it("keeps an option line's item: another option is chosen on the parent", async () => {
+    const { context, lineId, technician, lounge } = await optionsSetup();
+    const { items } = unwrap({
+      result: await choose({ context, lineId, options: picks({ ids: [technician.id] }) }),
+    });
+    const option = items[0];
+    if (!option) throw new Error("no option line");
+    const input = { id: option.id, itemId: lounge.id };
+    const result = await execute({ operation: updateLine, input, context });
+    expect(errorCode({ result })).toBe("VALIDATION");
+    const renamed = await execute({
+      operation: updateLine,
+      input: { id: option.id, note: "Bring the long cable" },
+      context,
+    });
+    expect(unwrap({ result: renamed }).itemId).toBe(technician.id);
   });
 
   it("counts EXTRA on top of the line", async () => {

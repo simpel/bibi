@@ -4,6 +4,7 @@ import { markNotificationsRead } from "../../features/notification/write-operati
 import { createExecuteContext, type ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { grantAll } from "../../permissions/permission-set";
+import { ALL_RECORDS } from "../../permissions/record-scope";
 import { missing } from "./seed-fields";
 import type { DemoOrg } from "./types";
 import type { DemoUserIds } from "./users";
@@ -39,6 +40,8 @@ export async function seedNotificationReads({
       organizationId: context.organizationId,
       roles: [],
       permissions: grantAll({}),
+      preset: "admin",
+      scopes: ALL_RECORDS,
       actor: { type: "user", userId },
       db,
     });

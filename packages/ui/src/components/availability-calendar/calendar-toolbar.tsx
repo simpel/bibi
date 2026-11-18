@@ -14,11 +14,14 @@ export type CalendarToolbarProps = {
 export function CalendarToolbar(props: CalendarToolbarProps) {
   return (
     <>
-      <div className="hidden min-w-0 items-center justify-between gap-3 @3xl:flex">
+      <div
+        data-slot="calendar-toolbar"
+        className="hidden min-w-0 items-center justify-between gap-3 @3xl:flex"
+      >
         <RangeToolbar {...props.range} />
         <AvailabilityFilter {...props.filter} />
       </div>
-      <div className="@3xl:hidden">
+      <div data-slot="calendar-toolbar" className="@3xl:hidden">
         <CompactToolbar {...props} />
       </div>
     </>

@@ -4,6 +4,7 @@ import { setOrganizationDomainJoin } from "../features/organization-profile/doma
 import { createExecuteContext } from "../operations/context";
 import { execute } from "../operations/execute";
 import { grantAll } from "../permissions/permission-set";
+import { ALL_RECORDS } from "../permissions/record-scope";
 import { emailDomainOf } from "./email-domain";
 
 /** Who created the organization, as Better Auth's `afterCreateOrganization` passes them. */
@@ -31,6 +32,8 @@ export async function claimCreatorDomain({
     organizationId,
     roles: [],
     permissions: grantAll({}),
+    preset: "admin",
+    scopes: ALL_RECORDS,
     actor: { type: "user", userId: creator.userId },
     ...(db ? { db } : {}),
   });

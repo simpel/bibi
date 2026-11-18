@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MyWorkFlagSchema } from "../my-work/schema";
 
 export const PipelineStatusSchema = z.object({
   id: z.string().describe("The order status id"),
@@ -36,6 +37,16 @@ export const PipelineCardSchema = z.object({
     .describe("Guaranteed or estimated headcount, else the requested quantity"),
   statusChangedAt: z.date().describe("When the order entered its status (time in status)"),
   assigneeId: z.string().nullable().describe("Main assignee (user id)"),
+  following: z
+    .boolean()
+    .describe("The caller follows the order and is not its main assignee: drawn unfilled"),
+  flags: z
+    .array(MyWorkFlagSchema)
+    .describe(
+      "What blocks or needs fixing, blocks first: HARD_CLASH (another order's hard hold over a " +
+        "soft hold still to come; needs program:read and item:read), HOLD_EXPIRES, QUOTE_WAITING " +
+        "(quote:read) and UNREAD_MESSAGES (inbox:read)",
+    ),
   heldLines: z
     .number()
     .int()
@@ -100,3 +111,31 @@ export type PipelineColumn = z.infer<typeof PipelineColumnSchema>;
 export type PipelineCard = z.infer<typeof PipelineCardSchema>;
 export type PipelineBoard = z.infer<typeof PipelineBoardSchema>;
 export type PipelineBoardInput = z.infer<typeof PipelineBoardInputSchema>;
+
+export const PipelineCuesInputSchema = z.object({
+  orderIds: z
+    .array(z.string())
+    .min(1)
+    .max(100)
+    .describe("The orders to read cues for, e.g. one page of order.list; unknown ids are left out"),
+});
+
+export const OrderCueSchema = z.object({
+  orderId: z.string().describe("order.get"),
+  soft: z
+    .boolean()
+    .nullable()
+    .describe("Every held line is a soft hold (preliminary); null without program:read"),
+  following: z.boolean().describe("The caller follows the order and is not its main assignee"),
+  flags: z
+    .array(MyWorkFlagSchema)
+    .describe(
+      "As on pipeline.board cards: HARD_CLASH, HOLD_EXPIRES, QUOTE_WAITING, UNREAD_MESSAGES",
+    ),
+});
+
+export const PipelineCuesSchema = z.object({ cues: z.array(OrderCueSchema) });
+
+export type PipelineCuesInput = z.infer<typeof PipelineCuesInputSchema>;
+export type OrderCue = z.infer<typeof OrderCueSchema>;
+export type PipelineCues = z.infer<typeof PipelineCuesSchema>;

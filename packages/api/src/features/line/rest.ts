@@ -18,6 +18,7 @@ export const lineRoutes = [
     method: "GET",
     path: "/orders/{orderId}/line-issues",
   }),
+  restRoute({ operation: "line.checkHours", method: "GET", path: "/lines/hours-check" }),
   restRoute({ operation: "line.get", method: "GET", path: "/lines/{id}" }),
   restRoute({ operation: "line.create", method: "POST", path: "/lines" }),
   restRoute({ operation: "line.expandBundle", method: "POST", path: "/lines/expand-bundle" }),

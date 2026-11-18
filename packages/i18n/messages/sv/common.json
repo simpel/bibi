@@ -130,6 +130,7 @@
     "invalidCode": "Koden är ogiltig eller har gått ut.",
     "tooManyRequests": "För många försök. Vänta en stund och försök igen.",
     "invalidEmail": "Ange en giltig e-postadress.",
+    "invalidPostalCode": "Ange ett giltigt postnummer för landet, t.ex. 412 50.",
     "invalidNumber": "Ange ett giltigt tal.",
     "tooLong": "Texten är för lång.",
     "tooShort": "Värdet är för litet.",
@@ -168,7 +169,7 @@
     "skills": "Färdigheter",
     "settings": "Inställningar",
     "openMenu": "Öppna meny",
-    "commandBar": "Kommandofält",
+    "commandBar": "Sök eller fråga assistenten",
     "members": "Medlemmar",
     "payments": "Betalningar",
     "accounting": "Bokföring",
@@ -244,8 +245,8 @@
   },
   "commandBar": {
     "title": "Kommandofält",
-    "description": "Navigera eller kör en snabbåtgärd.",
-    "placeholder": "Sök eller skriv ett kommando...",
+    "description": "Navigera, kör en snabbåtgärd eller fråga assistenten.",
+    "placeholder": "Sök, kör ett kommando eller fråga assistenten...",
     "empty": "Inga kommandon hittades.",
     "navigate": "Navigera",
     "actions": "Åtgärder",
@@ -254,8 +255,8 @@
     "openVenue": "Öppna {name}",
     "createItem": "Skapa artikel",
     "assistant": "Assistent",
-    "askAssistant": "Fråga assistenten: ”{query}”",
-    "openAssistant": "Öppna assistenten",
+    "askAssistant": "Fråga Bibi: ”{query}”",
+    "createChat": "Skapa chatt",
     "settings": "Inställningar",
     "createOrder": "Skapa bokning",
     "createCustomer": "Skapa kund",
@@ -381,13 +382,7 @@
   "buffers": {
     "legend": "Ställtid och nedplock",
     "setupMinutes": "Ställtid före (minuter)",
-    "teardownMinutes": "Nedplock efter (minuter)",
-    "inherits": {
-      "none": "Standard för typens artiklar, hålls runt varje bokning av en bokningsbar artikel. Tomt = ingen.",
-      "type": "Hålls runt varje bokning av en bokningsbar artikel. Tomt = artikeltypens.",
-      "item": "Hålls runt bokningen. Tomt = möbleringens, annars artikelns, annars dess typs."
-    },
-    "inEffect": "Gäller nu: {setup} min ställtid, {teardown} min nedplock."
+    "teardownMinutes": "Nedplock efter (minuter)"
   },
   "timeZone": {
     "placeholder": "Välj tidszon",
@@ -684,6 +679,194 @@
           "label": "Betalsätt",
           "keywords": "kort swish faktura betaltjänst stripe fortnox visma"
         }
+      }
+    }
+  },
+  "cardLegend": {
+    "title": "Korten:",
+    "following": {
+      "name": "Följer",
+      "text": "Du följer den, någon annan äger den"
+    },
+    "done": {
+      "name": "Passerad",
+      "text": "Arrangemanget har redan ägt rum. Kortet är nedtonat"
+    },
+    "blocked": {
+      "name": "Blockerad",
+      "text": "Röd etikett och streckad kant: något blockerar den, till exempel en dubbelbokning"
+    },
+    "fix": {
+      "name": "Åtgärda",
+      "text": "Gul etikett och streckad kant: något behöver åtgärdas, till exempel en preliminärbokning som snart går ut"
+    },
+    "live": {
+      "name": "Pågår",
+      "text": "Händer nu. Kortet får en grön kant med ett ljus som långsamt rör sig runt"
+    }
+  },
+  "helpHint": {
+    "dismiss": "Dölj hjälpen för gott"
+  },
+  "helpHints": {
+    "assistantApproval": {
+      "title": "Assistenten föreslår, du bestämmer",
+      "text": "Ingenting ändras förrän du godkänner. Förslaget gäller bara en stund, och när tiden gått ut får du be assistenten att föreslå det igen."
+    },
+    "dashboard": {
+      "title": "Så läser du Arbetsbelastning",
+      "body": "Behöver åtgärdas visar preliminärbokningar som går ut inom 7 dagar, körscheman som inte skickats för ordrar som startar inom 28 dagar och fakturor som passerat förfallodagen. Beläggning är hur stor del av artiklarnas öppettid som är bokad under perioden, och bokningar som överlappar räknas en gång. Antalet ordrar på korten är neutralt: fler öppna ordrar är varken bra eller dåligt."
+    },
+    "forecast": {
+      "title": "Utfall och prognos",
+      "body": "Bekräftade bokningar är accepterade offerter som ännu inte fakturerats, per eventmånad. Prognosen förlänger din genomsnittliga fakturering per månad de senaste sex månaderna. Förväntat fakturerat är det högsta av de två, och pipelinen är värdet av öppna ordrar, alltså inget löfte."
+    },
+    "calendar-legend": {
+      "hard": {
+        "name": "Fylld",
+        "text": "Bokad, platsen är spärrad för andra"
+      },
+      "soft": {
+        "name": "Randig",
+        "text": "Preliminärbokad, kan släppas"
+      },
+      "badge": {
+        "name": "Röd",
+        "text": "Krockar med en annan bokning"
+      }
+    },
+    "setup-preview-legend": {
+      "solid": {
+        "name": "Fylld",
+        "title": "Bokad: platsen är spärrad för andra"
+      },
+      "hatched": {
+        "name": "Randig",
+        "title": "Preliminärbokad: kan släppas"
+      },
+      "outline": {
+        "name": "Kontur",
+        "title": "Inte bokad: platsen är ledig"
+      }
+    }
+  },
+  "tour": {
+    "replay": "Visa sidans rundtur",
+    "skip": "Hoppa över",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "done": "Klar",
+    "progress": "Steg {current} av {total}",
+    "my-work": {
+      "search": {
+        "title": "Hitta det du söker",
+        "body": "Sök på status, kund eller plats, och spara en vy som du ofta återvänder till."
+      },
+      "timeline": {
+        "title": "Ditt arbete, dag för dag",
+        "body": "Alla beställningar du är inblandad i, grupperade i Idag, Denna vecka, Nästa vecka och Senare. Öppna ett kort för att gå till beställningen."
+      }
+    },
+    "calendar": {
+      "toolbar": {
+        "title": "Välj period",
+        "body": "Bläddra i tiden, zooma och filtrera vilka lokaler du ser."
+      },
+      "grid": {
+        "title": "Bokningar på en tidslinje",
+        "body": "Varje rad är en lokal. Heldragna fält är bokade och blockerar lokalen, randiga är preliminära och kan släppas, och en röd markering betyder krock. Klicka på en bokning för att öppna beställningen, eller på en ledig tid för att starta en ny bokning."
+      }
+    },
+    "pipeline": {
+      "toolbar": {
+        "title": "Tavlor",
+        "body": "Växla mellan tavlor eller skapa din egen. Summorna visar vad som finns på tavlan du tittar på."
+      },
+      "board": {
+        "title": "Beställningar per fas",
+        "body": "Varje kolumn är en fas. Dra en beställning till en annan kolumn för att flytta den. Rymmer kolumnen flera statusar väljer du vilken."
+      }
+    },
+    "order": {
+      "status": {
+        "title": "Flytta beställningen vidare",
+        "body": "Ändra status här. Bara de statusar som är tillåtna från den nuvarande visas, och vissa kräver först en anledning eller en ansvarig."
+      },
+      "program": {
+        "title": "Programmet",
+        "body": "Beställningens lokaler, mat och aktiviteter, dag för dag. Lägg till en rad eller ett helt paket och se vad som är preliminärt eller bokat."
+      },
+      "needs": {
+        "title": "Behov och körscheman",
+        "body": "Antal av det gästerna behöver matchas mot dina artiklar, och körscheman till köket och andra tas fram ur dem."
+      },
+      "details": {
+        "title": "Detaljer och personer",
+        "body": "Typ, budget och dina egna fält, samt vem som är ansvarig och vem som följer beställningen."
+      },
+      "money": {
+        "title": "Offerter och betalningar",
+        "body": "Skicka offerter, be om betalning och följ vad som är betalt."
+      }
+    },
+    "run-sheet": {
+      "facts": {
+        "title": "Vem det är till och när",
+        "body": "Beställningen körschemat hör till och när den äger rum. Öppna beställningen härifrån."
+      },
+      "status": {
+        "title": "Status och utskick",
+        "body": "Ett körschema börjar som utkast. Publicera det för att skicka det till ansvaret, som sedan kan markera det som klart."
+      },
+      "tasks": {
+        "title": "Det som ska levereras",
+        "body": "Varje rad som ska levereras, med när, vad, var och hur många. En stjärna markerar det som ändrats sedan den senast publicerade versionen."
+      },
+      "needs": {
+        "title": "Det som behövs",
+        "body": "De räknade behoven, matchade mot dina artiklar."
+      },
+      "versions": {
+        "title": "Versioner och historik",
+        "body": "När beställningen ändras skapas en ny version. Bara den aktuella versionen ska användas. De äldre versionerna och vad som hänt med denna visas här."
+      }
+    },
+    "admin-pipeline": {
+      "flow": {
+        "title": "Flödesregler",
+        "body": "Får flyttas till listar de statusar en beställning kan flyttas till härifrån. Är inget begränsat kan en beställning flyttas till vilken status som helst. Grindar visar vad en beställning behöver för att flyttas in i en status, till exempel en anledning, en ansvarig eller en godkänd offert. Klicka på en rad för att ändra dem."
+      },
+      "grid": {
+        "title": "Statusrutnätet",
+        "body": "Raderna är beställningsstatusarna och kolumnerna är artikeltyperna. Varje ruta anger vilken reservation en rad av den typen får när beställningen går in i statusen. Välj Behåll för att lämna raderna som de är."
+      }
+    },
+    "permissions": {
+      "preset": {
+        "title": "Rollen",
+        "body": "Rollen ger en startuppsättning av behörigheter. Allt nedanför utgår från den."
+      },
+      "grid": {
+        "title": "Tillåt eller neka",
+        "body": "Tillåt eller neka enskilda behörigheter här, och de går före rollen. Nekar du läsa på en funktion försvinner den för personen. Ändringar sparas medan du gör dem."
+      }
+    },
+    "item-type": {
+      "sections": {
+        "title": "Vad avsnitten gör",
+        "body": "Varje avsnitt du slår på lägger till en hel del hos varje artikel av typen: Priser lägger till pris och moms, Tillgänglighet gör artikeln bokningsbar, Rumsuppställningar lägger till kapacitet per uppställning, Paket låter den innehålla andra artiklar och Tillval lägger till valgrupper. Du kan lägga till fler senare, men ett avsnitt kan inte stängas av medan artiklar har data i det."
+      }
+    },
+    "run-sheet-definition": {
+      "build": {
+        "title": "Så byggs ett körschema",
+        "body": "Typerna du väljer ger raderna och fälten ger kolumnerna. Listor räknar behoven, och ansvaret tar emot körschemat när det publiceras."
+      }
+    },
+    "board-customize": {
+      "columns": {
+        "title": "Anpassa tavlan",
+        "body": "Kolumnerna är faser och brickorna i en kolumn är de statusar den visar. Dra brickor och kolumner för att flytta dem. En status som inte finns i någon kolumn visas inte på tavlan."
       }
     }
   }

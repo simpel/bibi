@@ -4,6 +4,7 @@ import type { MyWorkTaskKind } from "../../features/my-work/tasks-schema";
 import { createExecuteContext, type ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { grantAll } from "../../permissions/permission-set";
+import { ALL_RECORDS } from "../../permissions/record-scope";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoNeedsYouInput = { context: ExecuteContext; org: DemoOrg };
@@ -29,6 +30,8 @@ export async function checkDemoNeedsYou({
       organizationId: context.organizationId,
       roles: [],
       permissions: grantAll({}),
+      preset: "admin",
+      scopes: ALL_RECORDS,
       actor: { type: "user", userId: member.userId },
     });
     const result = await execute({ operation: viewMyTasks, input: {}, context: own });

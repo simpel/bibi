@@ -32,9 +32,6 @@
       "cancelled": "Moving {card} was cancelled."
     },
     "moving": "Moving…",
-    "inStatus": "In status <time></time>",
-    "heldLines": "{count, plural, one {# line held} other {# lines held}}",
-    "bookedLines": "{count, plural, one {# line booked} other {# lines booked}}",
     "reason": {
       "title": "Move to {column}",
       "description": "This status needs a reason.",
@@ -45,7 +42,8 @@
       "title": "Cannot move to {column}",
       "description": "Fix these first, then try again.",
       "close": "Close"
-    }
+    },
+    "daysInStatus": "{count, plural, one {# day} other {# days}} in status"
   },
   "board": {
     "switcher": "Board: {name}",
@@ -249,7 +247,10 @@
     "pinCard": {
       "when": "When",
       "where": "Where",
-      "state": "State",
+      "state": "Reservation",
+      "status": "Status",
+      "tentative": "Preliminary",
+      "tentativeDetail": "Only booked preliminarily: confirm or release it",
       "guests": "Guests",
       "value": "Value",
       "exclVat": "excl. VAT",
@@ -289,7 +290,7 @@
       "description": "What is booked in this slot.",
       "order": "Order",
       "customer": "Customer",
-      "state": "State",
+      "state": "Reservation",
       "line": "Line",
       "resource": "Resource",
       "period": "When",
@@ -303,17 +304,18 @@
       "to": "To",
       "createOrder": "Create order",
       "ask": "Ask the assistant"
-    }
+    },
+    "blockedDetail": "Another booking holds the same room or item hard at this time, so this one can't be confirmed. Move the time or free the other booking."
   },
   "runSheet": {
     "singular": "Run sheet",
+    "editName": "Edit name",
+    "nameLabel": "Name",
+    "nameUpdated": "The run sheet name has been updated.",
     "plural": "Run sheets",
     "empty": "No run sheets are defined yet. Define them under Settings.",
-    "noVersion": "No version has been generated yet.",
+    "noneForOrder": "No run sheets yet. They are made when the order has lines that call for one.",
     "nothingIncluded": "The order has nothing that this run sheet includes yet.",
-    "generate": "Generate version",
-    "generating": "Generating run sheet…",
-    "generated": "Run sheet version {version} is ready.",
     "send": "Send",
     "sent": "The run sheet has been sent.",
     "publish": "Publish",
@@ -353,6 +355,7 @@
     "sentAt": "Sent {when}",
     "changes": "{count, plural, =0 {No changes} one {# change} other {# changes}} since version {version}",
     "order": "Order {reference}",
+    "facts": { "order": "Order", "when": "When", "published": "Published", "fulfilled": "Done" },
     "headcount": "{count, plural, one {# guest} other {# guests}}",
     "onOrder": "Whole order",
     "onLine": "One line",
@@ -434,6 +437,7 @@
         "when": "When",
         "version": "Version",
         "status": "Status",
+        "updatedAt": "Updated",
         "publishedAt": "Published",
         "sentAt": "Sent"
       },

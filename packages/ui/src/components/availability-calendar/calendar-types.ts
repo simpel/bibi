@@ -114,6 +114,8 @@ export type AssetBooking = CalendarLine & {
   /** The day it is on, "YYYY-MM-DD" in the venue's zone (ADR 0064: a code-level key only). */
   date: string;
   order: string | null;
+  /** The order's status, in its own colour: never mixed with the line's `state`. */
+  status?: { name: string; color: string } | null | undefined;
   reference?: string | null;
   customer: string | null;
   /** The order's guest count, when it has guests. */

@@ -31,23 +31,31 @@ function DayHeading({ frame, index, total }: DayProps) {
   return (
     <div className="absolute inset-y-0" style={{ left: index * frame.pitch, width: frame.dayPx }}>
       <TodayBar date={date} frame={frame} />
-      <DayValuePeek total={total} day={day}>
-        <div className="absolute inset-x-0 top-0 h-[3.25rem] pt-2">
+      <div className="absolute inset-x-0 top-0 h-[3.25rem] pt-2">
+        <div className="sticky left-[calc(var(--label)+0.5rem)] flex w-max max-w-[calc(100%-1rem)] items-center gap-2">
           <button
             type="button"
             onClick={() => frame.onDrill({ date })}
             // A tap on the name zooms in; on touch only the bar opens the amounts.
             onPointerUp={(event) => event.stopPropagation()}
             className={cn(
-              "sticky left-[calc(var(--label)+0.5rem)] max-w-[calc(100%-1rem)] truncate rounded-sm text-xs leading-5 font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "truncate rounded-sm text-xs leading-5 font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-ring",
               date === frame.today && "font-bold text-primary",
             )}
           >
             {day}
           </button>
-          <DayValueStrip total={total} className="absolute inset-x-1 top-8 h-5" />
+          <DayValuePeek total={total} day={day}>
+            <span className="block shrink-0 -translate-y-px">
+              <DayValueStrip
+                total={total}
+                className="h-2 w-20 pt-0"
+                barClassName="h-2 rounded-[2px]"
+              />
+            </span>
+          </DayValuePeek>
         </div>
-      </DayValuePeek>
+      </div>
       {frame.detail === "hours" ? (
         <div className="absolute inset-x-0 bottom-1">
           <HourLabels window={frame.hours} />

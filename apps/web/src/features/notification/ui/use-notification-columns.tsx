@@ -3,6 +3,7 @@ import { Avatar, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ActivityTimeCell } from "@/components/activity/activity-time-cell";
 import { ActivityTitleCell } from "@/components/activity/activity-title-cell";
+import { notificationIcon } from "@/components/activity/subject-icons";
 import { Link } from "@/lib/navigation";
 import { orderRoute } from "@/lib/routes";
 import { useNotificationText } from "./use-notification-text";
@@ -33,6 +34,7 @@ const messageColumn = ({ t, text, onSelect, openingId }: ColumnInput): Column =>
   cell: ({ row: { original: notification } }) => (
     <ActivityTitleCell
       title={text({ notification }).message}
+      icon={notificationIcon({ kind: notification.kind })}
       unread={notification.readAt === null}
       unreadLabel={t("unread")}
       pending={openingId === notification.id}

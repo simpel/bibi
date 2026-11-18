@@ -6,6 +6,7 @@ import {
   statusesFromTemplate,
 } from "../src/features/pipeline-setup/draft-from-templates";
 import {
+  ALL_RECORDS,
   activatePipelineSetup,
   createExecuteContext,
   execute,
@@ -22,6 +23,8 @@ const adminOf = ({ organizationId }: { organizationId: string }) =>
     organizationId,
     roles: ["admin"],
     permissions: grantAll({}),
+    preset: "admin",
+    scopes: ALL_RECORDS,
     actor: { type: "user", userId: `user_${createId()}` },
   });
 

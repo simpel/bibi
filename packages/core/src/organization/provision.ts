@@ -8,9 +8,8 @@ import {
 } from "../features/organization-profile/operations";
 import type { SetupStatus } from "../features/organization-profile/schema";
 import { importStatusGridTemplate } from "../features/status-grid/operations";
-import { createExecuteContext } from "../operations/context";
+import { createSystemContext } from "../operations/context";
 import { execute } from "../operations/execute";
-import { grantAll } from "../permissions/permission-set";
 import { claimCreatorDomain, type OrganizationCreator } from "./claim-creator-domain";
 
 export type ProvisionOrganizationInput = {
@@ -43,11 +42,8 @@ export async function provisionOrganization({
   setupStatus = "PENDING",
   creator,
 }: ProvisionOrganizationInput): Promise<Result<true>> {
-  const context = createExecuteContext({
+  const context = createSystemContext({
     organizationId,
-    roles: [],
-    permissions: grantAll({}),
-    actor: { type: "system", userId: null },
     ...(db ? { db } : {}),
   });
   const zone = { operation: updateOrganizationProfile, input: { timeZone }, context };

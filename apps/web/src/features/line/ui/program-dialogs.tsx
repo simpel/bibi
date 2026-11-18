@@ -8,6 +8,7 @@ import { ChooseOptionsDialog } from "./choose-options-dialog";
 import { chosenOptions } from "./choose-options-schema";
 import { LineDialog } from "./line-dialog";
 import type { ProgramFormData } from "./program-form-data";
+import type { ItemLock } from "./program-item-field";
 import type { ProgramAccess } from "./program-row-actions";
 import type { ProgramDialogType } from "./program-row-menu";
 
@@ -24,6 +25,19 @@ const customisableOf = ({ line, data }: { line: LineDto; data: ProgramFormData }
     ? data.customisable.find(({ itemId }) => itemId === line.itemId)
     : undefined;
 
+/** Why a line's item cannot change: a part or option keeps it, so does a line that has them. */
+function itemLockOf({ line, lines }: { line: LineDto; lines: LineDto[] }): ItemLock {
+  if (line.role === "PART") return "part";
+  if (line.role === "OPTION") return "option";
+  const made = lines.some(
+    (other) =>
+      other.parentLineId === line.id &&
+      other.status === "ACTIVE" &&
+      (other.role === "PART" || other.role === "OPTION"),
+  );
+  return made ? "parent" : null;
+}
+
 /**
  * Manages the modal dialogs for the program table rows:
  * edit line, add add-on, choose options, unit allocations, and archive.
@@ -35,6 +49,7 @@ export function ProgramDialogs({ active, onClose, data, lines, access }: Program
   const allocations = useLineAllocations({ lineId: line?.id ?? "" });
   const customisable = line && access.canEdit ? customisableOf({ line, data }) : undefined;
   const chosen = line ? chosenOptions({ line, lines }) : [];
+  const itemLock = line ? itemLockOf({ line, lines }) : null;
 
   if (!line || !dialog) return null;
 
@@ -45,6 +60,7 @@ export function ProgramDialogs({ active, onClose, data, lines, access }: Program
       <LineDialog
         {...base}
         line={line}
+        itemLock={itemLock}
         open={dialog === "edit"}
         onOpenChange={(open) => {
           if (!open) onClose();

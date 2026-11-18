@@ -14,6 +14,7 @@ const ORDERS: Record<RunSheetListSort, (sort: Direction) => Order> = {
   definition: (sort) => ({ runSheetDefinition: { name: sort } }),
   responsibility: (sort) => ({ responsibility: { name: sort } }),
   version: (sort) => ({ version: sort }),
+  updated: (sort) => ({ updatedAt: sort }),
   published: (sort) => ({ publishedAt: { sort, nulls: "last" } }),
   sent: (sort) => ({ publishedAt: { sort, nulls: "last" } }),
 };

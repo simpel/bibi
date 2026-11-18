@@ -40,6 +40,8 @@ export const STORY_LABELS: CalendarLabels = {
   client: "Client",
   internal: "Internal",
   blocked: "Blocked",
+  blockedDetail:
+    "Another booking holds the same room or item hard at this time. Move the time or free the other booking.",
   notSold: "not sold",
   guests: ({ count }) => plural({ count, one: "guest", many: "guests" }),
   guestsHere: ({ count }) => (count ? `${count} guests here` : "Guests here"),
@@ -78,6 +80,9 @@ export const STORY_LABELS: CalendarLabels = {
     when: "When",
     where: "Where",
     state: "State",
+    status: "Status",
+    tentative: "Preliminary",
+    tentativeDetail: "Only booked preliminarily: confirm or release it",
     guests: "Guests",
     value: "Value",
     exclVat: "excl. VAT",

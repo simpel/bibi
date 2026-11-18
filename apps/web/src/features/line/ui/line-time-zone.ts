@@ -2,7 +2,7 @@ import type { LineDto } from "@bibi/core";
 import type { ProgramFormData } from "./program-form-data";
 
 export type LineTimeZoneInput = {
-  data: Pick<ProgramFormData, "items" | "bundles" | "timeZone">;
+  data: Pick<ProgramFormData, "items" | "otherItems" | "bundles" | "timeZone">;
   itemId: string | null | undefined;
   /** The line being edited: its own zone (derived by core) while it keeps its item. */
   line?: Pick<LineDto, "itemId" | "timeZone"> | undefined;
@@ -17,6 +17,8 @@ export type LineTimeZoneInput = {
 export function lineTimeZone({ data, itemId, line }: LineTimeZoneInput): string {
   if (!itemId) return data.timeZone;
   if (line && line.itemId === itemId) return line.timeZone;
-  const option = [...data.items, ...data.bundles].find((candidate) => candidate.id === itemId);
+  const option = [...data.items, ...data.otherItems, ...data.bundles].find(
+    (candidate) => candidate.id === itemId,
+  );
   return option?.timeZone ?? data.timeZone;
 }

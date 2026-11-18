@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PhoneSchema } from "../../shared/phone";
+import { checkPostalCode } from "../../shared/postal-code";
 import { WebsiteSchema } from "../../shared/website";
 import { TimeZoneSchema } from "../../time/time-zone";
 
@@ -39,11 +40,12 @@ export const OrganizationProfileGetInputSchema = z.object({});
 
 const text = ({ max }: { max: number }) => z.string().trim().min(1).max(max).nullish();
 
-export const OrganizationProfileUpdateInputSchema = z.object({
+/** The update fields without the cross-field rules, for `.pick` (refined objects refuse it). */
+export const OrganizationProfileUpdateFieldsSchema = z.object({
   legalName: text({ max: 200 }).describe("Registered company name"),
   orgNumber: text({ max: 40 }).describe("Organization number, e.g. 556000-0000"),
   streetAddress: text({ max: 200 }),
-  postalCode: text({ max: 20 }),
+  postalCode: text({ max: 20 }).describe("Postal code in the country's format, e.g. 412 50 (SE)"),
   city: text({ max: 100 }),
   country: z.string().length(2).toUpperCase().optional().describe("ISO 3166-1 alpha-2"),
   website: WebsiteSchema.nullish(),
@@ -53,6 +55,17 @@ export const OrganizationProfileUpdateInputSchema = z.object({
     "IANA zone, e.g. Europe/Stockholm: changes how times display and are entered, never a stored time",
   ),
 });
+
+/** The postal code must match the country's format (`shared/postal-code.ts`). */
+export const OrganizationProfileUpdateInputSchema =
+  OrganizationProfileUpdateFieldsSchema.superRefine((value, ctx) =>
+    checkPostalCode({
+      postalCode: value.postalCode,
+      country: value.country,
+      path: "postalCode",
+      ctx,
+    }),
+  );
 
 export const OrganizationProfileSetSetupStatusInputSchema = z.object({
   setupStatus: SetupStatusSchema,

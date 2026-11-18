@@ -7,6 +7,7 @@ import { updateUserSettings } from "../../features/user-settings/operations";
 import { createExecuteContext, type ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { grantAll } from "../../permissions/permission-set";
+import { ALL_RECORDS } from "../../permissions/record-scope";
 import type { DisplayFormats } from "../../time/display-formats";
 import type { DemoOrg } from "./types";
 import type { DemoUserIds } from "./users";
@@ -44,6 +45,8 @@ async function seedUserProfile({
     organizationId,
     roles: [],
     permissions: grantAll({}),
+    preset: "admin",
+    scopes: ALL_RECORDS,
     actor: { type: "user", userId },
     db,
   });

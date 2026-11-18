@@ -10,6 +10,7 @@ export const RUN_SHEET_LIST_SORTS = [
   "definition",
   "responsibility",
   "version",
+  "updated",
   "published",
   "sent",
 ] as const;

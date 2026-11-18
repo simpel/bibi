@@ -1,7 +1,8 @@
 import type { LineDto } from "@bibi/core";
 import { Badge, type ColumnDef } from "@bibi/ui";
-import { TriangleAlertIcon } from "lucide-react";
+import { CornerDownRightIcon, TriangleAlertIcon } from "lucide-react";
 import type { useTranslations } from "next-intl";
+import { bySeverity } from "./line-warning-severity";
 
 type Translator = ReturnType<typeof useTranslations<"line">>;
 type EffectTranslator = ReturnType<typeof useTranslations<"priceEffect">>;
@@ -12,11 +13,29 @@ export type NameColumnInput = {
   onEdit?: (line: LineDto) => void;
 };
 
+type WorstWarningProps = { t: Translator; warnings: LineDto["warnings"] };
+
+/** One badge per line: its most severe warning, every warning's sentence in the tooltip. */
+function WorstWarning({ t, warnings }: WorstWarningProps) {
+  const [worst] = bySeverity({ warnings });
+  if (!worst) return null;
+  const sentence = ({ warning }: { warning: LineDto["warnings"][number] }) =>
+    t(`warnings.${warning.kind}`, { sum: warning.sum ?? 0, expected: warning.expected ?? 0 });
+  const all = bySeverity({ warnings }).map((warning) => sentence({ warning }));
+  return (
+    <Badge variant="warning" title={all.join("\n")}>
+      <TriangleAlertIcon aria-hidden />
+      {t(`warningsShort.${worst.kind}`)}
+    </Badge>
+  );
+}
+
 /**
- * The line's name. A part, option or add-on line (ADR 0059, 0088) is indented and marked: a part
- * with "Part" (its bundle line carries the price), an option with its price effect, an add-on with
- * "Add-on" (its own time, quantity and price). A warning shows a triangle and a short label, the
- * full sentence as its tooltip.
+ * The line's name. A part, option or add-on line (ADR 0059, 0088) is indented under its parent
+ * with an arrow and marked: a part with "Part" (its bundle line carries the price), an option with
+ * its price effect unless it is included, an add-on with "Add-on" (its own time, quantity and
+ * price). Only the most severe warning shows, as a triangle
+ * and a short label; its tooltip has the full sentence of every warning on the line.
  * Clicking the name triggers line edit, matching the pen action button.
  */
 export function nameColumn({ t, effects, onEdit }: NameColumnInput): ColumnDef<LineDto> {
@@ -28,9 +47,12 @@ export function nameColumn({ t, effects, onEdit }: NameColumnInput): ColumnDef<L
     cell: ({ row: { original } }) => (
       <span
         className={
-          original.parentLineId ? "flex items-center gap-2 pl-4" : "flex items-center gap-2"
+          original.parentLineId ? "flex items-center gap-2 pl-2" : "flex items-center gap-2"
         }
       >
+        {original.parentLineId ? (
+          <CornerDownRightIcon aria-hidden className="size-4 shrink-0 text-muted-foreground" />
+        ) : null}
         {onEdit ? (
           <button
             type="button"
@@ -45,7 +67,8 @@ export function nameColumn({ t, effects, onEdit }: NameColumnInput): ColumnDef<L
         ) : (
           <span>{original.name}</span>
         )}
-        {original.role === "PART" || original.role === "OPTION" ? (
+        {original.role === "PART" ||
+        (original.role === "OPTION" && original.priceEffect !== "INCLUDED") ? (
           <Badge variant="outline">
             {original.role === "OPTION" && original.priceEffect
               ? effects(original.priceEffect)
@@ -53,19 +76,7 @@ export function nameColumn({ t, effects, onEdit }: NameColumnInput): ColumnDef<L
           </Badge>
         ) : null}
         {original.role === "ADD_ON" ? <Badge variant="outline">{t("addOn")}</Badge> : null}
-        {original.warnings.map((warning) => (
-          <Badge
-            key={warning.id}
-            variant="warning"
-            title={t(`warnings.${warning.kind}`, {
-              sum: warning.sum ?? 0,
-              expected: warning.expected ?? 0,
-            })}
-          >
-            <TriangleAlertIcon aria-hidden />
-            {t(`warningsShort.${warning.kind}`)}
-          </Badge>
-        ))}
+        <WorstWarning t={t} warnings={original.warnings} />
       </span>
     ),
   };

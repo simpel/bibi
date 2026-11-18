@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createExecuteContext } from "../../operations/context";
+import { createSystemContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { FollowUpInput, OperationContext } from "../../operations/types";
 import { generateRunSheet } from "./operations";
@@ -48,11 +48,9 @@ async function applicableDefinitions({ context, orderId }: Scope): Promise<strin
  * retried once.
  */
 export async function regenerateRunSheets({ context, orderId }: Scope): Promise<void> {
-  const system = createExecuteContext({
+  const system = createSystemContext({
     organizationId: context.organizationId,
-    roles: [],
     permissions: { runSheet: ["write"], order: ["read"], program: ["read"], item: ["read"] },
-    actor: { type: "system", userId: null },
     ...(context.now ? { now: context.now } : {}),
   });
   for (const runSheetDefinitionId of await applicableDefinitions({ context, orderId })) {
@@ -93,4 +91,58 @@ export async function regenerateForLine({
     : null;
   const orderId = known ?? line?.orderId;
   if (orderId) await regenerateRunSheets({ context, orderId });
+}
+
+const DefinitionOutputSchema = z.object({ id: z.string(), status: z.string().optional() });
+
+/**
+ * `followUp` of creating or changing a run sheet type: makes its versions for the open orders it
+ * applies to now, since nothing else would until the next change of those orders (ADR 0092). An
+ * order applies when a line in a state that goes on run sheets has an item of one of its types,
+ * or when it already has a version of it (the new contents then give the next one).
+ */
+export async function regenerateForDefinition({
+  output,
+  context,
+}: FollowUpInput<unknown, unknown>) {
+  const definition = DefinitionOutputSchema.safeParse(output);
+  if (!definition.success || definition.data.status === "ARCHIVED") return;
+  const runSheetDefinitionId = definition.data.id;
+  const types = await context.db.runSheetDefinitionEntityType.findMany({
+    where: { runSheetDefinitionId },
+    select: { entityTypeId: true },
+  });
+  const orders = await context.db.order.findMany({
+    where: {
+      orderStatus: { closes: false },
+      OR: [
+        { runSheets: { some: { runSheetDefinitionId } } },
+        {
+          lines: {
+            some: {
+              status: "ACTIVE",
+              state: { inRunSheets: true },
+              item: {
+                status: "ACTIVE",
+                entityTypeId: { in: types.map((type) => type.entityTypeId) },
+              },
+            },
+          },
+        },
+      ],
+    },
+    select: { id: true },
+  });
+  const system = createSystemContext({
+    organizationId: context.organizationId,
+    permissions: { runSheet: ["write"], order: ["read"], program: ["read"], item: ["read"] },
+    ...(context.now ? { now: context.now } : {}),
+  });
+  for (const { id: orderId } of orders) {
+    await execute({
+      operation: generateRunSheet,
+      input: { orderId, runSheetDefinitionId },
+      context: system,
+    });
+  }
 }

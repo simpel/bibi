@@ -1,5 +1,6 @@
 import type { CSSProperties, KeyboardEvent, MouseEvent, ReactNode } from "react";
 import { cn } from "../../lib/cn";
+import type { CardSurface } from "../booking-tone/booking-tone";
 import { CalendarHoverCard } from "./calendar-hover-card";
 import { bufferStyle, markStyle } from "./calendar-marks";
 import { percentIn, toMinutes } from "./calendar-time";
@@ -58,6 +59,8 @@ export type CalendarSpanProps = {
   children: (size: number) => ReactNode;
   /** What the hover card shows instead of the line card. */
   card?: ReactNode;
+  /** The hover card's surface instead of the line's, e.g. plain around a clash of several. */
+  cardSurface?: CardSurface | undefined;
   /** The line open beside the calendar: an ink ring. Nothing else is ever faded. */
   selected?: boolean;
   /** Opens the line's order. Mouse click or Enter; a touch tap shows the hover card first. */
@@ -90,6 +93,7 @@ export function CalendarSpan({ line, audience, window, axis, ...props }: Calenda
             key={segment.kind}
             asChild
             {...{ line, audience, card: props.card, disabled: props.selected }}
+            surface={props.cardSurface}
           >
             <div
               tabIndex={booking ? 0 : -1}

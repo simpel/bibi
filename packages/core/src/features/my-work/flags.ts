@@ -18,13 +18,14 @@ export type FlagOfInput = Partial<MyWorkFlag> & Pick<MyWorkFlag, "kind">;
 /** A flag of `kind` with only the given fields set. */
 export const flagOf = ({ ...flag }: FlagOfInput): MyWorkFlag => ({ ...EMPTY, ...flag });
 
-/** The member acts on the order itself, or on the run sheet's responsibility on it. */
+/**
+ * The member acts on the order itself, or the run sheet's responsibility on it is theirs: they
+ * own it or follow it (often by default). Following the order alone does not count.
+ */
 function acts({ concerns, orderId, responsibilityId }: ActsInput) {
-  const reasons = [
-    ...(concerns.orders.get(orderId) ?? []),
-    ...(concerns.slots.get(`${orderId}:${responsibilityId}`) ?? []),
-  ];
-  return reasons.some((reason) => ACTING_REASONS.has(reason));
+  const order = [...(concerns.orders.get(orderId) ?? [])];
+  const slot = concerns.slots.get(`${orderId}:${responsibilityId}`);
+  return order.some((reason) => ACTING_REASONS.has(reason)) || Boolean(slot?.size);
 }
 type ActsInput = { concerns: Concerns; orderId: string; responsibilityId: string };
 
@@ -77,7 +78,7 @@ export type OrderFlagsInput = { context: Context; concerns: Concerns; orderIds: 
 
 /**
  * The order-wide flags (spec: home), by order: run sheets where the member is the order's
- * assignee or owns the responsibility; holds running out, waiting quotes and unread customer
+ * assignee or owns or follows the responsibility; holds running out, waiting quotes and unread customer
  * messages only on orders the member is the main assignee of. Each needs its feature's `read`.
  */
 export async function orderFlags({

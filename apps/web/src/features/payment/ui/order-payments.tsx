@@ -85,6 +85,9 @@ export async function OrderPayments({ locale, orderId, canRequest }: OrderPaymen
   if (!result.ok)
     return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   const { balance, deposits, invoices, payments } = result.value;
+  const receivables = deposits.length + invoices.length;
+  // Nothing billed, requested or paid; a quote alone counts once it bills (accepted).
+  const nothing = receivables + payments.length === 0 && balance.billedFrom === "NONE";
   const available = !suggestion.ok || suggestion.value.paymentLinksAvailable;
   // Money needs a connected accounting system (ADR 0106): without one, say so instead.
   const noLedger = suggestion.ok && !suggestion.value.ledgerConnected;
@@ -102,14 +105,27 @@ export async function OrderPayments({ locale, orderId, canRequest }: OrderPaymen
           ) : null}
         </div>
         {canRequest && noLedger ? <ConnectLedgerNotice canConnect={canConnect} /> : null}
-        <BalanceSummary balance={balance} numbers={numbers} />
-        <h3 className="font-medium">{t("receivables")}</h3>
-        <ReceivableList
-          {...{ balance, deposits, invoices, dates, numbers }}
-          canWrite={canRequest}
-        />
-        <h3 className="font-medium">{t("plural")}</h3>
-        <PaymentList payments={payments} dates={dates} numbers={numbers} canWrite={canRequest} />
+        {nothing ? (
+          // Nothing billed, owed or paid: one sentence, not three empty parts saying the same.
+          <p className="text-muted-foreground text-sm">{t("noReceivables")}</p>
+        ) : (
+          <>
+            <BalanceSummary balance={balance} numbers={numbers} />
+            {receivables > 0 ? (
+              <>
+                <h3 className="font-medium">{t("receivables")}</h3>
+                <ReceivableList {...{ deposits, invoices, dates, numbers }} canWrite={canRequest} />
+              </>
+            ) : null}
+            <h3 className="font-medium">{t("plural")}</h3>
+            <PaymentList
+              payments={payments}
+              dates={dates}
+              numbers={numbers}
+              canWrite={canRequest}
+            />
+          </>
+        )}
       </section>
     </PaymentLinksProvider>
   );

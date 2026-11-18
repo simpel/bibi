@@ -1,5 +1,9 @@
+"use client";
+
 import type { ApprovalRequired } from "@bibi/ai";
 import { CardContent } from "@bibi/ui";
+import { useTranslations } from "next-intl";
+import { HelpTip } from "@/components/help/help-tip";
 import { ToolResultView } from "../tool-result-view";
 import { ApprovalErrorLine } from "./approval-error-line";
 import { ChangeDetails } from "./change-details";
@@ -23,8 +27,14 @@ export function ApprovalBody({
   acknowledged,
   onAcknowledge,
 }: ApprovalBodyProps) {
+  const t = useTranslations("helpHints");
   return (
     <CardContent className="grid gap-3 p-4 pt-0">
+      {decided ? null : (
+        <HelpTip id="assistant-approval" title={t("assistantApproval.title")}>
+          {t("assistantApproval.text")}
+        </HelpTip>
+      )}
       <ChangeDetails
         input={approval.input}
         preview={approval.preview}

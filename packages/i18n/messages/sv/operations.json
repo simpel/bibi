@@ -32,9 +32,6 @@
       "cancelled": "Flytten av {card} avbröts."
     },
     "moving": "Flyttar…",
-    "inStatus": "I bokningsstatusen <time></time>",
-    "heldLines": "{count, plural, one {# rad reserverad} other {# rader reserverade}}",
-    "bookedLines": "{count, plural, one {# rad bokad} other {# rader bokade}}",
     "reason": {
       "title": "Flytta till {column}",
       "description": "Den här bokningsstatusen kräver en anledning.",
@@ -45,7 +42,8 @@
       "title": "Kan inte flytta till {column}",
       "description": "Åtgärda dessa först och försök igen.",
       "close": "Stäng"
-    }
+    },
+    "daysInStatus": "{count, plural, one {# dag} other {# dagar}} i status"
   },
   "board": {
     "switcher": "Tavla: {name}",
@@ -249,7 +247,10 @@
     "pinCard": {
       "when": "När",
       "where": "Var",
-      "state": "Läge",
+      "state": "Reservation",
+      "status": "Status",
+      "tentative": "Preliminär",
+      "tentativeDetail": "Bara preliminärbokad: bekräfta eller släpp den",
       "guests": "Gäster",
       "value": "Värde",
       "exclVat": "exkl. moms",
@@ -289,7 +290,7 @@
       "description": "Det som är bokat här.",
       "order": "Bokning",
       "customer": "Kund",
-      "state": "Läge",
+      "state": "Reservation",
       "line": "Rad",
       "resource": "Resurs",
       "period": "När",
@@ -303,17 +304,18 @@
       "to": "Till",
       "createOrder": "Skapa bokning",
       "ask": "Fråga assistenten"
-    }
+    },
+    "blockedDetail": "En annan bokning har samma rum eller sak hårt bokad vid den här tiden, så den här kan inte bekräftas. Flytta tiden eller frigör den andra bokningen."
   },
   "runSheet": {
     "singular": "Körschema",
+    "editName": "Redigera namn",
+    "nameLabel": "Namn",
+    "nameUpdated": "Körschemats namn har uppdaterats.",
     "plural": "Körscheman",
     "empty": "Inga order är definierade än. Definiera dem under Inställningar.",
-    "noVersion": "Ingen version har skapats än.",
+    "noneForOrder": "Inga körscheman än. De skapas när beställningen har rader som kräver ett.",
     "nothingIncluded": "Bokningen har inget som den här ordern innehåller än.",
-    "generate": "Skapa version",
-    "generating": "Skapar ordern…",
-    "generated": "Version {version} av ordern är klar.",
     "send": "Skicka",
     "sent": "Ordern har skickats.",
     "publish": "Publicera",
@@ -353,6 +355,7 @@
     "sentAt": "Skickad {when}",
     "changes": "{count, plural, =0 {Inga ändringar} one {# ändring} other {# ändringar}} sedan version {version}",
     "order": "Bokning {reference}",
+    "facts": { "order": "Order", "when": "När", "published": "Publicerad", "fulfilled": "Klar" },
     "headcount": "{count, plural, one {# gäst} other {# gäster}}",
     "onOrder": "Hela bokningen",
     "onLine": "En programpost",
@@ -434,6 +437,7 @@
         "when": "När",
         "version": "Version",
         "status": "Status",
+        "updatedAt": "Uppdaterad",
         "publishedAt": "Publicerad",
         "sentAt": "Skickad"
       },

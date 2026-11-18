@@ -8,6 +8,8 @@ const PIPELINE = { route: "/pipeline" } as const;
  */
 export const PIPELINE_SURFACES: readonly WebSurface[] = [
   { operation: "pipeline.board", ...PIPELINE },
+  // The order table's card cues (spec: boards).
+  { operation: "pipeline.cues", route: "/orders" },
   // The Workload dashboard (ADR 0086).
   { operation: "dashboard.summary", route: "/data/[dashboard]/[from]/[to]" },
   { operation: "board.list", ...PIPELINE },

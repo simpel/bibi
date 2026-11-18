@@ -38,13 +38,25 @@ export const Small: Story = {
   },
 };
 
-/** A fact with a preheader leaves a line above every value, so they share a baseline. */
+/** On a page a fact with a preheader leaves a line above every value, so they share a baseline. */
 export const WithPreheader: Story = {
   args: {
     size: "lg",
     facts: [
       { label: "Value", value: "11 200,00 kr" },
       { label: "When", preheader: "Thu 5 Nov 2026", value: "13:00–17:00" },
+    ],
+  },
+};
+
+/** In a card (`sm`) the label sits on top and the date under the time. */
+export const SmallWithDate: Story = {
+  args: {
+    size: "sm",
+    facts: [
+      { label: "Guests", value: "12" },
+      { label: "When", preheader: "Mon 16 Nov 2026", value: "09:00–13:00" },
+      { label: "Where", value: "Mobile sound system, Styrsö" },
     ],
   },
 };

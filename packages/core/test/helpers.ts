@@ -1,11 +1,13 @@
 import { createId } from "@paralleldrive/cuid2";
 import {
   type Actor,
+  ALL_RECORDS,
   createExecuteContext,
   type ExecuteContext,
   type FixedRole,
   type PermissionSet,
   PRESET_PERMISSIONS,
+  type RecordScopes,
 } from "../src/index";
 
 /** Shorthand for a preset (ADR 0050): read → member, write → manager, admin → admin. */
@@ -19,6 +21,8 @@ export type TestContextInput = {
   /** The caller's fixed role (ADR 0034); defaults to the preset of `access`. */
   role?: FixedRole;
   actor?: Actor;
+  /** Which records the caller sees (ADR 0113); every record by default. */
+  scopes?: RecordScopes;
 };
 
 const ROLE_FOR_ACCESS: Record<TestAccess, FixedRole> = {
@@ -34,8 +38,10 @@ export function testContext({
   role = ROLE_FOR_ACCESS[access],
   permissions = PRESET_PERMISSIONS[role],
   actor = { type: "user", userId: `user_${createId()}` },
+  scopes = ALL_RECORDS,
 }: TestContextInput = {}): ExecuteContext {
-  return createExecuteContext({ organizationId, roles: [role], permissions, actor });
+  const caller = { roles: [role], preset: role, permissions, scopes };
+  return createExecuteContext({ organizationId, actor, ...caller });
 }
 
 export type UnwrapInput<T> = { result: { ok: true; value: T } | { ok: false; error: Error } };

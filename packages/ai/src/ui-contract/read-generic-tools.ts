@@ -22,6 +22,9 @@ export const READ_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
     "line amounts and the order total; the order page's lines table shows them; JSON in chat",
   line_issues:
     "a saved order's line issues; the order page shows one alert per issue; JSON in chat",
+  line_checkHours:
+    "whether a planned line falls outside opening hours; the line form asks to confirm before " +
+    "saving; JSON in chat",
   order_previewLines:
     "planned lines and their issues; the /new/order intake shows them (ADR 0081); JSON in chat",
   creditNote_list:
@@ -35,4 +38,6 @@ export const READ_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   orderDraft_fromMessage:
     "a draft the intake-from-message skill turns into questions and an order.create card; " +
     "the /new/order step 0 shows it (ADR 0084); JSON in chat",
+  pipeline_cues:
+    "card cues for a set of orders; the order table and the pipeline cards show them; JSON in chat",
 };

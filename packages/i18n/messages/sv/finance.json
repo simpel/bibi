@@ -320,7 +320,7 @@
       "STAFFED": "Du är bokad",
       "ITEM": "Din artikel",
       "FOLLOWER": "Följer",
-      "RESPONSIBILITY_FOLLOWER": "Följer",
+      "RESPONSIBILITY_FOLLOWER": "Ditt ansvar",
       "RECIPIENT": "Skickat till dig"
     },
     "flags": {
@@ -344,6 +344,18 @@
       "customer": "Kund",
       "place": "Plats"
     },
+    "flagDetails": {
+      "HARD_CLASH": "Bokning #{reference} har samma rum eller sak hårt bokad vid den här tiden, så den här bokningen kan inte bekräftas. Flytta tiden eller prata med den som har #{reference}.",
+      "HARD_CLASH_BLOCK": "Rummet eller saken är blockerad i kalendern vid den här tiden, till exempel för underhåll. Flytta tiden eller ta bort blockeringen.",
+      "RUN_SHEET": {
+        "DRAFT": "{runSheet} har inte skickats till teamet än. Öppna den och skicka den så att de kan förbereda.",
+        "REVISION_PENDING": "Bokningen ändrades efter att {runSheet} skickades. Skicka den igen så att teamet jobbar efter senaste versionen.",
+        "BLOCKED": "{runSheet} kan inte skickas förrän det som blockerar den är åtgärdat. Öppna den för att se vad som saknas."
+      },
+      "HOLD_EXPIRES": "Preliminärbokningen släpps {date} om inte bokningen går vidare. Bekräfta den eller förläng den.",
+      "QUOTE_WAITING": "Kunden har inte svarat på offerten som skickades {date}. Följ upp eller ändra offerten.",
+      "UNREAD_MESSAGES": "{count, plural, one {Ett meddelande på bokningen är oläst.} other {# meddelanden på bokningen är olästa.}} Öppna bokningen för att läsa och svara."
+    },
     "needsYou": {
       "title": "Behöver dig",
       "empty": "Inget behöver dig just nu.",
@@ -355,12 +367,6 @@
         "TODAY": "I dag",
         "SOON": "Snart",
         "WAITING": "Väntar på kunden"
-      },
-      "actions": {
-        "runSheet": "Öppna körschema",
-        "quote": "Öppna offert",
-        "inbox": "Öppna inkorgen",
-        "order": "Öppna bokning"
       },
       "tasks": {
         "HARD_CLASH": "Lös dubbelbokningen av {line} med #{reference}",
@@ -586,7 +592,6 @@
     "paidOf": "{paid} betalt av {amount}",
     "receivables": "Det kunden betalar för",
     "noReceivables": "Inget att betala för ännu: skicka en offert, begär förskott eller skapa en faktura.",
-    "quoteVersion": "Offert",
     "balance": {
       "title": "Saldo",
       "billed": "Debiterat",

@@ -109,10 +109,10 @@ test("⌘K asks the assistant a one-shot question and opens the panel on it", as
   await expect(page.locator(PANEL)).toHaveCount(0);
 
   await page.keyboard.press("Control+k");
-  await page.getByPlaceholder("Sök eller skriv ett kommando...").fill("list venues");
-  await expect(
-    page.getByRole("option", { name: /Fråga assistenten: ”list venues”/ }),
-  ).toBeVisible();
+  await page
+    .getByPlaceholder("Sök, kör ett kommando eller fråga assistenten...")
+    .fill("list venues");
+  await expect(page.getByRole("option", { name: /Fråga Bibi: ”list venues”/ })).toBeVisible();
   await page.keyboard.press("Enter");
 
   await expect(page.locator(PANEL)).toBeVisible();

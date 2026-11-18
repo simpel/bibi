@@ -7,17 +7,34 @@ import { ColorSwatch } from "../color-swatch/color-swatch";
 export type StatusBadgeProps = {
   label: ReactNode;
   color?: string | null;
+  /** Filled with a tint of its colour and no dot: the cards (My work, calendar, pipeline). */
+  tinted?: boolean;
   className?: string;
 };
 
 /**
  * Canonical status & state badge used across all tables, cards, and hover popovers:
  * `<Badge variant="secondary" className="gap-1.5"><ColorSwatch color={...} />{label}</Badge>`.
+ * `tinted` fills it with its colour instead (an organization colour, so a style), in sans like
+ * every badge even among serif stats.
  */
-export function StatusBadge({ label, color, className }: StatusBadgeProps) {
+export function StatusBadge({ label, color, tinted = false, className }: StatusBadgeProps) {
+  const hue = color ?? "var(--muted-foreground)";
+  if (tinted) {
+    return (
+      <Badge
+        data-slot="status-badge"
+        variant="outline"
+        className={cn("border-transparent font-sans tracking-normal", className)}
+        style={{ backgroundColor: `color-mix(in oklch, ${hue} 22%, transparent)` }}
+      >
+        {label}
+      </Badge>
+    );
+  }
   return (
     <Badge data-slot="status-badge" variant="secondary" className={cn("gap-1.5", className)}>
-      <ColorSwatch color={color ?? "var(--muted-foreground)"} />
+      <ColorSwatch color={hue} />
       {label}
     </Badge>
   );

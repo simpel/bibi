@@ -27,7 +27,9 @@ export type CheckBundleItemInput = PartsOfInput & { before: LineRecord; itemId: 
 
 /**
  * A line with part or option lines keeps its item: they were expanded or chosen from it. Add-ons
- * do not come from the item, so a line with only add-ons may change it (ADR 0088).
+ * do not come from the item, so a line with only add-ons may change it (ADR 0088). A part or
+ * option line keeps its own item too: the bundle or the parent's choice gave it, and another
+ * option is chosen on the parent (line.chooseOptions).
  */
 export async function checkBundleItem({
   context,
@@ -35,6 +37,11 @@ export async function checkBundleItem({
   itemId,
 }: CheckBundleItemInput): Promise<Result<true>> {
   if (itemId === before.itemId) return ok({ value: true });
+  if (before.role && ITEM_SUB_LINE_ROLES.includes(before.role)) {
+    const message =
+      "A part or option line keeps its item; choose another option on its parent line instead";
+    return invalid({ message, issues: [{ path: "itemId", message }] });
+  }
   const parts = await context.db.line.count({
     where: { parentLineId: before.id, role: { in: ITEM_SUB_LINE_ROLES } },
   });

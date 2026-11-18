@@ -3,6 +3,7 @@
 import {
   archiveLine,
   changeLineState,
+  checkLineHours,
   chooseLineOptions,
   createLine,
   expandLineBundle,
@@ -11,6 +12,8 @@ import {
   type LineCreateInput,
   type LineDto,
   type LineExpandBundleInput,
+  type LineHoursCheck,
+  type LineHoursCheckInput,
   type LineUpdateInput,
   listLines,
   updateLine,
@@ -22,6 +25,14 @@ import { toActionResult } from "@/server/to-action-result";
 export type CreateLineActionInput = { input: LineCreateInput };
 export type UpdateLineActionInput = { input: LineUpdateInput };
 export type ArchiveLineActionInput = { id: string };
+export type CheckLineHoursActionInput = { input: LineHoursCheckInput };
+
+/** Whether a line about to be saved falls outside the hours that apply (the confirm before save). */
+export async function checkLineHoursAction({
+  input,
+}: CheckLineHoursActionInput): Promise<ActionResult<LineHoursCheck>> {
+  return toActionResult({ result: await runOperation({ operation: checkLineHours, input }) });
+}
 
 export async function createLineAction({
   input,

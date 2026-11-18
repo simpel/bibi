@@ -1,8 +1,8 @@
 import type { OperationContext } from "../../operations/types";
 import { visibleTo } from "../../shared/visible-to";
 import type { DashboardHorizon } from "../dashboard/horizon";
-import { blocks, loadOccupancy, type OccupancyRow } from "../order/plan/occupancy-rows";
-import { overlaps } from "../order/plan/planned-line";
+import { loadOccupancy } from "../order/plan/occupancy-rows";
+import { softHoldClashes } from "../order/plan/soft-hold-clashes";
 import { type Concerns, type ConcernWindow, sortReasons } from "./concerns";
 import { flagOf, orderFlags } from "./flags";
 import { type DayLine, dayOf, loadDayLines, orderDays } from "./lines";
@@ -11,32 +11,6 @@ import type { ConcernReason, MyWorkCard, MyWorkFlag } from "./schema";
 type Context = Pick<OperationContext, "db" | "permissions">;
 
 const DAY_MS = 86_400_000;
-
-/** Each line's own hold, and the other orders' blocking rows overlapping its soft hold. */
-function holdsOf({ lines, rows }: { lines: DayLine[]; rows: OccupancyRow[] }) {
-  const ids = new Set(lines.map((line) => line.id));
-  const own = new Map(
-    rows.flatMap((row) =>
-      row.lineId && ids.has(row.lineId) && row.type === "HOLD" && row.holdKind
-        ? [[row.lineId, row] as const]
-        : [],
-    ),
-  );
-  const clashes = new Map<string, OccupancyRow[]>();
-  for (const [lineId, mine] of own) {
-    if (mine.holdKind !== "SOFT") continue;
-    const reference = lines.find((line) => line.id === lineId)?.order.reference;
-    const met = rows.filter(
-      (row) =>
-        row.itemId === mine.itemId &&
-        blocks({ row }) &&
-        row.orderReference !== reference &&
-        overlaps({ a: row, b: mine }),
-    );
-    if (met.length > 0) clashes.set(lineId, met);
-  }
-  return { own, clashes };
-}
 
 type Group = { orderId: string; day: string; first: DayLine; lines: DayLine[] };
 
@@ -55,7 +29,7 @@ type BuildInput = {
   group: Group;
   reasons: ConcernReason[];
   days: string[];
-  holds: ReturnType<typeof holdsOf>;
+  holds: ReturnType<typeof softHoldClashes>;
   flags: MyWorkFlag[];
 };
 
@@ -120,7 +94,7 @@ export async function myCards({ context, concerns, window, horizon }: CardsInput
     loadOccupancy({ context, itemIds, window: reach }),
     orderFlags({ context, concerns, orderIds, horizon }),
   ]);
-  const holds = holdsOf({ lines, rows });
+  const holds = softHoldClashes({ lines, rows });
   const flagged = new Set<string>();
   return [...groups.values()].flatMap((group) => {
     const reasons = reasonsOf({ concerns, group });

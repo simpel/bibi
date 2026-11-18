@@ -1,8 +1,7 @@
-import { OctagonAlertIcon, TriangleAlertIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "../../lib/cn";
-import { Badge } from "../badge/badge";
 import type { CardIssue } from "../booking-tone/booking-tone";
+import { IssueBadge } from "../booking-tone/issue-badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../card/card";
 import { StatusBadge } from "../data-table/data-table-column-helpers";
 import { type OrderViewFact, OrderViewFacts } from "./order-view-facts";
@@ -39,22 +38,10 @@ export type OrderViewProps = {
   headerActions?: ReactNode;
   /** No card chrome, for popovers and trays that bring their own surface. */
   bare?: boolean;
-  /** What is wrong, as error or warning badges on their own row above the title. */
+  /** What is wrong, as error or warning badges beside the header icons. */
   issues?: readonly CardIssue[] | undefined;
   className?: string;
 };
-
-/** An issue in words: red with a stop sign when it blocks, amber with a triangle to fix. */
-function IssueBadge({ issue }: { issue: CardIssue }) {
-  const error = issue.level === "error";
-  const Icon = error ? OctagonAlertIcon : TriangleAlertIcon;
-  return (
-    <Badge variant={error ? "destructive" : "warning"} className="gap-1">
-      <Icon aria-hidden className="size-3" />
-      {issue.label}
-    </Badge>
-  );
-}
 
 function Header({ title, reference, eyebrow, subtitle, bare }: OrderViewProps) {
   const heading = (
@@ -100,16 +87,20 @@ function Body(props: OrderViewProps) {
 }
 
 /** The bare card: the header ruled off, then each part under one thin rule, nothing under the last. */
-function BareOrderView({
-  actions,
-  issueRow,
-  ...props
-}: OrderViewProps & { actions: ReactNode; issueRow: ReactNode }) {
+function BareOrderView({ actions, ...props }: OrderViewProps & { actions: ReactNode }) {
   const { highlight, meta, facts, hidden = "–", notes, warnings, footer, status } = props;
+  // The header is ruled off only from a body; a card with nothing under it has no rule.
+  const hasBody = Boolean(
+    highlight || meta?.length || notes || facts?.length || warnings || footer,
+  );
   return (
     <div data-slot="order-view" className={cn("grid text-xs", props.className)}>
-      {issueRow ? <div className="pb-2">{issueRow}</div> : null}
-      <div className="flex items-start justify-between gap-2 border-b border-border/60 pb-2">
+      <div
+        className={cn(
+          "flex items-start justify-between gap-2",
+          hasBody && "border-b border-border/60 pb-2",
+        )}
+      >
         <Header {...props} />
         {actions}
       </div>
@@ -133,30 +124,31 @@ export function OrderView(props: OrderViewProps) {
     status && (!bare || !meta?.length) ? (
       <StatusBadge label={status.name} color={status.color} />
     ) : null;
-  // Issues get their own row above the title, so the title row keeps its width.
-  const issueRow = issues?.length ? (
-    <div data-slot="order-view-issues" className="relative z-10 flex flex-wrap gap-1">
+  // Issues sit beside the icons, so a glance down a list shows what needs you.
+  const issueBadges = issues?.length ? (
+    <div
+      data-slot="order-view-issues"
+      className="flex min-w-0 max-w-44 flex-wrap justify-end gap-1"
+    >
       {issues.map((issue) => (
         <IssueBadge key={issue.key} issue={issue} />
       ))}
     </div>
   ) : null;
   const actions =
-    badge || headerActions ? (
-      <div className="relative z-10 flex shrink-0 flex-wrap items-center justify-end gap-1">
+    issueBadges || badge || headerActions ? (
+      <div className="relative z-10 flex min-w-0 shrink-0 flex-wrap items-center justify-end gap-1">
+        {issueBadges}
         {badge}
         {headerActions}
       </div>
     ) : null;
 
-  if (bare) return <BareOrderView {...props} actions={actions} issueRow={issueRow} />;
+  if (bare) return <BareOrderView {...props} actions={actions} />;
 
   return (
     <Card data-slot="order-view" className={cn("shadow-none", className)}>
-      {issueRow ? <div className="px-4 pt-4">{issueRow}</div> : null}
-      <CardHeader
-        className={cn("flex-row items-start justify-between gap-2 p-4 pb-2", issueRow && "pt-2")}
-      >
+      <CardHeader className="flex-row items-start justify-between gap-2 p-4 pb-2">
         <Header {...props} />
         {actions}
       </CardHeader>

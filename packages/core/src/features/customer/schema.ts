@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
+import { checkPostalCode } from "../../shared/postal-code";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { ContactCreateInputSchema } from "../contact/schema";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
@@ -73,7 +74,8 @@ export const CustomerFirstContactInputSchema = ContactCreateInputSchema.omit({
   email: z.email().describe("The person's email address"),
 });
 
-export const CustomerCreateInputSchema = z.object({
+/** Customer fields without the cross-field rules; refined objects refuse `.omit`. */
+const CustomerFieldsSchema = z.object({
   entityTypeId: z
     .string()
     .min(1)
@@ -93,7 +95,12 @@ export const CustomerCreateInputSchema = z.object({
         "order without one is refused. Default false",
     ),
   invoiceStreetAddress: z.string().trim().max(200).nullish(),
-  invoicePostalCode: z.string().trim().max(20).nullish(),
+  invoicePostalCode: z
+    .string()
+    .trim()
+    .max(20)
+    .nullish()
+    .describe("Postal code in the invoice country's format, e.g. 412 50 (SE)"),
   invoiceCity: z.string().trim().max(100).nullish(),
   invoiceCountry: z.string().length(2).toUpperCase().optional().describe("ISO 3166-1 alpha-2"),
   paymentTermsDays: z
@@ -116,7 +123,24 @@ export const CustomerCreateInputSchema = z.object({
   ),
 });
 
-export const CustomerUpdateInputSchema = CustomerCreateInputSchema.omit({
+type InvoiceAddress = { invoicePostalCode?: string | null; invoiceCountry?: string };
+
+/** The invoice postal code must match the invoice country's format (`shared/postal-code.ts`). */
+function checkInvoicePostalCode({ value, ctx }: { value: InvoiceAddress; ctx: z.RefinementCtx }) {
+  checkPostalCode({
+    postalCode: value.invoicePostalCode,
+    country: value.invoiceCountry,
+    path: "invoicePostalCode",
+    ctx,
+  });
+}
+
+/** The invoice postal code must match the invoice country's format. */
+export const CustomerCreateInputSchema = CustomerFieldsSchema.superRefine((value, ctx) =>
+  checkInvoicePostalCode({ value, ctx }),
+);
+
+export const CustomerUpdateInputSchema = CustomerFieldsSchema.omit({
   entityTypeId: true,
   contact: true,
 })
@@ -129,7 +153,8 @@ export const CustomerUpdateInputSchema = CustomerCreateInputSchema.omit({
     fields: FieldValuesSchema.optional().describe(
       "Changed field values by key; other fields are kept. null clears a value.",
     ),
-  });
+  })
+  .superRefine((value, ctx) => checkInvoicePostalCode({ value, ctx }));
 
 export const CustomerIdInputSchema = z.object({ id: z.string().min(1) });
 

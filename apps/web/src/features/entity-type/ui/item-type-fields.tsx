@@ -21,7 +21,7 @@ export function ItemTypeFields({ form, groups }: ItemTypeFieldsProps) {
       <ResourceKindField control={form.control} />
       <CapabilityField
         control={form.control}
-        settings={{ BOOKABLE: <BufferFields form={form} inherits={null} /> }}
+        settings={{ BOOKABLE: <BufferFields form={form} /> }}
       />
     </>
   );

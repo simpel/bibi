@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
+import { regenerateForDefinition } from "../run-sheet/regenerate";
 import { checkRunSheetContents } from "./check-contents";
 import { findRunSheetDefinition, replaceRunSheetLinks } from "./run-sheet-definition-rows";
 import {
@@ -50,6 +51,7 @@ export const createRunSheetDefinition = defineOperation({
   input: RunSheetDefinitionCreateInputSchema,
   output: RunSheetDefinitionSchema,
   permission: "template:write",
+  followUp: regenerateForDefinition,
   handler: async ({ input: { name, ...given }, context }) => {
     if (await nameTaken({ context, name })) return taken({ name });
     const contents = await checkRunSheetContents({ context, contents: given });
@@ -72,6 +74,7 @@ export const updateRunSheetDefinition = defineOperation({
   input: RunSheetDefinitionUpdateInputSchema,
   output: RunSheetDefinitionSchema,
   permission: "template:write",
+  followUp: regenerateForDefinition,
   handler: async ({ input: { id, name, ...changes }, context }) => {
     const before = await findRunSheetDefinition({ context, id });
     if (!before) return notFound({ entity: "RunSheet" });

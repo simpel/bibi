@@ -15,9 +15,9 @@ export function MyWorkTasksView({ tasks }: MyWorkTasksViewProps) {
   const t = useTranslations("myWork.card");
   const numbers = useNumberFormat();
   return (
-    <Card data-slot="my-work-tasks-card" className="grid gap-3 p-4 shadow-none">
+    <Card data-slot="my-work-tasks-card" className="grid gap-2 p-1 shadow-none">
       <NeedsYou tasks={tasks.tasks} numbers={numbers} />
-      <Link href={ROUTES.home} className="text-sm font-medium hover:underline">
+      <Link href={ROUTES.home} className="px-3 pb-2 text-sm font-medium hover:underline">
         {t("open")}
       </Link>
     </Card>

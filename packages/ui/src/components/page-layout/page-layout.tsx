@@ -67,6 +67,42 @@ export function PageSection({ className, tone, divided, ...props }: PageSectionP
   );
 }
 
+export type PageBandsProps = ComponentProps<"div">;
+
+/**
+ * A page of several `PageSection` bands (ADR 0038): every other band on a muted background, a
+ * rule between bands. A band whose container renders nothing is hidden.
+ */
+export function PageBands({ className, ...props }: PageBandsProps) {
+  return (
+    <div
+      data-slot="page-bands"
+      className={cn(
+        "[&>section:nth-of-type(even)]:bg-muted/50 [&>section+section]:border-t",
+        "[&>section:has(>[data-slot=page-container]:empty)]:hidden",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export type PageBandProps = PageSectionProps & {
+  /** Classes for the inner container, e.g. its gap or columns. */
+  containerClassName?: string;
+};
+
+/** One band of `PageBands`: a `PageSection` with its content in a padded `PageContainer` grid. */
+export function PageBand({ containerClassName, children, ...props }: PageBandProps) {
+  return (
+    <PageSection {...props}>
+      <PageContainer className={cn("grid grid-cols-1 py-8 sm:py-10", containerClassName)}>
+        {children}
+      </PageContainer>
+    </PageSection>
+  );
+}
+
 export type SimplePageProps = PageContainerProps & Pick<PageSectionProps, "tone">;
 
 /** A page of one section: the usual list, detail or form. Several sections compose `PageSection`. */

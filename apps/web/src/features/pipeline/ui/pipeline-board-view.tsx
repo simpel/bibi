@@ -5,6 +5,7 @@ import type { TransitionGate } from "@bibi/core/schemas";
 import { KanbanBoard } from "@bibi/ui";
 import { useState } from "react";
 import { OrderSheet } from "@/features/order/sheet/ui/order-sheet";
+import { boardCardSurface } from "../lib/board-card-surface";
 import { findDrop, kanbanCards, kanbanColumns } from "../lib/kanban-model";
 import { CreateOrderFooter } from "./create-order-footer";
 import { PhaseValue } from "./phase-value";
@@ -19,6 +20,7 @@ export type PipelineBoardViewProps = {
   moveGates: Readonly<Record<string, Readonly<Record<string, readonly TransitionGate[]>>>>;
   /** Customer id → name; a card without one shows no customer (ADR 0050). */
   customerNames: Readonly<Record<string, string>>;
+  memberNames: Readonly<Record<string, string>>;
 };
 
 /**
@@ -27,10 +29,11 @@ export type PipelineBoardViewProps = {
  * holds several. A card's title opens the order's sheet beside the board.
  */
 export function PipelineBoardView(props: PipelineBoardViewProps) {
-  const { board, transitions, moveGates, customerNames } = props;
+  const { board, transitions, moveGates, customerNames, memberNames } = props;
   const labels = usePipelineLabels();
   const { drop, dialog } = useMoveCard({ moveGates });
   const [openId, setOpenId] = useState<string | null>(null);
+  const now = new Date();
   const entryColumnIds = new Set(
     board.columns.filter((c) => c.statuses.some((s) => s.entry)).map((c) => c.id),
   );
@@ -38,11 +41,11 @@ export function PipelineBoardView(props: PipelineBoardViewProps) {
     <>
       <KanbanBoard
         columns={kanbanColumns({ board })}
-        cards={kanbanCards({ board, customerNames })}
+        cards={kanbanCards({ board, customerNames, memberNames })}
         labels={labels}
-        renderCard={(card) => (
-          <PipelineCardContent card={card} onOpen={({ orderId }) => setOpenId(orderId)} />
-        )}
+        renderCard={(card) => <PipelineCardContent card={card} />}
+        onOpenCard={({ card }) => setOpenId(card.id)}
+        cardSurface={({ card }) => boardCardSurface({ card, now })}
         renderSummary={({ cards }) => (
           <PhaseValue cards={cards} currency={board.currency} size="sm" />
         )}

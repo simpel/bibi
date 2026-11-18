@@ -2,9 +2,8 @@ import { getEnv } from "@bibi/config";
 import { createId } from "@paralleldrive/cuid2";
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
-import { createExecuteContext } from "../../operations/context";
+import { createSystemContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
-import { grantAll } from "../../permissions/permission-set";
 import { notFound } from "../../shared/errors";
 import { toReceiveInput } from "../inbound-email/to-receive-input";
 import { receiveInboundMessage } from "./receive-operation";
@@ -41,11 +40,8 @@ export async function sendTestInboxMessage({
   if (getEnv().NODE_ENV === "production") {
     return err({ error: new AppError({ code: "FORBIDDEN", message: "Dev only" }) });
   }
-  const context = createExecuteContext({
+  const context = createSystemContext({
     organizationId,
-    roles: [],
-    permissions: grantAll({}),
-    actor: { type: "system", userId: null },
   });
   const endpoint = await context.db.inboundEndpoint.findFirst({ where: { channel: "EMAIL" } });
   if (!endpoint) return notFound({ entity: "Inbox address" });

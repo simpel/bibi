@@ -1,4 +1,4 @@
-import { createExecuteContext, type ExecuteContext, grantAll, type Result } from "@bibi/core";
+import { createSystemContext, type ExecuteContext, type Result } from "@bibi/core";
 import type { Db } from "@bibi/db";
 import { getLogger } from "@bibi/logger";
 
@@ -15,11 +15,8 @@ export type ForEachOrganizationOutput = { succeeded: number; failed: number };
 
 /** A SYSTEM context scoped to one organization (ADR 0004, 0027). */
 function systemContext({ db, organizationId }: { db: Db; organizationId: string }) {
-  return createExecuteContext({
+  return createSystemContext({
     organizationId,
-    roles: [],
-    permissions: grantAll({}),
-    actor: { type: "system", userId: null },
     db,
   });
 }

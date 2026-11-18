@@ -1,7 +1,6 @@
 import type { LineAmounts, LineDto } from "@bibi/core";
 import type { DateTimeFormat, NumberFormat } from "@bibi/core/schemas";
-import { actionsColumn, Button, type ColumnDef, createTableColumns } from "@bibi/ui";
-import { PencilIcon } from "lucide-react";
+import { actionsColumn, type ColumnDef, createTableColumns, DataTableRowActions } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { useNumberFormat } from "@/lib/number/use-number-format";
@@ -12,6 +11,7 @@ import { amountColumn, amountColumns } from "./program-amount-columns";
 import type { ProgramFormData } from "./program-form-data";
 import { nameColumn } from "./program-name-column";
 import type { ProgramAccess } from "./program-row-actions";
+import { ProgramRowMenu, type ProgramRowMenuProps } from "./program-row-menu";
 
 type Translator = ReturnType<typeof useTranslations<"line">>;
 type EffectTranslator = ReturnType<typeof useTranslations<"priceEffect">>;
@@ -25,6 +25,8 @@ export type UseProgramColumnsInput = {
   onStateChange?: (input: { lineId: string; stateId: string }) => void;
   onFollowStatus?: (input: { lineId: string }) => void;
   onEdit?: (line: LineDto) => void;
+  /** Opens a row's dialog from its "…" menu; without it the table has no actions column. */
+  onOpenDialog?: ProgramRowMenuProps["onOpenDialog"];
 };
 
 type DataInput = UseProgramColumnsInput & {
@@ -79,32 +81,17 @@ function timeColumn({ t, format }: { t: Translator; format: DateTimeFormat }): C
   };
 }
 
-function editActionColumn({
-  label,
-  editLabel,
-  onEdit,
-}: {
-  label: string;
-  editLabel: string;
-  onEdit?: (line: LineDto) => void;
-}): Column {
+type RowMenuInput = Omit<ProgramRowMenuProps, "kit" | "line"> & { label: string };
+
+/** The row's "…" menu: every action of the right-click menu (CLAUDE.md "Tables"). */
+function rowMenuColumn({ label, ...menu }: RowMenuInput): Column {
   return actionsColumn<LineDto>({
     label,
-    cell: (item) =>
-      onEdit ? (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8 p-0 text-muted-foreground hover:text-foreground"
-          aria-label={editLabel}
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(item);
-          }}
-        >
-          <PencilIcon className="size-4" />
-        </Button>
-      ) : null,
+    cell: (line) => (
+      <DataTableRowActions label={label}>
+        <ProgramRowMenu kit="dropdown" line={line} {...menu} />
+      </DataTableRowActions>
+    ),
   });
 }
 
@@ -117,6 +104,7 @@ export function useProgramColumns({
   onStateChange,
   onFollowStatus,
   onEdit,
+  onOpenDialog,
 }: UseProgramColumnsInput): Column[] {
   const t = useTranslations("line");
   const effects = useTranslations("priceEffect");
@@ -151,9 +139,15 @@ export function useProgramColumns({
       status: [state],
       dates: [timeColumn({ t, format })],
       numbers: [...amountColumns({ t }), amountColumn({ t, money, amounts })],
-      actions: access.canEdit
-        ? [editActionColumn({ label: common("actions"), editLabel: t("edit"), onEdit })]
-        : [],
+      actions:
+        onOpenDialog && onStateChange && onFollowStatus
+          ? [
+              rowMenuColumn({
+                ...{ label: common("actions"), data, access },
+                ...{ onOpenDialog, onStateChange, onFollowStatus },
+              }),
+            ]
+          : [],
     });
   }, [
     t,
@@ -168,5 +162,6 @@ export function useProgramColumns({
     onStateChange,
     onFollowStatus,
     onEdit,
+    onOpenDialog,
   ]);
 }

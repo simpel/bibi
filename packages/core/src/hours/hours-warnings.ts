@@ -1,3 +1,4 @@
+import { ITEM_SUB_LINE_ROLES, type LineRole } from "../features/line/line-role";
 import type { OperationContext } from "../operations/types";
 import { canView } from "../shared/can-view";
 import { loadZoneOfVenue } from "../shared/time-zones";
@@ -13,12 +14,18 @@ export type TimedLine = {
   itemId: string | null;
   startsAt: Date | null;
   endsAt: Date | null;
+  /** A part or option line (ADR 0059, 0088) is not checked: it shares its parent's time. */
+  role?: LineRole | null;
 };
 
 type Timed = { id: string; itemId: string; startsAt: Date; endsAt: Date };
 
+/** A timed line with an item of its own time: parts and options take their parent's warning. */
 const isTimed = ({ line }: { line: TimedLine }): boolean =>
-  line.itemId !== null && line.startsAt !== null && line.endsAt !== null;
+  line.itemId !== null &&
+  line.startsAt !== null &&
+  line.endsAt !== null &&
+  !(line.role && ITEM_SUB_LINE_ROLES.includes(line.role));
 
 /** UTC dates one day around the lines: wide enough for any zone's local days. */
 function dateRange({ lines }: { lines: readonly Timed[] }) {

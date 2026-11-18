@@ -1,4 +1,5 @@
 import {
+  ALL_RECORDS,
   appError,
   createCoreOperations,
   createExecuteContext,
@@ -35,6 +36,8 @@ async function resolveContext({ headers }: ResolveInput): Promise<Result<Execute
       organizationId,
       roles: preset ? [preset] : [],
       permissions,
+      preset: null,
+      scopes: ALL_RECORDS,
       actor,
     }),
   });

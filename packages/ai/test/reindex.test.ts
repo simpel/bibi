@@ -1,4 +1,4 @@
-import { createExecuteContext, createVenue, grantAll } from "@bibi/core";
+import { ALL_RECORDS, createExecuteContext, createVenue, grantAll } from "@bibi/core";
 import { EMBEDDING_DIMENSIONS, getDb, scopedDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { MockEmbeddingModelV4 } from "ai/test";
@@ -24,6 +24,8 @@ describe("reindexAll", () => {
       organizationId,
       roles: ["admin"],
       permissions: grantAll({}),
+      preset: "admin",
+      scopes: ALL_RECORDS,
       actor: { type: "user", userId: `user_${createId()}` },
     });
     const placeholder = createEmbed({ apiKey: null, nodeEnv: "test" });

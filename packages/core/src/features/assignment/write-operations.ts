@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { checkMembers } from "../../shared/check-members";
 import { notFound } from "../../shared/errors";
 import { notifyAssigned } from "../notification/follow-ups";
+import { checkFollower } from "./check-follower";
 import { checkSlot } from "./check-slot";
 import {
   AssignmentAssignInputSchema,
@@ -38,11 +39,14 @@ export const followAssignment = defineOperation({
   description:
     "Add a follower to an order or an item (or, with `responsibilityId`, to that " +
     "part of an order). Followers stay informed and see it in Following; they are never " +
-    "required by rules. The user must be a member. Following twice changes nothing.",
+    "required by rules. The user must be a member. Following twice changes nothing. Anyone " +
+    "who may view orders follows for themselves; adding someone else needs order:write.",
   input: AssignmentFollowInputSchema,
   output: AssignmentSchema,
-  permission: "order:write",
+  permission: "order:read",
   handler: async ({ input: { userId, ...slot }, context }) => {
+    const allowed = checkFollower({ context, subjectType: slot.subjectType, userId });
+    if (!allowed.ok) return allowed;
     const valid = await checkSlot({ context, ...slot });
     if (!valid.ok) return valid;
     const member = await checkMembers({ context, userIds: { userId } });
@@ -57,11 +61,14 @@ export const unfollowAssignment = defineOperation({
   description:
     "Remove a follower from an order or an item (or from that responsibility on a " +
     "order). Removing someone who does not follow changes nothing; NOT_FOUND when the " +
-    "subject has no such assignment.",
+    "subject has no such assignment. Anyone who may view orders unfollows for themselves; " +
+    "removing someone else needs order:write.",
   input: AssignmentFollowInputSchema,
   output: AssignmentSchema,
-  permission: "order:write",
+  permission: "order:read",
   handler: async ({ input: { userId, ...slot }, context }) => {
+    const allowed = checkFollower({ context, subjectType: slot.subjectType, userId });
+    if (!allowed.ok) return allowed;
     const valid = await checkSlot({ context, ...slot });
     if (!valid.ok) return valid;
     const removed = await removeFollower({ context, ...slot, userId });

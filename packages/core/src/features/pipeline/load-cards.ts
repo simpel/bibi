@@ -1,7 +1,9 @@
 import type { OperationContext } from "../../operations/types";
 import { canView } from "../../shared/can-view";
 import { subjectIdFilter } from "../assignment/subject-filter";
+import type { DashboardHorizon } from "../dashboard/horizon";
 import { LATEST_STATUS_CHANGE } from "../order/status-history";
+import { cardCues } from "./card-cues";
 import { cardValues } from "./card-values";
 import type { PipelineBoardInput, PipelineCard } from "./schema";
 
@@ -13,7 +15,7 @@ const CARD_LIMIT = 500;
 
 type Db = Pick<OperationContext, "db">;
 export type LoadCardsInput = {
-  context: Pick<OperationContext, "db" | "permissions">;
+  context: Pick<OperationContext, "db" | "permissions" | "actor">;
   input: PipelineBoardInput;
   since: Date;
   /** Which statuses: the board's (`in`) or every other (`notIn`). */
@@ -31,7 +33,7 @@ async function mainAssignees({ context, ids }: { context: Db; ids: string[] }) {
 type Counts = { heldLines: number; bookedLines: number };
 
 /** Per order: how many lines are in a soft-hold and in a hard-hold state (ADR 0044). */
-async function lineCounts({ context, ids }: { context: Db; ids: string[] }) {
+export async function lineCounts({ context, ids }: { context: Db; ids: string[] }) {
   const lines = await context.db.line.findMany({
     where: { orderId: { in: ids }, status: "ACTIVE", state: { hold: { in: ["SOFT", "HARD"] } } },
     select: { orderId: true, state: { select: { hold: true } } },
@@ -76,7 +78,13 @@ export async function countOrders({ context, ...query }: LoadCardsInput) {
   return context.db.order.count({ where: await orderWhere({ context, ...query }) });
 }
 
-export async function loadOrderCards({ context, ...query }: LoadCardsInput): Promise<LoadedCard[]> {
+export type LoadOrderCardsInput = LoadCardsInput & { horizon: DashboardHorizon };
+
+export async function loadOrderCards({
+  context,
+  horizon,
+  ...query
+}: LoadOrderCardsInput): Promise<LoadedCard[]> {
   const rows = await context.db.order.findMany({
     where: await orderWhere({ context, ...query }),
     include: { entityType: { select: { name: true } }, ...LATEST_STATUS_CHANGE },
@@ -84,9 +92,10 @@ export async function loadOrderCards({ context, ...query }: LoadCardsInput): Pro
     take: CARD_LIMIT,
   });
   const ids = rows.map((row) => row.id);
-  const [owners, valuesOf] = await Promise.all([
+  const [owners, valuesOf, cues] = await Promise.all([
     mainAssignees({ context, ids }),
     cardValues({ context, orderIds: ids }),
+    cardCues({ context, orderIds: ids, horizon }),
   ]);
   // Line states belong to the program: counted only for a caller who may view it (ADR 0050).
   const counted = canView({ context, feature: "program" });
@@ -105,6 +114,8 @@ export async function loadOrderCards({ context, ...query }: LoadCardsInput): Pro
     quantity: row.guaranteedHeadcount ?? row.estimatedHeadcount,
     statusChangedAt: row.statusChanges[0]?.changedAt ?? row.createdAt,
     assigneeId: owners.get(row.id) ?? null,
+    following: cues.following.has(row.id),
+    flags: cues.flags.get(row.id) ?? [],
     ...valuesOf({ orderId: row.id }),
   }));
 }

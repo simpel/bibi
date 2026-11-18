@@ -1,3 +1,4 @@
+import { PageBands } from "@bibi/ui";
 import type { ReactNode } from "react";
 
 export type AdminSectionsProps = {
@@ -6,12 +7,12 @@ export type AdminSectionsProps = {
   children: ReactNode;
 };
 
-/** An administration page: its sections one after another, every other band on a muted background. */
+/** An administration page: its sections one after another as alternating bands. */
 export function AdminSections({ title, children }: AdminSectionsProps) {
   return (
-    <div className="[&>section:nth-of-type(even)]:bg-muted/50 [&>section+section]:border-t">
+    <PageBands>
       <h1 className="sr-only">{title}</h1>
       {children}
-    </div>
+    </PageBands>
   );
 }

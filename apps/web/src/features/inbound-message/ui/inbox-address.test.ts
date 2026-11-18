@@ -14,6 +14,7 @@ vi.mock("next-intl/server", () => ({
     }),
 }));
 
+const { HelpHint } = await import("@/components/help/help-hint");
 const { InboxAddress } = await import("./inbox-address");
 
 describe("InboxAddress", () => {
@@ -27,7 +28,7 @@ describe("InboxAddress", () => {
     );
     const element = await InboxAddress({ isAdmin: false });
     expect(element).not.toBeNull();
-    expect(element?.type).toBe("p");
+    expect(element?.type).toBe(HelpHint);
   });
 
   it("returns null when no address is configured and caller is not admin", async () => {

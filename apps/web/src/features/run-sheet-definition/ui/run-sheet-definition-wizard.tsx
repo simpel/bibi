@@ -29,13 +29,15 @@ export function RunSheetDefinitionWizard({ options }: RunSheetDefinitionWizardPr
     description: t(`wizard.descriptions.${id as "name"}`),
   });
   return (
-    <StepWizard
-      form={form}
-      run={run}
-      pending={pending}
-      cancelHref={ROUTES.adminRunSheets}
-      progressLabel={t("wizard.progress")}
-      steps={runSheetSteps({ form, options, nameLabel: t("fields.name"), text })}
-    />
+    <div data-tour="run-sheet-definition.build" className="grid gap-4">
+      <StepWizard
+        form={form}
+        run={run}
+        pending={pending}
+        cancelHref={ROUTES.adminRunSheets}
+        progressLabel={t("wizard.progress")}
+        steps={runSheetSteps({ form, options, nameLabel: t("fields.name"), text })}
+      />
+    </div>
   );
 }

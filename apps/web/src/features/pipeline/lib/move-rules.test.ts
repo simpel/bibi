@@ -15,6 +15,8 @@ const card = ({ overrides = {} }: { overrides?: Partial<PipelineCard> } = {}): P
   quantity: 10,
   statusChangedAt: new Date("2026-10-01T08:00:00Z"),
   assigneeId: null,
+  following: false,
+  flags: [],
   heldLines: 0,
   bookedLines: 0,
   estimatedValueMinor: null,

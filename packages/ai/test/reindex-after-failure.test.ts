@@ -1,4 +1,11 @@
-import { createExecuteContext, createVenue, type EmbedFn, grantAll, updateVenue } from "@bibi/core";
+import {
+  ALL_RECORDS,
+  createExecuteContext,
+  createVenue,
+  type EmbedFn,
+  grantAll,
+  updateVenue,
+} from "@bibi/core";
 import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
@@ -17,6 +24,8 @@ describe("reindexAll after search.index_failed (ADR 0030)", () => {
       organizationId,
       roles: ["admin"],
       permissions: grantAll({}),
+      preset: "admin",
+      scopes: ALL_RECORDS,
       actor: { type: "user", userId: `user_${createId()}` },
     });
     const embed = createEmbed({ apiKey: null, nodeEnv: "test" });

@@ -1,4 +1,5 @@
 import {
+  ALL_RECORDS,
   cancelInvitation,
   createExecuteContext,
   execute,
@@ -20,6 +21,8 @@ const ownerContext = ({ organizationId, owner }: { organizationId: string; owner
     organizationId,
     roles: ["admin"],
     permissions: grantAll({}),
+    preset: "admin",
+    scopes: ALL_RECORDS,
     actor: { type: "user", userId: owner.userId },
   });
 

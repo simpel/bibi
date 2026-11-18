@@ -1,6 +1,7 @@
 "use client";
 
 import { closestCorners, DndContext, DragOverlay } from "@dnd-kit/core";
+import type { CardSurface } from "../booking-tone/booking-tone";
 import { buildKanbanAnnouncements } from "./kanban-announcements";
 import { KanbanCard } from "./kanban-card";
 import { KanbanColumn } from "./kanban-column";
@@ -30,6 +31,10 @@ export type KanbanBoardProps<TCard extends KanbanCardData> = {
   renderSummary?: KanbanRenderSummary<TCard>;
   /** Content at the end of a lane, under its cards, e.g. a create action. */
   renderFooter?: KanbanRenderSummary<TCard>;
+  /** A click anywhere on a card (or Enter on it) opens it, e.g. in a sheet beside the board. */
+  onOpenCard?: ((input: { card: TCard }) => void) | undefined;
+  /** A card's surface cues (soft, following, done), as on the timeline cards. */
+  cardSurface?: ((input: { card: TCard }) => CardSurface) | undefined;
 };
 
 const ALWAYS: KanbanCanDrop = () => true;
@@ -42,10 +47,13 @@ type KanbanLaneProps<TCard extends KanbanCardData> = {
   renderCard: KanbanRenderCard<TCard>;
   renderSummary?: KanbanRenderSummary<TCard> | undefined;
   renderFooter?: KanbanRenderSummary<TCard> | undefined;
+  onOpenCard?: ((input: { card: TCard }) => void) | undefined;
+  cardSurface?: ((input: { card: TCard }) => CardSurface) | undefined;
 };
 
 function KanbanLane<TCard extends KanbanCardData>(props: KanbanLaneProps<TCard>) {
   const { column, cards, state, emptyLabel, renderCard, renderSummary, renderFooter } = props;
+  const { onOpenCard, cardSurface } = props;
   return (
     <KanbanColumn
       column={column}
@@ -57,7 +65,12 @@ function KanbanLane<TCard extends KanbanCardData>(props: KanbanLaneProps<TCard>)
       footer={renderFooter?.({ column, cards })}
     >
       {cards.map((card) => (
-        <KanbanCard key={card.id} id={card.id}>
+        <KanbanCard
+          key={card.id}
+          id={card.id}
+          onOpen={onOpenCard ? () => onOpenCard({ card }) : undefined}
+          surface={cardSurface?.({ card })}
+        >
           {renderCard(card)}
         </KanbanCard>
       ))}
@@ -78,7 +91,7 @@ function KanbanOverlay<TCard extends KanbanCardData>({
   return (
     <DragOverlay>
       {active ? (
-        <div className="rounded-lg border bg-card p-3 shadow-lg">{renderCard(active)}</div>
+        <div className="rounded-xl border bg-card p-3 shadow-lg">{renderCard(active)}</div>
       ) : null}
     </DragOverlay>
   );
@@ -97,6 +110,8 @@ export function KanbanBoard<TCard extends KanbanCardData>({
   onMove,
   renderSummary,
   renderFooter,
+  onOpenCard,
+  cardSurface,
 }: KanbanBoardProps<TCard>) {
   const drop = useKanbanDrop({ cards, columns, canDrop, onMove });
   return (
@@ -118,6 +133,8 @@ export function KanbanBoard<TCard extends KanbanCardData>({
             state={drop.columnState({ column })}
             emptyLabel={labels.emptyColumn}
             renderCard={renderCard}
+            onOpenCard={onOpenCard}
+            cardSurface={cardSurface}
             renderSummary={renderSummary}
             renderFooter={renderFooter}
           />

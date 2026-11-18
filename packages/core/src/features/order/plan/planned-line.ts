@@ -1,3 +1,4 @@
+import type { LineRole } from "../../line/line-role";
 /**
  * A line the planning module evaluates before anything is written (ADR 0081): from a package's
  * template lines or from a draft. Untimed when it has no times; a null quantity follows the
@@ -22,6 +23,8 @@ export type PlannedLine = {
    * (source PARENT_LINE). Left out for any other line.
    */
   parent?: { quantity: number | null } | null;
+  /** A saved sub-line's role (ADR 0088): a part or option gets no hours warning of its own. */
+  role?: LineRole | null;
 };
 
 export type TimedPlannedLine = PlannedLine & { startsAt: Date; endsAt: Date };

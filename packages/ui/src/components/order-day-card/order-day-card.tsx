@@ -5,22 +5,26 @@ import type { ReactNode } from "react";
 import { cn } from "../../lib/cn";
 import { useOptionalCalendarLabels } from "../availability-calendar/calendar-labels";
 import type { PinnedBooking } from "../availability-calendar/pins-context";
-import { type BookingTone, bookingToneVariants } from "../booking-tone/booking-tone";
+import { attentionOf, type CardSurface, cardSurfaceProps } from "../booking-tone/booking-tone";
 import { Button } from "../button/button";
 import { CalendarHoverDetails } from "../cursor-hover/cursor-hover-details";
 import { PinAction } from "../cursor-hover/hover-actions";
+import { LiveBadge, LiveBorder } from "../live-border/live-border";
 import type { OrderViewFact } from "../order-view/order-view";
 
 export type OrderDayCardProps = {
   /** The order's day as a booking, so it renders and pins like a calendar booking. */
   booking: PinnedBooking;
   href: string;
-  tone: BookingTone;
+  /** Soft, following and done, each its own cue on the surface (`cardSurfaceProps`). */
+  surface?: CardSurface | undefined;
   /** A tiny line above the time, e.g. the date or "Day 2 of 3". */
   date: string;
   subtitle?: string | undefined;
-  /** The bottom row, e.g. Live and the most urgent flag; above the card's link. */
+  /** The bottom row, above the card's link. */
   footer?: ReactNode;
+  /** Now inside its span: this word ("Live") as a green badge by the icons, and a green ring. */
+  live?: string | undefined;
   expanded: boolean;
   onToggle: () => void;
   /** The order's facts, shown while expanded. */
@@ -61,22 +65,40 @@ function ExpandButton({
 
 /**
  * One order on one day of a timeline: the same card as the pinned and hover calendar cards
- * (`CalendarHoverDetails` detailed, header tinted by its tone, outline from `bookingToneVariants`).
+ * (`CalendarHoverDetails` detailed, surface cues and attention bar from `cardSurfaceProps`).
  * The whole card opens the order and hovering it underlines the title; pin and expand sit above
- * that link. Collapsed it shows the stats; expanded it adds the order's facts.
+ * that link. Collapsed it shows the stats; expanded it adds the order's facts. Live adds a green
+ * badge by the icons and a green shimmering ring, unless an attention border already shows.
  */
-export function OrderDayCard({ booking, href, tone, footer, ...props }: OrderDayCardProps) {
+export function OrderDayCard({
+  booking,
+  href,
+  surface,
+  footer,
+  live,
+  ...props
+}: OrderDayCardProps) {
   const name = booking.customer ?? booking.name;
+  const look = cardSurfaceProps({
+    surface: {
+      attention: attentionOf({
+        issues: booking.issues,
+        blocked: booking.blocked,
+        tentative: booking.state.hold === "soft",
+      }),
+      ...surface,
+    },
+  });
   return (
     <div
       data-slot="order-day-card"
-      data-tone={tone}
       className={cn(
         "group relative overflow-hidden rounded-xl border bg-card p-3.5 text-card-foreground shadow-sm transition-colors hover:border-foreground/30",
-        bookingToneVariants({ tone }),
+        look.className,
         props.className,
       )}
     >
+      {live && !look.attention ? <LiveBorder /> : null}
       <CalendarHoverDetails
         booking={booking}
         href={href}
@@ -84,14 +106,14 @@ export function OrderDayCard({ booking, href, tone, footer, ...props }: OrderDay
         subtitle={props.subtitle}
         detailed
         stretchTitle
-        tone={tone}
         hideFacts={!props.expanded}
         extraFacts={props.facts}
         footer={footer ? <div className="relative z-10">{footer}</div> : undefined}
         headerActions={
           <>
-            <PinAction booking={booking} name={name} />
+            {live ? <LiveBadge label={live} /> : null}
             <ExpandButton booking={booking} expanded={props.expanded} onToggle={props.onToggle} />
+            <PinAction booking={booking} name={name} />
           </>
         }
       />

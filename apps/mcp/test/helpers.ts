@@ -1,5 +1,6 @@
 import {
   type Actor,
+  ALL_RECORDS,
   createExecuteContext,
   type ExecuteContext,
   type PermissionSet,
@@ -34,6 +35,8 @@ export function testContext({
     organizationId,
     roles: [PRESET_FOR_ACCESS[access]],
     permissions,
+    preset: null,
+    scopes: ALL_RECORDS,
     actor,
   });
 }

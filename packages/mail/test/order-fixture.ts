@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import {
+  ALL_RECORDS,
   createContact,
   createCustomer,
   createEntityType,
@@ -25,6 +26,8 @@ export async function orderFixture(): Promise<{ context: ExecuteContext; orderId
     organizationId,
     roles: ["admin"],
     permissions: grantAll({}),
+    preset: "admin",
+    scopes: ALL_RECORDS,
     actor: { type: "user", userId: `user_${randomUUID()}` },
   });
   value({ result: await provisionOrganization({ organizationId, timeZone: FALLBACK_TIME_ZONE }) });

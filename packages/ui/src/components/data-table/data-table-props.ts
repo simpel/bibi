@@ -1,5 +1,6 @@
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import type { ReactNode } from "react";
+import type { CardSurface } from "../booking-tone/booking-tone";
 import type {
   DataTableLabels,
   DataTablePaginationState,
@@ -38,6 +39,8 @@ export type DataTableProps<TData, TValue> = {
    * `group/row`, so cells can show things on hover with `group-hover/row:`.
    */
   rowClassName?: (row: TData) => string | undefined;
+  /** A row's state cues, the same as on cards (`rowSurfaceProps`): attention bar, over. */
+  rowSurface?: ((row: TData) => CardSurface | undefined) | undefined;
   selectedRowId?: string;
   emptyText: string;
   /** Sorting, column order and selection texts. */
@@ -52,6 +55,8 @@ export type DataTableProps<TData, TValue> = {
   onColumnOrderChange?: (order: string[]) => void;
   /** Adds the pinned checkbox column. Selection is cleared when the page changes. */
   selectable?: boolean;
+  /** With `selectable`: which rows get a checkbox; the others cannot be selected. Default all. */
+  canSelectRow?: (row: TData) => boolean;
   onSelectionChange?: (rows: TData[]) => void;
   /** Rendered in a toolbar above the table while at least one row is selected. */
   bulkActions?: (rows: TData[]) => ReactNode;

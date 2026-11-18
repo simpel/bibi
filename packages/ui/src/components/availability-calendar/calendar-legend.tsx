@@ -1,8 +1,16 @@
 "use client";
 
+import { LegendItem } from "../booking-tone/legend-item";
 import { useCalendarLabels } from "./calendar-labels";
 import { bufferStyle, markStyle } from "./calendar-marks";
 import type { CalendarState } from "./calendar-types";
+
+/** An extra entry for what a user cannot guess: hard and soft holds and the blocked badge. */
+export type CalendarLegendNote = {
+  kind: "hard" | "soft" | "badge";
+  name: string;
+  text: string;
+};
 
 export type CalendarLegendProps = {
   /** The organization's states on screen. */
@@ -10,14 +18,35 @@ export type CalendarLegendProps = {
   withBuffers?: boolean;
   /** Show the grey "blocked, not sold" entry when manual blocks are on screen. */
   withBlocked?: CalendarState;
+  /** Further entries, after the states; the app supplies the words. */
+  notes?: readonly CalendarLegendNote[];
 };
 
+const GREY = "var(--muted-foreground)";
+
+/** A note's swatch, drawn with the calendar's own marks in neutral grey. */
+function NoteSwatch({ kind }: { kind: CalendarLegendNote["kind"] }) {
+  if (kind === "badge") return <span className="h-3 w-5 rounded-sm bg-destructive" />;
+  const state = { name: "", color: GREY, ink: "var(--background)", hold: kind } as const;
+  return (
+    <span
+      className="h-3 w-5 rounded-sm border"
+      style={markStyle({ state, audience: "internal" })}
+    />
+  );
+}
+
 /** Internal only, and only what is on screen. Customers get no legend. */
-export function CalendarLegend({ states, withBuffers = true, withBlocked }: CalendarLegendProps) {
+export function CalendarLegend({
+  states,
+  withBuffers = true,
+  withBlocked,
+  notes = [],
+}: CalendarLegendProps) {
   const labels = useCalendarLabels();
   const swatch = "h-3 w-5 rounded-sm border";
   return (
-    <ul className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
+    <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
       {states.map((state) => (
         <li key={state.name} className="flex items-center gap-2">
           <span className={swatch} style={markStyle({ state, audience: "internal" })} />
@@ -42,6 +71,11 @@ export function CalendarLegend({ states, withBuffers = true, withBlocked }: Cale
           {labels.buffersText}
         </li>
       ) : null}
+      {notes.map((note) => (
+        <LegendItem key={note.kind} name={note.name} text={note.text}>
+          <NoteSwatch kind={note.kind} />
+        </LegendItem>
+      ))}
     </ul>
   );
 }

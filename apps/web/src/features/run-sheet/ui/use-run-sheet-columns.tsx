@@ -26,7 +26,7 @@ export type UseRunSheetColumnsInput = {
 };
 
 /**
- * Run sheet (link), order (link), responsibility, status, when, published and row actions.
+ * Run sheet (link), status, responsibility, when, order, updated and row actions.
  */
 export function useRunSheetColumns({ renderActions }: UseRunSheetColumnsInput = {}): Column[] {
   const t = useTranslations("runSheet.list");
@@ -49,27 +49,7 @@ export function useRunSheetColumns({ renderActions }: UseRunSheetColumnsInput = 
             ),
           },
         ],
-        relations: [
-          {
-            id: "order",
-            header: t("columns.order"),
-            accessorFn: (row) => row.orderLabel,
-            cell: ({ row: { original: row } }) => (
-              <Link
-                href={listItemRoute({ list: ROUTES.orders, id: row.orderId })}
-                onClick={(event) => event.stopPropagation()}
-                className="hover:underline"
-              >
-                {row.orderLabel}
-              </Link>
-            ),
-          },
-          {
-            id: "responsibility",
-            header: t("columns.responsibility"),
-            accessorFn: (row) => row.responsibility,
-          },
-        ],
+        // Run sheet, status, responsibility, when, order, updated: the order is not a link here.
         status: [
           uiStatusColumn<RunSheetRow>({
             header: t("columns.status"),
@@ -78,14 +58,16 @@ export function useRunSheetColumns({ renderActions }: UseRunSheetColumnsInput = 
               return { label: t(statusKey), color: STATUS_COLORS[row.status] };
             },
           }),
+          {
+            id: "responsibility",
+            header: t("columns.responsibility"),
+            accessorFn: (row) => row.responsibility,
+          },
         ],
         dates: [
           { id: "when", header: t("columns.when"), accessorFn: (row) => row.when },
-          {
-            id: "published",
-            header: t("columns.publishedAt"),
-            accessorFn: (row) => row.publishedAt ?? "–",
-          },
+          { id: "order", header: t("columns.order"), accessorFn: (row) => row.orderLabel },
+          { id: "updated", header: t("columns.updatedAt"), accessorFn: (row) => row.updatedAt },
         ],
         actions: renderActions
           ? [actionsColumn<RunSheetRow>({ label: common("actions"), cell: renderActions })]

@@ -36,6 +36,7 @@ Denying `read` on a feature must hide its data everywhere, not only its own page
 
 ## UI
 - `/admin/members/<id>/permissions` and `/admin/api-keys/<id>/permissions`: a page per subject with the preset and a grid of features × actions. Each cell shows the preset value and whether it is overridden, and can be reset to the preset.
+- Following is for anyone who may view the subject: `assignment.follow` and `assignment.unfollow` need `order:read` (an item also `item:read`) when members follow or unfollow for themselves, and `order:write` to change someone else's follow (an API key always needs it).
 
 ## Adding a permission
 See `packages/auth/CLAUDE.md`.

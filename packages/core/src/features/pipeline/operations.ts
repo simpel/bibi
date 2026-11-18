@@ -20,7 +20,13 @@ import {
 } from "../board/schema";
 import { dashboardOperations, dashboardSummary } from "../dashboard/operations";
 import { pipelineBoardHandler } from "./board-view";
-import { PipelineBoardInputSchema, PipelineBoardSchema } from "./schema";
+import { pipelineCuesHandler } from "./cues-view";
+import {
+  PipelineBoardInputSchema,
+  PipelineBoardSchema,
+  PipelineCuesInputSchema,
+  PipelineCuesSchema,
+} from "./schema";
 
 export const pipelineBoard = defineOperation({
   name: "pipeline.board",
@@ -39,6 +45,22 @@ export const pipelineBoard = defineOperation({
   // The cards are orders; a card's customer is only its id (ADR 0050, feature scope).
   entityType: "order",
   handler: pipelineBoardHandler,
+});
+
+export const pipelineCues = defineOperation({
+  name: "pipeline.cues",
+  kind: "query",
+  description:
+    "The pipeline card cues for up to 100 orders, e.g. one page of order.list: `soft` (every " +
+    "held line is a soft hold, i.e. preliminary; null without program:read), `following` (the " +
+    "caller follows the order and is not its main assignee) and `flags`, blocks first: " +
+    "HARD_CLASH (needs program:read and item:read), HOLD_EXPIRES, QUOTE_WAITING (quote:read) " +
+    "and UNREAD_MESSAGES (inbox:read). Unknown ids are left out.",
+  input: PipelineCuesInputSchema,
+  output: PipelineCuesSchema,
+  permission: "order:read",
+  entityType: "order",
+  handler: pipelineCuesHandler,
 });
 
 export const createBoardPhase = defineOperation({
@@ -108,6 +130,7 @@ export const moveBoardPhaseStatus = defineOperation({
 /** The board view, board phases and boards (ADR 0067); handlers live in sibling files. */
 export const pipelineOperations = [
   pipelineBoard,
+  pipelineCues,
   createBoardPhase,
   updateBoardPhase,
   archiveBoardPhase,

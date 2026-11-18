@@ -2,7 +2,7 @@
 
 import type { LineAmounts, LineDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { actionWithToast } from "@/lib/action-with-toast";
 import { useRouter } from "@/lib/navigation";
@@ -11,6 +11,7 @@ import {
   changeLineStateAction,
   followLineStatusAction,
 } from "../actions";
+import { LINE_TREE_ROW_CLASS, lineTreePlaces } from "./line-tree";
 import { ProgramBulkActions } from "./program-bulk-actions";
 import { ProgramDialogs } from "./program-dialogs";
 import type { ProgramFormData } from "./program-form-data";
@@ -137,6 +138,8 @@ export function ProgramTable({ lines, data, access, amounts, flush }: ProgramTab
     });
   };
 
+  const treePlaces = useMemo(() => lineTreePlaces({ lines: linesState }), [linesState]);
+
   const columns = useProgramColumns({
     data,
     access,
@@ -145,6 +148,7 @@ export function ProgramTable({ lines, data, access, amounts, flush }: ProgramTab
     onStateChange: handleStateChange,
     onFollowStatus: handleFollowStatus,
     onEdit: (line) => setActiveDialog({ line, dialog: "edit" }),
+    onOpenDialog: setActiveDialog,
   });
 
   return (
@@ -155,8 +159,14 @@ export function ProgramTable({ lines, data, access, amounts, flush }: ProgramTab
         columns={columns}
         data={linesState}
         getRowId={(item) => item.id}
+        rowClassName={(item) => {
+          const place = treePlaces.get(item.id);
+          return place ? LINE_TREE_ROW_CLASS[place] : undefined;
+        }}
         emptyText={t("empty")}
         selectable={access.canChangeState}
+        // Bulk changes take top-level lines and add-ons; a part or option keeps its row menu.
+        canSelectRow={(item) => item.role !== "PART" && item.role !== "OPTION"}
         bulkActions={(selected) => (
           <ProgramBulkActions
             selected={selected}
@@ -167,6 +177,7 @@ export function ProgramTable({ lines, data, access, amounts, flush }: ProgramTab
         )}
         rowMenu={(row) => (
           <ProgramRowMenu
+            kit="context"
             line={row}
             data={data}
             access={access}

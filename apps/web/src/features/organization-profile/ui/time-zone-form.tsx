@@ -1,7 +1,7 @@
 "use client";
 
 import type { OrganizationProfileDto } from "@bibi/core/schemas";
-import { OrganizationProfileUpdateInputSchema } from "@bibi/core/schemas";
+import { OrganizationProfileUpdateFieldsSchema } from "@bibi/core/schemas";
 import { Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -14,7 +14,9 @@ import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { saveOrganizationAction } from "../../welcome/actions";
 
-const TimeZoneFormSchema = OrganizationProfileUpdateInputSchema.pick({ timeZone: true }).required();
+const TimeZoneFormSchema = OrganizationProfileUpdateFieldsSchema.pick({
+  timeZone: true,
+}).required();
 
 type TimeZoneFormValues = { timeZone: string };
 

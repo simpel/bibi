@@ -354,7 +354,6 @@
       },
       "calendar": "Holds over the order's life",
       "slot": "{status}: {state}",
-      "legend": "Solid: hard hold. Hatched: soft hold. Outline: no hold.",
       "status": "Status",
       "empty": "No statuses.",
       "released": "Released",

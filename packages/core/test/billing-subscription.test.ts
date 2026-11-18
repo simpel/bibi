@@ -4,9 +4,8 @@ import { checkoutParams } from "../src/features/billing/checkout-params";
 import {
   applyBillingSignal,
   type BillingSubscription,
-  createExecuteContext,
+  createSystemContext,
   execute,
-  grantAll,
   startBillingCheckout,
 } from "../src/index";
 import { useMemoryBilling } from "./billing-helpers";
@@ -16,11 +15,8 @@ import { withInviter } from "./invitation-helpers";
 type Context = Awaited<ReturnType<typeof withInviter>>;
 
 const system = ({ context }: { context: Context }) =>
-  createExecuteContext({
+  createSystemContext({
     organizationId: context.organizationId,
-    roles: [],
-    permissions: grantAll({}),
-    actor: { type: "system", userId: null },
   });
 
 const startCheckout = ({ context }: { context: Context }) =>

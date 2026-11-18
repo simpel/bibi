@@ -33,7 +33,7 @@ export function CapabilitySections({ form, type, data, itemId }: CapabilitySecti
       {hasCapability({ type, capability: "CUSTOMISATIONS" }) ? (
         <CustomisationGroupsSection form={form} items={parts} />
       ) : null}
-      <BufferFields form={form} inherits="type" />
+      <BufferFields form={form} />
     </>
   );
 }

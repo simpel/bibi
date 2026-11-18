@@ -1,10 +1,13 @@
 import type { OrderDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
+import { PageBand, PageBands } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { PageTour } from "@/components/tour/page-tour";
+import { FollowControl } from "@/features/assignment/ui/follow-control";
 import { OrderIssues } from "@/features/line/ui/order-issues";
 import { orderName } from "@/lib/order-label";
 import { orderRoute } from "@/lib/routes";
@@ -18,6 +21,7 @@ import type { OrderFormData } from "./order-form-data";
 import { OrderSections } from "./order-sections";
 import { OrderStatusLabel } from "./order-status-label";
 import { OrderStatusMenu } from "./order-status-menu";
+import { OrderTitle } from "./order-title";
 
 type Heading = {
   order: OrderDto;
@@ -42,15 +46,24 @@ type OrderHeaderActionsProps = {
   abilities: CallerAbilities;
 };
 
-/** Top right beside the title: the status (a menu for writers), then the order's actions. */
+/** Top right beside the title: the status (a menu for writers), Follow, then the order's actions. */
 function OrderHeaderActions({ order, statuses, abilities }: OrderHeaderActionsProps) {
   return (
     <>
       {can({ abilities, permission: "order:write" }) ? (
         <OrderStatusMenu order={order} statuses={statuses} />
       ) : (
-        <OrderStatusLabel statuses={statuses} id={order.statusId} />
+        <OrderStatusLabel statuses={statuses} id={order.statusId} badge />
       )}
+      {abilities.userId ? (
+        // Streams in after the header: the first paint does not wait for the followers.
+        <Suspense fallback={null}>
+          <FollowControl
+            subject={{ subjectType: "ORDER", subjectId: order.id }}
+            userId={abilities.userId}
+          />
+        </Suspense>
+      ) : null}
       <OrderActions order={order} abilities={abilities} />
     </>
   );
@@ -80,8 +93,7 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
     <OrderHeaderActions order={order.value} statuses={statuses.value} abilities={abilities} />
   );
   return (
-    // One shrinkable column: a wide table scrolls inside the page instead of widening it.
-    <div className="grid grid-cols-1 gap-12">
+    <PageBands>
       <CrumbName
         href={orderRoute({ id })}
         name={
@@ -90,7 +102,8 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
             : (order.value.title ?? "Order")
         }
       />
-      <div className="grid grid-cols-1 gap-4">
+      {/* One shrinkable column: a wide table scrolls inside the page instead of widening it. */}
+      <PageBand containerClassName="gap-4 pt-4 sm:pt-6">
         {can({ abilities, permission: "program:read" }) ? (
           // Hidden while empty, so a streamed-in alert gets space below it and none otherwise.
           <div className="empty:hidden [&:not(:empty)]:mb-4">
@@ -100,15 +113,30 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
             </Suspense>
           </div>
         ) : null}
-        <PageHeader {...heading({ order: order.value, label, short })} actions={actions} />
+        <PageHeader
+          {...heading({ order: order.value, label, short })}
+          heading={
+            <OrderTitle
+              id={id}
+              title={order.value.title}
+              fallback={label({ reference: order.value.reference })}
+              suffix={
+                order.value.title === null ? undefined : short({ reference: order.value.reference })
+              }
+              canEdit={can({ abilities, permission: "order:write" })}
+            />
+          }
+          actions={actions}
+        />
         <OrderKeyFacts order={order.value} data={names} />
-      </div>
+      </PageBand>
+      <PageTour tour="order" />
       <OrderSections
         locale={locale}
         order={order.value}
         statuses={statuses.value}
         abilities={abilities}
       />
-    </div>
+    </PageBands>
   );
 }

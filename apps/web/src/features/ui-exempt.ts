@@ -4,6 +4,11 @@ export type UiExempt = { operation: string; reason: string };
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
   {
+    operation: "runSheet.generate",
+    reason:
+      "Versions are made automatically when an order or its lines change (ADR 0092); the API, MCP and the assistant can still force one.",
+  },
+  {
     operation: "floorElementKind.get",
     reason:
       "The furniture library is imported and used on the layouts page (ADR 0099); its own admin section to edit kinds follows. Until then the API, MCP and the assistant edit it.",

@@ -67,6 +67,8 @@ const OUTPUT_EXCEPTIONS: Readonly<Record<string, string>> = {
   "dashboard:customerName": "a view read model (ADR 0071, 0080), null without customer:read",
   "myWork:runSheetName": "a view read model (ADR 0071, 0110), flags only with runSheet:read",
   "myWork:customerName": "a view read model (ADR 0071, 0110), null without customer:read",
+  "pipeline:runSheetName":
+    "the board's flags share My work's shape (ADR 0071) but never carry RUN_SHEET: always null",
   "notification:runSheetName":
     "a snapshot copied for a recipient who may read run sheets (ADR 0094)",
 };

@@ -1,8 +1,7 @@
 import { type Db, getDb } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
-import { createExecuteContext } from "../../operations/context";
+import { type createExecuteContext, createSystemContext } from "../../operations/context";
 import { provisionOrganization } from "../../organization/provision";
-import { grantAll } from "../../permissions/permission-set";
 import { kvarnby } from "./data/kvarnby/kvarnby";
 import { lindholmen } from "./data/lindholmen/lindholmen";
 import { vingaleden } from "./data/vingaleden/vingaleden";
@@ -111,11 +110,8 @@ async function seedOne({ db, org, skipPipeline }: SeedOneInput): Promise<Result<
     ...(creator ? { creator } : {}),
   });
   if (!provisioned.ok) return provisioned;
-  const context = createExecuteContext({
+  const context = createSystemContext({
     organizationId,
-    roles: [],
-    permissions: grantAll({}),
-    actor: { type: "system", userId: null },
     db,
   });
   const profiles = await seedDemoProfiles({ db, context, org, userIds });

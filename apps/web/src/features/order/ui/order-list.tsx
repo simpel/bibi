@@ -1,7 +1,8 @@
-import { listOrders } from "@bibi/core";
+import { listOrders, type OrderCue, pipelineCues } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { AppCardLegend } from "@/components/card-legend/app-card-legend";
 import { toCanonicalQuery } from "@/components/query-search/lib/query-canonical";
 import type { QueryVocabulary } from "@/components/query-search/lib/query-vocabulary";
 import { EmptyState } from "@/components/states/empty-state";
@@ -33,11 +34,10 @@ const GoToTypes = ({ label }: { label: string }) => (
 
 type HeaderPartsInput = { abilities: CallerAbilities; noTypes: boolean };
 
-/** The create button (not without types); needs `order:write`. */
-function headerParts({ abilities, noTypes }: HeaderPartsInput) {
+/** The empty state's create button (not without types); needs `order:write`. The page header has none: Create order sits in the top bar. */
+function emptyCreate({ abilities, noTypes }: HeaderPartsInput) {
   const canCreate = can({ abilities, permission: "order:write" });
-  const create = canCreate && !noTypes ? <CreateOrderButton /> : undefined;
-  return { create, actions: create };
+  return canCreate && !noTypes ? <CreateOrderButton /> : undefined;
 }
 
 type ListInputArgs = { params: OrderListParams; vocabulary: QueryVocabulary };
@@ -54,7 +54,21 @@ const listInput = ({ params, vocabulary }: ListInputArgs) => ({
   ...(params.q ? { q: toCanonicalQuery({ q: params.q, vocabulary }) } : {}),
 });
 
-/** Orders page body: header with create, filters and search, then the paged table. */
+/**
+ * The page's card cues (preliminary, flags), as on the pipeline (spec: boards). A convenience:
+ * on error the table shows the rows without them.
+ */
+async function orderCues({ orderIds }: { orderIds: string[] }) {
+  if (orderIds.length === 0) return {};
+  const result = await runOperation({ operation: pipelineCues, input: { orderIds } });
+  if (!result.ok) return {};
+  return Object.fromEntries(result.value.cues.map((cue) => [cue.orderId, cue])) as Record<
+    string,
+    OrderCue
+  >;
+}
+
+/** Orders page body: header, filters and search, then the paged table. */
 export async function OrderList({ locale, params }: OrderListProps) {
   const t = await getTranslations("order");
   const [abilities, query] = await Promise.all([getCallerAbilities(), loadOrderQuery()]);
@@ -68,12 +82,13 @@ export async function OrderList({ locale, params }: OrderListProps) {
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const noTypes = data.value.types.length === 0;
-  const { create, actions } = headerParts({ abilities, noTypes });
+  const create = emptyCreate({ abilities, noTypes });
   const { items, total } = result.value;
+  const cues = await orderCues({ orderIds: items.map((order) => order.id) });
   const empty = total === 0 && !params.q;
   return (
     <div className="grid gap-6">
-      <PageHeader title={t("plural")} description={t("listDescription")} actions={actions} />
+      <PageHeader title={t("plural")} description={t("listDescription")} />
       {empty ? (
         <EmptyState
           title={t("empty")}
@@ -89,7 +104,9 @@ export async function OrderList({ locale, params }: OrderListProps) {
             view={params}
             data={data.value}
             canEdit={can({ abilities, permission: "order:write" })}
+            cues={cues}
           />
+          {items.length > 0 ? <AppCardLegend following={false} /> : null}
         </>
       )}
     </div>

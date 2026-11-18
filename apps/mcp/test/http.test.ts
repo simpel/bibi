@@ -1,5 +1,5 @@
 import type { AddressInfo } from "node:net";
-import { appError, createExecuteContext, err, grantAll, ok } from "@bibi/core";
+import { ALL_RECORDS, appError, createExecuteContext, err, grantAll, ok } from "@bibi/core";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { createId } from "@paralleldrive/cuid2";
@@ -24,6 +24,8 @@ async function resolveContext({ headers }: ResolveInput) {
       organizationId,
       roles: ["admin"],
       permissions: grantAll({}),
+      preset: "admin",
+      scopes: ALL_RECORDS,
       actor,
     }),
   });

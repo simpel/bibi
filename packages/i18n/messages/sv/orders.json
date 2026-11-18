@@ -105,6 +105,9 @@
     "editDescription": "Ändra kund, kontaktperson, önskade datum, antal, budget och typens fält. Bokningsstatus och ansvarig ändras separat.",
     "created": "Bokningen har skapats.",
     "updated": "Bokningen har uppdaterats.",
+    "editTitle": "Redigera titel",
+    "titleLabel": "Titel",
+    "titleUpdated": "Titeln har uppdaterats.",
     "details": "Detaljer",
     "changeStatus": "Byt bokningsstatus",
     "changeStatusDescription": "Flytta bokningen till en av de bokningsstatusar som organisationen tillåter från nuvarande bokningsstatus. Vissa bokningsstatusar kräver en anledning eller en ansvarig, och en avslutande bokningsstatus frigör bokningens lokaler och resurser.",
@@ -172,7 +175,6 @@
     "statusHistory": {
       "title": "Statushistorik",
       "empty": "Inga statusbyten ännu.",
-      "entered": "Gick till {status}",
       "changed": "Bytte bokningsstatus",
       "trigger": {
         "MANUAL": "För hand",
@@ -256,6 +258,14 @@
         "excludeAssignee": "Uteslut ansvarig",
         "excludeFollower": "Uteslut följare"
       }
+    },
+    "groups": {
+      "program": "Program",
+      "needs": "Behov och körscheman",
+      "people": "Detaljer och personer",
+      "messages": "Meddelanden",
+      "money": "Ekonomi",
+      "history": "Historik"
     }
   },
   "orderIntake": {
@@ -595,12 +605,8 @@
     "description": "Bokningen i korthet",
     "untitled": "Bokning {reference}",
     "reference": "#{reference}",
-    "details": "Detaljer",
-    "assignee": "Ansvarig",
-    "customer": "Kund",
-    "contact": "Kontakt",
-    "none": "–",
-    "lines": "Rader"
+    "open": "Öppna bokningen",
+    "moreOnPage": "Offerter, betalningar, körscheman och meddelanden finns på bokningens sida, där du också kan ändra bokningen."
   },
   "orderTemplate": {
     "singular": "Mall",
@@ -659,14 +665,14 @@
     "archived": "Programpunkten har tagits bort.",
     "created": "Programpunkten har lagts till.",
     "updated": "Programpunkten har uppdaterats.",
-    "changeState": "Byt läge",
+    "changeState": "Byt reservation",
     "followStatus": "Följ bokningsstatusen igen",
-    "stateChanged": "Radens läge har ändrats.",
+    "stateChanged": "Radens reservation har ändrats.",
     "overridden": "(manuellt)",
     "empty": "Bokningen har inga programpunkter än.",
     "occupied": "Lokalen är redan belagd under perioden eller ställtiden.",
-    "noItem": "Ingen lokal",
-    "itemSearch": "Sök lokaler och bokningsbara artiklar",
+    "noItem": "Ingen artikel",
+    "itemSearch": "Sök artiklar",
     "noItemMatch": "Ingen artikel matchar.",
     "noLayout": "Ingen möblering",
     "layoutOption": "{name} (upp till {capacity})",
@@ -675,20 +681,20 @@
       "name": "Namn",
       "startsAt": "Börjar",
       "endsAt": "Slutar",
-      "item": "Lokal eller bokningsbar artikel",
+      "item": "Artikel",
       "layout": "Möblering",
       "quantity": "Antal",
       "note": "Intern anteckning",
-      "unitPrice": "Eget styckpris (kr)",
-      "discountPercent": "Egen rabatt (%)",
-      "vatRatePercent": "Egen moms (%)"
+      "unitPrice": "Styckpris (kr)",
+      "discountPercent": "Rabatt (%)",
+      "vatRatePercent": "Moms (%)"
     },
     "columns": {
       "time": "Tid",
       "name": "Namn",
       "type": "Typ",
       "where": "Var",
-      "state": "Läge",
+      "state": "Reservation",
       "quantity": "Antal",
       "unitPrice": "Styckpris",
       "amount": "Belopp exkl. moms"
@@ -784,6 +790,17 @@
       "otherLines": "Övriga rader",
       "missingTime": "Tid saknas",
       "untimed": "Ingen tid: {lines}"
+    },
+    "outsideHours": {
+      "venueTitle": "Anläggningen är stängd vid den här tiden",
+      "itemTitle": "Utanför artikelns arbetstider",
+      "description": "Raden hamnar utanför öppettiderna. Du kan ändå spara den, och den markeras som utanför öppettiderna så att alla ser det.",
+      "confirm": "Spara ändå"
+    },
+    "itemLock": {
+      "part": "Del av ett paket: den behåller sin artikel. Ändra paketraden i stället.",
+      "option": "Ett valt tillval: det behåller sin artikel. Använd Välj tillval på raden ovanför för att välja ett annat.",
+      "parent": "Raden har delar eller valda tillval och behåller därför sin artikel. Ta bort den och lägg till den nya artikeln i stället."
     }
   },
   "lineAllocation": {

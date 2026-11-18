@@ -1,18 +1,50 @@
 import type { PipelinePreviewLine, PipelinePreviewStep } from "@bibi/core/schemas";
-import { cn } from "@bibi/ui";
+import { cn, softHatch } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { HelpHint } from "@/components/help/help-hint";
 
 export type MiniCalendarProps = { steps: PipelinePreviewStep[] };
 
 /** How a line holds its item: solid for hard, hatched for soft, an outline for no hold. */
-function holdStyle({ line }: { line: PipelinePreviewLine }) {
+type HoldLook = Pick<PipelinePreviewLine, "color" | "released" | "hold">;
+
+function holdStyle({ line }: { line: HoldLook }) {
   const color = line.color ?? "transparent";
   if (line.released || line.hold === "NONE") return { borderColor: color };
   if (line.hold === "HARD") return { backgroundColor: color, borderColor: color };
   return {
     borderColor: color,
-    backgroundImage: `repeating-linear-gradient(45deg, ${color} 0 4px, transparent 4px 8px)`,
-  };
+    borderStyle: "dashed",
+    backgroundImage: softHatch({ color }),
+  } as const;
+}
+
+const SWATCH = "var(--muted-foreground)";
+
+const SWATCH_LINES: Record<"solid" | "hatched" | "outline", HoldLook> = {
+  solid: { hold: "HARD", color: SWATCH, released: false },
+  hatched: { hold: "SOFT", color: SWATCH, released: false },
+  outline: { hold: "NONE", color: SWATCH, released: false },
+};
+
+/** Swatches drawn with the slots' own styles, one word each; closed for good with its X. */
+function MiniCalendarLegend() {
+  const t = useTranslations("helpHints.setup-preview-legend");
+  return (
+    <HelpHint id="setup-preview-legend">
+      <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+        {(["solid", "hatched", "outline"] as const).map((key) => (
+          <li key={key} title={t(`${key}.title`)} className="flex items-center gap-2">
+            <span
+              className="h-3 w-5 rounded-sm border"
+              style={holdStyle({ line: SWATCH_LINES[key] })}
+            />
+            <span className="font-medium text-foreground">{t(`${key}.name`)}</span>
+          </li>
+        ))}
+      </ul>
+    </HelpHint>
+  );
 }
 
 /**
@@ -45,7 +77,7 @@ export function MiniCalendar({ steps }: MiniCalendarProps) {
           })}
         </div>
       ))}
-      <p className="text-xs text-muted-foreground">{t("legend")}</p>
+      <MiniCalendarLegend />
     </figure>
   );
 }

@@ -1,4 +1,5 @@
 import {
+  ALL_RECORDS,
   type AnyOperation,
   createContact,
   createCustomer,
@@ -37,6 +38,8 @@ async function provisionedOrg() {
     organizationId,
     roles: ["admin"],
     permissions: grantAll({}),
+    preset: "admin",
+    scopes: ALL_RECORDS,
     actor: { type: "user", userId: `user_${createId()}` },
   });
 }

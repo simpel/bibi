@@ -25,7 +25,9 @@ export async function FlowEditor({ statuses, errorKey }: FlowEditorProps) {
       {errorKey ? (
         <ErrorState errorKey={errorKey} inline />
       ) : (
-        <StatusFlowTable statuses={statuses} />
+        <div data-tour="admin-pipeline.flow">
+          <StatusFlowTable statuses={statuses} />
+        </div>
       )}
     </AdminSection>
   );

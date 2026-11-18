@@ -4,13 +4,13 @@ import {
   type AssetBooking,
   AvailabilityCalendar,
   CalendarLabelsProvider,
-  CalendarLegend,
   type CalendarState,
 } from "@bibi/ui";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { CalendarDays } from "../actions";
+import { AppCalendarLegend } from "./app-calendar-legend";
 import { SlotSheet } from "./slot-sheet";
 import { useCalendarText } from "./use-calendar-text";
 import { useLoadedBookings } from "./use-loaded-bookings";
@@ -65,9 +65,7 @@ export function ReadOnlyCalendar({ days, range, overlay = [] }: ReadOnlyCalendar
           selectedId={slot?.id}
           onOpen={setSlot}
         />
-        <div className="shrink-0 border-t px-4 py-2.5">
-          <CalendarLegend states={states} />
-        </div>
+        <AppCalendarLegend states={states} />
         <SlotSheet slot={slot} assets={days.assets} onClose={() => setSlot(null)} />
       </div>
     </CalendarLabelsProvider>

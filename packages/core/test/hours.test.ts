@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createVenue, execute, getItemHours, getVenueHours } from "../src/index";
+import { loadHoursWarnings } from "../src/hours/hours-warnings";
+import { checkLineHours, createVenue, execute, getItemHours, getVenueHours } from "../src/index";
 import { errorCode, peer, unwrap } from "./helpers";
 import { createHoldLine } from "./hold-helpers";
 import { ALL_DAYS, OFFICE_DAYS, runItemHours, runVenueHours, warningsOf } from "./hours-helpers";
@@ -111,5 +112,58 @@ describe("venue and item hours (ADR 0064 rules 10–11)", () => {
     ]);
     const own = await execute({ operation: getItemHours, input: { itemId: item.id }, context });
     expect(unwrap({ result: own }).timeZone).toBe("Europe/London");
+  });
+
+  it("checks a line before it is saved by the same rule (line.checkHours)", async () => {
+    const { context, venue } = await venueSetup();
+    const room = await createBookableItem({ context });
+    const item = await createTestItem({
+      context,
+      entityTypeId: room.entityTypeId,
+      name: "Pier",
+      venueId: venue.id,
+    });
+    // Sunday 1 November 2037, 09–11 UTC: the venue is open only on weekdays.
+    const input = {
+      itemId: item.id,
+      startsAt: new Date("2037-11-01T09:00:00Z"),
+      endsAt: new Date("2037-11-01T11:00:00Z"),
+    };
+    const check = async () =>
+      unwrap({ result: await execute({ operation: checkLineHours, input, context }) });
+    expect(await check()).toEqual({ kind: null, id: null });
+    unwrap({ result: await runVenueHours({ context, venueId: venue.id, days: OFFICE_DAYS }) });
+    expect(await check()).toEqual({ kind: "OUTSIDE_VENUE_HOURS", id: venue.id });
+    unwrap({ result: await runItemHours({ context, itemId: item.id, days: ALL_DAYS }) });
+    expect(await check()).toEqual({ kind: null, id: null });
+    const backwards = { ...input, endsAt: input.startsAt };
+    const refused = await execute({ operation: checkLineHours, input: backwards, context });
+    expect(errorCode({ result: refused })).toBe("VALIDATION");
+  });
+
+  it("leaves part and option lines out: they share their parent's time and warning", async () => {
+    const { context, venue } = await venueSetup();
+    const room = await createBookableItem({ context });
+    const item = await createTestItem({
+      context,
+      entityTypeId: room.entityTypeId,
+      name: "Pier",
+      venueId: venue.id,
+    });
+    unwrap({ result: await runVenueHours({ context, venueId: venue.id, days: OFFICE_DAYS }) });
+    // Sunday 1 November 2037, 09–11 UTC: closed.
+    const line = {
+      itemId: item.id,
+      startsAt: new Date("2037-11-01T09:00:00Z"),
+      endsAt: new Date("2037-11-01T11:00:00Z"),
+    };
+    const lines = [
+      { ...line, id: "top", role: null },
+      { ...line, id: "option", role: "OPTION" as const },
+      { ...line, id: "part", role: "PART" as const },
+      { ...line, id: "addOn", role: "ADD_ON" as const },
+    ];
+    const warnings = await loadHoursWarnings({ context, lines });
+    expect([...warnings.keys()]).toEqual(["top", "addOn"]);
   });
 });

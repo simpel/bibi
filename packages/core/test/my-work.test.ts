@@ -97,6 +97,26 @@ describe("myWork.view (spec: home)", () => {
     ]);
   });
 
+  it("asks a member who follows the run sheet's responsibility to send it", async () => {
+    const { context, order, definition } = await setup();
+    const sara = await memberUser({ context, name: "Sara Berg" });
+    const { responsibilityId } = definition;
+    const input = {
+      subjectType: "ORDER" as const,
+      subjectId: order.id,
+      responsibilityId,
+      userId: sara,
+    };
+    unwrap({ result: await execute({ operation: followAssignment, input, context }) });
+    const work = unwrap({ result: await view({ context: as({ context, userId: sara }) }) });
+    expect(work.cards).toEqual([
+      expect.objectContaining({
+        reasons: ["RESPONSIBILITY_FOLLOWER"],
+        flags: [expect.objectContaining({ kind: "RUN_SHEET" })],
+      }),
+    ]);
+  });
+
   it("tells a follower without asking: the card has no flags", async () => {
     const { context, order } = await setup();
     const eva = await memberUser({ context, name: "Eva Holm" });

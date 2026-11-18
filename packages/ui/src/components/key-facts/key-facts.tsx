@@ -4,7 +4,7 @@ import { cn } from "../../lib/cn";
 
 export type KeyFact = {
   label: string;
-  /** A tiny line above the value, e.g. the weekday and date over a time. */
+  /** A tiny line with the value, e.g. the weekday and date of a time: above it, under it at `sm`. */
   preheader?: string | undefined;
   value: ReactNode;
   /** Gives way first when the row is too wide: the value is cut short instead of wrapping. */
@@ -19,9 +19,9 @@ export const keyFactsVariants = cva("flex", {
   variants: {
     size: {
       /** The page's primary facts under the title. */
-      lg: "gap-x-10",
+      lg: "items-end gap-x-10",
       /** The same facts in a card or popover. */
-      sm: "flex-wrap gap-x-5 gap-y-1.5",
+      sm: "flex-wrap items-start gap-x-5 gap-y-1.5",
     },
   },
   defaultVariants: { size: "lg" },
@@ -43,33 +43,34 @@ export type KeyFactsProps = VariantProps<typeof keyFactsVariants> & {
 /**
  * The primary facts in one row, in the stat cards' type without their frame: each as wide as its
  * value, which may wrap; a truncating fact (the customer) gives way first. Links and names that
- * open a card underline on hover. The label sits under its value.
+ * open a card underline on hover. On a page (`lg`) the label sits under its value; in a card
+ * (`sm`) it sits on top, with the value's tiny line (the date) under the value. At `lg` the facts
+ * align to the bottom, so the labels share one line however many lines a value takes.
  */
 export function KeyFacts({ facts, size, className }: KeyFactsProps) {
-  // One fact with a preheader leaves a line above every value, so the values share a baseline.
-  const aligned = facts.some((fact) => fact.preheader);
+  const small = size === "sm";
   return (
     <dl data-slot="key-facts" className={cn(keyFactsVariants({ size }), className)}>
       {facts.map(({ label, preheader, value, truncate, title, onSelect }) => (
-        <div key={label} className={cn("grid gap-1", truncate && "min-w-0 shrink-[999]")}>
+        <div
+          key={label}
+          className={cn(
+            "grid gap-1",
+            small ? "content-start" : "content-end",
+            truncate && "min-w-0 shrink-[999]",
+          )}
+        >
           <dt
             className={cn(
-              "order-last text-muted-foreground",
-              size === "sm" ? "text-[10px]" : "text-xs",
+              "text-muted-foreground",
+              small ? "font-medium text-[11px] leading-4" : "order-last text-xs",
             )}
           >
             {label}
           </dt>
           <dd title={title} className={cn(valueVariants({ size }), truncate && "truncate")}>
-            {aligned ? (
-              <span
-                className={cn(
-                  "block font-sans leading-4",
-                  size === "sm"
-                    ? "min-h-3 text-[10px] text-muted-foreground"
-                    : "min-h-4 font-medium text-foreground/80 text-xs",
-                )}
-              >
+            {!small && preheader ? (
+              <span className="block font-medium font-sans text-foreground/80 text-xs leading-4">
                 {preheader}
               </span>
             ) : null}
@@ -84,6 +85,11 @@ export function KeyFacts({ facts, size, className }: KeyFactsProps) {
             ) : (
               value
             )}
+            {small && preheader ? (
+              <span className="mt-0.5 block font-medium font-sans text-[11px] text-muted-foreground leading-4 tracking-normal">
+                {preheader}
+              </span>
+            ) : null}
           </dd>
         </div>
       ))}

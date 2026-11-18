@@ -1,6 +1,7 @@
 import { flexRender, type Row } from "@tanstack/react-table";
 import type { ComponentProps, KeyboardEvent, ReactNode } from "react";
 import { cn } from "../../lib/cn";
+import { type CardSurface, rowSurfaceProps } from "../booking-tone/booking-tone";
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from "../context-menu/context-menu";
 import { TableCell, TableRow } from "../table/table";
 import { isPinnedColumn } from "./data-table-order";
@@ -13,6 +14,8 @@ export type DataTableRowProps<TData> = {
   /** The row's right-click menu items; none = the browser's own menu. */
   menu?: (row: TData) => ReactNode;
   rowClassName?: (row: TData) => string | undefined;
+  /** The row's state cues, as on cards: state bar, soft hatch, dimmed when over. */
+  rowSurface?: ((row: TData) => CardSurface | undefined) | undefined;
 };
 
 /** A row with a right-click menu when `menu` is given. */
@@ -45,9 +48,12 @@ function PlainRow<TData>({
   selected,
   onRowClick,
   rowClassName,
+  rowSurface,
   ...rest
 }: PlainRowProps<TData>) {
   const clickable = onRowClick !== undefined;
+  const surface = rowSurface?.(row.original);
+  const look = surface ? rowSurfaceProps({ surface }) : undefined;
   return (
     <TableRow
       {...rest}
@@ -57,6 +63,7 @@ function PlainRow<TData>({
         "group/row",
         clickable && "cursor-pointer focus-visible:bg-muted focus-visible:outline-none",
         rowClassName?.(row.original),
+        look?.className,
       )}
       onClick={() => onRowClick?.(row.original)}
       onKeyDown={(event) => openOnKey({ event, open: () => onRowClick?.(row.original) })}

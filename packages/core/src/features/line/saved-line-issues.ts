@@ -21,6 +21,7 @@ const toPlanned = ({ line }: { line: LineDto }): PlannedLine => ({
   ...{ layoutId: line.layoutId, startsAt: line.startsAt, endsAt: line.endsAt },
   ...{ setupMinutes: line.setupMinutes, teardownMinutes: line.teardownMinutes },
   quantity: line.effectiveQuantity,
+  role: line.role,
 });
 
 /** Each line's own state (its hold and whether it is released), one query. */

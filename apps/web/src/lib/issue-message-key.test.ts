@@ -16,6 +16,9 @@ describe("issueMessageKey", () => {
     expect(issueMessageKey({ code: "invalid_type", expected: "number" })).toBe("invalidNumber");
     expect(issueMessageKey({ code: "too_big", origin: "string" })).toBe("tooLong");
     expect(issueMessageKey({ code: "custom" })).toBe("invalid");
+    expect(issueMessageKey({ code: "custom", params: { key: "invalidPostalCode" } })).toBe(
+      "invalidPostalCode",
+    );
   });
 
   it("only returns keys that exist in errors.*", () => {
@@ -28,6 +31,7 @@ describe("issueMessageKey", () => {
       { code: "invalid_type", expected: "number" },
       { code: "invalid_type", expected: "string" },
       { code: "invalid_format", format: "email" },
+      { code: "custom", params: { key: "invalidPostalCode" } },
       { code: "other" },
     ];
     for (const fact of facts) {

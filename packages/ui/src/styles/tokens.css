@@ -205,6 +205,14 @@
 
   /* Motion: the bell wiggles when a notification comes in (ADR 0094); use with `motion-safe:`. */
   --animate-wiggle: wiggle 0.8s ease-in-out;
+  /* A live card's border: a light runs slowly round it (`LiveBorder`); use with `motion-safe:`. */
+  --animate-live-shimmer: live-shimmer 6s linear infinite;
+
+  @keyframes live-shimmer {
+    to {
+      --live-angle: 360deg;
+    }
+  }
 
   @keyframes wiggle {
     0%,

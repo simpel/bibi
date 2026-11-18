@@ -105,6 +105,9 @@
     "editDescription": "Change customer, contact, desired dates, counts, budget and the type's fields. The status and the assignee are changed separately.",
     "created": "The order has been created.",
     "updated": "The order has been updated.",
+    "editTitle": "Edit title",
+    "titleLabel": "Title",
+    "titleUpdated": "The title has been updated.",
     "details": "Details",
     "changeStatus": "Change status",
     "changeStatusDescription": "Move the order to one of the statuses your organization allows from its current status. Some statuses need a reason or an assignee, and a closing status releases the order's rooms and resources.",
@@ -172,7 +175,6 @@
     "statusHistory": {
       "title": "Status history",
       "empty": "No status changes yet.",
-      "entered": "Entered {status}",
       "changed": "Changed status",
       "trigger": {
         "MANUAL": "By hand",
@@ -256,6 +258,14 @@
         "excludeAssignee": "Exclude assignee",
         "excludeFollower": "Exclude follower"
       }
+    },
+    "groups": {
+      "program": "Program",
+      "needs": "Needs and run sheets",
+      "people": "Details and people",
+      "messages": "Messages",
+      "money": "Money",
+      "history": "History"
     }
   },
   "orderIntake": {
@@ -595,12 +605,8 @@
     "description": "The order at a glance",
     "untitled": "Order {reference}",
     "reference": "#{reference}",
-    "details": "Details",
-    "assignee": "Assignee",
-    "customer": "Client",
-    "contact": "Contact",
-    "none": "–",
-    "lines": "Lines"
+    "open": "Open order",
+    "moreOnPage": "Quotes, payments, run sheets and messages are on the order page, where you can also change the order."
   },
   "orderTemplate": {
     "singular": "Package",
@@ -659,14 +665,14 @@
     "archived": "The line has been removed.",
     "created": "The line has been added.",
     "updated": "The line has been updated.",
-    "changeState": "Change state",
+    "changeState": "Change reservation",
     "followStatus": "Follow the status again",
-    "stateChanged": "The line's state has been changed.",
+    "stateChanged": "The line's reservation has been changed.",
     "overridden": "(overridden)",
     "empty": "The order has no lines yet.",
     "occupied": "The room is already occupied during this period or its changeover time.",
-    "noItem": "No room",
-    "itemSearch": "Search rooms and bookable items",
+    "noItem": "No item",
+    "itemSearch": "Search items",
     "noItemMatch": "No item matches.",
     "noLayout": "No layout",
     "layoutOption": "{name} (up to {capacity})",
@@ -675,20 +681,20 @@
       "name": "Name",
       "startsAt": "Starts",
       "endsAt": "Ends",
-      "item": "Room or bookable item",
+      "item": "Item",
       "layout": "Layout",
       "quantity": "Quantity",
       "note": "Internal note",
-      "unitPrice": "Own unit price (kr)",
-      "discountPercent": "Own discount (%)",
-      "vatRatePercent": "Own VAT (%)"
+      "unitPrice": "Unit price (kr)",
+      "discountPercent": "Discount (%)",
+      "vatRatePercent": "VAT (%)"
     },
     "columns": {
       "time": "Time",
       "name": "Name",
       "type": "Type",
       "where": "Where",
-      "state": "State",
+      "state": "Reservation",
       "quantity": "Quantity",
       "unitPrice": "Unit price",
       "amount": "Amount excl. VAT"
@@ -784,6 +790,17 @@
       "otherLines": "Other lines",
       "missingTime": "No time yet",
       "untimed": "No time: {lines}"
+    },
+    "outsideHours": {
+      "venueTitle": "The venue is closed at this time",
+      "itemTitle": "Outside this item's working hours",
+      "description": "The line falls outside the opening hours. You can still save it, and it will be marked as outside the hours so everyone sees it.",
+      "confirm": "Save anyway"
+    },
+    "itemLock": {
+      "part": "Part of a bundle: it keeps its item. Edit the bundle line instead.",
+      "option": "A chosen option: it keeps its item. Use Choose options on the line above to pick another.",
+      "parent": "This line has parts or chosen options, so it keeps its item. Remove it and add the new item instead."
     }
   },
   "lineAllocation": {

@@ -16,7 +16,7 @@ import type {
 } from "../availability-calendar/calendar-types";
 import { type PinnedBooking, usePins } from "../availability-calendar/pins-context";
 import { Badge } from "../badge/badge";
-import type { BookingTone, CardIssue } from "../booking-tone/booking-tone";
+import type { CardIssue } from "../booking-tone/booking-tone";
 import { OrderView, type OrderViewFact, type OrderViewMetaRow } from "../order-view/order-view";
 import { BookingStats, bookingFacts, openable } from "./booking-extras";
 import { cleanTitle } from "./clean-title";
@@ -54,8 +54,6 @@ export type CalendarHoverDetailsProps = {
   extraFacts?: readonly OrderViewFact[];
   /** No facts list, e.g. a collapsed card on My work. */
   hideFacts?: boolean;
-  /** The card's tone; its surface draws the outline (`bookingToneVariants`), not this. */
-  tone?: BookingTone | undefined;
   /** Issues besides the booking's own (`issues`, and blocked), as badges on a row above the title. */
   issues?: readonly CardIssue[] | undefined;
   /** The title link covers the whole card, which needs `group relative` (hover underlines it). */
@@ -265,9 +263,22 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
   const saysBlocked = own.some((issue) => issue.level === "error");
   const blocked: CardIssue[] =
     booking?.blocked && labels && !saysBlocked
-      ? [{ key: "blocked", level: "error", label: labels.blocked }]
+      ? [{ key: "blocked", level: "error", label: labels.blocked, detail: labels.blockedDetail }]
       : [];
-  const issues = [...blocked, ...own, ...(props.issues ?? [])];
+  // A preliminary booking asks to be confirmed or released: an amber badge with a clock.
+  const tentative: CardIssue[] =
+    booking?.state.hold === "soft" && labels
+      ? [
+          {
+            key: "tentative",
+            level: "warning",
+            icon: "clock",
+            label: labels.pinCard.tentative,
+            detail: labels.pinCard.tentativeDetail,
+          },
+        ]
+      : [];
+  const issues = [...blocked, ...own, ...(props.issues ?? []), ...tentative];
 
   return (
     <OrderView
@@ -283,11 +294,12 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
       meta={meta}
       notes={notes}
       highlight={
-        booking && labels ? (
+        // Stats exist only on the detailed card; anything else here would rule off an empty body.
+        booking && labels && props.detailed ? (
           <BookingStats
             booking={booking}
             labels={labels}
-            detailed={Boolean(props.detailed)}
+            detailed
             time={time}
             date={dateStr}
             onOpen={props.detailed ? onOpen : undefined}

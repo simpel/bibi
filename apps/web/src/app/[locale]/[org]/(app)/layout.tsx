@@ -4,6 +4,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { TablePreferencesProvider } from "@/components/data-table/table-preferences-provider";
+import { dismissedHints, HELP_DISMISSED_PREFIX } from "@/components/help/help-hints";
+import { HelpProvider } from "@/components/help/help-provider";
 import { canOpenAdmin } from "@/components/shell/admin-items";
 import { AppShell } from "@/components/shell/app-shell";
 import { loadBillingGate } from "@/features/billing/load-billing-gate";
@@ -47,30 +49,34 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
     inboxOpen: null,
     myWorkDue: null,
   }));
-  const [platformAdmin, abilities, preferences, canDraftFromMessage] = await Promise.all([
-    isPlatformAdmin({ userId: id }),
-    getCallerAbilities(),
-    loadUserPreferences({ prefix: TABLE_COLUMNS_PREFIX }),
-    hasDraftModel(),
-  ]);
+  const [platformAdmin, abilities, preferences, helpPreferences, canDraftFromMessage] =
+    await Promise.all([
+      isPlatformAdmin({ userId: id }),
+      getCallerAbilities(),
+      loadUserPreferences({ prefix: TABLE_COLUMNS_PREFIX }),
+      loadUserPreferences({ prefix: HELP_DISMISSED_PREFIX }),
+      hasDraftModel(),
+    ]);
   return (
     <NextIntlClientProvider messages={pickSurfaceMessages({ locale, namespaces: APP_NAMESPACES })}>
       <TablePreferencesProvider preferences={preferences}>
-        <AppShell
-          organizationId={organizationId}
-          user={{ name, email }}
-          counts={counts}
-          needsYou={needsYou}
-          trial={trial}
-          access={{
-            canConfigure: canOpenAdmin({ permissions: abilities.permissions }),
-            canDraftFromMessage,
-            platformAdmin,
-            permissions: abilities.permissions,
-          }}
-        >
-          <AppPinnedBookings organizationId={organizationId}>{children}</AppPinnedBookings>
-        </AppShell>
+        <HelpProvider dismissed={dismissedHints({ preferences: helpPreferences })}>
+          <AppShell
+            organizationId={organizationId}
+            user={{ name, email }}
+            counts={counts}
+            needsYou={needsYou}
+            trial={trial}
+            access={{
+              canConfigure: canOpenAdmin({ permissions: abilities.permissions }),
+              canDraftFromMessage,
+              platformAdmin,
+              permissions: abilities.permissions,
+            }}
+          >
+            <AppPinnedBookings organizationId={organizationId}>{children}</AppPinnedBookings>
+          </AppShell>
+        </HelpProvider>
       </TablePreferencesProvider>
     </NextIntlClientProvider>
   );

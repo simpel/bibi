@@ -2,10 +2,9 @@ import { describe, expect, it } from "vitest";
 import { openSecret, sealSecret } from "../src/crypto/secret-box";
 import {
   completeIntegrationConnect,
-  createExecuteContext,
+  createSystemContext,
   execute,
   getAccessToken,
-  grantAll,
   listIntegrations,
   refreshExpiringIntegrations,
 } from "../src/index";
@@ -116,11 +115,8 @@ describe("getAccessToken (Fortnox)", () => {
 describe("integration.refreshExpiring", () => {
   it("refreshes only connections near the 45-day limit, as SYSTEM", async () => {
     const { fortnox, context } = await connected();
-    const system = createExecuteContext({
+    const system = createSystemContext({
       organizationId: context.organizationId,
-      roles: [],
-      permissions: grantAll({}),
-      actor: { type: "system", userId: null },
     });
     const early = unwrap({
       result: await execute({

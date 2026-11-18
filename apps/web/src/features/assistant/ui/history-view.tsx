@@ -3,25 +3,16 @@
 import { Button } from "@bibi/ui";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import { InlineLoadError } from "@/components/states/inline-load-error";
-import { useAssistant } from "../state/assistant-context";
 import { ArchiveConversationDialog } from "./archive-conversation-dialog";
-import { type EditingConversation, HistoryList } from "./history-list";
+import { HistoryList } from "./history-list";
+import { useConversationHistory } from "./use-conversation-history";
 
 /** Full-page conversation history: open, rename and archive earlier conversations, or start a new one. */
 export function HistoryView() {
   const t = useTranslations("assistant.history");
-  const { conversations, newConversation, openAssistant } = useAssistant();
-  const { items, loading, errorKey, refresh } = conversations;
-  const [editing, setEditing] = useState<EditingConversation>(null);
-  useEffect(() => void refresh(), [refresh]);
-  const archiving =
-    editing?.mode === "archive" ? items.find((item) => item.id === editing.id) : undefined;
-  const startNew = () => {
-    newConversation();
-    openAssistant();
-  };
+  const { items, loading, errorKey, editing, setEditing, archiving, startNew } =
+    useConversationHistory();
   return (
     <section className="grid gap-4" data-slot="assistant-history">
       <div className="flex items-center justify-between gap-2">

@@ -4,8 +4,10 @@ import { itemRoute, orderRoute } from "@/lib/routes";
 
 const MINUTE = 60_000;
 const DAY_MS = 86_400_000;
+/** The window when no line of the order has a time that day. */
 const DAY_START = 8 * 60;
 const DAY_END = 20 * 60;
+const HOUR = 60;
 
 type DayLine = Pick<LineDto, "id" | "name" | "itemId" | "startsAt" | "endsAt"> &
   Partial<Pick<LineDto, "stateId" | "timeZone">>;
@@ -151,9 +153,21 @@ function missingRows({ input }: { input: OrderDayInput }): DaySnapshotRow[] {
 }
 
 /**
+ * The axis: from the first line's start to the last line's end that day, in whole hours (never
+ * before midnight, at least an hour wide); 08:00–20:00 when no line of the order is timed there.
+ */
+function windowOf({ own }: { own: readonly OwnBar[] }) {
+  if (own.length === 0) return { startMinute: DAY_START, endMinute: DAY_END };
+  const first = Math.max(0, Math.min(...own.map(({ start }) => start)));
+  const last = Math.max(...own.map(({ end }) => end));
+  const startMinute = Math.floor(first / HOUR) * HOUR;
+  return { startMinute, endMinute: Math.max(Math.ceil(last / HOUR) * HOUR, startMinute + HOUR) };
+}
+
+/**
  * A saved order's day (the order page): everything booked that day, the other orders' dimmed
  * and this order's lines solid, its items first; lines without a bookable item in one row and
- * untimed lines listed. 08:00–20:00, widened in whole hours to cover every line.
+ * untimed lines listed. The axis spans the order's own lines that day (`windowOf`).
  */
 export function orderDayOf({ ...input }: OrderDayInput): OrderDay {
   const { midnight, itemNames, itemGroups, stateMap, timeFormatter } = input;
@@ -211,8 +225,7 @@ export function orderDayOf({ ...input }: OrderDayInput): OrderDay {
   const rows = itemRows({ input, own });
   const other = { id: "other", label: input.otherLabel, group: input.otherLabel, blocks: loose };
   return {
-    startMinute: Math.floor(Math.min(DAY_START, ...own.map(({ start }) => start)) / 60) * 60,
-    endMinute: Math.ceil(Math.max(DAY_END, ...own.map(({ end }) => end)) / 60) * 60,
+    ...windowOf({ own }),
     rows: [...(loose.length > 0 ? [...rows, other] : rows), ...missingRows({ input })],
     untimed: input.lines
       .filter(

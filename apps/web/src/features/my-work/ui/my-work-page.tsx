@@ -2,10 +2,12 @@ import { viewMyWork } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { SimplePage } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { AppCardLegend } from "@/components/card-legend/app-card-legend";
 import { buildTableQuery } from "@/components/data-table/table-filter-query";
 import { SavedViews } from "@/components/saved-views/saved-views";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { PageTour } from "@/components/tour/page-tour";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { getDateTimeFormat } from "@/server/date-time-format";
@@ -59,36 +61,45 @@ export async function MyWorkPage({ locale, from, to, today, q }: MyWorkPageProps
   const cards = all ? filterMyWork({ cards: all, q, labels }) : null;
   return (
     <SimplePage>
-      <div data-slot="my-work" className="mx-auto grid w-full max-w-2xl gap-6">
+      <div data-slot="my-work" className="mx-auto grid w-full max-w-4xl gap-6">
         {header}
-        {!startPage ? (
-          <Link href={ROUTES.home} className={linkClass}>
-            {t("backToToday")}
-          </Link>
-        ) : null}
-        {all ? (
-          <MyWorkSearch q={q} cards={all}>
-            <SavedViews
-              listId="my-work"
-              defaults={["all"]}
-              pathname={myWorkHref({ from, to, today })}
-              q={q}
-              vocabulary={
-                buildTableQuery({ qualifiers: myWorkQualifiers({ cards: all, labels }) }).vocabulary
+        <div className="grid min-w-0 content-start gap-6">
+          {!startPage ? (
+            <Link href={ROUTES.home} className={linkClass}>
+              {t("backToToday")}
+            </Link>
+          ) : null}
+          {all ? (
+            <div data-tour="my-work.search">
+              <MyWorkSearch q={q} cards={all}>
+                <SavedViews
+                  listId="my-work"
+                  defaults={["all"]}
+                  pathname={myWorkHref({ from, to, today })}
+                  q={q}
+                  vocabulary={
+                    buildTableQuery({ qualifiers: myWorkQualifiers({ cards: all, labels }) })
+                      .vocabulary
+                  }
+                />
+              </MyWorkSearch>
+            </div>
+          ) : null}
+          {all?.length ? <AppCardLegend live /> : null}
+          <div data-tour="my-work.timeline">
+            <MyWorkTimeline
+              work={{ ...result.value, cards }}
+              dates={dates}
+              later={
+                result.value.cards ? (
+                  <MyWorkLater next={result.value.next} timeZone={result.value.timeZone} q={q} />
+                ) : null
               }
             />
-          </MyWorkSearch>
-        ) : null}
-        <MyWorkTimeline
-          work={{ ...result.value, cards }}
-          dates={dates}
-          later={
-            result.value.cards ? (
-              <MyWorkLater next={result.value.next} timeZone={result.value.timeZone} q={q} />
-            ) : null
-          }
-        />
+          </div>
+        </div>
       </div>
+      <PageTour tour="my-work" />
     </SimplePage>
   );
 }

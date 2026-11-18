@@ -1,5 +1,4 @@
 import { resolveLocale } from "@bibi/i18n";
-import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { PermissionGate } from "@/components/states/permission-gate";
 import { loadRunSheetDocument } from "@/features/run-sheet/load-run-sheet-document";
@@ -23,10 +22,8 @@ export default async function RunSheetPage({ params }: RunSheetPageProps) {
   const locale = resolveLocale({ value: raw });
   setRequestLocale(locale);
   return (
-    <SimplePage>
-      <PermissionGate permission="runSheet:read">
-        <RunSheetDetail locale={locale} id={id} />
-      </PermissionGate>
-    </SimplePage>
+    <PermissionGate permission="runSheet:read">
+      <RunSheetDetail locale={locale} id={id} />
+    </PermissionGate>
   );
 }

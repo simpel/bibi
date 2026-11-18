@@ -2,6 +2,7 @@ import { listRunSheets } from "../../features/run-sheet/operations";
 import { createExecuteContext, type ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { PRESET_PERMISSIONS } from "../../permissions/presets";
+import { ALL_RECORDS } from "../../permissions/record-scope";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoRunSheetsInput = { context: ExecuteContext; org: DemoOrg };
@@ -12,6 +13,8 @@ async function mineFor({ context, userId }: { context: ExecuteContext; userId: s
     organizationId: context.organizationId,
     roles: ["member"],
     permissions: PRESET_PERMISSIONS.member,
+    preset: "member",
+    scopes: ALL_RECORDS,
     actor: { type: "user", userId },
   });
   const input = { q: "involves:me is:current", page: 1, limit: 100 };

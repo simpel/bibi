@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { toneOfLine } from "../booking-tone/booking-tone";
+import { type CardSurface, surfaceOfLine } from "../booking-tone/booking-tone";
 import { CursorHoverCard } from "../cursor-hover/cursor-hover-card";
 import {
   CalendarHoverDetails,
@@ -12,6 +12,8 @@ export type CalendarHoverCardProps = CalendarHoverDetailsProps & {
   children: ReactNode;
   /** Replaces the line card, e.g. the booking card in availability. */
   card?: ReactNode;
+  /** The card's surface instead of the line's, e.g. a plain frame around several bookings. */
+  surface?: CardSurface | undefined;
   content?: ReactNode;
   /** Never peek, e.g. while the item is open in a sheet beside it. */
   disabled?: boolean;
@@ -30,18 +32,19 @@ export function CalendarHoverCard({
   disabled,
   asChild = true,
   className,
+  surface: given,
   ...details
 }: CalendarHoverCardProps) {
   const line = details.booking ?? details.line;
-  const tone = line ? toneOfLine({ line }) : undefined;
-  const cardContent = content ?? card ?? <CalendarHoverDetails detailed tone={tone} {...details} />;
+  const surface = given ?? (line ? surfaceOfLine({ line }) : undefined);
+  const cardContent = content ?? card ?? <CalendarHoverDetails detailed {...details} />;
   return (
     <CursorHoverCard
       disabled={disabled}
       content={cardContent}
       asChild={asChild}
       className={className}
-      tone={tone}
+      surface={surface}
     >
       {children}
     </CursorHoverCard>

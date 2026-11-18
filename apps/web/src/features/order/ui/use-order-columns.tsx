@@ -33,9 +33,13 @@ export type OrderLookups = {
   /** Members who can be assigned (`id` = user id). */
   members: PersonOption[];
   renderActions?: ((order: OrderDto) => ReactNode) | undefined;
+  /** The order's red and amber badges beside its title, as on the pipeline card. */
+  renderIssues?: ((order: OrderDto) => ReactNode) | undefined;
 };
 
-const titleColumn = ({ t }: { t: Translate }): Column => ({
+type TitleInput = { t: Translate; renderIssues?: OrderLookups["renderIssues"] };
+
+const titleColumn = ({ t, renderIssues }: TitleInput): Column => ({
   id: "title",
   header: t("columns.title"),
   accessorFn: (order) => order.title ?? `#${order.reference}`,
@@ -46,6 +50,7 @@ const titleColumn = ({ t }: { t: Translate }): Column => ({
         title: order.title,
         fallback: t("reference", { reference: order.reference }),
       })}
+      issues={renderIssues?.(order)}
     />
   ),
 });
@@ -120,6 +125,7 @@ export function useOrderColumns({
   types,
   members,
   renderActions,
+  renderIssues,
 }: OrderLookups): Column[] {
   const t = useTranslations("order");
   const common = useTranslations("common");
@@ -128,7 +134,7 @@ export function useOrderColumns({
   return useMemo<Column[]>(
     () =>
       createTableColumns<OrderDto>({
-        primary: [titleColumn({ t })],
+        primary: [titleColumn({ t, renderIssues })],
         relations: [
           ...namedColumns({ t, customers, types, hidden: shown }),
           assigneeColumn({ t, members }),
@@ -148,6 +154,6 @@ export function useOrderColumns({
           ? [actionsColumn<OrderDto>({ label: common("actions"), cell: renderActions })]
           : [],
       }),
-    [t, common, format, customers, types, members, statuses, shown, renderActions],
+    [t, common, format, customers, types, members, statuses, shown, renderActions, renderIssues],
   );
 }

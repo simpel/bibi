@@ -79,7 +79,11 @@ export function DayValuePeek({ total, day, children }: DayValueProps & { childre
  * The day's value as a bar under its name, on every day however narrow. The strip around it is
  * taller than the bar, so a finger can tap it; inside a `DayValuePeek` that opens the amounts.
  */
-export function DayValueStrip({ total, className }: Omit<DayValueProps, "day">) {
+export function DayValueStrip({
+  total,
+  className,
+  barClassName,
+}: Omit<DayValueProps, "day"> & { barClassName?: string }) {
   const labels = useCalendarLabels();
   const fill = total ? fillOf({ total }) : null;
   if (!total || !fill) return null;
@@ -92,7 +96,7 @@ export function DayValueStrip({ total, className }: Omit<DayValueProps, "day">) 
         className,
       )}
     >
-      <DayValueBar total={total} className="rounded-full" />
+      <DayValueBar total={total} className={cn("rounded-full", barClassName)} />
     </button>
   );
 }

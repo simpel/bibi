@@ -51,5 +51,11 @@ describe("cross-organization isolation: shared hours", () => {
     expect(listed.data.items, "venue hoursList leaves A's venue out").toEqual([]);
     const ownList = await call({ client: a, name: "venue_hoursList", args: { venueIds } });
     expect(ownList.data.items[0].hours.days).toEqual(DAYS);
+    const period = { startsAt: "2037-11-01T09:00:00Z", endsAt: "2037-11-01T11:00:00Z" };
+    const check = { itemId: item.data.id, ...period };
+    const refused = await call({ client: b, name: "line_checkHours", args: check });
+    expect(refused.data.code, "line checkHours").toBe("NOT_FOUND");
+    const own = await call({ client: a, name: "line_checkHours", args: check });
+    expect(own.isError, JSON.stringify(own.data)).toBe(false);
   });
 });

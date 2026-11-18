@@ -1,5 +1,5 @@
 import type { Prisma } from "@bibi/db";
-import { createExecuteContext } from "../../operations/context";
+import { createSystemContext } from "../../operations/context";
 import type { Permission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 import { reachableRecipients } from "./recipient-access";
@@ -47,11 +47,9 @@ export async function notify({ context, kind, userIds, data, ...subject }: Notif
     ...{ context, userIds: wanted, kind, needs: NEEDS[kind] },
   });
   if (recipients.length === 0) return;
-  const system = createExecuteContext({
+  const system = createSystemContext({
     organizationId: context.organizationId,
-    roles: [],
     permissions: {},
-    actor: { type: "system", userId: null },
   });
   const snapshot = { ...data, actorName: await actorName({ context }) };
   await system.db.notification.createMany({

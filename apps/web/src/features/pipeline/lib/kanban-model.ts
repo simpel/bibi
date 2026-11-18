@@ -10,6 +10,14 @@ export type BoardCard = Omit<PipelineCard, "title"> & {
   customerName: string | null;
   /** The status name, set only in a column that groups several statuses. */
   statusTitle: string | null;
+  /** The status name, always; the pinned card shows it as its state. */
+  statusName: string;
+  /** The status colour, for its badge beside `statusTitle`. */
+  statusColor: string | null;
+  /** The main assignee's name, for the avatar; null without one. */
+  assigneeName: string | null;
+  /** ISO 4217 code of the card's value (the board's currency). */
+  currency: string;
 };
 
 /** The board's phases as kanban columns; a drop on one picks its status (ADR 0076). */
@@ -20,10 +28,16 @@ export function kanbanColumns({ board }: { board: PipelineBoard }): KanbanColumn
 export type KanbanCardsInput = {
   board: PipelineBoard;
   customerNames: Readonly<Record<string, string>>;
+  /** Member user id → name; empty hides the assignee. */
+  memberNames?: Readonly<Record<string, string>>;
 };
 
 /** The cards, titled by the order's title (else customer or reference) in their status zone. */
-export function kanbanCards({ board, customerNames }: KanbanCardsInput): BoardCard[] {
+export function kanbanCards({
+  board,
+  customerNames,
+  memberNames = {},
+}: KanbanCardsInput): BoardCard[] {
   return board.cards.map((card) => {
     const column = board.columns.find((c) => c.id === card.columnId);
     const status = column?.statuses.find((s) => s.id === card.statusId);
@@ -33,6 +47,10 @@ export function kanbanCards({ board, customerNames }: KanbanCardsInput): BoardCa
       title: card.title ?? customerName ?? `#${card.reference}`,
       customerName,
       statusTitle: column && column.statuses.length > 1 ? (status?.title ?? null) : null,
+      statusName: status?.title ?? "",
+      statusColor: status?.color ?? null,
+      assigneeName: card.assigneeId ? (memberNames[card.assigneeId] ?? null) : null,
+      currency: board.currency,
     };
   });
 }

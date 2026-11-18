@@ -1,6 +1,6 @@
 import { type Db, getDb } from "@bibi/db";
 import { err, ok, type Result } from "../../errors/result";
-import { createExecuteContext } from "../../operations/context";
+import { createSystemContext } from "../../operations/context";
 import { defineOperation } from "../../operations/define-operation";
 import { execute } from "../../operations/execute";
 import type { OperationContext } from "../../operations/types";
@@ -167,11 +167,9 @@ export async function startPublicAttempt({
     select: { organizationId: true },
   });
   if (!row) return notFound({ entity: "Payment" });
-  const context = createExecuteContext({
+  const context = createSystemContext({
     organizationId: row.organizationId,
-    roles: [],
     permissions: { payment: ["read", "write"] },
-    actor: { type: "system", userId: null },
     db,
   });
   return execute({ operation: startPaymentAttempt, input: { token, method }, context });

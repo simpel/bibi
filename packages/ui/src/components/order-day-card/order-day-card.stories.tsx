@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import type { PinnedBooking } from "../availability-calendar/pins-context";
 import { Badge } from "../badge/badge";
-import type { BookingTone } from "../booking-tone/booking-tone";
+import type { CardSurface } from "../booking-tone/booking-tone";
 import { OrderDayCard, type OrderDayCardProps } from "./order-day-card";
 
 const booking: PinnedBooking = {
@@ -49,7 +49,6 @@ const meta = {
   args: {
     booking,
     href: "/orders/1042",
-    tone: "confirmed",
     date: "Day 2 of 3",
     subtitle: "Volvo Cars · Your responsibility",
     facts,
@@ -62,32 +61,70 @@ type Story = StoryObj<typeof meta>;
 
 export const Confirmed: Story = {};
 
-/** The member has something to do: the most urgent flag in the bottom row. */
-export const Action: Story = {
-  args: { tone: "action", footer: <Badge variant="warning">Kitchen order changed</Badge> },
+/** Something needs fixing: an amber badge in the header, the most urgent flag in the bottom row. */
+export const Warning: Story = {
+  args: {
+    booking: {
+      ...booking,
+      issues: [{ key: "run-sheet", level: "warning", label: "Kitchen order changed" }],
+    },
+    footer: <Badge variant="warning">Kitchen order changed</Badge>,
+  },
 };
 
-export const Conflict: Story = {
-  args: { tone: "conflict", footer: <Badge variant="destructive">Room blocked by #1049</Badge> },
+/** Something blocks it: a red badge in the header. */
+export const Blocked: Story = {
+  args: {
+    booking: {
+      ...booking,
+      issues: [{ key: "clash", level: "error", label: "Room blocked by #1049" }],
+    },
+  },
 };
 
-const TONES: BookingTone[] = [
-  "conflict",
-  "action",
-  "live",
-  "tentative",
-  "confirmed",
-  "done",
-  "following",
+const soft: PinnedBooking = {
+  ...booking,
+  state: { ...booking.state, name: "Prebooked", hold: "soft" },
+};
+
+const SURFACES: { name: string; surface: CardSurface; tentative?: boolean }[] = [
+  { name: "plain", surface: {} },
+  { name: "preliminary", surface: {}, tentative: true },
+  { name: "following", surface: { following: true } },
+  { name: "preliminary + following", surface: { following: true }, tentative: true },
+  { name: "done", surface: { done: true } },
+  {
+    name: "preliminary + following + done",
+    surface: { following: true, done: true },
+    tentative: true,
+  },
 ];
 
-/** Every tone: the outline and the header's wash, as the start page shows them. */
-export const AllTones: Story = {
+/** Each fact has its own cue on the surface, and the cues combine (spec: home, Tone). */
+export const Surfaces: Story = {
   render: (args) => (
     <div className="grid gap-3">
-      {TONES.map((tone) => (
-        <Card key={tone} {...args} tone={tone} subtitle={`Volvo Cars · ${tone}`} />
+      {SURFACES.map(({ name, surface, tentative }) => (
+        <Card
+          key={name}
+          {...args}
+          booking={tentative ? soft : booking}
+          surface={surface}
+          subtitle={`Volvo Cars · ${name}`}
+        />
       ))}
     </div>
   ),
+};
+
+/** Happening now: the pulsing Live in the footer, never the surface. */
+export const Live: Story = {
+  args: {
+    footer: (
+      <span className="inline-flex items-center gap-1.5 font-semibold text-[10px] text-success uppercase tracking-wide">
+        <span aria-hidden className="size-1.5 animate-pulse rounded-full bg-success" />
+        Live
+      </span>
+    ),
+  },
 };

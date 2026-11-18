@@ -4,11 +4,12 @@ import {
   changeOrderStatus,
   createOrder,
   execute,
+  followAssignment,
   listAssignments,
   unfollowAssignment,
 } from "../src/index";
 import { assignTo, followAs, orderSubject } from "./assignment-helpers";
-import { errorCode, unwrap } from "./helpers";
+import { errorCode, testContext, unwrap } from "./helpers";
 import { contactAt, createTestOrder, memberUser, orderSetup } from "./order-helpers";
 import { statusByName } from "./order-status-helpers";
 import { testOrg } from "./org-helpers";
@@ -24,6 +25,31 @@ async function setup() {
 }
 
 describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
+  it("lets anyone who may view orders follow and unfollow for themselves, not for others", async () => {
+    const { context, subject } = await setup();
+    const eva = await memberUser({ context, name: "Eva Holm" });
+    const erik = await memberUser({ context, name: "Erik Lund" });
+    const viewer = testContext({
+      organizationId: context.organizationId,
+      permissions: { order: ["read"] },
+      actor: { type: "user", userId: eva },
+    });
+    const self = { ...subject, userId: eva };
+    const followed = unwrap({
+      result: await execute({ operation: followAssignment, input: self, context: viewer }),
+    });
+    expect(followed.followers).toEqual([{ userId: eva, source: "EXPLICIT" }]);
+    const unfollowed = unwrap({
+      result: await execute({ operation: unfollowAssignment, input: self, context: viewer }),
+    });
+    expect(unfollowed.followers).toEqual([]);
+    const other = { ...subject, userId: erik };
+    for (const operation of [followAssignment, unfollowAssignment]) {
+      const result = await execute({ operation, input: other, context: viewer });
+      expect(errorCode({ result })).toBe("FORBIDDEN");
+    }
+  });
+
   it("sets one assignee plus followers and audits every change", async () => {
     const { context, order, subject } = await setup();
     const erik = await memberUser({ context, name: "Erik Lund" });

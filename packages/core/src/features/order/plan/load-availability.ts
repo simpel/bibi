@@ -50,7 +50,10 @@ export async function loadAvailability({
   const lines = plans.flat();
   const itemIds = [...new Set(lines.flatMap((line) => (line.itemId ? [line.itemId] : [])))];
   const keyed = plans.flatMap((plan, p) =>
-    plan.map((line, i) => ({ id: `${p}.${i}`, itemId: line.itemId ?? null, ...times(line) })),
+    plan.map((line, i) => ({
+      ...{ id: `${p}.${i}`, itemId: line.itemId ?? null, role: line.role ?? null },
+      ...times(line),
+    })),
   );
   const [demands, hours] = await Promise.all([
     loadPlanDemands({ context, itemIds }),
