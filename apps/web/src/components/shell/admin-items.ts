@@ -67,7 +67,7 @@ export const ADMIN_GROUPS: readonly AdminGroup[] = [
         key: "general",
         icon: Building2Icon,
         href: ROUTES.adminGeneral,
-        ids: ["timeZone", "domainJoin"],
+        ids: ["timeZone", "domainJoin", "inboxAddress"],
       }),
       page({
         key: "members",

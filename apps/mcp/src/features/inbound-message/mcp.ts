@@ -11,6 +11,7 @@ export const inboundMessageMcpTools = [
   mcpTool({ operation: "inboundMessage.markUnread" }),
   mcpTool({ operation: "inboundMessage.delete" }),
   mcpTool({ operation: "inboundEndpoint.list" }),
+  mcpTool({ operation: "inboundEndpoint.setEmail" }),
   // The deprecated `inboundEmail.*` aliases (ADR 0085).
   ...inboundEmailMcpTools,
 ];

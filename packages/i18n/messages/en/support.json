@@ -78,6 +78,10 @@
             "question": "How do I create an order?",
             "answer": "Click Create order, pick the customer and add the lines: rooms, food, activities. You can also ask the assistant to create it for you.\nFor smaller meetings you don't need a quote first. Create the order and send the payment straight away."
           },
+          "inboxAddress": {
+            "question": "How do I get our booking mail into the inbox?",
+            "answer": "Go to **Administration**, **General** and find **Inbox address**. Pick the address you want before the @ and save. Mail sent there lands in the **Inbox**.\nTo keep your usual booking address, forward it to the inbox address. The same section shows the steps for Microsoft 365 and Google Workspace, and when the last mail arrived, so you can check that it works."
+          },
           "packages": {
             "question": "Where do I make a package, and who can?",
             "answer": "Open **Packages** under Catalog in the left menu and choose **Create package**. Give it a name, the order type and start status, then add its lines.\nManagers and admins can create, edit and archive packages, and everyone can use them when they create an order. An admin can give a member access too, under their permissions."

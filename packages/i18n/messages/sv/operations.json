@@ -508,8 +508,41 @@
     "title": "Inkorg",
     "description": "Förfrågningar som kommit in via e-post, formulär eller API och som inte har något bokning än.",
     "address": "Vidarebefordra er bokningsmejl till <code>{address}</code> så visas de här.",
-    "noAddress": "Ingen inkorgsadress är konfigurerad än, så e-post kan inte nå inkorgen.",
-    "configureAddress": "Ställ in i inställningar",
+    "noAddress": "Ingen inkorgsadress är inställd än, så e-post kan inte nå inkorgen.",
+    "configureAddress": "Ställ in adress",
+    "settings": {
+      "description": "E-post till den här adressen hamnar i inkorgen. Vidarebefordra er egen bokningsadress hit, så kan gästerna fortsätta skriva till adressen de redan känner till.",
+      "localPart": "Inkorgsadress",
+      "publicAddress": "Er egen adress (valfritt)",
+      "publicAddressPlaceholder": "bokning@er-anlaggning.se",
+      "saved": "Inkorgsadressen är sparad",
+      "taken": "En annan organisation använder redan den här adressen. Välj en annan.",
+      "readOnly": "Du kan se inkorgsadressen men inte ändra den.",
+      "lastReceived": "Senaste e-post kom <time></time>.",
+      "noneReceived": "Ingen e-post har nått inkorgen än.",
+      "noDomain": "Mottagning av e-post är inte påslagen för den här Bibi-installationen än, så adressen kan inte visas.",
+      "forwarding": {
+        "yourAddress": "er bokningsadress",
+        "intro": "Vidarebefordra {own} till <code>{address}</code>. Om ni ändrar inkorgsadressen senare behöver ni ändra vidarebefordringen också: e-post till den gamla adressen tas inte längre emot.",
+        "microsoft": {
+          "title": "Microsoft 365 eller Outlook",
+          "one": "Öppna Exchange admin center och gå till Mail flow och sedan Rules.",
+          "two": "Skapa en regel: när ett meddelande skickas till {own}, omdirigera det till <code>{address}</code>.",
+          "three": "Spara regeln. Det kan ta några minuter innan den börjar gälla.",
+          "note": "Vill ni hellre vidarebefordra från själva brevlådan? Microsoft 365 blockerar vidarebefordring utanför organisationen tills en admin tillåter det i policyn för utgående skräppost."
+        },
+        "google": {
+          "title": "Google Workspace eller Gmail",
+          "one": "Logga in i Gmail som {own} och öppna Inställningar, Visa alla inställningar, Vidarebefordran och POP/IMAP.",
+          "two": "Klicka på Lägg till en vidarebefordringsadress och skriv <code>{address}</code>.",
+          "three": "Google skickar ett bekräftelsemejl till adressen. Det dyker upp i er inkorg i Bibi: öppna det och klicka på länken.",
+          "four": "Gå tillbaka till Gmail, välj Vidarebefordra en kopia av inkommande e-post till <code>{address}</code> och spara.",
+          "note": "Är er bokningsadress en Google-grupp? Lägg då till <code>{address}</code> som medlem i gruppen i stället."
+        },
+        "other": "Andra e-posttjänster: leta efter vidarebefordran eller omdirigering i brevlådans inställningar och vidarebefordra till <code>{address}</code>.",
+        "test": "Skicka sedan ett testmejl till er egen adress och kontrollera att det dyker upp i inkorgen."
+      }
+    },
     "open": "Öppna",
     "empty": "Inga meddelanden.",
     "columns": {

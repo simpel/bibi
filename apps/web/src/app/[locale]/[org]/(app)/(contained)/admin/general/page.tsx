@@ -2,6 +2,7 @@ import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { AdminSections } from "@/components/admin/admin-sections";
 import { loadAdminPage } from "@/components/admin/load-admin-page";
+import { InboxAddressSettings } from "@/features/inbound-message/ui/inbox-address-settings";
 import { OrganizationSettings } from "@/features/organization-profile/ui/organization-settings";
 import { pageTitle } from "@/lib/page-metadata";
 
@@ -19,6 +20,7 @@ export default async function GeneralPage({ params }: PageProps) {
   return (
     <AdminSections title={title}>
       <OrganizationSettings locale={locale} show={show} />
+      {show.has("inboxAddress") ? <InboxAddressSettings locale={locale} /> : null}
     </AdminSections>
   );
 }

@@ -13,11 +13,14 @@ enum InboundChannel {
 /// `MAIL_INBOUND_DOMAIN`, which the database cannot know. Null for the API endpoint, which any
 /// caller with `inbox:submit` may use. Unique per channel across organizations, because routing
 /// resolves the organization from it. `status` is the soft-delete flag (ADR 0006).
+/// `publicAddress` (EMAIL only) is the organization's own mail address that forwards to the inbox
+/// address, e.g. `bokning@venue.se`: shown in the forwarding steps, never used for routing.
 model InboundEndpoint {
   id                  String           @id @default(cuid(2))
   organizationId      String
   channel             InboundChannel
   address             String?
+  publicAddress       String?
   name                String
   active              Boolean          @default(true)
   /// Optional defaults for a order made from its messages (owned).

@@ -293,6 +293,7 @@
         "deposit_request": "Request deposit with payment link",
         "inboundMessage_markRead": "Mark message as read",
         "inboundMessage_markUnread": "Mark message as unread",
+        "inboundEndpoint_setEmail": "Edit inbox address",
         "inboundMessage_delete": "Delete message",
         "notification_delete": "Delete notifications",
         "myWork_dismissTask": "Dismiss a Needs you task",

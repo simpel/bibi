@@ -2,7 +2,7 @@
 
 - **Date:** 2026-11-01
 - **Status:** Accepted
-- **Amended:** 2026-11-03 (read, unread and delete replace dismiss)
+- **Amended:** 2026-11-03 (read, unread and delete replace dismiss), 2026-11-18 (editable inbox address)
 - **Supersedes:** 0083
 - **Amends:** 0012, 0084
 - **Related:** 0081, 0003, 0050, 0051, 0058, 0007
@@ -24,6 +24,8 @@
 9. Only EMAIL and `submit` are built. WEB_FORM and SMS are designed, not built.
 
 Addendum 2026-11-03: read state is one shared flag per message (`readAt`, `readBy`), because the inbox is shared work. `delete` archives, as everywhere (ADR 0006), and only for a message without an order. A dismissed message became a read one.
+
+Addendum 2026-11-18: the EMAIL address starts as the slug and an admin may edit its local part (`inboundEndpoint.setEmail`, `configuration:write`), still unique across organizations. A venue keeps its own booking address by forwarding it to the inbox address; the optional `publicAddress` only feeds the setup steps. Receiving on the venue's own domain (per-organization domains at the mail provider, DNS set up by the venue) was weighed and deferred: the venue would still have to forward its existing mailbox, and it needs DNS work at every venue.
 
 ## Rejected
 - One table per channel. Three receive paths and inboxes, and order history split across tables, for mostly the same fields.

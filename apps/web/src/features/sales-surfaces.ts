@@ -20,6 +20,8 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "inboundMessage.markUnread", route: "/inbox" },
   { operation: "inboundMessage.delete", route: "/inbox" },
   { operation: "inboundEndpoint.list", route: "/inbox" },
+  // The inbox address and its forwarding steps on the General administration page.
+  { operation: "inboundEndpoint.setEmail", route: "/admin/general" },
   // The status history and the facts that contradict the status (ADR 0054).
   { operation: "order.statusHistory", route: "/orders/[id]" },
   { operation: "order.estimateHistory", route: "/orders/[id]" },

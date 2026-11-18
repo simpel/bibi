@@ -1502,7 +1502,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Attributes**
 - channel (`InboundChannel`)
-- address (EMAIL: the local part only, the full address `<local>@MAIL_INBOUND_DOMAIN` is derived in code; null for the API endpoint; unique per channel across organizations)
+- address (EMAIL: the local part only, the full address `<local>@MAIL_INBOUND_DOMAIN` is derived in code; null for the API endpoint; unique per channel across organizations; starts as the slug, an admin may edit it)
+- publicAddress (EMAIL, optional: the organization's own address that forwards to the inbox address; shown in the forwarding steps, never used for routing)
 - name
 - active
 - default order type, default package (optional)
@@ -1511,7 +1512,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Relations**
 - `1:N` receives → InboundMessage
 
-> Operations: `inboundEndpoint.list` (`configuration:read`), on every surface. The mail adapter (`deliverInboundEmail`) routes `order-<id>@<domain>` to that order first, else an organization EMAIL endpoint address to that organization's inbox with no order; any other address is dropped (`mail.unmatched`).
+> Operations: `inboundEndpoint.list` (`configuration:read`; also when its newest message arrived, derived, with `inbox:read`) and `inboundEndpoint.setEmail` (`configuration:write`: the local part and `publicAddress`; a taken local part is `CONFLICT`, `order-` and mail role names are reserved, the old address stops at once), on every surface. The mail adapter (`deliverInboundEmail`) routes `order-<id>@<domain>` to that order first, else an organization EMAIL endpoint address to that organization's inbox with no order; any other address is dropped (`mail.unmatched`).
 
 ### InboundEmail (`InboundEmail`) — legacy
 

@@ -5,6 +5,8 @@ import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { inboundEmailOperations } from "../inbound-email/operations";
 import { checkReadable } from "../order/order-rules";
+import { endpointLastReceived } from "./endpoint-last-received";
+import { setInboundEndpointEmail } from "./endpoint-operations";
 import { InboundEndpointListInputSchema, InboundEndpointListOutputSchema } from "./endpoint-schema";
 import {
   InboundMessageIdInputSchema,
@@ -109,7 +111,8 @@ export const listInboundEndpoints = defineOperation({
   description:
     "The organization's inbound endpoints (ADR 0085): its inbox mail address (channel EMAIL, " +
     "forward the venue's booking mail there) and its API endpoint (channel API, the endpointId " +
-    "for inboundMessage.submit), with name, whether active and optional defaults.",
+    "for inboundMessage.submit), with name, whether active, optional defaults, the address " +
+    "that forwards to it and when the newest message arrived (needs inbox:read).",
   input: InboundEndpointListInputSchema,
   output: InboundEndpointListOutputSchema,
   permission: "configuration:read",
@@ -119,7 +122,12 @@ export const listInboundEndpoints = defineOperation({
       orderBy: [{ channel: "asc" }, { createdAt: "asc" }],
       take: 100,
     });
-    return ok({ value: { items: rows.map((row) => toInboundEndpointDto({ row })) } });
+    const endpointIds = rows.map((row) => row.id);
+    const last = await endpointLastReceived({ context, endpointIds });
+    const items = rows.map((row) =>
+      toInboundEndpointDto({ row, lastReceivedAt: last.get(row.id) ?? null }),
+    );
+    return ok({ value: { items } });
   },
 });
 
@@ -134,5 +142,6 @@ export const inboundMessageOperations = [
   markInboundMessageUnread,
   deleteInboundMessage,
   listInboundEndpoints,
+  setInboundEndpointEmail,
   ...inboundEmailOperations,
 ];

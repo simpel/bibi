@@ -12,6 +12,7 @@ import {
   listInboundMessages,
   markInboundMessageRead,
   markInboundMessageUnread,
+  setInboundEndpointEmail,
   submitInboundMessage,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
@@ -70,6 +71,7 @@ fieldFromOperation({
   type: InboundEndpointListRef,
   name: "inboundEndpoints",
 });
+mutationFromOperation({ operation: setInboundEndpointEmail, type: InboundEndpointRef });
 mutationFromOperation({ operation: submitInboundMessage, type: InboundMessageRef });
 mutationFromOperation({ operation: attachInboundMessage, type: InboundMessageRef });
 mutationFromOperation({ operation: markInboundMessageRead, type: InboundMessageRef });

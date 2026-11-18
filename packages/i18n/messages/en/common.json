@@ -588,6 +588,10 @@
           "label": "Time zone",
           "keywords": "clock time zone daylight venue"
         },
+        "inboxAddress": {
+          "label": "Inbox address",
+          "keywords": "inbox email address forward forwarding mail domain"
+        },
         "domainJoin": {
           "label": "Join by email domain",
           "keywords": "domain email colleagues join automatically"

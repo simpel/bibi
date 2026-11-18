@@ -31,6 +31,11 @@ export const inboundMessageRoutes = [
     path: "/inbound-messages/{id}",
   }),
   restRoute({ operation: "inboundEndpoint.list", method: "GET", path: "/inbound-endpoints" }),
+  restRoute({
+    operation: "inboundEndpoint.setEmail",
+    method: "PUT",
+    path: "/inbound-endpoints/email",
+  }),
   // The deprecated `inboundEmail.*` aliases (ADR 0085).
   ...inboundEmailRoutes,
 ];

@@ -78,6 +78,7 @@ const MEMBER_PROFILE_NAMES = [
 /** Inbound messages of every channel and the organization's endpoints (ADR 0085). */
 const INBOX_NAMES = [
   "inboundEndpoint.list",
+  "inboundEndpoint.setEmail",
   "inboundMessage.attachToOrder",
   "inboundMessage.delete",
   "inboundMessage.get",

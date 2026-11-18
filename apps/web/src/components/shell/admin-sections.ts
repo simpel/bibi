@@ -4,6 +4,7 @@ import type { Permission } from "@bibi/core";
 export type AdminSectionId =
   | "timeZone"
   | "domainJoin"
+  | "inboxAddress"
   | "members"
   | "invitations"
   | "plan"
@@ -34,6 +35,7 @@ export type AdminSectionId =
 export const ADMIN_SECTIONS: Record<AdminSectionId, { anchor: string; permission: Permission }> = {
   timeZone: { anchor: "time-zone", permission: "configuration:read" },
   domainJoin: { anchor: "domain-join", permission: "configuration:read" },
+  inboxAddress: { anchor: "inbox-address", permission: "configuration:read" },
   members: { anchor: "members", permission: "member:read" },
   invitations: { anchor: "invitations", permission: "member:write" },
   plan: { anchor: "plan", permission: "billing:read" },

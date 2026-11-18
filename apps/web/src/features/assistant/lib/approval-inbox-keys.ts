@@ -4,4 +4,5 @@ export const INBOX_OPERATION_KEYS = [
   "inboundMessage_markRead",
   "inboundMessage_markUnread",
   "inboundMessage_delete",
+  "inboundEndpoint_setEmail",
 ] as const;

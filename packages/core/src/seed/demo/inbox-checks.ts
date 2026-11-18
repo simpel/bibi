@@ -1,4 +1,5 @@
 import type { ExecuteContext } from "../../operations/context";
+import { demoPublicAddress } from "./seed-inbox";
 import type { DemoOrg } from "./types";
 
 /**
@@ -13,13 +14,18 @@ export async function checkDemoInbox({
   org: DemoOrg;
 }): Promise<string[]> {
   const [endpoints, open, attached] = await Promise.all([
-    context.db.inboundEndpoint.findMany({ select: { channel: true, address: true } }),
+    context.db.inboundEndpoint.findMany({
+      select: { channel: true, address: true, publicAddress: true },
+    }),
     context.db.inboundMessage.findMany({ where: { orderId: null } }),
     context.db.inboundMessage.findMany({ where: { orderId: { not: null } } }),
   ]);
   const failures: string[] = [];
   const email = endpoints.find((endpoint) => endpoint.channel === "EMAIL");
   if (email?.address !== org.slug) failures.push(`${org.slug}: no inbox address ${org.slug}`);
+  if (email?.publicAddress !== demoPublicAddress({ slug: org.slug })) {
+    failures.push(`${org.slug}: no own address forwarding to the inbox`);
+  }
   if (!endpoints.some((endpoint) => endpoint.channel === "API")) {
     failures.push(`${org.slug}: no API endpoint`);
   }

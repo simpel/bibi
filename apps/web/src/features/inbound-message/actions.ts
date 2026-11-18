@@ -3,9 +3,12 @@
 import {
   attachInboundMessage,
   deleteInboundMessage,
+  type InboundEndpointDto,
+  type InboundEndpointSetEmailInput,
   type InboundMessageDto,
   markInboundMessageRead,
   markInboundMessageUnread,
+  setInboundEndpointEmail,
 } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
@@ -69,4 +72,14 @@ export async function deleteMessagesAction({
   ids,
 }: MessageIdsActionInput): Promise<ActionResult<{ count: number }>> {
   return forEachId({ ids, run: deleteMessageAction });
+}
+
+/** `/admin/general`: the inbox address and the organization's own address that forwards to it. */
+export async function setInboxAddressAction({
+  input,
+}: {
+  input: InboundEndpointSetEmailInput;
+}): Promise<ActionResult<InboundEndpointDto>> {
+  const result = await runOperation({ operation: setInboundEndpointEmail, input });
+  return toActionResult({ result });
 }

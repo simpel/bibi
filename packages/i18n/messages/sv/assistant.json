@@ -293,6 +293,7 @@
         "deposit_request": "Begär förskott med betallänk",
         "inboundMessage_markRead": "Markera meddelande som läst",
         "inboundMessage_markUnread": "Markera meddelande som oläst",
+        "inboundEndpoint_setEmail": "Ändra inkorgsadress",
         "inboundMessage_delete": "Ta bort meddelande",
         "notification_delete": "Ta bort notiser",
         "myWork_dismissTask": "Avfärda en uppgift i Behöver dig",

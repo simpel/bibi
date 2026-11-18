@@ -78,6 +78,10 @@
             "question": "Hur skapar jag en bokning?",
             "answer": "Klicka på Skapa bokning, välj kund och lägg till raderna: lokaler, mat, aktiviteter. Du kan också be assistenten skapa den åt dig.\nFör mindre möten behöver du ingen offert först. Skapa bokningen och skicka betalningen direkt."
           },
+          "inboxAddress": {
+            "question": "Hur får vi in vår bokningsmejl i inkorgen?",
+            "answer": "Gå till **Administration**, **Allmänt** och leta upp **Inkorgsadress**. Välj adressen före @ och spara. E-post som skickas dit hamnar i **Inkorgen**.\nVill ni behålla er vanliga bokningsadress vidarebefordrar ni den till inkorgsadressen. I samma avsnitt finns stegen för Microsoft 365 och Google Workspace, och när senaste mejlet kom, så att ni kan se att det fungerar."
+          },
           "packages": {
             "question": "Var skapar jag en mall, och vem får göra det?",
             "answer": "Öppna **Mallar** under Katalog i vänstermenyn och välj **Skapa mall**. Ge den ett namn, en bokningstyp och en startstatus och lägg sedan till raderna.\nChefer och administratörer kan skapa, ändra och arkivera mallar, och alla kan använda dem när de skapar en bokning. En administratör kan också ge en medlem behörighet under medlemmens behörigheter."

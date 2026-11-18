@@ -38,6 +38,7 @@ export * from "./features/floor-plan/layout-operations";
 export * from "./features/floor-plan/operations";
 export * from "./features/floor-plan/plan-operations";
 export * from "./features/inbound-email/operations";
+export * from "./features/inbound-message/endpoint-operations";
 export * from "./features/inbound-message/operations";
 export * from "./features/inbound-message/write-operations";
 export * from "./features/item/bundle-operations";

@@ -79,6 +79,23 @@ describe("cross-organization isolation for the inbox (ADR 0085)", () => {
     const ids = endpoints.data.items.map((item: { id: string }) => item.id);
     expect(ids).not.toContain(secret.endpointId);
 
+    // The inbox address is unique across organizations: B cannot take A's, nor reach A's row.
+    const localPart = `iso-${contextA.organizationId.slice(-10).toLowerCase()}`;
+    const setA = await call({
+      client: a,
+      name: "inboundEndpoint_setEmail",
+      args: { localPart, publicAddress: null },
+    });
+    const setB = await call({
+      client: b,
+      name: "inboundEndpoint_setEmail",
+      args: { localPart, publicAddress: null },
+    });
+    expect(setB.data.code).toBe("CONFLICT");
+    const afterSet = await call({ client: b, name: "inboundEndpoint_list", args: {} });
+    const afterIds = afterSet.data.items.map((item: { id: string }) => item.id);
+    expect(afterIds).not.toContain(setA.data.id);
+
     const created = await call({
       client: b,
       name: "order_create",

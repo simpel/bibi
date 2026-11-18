@@ -588,6 +588,10 @@
           "label": "Tidszon",
           "keywords": "klocka tid zon sommartid anläggning"
         },
+        "inboxAddress": {
+          "label": "Inkorgsadress",
+          "keywords": "inkorg e-post adress vidarebefordra vidarebefordring mejl domän"
+        },
         "domainJoin": {
           "label": "Gå med via e-postdomän",
           "keywords": "domän e-post kollegor gå med automatiskt"

@@ -11,9 +11,17 @@ export function endpointAddress({ row }: EndpointAddressInput): string | null {
   return domain ? `${row.address}@${domain.toLowerCase()}` : null;
 }
 
-export type ToInboundEndpointDtoInput = { row: InboundEndpoint };
+export type ToInboundEndpointDtoInput = {
+  row: InboundEndpoint;
+  /** When its newest message arrived (derived); null when none has, or not looked up. */
+  lastReceivedAt?: Date | null;
+};
 
-export function toInboundEndpointDto({ row }: ToInboundEndpointDtoInput): InboundEndpointDto {
+export function toInboundEndpointDto({
+  row,
+  lastReceivedAt = null,
+}: ToInboundEndpointDtoInput): InboundEndpointDto {
   const { status: _status, createdBy: _createdBy, ...rest } = row;
-  return { ...rest, address: endpointAddress({ row }) };
+  const localPart = row.channel === "EMAIL" ? row.address : null;
+  return { ...rest, address: endpointAddress({ row }), localPart, lastReceivedAt };
 }

@@ -1,5 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import { toReceiveInput } from "../../features/inbound-email/to-receive-input";
+import { setInboundEndpointEmail } from "../../features/inbound-message/endpoint-operations";
 import { receiveInboundMessage } from "../../features/inbound-message/receive-operation";
 import {
   markInboundMessageRead,
@@ -63,6 +64,9 @@ const mails = ({ emailId, orderId, slug }: Endpoints) => [
   },
 ];
 
+/** The venue's own booking address that forwards to its inbox address (the forwarding steps). */
+export const demoPublicAddress = ({ slug }: { slug: string }) => `bokning@${slug}.bibi.test`;
+
 const PARTNER_REQUEST = {
   subject: "Team day for 30",
   text: "Partner request: a team day for 30 guests next month, a meeting room and lunch.",
@@ -70,11 +74,15 @@ const PARTNER_REQUEST = {
 };
 
 /**
- * The inbox (ADR 0085, `docs/demo-seed.md`): a booking request mailed to the organization address,
+ * The inbox (ADR 0085, `docs/demo-seed.md`): the venue's own address that forwards to the inbox
+ * address, a booking request mailed to the organization address,
  * a customer reply on the first order, and a request a partner system handed in over the API.
  * The partner request is read, so the inbox shows both its unread and its read table.
  */
 export async function seedDemoInbox({ context, org }: SeedInboxInput): Promise<Result<true>> {
+  const own = { localPart: org.slug, publicAddress: demoPublicAddress({ slug: org.slug }) };
+  const set = await execute({ operation: setInboundEndpointEmail, input: own, context });
+  if (!set.ok) return set;
   const [endpoints, order] = await Promise.all([
     context.db.inboundEndpoint.findMany({}),
     context.db.order.findFirst({ orderBy: { reference: "asc" } }),

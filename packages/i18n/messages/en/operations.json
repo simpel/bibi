@@ -508,8 +508,41 @@
     "title": "Inbox",
     "description": "Requests that came in by email, form or API and have no order yet.",
     "address": "Forward your booking mail to <code>{address}</code> and it shows up here.",
-    "noAddress": "No inbox address is configured yet, so mail cannot reach the inbox.",
-    "configureAddress": "Set up in settings",
+    "noAddress": "No inbox address is set up yet, so mail cannot reach the inbox.",
+    "configureAddress": "Set up address",
+    "settings": {
+      "description": "Mail sent to this address lands in the inbox. Forward your own booking address here, so guests keep writing to the address they already know.",
+      "localPart": "Inbox address",
+      "publicAddress": "Your own address (optional)",
+      "publicAddressPlaceholder": "bookings@yourvenue.com",
+      "saved": "Inbox address saved",
+      "taken": "Another organization already uses this address. Pick another one.",
+      "readOnly": "You can see the inbox address but not change it.",
+      "lastReceived": "Last mail received <time></time>.",
+      "noneReceived": "No mail has reached the inbox yet.",
+      "noDomain": "Receiving mail is not switched on for this Bibi installation yet, so the address cannot be shown.",
+      "forwarding": {
+        "yourAddress": "your booking address",
+        "intro": "Forward {own} to <code>{address}</code>. If you change the inbox address later, update the forwarding too: mail to the old address is no longer received.",
+        "microsoft": {
+          "title": "Microsoft 365 or Outlook",
+          "one": "Open the Exchange admin center and go to Mail flow, then Rules.",
+          "two": "Create a rule: when a message is sent to {own}, redirect it to <code>{address}</code>.",
+          "three": "Save the rule. It can take a few minutes before it starts working.",
+          "note": "Prefer forwarding on the mailbox itself? Microsoft 365 blocks forwarding outside your organization until an admin allows it in the outbound anti-spam policy."
+        },
+        "google": {
+          "title": "Google Workspace or Gmail",
+          "one": "Sign in to Gmail as {own} and open Settings, See all settings, Forwarding and POP/IMAP.",
+          "two": "Click Add a forwarding address and enter <code>{address}</code>.",
+          "three": "Google sends a confirmation mail to that address. It shows up in your Bibi inbox: open it and click the link.",
+          "four": "Back in Gmail, choose Forward a copy of incoming mail to <code>{address}</code> and save.",
+          "note": "Using a Google group as your booking address? Add <code>{address}</code> as a member of the group instead."
+        },
+        "other": "Other mail services: look for forwarding or redirect in the mailbox settings and forward to <code>{address}</code>.",
+        "test": "Then send a test mail to your own address and check that it shows up in the inbox."
+      }
+    },
     "open": "Open",
     "empty": "No messages.",
     "columns": {
