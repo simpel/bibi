@@ -34,4 +34,6 @@ export const SELF_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
     "the organization's details are edited in the welcome flow (#418); settings_view shows its " +
     "time zone as a setting card; JSON",
   organizationProfile_setSetupStatus: "first setup bookkeeping (ADR 0061), not a tool card",
+  inboundEndpoint_setEmail:
+    "the inbox address is edited in the inbox settings (ADR 0085); read out, not a card",
 };
