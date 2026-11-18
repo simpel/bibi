@@ -37,4 +37,18 @@ describe("cross-organization isolation: my work", () => {
     expect(theirs.isError, JSON.stringify(theirs.data)).toBe(false);
     expect(theirs.data.tasks).toEqual([]);
   });
+
+  it("never dismisses one organization's task from another", async () => {
+    const actor = { type: "user" as const, userId: `user_isolation_dismiss_${Date.now()}` };
+    const a = await connect({ context: testContext({ actor }) });
+    const b = await connect({ context: testContext({ actor }) });
+    const order = await seedOrder({ client: a });
+
+    const theirs = await call({
+      client: b,
+      name: "myWork_dismissTask",
+      args: { key: `UNCONFIRMED:${order.id}` },
+    });
+    expect(theirs.data.code).toBe("NOT_FOUND");
+  });
 });

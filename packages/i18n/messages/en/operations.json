@@ -584,8 +584,13 @@
     "description": "What concerns you: orders you are assigned to, run sheets sent to you, and status changes and payments on orders you answer for or follow.",
     "bell": "Notifications",
     "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}",
-    "latest": "Latest notifications",
-    "seeAll": "See all notifications",
+    "panel": {
+      "close": "Close notifications",
+      "search": "Search orders",
+      "noTasks": "Nothing that needs you matches"
+    },
+    "loading": "Loading notifications…",
+    "end": "No more notifications",
     "listChanged": "The list has changed since you opened it.",
     "showLatest": "Show latest",
     "open": "Open",

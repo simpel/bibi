@@ -295,6 +295,7 @@
         "inboundMessage_markUnread": "Mark message as unread",
         "inboundMessage_delete": "Delete message",
         "notification_delete": "Delete notifications",
+        "myWork_dismissTask": "Dismiss a Needs you task",
         "organizationProfile_update": "Edit the organization's details"
       },
       "setup": {

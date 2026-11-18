@@ -295,6 +295,7 @@
         "inboundMessage_markUnread": "Markera meddelande som oläst",
         "inboundMessage_delete": "Ta bort meddelande",
         "notification_delete": "Ta bort notiser",
+        "myWork_dismissTask": "Avfärda en uppgift i Behöver dig",
         "organizationProfile_update": "Ändra organisationens uppgifter"
       },
       "setup": {

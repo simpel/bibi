@@ -122,6 +122,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Skill",
   "Notification",
   "NotificationPreference",
+  "NeedsYouDismissal",
   "OauthGrantRevocation",
 ]);
 

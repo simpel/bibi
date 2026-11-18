@@ -1,13 +1,21 @@
-import type { NumberFormat } from "@bibi/core/schemas";
-import { Button } from "@bibi/ui";
+import type { MyWorkTaskGroup, NumberFormat } from "@bibi/core/schemas";
+import { FeedItem } from "@bibi/ui";
+import { TriangleAlertIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
+import { taskIcon } from "@/components/activity/subject-icons";
 import { RelativeTime } from "@/components/relative-time";
-import { Link } from "@/lib/navigation";
-import { orderRoute } from "@/lib/routes";
-import { taskAction, taskHref } from "../lib/task-href";
+import { taskHref } from "../lib/task-href";
 import type { MyWorkTaskWireish } from "./my-work-wireish";
 
-export type NeedsYouRowProps = { task: MyWorkTaskWireish; numbers: NumberFormat };
+export type NeedsYouRowProps = {
+  task: MyWorkTaskWireish;
+  numbers: NumberFormat;
+  /** Just dismissed: shown greyed out until the next page. */
+  dimmed?: boolean;
+  /** A hover button over the end of the row, e.g. dismiss. */
+  action?: ReactNode;
+};
 
 /** What the task asks, as a sentence that starts with the verb. */
 function useTaskText({ task, numbers }: NeedsYouRowProps): string {
@@ -35,35 +43,39 @@ function useTaskText({ task, numbers }: NeedsYouRowProps): string {
   }
 }
 
-/** One task: the sentence, the order it is on, when it is due and the button to act. */
-export function NeedsYouRow({ task, numbers }: NeedsYouRowProps) {
+/** How urgent the group is: red when blocked or late. */
+function toneOf({ group }: { group: MyWorkTaskGroup }) {
+  return group === "BLOCKED" || group === "LATE" ? "destructive" : "default";
+}
+
+/**
+ * One task, shaped like a notification: its kind's icon (a red warning triangle when late), the
+ * sentence, the order and when it is due. The row opens where the member acts (the run sheet,
+ * the quote, the inbox or the order).
+ */
+export function NeedsYouRow({ task, numbers, dimmed = false, action }: NeedsYouRowProps) {
   const t = useTranslations("myWork.needsYou");
-  const text = useTaskText({ task, numbers });
   const order = [`#${task.reference}`, task.title, task.customerName].filter(Boolean).join(" · ");
   return (
-    <li
-      data-slot="needs-you-row"
-      data-kind={task.kind}
-      className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5"
-    >
-      <div className="grid min-w-0 flex-1 gap-0.5">
-        <Link
-          href={orderRoute({ id: task.orderId })}
-          className="truncate text-sm font-medium hover:underline"
-        >
-          {text}
-        </Link>
-        <p className="flex min-w-0 gap-1.5 text-xs text-muted-foreground">
-          <span className="truncate">{order}</span>
-          <span aria-hidden>·</span>
-          <span className="shrink-0">
-            {t(task.group === "WAITING" ? "since" : "due")} <RelativeTime instant={task.dueAt} />
-          </span>
-        </p>
-      </div>
-      <Button asChild variant="outline" size="sm" className="shrink-0">
-        <Link href={taskHref({ task })}>{t(`actions.${taskAction({ task })}`)}</Link>
-      </Button>
+    <li data-slot="needs-you-row" data-kind={task.kind}>
+      <FeedItem
+        icon={task.group === "LATE" ? TriangleAlertIcon : taskIcon({ kind: task.kind })}
+        tone={toneOf({ group: task.group })}
+        href={taskHref({ task })}
+        title={useTaskText({ task, numbers })}
+        emphasis={!dimmed && task.group !== "WAITING"}
+        muted={dimmed}
+        action={dimmed ? undefined : action}
+        meta={
+          <>
+            <span className="truncate">{order}</span>
+            <span aria-hidden>·</span>
+            <span className="shrink-0">
+              {t(task.group === "WAITING" ? "since" : "due")} <RelativeTime instant={task.dueAt} />
+            </span>
+          </>
+        }
+      />
     </li>
   );
 }

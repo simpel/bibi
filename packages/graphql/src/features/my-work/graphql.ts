@@ -1,7 +1,10 @@
 import {
+  dismissMyTask,
   type MyWork,
   type MyWorkCard,
   MyWorkCardSchema,
+  type MyWorkDismissTaskOutput,
+  MyWorkDismissTaskOutputSchema,
   type MyWorkFlag,
   MyWorkFlagSchema,
   type MyWorkTask,
@@ -11,7 +14,7 @@ import {
   viewMyWork,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
-import { fieldFromOperation } from "../../schema/from-operation";
+import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 
 type Status = NonNullable<MyWorkCard["status"]>;
@@ -66,3 +69,11 @@ const MyWorkTasksRef = builder.objectRef<MyWorkTasks>("MyWorkTasks").implement({
 });
 
 fieldFromOperation({ operation: viewMyTasks, type: MyWorkTasksRef, name: "myWorkTasks" });
+
+const DismissTaskRef = objectFromSchema<MyWorkDismissTaskOutput>({
+  name: "MyWorkDismissTaskResult",
+  schema: MyWorkDismissTaskOutputSchema,
+  description: "The Needs you task the caller dismissed for themselves (ADR 0114).",
+});
+
+mutationFromOperation({ operation: dismissMyTask, type: DismissTaskRef });

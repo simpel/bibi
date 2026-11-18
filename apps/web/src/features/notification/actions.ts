@@ -17,13 +17,30 @@ import { toActionResult } from "@/server/to-action-result";
 import { notificationListInput } from "./lib/list-input";
 import type { NotificationListParams } from "./lib/list-params";
 
-/** How many of the latest notifications the bell's popover shows. */
-const LATEST = 8;
+/** How many notifications the panel reads at a time as the member scrolls. */
+const FEED_PAGE = 20;
 
-/** The bell's popover rows, read when it opens instead of on every page (ADR 0094). */
-export async function loadLatestNotificationsAction(): Promise<ActionResult<NotificationDto[]>> {
-  const result = await runOperation({ operation: listNotifications, input: { limit: LATEST } });
-  return result.ok ? { ok: true, value: result.value.items } : toActionResult({ result });
+export type NotificationFeedPage = { items: NotificationDto[]; nextCursor: string | null };
+export type NotificationFeedActionInput = { q: string; cursor?: string | null | undefined };
+
+/**
+ * One page of the notification panel: unread ones only, newest first, like an inbox's unread
+ * filter. Read when it opens, on each page and as the member scrolls (ADR 0094), narrowed by the
+ * panel's search (`q`: the order's title or reference).
+ */
+export async function loadNotificationFeedAction({
+  q,
+  cursor,
+}: NotificationFeedActionInput): Promise<ActionResult<NotificationFeedPage>> {
+  const input = {
+    limit: FEED_PAGE,
+    read: "unread" as const,
+    ...(q.trim() ? { q: q.trim() } : {}),
+    ...(cursor ? { cursor } : {}),
+  };
+  const result = await runOperation({ operation: listNotifications, input });
+  if (!result.ok) return toActionResult({ result });
+  return { ok: true, value: { items: result.value.items, nextCursor: result.value.nextCursor } };
 }
 
 type ListResult = ActionResult<{ items: NotificationDto[]; total: number }>;

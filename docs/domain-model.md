@@ -1257,11 +1257,26 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` is told to → User
 - `N:0..1` is about → Order, Run sheet, Payment
 
-> Written only by core's `notify`, in the `followUp` of `assignment.assign` (the new assignee), `runSheet.send` (the stored recipients), `order.changeStatus` and `payment.applySignal` when a payment succeeds (everyone on the order: the main assignee and followers and every responsibility's, stored or by default, ADR 0055). It skips the actor, members who turned the kind off, and members who cannot read the order (and the run sheet or payment the snapshot copies). A trigger (`notify_notification.sql`) sends `pg_notify('notification', …)` on insert and on a change of `readAt`; the web app's `/api/notifications/stream` pushes the unread count over Server-Sent Events. Operations (`self:*`): `notification.list` (search on the order, `kind`, `read`, sort, numbered pages), `notification.unreadCount`, `notification.markRead|markUnread|markAllRead`. Web: the bell in the top bar (red dot, the latest eight) and `/notifications`.
+> Written only by core's `notify`, in the `followUp` of `assignment.assign` (the new assignee), `runSheet.send` (the stored recipients), `order.changeStatus` and `payment.applySignal` when a payment succeeds (everyone on the order: the main assignee and followers and every responsibility's, stored or by default, ADR 0055). It skips the actor, members who turned the kind off, and members who cannot read the order (and the run sheet or payment the snapshot copies). A trigger (`notify_notification.sql`) sends `pg_notify('notification', …)` on insert and on a change of `readAt`; the web app's `/api/notifications/stream` pushes the unread count over Server-Sent Events. Operations (`self:*`): `notification.list` (search on the order, `kind`, `read`, sort, numbered pages), `notification.unreadCount`, `notification.markRead|markUnread|markAllRead`. Web: the bell in the top bar (red dot) opens the notification panel on the right (Needs you on top, then the unread notifications, spec: home), and `/notifications` lists them all.
 
 ### NotificationPreference (`NotificationPreference`)
 
 *MVP* · A member's choice to turn one kind of notification off or back on in the organization (ADR 0094). No row means on: the default is inherited, never copied. Set on `/profile` with `notificationPreference.set`, read with `notificationPreference.list` (one entry per kind).
+
+### NeedsYouDismissal (`NeedsYouDismissal`)
+
+*MVP* · A member's dismissal of one Needs you task ([ADR 0114](decisions/0114-dismissing-needs-you-tasks.md)). The task itself stays derived on read (ADR 0110): `myWork.tasks` leaves it out for this member while its facts still match the stored fingerprint, and shows it again when they change. Only the member who dismissed it stops seeing it.
+
+**Attributes**
+- member (owned)
+- task key (owned, `<kind>:<orderId>[:<id>]`, unique per member)
+- fingerprint (owned: the task's due time and the kind's own facts when it was dismissed)
+
+**Relations**
+- `N:1` is dismissed by → User
+- `N:1` is about → Order (deleted with it)
+
+> Written only by `myWork.dismissTask` (`self:write`), which derives the caller's tasks again and refuses a key that is not among them (`NOT_FOUND`). Web: the checkmark on a Needs you row in the notification panel, after a confirm dialog.
 
 ### Invitation
 

@@ -802,6 +802,12 @@ export const RELATIONS: RelationMap = {
       "list": false
     }
   },
+  "NeedsYouDismissal": {
+    "order": {
+      "target": "Order",
+      "list": false
+    }
+  },
   "Notification": {
     "order": {
       "target": "Order",
@@ -981,6 +987,10 @@ export const RELATIONS: RelationMap = {
     },
     "notifications": {
       "target": "Notification",
+      "list": true
+    },
+    "needsYouDismissals": {
+      "target": "NeedsYouDismissal",
       "list": true
     },
     "record": {

@@ -382,6 +382,13 @@
         "PAYMENT_OVERDUE": "Följ upp {amount} som är förfallet",
         "NOT_CLOSED": "Stäng bokningen",
         "QUOTE_WAITING": "Följ upp offerten"
+      },
+      "dismiss": {
+        "label": "Avfärda",
+        "title": "Avfärda uppgiften?",
+        "description": "Den döljs för dig tills något i den ändras, till exempel när den ska vara klar. Andra som får samma uppgift ser den fortfarande.",
+        "confirm": "Avfärda uppgift",
+        "done": "Uppgiften är avfärdad"
       }
     }
   },

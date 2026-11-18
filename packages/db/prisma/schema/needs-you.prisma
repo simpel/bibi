@@ -1,0 +1,20 @@
+/// A member's dismissal of one Needs you task (ADR 0114). The task itself stays derived on read
+/// (ADR 0110): `myWork.tasks` leaves it out for this member while its facts still match
+/// `fingerprint`, and shows it again when they change. Every column is owned.
+model NeedsYouDismissal {
+  id             String   @id @default(cuid(2))
+  organizationId String
+  userId         String
+  orderId        String
+  /// The task's key, `<kind>:<orderId>[:<id>]`, stable across reads.
+  taskKey        String
+  /// The task's facts when it was dismissed: its due time and the kind's own facts.
+  fingerprint    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      String?
+  order          Order    @relation(fields: [orderId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@unique([organizationId, userId, taskKey])
+  @@index([orderId, organizationId])
+}

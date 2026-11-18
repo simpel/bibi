@@ -65,6 +65,7 @@ model Order {
   requirements        Requirement[]
   runSheets              RunSheet[]
   notifications       Notification[]
+  needsYouDismissals  NeedsYouDismissal[]
   /// The supertable row this record extends (ADR 0056).
   record              Record               @relation(fields: [id, organizationId], references: [id, organizationId])
 

@@ -64,6 +64,7 @@ export * from "./components/dropdown-menu/dropdown-menu";
 export * from "./components/dropdown-menu/dropdown-menu-sub";
 export * from "./components/email-input/email-format";
 export * from "./components/email-input/email-input";
+export * from "./components/feed-item/feed-item";
 export * from "./components/field-controls/boolean-control";
 export * from "./components/field-controls/choice-control";
 export * from "./components/field-controls/control-props";

@@ -382,6 +382,13 @@
         "PAYMENT_OVERDUE": "Follow up {amount} overdue",
         "NOT_CLOSED": "Close the order",
         "QUOTE_WAITING": "Follow up the quote"
+      },
+      "dismiss": {
+        "label": "Dismiss",
+        "title": "Dismiss this task?",
+        "description": "It is hidden for you until something about it changes, such as its due time. Others who get the same task still see it.",
+        "confirm": "Dismiss task",
+        "done": "Task dismissed"
       }
     }
   },

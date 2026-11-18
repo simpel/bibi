@@ -8,6 +8,7 @@ import { canOpenAdmin } from "@/components/shell/admin-items";
 import { AppShell } from "@/components/shell/app-shell";
 import { loadBillingGate } from "@/features/billing/load-billing-gate";
 import { AppPinnedBookings } from "@/features/calendar/ui/app-pinned-bookings";
+import { loadNeedsYou } from "@/features/my-work/load-needs-you";
 import { loadLiveCounts } from "@/features/notification/load-live-counts";
 import { loadUserPreferences } from "@/features/user-preference/load";
 import { welcomePath } from "@/features/welcome/lib/welcome-step";
@@ -39,7 +40,13 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
   if (payHref) redirect({ href: payHref, locale, org: organizationSlug });
   const { id, name, email } = session.user;
   // Only decide which sidebar links show (ADR 0036); `/admin/*` and `/admin` check again.
-  const counts = loadLiveCounts().catch(() => ({ unread: 0, inboxOpen: null, myWorkDue: null }));
+  // Needs you is read once, for the notification panel and the My work badge.
+  const needsYou = loadNeedsYou();
+  const counts = loadLiveCounts({ needsYou }).catch(() => ({
+    unread: 0,
+    inboxOpen: null,
+    myWorkDue: null,
+  }));
   const [platformAdmin, abilities, preferences, canDraftFromMessage] = await Promise.all([
     isPlatformAdmin({ userId: id }),
     getCallerAbilities(),
@@ -53,6 +60,7 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
           organizationId={organizationId}
           user={{ name, email }}
           counts={counts}
+          needsYou={needsYou}
           trial={trial}
           access={{
             canConfigure: canOpenAdmin({ permissions: abilities.permissions }),

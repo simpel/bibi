@@ -106,3 +106,18 @@ export const MyWorkTasksSchema = z.object({
     .describe("By group, then due, then reference; null without order:read"),
 });
 export type MyWorkTasks = z.infer<typeof MyWorkTasksSchema>;
+
+export const MyWorkDismissTaskInputSchema = z.object({
+  key: z
+    .string()
+    .trim()
+    .min(1)
+    .max(200)
+    .describe("The task's `key` from myWork.tasks, `<kind>:<orderId>[:<id>]`"),
+});
+export type MyWorkDismissTaskInput = z.infer<typeof MyWorkDismissTaskInputSchema>;
+
+export const MyWorkDismissTaskOutputSchema = z.object({
+  key: z.string().describe("The dismissed task's key"),
+});
+export type MyWorkDismissTaskOutput = z.infer<typeof MyWorkDismissTaskOutputSchema>;

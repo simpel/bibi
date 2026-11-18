@@ -45,6 +45,7 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "AssignmentFollower",
   "Notification",
   "NotificationPreference",
+  "NeedsYouDismissal",
   "Apikey",
   "OauthGrantRevocation",
   "RevenueAccount",

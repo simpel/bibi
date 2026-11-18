@@ -1,18 +1,24 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { canView } from "../../shared/can-view";
-import { invalid } from "../../shared/errors";
+import { invalid, notFound } from "../../shared/errors";
 import { requireUser } from "../../shared/require-user";
 import { addDays, compareDates, parseIsoDate } from "../../time/plain-date";
 import { resolveHorizon } from "../dashboard/horizon";
 import { periodOf } from "../finance/period";
 import { myCards } from "./cards";
 import { concernsOf } from "./concerns";
+import { taskFingerprint, withoutDismissed } from "./dismissals";
 import { nextCardDay } from "./lines";
 import { MY_WORK_MAX_DAYS, MyWorkInputSchema, MyWorkSchema } from "./schema";
 import { resolveTaskWindow } from "./task-window";
 import { myTasks } from "./tasks";
-import { MyWorkTasksInputSchema, MyWorkTasksSchema } from "./tasks-schema";
+import {
+  MyWorkDismissTaskInputSchema,
+  MyWorkDismissTaskOutputSchema,
+  MyWorkTasksInputSchema,
+  MyWorkTasksSchema,
+} from "./tasks-schema";
 
 /**
  * The caller's start page (spec: home): a timeline of the orders that concern them, one card per
@@ -105,7 +111,11 @@ export const viewMyTasks = defineOperation({
     if (!user.ok) return user;
     const window = await resolveTaskWindow({ context });
     const all = canView({ context, feature: "order" })
-      ? await myTasks({ context, userId: user.value, window })
+      ? await withoutDismissed({
+          context,
+          userId: user.value,
+          tasks: await myTasks({ context, userId: user.value, window }),
+        })
       : null;
     const kinds = input.kinds ? new Set(input.kinds) : null;
     const tasks = all && kinds ? all.filter((task) => kinds.has(task.kind)) : all;
@@ -113,4 +123,61 @@ export const viewMyTasks = defineOperation({
   },
 });
 
-export const myWorkOperations = [viewMyWork, viewMyTasks];
+/**
+ * Dismisses one of the caller's Needs you tasks for them alone (ADR 0114): the tasks are derived
+ * again, and the task's facts are stored, so it is back when they change. A key that is not one
+ * of the caller's tasks now is `NOT_FOUND`.
+ */
+export const dismissMyTask = defineOperation({
+  name: "myWork.dismissTask",
+  kind: "command",
+  description:
+    "Dismiss one of the caller's own Needs you tasks by its `key` from myWork.tasks (ADR 0114). " +
+    "It is hidden for the caller only, until its facts change (its due time, count, amount, the " +
+    "clashing order or the issue); then it shows again. Colleagues who get the same task still " +
+    "see it.",
+  input: MyWorkDismissTaskInputSchema,
+  output: MyWorkDismissTaskOutputSchema,
+  permission: "self:write",
+  handler: async ({ input: { key }, context }) => {
+    const user = requireUser({ context });
+    if (!user.ok) return user;
+    if (!canView({ context, feature: "order" })) return notFound({ entity: "Task" });
+    const window = await resolveTaskWindow({ context });
+    const tasks = await myTasks({ context, userId: user.value, window });
+    const task = tasks.find((candidate) => candidate.key === key);
+    if (!task) return notFound({ entity: "Task" });
+    const fingerprint = taskFingerprint({ task });
+    const where = {
+      organizationId_userId_taskKey: {
+        organizationId: context.organizationId,
+        userId: user.value,
+        taskKey: key,
+      },
+    };
+    const before = await context.db.needsYouDismissal.findUnique({
+      where,
+      select: { fingerprint: true },
+    });
+    const row = await context.db.needsYouDismissal.upsert({
+      where,
+      create: {
+        organizationId: context.organizationId,
+        userId: user.value,
+        orderId: task.orderId,
+        taskKey: key,
+        fingerprint,
+      },
+      update: { fingerprint },
+      select: { id: true },
+    });
+    context.recordChange({
+      entityId: row.id,
+      before: before ?? undefined,
+      after: { taskKey: key, fingerprint },
+    });
+    return ok({ value: { key } });
+  },
+});
+
+export const myWorkOperations = [viewMyWork, viewMyTasks, dismissMyTask];

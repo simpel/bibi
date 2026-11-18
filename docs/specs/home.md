@@ -3,14 +3,15 @@
 Current behaviour. Why: ADR 0110 (amended 2026-11-16). Operations: `myWork.view` and `myWork.tasks` (both `self:read`, view read models, ADR 0071).
 
 ## Needs you
-My work answers "what must I do", not only "what am I part of". The page opens with **Needs you**, a list of tasks the member must act on, above the timeline. A task is derived on read from data that already exists (run sheets, holds, line issues, quotes, messages, receivables, statuses), never stored (ADR 0110 rejected a stored task list), and it is gone when the data no longer calls for it.
+My work answers "what must I do", not only "what am I part of". The shell shows **Needs you**, a list of tasks the member must act on, at the top of the notification panel. A task is derived on read from data that already exists (run sheets, holds, line issues, quotes, messages, receivables, statuses), never stored (ADR 0110 rejected a stored task list), and it is gone when the data no longer calls for it.
 
 ### Page
-- Order: **Needs you**, then **Today** and the rest of the timeline as below. `/my-work/{from}/{to}` shows the timeline only.
-- One row per task: a sentence that starts with the verb ("Send Kitchen order", "Fix double booking on Hall A with #1042", "Confirm or release 2 soft holds"), the order's reference, title and customer, when it is due (`RelativeTime`; "Since" for Waiting on customer) and one button that opens the place to act: the run sheet, the quote, the inbox, else the order. The sentence opens the order.
+- Layout: **Needs you** sits at the top of the notification panel on the right of the shell, with the unread notifications under it (newest first, read on as the member scrolls). The top bar's bell opens and closes the panel. It opens by itself on a wide screen when Needs you has tasks, on every page, until the member closes it; on a narrow screen it is a sheet over the page, opened only with the bell and closed when a row is opened. One search at the top narrows both lists: Needs you by the order's reference, title or customer, or the line or run sheet; notifications by the order's title or reference. My work (`/` and `/my-work/{from}/{to}`) shows the timeline only.
+- One row per task, shaped like a notification (`FeedItem`): the icon of what it is about (shared with notifications, `components/activity/subject-icons.ts`; in Late a red warning triangle instead), a sentence that starts with the verb ("Send Kitchen order", "Fix double booking on Hall A with #1042", "Confirm or release 2 soft holds"), then the order's reference, title and customer and when it is due (`RelativeTime`; "Since" for Waiting on customer). The whole row opens the place to act: the run sheet, the quote, the inbox, else the order.
 - Rows sit in groups, in this order, each group shown only when it has rows: **Blocked** (red, stop sign), **Late** (due before now), **Today** (due later today in the organization's zone), **Soon** (due after today, through the end of next week) and **Waiting on customer** (nothing to do yet but follow up). Inside a group, soonest due first, then by reference.
-- Empty: a single line, "Nothing needs you right now", and the timeline below.
-- Sidebar: the My work entry carries a red count of the tasks in Blocked, Late and Today (a red dot when the sidebar is collapsed to icons), nothing at zero. The shell reads it once with its other live counts (ADR 0094, not on the stream) and the My work page refreshes it each time it renders, so the badge matches the list.
+- Dismiss (ADR 0114): hovering a row shows a checkmark. It asks first, then hides the task for this member only, until its facts change (its due time, count, amount, the clashing order or the issue); colleagues still see it. The row stays greyed out until the next page. In the same panel, the checkmark on a notification marks it read at once, with no dialog: the panel lists unread notifications only, like an inbox's unread filter, so a read one stays greyed out until the next page and is then gone.
+- Empty: a single line, "Nothing needs you right now", and the notifications below; while searching, "Nothing that needs you matches".
+- Sidebar: the My work entry carries a red count of the tasks in Blocked, Late and Today (a red dot when the sidebar is collapsed to icons), nothing at zero. The shell reads Needs you once per page load for the panel and the badge (ADR 0094, not on the stream); while the panel is open it reads it again on navigation, when the panel opens again and when a notification arrives, and the badge follows that read.
 - The assistant's `myWork_tasks` tool renders the same list (generative UI component in `@bibi/ui`).
 
 ### Tasks
@@ -60,4 +61,4 @@ Defined in `docs/specs/assignments-and-responsibilities.md` ("Concerns me"). A m
 
 ## Not built
 - Untimed lines (no place on a timeline), orders without lines, prep lead times, the responsibility's own name on the card.
-- Needs you: per-organization leads, tasks for a line item's assignee, deposits, ticking off run sheet rows, snoozing or dismissing a task, unassigned orders and responsibilities as tasks for a manager.
+- Needs you: per-organization leads, tasks for a line item's assignee, deposits, ticking off run sheet rows, snoozing a task, a list of dismissed tasks to restore, unassigned orders and responsibilities as tasks for a manager.

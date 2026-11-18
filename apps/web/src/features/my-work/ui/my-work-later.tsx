@@ -2,10 +2,11 @@
 
 import { Spinner } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { InlineLoadError } from "@/components/states/inline-load-error";
 import { type ErrorKey, errorKeyForCode } from "@/lib/error-key";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
+import { useEndInView } from "@/lib/use-end-in-view";
 import { loadMyWorkAction } from "../actions";
 import { filterMyWork } from "../lib/my-work-query";
 import { windowFrom } from "../lib/my-work-window";
@@ -33,23 +34,19 @@ export function MyWorkLater({ next, timeZone, q }: MyWorkLaterProps) {
   const [pending, startTransition] = useTransition();
   const end = useRef<HTMLDivElement>(null);
 
-  // IntersectionObserver: reads the next window when the end of the list scrolls into view.
-  useEffect(() => {
-    const target = end.current;
-    if (!cursor || pending || error || !target) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry?.isIntersecting) return;
-      observer.disconnect();
+  useEndInView({
+    target: end,
+    enabled: cursor !== null && !pending && error === null,
+    onEnd: () => {
+      if (!cursor) return;
       startTransition(async () => {
         const result = await loadMyWorkAction(windowFrom({ from: cursor }));
         if (!result.ok) return setError(errorKeyForCode({ code: result.error.code }));
         setCards((shown) => [...shown, ...(result.value.cards ?? [])]);
         setCursor(result.value.next);
       });
-    });
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [cursor, pending, error]);
+    },
+  });
 
   return (
     <>
