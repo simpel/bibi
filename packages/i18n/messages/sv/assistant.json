@@ -311,6 +311,12 @@
         "changeMessage": "Jag vill ändra något."
       },
       "needsAdmin": "Kräver admin",
+      "done": {
+        "created": "{name} är skapad",
+        "createdUnnamed": "Skapad",
+        "changed": "Ändringen är gjord",
+        "continue": "Fortsätt konfigurera"
+      },
       "edit": {
         "title": "Redigera {field}",
         "column": "Redigera"

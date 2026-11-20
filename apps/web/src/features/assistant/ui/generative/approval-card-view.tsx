@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { ApprovalEdits } from "../../lib/approval-edits";
 import { useApprovalContext } from "../../state/approval-context";
 import { ApprovalBody } from "./approval/approval-body";
+import { ApprovalDone } from "./approval/approval-done";
 import { ApprovalFooter } from "./approval/approval-footer";
 import { ApprovalHeader } from "./approval/approval-header";
 import { useApprovalDecision } from "./approval/use-approval-decision";
@@ -29,7 +30,7 @@ function useWarningGate({ preview }: { preview: ApprovalCardViewProps["approval"
   return { acknowledged, setAcknowledged, blocked: warned && !acknowledged };
 }
 
-function OperationApprovalCard({ approval, toolCallId, toolName }: ApprovalCardViewProps) {
+function OperationApprovalCard({ approval, toolCallId }: ApprovalCardViewProps) {
   const { conversationId, decisions } = useApprovalContext();
   const stored = decisions.find((decision) => decision.toolCallId === toolCallId);
   const [edits, setEdits] = useState<ApprovalEdits>({});
@@ -44,6 +45,7 @@ function OperationApprovalCard({ approval, toolCallId, toolName }: ApprovalCardV
   const seconds = useCountdown({ expiresAt: approval.expiresAt, active: !decided });
   const { preview } = approval;
   const gate = useWarningGate({ preview });
+  if (state.status === "approved") return <ApprovalDone preview={preview} result={state.result} />;
   return (
     <Card
       data-slot="approval-card"
@@ -56,7 +58,6 @@ function OperationApprovalCard({ approval, toolCallId, toolName }: ApprovalCardV
       />
       <ApprovalBody
         approval={approval}
-        toolName={toolName}
         state={state}
         decided={decided}
         acknowledged={gate.acknowledged}

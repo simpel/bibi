@@ -311,6 +311,12 @@
         "changeMessage": "I want to change something."
       },
       "needsAdmin": "Needs admin",
+      "done": {
+        "created": "{name} is created",
+        "createdUnnamed": "Created",
+        "changed": "The change is made",
+        "continue": "Continue setup"
+      },
       "edit": {
         "title": "Edit {field}",
         "column": "Edit"
