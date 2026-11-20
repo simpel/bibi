@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.2.0](https://github.com/simpel/bibi/compare/@bibi/ui-v2.1.1...@bibi/ui-v2.2.0) (2026-11-20)
+
+
+### Features
+
+* board cues, hours check, help hints and follow controls ([dec5f73](https://github.com/simpel/bibi/commit/dec5f733332cdff5918d02193312a3dd20440065))
+* calendar cards turn red when a hard hold blocks them, and hover cards fit the screen ([8b54d09](https://github.com/simpel/bibi/commit/8b54d0989475c2136cbe057f39e6a37ce2d2325e))
+* card issues are error and warning badges in words, state is the first stat ([1540c50](https://github.com/simpel/bibi/commit/1540c50bfae425bd022d7feff4eabce2ad7ea45f))
+* cards show issues as an error icon or a warning triangle, not a striped outline ([3ec59a9](https://github.com/simpel/bibi/commit/3ec59a980801c0b7df237ba40ec39b87254b5650))
+* cards wash their header in the status colour, show the order number as a stat and stripe the outline when there is an issue ([9bb8080](https://github.com/simpel/bibi/commit/9bb80808915a990944c3f13d0b01612badb20d57))
+* comment icons, unread dots, replies and mentions ([816137d](https://github.com/simpel/bibi/commit/816137db95fd648425dad04e46d5b466a745f89f))
+* every icon button has a tooltip saying what a click does ([7852d2b](https://github.com/simpel/bibi/commit/7852d2bd787292240183201526b9a51ccf59aea5))
+* My work has a search box, and card headers edge in their status colour ([0019ce4](https://github.com/simpel/bibi/commit/0019ce41c39d2face9332f44a15cbc5f359080d3))
+* My work in Today, This week, Next week and Later, reading on as you scroll ([25c8641](https://github.com/simpel/bibi/commit/25c86415a0eb1fe6dedf127ebb8930619dc200e4))
+* My work is a timeline of order cards with a shared card tone ([d21c3e6](https://github.com/simpel/bibi/commit/d21c3e646d27b1c5b01f25088b2b46b6d304a7c0))
+* My work is a timeline of order cards with a shared card tone ([1a8dcaa](https://github.com/simpel/bibi/commit/1a8dcaa62758b0fb411a8a6eb87b5d1872b50d5d))
+* My work, pinned and hover cards are one card with a tinted header, pin and expand ([9032c08](https://github.com/simpel/bibi/commit/9032c08af6b6056f069f9229379a20823ae6a328))
+* notifications open in a panel on the right, with Needs you on top and dismissable ([597ea74](https://github.com/simpel/bibi/commit/597ea740e59b98200ff8e7471c164a9ed08a2236))
+* the sidebar collapses to icons with tooltips and a red dot on Inbox ([4df3a79](https://github.com/simpel/bibi/commit/4df3a7911287f1d0148706f67ec6a9ac53d03580))
+
+
+### Bug Fixes
+
+* card headers are a solid wash, so no edge shows through around them ([8d863ef](https://github.com/simpel/bibi/commit/8d863ef8c5945fd55db234aa122db51b3ce5af27))
+* card headers end at the card's edge in their own wash, with no stronger edge ([33a1f4e](https://github.com/simpel/bibi/commit/33a1f4e82c6fbc37e8b5f148ff9e176ec8822903))
+* search inputs' clear button is a muted cross from the theme, not Chrome's blue ([eb7c45b](https://github.com/simpel/bibi/commit/eb7c45bdee7a2ac9af0ef51fc8d440404d8d0bc4))
+* the order header's comment button is an icon button with a red dot ([34a5782](https://github.com/simpel/bibi/commit/34a5782bd4acada677063e9a92dfa63c3db22441))
+
 ## [2.1.1](https://github.com/simpel/bibi/compare/@bibi/ui-v2.1.0...@bibi/ui-v2.1.1) (2026-11-15)
 
 

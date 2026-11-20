@@ -1,5 +1,45 @@
 # Changelog
 
+## [5.1.0](https://github.com/simpel/bibi/compare/@bibi/core-v5.0.0...@bibi/core-v5.1.0) (2026-11-20)
+
+
+### Features
+
+* a database projection records who is related to each order and item ([f82f058](https://github.com/simpel/bibi/commit/f82f058a057e113840b6009dd7dc34281742cdaf))
+* admins edit the inbox address and get forwarding steps ([e06d0c7](https://github.com/simpel/bibi/commit/e06d0c7c58ebb29cb4a1989c20e3e350a9959e64))
+* board cues, hours check, help hints and follow controls ([dec5f73](https://github.com/simpel/bibi/commit/dec5f733332cdff5918d02193312a3dd20440065))
+* comment icons, unread dots, replies and mentions ([816137d](https://github.com/simpel/bibi/commit/816137db95fd648425dad04e46d5b466a745f89f))
+* comments on orders and lines, shown on run sheets ([17ade2e](https://github.com/simpel/bibi/commit/17ade2eee0544984a4a4c92c92bbdb90b743e994))
+* members can be limited to related records; auth and notifications resolve access in one place ([034f590](https://github.com/simpel/bibi/commit/034f59060b53fe13fb799e8d3e6ac73d22c022a0))
+* My work in Today, This week, Next week and Later, reading on as you scroll ([25c8641](https://github.com/simpel/bibi/commit/25c86415a0eb1fe6dedf127ebb8930619dc200e4))
+* My work is a timeline of order cards with a shared card tone ([d21c3e6](https://github.com/simpel/bibi/commit/d21c3e646d27b1c5b01f25088b2b46b6d304a7c0))
+* My work is a timeline of order cards with a shared card tone ([1a8dcaa](https://github.com/simpel/bibi/commit/1a8dcaa62758b0fb411a8a6eb87b5d1872b50d5d))
+* My work opens with Needs you, the tasks the member must act on ([0741372](https://github.com/simpel/bibi/commit/074137279bafff113c6fa31a34687150f4c65f40))
+* notifications open in a panel on the right, with Needs you on top and dismissable ([597ea74](https://github.com/simpel/bibi/commit/597ea740e59b98200ff8e7471c164a9ed08a2236))
+* packages get their own permission and leave the administration area ([eaf769d](https://github.com/simpel/bibi/commit/eaf769d70d2635634b3a75a6e218205e25b8e5fb))
+* pipeline views are personal and shared with members or the organization ([58b0836](https://github.com/simpel/bibi/commit/58b083669fff4453d519e06424ab2f38d010b6c5))
+* Saved views above Orders, Run sheets and My work ([21ea9de](https://github.com/simpel/bibi/commit/21ea9dee7b5759b8942e52d9b11bd7756f0cef7f))
+* the demo seed adds Kvarnby Manor, an organization with no setup yet ([999fb67](https://github.com/simpel/bibi/commit/999fb677779b722b188cf383859bb74a7d124b32))
+* the sidebar counts down the free trial and leads admins to pick a plan ([5b9ffdb](https://github.com/simpel/bibi/commit/5b9ffdb3daedac34a2e11e2c0577f97738b651d7))
+* the welcome flow skips working hours; members set them on their profile ([055c2a0](https://github.com/simpel/bibi/commit/055c2a035d8c5832f08f3b4feb1b4c53ecebcbf9))
+
+
+### Bug Fixes
+
+* authorization errors follow one convention ([f465b3a](https://github.com/simpel/bibi/commit/f465b3aecd39afd26fc1ab247d49c2c7320847c3))
+* board views expose viewerCan; the web reads it instead of re-implementing edit and manage ([17fc91e](https://github.com/simpel/bibi/commit/17fc91e8c28f4e7b11edbbbc459d5da65c6b5168))
+* operations declare their real gate; GraphQL edges use core's permission check ([ff5c164](https://github.com/simpel/bibi/commit/ff5c1649aca03acc7a761c41819179369efce89e))
+* provider sweep tests read only their own organization ([fe6044e](https://github.com/simpel/bibi/commit/fe6044ea215699dcf67e6275ff07d62dea719f85))
+* removing a member leaves no assignments, follows or views behind ([d645625](https://github.com/simpel/bibi/commit/d645625957235b6e7317698d2b2563c4de77df24))
+* setting the language works before a profile exists ([79ddb8b](https://github.com/simpel/bibi/commit/79ddb8b37bccbe626cfdb0e3b8d5aa9b060106ac))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/db bumped to 3.2.0
+
 ## [5.0.0](https://github.com/simpel/bibi/compare/@bibi/core-v4.0.0...@bibi/core-v5.0.0) (2026-11-15)
 
 

@@ -1,5 +1,41 @@
 # Changelog
 
+## [5.1.0](https://github.com/simpel/bibi/compare/@bibi/mcp-v5.0.0...@bibi/mcp-v5.1.0) (2026-11-20)
+
+
+### Features
+
+* admins edit the inbox address and get forwarding steps ([e06d0c7](https://github.com/simpel/bibi/commit/e06d0c7c58ebb29cb4a1989c20e3e350a9959e64))
+* board cues, hours check, help hints and follow controls ([dec5f73](https://github.com/simpel/bibi/commit/dec5f733332cdff5918d02193312a3dd20440065))
+* comments on orders and lines, shown on run sheets ([17ade2e](https://github.com/simpel/bibi/commit/17ade2eee0544984a4a4c92c92bbdb90b743e994))
+* edit values on the assistant's confirmation card ([dbdaeca](https://github.com/simpel/bibi/commit/dbdaecacf4dac8f5c8c2bcbb8bc2902240e77252))
+* My work is a timeline of order cards with a shared card tone ([d21c3e6](https://github.com/simpel/bibi/commit/d21c3e646d27b1c5b01f25088b2b46b6d304a7c0))
+* My work is a timeline of order cards with a shared card tone ([1a8dcaa](https://github.com/simpel/bibi/commit/1a8dcaa62758b0fb411a8a6eb87b5d1872b50d5d))
+* My work opens with Needs you, the tasks the member must act on ([0741372](https://github.com/simpel/bibi/commit/074137279bafff113c6fa31a34687150f4c65f40))
+* notifications open in a panel on the right, with Needs you on top and dismissable ([597ea74](https://github.com/simpel/bibi/commit/597ea740e59b98200ff8e7471c164a9ed08a2236))
+* pipeline views are personal and shared with members or the organization ([58b0836](https://github.com/simpel/bibi/commit/58b083669fff4453d519e06424ab2f38d010b6c5))
+
+
+### Bug Fixes
+
+* board views expose viewerCan; the web reads it instead of re-implementing edit and manage ([17fc91e](https://github.com/simpel/bibi/commit/17fc91e8c28f4e7b11edbbbc459d5da65c6b5168))
+* removing a member leaves no assignments, follows or views behind ([d645625](https://github.com/simpel/bibi/commit/d645625957235b6e7317698d2b2563c4de77df24))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 5.1.0
+    * @bibi/auth bumped to 1.1.0
+    * @bibi/core bumped to 5.1.0
+    * @bibi/db bumped to 3.2.0
+    * @bibi/graphql bumped to 3.2.0
+    * @bibi/mail bumped to 1.1.0
+    * @bibi/storage bumped to 0.2.9
+  * devDependencies
+    * @bibi/api bumped to 3.2.0
+
 ## [5.0.0](https://github.com/simpel/bibi/compare/@bibi/mcp-v4.0.0...@bibi/mcp-v5.0.0) (2026-11-15)
 
 
