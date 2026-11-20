@@ -43,9 +43,10 @@ function useTaskText({ task, numbers }: NeedsYouRowProps): string {
   }
 }
 
-/** How urgent the group is: red when blocked or late. */
+/** How urgent the group is: red when blocked or late, amber when due today or soon. */
 function toneOf({ group }: { group: MyWorkTaskGroup }) {
-  return group === "BLOCKED" || group === "LATE" ? "destructive" : "default";
+  if (group === "BLOCKED" || group === "LATE") return "destructive";
+  return group === "TODAY" || group === "SOON" ? "warning" : "default";
 }
 
 /**

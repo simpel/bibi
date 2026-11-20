@@ -164,7 +164,7 @@
           },
           "followOrder": {
             "question": "How do I keep up with an order I'm not working on?",
-            "answer": "Open the order and click **Follow** at the top, next to its status. The bell fills in and the button says **Following**.\nThe order then shows up on your **My work** with a filled bell, and you hear about its status changes and payments. Click **Following** to stop. Anyone who can see orders can follow them."
+            "answer": "Open the order and click **Follow** at the top, next to its status. The eye turns green and the button says **Following**.\nThe order then shows up on your **My work**, and you hear about its status changes and payments. Click **Following** to stop. Anyone who can see orders can follow them."
           },
           "commentOrder": {
             "question": "How do I leave a comment on an order or one of its lines?",
