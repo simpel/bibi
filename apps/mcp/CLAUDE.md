@@ -19,6 +19,7 @@ The MCP server (ADR 0003, 0007). Thin adapter: all logic and permissions live in
 - `approvalToken` = `base64url(claims).base64url(HMAC-SHA256)` (`src/approval/`), key `BETTER_AUTH_SECRET`, valid 10 min, bound to operation, input (hash), organization and user. The input is in the token, so no server state is needed.
 - **The web app calls `approval_confirm({ approvalToken })` when the user clicks Approve**, with the user's own credentials and **without** `x-bibi-actor: ai`. The model must not and cannot call it: the tool is hidden in `tools/list` for the AI actor and rejected with FORBIDDEN if the caller is `ai`.
 - `approval_confirm` verifies the token (signature, expiry, org + user), consumes it (single use, per process) and runs the operation as actor `ai` with the token's `conversationId`. AuditLog gets `actorType=AI`, `actorId=<the user the AI acted for>`, `approvedBy=<approving user>` (the same person, the token is bound to the user) and `conversationId`.
+- `approval_confirm` takes optional `edits` (top-level field → string, number or boolean) the user made on the card: merged over the signed input and validated by the operation before the token is spent; references (`id`, `*Id`, `*Ids`) and fields the operation does not take are refused (`VALIDATION`).
 - Cancel = drop the token (no call needed). Expired token: ask the model to propose again.
 - Errors on confirmation: `FORBIDDEN` (invalid/expired/wrong user/AI caller), `CONFLICT` (already used), `NOT_FOUND` (unknown operation) and the operation's own errors.
 

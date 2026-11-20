@@ -135,4 +135,31 @@ describe("approval flow", () => {
     });
     expect(result).toMatchObject({ isError: true, data: { code: "FORBIDDEN" } });
   });
+  it("runs the user's edits, validated, and refuses edits on references", async () => {
+    const { base, user, assistant } = await setup();
+    const propose = () =>
+      call({ client: assistant, name: "venue_create", args: { name: "Proposed" } });
+    const refused = await call({
+      client: user,
+      name: "approval_confirm",
+      args: { approvalToken: (await propose()).data.approvalToken, edits: { id: "x" } },
+    });
+    expect(refused).toMatchObject({ isError: true, data: { code: "VALIDATION" } });
+    const token: string = (await propose()).data.approvalToken;
+    const invalid = await call({
+      client: user,
+      name: "approval_confirm",
+      args: { approvalToken: token, edits: { name: "" } },
+    });
+    expect(invalid).toMatchObject({ isError: true, data: { code: "VALIDATION" } });
+    // The token is not spent by a bad edit, so the user can fix it and confirm again.
+    const confirmed = await call({
+      client: user,
+      name: "approval_confirm",
+      args: { approvalToken: token, edits: { name: "Edited" } },
+    });
+    expect(confirmed.isError).toBe(false);
+    expect(confirmed.data).toMatchObject({ name: "Edited" });
+    expect(await base.db.venue.count()).toBe(1);
+  });
 });

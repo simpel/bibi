@@ -30,6 +30,7 @@ async function approve({ body, user, headers, options }: DecideInput): Promise<R
   const result = await confirmApproval({
     ...options,
     approvalToken: body.approvalToken,
+    ...(body.edits ? { edits: body.edits } : {}),
     headers,
     user,
   });

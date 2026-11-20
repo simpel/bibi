@@ -311,6 +311,10 @@
         "changeMessage": "Jag vill ändra något."
       },
       "needsAdmin": "Kräver admin",
+      "edit": {
+        "title": "Redigera {field}",
+        "column": "Redigera"
+      },
       "changes": {
         "record": "Post",
         "field": "Fält",

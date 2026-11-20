@@ -1,5 +1,6 @@
 import { type AfterCommitHook, type AnyOperation, fromZodError } from "@bibi/core";
 import { z } from "zod";
+import { ApprovalEditsSchema } from "../approval/apply-edits";
 import { confirmApproval } from "../approval/confirm";
 import { toJsonSchema } from "./json-schema";
 import { errorResult, successResult } from "./results";
@@ -7,6 +8,9 @@ import type { McpTool, RunToolInput } from "./types";
 
 export const ApprovalConfirmInputSchema = z.object({
   approvalToken: z.string().min(1).describe("Token from an approval_required result"),
+  edits: ApprovalEditsSchema.optional().describe(
+    "Top-level fields the user changed on the approval card; validated with the operation",
+  ),
 });
 
 export type ApprovalConfirmToolInput = {
@@ -45,6 +49,7 @@ export function createApprovalConfirmTool({
       }
       const result = await confirmApproval({
         token: parsed.data.approvalToken,
+        ...(parsed.data.edits ? { edits: parsed.data.edits } : {}),
         context,
         operations,
         afterCommit,

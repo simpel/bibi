@@ -9,6 +9,10 @@ export const ApprovalRequestSchema = z.object({
   toolCallId: z.string().min(1).max(200).optional(),
   /** Display only (note text); the token alone decides what runs. */
   operation: z.string().min(1).max(100).optional(),
+  /** Top-level fields the user changed on the card; MCP validates them with the operation. */
+  edits: z
+    .record(z.string().min(1).max(100), z.union([z.string().max(10_000), z.number(), z.boolean()]))
+    .optional(),
 });
 
 export type ApprovalRequest = z.infer<typeof ApprovalRequestSchema>;

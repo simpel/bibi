@@ -311,6 +311,10 @@
         "changeMessage": "I want to change something."
       },
       "needsAdmin": "Needs admin",
+      "edit": {
+        "title": "Edit {field}",
+        "column": "Edit"
+      },
       "changes": {
         "record": "Record",
         "field": "Field",

@@ -4,6 +4,7 @@ import type { ApprovalRequired } from "@bibi/ai";
 import { CardContent } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { HelpTip } from "@/components/help/help-tip";
+import type { ApprovalEdits, EditValue } from "../../../lib/approval-edits";
 import { ToolResultView } from "../tool-result-view";
 import { ApprovalErrorLine } from "./approval-error-line";
 import { ChangeDetails } from "./change-details";
@@ -16,6 +17,8 @@ export type ApprovalBodyProps = {
   decided: boolean;
   acknowledged: boolean;
   onAcknowledge: (input: { acknowledged: boolean }) => void;
+  edits: ApprovalEdits;
+  onEdit: (input: { path: string; value: EditValue }) => void;
 };
 
 /** What the change does, any error, and the result once it was confirmed. */
@@ -26,6 +29,8 @@ export function ApprovalBody({
   decided,
   acknowledged,
   onAcknowledge,
+  edits,
+  onEdit,
 }: ApprovalBodyProps) {
   const t = useTranslations("helpHints");
   return (
@@ -41,6 +46,8 @@ export function ApprovalBody({
         acknowledged={acknowledged}
         onAcknowledge={onAcknowledge}
         decided={decided}
+        edits={edits}
+        onEdit={onEdit}
       />
       <ApprovalErrorLine state={state} />
       {state.status === "approved" && state.result ? (

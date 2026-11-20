@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ApprovalEdits } from "../../../lib/approval-edits";
 
 const ResponseSchema = z.discriminatedUnion("status", [
   z.object({ status: z.literal("approved"), result: z.unknown() }),
@@ -13,6 +14,8 @@ export type PostDecisionInput = {
   operation: string;
   conversationId: string | null;
   toolCallId: string | undefined;
+  /** Values the user changed on the card; sent only with an approval. */
+  edits?: ApprovalEdits;
 };
 
 export type DecisionOutcome =
@@ -28,6 +31,7 @@ export async function postDecision({
   operation,
   conversationId,
   toolCallId,
+  edits,
 }: PostDecisionInput): Promise<DecisionOutcome> {
   try {
     const response = await fetch("/api/assistant/approval", {
@@ -39,6 +43,7 @@ export async function postDecision({
         operation,
         ...(conversationId ? { conversationId } : {}),
         ...(toolCallId ? { toolCallId } : {}),
+        ...(decision === "approve" && edits && Object.keys(edits).length > 0 ? { edits } : {}),
       }),
     });
     if (!response.ok) return { ok: false, status: response.status };

@@ -5,6 +5,7 @@ import { toast } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useRouter } from "@/lib/navigation";
+import type { ApprovalEdits } from "../../../lib/approval-edits";
 import { type ApprovalErrorKey, approvalErrorKey } from "../../../lib/approval-error";
 import type { StoredDecision } from "../../../lib/stored-messages";
 import { type Decision, postDecision } from "./post-decision";
@@ -22,6 +23,8 @@ export type UseApprovalDecisionInput = {
   toolCallId: string | undefined;
   conversationId: string | null;
   stored: StoredDecision | undefined;
+  /** Values the user changed on the card; sent with Confirm. */
+  edits: ApprovalEdits;
   /** Runs once, right after the user's approval went through (not for a stored decision). */
   onApproved?: () => void;
 };
@@ -39,6 +42,7 @@ export function useApprovalDecision({
   toolCallId,
   conversationId,
   stored,
+  edits,
   onApproved,
 }: UseApprovalDecisionInput) {
   const t = useTranslations("assistant.approval");
@@ -53,6 +57,7 @@ export function useApprovalDecision({
       operation: approval.operation,
       conversationId,
       toolCallId,
+      edits,
     });
     if (!outcome.ok) {
       const final = outcome.status === 409 || outcome.status === 403;

@@ -6,6 +6,8 @@ import { type AssistantServerOptions, resolveServerOptions } from "../server/ser
 
 export type ConfirmApprovalInput = AssistantServerOptions & {
   approvalToken: string;
+  /** Fields the user changed on the card before confirming. */
+  edits?: Record<string, string | number | boolean>;
   /** The user's request headers (session cookie). */
   headers: Headers;
   /** Already-resolved user (skips a second lookup). */
@@ -19,6 +21,7 @@ export type ConfirmApprovalInput = AssistantServerOptions & {
  */
 export async function confirmApproval({
   approvalToken,
+  edits,
   headers,
   user,
   ...options
@@ -38,7 +41,11 @@ export async function confirmApproval({
     ...(mcpUrl ? { url: mcpUrl } : {}),
   });
   try {
-    return await callMcpTool({ client, name: "approval_confirm", args: { approvalToken } });
+    return await callMcpTool({
+      client,
+      name: "approval_confirm",
+      args: { approvalToken, ...(edits ? { edits } : {}) },
+    });
   } finally {
     await client.close();
   }

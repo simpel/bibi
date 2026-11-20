@@ -2,6 +2,7 @@
 
 import { Card } from "@bibi/ui";
 import { useState } from "react";
+import type { ApprovalEdits } from "../../lib/approval-edits";
 import { useApprovalContext } from "../../state/approval-context";
 import { ApprovalBody } from "./approval/approval-body";
 import { ApprovalFooter } from "./approval/approval-footer";
@@ -14,7 +15,8 @@ export type ApprovalCardViewProps = GenerativeProps<"approval-card">;
 
 /**
  * A mutation the assistant proposed. Nothing has run yet: the user approves (POST to
- * `/api/assistant/approval`, which executes it as the user) or rejects. Decided cards are locked.
+ * `/api/assistant/approval`, which executes it as the user) or rejects. Before confirming, the
+ * user may edit the values with the pen on each row. Decided cards are locked.
  */
 export function ApprovalCardView(props: ApprovalCardViewProps) {
   return <OperationApprovalCard {...props} />;
@@ -30,7 +32,14 @@ function useWarningGate({ preview }: { preview: ApprovalCardViewProps["approval"
 function OperationApprovalCard({ approval, toolCallId, toolName }: ApprovalCardViewProps) {
   const { conversationId, decisions } = useApprovalContext();
   const stored = decisions.find((decision) => decision.toolCallId === toolCallId);
-  const { state, decide } = useApprovalDecision({ approval, toolCallId, conversationId, stored });
+  const [edits, setEdits] = useState<ApprovalEdits>({});
+  const { state, decide } = useApprovalDecision({
+    approval,
+    toolCallId,
+    conversationId,
+    stored,
+    edits,
+  });
   const decided = state.status === "approved" || state.status === "rejected";
   const seconds = useCountdown({ expiresAt: approval.expiresAt, active: !decided });
   const { preview } = approval;
@@ -42,7 +51,6 @@ function OperationApprovalCard({ approval, toolCallId, toolName }: ApprovalCardV
       className="border-primary/40 shadow-none"
     >
       <ApprovalHeader
-        operation={approval.operation}
         summary={approval.summary}
         needsAdmin={preview?.group === "setup" || preview?.group === "organization"}
       />
@@ -53,6 +61,8 @@ function OperationApprovalCard({ approval, toolCallId, toolName }: ApprovalCardV
         decided={decided}
         acknowledged={gate.acknowledged}
         onAcknowledge={({ acknowledged }) => gate.setAcknowledged(acknowledged)}
+        edits={edits}
+        onEdit={({ path, value }) => setEdits((current) => ({ ...current, [path]: value }))}
       />
       <ApprovalFooter
         state={state}
