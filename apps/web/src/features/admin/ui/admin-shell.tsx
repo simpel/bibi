@@ -14,14 +14,14 @@ export type AdminShellProps = {
 
 /** Superadmin layout (ADR 0015): shadcn sidebar + inset content, separate from the app shell. */
 export function AdminShell({ user, organizationId, children }: AdminShellProps) {
-  const t = useTranslations("admin");
+  const common = useTranslations("common");
   return (
     <SidebarProvider>
       <AdminSidebar user={user} organizationId={organizationId} />
       <SidebarInset>
         <CrumbNamesProvider>
           <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
-            <SidebarTrigger label={t("toggleSidebar")} />
+            <SidebarTrigger label={common("showSidebar")} closeLabel={common("hideSidebar")} />
             <Separator orientation="vertical" className="h-4" />
             <Breadcrumb />
           </header>

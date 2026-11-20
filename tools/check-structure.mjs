@@ -10,6 +10,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkFeatures } from "./lib/features.mjs";
 import { checkFile } from "./lib/file-rules.mjs";
+import { checkIconButtons } from "./lib/icon-button-rules.mjs";
 import { checkDbImport } from "./lib/import-rules.mjs";
 import { checkNumber } from "./lib/number-rules.mjs";
 import { analyzeParams } from "./lib/params.mjs";
@@ -42,6 +43,7 @@ export function runChecks({ root }) {
         ...analyzeParams({ relPath, content }),
         ...checkTime({ relPath, content }),
         ...checkNumber({ relPath, content }),
+        ...checkIconButtons({ relPath, content }),
         ...checkDbImport({ relPath, content }),
       ];
       for (const message of messages) problems.push({ file: relPath, message });

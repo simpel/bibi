@@ -622,6 +622,8 @@
     "title": "Notiser",
     "description": "Det som berör dig: bokningar du blir ansvarig för, order som skickas till dig, och statusändringar och betalningar på bokningar du ansvarar för eller följer.",
     "bell": "Notiser",
+    "showPanel": "Visa notiser",
+    "hidePanel": "Dölj notiser",
     "unreadCount": "{count, plural, =0 {Inga olästa notiser} one {# oläst notis} other {# olästa notiser}}",
     "panel": {
       "close": "Stäng notiser",

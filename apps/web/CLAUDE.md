@@ -58,6 +58,9 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - Load errors (not action outcomes): `ErrorState` in server components, `InlineLoadError` in client islands.
 - `ErrorBanner`, `useActionSubmit` and `useAuthSubmit` are removed. Do not reintroduce equivalent patterns.
 
+## Icon buttons
+- An icon-only button's `aria-label` says what a click does in its current state and is its tooltip (`Button` in `@bibi/ui` shows it); a toggle swaps the label with the state. Never `title`. Checked by `pnpm check:structure`.
+
 ## Tables (ADR 0040)
 - Every table is a shadcn TanStack table, rendered with `ClientDataTable` (for client-filtered/paginated tables) or `PersistedDataTable` (`components/data-table/`, on `DataTable` in `@bibi/ui`) with a stable `tableId`. Build column arrays with `createTableColumns` (`@bibi/ui`) so the 7 zones are concatenated in canonical order automatically, and use `statusColumn`, `dateColumn`, `numberColumn` and `actionsColumn` from `@bibi/ui`. Extract a `use-<entity>-columns` hook only when columns are shared between a page table and an assistant card; otherwise keep columns in the table file. Never a raw `<table>`, never the `Table*` primitives directly, never another table library. Only exception: the calendar grid.
 - All columns are sortable. Standard left-to-right order (enforced by `createTableColumns({ select, primary, relations, status, dates, numbers, actions })`):

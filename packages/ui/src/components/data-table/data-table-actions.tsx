@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../dropdown-menu/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip/tooltip";
 import { DATA_TABLE_ACTIONS_COLUMN_ID } from "./data-table-order";
 import { DataTableRowAction, type DataTableRowActionProps } from "./data-table-row-action";
 
@@ -35,21 +34,16 @@ type RowMenuProps = Pick<DataTableRowActionsProps, "label" | "compact" | "childr
 function RowMenu({ label, compact, primary, className, children }: RowMenuProps) {
   return (
     <DropdownMenu>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant={compact ? "ghost" : "outline"}
-              size="icon"
-              aria-label={label}
-              className={cn(!compact && "size-8 shrink-0", className)}
-            >
-              <MoreHorizontalIcon aria-hidden className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-        </TooltipTrigger>
-        <TooltipContent>{label}</TooltipContent>
-      </Tooltip>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant={compact ? "ghost" : "outline"}
+          size="icon"
+          aria-label={label}
+          className={cn(!compact && "size-8 shrink-0", className)}
+        >
+          <MoreHorizontalIcon aria-hidden className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {primary.map(({ label: text, onClick, destructive, disabled }) => (
           <DropdownMenuItem

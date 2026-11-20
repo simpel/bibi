@@ -21,6 +21,9 @@ export type HelpShellLabels = {
   title: string;
   description: string;
   toggleSidebar: string;
+  /** The trigger's tooltip while the sidebar is hidden and while it shows. */
+  showSidebar: string;
+  hideSidebar: string;
   signIn: string;
 };
 
@@ -60,7 +63,7 @@ export function HelpShell({
       <SidebarInset>
         <CrumbNamesProvider>
           <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background px-4">
-            <SidebarTrigger label={labels.toggleSidebar} />
+            <SidebarTrigger label={labels.showSidebar} closeLabel={labels.hideSidebar} />
             <Separator orientation="vertical" className="h-4" />
             <div className="min-w-0 flex-1">
               <Breadcrumb />

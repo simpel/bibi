@@ -1,5 +1,5 @@
 import { isOpening } from "@bibi/core/schemas";
-import { Button, Separator, Tooltip, TooltipContent, TooltipTrigger } from "@bibi/ui";
+import { Button, Separator } from "@bibi/ui";
 import { CopyIcon, DoorOpenIcon, RotateCwIcon, Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { CSSProperties, ReactNode } from "react";
@@ -27,20 +27,15 @@ function IconAction({
   children: ReactNode;
 }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8"
-          aria-label={label}
-          onClick={(event) => onClick(event.shiftKey)}
-        >
-          {children}
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
-    </Tooltip>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="size-8"
+      aria-label={label}
+      onClick={(event) => onClick(event.shiftKey)}
+    >
+      {children}
+    </Button>
   );
 }
 

@@ -351,6 +351,7 @@
     },
     "description": "Chatta med assistenten om anläggningar, artiklar och färdigheter.",
     "stop": "Stoppa",
+    "scrollToLatest": "Skrolla till senaste meddelandet",
     "emptyTitle": "Vad kan jag hjälpa dig med?",
     "emptyDescription": "Jag kan söka, visa och föreslå ändringar. Ändringar kräver alltid ditt godkännande.",
     "loadingConversation": "Laddar konversationen...",

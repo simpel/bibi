@@ -13,8 +13,9 @@ type SupportLayoutProps = { children: ReactNode; params: Promise<{ locale: strin
 export default async function SupportLayout({ children, params }: SupportLayoutProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
-  const [t, nav] = await Promise.all([
+  const [t, common, nav] = await Promise.all([
     getTranslations({ locale, namespace: "support" }),
+    getTranslations({ locale, namespace: "common" }),
     guideNavGroups({ locale }),
   ]);
   return (
@@ -24,6 +25,8 @@ export default async function SupportLayout({ children, params }: SupportLayoutP
           title: t("navTitle"),
           description: t("navDescription"),
           toggleSidebar: t("toggleSidebar"),
+          showSidebar: common("showSidebar"),
+          hideSidebar: common("hideSidebar"),
           signIn: t("signIn"),
         }}
         homeHref="/support"

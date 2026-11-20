@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@bibi/ui";
+import { Avatar, AvatarFallback, AvatarImage, Button } from "@bibi/ui";
 import { CameraIcon, Loader2Icon, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useRef, useState } from "react";
@@ -73,19 +73,20 @@ export function AvatarField({ avatarKey, gravatarUrl, onChange }: AvatarFieldPro
         </button>
 
         {hasImage ? (
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={(event) => {
               event.stopPropagation();
               if (hasUploadedImage) onChange(null);
               if (hasGravatarImage) setGravatarDismissed(true);
             }}
-            className="absolute -top-1 -right-1 flex size-7 items-center justify-center rounded-full border-2 border-background bg-background text-muted-foreground shadow-sm transition-colors hover:bg-destructive hover:text-destructive-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="absolute -top-1 -right-1 size-7 rounded-full border-2 border-background bg-background text-muted-foreground shadow-sm hover:bg-destructive hover:text-destructive-foreground"
             aria-label={t("removeAvatar")}
-            title={t("removeAvatar")}
           >
             <XIcon className="size-3.5" />
-          </button>
+          </Button>
         ) : (
           <span
             className="pointer-events-none absolute -top-1 -right-1 flex size-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground shadow-sm"

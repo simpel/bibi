@@ -1,5 +1,5 @@
 import type { FloorElementKindDto } from "@bibi/core/schemas";
-import { Button, FloorPiece, Tooltip, TooltipContent, TooltipTrigger } from "@bibi/ui";
+import { Button, FloorPiece } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { type KindMap, NO_OVERRIDES } from "../lib/draft";
 import { draftToDrawing } from "../lib/to-drawing";
@@ -43,22 +43,18 @@ export function FurnitureDock({ kinds, kindMap, onAdd }: FurnitureDockProps) {
       className="absolute top-3 left-3 grid max-h-[calc(100%-1.5rem)] gap-0.5 overflow-y-auto rounded-xl border bg-card p-1 shadow-sm max-sm:top-auto max-sm:bottom-3 max-sm:left-1/2 max-sm:max-w-[calc(100%-1.5rem)] max-sm:-translate-x-1/2 max-sm:grid-flow-col max-sm:overflow-x-auto"
     >
       {kinds.map((kind) => (
-        <Tooltip key={kind.id}>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-12 cursor-grab"
-              aria-label={t("add", { name: kind.name })}
-              draggable
-              onDragStart={(event) => event.dataTransfer.setData(KIND_MIME, kind.id)}
-              onClick={() => onAdd({ kindId: kind.id })}
-            >
-              <KindIcon kind={kind} kinds={kindMap} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">{kind.name}</TooltipContent>
-        </Tooltip>
+        <Button
+          key={kind.id}
+          variant="ghost"
+          size="icon"
+          className="size-12 cursor-grab"
+          aria-label={t("add", { name: kind.name })}
+          draggable
+          onDragStart={(event) => event.dataTransfer.setData(KIND_MIME, kind.id)}
+          onClick={() => onAdd({ kindId: kind.id })}
+        >
+          <KindIcon kind={kind} kinds={kindMap} />
+        </Button>
       ))}
     </nav>
   );

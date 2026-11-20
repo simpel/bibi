@@ -36,6 +36,9 @@ Nothing outside `tokens.css` may contain hardcoded colors (hex/rgb/oklch), radii
 7. Export from `src/index.ts`.
 8. Helper functions (non-components) take a single typed object: `fn({ a, b }: FnInput)`. The only exception is `cn(...inputs)`.
 
+## Icon buttons
+- Every icon-only button has a tooltip that says what a click does now ("Follow" / "Stop following", "Show sidebar" / "Hide sidebar"). `Button size="icon"` shows its `aria-label` as the tooltip; a mostly-icon button of another size passes `tooltip`; `tooltip={false}` only where another tooltip already covers it. Never `title`. `pnpm check:structure` refuses an icon button without a label.
+
 ## Title rows
 - Title (and description) left, actions right on the title row: `CardHeader` + `CardAction`, actions as `HeaderActions`. Never actions in the card body or footer for the card's own commands.
 - Below `md` the actions go under the title. One action stays a button; several fold into one menu, and an action with its own choices (`items`) becomes a submenu.

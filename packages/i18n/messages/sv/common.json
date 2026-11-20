@@ -1,5 +1,7 @@
 {
   "common": {
+    "showSidebar": "Visa sidomenyn",
+    "hideSidebar": "Dölj sidomenyn",
     "hidden": "Dold",
     "appName": "Bibi",
     "save": "Spara",

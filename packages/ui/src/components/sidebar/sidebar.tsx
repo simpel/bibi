@@ -60,15 +60,23 @@ export function Sidebar({
   );
 }
 
-export type SidebarTriggerProps = ComponentProps<typeof Button> & { label?: string };
+export type SidebarTriggerProps = ComponentProps<typeof Button> & {
+  /** What a click does while the sidebar is hidden, e.g. "Show sidebar"; its tooltip. */
+  label?: string;
+  /** What a click does while it shows, e.g. "Hide sidebar"; defaults to `label`. */
+  closeLabel?: string;
+};
 
 export function SidebarTrigger({
   className,
   onClick,
   label = "Toggle sidebar",
+  closeLabel,
   ...props
 }: SidebarTriggerProps) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, open, openMobile, isMobile } = useSidebar();
+  const shown = isMobile ? openMobile : open;
+  const action = shown && closeLabel ? closeLabel : label;
   return (
     <Button
       data-sidebar="trigger"
@@ -76,6 +84,7 @@ export function SidebarTrigger({
       variant="ghost"
       size="icon"
       className={cn("size-7", className)}
+      aria-label={action}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
@@ -83,7 +92,6 @@ export function SidebarTrigger({
       {...props}
     >
       <PanelLeftIcon />
-      <span className="sr-only">{label}</span>
     </Button>
   );
 }

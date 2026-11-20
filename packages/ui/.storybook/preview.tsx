@@ -4,6 +4,7 @@ import "./fonts.css";
 import "../src/styles/index.css";
 import { CalendarLabelsProvider } from "../src/components/availability-calendar/calendar-labels";
 import { ContactLabelsProvider } from "../src/components/person-contact/contact-labels";
+import { TooltipProvider } from "../src/components/tooltip/tooltip";
 import { STORY_LABELS } from "../src/stories/calendar/story-labels";
 
 const CONTACT_LABELS = {
@@ -22,11 +23,13 @@ const preview: Preview = {
   decorators: [
     // The calendar's and contact card's words: the app passes its translations, the stories English.
     (Story) => (
-      <CalendarLabelsProvider labels={STORY_LABELS}>
-        <ContactLabelsProvider labels={CONTACT_LABELS}>
-          <Story />
-        </ContactLabelsProvider>
-      </CalendarLabelsProvider>
+      <TooltipProvider>
+        <CalendarLabelsProvider labels={STORY_LABELS}>
+          <ContactLabelsProvider labels={CONTACT_LABELS}>
+            <Story />
+          </ContactLabelsProvider>
+        </CalendarLabelsProvider>
+      </TooltipProvider>
     ),
     withThemeByClassName({
       themes: { light: "", dark: "dark" },

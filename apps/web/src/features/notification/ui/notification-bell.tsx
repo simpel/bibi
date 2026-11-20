@@ -23,7 +23,7 @@ export function NotificationBell() {
       variant={open ? "secondary" : "ghost"}
       size="icon"
       className="relative"
-      aria-label={t("bell")}
+      aria-label={open ? t("hidePanel") : t("showPanel")}
       aria-expanded={open}
       aria-controls="notification-panel"
       onClick={() => setOpen(!open)}

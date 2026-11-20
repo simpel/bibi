@@ -37,6 +37,7 @@ export function ChatView({
   renderFooter,
   quietTools = NO_QUIET_TOOLS,
 }: ChatViewProps) {
+  const t = useTranslations("assistant");
   const { session, draft } = useAssistant();
   const { chat, loading } = session;
   const { messages, status, error, sendMessage, stop, regenerate } = chat;
@@ -55,7 +56,7 @@ export function ChatView({
               error={error}
               onRetry={() => void regenerate()}
             />
-            <ConversationScrollButton />
+            <ConversationScrollButton aria-label={t("scrollToLatest")} />
           </Conversation>
         </QuietToolsContext>
       ) : null}

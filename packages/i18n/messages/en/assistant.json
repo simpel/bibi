@@ -351,6 +351,7 @@
     },
     "description": "Chat with the assistant about venues, items and skills.",
     "stop": "Stop",
+    "scrollToLatest": "Scroll to the newest message",
     "emptyTitle": "What can I help you with?",
     "emptyDescription": "I can search, show and propose changes. Changes always need your approval.",
     "loadingConversation": "Loading the conversation...",

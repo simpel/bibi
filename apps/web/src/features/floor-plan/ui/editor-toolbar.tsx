@@ -1,4 +1,4 @@
-import { Button, Tooltip, TooltipContent, TooltipTrigger } from "@bibi/ui";
+import { Button } from "@bibi/ui";
 import { Redo2Icon, Undo2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { NamedOption } from "@/components/form/named-option";
@@ -46,34 +46,24 @@ export function EditorToolbar({
       </div>
       {canEdit ? (
         <div className="flex items-center gap-1">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("undo")}
-                disabled={state.undo.length === 0}
-                onClick={() => dispatch({ type: "undo" })}
-              >
-                <Undo2Icon />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t("undo")}</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("redo")}
-                disabled={state.redo.length === 0}
-                onClick={() => dispatch({ type: "redo" })}
-              >
-                <Redo2Icon />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t("redo")}</TooltipContent>
-          </Tooltip>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t("undo")}
+            disabled={state.undo.length === 0}
+            onClick={() => dispatch({ type: "undo" })}
+          >
+            <Undo2Icon />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t("redo")}
+            disabled={state.redo.length === 0}
+            onClick={() => dispatch({ type: "redo" })}
+          >
+            <Redo2Icon />
+          </Button>
           <Button disabled={!dirty || blocked || save.pending} onClick={save.save}>
             {dirty ? common("save") : t("savedState")}
           </Button>

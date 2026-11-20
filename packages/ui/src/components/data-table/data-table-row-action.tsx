@@ -2,7 +2,6 @@ import { PlusIcon } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 import { cn } from "../../lib/cn";
 import { Button } from "../button/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip/tooltip";
 
 export type DataTableRowActionProps = {
   /** The accessible name and tooltip. Never shown as inline text in table buttons. */
@@ -36,20 +35,15 @@ export function DataTableRowAction({
   const Icon = icon ?? (isCreateAction({ label }) ? PlusIcon : PlusIcon);
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label={label}
-          disabled={disabled}
-          onClick={onClick}
-          className={cn("size-8 shrink-0", destructive && "text-destructive")}
-        >
-          <Icon aria-hidden className="size-4" />
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
-    </Tooltip>
+    <Button
+      variant="outline"
+      size="icon"
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className={cn("size-8 shrink-0", destructive && "text-destructive")}
+    >
+      <Icon aria-hidden className="size-4" />
+    </Button>
   );
 }

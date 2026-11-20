@@ -75,7 +75,7 @@ export function CommentAction({
         className={look}
         onClick={(event) => event.stopPropagation()}
         aria-label={label}
-        title={label}
+        tooltip={label}
       >
         <AppLink href={href} data-slot="comment-action">
           <Content count={count} unread={unread} icon={icon} />
@@ -95,7 +95,7 @@ export function CommentAction({
         onClick?.();
       }}
       aria-label={label}
-      title={label}
+      tooltip={label}
     >
       <Content count={count} unread={unread} icon={icon} />
     </Button>

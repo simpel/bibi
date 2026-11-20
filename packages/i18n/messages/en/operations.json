@@ -622,6 +622,8 @@
     "title": "Notifications",
     "description": "What concerns you: orders you are assigned to, run sheets sent to you, and status changes and payments on orders you answer for or follow.",
     "bell": "Notifications",
+    "showPanel": "Show notifications",
+    "hidePanel": "Hide notifications",
     "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}",
     "panel": {
       "close": "Close notifications",

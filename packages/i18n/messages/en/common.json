@@ -1,5 +1,7 @@
 {
   "common": {
+    "showSidebar": "Show sidebar",
+    "hideSidebar": "Hide sidebar",
     "hidden": "Hidden",
     "appName": "Bibi",
     "save": "Save",

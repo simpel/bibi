@@ -2,6 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
 import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip/tooltip";
 
 export const buttonVariants = cva(
   "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
@@ -31,15 +32,46 @@ export const buttonVariants = cva(
 );
 
 export type ButtonProps = ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & { asChild?: boolean };
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+    /**
+     * The tooltip: what a click does now, e.g. "Follow" or "Stop following". An icon button
+     * (`size="icon"`) shows its `aria-label` by default; pass a text for a button that shows an
+     * icon with little else (a count), or `false` where another tooltip already covers it.
+     */
+    tooltip?: string | false;
+  };
 
-export function Button({ className, variant, size, asChild = false, ...props }: ButtonProps) {
+/**
+ * A button. Every icon button has a tooltip saying what clicking it does (its `aria-label`),
+ * shown on hover and keyboard focus; the browser's own `title` is dropped so it never shows twice.
+ */
+export function Button({
+  className,
+  variant,
+  size,
+  asChild = false,
+  tooltip,
+  ...props
+}: ButtonProps) {
   const Comp = asChild ? Slot.Root : "button";
-  return (
+  const label =
+    tooltip === false
+      ? undefined
+      : (tooltip ?? (size === "icon" ? props["aria-label"] : undefined));
+  const { title: _title, ...withoutTitle } = props;
+  const button = (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size }), className)}
-      {...props}
+      {...(label ? withoutTitle : props)}
     />
+  );
+  if (!label) return button;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
   );
 }

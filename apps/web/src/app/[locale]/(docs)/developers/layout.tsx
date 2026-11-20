@@ -19,8 +19,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function DevelopersLayout({ children, params }: DevelopersLayoutProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
-  const [t, nav] = await Promise.all([
+  const [t, common, nav] = await Promise.all([
     getTranslations({ locale, namespace: "docs" }),
+    getTranslations({ locale, namespace: "common" }),
     developerNavGroups({ locale }),
   ]);
   return (
@@ -30,6 +31,8 @@ export default async function DevelopersLayout({ children, params }: DevelopersL
           title: t("title"),
           description: t("description"),
           toggleSidebar: t("toggleSidebar"),
+          showSidebar: common("showSidebar"),
+          hideSidebar: common("hideSidebar"),
           signIn: t("signIn"),
         }}
         homeHref="/developers"

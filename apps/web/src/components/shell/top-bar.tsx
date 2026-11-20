@@ -17,12 +17,12 @@ export type TopBarProps = { access: ShellAccess };
  * fixed narrow width.
  */
 export function TopBar({ access }: TopBarProps) {
-  const t = useTranslations("nav");
+  const common = useTranslations("common");
   const tour = useTranslations("tour");
   return (
     <header className="flex h-14 items-center gap-2 border-b bg-background px-4 md:grid md:grid-cols-[minmax(0,1fr)_minmax(6rem,28rem)_minmax(max-content,1fr)]">
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <SidebarTrigger label={t("openMenu")} />
+        <SidebarTrigger label={common("showSidebar")} closeLabel={common("hideSidebar")} />
         <Separator orientation="vertical" className="h-4" />
         <Breadcrumb />
       </div>
