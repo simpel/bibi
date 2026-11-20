@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.2.0](https://github.com/simpel/bibi/compare/@bibi/db-v3.1.0...@bibi/db-v3.2.0) (2026-11-20)
+
+
+### Features
+
+* a database projection records who is related to each order and item ([f82f058](https://github.com/simpel/bibi/commit/f82f058a057e113840b6009dd7dc34281742cdaf))
+* admins edit the inbox address and get forwarding steps ([e06d0c7](https://github.com/simpel/bibi/commit/e06d0c7c58ebb29cb4a1989c20e3e350a9959e64))
+* comment icons, unread dots, replies and mentions ([816137d](https://github.com/simpel/bibi/commit/816137db95fd648425dad04e46d5b466a745f89f))
+* comments on orders and lines, shown on run sheets ([17ade2e](https://github.com/simpel/bibi/commit/17ade2eee0544984a4a4c92c92bbdb90b743e994))
+* members can be limited to related records; auth and notifications resolve access in one place ([034f590](https://github.com/simpel/bibi/commit/034f59060b53fe13fb799e8d3e6ac73d22c022a0))
+* notifications open in a panel on the right, with Needs you on top and dismissable ([597ea74](https://github.com/simpel/bibi/commit/597ea740e59b98200ff8e7471c164a9ed08a2236))
+* packages get their own permission and leave the administration area ([eaf769d](https://github.com/simpel/bibi/commit/eaf769d70d2635634b3a75a6e218205e25b8e5fb))
+* pipeline views are personal and shared with members or the organization ([58b0836](https://github.com/simpel/bibi/commit/58b083669fff4453d519e06424ab2f38d010b6c5))
+* the scoped client enforces declared record intent ([5975e2d](https://github.com/simpel/bibi/commit/5975e2db025bbef995dd9dc6d21168e7573ee38d))
+
+
+### Bug Fixes
+
+* setting the language works before a profile exists ([79ddb8b](https://github.com/simpel/bibi/commit/79ddb8b37bccbe626cfdb0e3b8d5aa9b060106ac))
+
 ## [3.1.0](https://github.com/simpel/bibi/compare/@bibi/db-v3.0.0...@bibi/db-v3.1.0) (2026-11-15)
 
 

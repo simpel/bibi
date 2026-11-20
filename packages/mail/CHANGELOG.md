@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/mail-v1.0.0...@bibi/mail-v1.1.0) (2026-11-20)
+
+
+### Features
+
+* board cues, hours check, help hints and follow controls ([dec5f73](https://github.com/simpel/bibi/commit/dec5f733332cdff5918d02193312a3dd20440065))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 5.1.0
+    * @bibi/i18n bumped to 4.2.0
+
 ## [1.0.0](https://github.com/simpel/bibi/compare/@bibi/mail-v0.5.4...@bibi/mail-v1.0.0) (2026-11-15)
 
 
