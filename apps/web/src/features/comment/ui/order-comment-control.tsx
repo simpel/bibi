@@ -11,5 +11,5 @@ export type OrderCommentControlProps = { order: Pick<OrderDto, "id">; title: str
 export async function OrderCommentControl({ order, title }: OrderCommentControlProps) {
   const state = await loadOrderComments({ order });
   if (!state.ok || !state.value) return null;
-  return <CommentDialogButton comments={state.value} lineId={null} title={title} />;
+  return <CommentDialogButton comments={state.value} lineId={null} title={title} look="icon" />;
 }

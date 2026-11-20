@@ -20,6 +20,8 @@ export type CommentDialogButtonProps = {
   lineId: string | null;
   /** The line's or the order's name, for the dialog's title. */
   title: string;
+  /** `icon` on a title row beside other icon buttons; `inline` (with the count) in rows. */
+  look?: "inline" | "icon";
 };
 
 /**
@@ -27,7 +29,7 @@ export type CommentDialogButtonProps = {
  * unread ones. It opens that line's (or the order's) comments with a text box to add one;
  * opening it reads the caller's notifications about them.
  */
-export function CommentDialogButton({ comments, lineId, title }: CommentDialogButtonProps) {
+export function CommentDialogButton({ comments, lineId, title, look }: CommentDialogButtonProps) {
   const t = useTranslations("comment");
   const [open, setOpen] = useState(false);
   const subject = subjectOf({ state: comments, lineId });
@@ -41,6 +43,7 @@ export function CommentDialogButton({ comments, lineId, title }: CommentDialogBu
         label={t("actionLabel", { count, unread })}
         count={count}
         unread={unread > 0}
+        look={look}
         onClick={() => {
           setOpen(true);
           void markSeen();

@@ -17,5 +17,10 @@ export const Empty: Story = {};
 /** Three comments, all read. */
 export const WithCount: Story = { args: { count: 3, label: "Comments (3)" } };
 
+/** Beside other title-row buttons: an outline icon button with the dot, no count. */
+export const IconButton: Story = {
+  args: { count: 3, unread: true, look: "icon", label: "Comments (3, 1 new)" },
+};
+
 /** One of them is new to the viewer: the red dot. */
 export const Unread: Story = { args: { count: 3, unread: true, label: "Comments (3, 1 new)" } };

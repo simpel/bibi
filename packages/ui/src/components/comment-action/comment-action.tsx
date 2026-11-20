@@ -16,14 +16,21 @@ export type CommentActionProps = {
   /** Opens the comments elsewhere; else `onClick` opens them in place. */
   href?: string | undefined;
   onClick?: (() => void) | undefined;
+  /**
+   * `inline` (default): a small ghost button with the count, for rows and cards. `icon`: an
+   * outline icon button without the count, beside other title-row buttons (the order header).
+   */
+  look?: "inline" | "icon";
   className?: string;
 };
 
-function Content({ count, unread }: Pick<CommentActionProps, "count" | "unread">): ReactNode {
+type ContentProps = Pick<CommentActionProps, "count" | "unread"> & { icon: boolean };
+
+function Content({ count, unread, icon }: ContentProps): ReactNode {
   return (
     <>
       <span className="relative">
-        <MessageCircleIcon aria-hidden className="size-3.5" />
+        <MessageCircleIcon aria-hidden className={icon ? "size-4" : "size-3.5"} />
         {unread ? (
           <span
             data-slot="comment-unread"
@@ -31,14 +38,14 @@ function Content({ count, unread }: Pick<CommentActionProps, "count" | "unread">
           />
         ) : null}
       </span>
-      {count > 0 ? <span className="text-xs tabular-nums">{count}</span> : null}
+      {count > 0 && !icon ? <span className="text-xs tabular-nums">{count}</span> : null}
     </>
   );
 }
 
 /**
- * The comments of an order or a line (ADR 0115): an icon with the count and a red dot for the
- * viewer's unread ones. Inside a card that is a link it stops the click from opening the card.
+ * The comments of an order or a line (ADR 0115): an icon with the count (or, on a title row, an
+ * outline icon button) and a red dot for the viewer's unread ones. Inside a card that is a link it stops the click from opening the card.
  */
 export function CommentAction({
   label,
@@ -46,26 +53,32 @@ export function CommentAction({
   unread,
   href,
   onClick,
+  look: shape = "inline",
   className,
 }: CommentActionProps) {
-  const look = cn(
-    "h-7 shrink-0 gap-1 px-1.5 text-muted-foreground hover:text-foreground",
-    unread && "text-foreground",
-    className,
-  );
+  const icon = shape === "icon";
+  const look = icon
+    ? cn("shrink-0", className)
+    : cn(
+        "h-7 shrink-0 gap-1 px-1.5 text-muted-foreground hover:text-foreground",
+        unread && "text-foreground",
+        className,
+      );
+  const variant = icon ? "outline" : "ghost";
+  const size = icon ? "icon" : "sm";
   if (href) {
     return (
       <Button
         asChild
-        size="sm"
-        variant="ghost"
+        size={size}
+        variant={variant}
         className={look}
         onClick={(event) => event.stopPropagation()}
         aria-label={label}
         title={label}
       >
         <AppLink href={href} data-slot="comment-action">
-          <Content count={count} unread={unread} />
+          <Content count={count} unread={unread} icon={icon} />
         </AppLink>
       </Button>
     );
@@ -73,8 +86,8 @@ export function CommentAction({
   return (
     <Button
       type="button"
-      size="sm"
-      variant="ghost"
+      size={size}
+      variant={variant}
       className={look}
       data-slot="comment-action"
       onClick={(event) => {
@@ -84,7 +97,7 @@ export function CommentAction({
       aria-label={label}
       title={label}
     >
-      <Content count={count} unread={unread} />
+      <Content count={count} unread={unread} icon={icon} />
     </Button>
   );
 }
