@@ -164,7 +164,7 @@
           },
           "followOrder": {
             "question": "Hur håller jag koll på en bokning jag inte jobbar med?",
-            "answer": "Öppna bokningen och klicka på **Följ** högst upp, bredvid statusen. Ögat blir grönt och knappen visar **Följer**.\nBokningen syns då under **Mitt arbete**, och du får veta när den byter status eller får betalningar. Klicka på **Följer** för att sluta följa. Alla som kan se bokningar kan följa dem."
+            "answer": "Öppna bokningen och klicka på **Följ** högst upp, bredvid statusen. Det överstrukna ögat öppnas och knappen visar **Följer**.\nBokningen syns då under **Mitt arbete**, och du får veta när den byter status eller får betalningar. Klicka på **Följer** för att sluta följa. Alla som kan se bokningar kan följa dem."
           },
           "commentOrder": {
             "question": "Hur lämnar jag en kommentar på en order eller en av dess rader?",

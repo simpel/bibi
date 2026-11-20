@@ -9,7 +9,7 @@ Current behaviour. Why: ADR 0034 (responsibilities are not roles), 0055 (derived
 
 ## Assignment
 - Every assignable subject (order, item) has exactly one main assignee (no responsibility) and any number of followers. An order also has one assignment per responsibility that applies to it. Quote has none of its own; it uses the order's.
-- On an order, Follow sits on the title row beside the status (an eye, green while following; the bell is only for notifications); the Assignee and followers section keeps Change assignee.
+- On an order, Follow sits on the title row beside the status (an open eye while following, a crossed-out eye otherwise; the bell is only for notifications); the Assignee and followers section keeps Change assignee.
 - Followers are need-to-know: they see the subject in "Following" and are included where the assignee is (run sheets, and notifications of status changes and payments, ADR 0094). Rules never require them.
 - A new order gets the creating member as main assignee (an order created from a template: the creating member too).
 

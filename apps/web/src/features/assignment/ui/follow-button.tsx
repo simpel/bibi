@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@bibi/ui";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
@@ -43,8 +43,8 @@ export function FollowButton({ subject, userId, following }: FollowButtonProps) 
       aria-label={label}
       title={label}
     >
-      {/* An eye, never the bell: the bell is notifications. */}
-      <EyeIcon aria-hidden className={following ? "text-primary" : undefined} />
+      {/* An eye, never the bell: the bell is notifications. Open while following. */}
+      {following ? <EyeIcon aria-hidden /> : <EyeOffIcon aria-hidden />}
     </Button>
   );
 }
