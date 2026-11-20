@@ -165,6 +165,14 @@
           "followOrder": {
             "question": "How do I keep up with an order I'm not working on?",
             "answer": "Open the order and click **Follow** at the top, next to its status. The bell fills in and the button says **Following**.\nThe order then shows up on your **My work** with a filled bell, and you hear about its status changes and payments. Click **Following** to stop. Anyone who can see orders can follow them."
+          },
+          "commentOrder": {
+            "question": "How do I leave a comment on an order or one of its lines?",
+            "answer": "Open the order and scroll to **Comments**. Write your comment, choose under **About** whether it is about the whole booking or one line, and click **Add comment**.\nEveryone who can see the order sees the comment with your name and the time. You can edit or delete your own comments with the buttons next to them."
+          },
+          "commentRunSheet": {
+            "question": "Does the kitchen see my comments?",
+            "answer": "Yes. Comments show on the order's run sheets: a comment on a line sits on that line's row, and comments on the whole booking sit at the top.\nWhen you add, edit or delete a comment, the run sheet gets a new version and the change is marked with a star."
           }
         }
       },

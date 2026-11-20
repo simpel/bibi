@@ -38,5 +38,6 @@ export async function requirementRows({
     startsAt: null,
     endsAt: null,
     values: { list: names.get(row.vocabularyValue.vocabularyId) ?? null },
+    comments: [],
   }));
 }

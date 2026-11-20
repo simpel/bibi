@@ -20,6 +20,7 @@ const row = ({ kind, key, label, ...rest }: RowSpec) => ({
   startsAt: null,
   endsAt: null,
   values: {},
+  comments: [],
   ...rest,
 });
 

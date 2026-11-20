@@ -16,6 +16,7 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   inboundEndpoint: "configuration",
   programItem: "program",
   requirement: "program",
+  comment: "comment",
   line: "program",
   lineAllocation: "program",
   alternativeGroup: "program",

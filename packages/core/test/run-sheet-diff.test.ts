@@ -15,6 +15,7 @@ const content = ({ specs }: { specs: Spec[] }): RunSheetContent => ({
     startsAt: null,
     endsAt: null,
     values: {},
+    comments: [],
     ...spec,
   })),
 });

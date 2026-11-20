@@ -2,9 +2,19 @@ import { z } from "zod";
 import { createSystemContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { FollowUpInput, OperationContext } from "../../operations/types";
+import type { PermissionSet } from "../../permissions/permission-set";
 import { generateRunSheet } from "./operations";
 
 type Scope = { context: OperationContext; orderId: string };
+
+/** What the system needs to generate a run sheet: it copies these features (`checkSourcesReadable`). */
+const GENERATE_PERMISSIONS: PermissionSet = {
+  runSheet: ["write"],
+  order: ["read"],
+  program: ["read"],
+  item: ["read"],
+  comment: ["read"],
+};
 
 /**
  * Active definitions that apply to the order: one that already has a version for it, or one
@@ -50,7 +60,7 @@ async function applicableDefinitions({ context, orderId }: Scope): Promise<strin
 export async function regenerateRunSheets({ context, orderId }: Scope): Promise<void> {
   const system = createSystemContext({
     organizationId: context.organizationId,
-    permissions: { runSheet: ["write"], order: ["read"], program: ["read"], item: ["read"] },
+    permissions: GENERATE_PERMISSIONS,
     ...(context.now ? { now: context.now } : {}),
   });
   for (const runSheetDefinitionId of await applicableDefinitions({ context, orderId })) {
@@ -135,7 +145,7 @@ export async function regenerateForDefinition({
   });
   const system = createSystemContext({
     organizationId: context.organizationId,
-    permissions: { runSheet: ["write"], order: ["read"], program: ["read"], item: ["read"] },
+    permissions: GENERATE_PERMISSIONS,
     ...(context.now ? { now: context.now } : {}),
   });
   for (const { id: orderId } of orders) {

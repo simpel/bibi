@@ -25,7 +25,7 @@ describe("buildSystemPrompt", () => {
     });
     expect(prompt).toContain("Bibi");
     expect(prompt).toContain("approval_required");
-    expect(prompt).toContain("Never say or imply that such an action is done");
+    expect(prompt).toContain("never say or imply the action is done");
     expect(prompt).toContain("Answer in Swedish");
     expect(prompt).toContain('"org_1"');
     expect(prompt).toContain('{"type":"venue","id":"v1"}');

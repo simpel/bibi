@@ -30,6 +30,7 @@ export {
   type BoardPhase,
   type BoardPhaseStatus,
   BuyerKind,
+  type Comment,
   type Contact,
   type Conversation,
   type CreditNote,

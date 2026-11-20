@@ -73,6 +73,7 @@ model Line {
   layout             SetupLayout?       @relation(fields: [layoutId, organizationId], references: [id, organizationId])
   state              ItemState?         @relation(fields: [stateId, organizationId], references: [id, organizationId])
   requirements       Requirement[]
+  comments           Comment[]
   occupancies        Occupancy[]
   orderLines         OrderLine[]        @relation("OrderLineLine")
   alternativeGroup   AlternativeGroup?  @relation("AlternativeGroupOptions", fields: [alternativeGroupId, organizationId], references: [id, organizationId])

@@ -1,5 +1,6 @@
 import type { ExecuteContext } from "../../operations/context";
 import type { DemoRefs } from "./demo-refs";
+import { seedDemoComments } from "./seed-comments";
 import { disconnectDemoProviders } from "./seed-disconnect";
 import { seedDemoFinance } from "./seed-finance";
 import { seedDemoInbox } from "./seed-inbox";
@@ -21,7 +22,7 @@ export type PipelineAndSalesInput = {
 };
 
 /**
- * The pipeline, then customers and orders with their money and run sheets (ADR 0092), the deposit rule (ADR 0090), the
+ * The pipeline, then customers and orders with their money, comments (ADR 0115) and run sheets (ADR 0092), the deposit rule (ADR 0090), the
  * inbox (ADR 0085), then the revenue accounts (ADR 0077), and last the demo's fake providers are
  * disconnected; without a pipeline (ADR 0044) only customers.
  */
@@ -35,6 +36,8 @@ export async function seedPipelineAndSales({ skipPipeline, ...input }: PipelineA
   }
   const sales = await seedDemoSales({ ...input, skipPipeline });
   if (!sales.ok || skipPipeline) return sales;
+  const comments = await seedDemoComments({ context: input.context, userIds: input.userIds });
+  if (!comments.ok) return comments;
   const runSheets = await seedDemoRunSheets({ context: input.context });
   if (!runSheets.ok) return runSheets;
   const settings = await seedDemoPaymentSettings({ context: input.context, org: input.org });

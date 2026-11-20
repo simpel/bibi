@@ -1,0 +1,25 @@
+/// Comment – staff's text on an order, or on one of its lines (ADR 0115). Read oldest first.
+/// Every column is owned: the author writes `body`; `createdBy` is the author (set by `scopedDb`);
+/// `editedAt` is set when the author changes the body. Archiving is the delete (ADR 0006).
+/// Run sheets snapshot the comments of the rows they show (`RunSheet.content`).
+model Comment {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  orderId        String
+  /// The line it is about; null = the whole order.
+  lineId         String?
+  /// The text, 1–2000 characters, line breaks kept.
+  body           String
+  /// When the author last changed the body; null = never edited.
+  editedAt       DateTime?
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  order          Order        @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  line           Line?        @relation(fields: [lineId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@index([organizationId, orderId, status])
+  @@index([organizationId, lineId])
+}

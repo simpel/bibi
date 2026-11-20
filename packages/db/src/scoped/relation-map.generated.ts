@@ -94,6 +94,16 @@ export const RELATIONS: RelationMap = {
       "list": false
     }
   },
+  "Comment": {
+    "order": {
+      "target": "Order",
+      "list": false
+    },
+    "line": {
+      "target": "Line",
+      "list": false
+    }
+  },
   "Contact": {
     "entityType": {
       "target": "EntityType",
@@ -673,6 +683,10 @@ export const RELATIONS: RelationMap = {
       "target": "Requirement",
       "list": true
     },
+    "comments": {
+      "target": "Comment",
+      "list": true
+    },
     "occupancies": {
       "target": "Occupancy",
       "list": true
@@ -979,6 +993,10 @@ export const RELATIONS: RelationMap = {
     },
     "requirements": {
       "target": "Requirement",
+      "list": true
+    },
+    "comments": {
+      "target": "Comment",
       "list": true
     },
     "runSheets": {

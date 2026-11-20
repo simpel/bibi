@@ -2,6 +2,7 @@ import type { Json } from "./helpers";
 import { byId, type ParityEntity, tool } from "./parity-entities";
 import { allocationEntities } from "./parity-entities-allocation";
 import { assignment } from "./parity-entities-assignment";
+import { comment } from "./parity-entities-comment";
 import { inboundEntities } from "./parity-entities-inbound";
 import { requirement } from "./parity-entities-requirement";
 
@@ -105,5 +106,13 @@ const orderTemplate = (): ParityEntity => ({
 /** Orders and what hangs off them; a function so the parity-entities import cycle resolves. */
 export function orderEntities(): ParityEntity[] {
   const sales = [...inboundEntities(), assignment()];
-  return [order(), orderTemplate(), line(), ...allocationEntities(), requirement(), ...sales];
+  return [
+    order(),
+    orderTemplate(),
+    line(),
+    ...allocationEntities(),
+    requirement(),
+    comment(),
+    ...sales,
+  ];
 }

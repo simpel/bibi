@@ -19,6 +19,8 @@ export { BILLING_PLAN } from "./features/billing/plan";
 export * from "./features/board/operations";
 export * from "./features/calendar/operations";
 export * from "./features/change-set/operations";
+export * from "./features/comment/operations";
+export * from "./features/comment/write-operations";
 export * from "./features/configuration/operations";
 export * from "./features/contact/operations";
 export * from "./features/contact/write-operations";

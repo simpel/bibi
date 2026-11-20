@@ -6,6 +6,7 @@ import { billingRoutes } from "./features/billing/rest";
 import { boardRoutes as boardCrudRoutes, boardPhaseRoutes } from "./features/board/rest";
 import { calendarRoutes } from "./features/calendar/rest";
 import { changeSetRoutes } from "./features/change-set/rest";
+import { commentRoutes } from "./features/comment/rest";
 import { configurationRoutes } from "./features/configuration/rest";
 import { contactRoutes } from "./features/contact/rest";
 import { conversationRoutes } from "./features/conversation/rest";
@@ -128,6 +129,7 @@ export function listRestRoutes(): RestRoute[] {
     ...orderRoutes,
     ...lineAndGroupRoutes,
     ...requirementRoutes,
+    ...commentRoutes,
     ...runSheetRoutes,
     ...boardRoutes,
     ...quoteRoutes,

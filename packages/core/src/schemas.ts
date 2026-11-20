@@ -14,6 +14,7 @@ export * from "./features/board/schema";
 export * from "./features/calendar/schema";
 export * from "./features/calendar/value-schema";
 export * from "./features/change-set/schema";
+export * from "./features/comment/schema";
 export * from "./features/configuration/schema";
 export * from "./features/contact/schema";
 export * from "./features/conversation/schema";

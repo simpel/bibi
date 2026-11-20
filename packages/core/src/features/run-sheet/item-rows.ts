@@ -5,7 +5,7 @@ import { inheritsParentQuantity } from "../line/line-role";
 import { nestUnderParents } from "../line/nest-lines";
 import type { RunSheetDefinitionDto } from "../run-sheet-definition/schema";
 import { runSheetLinesWhere } from "./run-sheet-lines";
-import type { RunSheetRow } from "./schema";
+import type { RunSheetComment, RunSheetRow } from "./schema";
 
 const HEADCOUNT = { estimatedHeadcount: true, guaranteedHeadcount: true } as const;
 
@@ -13,6 +13,8 @@ export type ItemRowsInput = {
   context: Pick<OperationContext, "db">;
   orderId: string;
   definition: Pick<RunSheetDefinitionDto, "entityTypeIds" | "fieldIds">;
+  /** The order's comments by line id (`loadRowComments`, ADR 0115); none when omitted. */
+  comments?: ReadonlyMap<string | null, RunSheetComment[]>;
 };
 
 /**
@@ -27,6 +29,7 @@ export async function itemRows({
   context,
   orderId,
   definition,
+  comments,
 }: ItemRowsInput): Promise<RunSheetRow[]> {
   const [fields, lines, order] = await Promise.all([
     context.db.fieldDefinition.findMany({
@@ -58,6 +61,7 @@ export async function itemRows({
       startsAt: row.startsAt?.toISOString() ?? null,
       endsAt: row.endsAt?.toISOString() ?? null,
       values: Object.fromEntries(keys.map(({ key }) => [key, own[key] ?? null])),
+      comments: comments?.get(row.id) ?? [],
     };
   });
   return nestUnderParents({ rows, keys: (row) => ({ id: row.key, parentId: row.parentKey }) });

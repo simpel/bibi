@@ -165,6 +165,14 @@
           "followOrder": {
             "question": "Hur håller jag koll på en bokning jag inte jobbar med?",
             "answer": "Öppna bokningen och klicka på **Följ** högst upp, bredvid statusen. Klockan fylls i och knappen visar **Följer**.\nBokningen syns då under **Mitt arbete** med en ifylld klocka, och du får veta när den byter status eller får betalningar. Klicka på **Följer** för att sluta följa. Alla som kan se bokningar kan följa dem."
+          },
+          "commentOrder": {
+            "question": "Hur lämnar jag en kommentar på en order eller en av dess rader?",
+            "answer": "Öppna ordern och skrolla till **Kommentarer**. Skriv din kommentar, välj under **Gäller** om den gäller hela bokningen eller en rad, och klicka på **Lägg till kommentar**.\nAlla som kan se ordern ser kommentaren med ditt namn och tiden. Du kan redigera eller ta bort dina egna kommentarer med knapparna bredvid dem."
+          },
+          "commentRunSheet": {
+            "question": "Ser köket mina kommentarer?",
+            "answer": "Ja. Kommentarer syns på orderns körscheman: en kommentar på en rad står på den radens rad, och kommentarer om hela bokningen står överst.\nNär du lägger till, redigerar eller tar bort en kommentar får körschemat en ny version och ändringen markeras med en stjärna."
           }
         }
       },

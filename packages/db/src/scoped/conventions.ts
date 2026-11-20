@@ -97,6 +97,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "LineAllocation",
   "AlternativeGroup",
   "Requirement",
+  "Comment",
   "RunSheet",
   "RunSheetRecipient",
   "Quote",

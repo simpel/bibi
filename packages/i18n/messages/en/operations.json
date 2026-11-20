@@ -386,7 +386,8 @@
         "quantity": "Quantity",
         "need": "Need",
         "count": "Count",
-        "appliesTo": "Applies to"
+        "appliesTo": "Applies to",
+        "comments": "Comments"
       }
     },
     "currentVersion": "Current version",
@@ -451,7 +452,8 @@
         "sent": "Published",
         "notSent": "Draft"
       }
-    }
+    },
+    "orderComments": "Comments on the booking"
   },
   "runSheetDefinition": {
     "singular": "Run sheet",

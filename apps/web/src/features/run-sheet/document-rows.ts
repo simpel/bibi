@@ -15,6 +15,8 @@ export type RunSheetTaskRow = {
   /** An add-on to another row, or to a line that is not on this run sheet. */
   addOnTo: string | null;
   fields: Record<string, string>;
+  /** Comments on the line (ADR 0115), oldest first. */
+  comments: RunSheetRow["comments"];
 };
 
 /** One counted need, e.g. Gluten × 5, on the whole order or on one line. */
@@ -54,9 +56,13 @@ const removedRow = ({ change }: { change: RunSheetChange }): RunSheetRow => ({
   startsAt: null,
   endsAt: null,
   values: {},
+  comments: [],
 });
 
-/** The rows of a run sheet version as two tables: what to deliver, and the counted needs. */
+/**
+ * The rows of a run sheet version as two tables, what to deliver and the counted needs, plus the
+ * comments on the whole order.
+ */
 export function documentRows({ runSheet, dates, wholeOrder }: DocumentRowsInput) {
   const marks = new Map(runSheet.changes.map((change) => [change.key, change.change]));
   const removed = runSheet.changes.filter((change) => change.change === "REMOVED");
@@ -76,6 +82,7 @@ export function documentRows({ runSheet, dates, wholeOrder }: DocumentRowsInput)
       fields: Object.fromEntries(
         Object.entries(row.values).map(([key, value]) => [key, text({ value })]),
       ),
+      comments: row.comments,
     }));
   const needs: RunSheetNeedRow[] = rows
     .filter((row) => row.kind === "REQUIREMENT")
@@ -86,5 +93,6 @@ export function documentRows({ runSheet, dates, wholeOrder }: DocumentRowsInput)
       quantity: row.quantity,
       appliesTo: row.parentKey ? (names.get(row.parentKey) ?? "") : wholeOrder,
     }));
-  return { tasks, needs };
+  const orderComments = rows.find((row) => row.kind === "ORDER")?.comments ?? [];
+  return { tasks, needs, orderComments };
 }

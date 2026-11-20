@@ -1,6 +1,8 @@
+import type { DateTimeFormat } from "@bibi/core/schemas";
 import type { ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { CommentLines } from "@/features/comment/ui/comment-lines";
 import type { ChangeMark, RunSheetTaskRow } from "../document-rows";
 
 type Column = ColumnDef<RunSheetTaskRow>;
@@ -8,7 +10,11 @@ type Column = ColumnDef<RunSheetTaskRow>;
 /** An included field of the run sheet: its key in the row's values and its name. */
 export type RunSheetFieldColumn = { key: string; name: string };
 
-export type UseRunSheetTaskColumnsInput = { fields: readonly RunSheetFieldColumn[] };
+export type UseRunSheetTaskColumnsInput = {
+  fields: readonly RunSheetFieldColumn[];
+  /** The viewer's date and time format, for the comments' times. */
+  dates: DateTimeFormat;
+};
 
 /** ★ for a row added or changed since the last sent version; a removed row is struck through. */
 export function ChangeCell({ change }: { change: ChangeMark }) {
@@ -28,9 +34,10 @@ function NameCell({ row }: { row: RunSheetTaskRow }) {
   return <span className={row.change === "REMOVED" ? "line-through" : "font-medium"}>{name}</span>;
 }
 
-/** ★ · when · what · item · quantity, then one column per included field. */
-export function useRunSheetTaskColumns({ fields }: UseRunSheetTaskColumnsInput): Column[] {
+/** ★ · when · what · item · quantity, one column per included field, then the comments. */
+export function useRunSheetTaskColumns({ fields, dates }: UseRunSheetTaskColumnsInput): Column[] {
   const t = useTranslations("runSheet.document.columns");
+  const comment = useTranslations("comment");
   return useMemo<Column[]>(
     () => [
       {
@@ -58,7 +65,19 @@ export function useRunSheetTaskColumns({ fields }: UseRunSheetTaskColumnsInput):
         header: field.name,
         accessorFn: (row) => row.fields[field.key] ?? "",
       })),
+      {
+        id: "comments",
+        header: t("comments"),
+        accessorFn: (row) => row.comments.map((c) => c.body).join(" "),
+        cell: ({ row }) => (
+          <CommentLines
+            comments={row.original.comments}
+            dates={dates}
+            formerMember={comment("formerMember")}
+          />
+        ),
+      },
     ],
-    [t, fields],
+    [t, comment, fields, dates],
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import type { DateTimeFormat } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import type { RunSheetNeedRow, RunSheetTaskRow } from "../document-rows";
@@ -9,12 +10,13 @@ import { type RunSheetFieldColumn, useRunSheetTaskColumns } from "./use-run-shee
 export type RunSheetTaskTableProps = {
   tasks: RunSheetTaskRow[];
   fields: readonly RunSheetFieldColumn[];
+  dates: DateTimeFormat;
 };
 
 /** What to deliver: one row per line on the run sheet, in time order. */
-export function RunSheetTaskTable({ tasks, fields }: RunSheetTaskTableProps) {
+export function RunSheetTaskTable({ tasks, fields, dates }: RunSheetTaskTableProps) {
   const t = useTranslations("runSheet.document");
-  const columns = useRunSheetTaskColumns({ fields });
+  const columns = useRunSheetTaskColumns({ fields, dates });
   return (
     <PersistedDataTable
       tableId="run-sheet.tasks"

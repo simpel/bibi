@@ -3,6 +3,7 @@ import { ALLOCATION_GENERIC_UI_TOOLS } from "./allocation-generic-tools";
 import { ALTERNATIVE_GROUP_UI_ENTRIES } from "./alternative-group-entries";
 import { ASSIGNMENT_UI_ENTRIES } from "./assignment-entries";
 import { BILLING_GENERIC_UI_TOOLS, BILLING_UI_ENTRIES } from "./billing-entries";
+import { COMMENT_UI_ENTRIES } from "./comment-entries";
 import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import { CUSTOMER_UI_ENTRIES } from "./customer-entries";
 import { FLOOR_PLAN_GENERIC_UI_TOOLS } from "./floor-plan-generic-tools";
@@ -77,6 +78,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...ALTERNATIVE_GROUP_UI_ENTRIES,
   ...ASSIGNMENT_UI_ENTRIES,
   ...REQUIREMENT_UI_ENTRIES,
+  ...COMMENT_UI_ENTRIES,
   ...PIPELINE_UI_ENTRIES,
   ...PIPELINE_SETUP_UI_ENTRIES,
   ...QUOTE_UI_ENTRIES,

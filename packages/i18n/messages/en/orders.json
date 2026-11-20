@@ -262,6 +262,7 @@
     "groups": {
       "program": "Program",
       "needs": "Needs and run sheets",
+      "comments": "Comments",
       "people": "Details and people",
       "messages": "Messages",
       "money": "Money",
@@ -819,5 +820,24 @@
     "optional": "Optional",
     "chained": "needed by a chosen unit",
     "noneFree": "No free unit in {pool} for {window}."
+  },
+  "comment": {
+    "plural": "Comments",
+    "description": "Notes for your colleagues on the whole booking or one of its lines. They also show on the run sheets.",
+    "empty": "No comments yet.",
+    "body": "Comment",
+    "placeholder": "Write a comment for your colleagues and the run sheets",
+    "about": "About",
+    "wholeOrder": "The whole booking",
+    "onLine": "On {name}",
+    "add": "Add comment",
+    "added": "Comment added",
+    "edit": "Edit comment",
+    "updated": "Comment saved",
+    "delete": "Delete comment",
+    "deleteConfirm": "Delete this comment? It also leaves the next version of the run sheets.",
+    "deleted": "Comment deleted",
+    "edited": "edited",
+    "formerMember": "Former member"
   }
 }

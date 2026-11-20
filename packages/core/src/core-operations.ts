@@ -5,6 +5,7 @@ import { assignmentOperations } from "./features/assignment/operations";
 import { auditLogOperations } from "./features/audit-log/operations";
 import { calendarOperations } from "./features/calendar/operations";
 import { changeSetOperations } from "./features/change-set/operations";
+import { commentOperations } from "./features/comment/operations";
 import { configurationOperations } from "./features/configuration/operations";
 import { contactOperations } from "./features/contact/operations";
 import { conversationOperations } from "./features/conversation/operations";
@@ -102,6 +103,7 @@ function staticOperations(): AnyOperation[] {
     ...lineGroupOperations,
     ...assignmentOperations,
     ...requirementOperations,
+    ...commentOperations,
     ...runSheetOperations,
     ...pipelineGroupOperations,
     ...quoteOperations,

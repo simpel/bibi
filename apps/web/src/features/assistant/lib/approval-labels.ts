@@ -1,3 +1,4 @@
+import { COMMENT_OPERATION_KEYS } from "./approval-comment-keys";
 import { INBOX_OPERATION_KEYS } from "./approval-inbox-keys";
 import { MONEY_FIELD_KEYS, MONEY_OPERATION_KEYS } from "./approval-money-keys";
 import { PEOPLE_FIELD_KEYS, PEOPLE_OPERATION_KEYS } from "./approval-people-keys";
@@ -79,6 +80,7 @@ export const FIELD_KEYS = [
   "discountPercent",
   "budgetMinor",
   "orderId",
+  "body",
   "inboundMessageId",
   "parentLineId",
   "statusId",
@@ -108,6 +110,7 @@ export const OPERATION_KEYS = [
   "line_create",
   "line_update",
   "line_archive",
+  ...COMMENT_OPERATION_KEYS,
   ...INBOX_OPERATION_KEYS,
   ...PEOPLE_OPERATION_KEYS,
   ...PIPELINE_OPERATION_KEYS,

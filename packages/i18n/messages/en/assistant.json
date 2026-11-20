@@ -112,6 +112,7 @@
         "targetStateId": "Move lines to (state id)",
         "toStateIds": "May move to (state ids)",
         "lineId": "Line (id)",
+        "body": "Comment",
         "lineIds": "Options (line ids)",
         "chosenLineIds": "Chosen options (line ids)",
         "stateId": "State (id)",
@@ -238,6 +239,9 @@
         "line_create": "Add line",
         "line_update": "Update line",
         "line_archive": "Remove line",
+        "comment_create": "Add comment",
+        "comment_update": "Edit comment",
+        "comment_archive": "Delete comment",
         "inboundMessage_attachToOrder": "Attach message to order",
         "line_changeState": "Change line state",
         "line_expandBundle": "Add bundle with its parts",
@@ -745,6 +749,14 @@
         "open": "Open the board",
         "archived": "Archived",
         "column": "Column {name}"
+      },
+      "comment": {
+        "singular": "Comment",
+        "empty": "No comments found.",
+        "onOrder": "On the whole order",
+        "onLine": "On one line",
+        "archived": "Deleted",
+        "openOrder": "Open the order"
       }
     },
     "questionnaire": {

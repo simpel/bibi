@@ -3,8 +3,13 @@ import { err, ok, type Result } from "../../errors/result";
 import { hasPermission, type Permission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 
-/** The features a run sheet copies its rows from: the order, its program items and their items. */
-const SOURCE_PERMISSIONS: readonly Permission[] = ["order:read", "program:read", "item:read"];
+/** The features a run sheet copies its rows from: the order, its lines, their items and comments. */
+const SOURCE_PERMISSIONS: readonly Permission[] = [
+  "order:read",
+  "program:read",
+  "item:read",
+  "comment:read",
+];
 
 export type CheckSourcesReadableInput = { context: Pick<OperationContext, "permissions"> };
 
@@ -19,7 +24,7 @@ export function checkSourcesReadable({ context }: CheckSourcesReadableInput): Re
   );
   if (missing.length === 0) return ok({ value: true });
   const message =
-    "Generating a run sheet copies the order, its program and its items; it needs " +
+    "Generating a run sheet copies the order, its program, its items and comments; it needs " +
     `${SOURCE_PERMISSIONS.join(", ")} (missing ${missing.join(", ")})`;
   return err({ error: new AppError({ code: "FORBIDDEN", message }) });
 }

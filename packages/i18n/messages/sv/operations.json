@@ -386,7 +386,8 @@
         "quantity": "Antal",
         "need": "Behov",
         "count": "Antal",
-        "appliesTo": "Gäller"
+        "appliesTo": "Gäller",
+        "comments": "Kommentarer"
       }
     },
     "currentVersion": "Aktuell version",
@@ -451,7 +452,8 @@
         "sent": "Publicerad",
         "notSent": "Utkast"
       }
-    }
+    },
+    "orderComments": "Kommentarer om bokningen"
   },
   "runSheetDefinition": {
     "singular": "Körschema",

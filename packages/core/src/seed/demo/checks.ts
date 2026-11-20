@@ -75,13 +75,16 @@ export async function checkDemoOrg({
   return [...failures, ...(await auditFailures({ context, org }))];
 }
 
-/** Entities the seed writes as each user, because `self:*` operations refuse SYSTEM. */
-const SELF_SEEDED = ["profile", "workingHours", "userSettings", "notification"] as const;
+/**
+ * Entities the seed writes as a user: `self:*` operations refuse SYSTEM, and a comment's author is
+ * the person who wrote it (ADR 0115).
+ */
+const SELF_SEEDED = ["profile", "workingHours", "userSettings", "notification", "comment"] as const;
 
 /**
  * Check 7 (ADR 0025): every write must have an audit row as SYSTEM, except each user's own
  * profile, hours, settings and read notifications (ADR 0061, 0046, 0094), which `self:*`
- * operations save as that user, and
+ * operations save as that user, the demo comments, written by a staff member (ADR 0115), and
  * the creator's claim of their email domain (ADR 0078), which a real signup makes as the creator.
  */
 async function auditFailures({ context, org }: CheckDemoOrgInput): Promise<string[]> {

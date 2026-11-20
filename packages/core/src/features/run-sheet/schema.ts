@@ -6,6 +6,13 @@ export const RunSheetRowKindSchema = z
   .enum(RUN_SHEET_ROW_KINDS)
   .describe("ORDER: the order itself. ITEM: an item on the order. REQUIREMENT: a count.");
 
+/** A staff comment on the order or a line, as the run sheet snapshot holds it (ADR 0115). */
+export const RunSheetCommentSchema = z.object({
+  body: z.string(),
+  authorName: z.string().nullable().describe("Null when the author is no longer a member"),
+  createdAt: z.string().describe("ISO time"),
+});
+
 /** One row of a run sheet snapshot. `key` is stable across versions, so rows can be compared. */
 export const RunSheetRowSchema = z.object({
   kind: RunSheetRowKindSchema,
@@ -35,6 +42,10 @@ export const RunSheetRowSchema = z.object({
   startsAt: z.string().nullable().describe("ISO time"),
   endsAt: z.string().nullable().describe("ISO time"),
   values: FieldValuesSchema.describe("Included field values by key; a requirement carries `list`"),
+  comments: z
+    .array(RunSheetCommentSchema)
+    .default([])
+    .describe("ORDER and ITEM: the comments on the order or the line, oldest first (ADR 0115)"),
 });
 
 export const RunSheetContentSchema = z.object({
@@ -161,6 +172,7 @@ export const RunSheetGenerateInputSchema = z.object({
 
 export const RunSheetIdInputSchema = z.object({ id: z.string().min(1) });
 
+export type RunSheetComment = z.infer<typeof RunSheetCommentSchema>;
 export type RunSheetRow = z.infer<typeof RunSheetRowSchema>;
 export type RunSheetContent = z.infer<typeof RunSheetContentSchema>;
 export type RunSheetChange = z.infer<typeof RunSheetChangeSchema>;

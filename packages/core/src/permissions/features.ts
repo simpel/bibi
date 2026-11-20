@@ -33,6 +33,8 @@ export const FEATURE_SPECS = {
   // Inbound messages of every channel (ADR 0085): read and unread are `write`, delete archives.
   inbox: { group: "bookings", actions: ["read", "write", "delete", "submit"] },
   program: { group: "bookings", actions: all },
+  // Comments on orders and lines (ADR 0115): everyone writes; `delete` archives others' comments.
+  comment: { group: "bookings", actions: all },
   customer: { group: "selling", actions: all },
   quote: { group: "selling", actions: all },
   // Refunds give money back (ADR 0100): their own action, managers and admins by preset.

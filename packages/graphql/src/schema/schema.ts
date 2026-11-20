@@ -33,6 +33,7 @@ import "../features/status-grid/graphql";
 import "../features/pipeline-setup/graphql";
 import "../features/change-set/graphql";
 import "../features/requirement/graphql";
+import "../features/comment/graphql";
 import "../features/run-sheet/graphql";
 import "../features/pipeline/graphql";
 import "../features/calendar/graphql";

@@ -1,4 +1,5 @@
 import type { OperationContext } from "../../operations/types";
+import { memberNames } from "../../shared/member-names";
 import { parseKeyMetadata } from "./to-api-key-dto";
 
 export type LoadCreatorNamesInput = {
@@ -11,17 +12,10 @@ export async function loadCreatorNames({
   context,
   rows,
 }: LoadCreatorNamesInput): Promise<Map<string, string>> {
-  const userIds = [
-    ...new Set(
-      rows.flatMap((row) => parseKeyMetadata({ metadata: row.metadata })?.createdBy ?? []),
-    ),
-  ];
-  if (userIds.length === 0) return new Map();
-  const members = await context.db.member.findMany({
-    where: { userId: { in: userIds } },
-    select: { userId: true, user: { select: { name: true } } },
-  });
-  return new Map(members.map((member) => [member.userId, member.user.name]));
+  const userIds = rows.flatMap(
+    (row) => parseKeyMetadata({ metadata: row.metadata })?.createdBy ?? [],
+  );
+  return memberNames({ context, userIds });
 }
 
 export type KeyDtoInput = {

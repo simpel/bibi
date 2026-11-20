@@ -112,6 +112,7 @@
         "targetStateId": "Flytta rader till (läges-id)",
         "toStateIds": "Får gå till (läges-id:n)",
         "lineId": "Rad (id)",
+        "body": "Kommentar",
         "lineIds": "Alternativ (rad-id)",
         "chosenLineIds": "Valda alternativ (rad-id)",
         "stateId": "Läge (id)",
@@ -238,6 +239,9 @@
         "line_create": "Lägg till rad",
         "line_update": "Uppdatera rad",
         "line_archive": "Ta bort rad",
+        "comment_create": "Lägg till kommentar",
+        "comment_update": "Redigera kommentar",
+        "comment_archive": "Ta bort kommentar",
         "inboundMessage_attachToOrder": "Koppla meddelande till bokning",
         "line_changeState": "Byt läge på rad",
         "line_expandBundle": "Lägg till paket med delar",
@@ -745,6 +749,14 @@
         "open": "Öppna tavlan",
         "archived": "Arkiverad",
         "column": "Kolumn {name}"
+      },
+      "comment": {
+        "singular": "Kommentar",
+        "empty": "Inga kommentarer hittades.",
+        "onOrder": "Gäller hela ordern",
+        "onLine": "Gäller en rad",
+        "archived": "Borttagen",
+        "openOrder": "Öppna ordern"
       }
     },
     "questionnaire": {

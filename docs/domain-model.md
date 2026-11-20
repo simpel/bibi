@@ -53,6 +53,8 @@ erDiagram
   Order ||--o{ Requirement : "has"
   Line ||--o{ Requirement : "adjusts"
   Requirement }o--|| VocabularyValue : "refers to"
+  Order ||--o{ Comment : "has"
+  Line ||--o{ Comment : "has"
   Order }o--|| CancellationTerms : "follows"
   Order ||--o{ Deposit : "requires"
   Order ||--o{ Invoice : "is invoiced via"
@@ -514,7 +516,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `N:1` is in → OrderStatus
 - `1:N` has → OrderStatusChange (its status history)
 - `1:N` has → OrderEstimate (its value estimates)
-- `1:N` has → Quote, Line, Requirement, Run sheet, Payment, Deposit, Invoice
+- `1:N` has → Quote, Line, Requirement, Comment, Run sheet, Payment, Deposit, Invoice
 - `1:N` InboundEmail is a reply on this (legacy)
 - `1:N` InboundMessage is attached to this (set once)
 - `1:N` is answered for by → Assignment
@@ -642,6 +644,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `N:0..1` is held in → Item (bookable)
 - `N:0..1` books → SetupLayout
 - `1:N` adjusts → Requirement
+- `1:N` has → Comment
 - `1:N` is charged via → OrderLine
 - `N:0..1` is an option of → AlternativeGroup
 - `N:0..1` is a part or option of → Line (its parent line)
@@ -692,6 +695,24 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 > Operations (resource `requirement`): `requirement.list|get|create|update|archive` ([ADR 0021](decisions/0021-configurable-items.md)). One active count per vocabulary value and level (the order, or one line); a second is refused (`CONFLICT`). `update` changes only the count and fields. The line must belong to the order (`VALIDATION`). A vocabulary value, or a whole vocabulary, cannot be archived while a requirement counts it (`CONFLICT`). Every change is audited.
 
 > ★ A row on the line replaces the order's count there, value by value; the core helper `effectiveRequirements` (`resolveEffective`) computes the effective count per line. Matching: the requirement is compared with the items on the order that are tagged with the same vocabulary value. A hit on a required part without an alternative is flagged and blocks the run sheet. `item.resolve` computes inherited tags and is the only place for that.
+
+### Comment (`Comment`)
+
+*MVP* · Staff's text on an order, or on one of its lines ([ADR 0115](decisions/0115-comments-on-orders-and-lines.md)). Internal only; customers never see it. Run sheets carry the comments of the rows they show.
+
+> **Ownership:** owned by its author: `body`, `editedAt`; `createdBy` is the author (set by `scopedDb`). Archiving is the delete.
+
+**Attributes**
+- order (`orderId`) and optionally one of its lines (`lineId`; null = the whole order)
+- body (1–2000 characters, line breaks kept)
+- author (`createdBy`, a user or API key) and author name (derived from the member, null when they left)
+- edited at (`editedAt`, null = never edited)
+
+**Relations**
+- `N:1` Order has this
+- `N:0..1` Line has this
+
+> Operations (feature `comment`): `comment.list({ orderId, lineId? })` (oldest first; `lineId: null` = only the whole order's) and `comment.get` (`comment:read`); `comment.create|update|archive` (`comment:write`). Only the author edits; the author or a caller with `comment:delete` archives; anyone else's comment is `NOT_FOUND`. The line must belong to the order (`VALIDATION`). Members read and write by preset, managers and admins also delete. Every command regenerates the order's run sheets (`followUp`, ADR 0092) and is audited.
 
 ### CancellationTerms
 
@@ -923,7 +944,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - run sheet definition
 - version (1, 2, 3, … per order and run sheet definition)
 - current (projection, ADR 0051): true on the newest version of its order and definition; written only by core `createVersion`, which takes it from the previous version in the same transaction; reconciliation check `run-sheet-current`
-- content: a snapshot of the order's rows (`ORDER`, `ITEM`, `REQUIREMENT`) as the definition includes them: the order itself, the lines that use an item of an included type with the included fields, and the counts of the included lists (never names); an add-on line's row (ADR 0088) follows its parent's row with `parentKey` set when the parent is on the run sheet, else stands alone, and `addOnTo` names the parent either way
+- content: a snapshot of the order's rows (`ORDER`, `ITEM`, `REQUIREMENT`) as the definition includes them: the order itself, the lines that use an item of an included type with the included fields, and the counts of the included lists (never names); each `ORDER` and `ITEM` row carries its comments (`comments`: body, author name, time; ADR 0115); an add-on line's row (ADR 0088) follows its parent's row with `parentKey` set when the parent is on the run sheet, else stands alone, and `addOnTo` names the parent either way
 - changes (★): the rows added, changed or removed since the last sent version (`baseVersion`)
 - receiving responsibility (a copy of the definition's responsibility at generation; the run sheet goes to that responsibility's assignee and followers on the order)
 - sent (`sentAt`, `sentBy`)
@@ -936,7 +957,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `N:1` RunSheetDefinition produces this version
 - `N:1` goes to → Responsibility
 
-> Operations (resource `runSheet`): `runSheet.list|get|generate|send`. `runSheet.generate` snapshots the order for a definition; a changed order gives the next version with the changed rows marked ★ against the last *sent* version, an unchanged order returns the latest version. `runSheet.send` marks a version as sent: only from the `CONFIRMED` status (`CONFLICT` otherwise), only the latest version, and a version once. A `blocked` run sheet is refused with `CONFLICT`. A version is never edited or removed. The core function `diffContent` is the only place the markers are computed; `matchRequirements` (over `item.resolve`) is the only place matches are computed. A change in matches gives a new version. **Regenerates on change (ADR 0092):** after `order.create|createFromTemplate|update|changeStatus`, `line.create|update|archive|changeState|chooseOptions|expandBundle|followStatus` and `requirement.create|update|archive` commit, core runs `runSheet.generate` as the system for every active definition that already has a version for the order or includes the item type of one of its lines in an `inRunSheets` state (the operation's `followUp`); an unchanged run sheet keeps its latest version. Changes to items, fields or definitions do not regenerate. `runSheet.list` searches GitHub style (`q`; the positive `involves:`, `assignee:` and `follower:` filters are alternatives of each other, as on the order list, the rest all must hold): `involves:me` (assignee or follower of the run sheet's responsibility on its order, stored or by default, ADR 0055), `assignee:`, `follower:`, `definition:`, `responsibility:`, `is:current|sent|unsent|blocked|open|closed` and the order's `status:`, `type:`, `customer:`, `contact:`, `when:`, `created:`, `guests:`; `from`/`to` window the order's period; `page` gives `total`. Web (ADR 0092, decision 8): the sidebar's **Run sheets** opens one page (`/run-sheets`): a table searched like orders, unfiltered by default and listing only each run sheet's latest version (the Assigned to me and Following toggles narrow it); each version has its own page in the app shell, `/run-sheets/{id}`, the full view of that version, with a Current / Not the current version badge and links to every version.
+> Operations (resource `runSheet`): `runSheet.list|get|generate|send`. `runSheet.generate` snapshots the order for a definition; a changed order gives the next version with the changed rows marked ★ against the last *sent* version, an unchanged order returns the latest version. `runSheet.send` marks a version as sent: only from the `CONFIRMED` status (`CONFLICT` otherwise), only the latest version, and a version once. A `blocked` run sheet is refused with `CONFLICT`. A version is never edited or removed. The core function `diffContent` is the only place the markers are computed; `matchRequirements` (over `item.resolve`) is the only place matches are computed. A change in matches gives a new version. **Regenerates on change (ADR 0092):** after `order.create|createFromTemplate|update|changeStatus`, `line.create|update|archive|changeState|chooseOptions|expandBundle|followStatus` `requirement.create|update|archive` and `comment.create|update|archive` commit, core runs `runSheet.generate` as the system for every active definition that already has a version for the order or includes the item type of one of its lines in an `inRunSheets` state (the operation's `followUp`); an unchanged run sheet keeps its latest version. Changes to items, fields or definitions do not regenerate. `runSheet.list` searches GitHub style (`q`; the positive `involves:`, `assignee:` and `follower:` filters are alternatives of each other, as on the order list, the rest all must hold): `involves:me` (assignee or follower of the run sheet's responsibility on its order, stored or by default, ADR 0055), `assignee:`, `follower:`, `definition:`, `responsibility:`, `is:current|sent|unsent|blocked|open|closed` and the order's `status:`, `type:`, `customer:`, `contact:`, `when:`, `created:`, `guests:`; `from`/`to` window the order's period; `page` gives `total`. Web (ADR 0092, decision 8): the sidebar's **Run sheets** opens one page (`/run-sheets`): a table searched like orders, unfiltered by default and listing only each run sheet's latest version (the Assigned to me and Following toggles narrow it); each version has its own page in the app shell, `/run-sheets/{id}`, the full view of that version, with a Current / Not the current version badge and links to every version.
 
 > ★ Versioned, with changes marked since the last dispatch. Cannot be sent in the `TENTATIVE` status. `runSheet.export` gives a single run sheet as json, pdf or csv, always with the latest version and the version number. This is how a run sheet is handed to someone outside the system.
 
@@ -1611,7 +1632,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### Communication & log
 
-*Status 2* · Email, notes and change history. Status and line-state history come from `OrderStatusChange` and `LineStateChange` (ADR 0054), never from `AuditLog`.
+*Status 2* · Email, notes and change history. Staff comments on orders and lines are built as `Comment` (ADR 0115). Status and line-state history come from `OrderStatusChange` and `LineStateChange` (ADR 0054), never from `AuditLog`.
 
 **Attributes**
 - channel

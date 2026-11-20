@@ -9,6 +9,7 @@ const ATTRIBUTES = [
   "quantity",
   "startsAt",
   "endsAt",
+  "comments",
 ] as const;
 
 type ChangedInput = { before: RunSheetRow; after: RunSheetRow };

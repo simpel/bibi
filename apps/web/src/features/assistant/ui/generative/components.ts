@@ -9,6 +9,8 @@ import { AssignmentTableView } from "./assignment-table-view";
 import { AuditLogCardView } from "./audit-log-card-view";
 import { AuditLogTableView } from "./audit-log-table-view";
 import { BOARD_COMPONENTS } from "./board-components";
+import { CommentCardView } from "./comment-card-view";
+import { CommentListView } from "./comment-list-view";
 import { ContactCardView } from "./contact-card-view";
 import { ContactTableView } from "./contact-table-view";
 import { CustomerCardView } from "./customer-card-view";
@@ -106,6 +108,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "alternative-group-card": AlternativeGroupCardView,
   "requirement-table": RequirementTableView,
   "requirement-card": RequirementCardView,
+  "comment-list": CommentListView,
+  "comment-card": CommentCardView,
   ...BOARD_COMPONENTS,
   ...ORDER_COMPONENTS,
   "quote-card": QuoteCardView,

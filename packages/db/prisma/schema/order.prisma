@@ -63,6 +63,7 @@ model Order {
   statusChanges       OrderStatusChange[]
   estimates           OrderEstimate[]
   requirements        Requirement[]
+  comments            Comment[]
   runSheets              RunSheet[]
   notifications       Notification[]
   needsYouDismissals  NeedsYouDismissal[]

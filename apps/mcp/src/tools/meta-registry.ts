@@ -5,6 +5,7 @@ import { auditLogMcpTools } from "../features/audit-log/mcp";
 import { boardCrudMcpTools, boardPhaseMcpTools } from "../features/board/mcp";
 import { calendarMcpTools } from "../features/calendar/mcp";
 import { changeSetMcpTools } from "../features/change-set/mcp";
+import { commentMcpTools } from "../features/comment/mcp";
 import { configurationMcpTools } from "../features/configuration/mcp";
 import { contactMcpTools } from "../features/contact/mcp";
 import { conversationMcpTools } from "../features/conversation/mcp";
@@ -119,6 +120,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...assignmentMcpTools,
     ...lineAndGroupMcpTools,
     ...requirementMcpTools,
+    ...commentMcpTools,
     ...runSheetMcpTools,
     ...boardMcpTools,
     ...quoteMcpTools,

@@ -69,6 +69,7 @@ export type { AssistantServerOptions } from "./server/server-options";
 export { LOCAL_SKILL_TOOLS } from "./skills/create-skill-tools";
 export type { AssignmentWire } from "./ui-contract/assignment-entries";
 export type { CalendarRangeWire } from "./ui-contract/calendar-entries";
+export type { CommentWire } from "./ui-contract/comment-entries";
 export type { InboundEmailWire } from "./ui-contract/inbound-email-entries";
 export type { InboundMessageWire } from "./ui-contract/inbound-message-entries";
 export type { IntegrationWire } from "./ui-contract/integration-entries";

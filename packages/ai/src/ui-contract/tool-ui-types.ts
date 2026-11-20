@@ -5,6 +5,7 @@ import type { ArchivePreviewWire } from "./archive-preview-entry";
 import type { AssignmentWire } from "./assignment-entries";
 import type { BoardUiProps } from "./board-entries";
 import type { CalendarRangeWire } from "./calendar-entries";
+import type { CommentWire } from "./comment-entries";
 import type { DashboardUiProps } from "./dashboard-ui-props";
 import type { FinanceUiProps } from "./finance-ui-props";
 import type { HoursWire } from "./hours-entries";
@@ -86,6 +87,8 @@ export type ToolUiProps = BoardUiProps &
     "alternative-group-card": { group: AlternativeGroupWire };
     "requirement-table": { items: RequirementWire[]; nextCursor: string | null };
     "requirement-card": { requirement: RequirementWire };
+    "comment-list": { items: CommentWire[]; nextCursor: string | null };
+    "comment-card": { comment: CommentWire };
     "pipeline-board": { board: PipelineBoardWire };
     "calendar-range": { range: CalendarRangeWire };
     "hours-card": { hours: HoursWire };

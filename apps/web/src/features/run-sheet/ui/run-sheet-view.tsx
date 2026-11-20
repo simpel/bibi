@@ -1,6 +1,7 @@
 import type { DateTimeFormat } from "@bibi/core/schemas";
 import { PageBand, PageBands } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { CommentLines } from "@/features/comment/ui/comment-lines";
 import { documentRows } from "../document-rows";
 import type { RunSheetViewData } from "../load-run-sheet-views";
 import { RunSheetHistory } from "./run-sheet-history";
@@ -31,14 +32,23 @@ export function RunSheetView({
   canRename,
 }: RunSheetViewProps) {
   const t = useTranslations("runSheet");
-  const { tasks, needs } = documentRows({ runSheet, dates, wholeOrder: t("onOrder") });
+  const { tasks, needs, orderComments } = documentRows({
+    runSheet,
+    dates,
+    wholeOrder: t("onOrder"),
+  });
+  const comment = useTranslations("comment");
   const current = versions.find((version) => version.current);
   const Heading = standalone ? "h2" : "h3";
 
   const header = (
     <RunSheetViewHeader {...{ runSheet, name, current, dates, standalone, canRename }} />
   );
-  const taskTable = <RunSheetTaskTable tasks={tasks} fields={fields} />;
+  const taskTable = <RunSheetTaskTable tasks={tasks} fields={fields} dates={dates} />;
+  const commentsTitle = <Heading className="font-serif text-xl">{t("orderComments")}</Heading>;
+  const commentList = (
+    <CommentLines comments={orderComments} dates={dates} formerMember={comment("formerMember")} />
+  );
   const taskTitle = <Heading className="font-serif text-xl">{t("document.tasks")}</Heading>;
   const needTitle = <Heading className="font-serif text-xl">{t("document.needs")}</Heading>;
 
@@ -47,6 +57,12 @@ export function RunSheetView({
     return (
       <PageBands data-slot="run-sheet-view">
         <PageBand containerClassName="gap-4 pt-4 sm:pt-6">{header}</PageBand>
+        {orderComments.length > 0 ? (
+          <PageBand data-tour="run-sheet.comments" containerClassName="gap-3">
+            {commentsTitle}
+            {commentList}
+          </PageBand>
+        ) : null}
         <PageBand data-tour="run-sheet.tasks" containerClassName="gap-3">
           {taskTitle}
           {taskTable}
@@ -68,6 +84,12 @@ export function RunSheetView({
   return (
     <article data-slot="run-sheet-view" className="grid gap-8">
       {header}
+      {orderComments.length > 0 ? (
+        <section className="grid gap-3">
+          {commentsTitle}
+          {commentList}
+        </section>
+      ) : null}
       <section className="grid gap-3">
         {taskTitle}
         {taskTable}

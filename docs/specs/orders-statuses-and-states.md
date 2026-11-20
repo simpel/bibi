@@ -43,6 +43,11 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 - `OrderTemplate`: name, order type, start status, default own-field values and lines (item, optional layout, offset and duration from the order start, quantity fixed or per headcount).
 - `order.createFromTemplate({ templateId, customerId, startsAt, quantity })` creates the order with its lines in one step. Lines get their state from the grid cell for the start status. A collision refuses the whole creation and lists the blocking lines.
 
+## Comments
+- Staff comment on the whole order or one of its lines (`Comment`, ADR 0115) in the **Comments** band of the order page: a text box, an **About** picker (the whole booking or a line) and **Add comment**. Comments list oldest first with author, relative time, "edited" and the line they are about.
+- Authors edit their own comments in place and delete them after a confirm; a caller with `comment:delete` (managers, admins) deletes anyone's.
+- Run sheets carry every comment: a line's on its row (a Comments column in What to deliver), the order's in a block at the top. A comment change makes the next version, the row marked ★.
+
 ## Line states
 - `ItemState` per item type: name, color, position and flags. Every type has at least one state and exactly one `initial` state.
 

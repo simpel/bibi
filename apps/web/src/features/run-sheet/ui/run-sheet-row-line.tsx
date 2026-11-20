@@ -1,10 +1,11 @@
 import type { DateTimeFormat, RunSheetChange, RunSheetRow } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
+import { CommentLines } from "@/features/comment/ui/comment-lines";
 
 type RowFacts = Pick<
   RunSheetRow,
   "kind" | "label" | "itemName" | "quantity" | "startsAt" | "endsAt" | "values" | "addOnTo"
->;
+> & { comments?: RunSheetRow["comments"] };
 
 export type RunSheetRowLineProps = {
   row: RowFacts;
@@ -51,9 +52,10 @@ function Title({ row, nested }: TitleProps) {
   return <>{`${row.label}${count}`}</>;
 }
 
-/** One run sheet row with its ★ marker: the order, an item with its fields, or a count. */
+/** One run sheet row with its ★ marker: the order, an item with its fields, or a count, then its comments. */
 export function RunSheetRowLine({ row, change, parentKey, dates }: RunSheetRowLineProps) {
   const t = useTranslations("runSheet");
+  const comment = useTranslations("comment");
   const details = Object.values(row.values).filter((value) => value !== null && value !== "");
   const muted = "text-muted-foreground";
   const nested = row.kind === "ITEM" && Boolean(parentKey);
@@ -78,6 +80,15 @@ export function RunSheetRowLine({ row, change, parentKey, dates }: RunSheetRowLi
       ) : null}
       <Period row={row} dates={dates} />
       {details.length > 0 ? <span className={muted}>{details.map(String).join(", ")}</span> : null}
+      {row.comments && row.comments.length > 0 ? (
+        <div className="basis-full pl-6">
+          <CommentLines
+            comments={row.comments}
+            dates={dates}
+            formerMember={comment("formerMember")}
+          />
+        </div>
+      ) : null}
     </li>
   );
 }
