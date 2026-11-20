@@ -826,7 +826,7 @@
     "description": "Notes for your colleagues on the whole booking or one of its lines. They also show on the run sheets.",
     "empty": "No comments yet.",
     "body": "Comment",
-    "placeholder": "Write a comment for your colleagues and the run sheets",
+    "placeholder": "Write a comment; type @ to mention a colleague",
     "about": "About",
     "wholeOrder": "The whole booking",
     "onLine": "On {name}",
@@ -838,6 +838,13 @@
     "deleteConfirm": "Delete this comment? It also leaves the next version of the run sheets.",
     "deleted": "Comment deleted",
     "edited": "edited",
-    "formerMember": "Former member"
+    "formerMember": "Former member",
+    "actionLabel": "{count, plural, =0 {Comment} one {# comment} other {# comments}}{unread, plural, =0 {} other {, # new}}",
+    "dialogTitle": "Comments on {name}",
+    "dialogDescription": "Your colleagues see them on the order and on the run sheets.",
+    "linkLabel": "{count, plural, =0 {Comments} one {# comment} other {# comments}}{unread, plural, =0 {} other {, # new}}",
+    "reply": "Reply",
+    "replied": "Reply added",
+    "mentionList": "Colleagues to mention"
   }
 }

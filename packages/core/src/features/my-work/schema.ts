@@ -89,6 +89,13 @@ export const MyWorkCardSchema = z.object({
     .min(1)
     .describe("Why it concerns the caller, strongest first"),
   flags: z.array(MyWorkFlagSchema).describe("Most urgent first"),
+  comments: z
+    .object({
+      count: z.number().int().describe("Active comments on the order"),
+      unread: z.number().int().describe("The caller's unread comment notifications on it"),
+    })
+    .nullable()
+    .describe("Comments on the order (ADR 0115); null without comment:read"),
 });
 export type MyWorkCard = z.infer<typeof MyWorkCardSchema>;
 

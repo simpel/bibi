@@ -2,12 +2,14 @@ import type { MyWorkTaskKind, NotificationKind } from "@bibi/core/schemas";
 import {
   ArchiveIcon,
   ArrowRightLeftIcon,
+  AtSignIcon,
   CalendarCheckIcon,
   ClipboardListIcon,
   HandCoinsIcon,
   HourglassIcon,
   InboxIcon,
   type LucideIcon,
+  MessageCircleIcon,
   OctagonXIcon,
   ScrollTextIcon,
   TriangleAlertIcon,
@@ -31,6 +33,8 @@ export const SUBJECT_ICONS = {
   confirm: CalendarCheckIcon,
   hold: HourglassIcon,
   close: ArchiveIcon,
+  comment: MessageCircleIcon,
+  mention: AtSignIcon,
 } satisfies Record<string, LucideIcon>;
 
 export type Subject = keyof typeof SUBJECT_ICONS;
@@ -40,6 +44,8 @@ const NOTIFICATION_SUBJECTS: Record<NotificationKind, Subject> = {
   RUN_SHEET_SENT: "runSheet",
   ORDER_STATUS_CHANGED: "status",
   PAYMENT_RECEIVED: "payment",
+  COMMENT_ADDED: "comment",
+  COMMENT_MENTIONED: "mention",
 };
 
 const TASK_SUBJECTS: Record<MyWorkTaskKind, Subject> = {

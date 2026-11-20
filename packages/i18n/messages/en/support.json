@@ -168,11 +168,19 @@
           },
           "commentOrder": {
             "question": "How do I leave a comment on an order or one of its lines?",
-            "answer": "Open the order and scroll to **Comments**. Write your comment, choose under **About** whether it is about the whole booking or one line, and click **Add comment**.\nEveryone who can see the order sees the comment with your name and the time. You can edit or delete your own comments with the buttons next to them."
+            "answer": "Click the speech bubble next to a line in the program, or the one next to **Follow** at the top of the order for the whole booking. Write your comment and click **Add comment**.\nYou can also scroll to **Comments** on the order and choose under **About** which line it is about. You can edit or delete your own comments."
           },
           "commentRunSheet": {
             "question": "Does the kitchen see my comments?",
             "answer": "Yes. Comments show on the order's run sheets: a comment on a line sits on that line's row, and comments on the whole booking sit at the top.\nWhen you add, edit or delete a comment, the run sheet gets a new version and the change is marked with a star."
+          },
+          "commentNew": {
+            "question": "How do I see new comments?",
+            "answer": "When someone comments on an order you answer for, follow or created, you get a notification. The speech bubble on the order, the line and your card on **My work** gets a red dot until you open the comments.\nEveryone has their own dots: reading a comment clears it only for you."
+          },
+          "commentReply": {
+            "question": "Can I reply to a comment or mention a colleague?",
+            "answer": "Click the reply arrow next to a comment to answer it; the answer shows under the comment, also on the run sheet. Type **@** and the start of a name to mention a colleague, then pick them in the list.\nThe person you mention gets a notification, even if they are not on the order, and the one who wrote the comment you answer is told too."
           }
         }
       },

@@ -27,6 +27,8 @@ export type OrderDayCardProps = {
   live?: string | undefined;
   expanded: boolean;
   onToggle: () => void;
+  /** Icons before expand and pin, e.g. the order's comments (ADR 0115). */
+  actions?: ReactNode;
   /** The order's facts, shown while expanded. */
   facts?: readonly OrderViewFact[] | undefined;
   className?: string;
@@ -112,6 +114,7 @@ export function OrderDayCard({
         headerActions={
           <>
             {live ? <LiveBadge label={live} /> : null}
+            {props.actions}
             <ExpandButton booking={booking} expanded={props.expanded} onToggle={props.onToggle} />
             <PinAction booking={booking} name={name} />
           </>

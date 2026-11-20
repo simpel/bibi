@@ -46,6 +46,7 @@ export * from "./components/color-swatch/color-swatch";
 export { Combobox, type ComboboxProps } from "./components/combobox/combobox";
 export type { ComboboxOption } from "./components/combobox/combobox-groups";
 export * from "./components/command/command";
+export * from "./components/comment-action/comment-action";
 export * from "./components/compact-card-header/compact-card-header";
 export * from "./components/context-menu/context-menu";
 export * from "./components/cursor-hover/clean-title";

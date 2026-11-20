@@ -2,7 +2,7 @@ import type { LineAmounts, LineDto } from "@bibi/core";
 import type { DateTimeFormat, NumberFormat } from "@bibi/core/schemas";
 import { actionsColumn, type ColumnDef, createTableColumns, DataTableRowActions } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { type ReactNode, useMemo } from "react";
 import { useNumberFormat } from "@/lib/number/use-number-format";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { LineStateCell, stateOf } from "./line-state-cell";
@@ -27,6 +27,8 @@ export type UseProgramColumnsInput = {
   onEdit?: (line: LineDto) => void;
   /** Opens a row's dialog from its "…" menu; without it the table has no actions column. */
   onOpenDialog?: ProgramRowMenuProps["onOpenDialog"];
+  /** After a line's name, e.g. its comments (ADR 0115). */
+  nameExtra?: ((line: LineDto) => ReactNode) | undefined;
 };
 
 type DataInput = UseProgramColumnsInput & {
@@ -105,6 +107,7 @@ export function useProgramColumns({
   onFollowStatus,
   onEdit,
   onOpenDialog,
+  nameExtra,
 }: UseProgramColumnsInput): Column[] {
   const t = useTranslations("line");
   const effects = useTranslations("priceEffect");
@@ -128,7 +131,7 @@ export function useProgramColumns({
       hidden,
     });
     return createTableColumns<LineDto>({
-      primary: [nameColumn({ t, effects, onEdit })],
+      primary: [nameColumn({ t, effects, onEdit, extra: nameExtra })],
       relations: [
         {
           id: "where",
@@ -163,5 +166,6 @@ export function useProgramColumns({
     onFollowStatus,
     onEdit,
     onOpenDialog,
+    nameExtra,
   ]);
 }

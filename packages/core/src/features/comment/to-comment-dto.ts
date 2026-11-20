@@ -5,14 +5,21 @@ import type { CommentDto } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-export type ToCommentDtosInput = Db & { rows: readonly Comment[] };
+/** Prisma `include` for every comment read (`toCommentDtos`): who it mentions. */
+export const COMMENT_INCLUDE = { mentions: { select: { userId: true } } } as const;
 
-/** Comment rows → DTOs with their authors' names (one member lookup). */
+export type CommentRow = Comment & { mentions: { userId: string }[] };
+
+export type ToCommentDtosInput = Db & { rows: readonly CommentRow[] };
+
+/** Comment rows → DTOs with their authors' and mentioned colleagues' names (one member lookup). */
 export async function toCommentDtos({ context, rows }: ToCommentDtosInput): Promise<CommentDto[]> {
-  const names = await memberNames({ context, userIds: rows.map((row) => row.createdBy) });
-  return rows.map((row) => ({
+  const userIds = rows.flatMap((row) => [row.createdBy, ...row.mentions.map((m) => m.userId)]);
+  const names = await memberNames({ context, userIds });
+  return rows.map(({ mentions, ...row }) => ({
     ...row,
     authorName: row.createdBy ? (names.get(row.createdBy) ?? null) : null,
+    mentions: mentions.map(({ userId }) => ({ userId, name: names.get(userId) ?? null })),
   }));
 }
 
@@ -20,7 +27,7 @@ export type LoadCommentInput = Db & { id: string };
 
 /** The active comment, or null when missing, archived or in another organization. */
 export async function loadComment({ context, id }: LoadCommentInput): Promise<CommentDto | null> {
-  const row = await context.db.comment.findFirst({ where: { id } });
+  const row = await context.db.comment.findFirst({ where: { id }, include: COMMENT_INCLUDE });
   if (!row) return null;
   const [comment] = await toCommentDtos({ context, rows: [row] });
   return comment ?? null;

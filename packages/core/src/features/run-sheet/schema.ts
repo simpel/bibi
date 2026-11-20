@@ -11,6 +11,7 @@ export const RunSheetCommentSchema = z.object({
   body: z.string(),
   authorName: z.string().nullable().describe("Null when the author is no longer a member"),
   createdAt: z.string().describe("ISO time"),
+  reply: z.boolean().default(false).describe("Answers the comment before it (ADR 0115)"),
 });
 
 /** One row of a run sheet snapshot. `key` is stable across versions, so rows can be compared. */

@@ -51,6 +51,7 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "RevenueAccount",
   "ResponsibilityEntityType",
   "ResponsibilityDefaultFollower",
+  "CommentMention",
   "RunSheetDefinitionEntityType",
   "RunSheetDefinitionField",
   "RunSheetDefinitionVocabulary",

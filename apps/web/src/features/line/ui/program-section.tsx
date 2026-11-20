@@ -3,6 +3,7 @@ import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { AlternativeGroupSection } from "@/features/alternative-group/ui/alternative-group-section";
+import { loadOrderComments } from "@/features/comment/load-order-comments";
 import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -53,11 +54,13 @@ function ProgramHeader({ title, canEdit, start }: ProgramHeaderProps) {
 export async function ProgramSection({ locale, order }: ProgramSectionProps) {
   const t = await getTranslations("line");
   const access = programAccess({ abilities: await getCallerAbilities() });
-  const [lines, data, amounts] = await Promise.all([
+  const [lines, data, amounts, comments] = await Promise.all([
     loadOrderLines({ orderId: order.id }),
     loadProgramData(),
     runOperation({ operation: lineAmounts, input: { orderId: order.id } }),
+    loadOrderComments({ order }),
   ]);
+  const commentState = comments.ok ? comments.value : null;
   if (!lines.ok && lines.error.code === "FORBIDDEN") return null;
   if (!lines.ok) {
     return <ErrorState inline errorKey={handleLoadError({ error: lines.error, locale })} />;
@@ -81,6 +84,7 @@ export async function ProgramSection({ locale, order }: ProgramSectionProps) {
             lines={items}
             data={data.value}
             joined
+            comments={commentState}
           />
           {items.length === 0 ? (
             <p className="border-t p-4 text-sm text-muted-foreground">{t("empty")}</p>
@@ -91,6 +95,7 @@ export async function ProgramSection({ locale, order }: ProgramSectionProps) {
               access={access}
               amounts={amounts.ok ? amounts.value : null}
               flush
+              comments={commentState}
             />
           )}
         </div>

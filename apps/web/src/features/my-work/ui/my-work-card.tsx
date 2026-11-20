@@ -1,8 +1,9 @@
 "use client";
 
-import { CalendarLabelsProvider, OrderDayCard, useStoredState } from "@bibi/ui";
+import { CalendarLabelsProvider, CommentAction, OrderDayCard, useStoredState } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useCalendarText } from "@/features/calendar/ui/use-calendar-text";
+import { commentAnchor } from "@/features/comment/lib/comment-anchor";
 import { useOrderFacts } from "@/features/order/ui/use-order-facts";
 import { orderRoute } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
@@ -29,9 +30,11 @@ export type MyWorkCardProps = { card: MyWorkCardWireish; now: Date | string; tim
  * One order on one day, the same card as the pinned and hover calendar cards (spec: home): its
  * flags as error and warning badges by the icons, its status as the first stat, Live as a green
  * badge by the icons with a green shimmering ring. Expanding loads the order's facts; a reload keeps it expanded.
+ * The comment icon opens the order at its comments, with a red dot for the viewer's unread ones.
  */
 export function MyWorkCard({ card, now, timeZone }: MyWorkCardProps) {
   const t = useTranslations("myWork");
+  const comment = useTranslations("comment");
   const labels = useCalendarText();
   const dates = useDateTimeFormat();
   // Kept per card in the viewer's browser, so a reload keeps it open.
@@ -62,6 +65,16 @@ export function MyWorkCard({ card, now, timeZone }: MyWorkCardProps) {
         onToggle={() => setExpanded(!expanded)}
         facts={facts}
         live={live ? t("live") : undefined}
+        actions={
+          card.comments ? (
+            <CommentAction
+              label={comment("linkLabel", card.comments)}
+              count={card.comments.count}
+              unread={card.comments.unread > 0}
+              href={`${orderRoute({ id: card.orderId })}#${commentAnchor()}`}
+            />
+          ) : null
+        }
       />
     </CalendarLabelsProvider>
   );

@@ -1,4 +1,5 @@
 import type { LineDto } from "@bibi/core";
+import type { OrderComments } from "@/features/comment/ui/comment-view";
 import { loadOrderDays } from "../order-days";
 import { OrderDayList } from "./order-day-list";
 import type { ProgramFormData } from "./program-form-data";
@@ -11,6 +12,8 @@ export type OrderDayProps = {
   data: ProgramFormData;
   /** Drawn inside a card shared with the table below, without its own border. */
   joined?: boolean;
+  /** The order's comments, for each bar's comment icon (ADR 0115). */
+  comments?: OrderComments | null;
 };
 
 /**
@@ -24,7 +27,8 @@ export async function OrderDay({
   lines,
   data,
   joined,
+  comments,
 }: OrderDayProps) {
   const days = await loadOrderDays({ orderId, orderReference, customerName, lines, data });
-  return <OrderDayList {...days} joined={joined} />;
+  return <OrderDayList {...days} joined={joined} comments={comments} />;
 }

@@ -48,6 +48,8 @@ export type CalendarHoverDetailsProps = {
   warnings?: string[];
   footer?: ReactNode;
   headerActions?: ReactNode;
+  /** Icons before pin and open, kept with the defaults, e.g. a line's comments (ADR 0115). */
+  extraActions?: ReactNode;
   /** Adds the booking's own quantity, hold and buffers, e.g. in a pinned card. */
   detailed?: boolean;
   /** Facts after the booking's, e.g. the order's assignee and totals. */
@@ -231,8 +233,9 @@ export function CalendarHoverDetails(props: CalendarHoverDetailsProps) {
 
   const actions =
     props.headerActions ??
-    (hasPin || hasVisit ? (
+    (hasPin || hasVisit || props.extraActions ? (
       <>
+        {props.extraActions}
         {hasPin && pinBooking ? (
           <PinAction booking={pinBooking} name={customer ?? rawTitle} />
         ) : null}

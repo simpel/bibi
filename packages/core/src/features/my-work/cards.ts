@@ -3,12 +3,13 @@ import { visibleTo } from "../../shared/visible-to";
 import type { DashboardHorizon } from "../dashboard/horizon";
 import { loadOccupancy } from "../order/plan/occupancy-rows";
 import { softHoldClashes } from "../order/plan/soft-hold-clashes";
+import { type CommentSummary, commentSummaries } from "./comments";
 import { type Concerns, type ConcernWindow, sortReasons } from "./concerns";
 import { flagOf, orderFlags } from "./flags";
 import { type DayLine, dayOf, loadDayLines, orderDays } from "./lines";
 import type { ConcernReason, MyWorkCard, MyWorkFlag } from "./schema";
 
-type Context = Pick<OperationContext, "db" | "permissions">;
+type Context = Pick<OperationContext, "db" | "permissions" | "actor">;
 
 const DAY_MS = 86_400_000;
 
@@ -31,9 +32,18 @@ type BuildInput = {
   days: string[];
   holds: ReturnType<typeof softHoldClashes>;
   flags: MyWorkFlag[];
+  comments: CommentSummary;
 };
 
-function buildCard({ context, group, reasons, days, holds, flags }: BuildInput): MyWorkCard {
+function buildCard({
+  context,
+  group,
+  reasons,
+  days,
+  holds,
+  flags,
+  comments,
+}: BuildInput): MyWorkCard {
   const { first } = group;
   const { order } = first;
   const kinds = group.lines.flatMap((line) => holds.own.get(line.id)?.holdKind ?? []);
@@ -58,6 +68,7 @@ function buildCard({ context, group, reasons, days, holds, flags }: BuildInput):
       ...(clash ? [flagOf({ kind: "HARD_CLASH", reference: clash.orderReference })] : []),
       ...flags,
     ],
+    comments: visibleTo({ context, feature: "comment", value: comments }),
   };
 }
 
@@ -89,10 +100,11 @@ export async function myCards({ context, concerns, window, horizon }: CardsInput
     startsAt: new Date(window.start.getTime() - DAY_MS),
     endsAt: new Date(window.end.getTime() + DAY_MS),
   };
-  const [days, rows, flags] = await Promise.all([
+  const [days, rows, flags, comments] = await Promise.all([
     orderDays({ context, orderIds, timeZone }),
     loadOccupancy({ context, itemIds, window: reach }),
     orderFlags({ context, concerns, orderIds, horizon }),
+    commentSummaries({ context, orderIds }),
   ]);
   const holds = softHoldClashes({ lines, rows });
   const flagged = new Set<string>();
@@ -103,6 +115,17 @@ export async function myCards({ context, concerns, window, horizon }: CardsInput
     flagged.add(group.orderId);
     const own = first ? (flags.get(group.orderId) ?? []) : [];
     const orderDayList = days.get(group.orderId) ?? [group.day];
-    return [buildCard({ context, group, reasons, days: orderDayList, holds, flags: own })];
+    const summary = comments.get(group.orderId) ?? { count: 0, unread: 0 };
+    return [
+      buildCard({
+        context,
+        group,
+        reasons,
+        days: orderDayList,
+        holds,
+        flags: own,
+        comments: summary,
+      }),
+    ];
   });
 }

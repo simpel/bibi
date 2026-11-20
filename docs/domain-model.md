@@ -707,12 +707,16 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - body (1–2000 characters, line breaks kept)
 - author (`createdBy`, a user or API key) and author name (derived from the member, null when they left)
 - edited at (`editedAt`, null = never edited)
+- reply to (`parentCommentId`, owned, set once; one level, on its parent's order and line)
+- mentions (`CommentMention` rows: the mentioned member's user id; replaced as a set on edit)
 
 **Relations**
 - `N:1` Order has this
 - `N:0..1` Line has this
+- `N:0..1` replies to → Comment
+- `1:N` mentions → CommentMention
 
-> Operations (feature `comment`): `comment.list({ orderId, lineId? })` (oldest first; `lineId: null` = only the whole order's) and `comment.get` (`comment:read`); `comment.create|update|archive` (`comment:write`). Only the author edits; the author or a caller with `comment:delete` archives; anyone else's comment is `NOT_FOUND`. The line must belong to the order (`VALIDATION`). Members read and write by preset, managers and admins also delete. Every command regenerates the order's run sheets (`followUp`, ADR 0092) and is audited.
+> Operations (feature `comment`): `comment.list({ orderId, lineId? })` (oldest first; `lineId: null` = only the whole order's) and `comment.get` (`comment:read`); `comment.create|update|archive` (`comment:write`). `create` takes `parentCommentId` (a reply; a reply to a reply, or to another order's comment, is `VALIDATION`) and `mentionUserIds` (members only, else `VALIDATION`), `update` replaces `mentionUserIds`. Only the author edits; the author or a caller with `comment:delete` archives (replies stay); anyone else's comment is `NOT_FOUND`. The line must belong to the order (`VALIDATION`). Members read and write by preset, managers and admins also delete. Every command regenerates the order's run sheets (`followUp`, ADR 0092) and is audited; `create` also notifies the people on the order (`COMMENT_ADDED`). My work cards carry `comments` (count, the caller's unread comment notifications; null without `comment:read`), and `notification.list` filters by `orderId`.
 
 ### CancellationTerms
 
@@ -1268,7 +1272,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Attributes**
 - recipient (owned): the member it is for; every read and write is filtered on the caller, so another member's notification is `NOT_FOUND`
-- kind (owned): `ASSIGNED`, `RUN_SHEET_SENT`, `ORDER_STATUS_CHANGED`, `PAYMENT_RECEIVED`
+- kind (owned): `ASSIGNED`, `RUN_SHEET_SENT`, `ORDER_STATUS_CHANGED`, `PAYMENT_RECEIVED`, `COMMENT_ADDED` and `COMMENT_MENTIONED` (ADR 0115: a mention to the mentioned member; otherwise to the order's assignees, followers and creator and a reply's parent author, never the author; the snapshot holds the line and the first 140 characters, shown with `comment:read`)
 - actor (owned): who caused it; null for the system
 - order, run sheet, payment (owned, foreign keys)
 - data (snapshot, ADR 0051): the order's number and title, the old and new status, the run sheet and version, the amount and currency at the time

@@ -662,14 +662,22 @@
       "ASSIGNED": "Assigned",
       "RUN_SHEET_SENT": "Run sheet",
       "ORDER_STATUS_CHANGED": "Status change",
-      "PAYMENT_RECEIVED": "Payment"
+      "PAYMENT_RECEIVED": "Payment",
+      "COMMENT_ADDED": "Comment",
+      "COMMENT_MENTIONED": "Mention"
     },
     "messages": {
       "ASSIGNED": "{actor} assigned you to #{reference}",
       "RUN_SHEET_SENT": "{actor} sent you {runSheet} v{version} for #{reference}",
       "ORDER_STATUS_CHANGED": "#{reference} moved from {from} to {to}",
       "PAYMENT_RECEIVED": "{amount} received on #{reference}",
-      "PAYMENT_OVERPAID": "{amount} paid again on #{reference}, which was already paid: refund it or keep it as credit"
+      "PAYMENT_OVERPAID": "{amount} paid again on #{reference}, which was already paid: refund it or keep it as credit",
+      "COMMENT_ADDED": "{actor} commented on #{reference}: {excerpt}",
+      "COMMENT_ADDED_LINE": "{actor} commented on {line} in #{reference}: {excerpt}",
+      "COMMENT_REPLIED": "{actor} replied on #{reference}: {excerpt}",
+      "COMMENT_REPLIED_LINE": "{actor} replied on {line} in #{reference}: {excerpt}",
+      "COMMENT_MENTIONED": "{actor} mentioned you on #{reference}: {excerpt}",
+      "COMMENT_MENTIONED_LINE": "{actor} mentioned you on {line} in #{reference}: {excerpt}"
     },
     "someone": "Someone",
     "aRunSheet": "a run sheet",
@@ -681,6 +689,8 @@
       "ORDER_STATUS_CHANGED": "When an order I answer for or follow changes status",
       "PAYMENT_RECEIVED": "When a payment is received on an order I answer for or follow",
       "turnedOn": "Notifications turned on",
+      "COMMENT_ADDED": "When someone comments on an order I answer for, follow or created",
+      "COMMENT_MENTIONED": "When someone mentions me in a comment",
       "turnedOff": "Notifications turned off"
     },
     "arrivedTitle": "New notification",

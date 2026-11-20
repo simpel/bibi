@@ -8,6 +8,7 @@ import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { PageTour } from "@/components/tour/page-tour";
 import { FollowControl } from "@/features/assignment/ui/follow-control";
+import { OrderCommentControl } from "@/features/comment/ui/order-comment-control";
 import { OrderIssues } from "@/features/line/ui/order-issues";
 import { orderName } from "@/lib/order-label";
 import { orderRoute } from "@/lib/routes";
@@ -46,7 +47,7 @@ type OrderHeaderActionsProps = {
   abilities: CallerAbilities;
 };
 
-/** Top right beside the title: the status (a menu for writers), Follow, then the order's actions. */
+/** Top right beside the title: the status (a menu for writers), Follow, comments, then the actions. */
 function OrderHeaderActions({ order, statuses, abilities }: OrderHeaderActionsProps) {
   return (
     <>
@@ -62,6 +63,11 @@ function OrderHeaderActions({ order, statuses, abilities }: OrderHeaderActionsPr
             subject={{ subjectType: "ORDER", subjectId: order.id }}
             userId={abilities.userId}
           />
+        </Suspense>
+      ) : null}
+      {can({ abilities, permission: "comment:read" }) ? (
+        <Suspense fallback={null}>
+          <OrderCommentControl order={order} title={order.title ?? `#${order.reference}`} />
         </Suspense>
       ) : null}
       <OrderActions order={order} abilities={abilities} />

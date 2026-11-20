@@ -2,8 +2,10 @@
 
 import type { LineAmounts, LineDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
+import { CommentDialogButton } from "@/features/comment/ui/comment-dialog-button";
+import type { OrderComments } from "@/features/comment/ui/comment-view";
 import { actionWithToast } from "@/lib/action-with-toast";
 import { useRouter } from "@/lib/navigation";
 import {
@@ -27,6 +29,8 @@ export type ProgramTableProps = {
   amounts: LineAmounts | null;
   /** Drawn inside a shared card: no border or rounding of its own. */
   flush?: boolean;
+  /** Each line's comments (ADR 0115), keyed by line id; absent without `comment:read`. */
+  comments?: OrderComments | null;
 };
 
 /**
@@ -34,7 +38,7 @@ export type ProgramTableProps = {
  * Selection · State dropdown with pulse · Name (clickable) · Where · Time (hours) · Quantity · Total Amount.
  * Single Pen action button and full right-click context menu with Edit first.
  */
-export function ProgramTable({ lines, data, access, amounts, flush }: ProgramTableProps) {
+export function ProgramTable({ lines, data, access, amounts, flush, comments }: ProgramTableProps) {
   const t = useTranslations("line");
   const common = useTranslations("common");
   const errors = useTranslations("errors");
@@ -140,6 +144,14 @@ export function ProgramTable({ lines, data, access, amounts, flush }: ProgramTab
 
   const treePlaces = useMemo(() => lineTreePlaces({ lines: linesState }), [linesState]);
 
+  const nameExtra = useCallback(
+    (line: LineDto) =>
+      comments ? (
+        <CommentDialogButton comments={comments} lineId={line.id} title={line.name} />
+      ) : null,
+    [comments],
+  );
+
   const columns = useProgramColumns({
     data,
     access,
@@ -149,6 +161,7 @@ export function ProgramTable({ lines, data, access, amounts, flush }: ProgramTab
     onFollowStatus: handleFollowStatus,
     onEdit: (line) => setActiveDialog({ line, dialog: "edit" }),
     onOpenDialog: setActiveDialog,
+    nameExtra,
   });
 
   return (

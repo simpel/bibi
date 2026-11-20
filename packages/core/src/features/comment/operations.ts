@@ -9,15 +9,16 @@ import {
   CommentListOutputSchema,
   CommentSchema,
 } from "./schema";
-import { loadComment, toCommentDtos } from "./to-comment-dto";
+import { COMMENT_INCLUDE, loadComment, toCommentDtos } from "./to-comment-dto";
 import { archiveComment, createComment, updateComment } from "./write-operations";
 
 export const listComments = defineOperation({
   name: "comment.list",
   kind: "query",
   description:
-    "List staff comments on an order, oldest first, with each author's name. `lineId` gives " +
-    "one line's comments, `lineId: null` only those on the whole order; omit it for all.",
+    "List staff comments on an order, oldest first, with each author's name and who they " +
+    "mention. Replies carry `parentCommentId`. `lineId` gives one line's comments, " +
+    "`lineId: null` only those on the whole order; omit it for all.",
   input: CommentListInputSchema,
   output: CommentListOutputSchema,
   permission: "comment:read",
@@ -28,6 +29,7 @@ export const listComments = defineOperation({
         ...(input.lineId === undefined ? {} : { lineId: input.lineId }),
       },
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      include: COMMENT_INCLUDE,
       ...pageArgs(input),
     });
     const page = paginate({ rows, limit: input.limit });

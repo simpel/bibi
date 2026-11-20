@@ -19,6 +19,7 @@ const EXTRAS: readonly Extra[] = [
   { kind: "ASSIGNED", data: {} },
   { kind: "ORDER_STATUS_CHANGED", data: { fromStatus: "Quote sent", toStatus: "Confirmed" } },
   { kind: "PAYMENT_RECEIVED", data: { amountMinor: 1_250_000, currency: "SEK" } },
+  { kind: "COMMENT_ADDED", data: { lineId: null, excerpt: "The group arrives by bus." } },
 ];
 
 /**

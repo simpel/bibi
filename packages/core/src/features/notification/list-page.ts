@@ -60,6 +60,7 @@ export function notificationWhere({
   return {
     recipientUserId,
     ...(input.kind ? { kind: input.kind } : {}),
+    ...(input.orderId ? { orderId: input.orderId } : {}),
     ...read,
     ...searchWhere({ q: input.q, canReadOrders }),
   } satisfies Prisma.NotificationWhereInput;

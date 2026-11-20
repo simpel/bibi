@@ -62,7 +62,12 @@ describe("run sheets show comments (ADR 0115)", () => {
     }).items;
     const row = latest?.content.rows.find((candidate) => candidate.key === held.id);
     expect(row?.comments).toEqual([
-      { body: "Allergy list attached", authorName: "Kim Berg", createdAt: expect.any(String) },
+      {
+        body: "Allergy list attached",
+        authorName: "Kim Berg",
+        createdAt: expect.any(String),
+        reply: false,
+      },
     ]);
   });
 });

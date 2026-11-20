@@ -6,6 +6,8 @@ export const NOTIFICATION_KINDS = [
   "RUN_SHEET_SENT",
   "ORDER_STATUS_CHANGED",
   "PAYMENT_RECEIVED",
+  "COMMENT_ADDED",
+  "COMMENT_MENTIONED",
 ] as const;
 export const NotificationKindSchema = z.enum(NOTIFICATION_KINDS);
 export type NotificationKind = z.infer<typeof NotificationKindSchema>;
@@ -25,6 +27,11 @@ export const NotificationDataSchema = z.object({
     .boolean()
     .optional()
     .describe("PAYMENT_RECEIVED: money arrived on a payment already paid (give it back or keep)"),
+  lineId: z.string().nullable().optional().describe("COMMENT_*: the line; null = the order"),
+  lineName: z.string().nullable().optional().describe("COMMENT_*: the line's name then"),
+  excerpt: z.string().optional().describe("COMMENT_*: the comment's first 140 characters"),
+  commentId: z.string().optional().describe("COMMENT_*: the comment (comment.get)"),
+  reply: z.boolean().optional().describe("COMMENT_*: the comment answers another one"),
 });
 export type NotificationData = z.infer<typeof NotificationDataSchema>;
 

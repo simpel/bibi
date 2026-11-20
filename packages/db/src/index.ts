@@ -31,6 +31,7 @@ export {
   type BoardPhaseStatus,
   BuyerKind,
   type Comment,
+  type CommentMention,
   type Contact,
   type Conversation,
   type CreditNote,

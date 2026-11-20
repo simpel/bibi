@@ -113,6 +113,8 @@
         "toStateIds": "May move to (state ids)",
         "lineId": "Line (id)",
         "body": "Comment",
+        "parentCommentId": "Reply to (id)",
+        "mentionUserIds": "Mentioned (ids)",
         "lineIds": "Options (line ids)",
         "chosenLineIds": "Chosen options (line ids)",
         "stateId": "State (id)",

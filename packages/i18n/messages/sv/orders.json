@@ -826,7 +826,7 @@
     "description": "Anteckningar till kollegorna om hela bokningen eller en av dess rader. De syns också på körschemana.",
     "empty": "Inga kommentarer än.",
     "body": "Kommentar",
-    "placeholder": "Skriv en kommentar till kollegorna och körschemana",
+    "placeholder": "Skriv en kommentar; skriv @ för att nämna en kollega",
     "about": "Gäller",
     "wholeOrder": "Hela bokningen",
     "onLine": "På {name}",
@@ -838,6 +838,13 @@
     "deleteConfirm": "Ta bort kommentaren? Den försvinner också från nästa version av körschemana.",
     "deleted": "Kommentaren har tagits bort",
     "edited": "redigerad",
-    "formerMember": "Tidigare medlem"
+    "formerMember": "Tidigare medlem",
+    "actionLabel": "{count, plural, =0 {Kommentera} one {# kommentar} other {# kommentarer}}{unread, plural, =0 {} other {, # nya}}",
+    "dialogTitle": "Kommentarer om {name}",
+    "dialogDescription": "Kollegorna ser dem på ordern och på körschemana.",
+    "linkLabel": "{count, plural, =0 {Kommentarer} one {# kommentar} other {# kommentarer}}{unread, plural, =0 {} other {, # nya}}",
+    "reply": "Svara",
+    "replied": "Svaret har lagts till",
+    "mentionList": "Kollegor att nämna"
   }
 }

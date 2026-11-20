@@ -113,6 +113,8 @@
         "toStateIds": "Får gå till (läges-id:n)",
         "lineId": "Rad (id)",
         "body": "Kommentar",
+        "parentCommentId": "Svar på (id)",
+        "mentionUserIds": "Nämnda (id)",
         "lineIds": "Alternativ (rad-id)",
         "chosenLineIds": "Valda alternativ (rad-id)",
         "stateId": "Läge (id)",

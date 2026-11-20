@@ -17,6 +17,7 @@ export const NotificationListInputSchema = z.object({
     .optional()
     .describe("Text in the order's title, or its reference number"),
   kind: NotificationKindSchema.optional().describe("Only notifications of this kind"),
+  orderId: z.string().min(1).optional().describe("Only notifications about this order"),
   read: z.enum(NOTIFICATION_READ_FILTERS).optional().describe("Only unread or only read ones"),
   sort: z.enum(NOTIFICATION_LIST_SORTS).default("created"),
   direction: z.enum(["asc", "desc"]).default("desc"),

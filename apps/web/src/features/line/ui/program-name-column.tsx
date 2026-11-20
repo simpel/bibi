@@ -2,6 +2,7 @@ import type { LineDto } from "@bibi/core";
 import { Badge, type ColumnDef } from "@bibi/ui";
 import { CornerDownRightIcon, TriangleAlertIcon } from "lucide-react";
 import type { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { bySeverity } from "./line-warning-severity";
 
 type Translator = ReturnType<typeof useTranslations<"line">>;
@@ -11,6 +12,8 @@ export type NameColumnInput = {
   t: Translator;
   effects: EffectTranslator;
   onEdit?: (line: LineDto) => void;
+  /** After the name and badges, e.g. the line's comments (ADR 0115). */
+  extra?: ((line: LineDto) => ReactNode) | undefined;
 };
 
 type WorstWarningProps = { t: Translator; warnings: LineDto["warnings"] };
@@ -38,7 +41,7 @@ function WorstWarning({ t, warnings }: WorstWarningProps) {
  * and a short label; its tooltip has the full sentence of every warning on the line.
  * Clicking the name triggers line edit, matching the pen action button.
  */
-export function nameColumn({ t, effects, onEdit }: NameColumnInput): ColumnDef<LineDto> {
+export function nameColumn({ t, effects, onEdit, extra }: NameColumnInput): ColumnDef<LineDto> {
   return {
     id: "name",
     header: t("columns.name"),
@@ -77,6 +80,7 @@ export function nameColumn({ t, effects, onEdit }: NameColumnInput): ColumnDef<L
         ) : null}
         {original.role === "ADD_ON" ? <Badge variant="outline">{t("addOn")}</Badge> : null}
         <WorstWarning t={t} warnings={original.warnings} />
+        {extra?.(original)}
       </span>
     ),
   };

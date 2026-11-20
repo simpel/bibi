@@ -81,6 +81,8 @@ export const FIELD_KEYS = [
   "budgetMinor",
   "orderId",
   "body",
+  "parentCommentId",
+  "mentionUserIds",
   "inboundMessageId",
   "parentLineId",
   "statusId",

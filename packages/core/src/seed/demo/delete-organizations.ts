@@ -28,6 +28,9 @@ const orderChildren = ({ db, where }: ScopeInput) => [
   db.runSheetRecipient.deleteMany({ where }),
   db.runSheet.deleteMany({ where }),
   db.requirement.deleteMany({ where }),
+  // Mentions and replies point at comments (ADR 0115).
+  db.commentMention.deleteMany({ where }),
+  db.comment.updateMany({ where, data: { parentCommentId: null } }),
   db.comment.deleteMany({ where }),
   // Order lines point at the lines they froze and at their quote or invoice (ADR 0052).
   db.orderLine.deleteMany({ where }),

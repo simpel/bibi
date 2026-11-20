@@ -46,6 +46,9 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 ## Comments
 - Staff comment on the whole order or one of its lines (`Comment`, ADR 0115) in the **Comments** band of the order page: a text box, an **About** picker (the whole booking or a line) and **Add comment**. Comments list oldest first with author, relative time, "edited" and the line they are about.
 - Authors edit their own comments in place and delete them after a confirm; a caller with `comment:delete` (managers, admins) deletes anyone's.
+- A comment icon with the count sits on the order's title row, on each line in the program table and in each line's hover card on the timeline, and on My work cards. A red dot means the viewer has unread comment notifications there (each person their own, ADR 0094). On the order page the icon opens that line's (or the order's) comments with a text box; the hover card's icon picks the line in the Comments section; My work's opens the order at its comments. Opening the comments, or scrolling the Comments section into view, reads the notifications.
+- The reply arrow beside a comment's edit and delete buttons opens a reply box; replies sit indented under their comment, one level. Typing `@` in any comment box lists colleagues by name; the picked `@Name` shows highlighted and the person is mentioned.
+- A new comment notifies the order's assignees, followers and creator, never the author; a reply also its comment's author; a mentioned colleague gets "mentioned you" instead, even when not on the order.
 - Run sheets carry every comment: a line's on its row (a Comments column in What to deliver), the order's in a block at the top. A comment change makes the next version, the row marked ★.
 
 ## Line states

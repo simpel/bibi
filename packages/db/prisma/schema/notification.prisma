@@ -4,6 +4,8 @@ enum NotificationKind {
   RUN_SHEET_SENT
   ORDER_STATUS_CHANGED
   PAYMENT_RECEIVED
+  COMMENT_ADDED
+  COMMENT_MENTIONED
 }
 
 /// Notification (ADR 0094) – tells one member (`recipientUserId`) that something in the organization

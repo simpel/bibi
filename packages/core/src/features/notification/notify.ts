@@ -22,6 +22,8 @@ const NEEDS: Record<NotificationKind, readonly Permission[]> = {
   ORDER_STATUS_CHANGED: ["order:read"],
   RUN_SHEET_SENT: ["order:read", "runSheet:read"],
   PAYMENT_RECEIVED: ["order:read", "payment:read"],
+  COMMENT_ADDED: ["order:read", "comment:read"],
+  COMMENT_MENTIONED: ["order:read", "comment:read"],
 };
 
 /** The acting member's name for the snapshot; none for the system or an API key. */

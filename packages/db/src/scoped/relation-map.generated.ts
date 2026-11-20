@@ -102,6 +102,24 @@ export const RELATIONS: RelationMap = {
     "line": {
       "target": "Line",
       "list": false
+    },
+    "parent": {
+      "target": "Comment",
+      "list": false
+    },
+    "replies": {
+      "target": "Comment",
+      "list": true
+    },
+    "mentions": {
+      "target": "CommentMention",
+      "list": true
+    }
+  },
+  "CommentMention": {
+    "comment": {
+      "target": "Comment",
+      "list": false
     }
   },
   "Contact": {

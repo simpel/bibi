@@ -52,6 +52,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Responsibility",
   "ResponsibilityEntityType",
   "ResponsibilityDefaultFollower",
+  "CommentMention",
   "PermissionOverride",
   "RecordScopeOverride",
   "Assignment",

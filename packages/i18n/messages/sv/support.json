@@ -168,11 +168,19 @@
           },
           "commentOrder": {
             "question": "Hur lämnar jag en kommentar på en order eller en av dess rader?",
-            "answer": "Öppna ordern och skrolla till **Kommentarer**. Skriv din kommentar, välj under **Gäller** om den gäller hela bokningen eller en rad, och klicka på **Lägg till kommentar**.\nAlla som kan se ordern ser kommentaren med ditt namn och tiden. Du kan redigera eller ta bort dina egna kommentarer med knapparna bredvid dem."
+            "answer": "Klicka på pratbubblan bredvid en rad i programmet, eller den bredvid **Följ** högst upp på ordern för hela bokningen. Skriv din kommentar och klicka på **Lägg till kommentar**.\nDu kan också skrolla till **Kommentarer** på ordern och välja under **Gäller** vilken rad den gäller. Du kan redigera eller ta bort dina egna kommentarer."
           },
           "commentRunSheet": {
             "question": "Ser köket mina kommentarer?",
             "answer": "Ja. Kommentarer syns på orderns körscheman: en kommentar på en rad står på den radens rad, och kommentarer om hela bokningen står överst.\nNär du lägger till, redigerar eller tar bort en kommentar får körschemat en ny version och ändringen markeras med en stjärna."
+          },
+          "commentNew": {
+            "question": "Hur ser jag nya kommentarer?",
+            "answer": "När någon kommenterar en order du ansvarar för, följer eller har skapat får du en notis. Pratbubblan på ordern, raden och ditt kort på **Mitt arbete** får en röd prick tills du öppnar kommentarerna.\nAlla har sina egna prickar: läser du en kommentar försvinner pricken bara för dig."
+          },
+          "commentReply": {
+            "question": "Kan jag svara på en kommentar eller nämna en kollega?",
+            "answer": "Klicka på svarspilen bredvid en kommentar för att svara; svaret visas under kommentaren, även på körschemat. Skriv **@** och början av ett namn för att nämna en kollega och välj personen i listan.\nDen du nämner får en notis, även om hen inte är med på ordern, och den som skrev kommentaren du svarar på får också veta det."
           }
         }
       },
