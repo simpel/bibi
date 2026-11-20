@@ -43,8 +43,8 @@ export function FollowButton({ subject, userId, following }: FollowButtonProps) 
       aria-label={label}
       title={label}
     >
-      {/* An eye, never the bell: the bell is notifications. Open while following. */}
-      {following ? <EyeIcon aria-hidden /> : <EyeOffIcon aria-hidden />}
+      {/* An eye, never the bell (that is notifications). It shows what a click does: stop or start. */}
+      {following ? <EyeOffIcon aria-hidden /> : <EyeIcon aria-hidden />}
     </Button>
   );
 }
