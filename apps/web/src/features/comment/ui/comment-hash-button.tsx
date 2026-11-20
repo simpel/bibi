@@ -9,21 +9,32 @@ export type CommentHashButtonProps = {
   lineId: string | null;
   count: number;
   unread: boolean;
+  /** `icon` on the title row: an outline icon button with the dot, no count. */
+  look?: "inline" | "icon";
 };
 
 /**
- * A comment icon on the order page itself, where a dialog cannot live (a hover card closes): it
- * sets `#comment-<lineId>`, and the Comments section's composer picks that line (ADR 0115).
+ * A comment icon on the order page itself: it goes to the Comments section (`#comments`, or
+ * `#comment-<lineId>` so the composer picks that line, ADR 0115). Clicking again when the hash is
+ * already set still scrolls there.
  */
-export function CommentHashButton({ lineId, count, unread }: CommentHashButtonProps) {
+export function CommentHashButton({ lineId, count, unread, look }: CommentHashButtonProps) {
   const t = useTranslations("comment");
+  const unreadCount = unread ? 1 : 0;
   return (
     <CommentAction
-      label={t("actionLabel", { count, unread: unread ? 1 : 0 })}
+      label={
+        lineId === null && look === "icon"
+          ? t("goToLabel", { count, unread: unreadCount })
+          : t("actionLabel", { count, unread: unreadCount })
+      }
       count={count}
       unread={unread}
+      look={look}
       onClick={() => {
-        window.location.hash = commentAnchor({ lineId });
+        const hash = `#${commentAnchor({ lineId })}`;
+        if (window.location.hash === hash) window.dispatchEvent(new HashChangeEvent("hashchange"));
+        else window.location.hash = hash;
       }}
     />
   );

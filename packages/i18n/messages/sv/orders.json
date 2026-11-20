@@ -845,6 +845,7 @@
     "linkLabel": "{count, plural, =0 {Kommentarer} one {# kommentar} other {# kommentarer}}{unread, plural, =0 {} other {, # nya}}",
     "reply": "Svara",
     "replied": "Svaret har lagts till",
-    "mentionList": "Kollegor att nämna"
+    "mentionList": "Kollegor att nämna",
+    "goToLabel": "Gå till kommentarer{count, plural, =0 {} one { (# kommentar} other { (# kommentarer}}{unread, plural, =0 {} other {, # nya}}{count, plural, =0 {} other {)}}"
   }
 }

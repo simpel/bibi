@@ -67,7 +67,7 @@ function OrderHeaderActions({ order, statuses, abilities }: OrderHeaderActionsPr
       ) : null}
       {can({ abilities, permission: "comment:read" }) ? (
         <Suspense fallback={null}>
-          <OrderCommentControl order={order} title={order.title ?? `#${order.reference}`} />
+          <OrderCommentControl order={order} />
         </Suspense>
       ) : null}
       <OrderActions order={order} abilities={abilities} />
