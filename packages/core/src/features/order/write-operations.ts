@@ -45,13 +45,13 @@ export const updateOrder = defineOperation({
   name: "order.update",
   kind: "command",
   description:
-    "Update an order's title, customer, contact, desired period, headcount, budget, estimated value " +
+    "Update an order's title, contact, desired period, headcount, budget, estimated value " +
     "(each change is kept: order.estimateHistory), " +
     "holdsUntil (when its soft holds expire), the booking note or own " +
     "fields. A headcount that puts a line counting it above its item's maxPeople is " +
     "VALIDATION on that headcount. The contact can be changed but never cleared. Omitted properties are unchanged; " +
     "`fields` is merged by key (null clears a value). " +
-    "The type cannot be changed, the status changes only with order.changeStatus and the " +
+    "The type and the customer are set at creation and cannot be changed, the status changes only with order.changeStatus and the " +
     "assignee with assignment.assign. A closed order (its status closes) takes only buyerKind " +
     "and buyerReference, which its invoices still need; any other change is CONFLICT.",
   input: OrderUpdateInputSchema,

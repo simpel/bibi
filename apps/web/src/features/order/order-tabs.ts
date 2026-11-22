@@ -3,19 +3,26 @@ import { canPermission } from "@/lib/can";
 import type { CallerAbilities } from "@/server/caller-abilities";
 
 /** The order page's tabs, in order; each is its own URL (`?tab=`), so the URL is the state. */
-export const ORDER_TABS = ["program", "run-sheets", "money", "activity"] as const;
+export const ORDER_TABS = [
+  "program",
+  "run-sheets",
+  "money",
+  "comments",
+  "messages",
+  "activity",
+] as const;
 
 export type OrderTab = (typeof ORDER_TABS)[number];
 
 /** The tab the order page's comments live in: a `#comments` link opens it. */
-export const COMMENTS_TAB: OrderTab = "activity";
+export const COMMENTS_TAB: OrderTab = "comments";
 
 type AvailableInput = { abilities: CallerAbilities };
 
 /**
  * The tabs the caller can see: a tab whose every section belongs to a feature they may not read is
- * left out (ADR 0050). Money and Activity always show: their estimate and status histories are
- * the order's own.
+ * left out (ADR 0050). Money, Messages and Activity always show: the estimate history, the reply
+ * address and the status history are the order's own.
  */
 export function availableOrderTabs({ abilities }: AvailableInput): OrderTab[] {
   // `canPermission`, not the server's `can`: a client component reads this file's constants.
@@ -26,6 +33,10 @@ export function availableOrderTabs({ abilities }: AvailableInput): OrderTab[] {
     "run-sheets": allowed({ permission: "runSheet:read" }),
     // The estimate history is the order's own, so Money always has something to show.
     money: true,
+    comments: allowed({ permission: "comment:read" }),
+    // The order's own reply address shows even before any message arrives.
+    messages: true,
+    // The status history is the order's own.
     activity: true,
   };
   return ORDER_TABS.filter((tab) => shown[tab]);

@@ -44,7 +44,7 @@ export type OrderDetailsProps = {
 };
 
 /**
- * The rest of the order, lower on the page: type, money, holds, own fields and the note, edited
+ * The rest of the order, last in the side panel: type, money, holds, own fields and the note, edited
  * in place from the pencil beside the title. Left out when none is set and it cannot be edited.
  */
 export async function OrderDetails({ order, data, canEdit, groups }: OrderDetailsProps) {

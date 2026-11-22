@@ -7,7 +7,6 @@ import { AlternativeGroupSection } from "@/features/alternative-group/ui/alterna
 import { loadOrderComments } from "@/features/comment/load-order-comments";
 import { getOrderAbilities } from "@/features/order/order-abilities";
 import { OrderVersions } from "@/features/order-version/ui/order-versions";
-import { VersionSyncLine } from "@/features/order-version/ui/version-sync-line";
 import {
   VersionsPanel,
   VersionsPanelProvider,
@@ -44,18 +43,13 @@ type ProgramHeaderProps = {
 };
 
 /**
- * The section's title, whether the order still matches the quote last sent (ADR 0116), Versions,
- * and the add buttons for a caller who may edit the program.
+ * The section's title, Versions (ADR 0116), and the add buttons for a caller who may edit the
+ * program.
  */
 function ProgramHeader({ title, versionsLabel, order, canEdit, start }: ProgramHeaderProps) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <div className="grid gap-1.5">
-        <h2 className="text-xl">{title}</h2>
-        <Suspense fallback={null}>
-          <VersionSyncLine order={order} />
-        </Suspense>
-      </div>
+      <h2 className="text-xl">{title}</h2>
       <div className="flex flex-wrap justify-end gap-2">
         <VersionsToggle label={versionsLabel} />
         {canEdit ? (
@@ -72,7 +66,7 @@ function ProgramHeader({ title, versionsLabel, order, canEdit, start }: ProgramH
 /**
  * The order's run schedule (ADR 0022): its days in the calendar, the lines in time order with
  * their amounts and the total, edited inline, then its alternatives. Its versions (ADR 0116) open
- * under the header from Versions or the quote sync pill.
+ * under the header from Versions.
  */
 export async function ProgramSection({ locale, order }: ProgramSectionProps) {
   const [t, versions, common] = await Promise.all([

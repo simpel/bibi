@@ -8,9 +8,9 @@ import { InlineLoadError } from "@/components/states/inline-load-error";
 import { TypeFields } from "@/components/typed-fields/type-fields";
 import {
   BuyerFields,
+  ContactFields,
   HeadcountFields,
   MoneyAndNoteFields,
-  PartyFields,
   PeriodFields,
 } from "./order-core-fields";
 import type { OrderFormData } from "./order-form-data";
@@ -34,7 +34,7 @@ function Editor({ order, data, groups }: EditorProps) {
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
-        {shows.has("party") ? <PartyFields form={form} data={data} /> : null}
+        {shows.has("contact") ? <ContactFields form={form} data={data} /> : null}
         {shows.has("period") ? <PeriodFields form={form} /> : null}
         {shows.has("headcount") ? <HeadcountFields form={form} /> : null}
         {shows.has("buyer") ? <BuyerFields form={form} /> : null}

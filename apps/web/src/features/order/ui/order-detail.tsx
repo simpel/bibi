@@ -19,7 +19,7 @@ import { loadOrder } from "../load-order";
 import { orderFormDataPromise } from "../load-order-data";
 import { loadOrderNames, loadOrderStatuses } from "../load-order-names";
 import { closedStatus, readOnlyAbilities } from "../order-abilities";
-import { availableOrderTabs, pickOrderTab } from "../order-tabs";
+import { availableOrderTabs, COMMENTS_TAB, pickOrderTab } from "../order-tabs";
 import { ClosedOrderNotice } from "./closed-order-notice";
 import { OrderCommentsTabHash } from "./order-comments-tab-hash";
 import { OrderKeyFacts } from "./order-facts";
@@ -152,7 +152,7 @@ export async function OrderDetail({ locale, id, tab: tabParam }: OrderDetailProp
         }
       />
       <PageSection>
-        <PageContainer width="wide" className="grid grid-cols-1 gap-4 pt-4 sm:pt-6">
+        <PageContainer width="wide" className="grid grid-cols-1 gap-4 pt-4 pb-0 sm:pt-6 sm:pb-0">
           <PageHeader
             {...heading({ order: order.value, label, short })}
             heading={
@@ -181,6 +181,10 @@ export async function OrderDetail({ locale, id, tab: tabParam }: OrderDetailProp
             closed={closed}
             canProgram={can({ abilities, permission: "program:read" })}
           />
+          {/* The tabs close the header: their underline sits on its bottom edge (no bottom padding). */}
+          <div className="mt-2">
+            <OrderTabNav orderId={id} tabs={tabs} current={tab} />
+          </div>
         </PageContainer>
       </PageSection>
       <PageTour tour="order" />
@@ -191,7 +195,6 @@ export async function OrderDetail({ locale, id, tab: tabParam }: OrderDetailProp
           className="grid grid-cols-1 items-start gap-8 py-6 sm:py-8 lg:grid-cols-[minmax(0,1fr)_20rem]"
         >
           <div className="grid min-w-0 grid-cols-1 gap-8">
-            <OrderTabNav orderId={id} tabs={tabs} current={tab} />
             <OrderSections
               locale={locale}
               order={order.value}
@@ -203,7 +206,7 @@ export async function OrderDetail({ locale, id, tab: tabParam }: OrderDetailProp
           <OrderSidePanel locale={locale} order={order.value} abilities={pageAbilities} />
         </PageContainer>
       </PageSection>
-      <OrderCommentsTabHash active={tab === "activity"} />
+      <OrderCommentsTabHash active={tab === COMMENTS_TAB} />
     </PageBands>
   );
 }

@@ -4,6 +4,7 @@ import { DeferredSection } from "@/components/states/deferred-section";
 import { CommentSection } from "@/features/comment/ui/comment-section";
 import { OrderMessages } from "@/features/inbound-message/ui/order-messages";
 import { ProgramSection } from "@/features/line/ui/program-section";
+import { OrderVersions } from "@/features/order-version/ui/order-versions";
 import { OrderPayments } from "@/features/payment/ui/order-payments";
 import { OrderQuotes } from "@/features/quote/ui/order-quotes";
 import { RequirementSection } from "@/features/requirement/ui/requirement-section";
@@ -65,21 +66,18 @@ function MoneyTab({ locale, order, statuses, allowed }: TabProps) {
   );
 }
 
-/** What happened on the order: comments, the customer's messages, status moves and versions. */
+/** What happened on the order: its status moves and its versions (ADR 0116). */
 function ActivityTab({ locale, order, statuses, allowed }: TabProps) {
   return (
     <>
-      {allowed({ permission: "comment:read" }) ? (
-        <DeferredSection rows={3}>
-          <CommentSection locale={locale} order={order} />
-        </DeferredSection>
-      ) : null}
-      <DeferredSection>
-        <OrderMessages locale={locale} orderId={order.id} address={order.inboundAddress} />
-      </DeferredSection>
       <DeferredSection>
         <OrderStatusHistory locale={locale} orderId={order.id} statuses={statuses} />
       </DeferredSection>
+      {allowed({ permission: "program:read" }) ? (
+        <DeferredSection>
+          <OrderVersions locale={locale} order={order} heading />
+        </DeferredSection>
+      ) : null}
     </>
   );
 }
@@ -103,6 +101,20 @@ export function OrderSections({ tab, ...props }: OrderSectionsProps) {
         </DeferredSection>
       ) : null}
       {tab === "money" ? <MoneyTab {...tabProps} /> : null}
+      {tab === "comments" ? (
+        <DeferredSection rows={3}>
+          <CommentSection locale={props.locale} order={props.order} />
+        </DeferredSection>
+      ) : null}
+      {tab === "messages" ? (
+        <DeferredSection>
+          <OrderMessages
+            locale={props.locale}
+            orderId={props.order.id}
+            address={props.order.inboundAddress}
+          />
+        </DeferredSection>
+      ) : null}
       {tab === "activity" ? <ActivityTab {...tabProps} /> : null}
     </div>
   );

@@ -1,7 +1,6 @@
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { DateTimeField } from "@/components/date-picker/date-time-field";
-import type { NamedOption } from "@/components/form/named-option";
 import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
 import type { ContactOption } from "./order-form-data";
@@ -12,38 +11,27 @@ export type OrderFieldsForm = UseFormReturn<OrderFormValues, unknown, OrderFormO
 
 type FormOnly = { form: OrderFieldsForm };
 
-export type PartyFieldsProps = FormOnly & {
+export type ContactFieldsProps = FormOnly & {
   data: {
-    customers: readonly NamedOption[];
     contacts: readonly ContactOption[];
-    /** The caller may not view customers (and their contacts): both pickers are disabled. */
+    /** The caller may not view customers (and their contacts): the picker is disabled. */
     customersHidden: boolean;
   };
 };
 
-/** Customer and a contact person who works there (the list follows the customer). */
-export function PartyFields({ form, data }: PartyFieldsProps) {
-  const { customers, contacts, customersHidden: hidden } = data;
+/** A contact person at the order's customer; the customer itself never changes after creation. */
+export function ContactFields({ form, data }: ContactFieldsProps) {
   const t = useTranslations("order.fields");
-  const ofCustomer = contacts.filter(({ customerId }) => customerId === form.watch("customerId"));
+  const customerId = form.watch("customerId");
+  const ofCustomer = data.contacts.filter((contact) => contact.customerId === customerId);
   return (
-    <>
-      <OptionSelectField
-        control={form.control}
-        name="customerId"
-        label={t("customer")}
-        options={customers}
-        hidden={hidden}
-        onChange={() => form.setValue("contactId", "")}
-      />
-      <OptionSelectField
-        control={form.control}
-        name="contactId"
-        label={t("contact")}
-        options={ofCustomer}
-        hidden={hidden}
-      />
-    </>
+    <OptionSelectField
+      control={form.control}
+      name="contactId"
+      label={t("contact")}
+      options={ofCustomer}
+      hidden={data.customersHidden}
+    />
   );
 }
 

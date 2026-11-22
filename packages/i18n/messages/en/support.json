@@ -116,7 +116,7 @@
           },
           "orderTabs": {
             "question": "Where do I find the quotes, run sheets and comments on an order?",
-            "answer": "The order page has four tabs under the title: **Program** for the lines and requirements, **Run sheets**, **Money** for quotes, payments and the estimate, and **Activity** for comments, the customer's messages, status changes and versions. Click a tab to switch; the address in your browser remembers it, so a link opens the same tab.\nThe panel on the right always shows the order's details, who works on it and what is left to pay. Anything that needs your attention, like a double booking or a task for you, shows at the top under the title."
+            "answer": "The order page has tabs along the bottom of its header: **Program** for the lines and requirements, **Run sheets**, **Money** for quotes, payments and the estimate, **Comments**, **Messages** from the customer, and **Activity** for status changes and versions. Click a tab to switch; the address in your browser remembers it, so a link opens the same tab.\nThe panel on the right always shows the customer and contact person, who works on the order, what is left to pay and what is paid, and the order's details. Anything that needs your attention, like a double booking or a task for you, shows at the top under the title."
           },
           "orderVersions": {
             "question": "How do I go back to an earlier version of an order?",
@@ -124,7 +124,7 @@
           },
           "quoteMatches": {
             "question": "Does the order still match the quote I sent?",
-            "answer": "Look under the **Program** heading on the order. It says **Matches quote v2** when nothing has changed since the quote was sent, or how many changes there are. Click it to open the versions, then **Show changes** on the quote's version to see them, and restore the quote's version if you want the order back the way it was.\nIf the customer picks an older quote after you sent a newer one, open that quote and click **Customer chose this version**. The order goes back to what that quote offered and the newer quote is marked declined."
+            "answer": "Look at **Version** under the order's title. Above the number it says **Matches quote v2** when nothing has changed since the quote was sent, or how many changes there are. Click **Versions** under **Program** and then **Show changes** on the quote's version to see them, and restore it if you want the order back the way it was.\nIf the customer picks an older quote after you sent a newer one, open that quote and click **Customer chose this version**. The order goes back to what that quote offered and the newer quote is marked declined."
           },
           "createFromBoard": {
             "question": "Can I create an order from the pipeline board?",
@@ -180,7 +180,7 @@
           },
           "commentOrder": {
             "question": "How do I leave a comment on an order or one of its lines?",
-            "answer": "Click the speech bubble next to a line in the program, or the one next to **Follow** at the top of the order for the whole booking. Write your comment and click **Add comment**.\nYou can also open the **Activity** tab on the order and choose under **About** which line it is about. You can edit or delete your own comments."
+            "answer": "Click the speech bubble next to a line in the program, or the one next to **Follow** at the top of the order for the whole booking. Write your comment and click **Add comment**.\nYou can also open the **Comments** tab on the order and choose under **About** which line it is about. You can edit or delete your own comments."
           },
           "commentRunSheet": {
             "question": "Does the kitchen see my comments?",
@@ -195,8 +195,8 @@
             "answer": "Click the reply arrow next to a comment to answer it; the answer shows under the comment, also on the run sheet. Type **@** and the start of a name to mention a colleague, then pick them in the list.\nThe person you mention gets a notification, even if they are not on the order, and the one who wrote the comment you answer is told too."
           },
           "editInPlace": {
-            "question": "How do I change an order's customer, dates or headcount?",
-            "answer": "Change things where you see them on the order. Hover a fact under the title, such as the customer, the dates or the headcount, and click the pencil next to it. Change it in the small box and click **Save**.\nThe rest of the order, such as the budget, the note and your own fields, is under **Details** in the panel on the right: click the pencil next to the heading to edit it all at once."
+            "question": "How do I change an order's contact person, dates or headcount?",
+            "answer": "Change things where you see them on the order. Hover the dates or the headcount under the title and click the pencil next to it, change it in the small box and click **Save**.\nThe contact person and the rest of the order, such as the budget, the note and your own fields, are under **Details** in the panel on the right: click the pencil next to the heading to edit them. The customer is set when the order is created and can't be changed; create a new order for another customer."
           },
           "closedOrder": {
             "question": "Why can't I change a completed order?",

@@ -105,7 +105,7 @@
     "updated": "The order has been updated.",
     "editTitle": "Edit title",
     "inlineEdit": {
-      "party": "Edit customer and contact",
+      "contact": "Edit contact person",
       "period": "Edit desired dates",
       "headcount": "Edit headcount",
       "buyer": "Edit buyer details",
@@ -159,7 +159,11 @@
       "template": "Package",
       "startsAt": "Starts",
       "headcount": "Headcount",
-      "assignee": "Assigned to"
+      "assignee": "Assigned to",
+      "version": "Version",
+      "headcountGuaranteed": "Guaranteed",
+      "headcountEstimated": "Estimated",
+      "headcountWasEstimated": "Guaranteed · {count, number} estimated"
     },
     "columns": {
       "title": "Title",
@@ -272,6 +276,8 @@
       "program": "Program",
       "runSheets": "Run sheets",
       "money": "Money",
+      "comments": "Comments",
+      "messages": "Messages",
       "activity": "Activity"
     }
   },
@@ -919,7 +925,7 @@
     },
     "sync": {
       "matches": "Matches quote v{version}",
-      "changedShow": "{count, plural, one {# change} other {# changes}} since quote v{version} · Show"
+      "changed": "{count, plural, one {# change} other {# changes}} since quote v{version}"
     }
   }
 }

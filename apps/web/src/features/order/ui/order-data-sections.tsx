@@ -7,6 +7,7 @@ import { handleLoadError } from "@/server/load-error";
 import { loadOrderData } from "../load-order-data";
 import { loadOrderStatuses } from "../load-order-names";
 import { closedStatus } from "../order-abilities";
+import { OrderCustomer } from "./order-customer";
 import { OrderDetails } from "./order-details";
 import type { OrderEditGroup } from "./order-form-schema";
 
@@ -23,9 +24,23 @@ export async function OrderDetailsSection({ locale, order }: OrderDataSectionPro
     return <ErrorState inline errorKey={handleLoadError({ error: data.error, locale })} />;
   // A closed order still takes the buyer fields its invoices need (core `order.update`).
   const closed = statuses.ok && closedStatus({ order, statuses: statuses.value }) !== null;
-  const groups: OrderEditGroup[] = closed ? ["buyer"] : ["buyer", "money", "fields"];
+  const groups: OrderEditGroup[] = closed ? ["buyer"] : ["contact", "buyer", "money", "fields"];
   const canEdit = can({ abilities, permission: "order:write" });
   return <OrderDetails order={order} data={data.value} canEdit={canEdit} groups={groups} />;
+}
+
+/** The customer and its contact person; the contact changes in place while the order is open. */
+export async function OrderCustomerSection({ locale, order }: OrderDataSectionProps) {
+  const [data, abilities, statuses] = await Promise.all([
+    loadOrderData(),
+    getCallerAbilities(),
+    loadOrderStatuses(),
+  ]);
+  if (!data.ok)
+    return <ErrorState inline errorKey={handleLoadError({ error: data.error, locale })} />;
+  const closed = closedStatus({ order, statuses: statuses.ok ? statuses.value : [] });
+  const canEdit = !closed && can({ abilities, permission: "order:write" });
+  return <OrderCustomer order={order} data={data.value} canEdit={canEdit} />;
 }
 
 /** Who works the order; streams in with the members it can assign. */

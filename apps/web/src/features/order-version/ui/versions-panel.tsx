@@ -29,36 +29,6 @@ export function VersionsToggle({ label }: { label: string }) {
   );
 }
 
-export type VersionSyncPillProps = {
-  /** The order no longer matches the quote last sent: amber, else green. */
-  changed: boolean;
-  children: ReactNode;
-};
-
-/** Whether the order matches the quote last sent, as a pill that shows the versions. */
-export function VersionSyncPill({ changed, children }: VersionSyncPillProps) {
-  const { open, toggle } = use(PanelContext);
-  return (
-    <button
-      type="button"
-      data-slot="version-sync"
-      onClick={toggle}
-      aria-expanded={open}
-      className={
-        changed
-          ? "inline-flex w-fit cursor-pointer items-center gap-2 rounded-full bg-warning/15 px-2.5 py-1 text-sm text-warning-foreground hover:bg-warning/25"
-          : "inline-flex w-fit cursor-pointer items-center gap-2 rounded-full bg-success/10 px-2.5 py-1 text-sm hover:bg-success/20"
-      }
-    >
-      <span
-        aria-hidden
-        className={changed ? "size-2 rounded-full bg-warning" : "size-2 rounded-full bg-success"}
-      />
-      {children}
-    </button>
-  );
-}
-
 export type VersionsPanelProps = { title: string; closeLabel: string; children: ReactNode };
 
 /** The versions, inline under the Program header while open. */

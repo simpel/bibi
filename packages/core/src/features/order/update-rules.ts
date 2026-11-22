@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { checkPeopleLimit } from "../line/people-limit";
-import { checkContact, checkCustomer, checkDesiredPeriod, checkReadable } from "./order-rules";
+import { checkContact, checkDesiredPeriod, checkReadable } from "./order-rules";
 import type { OrderDto, OrderUpdateInput } from "./schema";
 
 export type CheckOrderDetailsInput = {
@@ -14,7 +14,7 @@ export type CheckOrderDetailsInput = {
 const pick = <T>({ given, stored }: { given: T | undefined; stored: T }): T =>
   given === undefined ? stored : given;
 
-/** The details after a `order.update` must still hold together: dates, customer and contact. */
+/** The details after a `order.update` must still hold together: dates, and a contact at the customer. */
 export async function checkOrderDetails({
   context,
   before,
@@ -25,16 +25,11 @@ export async function checkOrderDetails({
     desiredEndsAt: pick({ given: change.desiredEndsAt, stored: before.desiredEndsAt }),
   });
   if (!period.ok) return period;
-  const customerId = change.customerId ?? before.customerId;
-  if (customerId !== before.customerId) {
-    const readable = checkReadable({ context, permission: "customer:read", path: "customerId" });
-    if (!readable.ok) return readable;
-    const customer = await checkCustomer({ context, customerId });
-    if (!customer.ok) return customer;
-  }
+  // The customer never changes (set at creation); the contact must work there.
+  const { customerId } = before;
   const contactId = pick({ given: change.contactId, stored: before.contactId });
   // An unchanged reference stays valid even if the contact was archived since.
-  if (contactId === before.contactId && customerId === before.customerId) {
+  if (contactId === before.contactId) {
     return ok({ value: true });
   }
   if (contactId) {

@@ -136,9 +136,13 @@ export const OrderCreateInputSchema = z.object({
   ...OrderIntakeShape,
 });
 
-/** Status and assignee are not here: they change only through their own commands. */
+/**
+ * Status and assignee are not here: they change only through their own commands. Nor is the
+ * customer: it is set when the order is created and never changes.
+ */
 export const OrderUpdateInputSchema = z
   .object(OrderDetailsShape)
+  .omit({ customerId: true })
   .partial()
   .extend({
     id: z.string().min(1),

@@ -1,6 +1,5 @@
 import { getOrderBalance } from "@bibi/core";
 import { getTranslations } from "next-intl/server";
-import { FactList } from "@/components/typed-fields/fact-list";
 import { Link } from "@/lib/navigation";
 import { getNumberFormat } from "@/server/number-format";
 import { runOperation } from "@/server/run-operation";
@@ -12,8 +11,8 @@ export type OrderBalanceFactsProps = {
 };
 
 /**
- * The order's balance in short for the side panel (ADR 0057): billed, paid and left to pay, with
- * a link to the Money tab. Nothing without `payment:read`, or before anything is billed.
+ * The order's balance in short for the side panel (ADR 0057): left to pay and paid side by side,
+ * with a link to the Money tab. Nothing without `payment:read`, or before anything is billed.
  */
 export async function OrderBalanceFacts({ orderId, moneyHref }: OrderBalanceFactsProps) {
   const [t, numbers, result] = await Promise.all([
@@ -38,13 +37,17 @@ export async function OrderBalanceFacts({ orderId, moneyHref }: OrderBalanceFact
           {t("open")}
         </Link>
       </div>
-      <FactList
-        facts={[
-          { label: t("billed"), value: money({ minor: balance.billedMinor }) },
-          { label: t("paid"), value: money({ minor: balance.paidMinor }) },
-          { label: t("balance"), value: money({ minor: balance.balanceMinor }) },
-        ]}
-      />
+      <div className="grid grid-cols-2 gap-4">
+        {[
+          { label: t("balance"), minor: balance.balanceMinor },
+          { label: t("paid"), minor: balance.paidMinor },
+        ].map(({ label, minor }) => (
+          <div key={label} className="grid gap-0.5">
+            <span className="text-sm text-muted-foreground">{label}</span>
+            <span className="text-lg tabular-nums">{money({ minor })}</span>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

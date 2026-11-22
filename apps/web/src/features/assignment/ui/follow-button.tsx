@@ -17,7 +17,7 @@ export type FollowButtonProps = {
 
 /**
  * Follow or unfollow as the signed-in member: what anyone does to keep up with something they
- * have no work in. An icon button as tall as its neighbours; the bell is filled while following.
+ * have no work in. Says what a click does ("Follow", "Unfollow"), with an eye to match.
  */
 export function FollowButton({ subject, userId, following }: FollowButtonProps) {
   const t = useTranslations("assignment");
@@ -32,19 +32,11 @@ export function FollowButton({ subject, userId, following }: FollowButtonProps) 
       onSuccess: () => router.refresh(),
     });
   };
-  const label = following ? t("unfollow") : t("follow");
   return (
-    <Button
-      variant="outline"
-      size="icon"
-      onClick={toggle}
-      disabled={pending}
-      aria-pressed={following}
-      aria-label={label}
-      title={label}
-    >
-      {/* An eye, never the bell (that is notifications). It shows what a click does: stop or start. */}
+    <Button variant="outline" onClick={toggle} disabled={pending} aria-pressed={following}>
+      {/* An eye, never the bell (that is notifications). */}
       {following ? <EyeOffIcon aria-hidden /> : <EyeIcon aria-hidden />}
+      {following ? t("unfollow") : t("follow")}
     </Button>
   );
 }

@@ -47,10 +47,10 @@ export function orderFormSchema({ type, vocabularies, timeZone }: OrderSchemaInp
 }
 
 /** The parts of an order edited in place, each by the page element that shows it. */
-export type OrderEditGroup = "party" | "period" | "headcount" | "buyer" | "money" | "fields";
+export type OrderEditGroup = "contact" | "period" | "headcount" | "buyer" | "money" | "fields";
 
 const GROUP_KEYS = {
-  party: ["customerId", "contactId"],
+  contact: ["contactId"],
   period: ["desiredStartsAt", "desiredEndsAt"],
   headcount: ["estimatedHeadcount", "guaranteedHeadcount"],
   buyer: ["buyerKind", "buyerReference"],

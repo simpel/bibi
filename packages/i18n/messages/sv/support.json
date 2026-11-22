@@ -116,7 +116,7 @@
           },
           "orderTabs": {
             "question": "Var hittar jag offerter, körscheman och kommentarer på en bokning?",
-            "answer": "Bokningens sida har fyra flikar under rubriken: **Program** för rader och krav, **Körscheman**, **Ekonomi** för offerter, betalningar och uppskattningen, och **Aktivitet** för kommentarer, kundens meddelanden, statusändringar och versioner. Klicka på en flik för att byta; adressen i webbläsaren kommer ihåg den, så en länk öppnar samma flik.\nPanelen till höger visar alltid bokningens detaljer, vem som arbetar med den och vad som är kvar att betala. Det som behöver din uppmärksamhet, som en dubbelbokning eller en uppgift till dig, syns överst under rubriken."
+            "answer": "Bokningens sida har flikar längst ner i sidhuvudet: **Program** för rader och krav, **Körscheman**, **Ekonomi** för offerter, betalningar och uppskattningen, **Kommentarer**, **Meddelanden** från kunden och **Aktivitet** för statusändringar och versioner. Klicka på en flik för att byta; adressen i webbläsaren kommer ihåg den, så en länk öppnar samma flik.\nPanelen till höger visar alltid kunden och kontaktpersonen, vem som arbetar med bokningen, vad som är kvar att betala och vad som är betalt, och bokningens detaljer. Det som behöver din uppmärksamhet, som en dubbelbokning eller en uppgift till dig, syns överst under rubriken."
           },
           "orderVersions": {
             "question": "Hur går jag tillbaka till en tidigare version av en bokning?",
@@ -124,7 +124,7 @@
           },
           "quoteMatches": {
             "question": "Stämmer bokningen fortfarande med offerten jag skickade?",
-            "answer": "Titta under rubriken **Program** på bokningen. Där står **Stämmer med offert v2** när inget har ändrats sedan offerten skickades, annars hur många ändringar det finns. Klicka på den för att öppna versionerna, och sedan på **Visa ändringar** på offertens version för att se dem, och återställ offertens version om du vill ha tillbaka bokningen som den var.\nOm kunden väljer en äldre offert efter att du skickat en nyare, öppna den offerten och klicka på **Kunden valde den här versionen**. Bokningen går tillbaka till det den offerten erbjöd och den nyare offerten markeras som avböjd."
+            "answer": "Titta på **Version** under bokningens rubrik. Ovanför numret står **Stämmer med offert v2** när inget har ändrats sedan offerten skickades, annars hur många ändringar det finns. Klicka på **Versioner** under **Program** och sedan på **Visa ändringar** på offertens version för att se dem, och återställ den om du vill ha tillbaka bokningen som den var.\nOm kunden väljer en äldre offert efter att du skickat en nyare, öppna den offerten och klicka på **Kunden valde den här versionen**. Bokningen går tillbaka till det den offerten erbjöd och den nyare offerten markeras som avböjd."
           },
           "createFromBoard": {
             "question": "Kan jag skapa en order direkt från tavlan?",
@@ -180,7 +180,7 @@
           },
           "commentOrder": {
             "question": "Hur lämnar jag en kommentar på en order eller en av dess rader?",
-            "answer": "Klicka på pratbubblan bredvid en rad i programmet, eller den bredvid **Följ** högst upp på ordern för hela bokningen. Skriv din kommentar och klicka på **Lägg till kommentar**.\nDu kan också öppna fliken **Aktivitet** på ordern och välja under **Gäller** vilken rad den gäller. Du kan redigera eller ta bort dina egna kommentarer."
+            "answer": "Klicka på pratbubblan bredvid en rad i programmet, eller den bredvid **Följ** högst upp på ordern för hela bokningen. Skriv din kommentar och klicka på **Lägg till kommentar**.\nDu kan också öppna fliken **Kommentarer** på ordern och välja under **Gäller** vilken rad den gäller. Du kan redigera eller ta bort dina egna kommentarer."
           },
           "commentRunSheet": {
             "question": "Ser köket mina kommentarer?",
@@ -195,8 +195,8 @@
             "answer": "Klicka på svarspilen bredvid en kommentar för att svara; svaret visas under kommentaren, även på körschemat. Skriv **@** och början av ett namn för att nämna en kollega och välj personen i listan.\nDen du nämner får en notis, även om hen inte är med på ordern, och den som skrev kommentaren du svarar på får också veta det."
           },
           "editInPlace": {
-            "question": "Hur ändrar jag kund, datum eller antal på en bokning?",
-            "answer": "Du ändrar saker där du ser dem på bokningen. Håll muspekaren över en uppgift under rubriken, till exempel kunden, datumen eller antalet, och klicka på pennan bredvid. Ändra i den lilla rutan och klicka på **Spara**.\nResten av bokningen, som budget, anteckning och era egna fält, finns under **Detaljer** i panelen till höger: klicka på pennan bredvid rubriken för att redigera allt på en gång."
+            "question": "Hur ändrar jag kontaktperson, datum eller antal på en bokning?",
+            "answer": "Du ändrar saker där du ser dem på bokningen. Håll muspekaren över datumen eller antalet under rubriken och klicka på pennan bredvid, ändra i den lilla rutan och klicka på **Spara**.\nKontaktpersonen och resten av bokningen, som budget, anteckning och era egna fält, finns under **Detaljer** i panelen till höger: klicka på pennan bredvid rubriken för att redigera dem. Kunden bestäms när bokningen skapas och kan inte ändras; skapa en ny bokning för en annan kund."
           },
           "closedOrder": {
             "question": "Varför kan jag inte ändra en genomförd bokning?",

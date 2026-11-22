@@ -49,6 +49,8 @@ describe("order referenced ids (ADR 0004)", () => {
       const path = Object.keys(input)[0];
       const create = await refusal({ context, input: { ...base, ...input } });
       expect(create).toMatchObject({ code: "VALIDATION", path });
+      // The customer is set at creation only: order.update has no customerId to refuse.
+      if (path === "customerId") continue;
       expect(await refusal({ context, input, orderId: order.id })).toMatchObject({
         code: "VALIDATION",
         path,

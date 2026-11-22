@@ -105,7 +105,7 @@
     "updated": "Bokningen har uppdaterats.",
     "editTitle": "Redigera titel",
     "inlineEdit": {
-      "party": "Redigera kund och kontaktperson",
+      "contact": "Redigera kontaktperson",
       "period": "Redigera önskade datum",
       "headcount": "Redigera antal",
       "buyer": "Redigera köparuppgifter",
@@ -159,7 +159,11 @@
       "template": "Mall",
       "startsAt": "Startar",
       "headcount": "Antal gäster",
-      "assignee": "Ansvarig"
+      "assignee": "Ansvarig",
+      "version": "Version",
+      "headcountGuaranteed": "Garanterat",
+      "headcountEstimated": "Beräknat",
+      "headcountWasEstimated": "Garanterat · {count, number} beräknat"
     },
     "columns": {
       "title": "Titel",
@@ -272,6 +276,8 @@
       "program": "Program",
       "runSheets": "Körscheman",
       "money": "Ekonomi",
+      "comments": "Kommentarer",
+      "messages": "Meddelanden",
       "activity": "Aktivitet"
     }
   },
@@ -919,7 +925,7 @@
     },
     "sync": {
       "matches": "Stämmer med offert v{version}",
-      "changedShow": "{count, plural, one {# ändring} other {# ändringar}} sedan offert v{version} · Visa"
+      "changed": "{count, plural, one {# ändring} other {# ändringar}} sedan offert v{version}"
     }
   }
 }
