@@ -51,7 +51,7 @@
         },
         "graphql": {
           "title": "GraphQL",
-          "lead": "A read-focused graph for fetching related data in one request, for example an order with its program, needs and run sheets.",
+          "lead": "A read-focused graph for fetching related data in one request, for example an order with its program, requirements and run sheets.",
           "body": "# Endpoint\n\n`POST {{webUrl}}/api/graphql` with a JSON body of `query`, `variables` and optionally `operationName`. Authenticate the same way as REST (API key, OAuth token or session).\n\n```\ncurl -X POST \"{{webUrl}}/api/graphql\" \\\n  -H \"Authorization: Bearer bib_<your key>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"query\":\"{ venues { items { id name } } }\"}'\n```\n\n# Schema\n\nThe schema is generated from the same operations and Zod schemas as REST and MCP. Every entity can be read through the graph, and every command is also available as a mutation.\n\nIntrospection is turned off in production. Get the schema as SDL from the MCP tool `graphql_schema`, or run the app locally where GraphiQL and introspection are on.\n\n# Limits\n\nQueries are checked for depth and cost before they run. A query that is too deep or too expensive is rejected with a validation error. Split it into smaller queries or use pagination.\n\n# When to use GraphQL or REST\n\n- Use **GraphQL** to read a tree of related data in one round trip.\n- Use **REST** for simple integrations, webhooks-style syncs and anything where an OpenAPI client is convenient.\n"
         },
         "mcp": {

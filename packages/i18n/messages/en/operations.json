@@ -355,7 +355,12 @@
     "sentAt": "Sent {when}",
     "changes": "{count, plural, =0 {No changes} one {# change} other {# changes}} since version {version}",
     "order": "Order {reference}",
-    "facts": { "order": "Order", "when": "When", "published": "Published", "fulfilled": "Done" },
+    "facts": {
+      "order": "Order",
+      "when": "When",
+      "published": "Published",
+      "fulfilled": "Done"
+    },
     "headcount": "{count, plural, one {# guest} other {# guests}}",
     "onOrder": "Whole order",
     "onLine": "One line",
@@ -376,15 +381,15 @@
       "open": "Open",
       "back": "← Back to the order",
       "tasks": "What to deliver",
-      "needs": "Needs",
+      "needs": "Requirements",
       "noTasks": "Nothing to deliver on this run sheet yet.",
-      "noNeeds": "No needs counted.",
+      "noNeeds": "No requirements counted.",
       "columns": {
         "when": "When",
         "name": "What",
         "item": "Item",
         "quantity": "Quantity",
-        "need": "Need",
+        "need": "Requirement",
         "count": "Count",
         "appliesTo": "Applies to",
         "comments": "Comments"

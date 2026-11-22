@@ -20,7 +20,7 @@ words: use the user's own vocabulary for every name.
 2. Ask at most two short questions if the description is too thin (what is sold or booked,
    what must be tracked per order). Otherwise go straight to a proposal.
 3. Present the whole proposal as one short plan before creating anything:
-   - Lists (with values), e.g. needs counted against a list such as allergens.
+   - Lists (with values), e.g. requirements counted against a list such as allergens.
    - Types with a `base` and, for ITEM types, the capabilities that fit: PRICED, BUNDLE,
      CUSTOMISATIONS (option groups on any item), BOOKABLE, SETUPS (rooms with a floor plan and
      layouts; needs BOOKABLE). Layouts are made per room afterwards, not here.

@@ -457,7 +457,7 @@
       },
       "serve": {
         "title": "The kitchen knows",
-        "body": "Needs are counted, run sheets reach the person responsible, and every change makes a new version."
+        "body": "Requirements are counted, run sheets reach the person responsible, and every change makes a new version."
       }
     },
     "features": {
@@ -469,9 +469,9 @@
         "body": "Pick a predefined order for a smaller meeting and Bibi fills in the rooms, food and activities. No quote, no back and forth. The customer pays by card or on invoice through a link."
       },
       "needs": {
-        "eyebrow": "Needs as counts",
+        "eyebrow": "Requirements as counts",
         "title": "Allergens counted, guests never tracked",
-        "body": "Count needs against your own lists, such as the 14 EU allergens. Bibi matches them to items and compiles them for the kitchen. No personal data about guests."
+        "body": "Count requirements against your own lists, such as the 14 EU allergens. Bibi matches them to items and compiles them for the kitchen. No personal data about guests."
       },
       "runSheets": {
         "eyebrow": "Run sheets",
@@ -519,7 +519,7 @@
         "paid": "Paid"
       },
       "needs": {
-        "title": "Needs for Friday",
+        "title": "Requirements for Friday",
         "gluten": "Gluten",
         "lactose": "Lactose",
         "nuts": "Nuts",
@@ -623,7 +623,7 @@
         },
         "lists": {
           "label": "Lists",
-          "keywords": "allergens diets needs values word list"
+          "keywords": "allergens diets needs requirements values word list"
         },
         "priceLists": {
           "label": "Price lists",
@@ -826,7 +826,7 @@
       },
       "needs": {
         "title": "What is needed",
-        "body": "The counted needs, matched against your items."
+        "body": "The counted requirements, matched against your items."
       },
       "versions": {
         "title": "Versions and history",
@@ -862,7 +862,7 @@
     "run-sheet-definition": {
       "build": {
         "title": "How a run sheet is built",
-        "body": "The types you pick give the rows and the fields give the columns. Lists count the needs, and the responsibility receives the run sheet when it is published."
+        "body": "The types you pick give the rows and the fields give the columns. Lists count the requirements, and the responsibility receives the run sheet when it is published."
       }
     },
     "board-customize": {

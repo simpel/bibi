@@ -383,7 +383,7 @@
       "startChanged": "The start changed from {from} to {to}. What should happen to the lines?",
       "noLines": "There are no lines. Create the order as a lead without lines?",
       "zeroQuantity": "{line} has quantity 0.",
-      "overQuantity": "{line}: {count} {what, select, choices {choices} other {needs}} but only {quantity} ordered.",
+      "overQuantity": "{line}: {count} {what, select, choices {choices} other {requirements}} but only {quantity} ordered.",
       "poolShort": "{line}: {needed} needed, only {free} left that day.",
       "guessed": "The email doesn't say {field}. The assistant guessed {value}.",
       "typeField": "{type} orders need {field}.",
@@ -475,10 +475,10 @@
       "layoutOption": "{name} (up to {capacity})",
       "unitPrice": "Unit price",
       "discount": "Discount %",
-      "needs": "Needs",
+      "needs": "Requirements",
       "needValue": "Value",
       "needCount": "Count",
-      "addNeed": "+ Add need",
+      "addNeed": "+ Add requirement",
       "removeNeed": "Remove",
       "note": "Note (shown on run sheets)",
       "checking": "Checking availability…",
@@ -565,7 +565,7 @@
       "byHand": "Fill in by hand",
       "unavailable": "The assistant can't read the request right now. Fill in the steps by hand.",
       "fromEmail": "from email",
-      "needs": "Needs",
+      "needs": "Requirements",
       "suggested": "★ Suggested from the email",
       "panel": {
         "title": "What the assistant read",
@@ -583,7 +583,7 @@
         "guests": "the number of guests",
         "wish": "the request",
         "package": "the package",
-        "need": "a need",
+        "need": "a requirement",
         "notes": "the notes"
       },
       "labels": {
@@ -597,7 +597,7 @@
         "guests": "Guests",
         "wish": "Request",
         "package": "Package",
-        "need": "Need",
+        "need": "Requirement",
         "notes": "Notes"
       }
     },

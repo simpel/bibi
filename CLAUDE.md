@@ -7,7 +7,7 @@
 
 ## Differentiators (drive prioritisation)
 - Predefined orders for smaller meetings: staff create a order with its lines in one step without a quote, and the customer pays via a Swish or card link or by invoice. Bibi is an internal tool for staff. Guests and customers never use the app; they only see the payment page.
-- Needs as counts against the organization's own lists (e.g. the EU's 14 allergens as an importable template), matched against items and compiled into run sheets. No personal data about guests.
+- Requirements as counts against the organization's own lists (e.g. the EU's 14 allergens as an importable template), matched against items and compiled into run sheets. No personal data about guests.
 - Versioned run sheets (e.g. kitchen order) sent to a responsibility (e.g. head of kitchen), plus export (json, pdf, csv) for handover outside the system.
 - Configurable domain: each organization sets up its own types, fields, lists, statuses and responsibilities (ADR 0021, 0034). Access uses three fixed roles as presets (member, manager, admin) of `<feature>:<action>` permissions, which admins fine-tune per member or API key with allow/deny overrides (ADR 0034, 0050).
 - A order moves through the organization's own statuses, and each line (room, food, activity) has a state per status set in a grid: soft holds with a held-since date and one expiry date per order, hard holds that block (ADR 0043, 0044). A order may move to any status unless a status restricts its next move; gates sit on the target status, and the flow is admin-only (`pipeline:write`) while boards use `board:*` (ADR 0076).

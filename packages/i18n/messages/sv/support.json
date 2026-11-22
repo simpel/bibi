@@ -116,7 +116,7 @@
           },
           "orderTabs": {
             "question": "Var hittar jag offerter, körscheman och kommentarer på en bokning?",
-            "answer": "Bokningens sida har flikar längst ner i sidhuvudet: **Program** för rader och krav, **Körscheman**, **Ekonomi** för offerter, betalningar och uppskattningen, **Kommentarer**, **Meddelanden** från kunden och **Aktivitet** för statusändringar och versioner. Klicka på en flik för att byta; adressen i webbläsaren kommer ihåg den, så en länk öppnar samma flik.\nPanelen till höger visar alltid kunden och kontaktpersonen, vem som arbetar med bokningen, vad som är kvar att betala och vad som är betalt, och bokningens detaljer. Det som behöver din uppmärksamhet, som en dubbelbokning eller en uppgift till dig, syns överst under rubriken."
+            "answer": "Bokningens sida har flikar längst ner i sidhuvudet: **Program** för rader och behov, **Körscheman**, **Ekonomi** för offerter, betalningar och uppskattningen, **Kommentarer**, **Meddelanden** från kunden och **Aktivitet** för statusändringar och versioner. Klicka på en flik för att byta; adressen i webbläsaren kommer ihåg den, så en länk öppnar samma flik.\nPanelen till höger visar alltid kunden och kontaktpersonen, vem som arbetar med bokningen, vad som är kvar att betala och vad som är betalt, och bokningens detaljer. Det som behöver din uppmärksamhet, som en dubbelbokning eller en uppgift till dig, syns överst under rubriken."
           },
           "orderVersions": {
             "question": "Hur går jag tillbaka till en tidigare version av en bokning?",
@@ -200,7 +200,7 @@
           },
           "closedOrder": {
             "question": "Varför kan jag inte ändra en genomförd bokning?",
-            "answer": "När en bokning når en status som stänger den, till exempel **Genomförd** eller **Avbokad**, blir den ett underlag för det som hände. En rad överst på bokningen säger det, och knapparna för att redigera, lägga till rader, ändra krav och skapa en offert är borta.\nFakturor, betalningar, återbetalningar och kommentarer fungerar som vanligt, och köparens referens kan du fortfarande rätta med pennan bredvid **Detaljer**. En stängd bokning går inte att öppna igen, så skapa en ny bokning om det behövs mer."
+            "answer": "När en bokning når en status som stänger den, till exempel **Genomförd** eller **Avbokad**, blir den ett underlag för det som hände. En rad överst på bokningen säger det, och knapparna för att redigera, lägga till rader, ändra behov och skapa en offert är borta.\nFakturor, betalningar, återbetalningar och kommentarer fungerar som vanligt, och köparens referens kan du fortfarande rätta med pennan bredvid **Detaljer**. En stängd bokning går inte att öppna igen, så skapa en ny bokning om det behövs mer."
           },
           "missingMarks": {
             "question": "Vad betyder de gula randiga markeringarna på en orders rader?",
