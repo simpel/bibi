@@ -15,7 +15,6 @@ import { ledgerProviderKeys } from "../../providers/registry";
 import { connectDemoOauth, connectDemoSwish } from "./demo-connect";
 import { applyDemoSignal } from "./demo-signal";
 import type { DemoOrder } from "./order-types";
-import { seedOrderEstimates } from "./seed-estimates";
 import { seedInvoice } from "./seed-invoice";
 import type { DemoOrg } from "./types";
 
@@ -164,8 +163,6 @@ export async function seedOrderMoney({
   order,
   orderId,
 }: OrderMoneyInput): Promise<Result<true>> {
-  const estimated = await seedOrderEstimates({ context, order, orderId });
-  if (!estimated.ok) return estimated;
   const deposit = await seedDeposit({ context, order, orderId });
   if (!deposit.ok) return deposit;
   const paid = await seedPartialPayment({ context, order, orderId });

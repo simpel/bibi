@@ -5,6 +5,7 @@ import { execute } from "../../operations/execute";
 import type { DemoRefs } from "./demo-refs";
 import type { DemoTimeZones } from "./demo-time-zones";
 import type { DemoOrder } from "./order-types";
+import { seedOrderEstimates } from "./seed-estimates";
 import { missing, resolveDemoFields } from "./seed-fields";
 import { seedDemoLines } from "./seed-lines";
 import { seedOrderMoney } from "./seed-money";
@@ -78,6 +79,9 @@ async function seedOrder({ context, refs, userIds, zones, order, now }: OrderInp
   if (!lines.ok) return lines;
   const chosen = await seedOrderChoices({ ...{ context, orderId, userIds }, order });
   if (!chosen.ok) return chosen;
+  // Estimates before the status: a closed order can no longer be changed.
+  const estimated = await seedOrderEstimates({ context, order, orderId });
+  if (!estimated.ok) return estimated;
   const moved = await moveStatus({ context, order, orderId, now });
   return moved.ok ? seedOrderMoney({ context, order, orderId }) : moved;
 }
