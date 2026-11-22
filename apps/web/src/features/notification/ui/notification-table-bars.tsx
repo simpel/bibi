@@ -40,7 +40,7 @@ export function StaleBar({ onShow, pending }: { onShow: () => void; pending: boo
   return (
     <div className="flex items-center justify-between gap-2 rounded-md border bg-muted/50 px-3 py-2 text-sm">
       <span>{t("listChanged")}</span>
-      <Button size="sm" variant="outline" disabled={pending} onClick={onShow}>
+      <Button size="sm" variant="outline" pending={pending} onClick={onShow}>
         <RefreshCwIcon />
         {t("showLatest")}
       </Button>

@@ -10,7 +10,6 @@ import {
   FormItem,
   FormLabel,
   Input,
-  Spinner,
 } from "@bibi/ui";
 import { SearchIcon } from "lucide-react";
 import { type ReactNode, useEffect } from "react";
@@ -42,8 +41,14 @@ type SearchButtonProps = Pick<SearchFormProps, "submitLabel" | "pending" | "pend
 /** The submit button: disabled while a search is on its way, a spinner for its icon. */
 function SearchButton({ submitLabel, pending = false, pendingLabel }: SearchButtonProps) {
   return (
-    <Button type="submit" variant="outline" size="icon" aria-label={submitLabel} disabled={pending}>
-      {pending ? <Spinner label={pendingLabel ?? submitLabel} /> : <SearchIcon />}
+    <Button
+      type="submit"
+      variant="outline"
+      size="icon"
+      aria-label={pending ? (pendingLabel ?? submitLabel) : submitLabel}
+      pending={pending}
+    >
+      <SearchIcon />
     </Button>
   );
 }

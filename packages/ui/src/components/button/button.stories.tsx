@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { SaveIcon } from "lucide-react";
 import { Button } from "./button";
 
 const meta = {
@@ -36,3 +37,15 @@ export const Stripe: Story = { args: { variant: "stripe", children: "Connect Str
 export const Fortnox: Story = { args: { variant: "fortnox", children: "Connect Fortnox" } };
 export const Small: Story = { args: { size: "sm" } };
 export const Disabled: Story = { args: { disabled: true } };
+export const PendingWithIcon: Story = {
+  args: {
+    pending: true,
+    children: (
+      <>
+        <SaveIcon />
+        Save
+      </>
+    ),
+  },
+};
+export const PendingWithoutIcon: Story = { args: { pending: true, children: "Save" } };

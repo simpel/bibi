@@ -31,7 +31,7 @@ export function FulfillRunSheetButton({ id, fulfilled }: FulfillRunSheetButtonPr
 
   if (fulfilled) {
     return (
-      <Button variant="ghost" size="sm" disabled={pending} onClick={toggle}>
+      <Button variant="ghost" size="sm" pending={pending} onClick={toggle}>
         <Undo2Icon className="h-4 w-4" />
         {t("reopen")}
       </Button>
@@ -39,7 +39,7 @@ export function FulfillRunSheetButton({ id, fulfilled }: FulfillRunSheetButtonPr
   }
 
   return (
-    <Button variant="outline" size="sm" disabled={pending} onClick={toggle}>
+    <Button variant="outline" size="sm" pending={pending} onClick={toggle}>
       <CheckIcon className="h-4 w-4" />
       {t("markAsDone")}
     </Button>

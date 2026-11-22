@@ -78,6 +78,7 @@ export function EditableTitle(props: EditableTitleProps) {
           aria-label={common("save")}
           title={common("save")}
           disabled={pending || draft.trim() === ""}
+          pending={pending}
         >
           <CheckIcon />
         </Button>

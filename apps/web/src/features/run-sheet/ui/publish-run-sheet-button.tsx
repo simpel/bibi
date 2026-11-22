@@ -22,7 +22,7 @@ export function PublishRunSheetButton({ id }: PublishRunSheetButtonProps) {
       onSuccess: () => router.refresh(),
     });
   return (
-    <Button disabled={pending} onClick={publish}>
+    <Button pending={pending} onClick={publish}>
       <UploadCloudIcon />
       {t("publish")}
     </Button>

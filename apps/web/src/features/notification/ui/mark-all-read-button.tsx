@@ -10,7 +10,7 @@ export function MarkAllReadButton() {
   const t = useTranslations("notifications");
   const { markAllRead, pending } = useMarkNotifications();
   return (
-    <Button variant="outline" disabled={pending} onClick={markAllRead}>
+    <Button variant="outline" pending={pending} onClick={markAllRead}>
       <CheckCheckIcon />
       {t("markAllRead")}
     </Button>

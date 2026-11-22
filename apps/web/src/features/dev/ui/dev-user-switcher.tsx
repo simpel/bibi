@@ -72,7 +72,7 @@ export function DevUserSwitcher({ users, admins, services, currentUserId }: DevU
     <div className="fixed bottom-4 right-4 z-50">
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="secondary" size="sm" disabled={pending} aria-label={t("switchUser")}>
+          <Button variant="secondary" size="sm" pending={pending} aria-label={t("switchUser")}>
             <UsersIcon />
             {t("devUsers")}
           </Button>

@@ -23,7 +23,7 @@ export function ImportOrderStatusTemplateButton() {
       onSuccess: () => router.refresh(),
     });
   return (
-    <Button variant="outline" disabled={pending} onClick={importTemplate}>
+    <Button variant="outline" pending={pending} onClick={importTemplate}>
       <DownloadIcon />
       {t("importTemplate")}
     </Button>

@@ -21,7 +21,7 @@ export function ExportSkillButton({ id }: ExportSkillButtonProps) {
       onSuccess: ({ value }) => downloadText({ text: value.markdown, filename: value.filename }),
     });
   return (
-    <Button variant="outline" disabled={pending} onClick={onClick}>
+    <Button variant="outline" pending={pending} onClick={onClick}>
       <DownloadIcon />
       {t("export")}
     </Button>

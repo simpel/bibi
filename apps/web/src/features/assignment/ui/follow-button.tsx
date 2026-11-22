@@ -33,7 +33,7 @@ export function FollowButton({ subject, userId, following }: FollowButtonProps) 
     });
   };
   return (
-    <Button variant="outline" onClick={toggle} disabled={pending} aria-pressed={following}>
+    <Button variant="outline" onClick={toggle} pending={pending} aria-pressed={following}>
       {/* An eye, never the bell (that is notifications). */}
       {following ? <EyeOffIcon aria-hidden /> : <EyeIcon aria-hidden />}
       {following ? t("unfollow") : t("follow")}

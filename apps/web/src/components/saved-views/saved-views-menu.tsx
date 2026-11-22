@@ -42,7 +42,7 @@ export function SavedViewsMenu({ listId, active, canSave, onOpen }: SavedViewsMe
           variant="ghost"
           className="size-8"
           aria-label={t("options")}
-          disabled={pending}
+          pending={pending}
         >
           <EllipsisIcon aria-hidden />
         </Button>
