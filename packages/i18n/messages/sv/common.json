@@ -798,13 +798,13 @@
         "title": "Programmet",
         "body": "Beställningens lokaler, mat och aktiviteter, dag för dag. Lägg till en rad eller ett helt paket och se vad som är preliminärt eller bokat."
       },
-      "needs": {
-        "title": "Behov och körscheman",
-        "body": "Antal av det gästerna behöver matchas mot dina artiklar, och körscheman till köket och andra tas fram ur dem."
+      "runSheets": {
+        "title": "Körscheman",
+        "body": "Körschemana till köket och andra tas fram ur programmet och dess räknade krav, och skickas härifrån."
       },
       "details": {
         "title": "Detaljer och personer",
-        "body": "Typ, budget och dina egna fält, samt vem som är ansvarig och vem som följer beställningen."
+        "body": "Typ, budget och dina egna fält, vem som är ansvarig och vem som följer beställningen, och vad som är kvar att betala."
       },
       "money": {
         "title": "Offerter och betalningar",

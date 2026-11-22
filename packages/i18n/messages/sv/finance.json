@@ -623,7 +623,8 @@
         "INVOICE": "Från den skickade fakturan",
         "QUOTE": "Från den accepterade offerten",
         "NONE": "Inget debiterat ännu"
-      }
+      },
+      "open": "Visa betalningar"
     },
     "methodRequired": {
       "title": "Koppla ett betalsätt först",

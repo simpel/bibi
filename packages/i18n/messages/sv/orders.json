@@ -267,17 +267,12 @@
         "excludeFollower": "Uteslut följare"
       }
     },
-    "groups": {
+    "tabs": {
+      "label": "Beställningens delar",
       "program": "Program",
-      "needs": "Behov och körscheman",
-      "comments": "Kommentarer",
-      "people": "Detaljer och personer",
-      "messages": "Meddelanden",
-      "quotes": "Offerter",
-      "versions": "Versioner",
-      "balance": "Saldo",
-      "estimates": "Värdehistorik",
-      "history": "Historik"
+      "runSheets": "Körscheman",
+      "money": "Ekonomi",
+      "activity": "Aktivitet"
     }
   },
   "orderIntake": {

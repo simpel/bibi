@@ -114,9 +114,13 @@
             "question": "Hur byter jag namn på en bokning eller ett körschema?",
             "answer": "Håll muspekaren över titeln högst upp på sidan och klicka på pennan. Skriv det nya namnet och tryck Enter, eller klicka på Spara. Escape eller Avbryt behåller det gamla.\nOm du byter namn på ett körschema ändras det överallt, för alla dess versioner och bokningar, så det kräver samma behörighet som att redigera körschemats inställningar."
           },
+          "orderTabs": {
+            "question": "Var hittar jag offerter, körscheman och kommentarer på en bokning?",
+            "answer": "Bokningens sida har fyra flikar under rubriken: **Program** för rader och krav, **Körscheman**, **Ekonomi** för offerter, betalningar och uppskattningen, och **Aktivitet** för kommentarer, kundens meddelanden, statusändringar och versioner. Klicka på en flik för att byta; adressen i webbläsaren kommer ihåg den, så en länk öppnar samma flik.\nPanelen till höger visar alltid bokningens detaljer, vem som arbetar med den och vad som är kvar att betala. Det som behöver din uppmärksamhet, som en dubbelbokning eller en uppgift till dig, syns överst under rubriken."
+          },
           "orderVersions": {
             "question": "Hur går jag tillbaka till en tidigare version av en bokning?",
-            "answer": "Bibi sparar en version av bokningen varje gång någon ändrar dess rader eller antal gäster, så du behöver aldrig spara själv. Öppna bokningen och scrolla till **Versioner** för att se alla, med offerterna som skickades som var och en.\nKlicka på **Visa ändringar** på en version för att se vad som ändrats sedan dess. **Återställ den här versionen** tar tillbaka bokningen: rader som lagts till tas bort, borttagna rader kommer tillbaka och allt annat ändras tillbaka. Återställningen sparas som en ny version, så du kan alltid gå tillbaka igen. Ge en version ett namn från radens meny så är den lätt att hitta."
+            "answer": "Bibi sparar en version av bokningen varje gång någon ändrar dess rader eller antal gäster, så du behöver aldrig spara själv. Öppna bokningens flik **Aktivitet** och scrolla till **Versioner** för att se alla, med offerterna som skickades som var och en.\nKlicka på **Visa ändringar** på en version för att se vad som ändrats sedan dess. **Återställ den här versionen** tar tillbaka bokningen: rader som lagts till tas bort, borttagna rader kommer tillbaka och allt annat ändras tillbaka. Återställningen sparas som en ny version, så du kan alltid gå tillbaka igen. Ge en version ett namn från radens meny så är den lätt att hitta."
           },
           "quoteMatches": {
             "question": "Stämmer bokningen fortfarande med offerten jag skickade?",
@@ -176,7 +180,7 @@
           },
           "commentOrder": {
             "question": "Hur lämnar jag en kommentar på en order eller en av dess rader?",
-            "answer": "Klicka på pratbubblan bredvid en rad i programmet, eller den bredvid **Följ** högst upp på ordern för hela bokningen. Skriv din kommentar och klicka på **Lägg till kommentar**.\nDu kan också skrolla till **Kommentarer** på ordern och välja under **Gäller** vilken rad den gäller. Du kan redigera eller ta bort dina egna kommentarer."
+            "answer": "Klicka på pratbubblan bredvid en rad i programmet, eller den bredvid **Följ** högst upp på ordern för hela bokningen. Skriv din kommentar och klicka på **Lägg till kommentar**.\nDu kan också öppna fliken **Aktivitet** på ordern och välja under **Gäller** vilken rad den gäller. Du kan redigera eller ta bort dina egna kommentarer."
           },
           "commentRunSheet": {
             "question": "Ser köket mina kommentarer?",
@@ -192,11 +196,11 @@
           },
           "editInPlace": {
             "question": "Hur ändrar jag kund, datum eller antal på en bokning?",
-            "answer": "Du ändrar saker där du ser dem på bokningen. Håll muspekaren över en uppgift under rubriken, till exempel kunden, datumen eller antalet, och klicka på pennan bredvid. Ändra i den lilla rutan och klicka på **Spara**.\nResten av bokningen, som budget, anteckning och era egna fält, finns under **Detaljer** längre ner: klicka på pennan bredvid rubriken för att redigera allt på en gång."
+            "answer": "Du ändrar saker där du ser dem på bokningen. Håll muspekaren över en uppgift under rubriken, till exempel kunden, datumen eller antalet, och klicka på pennan bredvid. Ändra i den lilla rutan och klicka på **Spara**.\nResten av bokningen, som budget, anteckning och era egna fält, finns under **Detaljer** i panelen till höger: klicka på pennan bredvid rubriken för att redigera allt på en gång."
           },
           "closedOrder": {
             "question": "Varför kan jag inte ändra en genomförd bokning?",
-            "answer": "När en bokning når en status som stänger den, till exempel **Genomförd** eller **Avbokad**, blir den ett underlag för det som hände. En rad överst på bokningen säger det, och knapparna för att redigera, lägga till rader, ändra behov och skapa en offert är borta.\nFakturor, betalningar, återbetalningar och kommentarer fungerar som vanligt, och köparens referens kan du fortfarande rätta med pennan bredvid **Detaljer**. En stängd bokning går inte att öppna igen, så skapa en ny bokning om det behövs mer."
+            "answer": "När en bokning når en status som stänger den, till exempel **Genomförd** eller **Avbokad**, blir den ett underlag för det som hände. En rad överst på bokningen säger det, och knapparna för att redigera, lägga till rader, ändra krav och skapa en offert är borta.\nFakturor, betalningar, återbetalningar och kommentarer fungerar som vanligt, och köparens referens kan du fortfarande rätta med pennan bredvid **Detaljer**. En stängd bokning går inte att öppna igen, så skapa en ny bokning om det behövs mer."
           },
           "missingMarks": {
             "question": "Vad betyder de gula randiga markeringarna på en orders rader?",
@@ -376,7 +380,7 @@
           },
           "needsAccounting": {
             "question": "Varför kan jag inte skapa förskott, faktura eller betallänk?",
-            "answer": "Bibi behöver ett kopplat bokföringssystem för att ta betalt, eftersom Fortnox eller Spiris gör varje faktura och förskottsfaktura. Tills ett är kopplat visar orderns betalningsdel det i stället för knapparna.\nEn administratör kopplar ett under Administration → Integrationer och väljer det för **Faktura** under Administration → Betalningar."
+            "answer": "Bibi behöver ett kopplat bokföringssystem för att ta betalt, eftersom Fortnox eller Spiris gör varje faktura och förskottsfaktura. Tills ett är kopplat visar orderns flik **Ekonomi** det i stället för knapparna.\nEn administratör kopplar ett under Administration → Integrationer och väljer det för **Faktura** under Administration → Betalningar."
           },
           "unavailable": {
             "question": "Varför står det Inte tillgänglig på en anslutning?",

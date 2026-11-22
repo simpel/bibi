@@ -623,7 +623,8 @@
         "INVOICE": "From the sent invoice",
         "QUOTE": "From the accepted quote",
         "NONE": "Nothing billed yet"
-      }
+      },
+      "open": "See payments"
     },
     "methodRequired": {
       "title": "Connect a payment method first",

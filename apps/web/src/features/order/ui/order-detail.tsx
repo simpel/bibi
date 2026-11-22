@@ -1,6 +1,6 @@
 import type { OrderDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { PageBand, PageBands } from "@bibi/ui";
+import { PageBands, PageContainer, PageSection } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { CrumbName } from "@/components/shell/crumb-name";
@@ -19,12 +19,16 @@ import { loadOrder } from "../load-order";
 import { orderFormDataPromise } from "../load-order-data";
 import { loadOrderNames, loadOrderStatuses } from "../load-order-names";
 import { closedStatus, readOnlyAbilities } from "../order-abilities";
+import { availableOrderTabs, pickOrderTab } from "../order-tabs";
 import { ClosedOrderNotice } from "./closed-order-notice";
+import { OrderCommentsTabHash } from "./order-comments-tab-hash";
 import { OrderKeyFacts } from "./order-facts";
 import type { OrderFormData } from "./order-form-data";
 import { OrderSections } from "./order-sections";
+import { OrderSidePanel } from "./order-side-panel";
 import { OrderStatusLabel } from "./order-status-label";
 import { OrderStatusMenu } from "./order-status-menu";
+import { OrderTabNav } from "./order-tab-nav";
 import { OrderTitle } from "./order-title";
 
 type Heading = {
@@ -77,9 +81,41 @@ function OrderHeaderActions({ order, statuses, abilities }: OrderHeaderActionsPr
   );
 }
 
-export type OrderDetailProps = { locale: Locale; id: string };
+type OrderAttentionProps = {
+  order: OrderDto;
+  closed: OrderFormData["statuses"][number] | null;
+  canProgram: boolean;
+};
 
-export async function OrderDetail({ locale, id }: OrderDetailProps) {
+/**
+ * What needs attention on the order, under its heading: the program's issues, the closed notice
+ * and the caller's own tasks (Needs you). Hidden while there is nothing.
+ */
+function OrderAttention({ order, closed, canProgram }: OrderAttentionProps) {
+  return (
+    <div className="grid gap-4 empty:hidden">
+      {canProgram ? (
+        // No skeleton: most orders have no issues, so a placeholder would flash and vanish.
+        <Suspense fallback={null}>
+          <OrderIssues orderId={order.id} />
+        </Suspense>
+      ) : null}
+      {closed ? <ClosedOrderNotice order={order} status={closed} /> : null}
+      <Suspense fallback={null}>
+        <OrderTasks orderId={order.id} />
+      </Suspense>
+    </div>
+  );
+}
+
+export type OrderDetailProps = {
+  locale: Locale;
+  id: string;
+  /** `?tab=`: the open tab; an unknown or hidden one falls back to the first. */
+  tab?: string | undefined;
+};
+
+export async function OrderDetail({ locale, id, tab: tabParam }: OrderDetailProps) {
   // The first paint (ADR 0097): the order, its statuses and its own customer and contact.
   const [t, sheet, abilities, order, statuses] = await Promise.all([
     getTranslations("order"),
@@ -100,6 +136,8 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
   // A closed order is a record: its content controls are hidden, not disabled.
   const closed = closedStatus({ order: order.value, statuses: statuses.value });
   const pageAbilities = closed ? readOnlyAbilities({ abilities }) : abilities;
+  const tabs = availableOrderTabs({ abilities });
+  const tab = pickOrderTab({ value: tabParam, available: tabs });
   const actions = (
     <OrderHeaderActions order={order.value} statuses={statuses.value} abilities={pageAbilities} />
   );
@@ -113,53 +151,59 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
             : (order.value.title ?? "Order")
         }
       />
-      {/* One shrinkable column: a wide table scrolls inside the page instead of widening it. */}
-      <PageBand containerClassName="gap-4 pt-4 sm:pt-6">
-        {can({ abilities, permission: "program:read" }) ? (
-          // Hidden while empty, so a streamed-in alert gets space below it and none otherwise.
-          <div className="empty:hidden [&:not(:empty)]:mb-4">
-            {/* No skeleton: most orders have no issues, so a placeholder would flash and vanish. */}
-            <Suspense fallback={null}>
-              <OrderIssues orderId={id} />
-            </Suspense>
-          </div>
-        ) : null}
-        {closed ? <ClosedOrderNotice order={order.value} status={closed} /> : null}
-        {/* What the caller must do on this order (Needs you), hidden while there is nothing. */}
-        <div className="empty:hidden [&:not(:empty)]:mb-4">
-          <Suspense fallback={null}>
-            <OrderTasks orderId={id} />
-          </Suspense>
-        </div>
-        <PageHeader
-          {...heading({ order: order.value, label, short })}
-          heading={
-            <OrderTitle
-              id={id}
-              title={order.value.title}
-              fallback={label({ reference: order.value.reference })}
-              suffix={
-                order.value.title === null ? undefined : short({ reference: order.value.reference })
-              }
-              canEdit={can({ abilities: pageAbilities, permission: "order:write" })}
-            />
-          }
-          actions={actions}
-        />
-        <OrderKeyFacts
-          order={order.value}
-          data={names}
-          canEdit={can({ abilities: pageAbilities, permission: "order:write" })}
-          formData={orderFormDataPromise()}
-        />
-      </PageBand>
+      <PageSection>
+        <PageContainer width="wide" className="grid grid-cols-1 gap-4 pt-4 sm:pt-6">
+          <PageHeader
+            {...heading({ order: order.value, label, short })}
+            heading={
+              <OrderTitle
+                id={id}
+                title={order.value.title}
+                fallback={label({ reference: order.value.reference })}
+                suffix={
+                  order.value.title === null
+                    ? undefined
+                    : short({ reference: order.value.reference })
+                }
+                canEdit={can({ abilities: pageAbilities, permission: "order:write" })}
+              />
+            }
+            actions={actions}
+          />
+          <OrderKeyFacts
+            order={order.value}
+            data={names}
+            canEdit={can({ abilities: pageAbilities, permission: "order:write" })}
+            formData={orderFormDataPromise()}
+          />
+          <OrderAttention
+            order={order.value}
+            closed={closed}
+            canProgram={can({ abilities, permission: "program:read" })}
+          />
+        </PageContainer>
+      </PageSection>
       <PageTour tour="order" />
-      <OrderSections
-        locale={locale}
-        order={order.value}
-        statuses={statuses.value}
-        abilities={abilities}
-      />
+      <PageSection divided>
+        {/* Tabs and the facts panel side by side; the panel goes under the tabs on narrow screens. */}
+        <PageContainer
+          width="wide"
+          className="grid grid-cols-1 items-start gap-8 py-6 sm:py-8 lg:grid-cols-[minmax(0,1fr)_20rem]"
+        >
+          <div className="grid min-w-0 grid-cols-1 gap-8">
+            <OrderTabNav orderId={id} tabs={tabs} current={tab} />
+            <OrderSections
+              locale={locale}
+              order={order.value}
+              statuses={statuses.value}
+              abilities={abilities}
+              tab={tab}
+            />
+          </div>
+          <OrderSidePanel locale={locale} order={order.value} abilities={pageAbilities} />
+        </PageContainer>
+      </PageSection>
+      <OrderCommentsTabHash active={tab === "activity"} />
     </PageBands>
   );
 }

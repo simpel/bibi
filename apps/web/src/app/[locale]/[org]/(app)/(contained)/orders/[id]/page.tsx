@@ -4,7 +4,10 @@ import { loadOrder } from "@/features/order/load-order";
 import { OrderDetail } from "@/features/order/ui/order-detail";
 import { entityTitle } from "@/lib/page-metadata";
 
-type OrderPageProps = { params: Promise<{ locale: string; id: string }> };
+type OrderPageProps = {
+  params: Promise<{ locale: string; id: string }>;
+  searchParams: Promise<{ tab?: string }>;
+};
 
 export async function generateMetadata({ params }: OrderPageProps) {
   const { id } = await params;
@@ -18,9 +21,9 @@ export async function generateMetadata({ params }: OrderPageProps) {
   return entityTitle({ fallback: "Order" });
 }
 
-export default async function OrderPage({ params }: OrderPageProps) {
-  const { locale: rawLocale, id } = await params;
+export default async function OrderPage({ params, searchParams }: OrderPageProps) {
+  const [{ locale: rawLocale, id }, { tab }] = await Promise.all([params, searchParams]);
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
-  return <OrderDetail locale={locale} id={id} />;
+  return <OrderDetail locale={locale} id={id} tab={tab} />;
 }

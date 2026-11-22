@@ -10,7 +10,7 @@ export const TOURS = {
   "my-work": { hint: "tour-my-work", steps: ["search", "timeline"] },
   calendar: { hint: "tour-calendar", steps: ["toolbar", "grid"] },
   pipeline: { hint: "tour-pipeline", steps: ["toolbar", "board"] },
-  order: { hint: "tour-order", steps: ["status", "program", "needs", "details", "money"] },
+  order: { hint: "tour-order", steps: ["status", "program", "runSheets", "money", "details"] },
   "admin-pipeline": { hint: "tour-admin-pipeline", steps: ["flow", "grid"] },
   permissions: { hint: "tour-permissions", steps: ["preset", "grid"] },
   "item-type": { hint: "tour-item-type", steps: ["sections"] },

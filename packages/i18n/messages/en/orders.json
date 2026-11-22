@@ -267,17 +267,12 @@
         "excludeFollower": "Exclude follower"
       }
     },
-    "groups": {
+    "tabs": {
+      "label": "Order sections",
       "program": "Program",
-      "needs": "Needs and run sheets",
-      "comments": "Comments",
-      "people": "Details and people",
-      "messages": "Messages",
-      "quotes": "Quotes",
-      "versions": "Versions",
-      "balance": "Balance",
-      "estimates": "Estimate history",
-      "history": "History"
+      "runSheets": "Run sheets",
+      "money": "Money",
+      "activity": "Activity"
     }
   },
   "orderIntake": {

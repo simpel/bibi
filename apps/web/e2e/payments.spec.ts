@@ -48,7 +48,7 @@ test("staff refund a card payment and credit an invoice from the order page", as
   });
   await call({ page, method: "post", path: `/invoices/${invoice.id}/send`, data: {} });
 
-  await gotoApp({ page, path: `/orders/${order.id}` });
+  await gotoApp({ page, path: `/orders/${order.id}?tab=money` });
   const paid = page.locator('[data-slot="payment-entry"]').first();
   await paid.getByRole("button", { name: "Återbetala" }).click();
   const refundDialog = page.getByRole("dialog");

@@ -798,13 +798,13 @@
         "title": "The program",
         "body": "The rooms, food and activities of the order, day by day. Add a line or a whole bundle, and see what is held or booked."
       },
-      "needs": {
-        "title": "Needs and run sheets",
-        "body": "Counts of what the guests need are matched against your items, and the run sheets for the kitchen and others are made from them."
+      "runSheets": {
+        "title": "Run sheets",
+        "body": "The run sheets for the kitchen and others are made from the program and its counted requirements, and sent from here."
       },
       "details": {
         "title": "Details and people",
-        "body": "The type, budget and your own fields, plus who is responsible and who follows the order."
+        "body": "The type, budget and your own fields, who is responsible and who follows the order, and what is left to pay."
       },
       "money": {
         "title": "Quotes and payments",

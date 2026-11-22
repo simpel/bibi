@@ -1,7 +1,5 @@
 import type { OrderDto, Permission } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { PageBand } from "@bibi/ui";
-import { getTranslations } from "next-intl/server";
 import { DeferredSection } from "@/components/states/deferred-section";
 import { CommentSection } from "@/features/comment/ui/comment-section";
 import { OrderMessages } from "@/features/inbound-message/ui/order-messages";
@@ -12,7 +10,7 @@ import { OrderQuotes } from "@/features/quote/ui/order-quotes";
 import { RequirementSection } from "@/features/requirement/ui/requirement-section";
 import { RunSheetSection } from "@/features/run-sheet/ui/run-sheet-section";
 import { type CallerAbilities, can } from "@/server/caller-abilities";
-import { OrderAssignmentSection, OrderDetailsSection } from "./order-data-sections";
+import type { OrderTab } from "../order-tabs";
 import { OrderEstimateHistory } from "./order-estimate-history";
 import type { OrderFormData } from "./order-form-data";
 import { OrderStatusHistory } from "./order-status-history";
@@ -22,102 +20,96 @@ export type OrderSectionsProps = {
   order: OrderDto;
   statuses: OrderFormData["statuses"];
   abilities: CallerAbilities;
+  tab: OrderTab;
 };
 
-/**
- * The order's page sections as bands: program, needs and run sheets, comments, details and people,
- * messages, quotes, balance, estimates, status history and versions. Each section belongs to another feature (ADR 0050,
- * feature scope): without that feature's `read` it is left out, not shown as an error, and a
- * band left with nothing is not rendered. Every section that loads its own data streams in on
- * its own.
- */
-export async function OrderSections({ locale, order, statuses, abilities }: OrderSectionsProps) {
-  const t = await getTranslations("order.groups");
-  const allowed = ({ permission }: { permission: Permission }) => can({ abilities, permission });
-  const canProgram = allowed({ permission: "program:read" });
-  const canRunSheets = allowed({ permission: "runSheet:read" });
+type TabProps = Omit<OrderSectionsProps, "tab"> & {
+  allowed: (input: { permission: Permission }) => boolean;
+};
+
+/** The program and the counted requirements. */
+function ProgramTab({ locale, order }: TabProps) {
   return (
     <>
-      {canProgram ? (
-        <PageBand aria-label={t("program")} data-tour="order.program" containerClassName="gap-12">
-          <DeferredSection rows={5}>
-            <ProgramSection locale={locale} order={order} />
-          </DeferredSection>
-        </PageBand>
-      ) : null}
-      {canProgram || canRunSheets ? (
-        <PageBand aria-label={t("needs")} data-tour="order.needs" containerClassName="gap-12">
-          {canProgram ? (
-            <DeferredSection>
-              <RequirementSection locale={locale} order={order} />
-            </DeferredSection>
-          ) : null}
-          {canRunSheets ? (
-            <DeferredSection>
-              <RunSheetSection locale={locale} order={order} />
-            </DeferredSection>
-          ) : null}
-        </PageBand>
-      ) : null}
-      {allowed({ permission: "comment:read" }) ? (
-        <PageBand aria-label={t("comments")} data-tour="order.comments" containerClassName="gap-12">
-          <DeferredSection rows={3}>
-            <CommentSection locale={locale} order={order} />
-          </DeferredSection>
-        </PageBand>
-      ) : null}
-      <PageBand
-        aria-label={t("people")}
-        data-tour="order.details"
-        containerClassName="items-start gap-12 md:grid-cols-2"
-      >
-        <DeferredSection rows={2}>
-          <OrderDetailsSection locale={locale} order={order} />
-        </DeferredSection>
-        <DeferredSection rows={2}>
-          <OrderAssignmentSection locale={locale} order={order} />
-        </DeferredSection>
-      </PageBand>
-      <PageBand aria-label={t("messages")} containerClassName="gap-12">
-        <DeferredSection>
-          <OrderMessages locale={locale} orderId={order.id} address={order.inboundAddress} />
-        </DeferredSection>
-      </PageBand>
+      <DeferredSection rows={5}>
+        <ProgramSection locale={locale} order={order} />
+      </DeferredSection>
+      <DeferredSection>
+        <RequirementSection locale={locale} order={order} />
+      </DeferredSection>
+    </>
+  );
+}
+
+/** Quotes, the balance with its requests and payments, and the estimate over time. */
+function MoneyTab({ locale, order, statuses, allowed }: TabProps) {
+  return (
+    <>
       {allowed({ permission: "quote:read" }) ? (
-        <PageBand aria-label={t("quotes")} data-tour="order.money" containerClassName="gap-12">
-          <DeferredSection>
-            <OrderQuotes locale={locale} order={order} statuses={statuses} />
-          </DeferredSection>
-        </PageBand>
+        <DeferredSection>
+          <OrderQuotes locale={locale} order={order} statuses={statuses} />
+        </DeferredSection>
       ) : null}
       {allowed({ permission: "payment:read" }) ? (
-        <PageBand aria-label={t("balance")} containerClassName="gap-12">
-          <DeferredSection>
-            <OrderPayments
-              locale={locale}
-              orderId={order.id}
-              canRequest={allowed({ permission: "payment:write" })}
-            />
-          </DeferredSection>
-        </PageBand>
+        <DeferredSection>
+          <OrderPayments
+            locale={locale}
+            orderId={order.id}
+            canRequest={allowed({ permission: "payment:write" })}
+          />
+        </DeferredSection>
       ) : null}
-      <PageBand aria-label={t("estimates")} containerClassName="gap-12">
-        <DeferredSection>
-          <OrderEstimateHistory locale={locale} orderId={order.id} />
+      <DeferredSection>
+        <OrderEstimateHistory locale={locale} orderId={order.id} />
+      </DeferredSection>
+    </>
+  );
+}
+
+/** What happened on the order: comments, the customer's messages, status moves and versions. */
+function ActivityTab({ locale, order, statuses, allowed }: TabProps) {
+  return (
+    <>
+      {allowed({ permission: "comment:read" }) ? (
+        <DeferredSection rows={3}>
+          <CommentSection locale={locale} order={order} />
         </DeferredSection>
-      </PageBand>
-      <PageBand aria-label={t("history")} containerClassName="gap-12">
+      ) : null}
+      <DeferredSection>
+        <OrderMessages locale={locale} orderId={order.id} address={order.inboundAddress} />
+      </DeferredSection>
+      <DeferredSection>
+        <OrderStatusHistory locale={locale} orderId={order.id} statuses={statuses} />
+      </DeferredSection>
+      {allowed({ permission: "program:read" }) ? (
         <DeferredSection>
-          <OrderStatusHistory locale={locale} orderId={order.id} statuses={statuses} />
+          <OrderVersions locale={locale} order={order} />
         </DeferredSection>
-      </PageBand>
-      {canProgram ? (
-        <PageBand aria-label={t("versions")} containerClassName="gap-12">
-          <DeferredSection>
-            <OrderVersions locale={locale} order={order} />
-          </DeferredSection>
-        </PageBand>
       ) : null}
     </>
+  );
+}
+
+/**
+ * The open tab's sections, and only those: each tab is its own URL, so the others never load
+ * (ADR 0097). Each section belongs to another feature (ADR 0050, feature scope): without that
+ * feature's `read` it is left out, not shown as an error, and a tab with nothing readable is
+ * left out of the tabs (`availableOrderTabs`). Every section streams in on its own.
+ */
+export function OrderSections({ tab, ...props }: OrderSectionsProps) {
+  const allowed = ({ permission }: { permission: Permission }) =>
+    can({ abilities: props.abilities, permission });
+  const tabProps = { ...props, allowed };
+  return (
+    <div className="grid grid-cols-1 gap-12">
+      {tab === "program" ? <ProgramTab {...tabProps} /> : null}
+      {tab === "run-sheets" ? (
+        <DeferredSection>
+          <RunSheetSection locale={props.locale} order={props.order} />
+        </DeferredSection>
+      ) : null}
+      {tab === "money" ? <MoneyTab {...tabProps} /> : null}
+      {tab === "activity" ? <ActivityTab {...tabProps} /> : null}
+    </div>
   );
 }

@@ -114,9 +114,13 @@
             "question": "How do I rename an order or a run sheet?",
             "answer": "Hover over the title at the top of the page and click the pencil. Type the new name and press Enter, or click Save. Escape or Cancel keeps the old one.\nRenaming a run sheet renames it everywhere, for all its versions and orders, so it needs the same access as editing the run sheet's setup."
           },
+          "orderTabs": {
+            "question": "Where do I find the quotes, run sheets and comments on an order?",
+            "answer": "The order page has four tabs under the title: **Program** for the lines and requirements, **Run sheets**, **Money** for quotes, payments and the estimate, and **Activity** for comments, the customer's messages, status changes and versions. Click a tab to switch; the address in your browser remembers it, so a link opens the same tab.\nThe panel on the right always shows the order's details, who works on it and what is left to pay. Anything that needs your attention, like a double booking or a task for you, shows at the top under the title."
+          },
           "orderVersions": {
             "question": "How do I go back to an earlier version of an order?",
-            "answer": "Bibi saves a version of the order every time someone changes its lines or headcount, so you never need to save by hand. Open the order and scroll to **Versions** to see them all, with the quotes that were sent as each one.\nClick **Show changes** on a version to see what has changed since. **Restore this version** takes the order back: lines added since are removed, removed lines come back and everything else is set back. The restore is saved as a new version, so you can always go back again. Give a version a name from the row menu to keep it easy to find."
+            "answer": "Bibi saves a version of the order every time someone changes its lines or headcount, so you never need to save by hand. Open the order's **Activity** tab and scroll to **Versions** to see them all, with the quotes that were sent as each one.\nClick **Show changes** on a version to see what has changed since. **Restore this version** takes the order back: lines added since are removed, removed lines come back and everything else is set back. The restore is saved as a new version, so you can always go back again. Give a version a name from the row menu to keep it easy to find."
           },
           "quoteMatches": {
             "question": "Does the order still match the quote I sent?",
@@ -176,7 +180,7 @@
           },
           "commentOrder": {
             "question": "How do I leave a comment on an order or one of its lines?",
-            "answer": "Click the speech bubble next to a line in the program, or the one next to **Follow** at the top of the order for the whole booking. Write your comment and click **Add comment**.\nYou can also scroll to **Comments** on the order and choose under **About** which line it is about. You can edit or delete your own comments."
+            "answer": "Click the speech bubble next to a line in the program, or the one next to **Follow** at the top of the order for the whole booking. Write your comment and click **Add comment**.\nYou can also open the **Activity** tab on the order and choose under **About** which line it is about. You can edit or delete your own comments."
           },
           "commentRunSheet": {
             "question": "Does the kitchen see my comments?",
@@ -192,11 +196,11 @@
           },
           "editInPlace": {
             "question": "How do I change an order's customer, dates or headcount?",
-            "answer": "Change things where you see them on the order. Hover a fact under the title, such as the customer, the dates or the headcount, and click the pencil next to it. Change it in the small box and click **Save**.\nThe rest of the order, such as the budget, the note and your own fields, is under **Details** further down: click the pencil next to the heading to edit it all at once."
+            "answer": "Change things where you see them on the order. Hover a fact under the title, such as the customer, the dates or the headcount, and click the pencil next to it. Change it in the small box and click **Save**.\nThe rest of the order, such as the budget, the note and your own fields, is under **Details** in the panel on the right: click the pencil next to the heading to edit it all at once."
           },
           "closedOrder": {
             "question": "Why can't I change a completed order?",
-            "answer": "When a booking reaches a status that closes it, such as **Completed** or **Cancelled**, it becomes a record of what happened. A line at the top of the booking says so, and the buttons for editing, adding lines, changing needs and creating a quote are gone.\nInvoices, payments, refunds and comments still work as usual, and you can still correct the buyer's reference with the pencil next to **Details**. A closed booking cannot be opened again, so create a new booking if more is needed."
+            "answer": "When a booking reaches a status that closes it, such as **Completed** or **Cancelled**, it becomes a record of what happened. A line at the top of the booking says so, and the buttons for editing, adding lines, changing requirements and creating a quote are gone.\nInvoices, payments, refunds and comments still work as usual, and you can still correct the buyer's reference with the pencil next to **Details**. A closed booking cannot be opened again, so create a new booking if more is needed."
           },
           "missingMarks": {
             "question": "What do the amber striped marks on an order's lines mean?",
@@ -376,7 +380,7 @@
           },
           "needsAccounting": {
             "question": "Why can't I create a deposit, invoice or payment link?",
-            "answer": "Bibi needs a connected accounting system to take money, since Fortnox or Spiris makes every invoice and deposit invoice. Until one is connected, the order's Payments section says so instead of showing its buttons.\nAn admin connects one under Administration → Integrations and picks it for **Invoice** under Administration → Payments."
+            "answer": "Bibi needs a connected accounting system to take money, since Fortnox or Spiris makes every invoice and deposit invoice. Until one is connected, the order's **Money** tab says so instead of showing its buttons.\nAn admin connects one under Administration → Integrations and picks it for **Invoice** under Administration → Payments."
           },
           "unavailable": {
             "question": "Why does a connection say Unavailable?",
