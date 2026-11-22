@@ -197,6 +197,10 @@
           "closedOrder": {
             "question": "Varför kan jag inte ändra en genomförd bokning?",
             "answer": "När en bokning når en status som stänger den, till exempel **Genomförd** eller **Avbokad**, blir den ett underlag för det som hände. En rad överst på bokningen säger det, och knapparna för att redigera, lägga till rader, ändra behov och skapa en offert är borta.\nFakturor, betalningar, återbetalningar och kommentarer fungerar som vanligt, och köparens referens kan du fortfarande rätta med pennan bredvid **Detaljer**. En stängd bokning går inte att öppna igen, så skapa en ny bokning om det behövs mer."
+          },
+          "missingMarks": {
+            "question": "Vad betyder de gula randiga markeringarna på en orders rader?",
+            "answer": "Gula ränder visar vad en rad fortfarande saknar, likadant i dagsvyn överst i programmet och i tabellen under. **Ingen tid än** betyder att raden saknar start och slut, och **Välj** följt av en grupp, till exempel Välj Varmrätt, betyder att ett obligatoriskt val inte är gjort.\nKlicka på markeringen för att öppna raden. Det som saknas har en gul ram där: ange tiderna, eller kryssa i ett alternativ under **Val**, och klicka på **Spara**. För att sälja fler än gruppen tillåter, eller något annat med raden, välj **Lägg till tillägg** i radens meny."
           }
         }
       },

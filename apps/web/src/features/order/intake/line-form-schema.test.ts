@@ -15,7 +15,7 @@ const item: CatalogItem = {
   },
   groups: [
     {
-      ...{ name: "Main", minPick: 1, maxPick: 2, split: true },
+      ...{ id: "g-main", name: "Main", minPick: 1, maxPick: 2, split: true },
       options: [
         { itemId: "fish", name: "Fish", priceEffect: "INCLUDED" },
         { itemId: "veg", name: "Veg", priceEffect: "INCLUDED" },
@@ -54,7 +54,7 @@ describe("lineFormSchema", () => {
 
   it("refuses a group choice outside its pick rule, under the group, once one is chosen", () => {
     const snack = {
-      ...{ name: "Snack", minPick: 1, maxPick: 1, split: false },
+      ...{ id: "g-snack", name: "Snack", minPick: 1, maxPick: 1, split: false },
       options: ["cake", "fruit"].map((id) => ({
         ...{ itemId: id, name: id },
         priceEffect: "INCLUDED" as const,
@@ -80,7 +80,7 @@ describe("lineFormSchema", () => {
 
   it("keeps the options and add-ons apart, also an add-on of an option's item (ADR 0088)", () => {
     const snack = {
-      ...{ name: "Snack", minPick: 1, maxPick: 1, split: false },
+      ...{ id: "g-snack", name: "Snack", minPick: 1, maxPick: 1, split: false },
       options: ["cake", "oat", "fruit"].map((id) => ({
         ...{ itemId: id, name: id },
         priceEffect: "INCLUDED" as const,

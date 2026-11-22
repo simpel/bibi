@@ -4,12 +4,11 @@ import type { LineDto } from "@bibi/core";
 import { LineAllocationsDialog } from "../../line-allocation/ui/line-allocations-dialog";
 import { useLineAllocations } from "../../line-allocation/ui/use-line-allocations";
 import { ArchiveLineDialog } from "./archive-line-dialog";
-import { ChooseOptionsDialog } from "./choose-options-dialog";
 import { chosenOptions } from "./choose-options-schema";
 import { LineDialog } from "./line-dialog";
+import type { ProgramAccess } from "./program-access";
 import type { ProgramFormData } from "./program-form-data";
 import type { ItemLock } from "./program-item-field";
-import type { ProgramAccess } from "./program-row-actions";
 import type { ProgramDialogType } from "./program-row-menu";
 
 export type ProgramDialogsProps = {
@@ -40,7 +39,7 @@ function itemLockOf({ line, lines }: { line: LineDto; lines: LineDto[] }): ItemL
 
 /**
  * Manages the modal dialogs for the program table rows:
- * edit line, add add-on, choose options, unit allocations, and archive.
+ * edit line (with its choices), add an extra, unit allocations, and archive.
  */
 export function ProgramDialogs({ active, onClose, data, lines, access }: ProgramDialogsProps) {
   const line = active?.line;
@@ -61,6 +60,11 @@ export function ProgramDialogs({ active, onClose, data, lines, access }: Program
         {...base}
         line={line}
         itemLock={itemLock}
+        choices={
+          customisable
+            ? { item: customisable, chosen, quantity: line.effectiveQuantity }
+            : undefined
+        }
         open={dialog === "edit"}
         onOpenChange={(open) => {
           if (!open) onClose();
@@ -75,19 +79,6 @@ export function ProgramDialogs({ active, onClose, data, lines, access }: Program
           if (!open) onClose();
         }}
       />
-
-      {customisable ? (
-        <ChooseOptionsDialog
-          lineId={line.id}
-          chosen={chosen}
-          item={customisable}
-          quantity={line.effectiveQuantity}
-          open={dialog === "options"}
-          onOpenChange={(open) => {
-            if (!open) onClose();
-          }}
-        />
-      ) : null}
 
       <LineAllocationsDialog
         allocations={allocations}

@@ -12,8 +12,8 @@ import {
 } from "@bibi/ui";
 import { ChevronDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ProgramAccess } from "./program-access";
 import type { ProgramFormData } from "./program-form-data";
-import type { ProgramAccess } from "./program-row-actions";
 
 export type ProgramBulkActionsProps = {
   selected: LineDto[];

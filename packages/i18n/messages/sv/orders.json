@@ -712,6 +712,16 @@
       "amount": "Belopp exkl. moms"
     },
     "untimed": "Ingen tid",
+    "missing": {
+      "time": "Ingen tid än",
+      "timeHint": "Ingen tid än: ange när den börjar och slutar",
+      "pick": "Välj {groups}",
+      "pickHint": "Inte valt än: välj {group}"
+    },
+    "choices": {
+      "title": "Val",
+      "moreHint": "Behövs fler än gruppen tillåter, eller något annat som säljs med raden? Använd Lägg till tillägg i radens meny."
+    },
     "inherited": "(ärvt)",
     "part": "Del",
     "warnings": {
@@ -735,9 +745,6 @@
       "itemId": "Paket",
       "name": "Namn (paketets om tomt)"
     },
-    "chooseOptions": "Välj tillval",
-    "chooseOptionsDescription": "Välj radens tillval i varje anpassningsgrupp. Varje valt tillval blir en egen rad under den här: tillval som ingår kostar inget extra, tillägg debiteras med sitt eget pris och ett tillval som ersätter sätter priset i stället för artikeln.",
-    "optionsChosen": "Tillvalen har sparats.",
     "optionGroup": "{name} (välj {min, number}{same, select, true {} other {–{max, number}}})",
     "optionChoice": "{name} · {effect}",
     "optionSplitHint": "Fördela mellan gästerna: ange hur många av {quantity, number} som får varje tillval. Lämna 0 för att inte välja tillvalet.",
@@ -811,7 +818,7 @@
     },
     "itemLock": {
       "part": "Del av ett paket: den behåller sin artikel. Ändra paketraden i stället.",
-      "option": "Ett valt tillval: det behåller sin artikel. Använd Välj tillval på raden ovanför för att välja ett annat.",
+      "option": "Ett valt tillval: det behåller sin artikel. Redigera raden ovanför och välj ett annat under Val.",
       "parent": "Raden har delar eller valda tillval och behåller därför sin artikel. Ta bort den och lägg till den nya artikeln i stället."
     }
   },

@@ -1,15 +1,18 @@
 import type { EntityTypeDto, LineDto } from "@bibi/core";
+import type { LineChooseOptionsInput } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useTypedResolver } from "@/components/typed-fields/use-typed-resolver";
 import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
-import { createLineAction, updateLineAction } from "../actions";
+import { chooseLineOptionsAction, createLineAction, updateLineAction } from "../actions";
 import { type LineFormOutput, lineFormSchema, toLineUpdate } from "./line-form-schema";
 import { type LineFormValues, lineFormDefaults } from "./line-form-values";
 import { lineTimeZone } from "./line-time-zone";
 import type { ProgramFormData } from "./program-form-data";
 import { useHoursConfirm } from "./use-hours-confirm";
+import { type LineChoices, useLineChoices } from "./use-line-choices";
 
 export type UseLineFormInput = {
   data: ProgramFormData;
@@ -20,6 +23,8 @@ export type UseLineFormInput = {
   line?: LineDto | undefined;
   /** Create mode: the top-level line the new line is an add-on of (ADR 0088). */
   parent?: LineDto | undefined;
+  /** Edit mode, an item with customisation groups: its choices are edited and saved here too. */
+  choices?: LineChoices | undefined;
   onDone: () => void;
 };
 
@@ -36,8 +41,26 @@ const save = ({ line, parent, values, type }: SaveInput) =>
     ? updateLineAction({ input: toLineUpdate({ line, values, type }) })
     : createLineAction({ input: { ...values, ...(parent ? { parentLineId: parent.id } : {}) } });
 
+type SaveWithChoicesInput = SaveInput & { options: LineChooseOptionsInput | null };
+
+/** Saves the line, then its changed choices; the first error stops it and is the result. */
+async function saveWithChoices({ options, ...input }: SaveWithChoicesInput) {
+  const saved = await save(input);
+  if (!saved.ok || options === null) return saved;
+  const chosen = await chooseLineOptionsAction({ input: options });
+  return chosen.ok ? saved : { ok: false as const, error: chosen.error };
+}
+
 /** Line form state; the order page reloads with the changed run schedule. */
-export function useLineForm({ data, orderId, startsAt, line, parent, onDone }: UseLineFormInput) {
+export function useLineForm({
+  data,
+  orderId,
+  startsAt,
+  line,
+  parent,
+  choices,
+  onDone,
+}: UseLineFormInput) {
   const t = useTranslations("line");
   const common = useTranslations("common");
   const router = useRouter();
@@ -57,10 +80,17 @@ export function useLineForm({ data, orderId, startsAt, line, parent, onDone }: U
     defaultValues: lineFormDefaults({ type: initial, line, parent, startsAt, timeZone }),
   });
   const hours = useHoursConfirm({ line });
+  // Choices only while the line keeps the item they belong to.
+  const kept = choices && form.watch("itemId") === choices.item.itemId ? choices : undefined;
+  const lineChoices = useLineChoices({ lineId: line?.id ?? "", choices: kept });
+  const options = useRef<LineChooseOptionsInput | null>(null);
   const { run, pending } = useFormAction({
     form,
     action: ({ values }) =>
-      save({ line, parent, values, type: typeOf({ id: values.entityTypeId }) }),
+      saveWithChoices({
+        ...{ line, parent, values, options: options.current },
+        type: typeOf({ id: values.entityTypeId }),
+      }),
     messages: { pending: common("saving"), success: t(line ? "updated" : "created") },
     onSuccess: () => {
       onDone();
@@ -72,6 +102,9 @@ export function useLineForm({ data, orderId, startsAt, line, parent, onDone }: U
   });
   // Outside the hours that apply, the save waits for the user's yes in a dialog.
   const submit = form.handleSubmit(async (values) => {
+    const chosen = await lineChoices.resolve();
+    if (!chosen.ok) return;
+    options.current = chosen.input;
     if (await hours.check({ values })) run({ values });
   });
   const confirmOutsideHours = () => {
@@ -79,5 +112,8 @@ export function useLineForm({ data, orderId, startsAt, line, parent, onDone }: U
     run({ values: hours.waiting.values });
     hours.cancel();
   };
-  return { form, submit, pending, typeOf, hours, confirmOutsideHours };
+  return {
+    ...{ form, submit, pending, typeOf, hours, confirmOutsideHours },
+    choices: kept ? lineChoices : undefined,
+  };
 }

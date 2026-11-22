@@ -14,10 +14,10 @@ import {
   followLineStatusAction,
 } from "../actions";
 import { LINE_TREE_ROW_CLASS, lineTreePlaces } from "./line-tree";
+import type { ProgramAccess } from "./program-access";
 import { ProgramBulkActions } from "./program-bulk-actions";
 import { ProgramDialogs } from "./program-dialogs";
 import type { ProgramFormData } from "./program-form-data";
-import type { ProgramAccess } from "./program-row-actions";
 import { type ProgramDialogType, ProgramRowMenu } from "./program-row-menu";
 import { useProgramColumns } from "./use-program-columns";
 

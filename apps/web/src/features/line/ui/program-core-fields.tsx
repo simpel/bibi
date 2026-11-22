@@ -1,4 +1,5 @@
 import type { LineDto } from "@bibi/core";
+import { MissingField } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { DateTimeField } from "@/components/date-picker/date-time-field";
@@ -34,11 +35,16 @@ export function ProgramCoreFields({ form, data, line, itemLock }: ProgramCoreFie
   const itemId = form.watch("itemId");
   // What the line inherits is known only while it keeps its item.
   const known = line && itemId === (line.itemId ?? NONE) ? line : undefined;
+  // A line with an item should have a time (the day view stripes it): framed until both are set.
+  const timeMissing =
+    line !== undefined && itemId !== NONE && (!form.watch("startsAt") || !form.watch("endsAt"));
   return (
     <>
       <TextField form={form} name="name" label={t("fields.name")} required />
-      <DateTimeField form={form} name="startsAt" label={t("fields.startsAt")} />
-      <DateTimeField form={form} name="endsAt" label={t("fields.endsAt")} />
+      <MissingField hint={timeMissing ? t("missing.timeHint") : undefined}>
+        <DateTimeField form={form} name="startsAt" label={t("fields.startsAt")} />
+        <DateTimeField form={form} name="endsAt" label={t("fields.endsAt")} />
+      </MissingField>
       <ProgramPlaceFields form={form} data={data} itemLock={itemLock} />
       {itemId === NONE ? null : (
         <BufferFields

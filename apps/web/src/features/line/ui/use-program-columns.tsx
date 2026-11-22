@@ -5,12 +5,13 @@ import { useTranslations } from "next-intl";
 import { type ReactNode, useMemo } from "react";
 import { useNumberFormat } from "@/lib/number/use-number-format";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
+import { lacksTime, MissingCell } from "./line-missing";
 import { LineStateCell, stateOf } from "./line-state-cell";
 import { placeOf } from "./place-of";
+import type { ProgramAccess } from "./program-access";
 import { amountColumn, amountColumns } from "./program-amount-columns";
 import type { ProgramFormData } from "./program-form-data";
 import { nameColumn } from "./program-name-column";
-import type { ProgramAccess } from "./program-row-actions";
 import { ProgramRowMenu, type ProgramRowMenuProps } from "./program-row-menu";
 
 type Translator = ReturnType<typeof useTranslations<"line">>;
@@ -64,22 +65,38 @@ function stateColumn({
   };
 }
 
-function timeColumn({ t, format }: { t: Translator; format: DateTimeFormat }): Column {
+type TimeColumnInput = {
+  t: Translator;
+  format: DateTimeFormat;
+  onEdit?: ((line: LineDto) => void) | undefined;
+};
+
+/** The line's hours; a line with an item and no time shows "No time yet" in amber stripes. */
+function timeColumn({ t, format, onEdit }: TimeColumnInput): Column {
   return {
     id: "time",
     header: t("columns.time"),
     accessorFn: (item) => item.startsAt ?? undefined,
-    cell: ({ row: { original } }) => (
-      <span className="whitespace-nowrap">
-        {original.startsAt && original.endsAt
-          ? format.timeRange({
-              start: original.startsAt,
-              end: original.endsAt,
-              timeZone: original.timeZone,
-            })
-          : t("untimed")}
-      </span>
-    ),
+    cell: ({ row: { original } }) => {
+      if (lacksTime({ line: original }))
+        return (
+          <MissingCell
+            label={t("missing.time")}
+            onOpen={onEdit ? () => onEdit(original) : undefined}
+          />
+        );
+      return (
+        <span className="whitespace-nowrap">
+          {original.startsAt && original.endsAt
+            ? format.timeRange({
+                start: original.startsAt,
+                end: original.endsAt,
+                timeZone: original.timeZone,
+              })
+            : t("untimed")}
+        </span>
+      );
+    },
   };
 }
 
@@ -130,8 +147,11 @@ export function useProgramColumns({
       money,
       hidden,
     });
+    const groupNames = new Map(
+      data.customisable.flatMap(({ groups }) => groups.map(({ id, name }) => [id, name] as const)),
+    );
     return createTableColumns<LineDto>({
-      primary: [nameColumn({ t, effects, onEdit, extra: nameExtra })],
+      primary: [nameColumn({ t, effects, onEdit, groupNames, extra: nameExtra })],
       relations: [
         {
           id: "where",
@@ -140,7 +160,7 @@ export function useProgramColumns({
         },
       ],
       status: [state],
-      dates: [timeColumn({ t, format })],
+      dates: [timeColumn({ t, format, onEdit })],
       numbers: [...amountColumns({ t }), amountColumn({ t, money, amounts })],
       actions:
         onOpenDialog && onStateChange && onFollowStatus

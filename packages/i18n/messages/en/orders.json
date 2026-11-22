@@ -712,6 +712,16 @@
       "amount": "Amount excl. VAT"
     },
     "untimed": "No time",
+    "missing": {
+      "time": "No time yet",
+      "timeHint": "No time yet: set when it starts and ends",
+      "pick": "Pick {groups}",
+      "pickHint": "Not chosen yet: pick {group}"
+    },
+    "choices": {
+      "title": "Choices",
+      "moreHint": "Need more than a group allows, or something else sold with this line? Use Add add-on in the line's menu."
+    },
     "inherited": "(inherited)",
     "part": "Part",
     "warnings": {
@@ -735,9 +745,6 @@
       "itemId": "Bundle",
       "name": "Name (default the bundle's)"
     },
-    "chooseOptions": "Choose options",
-    "chooseOptionsDescription": "Choose the line's options in each customisation group. Each chosen option becomes its own line under this one: included options add nothing, extras are charged at their own price, and an option that replaces sets the price instead of the item.",
-    "optionsChosen": "The options have been saved.",
     "optionGroup": "{name} (choose {min, number}{same, select, true {} other {–{max, number}}})",
     "optionChoice": "{name} · {effect}",
     "optionSplitHint": "Split between guests: give each chosen option how many of {quantity, number} get it. Leave an option at 0 to not choose it.",
@@ -811,7 +818,7 @@
     },
     "itemLock": {
       "part": "Part of a bundle: it keeps its item. Edit the bundle line instead.",
-      "option": "A chosen option: it keeps its item. Use Choose options on the line above to pick another.",
+      "option": "A chosen option: it keeps its item. Edit the line above and pick another under Choices.",
       "parent": "This line has parts or chosen options, so it keeps its item. Remove it and add the new item instead."
     }
   },

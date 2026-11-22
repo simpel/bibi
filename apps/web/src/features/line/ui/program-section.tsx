@@ -16,7 +16,7 @@ import { nestedLines } from "../nested-lines";
 import { CreateLineButton } from "./create-line-button";
 import { ExpandBundleButton } from "./expand-bundle-button";
 import { OrderDay } from "./order-day";
-import type { ProgramAccess } from "./program-row-actions";
+import type { ProgramAccess } from "./program-access";
 import { ProgramTable } from "./program-table";
 
 export type ProgramSectionProps = { locale: Locale; order: OrderDto };

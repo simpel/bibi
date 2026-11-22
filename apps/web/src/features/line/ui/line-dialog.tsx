@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { LineForm } from "./line-form";
 import type { ProgramFormData } from "./program-form-data";
 import type { ItemLock } from "./program-item-field";
+import type { LineChoices } from "./use-line-choices";
 
 export type LineDialogProps = {
   data: ProgramFormData;
@@ -14,6 +15,8 @@ export type LineDialogProps = {
   /** Create mode: the top-level line the new line is an add-on of (ADR 0088). */
   parent?: LineDto | undefined;
   itemLock?: ItemLock;
+  /** Edit mode, an item with customisation groups: its choices, edited in the same dialog. */
+  choices?: LineChoices | undefined;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };

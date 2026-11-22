@@ -3,6 +3,7 @@ import { Badge, type ColumnDef } from "@bibi/ui";
 import { CornerDownRightIcon, TriangleAlertIcon } from "lucide-react";
 import type { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { MissingCell, openGroupNames, pickLabel } from "./line-missing";
 import { bySeverity } from "./line-warning-severity";
 
 type Translator = ReturnType<typeof useTranslations<"line">>;
@@ -12,15 +13,20 @@ export type NameColumnInput = {
   t: Translator;
   effects: EffectTranslator;
   onEdit?: (line: LineDto) => void;
+  /** Customisation group names by id, so an open required choice says which group it is. */
+  groupNames: ReadonlyMap<string, string>;
   /** After the name and badges, e.g. the line's comments (ADR 0115). */
   extra?: ((line: LineDto) => ReactNode) | undefined;
 };
 
 type WorstWarningProps = { t: Translator; warnings: LineDto["warnings"] };
 
-/** One badge per line: its most severe warning, every warning's sentence in the tooltip. */
+/**
+ * One badge per line: its most severe warning other than an open choice (that one is the amber
+ * "Pick …" mark), every warning's sentence in the tooltip.
+ */
 function WorstWarning({ t, warnings }: WorstWarningProps) {
-  const [worst] = bySeverity({ warnings });
+  const [worst] = bySeverity({ warnings }).filter(({ kind }) => kind !== "UNCHOSEN_REQUIRED_GROUP");
   if (!worst) return null;
   const sentence = ({ warning }: { warning: LineDto["warnings"][number] }) =>
     t(`warnings.${warning.kind}`, { sum: warning.sum ?? 0, expected: warning.expected ?? 0 });
@@ -37,11 +43,18 @@ function WorstWarning({ t, warnings }: WorstWarningProps) {
  * The line's name. A part, option or add-on line (ADR 0059, 0088) is indented under its parent
  * with an arrow and marked: a part with "Part" (its bundle line carries the price), an option with
  * its price effect unless it is included, an add-on with "Add-on" (its own time, quantity and
- * price). Only the most severe warning shows, as a triangle
- * and a short label; its tooltip has the full sentence of every warning on the line.
+ * price). A required choice still open shows as the amber "Pick <group>" mark, which opens the
+ * line where it is chosen; of the other warnings only the most severe shows, as a triangle and a
+ * short label, its tooltip with the full sentence of every warning on the line.
  * Clicking the name triggers line edit, matching the pen action button.
  */
-export function nameColumn({ t, effects, onEdit, extra }: NameColumnInput): ColumnDef<LineDto> {
+export function nameColumn({
+  t,
+  effects,
+  onEdit,
+  groupNames,
+  extra,
+}: NameColumnInput): ColumnDef<LineDto> {
   return {
     id: "name",
     header: t("columns.name"),
@@ -79,6 +92,12 @@ export function nameColumn({ t, effects, onEdit, extra }: NameColumnInput): Colu
           </Badge>
         ) : null}
         {original.role === "ADD_ON" ? <Badge variant="outline">{t("addOn")}</Badge> : null}
+        {original.warnings.some(({ kind }) => kind === "UNCHOSEN_REQUIRED_GROUP") ? (
+          <MissingCell
+            label={pickLabel({ t, names: openGroupNames({ line: original, groupNames }) })}
+            onOpen={onEdit ? () => onEdit(original) : undefined}
+          />
+        ) : null}
         <WorstWarning t={t} warnings={original.warnings} />
         {extra?.(original)}
       </span>

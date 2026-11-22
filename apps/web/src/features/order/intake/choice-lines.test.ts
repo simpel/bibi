@@ -8,13 +8,13 @@ import { openQuestions } from "./open-questions";
 import { newReview } from "./review-state";
 
 const snack = {
-  ...{ name: "Snack", minPick: 1, maxPick: 1, split: false },
+  ...{ id: "g-snack", name: "Snack", minPick: 1, maxPick: 1, split: false },
   options: [
     { itemId: "cake", name: "Carrot cake", priceEffect: "INCLUDED" as const },
     { itemId: "fruit", name: "Fresh fruit", priceEffect: "INCLUDED" as const },
   ],
 };
-const drink = { ...snack, name: "Drink", minPick: 0, options: [] };
+const drink = { ...snack, id: "g-drink", name: "Drink", minPick: 0, options: [] };
 const items = [{ id: "i1", groups: [snack, drink] }];
 
 describe("the choices step (ADR 0089)", () => {

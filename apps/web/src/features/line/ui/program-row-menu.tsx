@@ -17,10 +17,10 @@ import {
 import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { LineStateOption } from "./line-state-option";
+import type { ProgramAccess } from "./program-access";
 import type { ProgramFormData } from "./program-form-data";
-import type { ProgramAccess } from "./program-row-actions";
 
-export type ProgramDialogType = "edit" | "addOn" | "options" | "units" | "archive" | null;
+export type ProgramDialogType = "edit" | "addOn" | "units" | "archive" | null;
 
 /** The menu parts a row's actions are drawn with: the right-click menu or the row's "…" menu. */
 const KITS = {
@@ -55,15 +55,9 @@ export type ProgramRowMenuProps = {
 const canAddOn = ({ line, access }: Pick<ProgramRowMenuProps, "line" | "access">) =>
   access.canEdit && line.role === null;
 
-/** The line's item, when it has customisation groups and the line is not an option itself. */
-const customisableOf = ({ line, data }: Pick<ProgramRowMenuProps, "line" | "data">) =>
-  line.role !== "OPTION"
-    ? data.customisable.find(({ itemId }) => itemId === line.itemId)
-    : undefined;
-
 /**
  * Every action on an order line, the same in the right-click menu and the row's "…" menu: edit
- * first, then add-on, options, units, state changes, and remove last.
+ * first (its choices too), then add an extra, units, state changes, and remove last.
  */
 export function ProgramRowMenu({
   kit,
@@ -76,7 +70,6 @@ export function ProgramRowMenu({
 }: ProgramRowMenuProps) {
   const t = useTranslations("line");
   const { Item, Separator, Sub, SubTrigger, SubContent } = KITS[kit];
-  const customisable = access.canEdit ? customisableOf({ line, data }) : undefined;
   const canAllocate = access.canAllocate && line.itemId !== null && line.startsAt !== null;
 
   const current = data.states.find((s) => s.id === line.stateId);
@@ -99,10 +92,6 @@ export function ProgramRowMenu({
 
       {canAddOn({ line, access }) ? (
         <Item onSelect={() => onOpenDialog({ line, dialog: "addOn" })}>{t("addAddOn")}</Item>
-      ) : null}
-
-      {customisable ? (
-        <Item onSelect={() => onOpenDialog({ line, dialog: "options" })}>{t("chooseOptions")}</Item>
       ) : null}
 
       {canAllocate ? (

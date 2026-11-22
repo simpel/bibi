@@ -197,6 +197,10 @@
           "closedOrder": {
             "question": "Why can't I change a completed order?",
             "answer": "When a booking reaches a status that closes it, such as **Completed** or **Cancelled**, it becomes a record of what happened. A line at the top of the booking says so, and the buttons for editing, adding lines, changing needs and creating a quote are gone.\nInvoices, payments, refunds and comments still work as usual, and you can still correct the buyer's reference with the pencil next to **Details**. A closed booking cannot be opened again, so create a new booking if more is needed."
+          },
+          "missingMarks": {
+            "question": "What do the amber striped marks on an order's lines mean?",
+            "answer": "Amber stripes show what a line still lacks, the same in the day view at the top of the program and in the table below it. **No time yet** means the line has no start and end, and **Pick** followed by a group, such as Pick Main course, means a required choice is still open.\nClick the mark to open the line. What is missing is framed in amber there: set the times, or tick an option under **Choices**, and click **Save**. To sell more than a group allows, or something else with the line, choose **Add add-on** in the line's menu."
           }
         }
       },

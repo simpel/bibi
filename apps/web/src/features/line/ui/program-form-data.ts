@@ -25,6 +25,8 @@ export type BundleOption = NamedOption & { timeZone: string };
 export type CustomisableItem = {
   itemId: string;
   groups: {
+    /** The group's id, as a line's `UNCHOSEN_REQUIRED_GROUP` warning names it. */
+    id: string;
     name: string;
     minPick: number;
     maxPick: number;
