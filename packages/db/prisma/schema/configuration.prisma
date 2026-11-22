@@ -64,6 +64,7 @@ model EntityType {
   contacts         Contact[]
   orders          Order[]
   lines            Line[]
+  versionLines        OrderVersionLine[]
   requirements     Requirement[]
   itemStates       ItemState[]                 @relation("ItemStateType")
   statusRules      StatusStateRule[]

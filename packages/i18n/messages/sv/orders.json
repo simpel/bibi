@@ -274,6 +274,7 @@
       "people": "Detaljer och personer",
       "messages": "Meddelanden",
       "quotes": "Offerter",
+      "versions": "Versioner",
       "balance": "Saldo",
       "estimates": "Värdehistorik",
       "history": "Historik"
@@ -857,5 +858,64 @@
     "replied": "Svaret har lagts till",
     "mentionList": "Kollegor att nämna",
     "goToLabel": "Gå till kommentarer{count, plural, =0 {} one { (# kommentar} other { (# kommentarer}}{unread, plural, =0 {} other {, # nya}}{count, plural, =0 {} other {)}}"
+  },
+  "orderVersion": {
+    "title": "Versioner",
+    "description": "Bibi sparar en version av bokningens rader och antal gäster efter varje ändring. Öppna en för att se vad som ändrats sedan dess, och återställ den för att ta tillbaka bokningen.",
+    "empty": "Inga versioner än. En sparas efter första ändringen.",
+    "versionLabel": "Version {number}",
+    "quoteLabel": "Offert v{version}",
+    "current": "Aktuell",
+    "matches": "Stämmer med bokningen",
+    "restoredFrom": "Återställd från version {number}",
+    "changeCount": "{count, plural, one {# ändring sedan dess} other {# ändringar sedan dess}}",
+    "showChanges": "Visa ändringar",
+    "name": "Namnge version",
+    "rename": "Byt namn på version",
+    "nameTitle": "Namnge version {number}",
+    "nameHint": "En namngiven version är lätt att hitta och slås aldrig ihop med senare ändringar. Lämna tomt för att ta bort namnet.",
+    "named": "Versionen har sparats.",
+    "dialogDescription": "Det som ändrats i bokningen sedan den här versionen. En återställning gör precis detta ogjort.",
+    "loadFailed": "Versionen kunde inte hämtas. Försök igen.",
+    "restore": "Återställ den här versionen",
+    "restoreNote": "Rader som kommer tillbaka börjar som nya bokningar. Status, betalningar och skickade körscheman är som de är; återställningen sparas som en ny version.",
+    "restored": "Bokningen har återställts.",
+    "fields": {
+      "version": "Version",
+      "name": "Namn",
+      "quotes": "Offerter",
+      "capturedAt": "Sparad",
+      "changes": "Bokningen nu",
+      "startsAt": "start",
+      "endsAt": "slut",
+      "itemId": "artikel",
+      "layoutId": "möblering",
+      "setupMinutes": "ställtid före",
+      "teardownMinutes": "ställtid efter",
+      "quantity": "antal",
+      "unitPriceMinor": "pris",
+      "discountPercent": "rabatt",
+      "vatRatePercent": "moms",
+      "note": "anteckning",
+      "fields": "fält",
+      "alternativeGroupId": "alternativ"
+    },
+    "changes": {
+      "none": "Bokningen stämmer med den här versionen.",
+      "added": "Tillagt sedan dess",
+      "addedHint": "En återställning tar bort de här raderna.",
+      "removed": "Borttaget sedan dess",
+      "removedHint": "En återställning tar tillbaka de här raderna.",
+      "changed": "Ändrat sedan dess",
+      "changedHint": "En återställning ändrar tillbaka det här.",
+      "estimatedHeadcount": "Uppskattat antal gäster: {from} i versionen, {to} nu",
+      "guaranteedHeadcount": "Garanterat antal gäster: {from} i versionen, {to} nu"
+    },
+    "sync": {
+      "matches": "Stämmer med offert v{version}",
+      "changed": "{count, plural, one {# ändring} other {# ändringar}} sedan offert v{version}",
+      "show": "Visa ändringar",
+      "dialogTitle": "Sedan offert v{version}"
+    }
   }
 }

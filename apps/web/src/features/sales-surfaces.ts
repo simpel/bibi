@@ -45,6 +45,11 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "alternativeGroup.update", route: "/orders/[id]" },
   { operation: "alternativeGroup.archive", route: "/orders/[id]" },
   { operation: "alternativeGroup.choose", route: "/orders/[id]" },
+  // Order versions (ADR 0116): listed, named and restored on the order page.
+  { operation: "orderVersion.list", route: "/orders/[id]" },
+  { operation: "orderVersion.get", route: "/orders/[id]" },
+  { operation: "orderVersion.name", route: "/orders/[id]" },
+  { operation: "orderVersion.restore", route: "/orders/[id]" },
   { operation: "quote.list", route: "/orders/[id]" },
   { operation: "quote.create", route: "/orders/[id]" },
   { operation: "quote.get", route: "/quotes/[id]" },

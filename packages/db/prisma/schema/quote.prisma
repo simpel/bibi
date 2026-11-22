@@ -5,6 +5,8 @@ enum QuoteStatus {
   ACCEPTED
   DECLINED
   EXPIRED
+  /// A newer version was sent (ADR 0116); still acceptable until its validity passes.
+  SUPERSEDED
 }
 
 /// How the customer's acceptance was recorded (ADR 0022). Only staff entry exists so far.
@@ -26,6 +28,8 @@ model Quote {
   version           Int
   /// The version this one was made from; the lines' change markers compare against it.
   previousId        String?
+  /// The order version the quote was sent as (ADR 0116, snapshot): set by `quote.send`.
+  versionId         String?
   quoteStatus       QuoteStatus       @default(DRAFT)
   validUntil        DateTime?
   terms             String?
@@ -44,6 +48,7 @@ model Quote {
   createdBy         String?
   order            Order            @relation(fields: [orderId, organizationId], references: [id, organizationId])
   previous          Quote?            @relation("QuoteVersions", fields: [previousId, organizationId], references: [id, organizationId])
+  orderVersion      OrderVersion?     @relation(fields: [versionId, organizationId], references: [id, organizationId])
   next              Quote[]           @relation("QuoteVersions")
   lines             OrderLine[]
   payments          Payment[]
@@ -52,6 +57,7 @@ model Quote {
   @@unique([orderId, version])
   @@index([organizationId, status, quoteStatus])
   @@index([organizationId, orderId])
+  @@index([organizationId, versionId])
 }
 
 /// Order line – a frozen snapshot of one priced order line (ADR 0052): its name, effective price,

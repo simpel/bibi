@@ -19,6 +19,8 @@ import {
 export const QUOTE_COMMANDS = {
   send: { action: sendQuoteAction, done: "sent", confirm: "confirm.send" },
   accept: { action: acceptQuoteAction, done: "accepted", confirm: "confirm.accept" },
+  /** Accepting a SUPERSEDED quote: the customer chose an older version (ADR 0116). */
+  choose: { action: acceptQuoteAction, done: "accepted", confirm: "confirm.choose" },
   decline: { action: declineQuoteAction, done: "declined", confirm: "confirm.decline" },
   expire: { action: expireQuoteAction, done: "expired", confirm: "confirm.expire" },
   revise: { action: reviseQuoteAction, done: "revised", confirm: null },

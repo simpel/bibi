@@ -35,6 +35,7 @@ import { orderMcpTools } from "../features/order/mcp";
 import { orderDraftMcpTools } from "../features/order-draft/mcp";
 import { orderStatusMcpTools } from "../features/order-status/mcp";
 import { orderTemplateMcpTools } from "../features/order-template/mcp";
+import { orderVersionMcpTools } from "../features/order-version/mcp";
 import { organizationProfileMcpTools } from "../features/organization-profile/mcp";
 import { permissionMcpTools } from "../features/permission/mcp";
 import { pipelineMcpTools } from "../features/pipeline/mcp";
@@ -75,6 +76,7 @@ const boardMcpTools = [
   ...settingsMcpTools,
   ...dashboardMcpTools,
   ...myWorkMcpTools,
+  ...orderVersionMcpTools,
   ...financeMcpTools,
   ...boardCrudMcpTools,
   ...boardPhaseMcpTools,

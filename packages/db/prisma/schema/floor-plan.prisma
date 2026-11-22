@@ -97,6 +97,7 @@ model SetupLayout {
   setup          Setup?         @relation(fields: [setupId, organizationId], references: [id, organizationId])
   elements       FloorElement[]
   lines          Line[]
+  versionLines    OrderVersionLine[]
   templateLines  OrderTemplateLine[]
 
   @@unique([id, organizationId])

@@ -47,6 +47,9 @@ erDiagram
   Order ||--o{ Quote : "is answered by"
   Quote |o--o{ Quote : "is revised as"
   Quote ||--o{ OrderLine : "contains"
+  Order ||--o{ OrderVersion : "is saved as"
+  OrderVersion ||--o{ OrderVersionLine : "holds"
+  OrderVersion |o--o{ Quote : "is sent as"
   Order ||--o{ Line : "has lines"
   Order ||--o{ AlternativeGroup : "has"
   AlternativeGroup ||--o{ Line : "groups"
@@ -562,7 +565,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Attributes**
 - version number (`version`, 1 for the order's first quote, then +1) and the version it was made from (`previousId`)
 - valid until (`validUntil`, required to send)
-- status (`quoteStatus`): `DRAFT → SENT → ACCEPTED`, `DECLINED` or `EXPIRED`; only a `DRAFT` can be edited
+- status (`quoteStatus`): `DRAFT → SENT → ACCEPTED`, `DECLINED`, `EXPIRED` or `SUPERSEDED` (a newer version was sent; still acceptable until its validity passes, ADR 0116); only a `DRAFT` can be edited
+- order version (`versionId`, snapshot, set by `quote.send`): the order's content it was sent as (ADR 0116)
 - lines (a `DRAFT`: the order's priced lines, live; sent: the frozen order lines)
 - total excl. and incl. VAT (`totalExclVatMinor`, `totalInclVatMinor`, the sums of the lines that count; stored when sent). Of an alternative group only the chosen option counts, or until then the cheapest; `totalIsFrom` (derived from the lines) then marks the totals as "from" prices (ADR 0052)
 - differs from the order (`differsFromOrder`, `ACCEPTED` only, derived) with the changed and removed lines
@@ -579,7 +583,24 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > ★ Versions with change markers against the previous one: each line is `ADDED`, `CHANGED` (with the changed properties) or `UNCHANGED`, paired with the previous version's lines by the order line they price (`lineId`), and the lines the version dropped are listed as removed. `quote.update` changes validity and terms only; prices and quantities are changed on the lines (`line.update`). `quote.accept` stores the acceptance and fires the `QUOTE_ACCEPTED` status event. A quote can also be built directly from items, and "Save as bundle" then creates a customer-specific item.
 
-> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open order that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the order moves into the status with the `QUOTE_SENT` event, and older `SENT` versions expire), `quote.accept` (from `SENT`; stores `acceptedBy`, `acceptedAt` and `acceptanceMethod` `MANUAL`, creates no other record; `chosenLineIds` records the customer's pick per alternative group first, as `alternativeGroup.choose` does; the order moves into the status with the `QUOTE_ACCEPTED` event), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`. A quote event moves the order as the acting user (`order:write` is needed), only when the organization has an active status with that `event` and allows the move from the order's status; a blocked move (reason, assignee, line collision) fails the send or accept without any change. A status with an `event` cannot be entered by `order.changeStatus` or as the target of a status archive. Archiving a status clears its `event`; importing a template never takes an event from a status that has it.
+> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open order that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the order moves into the status with the `QUOTE_SENT` event, and older `SENT` versions become `SUPERSEDED`), `quote.accept` (from `SENT`, or a still valid `SUPERSEDED` quote: the customer chose an older version, so the order is first restored to its version and the newer `SENT` quote is declined, ADR 0116; stores `acceptedBy`, `acceptedAt` and `acceptanceMethod` `MANUAL`, creates no other record; `chosenLineIds` records the customer's pick per alternative group first, as `alternativeGroup.choose` does; the order moves into the status with the `QUOTE_ACCEPTED` event), `quote.decline` and `quote.expire` (from `SENT` or `SUPERSEDED`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`. A quote event moves the order as the acting user (`order:write` is needed), only when the organization has an active status with that `event` and allows the move from the order's status; a blocked move (reason, assignee, line collision) fails the send or accept without any change. A status with an `event` cannot be entered by `order.changeStatus` or as the target of a status archive. Archiving a status clears its `event`; importing a template never takes an event from a status that has it.
+
+### Order version
+
+*MVP* · The order's content at one moment ([ADR 0116](decisions/0116-order-versions.md)): its active lines and headcounts, never its workflow (status, line states, holds, payments). Snapshot, captured automatically by core after every command that changed the order's lines, alternative groups or the order (`runCommand`); nothing new when the content hash is unchanged.
+
+**Attributes**
+- number (1, 2, … per order), name (owned, optional), restored from (`restoredFromId`, snapshot)
+- content hash (`contentHash`, snapshot), headcounts, captured at (collapsed edits move it)
+- lines (`OrderVersionLine`, one per line: its id, parent, role, alternative group, type, name, time, item, layout, buffers, quantity, price overrides, price effect, note and fields)
+- derived on read: `isCurrent` (equals the order now), `changeCount` and the changes against the order now (lines added, removed and changed, headcounts), the quotes sent as it (with `quote:read`)
+
+**Relations**
+- `N:1` Order is saved as this
+- `1:N` holds → OrderVersionLine
+- `1:N` is sent as → Quote
+
+> Edits by the same actor within 30 minutes collapse into the newest version unless it is named, restored or sent as a quote. `orderVersion.restore` sets the order back through the normal line commands (archive, update) and brings archived lines back with their ids in the state the status grid gives a new line; the result is a new version. Operations (feature `program`): `orderVersion.list|get` (`program:read`), `orderVersion.name|restore` (`program:write`).
 
 ### Agreement & signing
 

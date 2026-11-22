@@ -40,6 +40,7 @@ import "../features/calendar/graphql";
 import "../features/settings/graphql";
 import "../features/dashboard/graphql";
 import "../features/my-work/graphql";
+import "../features/order-version/graphql";
 import "../features/finance/graphql";
 import "../features/quote/graphql";
 import "../features/assignment/graphql";

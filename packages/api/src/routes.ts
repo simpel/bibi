@@ -40,6 +40,7 @@ import { orderRoutes } from "./features/order/rest";
 import { orderDraftRoutes } from "./features/order-draft/rest";
 import { orderStatusRoutes } from "./features/order-status/rest";
 import { orderTemplateRoutes } from "./features/order-template/rest";
+import { orderVersionRoutes } from "./features/order-version/rest";
 import { organizationProfileRoutes } from "./features/organization-profile/rest";
 import { paymentRoutes } from "./features/payment/rest";
 import { paymentAccountRoutes } from "./features/payment-account/rest";
@@ -71,6 +72,7 @@ const boardRoutes = [
   ...settingsRoutes,
   ...dashboardRoutes,
   ...myWorkRoutes,
+  ...orderVersionRoutes,
   ...financeRoutes,
   ...boardCrudRoutes,
   ...boardPhaseRoutes,

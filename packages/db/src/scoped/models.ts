@@ -68,6 +68,8 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "RunSheetRecipient",
   "Quote",
   "OrderLine",
+  "OrderVersion",
+  "OrderVersionLine",
   "InboundEmail",
   "InboundEndpoint",
   "InboundMessage",

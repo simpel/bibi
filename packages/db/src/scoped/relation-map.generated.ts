@@ -24,6 +24,10 @@ export const RELATIONS: RelationMap = {
     "orderLines": {
       "target": "OrderLine",
       "list": true
+    },
+    "versionLines": {
+      "target": "OrderVersionLine",
+      "list": true
     }
   },
   "Assignment": {
@@ -237,6 +241,10 @@ export const RELATIONS: RelationMap = {
     },
     "lines": {
       "target": "Line",
+      "list": true
+    },
+    "versionLines": {
+      "target": "OrderVersionLine",
       "list": true
     },
     "requirements": {
@@ -537,6 +545,10 @@ export const RELATIONS: RelationMap = {
       "target": "OrderLine",
       "list": true
     },
+    "versionLines": {
+      "target": "OrderVersionLine",
+      "list": true
+    },
     "hoursDays": {
       "target": "HoursDay",
       "list": true
@@ -711,6 +723,14 @@ export const RELATIONS: RelationMap = {
     },
     "orderLines": {
       "target": "OrderLine",
+      "list": true
+    },
+    "versionLines": {
+      "target": "OrderVersionLine",
+      "list": true
+    },
+    "versionPartLines": {
+      "target": "OrderVersionLine",
       "list": true
     },
     "alternativeGroup": {
@@ -1001,6 +1021,10 @@ export const RELATIONS: RelationMap = {
       "target": "Quote",
       "list": true
     },
+    "versions": {
+      "target": "OrderVersion",
+      "list": true
+    },
     "statusChanges": {
       "target": "OrderStatusChange",
       "list": true
@@ -1204,6 +1228,58 @@ export const RELATIONS: RelationMap = {
       "list": false
     }
   },
+  "OrderVersion": {
+    "order": {
+      "target": "Order",
+      "list": false
+    },
+    "restoredFrom": {
+      "target": "OrderVersion",
+      "list": false
+    },
+    "restores": {
+      "target": "OrderVersion",
+      "list": true
+    },
+    "lines": {
+      "target": "OrderVersionLine",
+      "list": true
+    },
+    "quotes": {
+      "target": "Quote",
+      "list": true
+    }
+  },
+  "OrderVersionLine": {
+    "version": {
+      "target": "OrderVersion",
+      "list": false
+    },
+    "line": {
+      "target": "Line",
+      "list": false
+    },
+    "parentLine": {
+      "target": "Line",
+      "list": false
+    },
+    "alternativeGroup": {
+      "target": "AlternativeGroup",
+      "list": false
+    },
+    "entityType": {
+      "target": "EntityType",
+      "list": false
+    },
+    "item": {
+      "target": "Item",
+      "list": false
+    },
+    "layout": {
+      "target": "SetupLayout",
+      "list": false
+    }
+  },
   "Organization": {
     "members": {
       "target": "Member",
@@ -1313,6 +1389,10 @@ export const RELATIONS: RelationMap = {
     },
     "previous": {
       "target": "Quote",
+      "list": false
+    },
+    "orderVersion": {
+      "target": "OrderVersion",
       "list": false
     },
     "next": {
@@ -1607,6 +1687,10 @@ export const RELATIONS: RelationMap = {
     },
     "lines": {
       "target": "Line",
+      "list": true
+    },
+    "versionLines": {
+      "target": "OrderVersionLine",
       "list": true
     },
     "templateLines": {

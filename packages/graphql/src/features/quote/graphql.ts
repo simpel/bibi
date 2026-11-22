@@ -44,7 +44,7 @@ export const QuoteRef = objectFromSchema<QuoteDto>({
   description:
     "Quote – a versioned proposal to an order with terms and totals; a DRAFT shows the order's " +
     "priced lines live and sending freezes them (ADR 0052). Fixed status DRAFT → SENT → " +
-    "ACCEPTED, DECLINED or EXPIRED. It uses the order's owner, none of its own.",
+    "ACCEPTED, DECLINED, EXPIRED or SUPERSEDED (a newer version was sent, ADR 0116). It uses the order's owner, none of its own.",
 });
 const QuotePageRef = pageType({ name: "QuotePage", item: QuoteRef });
 

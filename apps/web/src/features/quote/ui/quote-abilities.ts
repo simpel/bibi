@@ -9,6 +9,8 @@ export type QuoteAbilitiesInput = {
   canEdit: boolean;
   /** The caller holds `quote:write`. */
   canSend: boolean;
+  /** The caller holds `program:write`: the order can be restored to the quote's version. */
+  canRestore: boolean;
 };
 
 /** The only place that decides which quote buttons are shown (the operations check anyway). */
@@ -17,6 +19,7 @@ export function quoteAbilities({
   latestVersion,
   canEdit,
   canSend,
+  canRestore,
 }: QuoteAbilitiesInput): QuoteAbilities {
   const from = quote.quoteStatus;
   const revisable = from !== "DRAFT" && from !== "ACCEPTED" && quote.version === latestVersion;
@@ -27,5 +30,6 @@ export function quoteAbilities({
     decline: canEdit && canQuoteTransition({ from, to: "DECLINED" }),
     expire: canEdit && canQuoteTransition({ from, to: "EXPIRED" }),
     revise: canEdit && revisable,
+    restore: canRestore && from !== "DRAFT" && quote.versionId !== null,
   };
 }

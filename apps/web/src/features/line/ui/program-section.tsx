@@ -1,10 +1,12 @@
 import { lineAmounts, type OrderDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { ErrorState } from "@/components/states/error-state";
 import { AlternativeGroupSection } from "@/features/alternative-group/ui/alternative-group-section";
 import { loadOrderComments } from "@/features/comment/load-order-comments";
 import { getOrderAbilities } from "@/features/order/order-abilities";
+import { VersionSyncLine } from "@/features/order-version/ui/version-sync-line";
 import { type CallerAbilities, can } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -29,15 +31,24 @@ function programAccess({ abilities }: { abilities: CallerAbilities }): ProgramAc
 
 type ProgramHeaderProps = {
   title: string;
+  order: OrderDto;
   canEdit: boolean;
   start: Parameters<typeof CreateLineButton>[0];
 };
 
-/** The section's title with the add buttons for a caller who may edit the program. */
-function ProgramHeader({ title, canEdit, start }: ProgramHeaderProps) {
+/**
+ * The section's title, whether the order still matches the quote last sent (ADR 0116), and the
+ * add buttons for a caller who may edit the program.
+ */
+function ProgramHeader({ title, order, canEdit, start }: ProgramHeaderProps) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <h2 className="text-xl">{title}</h2>
+      <div className="grid gap-1">
+        <h2 className="text-xl">{title}</h2>
+        <Suspense fallback={null}>
+          <VersionSyncLine order={order} />
+        </Suspense>
+      </div>
       {canEdit ? (
         <div className="flex flex-wrap gap-2">
           <ExpandBundleButton {...start} />
@@ -77,7 +88,7 @@ export async function ProgramSection({ locale, order }: ProgramSectionProps) {
   return (
     <>
       <section className="grid grid-cols-1 gap-4">
-        <ProgramHeader title={t("plural")} canEdit={access.canEdit} start={start} />
+        <ProgramHeader title={t("plural")} order={order} canEdit={access.canEdit} start={start} />
         <div className="overflow-hidden rounded-xl border bg-card">
           <OrderDay
             orderId={order.id}

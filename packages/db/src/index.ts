@@ -81,6 +81,8 @@ export {
   type OrderStatusTransition,
   type OrderTemplate,
   type OrderTemplateLine,
+  type OrderVersion,
+  type OrderVersionLine,
   type Payment,
   type PaymentAttempt,
   PaymentMethod,

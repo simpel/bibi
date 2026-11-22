@@ -114,6 +114,14 @@
             "question": "How do I rename an order or a run sheet?",
             "answer": "Hover over the title at the top of the page and click the pencil. Type the new name and press Enter, or click Save. Escape or Cancel keeps the old one.\nRenaming a run sheet renames it everywhere, for all its versions and orders, so it needs the same access as editing the run sheet's setup."
           },
+          "orderVersions": {
+            "question": "How do I go back to an earlier version of an order?",
+            "answer": "Bibi saves a version of the order every time someone changes its lines or headcount, so you never need to save by hand. Open the order and scroll to **Versions** to see them all, with the quotes that were sent as each one.\nClick **Show changes** on a version to see what has changed since. **Restore this version** takes the order back: lines added since are removed, removed lines come back and everything else is set back. The restore is saved as a new version, so you can always go back again. Give a version a name from the row menu to keep it easy to find."
+          },
+          "quoteMatches": {
+            "question": "Does the order still match the quote I sent?",
+            "answer": "Look under the **Program** heading on the order. It says **Matches quote v2** when nothing has changed since the quote was sent, or how many changes there are. Click **Show changes** to see them, and restore the quote's version if you want the order back the way it was.\nIf the customer picks an older quote after you sent a newer one, open that quote and click **Customer chose this version**. The order goes back to what that quote offered and the newer quote is marked declined."
+          },
           "createFromBoard": {
             "question": "Can I create an order from the pipeline board?",
             "answer": "Yes. At the bottom of the column where new orders start there is + Create order. It opens the same page as Create order in the menu, and the order lands in that first column."

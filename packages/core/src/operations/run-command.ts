@@ -1,4 +1,5 @@
 import { ok, type Result } from "../errors/result";
+import { captureChangedOrders } from "../features/order-version/capture-changed";
 import type { ExecuteContext } from "./context";
 import { parseWith } from "./parse-with";
 import { Rollback } from "./rollback";
@@ -8,7 +9,7 @@ import { writeAudit } from "./write-audit";
 
 export type RunCommandInput = { operation: AnyOperation; input: unknown; context: ExecuteContext };
 
-/** Handler, output validation and audit rows commit or roll back together. */
+/** Handler, output validation, order versions and audit rows commit or roll back together. */
 export async function runCommand({
   operation,
   input,
@@ -28,6 +29,9 @@ export async function runCommand({
         ? parseWith({ schema: operation.output, data: result.value, side: "output" })
         : result;
       if (!parsed.ok) throw new Rollback({ result: parsed });
+      // Order versions follow every content change, on every surface (ADR 0116).
+      const db = { ...context, db: tx };
+      await captureChangedOrders({ context: db, entityType: operation.entityType, changes });
       await writeAudit({ db: tx, operation, actor: context.actor, changes, output: parsed.value });
       return parsed.value;
     }, transactionOptions({ operation }));

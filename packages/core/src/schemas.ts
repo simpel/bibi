@@ -95,6 +95,7 @@ export * from "./features/order-status/gate-schema";
 export * from "./features/order-status/move-schema";
 export * from "./features/order-status/schema";
 export * from "./features/order-template/schema";
+export * from "./features/order-version/schema";
 export * from "./features/organization-profile/schema";
 export * from "./features/payment/balance-schema";
 export * from "./features/payment/lifecycle-schema";

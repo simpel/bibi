@@ -257,6 +257,8 @@
         "alternativeGroup_update": "Ändra alternativ",
         "alternativeGroup_archive": "Lös upp alternativ",
         "alternativeGroup_choose": "Välj ett alternativ",
+        "orderVersion_name": "Namnge en version av bokningen",
+        "orderVersion_restore": "Återställ en version av bokningen",
         "order_expireHolds": "Släpp förfallna reservationer",
         "order_createFromTemplate": "Skapa bokning från mall",
         "orderTemplate_create": "Skapa mall",

@@ -257,6 +257,8 @@
         "alternativeGroup_update": "Change alternatives",
         "alternativeGroup_archive": "Dissolve alternatives",
         "alternativeGroup_choose": "Choose an alternative",
+        "orderVersion_name": "Name an order version",
+        "orderVersion_restore": "Restore an order version",
         "order_expireHolds": "Expire overdue holds",
         "order_createFromTemplate": "Create order from a package",
         "orderTemplate_create": "Create package",

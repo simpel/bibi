@@ -36,6 +36,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["Requirement", "ACTIVE"],
   ["Comment", "ACTIVE"],
   ["Quote", "ACTIVE"],
+  ["OrderVersion", "ACTIVE"],
   ["Conversation", "ACTIVE"],
   ["OrganizationProfile", "ACTIVE"],
   ["AccountingSettings", "ACTIVE"],

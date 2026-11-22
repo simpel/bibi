@@ -465,24 +465,29 @@
     "sent": "Offerten har markerats som skickad.",
     "accept": "Markera som godkänd",
     "accepted": "Offerten har godkänts.",
+    "choose": "Kunden valde den här versionen",
     "decline": "Avböjd",
     "declined": "Offerten har markerats som avböjd.",
     "expire": "Låt gå ut",
     "expired": "Offerten har gått ut.",
     "revise": "Skapa ny version",
     "revised": "En ny version har skapats.",
+    "restoreToOrder": "Återställ bokningen",
+    "restoreTitle": "Återställ bokningen till offert v{version}",
     "confirm": {
-      "send": "Markera version {version} som skickad till kunden? Bokningens rader fryses i den, den kan inte längre redigeras och äldre skickade versioner förfaller.",
+      "send": "Markera version {version} som skickad till kunden? Bokningens rader fryses i den, den kan inte längre redigeras och äldre skickade versioner markeras som ersatta. Kunden kan fortfarande välja en av dem.",
       "accept": "Registrera att kunden godkände version {version}? Bokningen flyttas om pipelinen har en bokningsstatus för det.",
       "decline": "Registrera att kunden avböjde version {version}?",
-      "expire": "Låta version {version} gå ut? Kunden kan inte längre acceptera den."
+      "expire": "Låta version {version} gå ut? Kunden kan inte längre acceptera den.",
+      "choose": "Registrera att kunden valde version {version}? Bokningen återställs till det offerten erbjöd och den nyare offerten markeras som avböjd."
     },
     "statuses": {
       "DRAFT": "Utkast",
       "SENT": "Skickad",
       "ACCEPTED": "Accepterad",
       "DECLINED": "Avböjd",
-      "EXPIRED": "Utgången"
+      "EXPIRED": "Utgången",
+      "SUPERSEDED": "Ersatt"
     },
     "changes": {
       "ADDED": "Ny",

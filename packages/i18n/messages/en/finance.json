@@ -465,24 +465,29 @@
     "sent": "The quote has been marked as sent.",
     "accept": "Mark as accepted",
     "accepted": "The quote has been accepted.",
+    "choose": "Customer chose this version",
     "decline": "Declined",
     "declined": "The quote has been marked as declined.",
     "expire": "Expire",
     "expired": "The quote has expired.",
     "revise": "Create new version",
     "revised": "A new version has been created.",
+    "restoreToOrder": "Restore to the order",
+    "restoreTitle": "Restore quote v{version} to the order",
     "confirm": {
-      "send": "Mark version {version} as sent to the customer? The order's lines are frozen into it, it can no longer be edited and older sent versions expire.",
+      "send": "Mark version {version} as sent to the customer? The order's lines are frozen into it, it can no longer be edited, and older sent versions are marked as replaced. The customer can still choose one of those.",
       "accept": "Record that the customer accepted version {version}? The order moves on if the pipeline has a status for it.",
       "decline": "Record that the customer declined version {version}?",
-      "expire": "Expire version {version}? The customer can no longer accept it."
+      "expire": "Expire version {version}? The customer can no longer accept it.",
+      "choose": "Record that the customer chose version {version}? The order is restored to what this quote offered and the newer quote is marked declined."
     },
     "statuses": {
       "DRAFT": "Draft",
       "SENT": "Sent",
       "ACCEPTED": "Accepted",
       "DECLINED": "Declined",
-      "EXPIRED": "Expired"
+      "EXPIRED": "Expired",
+      "SUPERSEDED": "Replaced"
     },
     "changes": {
       "ADDED": "New",

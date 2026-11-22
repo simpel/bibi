@@ -64,3 +64,29 @@ export const quoteEntity = (): ParityEntity => ({
       },
     }),
 });
+
+const VERSION_LINE =
+  "lineId parentLineId role alternativeGroupId entityTypeId name startsAt endsAt itemId layoutId " +
+  "setupMinutes teardownMinutes quantity unitPriceMinor discountPercent vatRatePercent " +
+  "priceEffect note fields";
+
+/** The newest version of the order created earlier (ADR 0116): captured by its lines. */
+export const orderVersionEntity = (): ParityEntity => ({
+  ...byId({
+    name: "orderVersion",
+    field: "orderVersion",
+    list: "order-versions",
+    createTool: "",
+    args: {},
+    nested: {
+      quotes: "{ id version quoteStatus }",
+      lines: `{ ${VERSION_LINE} }`,
+      changes: `{ added { ${VERSION_LINE} } removed { ${VERSION_LINE} } changed { line { ${VERSION_LINE} } now { ${VERSION_LINE} } fields } estimatedHeadcount guaranteedHeadcount count }`,
+    },
+  }),
+  create: async ({ mcp, made }) => {
+    const list = await tool({ mcp, name: "orderVersion_list", args: { orderId: made.order.id } });
+    const [latest] = list.items as { id: string }[];
+    return tool({ mcp, name: "orderVersion_get", args: { id: latest?.id } });
+  },
+});

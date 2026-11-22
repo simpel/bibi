@@ -1,0 +1,84 @@
+/// Order version – the order's content at one moment (ADR 0116): its active lines and its
+/// headcounts, never its workflow (status, line states, holds, payments). Snapshot, written only
+/// by core's version capture after a command that changed the order's lines, alternative groups
+/// or the order itself (`features/order-version/capture.ts`), and by `orderVersion.restore`.
+/// Edits by one actor within 30 minutes overwrite the newest version unless it is named, restored
+/// or sent as a quote. `name` is owned (`orderVersion.name`). `status` is the soft-delete flag.
+model OrderVersion {
+  id                  String             @id @default(cuid(2))
+  organizationId      String
+  orderId             String
+  /// 1 for the order's first version, then one higher per new version.
+  number              Int
+  /// A name staff gave the version, e.g. "Without the boat" (owned); null for an automatic one.
+  name                String?
+  /// The version this one restored (snapshot); null for a version made by editing.
+  restoredFromId      String?
+  /// SHA-256 of the content (snapshot): equal hashes are equal content.
+  contentHash         String
+  estimatedHeadcount  Int?
+  guaranteedHeadcount Int?
+  /// When the content was last captured; collapsed edits move it forward.
+  capturedAt          DateTime
+  status              RecordStatus       @default(ACTIVE)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  createdBy           String?
+  order               Order              @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  restoredFrom        OrderVersion?      @relation("OrderVersionRestores", fields: [restoredFromId, organizationId], references: [id, organizationId])
+  restores            OrderVersion[]     @relation("OrderVersionRestores")
+  lines               OrderVersionLine[]
+  quotes              Quote[]
+
+  @@unique([id, organizationId])
+  @@unique([orderId, number])
+  @@index([organizationId, orderId])
+}
+
+/// Order version line – one line as a version holds it (ADR 0116, snapshot): the line's own
+/// content columns at capture time, paired with the line by `lineId`. Replaced as a set when a
+/// version collapses; never edited one by one.
+model OrderVersionLine {
+  id                 String            @id @default(cuid(2))
+  organizationId     String
+  versionId          String
+  lineId             String
+  /// Order in the version, from 0: parents before their sub-lines, then by time.
+  position           Int
+  parentLineId       String?
+  role               LineRole?
+  alternativeGroupId String?
+  entityTypeId       String
+  name               String
+  startsAt           DateTime?
+  endsAt             DateTime?
+  itemId             String?
+  layoutId           String?
+  setupMinutes       Int?
+  teardownMinutes    Int?
+  quantity           Int?
+  unitPriceMinor     Int?
+  discountPercent    Decimal?          @db.Decimal(5, 2)
+  vatRatePercent     Int?
+  priceEffect        PriceEffect?
+  note               String?
+  fields             Json              @default("{}")
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  createdBy          String?
+  version            OrderVersion      @relation(fields: [versionId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  line               Line              @relation("OrderVersionLineLine", fields: [lineId, organizationId], references: [id, organizationId])
+  parentLine         Line?             @relation("OrderVersionLineParent", fields: [parentLineId, organizationId], references: [id, organizationId])
+  alternativeGroup   AlternativeGroup? @relation(fields: [alternativeGroupId, organizationId], references: [id, organizationId])
+  entityType         EntityType        @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  item               Item?             @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  layout             SetupLayout?      @relation(fields: [layoutId, organizationId], references: [id, organizationId])
+
+  @@index([organizationId, versionId])
+  @@index([organizationId, lineId])
+  @@index([organizationId, parentLineId])
+  @@index([organizationId, alternativeGroupId])
+  @@index([organizationId, entityTypeId])
+  @@index([organizationId, itemId])
+  @@index([organizationId, layoutId])
+}

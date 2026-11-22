@@ -4,15 +4,17 @@ import type { QuoteStatus } from "./schema";
 
 /**
  * The quote's fixed state machine (ADR 0022): `DRAFT → SENT → ACCEPTED`, `DECLINED` or
- * `EXPIRED`. Only a DRAFT can be edited; the final statuses never move. Each move has its own
+ * `EXPIRED`; a SENT quote becomes SUPERSEDED when a newer version is sent, and stays acceptable
+ * (ADR 0116). Only a DRAFT can be edited; the final statuses never move. Each move has its own
  * command.
  */
 export const QUOTE_TRANSITIONS: Readonly<Record<QuoteStatus, readonly QuoteStatus[]>> = {
   DRAFT: ["SENT"],
-  SENT: ["ACCEPTED", "DECLINED", "EXPIRED"],
+  SENT: ["ACCEPTED", "DECLINED", "EXPIRED", "SUPERSEDED"],
   ACCEPTED: [],
   DECLINED: [],
   EXPIRED: [],
+  SUPERSEDED: ["ACCEPTED", "DECLINED", "EXPIRED"],
 };
 
 export type QuoteTransition = { from: QuoteStatus; to: QuoteStatus };

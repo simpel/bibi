@@ -34,6 +34,7 @@ import { checkDemoRunSheets } from "./run-sheet-checks";
 import { checkDemoShowcase } from "./showcase-checks";
 import { checkDemoTemplates } from "./template-checks";
 import type { DemoOrg } from "./types";
+import { checkDemoVersions } from "./version-checks";
 
 type OrgCheck = (input: { context: ExecuteContext; org: DemoOrg }) => Promise<string[]>;
 
@@ -68,6 +69,7 @@ export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoProviders,
   checkDemoFinance,
   checkDemoDensity,
+  checkDemoVersions,
   checkDemoDashboard,
   checkDemoNeedsYou,
   checkDemoInbox,

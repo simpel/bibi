@@ -39,6 +39,10 @@ const orderChildren = ({ db, where }: ScopeInput) => [
   // Payments, attempts, invoices and credit notes point at their provider connection (ADR 0100).
   db.providerConnection.deleteMany({ where }),
   db.quote.deleteMany({ where }),
+  // Versions point at their order, lines and each other; quotes pointed at them (ADR 0116).
+  db.orderVersionLine.deleteMany({ where }),
+  db.orderVersion.updateMany({ where, data: { restoredFromId: null } }),
+  db.orderVersion.deleteMany({ where }),
   // A chosen alternative points at its line and the lines at their group (ADR 0052).
   db.alternativeGroup.updateMany({ where, data: { chosenLineId: null } }),
   // The status, state and estimate history (ADR 0054, 0074) points at lines, orders and states.

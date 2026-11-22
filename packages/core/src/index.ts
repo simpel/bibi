@@ -92,6 +92,8 @@ export * from "./features/order-status/order-operations";
 export * from "./features/order-status/read-operations";
 export * from "./features/order-status/write-operations";
 export * from "./features/order-template/operations";
+export * from "./features/order-version/operations";
+export * from "./features/order-version/schema";
 export * from "./features/organization-profile/operations";
 export { applyPaymentSignal } from "./features/payment/apply-signal-operation";
 export * from "./features/payment/operations";

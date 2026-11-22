@@ -274,6 +274,7 @@
       "people": "Details and people",
       "messages": "Messages",
       "quotes": "Quotes",
+      "versions": "Versions",
       "balance": "Balance",
       "estimates": "Estimate history",
       "history": "History"
@@ -857,5 +858,64 @@
     "replied": "Reply added",
     "mentionList": "Colleagues to mention",
     "goToLabel": "Go to comments{count, plural, =0 {} one { (# comment} other { (# comments}}{unread, plural, =0 {} other {, # new}}{count, plural, =0 {} other {)}}"
+  },
+  "orderVersion": {
+    "title": "Versions",
+    "description": "Bibi saves a version of the order's lines and headcount after every change. Open one to see what has changed since, and restore it to take the order back.",
+    "empty": "No versions yet. One is saved after the first change.",
+    "versionLabel": "Version {number}",
+    "quoteLabel": "Quote v{version}",
+    "current": "Current",
+    "matches": "Matches the order",
+    "restoredFrom": "Restored from version {number}",
+    "changeCount": "{count, plural, one {# change since} other {# changes since}}",
+    "showChanges": "Show changes",
+    "name": "Name version",
+    "rename": "Rename version",
+    "nameTitle": "Name version {number}",
+    "nameHint": "A named version is easy to find and is never merged with later edits. Leave it empty to remove the name.",
+    "named": "The version has been saved.",
+    "dialogDescription": "What the order has changed since this version. Restoring undoes exactly this.",
+    "loadFailed": "The version could not be loaded. Try again.",
+    "restore": "Restore this version",
+    "restoreNote": "Lines that come back start as new bookings. The status, payments and run sheets that were sent stay as they are; the restore is saved as a new version.",
+    "restored": "The order has been restored.",
+    "fields": {
+      "version": "Version",
+      "name": "Name",
+      "quotes": "Quotes",
+      "capturedAt": "Saved",
+      "changes": "Order now",
+      "startsAt": "start",
+      "endsAt": "end",
+      "itemId": "item",
+      "layoutId": "layout",
+      "setupMinutes": "setup time",
+      "teardownMinutes": "teardown time",
+      "quantity": "quantity",
+      "unitPriceMinor": "price",
+      "discountPercent": "discount",
+      "vatRatePercent": "VAT",
+      "note": "note",
+      "fields": "fields",
+      "alternativeGroupId": "alternative"
+    },
+    "changes": {
+      "none": "The order matches this version.",
+      "added": "Added since",
+      "addedHint": "Restoring removes these lines.",
+      "removed": "Removed since",
+      "removedHint": "Restoring brings these lines back.",
+      "changed": "Changed since",
+      "changedHint": "Restoring sets these back.",
+      "estimatedHeadcount": "Estimated headcount: {from} in the version, {to} now",
+      "guaranteedHeadcount": "Guaranteed headcount: {from} in the version, {to} now"
+    },
+    "sync": {
+      "matches": "Matches quote v{version}",
+      "changed": "{count, plural, one {# change} other {# changes}} since quote v{version}",
+      "show": "Show changes",
+      "dialogTitle": "Since quote v{version}"
+    }
   }
 }

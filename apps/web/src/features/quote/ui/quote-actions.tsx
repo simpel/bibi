@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { QuoteCommand } from "./quote-command";
 import { QuoteDialog } from "./quote-dialog";
+import { RestoreQuoteVersion } from "./restore-quote-version";
 
 export type QuoteAbilities = {
   edit: boolean;
@@ -22,6 +23,8 @@ export type QuoteAbilities = {
   decline: boolean;
   expire: boolean;
   revise: boolean;
+  /** `program:write` on a sent quote: restore the order to the version it was sent as. */
+  restore: boolean;
 };
 
 export type QuoteActionsProps = {
@@ -47,7 +50,15 @@ export function QuoteActions({ quote, can }: QuoteActionsProps) {
       ) : null}
       {can.revise ? <QuoteCommand quote={quote} command="revise" icon={<CopyPlusIcon />} /> : null}
       {can.accept ? (
-        <QuoteCommand quote={quote} command="accept" icon={<CheckCircleIcon />} variant="default" />
+        <QuoteCommand
+          quote={quote}
+          command={quote.quoteStatus === "SUPERSEDED" ? "choose" : "accept"}
+          icon={<CheckCircleIcon />}
+          variant="default"
+        />
+      ) : null}
+      {can.restore && quote.versionId ? (
+        <RestoreQuoteVersion versionId={quote.versionId} quoteVersion={quote.version} />
       ) : null}
       {can.decline ? <QuoteCommand quote={quote} command="decline" icon={<XCircleIcon />} /> : null}
       {can.expire ? <QuoteCommand quote={quote} command="expire" icon={<TimerOffIcon />} /> : null}

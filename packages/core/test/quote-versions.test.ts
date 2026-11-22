@@ -39,7 +39,7 @@ describe("quote.revise (ADR 0022)", () => {
     const v1 = unwrap({
       result: await execute({ operation: getQuote, input: { id: quote.id }, context }),
     });
-    expect(v1.quoteStatus).toBe("EXPIRED");
+    expect(v1.quoteStatus).toBe("SUPERSEDED");
   });
 
   it("lists the lines a version removed", async () => {

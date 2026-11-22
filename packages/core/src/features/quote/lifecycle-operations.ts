@@ -1,6 +1,7 @@
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { chooseOnAccept } from "../alternative-group/choose-on-accept";
+import { prepareSupersededAccept } from "./accept-superseded";
 import { moveOnQuoteEvent } from "./move-on-event";
 import { moveQuote } from "./move-quote";
 import { loadOpenOrder } from "./quote-rules";
@@ -15,7 +16,7 @@ import { checkQuoteTransition } from "./transitions";
 
 type CloseInput = { name: string; to: QuoteStatus; description: string };
 
-/** A command that moves a SENT quote to a final status; any other start is `CONFLICT`. */
+/** A command that moves a SENT or SUPERSEDED quote to a final status; else `CONFLICT`. */
 const closeQuote = ({ name, to, description }: CloseInput) =>
   defineOperation({
     name,
@@ -35,7 +36,7 @@ export const declineQuote = closeQuote({
   name: "quote.decline",
   to: "DECLINED",
   description:
-    "Record that the customer declined a SENT quote (ADR 0022). The order stays open: make a " +
+    "Record that the customer declined a SENT or SUPERSEDED quote (ADR 0022). The order stays open: make a " +
     "new version with quote.revise or move the order to a closing status. Any other status is a CONFLICT.",
 });
 
@@ -43,7 +44,7 @@ export const expireQuote = closeQuote({
   name: "quote.expire",
   to: "EXPIRED",
   description:
-    "Expire a SENT quote that the customer did not accept in time (ADR 0022). A new version can " +
+    "Expire a SENT or SUPERSEDED quote the customer did not accept in time (ADR 0022). A new version can " +
     "then be made with quote.revise. Any other status is a CONFLICT.",
 });
 
@@ -51,7 +52,10 @@ export const acceptQuote = defineOperation({
   name: "quote.accept",
   kind: "command",
   description:
-    "Record that the customer accepted a SENT quote (ADR 0022). Stores who recorded it " +
+    "Record that the customer accepted a SENT quote, or a still valid SUPERSEDED one (ADR 0022, " +
+    "0116). For a SUPERSEDED quote the customer chose an older version: the order is restored " +
+    "to the version it was sent as (orderVersion.restore, needs program:write) and the newer " +
+    "SENT quote is declined. Stores who recorded it " +
     "(`acceptedBy`), when (`acceptedAt`) and `acceptanceMethod` MANUAL, and creates no other " +
     "record. The order must not be in a closing status. The order moves into the status with " +
     "the QUOTE_ACCEPTED event, if there is one and the organization allows the move from its " +
@@ -69,6 +73,8 @@ export const acceptQuote = defineOperation({
     if (!allowed.ok) return allowed;
     const order = await loadOpenOrder({ context, orderId: before.orderId });
     if (!order.ok) return order;
+    const prepared = await prepareSupersededAccept({ context, quote: before });
+    if (!prepared.ok) return prepared;
     const chosen = await chooseOnAccept({ context, orderId: before.orderId, chosenLineIds });
     if (!chosen.ok) return chosen;
     const extra = {

@@ -8,6 +8,7 @@ const COLOR: Record<QuoteStatus, string> = {
   ACCEPTED: "var(--success)",
   DECLINED: "var(--destructive)",
   EXPIRED: "var(--muted-foreground)",
+  SUPERSEDED: "var(--muted-foreground)",
 };
 
 export type QuoteStatusBadgeProps = { status: QuoteStatus };

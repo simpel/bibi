@@ -71,6 +71,8 @@ export const PIPELINE_OPERATION_KEYS = [
   "alternativeGroup_update",
   "alternativeGroup_archive",
   "alternativeGroup_choose",
+  "orderVersion_name",
+  "orderVersion_restore",
   "statusGrid_setCell",
   "statusGrid_importTemplate",
   "order_expireHolds",

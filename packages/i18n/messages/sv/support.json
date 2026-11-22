@@ -114,6 +114,14 @@
             "question": "Hur byter jag namn på en bokning eller ett körschema?",
             "answer": "Håll muspekaren över titeln högst upp på sidan och klicka på pennan. Skriv det nya namnet och tryck Enter, eller klicka på Spara. Escape eller Avbryt behåller det gamla.\nOm du byter namn på ett körschema ändras det överallt, för alla dess versioner och bokningar, så det kräver samma behörighet som att redigera körschemats inställningar."
           },
+          "orderVersions": {
+            "question": "Hur går jag tillbaka till en tidigare version av en bokning?",
+            "answer": "Bibi sparar en version av bokningen varje gång någon ändrar dess rader eller antal gäster, så du behöver aldrig spara själv. Öppna bokningen och scrolla till **Versioner** för att se alla, med offerterna som skickades som var och en.\nKlicka på **Visa ändringar** på en version för att se vad som ändrats sedan dess. **Återställ den här versionen** tar tillbaka bokningen: rader som lagts till tas bort, borttagna rader kommer tillbaka och allt annat ändras tillbaka. Återställningen sparas som en ny version, så du kan alltid gå tillbaka igen. Ge en version ett namn från radens meny så är den lätt att hitta."
+          },
+          "quoteMatches": {
+            "question": "Stämmer bokningen fortfarande med offerten jag skickade?",
+            "answer": "Titta under rubriken **Program** på bokningen. Där står **Stämmer med offert v2** när inget har ändrats sedan offerten skickades, annars hur många ändringar det finns. Klicka på **Visa ändringar** för att se dem, och återställ offertens version om du vill ha tillbaka bokningen som den var.\nOm kunden väljer en äldre offert efter att du skickat en nyare, öppna den offerten och klicka på **Kunden valde den här versionen**. Bokningen går tillbaka till det den offerten erbjöd och den nyare offerten markeras som avböjd."
+          },
           "createFromBoard": {
             "question": "Kan jag skapa en order direkt från tavlan?",
             "answer": "Ja. Längst ner i kolumnen där nya ordrar hamnar finns + Skapa bokning. Den öppnar samma sida som Skapa bokning i menyn, och ordern hamnar i den första kolumnen."

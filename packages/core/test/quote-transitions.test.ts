@@ -2,12 +2,16 @@ import { describe, expect, it } from "vitest";
 import { checkQuoteTransition, QUOTE_STATUSES, type QuoteStatus } from "../src/index";
 import { errorCode } from "./helpers";
 
-/** Every move the quote's state machine allows (ADR 0022); every other pair is a CONFLICT. */
+/** Every move the quote's state machine allows (ADR 0022, 0116); every other pair is a CONFLICT. */
 const ALLOWED: ReadonlyArray<readonly [QuoteStatus, QuoteStatus]> = [
   ["DRAFT", "SENT"],
   ["SENT", "ACCEPTED"],
   ["SENT", "DECLINED"],
   ["SENT", "EXPIRED"],
+  ["SENT", "SUPERSEDED"],
+  ["SUPERSEDED", "ACCEPTED"],
+  ["SUPERSEDED", "DECLINED"],
+  ["SUPERSEDED", "EXPIRED"],
 ];
 
 const isAllowed = ({ from, to }: { from: QuoteStatus; to: QuoteStatus }) =>
@@ -27,8 +31,8 @@ describe("quote transitions (ADR 0022)", () => {
     },
   );
 
-  it("covers all 25 pairs", () => {
-    expect(ALL_PAIRS).toHaveLength(25);
+  it("covers all 36 pairs", () => {
+    expect(ALL_PAIRS).toHaveLength(36);
     expect(ALL_PAIRS.filter(isAllowed)).toHaveLength(ALLOWED.length);
   });
 });

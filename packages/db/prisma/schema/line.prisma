@@ -76,6 +76,9 @@ model Line {
   comments           Comment[]
   occupancies        Occupancy[]
   orderLines         OrderLine[]        @relation("OrderLineLine")
+  /// Snapshots of the line in order versions (ADR 0116).
+  versionLines       OrderVersionLine[] @relation("OrderVersionLineLine")
+  versionPartLines   OrderVersionLine[] @relation("OrderVersionLineParent")
   alternativeGroup   AlternativeGroup?  @relation("AlternativeGroupOptions", fields: [alternativeGroupId, organizationId], references: [id, organizationId])
   chosenIn           AlternativeGroup[] @relation("AlternativeGroupChoice")
   parentLine         Line?              @relation("LineParts", fields: [parentLineId, organizationId], references: [id, organizationId])

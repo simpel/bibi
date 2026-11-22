@@ -40,4 +40,14 @@ export const READ_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
     "the /new/order step 0 shows it (ADR 0084); JSON in chat",
   pipeline_cues:
     "card cues for a set of orders; the order table and the pipeline cards show them; JSON in chat",
+  orderVersion_list:
+    "an order's versions (ADR 0116); the order page's Versions section shows them; JSON in chat",
+  orderVersion_get:
+    "one version and its changes against the order now; the order page's restore dialog shows " +
+    "it (ADR 0116); JSON in chat",
+  orderVersion_name:
+    "names a version (ADR 0116); the order page's Versions section shows it; read out, JSON",
+  orderVersion_restore:
+    "restores the order to a version (ADR 0116); the order page's program shows the result; " +
+    "read out, JSON",
 };

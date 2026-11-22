@@ -11,7 +11,7 @@ import { integrationEntities } from "./parity-entities-integration";
 import { itemStateEntities } from "./parity-entities-item-state";
 import { orderEntities } from "./parity-entities-order";
 import { moneyEntities } from "./parity-entities-payment";
-import { alternativeGroupEntity, quoteEntity } from "./parity-entities-quote";
+import { alternativeGroupEntity, orderVersionEntity, quoteEntity } from "./parity-entities-quote";
 import { runSheet } from "./parity-entities-run-sheet";
 import { selfEntities } from "./parity-entities-user-settings";
 import { welcomeEntities } from "./parity-entities-welcome";
@@ -116,6 +116,7 @@ export const ENTITIES: ParityEntity[] = [
   ...itemStateEntities(),
   alternativeGroupEntity(),
   quoteEntity(),
+  orderVersionEntity(),
   runSheet(),
   byId({
     name: "conversation",

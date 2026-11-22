@@ -59,6 +59,7 @@ const loadQuotePageCached = cache(async (id: string): Promise<Result<QuotePageDa
         latestVersion,
         canEdit: can({ abilities, permission: "quote:write" }),
         canSend: can({ abilities, permission: "quote:write" }),
+        canRestore: can({ abilities, permission: "program:write" }),
       }),
     },
   };

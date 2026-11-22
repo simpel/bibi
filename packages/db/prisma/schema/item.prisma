@@ -71,6 +71,7 @@ model Item {
   revenueAccounts        RevenueAccount[]
   /// Order lines that copied this item (snapshot).
   orderLines             OrderLine[]
+  versionLines           OrderVersionLine[]
   hoursDays              HoursDay[]
   hoursExceptions        HoursException[]
   /// The supertable row this record extends (ADR 0056).

@@ -3,8 +3,18 @@ import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { OrderLineSchema } from "./order-line-schema";
 
-/** The quote's fixed status (ADR 0022); the allowed moves are in `transitions.ts`. */
-export const QUOTE_STATUSES = ["DRAFT", "SENT", "ACCEPTED", "DECLINED", "EXPIRED"] as const;
+/**
+ * The quote's fixed status (ADR 0022); the allowed moves are in `transitions.ts`. SUPERSEDED: a
+ * newer version was sent, still acceptable until its validity passes (ADR 0116).
+ */
+export const QUOTE_STATUSES = [
+  "DRAFT",
+  "SENT",
+  "ACCEPTED",
+  "DECLINED",
+  "EXPIRED",
+  "SUPERSEDED",
+] as const;
 export const QuoteStatusSchema = z.enum(QUOTE_STATUSES);
 
 /** How an acceptance was recorded; staff entry is the only way so far (ADR 0022). */
@@ -30,6 +40,10 @@ export const QuoteSchema = z.object({
   orderId: z.string(),
   version: z.number().int().describe("1 for the first quote of the order, then +1 per version"),
   previousId: z.string().nullable().describe("The version this one was made from"),
+  versionId: z
+    .string()
+    .nullable()
+    .describe("orderVersion.get: the order version it was sent as (ADR 0116); null on a DRAFT"),
   /** Changed only by the quote's own commands (`quote.send`, `quote.accept`, …). */
   quoteStatus: QuoteStatusSchema,
   validUntil: z.date().nullable(),

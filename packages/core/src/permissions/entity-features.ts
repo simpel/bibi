@@ -20,6 +20,7 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   line: "program",
   lineAllocation: "program",
   alternativeGroup: "program",
+  orderVersion: "program",
   lineStateChange: "program",
   customer: "customer",
   contact: "customer",

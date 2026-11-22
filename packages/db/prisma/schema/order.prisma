@@ -60,6 +60,7 @@ model Order {
   lines               Line[]
   alternativeGroups   AlternativeGroup[]
   quotes              Quote[]
+  versions            OrderVersion[]
   statusChanges       OrderStatusChange[]
   estimates           OrderEstimate[]
   requirements        Requirement[]

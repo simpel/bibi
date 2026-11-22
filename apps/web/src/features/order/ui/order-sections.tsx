@@ -6,6 +6,7 @@ import { DeferredSection } from "@/components/states/deferred-section";
 import { CommentSection } from "@/features/comment/ui/comment-section";
 import { OrderMessages } from "@/features/inbound-message/ui/order-messages";
 import { ProgramSection } from "@/features/line/ui/program-section";
+import { OrderVersions } from "@/features/order-version/ui/order-versions";
 import { OrderPayments } from "@/features/payment/ui/order-payments";
 import { OrderQuotes } from "@/features/quote/ui/order-quotes";
 import { RequirementSection } from "@/features/requirement/ui/requirement-section";
@@ -25,7 +26,7 @@ export type OrderSectionsProps = {
 
 /**
  * The order's page sections as bands: program, needs and run sheets, comments, details and people,
- * messages, quotes, balance, estimates and status history. Each section belongs to another feature (ADR 0050,
+ * messages, quotes, versions, balance, estimates and status history. Each section belongs to another feature (ADR 0050,
  * feature scope): without that feature's `read` it is left out, not shown as an error, and a
  * band left with nothing is not rendered. Every section that loads its own data streams in on
  * its own.
@@ -86,6 +87,13 @@ export async function OrderSections({ locale, order, statuses, abilities }: Orde
         <PageBand aria-label={t("quotes")} data-tour="order.money" containerClassName="gap-12">
           <DeferredSection>
             <OrderQuotes locale={locale} order={order} statuses={statuses} />
+          </DeferredSection>
+        </PageBand>
+      ) : null}
+      {canProgram ? (
+        <PageBand aria-label={t("versions")} containerClassName="gap-12">
+          <DeferredSection>
+            <OrderVersions locale={locale} order={order} />
           </DeferredSection>
         </PageBand>
       ) : null}

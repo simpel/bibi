@@ -103,6 +103,8 @@ export const CREATED_BY_MODELS = new Set<string>([
   "RunSheetRecipient",
   "Quote",
   "OrderLine",
+  "OrderVersion",
+  "OrderVersionLine",
   "InboundEmail",
   "InboundEndpoint",
   "InboundMessage",

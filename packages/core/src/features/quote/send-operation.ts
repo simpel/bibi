@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { invalid, notFound } from "../../shared/errors";
+import { versionForQuote } from "../order-version/capture";
 import { checkLinesReadable } from "./check-lines-readable";
 import { checkPricedLines } from "./check-priced-lines";
 import { type DerivedLine, deriveOrderLines } from "./derive-lines";
@@ -30,7 +31,7 @@ function checkSendable({ quote, lines }: SendableInput): Result<true> {
 
 type SupersedeInput = { context: Context; quote: QuoteDto };
 
-/** Expires the older SENT versions of the quote. */
+/** The older SENT versions of the quote are superseded (ADR 0116): still acceptable. */
 async function supersede({ context, quote }: SupersedeInput): Promise<Result<true>> {
   const older = await context.db.quote.findMany({
     where: { orderId: quote.orderId, quoteStatus: "SENT", id: { not: quote.id } },
@@ -39,8 +40,8 @@ async function supersede({ context, quote }: SupersedeInput): Promise<Result<tru
   for (const { id } of older) {
     const before = await loadQuote({ context, id });
     if (!before) continue;
-    const expired = await moveQuote({ context, before, to: "EXPIRED" });
-    if (!expired.ok) return expired;
+    const moved = await moveQuote({ context, before, to: "SUPERSEDED" });
+    if (!moved.ok) return moved;
   }
   return ok({ value: true });
 }
@@ -53,7 +54,8 @@ export const sendQuote = defineOperation({
     "lines as the quote's snapshot: one order line per line with its effective price, VAT, " +
     "tags and totals; later line changes never touch it. It needs at least one priced line, " +
     "each with a quantity and VAT, and a future `validUntil`, and the order must not be in a " +
-    "closing status. Older SENT versions expire. The order's status does not change. Any other " +
+    "closing status. Older SENT versions become SUPERSEDED (still acceptable). The quote points " +
+    "at the order version it was sent as (versionId, orderVersion.get). Any other " +
     "starting status is a CONFLICT. Needs program:read and item:read (the lines are copied).",
   input: QuoteIdInputSchema,
   output: QuoteSchema,
@@ -75,6 +77,9 @@ export const sendQuote = defineOperation({
     if (!superseded.ok) return superseded;
     const frozen = await freezeLines({ context, quoteId: id, lines: lines.map((d) => d.line) });
     if (!frozen.ok) return frozen;
+    // The order version it is sent as, sealed by this quote (ADR 0116).
+    const version = await versionForQuote({ context, orderId });
+    if (version) await context.db.quote.update({ where: { id }, data: { versionId: version.id } });
     const sent = await moveQuote({ context, before, to: "SENT" });
     if (!sent.ok) return sent;
     const moved = await moveOnQuoteEvent({ context, orderId, event: "QUOTE_SENT" });

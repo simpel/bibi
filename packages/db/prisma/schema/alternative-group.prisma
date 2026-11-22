@@ -19,6 +19,7 @@ model AlternativeGroup {
   chosenLine     Line?        @relation("AlternativeGroupChoice", fields: [chosenLineId, organizationId], references: [id, organizationId])
   options        Line[]       @relation("AlternativeGroupOptions")
   orderLines     OrderLine[]
+  versionLines   OrderVersionLine[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

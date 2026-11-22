@@ -30,6 +30,7 @@ import { occupancyOperations } from "./features/occupancy/operations";
 import { orderOperations } from "./features/order/operations";
 import { orderStatusOperations } from "./features/order-status/operations";
 import { orderTemplateOperations } from "./features/order-template/operations";
+import { orderVersionOperations } from "./features/order-version/operations";
 import { organizationProfileOperations } from "./features/organization-profile/operations";
 import { permissionOperations } from "./features/permission/operations";
 import { pipelineOperations } from "./features/pipeline/operations";
@@ -58,6 +59,7 @@ const pipelineGroupOperations = [
   ...pipelineOperations,
   ...dashboardOperations,
   ...myWorkOperations,
+  ...orderVersionOperations,
   ...pipelineSetupOperations,
   ...changeSetOperations,
 ];
