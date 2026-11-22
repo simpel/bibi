@@ -735,7 +735,7 @@
       "UNFILLED_OPTIONAL_DEMAND": "Enhet saknas",
       "OUTSIDE_ITEM_HOURS": "Utanför arbetstid",
       "OUTSIDE_VENUE_HOURS": "Stängt då",
-      "OPTION_SPLIT_MISMATCH": "Fel fördelning",
+      "OPTION_SPLIT_MISMATCH": "Fördelat {sum, number} av {expected, number}",
       "UNCHOSEN_REQUIRED_GROUP": "Val saknas"
     },
     "expandBundle": "Lägg till paket",
@@ -748,6 +748,10 @@
     "optionGroup": "{name} (välj {min, number}{same, select, true {} other {–{max, number}}})",
     "optionChoice": "{name} · {effect}",
     "optionSplitHint": "Fördela mellan gästerna: ange hur många av {quantity, number} som får varje tillval. Lämna 0 för att inte välja tillvalet.",
+    "splitSum": {
+      "over": "{sum, number} valda, men raden gäller {quantity, number}. Sänk antalen, eller ändra antal gäster eller radens antal.",
+      "under": "{sum, number} av {quantity, number} fördelade hittills."
+    },
     "units": "Enheter",
     "pickRule": {
       "exact": "Välj {min, number}",

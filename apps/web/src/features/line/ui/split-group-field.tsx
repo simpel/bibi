@@ -1,3 +1,4 @@
+import { TriangleAlertIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Path, UseFormReturn } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";
@@ -29,7 +30,39 @@ function GroupRuleMessage<V extends ChooseOptionsFormValues, O>({
   return <p className="text-sm text-destructive">{message}</p>;
 }
 
-/** A split group (ADR 0082): a quantity per option, 0 = not chosen. */
+type SplitSumProps<V extends ChooseOptionsFormValues, O> = RuleMessageProps<V, O> & {
+  quantity: number | null;
+};
+
+/**
+ * How many the split places against the line's quantity, while typing: amber when it places more
+ * than there are (core keeps it and warns OPTION_SPLIT_MISMATCH), a count while it places fewer.
+ */
+function SplitSum<V extends ChooseOptionsFormValues, O>({
+  form,
+  index,
+  quantity,
+}: SplitSumProps<V, O>) {
+  const t = useTranslations("line");
+  const values = form.watch(`groups.${index}.quantities` as Path<V>) as Record<string, string>;
+  const sum = Object.values(values ?? {}).reduce((total, raw) => {
+    const value = Number(raw.trim() === "" ? 0 : raw);
+    return Number.isFinite(value) ? total + value : total;
+  }, 0);
+  if (quantity === null || sum === 0 || sum === quantity) return null;
+  if (sum < quantity)
+    return (
+      <p className="text-sm text-muted-foreground">{t("splitSum.under", { sum, quantity })}</p>
+    );
+  return (
+    <p className="flex items-center gap-2 text-sm font-medium text-warning-foreground">
+      <TriangleAlertIcon aria-hidden className="size-4 shrink-0 text-warning" />
+      {t("splitSum.over", { sum, quantity })}
+    </p>
+  );
+}
+
+/** A split group (ADR 0082): a quantity per option, 0 = not chosen, and the running sum. */
 export function SplitGroupField<V extends ChooseOptionsFormValues, O>({
   form,
   index,
@@ -59,6 +92,7 @@ export function SplitGroupField<V extends ChooseOptionsFormValues, O>({
           />
         ))}
       </div>
+      <SplitSum form={form} index={index} quantity={quantity} />
       <GroupRuleMessage form={form} index={index} />
     </fieldset>
   );

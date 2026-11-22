@@ -34,7 +34,7 @@ function WorstWarning({ t, warnings }: WorstWarningProps) {
   return (
     <Badge variant="warning" title={all.join("\n")}>
       <TriangleAlertIcon aria-hidden />
-      {t(`warningsShort.${worst.kind}`)}
+      {t(`warningsShort.${worst.kind}`, { sum: worst.sum ?? 0, expected: worst.expected ?? 0 })}
     </Badge>
   );
 }

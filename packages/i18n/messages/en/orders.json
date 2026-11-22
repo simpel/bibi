@@ -735,7 +735,7 @@
       "UNFILLED_OPTIONAL_DEMAND": "Unit missing",
       "OUTSIDE_ITEM_HOURS": "Outside hours",
       "OUTSIDE_VENUE_HOURS": "Venue closed",
-      "OPTION_SPLIT_MISMATCH": "Split off",
+      "OPTION_SPLIT_MISMATCH": "Split {sum, number} of {expected, number}",
       "UNCHOSEN_REQUIRED_GROUP": "Choice open"
     },
     "expandBundle": "Add bundle",
@@ -748,6 +748,10 @@
     "optionGroup": "{name} (choose {min, number}{same, select, true {} other {–{max, number}}})",
     "optionChoice": "{name} · {effect}",
     "optionSplitHint": "Split between guests: give each chosen option how many of {quantity, number} get it. Leave an option at 0 to not choose it.",
+    "splitSum": {
+      "over": "{sum, number} chosen, but the line is for {quantity, number}. Lower the numbers, or change the headcount or quantity.",
+      "under": "{sum, number} of {quantity, number} placed so far."
+    },
     "units": "Units",
     "pickRule": {
       "exact": "Choose {min, number}",
