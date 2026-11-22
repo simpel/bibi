@@ -10,6 +10,7 @@ import { PageTour } from "@/components/tour/page-tour";
 import { FollowControl } from "@/features/assignment/ui/follow-control";
 import { OrderCommentControl } from "@/features/comment/ui/order-comment-control";
 import { OrderIssues } from "@/features/line/ui/order-issues";
+import { OrderTasks } from "@/features/my-work/ui/order-tasks";
 import { orderName } from "@/lib/order-label";
 import { orderRoute } from "@/lib/routes";
 import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
@@ -119,6 +120,12 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
             </Suspense>
           </div>
         ) : null}
+        {/* What the caller must do on this order (Needs you), hidden while there is nothing. */}
+        <div className="empty:hidden [&:not(:empty)]:mb-4">
+          <Suspense fallback={null}>
+            <OrderTasks orderId={id} />
+          </Suspense>
+        </div>
         <PageHeader
           {...heading({ order: order.value, label, short })}
           heading={

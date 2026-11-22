@@ -396,6 +396,23 @@
         "confirm": "Avfärda uppgift",
         "done": "Uppgiften är avfärdad"
       }
+    },
+    "orderTasks": {
+      "hints": {
+        "RUN_SHEET_BLOCKED": "Något hindrar körschemat från att skickas. Öppna det för att se vad som saknas.",
+        "RUN_SHEET_UNSENT": "Körschemat har inte skickats, eller har ändrats sedan det skickades. Öppna det och skicka det.",
+        "UNCONFIRMED": "Några rader är fortfarande preliminärbokade och bokningen börjar snart. Bekräfta eller släpp dem i programmet nedan.",
+        "HOLD_EXPIRES": "Bokningens preliminärbokningar går ut snart. Bekräfta raderna eller flytta datumet de gäller till.",
+        "UNREAD_MESSAGES": "Kunden har skrivit och väntar på svar.",
+        "PAYMENT_OVERDUE": "En faktura har passerat förfallodagen och är inte helt betald. Kontakta kunden om betalningen.",
+        "NOT_CLOSED": "Allt i bokningen har genomförts. Välj en status som stänger bokningen i statusmenyn uppe till höger.",
+        "QUOTE_WAITING": "Kunden har inte svarat på offerten än. Hör av dig till kunden, eller öppna offerten för att se den."
+      },
+      "open": {
+        "runSheet": "Öppna körschema",
+        "quote": "Öppna offert",
+        "inbox": "Öppna inkorgen"
+      }
     }
   },
   "occupancy": {

@@ -7,6 +7,7 @@ import { taskIcon } from "@/components/activity/subject-icons";
 import { RelativeTime } from "@/components/relative-time";
 import { taskHref } from "../lib/task-href";
 import type { MyWorkTaskWireish } from "./my-work-wireish";
+import { useTaskText } from "./use-task-text";
 
 export type NeedsYouRowProps = {
   task: MyWorkTaskWireish;
@@ -17,34 +18,8 @@ export type NeedsYouRowProps = {
   action?: ReactNode;
 };
 
-/** What the task asks, as a sentence that starts with the verb. */
-function useTaskText({ task, numbers }: NeedsYouRowProps): string {
-  const t = useTranslations("myWork.needsYou.tasks");
-  const line = task.lineName ?? "";
-  const runSheet = task.runSheetName ?? "";
-  const count = task.count ?? 0;
-  switch (task.kind) {
-    case "HARD_CLASH":
-      return task.otherReference === null
-        ? t("HARD_CLASH_BLOCK", { line })
-        : t("HARD_CLASH", { line, reference: task.otherReference });
-    case "LINE_ISSUE":
-      return t(`LINE_ISSUE.${task.issueKind ?? "SELF_OVERLAP"}`, { line });
-    case "RUN_SHEET_BLOCKED":
-    case "RUN_SHEET_UNSENT":
-      return t(task.kind, { runSheet });
-    case "UNCONFIRMED":
-    case "UNREAD_MESSAGES":
-      return t(task.kind, { count });
-    case "PAYMENT_OVERDUE":
-      return t(task.kind, { amount: numbers.money({ minor: task.amountMinor ?? 0 }) });
-    default:
-      return t(task.kind);
-  }
-}
-
 /** How urgent the group is: red when blocked or late, amber when due today or soon. */
-function toneOf({ group }: { group: MyWorkTaskGroup }) {
+export function toneOf({ group }: { group: MyWorkTaskGroup }) {
   if (group === "BLOCKED" || group === "LATE") return "destructive";
   return group === "TODAY" || group === "SOON" ? "warning" : "default";
 }

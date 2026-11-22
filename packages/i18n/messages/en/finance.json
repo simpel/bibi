@@ -396,6 +396,23 @@
         "confirm": "Dismiss task",
         "done": "Task dismissed"
       }
+    },
+    "orderTasks": {
+      "hints": {
+        "RUN_SHEET_BLOCKED": "Something stops the run sheet from being sent. Open it to see what is missing.",
+        "RUN_SHEET_UNSENT": "The run sheet has not been sent, or it has changed since it was sent. Open it and send it.",
+        "UNCONFIRMED": "Some lines are still soft holds and the order starts soon. Confirm or release them in the program below.",
+        "HOLD_EXPIRES": "The order's soft holds run out soon. Confirm the lines, or move the date the hold runs until.",
+        "UNREAD_MESSAGES": "The customer has written and is waiting for an answer.",
+        "PAYMENT_OVERDUE": "An invoice is past its due date and not fully paid. Contact the customer about the payment.",
+        "NOT_CLOSED": "Everything on the order has taken place. Pick a status that closes the order in the status menu at the top right.",
+        "QUOTE_WAITING": "The customer has not answered the quote yet. Get in touch with them, or open the quote to see it."
+      },
+      "open": {
+        "runSheet": "Open run sheet",
+        "quote": "Open quote",
+        "inbox": "Open inbox"
+      }
     }
   },
   "occupancy": {
