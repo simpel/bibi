@@ -8,10 +8,11 @@ import type { ContactOption } from "./order-form-data";
 import type { OrderFormOutput } from "./order-form-schema";
 import type { OrderFormValues } from "./order-form-values";
 
-type Form = UseFormReturn<OrderFormValues, unknown, OrderFormOutput>;
+export type OrderFieldsForm = UseFormReturn<OrderFormValues, unknown, OrderFormOutput>;
 
-export type OrderCoreFieldsProps = {
-  form: Form;
+type FormOnly = { form: OrderFieldsForm };
+
+export type PartyFieldsProps = FormOnly & {
   data: {
     customers: readonly NamedOption[];
     contacts: readonly ContactOption[];
@@ -20,35 +21,8 @@ export type OrderCoreFieldsProps = {
   };
 };
 
-/** Optional: left empty, a title is generated after an order is created. */
-function TitleField({ form }: { form: Form }) {
-  const t = useTranslations("order.fields");
-  return (
-    <TextField form={form} name="title" label={t("title")} placeholder={t("titlePlaceholder")} />
-  );
-}
-
-/** Business or private for this order only; by default it follows the customer (ADR 0106). */
-function BuyerKindField({ form }: { form: Form }) {
-  const t = useTranslations("order.fields");
-  const kinds = useTranslations("customer.buyerKind");
-  const options = [
-    { id: "BUSINESS", name: kinds("BUSINESS") },
-    { id: "PRIVATE", name: kinds("PRIVATE") },
-  ];
-  return (
-    <OptionSelectField
-      control={form.control}
-      name="buyerKind"
-      label={t("buyerKind")}
-      options={options}
-      noneLabel={t("buyerKindFromCustomer")}
-    />
-  );
-}
-
 /** Customer and a contact person who works there (the list follows the customer). */
-function CustomerFields({ form, data }: OrderCoreFieldsProps) {
+export function PartyFields({ form, data }: PartyFieldsProps) {
   const { customers, contacts, customersHidden: hidden } = data;
   const t = useTranslations("order.fields");
   const ofCustomer = contacts.filter(({ customerId }) => customerId === form.watch("customerId"));
@@ -69,43 +43,74 @@ function CustomerFields({ form, data }: OrderCoreFieldsProps) {
         options={ofCustomer}
         hidden={hidden}
       />
-      <BuyerKindField form={form} />
+    </>
+  );
+}
+
+/** Business or private and the buyer's reference; both follow the customer and contact by default. */
+export function BuyerFields({ form }: FormOnly) {
+  const t = useTranslations("order.fields");
+  const kinds = useTranslations("customer.buyerKind");
+  const options = [
+    { id: "BUSINESS", name: kinds("BUSINESS") },
+    { id: "PRIVATE", name: kinds("PRIVATE") },
+  ];
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <OptionSelectField
+        control={form.control}
+        name="buyerKind"
+        label={t("buyerKind")}
+        options={options}
+        noneLabel={t("buyerKindFromCustomer")}
+      />
       <TextField
         form={form}
         name="buyerReference"
         label={t("buyerReference")}
         placeholder={t("buyerReferencePlaceholder")}
       />
+    </div>
+  );
+}
+
+/** The desired start and end. */
+export function PeriodFields({ form }: FormOnly) {
+  const t = useTranslations("order.fields");
+  return (
+    <>
+      <DateTimeField form={form} name="desiredStartsAt" label={t("desiredStartsAt")} />
+      <DateTimeField form={form} name="desiredEndsAt" label={t("desiredEndsAt")} />
     </>
   );
 }
 
-type DetailInput = {
-  name:
-    | "desiredStartsAt"
-    | "desiredEndsAt"
-    | "estimatedHeadcount"
-    | "guaranteedHeadcount"
-    | "holdsUntil";
-  type: "number";
-};
-
-/** The desired period, the counts, the budget and when soft holds expire; all optional. */
-function DetailFields({ form }: { form: Form }) {
+/** The estimated and the guaranteed headcount. */
+export function HeadcountFields({ form }: FormOnly) {
   const t = useTranslations("order.fields");
-  const field = ({ name, type }: DetailInput) => (
-    <TextField form={form} name={name} label={t(name)} type={type} />
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      <TextField
+        form={form}
+        name="estimatedHeadcount"
+        label={t("estimatedHeadcount")}
+        type="number"
+      />
+      <TextField
+        form={form}
+        name="guaranteedHeadcount"
+        label={t("guaranteedHeadcount")}
+        type="number"
+      />
+    </div>
   );
+}
+
+/** Budget, estimated value, when soft holds expire and the booking note; all optional. */
+export function MoneyAndNoteFields({ form }: FormOnly) {
+  const t = useTranslations("order.fields");
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <DateTimeField form={form} name="desiredStartsAt" label={t("desiredStartsAt")} />
-        <DateTimeField form={form} name="desiredEndsAt" label={t("desiredEndsAt")} />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {field({ name: "estimatedHeadcount", type: "number" })}
-        {field({ name: "guaranteedHeadcount", type: "number" })}
-      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField form={form} name="budget" label={t("budget")} type="number" step="0.01" />
         <TextField
@@ -120,17 +125,6 @@ function DetailFields({ form }: { form: Form }) {
         <DateTimeField form={form} name="holdsUntil" label={t("holdsUntil")} />
       </div>
       <TextField form={form} name="note" label={t("note")} multiline rows={4} />
-    </>
-  );
-}
-
-/** Customer, contact, desired period, counts and budget (the type's own fields come after). */
-export function OrderCoreFields(props: OrderCoreFieldsProps) {
-  return (
-    <>
-      <TitleField form={props.form} />
-      <CustomerFields {...props} />
-      <DetailFields form={props.form} />
     </>
   );
 }

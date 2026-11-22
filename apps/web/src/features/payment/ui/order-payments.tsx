@@ -92,6 +92,7 @@ export async function OrderPayments({ locale, orderId, canRequest }: OrderPaymen
   // Money needs a connected accounting system (ADR 0106): without one, say so instead.
   const noLedger = suggestion.ok && !suggestion.value.ledgerConnected;
   const canConnect = can({ abilities, permission: "integration:write" });
+  const setupMissing = canRequest && noLedger;
   return (
     <PaymentLinksProvider available={available}>
       <section data-slot="order-payments" className="grid grid-cols-1 gap-4">
@@ -104,10 +105,13 @@ export async function OrderPayments({ locale, orderId, canRequest }: OrderPaymen
             />
           ) : null}
         </div>
-        {canRequest && noLedger ? <ConnectLedgerNotice canConnect={canConnect} /> : null}
+        {setupMissing ? <ConnectLedgerNotice canConnect={canConnect} /> : null}
         {nothing ? (
           // Nothing billed, owed or paid: one sentence, not three empty parts saying the same.
-          <p className="text-muted-foreground text-sm">{t("noReceivables")}</p>
+          // Left out under the setup notice, which already says why there is nothing.
+          setupMissing ? null : (
+            <p className="text-muted-foreground text-sm">{t("noReceivables")}</p>
+          )
         ) : (
           <>
             <BalanceSummary balance={balance} numbers={numbers} />

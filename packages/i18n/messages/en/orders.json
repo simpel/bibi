@@ -100,12 +100,19 @@
     "listDescription": "Customer requests from first contact to the finished event, each in one of your statuses. The type decides which fields an order has.",
     "reference": "Order {reference}",
     "create": "Create order",
-    "edit": "Edit order",
     "createDescription": "Pick a type and the customer; everything else can wait. The order starts in your entry status.",
-    "editDescription": "Change customer, contact, desired dates, counts, budget and the type's fields. The status and the assignee are changed separately.",
     "created": "The order has been created.",
     "updated": "The order has been updated.",
     "editTitle": "Edit title",
+    "inlineEdit": {
+      "party": "Edit customer and contact",
+      "period": "Edit desired dates",
+      "headcount": "Edit headcount",
+      "buyer": "Edit buyer details",
+      "money": "Edit budget and note",
+      "fields": "Edit own fields",
+      "details": "Edit details"
+    },
     "titleLabel": "Title",
     "titleUpdated": "The title has been updated.",
     "details": "Details",
@@ -266,7 +273,9 @@
       "comments": "Comments",
       "people": "Details and people",
       "messages": "Messages",
-      "money": "Money",
+      "quotes": "Quotes",
+      "balance": "Balance",
+      "estimates": "Estimate history",
       "history": "History"
     }
   },

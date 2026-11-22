@@ -20,7 +20,6 @@ export type OrderTableProps = Omit<OrderLookups, "renderActions"> & {
   orders: OrderDto[];
   total: number;
   view: OrderTablePage;
-  canEdit?: boolean | undefined;
   /** Card cues by order id (preliminary, flags), the same as on the pipeline. */
   cues?: Readonly<Record<string, OrderCue>> | undefined;
 };
@@ -58,18 +57,11 @@ function usePagination({
  * Order rows, paged, sorted and searched on the server (the list may hold 100 000 orders): the
  * URL holds the state and every change renders the next page there.
  */
-export function OrderTable({
-  orders,
-  total,
-  view,
-  canEdit = false,
-  cues = {},
-  ...lookups
-}: OrderTableProps) {
+export function OrderTable({ orders, total, view, cues = {}, ...lookups }: OrderTableProps) {
   const t = useTranslations("order");
   const columns = useOrderColumns({
     ...lookups,
-    renderActions: (order) => <OrderRowActions order={order} canEdit={canEdit} />,
+    renderActions: (order) => <OrderRowActions order={order} />,
     renderIssues: (order) => (
       <OrderCueBadges
         flags={cues[order.id]?.flags ?? []}
@@ -95,7 +87,7 @@ export function OrderTable({
         done: order.desiredEndsAt !== null && new Date(order.desiredEndsAt).getTime() <= now,
       })}
       onRowClick={(order) => router.push(orderRoute({ id: order.id }))}
-      rowMenu={(order) => <OrderRowMenu order={order} canEdit={canEdit} />}
+      rowMenu={(order) => <OrderRowMenu order={order} />}
       emptyText={t("noMatches")}
       pagination={pagination}
       manualSorting

@@ -16,10 +16,10 @@ import { orderRoute } from "@/lib/routes";
 import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { loadOrder } from "../load-order";
+import { orderFormDataPromise } from "../load-order-data";
 import { loadOrderNames, loadOrderStatuses } from "../load-order-names";
 import { closedStatus, readOnlyAbilities } from "../order-abilities";
 import { ClosedOrderNotice } from "./closed-order-notice";
-import { OrderActions } from "./order-actions";
 import { OrderKeyFacts } from "./order-facts";
 import type { OrderFormData } from "./order-form-data";
 import { OrderSections } from "./order-sections";
@@ -50,7 +50,7 @@ type OrderHeaderActionsProps = {
   abilities: CallerAbilities;
 };
 
-/** Top right beside the title: the status (a menu for writers), Follow, comments, then the actions. */
+/** Top right beside the title: the status (a menu for writers), Follow and comments; the rest edits in place. */
 function OrderHeaderActions({ order, statuses, abilities }: OrderHeaderActionsProps) {
   return (
     <>
@@ -73,7 +73,6 @@ function OrderHeaderActions({ order, statuses, abilities }: OrderHeaderActionsPr
           <OrderCommentControl order={order} />
         </Suspense>
       ) : null}
-      <OrderActions order={order} abilities={abilities} />
     </>
   );
 }
@@ -147,7 +146,12 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
           }
           actions={actions}
         />
-        <OrderKeyFacts order={order.value} data={names} />
+        <OrderKeyFacts
+          order={order.value}
+          data={names}
+          canEdit={can({ abilities: pageAbilities, permission: "order:write" })}
+          formData={orderFormDataPromise()}
+        />
       </PageBand>
       <PageTour tour="order" />
       <OrderSections

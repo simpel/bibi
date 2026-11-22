@@ -77,7 +77,8 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "order.get", route: "/orders/[id]" },
   // The order page's first paint in one read (ADR 0097).
   { operation: "order.view", route: "/orders/[id]" },
-  { operation: "order.update", route: "/orders/[id]/update" },
+  // Edited in place: the key facts and the Details section of the order page.
+  { operation: "order.update", route: "/orders/[id]" },
   { operation: "order.changeStatus", route: "/orders/[id]" },
   // The run schedule (lines) is listed and edited on the order page.
   { operation: "line.list", route: "/orders/[id]" },

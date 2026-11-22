@@ -2,6 +2,7 @@ import { listInboundMessages } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
+import { SetupNotice } from "@/components/states/setup-notice";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -32,15 +33,20 @@ export async function OrderMessages({ locale, orderId, address }: OrderMessagesP
   return (
     <section data-slot="order-messages" className="grid grid-cols-1 gap-3">
       <h2 className="text-xl">{t("orderTitle")}</h2>
-      <p className="text-sm text-muted-foreground">
-        {address
-          ? t.rich("replyAddress", {
-              address,
-              code: (chunks) => <code className="text-foreground">{chunks}</code>,
-            })
-          : t("noReplyAddress")}
-      </p>
-      <MessageList messages={result.value.items} dates={dates} />
+      {address ? (
+        <p className="text-sm text-muted-foreground">
+          {t.rich("replyAddress", {
+            address,
+            code: (chunks) => <code className="text-foreground">{chunks}</code>,
+          })}
+        </p>
+      ) : (
+        <SetupNotice slot="no-reply-address">{t("noReplyAddress")}</SetupNotice>
+      )}
+      {/* Without an address and messages, the setup notice alone says why the list is empty. */}
+      {address || result.value.items.length > 0 ? (
+        <MessageList messages={result.value.items} dates={dates} />
+      ) : null}
     </section>
   );
 }

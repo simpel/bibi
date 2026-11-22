@@ -104,11 +104,11 @@
           },
           "businessOrPrivate": {
             "question": "How do I mark a customer as a business or a private person?",
-            "answer": "When you create a customer, choose Business or Private person. For a business you can also fill in its org. no.\nEvery order follows its customer. To change it for a single order, click Edit on the order and pick Business or Private person under Business or private. Choose Same as the customer to go back."
+            "answer": "When you create a customer, choose Business or Private person. For a business you can also fill in its org. no.\nEvery order follows its customer. To change it for a single order, click the pencil next to **Details** on the order and pick Business or Private person under Business or private. Choose Same as the customer to go back."
           },
           "buyerReference": {
             "question": "How do I add the buyer's reference to an order?",
-            "answer": "Some buyers, often public agencies, need their own reference on every invoice, such as a case number. Open the contact person and fill in Buyer's reference. Their orders use it automatically.\nFor a single order, click Edit on the order and fill in Buyer's reference there instead.\nIf a customer always needs a reference, edit the customer and tick Invoices must carry the buyer's reference. Bibi then won't create an invoice for one of its orders until a reference is set."
+            "answer": "Some buyers, often public agencies, need their own reference on every invoice, such as a case number. Open the contact person and fill in Buyer's reference. Their orders use it automatically.\nFor a single order, click the pencil next to **Details** on the order and fill in Buyer's reference there instead.\nIf a customer always needs a reference, edit the customer and tick Invoices must carry the buyer's reference. Bibi then won't create an invoice for one of its orders until a reference is set."
           },
           "renameOrder": {
             "question": "How do I rename an order or a run sheet?",
@@ -182,9 +182,13 @@
             "question": "Can I reply to a comment or mention a colleague?",
             "answer": "Click the reply arrow next to a comment to answer it; the answer shows under the comment, also on the run sheet. Type **@** and the start of a name to mention a colleague, then pick them in the list.\nThe person you mention gets a notification, even if they are not on the order, and the one who wrote the comment you answer is told too."
           },
+          "editInPlace": {
+            "question": "How do I change an order's customer, dates or headcount?",
+            "answer": "Change things where you see them on the order. Hover a fact under the title, such as the customer, the dates or the headcount, and click the pencil next to it. Change it in the small box and click **Save**.\nThe rest of the order, such as the budget, the note and your own fields, is under **Details** further down: click the pencil next to the heading to edit it all at once."
+          },
           "closedOrder": {
             "question": "Why can't I change a completed order?",
-            "answer": "When a booking reaches a status that closes it, such as **Completed** or **Cancelled**, it becomes a record of what happened. A line at the top of the booking says so, and the buttons for editing, adding lines, changing needs and creating a quote are gone.\nInvoices, payments, refunds and comments still work as usual, and you can still correct the buyer's reference through the assistant. A closed booking cannot be opened again, so create a new booking if more is needed."
+            "answer": "When a booking reaches a status that closes it, such as **Completed** or **Cancelled**, it becomes a record of what happened. A line at the top of the booking says so, and the buttons for editing, adding lines, changing needs and creating a quote are gone.\nInvoices, payments, refunds and comments still work as usual, and you can still correct the buyer's reference with the pencil next to **Details**. A closed booking cannot be opened again, so create a new booking if more is needed."
           }
         }
       },

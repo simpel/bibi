@@ -7,19 +7,17 @@ export type OrderListTableProps = {
   total: number;
   view: OrderTablePage;
   data: OrderFormData;
-  canEdit?: boolean | undefined;
   /** Card cues by order id (preliminary, flags); missing = none. */
   cues: Readonly<Record<string, OrderCue>>;
 };
 
 /** Hands the client table only what it shows (plain lookups, no form schemas or Maps). */
-export function OrderListTable({ orders, total, view, data, canEdit, cues }: OrderListTableProps) {
+export function OrderListTable({ orders, total, view, data, cues }: OrderListTableProps) {
   return (
     <OrderTable
       orders={orders}
       total={total}
       view={view}
-      canEdit={canEdit}
       cues={cues}
       customers={data.customers}
       customersHidden={data.customersHidden}

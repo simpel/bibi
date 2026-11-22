@@ -1,34 +1,11 @@
 import { resolveLocale } from "@bibi/i18n";
-import { SimplePage } from "@bibi/ui";
-import { setRequestLocale } from "next-intl/server";
-import { PermissionGate } from "@/components/states/permission-gate";
-import { loadOrder } from "@/features/order/load-order";
-import { OrderUpdate } from "@/features/order/ui/order-update";
-import { entityTitle } from "@/lib/page-metadata";
+import { redirect } from "@/lib/navigation";
+import { orderRoute } from "@/lib/routes";
 
-type UpdateOrderPageProps = { params: Promise<{ locale: string; id: string }> };
+type UpdateOrderPageProps = { params: Promise<{ locale: string; org: string; id: string }> };
 
-export async function generateMetadata({ params }: UpdateOrderPageProps) {
-  const { id } = await params;
-  const order = await loadOrder({ id });
-  if (order.ok) {
-    const title = order.value.reference
-      ? `#${order.value.reference} ${order.value.title ?? ""}`.trim()
-      : order.value.title;
-    return entityTitle({ name: title, fallback: "Order", prefix: "Edit" });
-  }
-  return entityTitle({ fallback: "Order", prefix: "Edit" });
-}
-
+/** The order is edited in place on its own page now; old Edit links land there. */
 export default async function UpdateOrderPage({ params }: UpdateOrderPageProps) {
-  const { locale: rawLocale, id } = await params;
-  const locale = resolveLocale({ value: rawLocale });
-  setRequestLocale(locale);
-  return (
-    <SimplePage>
-      <PermissionGate permission="order:write">
-        <OrderUpdate locale={locale} id={id} />
-      </PermissionGate>
-    </SimplePage>
-  );
+  const { locale: rawLocale, org, id } = await params;
+  redirect({ org, locale: resolveLocale({ value: rawLocale }), href: orderRoute({ id }) });
 }

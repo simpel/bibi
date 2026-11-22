@@ -1,7 +1,5 @@
-import { Alert, AlertDescription, Button } from "@bibi/ui";
-import { AlertCircleIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/lib/navigation";
+import { SetupNotice } from "@/components/states/setup-notice";
 import { ROUTES } from "@/lib/routes";
 
 export type ConnectLedgerNoticeProps = {
@@ -16,23 +14,11 @@ export type ConnectLedgerNoticeProps = {
 export async function ConnectLedgerNotice({ canConnect }: ConnectLedgerNoticeProps) {
   const t = await getTranslations("payment.ledger");
   return (
-    <Alert data-slot="connect-ledger-notice">
-      <AlertCircleIcon className="size-4" />
-      <div className="col-start-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <AlertDescription className="text-foreground">
-          {canConnect ? t("missing") : t("askAdmin")}
-        </AlertDescription>
-        {canConnect ? (
-          <Button
-            asChild
-            size="sm"
-            variant="outline"
-            className="shrink-0 self-start sm:self-center"
-          >
-            <Link href={ROUTES.adminIntegrations}>{t("connect")}</Link>
-          </Button>
-        ) : null}
-      </div>
-    </Alert>
+    <SetupNotice
+      slot="connect-ledger-notice"
+      action={canConnect ? { href: ROUTES.adminIntegrations, label: t("connect") } : undefined}
+    >
+      {canConnect ? t("missing") : t("askAdmin")}
+    </SetupNotice>
   );
 }

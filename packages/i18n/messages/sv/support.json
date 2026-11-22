@@ -104,11 +104,11 @@
           },
           "businessOrPrivate": {
             "question": "Hur anger jag om en kund är ett företag eller en privatperson?",
-            "answer": "När du skapar en kund väljer du Företag eller Privatperson. För ett företag kan du också fylla i organisationsnumret.\nVarje bokning följer sin kund. Vill du ändra det för en enda bokning klickar du på Redigera på bokningen och väljer Företag eller Privatperson under Företag eller privat. Välj Samma som kunden för att gå tillbaka."
+            "answer": "När du skapar en kund väljer du Företag eller Privatperson. För ett företag kan du också fylla i organisationsnumret.\nVarje bokning följer sin kund. Vill du ändra det för en enda bokning klickar du på pennan bredvid **Detaljer** på bokningen och väljer Företag eller Privatperson under Företag eller privat. Välj Samma som kunden för att gå tillbaka."
           },
           "buyerReference": {
             "question": "Hur lägger jag till beställarens referens på en order?",
-            "answer": "Vissa beställare, ofta myndigheter, behöver sin egen referens på varje faktura, till exempel ett diarienummer. Öppna kontaktpersonen och fyll i Beställarreferens. Personens ordrar använder den automatiskt.\nFör en enskild order klickar du på Redigera på ordern och fyller i Beställarreferens där i stället.\nOm en kund alltid behöver en referens redigerar du kunden och kryssar i Fakturor måste ha beställarens referens. Då skapar Bibi ingen faktura för kundens ordrar förrän en referens finns."
+            "answer": "Vissa beställare, ofta myndigheter, behöver sin egen referens på varje faktura, till exempel ett diarienummer. Öppna kontaktpersonen och fyll i Beställarreferens. Personens ordrar använder den automatiskt.\nFör en enskild order klickar du på pennan bredvid **Detaljer** på ordern och fyller i Beställarreferens där i stället.\nOm en kund alltid behöver en referens redigerar du kunden och kryssar i Fakturor måste ha beställarens referens. Då skapar Bibi ingen faktura för kundens ordrar förrän en referens finns."
           },
           "renameOrder": {
             "question": "Hur byter jag namn på en bokning eller ett körschema?",
@@ -182,9 +182,13 @@
             "question": "Kan jag svara på en kommentar eller nämna en kollega?",
             "answer": "Klicka på svarspilen bredvid en kommentar för att svara; svaret visas under kommentaren, även på körschemat. Skriv **@** och början av ett namn för att nämna en kollega och välj personen i listan.\nDen du nämner får en notis, även om hen inte är med på ordern, och den som skrev kommentaren du svarar på får också veta det."
           },
+          "editInPlace": {
+            "question": "Hur ändrar jag kund, datum eller antal på en bokning?",
+            "answer": "Du ändrar saker där du ser dem på bokningen. Håll muspekaren över en uppgift under rubriken, till exempel kunden, datumen eller antalet, och klicka på pennan bredvid. Ändra i den lilla rutan och klicka på **Spara**.\nResten av bokningen, som budget, anteckning och era egna fält, finns under **Detaljer** längre ner: klicka på pennan bredvid rubriken för att redigera allt på en gång."
+          },
           "closedOrder": {
             "question": "Varför kan jag inte ändra en genomförd bokning?",
-            "answer": "När en bokning når en status som stänger den, till exempel **Genomförd** eller **Avbokad**, blir den ett underlag för det som hände. En rad överst på bokningen säger det, och knapparna för att redigera, lägga till rader, ändra behov och skapa en offert är borta.\nFakturor, betalningar, återbetalningar och kommentarer fungerar som vanligt, och köparens referens kan du fortfarande rätta via assistenten. En stängd bokning går inte att öppna igen, så skapa en ny bokning om det behövs mer."
+            "answer": "När en bokning når en status som stänger den, till exempel **Genomförd** eller **Avbokad**, blir den ett underlag för det som hände. En rad överst på bokningen säger det, och knapparna för att redigera, lägga till rader, ändra behov och skapa en offert är borta.\nFakturor, betalningar, återbetalningar och kommentarer fungerar som vanligt, och köparens referens kan du fortfarande rätta med pennan bredvid **Detaljer**. En stängd bokning går inte att öppna igen, så skapa en ny bokning om det behövs mer."
           }
         }
       },

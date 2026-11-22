@@ -100,12 +100,19 @@
     "listDescription": "Kundförfrågningar från första kontakt till genomfört event, var och ett i en av era bokningsstatusar. Typen avgör vilka fält en bokning har.",
     "reference": "Bokning {reference}",
     "create": "Skapa bokning",
-    "edit": "Redigera bokning",
     "createDescription": "Välj typ och kund; resten kan vänta. Bokningen startar i er startstatus.",
-    "editDescription": "Ändra kund, kontaktperson, önskade datum, antal, budget och typens fält. Bokningsstatus och ansvarig ändras separat.",
     "created": "Bokningen har skapats.",
     "updated": "Bokningen har uppdaterats.",
     "editTitle": "Redigera titel",
+    "inlineEdit": {
+      "party": "Redigera kund och kontaktperson",
+      "period": "Redigera önskade datum",
+      "headcount": "Redigera antal",
+      "buyer": "Redigera köparuppgifter",
+      "money": "Redigera budget och anteckning",
+      "fields": "Redigera egna fält",
+      "details": "Redigera detaljer"
+    },
     "titleLabel": "Titel",
     "titleUpdated": "Titeln har uppdaterats.",
     "details": "Detaljer",
@@ -266,7 +273,9 @@
       "comments": "Kommentarer",
       "people": "Detaljer och personer",
       "messages": "Meddelanden",
-      "money": "Ekonomi",
+      "quotes": "Offerter",
+      "balance": "Saldo",
+      "estimates": "Värdehistorik",
       "history": "Historik"
     }
   },

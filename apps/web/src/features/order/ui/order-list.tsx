@@ -103,7 +103,6 @@ export async function OrderList({ locale, params }: OrderListProps) {
             total={total ?? 0}
             view={params}
             data={data.value}
-            canEdit={can({ abilities, permission: "order:write" })}
             cues={cues}
           />
           {items.length > 0 ? <AppCardLegend following={false} /> : null}

@@ -47,3 +47,7 @@ export const loadOrderData = cache(async (): Promise<Result<OrderFormData>> => {
     },
   };
 });
+
+/** The same data as a promise the order page hands its in-place editors (null when it failed). */
+export const orderFormDataPromise = (): Promise<OrderFormData | null> =>
+  loadOrderData().then((result) => (result.ok ? result.value : null));

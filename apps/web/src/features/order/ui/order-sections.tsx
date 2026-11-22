@@ -25,7 +25,7 @@ export type OrderSectionsProps = {
 
 /**
  * The order's page sections as bands: program, needs and run sheets, comments, details and people,
- * messages, money and status history. Each section belongs to another feature (ADR 0050,
+ * messages, quotes, balance, estimates and status history. Each section belongs to another feature (ADR 0050,
  * feature scope): without that feature's `read` it is left out, not shown as an error, and a
  * band left with nothing is not rendered. Every section that loads its own data streams in on
  * its own.
@@ -82,13 +82,15 @@ export async function OrderSections({ locale, order, statuses, abilities }: Orde
           <OrderMessages locale={locale} orderId={order.id} address={order.inboundAddress} />
         </DeferredSection>
       </PageBand>
-      <PageBand aria-label={t("money")} data-tour="order.money" containerClassName="gap-12">
-        {allowed({ permission: "quote:read" }) ? (
+      {allowed({ permission: "quote:read" }) ? (
+        <PageBand aria-label={t("quotes")} data-tour="order.money" containerClassName="gap-12">
           <DeferredSection>
             <OrderQuotes locale={locale} order={order} statuses={statuses} />
           </DeferredSection>
-        ) : null}
-        {allowed({ permission: "payment:read" }) ? (
+        </PageBand>
+      ) : null}
+      {allowed({ permission: "payment:read" }) ? (
+        <PageBand aria-label={t("balance")} containerClassName="gap-12">
           <DeferredSection>
             <OrderPayments
               locale={locale}
@@ -96,7 +98,9 @@ export async function OrderSections({ locale, order, statuses, abilities }: Orde
               canRequest={allowed({ permission: "payment:write" })}
             />
           </DeferredSection>
-        ) : null}
+        </PageBand>
+      ) : null}
+      <PageBand aria-label={t("estimates")} containerClassName="gap-12">
         <DeferredSection>
           <OrderEstimateHistory locale={locale} orderId={order.id} />
         </DeferredSection>

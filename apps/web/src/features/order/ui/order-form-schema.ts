@@ -46,18 +46,34 @@ export function orderFormSchema({ type, vocabularies, timeZone }: OrderSchemaInp
   });
 }
 
+/** The parts of an order edited in place, each by the page element that shows it. */
+export type OrderEditGroup = "party" | "period" | "headcount" | "buyer" | "money" | "fields";
+
+const GROUP_KEYS = {
+  party: ["customerId", "contactId"],
+  period: ["desiredStartsAt", "desiredEndsAt"],
+  headcount: ["estimatedHeadcount", "guaranteedHeadcount"],
+  buyer: ["buyerKind", "buyerReference"],
+  money: ["budgetMinor", "estimatedValueMinor", "holdsUntil", "note"],
+  fields: [],
+} as const satisfies Record<OrderEditGroup, readonly (keyof OrderUpdateInput)[]>;
+
 export type OrderUpdateArgs = {
   order: OrderDto;
   values: OrderFormOutput;
   type: EntityTypeDto | undefined;
+  /** Only these parts are sent: a closed order still takes its buyer fields (ADR 0106). */
+  groups: readonly OrderEditGroup[];
 };
 
-/** Create-shaped values → `order.update` input; emptied fields are cleared with `null`. */
-export function toOrderUpdate({ order, values, type }: OrderUpdateArgs): OrderUpdateInput {
-  const { entityTypeId: _type, assigneeId: _assignee, fields, ...rest } = values;
-  return {
-    id: order.id,
-    ...rest,
-    fields: fieldsPatch({ type, stored: order.fields, fields }),
-  };
+/** Create-shaped values → `order.update` input for the edited parts; emptied ones are `null`. */
+export function toOrderUpdate({ order, values, type, groups }: OrderUpdateArgs): OrderUpdateInput {
+  const input: OrderUpdateInput = { id: order.id };
+  for (const group of groups) {
+    for (const key of GROUP_KEYS[group]) Object.assign(input, { [key]: values[key] });
+  }
+  if (groups.includes("fields")) {
+    input.fields = fieldsPatch({ type, stored: order.fields, fields: values.fields });
+  }
+  return input;
 }
