@@ -1,5 +1,5 @@
 import type { MyWorkTask, MyWorkTaskKind, NumberFormat } from "@bibi/core/schemas";
-import { Alert, AlertDescription, AlertTitle } from "@bibi/ui";
+import { Alert, AlertDescription, AlertTitle, Button } from "@bibi/ui";
 import { TriangleAlertIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { taskIcon } from "@/components/activity/subject-icons";
@@ -26,7 +26,7 @@ function openKeyOf({ task }: { task: MyWorkTask }): OpenKey | null {
 
 type OrderTaskAlertProps = { task: OrderTask; numbers: NumberFormat };
 
-/** One task as an alert: what to do, how to do it and when it is due. */
+/** One task as an alert: what to do and when it is due, with a button to where it is done. */
 function OrderTaskAlert({ task, numbers }: OrderTaskAlertProps) {
   const t = useTranslations("myWork");
   const Icon = task.group === "LATE" ? TriangleAlertIcon : taskIcon({ kind: task.kind });
@@ -34,19 +34,26 @@ function OrderTaskAlert({ task, numbers }: OrderTaskAlertProps) {
   return (
     <Alert variant={toneOf({ group: task.group })} data-kind={task.kind}>
       <Icon />
-      <AlertTitle>{useTaskText({ task, numbers })}</AlertTitle>
-      <AlertDescription>
-        <p>{t(`orderTasks.hints.${task.kind}`)}</p>
-        <p className="text-xs">
-          {t(task.group === "WAITING" ? "needsYou.since" : "needsYou.due")}{" "}
-          <RelativeTime instant={task.dueAt} />
-        </p>
+      {/* Title and due date on the left, the way to do it as a button at the top right. */}
+      <div className="col-start-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="grid gap-1">
+          <AlertTitle className="col-start-1 line-clamp-none">
+            {useTaskText({ task, numbers })}
+          </AlertTitle>
+          <p className="text-sm font-medium">
+            {t(task.group === "WAITING" ? "needsYou.since" : "needsYou.due")}{" "}
+            <RelativeTime instant={task.dueAt} />
+          </p>
+          <AlertDescription className="col-start-1">
+            <p>{t(`orderTasks.hints.${task.kind}`)}</p>
+          </AlertDescription>
+        </div>
         {open ? (
-          <Link href={taskHref({ task })} className="font-medium underline underline-offset-4">
-            {t(`orderTasks.open.${open}`)}
-          </Link>
+          <Button asChild size="sm" variant="outline" className="shrink-0 self-start">
+            <Link href={taskHref({ task })}>{t(`orderTasks.open.${open}`)}</Link>
+          </Button>
         ) : null}
-      </AlertDescription>
+      </div>
     </Alert>
   );
 }
