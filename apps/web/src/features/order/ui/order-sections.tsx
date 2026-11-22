@@ -4,7 +4,6 @@ import { DeferredSection } from "@/components/states/deferred-section";
 import { CommentSection } from "@/features/comment/ui/comment-section";
 import { OrderMessages } from "@/features/inbound-message/ui/order-messages";
 import { ProgramSection } from "@/features/line/ui/program-section";
-import { OrderVersions } from "@/features/order-version/ui/order-versions";
 import { OrderPayments } from "@/features/payment/ui/order-payments";
 import { OrderQuotes } from "@/features/quote/ui/order-quotes";
 import { RequirementSection } from "@/features/requirement/ui/requirement-section";
@@ -81,11 +80,6 @@ function ActivityTab({ locale, order, statuses, allowed }: TabProps) {
       <DeferredSection>
         <OrderStatusHistory locale={locale} orderId={order.id} statuses={statuses} />
       </DeferredSection>
-      {allowed({ permission: "program:read" }) ? (
-        <DeferredSection>
-          <OrderVersions locale={locale} order={order} />
-        </DeferredSection>
-      ) : null}
     </>
   );
 }

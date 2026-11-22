@@ -919,9 +919,7 @@
     },
     "sync": {
       "matches": "Stämmer med offert v{version}",
-      "changed": "{count, plural, one {# ändring} other {# ändringar}} sedan offert v{version}",
-      "show": "Visa ändringar",
-      "dialogTitle": "Sedan offert v{version}"
+      "changedShow": "{count, plural, one {# ändring} other {# ändringar}} sedan offert v{version} · Visa"
     }
   }
 }

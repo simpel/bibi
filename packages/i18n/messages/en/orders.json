@@ -919,9 +919,7 @@
     },
     "sync": {
       "matches": "Matches quote v{version}",
-      "changed": "{count, plural, one {# change} other {# changes}} since quote v{version}",
-      "show": "Show changes",
-      "dialogTitle": "Since quote v{version}"
+      "changedShow": "{count, plural, one {# change} other {# changes}} since quote v{version} · Show"
     }
   }
 }

@@ -12,7 +12,8 @@ export type OrderVersionsProps = { locale: Locale; order: OrderDto };
 
 /**
  * The order's versions (ADR 0116): captured after every change, each with the quotes sent as it
- * and how far the order has moved from it; restore and name from the row.
+ * and how far the order has moved from it; restore and name from the row. Shown inside the
+ * Program's versions panel, which carries the title.
  */
 export async function OrderVersions({ locale, order }: OrderVersionsProps) {
   const [t, abilities, versions] = await Promise.all([
@@ -25,15 +26,12 @@ export async function OrderVersions({ locale, order }: OrderVersionsProps) {
     return <ErrorState inline errorKey={handleLoadError({ error: versions.error, locale })} />;
   }
   return (
-    <section className="grid grid-cols-1 gap-4">
-      <div className="grid gap-1">
-        <h2 className="text-xl">{t("title")}</h2>
-        <p className="text-sm text-muted-foreground">{t("description")}</p>
-      </div>
+    <div className="grid grid-cols-1 gap-3">
+      <p className="text-sm text-muted-foreground">{t("description")}</p>
       <VersionTable
         versions={versions.value.items}
         canEdit={can({ abilities, permission: "program:write" })}
       />
-    </section>
+    </div>
   );
 }
