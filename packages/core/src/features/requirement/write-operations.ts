@@ -5,6 +5,7 @@ import { archiveRecords, updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
+import { openOrderHandler } from "../order/open-order";
 import { regenerateForLine } from "../run-sheet/regenerate";
 import { insertRequirement } from "./insert-requirement";
 import {
@@ -14,6 +15,9 @@ import {
   RequirementUpdateInputSchema,
 } from "./schema";
 import { loadRequirement, REQUIREMENT_INCLUDE, toRequirementDto } from "./to-requirement-dto";
+
+/** The requirement's order: a closed order's needs no longer change. */
+const ofRequirement = ({ orderId }: { orderId: string }) => [orderId];
 
 export const createRequirement = defineOperation({
   name: "requirement.create",
@@ -27,7 +31,10 @@ export const createRequirement = defineOperation({
   output: RequirementSchema,
   permission: "program:write",
   followUp: regenerateForLine,
-  handler: ({ input, context }) => insertRequirement({ context, input }),
+  handler: openOrderHandler({
+    orderIds: ofRequirement,
+    handler: ({ input, context }) => insertRequirement({ context, input }),
+  }),
 });
 
 export const updateRequirement = defineOperation({
@@ -40,28 +47,38 @@ export const updateRequirement = defineOperation({
   output: RequirementSchema,
   permission: "program:write",
   followUp: regenerateForLine,
-  handler: async ({ input: { id, quantity, fields: patch }, context }) => {
-    const before = await loadRequirement({ context, id });
-    if (!before) return notFound({ entity: "Requirement" });
-    let json: ReturnType<typeof toJson>;
-    let links: LinkValue[] | undefined;
-    if (patch) {
-      const values = mergeFields({ before: before.fields, patch });
-      const checked = await validateFields({ context, entityTypeId: before.entityTypeId, values });
-      if (!checked.ok) return checked;
-      json = toJson({ value: checked.value.fields });
-      links = checked.value.links;
-    }
-    await updateRecord({ context, id, change: { fields: json, links } });
-    const row = await context.db.requirement.update({
-      where: { id },
-      data: { ...(quantity === undefined ? {} : { quantity }), ...(json ? { fields: json } : {}) },
-      include: REQUIREMENT_INCLUDE,
-    });
-    const requirement = toRequirementDto({ row });
-    context.recordChange({ entityId: id, before, after: requirement });
-    return ok({ value: requirement });
-  },
+  handler: openOrderHandler({
+    orderIds: ofRequirement,
+    handler: async ({ input: { id, quantity, fields: patch }, context }) => {
+      const before = await loadRequirement({ context, id });
+      if (!before) return notFound({ entity: "Requirement" });
+      let json: ReturnType<typeof toJson>;
+      let links: LinkValue[] | undefined;
+      if (patch) {
+        const values = mergeFields({ before: before.fields, patch });
+        const checked = await validateFields({
+          context,
+          entityTypeId: before.entityTypeId,
+          values,
+        });
+        if (!checked.ok) return checked;
+        json = toJson({ value: checked.value.fields });
+        links = checked.value.links;
+      }
+      await updateRecord({ context, id, change: { fields: json, links } });
+      const row = await context.db.requirement.update({
+        where: { id },
+        data: {
+          ...(quantity === undefined ? {} : { quantity }),
+          ...(json ? { fields: json } : {}),
+        },
+        include: REQUIREMENT_INCLUDE,
+      });
+      const requirement = toRequirementDto({ row });
+      context.recordChange({ entityId: id, before, after: requirement });
+      return ok({ value: requirement });
+    },
+  }),
 });
 
 export const archiveRequirement = defineOperation({
@@ -74,17 +91,20 @@ export const archiveRequirement = defineOperation({
   output: RequirementSchema,
   permission: "program:delete",
   followUp: regenerateForLine,
-  handler: async ({ input: { id }, context }) => {
-    const before = await loadRequirement({ context, id });
-    if (!before) return notFound({ entity: "Requirement" });
-    const row = await context.db.requirement.update({
-      where: { id },
-      data: { status: "ARCHIVED" },
-      include: REQUIREMENT_INCLUDE,
-    });
-    await archiveRecords({ context, ids: [id] });
-    const requirement = toRequirementDto({ row });
-    context.recordChange({ entityId: id, before, after: requirement });
-    return ok({ value: requirement });
-  },
+  handler: openOrderHandler({
+    orderIds: ofRequirement,
+    handler: async ({ input: { id }, context }) => {
+      const before = await loadRequirement({ context, id });
+      if (!before) return notFound({ entity: "Requirement" });
+      const row = await context.db.requirement.update({
+        where: { id },
+        data: { status: "ARCHIVED" },
+        include: REQUIREMENT_INCLUDE,
+      });
+      await archiveRecords({ context, ids: [id] });
+      const requirement = toRequirementDto({ row });
+      context.recordChange({ entityId: id, before, after: requirement });
+      return ok({ value: requirement });
+    },
+  }),
 });

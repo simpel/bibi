@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
+import { checkOrderOpen } from "../order/open-order";
 import type { OrderDto } from "../order/schema";
 import { loadOrder } from "../order/to-order-dto";
 import type { QuoteDto } from "./schema";
@@ -16,14 +17,8 @@ export async function loadOpenOrder({
 }: LoadOpenOrderInput): Promise<Result<OrderDto>> {
   const order = await loadOrder({ context, id: orderId });
   if (!order) return notFound({ entity: "Order" });
-  const orderStatus = await context.db.orderStatus.findFirst({
-    where: { id: order.statusId, status: { in: ["ACTIVE", "ARCHIVED"] } },
-    select: { name: true, closes: true },
-  });
-  if (orderStatus?.closes) {
-    return conflict({ message: `The order is in "${orderStatus.name}" and takes no quotes` });
-  }
-  return ok({ value: order });
+  const open = await checkOrderOpen({ context, orderIds: [orderId] });
+  return open.ok ? ok({ value: order }) : open;
 }
 
 /** Only a DRAFT can be edited; a sent quote is changed by making a new version. */

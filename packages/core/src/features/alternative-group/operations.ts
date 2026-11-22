@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { openOrderHandler } from "../order/open-order";
 import { chooseOption } from "./choose-option";
 import { changeGroup, dissolveGroup, insertGroup } from "./group-commands";
 import {
@@ -20,6 +21,9 @@ const OPTIONS_NOTE =
   "Every option keeps its own state and hold: soft holds on all options are the normal case " +
   "until the customer picks one; at most one option may be in a hard-hold state (VALIDATION).";
 const Group = { output: AlternativeGroupSchema, permission: "program:write" } as const;
+
+/** The group's order: a closed order's groups no longer change. */
+const ofGroup = ({ orderId }: { orderId: string }) => [orderId];
 
 export const listAlternativeGroups = defineOperation({
   name: "alternativeGroup.list",
@@ -64,7 +68,7 @@ export const createAlternativeGroup = defineOperation({
     `"from" price until one is chosen (alternativeGroup.choose). ${OPTIONS_NOTE}`,
   input: AlternativeGroupCreateInputSchema,
   ...Group,
-  handler: insertGroup,
+  handler: openOrderHandler({ handler: insertGroup, orderIds: ofGroup }),
 });
 
 export const updateAlternativeGroup = defineOperation({
@@ -75,7 +79,7 @@ export const updateAlternativeGroup = defineOperation({
     `ordinary lines). Options cannot change once one is chosen (CONFLICT). ${OPTIONS_NOTE}`,
   input: AlternativeGroupUpdateInputSchema,
   ...Group,
-  handler: changeGroup,
+  handler: openOrderHandler({ handler: changeGroup, orderIds: ofGroup }),
 });
 
 export const archiveAlternativeGroup = defineOperation({
@@ -87,7 +91,7 @@ export const archiveAlternativeGroup = defineOperation({
   input: AlternativeGroupIdInputSchema,
   ...Group,
   permission: "program:delete",
-  handler: dissolveGroup,
+  handler: openOrderHandler({ handler: dissolveGroup, orderIds: ofGroup }),
 });
 
 export const chooseAlternative = defineOperation({
@@ -100,11 +104,14 @@ export const chooseAlternative = defineOperation({
     "quote.accept can do the same with chosenLineIds.",
   input: AlternativeGroupChooseInputSchema,
   ...Group,
-  handler: async ({ input: { id, lineId }, context }) => {
-    const group = await loadGroup({ context, id });
-    if (!group) return notFound({ entity: "Alternative group" });
-    return chooseOption({ context, group, lineId });
-  },
+  handler: openOrderHandler({
+    orderIds: ofGroup,
+    handler: async ({ input: { id, lineId }, context }) => {
+      const group = await loadGroup({ context, id });
+      if (!group) return notFound({ entity: "Alternative group" });
+      return chooseOption({ context, group, lineId });
+    },
+  }),
 });
 
 export const alternativeGroupOperations = [

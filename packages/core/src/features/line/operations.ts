@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { checkOrderOpen } from "../order/open-order";
 import { checkReadable } from "../order/order-rules";
 import { regenerateForLine } from "../run-sheet/regenerate";
 import { lineAmounts } from "./amounts-operation";
@@ -95,6 +96,8 @@ export const chooseLineOptions = defineOperation({
   handler: async ({ input, context }) => {
     const readable = checkReadable({ context, permission: "item:read", path: "options" });
     if (!readable.ok) return readable;
+    const open = await checkOrderOpen({ context, lineIds: [input.lineId] });
+    if (!open.ok) return open;
     const lines = await chooseOptions({ context, input });
     if (!lines.ok) return lines;
     return ok({ value: { items: await withEffective({ context, lines: lines.value }) } });

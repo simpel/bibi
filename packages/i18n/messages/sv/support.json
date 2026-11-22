@@ -181,6 +181,10 @@
           "commentReply": {
             "question": "Kan jag svara på en kommentar eller nämna en kollega?",
             "answer": "Klicka på svarspilen bredvid en kommentar för att svara; svaret visas under kommentaren, även på körschemat. Skriv **@** och början av ett namn för att nämna en kollega och välj personen i listan.\nDen du nämner får en notis, även om hen inte är med på ordern, och den som skrev kommentaren du svarar på får också veta det."
+          },
+          "closedOrder": {
+            "question": "Varför kan jag inte ändra en genomförd bokning?",
+            "answer": "När en bokning når en status som stänger den, till exempel **Genomförd** eller **Avbokad**, blir den ett underlag för det som hände. En rad överst på bokningen säger det, och knapparna för att redigera, lägga till rader, ändra behov och skapa en offert är borta.\nFakturor, betalningar, återbetalningar och kommentarer fungerar som vanligt, och köparens referens kan du fortfarande rätta via assistenten. En stängd bokning går inte att öppna igen, så skapa en ny bokning om det behövs mer."
           }
         }
       },

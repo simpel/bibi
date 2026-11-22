@@ -19,7 +19,7 @@ export function CreateLineButton(props: CreateLineButtonProps) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
+      <Button onClick={() => setOpen(true)}>
         <PlusIcon />
         {t("create")}
       </Button>

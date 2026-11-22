@@ -112,6 +112,7 @@
     "changeStatus": "Change status",
     "changeStatusDescription": "Move the order to one of the statuses your organization allows from its current status. Some statuses need a reason or an assignee, and a closing status releases the order's rooms and resources.",
     "statusChanged": "The status has been changed.",
+    "closedNotice": "{status} {date} · This order is closed and can't be changed. Invoices, payments and comments still work.",
     "transitionRefused": "Your organization does not allow this move.",
     "linesBlocked": "{count, plural, one {# line cannot move: a hold collides or its state change is not allowed.} other {# lines cannot move: a hold collides or their state change is not allowed.}}",
     "assigneeRequired": "This status needs an assignee. Assign one on the order first.",

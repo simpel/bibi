@@ -3,7 +3,8 @@ import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { loadOrderLines } from "@/features/line/load-order-lines";
-import { can, getCallerAbilities } from "@/server/caller-abilities";
+import { getOrderAbilities } from "@/features/order/order-abilities";
+import { can } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadRequirementData } from "../load-requirement-data";
@@ -19,7 +20,7 @@ export type RequirementSectionProps = { locale: Locale; order: OrderDto };
 export async function RequirementSection({ locale, order }: RequirementSectionProps) {
   const [t, abilities, requirements, lines] = await Promise.all([
     getTranslations("requirement"),
-    getCallerAbilities(),
+    getOrderAbilities({ order }),
     runOperation({ operation: listRequirements, input: { orderId: order.id, limit: 100 } }),
     loadOrderLines({ orderId: order.id }),
   ]);

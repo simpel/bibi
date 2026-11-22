@@ -17,6 +17,8 @@ import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-a
 import { handleLoadError } from "@/server/load-error";
 import { loadOrder } from "../load-order";
 import { loadOrderNames, loadOrderStatuses } from "../load-order-names";
+import { closedStatus, readOnlyAbilities } from "../order-abilities";
+import { ClosedOrderNotice } from "./closed-order-notice";
 import { OrderActions } from "./order-actions";
 import { OrderKeyFacts } from "./order-facts";
 import type { OrderFormData } from "./order-form-data";
@@ -96,8 +98,11 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
     return <ErrorState errorKey={handleLoadError({ error: statuses.error, locale })} />;
   }
   const names = await loadOrderNames({ order: order.value });
+  // A closed order is a record: its content controls are hidden, not disabled.
+  const closed = closedStatus({ order: order.value, statuses: statuses.value });
+  const pageAbilities = closed ? readOnlyAbilities({ abilities }) : abilities;
   const actions = (
-    <OrderHeaderActions order={order.value} statuses={statuses.value} abilities={abilities} />
+    <OrderHeaderActions order={order.value} statuses={statuses.value} abilities={pageAbilities} />
   );
   return (
     <PageBands>
@@ -120,6 +125,7 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
             </Suspense>
           </div>
         ) : null}
+        {closed ? <ClosedOrderNotice order={order.value} status={closed} /> : null}
         {/* What the caller must do on this order (Needs you), hidden while there is nothing. */}
         <div className="empty:hidden [&:not(:empty)]:mb-4">
           <Suspense fallback={null}>
@@ -136,7 +142,7 @@ export async function OrderDetail({ locale, id }: OrderDetailProps) {
               suffix={
                 order.value.title === null ? undefined : short({ reference: order.value.reference })
               }
-              canEdit={can({ abilities, permission: "order:write" })}
+              canEdit={can({ abilities: pageAbilities, permission: "order:write" })}
             />
           }
           actions={actions}

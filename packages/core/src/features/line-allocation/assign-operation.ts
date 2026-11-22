@@ -1,6 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
+import { checkOrderOpen } from "../order/open-order";
 import { checkAssign } from "./assign-rules";
 import { LineAllocationAssignInputSchema, LineAllocationSchema } from "./schema";
 import { syncAllocations } from "./sync-allocations";
@@ -20,6 +21,8 @@ export const assignLineAllocation = defineOperation({
   handler: async ({ input: { id, unitId }, context }) => {
     const before = await context.db.lineAllocation.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Allocation" });
+    const open = await checkOrderOpen({ context, lineIds: [before.lineId] });
+    if (!open.ok) return open;
     const checked = await checkAssign({ context, allocation: before, unitId });
     if (!checked.ok) return checked;
     const row = await context.db.lineAllocation.update({ where: { id }, data: { unitId } });

@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
+import { checkOrderOpen } from "../order/open-order";
 import { checkReadable } from "../order/order-rules";
 import { regenerateForLine } from "../run-sheet/regenerate";
 import { loadBundle, planParts } from "./bundle-parts";
@@ -86,6 +87,8 @@ export const expandLineBundle = defineOperation({
   permission: "program:write",
   followUp: regenerateForLine,
   handler: async ({ input, context }) => {
+    const open = await checkOrderOpen({ context, orderIds: [input.orderId] });
+    if (!open.ok) return open;
     const lines = await expand({ context, input });
     if (!lines.ok) return lines;
     return ok({ value: { items: await withEffective({ context, lines: lines.value }) } });

@@ -181,6 +181,10 @@
           "commentReply": {
             "question": "Can I reply to a comment or mention a colleague?",
             "answer": "Click the reply arrow next to a comment to answer it; the answer shows under the comment, also on the run sheet. Type **@** and the start of a name to mention a colleague, then pick them in the list.\nThe person you mention gets a notification, even if they are not on the order, and the one who wrote the comment you answer is told too."
+          },
+          "closedOrder": {
+            "question": "Why can't I change a completed order?",
+            "answer": "When a booking reaches a status that closes it, such as **Completed** or **Cancelled**, it becomes a record of what happened. A line at the top of the booking says so, and the buttons for editing, adding lines, changing needs and creating a quote are gone.\nInvoices, payments, refunds and comments still work as usual, and you can still correct the buyer's reference through the assistant. A closed booking cannot be opened again, so create a new booking if more is needed."
           }
         }
       },

@@ -4,6 +4,7 @@ import type { HandlerInput, OperationContext } from "../../operations/types";
 import { effectiveBuffers } from "../../shared/buffers";
 import { loadZoneOfVenue } from "../../shared/time-zones";
 import { loadLayoutFacts } from "../floor-plan/layout-seats";
+import { openOrderHandler } from "../order/open-order";
 import { loadPriceTerms } from "../price-list/customer-price-terms";
 import { effectiveOf } from "./effective-values";
 import { loadLineWarnings } from "./line-warnings";
@@ -133,10 +134,14 @@ type Handler<I, T> = (args: HandlerInput<I>) => Promise<Result<T>>;
 
 export type EffectiveHandlerInput<I> = { handler: Handler<I, LineRecord> };
 
-/** Wraps a line command's handler so its output carries the effective values. */
+/**
+ * Wraps a line command's handler so it is refused on a closed order (`openOrderHandler`) and its
+ * output carries the effective values.
+ */
 export function effectiveHandler<I>({ handler }: EffectiveHandlerInput<I>): Handler<I, LineDto> {
+  const guarded = openOrderHandler({ handler, orderIds: (line) => [line.orderId] });
   return async (args) => {
-    const result = await handler(args);
+    const result = await guarded(args);
     if (!result.ok) return result;
     return ok({ value: await withEffectiveOne({ context: args.context, line: result.value }) });
   };

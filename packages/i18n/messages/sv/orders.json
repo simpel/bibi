@@ -112,6 +112,7 @@
     "changeStatus": "Byt bokningsstatus",
     "changeStatusDescription": "Flytta bokningen till en av de bokningsstatusar som organisationen tillåter från nuvarande bokningsstatus. Vissa bokningsstatusar kräver en anledning eller en ansvarig, och en avslutande bokningsstatus frigör bokningens lokaler och resurser.",
     "statusChanged": "Bokningsstatusen har ändrats.",
+    "closedNotice": "{status} {date} · Bokningen är stängd och kan inte ändras. Fakturor, betalningar och kommentarer fungerar som vanligt.",
     "transitionRefused": "Er organisation tillåter inte den här flytten.",
     "linesBlocked": "{count, plural, one {# rad kan inte flyttas: en reservation krockar eller lägesbytet är inte tillåtet.} other {# rader kan inte flyttas: en reservation krockar eller lägesbytet är inte tillåtet.}}",
     "assigneeRequired": "Bokningsstatusen kräver en ansvarig. Tilldela en på bokningen först.",

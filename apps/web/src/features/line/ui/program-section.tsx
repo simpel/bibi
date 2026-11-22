@@ -4,7 +4,8 @@ import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { AlternativeGroupSection } from "@/features/alternative-group/ui/alternative-group-section";
 import { loadOrderComments } from "@/features/comment/load-order-comments";
-import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
+import { getOrderAbilities } from "@/features/order/order-abilities";
+import { type CallerAbilities, can } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadOrderLines } from "../load-order-lines";
@@ -53,7 +54,7 @@ function ProgramHeader({ title, canEdit, start }: ProgramHeaderProps) {
  */
 export async function ProgramSection({ locale, order }: ProgramSectionProps) {
   const t = await getTranslations("line");
-  const access = programAccess({ abilities: await getCallerAbilities() });
+  const access = programAccess({ abilities: await getOrderAbilities({ order }) });
   const [lines, data, amounts, comments] = await Promise.all([
     loadOrderLines({ orderId: order.id }),
     loadProgramData(),

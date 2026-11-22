@@ -10,6 +10,7 @@ import { notifyCreatedAssignee } from "../notification/follow-ups";
 import { regenerateForOrder } from "../run-sheet/regenerate";
 import { runOrderCreate } from "./create-order";
 import { recordEstimate } from "./estimate-history";
+import { checkOrderOpen } from "./open-order";
 import { OrderCreateInputSchema, OrderSchema, OrderUpdateInputSchema } from "./schema";
 import { titleAfterCreate } from "./title/generate-title";
 import { loadOrder, ORDER_INCLUDE, toOrderDto } from "./to-order-dto";
@@ -51,7 +52,8 @@ export const updateOrder = defineOperation({
     "VALIDATION on that headcount. The contact can be changed but never cleared. Omitted properties are unchanged; " +
     "`fields` is merged by key (null clears a value). " +
     "The type cannot be changed, the status changes only with order.changeStatus and the " +
-    "assignee with assignment.assign.",
+    "assignee with assignment.assign. A closed order (its status closes) takes only buyerKind " +
+    "and buyerReference, which its invoices still need; any other change is CONFLICT.",
   input: OrderUpdateInputSchema,
   output: OrderSchema,
   permission: "order:write",
@@ -59,6 +61,12 @@ export const updateOrder = defineOperation({
   handler: async ({ input: { id, fields: patch, estimatedValueMinor, ...data }, context }) => {
     const before = await loadOrder({ context, id });
     if (!before) return notFound({ entity: "Order" });
+    const { buyerKind, buyerReference, ...content } = data;
+    const touches = patch !== undefined || estimatedValueMinor !== undefined;
+    if (touches || Object.values(content).some((value) => value !== undefined)) {
+      const open = await checkOrderOpen({ context, orderIds: [id] });
+      if (!open.ok) return open;
+    }
     for (const check of [
       await checkOrderDetails({ context, before, change: data }),
       await checkHeadcountChange({ context, before, change: data }),
