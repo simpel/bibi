@@ -50,6 +50,32 @@ describe("occupancy (ADR 0022)", () => {
     expect(list.items.map((row) => row.type)).toEqual(["INTERNAL", "HOLD", "HOLD"]);
   });
 
+  it("lists the periods that have ended, newest first", async () => {
+    const context = testContext();
+    const item = await createBookableItem({ context });
+    for (const [from, to] of [
+      [8, 9],
+      [10, 11],
+      [12, 14],
+    ] as const) {
+      const input = { itemId: item.id, type: "INTERNAL" as const, ...hours({ from, to }) };
+      unwrap({ result: await execute({ operation: createOccupancy, input, context }) });
+    }
+    const list = unwrap({
+      result: await execute({
+        operation: listOccupancies,
+        input: {
+          itemId: item.id,
+          endsBefore: hours({ from: 0, to: 13 }).endsAt,
+          newestFirst: true,
+        },
+        context,
+      }),
+    });
+    const starts = list.items.map((row) => row.startsAt.getUTCHours());
+    expect(starts).toEqual([10, 8]);
+  });
+
   it("saves only one of several concurrent overlapping blocks", async () => {
     const context = testContext();
     const item = await createBookableItem({ context });

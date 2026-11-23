@@ -17,7 +17,8 @@ export const listOccupancies = defineOperation({
   kind: "query",
   description:
     "List when bookable items are occupied (bookings, options, setup time, maintenance, " +
-    "internal use), earliest first. Filter by item, type and a time window (from/to).",
+    "internal use), earliest first (newestFirst: latest first). Filter by item, type, a time " +
+    "window (from/to) and endsBefore (only periods that have ended).",
   input: OccupancyListInputSchema,
   output: OccupancyListOutputSchema,
   permission: "order:read",
@@ -26,10 +27,19 @@ export const listOccupancies = defineOperation({
       where: {
         ...(input.itemId ? { itemId: input.itemId } : {}),
         ...(input.type ? { type: input.type } : {}),
-        ...(input.from ? { endsAt: { gt: input.from } } : {}),
+        ...(input.from || input.endsBefore
+          ? {
+              endsAt: {
+                ...(input.from ? { gt: input.from } : {}),
+                ...(input.endsBefore ? { lte: input.endsBefore } : {}),
+              },
+            }
+          : {}),
         ...(input.to ? { startsAt: { lt: input.to } } : {}),
       },
-      orderBy: [{ startsAt: "asc" }, { id: "asc" }],
+      orderBy: input.newestFirst
+        ? [{ startsAt: "desc" }, { id: "desc" }]
+        : [{ startsAt: "asc" }, { id: "asc" }],
       ...pageArgs(input),
     });
     const page = paginate({ rows, limit: input.limit });

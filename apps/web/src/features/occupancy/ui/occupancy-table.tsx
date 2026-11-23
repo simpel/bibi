@@ -11,15 +11,17 @@ export type OccupancyTableProps = {
   access: RowAccess;
   /** The zone of the item's venue (ADR 0064). */
   timeZone: string;
+  /** Which list: each keeps its own column order and sort. */
+  list: "upcoming" | "past";
 };
 
 /** Occupancy rows: type, note and period; manual blocks can be edited and released. */
-export function OccupancyTable({ occupancies, access, timeZone }: OccupancyTableProps) {
+export function OccupancyTable({ occupancies, access, timeZone, list }: OccupancyTableProps) {
   const t = useTranslations("occupancy");
   const columns = useOccupancyColumns({ access, timeZone });
   return (
     <PersistedDataTable
-      tableId="occupancy.list"
+      tableId={`occupancy.${list}`}
       columns={columns}
       data={occupancies}
       getRowId={(occupancy) => occupancy.id}

@@ -54,6 +54,14 @@ export const OccupancyListInputSchema = z.object({
   type: OccupancyTypeSchema.optional().describe("Only occupancies of this type"),
   from: z.coerce.date().optional().describe("Only periods that end after this time"),
   to: z.coerce.date().optional().describe("Only periods that start before this time"),
+  endsBefore: z.coerce
+    .date()
+    .optional()
+    .describe("Only periods that have ended by this time, e.g. now for the past"),
+  newestFirst: z
+    .boolean()
+    .optional()
+    .describe("Latest start first instead of earliest first, e.g. for the past"),
   ...PageInputShape,
 });
 

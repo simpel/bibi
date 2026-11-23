@@ -447,6 +447,11 @@
       "startsAt": "Börjar",
       "endsAt": "Slutar",
       "note": "Anteckning"
+    },
+    "tabs": {
+      "upcoming": "Kommande ({count, plural, =100 {100+} other {#}})",
+      "past": "Tidigare ({count, plural, =100 {100+} other {#}})",
+      "emptyPast": "Artikeln har inte varit upptagen än."
     }
   },
   "quote": {

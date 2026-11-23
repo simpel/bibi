@@ -447,6 +447,11 @@
       "startsAt": "Starts",
       "endsAt": "Ends",
       "note": "Note"
+    },
+    "tabs": {
+      "upcoming": "Upcoming ({count, plural, =100 {100+} other {#}})",
+      "past": "Past ({count, plural, =100 {100+} other {#}})",
+      "emptyPast": "Nothing has occupied the item yet."
     }
   },
   "quote": {
