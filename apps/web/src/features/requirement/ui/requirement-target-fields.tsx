@@ -14,19 +14,31 @@ export type RequirementTargetFieldsProps = {
   typeOf: ({ id }: { id: string }) => EntityTypeDto | undefined;
 };
 
-/** On create only: the type, where the count applies and which list value it counts. */
+/**
+ * On create only: the list, then a value from that list alone (each left out when there is just
+ * one), where the count applies, and the type when there is more than one.
+ */
 export function RequirementTargetFields({ form, data, typeOf }: RequirementTargetFieldsProps) {
   const t = useTranslations("requirement");
+  const list = data.lists.find(({ id }) => id === form.watch("vocabularyId"));
   return (
     <>
-      <TypeSelectField
+      <OptionSelectField
         control={form.control}
-        types={data.types}
-        label={t("fields.type")}
-        onTypeChange={(id) =>
-          form.setValue("fields", rawFields({ type: typeOf({ id }), stored: {} }))
-        }
+        name="vocabularyId"
+        label={t("fields.list")}
+        options={data.lists}
+        onChange={() => form.setValue("vocabularyValueId", "")}
       />
+      {list ? (
+        <OptionSelectField
+          key={list.id}
+          control={form.control}
+          name="vocabularyValueId"
+          label={list.name}
+          options={list.values}
+        />
+      ) : null}
       <OptionSelectField
         control={form.control}
         name="lineId"
@@ -34,11 +46,13 @@ export function RequirementTargetFields({ form, data, typeOf }: RequirementTarge
         options={data.lines}
         noneLabel={t("wholeOrder")}
       />
-      <OptionSelectField
+      <TypeSelectField
         control={form.control}
-        name="vocabularyValueId"
-        label={t("fields.value")}
-        options={data.values}
+        types={data.types.filter((type) => type.status === "ACTIVE")}
+        label={t("fields.type")}
+        onTypeChange={(id) =>
+          form.setValue("fields", rawFields({ type: typeOf({ id }), stored: {} }))
+        }
       />
     </>
   );

@@ -112,6 +112,12 @@ export const lindholmenTypes: readonly DemoType[] = [
   },
   { base: "LINE", name: "Line", pluralName: "Lines" },
   {
+    base: "REQUIREMENT",
+    name: "Requirement",
+    pluralName: "Requirements",
+    fields: [{ name: "Severity", kind: "CHOICE", list: "Severity" }],
+  },
+  {
     base: "CUSTOMER",
     name: "Company",
     pluralName: "Companies",

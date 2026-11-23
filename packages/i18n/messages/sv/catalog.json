@@ -558,6 +558,7 @@
     "fields": {
       "type": "Typ",
       "line": "Gäller",
+      "list": "Lista",
       "value": "Listvärde",
       "quantity": "Antal"
     },
@@ -566,6 +567,17 @@
       "where": "Gäller",
       "quantity": "Antal",
       "type": "Typ"
+    },
+    "setup": {
+      "type": {
+        "description": "Innan ni kan räkna behov behöver organisationen en behovstyp. Typen bär behovets egna fält, till exempel allvarlighetsgrad.",
+        "action": "Skapa behovstyp"
+      },
+      "list": {
+        "description": "Det finns ingen lista att räkna mot än. Skapa en lista först, till exempel allergenerna.",
+        "action": "Skapa lista"
+      },
+      "askAdmin": "Be en administratör att ställa in det."
     }
   },
   "priceList": {

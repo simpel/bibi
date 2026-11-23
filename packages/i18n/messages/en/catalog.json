@@ -558,6 +558,7 @@
     "fields": {
       "type": "Type",
       "line": "Applies to",
+      "list": "List",
       "value": "List value",
       "quantity": "Quantity"
     },
@@ -566,6 +567,17 @@
       "where": "Applies to",
       "quantity": "Quantity",
       "type": "Type"
+    },
+    "setup": {
+      "type": {
+        "description": "Before you can count requirements, the organization needs a requirement type. The type holds the requirement's own fields, such as a severity.",
+        "action": "Create requirement type"
+      },
+      "list": {
+        "description": "There is no list to count against yet. Create a list first, for example the allergens.",
+        "action": "Create list"
+      },
+      "askAdmin": "Ask an admin to set it up."
     }
   },
   "priceList": {

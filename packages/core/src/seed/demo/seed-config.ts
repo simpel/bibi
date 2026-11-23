@@ -134,6 +134,7 @@ export async function seedDemoConfig({
     customerTypes: new Map(),
     contactTypes: new Map(),
     orderTypes: new Map(),
+    requirementTypes: new Map(),
   };
   const groups = await seedItemTypeGroups({ context, types: config.types });
   if (!groups.ok) return groups;
@@ -145,6 +146,7 @@ export async function seedDemoConfig({
       CUSTOMER: refs.customerTypes,
       CONTACT: refs.contactTypes,
       ORDER: refs.orderTypes,
+      REQUIREMENT: refs.requirementTypes,
     };
     byBase[type.base as keyof typeof byBase]?.set(type.name, result.value);
   }

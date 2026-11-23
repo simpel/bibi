@@ -34,7 +34,8 @@ export async function RequirementSection({ locale, order }: RequirementSectionPr
       return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   }
   if (!requirements.ok || !lines.ok) return null;
-  const data = await loadRequirementData({ lines: lines.value.items });
+  const canSetUp = can({ abilities, permission: "configuration:write" });
+  const data = await loadRequirementData({ lines: lines.value.items, canSetUp });
   if (!data.ok)
     return <ErrorState inline errorKey={handleLoadError({ error: data.error, locale })} />;
   const rows = requirements.value.items;

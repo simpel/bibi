@@ -11,7 +11,7 @@ type Column = ColumnDef<RequirementDto>;
 
 export type UseRequirementColumnsInput = { data: RequirementFormData; access: RowAccess };
 
-/** Value · where · type · quantity, plus the row actions when the caller can write. */
+/** Value · where · type (when there are several) · quantity, plus the row actions when the caller can write. */
 export function useRequirementColumns({ data, access }: UseRequirementColumnsInput): Column[] {
   const t = useTranslations("requirement");
   const common = useTranslations("common");
@@ -28,11 +28,16 @@ export function useRequirementColumns({ data, access }: UseRequirementColumnsInp
         accessorFn: (row) =>
           row.lineId ? nameOf({ options: data.lines, id: row.lineId }) : t("wholeOrder"),
       },
-      {
-        id: "type",
-        header: t("columns.type"),
-        accessorFn: (row) => nameOf({ options: data.types, id: row.entityTypeId }),
-      },
+      ...(data.types.length > 1
+        ? [
+            {
+              id: "type",
+              header: t("columns.type"),
+              accessorFn: (row: RequirementDto) =>
+                nameOf({ options: data.types, id: row.entityTypeId }),
+            },
+          ]
+        : []),
       { id: "quantity", header: t("columns.quantity"), accessorFn: (row) => row.quantity },
     ];
     if (!access.canEdit && !access.canRemove) return columns;

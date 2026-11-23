@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
 import { TypeFields } from "@/components/typed-fields/type-fields";
 import type { RequirementFormData } from "./requirement-form-data";
+import { RequirementSetupNotice } from "./requirement-setup-notice";
 import { RequirementTargetFields } from "./requirement-target-fields";
 import { useRequirementForm } from "./use-requirement-form";
 
@@ -14,8 +15,26 @@ export type RequirementFormProps = {
   onDone: () => void;
 };
 
-/** Create (type, where and which list value first) or edit a count, then the type's fields. */
+/** What the organization lacks before a count can be created, if anything. */
+const missingSetup = ({ data }: { data: RequirementFormData }) => {
+  if (!data.types.some((type) => type.status === "ACTIVE")) return "type";
+  return data.lists.length === 0 ? "list" : null;
+};
+
+/** Create (list value, where and type first) or edit a count, then the type's fields. */
 export function RequirementForm({ requirement, ...props }: RequirementFormProps) {
+  const missing = requirement ? null : missingSetup({ data: props.data });
+  if (missing === null) return <RequirementFields {...props} requirement={requirement} />;
+  return (
+    <RequirementSetupNotice
+      missing={missing}
+      canSetUp={props.data.canSetUp}
+      onDone={props.onDone}
+    />
+  );
+}
+
+function RequirementFields({ requirement, ...props }: RequirementFormProps) {
   const common = useTranslations("common");
   const t = useTranslations("requirement");
   const { form, submit, pending, typeOf } = useRequirementForm({ ...props, requirement });

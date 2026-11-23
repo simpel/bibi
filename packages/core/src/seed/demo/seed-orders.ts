@@ -13,6 +13,7 @@ import { seedOrderChoices } from "./seed-order-choices";
 import { at, createOne } from "./seed-order-create";
 import { loadParty } from "./seed-order-party";
 import { moveStatus } from "./seed-order-status";
+import { seedOrderRequirements } from "./seed-requirements";
 import type { DemoUserIds } from "./users";
 
 export type SeedOrdersInput = {
@@ -77,6 +78,8 @@ async function seedOrder({ context, refs, userIds, zones, order, now }: OrderInp
   if (!followed.ok) return followed;
   const lines = await seedDemoLines({ context, orderId, order, at: lineAt });
   if (!lines.ok) return lines;
+  const counted = await seedOrderRequirements({ context, refs, order, orderId });
+  if (!counted.ok) return counted;
   const chosen = await seedOrderChoices({ ...{ context, orderId, userIds }, order });
   if (!chosen.ok) return chosen;
   // Estimates before the status: a closed order can no longer be changed.

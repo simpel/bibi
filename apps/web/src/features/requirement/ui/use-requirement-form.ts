@@ -33,6 +33,15 @@ const save = ({ requirement, values, type }: SaveInput) =>
     ? updateRequirementAction({ input: toRequirementUpdate({ requirement, values, type }) })
     : createRequirementAction({ input: values });
 
+type ListOfValueInput = { data: RequirementFormData; valueId: string | undefined };
+
+/** The list holding the value being edited, else the only list to count against. */
+const listOfValue = ({ data, valueId }: ListOfValueInput): string => {
+  const holding = data.vocabularies.find((list) => list.values.some(({ id }) => id === valueId));
+  const [sole] = data.lists;
+  return holding?.id ?? (data.lists.length === 1 && sole ? sole.id : "");
+};
+
 /** Requirement form state; the order page reloads with the changed counts. */
 export function useRequirementForm({
   data,
@@ -49,10 +58,15 @@ export function useRequirementForm({
     schemaFor: ({ type }) =>
       requirementFormSchema({ orderId, type, vocabularies: data.vocabularies }),
   });
-  const initial = typeOf({ id: requirement?.entityTypeId ?? data.types[0]?.id ?? "" });
+  const firstActive = data.types.find((type) => type.status === "ACTIVE");
+  const initial = typeOf({ id: requirement?.entityTypeId ?? firstActive?.id ?? "" });
   const form = useForm<RequirementFormValues, unknown, RequirementFormOutput>({
     resolver,
-    defaultValues: requirementFormDefaults({ type: initial, requirement }),
+    defaultValues: requirementFormDefaults({
+      type: initial,
+      requirement,
+      vocabularyId: listOfValue({ data, valueId: requirement?.vocabularyValueId }),
+    }),
   });
   const { submit, pending } = useFormAction({
     form,

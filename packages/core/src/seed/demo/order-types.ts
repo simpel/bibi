@@ -81,6 +81,8 @@ export type DemoOrder = {
   holdsUntilDay?: number;
   /** The order's lines, on the order's day. */
   lines?: readonly DemoLine[];
+  /** Counts for the whole order against a list value, by list and value name (ADR 0021). */
+  requirements?: readonly DemoRequirement[];
   /** Bundles expanded onto the order as a bundle line with part lines (ADR 0059). */
   bundles?: readonly DemoBundleLine[];
   /** Lines (by name) grouped as alternatives the customer picks one of (ADR 0052). */
@@ -90,6 +92,14 @@ export type DemoOrder = {
    * and change nothing; the others must move the lines as the grid says, skipping overrides.
    */
   checkMove?: { to: string; blocked: boolean };
+};
+
+/** A requirement on a demo order: how many need `value` of the list `list`, with own fields. */
+export type DemoRequirement = {
+  list: string;
+  value: string;
+  quantity: number;
+  fields?: DemoFieldValues;
 };
 
 /**

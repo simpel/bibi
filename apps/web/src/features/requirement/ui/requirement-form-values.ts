@@ -6,6 +6,8 @@ import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fie
 export type RequirementFormValues = {
   entityTypeId: string;
   lineId: string;
+  /** The list picked before its value; the form's own, never sent. */
+  vocabularyId: string;
   vocabularyValueId: string;
   quantity: string;
   fields: Record<string, RawFieldValue>;
@@ -14,15 +16,19 @@ export type RequirementFormValues = {
 export type RequirementDefaultsInput = {
   type: EntityTypeDto | undefined;
   requirement?: RequirementDto | undefined;
+  /** The list of the value being counted, or the only list there is. */
+  vocabularyId: string;
 };
 
 export function requirementFormDefaults({
   type,
   requirement,
+  vocabularyId,
 }: RequirementDefaultsInput): RequirementFormValues {
   return {
     entityTypeId: type?.id ?? "",
     lineId: requirement?.lineId ?? NONE,
+    vocabularyId,
     vocabularyValueId: requirement?.vocabularyValueId ?? "",
     quantity: requirement ? String(requirement.quantity) : "",
     fields: rawFields({ type, stored: requirement?.fields ?? {} }),

@@ -25,6 +25,10 @@ export const vingaledenOrders: readonly DemoOrder[] = [
     title: "Rask family round trip",
     ...{ ref: "V3", customer: "Familjen Rask", type: "Round trip", day: 2, from: "10:00" },
     ...{ to: "11:30", status: "Weather OK", headcount: 9, estimatesKr: [6_500], ...people },
+    requirements: [
+      { list: "Accessibility", value: "Wheelchair", quantity: 1 },
+      { list: "Life jacket", value: "Child under 15 kg", quantity: 2 },
+    ],
   },
   {
     title: "Hisingen Energi client charter",

@@ -14,4 +14,5 @@ export type DemoRefs = {
   customerTypes: Map<string, TypeRef>;
   contactTypes: Map<string, TypeRef>;
   orderTypes: Map<string, TypeRef>;
+  requirementTypes: Map<string, TypeRef>;
 };

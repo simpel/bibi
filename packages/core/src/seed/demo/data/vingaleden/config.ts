@@ -51,6 +51,7 @@ export const vingaledenConfig: Omit<DemoConfig, "items" | "venue" | "venueHours"
     { base: "ORDER", name: "Charter" },
     { base: "ORDER", name: "Round trip" },
     { base: "LINE", name: "Line" },
+    { base: "REQUIREMENT", name: "Requirement" },
   ],
 };
 

@@ -37,6 +37,12 @@ export const lindholmenOrders: readonly DemoOrder[] = [
       followers: ["Erik Lund", "Maria Holm", "Anna Berg"],
     },
     fields: { Purpose: "Strategy days", Host: "Eva Sund" },
+    requirements: [
+      { list: "Allergens", value: "Gluten", quantity: 4, fields: { Severity: "Allergy" } },
+      { list: "Allergens", value: "Tree nuts", quantity: 1, fields: { Severity: "Anaphylaxis" } },
+      { list: "Diet", value: "Vegetarian", quantity: 8 },
+      { list: "Accessibility", value: "Wheelchair", quantity: 1 },
+    ],
   },
   {
     title: "Göta half-day conference",
@@ -65,6 +71,9 @@ export const lindholmenOrders: readonly DemoOrder[] = [
       followers: ["Erik Lund", "Anna Berg"],
     },
     fields: { Dresscode: "Dark suit" },
+    requirements: [
+      { list: "Allergens", value: "Crustaceans", quantity: 2, fields: { Severity: "Anaphylaxis" } },
+    ],
   },
   {
     title: "Hisingen Energi team day",
