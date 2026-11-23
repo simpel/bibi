@@ -193,7 +193,17 @@
     },
     "layouts": "Layouts",
     "maxPeople": "Max number of people",
-    "maxPeopleHint": "The most people the room may hold by law, for example because of fire safety and ventilation. Layouts and bookings cannot go above it."
+    "maxPeopleHint": "The most people the room may hold by law, for example because of fire safety and ventilation. Layouts and bookings cannot go above it.",
+    "picture": {
+      "label": "Picture",
+      "icon": "Icon",
+      "image": "Image",
+      "search": "Search icons",
+      "searchPlaceholder": "Search icons, e.g. wine, room or coffee",
+      "noIcons": "No icon matches that search.",
+      "iconHint": "Suggested from the name first. Shown wherever the item has no image.",
+      "imageHint": "Removing it shows the icon again."
+    }
   },
   "itemState": {
     "flags": {

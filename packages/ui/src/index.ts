@@ -171,6 +171,7 @@ export * from "./components/time-input/time-input";
 export { Toaster, type ToasterProps, toast } from "./components/toast/toast";
 export * from "./components/tooltip/tooltip";
 export * from "./components/view-switcher/view-switcher";
+export * from "./components/visual-tile/visual-tile";
 export * from "./components/website-input/website-format";
 export * from "./components/website-input/website-input";
 export * from "./components/wordmark/wordmark";

@@ -4,8 +4,10 @@ import {
   bufferMinutesInputShape,
   EffectiveBuffersShape,
 } from "../../shared/buffers";
+import { IconNameSchema } from "../../shared/icon-name";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
+import { FileKeySchema } from "../file/schema";
 import {
   CustomisationGroupsInputSchema,
   ItemCustomisationGroupDtoSchema,
@@ -77,6 +79,11 @@ export const ItemSchema = z.object({
   layouts: z.array(ItemLayoutSchema).describe("SETUPS: the room's layouts, largest first"),
   parts: z.array(ItemPartSchema),
   customisationGroups: z.array(ItemCustomisationGroupDtoSchema),
+  icon: z
+    .string()
+    .nullable()
+    .describe("Lucide icon name shown when there is no image; null = none"),
+  imageKey: z.string().nullable().describe("The item's image (file.get); null = show the icon"),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -135,6 +142,12 @@ export const ItemCreateInputSchema = z.object({
   maxPeople: Capability.maxPeople.nullish(),
   parts: Capability.parts.optional(),
   customisationGroups: CustomisationGroupsInputSchema.optional(),
+  icon: IconNameSchema.nullish().describe(
+    "A Lucide icon name (lucide.dev/icons), e.g. wine; shown when the item has no image",
+  ),
+  imageKey: FileKeySchema.nullish().describe(
+    "The item's image: a key from file.upload; null removes it and the icon shows",
+  ),
 });
 
 export const ItemUpdateInputSchema = ItemCreateInputSchema.omit({ entityTypeId: true })

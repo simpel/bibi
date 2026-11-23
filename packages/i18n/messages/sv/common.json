@@ -115,6 +115,12 @@
       "deleted": "Vyn raderad",
       "removed": "Vyn borttagen",
       "resetDone": "Vyerna återställda"
+    },
+    "imageUpload": {
+      "upload": "Ladda upp bild",
+      "replace": "Byt bild",
+      "remove": "Ta bort bild",
+      "limits": "PNG, JPEG eller WebP, högst 2 MB."
     }
   },
   "errors": {

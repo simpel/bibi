@@ -5,7 +5,15 @@ import { at } from "./line-fixture";
 import { slotLines } from "./slot-lines";
 
 const room: CatalogItem = {
-  ...{ id: "room1", name: "Vinga", typeName: "Room", capabilities: ["BOOKABLE"], timeZone: "UTC" },
+  ...{
+    id: "room1",
+    name: "Vinga",
+    typeName: "Room",
+    icon: null,
+    imageUrl: null,
+    capabilities: ["BOOKABLE"],
+    timeZone: "UTC",
+  },
   ...{ priceMinor: null, priceUnit: null, defaultDurationMinutes: 60, layouts: [] },
   ...{ maxPeople: null, groups: [] },
 };

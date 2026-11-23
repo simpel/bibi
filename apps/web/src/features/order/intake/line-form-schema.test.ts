@@ -4,7 +4,14 @@ import { lineFormSchema, toDraftLine } from "./line-form-schema";
 import { lineFormDefaults } from "./line-form-values";
 
 const item: CatalogItem = {
-  ...{ id: "i1", name: "Lunch", typeName: "Food", capabilities: ["CUSTOMISATIONS", "PRICED"] },
+  ...{
+    id: "i1",
+    name: "Lunch",
+    typeName: "Food",
+    icon: null,
+    imageUrl: null,
+    capabilities: ["CUSTOMISATIONS", "PRICED"],
+  },
   ...{
     timeZone: "UTC",
     priceMinor: 25_000,

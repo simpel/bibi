@@ -1,12 +1,14 @@
 "use client";
 
 import type { OrderTemplateCreateInput, OrderTemplateDto } from "@bibi/core/schemas";
-import { Button, Form } from "@bibi/ui";
+import { Button, Form, VisualTile } from "@bibi/ui";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type UseFormReturn, useFieldArray } from "react-hook-form";
+import { ImageUploadField } from "@/components/form/image-upload-field";
 import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
+import { fileUrl } from "@/lib/file-url";
 import type { OrderTemplateFormData } from "./order-template-form-data";
 import { emptyLine, type OrderTemplateFormValues } from "./order-template-form-schema";
 import { TemplateLineFields } from "./template-line-fields";
@@ -17,12 +19,32 @@ type FormProps = {
   data: OrderTemplateFormData;
 };
 
-/** Name, order type, the status orders start in and the guest range. */
+/** The package's own image; without one, the package shows its first item's picture. */
+function ImageField({ form }: Pick<FormProps, "form">) {
+  const t = useTranslations("orderTemplate.fields");
+  const imageKey = form.watch("imageKey");
+  return (
+    <fieldset className="grid gap-2">
+      <legend className="mb-2 text-sm font-medium">{t("image")}</legend>
+      <div className="flex items-start gap-4">
+        <VisualTile size="lg" src={imageKey ? fileUrl({ key: imageKey }) : null} />
+        <ImageUploadField
+          imageKey={imageKey}
+          onChange={(key) => form.setValue("imageKey", key, { shouldDirty: true })}
+          hint={t("imageHint")}
+        />
+      </div>
+    </fieldset>
+  );
+}
+
+/** Name, image, order type, the status orders start in and the guest range. */
 function DetailFields({ form, data }: FormProps) {
   const t = useTranslations("orderTemplate.fields");
   return (
     <>
       <TextField form={form} name="name" label={t("name")} required />
+      <ImageField form={form} />
       <div className="grid gap-4 sm:grid-cols-2">
         <OptionSelectField
           control={form.control}

@@ -338,29 +338,39 @@
         "max": "Up to {max} guests",
         "any": "Any number of guests"
       },
-      "notes": {
-        "available": "✓ Available",
-        "hidden": "Availability hidden",
-        "warnings": "⚠ {count, plural, one {# warning} other {# warnings}}",
-        "clashes": "✕ {count, plural, one {# clash} other {# clashes}} with other bookings",
-        "guests": "⚠ Made for {range}, you asked for {headcount}",
-        "pastEnd": "⚠ Runs to {time}, past the requested end"
-      },
       "none": "No packages yet",
       "noneDescription": "Make a custom booking, or create a package to reuse.",
       "noneForSlot": "No package books this resource",
       "noneForSlotDescription": "Make a custom booking: it starts with the resource you picked in the calendar.",
       "createPackage": "Create package",
       "picked": "Picked: {summary}",
-      "tabs": {
-        "fits": "Fits your request ({count})",
-        "adjust": "Needs adjusting ({count})",
-        "nothingFits": "Nothing fits {period} for {guests}.",
-        "nothingToAdjust": "Every package fits your request."
-      },
       "custom": {
         "button": "Custom booking",
         "hint": "Put the booking together line by line."
+      },
+      "listLabel": "Packages",
+      "pick": "Pick package",
+      "pickAndAdjust": "Pick and adjust",
+      "pickedShort": "Picked",
+      "changes": "{count, plural, =0 {Fits as asked} one {# change} other {# changes}}",
+      "lead": {
+        "nothingFits": "Nothing fits {guests} guests, {period} as asked. Closest first:",
+        "someFit": "{count, plural, one {# package fits} other {# packages fit}} {guests} guests, {period}. Closest first:"
+      },
+      "compare": {
+        "asked": "You asked",
+        "package": "Package",
+        "guests": "Guests",
+        "time": "Time",
+        "rooms": "Rooms and resources",
+        "fits": "Fits",
+        "outsideRange": "Outside its range",
+        "runsLonger": "Runs longer",
+        "free": "Free",
+        "hidden": "Hidden",
+        "change": "Needs a change",
+        "clashes": "{count, plural, one {# clash} other {# clashes}}",
+        "warnings": "{count, plural, one {# warning} other {# warnings}}"
       }
     },
     "questions": {
@@ -661,7 +671,9 @@
       "item": "Item",
       "offset": "Starts (minutes after the order start)",
       "duration": "Duration (minutes)",
-      "quantity": "Quantity (empty: the headcount)"
+      "quantity": "Quantity (empty: the headcount)",
+      "image": "Image",
+      "imageHint": "Without one, the package shows its first item's picture."
     },
     "columns": {
       "name": "Name",

@@ -1,21 +1,22 @@
 import { describe, expect, it } from "vitest";
 import { entryFixture } from "./entry-fixture";
-import { cardNotes, groupPackages, type PackageOption } from "./package-groups";
+import { cardNotes, type PackageOption, packageCards } from "./package-groups";
 
 const option = ({ id }: { id: string }): PackageOption => ({
   id,
   name: id,
   minGuests: null,
   maxGuests: null,
-  lineNames: [],
+  imageUrl: null,
+  lines: [],
   itemIds: [],
   entityTypeId: "tt",
   fields: {},
 });
 
-describe("groupPackages", () => {
-  it("puts each package in its preview's group, in the packages' order", () => {
-    const groups = groupPackages({
+describe("packageCards", () => {
+  it("pairs each package with its preview entry, in the packages' order", () => {
+    const cards = packageCards({
       options: [option({ id: "a" }), option({ id: "b" }), option({ id: "c" }), option({ id: "d" })],
       entries: [
         entryFixture({ templateId: "c", group: "CLASHES" }),
@@ -23,9 +24,7 @@ describe("groupPackages", () => {
         entryFixture({ templateId: "b", group: "OUTSIDE_RANGE" }),
       ],
     });
-    expect(groups.AVAILABLE.map(({ option: { id } }) => id)).toEqual(["a"]);
-    expect(groups.CLASHES.map(({ option: { id } }) => id)).toEqual(["c"]);
-    expect(groups.OUTSIDE_RANGE.map(({ option: { id } }) => id)).toEqual(["b"]);
+    expect(cards.map(({ option: { id } }) => id)).toEqual(["a", "b", "c"]);
   });
 });
 

@@ -54,6 +54,7 @@ export const updateItem = defineOperation({
       type: type.value,
       itemId: id,
       customerId: before.customerId,
+      currentImageKey: before.imageKey,
       data: { ...data, parts, customisationGroups },
       fields: patch ? mergeFields({ before: before.fields, patch }) : undefined,
     });

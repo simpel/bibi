@@ -115,6 +115,12 @@
       "deleted": "View deleted",
       "removed": "View removed",
       "resetDone": "Views reset"
+    },
+    "imageUpload": {
+      "upload": "Upload image",
+      "replace": "Replace image",
+      "remove": "Remove image",
+      "limits": "PNG, JPEG or WebP, at most 2 MB."
     }
   },
   "errors": {

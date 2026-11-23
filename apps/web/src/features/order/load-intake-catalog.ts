@@ -1,5 +1,6 @@
 import "server-only";
 import { type EntityTypeDto, type ItemDto, listMembers, type Result } from "@bibi/core";
+import { fileUrl } from "@/lib/file-url";
 import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { loadPickerItems } from "@/server/load-items-for-pickers";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
@@ -24,6 +25,8 @@ function toCatalogItem({ item, types, groups }: ToCatalogInput): CatalogItem {
     ...{ id: item.id, name: item.name, timeZone: item.timeZone },
     ...{ priceMinor: item.priceMinor, priceUnit: item.priceUnit },
     typeName: type?.name ?? "",
+    icon: item.icon,
+    imageUrl: item.imageKey ? fileUrl({ key: item.imageKey }) : null,
     capabilities: type?.capabilities ?? [],
     defaultDurationMinutes: item.defaultDurationMinutes,
     layouts: item.layouts.map(({ layoutId, name, effectiveCapacity }) => ({

@@ -4,6 +4,7 @@ import { archiveRecords } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { checkImageKey } from "../file/image-key";
 import { checkTemplate } from "./check-template";
 import { loadOrderTemplate, toOrderTemplateDto, WITH_LINES } from "./load-order-template";
 import { replaceLines } from "./replace-lines";
@@ -71,6 +72,8 @@ export const createOrderTemplate = defineOperation({
     const { lines, fields: _fields, ...data } = input;
     const taken = await nameTaken({ context, name: data.name });
     if (taken) return taken;
+    const image = checkImageKey({ context, key: data.imageKey, path: "imageKey" });
+    if (!image.ok) return image;
     const checked = await checkTemplate({ context, ...input });
     if (!checked.ok) return checked;
     const row = await insertTemplateRow({ context, data, fields: checked.value });
@@ -96,6 +99,13 @@ export const updateOrderTemplate = defineOperation({
     if (!before) return notFound({ entity: "Order template" });
     const taken = data.name ? await nameTaken({ context, name: data.name, id }) : null;
     if (taken) return taken;
+    const image = checkImageKey({
+      context,
+      key: data.imageKey,
+      current: before.imageKey,
+      path: "imageKey",
+    });
+    if (!image.ok) return image;
     const checked = await checkTemplate({
       context,
       entityTypeId: data.entityTypeId ?? before.entityTypeId,

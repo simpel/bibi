@@ -394,6 +394,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Attributes**
 - name (unique among the organization's active templates), order type, start status (`statusId`), default own-field values
 - guest range (`minGuests`, `maxGuests`, optional; the package is made for that many guests, ADR 0081)
+- image (`imageKey`, owned, optional; a `@bibi/storage` key from the caller's `file.upload`, ADR 0063; null = the intake shows its first line's item picture; readable with `orderTemplate:read`)
 - lines (`OrderTemplateLine`, replaced as a set): line type (base `LINE`), name, optional general item and layout (`layoutId`, a layout of the item), offset and duration in minutes from the order start, quantity (null = the order's headcount, ADR 0052)
 - default choices (`OrderTemplateLineOption`, owned, ADR 0089): per template line the option items to preselect (foreign key to `Item`, never an option id, since groups get new ids when replaced), replaced with the lines, removed with their line; at most each normal group's maxPick, none in a split group (`VALIDATION` at `lines.<i>.options`). Reads add a derived `stale` for a default that no longer fits the item; a stale default is ignored by the intake and `order.createFromTemplate`, and dropped on the next save.
 - status (active / archived)
@@ -832,6 +833,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - type (the organization's own) and custom fields (`fields` as JSON)
 - name
 - description
+- picture (owned, both optional): `icon`, a Lucide icon name (kebab-case, checked for shape only), and `imageKey`, a `@bibi/storage` key from `file.upload` (ADR 0063; a new key must be the caller's own upload, else `VALIDATION`). The image wins where both are set; colleagues with `item:read` read it with `file.get`
 - capability columns (values only if the type has the capability, otherwise `VALIDATION`):
   - `PRICED`: `priceMinor` (minor units), `priceUnit` (`PER_PERSON`, `PER_UNIT`, `PER_HOUR`, `FLAT`), `vatRatePercent` (null = the venue's default)
   - `BUNDLE`: contains other items with count, `offsetMinutes`, `durationMinutes`

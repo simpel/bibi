@@ -7,12 +7,13 @@ import {
   type Result,
 } from "@bibi/core";
 import type { NamedOption } from "@/components/form/named-option";
+import { fileUrl } from "@/lib/file-url";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { runOperation } from "@/server/run-operation";
 import { getSessionState } from "@/server/session";
 import type { CustomerOption } from "../customer/actions";
-import type { IntakeCatalog } from "./intake/catalog";
+import type { CatalogItem, IntakeCatalog } from "./intake/catalog";
 import type { CustomerTypeOption } from "./intake/customer-type-option";
 import { draftKey } from "./intake/intake-draft";
 import type { IntakeSlot } from "./intake/intake-slot";
@@ -51,14 +52,21 @@ const customerTypeOptions = ({ types }: { types: EntityTypeDto[] }): CustomerTyp
     buyerKind: buyerKind ?? "BUSINESS",
   }));
 
-const toPackage = ({ template }: { template: OrderTemplateDto }): PackageOption => ({
+type ToPackageInput = { template: OrderTemplateDto; items: ReadonlyMap<string, CatalogItem> };
+
+/** A package with its lines' pictures from the catalog it already loaded (no extra read). */
+const toPackage = ({ template, items }: ToPackageInput): PackageOption => ({
   id: template.id,
   name: template.name,
   minGuests: template.minGuests,
   maxGuests: template.maxGuests,
   entityTypeId: template.entityTypeId,
   fields: template.fields,
-  lineNames: template.lines.map(({ name }) => name),
+  imageUrl: template.imageKey ? fileUrl({ key: template.imageKey }) : null,
+  lines: template.lines.map(({ name, itemId }) => {
+    const item = itemId ? items.get(itemId) : undefined;
+    return { name, icon: item?.icon ?? null, imageUrl: item?.imageUrl ?? null };
+  }),
   itemIds: template.lines.flatMap(({ itemId }) => (itemId ? [itemId] : [])),
 });
 
@@ -80,6 +88,7 @@ export async function loadIntakeData(): Promise<Result<IntakeData>> {
   if (!catalog.ok) return catalog;
   if (!customerTypes.ok) return customerTypes;
   if (!contactTypes.ok) return contactTypes;
+  const itemsById = new Map(catalog.value.items.map((item) => [item.id, item]));
   const organizationId = session.status === "ready" ? session.organizationId : "";
   return {
     ok: true,
@@ -89,7 +98,7 @@ export async function loadIntakeData(): Promise<Result<IntakeData>> {
       contactTypes: named({ types: contactTypes.value.items }),
       packages: itemsOr({ result: templates })
         .filter(({ status }) => status === "ACTIVE")
-        .map((template) => toPackage({ template })),
+        .map((template) => toPackage({ template, items: itemsById })),
       canCreatePackage: can({ abilities, permission: "orderTemplate:write" }),
       draftKey: draftKey({ organizationId, userId: abilities.userId ?? "" }),
       catalog: catalog.value,

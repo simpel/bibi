@@ -28,6 +28,8 @@ export type OrderTemplateFormValues = {
   /** Fewest and most guests the package is made for; empty: no limit. */
   minGuests: string;
   maxGuests: string;
+  /** A storage key from `file.upload` ("" = no image of its own). */
+  imageKey: string;
   lines: TemplateLineValues[];
 };
 
@@ -41,6 +43,7 @@ export const orderTemplateFormSchema = formSchema({
     name: values.name.trim(),
     minGuests: numberOrNull({ value: values.minGuests }),
     maxGuests: numberOrNull({ value: values.maxGuests }),
+    imageKey: values.imageKey === "" ? null : values.imageKey,
     lines: values.lines.map(({ staleOptions: _stale, ...line }) => ({
       ...line,
       name: line.name.trim(),
@@ -82,6 +85,7 @@ export function orderTemplateFormDefaults({
     statusId: template?.statusId ?? firstTypes.orderStatus,
     minGuests: template?.minGuests == null ? "" : String(template.minGuests),
     maxGuests: template?.maxGuests == null ? "" : String(template.maxGuests),
+    imageKey: template?.imageKey ?? "",
     lines: (template?.lines ?? []).map((line) => ({
       name: line.name,
       entityTypeId: line.entityTypeId,

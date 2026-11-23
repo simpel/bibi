@@ -3,6 +3,7 @@ import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
+import { canView } from "../../shared/can-view";
 import { notFound } from "../../shared/errors";
 import { requireUser } from "../../shared/require-user";
 import { decodeImage } from "./decode-image";
@@ -22,7 +23,8 @@ export const uploadFile = defineOperation({
   kind: "command",
   description:
     "Store an image (png, jpeg or webp, at most 2 MB, base64 without a data: prefix) for the " +
-    "caller and return its key, e.g. for profile.update's avatarKey. Only the caller can read it.",
+    "caller and return its key, e.g. for profile.update's avatarKey or item.update's imageKey. " +
+    "Only the caller can read it until a record uses it.",
   input: FileUploadInputSchema,
   output: FileUploadOutputSchema,
   permission: "self:write",
@@ -64,17 +66,18 @@ export const getFile = defineOperation({
   name: "file.get",
   kind: "query",
   description:
-    "Read one of the caller's own files by the key file.upload returned, or the photo of a " +
-    "member of this organization: content type and base64 bytes. Other keys are not found.",
+    "Read one of the caller's own files by the key file.upload returned, the photo of a " +
+    "member of this organization, or an item's or package's image (imageKey) the caller may " +
+    "view: content type and base64 bytes. Other keys are not found.",
   input: FileGetInputSchema,
   output: FileSchema,
   permission: "self:read",
   handler: async ({ input: { key }, context }) => {
     const user = requireUser({ context });
     if (!user.ok) return user;
-    // Key ownership (ADR 0063): the caller's own uploads, or a colleague's photo here (ADR 0072).
+    // Key ownership (ADR 0063): own uploads, a colleague's photo (ADR 0072) or a record's image.
     const own = key.startsWith(`${user.value}/`);
-    if (!own && !(await isMemberPhoto({ context, key }))) return notFound({ entity: "File" });
+    if (!own && !(await isSharedHere({ context, key }))) return notFound({ entity: "File" });
     const store = getFileStore();
     if (!store) return unavailable();
     const found = await store.get({ key });
@@ -85,13 +88,31 @@ export const getFile = defineOperation({
   },
 });
 
+type KeyInput = { context: OperationContext; key: string };
+
 /** A member's photo in this organization: visible to their colleagues here, nowhere else. */
-async function isMemberPhoto({ context, key }: { context: OperationContext; key: string }) {
+async function isMemberPhoto({ context, key }: KeyInput) {
   const profile = await context.db.memberProfile.findFirst({
     where: { avatarKey: key },
     select: { id: true },
   });
   return profile !== null;
+}
+
+/** An item's or a package's image here, for callers who may view that feature (ADR 0050). */
+async function isRecordImage({ context, key }: KeyInput) {
+  const where = { imageKey: key };
+  const item =
+    canView({ context, feature: "item" }) &&
+    (await context.db.item.findFirst({ where, select: { id: true } })) !== null;
+  if (item) return true;
+  if (!canView({ context, feature: "orderTemplate" })) return false;
+  return (await context.db.orderTemplate.findFirst({ where, select: { id: true } })) !== null;
+}
+
+/** Whether the caller may read another user's upload: a shared photo or record image here. */
+async function isSharedHere({ context, key }: KeyInput) {
+  return (await isMemberPhoto({ context, key })) || (await isRecordImage({ context, key }));
 }
 
 /** The caller's own stored files (ADR 0063). */

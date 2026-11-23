@@ -8,6 +8,10 @@ export type CatalogItem = {
   id: string;
   name: string;
   typeName: string;
+  /** Its Lucide icon name, or null. */
+  icon: string | null;
+  /** Its image (`/api/files/…`), or null. */
+  imageUrl: string | null;
   /** Its type's capabilities (ADR 0059): which fields the line dialog shows. */
   capabilities: ItemCapability[];
   /** Its venue's zone, else the organization's (ADR 0064): the zone its line times are in. */

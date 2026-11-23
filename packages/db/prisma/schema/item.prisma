@@ -33,6 +33,10 @@ model Item {
   /// SETUPS: the most people the room may hold (fire safety, ventilation; ADR 0103, owned, a hard
   /// limit on layouts and order lines); null = no limit.
   maxPeople              Int?
+  /// A Lucide icon name, e.g. "wine" (owned); null = no icon chosen. Shown when there is no image.
+  icon                   String?
+  /// Key in `@bibi/storage` (ADR 0063) of the item's image (owned); null = show the icon.
+  imageKey               String?
   status                 RecordStatus               @default(ACTIVE)
   createdAt              DateTime                   @default(now())
   updatedAt              DateTime                   @updatedAt

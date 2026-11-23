@@ -16,6 +16,7 @@ import { TextField } from "@/components/form/text-field";
 import type { ItemFormData } from "./item-form-data";
 import type { ItemFormOutput } from "./item-form-schema";
 import { type ItemFormValues, NO_VENUE } from "./item-form-values";
+import { ItemPictureField } from "./item-picture-field";
 
 export type ItemCoreFieldsProps = {
   form: UseFormReturn<ItemFormValues, unknown, ItemFormOutput>;
@@ -24,7 +25,7 @@ export type ItemCoreFieldsProps = {
   venuesHidden: boolean;
 };
 
-/** Name, description and the optional venue select (the type select lives in `ItemTypeField`). */
+/** Name, description, the picture and the optional venue select (the type select lives in `ItemTypeField`). */
 export function ItemCoreFields({ form, venues, venuesHidden }: ItemCoreFieldsProps) {
   const t = useTranslations("item.fields");
   const common = useTranslations("common");
@@ -32,6 +33,7 @@ export function ItemCoreFields({ form, venues, venuesHidden }: ItemCoreFieldsPro
     <>
       <TextField form={form} name="name" label={t("name")} required />
       <TextField form={form} name="description" label={t("description")} multiline />
+      <ItemPictureField form={form} />
       <FormController
         control={form.control}
         name="venueId"

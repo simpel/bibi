@@ -13,7 +13,7 @@ const slot: IntakeSlot = { itemId: "room1", date: "2026-11-20", from: "09:00", t
 const search = { slot: "room1", date: "2026-11-20", from: "09:00", to: "12:30" };
 
 const option = ({ id, itemIds }: { id: string; itemIds: string[] }): PackageOption => ({
-  ...{ id, name: id, minGuests: null, maxGuests: null, lineNames: [], itemIds },
+  ...{ id, name: id, minGuests: null, maxGuests: null, imageUrl: null, lines: [], itemIds },
   ...{ entityTypeId: "tt", fields: {} },
 });
 

@@ -34,6 +34,10 @@ export type ItemFormValues = BufferFormValues & {
   venueId: string;
   name: string;
   description: string;
+  /** A Lucide icon name ("" = none). */
+  icon: string;
+  /** A storage key from `file.upload` ("" = no image). */
+  imageKey: string;
   fields: Record<string, RawFieldValue>;
   price: string;
   priceUnit: PriceUnitValue;
@@ -58,6 +62,8 @@ export function itemFormDefaults({ type, item }: ItemDefaultsInput): ItemFormVal
     venueId: item?.venueId ?? NO_VENUE,
     name: item?.name ?? "",
     description: item?.description ?? "",
+    icon: item?.icon ?? "",
+    imageKey: item?.imageKey ?? "",
     fields: rawFields({ type, stored: item?.fields ?? {} }),
     price: item?.priceMinor == null ? "" : String(item.priceMinor / 100),
     priceUnit: item?.priceUnit ?? "PER_UNIT",

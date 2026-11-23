@@ -3,14 +3,17 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { validateFields } from "../field-definition/field-values";
 import type { CheckedFields } from "../field-definition/split-links";
+import { checkImageKey } from "../file/image-key";
 import { checkCustomisationGroups } from "./item-customisation-groups";
 import { checkParts } from "./item-parts";
 import { checkCapabilityData, checkVenue } from "./item-rules";
 import type { ItemUpdateInput } from "./schema";
 
 export type CheckItemInput = {
-  context: Pick<OperationContext, "db" | "permissions">;
+  context: Pick<OperationContext, "db" | "permissions" | "actor">;
   type: EntityType;
+  /** The item's image key now; undefined on create. */
+  currentImageKey?: string | null | undefined;
   /** The item being updated; undefined on create. */
   itemId?: string | undefined;
   /** The customer owning the item; null = a catalog item. */
@@ -22,7 +25,7 @@ export type CheckItemInput = {
 
 /**
  * Everything `item.create` and `item.update` check before writing: capability data matches the
- * type, the venue and parts exist (parts without cycles or excess depth), customisation
+ * type, the image is the caller's upload (ADR 0063), the venue and parts exist (parts without cycles or excess depth), customisation
  * groups offer other items (ADR 0059), and field values pass the type's field schema.
  * Returns the validated field values (undefined when untouched).
  */
@@ -33,7 +36,15 @@ export async function checkItem({
   customerId,
   data,
   fields,
+  currentImageKey,
 }: CheckItemInput): Promise<Result<CheckedFields | undefined>> {
+  const image = checkImageKey({
+    context,
+    key: data.imageKey,
+    current: currentImageKey,
+    path: "imageKey",
+  });
+  if (!image.ok) return image;
   const capability = checkCapabilityData({ capabilities: type.capabilities, data });
   if (!capability.ok) return capability;
   const venue = await checkVenue({ context, venueId: data.venueId });

@@ -84,6 +84,8 @@ export function itemFormToInput({ values, type, specs }: ItemInputArgs) {
     venueId: values.venueId === NO_VENUE ? null : values.venueId,
     name: values.name.trim(),
     description: blankToNull({ value: values.description }),
+    icon: blankToNull({ value: values.icon }),
+    imageKey: blankToNull({ value: values.imageKey }),
     fields: fieldsToInput({ values, specs }),
     ...bufferFormToInput({ values }),
     ...capabilityInput({ values, type }),

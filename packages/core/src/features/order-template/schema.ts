@@ -2,6 +2,7 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
+import { FileKeySchema } from "../file/schema";
 
 export const OrderTemplateLineSchema = z.object({
   id: z.string(),
@@ -41,6 +42,10 @@ export const OrderTemplateSchema = z.object({
   /** The guest range the package is made for (ADR 0081); null = no limit on that side. */
   minGuests: z.number().int().nullable(),
   maxGuests: z.number().int().nullable(),
+  imageKey: z
+    .string()
+    .nullable()
+    .describe("The package's image (file.get); null = its first item's picture"),
   lines: z.array(OrderTemplateLineSchema),
   status: RecordStatusSchema,
   createdAt: z.date(),
@@ -102,6 +107,9 @@ const DetailsShape = {
   ),
   maxGuests: GuestsSchema.nullish().describe(
     "Most guests the package is made for; null = no upper limit",
+  ),
+  imageKey: FileKeySchema.nullish().describe(
+    "The package's image: a key from file.upload; null removes it and its first item's shows",
   ),
   lines: z.array(OrderTemplateLineInputSchema).max(100).describe("The lines, in order"),
 };

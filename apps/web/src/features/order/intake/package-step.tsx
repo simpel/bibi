@@ -12,7 +12,7 @@ import type { IntakePick, IntakeWhen, IntakeWho } from "./intake-state";
 import { NoPackages } from "./no-packages";
 import { PackageActions } from "./package-actions";
 import type { PackageCardData, PackageOption } from "./package-groups";
-import { PackageGroupsView } from "./package-groups-view";
+import { PackagePicker } from "./package-picker";
 import { ReplaceDialog } from "./replace-dialog";
 import type { IntakeReview } from "./review-state";
 import { usePackageNext } from "./use-package-next";
@@ -51,7 +51,7 @@ type BodyProps = Pick<PackageStepProps, "when" | "pick" | "packages" | "timeZone
   onPackage: (input: { card: PackageCardData }) => void;
 };
 
-/** The preview's tabs once loaded; a failed preview still leaves Custom booking. */
+/** The ranked packages once loaded; a failed preview still leaves Custom booking. */
 function PreviewBody({ when, timeZone, preview, ...props }: BodyProps) {
   const dates = useDateTimeFormat();
   const period = periodOf({ when, timeZone });
@@ -61,15 +61,15 @@ function PreviewBody({ when, timeZone, preview, ...props }: BodyProps) {
   if (preview.status === "error") return <InlineLoadError errorKey={preview.errorKey} />;
   if (preview.status !== "ready") return null;
   return (
-    <PackageGroupsView
+    <PackagePicker
       {...{ options: props.packages, preview: preview.preview, period: span }}
-      {...{ headcount: when.guests, pick: props.pick, onPackage: props.onPackage }}
+      {...{ when, pick: props.pick, onPackage: props.onPackage }}
       suggestedId={props.suggestedId}
     />
   );
 }
 
-/** Step 3: every active package in two tabs by one preview, Custom booking under them. */
+/** Step 3: every active package ranked by one preview, Custom booking under them. */
 export function PackageStep(props: PackageStepProps) {
   const t = useTranslations("orderIntake.package");
   const intake = useTranslations("orderIntake");

@@ -4,7 +4,15 @@ import { at } from "./line-fixture";
 import { quickLine } from "./quick-line";
 
 const item = ({ ...input }: Partial<CatalogItem>): CatalogItem => ({
-  ...{ id: "i1", name: "Vinga", typeName: "Room", capabilities: [], timeZone: "UTC" },
+  ...{
+    id: "i1",
+    name: "Vinga",
+    typeName: "Room",
+    icon: null,
+    imageUrl: null,
+    capabilities: [],
+    timeZone: "UTC",
+  },
   ...{
     priceMinor: null,
     priceUnit: null,

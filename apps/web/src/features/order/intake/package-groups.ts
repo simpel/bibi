@@ -1,4 +1,7 @@
-import type { PlanGroup, PreviewEntry } from "@bibi/core";
+import type { PreviewEntry } from "@bibi/core";
+
+/** One line of a package as step 3 shows it: its name and its item's icon or image. */
+export type PackageLineView = { name: string; icon: string | null; imageUrl: string | null };
 
 /** An active package as step 3 lists it (prepared on the server). */
 export type PackageOption = {
@@ -9,39 +12,25 @@ export type PackageOption = {
   /** The order type its orders get, with its default own field values. */
   entityTypeId: string;
   fields: Record<string, unknown>;
-  /** Its lines' names in order, for the card's summary. */
-  lineNames: string[];
+  /** Its own image (`/api/files/…`); null = its first line's picture. */
+  imageUrl: string | null;
+  /** Its lines in order with their item's picture, for the list and the detail. */
+  lines: PackageLineView[];
   /** The items its lines book: the calendar's resource filters by them. */
   itemIds: string[];
 };
 
 export type PackageCardData = { option: PackageOption; entry: PreviewEntry };
 
-export type PackageGroups = Record<PlanGroup, PackageCardData[]>;
+export type PackageCardsInput = { options: PackageOption[]; entries: PreviewEntry[] };
 
-export type GroupPackagesInput = { options: PackageOption[]; entries: PreviewEntry[] };
-
-/** Each package in the group its preview gave it (ADR 0081 decision 5), in the packages' order. */
-export function groupPackages({ options, entries }: GroupPackagesInput): PackageGroups {
-  const groups: PackageGroups = { AVAILABLE: [], CLASHES: [], OUTSIDE_RANGE: [] };
+/** Each package with its preview entry, in the packages' order; one without an entry is left out. */
+export function packageCards({ options, entries }: PackageCardsInput): PackageCardData[] {
   const byTemplate = new Map(entries.map((entry) => [entry.templateId, entry]));
-  for (const option of options) {
+  return options.flatMap((option) => {
     const entry = byTemplate.get(option.id);
-    if (entry) groups[entry.group].push({ option, entry });
-  }
-  return groups;
-}
-
-/** Step 3's tabs: packages that fit the request as asked, and those that need adjusting. */
-export type PackageTab = "FITS" | "ADJUST";
-
-/** The tabs' cards: clashes, then packages outside the guest range or the requested period. */
-export function tabsOf({
-  groups,
-}: {
-  groups: PackageGroups;
-}): Record<PackageTab, PackageCardData[]> {
-  return { FITS: groups.AVAILABLE, ADJUST: [...groups.CLASHES, ...groups.OUTSIDE_RANGE] };
+    return entry ? [{ option, entry }] : [];
+  });
 }
 
 /** One note on a package card: ✓ available, ⚠ a warning, ✕ clashes (spec step 3). */

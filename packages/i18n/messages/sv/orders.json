@@ -338,29 +338,39 @@
         "max": "Upp till {max} gäster",
         "any": "Valfritt antal gäster"
       },
-      "notes": {
-        "available": "✓ Ledigt",
-        "hidden": "Tillgänglighet dold",
-        "warnings": "⚠ {count, plural, one {# varning} other {# varningar}}",
-        "clashes": "✕ {count, plural, one {# krock} other {# krockar}} med andra bokningar",
-        "guests": "⚠ Gjort för {range}, du frågade om {headcount}",
-        "pastEnd": "⚠ Pågår till {time}, efter önskat slut"
-      },
       "none": "Inga mallar ännu",
       "noneDescription": "Gör en egen bokning, eller skapa en mall att återanvända.",
       "noneForSlot": "Ingen mall bokar den här resursen",
       "noneForSlotDescription": "Gör en egen bokning: den börjar med resursen du valde i kalendern.",
       "createPackage": "Skapa mall",
       "picked": "Valt: {summary}",
-      "tabs": {
-        "fits": "Passar förfrågan ({count})",
-        "adjust": "Kräver justering ({count})",
-        "nothingFits": "Inget passar {period} för {guests}.",
-        "nothingToAdjust": "Alla mallar passar förfrågan."
-      },
       "custom": {
         "button": "Egen bokning",
         "hint": "Sätt ihop bokningen rad för rad."
+      },
+      "listLabel": "Mallar",
+      "pick": "Välj mall",
+      "pickAndAdjust": "Välj och justera",
+      "pickedShort": "Vald",
+      "changes": "{count, plural, =0 {Passar som efterfrågat} one {# ändring} other {# ändringar}}",
+      "lead": {
+        "nothingFits": "Ingen mall passar {guests} gäster, {period} som efterfrågat. Närmast först:",
+        "someFit": "{count, plural, one {# mall passar} other {# mallar passar}} {guests} gäster, {period}. Närmast först:"
+      },
+      "compare": {
+        "asked": "Efterfrågat",
+        "package": "Mallen",
+        "guests": "Gäster",
+        "time": "Tid",
+        "rooms": "Lokaler och resurser",
+        "fits": "Passar",
+        "outsideRange": "Utanför dess antal",
+        "runsLonger": "Pågår längre",
+        "free": "Lediga",
+        "hidden": "Dolt",
+        "change": "Behöver ändras",
+        "clashes": "{count, plural, one {# krock} other {# krockar}}",
+        "warnings": "{count, plural, one {# varning} other {# varningar}}"
       }
     },
     "questions": {
@@ -661,7 +671,9 @@
       "item": "Artikel",
       "offset": "Börjar (minuter efter bokningens start)",
       "duration": "Längd (minuter)",
-      "quantity": "Antal (tomt: antalet gäster)"
+      "quantity": "Antal (tomt: antalet gäster)",
+      "image": "Bild",
+      "imageHint": "Utan bild visar mallen sin första artikels bild eller ikon."
     },
     "columns": {
       "name": "Namn",

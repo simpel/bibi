@@ -193,7 +193,17 @@
     },
     "layouts": "Möbleringar",
     "maxPeople": "Max antal personer",
-    "maxPeopleHint": "Det högsta antal personer rummet får rymma enligt lag, till exempel på grund av brandskydd och ventilation. Möbleringar och bokningar kan inte gå över det."
+    "maxPeopleHint": "Det högsta antal personer rummet får rymma enligt lag, till exempel på grund av brandskydd och ventilation. Möbleringar och bokningar kan inte gå över det.",
+    "picture": {
+      "label": "Bild",
+      "icon": "Ikon",
+      "image": "Bild",
+      "search": "Sök ikoner",
+      "searchPlaceholder": "Sök på engelska, t.ex. wine, room eller coffee",
+      "noIcons": "Ingen ikon matchar sökningen.",
+      "iconHint": "Förslag utifrån namnet först. Visas där artikeln saknar bild.",
+      "imageHint": "Tar du bort den visas ikonen igen."
+    }
   },
   "itemState": {
     "flags": {
