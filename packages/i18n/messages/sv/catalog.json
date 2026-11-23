@@ -203,6 +203,26 @@
       "noIcons": "Ingen ikon matchar sökningen.",
       "iconHint": "Förslag utifrån namnet först. Visas där artikeln saknar bild.",
       "imageHint": "Tar du bort den visas ikonen igen."
+    },
+    "page": {
+      "details": "Uppgifter",
+      "timing": "Bokning och ställtider",
+      "setup": "Ställtid före",
+      "teardown": "Nedplock efter",
+      "minutes": "{minutes} min",
+      "fromType": "{minutes} min (från typen)",
+      "noPrice": "Inget pris satt",
+      "noParts": "Inga delar än",
+      "noCustomisations": "Inga anpassningsgrupper än",
+      "editPicture": "Ändra bild",
+      "editTitle": "Ändra namn",
+      "titleLabel": "Namn",
+      "titleUpdated": "Namnet är sparat",
+      "editDetails": "Ändra uppgifter",
+      "editPrice": "Ändra pris",
+      "editTiming": "Ändra bokning och ställtider",
+      "editParts": "Ändra delar",
+      "editCustomisations": "Ändra anpassningar"
     }
   },
   "itemState": {
@@ -791,12 +811,14 @@
     },
     "section": {
       "title": "Möbleringar",
-      "floorPlan": "Planritning",
-      "editLayouts": "Redigera möbleringar",
       "noLayouts": "Ingen möblering ritad än.",
       "noCapacity": "Ingen kapacitet än",
       "capacity": "Kapacitet {capacity}",
-      "maxPeople": "Personbegränsning: {count}"
+      "maxPeople": "Personbegränsning: {count}",
+      "editFloorPlan": "Redigera planritning",
+      "editLayout": "Redigera {name}",
+      "editPeopleLimit": "Ändra personbegränsning",
+      "noPeopleLimit": "Ingen personbegränsning"
     },
     "detailsDialog": {
       "title": "Redigera möblering",

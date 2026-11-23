@@ -18,14 +18,16 @@ import { loadItem } from "../load-item";
 import { loadItemFormData } from "../load-item-form-data";
 import { BundleOwner } from "./bundle-owner";
 import { ItemActions } from "./item-actions";
-import { ItemCapabilities } from "./item-capabilities";
-import { ItemFacts } from "./item-facts";
 import { ItemHoursSection } from "./item-hours-section";
+import { ItemInlineEditor } from "./item-inline-editor";
+import { ItemPictureEditable } from "./item-picture-editable";
 import { ItemResolutionSection } from "./item-resolution-section";
+import { ItemSections } from "./item-sections";
+import { ItemTitle } from "./item-title";
 
 export type ItemDetailProps = { locale: Locale; id: string };
 
-/** Item detail page body: facts with edit and archive, contents and occupancy. */
+/** Item detail page body: title, picture, details and capabilities edited in place, then contents and occupancy. */
 export async function ItemDetail({ locale, id }: ItemDetailProps) {
   const common = await getTranslations("common");
   const abilities = await getCallerAbilities();
@@ -35,15 +37,9 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const type = data.value.types.find((candidate) => candidate.id === item.value.entityTypeId);
   const hasLayouts = type?.capabilities.includes("SETUPS") ?? false;
+  const canEdit = can({ abilities, permission: "item:write" });
   const history = await historyNode({ locale, entityType: "item", entityId: id });
-  const actions = (
-    <ItemActions
-      item={item.value}
-      abilities={abilities}
-      hasLayouts={hasLayouts}
-      history={history}
-    />
-  );
+  const actions = <ItemActions item={item.value} abilities={abilities} history={history} />;
   return (
     <div className="grid gap-6">
       <CrumbName href={itemRoute({ id })} name={item.value.name} />
@@ -56,16 +52,25 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
       </Link>
       <PageHeader
         title={item.value.name}
-        description={item.value.description ?? undefined}
+        heading={
+          <span className="flex min-w-0 items-center gap-4">
+            <ItemPictureEditable item={item.value} data={data.value} canEdit={canEdit} />
+            <ItemTitle id={item.value.id} name={item.value.name} canEdit={canEdit} />
+          </span>
+        }
         actions={actions}
       />
       <LastEdited entityType="item" entityId={item.value.id} />
       {item.value.customerId ? <BundleOwner customerId={item.value.customerId} /> : null}
-      <ItemFacts item={item.value} type={type} data={data.value} />
-      <ItemCapabilities item={item.value} data={data.value} />
+      <ItemSections item={item.value} type={type} data={data.value} canEdit={canEdit} />
       {hasLayouts ? (
         <DeferredSection>
-          <LayoutsSection locale={locale} itemId={item.value.id} />
+          <LayoutsSection
+            locale={locale}
+            itemId={item.value.id}
+            canEdit={canEdit}
+            limitEditor={<ItemInlineEditor item={item.value} data={data.value} group="layouts" />}
+          />
         </DeferredSection>
       ) : null}
       {type?.capabilities.includes("BUNDLE") ? (

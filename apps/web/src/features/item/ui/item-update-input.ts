@@ -2,14 +2,45 @@ import type { EntityTypeDto, ItemDto, ItemUpdateInput } from "@bibi/core";
 import { fieldsPatch } from "@/components/typed-fields/raw-fields";
 import type { ItemFormOutput } from "./item-form-schema";
 
+/** The parts of an item its page edits in place, each from its own pencil. */
+export type ItemEditGroup =
+  | "picture"
+  | "details"
+  | "price"
+  | "timing"
+  | "layouts"
+  | "parts"
+  | "customisations";
+
+/** Which update properties each group sends (own fields go with `details`). */
+const GROUP_KEYS = {
+  picture: ["icon", "imageKey"],
+  details: ["description", "venueId"],
+  price: ["priceMinor", "priceUnit", "vatRatePercent"],
+  timing: ["defaultDurationMinutes", "setupMinutes", "teardownMinutes"],
+  layouts: ["maxPeople"],
+  parts: ["parts"],
+  customisations: ["customisationGroups"],
+} as const satisfies Record<ItemEditGroup, readonly (keyof ItemUpdateInput)[]>;
+
 export type UpdateInputArgs = {
   item: ItemDto;
   values: ItemFormOutput;
   type: EntityTypeDto | undefined;
+  /** Only these groups are sent; left out = everything the form has. */
+  groups?: readonly ItemEditGroup[] | undefined;
 };
 
 /** Create-shaped values → `item.update` input; emptied fields are cleared with `null`. */
-export function toUpdateInput({ item, values, type }: UpdateInputArgs): ItemUpdateInput {
+export function toUpdateInput({ item, values, type, groups }: UpdateInputArgs): ItemUpdateInput {
   const { entityTypeId: _type, fields, ...rest } = values;
-  return { id: item.id, ...rest, fields: fieldsPatch({ type, stored: item.fields, fields }) };
+  const patch = fieldsPatch({ type, stored: item.fields, fields });
+  if (!groups) return { id: item.id, ...rest, fields: patch };
+  const input: ItemUpdateInput = { id: item.id };
+  for (const group of groups) {
+    for (const key of GROUP_KEYS[group]) {
+      if (key in rest) Object.assign(input, { [key]: rest[key as keyof typeof rest] });
+    }
+  }
+  return groups.includes("details") ? { ...input, fields: patch } : input;
 }

@@ -1,47 +1,24 @@
 import type { ItemDto } from "@bibi/core";
-import { Button } from "@bibi/ui";
-import { LayoutDashboardIcon, PencilIcon } from "lucide-react";
-import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { HistoryMenu } from "@/features/audit-log/ui/history-sheet";
-import { Link } from "@/lib/navigation";
-import { itemRoute, updateRoute } from "@/lib/routes";
 import { type CallerAbilities, can } from "@/server/caller-abilities";
-import { layoutsRoute } from "../../floor-plan/layouts-path";
 import { ArchiveItemButton } from "./archive-item-button";
 
 export type ItemActionsProps = {
   item: ItemDto;
   abilities: CallerAbilities;
-  /** The item's type has setups: the layouts open from here (ADR 0099). */
-  hasLayouts: boolean;
   /** The history list for the "View history" sheet; `null` without `audit:read`. */
   history: ReactNode | null;
 };
 
-/** Layouts, edit (its own page), archive and the more menu with history of the item detail page, each by its permission. */
-export async function ItemActions({ item, abilities, hasLayouts, history }: ItemActionsProps) {
-  const t = await getTranslations("item");
-  const canEdit = can({ abilities, permission: "item:write" });
+/**
+ * Archive and the more menu with history, each by its permission. Everything else on the item
+ * page is edited in place, its layouts from their own cards (no Edit or Layouts button here).
+ */
+export function ItemActions({ item, abilities, history }: ItemActionsProps) {
   const canArchive = can({ abilities, permission: "item:delete" });
   return (
     <>
-      {hasLayouts ? (
-        <Button asChild variant="outline">
-          <Link href={layoutsRoute({ itemId: item.id })}>
-            <LayoutDashboardIcon />
-            {t("layouts")}
-          </Link>
-        </Button>
-      ) : null}
-      {canEdit ? (
-        <Button asChild variant="outline">
-          <Link href={updateRoute({ detail: itemRoute({ id: item.id }) })}>
-            <PencilIcon />
-            {t("edit")}
-          </Link>
-        </Button>
-      ) : null}
       {canArchive ? <ArchiveItemButton item={item} /> : null}
       {history ? <HistoryMenu history={history} /> : null}
     </>

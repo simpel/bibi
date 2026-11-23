@@ -8,7 +8,6 @@ import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { loadVenue } from "@/features/venue/load-venue";
 import { venueItemsRoute, venueRoute } from "@/lib/routes";
-import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadItemFormData } from "../load-item-form-data";
@@ -25,7 +24,7 @@ const LIMIT = 100;
 
 /** A venue's items, all or of one type: the page the venue's items summary links to. */
 export async function VenueItems({ locale, venueId, typeId }: VenueItemsProps) {
-  const [t, venue, data, page, abilities] = await Promise.all([
+  const [t, venue, data, page] = await Promise.all([
     getTranslations("venue"),
     loadVenue({ id: venueId }),
     loadItemFormData(),
@@ -33,7 +32,6 @@ export async function VenueItems({ locale, venueId, typeId }: VenueItemsProps) {
       operation: listItems,
       input: { venueId, limit: LIMIT, ...(typeId ? { entityTypeId: typeId } : {}) },
     }),
-    getCallerAbilities(),
   ]);
   for (const result of [venue, data, page]) {
     if (!result.ok)
@@ -66,7 +64,6 @@ export async function VenueItems({ locale, venueId, typeId }: VenueItemsProps) {
           types={data.value.types}
           venues={data.value.venues}
           venuesHidden={data.value.venuesHidden}
-          canEdit={can({ abilities, permission: "item:write" })}
           withControls
         />
       )}

@@ -203,6 +203,26 @@
       "noIcons": "No icon matches that search.",
       "iconHint": "Suggested from the name first. Shown wherever the item has no image.",
       "imageHint": "Removing it shows the icon again."
+    },
+    "page": {
+      "details": "Details",
+      "timing": "Booking and buffers",
+      "setup": "Setup before",
+      "teardown": "Teardown after",
+      "minutes": "{minutes} min",
+      "fromType": "{minutes} min (from the type)",
+      "noPrice": "No price set",
+      "noParts": "No parts yet",
+      "noCustomisations": "No customisation groups yet",
+      "editPicture": "Edit picture",
+      "editTitle": "Edit name",
+      "titleLabel": "Name",
+      "titleUpdated": "Name saved",
+      "editDetails": "Edit details",
+      "editPrice": "Edit price",
+      "editTiming": "Edit booking and buffers",
+      "editParts": "Edit parts",
+      "editCustomisations": "Edit customisations"
     }
   },
   "itemState": {
@@ -791,12 +811,14 @@
     },
     "section": {
       "title": "Layouts",
-      "floorPlan": "Floor plan",
-      "editLayouts": "Edit layouts",
       "noLayouts": "No layout drawn yet.",
       "noCapacity": "No capacity yet",
       "capacity": "Capacity {capacity}",
-      "maxPeople": "People limit: {count}"
+      "maxPeople": "People limit: {count}",
+      "editFloorPlan": "Edit floor plan",
+      "editLayout": "Edit {name}",
+      "editPeopleLimit": "Edit people limit",
+      "noPeopleLimit": "No people limit"
     },
     "detailsDialog": {
       "title": "Edit layout",

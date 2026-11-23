@@ -80,9 +80,13 @@
             "question": "Hur får jag sidans rundtur igen?",
             "answer": "Första gången du öppnar Mitt arbete, kalendern, pipelinen, en beställning eller ett körschema pekar en kort rundtur ut de viktigaste delarna. Använd Nästa och Tillbaka för att bläddra, eller Hoppa över för att stänga den.\nFör att se den igen klickar du på frågetecknet i det övre fältet på den sidan."
           },
+          "itemEdit": {
+            "question": "Hur ändrar jag en artikel?",
+            "answer": "Öppna artikeln och klicka på pennan vid det du vill ändra: namnet, bilden eller rubriken på ett avsnitt som **Uppgifter**, **Pris** eller **Bokning och ställtider**. Ändra och klicka på **Spara**; bara den delen sparas.\nFör ett rum har varje möblering en egen penna, pennan vid personbegränsningen ändrar den, och **Redigera planritning** öppnar rummets väggar, dörrar och fönster."
+          },
           "itemPicture": {
             "question": "Hur ger jag en artikel en ikon eller en bild?",
-            "answer": "Öppna artikeln och klicka på pennan vid dess uppgifter, eller välj när du skapar artikeln. Under **Bild** väljer du **Ikon** och en ikon i rutnätet (sök på engelska, till exempel wine eller coffee), eller **Bild** och laddar upp en PNG, JPEG eller WebP på högst 2 MB.\nBilden visas när båda finns. Tar du bort den visas ikonen igen."
+            "answer": "Öppna artikeln och klicka på pennan på bilden bredvid namnet, eller välj när du skapar artikeln. Under **Bild** väljer du **Ikon** och en ikon i rutnätet (sök på engelska, till exempel wine eller coffee), eller **Bild** och laddar upp en PNG, JPEG eller WebP på högst 2 MB.\nBilden visas när båda finns. Tar du bort den visas ikonen igen."
           }
         }
       },
@@ -246,15 +250,15 @@
           },
           "emergencyExit": {
             "question": "Hur markerar jag en nödutgång?",
-            "answer": "Öppna rummet under Artiklar, välj Planritning, klicka på en dörr eller ett fönster och slå på Nödutgång. Utgången ritas i grönt med ett streckat område framför.\nMöbler får inte stå i området: en möblering med en stol eller ett bord där går inte att spara förrän du flyttat det, och du kan inte markera en utgång som en möblering redan blockerar."
+            "answer": "Öppna rummet under Artiklar, välj **Redigera planritning** under Möbleringar, klicka på en dörr eller ett fönster och slå på Nödutgång. Utgången ritas i grönt med ett streckat område framför.\nMöbler får inte stå i området: en möblering med en stol eller ett bord där går inte att spara förrän du flyttat det, och du kan inte markera en utgång som en möblering redan blockerar."
           },
           "floorPlan": {
             "question": "Var lägger jag in dörrar, fönster och pelare?",
-            "answer": "Öppna rummet under Artiklar och välj Planritning. Dörrar, fönster, pelare och skärmar som du placerar där syns i alla rummets möbleringar, och Bibi varnar om en möbel står där en dörr öppnas.\nDörrar och fönster sitter alltid på en vägg: dra en så följer den närmaste vägg. Klicka på den för att ange bredd och hur långt den öppnas."
+            "answer": "Öppna rummet under Artiklar och välj **Redigera planritning** under Möbleringar. Dörrar, fönster, pelare och skärmar som du placerar där syns i alla rummets möbleringar, och Bibi varnar om en möbel står där en dörr öppnas.\nDörrar och fönster sitter alltid på en vägg: dra en så följer den närmaste vägg. Klicka på den för att ange bredd och hur långt den öppnas."
           },
           "roomShape": {
             "question": "Hur ritar jag ett rum som inte är rektangulärt?",
-            "answer": "Öppna rummet under Artiklar och välj Planritning. Dra i ett hörn för att flytta väggarna, klicka på + mitt på en vägg för att lägga till ett hörn och dubbelklicka på ett hörn för att ta bort det.\nVarje vägg visar sin längd. Klicka på Spara när formen stämmer, så använder alla möbleringar i rummet den. Använd menyn med tre punkter för att ange rummets bredd och djup."
+            "answer": "Öppna rummet under Artiklar och välj **Redigera planritning** under Möbleringar. Dra i ett hörn för att flytta väggarna, klicka på + mitt på en vägg för att lägga till ett hörn och dubbelklicka på ett hörn för att ta bort det.\nVarje vägg visar sin längd. Klicka på Spara när formen stämmer, så använder alla möbleringar i rummet den. Använd menyn med tre punkter för att ange rummets bredd och djup."
           },
           "history": {
             "question": "Var ser jag vem som har ändrat en artikel?",

@@ -49,7 +49,6 @@ export async function ItemCatalog(props: ItemCatalogProps) {
           types={data.types}
           venues={data.venues}
           venuesHidden={data.venuesHidden}
-          canEdit={canCreate}
           withControls
           filterBar={<ItemTypeFilter types={data.types} typeId={typeId} group={groups?.current} />}
         />

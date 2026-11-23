@@ -17,7 +17,6 @@ export type ItemTableProps = {
   types: EntityTypeDto[];
   venues: { id: string; name: string }[];
   venuesHidden?: boolean;
-  canEdit?: boolean | undefined;
   filterBar?: ReactNode;
   withControls?: boolean | undefined;
 };
@@ -57,7 +56,6 @@ export function ItemTable({
   types,
   venues,
   venuesHidden,
-  canEdit = false,
   filterBar,
   withControls = false,
 }: ItemTableProps) {
@@ -76,7 +74,7 @@ export function ItemTable({
     types,
     venues,
     hidden,
-    renderActions: (item) => <ItemRowActions item={item} canEdit={canEdit} />,
+    renderActions: (item) => <ItemRowActions item={item} />,
   });
   return (
     <div className="grid gap-4">
@@ -91,7 +89,7 @@ export function ItemTable({
         data={withControls ? view.rows : items}
         getRowId={(item) => item.id}
         onRowClick={(item) => router.push(itemRoute({ id: item.id }))}
-        rowMenu={(item) => <ItemRowMenu item={item} canEdit={canEdit} />}
+        rowMenu={(item) => <ItemRowMenu item={item} />}
         emptyText={t("empty")}
         {...(withControls ? { pagination: view.pagination } : {})}
       />

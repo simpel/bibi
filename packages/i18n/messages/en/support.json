@@ -80,9 +80,13 @@
             "question": "How do I get the tour of a page again?",
             "answer": "The first time you open My work, the calendar, the pipeline, an order or a run sheet, a short tour points out the main parts. Use Next and Back to step through it, or Skip to close it.\nTo see it again, click the question mark in the top bar on that page."
           },
+          "itemEdit": {
+            "question": "How do I change an item?",
+            "answer": "Open the item and click the pencil next to what you want to change: the name, the picture, or the title of a section such as **Details**, **Price** or **Booking and buffers**. Change it and click **Save**; only that part is saved.\nFor a room, each layout has its own pencil, the pencil next to the people limit changes it, and **Edit floor plan** opens the room's walls, doors and windows."
+          },
           "itemPicture": {
             "question": "How do I give an item an icon or a picture?",
-            "answer": "Open the item and click the pencil next to its details, or set it when you create the item. Under **Picture**, choose **Icon** and pick one from the grid (search in English, for example wine or coffee), or choose **Image** and upload a PNG, JPEG or WebP of at most 2 MB.\nThe image is shown where both are set. Remove it and the icon shows again."
+            "answer": "Open the item and click the pencil on the picture next to its name, or set it when you create the item. Under **Picture**, choose **Icon** and pick one from the grid (search in English, for example wine or coffee), or choose **Image** and upload a PNG, JPEG or WebP of at most 2 MB.\nThe image is shown where both are set. Remove it and the icon shows again."
           }
         }
       },
@@ -246,15 +250,15 @@
           },
           "emergencyExit": {
             "question": "How do I mark an emergency exit?",
-            "answer": "Open the room under Items, choose Floor plan, click a door or window and switch on Emergency exit. The exit is drawn in green with a hatched area in front of it.\nFurniture may not stand in that area: a layout with a chair or table there cannot be saved until you move it, and you cannot mark an exit that a layout already blocks."
+            "answer": "Open the room under Items, choose **Edit floor plan** under Layouts, click a door or window and switch on Emergency exit. The exit is drawn in green with a hatched area in front of it.\nFurniture may not stand in that area: a layout with a chair or table there cannot be saved until you move it, and you cannot mark an exit that a layout already blocks."
           },
           "floorPlan": {
             "question": "Where do I put doors, windows and pillars?",
-            "answer": "Open the room under Items and choose Floor plan. Doors, windows, pillars and screens placed there show in every layout of the room, and Bibi warns if furniture stands where a door opens.\nDoors and windows always sit on a wall: drag one and it follows the nearest wall. Click it to set its width and how far it opens."
+            "answer": "Open the room under Items and choose **Edit floor plan** under Layouts. Doors, windows, pillars and screens placed there show in every layout of the room, and Bibi warns if furniture stands where a door opens.\nDoors and windows always sit on a wall: drag one and it follows the nearest wall. Click it to set its width and how far it opens."
           },
           "roomShape": {
             "question": "How do I draw a room that is not a rectangle?",
-            "answer": "Open the room under Items and choose Floor plan. Drag a corner to move the walls, click the + in the middle of a wall to add a corner, and double-click a corner to delete it.\nEach wall shows its length. Click Save when the shape is right; every layout of the room uses it. Use the menu with three dots to set the room's width and depth."
+            "answer": "Open the room under Items and choose **Edit floor plan** under Layouts. Drag a corner to move the walls, click the + in the middle of a wall to add a corner, and double-click a corner to delete it.\nEach wall shows its length. Click Save when the shape is right; every layout of the room uses it. Use the menu with three dots to set the room's width and depth."
           },
           "history": {
             "question": "Where can I see who changed an item?",
