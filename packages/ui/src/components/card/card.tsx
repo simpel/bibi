@@ -35,7 +35,11 @@ export function CardAction({ className, ...props }: CardProps) {
   return (
     <div
       data-slot="card-action"
-      className={cn("mt-2 md:col-start-2 md:row-span-2 md:row-start-1 md:mt-0", className)}
+      className={cn(
+        // Narrow: above the title at the right, like a page header; wide: right of the title.
+        "-order-1 justify-self-end md:order-none md:col-start-2 md:row-span-2 md:row-start-1 md:justify-self-auto",
+        className,
+      )}
       {...props}
     />
   );
