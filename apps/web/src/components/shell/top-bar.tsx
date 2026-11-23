@@ -14,7 +14,7 @@ export type TopBarProps = { access: ShellAccess };
  * the primary Create order button and the notifications bell on the right. All three share the
  * width (the search at most 28rem), so the search stays centred and shrinks with the window; the
  * right column never gets less than its buttons need, so the search and the breadcrumb give way. Below `md` it is a row: the breadcrumb takes the room, the search a
- * fixed narrow width.
+ * small pill (magnifier and ⌘K).
  */
 export function TopBar({ access }: TopBarProps) {
   const common = useTranslations("common");
@@ -26,7 +26,7 @@ export function TopBar({ access }: TopBarProps) {
         <Separator orientation="vertical" className="h-4" />
         <Breadcrumb />
       </div>
-      <div className="flex w-32 min-w-0 shrink-0 justify-center sm:w-56 md:mx-auto md:w-full md:max-w-md">
+      <div className="flex min-w-0 shrink-0 justify-center md:mx-auto md:w-full md:max-w-md">
         <CommandBar permissions={access.permissions} />
       </div>
       <div className="flex shrink-0 items-center justify-end gap-2">
