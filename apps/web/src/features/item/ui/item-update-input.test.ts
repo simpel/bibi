@@ -27,11 +27,24 @@ describe("toUpdateInput", () => {
     });
   });
 
-  it("sends the description, venue and own fields together", () => {
-    const input = toUpdateInput({ item, values, type: undefined, groups: ["details"] });
-    expect(input).toMatchObject({ id: "i1", description: "Six wines", venueId: null });
-    expect(input).toHaveProperty("fields");
-    expect(input).not.toHaveProperty("name");
+  it("sends one own field by its key, cleared with null when emptied", () => {
+    const withField = { ...values, fields: { floor: 2, view: "River" } };
+    const input = toUpdateInput({
+      item,
+      values: withField,
+      type: undefined,
+      groups: ["field"],
+      fieldKey: "floor",
+    });
+    expect(input).toEqual({ id: "i1", fields: { floor: 2 } });
+    const cleared = toUpdateInput({
+      item,
+      values,
+      type: undefined,
+      groups: ["field"],
+      fieldKey: "floor",
+    });
+    expect(cleared).toEqual({ id: "i1", fields: { floor: null } });
   });
 
   it("leaves out a group's keys the type does not have", () => {

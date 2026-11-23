@@ -1,6 +1,5 @@
 import { getVenueHours } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
@@ -11,8 +10,7 @@ export type VenueHoursSectionProps = { locale: Locale; venueId: string };
 
 /** Opening hours of a venue: the weekly pattern and dated exceptions (ADR 0064 rule 10). */
 export async function VenueHoursSection({ locale, venueId }: VenueHoursSectionProps) {
-  const [t, result, abilities] = await Promise.all([
-    getTranslations("venue.hours"),
+  const [result, abilities] = await Promise.all([
     runOperation({ operation: getVenueHours, input: { venueId } }),
     getCallerAbilities(),
   ]);
@@ -20,10 +18,6 @@ export async function VenueHoursSection({ locale, venueId }: VenueHoursSectionPr
     return <ErrorState inline errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
     <section className="grid gap-3">
-      <div className="grid gap-1">
-        <h2 className="text-xl">{t("title")}</h2>
-        <p className="text-sm text-muted-foreground">{t("description")}</p>
-      </div>
       <VenueHoursEditor
         venueId={venueId}
         initial={{ days: result.value.days, exceptions: result.value.exceptions }}

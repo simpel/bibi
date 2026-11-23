@@ -18,6 +18,7 @@ import { loadItem } from "../load-item";
 import { loadItemFormData } from "../load-item-form-data";
 import { BundleOwner } from "./bundle-owner";
 import { ItemActions } from "./item-actions";
+import { ItemDetailsSection } from "./item-details-section";
 import { ItemHoursSection } from "./item-hours-section";
 import { ItemInlineEditor } from "./item-inline-editor";
 import { ItemPictureEditable } from "./item-picture-editable";
@@ -62,6 +63,7 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
       />
       <LastEdited entityType="item" entityId={item.value.id} />
       {item.value.customerId ? <BundleOwner customerId={item.value.customerId} /> : null}
+      <ItemDetailsSection item={item.value} type={type} data={data.value} canEdit={canEdit} />
       <ItemSections item={item.value} type={type} data={data.value} canEdit={canEdit} />
       {hasLayouts ? (
         <DeferredSection>

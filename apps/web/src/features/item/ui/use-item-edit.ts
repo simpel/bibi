@@ -16,13 +16,15 @@ export type UseItemEditInput = {
   item: ItemDto;
   data: ItemFormData;
   groups: readonly ItemEditGroup[];
+  /** The own field a `field` editor changes. */
+  fieldKey?: string | undefined;
 };
 
 /**
  * One in-place editor of an item (the picture's popover, a section's form): the whole item's
  * form state and checks, but only `groups` are sent. Saving closes the editor and refreshes.
  */
-export function useItemEdit({ item, data, groups }: UseItemEditInput) {
+export function useItemEdit({ item, data, groups, fieldKey }: UseItemEditInput) {
   const t = useTranslations("item");
   const router = useRouter();
   const messages = useZodMessages();
@@ -36,7 +38,7 @@ export function useItemEdit({ item, data, groups }: UseItemEditInput) {
   const { submit, pending } = useFormAction({
     form,
     action: ({ values }) =>
-      updateItemAction({ input: toUpdateInput({ item, values, type, groups }) }),
+      updateItemAction({ input: toUpdateInput({ item, values, type, groups, fieldKey }) }),
     messages: { pending: t("saving"), success: t("updated") },
     onSuccess: () => {
       close();

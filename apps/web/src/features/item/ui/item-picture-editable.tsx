@@ -21,7 +21,7 @@ export function ItemPictureEditable({ item, data, canEdit }: ItemPictureEditable
   const t = useTranslations("item.page");
   const [open, setOpen] = useState(false);
   const src = item.imageKey ? fileUrl({ key: item.imageKey }) : null;
-  const tile = <VisualTile size="md" src={src} icon={item.icon} />;
+  const tile = <VisualTile size="md" src={src} icon={item.icon} className="rounded-full" />;
   if (!canEdit) return tile;
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -34,7 +34,7 @@ export function ItemPictureEditable({ item, data, canEdit }: ItemPictureEditable
             size="icon"
             aria-label={t("editPicture")}
             onClick={() => setOpen(true)}
-            className="absolute -right-2 -bottom-2 size-6 rounded-full bg-background shadow-xs [&_svg]:size-3"
+            className="absolute top-[14.6%] right-[14.6%] size-6 translate-x-1/2 -translate-y-1/2 rounded-full bg-background shadow-xs [&_svg]:size-3"
           >
             <PencilIcon />
           </Button>

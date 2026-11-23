@@ -62,6 +62,7 @@ export function ItemPictureField({ form }: { form: Form }) {
       <div className="grid items-start gap-4 sm:grid-cols-[auto_minmax(0,1fr)]">
         <VisualTile
           size="lg"
+          className="rounded-full"
           src={imageKey ? fileUrl({ key: imageKey }) : null}
           icon={form.watch("icon")}
         />

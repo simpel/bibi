@@ -56,7 +56,8 @@
     "hours": {
       "title": "Öppettider",
       "description": "Används för att varna när en bokning ligger utanför öppettiderna. Blockerar aldrig en bokning.",
-      "empty": "Inga öppettider angivna. Bokningar kontrolleras inte mot öppettider."
+      "empty": "Inga öppettider angivna. Bokningar kontrolleras inte mot öppettider.",
+      "edit": "Ändra öppettider"
     },
     "items": {
       "showAll": "Visa alla artiklar",
@@ -189,7 +190,8 @@
       "title": "Arbetstider",
       "description": "När den här resursen är tillgänglig, till exempel en person eller ett rum. Blockerar aldrig en bokning.",
       "followsVenue": "Inga egna tider: resursen följer lokalens öppettider.",
-      "followHint": "Stäng av alla dagar och ta bort alla undantag för att följa lokalens öppettider igen."
+      "followHint": "Stäng av alla dagar och ta bort alla undantag för att följa lokalens öppettider igen.",
+      "edit": "Ändra arbetstider"
     },
     "layouts": "Möbleringar",
     "maxPeople": "Max antal personer",
@@ -218,11 +220,11 @@
       "editTitle": "Ändra namn",
       "titleLabel": "Namn",
       "titleUpdated": "Namnet är sparat",
-      "editDetails": "Ändra uppgifter",
       "editPrice": "Ändra pris",
       "editTiming": "Ändra bokning och ställtider",
       "editParts": "Ändra delar",
-      "editCustomisations": "Ändra anpassningar"
+      "editCustomisations": "Ändra anpassningar",
+      "editFact": "Ändra {label}"
     }
   },
   "itemState": {

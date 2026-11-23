@@ -56,7 +56,8 @@
     "hours": {
       "title": "Opening hours",
       "description": "Used to warn when a booking falls outside opening hours. It never blocks a booking.",
-      "empty": "No opening hours set. Bookings are not checked against opening hours."
+      "empty": "No opening hours set. Bookings are not checked against opening hours.",
+      "edit": "Edit opening hours"
     },
     "items": {
       "showAll": "Show all items",
@@ -189,7 +190,8 @@
       "title": "Working hours",
       "description": "When this item is available, for example a person or a room. It never blocks a booking.",
       "followsVenue": "No own hours: this item follows its venue's opening hours.",
-      "followHint": "Switch off every day and remove all exceptions to follow the venue's opening hours again."
+      "followHint": "Switch off every day and remove all exceptions to follow the venue's opening hours again.",
+      "edit": "Edit working hours"
     },
     "layouts": "Layouts",
     "maxPeople": "Max number of people",
@@ -218,11 +220,11 @@
       "editTitle": "Edit name",
       "titleLabel": "Name",
       "titleUpdated": "Name saved",
-      "editDetails": "Edit details",
       "editPrice": "Edit price",
       "editTiming": "Edit booking and buffers",
       "editParts": "Edit parts",
-      "editCustomisations": "Edit customisations"
+      "editCustomisations": "Edit customisations",
+      "editFact": "Edit {label}"
     }
   },
   "itemState": {

@@ -5,7 +5,6 @@ import { type Fact, FactList } from "@/components/typed-fields/fact-list";
 import { getNumberFormat } from "@/server/number-format";
 import { customisationGroupLines } from "./customisation-group-lines";
 import { hasCapability } from "./has-capability";
-import { itemFacts } from "./item-facts-list";
 import type { ItemFormData } from "./item-form-data";
 import { ItemInlineEditor } from "./item-inline-editor";
 import type { ItemEditGroup } from "./item-update-input";
@@ -68,22 +67,16 @@ type TimingInput = {
 };
 
 /**
- * The item's details and capability values as sections edited in place, each from the pencil
+ * The item's capability values and buffers as sections edited in place, each from the pencil
  * beside its title and sending only its own fields (like the order page).
  */
 export async function ItemSections({ item, type, data, canEdit }: ItemSectionsProps) {
-  const [t, page, common, buffers, { money }] = await Promise.all([
+  const [t, page, buffers, { money }] = await Promise.all([
     getTranslations("item"),
     getTranslations("item.page"),
-    getTranslations("common"),
     getTranslations("buffers"),
     getNumberFormat(),
   ]);
-  const yesNo = { yes: common("yes"), no: common("no") };
-  const details = [
-    { label: t("fields.description"), value: item.description ?? "–" },
-    ...itemFacts({ item, type, data, t, yesNo, hidden: common("hidden") }),
-  ];
   const price =
     item.priceMinor === null || item.priceUnit === null
       ? page("noPrice")
@@ -104,12 +97,6 @@ export async function ItemSections({ item, type, data, canEdit }: ItemSectionsPr
     format: (values) => t("customisationGroupValue", values),
   });
   const sections: Section[] = [
-    {
-      group: "details",
-      title: page("details"),
-      editLabel: page("editDetails"),
-      body: <FactList facts={details} />,
-    },
     ...(hasCapability({ type, capability: "PRICED" })
       ? [
           {

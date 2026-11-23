@@ -52,7 +52,7 @@ function LayoutThumbnail({
           variant="outline"
           size="icon"
           aria-label={editLabel}
-          className="absolute top-2 right-2 z-10 size-7 bg-background"
+          className="absolute top-0 right-0 z-10 size-7 translate-x-1/2 -translate-y-1/2 rounded-full bg-background"
         >
           <Link href={href}>
             <PencilIcon className="size-3.5" />
@@ -77,7 +77,8 @@ function LayoutThumbnail({
 
 /**
  * The room's layouts as thumbnails (ADR 0102, 0103): name, capacity and what each suits, with
- * the room's people limit edited in place, a pencil on each layout and Edit floor plan.
+ * the room's people limit edited in place, a pencil on each layout, a Create layout card last
+ * and Edit floor plan.
  */
 export async function LayoutsSection({
   locale,
@@ -97,16 +98,9 @@ export async function LayoutsSection({
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl">{t("title")}</h2>
         {canEdit ? (
-          <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm">
-              <Link href={floorPlanRoute({ itemId })}>{t("editFloorPlan")}</Link>
-            </Button>
-            <CreateLayoutButton
-              itemId={itemId}
-              layouts={layouts.map(({ id, name }) => ({ id, name }))}
-              compact
-            />
-          </div>
+          <Button asChild variant="outline" size="sm">
+            <Link href={floorPlanRoute({ itemId })}>{t("editFloorPlan")}</Link>
+          </Button>
         ) : null}
       </div>
       <p className="text-sm text-muted-foreground">
@@ -114,7 +108,7 @@ export async function LayoutsSection({
           {maxPeople === null ? t("noPeopleLimit") : t("maxPeople", { count: maxPeople })}
         </EditableFact>
       </p>
-      {layouts.length ? (
+      {layouts.length || canEdit ? (
         <div className="flex flex-wrap gap-3">
           {layouts.map((layout) => (
             <LayoutThumbnail
@@ -128,6 +122,13 @@ export async function LayoutsSection({
               }
             />
           ))}
+          {canEdit ? (
+            <CreateLayoutButton
+              itemId={itemId}
+              layouts={layouts.map(({ id, name }) => ({ id, name }))}
+              tile
+            />
+          ) : null}
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">{t("noLayouts")}</p>

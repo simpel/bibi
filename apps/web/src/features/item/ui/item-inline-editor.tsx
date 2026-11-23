@@ -23,12 +23,14 @@ export type ItemInlineEditorProps = {
   data: ItemFormData;
   /** The one part of the item this editor changes. */
   group: ItemEditGroup;
+  /** The own field a `field` editor changes. */
+  fieldKey?: string | undefined;
 };
 
 type GroupProps = ItemInlineEditorProps & { form: ReturnType<typeof useItemEdit>["form"] };
 
 /** The fields of one group; the section around it already says what they are. */
-function GroupFields({ item, data, group, form }: GroupProps) {
+function GroupFields({ item, data, group, fieldKey, form }: GroupProps) {
   const t = useTranslations("item.fields");
   const type = data.types.find(({ id }) => id === item.entityTypeId);
   const others = data.parts.filter(({ id }) => id !== item.id);
@@ -45,28 +47,38 @@ function GroupFields({ item, data, group, form }: GroupProps) {
       </>
     );
   }
-  return (
-    <>
-      <TextField form={form} name="description" label={t("description")} multiline />
-      <ItemVenueField form={form} venues={data.venues} venuesHidden={data.venuesHidden} />
-      {type ? <TypeFields control={form.control} type={type} data={data} /> : null}
-    </>
-  );
+  if (group === "description") {
+    return <TextField form={form} name="description" label={t("description")} multiline />;
+  }
+  if (group === "venue") {
+    return <ItemVenueField form={form} venues={data.venues} venuesHidden={data.venuesHidden} />;
+  }
+  return type ? (
+    <TypeFields control={form.control} type={type} data={data} only={fieldKey} />
+  ) : null;
 }
 
 /** Edits one part of an item in place (the picture's popover, a section), sending only that part. */
 export function ItemInlineEditor(props: ItemInlineEditorProps) {
   const common = useTranslations("common");
   const { form, submit, pending, close } = useItemEdit({ ...props, groups: [props.group] });
+  const compact =
+    props.group === "description" || props.group === "venue" || props.group === "field";
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4 [&_legend]:sr-only">
         <GroupFields {...props} form={form} />
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={close} disabled={pending}>
+          <Button
+            type="button"
+            variant="outline"
+            size={compact ? "sm" : "default"}
+            onClick={close}
+            disabled={pending}
+          >
             {common("cancel")}
           </Button>
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" size={compact ? "sm" : "default"} disabled={pending}>
             {common("save")}
           </Button>
         </div>

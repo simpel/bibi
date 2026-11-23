@@ -82,7 +82,7 @@
           },
           "itemEdit": {
             "question": "How do I change an item?",
-            "answer": "Open the item and click the pencil next to what you want to change: the name, the picture, or the title of a section such as **Details**, **Price** or **Booking and buffers**. Change it and click **Save**; only that part is saved.\nFor a room, each layout has its own pencil, the pencil next to the people limit changes it, and **Edit floor plan** opens the room's walls, doors and windows."
+            "answer": "Open the item and click the pencil next to what you want to change: the name, the picture, a single detail such as the description or the floor, or the title of a section such as **Price** or **Booking and buffers**. Change it and click **Save**; only that part is saved.\nFor a room, each layout has its own pencil, the pencil next to the people limit changes it, and **Edit floor plan** opens the room's walls, doors and windows."
           },
           "itemPicture": {
             "question": "How do I give an item an icon or a picture?",

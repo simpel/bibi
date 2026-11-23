@@ -5,17 +5,21 @@ import type { ItemFormOutput } from "./item-form-schema";
 /** The parts of an item its page edits in place, each from its own pencil. */
 export type ItemEditGroup =
   | "picture"
-  | "details"
+  | "description"
+  | "venue"
+  | "field"
   | "price"
   | "timing"
   | "layouts"
   | "parts"
   | "customisations";
 
-/** Which update properties each group sends (own fields go with `details`). */
+/** Which update properties each group sends (`field` sends one own field, by `fieldKey`). */
 const GROUP_KEYS = {
   picture: ["icon", "imageKey"],
-  details: ["description", "venueId"],
+  description: ["description"],
+  venue: ["venueId"],
+  field: [],
   price: ["priceMinor", "priceUnit", "vatRatePercent"],
   timing: ["defaultDurationMinutes", "setupMinutes", "teardownMinutes"],
   layouts: ["maxPeople"],
@@ -29,10 +33,18 @@ export type UpdateInputArgs = {
   type: EntityTypeDto | undefined;
   /** Only these groups are sent; left out = everything the form has. */
   groups?: readonly ItemEditGroup[] | undefined;
+  /** The own field the `field` group sends. */
+  fieldKey?: string | undefined;
 };
 
 /** Create-shaped values → `item.update` input; emptied fields are cleared with `null`. */
-export function toUpdateInput({ item, values, type, groups }: UpdateInputArgs): ItemUpdateInput {
+export function toUpdateInput({
+  item,
+  values,
+  type,
+  groups,
+  fieldKey,
+}: UpdateInputArgs): ItemUpdateInput {
   const { entityTypeId: _type, fields, ...rest } = values;
   const patch = fieldsPatch({ type, stored: item.fields, fields });
   if (!groups) return { id: item.id, ...rest, fields: patch };
@@ -42,5 +54,6 @@ export function toUpdateInput({ item, values, type, groups }: UpdateInputArgs): 
       if (key in rest) Object.assign(input, { [key]: rest[key as keyof typeof rest] });
     }
   }
-  return groups.includes("details") ? { ...input, fields: patch } : input;
+  if (!groups.includes("field") || !fieldKey) return input;
+  return { ...input, fields: { [fieldKey]: patch[fieldKey] ?? null } };
 }

@@ -82,7 +82,7 @@
           },
           "itemEdit": {
             "question": "Hur ändrar jag en artikel?",
-            "answer": "Öppna artikeln och klicka på pennan vid det du vill ändra: namnet, bilden eller rubriken på ett avsnitt som **Uppgifter**, **Pris** eller **Bokning och ställtider**. Ändra och klicka på **Spara**; bara den delen sparas.\nFör ett rum har varje möblering en egen penna, pennan vid personbegränsningen ändrar den, och **Redigera planritning** öppnar rummets väggar, dörrar och fönster."
+            "answer": "Öppna artikeln och klicka på pennan vid det du vill ändra: namnet, bilden, en enskild uppgift som beskrivningen eller våningen, eller rubriken på ett avsnitt som **Pris** eller **Bokning och ställtider**. Ändra och klicka på **Spara**; bara den delen sparas.\nFör ett rum har varje möblering en egen penna, pennan vid personbegränsningen ändrar den, och **Redigera planritning** öppnar rummets väggar, dörrar och fönster."
           },
           "itemPicture": {
             "question": "Hur ger jag en artikel en ikon eller en bild?",
