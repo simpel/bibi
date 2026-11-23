@@ -19,6 +19,9 @@ model Customer {
   /// The organisation number, e.g. 556677-8899 (owned, ADR 0106); null = not given. Sent to the
   /// ledger provider and required before a business customer is invoiced.
   organizationNumber   String?
+  /// The personal identity number (personnummer) of a private customer (owned); null = not
+  /// given, always null for a business. Sent to the ledger provider; never logged.
+  personalIdentityNumber String?
   /// Owned (ADR 0105): its invoices must carry the buyer's reference (Er referens), e.g. a
   /// public-sector buyer that routes invoices by it. Enforced when invoicing.
   requiresBuyerReference Boolean   @default(false)

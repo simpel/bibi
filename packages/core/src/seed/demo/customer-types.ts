@@ -15,9 +15,11 @@ export type DemoContact = {
 export type DemoCustomer = {
   name: string;
   type: string;
-  /** Business or private (ADR 0106); omitted = BUSINESS. */
+  /** Business or private (ADR 0106); omitted = the customer type's. */
   buyerKind?: "BUSINESS" | "PRIVATE";
   organizationNumber?: string;
+  /** A private customer's personal identity number (a Skatteverket test number in the demo). */
+  personalIdentityNumber?: string;
   /** Invoices must carry the buyer's reference (ADR 0105). */
   requiresBuyerReference?: boolean;
   fields?: DemoFieldValues;

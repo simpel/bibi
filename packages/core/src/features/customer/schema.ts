@@ -4,14 +4,7 @@ import { checkPostalCode } from "../../shared/postal-code";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { ContactCreateInputSchema } from "../contact/schema";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
-
-/** Business or private (ADR 0106): what an order's money needs. Orders inherit the customer's. */
-export const BuyerKindSchema = z
-  .enum(["BUSINESS", "PRIVATE"])
-  .describe(
-    "BUSINESS: a company, agency or association, always invoiced in full. PRIVATE: a private " +
-      "person, who pays up front",
-  );
+import { BuyerKindSchema } from "./buyer-kind";
 
 const OrganizationNumberSchema = z
   .string()
@@ -19,6 +12,16 @@ const OrganizationNumberSchema = z
   .min(1)
   .max(32)
   .describe("The organisation number, e.g. 556677-8899; sent with invoices");
+
+const PersonalIdentityNumberSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(32)
+  .describe(
+    "A private customer's personal identity number (personnummer), e.g. 19900101-1234; sent " +
+      "with invoices",
+  );
 
 export const CustomerSchema = z.object({
   id: z.string(),
@@ -29,6 +32,10 @@ export const CustomerSchema = z.object({
   phone: z.string().nullable(),
   buyerKind: BuyerKindSchema,
   organizationNumber: z.string().nullable(),
+  personalIdentityNumber: z
+    .string()
+    .nullable()
+    .describe("A private customer's personal identity number (personnummer); null for a business"),
   requiresBuyerReference: z
     .boolean()
     .describe("Its invoices must carry the buyer's reference (order or contact)"),
@@ -83,10 +90,12 @@ const CustomerFieldsSchema = z.object({
   name: z.string().trim().min(1).max(200).describe("The customer's name, e.g. a company name"),
   email: z.email().nullish(),
   phone: z.string().trim().max(50).nullish(),
-  buyerKind: BuyerKindSchema.default("BUSINESS").describe(
-    "Business or private; each order inherits it unless it sets its own. Default BUSINESS",
+  buyerKind: BuyerKindSchema.optional().describe(
+    "Business or private; each order inherits it unless it sets its own. Omitted = the " +
+      "customer type's",
   ),
   organizationNumber: OrganizationNumberSchema.nullish(),
+  personalIdentityNumber: PersonalIdentityNumberSchema.nullish(),
   requiresBuyerReference: z
     .boolean()
     .default(false)

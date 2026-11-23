@@ -1,5 +1,4 @@
 import {
-  BuyerKindSchema,
   type CustomerCreateInput,
   CustomerCreateInputSchema,
   CustomerFirstContactInputSchema,
@@ -10,28 +9,27 @@ import { formSchema } from "@/lib/form-schema";
 /** Raw values of the intake's new-customer form: the customer and its first contact person. */
 export type NewCustomerValues = {
   name: string;
+  /** The customer type, which decides business or private (ADR 0106). */
   entityTypeId: string;
-  /** Empty until staff choose business or private (ADR 0106). */
-  buyerKind: "" | "BUSINESS" | "PRIVATE";
   organizationNumber: string;
+  personalIdentityNumber: string;
   contact: { name: string; email: string; entityTypeId: string };
 };
 
 /** What the resolver outputs: `customer.create` with the nested contact (ADR 0081). */
 export type NewCustomerOutput = CustomerCreateInput;
 
-/** Core's create schema with the contact and business-or-private required, as step 1 asks. */
+/**
+ * Core's create schema with the contact required, as step 1 asks. Business or private comes from
+ * the type in core, which also clears the number that does not fit it.
+ */
 export const newCustomerSchema = formSchema({
-  schema: CustomerCreateInputSchema.safeExtend({
-    buyerKind: BuyerKindSchema,
-    contact: CustomerFirstContactInputSchema,
-  }),
+  schema: CustomerCreateInputSchema.safeExtend({ contact: CustomerFirstContactInputSchema }),
   toInput: ({ values }: { values: NewCustomerValues }) => ({
     entityTypeId: values.entityTypeId,
     name: values.name.trim(),
-    buyerKind: values.buyerKind || undefined,
-    organizationNumber:
-      values.buyerKind === "PRIVATE" ? null : blankToNull({ value: values.organizationNumber }),
+    organizationNumber: blankToNull({ value: values.organizationNumber }),
+    personalIdentityNumber: blankToNull({ value: values.personalIdentityNumber }),
     contact: {
       name: values.contact.name.trim(),
       email: values.contact.email.trim(),
@@ -54,8 +52,8 @@ export function newCustomerDefaults({
   return {
     name,
     entityTypeId: customerTypeId ?? "",
-    buyerKind: "",
     organizationNumber: "",
+    personalIdentityNumber: "",
     contact: { name: "", email: "", entityTypeId: contactTypeId ?? "" },
   };
 }

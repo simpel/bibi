@@ -1,5 +1,5 @@
 import type { CustomerDto, CustomerUpdateInput, EntityTypeDto, VocabularyDto } from "@bibi/core";
-import { BuyerKindSchema, buildFieldsSchema, CustomerCreateInputSchema } from "@bibi/core/schemas";
+import { buildFieldsSchema, CustomerCreateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsPatch, fieldsToInput } from "@/components/typed-fields/raw-fields";
@@ -19,11 +19,7 @@ export type CustomerSchemaInput = {
 export function customerFormSchema({ type, vocabularies }: CustomerSchemaInput) {
   const specs = specsOf({ type, vocabularies });
   return formSchema({
-    // No default here: the form makes staff choose business or private.
-    schema: CustomerCreateInputSchema.extend({
-      buyerKind: BuyerKindSchema,
-      fields: buildFieldsSchema({ specs }),
-    }),
+    schema: CustomerCreateInputSchema.extend({ fields: buildFieldsSchema({ specs }) }),
     toInput: ({ values }: { values: CustomerFormValues }) => {
       const kr = numberOrNull({ value: values.creditLimit });
       return {
@@ -31,9 +27,13 @@ export function customerFormSchema({ type, vocabularies }: CustomerSchemaInput) 
         name: values.name.trim(),
         email: blankToNull({ value: values.email }),
         phone: blankToNull({ value: values.phone }),
-        buyerKind: values.buyerKind || undefined,
+        buyerKind: values.buyerKind,
         organizationNumber:
           values.buyerKind === "PRIVATE" ? null : blankToNull({ value: values.organizationNumber }),
+        personalIdentityNumber:
+          values.buyerKind === "PRIVATE"
+            ? blankToNull({ value: values.personalIdentityNumber })
+            : null,
         requiresBuyerReference: values.requiresBuyerReference,
         invoiceStreetAddress: blankToNull({ value: values.invoiceStreetAddress }),
         invoicePostalCode: blankToNull({ value: values.invoicePostalCode }),

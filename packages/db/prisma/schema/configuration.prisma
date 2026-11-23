@@ -51,6 +51,9 @@ model EntityType {
   teardownMinutes  Int?
   /// Item types: Equipment or Person (ADR 0059, owned); null on every other base.
   resourceKind     ResourceKind?
+  /// Customer types: business or private (owned); a new customer of the type takes it (ADR
+  /// 0106). Null on every other base.
+  buyerKind        BuyerKind?
   /// Item types: the group the type is browsed under (ADR 0101, owned); null = ungrouped.
   groupId          String?
   status           RecordStatus                @default(ACTIVE)

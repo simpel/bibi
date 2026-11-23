@@ -11,6 +11,7 @@ import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { createEntityTypeAction, updateEntityTypeAction } from "../actions";
 import { BaseSelectField } from "./base-select-field";
+import { BuyerKindField } from "./buyer-kind-field";
 import {
   type EntityTypeFormOutput,
   type EntityTypeFormValues,
@@ -41,7 +42,7 @@ const save = ({ entityType, values, withGroup }: SaveInput) =>
         input: {
           ...{ id: entityType.id, name: values.name, pluralName: values.pluralName },
           ...{ capabilities: values.capabilities },
-          ...{ resourceKind: values.resourceKind },
+          ...{ resourceKind: values.resourceKind, buyerKind: values.buyerKind },
           ...{ setupMinutes: values.setupMinutes, teardownMinutes: values.teardownMinutes },
           ...(withGroup ? { groupId: values.groupId } : {}),
         },
@@ -77,6 +78,7 @@ export function EntityTypeForm({ entityType, onDone, groups }: EntityTypeFormPro
           label={t("fields.pluralName")}
           placeholder={t("fields.pluralNamePlaceholder")}
         />
+        {form.watch("base") === "CUSTOMER" ? <BuyerKindField control={form.control} /> : null}
         {form.watch("base") === "ITEM" ? <ItemTypeFields form={form} groups={groups} /> : null}
         <div className="flex justify-end gap-2">
           {onDone ? (

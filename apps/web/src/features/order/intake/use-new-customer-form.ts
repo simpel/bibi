@@ -11,6 +11,7 @@ import {
   createCustomerAction,
   findSimilarCustomersAction,
 } from "../../customer/actions";
+import type { CustomerTypeOption } from "./customer-type-option";
 import {
   type NewCustomerOutput,
   type NewCustomerValues,
@@ -22,7 +23,7 @@ export type UseNewCustomerFormInput = {
   name: string;
   /** The name already checked for duplicates (from the search), or null. */
   checkedName: string | null;
-  customerTypes: NamedOption[];
+  customerTypes: CustomerTypeOption[];
   contactTypes: NamedOption[];
   onCreated: (input: { customer: CustomerOption }) => void;
 };

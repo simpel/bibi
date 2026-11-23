@@ -10,7 +10,7 @@ describe("entity type form schema", () => {
   it("keeps capabilities for item types only", () => {
     const item: EntityTypeFormValues = {
       ...{ base: "ITEM", name: " Rum ", capabilities: ["BOOKABLE"], resourceKind: "PERSON" },
-      ...{ groupId: "g1", pluralName: " Rum " },
+      ...{ groupId: "g1", pluralName: " Rum ", buyerKind: "PRIVATE" },
       ...{ setupMinutes: "30", teardownMinutes: "" },
     };
     expect(entityTypeFormToInput({ values: item })).toMatchObject({
@@ -27,6 +27,8 @@ describe("entity type form schema", () => {
     const input = entityTypeFormToInput({ values: customer });
     expect(input.capabilities).toBeUndefined();
     expect(input.resourceKind).toBeUndefined();
+    expect(input.buyerKind).toBe(customer.buyerKind);
+    expect(entityTypeFormToInput({ values: item }).buyerKind).toBeUndefined();
     expect(input.groupId).toBeUndefined();
     expect(input).not.toHaveProperty("setupMinutes");
   });
@@ -37,6 +39,7 @@ describe("entity type form schema", () => {
       setupMinutes: "",
       teardownMinutes: "",
       resourceKind: "EQUIPMENT",
+      buyerKind: "BUSINESS",
       groupId: "none",
       pluralName: "",
     };

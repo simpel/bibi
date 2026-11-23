@@ -104,7 +104,7 @@
           },
           "businessOrPrivate": {
             "question": "Hur anger jag om en kund är ett företag eller en privatperson?",
-            "answer": "När du skapar en kund väljer du Företag eller Privatperson. För ett företag kan du också fylla i organisationsnumret.\nVarje bokning följer sin kund. Vill du ändra det för en enda bokning klickar du på pennan bredvid **Detaljer** på bokningen och väljer Företag eller Privatperson under Företag eller privat. Välj Samma som kunden för att gå tillbaka."
+            "answer": "Det följer kundtypen. Under **Administration, Typer** öppnar du en kundtyp och väljer **Företag eller privat**. En ny kund av den typen blir då ett företag eller en privatperson.\nFör ett företag kan du fylla i organisationsnumret, för en privatperson ett personnummer om du vill. Det skickas till ert bokföringssystem med fakturan.\nVarje bokning följer sin kund. Vill du ändra det för en enda bokning klickar du på pennan bredvid **Detaljer** på bokningen och väljer Företag eller Privatperson under Företag eller privat. Välj Samma som kunden för att gå tillbaka."
           },
           "buyerReference": {
             "question": "Hur lägger jag till beställarens referens på en order?",

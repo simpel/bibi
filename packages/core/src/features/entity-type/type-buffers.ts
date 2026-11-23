@@ -8,18 +8,25 @@ export type CheckTypeBuffersInput = {
   teardownMinutes?: number | null;
   /** Item types only: EQUIPMENT or PERSON (ADR 0059). */
   resourceKind?: string | null;
+  /** Customer types only: BUSINESS or PRIVATE (ADR 0106). */
+  buyerKind?: string | null;
 };
 
 /**
  * Only item types have default buffers, which apply around their items' bookings, and the
- * Equipment or Person choice (ADR 0059).
+ * Equipment or Person choice (ADR 0059); only customer types are business or private.
  */
 export function checkTypeBuffers({
   base,
   setupMinutes,
   teardownMinutes,
   resourceKind,
+  buyerKind,
 }: CheckTypeBuffersInput): Result<true> {
+  if (buyerKind != null && base !== "CUSTOMER") {
+    const message = "Only customer types are business or private";
+    return invalid({ message, issues: [{ path: "buyerKind", message }] });
+  }
   if (base === "ITEM") return ok({ value: true });
   const message = "Only item types have setup and teardown minutes or a resource kind";
   const paths = [

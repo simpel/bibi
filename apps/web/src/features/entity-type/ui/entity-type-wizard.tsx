@@ -8,6 +8,7 @@ import { WizardProgress } from "@/components/wizard/wizard-progress";
 import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { BaseSelectField } from "./base-select-field";
+import { BuyerKindField } from "./buyer-kind-field";
 import type { GroupOption } from "./group-select-field";
 import { ItemTypeFields } from "./item-type-fields";
 import { useEntityTypeWizard } from "./use-entity-type-wizard";
@@ -42,6 +43,7 @@ export function EntityTypeWizard({ groups, forItem }: EntityTypeWizardProps) {
               label={t("fields.pluralName")}
               placeholder={t("fields.pluralNamePlaceholder")}
             />
+            {form.watch("base") === "CUSTOMER" ? <BuyerKindField control={form.control} /> : null}
           </>
         ) : (
           <ItemTypeFields form={form} groups={groups} />

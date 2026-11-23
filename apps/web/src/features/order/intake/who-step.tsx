@@ -4,6 +4,7 @@ import type { NamedOption } from "@/components/form/named-option";
 import type { CustomerOption } from "../../customer/actions";
 import { ContactChooser } from "./contact-chooser";
 import { CustomerSearch } from "./customer-search";
+import type { CustomerTypeOption } from "./customer-type-option";
 import type { IntakeWho } from "./intake-state";
 import { NewCustomerForm } from "./new-customer-form";
 import { SimilarCustomers } from "./similar-customers";
@@ -12,7 +13,7 @@ import type { WhoFlow } from "./use-who-flow";
 export type WhoStepProps = {
   who: IntakeWho | null;
   recent: CustomerOption[];
-  customerTypes: NamedOption[];
+  customerTypes: CustomerTypeOption[];
   contactTypes: NamedOption[];
   /** What the customer search starts with (from an inbox message's sender), or null. */
   search?: string | null;

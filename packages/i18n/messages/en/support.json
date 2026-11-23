@@ -104,7 +104,7 @@
           },
           "businessOrPrivate": {
             "question": "How do I mark a customer as a business or a private person?",
-            "answer": "When you create a customer, choose Business or Private person. For a business you can also fill in its org. no.\nEvery order follows its customer. To change it for a single order, click the pencil next to **Details** on the order and pick Business or Private person under Business or private. Choose Same as the customer to go back."
+            "answer": "It follows the customer type. Under **Administration, Types**, open a customer type and set **Business or private**. A new customer of that type is then a business or a private person.\nFor a business you can fill in its org. no., for a private person an optional personal identity number, which is sent to your accounting system with the invoice.\nEvery order follows its customer. To change it for a single order, click the pencil next to **Details** on the order and pick Business or Private person under Business or private. Choose Same as the customer to go back."
           },
           "buyerReference": {
             "question": "How do I add the buyer's reference to an order?",

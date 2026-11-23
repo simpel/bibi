@@ -13,6 +13,7 @@ import { runOperation } from "@/server/run-operation";
 import { getSessionState } from "@/server/session";
 import type { CustomerOption } from "../customer/actions";
 import type { IntakeCatalog } from "./intake/catalog";
+import type { CustomerTypeOption } from "./intake/customer-type-option";
 import { draftKey } from "./intake/intake-draft";
 import type { IntakeSlot } from "./intake/intake-slot";
 import type { PackageOption } from "./intake/package-groups";
@@ -22,7 +23,7 @@ import { loadIntakeCatalog } from "./load-intake-catalog";
 export type IntakeData = {
   /** The 5 customers with the latest orders, shown while the search is empty. */
   recent: CustomerOption[];
-  customerTypes: NamedOption[];
+  customerTypes: CustomerTypeOption[];
   contactTypes: NamedOption[];
   /** Every active package, for step 3; empty without `orderTemplate:read`. */
   packages: PackageOption[];
@@ -38,8 +39,17 @@ export type IntakeData = {
 
 const typesOf = ({ base }: { base: "CUSTOMER" | "CONTACT" }) => loadEntityTypesOf({ base });
 
+const active = ({ types }: { types: EntityTypeDto[] }) =>
+  types.filter(({ status }) => status === "ACTIVE");
+
 const named = ({ types }: { types: EntityTypeDto[] }): NamedOption[] =>
-  types.filter(({ status }) => status === "ACTIVE").map(({ id, name }) => ({ id, name }));
+  active({ types }).map(({ id, name }) => ({ id, name }));
+
+const customerTypeOptions = ({ types }: { types: EntityTypeDto[] }): CustomerTypeOption[] =>
+  active({ types }).map(({ id, name, buyerKind }) => ({
+    ...{ id, name },
+    buyerKind: buyerKind ?? "BUSINESS",
+  }));
 
 const toPackage = ({ template }: { template: OrderTemplateDto }): PackageOption => ({
   id: template.id,
@@ -75,7 +85,7 @@ export async function loadIntakeData(): Promise<Result<IntakeData>> {
     ok: true,
     value: {
       recent: itemsOr({ result: recent }).map(({ id, name }) => ({ id, name })),
-      customerTypes: named({ types: customerTypes.value.items }),
+      customerTypes: customerTypeOptions({ types: customerTypes.value.items }),
       contactTypes: named({ types: contactTypes.value.items }),
       packages: itemsOr({ result: templates })
         .filter(({ status }) => status === "ACTIVE")

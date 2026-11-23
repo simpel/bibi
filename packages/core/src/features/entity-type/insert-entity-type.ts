@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
+import type { BuyerKindValue } from "../customer/buyer-kind";
 import { insertItemState } from "../item-state/insert-item-state";
 import { checkCapabilities } from "./capabilities";
 import type { EntityBase, ItemCapability, ResourceKind } from "./capability-kinds";
@@ -21,6 +22,8 @@ export type InsertEntityTypeInput = {
   teardownMinutes?: number | null;
   /** Item types: EQUIPMENT (default) or PERSON (ADR 0059). */
   resourceKind?: ResourceKind;
+  /** Customer types: BUSINESS (default) or PRIVATE (ADR 0106). */
+  buyerKind?: BuyerKindValue;
   /** Item types: the group (ADR 0101); null or omitted = ungrouped. */
   groupId?: string | null | undefined;
 };
@@ -51,12 +54,13 @@ export async function insertEntityType({
   pluralName = null,
   capabilities = [],
   resourceKind,
+  buyerKind,
   groupId = null,
   ...buffers
 }: InsertEntityTypeInput): Promise<Result<EntityTypeDto>> {
   const valid = checkCapabilities({ base, capabilities });
   if (!valid.ok) return valid;
-  const buffered = checkTypeBuffers({ base, resourceKind, ...buffers });
+  const buffered = checkTypeBuffers({ base, resourceKind, buyerKind, ...buffers });
   if (!buffered.ok) return buffered;
   const grouped = await checkTypeGroup({ context, base, groupId });
   if (!grouped.ok) return grouped;
@@ -67,6 +71,7 @@ export async function insertEntityType({
     data: {
       ...{ base, name, pluralName, capabilities: [...capabilities], ...buffers },
       resourceKind: base === "ITEM" ? (resourceKind ?? "EQUIPMENT") : null,
+      buyerKind: base === "CUSTOMER" ? (buyerKind ?? "BUSINESS") : null,
       groupId,
       organizationId: context.organizationId,
     },

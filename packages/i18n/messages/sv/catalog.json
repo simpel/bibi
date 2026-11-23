@@ -352,6 +352,7 @@
       "name": "Namn",
       "sections": "Avsnitt",
       "resourceKind": "Utrustning eller person",
+      "buyerKind": "Företag eller privat",
       "group": "Grupp",
       "pluralName": "Pluralform",
       "pluralNamePlaceholder": "Konferensrum"

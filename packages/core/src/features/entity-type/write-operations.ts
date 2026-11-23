@@ -54,7 +54,8 @@ export const updateEntityType = defineOperation({
     "Rename a type (name, pluralName), replace its capabilities, set an item type's expiry state (where lines in " +
     "an expiring state fall when the order's holdsUntil passes) or its default setup and " +
     "teardown minutes (held around bookings; a hard hold that would then collide is CONFLICT) " +
-    "or its group (groupId, ADR 0101; null leaves it ungrouped). " +
+    "or its group (groupId, ADR 0101; null leaves it ungrouped), or whether a customer type " +
+    "is business or private (buyerKind; existing customers keep their own). " +
     "Switching a capability off while items of the " +
     "type have data for it (e.g. prices for PRICED) is refused with CONFLICT.",
   input: EntityTypeUpdateInputSchema,

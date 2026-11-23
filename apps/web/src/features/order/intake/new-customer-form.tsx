@@ -5,6 +5,7 @@ import type { NamedOption } from "@/components/form/named-option";
 import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
 import type { CustomerOption } from "../../customer/actions";
+import { buyerKindOf, type CustomerTypeOption } from "./customer-type-option";
 import { SimilarCustomers } from "./similar-customers";
 import { type UseNewCustomerFormInput, useNewCustomerForm } from "./use-new-customer-form";
 
@@ -14,19 +15,15 @@ export type NewCustomerFormProps = UseNewCustomerFormInput & {
   onCancel: () => void;
 };
 
-type FieldsProps = { customerTypes: NamedOption[]; contactTypes: NamedOption[] } & {
+type FieldsProps = { customerTypes: CustomerTypeOption[]; contactTypes: NamedOption[] } & {
   form: ReturnType<typeof useNewCustomerForm>["form"];
 };
 
+/** Business or private follows the chosen type (ADR 0106): org. no. or personal identity number. */
 function NewCustomerFields({ form, customerTypes, contactTypes }: FieldsProps) {
   const t = useTranslations("orderIntake.who");
   const fields = useTranslations("customer.fields");
-  const kinds = useTranslations("customer.buyerKind");
-  const business = form.watch("buyerKind") !== "PRIVATE";
-  const kindOptions = [
-    { id: "BUSINESS", name: kinds("BUSINESS") },
-    { id: "PRIVATE", name: kinds("PRIVATE") },
-  ];
+  const kind = buyerKindOf({ types: customerTypes, id: form.watch("entityTypeId") });
   return (
     <div className="grid items-start gap-4 sm:grid-cols-2">
       <TextField form={form} name="name" label={t("customerName")} required />
@@ -36,15 +33,16 @@ function NewCustomerFields({ form, customerTypes, contactTypes }: FieldsProps) {
         label={t("customerType")}
         options={customerTypes}
       />
-      <OptionSelectField
-        control={form.control}
-        name="buyerKind"
-        label={fields("buyerKind")}
-        options={kindOptions}
-      />
-      {business ? (
+      {kind === "BUSINESS" ? (
         <TextField form={form} name="organizationNumber" label={fields("organizationNumber")} />
-      ) : null}
+      ) : (
+        <TextField
+          form={form}
+          name="personalIdentityNumber"
+          label={fields("personalIdentityNumber")}
+          placeholder={fields("personalIdentityNumberPlaceholder")}
+        />
+      )}
       <TextField form={form} name="contact.name" label={t("contactName")} required />
       <EmailField form={form} name="contact.email" label={t("contactEmail")} required />
       {contactTypes.length > 1 ? (

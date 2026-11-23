@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { BuyerReferenceSchema } from "../contact/schema";
-import { BuyerKindSchema } from "../customer/schema";
+import { BuyerKindSchema } from "../customer/buyer-kind";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 import { LineSchema } from "../line/schema";
 import { OrderIntakeShape } from "./create-intake-schema";

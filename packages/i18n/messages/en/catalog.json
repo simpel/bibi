@@ -352,6 +352,7 @@
       "name": "Name",
       "sections": "Sections",
       "resourceKind": "Equipment or person",
+      "buyerKind": "Business or private",
       "group": "Group",
       "pluralName": "Plural name",
       "pluralNamePlaceholder": "Conference rooms"

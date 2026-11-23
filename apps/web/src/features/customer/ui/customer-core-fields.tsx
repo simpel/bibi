@@ -2,7 +2,6 @@ import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { CheckField } from "@/components/form/check-field";
 import { EmailField } from "@/components/form/email-field";
-import { OptionSelectField } from "@/components/form/option-select-field";
 import { PhoneField } from "@/components/form/phone-field";
 import { TextField } from "@/components/form/text-field";
 import type { CustomerFormOutput } from "./customer-form-schema";
@@ -13,30 +12,27 @@ export type CustomerCoreFieldsProps = {
 };
 
 /**
- * Name, business or private with the org no., contact details, invoice address and terms (the
- * type's own fields come after).
+ * Name, the org no. (business) or personal identity number (private; the kind comes from the
+ * customer type, ADR 0106), contact details, invoice address and terms (the type's own fields
+ * come after).
  */
 export function CustomerCoreFields({ form }: CustomerCoreFieldsProps) {
   const t = useTranslations("customer.fields");
-  const kinds = useTranslations("customer.buyerKind");
   const business = form.watch("buyerKind") !== "PRIVATE";
-  const options = [
-    { id: "BUSINESS", name: kinds("BUSINESS") },
-    { id: "PRIVATE", name: kinds("PRIVATE") },
-  ];
   return (
     <>
-      <TextField form={form} name="name" label={t("name")} required />
       <div className="grid gap-4 sm:grid-cols-2">
-        <OptionSelectField
-          control={form.control}
-          name="buyerKind"
-          label={t("buyerKind")}
-          options={options}
-        />
+        <TextField form={form} name="name" label={t("name")} required />
         {business ? (
           <TextField form={form} name="organizationNumber" label={t("organizationNumber")} />
-        ) : null}
+        ) : (
+          <TextField
+            form={form}
+            name="personalIdentityNumber"
+            label={t("personalIdentityNumber")}
+            placeholder={t("personalIdentityNumberPlaceholder")}
+          />
+        )}
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <EmailField form={form} name="email" label={t("email")} />

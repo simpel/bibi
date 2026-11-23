@@ -2,6 +2,7 @@ import { z } from "zod";
 import { BufferMinutesShape, bufferMinutesInputShape } from "../../shared/buffers";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
+import { BuyerKindSchema } from "../customer/buyer-kind";
 import { FieldDefinitionSchema } from "../field-definition/schema";
 import {
   EntityBaseSchema,
@@ -24,6 +25,8 @@ export const EntityTypeSchema = z.object({
   ...BufferMinutesShape,
   /** Item types: EQUIPMENT or PERSON (ADR 0059); null on every other base. */
   resourceKind: ResourceKindSchema.nullable(),
+  /** Customer types: BUSINESS or PRIVATE, taken by a new customer (ADR 0106); null otherwise. */
+  buyerKind: BuyerKindSchema.nullable(),
   /** Item types: the group the type is browsed under (ADR 0101); null = ungrouped. */
   groupId: z.string().nullable(),
   /** Active fields of the type, in display order. */
@@ -60,6 +63,10 @@ const GroupIdSchema = z
   .optional()
   .describe("Item types only: the group (itemTypeGroup.list) to browse it under; null = ungrouped");
 
+const TypeBuyerKindSchema = BuyerKindSchema.describe(
+  "Customer types only: BUSINESS (default) or PRIVATE; a new customer of the type takes it",
+);
+
 /** Item types only: the default buffers of the type's items (ADR 0059). */
 const TypeBufferInputShape = bufferMinutesInputShape({ inherits: "none (item types only)" });
 
@@ -72,6 +79,7 @@ export const EntityTypeCreateInputSchema = z.object({
   resourceKind: ResourceKindSchema.optional().describe(
     "Item types only: EQUIPMENT (default) or PERSON (ADR 0059)",
   ),
+  buyerKind: TypeBuyerKindSchema.optional(),
   groupId: GroupIdSchema,
 });
 
@@ -93,6 +101,7 @@ export const EntityTypeUpdateInputSchema = z.object({
     ),
   ...TypeBufferInputShape,
   resourceKind: ResourceKindSchema.optional(),
+  buyerKind: TypeBuyerKindSchema.optional(),
   groupId: GroupIdSchema,
 });
 

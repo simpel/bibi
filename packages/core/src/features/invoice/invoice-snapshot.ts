@@ -14,7 +14,15 @@ const day = ({ instant, timeZone }: { instant: Date; timeZone: string }) =>
 export const ORDER_FOR_PROVIDER = {
   reference: true,
   buyerKind: true,
-  customer: { select: { name: true, email: true, organizationNumber: true, buyerKind: true } },
+  customer: {
+    select: {
+      name: true,
+      email: true,
+      organizationNumber: true,
+      personalIdentityNumber: true,
+      buyerKind: true,
+    },
+  },
 } as const;
 
 type OrderForProvider = {
@@ -23,6 +31,7 @@ type OrderForProvider = {
     name: string;
     email: string | null;
     organizationNumber: string | null;
+    personalIdentityNumber: string | null;
     buyerKind: "BUSINESS" | "PRIVATE";
   };
 };
@@ -35,6 +44,7 @@ export function buyerOf({ order }: { order: OrderForProvider }): InvoiceSnapshot
     name: customer.name,
     email: customer.email,
     organizationNumber: buyerKind === "BUSINESS" ? customer.organizationNumber : null,
+    personalIdentityNumber: buyerKind === "PRIVATE" ? customer.personalIdentityNumber : null,
     buyerKind,
   };
 }

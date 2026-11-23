@@ -127,12 +127,14 @@ export type InvoiceSnapshot = {
   buyerReference: string | null;
   /**
    * The buyer (ADR 0106): its kind for this order (the order's own, else the customer's) and, for a
-   * business, its organisation number; providers set both on the customer they create.
+   * business, its organisation number, for a private person, its personal identity number;
+   * providers set them on the customer they create. The identity number is never logged.
    */
   customer: {
     name: string;
     email: string | null;
     organizationNumber: string | null;
+    personalIdentityNumber: string | null;
     buyerKind: "BUSINESS" | "PRIVATE";
   };
   lines: readonly InvoiceSnapshotLine[];

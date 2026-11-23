@@ -1,12 +1,7 @@
 import { z } from "zod";
 import { ok, type Result } from "../../errors/result";
 import { fortnoxGet, fortnoxRefused, fortnoxSend } from "./fortnox-request";
-import type {
-  FortnoxApi,
-  FortnoxCustomerInput,
-  FortnoxInvoiceRow,
-  FortnoxPayment,
-} from "./fortnox-types";
+import type { FortnoxApi, FortnoxInvoiceRow, FortnoxPayment } from "./fortnox-types";
 
 const CustomersSchema = z.object({
   Customers: z.array(z.object({ CustomerNumber: z.string() })).default([]),
@@ -49,15 +44,15 @@ const toPayment = ({ p }: { p: ListedPayment }): FortnoxPayment => ({
 type Authed = { accessToken: string };
 
 /**
- * The first customer matching the organisation number, else the email, else the name (Fortnox
- * filters are exact).
+ * The first customer matching the organisation number (a person's personal identity number for
+ * a private customer), else the email, else the name (Fortnox filters are exact).
  */
 async function findCustomer({
   accessToken,
   name,
   email,
   organizationNumber,
-}: Authed & Omit<FortnoxCustomerInput, "buyerKind">) {
+}: Authed & { name: string; email: string | null; organizationNumber: string | null }) {
   const filters = [
     organizationNumber ? `organisationnumber=${encodeURIComponent(organizationNumber)}` : null,
     email ? `email=${encodeURIComponent(email)}` : null,
@@ -75,7 +70,17 @@ async function findCustomer({
 
 /** Fortnox's invoicing API (ADR 0090): customers, invoices and their payments. */
 export const fortnoxApi: FortnoxApi = {
-  async findOrCreateCustomer({ accessToken, buyerKind, ...customer }): Promise<Result<string>> {
+  async findOrCreateCustomer({
+    accessToken,
+    buyerKind,
+    personalIdentityNumber,
+    ...rest
+  }): Promise<Result<string>> {
+    // Fortnox keeps a business's organisation number and a person's personnummer in one field.
+    const customer = {
+      ...rest,
+      organizationNumber: rest.organizationNumber ?? personalIdentityNumber,
+    };
     const existing = await findCustomer({ accessToken, ...customer });
     if (!existing.ok || existing.value) return existing as Result<string>;
     const { name, email, organizationNumber } = customer;

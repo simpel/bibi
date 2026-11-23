@@ -9,6 +9,8 @@ export type FortnoxCustomerInput = {
   email: string | null;
   /** A business's organisation number (ADR 0106); null for a private person. */
   organizationNumber: string | null;
+  /** A private person's personal identity number; null for a business. */
+  personalIdentityNumber: string | null;
   buyerKind: "BUSINESS" | "PRIVATE";
 };
 

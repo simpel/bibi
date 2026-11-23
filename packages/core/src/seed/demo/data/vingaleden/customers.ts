@@ -16,7 +16,7 @@ export const vingaledenCustomers: readonly DemoCustomer[] = [
   {
     name: "Familjen Rask",
     type: "Private",
-    buyerKind: "PRIVATE",
+    personalIdentityNumber: "19121212-1212",
     contacts: [contact({ name: "Johan Rask" })],
   },
   {

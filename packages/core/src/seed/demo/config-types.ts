@@ -36,6 +36,8 @@ export type DemoType = {
   pool?: boolean;
   /** Item types: EQUIPMENT (default) or PERSON (ADR 0059). */
   resourceKind?: ResourceKind;
+  /** Customer types: BUSINESS (default) or PRIVATE, taken by their customers (ADR 0106). */
+  buyerKind?: "BUSINESS" | "PRIVATE";
 };
 
 /**

@@ -1,5 +1,6 @@
 import type { EntityTypeDto } from "@bibi/core";
 import {
+  type BuyerKindValue,
   type EntityBase,
   EntityTypeCreateInputSchema,
   type ItemCapability,
@@ -13,7 +14,10 @@ import {
 } from "@/components/form/buffer-values";
 import { formSchema } from "@/lib/form-schema";
 
-/** Raw values of the type form. Capabilities, buffers and resource kind only apply to ITEM types. */
+/**
+ * Raw values of the type form. Capabilities, buffers and resource kind only apply to ITEM types,
+ * business or private only to CUSTOMER types.
+ */
 export type EntityTypeFormValues = BufferFormValues & {
   base: EntityBase;
   name: string;
@@ -22,6 +26,8 @@ export type EntityTypeFormValues = BufferFormValues & {
   capabilities: ItemCapability[];
   /** Item types: Equipment or Person (ADR 0059). */
   resourceKind: ResourceKind;
+  /** Customer types: business or private (ADR 0106). */
+  buyerKind: BuyerKindValue;
   /** Item types: the group id, or `NO_GROUP` for none (a Select item cannot be empty). */
   groupId: string;
 };
@@ -43,6 +49,7 @@ export function entityTypeFormToInput({ values }: EntityTypeFormInput) {
     pluralName: values.pluralName.trim() || null,
     capabilities: item ? values.capabilities : undefined,
     resourceKind: item ? values.resourceKind : undefined,
+    buyerKind: values.base === "CUSTOMER" ? values.buyerKind : undefined,
     groupId: item ? (values.groupId === NO_GROUP ? null : values.groupId) : undefined,
     ...(item ? bufferFormToInput({ values }) : {}),
   };
@@ -64,6 +71,7 @@ export function entityTypeFormDefaults({
     pluralName: entityType?.pluralName ?? "",
     capabilities: entityType?.capabilities ?? [],
     resourceKind: entityType?.resourceKind ?? "EQUIPMENT",
+    buyerKind: entityType?.buyerKind ?? "BUSINESS",
     groupId: entityType?.groupId ?? NO_GROUP,
     ...bufferFormDefaults({ stored: entityType }),
   };

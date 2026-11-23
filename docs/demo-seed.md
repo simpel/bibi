@@ -487,7 +487,7 @@ Layouts belong to boats (see Catalog); setup minutes by layout name: Seated 10, 
 | Add-on | `PRICED` | – |
 
 ### Other types, statuses, item states and run sheets
-- Customer: Company · Private (no fields). Companies are businesses with their org no. in `organizationNumber`; Familjen Rask is private (ADR 0106).
+- Customer: Company · Private (no fields). Company is a business type, Private a private type (`buyerKind`), and each customer takes its type's kind (ADR 0106). Companies carry their org no. in `organizationNumber`; Familjen Rask is private, with the Skatteverket test number 19121212-1212 as `personalIdentityNumber`.
 - Contact: Contact person (no fields).
 - Order: Charter · Round trip.
 - Requirement: Requirement, no fields (one type for every list).

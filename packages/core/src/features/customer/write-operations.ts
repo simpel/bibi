@@ -9,6 +9,7 @@ import { toJson } from "../../shared/to-json";
 import { contactEmbeddable } from "../contact/embeddable";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { mergeFields, validateFields } from "../field-definition/field-values";
+import { buyerIdentity } from "./buyer-identity";
 import { customerEmbeddable } from "./embeddable";
 import { createFirstContact } from "./first-contact";
 import { CustomerCreateInputSchema, CustomerSchema, CustomerUpdateInputSchema } from "./schema";
@@ -25,8 +26,9 @@ export const createCustomer = defineOperation({
   kind: "command",
   description:
     "Create a customer of one of the organization's customer types. `fields` must match the " +
-    "type's own fields. `buyerKind` (BUSINESS or PRIVATE, default BUSINESS) is what its " +
-    "orders inherit; give `organizationNumber` for a business. `requiresBuyerReference` makes " +
+    "type's own fields. `buyerKind` (BUSINESS or PRIVATE, omitted = the type's) is what its " +
+    "orders inherit; give `organizationNumber` for a business, `personalIdentityNumber` for a " +
+    "private person (the other is cleared). `requiresBuyerReference` makes " +
     "invoicing refuse an order without the buyer's reference. With `contact`, its first " +
     "contact person is created in the same command (find it with contact.list by customerId).",
   input: CustomerCreateInputSchema,
@@ -36,9 +38,11 @@ export const createCustomer = defineOperation({
   alsoIndexed: async ({ output, db }) => [
     { embeddable: contactEmbeddable, ids: await contactIdsOf({ db, customerId: output.id }) },
   ],
-  handler: async ({ input: { entityTypeId, fields, contact, ...data }, context }) => {
+  handler: async ({ input: { entityTypeId, fields, contact, ...input }, context }) => {
     const type = await loadTypeOfBase({ context, entityTypeId, base: "CUSTOMER" });
     if (!type.ok) return type;
+    const buyerKind = input.buyerKind ?? type.value.buyerKind ?? "BUSINESS";
+    const data = { ...input, buyerKind, ...buyerIdentity({ ...input, buyerKind }) };
     const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
     if (!checked.ok) return checked;
     const row = await createRecord({
@@ -75,14 +79,17 @@ export const updateCustomer = defineOperation({
   kind: "command",
   description:
     "Update a customer. Omitted properties are unchanged; `fields` is merged by key (null " +
-    "clears a value). The type cannot be changed.",
+    "clears a value). The type cannot be changed. Making it PRIVATE clears its " +
+    "organizationNumber, making it BUSINESS clears its personalIdentityNumber.",
   input: CustomerUpdateInputSchema,
   output: CustomerSchema,
   permission: "customer:write",
   embeddable: customerEmbeddable,
-  handler: async ({ input: { id, fields: patch, ...data }, context }) => {
+  handler: async ({ input: { id, fields: patch, ...input }, context }) => {
     const before = await loadCustomer({ context, id });
     if (!before) return notFound({ entity: "Customer" });
+    const buyerKind = input.buyerKind ?? before.buyerKind;
+    const data = { ...input, ...buyerIdentity({ ...input, buyerKind }) };
     let json: ReturnType<typeof toJson>;
     let links: LinkValue[] | undefined;
     if (patch) {

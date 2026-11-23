@@ -25,6 +25,7 @@ const snapshot = (): InvoiceSnapshot => ({
     name: "Acme AB",
     email: "ap@acme.test",
     organizationNumber: "556677-8899",
+    personalIdentityNumber: null,
     buyerKind: "BUSINESS",
   },
   lines: [

@@ -31,14 +31,15 @@ export async function CustomerFacts(props: CustomerFactsProps) {
   const facts = [
     { label: t("fields.type"), value: type?.name ?? "–" },
     { label: t("fields.buyerKind"), value: t(`buyerKind.${customer.buyerKind}`) },
-    ...(customer.buyerKind === "BUSINESS"
-      ? [
-          {
-            label: t("fields.organizationNumber"),
-            value: dash({ value: customer.organizationNumber }),
-          },
-        ]
-      : []),
+    customer.buyerKind === "BUSINESS"
+      ? {
+          label: t("fields.organizationNumber"),
+          value: dash({ value: customer.organizationNumber }),
+        }
+      : {
+          label: t("fields.personalIdentityNumber"),
+          value: dash({ value: customer.personalIdentityNumber }),
+        },
     ...(customer.requiresBuyerReference
       ? [{ label: t("fields.requiresBuyerReference"), value: t("requiresBuyerReferenceYes") }]
       : []),

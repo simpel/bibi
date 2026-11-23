@@ -36,6 +36,8 @@
       "creditLimit": "Credit limit (SEK)",
       "buyerKind": "Business or private",
       "organizationNumber": "Org. no.",
+      "personalIdentityNumber": "Personal identity number",
+      "personalIdentityNumberPlaceholder": "YYYYMMDD-XXXX (optional)",
       "requiresBuyerReference": "Invoices must carry the buyer's reference"
     },
     "buyerKind": {

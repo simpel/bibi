@@ -8,6 +8,8 @@ export type VismaCustomerInput = {
   email: string | null;
   /** A business's organisation number (ADR 0106); null for a private person. */
   organizationNumber: string | null;
+  /** A private person's personal identity number; null for a business. */
+  personalIdentityNumber: string | null;
   buyerKind: "BUSINESS" | "PRIVATE";
 };
 
@@ -16,7 +18,8 @@ const filterPath = ({ field, value }: { field: string; value: string }) =>
 
 /**
  * The venue's customer in Visma: the first matching the organisation number, else the email,
- * else the name, else a new one, private or a business with its number (ADR 0106).
+ * else the name, else a new one, private or a business with its number (ADR 0106). A private
+ * person's personal identity number takes the organisation number's place.
  * Bibi's snapshot has no address, so the required invoice city and postal code are placeholders
  * staff can complete in Visma. // Verify against Visma sandbox (required customer fields)
  */
@@ -25,13 +28,14 @@ export async function findOrCreateCustomer({
   name,
   email,
   organizationNumber,
+  personalIdentityNumber,
   buyerKind,
 }: VismaCustomerInput): Promise<Result<string>> {
   const what = "the customer";
+  // Visma keeps a business's organisation number and a person's personnummer in one field.
+  const identityNumber = organizationNumber ?? personalIdentityNumber;
   const lookups = [
-    ...(organizationNumber
-      ? [{ field: "CorporateIdentityNumber", value: organizationNumber }]
-      : []),
+    ...(identityNumber ? [{ field: "CorporateIdentityNumber", value: identityNumber }] : []),
     ...(email ? [{ field: "EmailAddress", value: email }] : []),
     { field: "Name", value: name },
   ];
@@ -44,7 +48,7 @@ export async function findOrCreateCustomer({
   const body = {
     Name: name,
     ...(email ? { EmailAddress: email } : {}),
-    ...(organizationNumber ? { CorporateIdentityNumber: organizationNumber } : {}),
+    ...(identityNumber ? { CorporateIdentityNumber: identityNumber } : {}),
     InvoiceCity: "-",
     InvoicePostalCode: "-",
     IsPrivatePerson: buyerKind === "PRIVATE",

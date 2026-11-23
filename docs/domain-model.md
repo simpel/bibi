@@ -181,6 +181,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > **Done (ADR 0059):** an item type is Equipment or Person (`resourceKind`, owned, `EQUIPMENT` by default, null on other bases, a database check keeps it so); it decides whether a demand on the type is listed under Resources or Staffing.
 
+> **Done (ADR 0106):** a customer type is business or private (`buyerKind`, owned, `BUSINESS` by default, null on other bases, `VALIDATION` when set on another base). A new customer of the type takes it; changing it leaves existing customers alone.
+
 > **Done (ADR 0059):** item types have nullable `setupMinutes` and `teardownMinutes` (owned): the default buffers of their items, null = none (`VALIDATION` on other bases). Changing them re-derives the holds of lines that have not ended (by trigger; a collision is `CONFLICT`).
 
 **Attributes**
@@ -451,8 +453,9 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Attributes**
 - type and custom fields (`fields` as JSON, e.g. Peppol ID, framework agreement)
 - name
-- business or private (`buyerKind`, `BUSINESS` | `PRIVATE`, owned; the web forms make staff choose, the API defaults to `BUSINESS`): what its orders inherit ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md))
-- organisation number (`organizationNumber`, owned, optional, trimmed, ≤ 32): sent with invoices; required before a business customer is invoiced once invoicing moves to the ledger provider (ADR 0106, not built)
+- business or private (`buyerKind`, `BUSINESS` | `PRIVATE`, owned; omitted on create = its customer type's `buyerKind`, and the web forms show no choice): what its orders inherit ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md))
+- organisation number (`organizationNumber`, owned, optional, trimmed, ≤ 32, a business only: making the customer private clears it): sent with invoices; required before a business customer is invoiced once invoicing moves to the ledger provider (ADR 0106, not built)
+- personal identity number (`personalIdentityNumber`, owned, optional, trimmed, ≤ 32, a private customer only: making it a business clears it): the personnummer, sent to the ledger provider in the organisation number's place when the provider creates the customer; never logged
 - requires the buyer's reference (`requiresBuyerReference`, owned, default false): creating or sending an invoice for one of its orders without an effective reference is `VALIDATION` at `buyerReference`, and the order page warns ([ADR 0105](decisions/0105-buyer-reference-on-the-order.md))
 - email, phone
 - invoice address (`invoiceStreetAddress`, `invoicePostalCode`, `invoiceCity`, `invoiceCountry`, default `SE`)

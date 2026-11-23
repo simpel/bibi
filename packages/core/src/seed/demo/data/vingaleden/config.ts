@@ -46,7 +46,7 @@ export const vingaledenConfig: Omit<DemoConfig, "items" | "venue" | "venueHours"
     },
     { base: "ITEM", name: "Add-on", capabilities: ["PRICED"], states: "other" },
     { base: "CUSTOMER", name: "Company" },
-    { base: "CUSTOMER", name: "Private" },
+    { base: "CUSTOMER", name: "Private", buyerKind: "PRIVATE" },
     { base: "CONTACT", name: "Contact person" },
     { base: "ORDER", name: "Charter" },
     { base: "ORDER", name: "Round trip" },

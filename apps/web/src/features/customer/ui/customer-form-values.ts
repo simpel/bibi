@@ -7,9 +7,10 @@ export type CustomerFormValues = {
   name: string;
   email: string;
   phone: string;
-  /** Empty on create, so staff choose business or private on purpose (ADR 0106). */
-  buyerKind: "" | "BUSINESS" | "PRIVATE";
+  /** The customer's own kind, else its type's (ADR 0106); not edited in the form. */
+  buyerKind: "BUSINESS" | "PRIVATE";
   organizationNumber: string;
+  personalIdentityNumber: string;
   /** Invoices must carry the buyer's reference (ADR 0105). */
   requiresBuyerReference: boolean;
   invoiceStreetAddress: string;
@@ -38,8 +39,9 @@ export function customerFormDefaults({
     name: customer?.name ?? "",
     email: text({ value: customer?.email }),
     phone: text({ value: customer?.phone }),
-    buyerKind: customer?.buyerKind ?? "",
+    buyerKind: customer?.buyerKind ?? type?.buyerKind ?? "BUSINESS",
     organizationNumber: text({ value: customer?.organizationNumber }),
+    personalIdentityNumber: text({ value: customer?.personalIdentityNumber }),
     requiresBuyerReference: customer?.requiresBuyerReference ?? false,
     invoiceStreetAddress: text({ value: customer?.invoiceStreetAddress }),
     invoicePostalCode: text({ value: customer?.invoicePostalCode }),

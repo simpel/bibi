@@ -36,6 +36,8 @@
       "creditLimit": "Kreditgräns (kr)",
       "buyerKind": "Företag eller privat",
       "organizationNumber": "Org.nr",
+      "personalIdentityNumber": "Personnummer",
+      "personalIdentityNumberPlaceholder": "ÅÅÅÅMMDD-XXXX (valfritt)",
       "requiresBuyerReference": "Fakturor måste ha beställarens referens"
     },
     "buyerKind": {
