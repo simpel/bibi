@@ -116,7 +116,7 @@
           },
           "orderTabs": {
             "question": "Where do I find the quotes, run sheets and comments on an order?",
-            "answer": "The order page has tabs along the bottom of its header: **Program** for the lines and requirements, **Run sheets**, **Money** for quotes, payments and the estimate, **Comments**, **Messages** from the customer, and **Activity** for status changes and versions. Click a tab to switch; the address in your browser remembers it, so a link opens the same tab.\nThe panel on the right always shows the customer and contact person, who works on the order, what is left to pay and what is paid, and the order's details. Anything that needs your attention, like a double booking or a task for you, shows at the top under the title."
+            "answer": "The order page has tabs along the bottom of its header: **Program** for the lines and requirements, **Run sheets**, **Money** for quotes, payments and the estimate, **Comments**, **Messages** from the customer, and **Activity** for status changes and versions. Click a tab to switch; the address in your browser remembers it, so a link opens the same tab.\nThe panel on the right always shows the customer and contact person, who works on the order, what is left to pay and what is paid, and the order's details. Anything that needs your attention, like a double booking or a task for you, shows at the top under the title.\nA small warning icon on **Run sheets** means a run sheet hasn't been sent yet, has changed since it was sent, or is blocked. Open the tab to send it."
           },
           "orderVersions": {
             "question": "How do I go back to an earlier version of an order?",

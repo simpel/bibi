@@ -279,6 +279,9 @@
       "comments": "Comments",
       "messages": "Messages",
       "activity": "Activity"
+    },
+    "tabMarks": {
+      "runSheets": "A run sheet is not sent or is out of date"
     }
   },
   "orderIntake": {

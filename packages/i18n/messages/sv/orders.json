@@ -279,6 +279,9 @@
       "comments": "Kommentarer",
       "messages": "Meddelanden",
       "activity": "Aktivitet"
+    },
+    "tabMarks": {
+      "runSheets": "Ett körschema är inte skickat eller är inaktuellt"
     }
   },
   "orderIntake": {

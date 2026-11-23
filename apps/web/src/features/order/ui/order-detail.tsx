@@ -21,6 +21,7 @@ import { loadOrderNames, loadOrderStatuses } from "../load-order-names";
 import { closedStatus, readOnlyAbilities } from "../order-abilities";
 import { availableOrderTabs, COMMENTS_TAB, pickOrderTab } from "../order-tabs";
 import { ClosedOrderNotice } from "./closed-order-notice";
+import { MarkedOrderTabNav } from "./marked-order-tab-nav";
 import { OrderCommentsTabHash } from "./order-comments-tab-hash";
 import { OrderKeyFacts } from "./order-facts";
 import type { OrderFormData } from "./order-form-data";
@@ -183,7 +184,10 @@ export async function OrderDetail({ locale, id, tab: tabParam }: OrderDetailProp
           />
           {/* The tabs close the header: their underline sits on its bottom edge (no bottom padding). */}
           <div className="mt-2">
-            <OrderTabNav orderId={id} tabs={tabs} current={tab} />
+            {/* The plain tabs paint first; their marks (an unsent run sheet) stream in. */}
+            <Suspense fallback={<OrderTabNav orderId={id} tabs={tabs} current={tab} />}>
+              <MarkedOrderTabNav orderId={id} tabs={tabs} current={tab} />
+            </Suspense>
           </div>
         </PageContainer>
       </PageSection>
