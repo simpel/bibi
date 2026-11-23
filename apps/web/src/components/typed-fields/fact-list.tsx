@@ -9,12 +9,13 @@ export type Fact = {
 
 export type FactListProps = { facts: readonly Fact[] };
 
-/** Description list of labelled values (detail pages), in two columns. */
+/** Description list of labelled values (detail pages), in two columns; a whole fact is its hover area. */
 export function FactList({ facts }: FactListProps) {
   return (
     <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
       {facts.map(({ label, value, node }) => (
-        <div key={`${label}-${value}`}>
+        // `group/fact`: hovering anywhere on the fact shows an `EditableFact`'s pencil.
+        <div key={`${label}-${value}`} className="group/fact">
           <dt className="text-sm text-muted-foreground">{label}</dt>
           <dd>{node ?? value}</dd>
         </div>
