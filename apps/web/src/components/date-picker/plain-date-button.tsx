@@ -13,11 +13,20 @@ export type PlainDateButtonProps = Omit<
   onChange: (value: string) => void;
   /** An optional date can be cleared. */
   clearable?: boolean;
+  /** The first day that can be picked, `YYYY-MM-DD`; earlier days are disabled. */
+  minDay?: string;
 };
 
 /** One plain date as a button in the user's date format that opens a calendar. */
-export function PlainDateButton({ value, onChange, clearable, ...aria }: PlainDateButtonProps) {
+export function PlainDateButton({
+  value,
+  onChange,
+  clearable,
+  minDay,
+  ...aria
+}: PlainDateButtonProps) {
   const { t, formatDay, calendar } = useDatePicker();
+  const before = minDay ? dateOfDay({ day: minDay }) : undefined;
   return (
     <DateButton
       {...aria}
@@ -26,7 +35,7 @@ export function PlainDateButton({ value, onChange, clearable, ...aria }: PlainDa
       label={formatDay({ day: value })}
       placeholder={t("placeholder")}
       clearLabel={clearable ? t("clear") : undefined}
-      calendar={calendar}
+      calendar={before ? { ...calendar, disabled: { before } } : calendar}
     />
   );
 }

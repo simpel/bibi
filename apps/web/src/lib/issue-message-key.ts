@@ -5,7 +5,7 @@ export type IssueFacts = {
   format?: string | undefined;
   expected?: string | undefined;
   minimum?: number | bigint | undefined;
-  /** Set by core's cross-field checks, e.g. `{ key: "invalidPostalCode" }`. */
+  /** Set by cross-field checks, e.g. `{ key: "invalidPostalCode" }` or `{ key: "inPast" }`. */
   params?: { key?: unknown } | undefined;
 };
 
@@ -13,6 +13,7 @@ export type IssueMessageKey =
   | "required"
   | "invalidEmail"
   | "invalidPostalCode"
+  | "inPast"
   | "invalidNumber"
   | "tooLong"
   | "tooShort"
@@ -32,6 +33,7 @@ export function issueMessageKey({
   params,
 }: IssueFacts): IssueMessageKey {
   if (code === "custom" && params?.key === "invalidPostalCode") return "invalidPostalCode";
+  if (code === "custom" && params?.key === "inPast") return "inPast";
   if (code === "invalid_format") return format === "email" ? "invalidEmail" : "invalid";
   if (code === "invalid_type") return expected === "number" ? "invalidNumber" : "required";
   if (code === "too_big") return origin === "string" ? "tooLong" : "tooBig";

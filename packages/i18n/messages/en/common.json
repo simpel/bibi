@@ -133,6 +133,7 @@
     "tooManyRequests": "Too many attempts. Wait a moment and try again.",
     "invalidEmail": "Enter a valid email address.",
     "invalidPostalCode": "Enter a valid postal code for the country, e.g. 412 50.",
+    "inPast": "Choose a time that has not passed.",
     "invalidNumber": "Enter a valid number.",
     "tooLong": "The text is too long.",
     "tooShort": "The value is too small.",

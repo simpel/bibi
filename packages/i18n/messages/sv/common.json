@@ -133,6 +133,7 @@
     "tooManyRequests": "För många försök. Vänta en stund och försök igen.",
     "invalidEmail": "Ange en giltig e-postadress.",
     "invalidPostalCode": "Ange ett giltigt postnummer för landet, t.ex. 412 50.",
+    "inPast": "Välj en tid som inte har passerat.",
     "invalidNumber": "Ange ett giltigt tal.",
     "tooLong": "Texten är för lång.",
     "tooShort": "Värdet är för litet.",

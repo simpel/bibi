@@ -12,6 +12,8 @@ export type DateFieldProps<V extends FieldValues, O> = {
   required?: boolean;
   /** An optional date can be cleared. */
   clearable?: boolean;
+  /** The first day that can be picked, `YYYY-MM-DD`. */
+  minDay?: string;
 };
 
 /**
@@ -24,6 +26,7 @@ export function DateField<V extends FieldValues, O>({
   label,
   required,
   clearable,
+  minDay,
 }: DateFieldProps<V, O>) {
   const t = useTranslations("common.datePicker");
   return (
@@ -41,6 +44,7 @@ export function DateField<V extends FieldValues, O>({
               value={field.value ?? ""}
               onChange={field.onChange}
               clearable={clearable}
+              minDay={minDay}
             />
           </FormControl>
           <FormMessage errorText={field.value ? undefined : t("chooseDate")} />
