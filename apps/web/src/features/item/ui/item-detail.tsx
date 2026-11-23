@@ -53,12 +53,8 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
       </Link>
       <PageHeader
         title={item.value.name}
-        heading={
-          <span className="flex min-w-0 items-center gap-4">
-            <ItemPictureEditable item={item.value} data={data.value} canEdit={canEdit} />
-            <ItemTitle id={item.value.id} name={item.value.name} canEdit={canEdit} />
-          </span>
-        }
+        leading={<ItemPictureEditable item={item.value} data={data.value} canEdit={canEdit} />}
+        heading={<ItemTitle id={item.value.id} name={item.value.name} canEdit={canEdit} />}
         actions={actions}
       />
       <LastEdited entityType="item" entityId={item.value.id} />

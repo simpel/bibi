@@ -22,7 +22,7 @@ export function CardHeader({ className, ...props }: CardProps) {
     <div
       data-slot="card-header"
       className={cn(
-        "grid auto-rows-min items-start gap-1.5 p-6 md:has-data-[slot=card-action]:grid-cols-[1fr_auto]",
+        "grid auto-rows-min items-start gap-1.5 p-6 has-data-[slot=card-action]:grid-cols-[1fr_auto]",
         className,
       )}
       {...props}
@@ -36,8 +36,8 @@ export function CardAction({ className, ...props }: CardProps) {
     <div
       data-slot="card-action"
       className={cn(
-        // Narrow: above the title at the right, like a page header; wide: right of the title.
-        "-order-1 justify-self-end md:order-none md:col-start-2 md:row-span-2 md:row-start-1 md:justify-self-auto",
+        // Always on the title row: several actions fold into one menu first (`HeaderActions`).
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
         className,
       )}
       {...props}

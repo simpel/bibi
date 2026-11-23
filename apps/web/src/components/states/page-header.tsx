@@ -1,9 +1,12 @@
+import { cn } from "@bibi/ui";
 import type { ReactNode } from "react";
 
 export type PageHeaderProps = {
   title: string;
   /** Replaces the whole `h1`, e.g. an `EditableTitle`; `title` and `suffix` are then ignored. */
   heading?: ReactNode;
+  /** Before the title, e.g. a record's picture: beside it when wide, on a row above when narrow. */
+  leading?: ReactNode;
   /** Dimmed sans text after the title, e.g. a reference number. */
   suffix?: string;
   description?: string;
@@ -11,17 +14,25 @@ export type PageHeaderProps = {
 };
 
 /**
- * A page's title row: title and description left, actions right of the title on a wide page. On
- * a narrow one (under 42rem of the page's own width) it stacks the same way everywhere: the
- * actions on their own row at the right, then the title across the whole width, then the
- * description. It follows the room the page has, not the screen, so a narrow page beside the
- * open sidebar behaves like a phone.
+ * A page's title row: title and description left, actions right, always on one row; a narrow
+ * page folds its actions into one menu first (`HeaderActions foldBy="header"`). A `leading`
+ * element (a record's picture) sits left of the title on a wide page and on its own row above
+ * the title on a narrow one (under 42rem of the page's own width, so a page beside the open
+ * sidebar behaves like a phone).
  */
-export function PageHeader({ title, heading, suffix, description, actions }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  heading,
+  leading,
+  suffix,
+  description,
+  actions,
+}: PageHeaderProps) {
   return (
-    <div className="@container">
-      <header className="flex flex-col-reverse gap-3 @2xl:flex-row @2xl:items-end @2xl:justify-between @2xl:gap-4">
-        <div className="grid min-w-0 gap-1 @2xl:flex-1">
+    <div className="@container/header">
+      <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 @2xl/header:grid-cols-[auto_minmax(0,1fr)_auto]">
+        {leading ? <div className="col-span-2 @2xl/header:col-span-1">{leading}</div> : null}
+        <div className={cn("grid min-w-0 gap-1", leading ? null : "@2xl/header:col-span-2")}>
           {heading ?? (
             <h1 className="text-3xl">
               {title}
@@ -35,7 +46,7 @@ export function PageHeader({ title, heading, suffix, description, actions }: Pag
           {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
         </div>
         {actions ? (
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 self-end @2xl:ml-auto">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 self-start">
             {actions}
           </div>
         ) : null}
