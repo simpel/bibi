@@ -4,10 +4,12 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { archiveItemDemandAction } from "../actions";
+import type { DemandList } from "./demand-types";
 
 export type ArchiveDemandDialogProps = {
   demand: ItemDemandDto;
   targetName: string;
+  list: DemandList;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
@@ -16,6 +18,7 @@ export type ArchiveDemandDialogProps = {
 export function ArchiveDemandDialog({
   demand,
   targetName,
+  list,
   open,
   onOpenChange,
 }: ArchiveDemandDialogProps) {
@@ -25,7 +28,7 @@ export function ArchiveDemandDialog({
   const archive = () =>
     run({
       action: () => archiveItemDemandAction({ id: demand.id }),
-      messages: { pending: t("archiving"), success: t("archived") },
+      messages: { pending: t("archiving"), success: t(`${list}.archived`) },
       onSuccess: () => {
         onOpenChange(false);
         router.refresh();
@@ -35,9 +38,9 @@ export function ArchiveDemandDialog({
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={t("archive")}
-      description={t("archiveConfirm", { name: targetName })}
-      confirmLabel={t("archive")}
+      title={t(`${list}.archive`)}
+      description={t(`${list}.archiveConfirm`, { name: targetName })}
+      confirmLabel={t(`${list}.archive`)}
       pending={pending}
       onConfirm={archive}
     />

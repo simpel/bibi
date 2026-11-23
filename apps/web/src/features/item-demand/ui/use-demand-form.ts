@@ -13,16 +13,18 @@ import {
   demandFormSchema,
   toDemandUpdate,
 } from "./demand-form-schema";
+import type { DemandList } from "./demand-types";
 
 export type UseDemandFormInput = {
   itemId: string;
   /** Present = edit mode, absent = create mode. */
   demand?: ItemDemandDto | undefined;
+  list: DemandList;
   onDone: () => void;
 };
 
 /** Demand form state; a failed save is a toast and field issues on the fields. */
-export function useDemandForm({ itemId, demand, onDone }: UseDemandFormInput) {
+export function useDemandForm({ itemId, demand, list, onDone }: UseDemandFormInput) {
   const t = useTranslations("itemDemand");
   const common = useTranslations("common");
   const errors = useTranslations("errors");
@@ -39,7 +41,10 @@ export function useDemandForm({ itemId, demand, onDone }: UseDemandFormInput) {
       demand
         ? updateItemDemandAction({ input: toDemandUpdate({ demand, values }) })
         : createItemDemandAction({ input: values }),
-    messages: { pending: common("saving"), success: t(demand ? "updated" : "created") },
+    messages: {
+      pending: common("saving"),
+      success: t(`${list}.${demand ? "updated" : "created"}`),
+    },
     onSuccess: () => {
       router.refresh();
       onDone();

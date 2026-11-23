@@ -2,14 +2,14 @@ import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { DemandRowActions } from "./demand-row-actions";
-import type { DemandRow } from "./demand-types";
+import type { DemandList, DemandRow } from "./demand-types";
 
 type Column = ColumnDef<DemandRow>;
 
-export type UseDemandColumnsInput = { canEdit: boolean };
+export type UseDemandColumnsInput = { canEdit: boolean; list: DemandList };
 
 /** Target · mandatory or optional · quantity · windows, plus the row actions when writable. */
-export function useDemandColumns({ canEdit }: UseDemandColumnsInput): Column[] {
+export function useDemandColumns({ canEdit, list }: UseDemandColumnsInput): Column[] {
   const t = useTranslations("itemDemand");
   const common = useTranslations("common");
   return useMemo<Column[]>(() => {
@@ -32,8 +32,8 @@ export function useDemandColumns({ canEdit }: UseDemandColumnsInput): Column[] {
       ...columns,
       actionsColumn<DemandRow>({
         label: common("actions"),
-        cell: (row) => <DemandRowActions row={row} />,
+        cell: (row) => <DemandRowActions row={row} list={list} />,
       }),
     ];
-  }, [t, common, canEdit]);
+  }, [t, common, canEdit, list]);
 }

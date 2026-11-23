@@ -289,16 +289,9 @@
     }
   },
   "itemDemand": {
-    "plural": "Behov",
-    "create": "Lägg till behov",
-    "edit": "Redigera behov",
-    "archive": "Ta bort behov",
+    "plural": "Resurser och personal",
     "archiving": "Tar bort…",
-    "archived": "Behovet togs bort",
-    "archiveConfirm": "Ta bort behovet av {name}?",
-    "created": "Behovet lades till",
-    "updated": "Behovet sparades",
-    "formDescription": "Vad den här posten behöver ur en pool varje gång den bokas.",
+    "formDescription": "Vad den här artikeln använder ur en pool varje gång den bokas.",
     "lists": {
       "resources": "Resurser",
       "staffing": "Bemanning"
@@ -311,7 +304,7 @@
     "optional": "Valfritt",
     "columns": {
       "target": "Pool",
-      "required": "Behov",
+      "required": "Obligatoriskt",
       "quantity": "Antal",
       "windows": "Tider"
     },
@@ -325,6 +318,24 @@
       "SETUP": "Iordningställande",
       "BOOKING": "Bokning",
       "TEARDOWN": "Avveckling"
+    },
+    "resources": {
+      "create": "Lägg till resurs",
+      "edit": "Redigera resurs",
+      "archive": "Ta bort resurs",
+      "archived": "Resursen togs bort",
+      "archiveConfirm": "Ta bort {name} från artikelns resurser?",
+      "created": "Resursen lades till",
+      "updated": "Resursen sparades"
+    },
+    "staffing": {
+      "create": "Lägg till personal",
+      "edit": "Redigera personal",
+      "archive": "Ta bort personal",
+      "archived": "Personalen togs bort",
+      "archiveConfirm": "Ta bort {name} från artikelns bemanning?",
+      "created": "Personalen lades till",
+      "updated": "Personalen sparades"
     }
   },
   "itemTypeGroup": {

@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { CheckField } from "@/components/form/check-field";
 import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
-import type { PoolOption } from "./demand-types";
+import type { DemandList, PoolOption } from "./demand-types";
 import { DemandWindowsField } from "./demand-windows-field";
 import { useDemandForm } from "./use-demand-form";
 
@@ -14,14 +14,16 @@ export type DemandFormProps = {
   pools: readonly PoolOption[];
   /** Present = edit mode (the target is fixed), absent = create mode. */
   demand?: ItemDemandDto | undefined;
+  /** The list it belongs to, for the words of its toasts. */
+  list: DemandList;
   onDone: () => void;
 };
 
 /** Create or edit a demand: target pool, mandatory or optional, quantity and windows. */
-export function DemandForm({ itemId, pools, demand, onDone }: DemandFormProps) {
+export function DemandForm({ itemId, pools, demand, list, onDone }: DemandFormProps) {
   const common = useTranslations("common");
   const t = useTranslations("itemDemand.fields");
-  const { form, submit, pending } = useDemandForm({ itemId, demand, onDone });
+  const { form, submit, pending } = useDemandForm({ itemId, demand, list, onDone });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">

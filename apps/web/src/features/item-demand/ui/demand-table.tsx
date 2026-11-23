@@ -1,7 +1,7 @@
 "use client";
 
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import type { DemandListKind, DemandRow } from "./demand-types";
+import { type DemandListKind, type DemandRow, listOf } from "./demand-types";
 import { useDemandColumns } from "./use-demand-columns";
 
 export type DemandTableProps = {
@@ -13,7 +13,7 @@ export type DemandTableProps = {
 
 /** One list of the item's demands (Resources or Staffing): its own persisted table per kind. */
 export function DemandTable({ kind, rows, canEdit, emptyText }: DemandTableProps) {
-  const columns = useDemandColumns({ canEdit });
+  const columns = useDemandColumns({ canEdit, list: listOf({ kind }) });
   return (
     <PersistedDataTable
       tableId={`itemDemand.${kind}`}

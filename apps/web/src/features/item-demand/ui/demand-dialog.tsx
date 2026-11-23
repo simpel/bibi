@@ -13,7 +13,7 @@ export function DemandDialog({ open, onOpenChange, ...rest }: DemandDialogProps)
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{rest.demand ? t("edit") : t("create")}</DialogTitle>
+          <DialogTitle>{t(`${rest.list}.${rest.demand ? "edit" : "create"}`)}</DialogTitle>
           <DialogDescription>{t("formDescription")}</DialogDescription>
         </DialogHeader>
         {open ? <DemandForm onDone={() => onOpenChange(false)} {...rest} /> : null}

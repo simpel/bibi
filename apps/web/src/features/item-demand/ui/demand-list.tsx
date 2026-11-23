@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { CreateDemandButton } from "./create-demand-button";
 import { DemandTable } from "./demand-table";
-import type { DemandListKind, DemandRow, PoolOption } from "./demand-types";
+import { type DemandListKind, type DemandRow, listOf, type PoolOption } from "./demand-types";
 
 export type DemandListProps = {
   itemId: string;
@@ -11,15 +11,17 @@ export type DemandListProps = {
   canEdit: boolean;
 };
 
-/** One labelled list: Resources (equipment) or Staffing (people), with its add button. */
+/** One labelled list: Resources (equipment) or Staffing (people), with its Add button. */
 export async function DemandList({ itemId, kind, rows, pools, canEdit }: DemandListProps) {
   const t = await getTranslations("itemDemand");
-  const list = kind === "PERSON" ? "staffing" : "resources";
+  const list = listOf({ kind });
   return (
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl">{t(`lists.${list}`)}</h2>
-        {canEdit && pools.length > 0 ? <CreateDemandButton itemId={itemId} pools={pools} /> : null}
+        {canEdit && pools.length > 0 ? (
+          <CreateDemandButton itemId={itemId} pools={pools} list={list} />
+        ) : null}
       </div>
       {rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t(`empty.${list}`)}</p>

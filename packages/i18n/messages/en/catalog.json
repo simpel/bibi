@@ -289,16 +289,9 @@
     }
   },
   "itemDemand": {
-    "plural": "Needs",
-    "create": "Add need",
-    "edit": "Edit need",
-    "archive": "Remove need",
+    "plural": "Resources and staffing",
     "archiving": "Removing…",
-    "archived": "Need removed",
-    "archiveConfirm": "Remove the need for {name}?",
-    "created": "Need added",
-    "updated": "Need saved",
-    "formDescription": "What this item asks of a pool each time it is booked.",
+    "formDescription": "What this item uses from a pool each time it is booked.",
     "lists": {
       "resources": "Resources",
       "staffing": "Staffing"
@@ -311,7 +304,7 @@
     "optional": "Optional",
     "columns": {
       "target": "Pool",
-      "required": "Need",
+      "required": "Mandatory",
       "quantity": "Quantity",
       "windows": "Windows"
     },
@@ -325,6 +318,24 @@
       "SETUP": "Setup",
       "BOOKING": "Booking",
       "TEARDOWN": "Teardown"
+    },
+    "resources": {
+      "create": "Add resource",
+      "edit": "Edit resource",
+      "archive": "Remove resource",
+      "archived": "Resource removed",
+      "archiveConfirm": "Remove {name} from this item's resources?",
+      "created": "Resource added",
+      "updated": "Resource saved"
+    },
+    "staffing": {
+      "create": "Add staff",
+      "edit": "Edit staff",
+      "archive": "Remove staff",
+      "archived": "Staff removed",
+      "archiveConfirm": "Remove {name} from this item's staffing?",
+      "created": "Staff added",
+      "updated": "Staff saved"
     }
   },
   "itemTypeGroup": {
