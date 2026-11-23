@@ -210,7 +210,7 @@ The definitions (`data/<org>/run-sheets.ts`) are made with `runSheetDefinition.c
 
 ## Catalog
 
-Every item has a Lucide icon from its type (rooms `presentation`, dishes `utensils`, drinks `wine`, meals `salad`, tours `map`, boats `ship` and so on, `TYPE_ICONS` in `seed-item-input.ts`); Coffee and tea (`coffee`), Mineral water (`glass-water`) and the lager (`beer`) have their own. No demo item or package has an uploaded image, so the package step shows icons.
+Every item has a Lucide icon (`data/item-icons.ts`): many have their own by name (Scrambled eggs `egg-fried`, Vinga `theater`, Sunset tour `sunset`), the rest their type's (rooms `presentation`, dishes `utensils`, drinks `wine`, meals `salad`, tours `map`, boats `ship` and so on). No demo item or package has an uploaded image, so the app shows icons.
 
 ### Conference rooms (10)
 Price per hour excl. VAT. Each room has layouts named after its arrangements, each with its own capacity; the room's people limit (`maxPeople`) is one person per m² of its area. Vinga (auditorium) has its own teardown of 30 minutes (the type's is 15).

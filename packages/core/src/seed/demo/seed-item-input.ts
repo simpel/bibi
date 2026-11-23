@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { PriceEffect } from "../../features/item/customisation-group-schema";
 import type { DemoItem, DemoPart } from "./config-types";
+import { DEMO_ITEM_ICONS, DEMO_TYPE_ICONS } from "./data/item-icons";
 import type { DemoRefs } from "./demo-refs";
 import { missing, resolveFields } from "./seed-fields";
 
@@ -62,25 +63,6 @@ function resolveGroups({ item, seeded }: GroupsInput): Result<Group[]> {
   return ok({ value: groups });
 }
 
-/** Demo icons by item type name, so most demo items show a picture (data, not code rules). */
-const TYPE_ICONS: Readonly<Record<string, string>> = {
-  "Conference room": "presentation",
-  Dish: "utensils",
-  Drink: "wine",
-  Meal: "salad",
-  Tour: "map",
-  Boat: "ship",
-  Skipper: "anchor",
-  Guide: "flag",
-  Host: "user-round",
-  Technician: "wrench",
-  Equipment: "projector",
-  "Wireless microphone": "mic",
-  "Add-on": "sparkles",
-  Service: "concierge-bell",
-  Bundle: "package",
-};
-
 export type ItemInputArgs = {
   item: DemoItem;
   refs: DemoRefs;
@@ -110,7 +92,7 @@ export function itemInput({ item, refs, venueId, seeded }: ItemInputArgs) {
   return ok({
     value: {
       ...{ entityTypeId: type.id, venueId, name: item.name, fields: fields.value },
-      icon: item.icon ?? TYPE_ICONS[item.type] ?? null,
+      icon: item.icon ?? DEMO_ITEM_ICONS[item.name] ?? DEMO_TYPE_ICONS[item.type] ?? null,
       ...(item.priceKr === undefined ? {} : { priceMinor: Math.round(item.priceKr * 100) }),
       ...(item.priceUnit ? { priceUnit: item.priceUnit } : {}),
       ...(item.vatRatePercent === undefined ? {} : { vatRatePercent: item.vatRatePercent }),

@@ -105,7 +105,7 @@ export type DemoItem = {
   teardownMinutes?: number;
   /** What the item asks of pools (ADR 0059), seeded with `itemDemand.create` after the item. */
   demands?: readonly DemoDemand[];
-  /** A Lucide icon name; left out = its type's demo icon (`TYPE_ICONS`). */
+  /** A Lucide icon name; left out = `DEMO_ITEM_ICONS` by name, else its type's. */
   icon?: string;
 };
 
