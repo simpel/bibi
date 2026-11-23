@@ -30,6 +30,7 @@ export function TypeFields<V extends WithRawFields, O>({
           control={control}
           field={field}
           choices={choicesOf({ field, vocabularies, links }) ?? []}
+          list={vocabularies.find(({ id }) => id === field.vocabularyId)}
         />
       ))}
     </>

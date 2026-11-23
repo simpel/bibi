@@ -1,10 +1,9 @@
 import type { ItemDto } from "@bibi/core";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { type Resolver, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { useTypedResolver } from "@/components/typed-fields/use-typed-resolver";
 import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
-import { useZodMessages } from "@/lib/use-zod-messages";
 import { createItemAction, saveItemAsBundleAction, updateItemAction } from "../actions";
 import type { ItemFormData } from "./item-form-data";
 import { type ItemFormOutput, itemFormSchema } from "./item-form-schema";
@@ -48,17 +47,15 @@ const createAction = ({ values, customerId }: CreateActionInput) =>
 export function useItemForm({ data, item, typeId, customerId, onDone }: UseItemFormInput) {
   const t = useTranslations("item");
   const router = useRouter();
-  const messages = useZodMessages();
   const typeOf = ({ id }: { id: string }) => findType({ types: data.types, id });
   const initial = typeOf({ id: item?.entityTypeId ?? typeId ?? "" });
+  // Reads the latest list values, so one created from a choice field passes (`useTypedResolver`).
+  const resolver = useTypedResolver<ItemFormValues, ItemFormOutput>({
+    types: data.types,
+    schemaFor: ({ type }) => itemFormSchema({ type, vocabularies: data.vocabularies }),
+  });
   const form = useForm<ItemFormValues, unknown, ItemFormOutput>({
-    resolver: (values, context, options) => {
-      const type = typeOf({ id: values.entityTypeId });
-      const schema = itemFormSchema({ type, vocabularies: data.vocabularies });
-      return zodResolver(schema, messages)(values, context, options) as ReturnType<
-        Resolver<ItemFormValues, unknown, ItemFormOutput>
-      >;
-    },
+    resolver,
     defaultValues: itemFormDefaults({ type: initial, item }),
   });
   const { submit, run, pending } = useFormAction({

@@ -1,11 +1,10 @@
 import type { ItemDto } from "@bibi/core";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { type Resolver, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useInlineEdit } from "@/components/inline-edit/inline-edit";
+import { useTypedResolver } from "@/components/typed-fields/use-typed-resolver";
 import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
-import { useZodMessages } from "@/lib/use-zod-messages";
 import { updateItemAction } from "../actions";
 import type { ItemFormData } from "./item-form-data";
 import { type ItemFormOutput, itemFormSchema } from "./item-form-schema";
@@ -27,12 +26,15 @@ export type UseItemEditInput = {
 export function useItemEdit({ item, data, groups, fieldKey }: UseItemEditInput) {
   const t = useTranslations("item");
   const router = useRouter();
-  const messages = useZodMessages();
   const { close } = useInlineEdit();
   const type = data.types.find(({ id }) => id === item.entityTypeId);
-  const schema = itemFormSchema({ type, vocabularies: data.vocabularies });
+  const resolver = useTypedResolver<ItemFormValues, ItemFormOutput>({
+    types: data.types,
+    schemaFor: ({ type: current }) =>
+      itemFormSchema({ type: current, vocabularies: data.vocabularies }),
+  });
   const form = useForm<ItemFormValues, unknown, ItemFormOutput>({
-    resolver: zodResolver(schema, messages) as Resolver<ItemFormValues, unknown, ItemFormOutput>,
+    resolver,
     defaultValues: itemFormDefaults({ type, item }),
   });
   const { submit, pending } = useFormAction({

@@ -121,6 +121,13 @@
       "replace": "Replace image",
       "remove": "Remove image",
       "limits": "PNG, JPEG or WebP, at most 2 MB."
+    },
+    "listValue": {
+      "create": "Create value",
+      "title": "Create value",
+      "description": "It is added to the list {list} and can be picked everywhere the list is used.",
+      "name": "Name",
+      "created": "Value created"
     }
   },
   "errors": {

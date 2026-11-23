@@ -121,6 +121,13 @@
       "replace": "Byt bild",
       "remove": "Ta bort bild",
       "limits": "PNG, JPEG eller WebP, högst 2 MB."
+    },
+    "listValue": {
+      "create": "Skapa värde",
+      "title": "Skapa värde",
+      "description": "Det läggs till i listan {list} och kan väljas överallt där listan används.",
+      "name": "Namn",
+      "created": "Värdet skapades"
     }
   },
   "errors": {

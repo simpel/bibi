@@ -48,6 +48,22 @@ export const Choice: Story = {
   },
 };
 
+export const ChoiceWithCreate: Story = {
+  render: () => {
+    const [value, setValue] = useState("");
+    return (
+      <ChoiceControl
+        value={value}
+        onChange={setValue}
+        choices={choices}
+        placeholder="Select…"
+        createLabel="Create value"
+        onCreate={() => setValue("")}
+      />
+    );
+  },
+};
+
 export const MultiChoice: Story = {
   render: () => {
     const [value, setValue] = useState(["a"]);

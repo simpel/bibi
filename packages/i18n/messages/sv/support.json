@@ -289,6 +289,10 @@
           "export": {
             "question": "Kan jag skriva ut eller exportera ett körschema?",
             "answer": "Ja. Ladda ner det som PDF för att skriva ut, eller som CSV eller JSON om någon behöver uppgifterna i ett annat system."
+          },
+          "listValueInForm": {
+            "question": "Kan jag lägga till ett värde i en lista medan jag fyller i ett formulär?",
+            "answer": "Ja. När ett fält väljer ur en av era listor öppnar du det och väljer **Skapa värde** längst ner. Ge värdet ett namn och klicka på **Skapa värde**: det läggs till i listan och väljs i fältet.\nBara de som får ändra era listor ser valet."
           }
         }
       },

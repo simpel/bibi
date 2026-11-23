@@ -289,6 +289,10 @@
           "export": {
             "question": "Can I print or export a run sheet?",
             "answer": "Yes. Download it as PDF to print, or as CSV or JSON if someone needs the data in another system."
+          },
+          "listValueInForm": {
+            "question": "Can I add a value to a list while I fill in a form?",
+            "answer": "Yes. When a field picks from one of your lists, such as View, open it and choose **Create value** at the bottom. Give the value a name and click **Create value**: it is added to the list and selected in the field.\nOnly people who may change your lists see the option."
           }
         }
       },
