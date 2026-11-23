@@ -1,10 +1,10 @@
 "use client";
 
 import type { ItemDto } from "@bibi/core";
-import { Button, Popover, PopoverAnchor, PopoverContent, VisualTile } from "@bibi/ui";
-import { PencilIcon } from "lucide-react";
+import { Popover, PopoverAnchor, PopoverContent, VisualTile } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { CornerEditButton } from "@/components/inline-edit/corner-edit-button";
 import { InlineEditContext } from "@/components/inline-edit/inline-edit";
 import { fileUrl } from "@/lib/file-url";
 import type { ItemFormData } from "./item-form-data";
@@ -28,16 +28,7 @@ export function ItemPictureEditable({ item, data, canEdit }: ItemPictureEditable
       <PopoverAnchor asChild>
         <span className="relative inline-flex shrink-0">
           {tile}
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label={t("editPicture")}
-            onClick={() => setOpen(true)}
-            className="absolute top-[14.6%] right-[14.6%] size-6 translate-x-1/2 -translate-y-1/2 rounded-full bg-background shadow-xs [&_svg]:size-3"
-          >
-            <PencilIcon />
-          </Button>
+          <CornerEditButton aria-label={t("editPicture")} onClick={() => setOpen(true)} />
         </span>
       </PopoverAnchor>
       <PopoverContent align="start" className="w-[min(32rem,calc(100vw-2rem))]">

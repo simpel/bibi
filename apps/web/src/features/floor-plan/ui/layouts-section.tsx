@@ -4,6 +4,7 @@ import { Button, FloorDrawing } from "@bibi/ui";
 import { PencilIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
+import { CornerEditButton } from "@/components/inline-edit/corner-edit-button";
 import { EditableFact } from "@/components/inline-edit/editable-fact";
 import { ErrorState } from "@/components/states/error-state";
 import { Link } from "@/lib/navigation";
@@ -47,17 +48,11 @@ function LayoutThumbnail({
   return (
     <div className="relative grid w-52 content-start gap-1.5 rounded-lg border bg-card p-2">
       {editLabel ? (
-        <Button
-          asChild
-          variant="outline"
-          size="icon"
-          aria-label={editLabel}
-          className="absolute top-0 right-0 z-10 size-7 translate-x-1/2 -translate-y-1/2 rounded-full bg-background"
-        >
+        <CornerEditButton asChild aria-label={editLabel}>
           <Link href={href}>
-            <PencilIcon className="size-3.5" />
+            <PencilIcon />
           </Link>
-        </Button>
+        </CornerEditButton>
       ) : null}
       <FloorDrawing
         title={layout.name}
