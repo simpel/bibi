@@ -1,4 +1,4 @@
-import { Badge, Button, Input } from "@bibi/ui";
+import { Badge, Button, Input, VisualTile } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { useNumberFormat } from "@/lib/number/use-number-format";
@@ -45,6 +45,7 @@ function ItemRow({ item, hue, tone, onItem }: ItemRowProps) {
         onClick={() => onItem({ item })}
       >
         <span className="flex min-w-0 items-center gap-2">
+          <VisualTile size="xs" icon={item.icon} src={item.imageUrl} />
           <span className="truncate">{item.name}</span>
           {item.typeName ? <Badge hue={hue ?? 1}>{item.typeName}</Badge> : null}
         </span>

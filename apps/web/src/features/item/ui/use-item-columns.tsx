@@ -1,9 +1,10 @@
 import type { EntityTypeDto, ItemDto } from "@bibi/core";
-import { actionsColumn, type ColumnDef } from "@bibi/ui";
+import { actionsColumn, type ColumnDef, VisualTile } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";
 import { itemRoute } from "@/lib/configuration-routes";
+import { fileUrl } from "@/lib/file-url";
 import { Link } from "@/lib/navigation";
 import { useNumberFormat } from "@/lib/number/use-number-format";
 import { priceText } from "./price-text";
@@ -18,7 +19,7 @@ export type UseItemColumnsInput = {
   renderActions?: ((row: ItemDto) => ReactNode) | undefined;
 };
 
-/** Name · type · venue · price · sticky actions. */
+/** Name (with its picture) · type · venue · price · sticky actions. */
 export function useItemColumns({
   types,
   venues,
@@ -35,9 +36,16 @@ export function useItemColumns({
         header: t("columns.name"),
         accessorFn: (item) => item.name,
         cell: ({ row }) => (
-          <Link href={itemRoute({ id: row.original.id })} className="font-medium hover:underline">
-            {row.original.name}
-          </Link>
+          <span className="flex items-center gap-2">
+            <VisualTile
+              size="xs"
+              icon={row.original.icon}
+              src={row.original.imageKey ? fileUrl({ key: row.original.imageKey }) : null}
+            />
+            <Link href={itemRoute({ id: row.original.id })} className="font-medium hover:underline">
+              {row.original.name}
+            </Link>
+          </span>
         ),
       },
       {
