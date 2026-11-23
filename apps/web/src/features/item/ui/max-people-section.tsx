@@ -14,9 +14,9 @@ export function MaxPeopleSection({ form }: MaxPeopleSectionProps) {
   return (
     <fieldset className="grid gap-4">
       <legend className="mb-1 text-sm font-semibold">{t("sections.layouts")}</legend>
-      <p className="text-sm text-muted-foreground">{t("maxPeopleHint")}</p>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-2 sm:max-w-xs">
         <TextField form={form} name="maxPeople" label={t("maxPeople")} type="number" required />
+        <p className="text-sm text-muted-foreground">{t("maxPeopleHint")}</p>
       </div>
     </fieldset>
   );

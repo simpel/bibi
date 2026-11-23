@@ -10,7 +10,6 @@ import { ItemVenueField } from "./item-core-fields";
 import type { ItemFormData } from "./item-form-data";
 import { ItemPictureField } from "./item-picture-field";
 import type { ItemEditGroup } from "./item-update-input";
-import { MaxPeopleSection } from "./max-people-section";
 import { PartsSection } from "./parts-section";
 import { PriceUnitField } from "./price-section";
 import { useItemEdit } from "./use-item-edit";
@@ -30,6 +29,7 @@ type GroupProps = ItemInlineEditorProps & { form: ReturnType<typeof useItemEdit>
 function GroupFields({ item, data, group, fieldKey, form }: GroupProps) {
   const t = useTranslations("item.fields");
   const buffers = useTranslations("buffers");
+  const items = useTranslations("item");
   const type = data.types.find(({ id }) => id === item.entityTypeId);
   const others = data.parts.filter(({ id }) => id !== item.id);
   switch (group) {
@@ -68,7 +68,19 @@ function GroupFields({ item, data, group, fieldKey, form }: GroupProps) {
         />
       );
     case "layouts":
-      return <MaxPeopleSection form={form} />;
+      // Label, input, then what the limit means: one field, no section heading.
+      return (
+        <div className="grid gap-2">
+          <TextField
+            form={form}
+            name="maxPeople"
+            label={items("maxPeople")}
+            type="number"
+            required
+          />
+          <p className="text-sm text-muted-foreground">{items("maxPeopleHint")}</p>
+        </div>
+      );
     case "parts":
       return <PartsSection form={form} parts={others} />;
     case "customisations":
