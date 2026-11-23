@@ -188,10 +188,17 @@
     },
     "hours": {
       "title": "Working hours",
-      "description": "When this item is available, for example a person or a room. It never blocks a booking.",
-      "followsVenue": "No own hours: this item follows its venue's opening hours.",
-      "followHint": "Switch off every day and remove all exceptions to follow the venue's opening hours again.",
-      "edit": "Edit working hours"
+      "edit": "Edit working hours",
+      "ownHours": "Own hours",
+      "ownNote": "The item's own hours · bookings outside them get a warning",
+      "fromVenue": "From {venue} · bookings outside these hours get a warning",
+      "noHours": "No hours set: the item can be booked at any time.",
+      "followVenueTitle": "Follow the venue's hours?",
+      "followVenueDescription": "The item's own hours are removed and it follows {venue}'s opening hours again.",
+      "followNothingDescription": "The item's own hours are removed. It has no venue, so it can then be booked at any time.",
+      "followVenue": "Follow the venue",
+      "saving": "Saving…",
+      "followsVenueSaved": "The item follows its venue's hours"
     },
     "layouts": "Layouts",
     "maxPeople": "Max number of people",
@@ -224,13 +231,12 @@
       "editFact": "Edit {label}",
       "createOrder": "Create order",
       "capacity": "Capacity",
-      "people": "people",
       "noCapacity": "No people limit",
       "editCapacity": "Edit capacity",
       "defaultLength": "Default length",
       "editDefaultLength": "Edit default length",
-      "vat": "VAT {percent} %",
-      "vatDefault": "The venue's VAT"
+      "priceLabel": "{unit, select, PER_PERSON {Price per person} PER_UNIT {Price per unit} PER_HOUR {Price per hour} other {Price}}",
+      "capacityValue": "{count} people"
     }
   },
   "itemState": {

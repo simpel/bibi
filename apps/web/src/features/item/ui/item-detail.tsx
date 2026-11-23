@@ -20,10 +20,10 @@ import { BundleOwner } from "./bundle-owner";
 import { ItemActions } from "./item-actions";
 import { ItemDetailsSection } from "./item-details-section";
 import { ItemHoursSection } from "./item-hours-section";
+import { ItemKeyFacts } from "./item-key-facts";
 import { ItemPictureEditable } from "./item-picture-editable";
 import { ItemResolutionSection } from "./item-resolution-section";
 import { ItemSections } from "./item-sections";
-import { ItemStatCards } from "./item-stat-cards";
 import { ItemTitle } from "./item-title";
 
 export type ItemDetailProps = { locale: Locale; id: string };
@@ -63,7 +63,7 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
       />
       <LastEdited entityType="item" entityId={item.value.id} />
       {item.value.customerId ? <BundleOwner customerId={item.value.customerId} /> : null}
-      <ItemStatCards item={item.value} type={type} data={data.value} canEdit={canEdit} />
+      <ItemKeyFacts item={item.value} type={type} data={data.value} canEdit={canEdit} />
       <ItemDetailsSection item={item.value} type={type} data={data.value} canEdit={canEdit} />
       <ItemSections item={item.value} type={type} data={data.value} canEdit={canEdit} />
       {hasLayouts ? (
@@ -77,7 +77,18 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         </DeferredSection>
       ) : null}
       <DeferredSection>
-        <ItemHoursSection locale={locale} itemId={item.value.id} />
+        <ItemHoursSection
+          locale={locale}
+          itemId={item.value.id}
+          venue={
+            item.value.venueId
+              ? {
+                  id: item.value.venueId,
+                  name: data.value.venues.find(({ id }) => id === item.value.venueId)?.name ?? "",
+                }
+              : null
+          }
+        />
       </DeferredSection>
       <DeferredSection>
         <DemandsSection locale={locale} itemId={item.value.id} />

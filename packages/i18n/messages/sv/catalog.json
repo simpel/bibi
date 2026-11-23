@@ -188,10 +188,17 @@
     },
     "hours": {
       "title": "Arbetstider",
-      "description": "När den här resursen är tillgänglig, till exempel en person eller ett rum. Blockerar aldrig en bokning.",
-      "followsVenue": "Inga egna tider: resursen följer lokalens öppettider.",
-      "followHint": "Stäng av alla dagar och ta bort alla undantag för att följa lokalens öppettider igen.",
-      "edit": "Ändra arbetstider"
+      "edit": "Ändra arbetstider",
+      "ownHours": "Egna tider",
+      "ownNote": "Artikelns egna tider · bokningar utanför dem får en varning",
+      "fromVenue": "Från {venue} · bokningar utanför tiderna får en varning",
+      "noHours": "Inga tider satta: artikeln kan bokas när som helst.",
+      "followVenueTitle": "Följa anläggningens tider?",
+      "followVenueDescription": "Artikelns egna tider tas bort och den följer {venue}s öppettider igen.",
+      "followNothingDescription": "Artikelns egna tider tas bort. Den har ingen anläggning och kan då bokas när som helst.",
+      "followVenue": "Följ anläggningen",
+      "saving": "Sparar…",
+      "followsVenueSaved": "Artikeln följer anläggningens tider"
     },
     "layouts": "Möbleringar",
     "maxPeople": "Max antal personer",
@@ -224,13 +231,12 @@
       "editFact": "Ändra {label}",
       "createOrder": "Skapa bokning",
       "capacity": "Kapacitet",
-      "people": "personer",
       "noCapacity": "Ingen personbegränsning",
       "editCapacity": "Ändra kapacitet",
       "defaultLength": "Standardlängd",
       "editDefaultLength": "Ändra standardlängd",
-      "vat": "Moms {percent} %",
-      "vatDefault": "Anläggningens moms"
+      "priceLabel": "{unit, select, PER_PERSON {Pris per person} PER_UNIT {Pris per enhet} PER_HOUR {Pris per timme} FLAT {Fast pris} other {Pris}}",
+      "capacityValue": "{count} personer"
     }
   },
   "itemState": {
