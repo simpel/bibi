@@ -124,7 +124,7 @@
           },
           "buyerReference": {
             "question": "How do I add the buyer's reference to an order?",
-            "answer": "Some buyers, often public agencies, need their own reference on every invoice, such as a case number. Open the contact person and fill in Buyer's reference. Their orders use it automatically.\nFor a single order, click the pencil next to **Details** on the order and fill in Buyer's reference there instead.\nIf a customer always needs a reference, edit the customer and tick Invoices must carry the buyer's reference. Bibi then won't create an invoice for one of its orders until a reference is set."
+            "answer": "Some buyers, often public agencies, need their own reference on every invoice, such as a case number. Open the contact person and fill in Buyer's reference. Their orders use it automatically.\nFor a single order, open the **Details** tab on the order, click the pencil next to **Details** and fill in Buyer's reference there instead.\nIf a customer always needs a reference, edit the customer and tick Invoices must carry the buyer's reference. Bibi then won't create an invoice for one of its orders until a reference is set."
           },
           "renameOrder": {
             "question": "How do I rename an order or a run sheet?",
@@ -132,7 +132,7 @@
           },
           "orderTabs": {
             "question": "Where do I find the quotes, run sheets and comments on an order?",
-            "answer": "The order page has tabs along the bottom of its header: **Program** for the lines and requirements, **Run sheets**, **Money** for quotes, payments and the estimate, **Comments**, **Messages** from the customer, and **Activity** for status changes and versions. Click a tab to switch; the address in your browser remembers it, so a link opens the same tab.\nThe panel on the right always shows the customer and contact person, who works on the order, what is left to pay and what is paid, and the order's details. Anything that needs your attention, like a double booking or a task for you, shows at the top under the title.\nA small warning icon on **Run sheets** means a run sheet hasn't been sent yet, has changed since it was sent, or is blocked. Open the tab to send it."
+            "answer": "The order page has tabs along the bottom of its header: **Program** for the lines and requirements, **Customer** for the customer and contact person, **Run sheets**, **Money** for quotes, payments and what is left to pay, **Details** for the type, budget, your own fields and who works on the order, **Comments**, **Messages** from the customer, and **Activity** for status changes and versions. Click a tab to switch; the address in your browser remembers it, so a link opens the same tab.\nAnything that needs your attention, like a double booking or a task for you, shows at the top under the title.\nA small warning icon on **Run sheets** means a run sheet hasn't been sent yet, has changed since it was sent, or is blocked. Open the tab to send it."
           },
           "orderVersions": {
             "question": "How do I go back to an earlier version of an order?",
@@ -212,7 +212,7 @@
           },
           "editInPlace": {
             "question": "How do I change an order's contact person, dates or headcount?",
-            "answer": "Change things where you see them on the order. Hover the dates or the headcount under the title and click the pencil next to it, change it in the small box and click **Save**.\nThe contact person and the rest of the order, such as the budget, the note and your own fields, are under **Details** in the panel on the right: click the pencil next to the heading to edit them. The customer is set when the order is created and can't be changed; create a new order for another customer."
+            "answer": "Change things where you see them on the order. Hover the dates or the headcount under the title and click the pencil next to it, change it in the small box and click **Save**.\nThe contact person is on the **Customer** tab, and the rest of the order, such as the budget, the note and your own fields, is on the **Details** tab: click the pencil next to a heading to edit it. The customer is set when the order is created and can't be changed; create a new order for another customer."
           },
           "closedOrder": {
             "question": "Why can't I change a completed order?",

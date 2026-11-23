@@ -16,10 +16,8 @@ import { loadItem } from "../load-item";
 import { loadItemFormData } from "../load-item-form-data";
 import { BundleOwner } from "./bundle-owner";
 import { ItemActions } from "./item-actions";
-import { ItemDetailsSection } from "./item-details-section";
 import { ItemKeyFacts } from "./item-key-facts";
 import { ItemPictureEditable } from "./item-picture-editable";
-import { ItemSections } from "./item-sections";
 import { ItemTabContent } from "./item-tab-content";
 import { ItemTabNav } from "./item-tab-nav";
 import { ItemTitle } from "./item-title";
@@ -33,7 +31,7 @@ export type ItemDetailProps = {
 
 /**
  * The item page, laid out like the order page: a header band (picture, name, key facts, tabs)
- * and under it the open tab beside a panel with the item's details and buffers. Everything is
+ * and under it the open tab across the whole width; Details is the first tab. Everything is
  * edited in place.
  */
 export async function ItemDetail({ locale, id, tab: tabParam }: ItemDetailProps) {
@@ -80,18 +78,8 @@ export async function ItemDetail({ locale, id, tab: tabParam }: ItemDetailProps)
         </PageContainer>
       </PageSection>
       <PageSection divided>
-        {/* The tab and the details panel side by side; the panel goes under it on narrow screens. */}
-        <PageContainer
-          width="wide"
-          className="grid grid-cols-1 items-start gap-8 py-6 sm:py-8 lg:grid-cols-[minmax(0,1fr)_20rem]"
-        >
-          <div className="grid min-w-0 grid-cols-1 gap-12">
-            <ItemTabContent locale={locale} {...shared} tab={tab} />
-          </div>
-          <aside className="grid content-start gap-8 rounded-xl border bg-card p-5 [&_dl]:grid-cols-1">
-            <ItemDetailsSection {...shared} />
-            <ItemSections {...shared} show="buffers" />
-          </aside>
+        <PageContainer width="wide" className="grid grid-cols-1 gap-12 py-6 sm:py-8">
+          <ItemTabContent locale={locale} {...shared} tab={tab} />
         </PageContainer>
       </PageSection>
     </PageBands>

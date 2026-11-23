@@ -28,11 +28,7 @@ type Card = {
  * default length (BOOKABLE), each with its own pencil and editing only itself.
  */
 export async function ItemKeyFacts({ item, type, data, canEdit }: ItemKeyFactsProps) {
-  const [t, page, { money }] = await Promise.all([
-    getTranslations("item"),
-    getTranslations("item.page"),
-    getNumberFormat(),
-  ]);
+  const [page, { money }] = await Promise.all([getTranslations("item.page"), getNumberFormat()]);
   const cards: Card[] = [
     ...(hasCapability({ type, capability: "PRICED" })
       ? [

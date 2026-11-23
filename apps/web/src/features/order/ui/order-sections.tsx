@@ -11,6 +11,11 @@ import { RequirementSection } from "@/features/requirement/ui/requirement-sectio
 import { RunSheetSection } from "@/features/run-sheet/ui/run-sheet-section";
 import { type CallerAbilities, can } from "@/server/caller-abilities";
 import type { OrderTab } from "../order-tabs";
+import {
+  OrderAssignmentSection,
+  OrderCustomerSection,
+  OrderDetailsSection,
+} from "./order-data-sections";
 import { OrderEstimateHistory } from "./order-estimate-history";
 import type { OrderFormData } from "./order-form-data";
 import { OrderStatusHistory } from "./order-status-history";
@@ -100,7 +105,22 @@ export function OrderSections({ tab, ...props }: OrderSectionsProps) {
           <RunSheetSection locale={props.locale} order={props.order} />
         </DeferredSection>
       ) : null}
+      {tab === "customer" ? (
+        <DeferredSection rows={2}>
+          <OrderCustomerSection locale={props.locale} order={props.order} />
+        </DeferredSection>
+      ) : null}
       {tab === "money" ? <MoneyTab {...tabProps} /> : null}
+      {tab === "details" ? (
+        <>
+          <DeferredSection rows={3}>
+            <OrderDetailsSection locale={props.locale} order={props.order} />
+          </DeferredSection>
+          <DeferredSection rows={2}>
+            <OrderAssignmentSection locale={props.locale} order={props.order} />
+          </DeferredSection>
+        </>
+      ) : null}
       {tab === "comments" ? (
         <DeferredSection rows={3}>
           <CommentSection locale={props.locale} order={props.order} />

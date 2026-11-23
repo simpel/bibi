@@ -818,7 +818,7 @@
       },
       "details": {
         "title": "Details and people",
-        "body": "The type, budget and your own fields, who is responsible and who follows the order, and what is left to pay."
+        "body": "The type, budget and your own fields, who is responsible and who follows the order. The customer has a tab of its own."
       },
       "money": {
         "title": "Quotes and payments",

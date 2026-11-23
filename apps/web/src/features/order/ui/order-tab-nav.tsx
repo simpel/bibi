@@ -10,13 +10,16 @@ const TOUR: Partial<Record<OrderTab, string>> = {
   program: "order.program",
   "run-sheets": "order.runSheets",
   money: "order.money",
+  details: "order.details",
 };
 
 /** The i18n key of each tab's label under `order.tabs`. */
 const LABEL = {
   program: "program",
+  customer: "customer",
   "run-sheets": "runSheets",
   money: "money",
+  details: "details",
   comments: "comments",
   messages: "messages",
   activity: "activity",

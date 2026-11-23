@@ -6,6 +6,7 @@ import { DemandsSection } from "../../item-demand/ui/demands-section";
 import { OccupancySection } from "../../occupancy/ui/occupancy-section";
 import type { ItemTab } from "../item-tabs";
 import { hasCapability } from "./has-capability";
+import { ItemDetailsSection } from "./item-details-section";
 import type { ItemFormData } from "./item-form-data";
 import { ItemHoursSection } from "./item-hours-section";
 import { ItemResolutionSection } from "./item-resolution-section";
@@ -24,6 +25,16 @@ export type ItemTabContentProps = {
 export function ItemTabContent({ locale, item, type, data, canEdit, tab }: ItemTabContentProps) {
   const venueName = data.venues.find(({ id }) => id === item.venueId)?.name ?? "";
   switch (tab) {
+    case "details":
+      return (
+        <>
+          <ItemDetailsSection item={item} type={type} data={data} canEdit={canEdit} />
+          {/* A room's setup and teardown belong to its layouts (ADR 0103), not the room. */}
+          {hasCapability({ type, capability: "SETUPS" }) ? null : (
+            <ItemSections item={item} type={type} data={data} canEdit={canEdit} show="buffers" />
+          )}
+        </>
+      );
     case "layouts":
       return (
         <DeferredSection>

@@ -33,7 +33,8 @@ export function CapabilitySections({ form, type, data, itemId }: CapabilitySecti
       {hasCapability({ type, capability: "CUSTOMISATIONS" }) ? (
         <CustomisationGroupsSection form={form} items={parts} />
       ) : null}
-      <BufferFields form={form} />
+      {/* A room's setup and teardown are set per layout (ADR 0103). */}
+      {hasCapability({ type, capability: "SETUPS" }) ? null : <BufferFields form={form} />}
     </>
   );
 }

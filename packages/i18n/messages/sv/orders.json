@@ -276,8 +276,10 @@
     "tabs": {
       "label": "Beställningens delar",
       "program": "Program",
+      "customer": "Kund",
       "runSheets": "Körscheman",
       "money": "Ekonomi",
+      "details": "Detaljer",
       "comments": "Kommentarer",
       "messages": "Meddelanden",
       "activity": "Aktivitet"

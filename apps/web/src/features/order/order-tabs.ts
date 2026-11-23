@@ -5,8 +5,10 @@ import type { CallerAbilities } from "@/server/caller-abilities";
 /** The order page's tabs, in order; each is its own URL (`?tab=`), so the URL is the state. */
 export const ORDER_TABS = [
   "program",
+  "customer",
   "run-sheets",
   "money",
+  "details",
   "comments",
   "messages",
   "activity",
@@ -30,9 +32,13 @@ export function availableOrderTabs({ abilities }: AvailableInput): OrderTab[] {
     canPermission({ permissions: abilities.permissions, permission });
   const shown: Record<OrderTab, boolean> = {
     program: allowed({ permission: "program:read" }),
+    // The order's own customer and contact, as names, even without customer:read.
+    customer: true,
     "run-sheets": allowed({ permission: "runSheet:read" }),
     // The estimate history is the order's own, so Money always has something to show.
     money: true,
+    // The order's own type, money, fields and note, and who works it.
+    details: true,
     comments: allowed({ permission: "comment:read" }),
     // The order's own reply address shows even before any message arrives.
     messages: true,

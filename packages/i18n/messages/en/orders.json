@@ -276,8 +276,10 @@
     "tabs": {
       "label": "Order sections",
       "program": "Program",
+      "customer": "Customer",
       "runSheets": "Run sheets",
       "money": "Money",
+      "details": "Details",
       "comments": "Comments",
       "messages": "Messages",
       "activity": "Activity"

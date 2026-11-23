@@ -240,6 +240,7 @@
     },
     "tabs": {
       "label": "Item sections",
+      "details": "Details",
       "layouts": "Layouts",
       "bookings": "Bookings",
       "contents": "Contents",

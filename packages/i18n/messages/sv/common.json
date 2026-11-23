@@ -818,7 +818,7 @@
       },
       "details": {
         "title": "Detaljer och personer",
-        "body": "Typ, budget och dina egna fält, vem som är ansvarig och vem som följer beställningen, och vad som är kvar att betala."
+        "body": "Typ, budget och dina egna fält, vem som är ansvarig och vem som följer beställningen. Kunden har en egen flik."
       },
       "money": {
         "title": "Offerter och betalningar",

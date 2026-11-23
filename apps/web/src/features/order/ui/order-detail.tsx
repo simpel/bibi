@@ -26,7 +26,6 @@ import { OrderCommentsTabHash } from "./order-comments-tab-hash";
 import { OrderKeyFacts } from "./order-facts";
 import type { OrderFormData } from "./order-form-data";
 import { OrderSections } from "./order-sections";
-import { OrderSidePanel } from "./order-side-panel";
 import { OrderStatusLabel } from "./order-status-label";
 import { OrderStatusMenu } from "./order-status-menu";
 import { OrderTabNav } from "./order-tab-nav";
@@ -193,21 +192,15 @@ export async function OrderDetail({ locale, id, tab: tabParam }: OrderDetailProp
       </PageSection>
       <PageTour tour="order" />
       <PageSection divided>
-        {/* Tabs and the facts panel side by side; the panel goes under the tabs on narrow screens. */}
-        <PageContainer
-          width="wide"
-          className="grid grid-cols-1 items-start gap-8 py-6 sm:py-8 lg:grid-cols-[minmax(0,1fr)_20rem]"
-        >
-          <div className="grid min-w-0 grid-cols-1 gap-8">
-            <OrderSections
-              locale={locale}
-              order={order.value}
-              statuses={statuses.value}
-              abilities={abilities}
-              tab={tab}
-            />
-          </div>
-          <OrderSidePanel locale={locale} order={order.value} abilities={pageAbilities} />
+        {/* The open tab across the whole width: details and customer are tabs of their own. */}
+        <PageContainer width="wide" className="grid grid-cols-1 gap-8 py-6 sm:py-8">
+          <OrderSections
+            locale={locale}
+            order={order.value}
+            statuses={statuses.value}
+            abilities={abilities}
+            tab={tab}
+          />
         </PageContainer>
       </PageSection>
       <OrderCommentsTabHash active={tab === COMMENTS_TAB} />

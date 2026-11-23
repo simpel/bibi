@@ -240,6 +240,7 @@
     },
     "tabs": {
       "label": "Artikelns avsnitt",
+      "details": "Uppgifter",
       "layouts": "Möbleringar",
       "bookings": "Bokningar",
       "contents": "Innehåll",
