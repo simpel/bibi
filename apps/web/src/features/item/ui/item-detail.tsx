@@ -1,8 +1,8 @@
 import type { Locale } from "@bibi/i18n";
+import { PageBands, PageContainer, PageSection } from "@bibi/ui";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
-import { DeferredSection } from "@/components/states/deferred-section";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { historyNode } from "@/features/audit-log/ui/history-node";
@@ -11,89 +11,89 @@ import { Link } from "@/lib/navigation";
 import { itemRoute, ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
-import { LayoutsSection } from "../../floor-plan/ui/layouts-section";
-import { DemandsSection } from "../../item-demand/ui/demands-section";
-import { OccupancySection } from "../../occupancy/ui/occupancy-section";
+import { availableItemTabs, pickItemTab } from "../item-tabs";
 import { loadItem } from "../load-item";
 import { loadItemFormData } from "../load-item-form-data";
 import { BundleOwner } from "./bundle-owner";
 import { ItemActions } from "./item-actions";
 import { ItemDetailsSection } from "./item-details-section";
-import { ItemHoursSection } from "./item-hours-section";
 import { ItemKeyFacts } from "./item-key-facts";
 import { ItemPictureEditable } from "./item-picture-editable";
-import { ItemResolutionSection } from "./item-resolution-section";
 import { ItemSections } from "./item-sections";
+import { ItemTabContent } from "./item-tab-content";
+import { ItemTabNav } from "./item-tab-nav";
 import { ItemTitle } from "./item-title";
 
-export type ItemDetailProps = { locale: Locale; id: string };
+export type ItemDetailProps = {
+  locale: Locale;
+  id: string;
+  /** `?tab=`: the open tab; one the item lacks falls back to its first. */
+  tab?: string | undefined;
+};
 
-/** Item detail page body: title, picture, details and capabilities edited in place, then contents and occupancy. */
-export async function ItemDetail({ locale, id }: ItemDetailProps) {
-  const common = await getTranslations("common");
-  const abilities = await getCallerAbilities();
-  const item = await loadItem({ id });
+/**
+ * The item page, laid out like the order page: a header band (picture, name, key facts, tabs)
+ * and under it the open tab beside a panel with the item's details and buffers. Everything is
+ * edited in place.
+ */
+export async function ItemDetail({ locale, id, tab: tabParam }: ItemDetailProps) {
+  const [common, abilities, item] = await Promise.all([
+    getTranslations("common"),
+    getCallerAbilities(),
+    loadItem({ id }),
+  ]);
   if (!item.ok) return <ErrorState errorKey={handleLoadError({ error: item.error, locale })} />;
-  const data = await loadItemFormData({ customerId: item.value.customerId });
+  const [data, history] = await Promise.all([
+    loadItemFormData({ customerId: item.value.customerId }),
+    historyNode({ locale, entityType: "item", entityId: id }),
+  ]);
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const type = data.value.types.find((candidate) => candidate.id === item.value.entityTypeId);
-  const hasLayouts = type?.capabilities.includes("SETUPS") ?? false;
   const canEdit = can({ abilities, permission: "item:write" });
-  const history = await historyNode({ locale, entityType: "item", entityId: id });
-  const actions = <ItemActions item={item.value} abilities={abilities} history={history} />;
+  const tabs = availableItemTabs({ type, abilities });
+  const tab = pickItemTab({ value: tabParam, available: tabs });
+  const shared = { item: item.value, type, data: data.value, canEdit };
   return (
-    <div className="grid gap-6">
+    <PageBands>
       <CrumbName href={itemRoute({ id })} name={item.value.name} />
-      <Link
-        href={ROUTES.items}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-4" />
-        {common("back")}
-      </Link>
-      <PageHeader
-        title={item.value.name}
-        leading={<ItemPictureEditable item={item.value} data={data.value} canEdit={canEdit} />}
-        heading={<ItemTitle id={item.value.id} name={item.value.name} canEdit={canEdit} />}
-        actions={actions}
-      />
-      <LastEdited entityType="item" entityId={item.value.id} />
-      {item.value.customerId ? <BundleOwner customerId={item.value.customerId} /> : null}
-      <ItemKeyFacts item={item.value} type={type} data={data.value} canEdit={canEdit} />
-      <ItemDetailsSection item={item.value} type={type} data={data.value} canEdit={canEdit} />
-      <ItemSections item={item.value} type={type} data={data.value} canEdit={canEdit} />
-      {hasLayouts ? (
-        <DeferredSection>
-          <LayoutsSection locale={locale} itemId={item.value.id} canEdit={canEdit} />
-        </DeferredSection>
-      ) : null}
-      {type?.capabilities.includes("BUNDLE") ? (
-        <DeferredSection>
-          <ItemResolutionSection locale={locale} itemId={item.value.id} />
-        </DeferredSection>
-      ) : null}
-      <DeferredSection>
-        <ItemHoursSection
-          locale={locale}
-          itemId={item.value.id}
-          venue={
-            item.value.venueId
-              ? {
-                  id: item.value.venueId,
-                  name: data.value.venues.find(({ id }) => id === item.value.venueId)?.name ?? "",
-                }
-              : null
-          }
-        />
-      </DeferredSection>
-      <DeferredSection>
-        <DemandsSection locale={locale} itemId={item.value.id} />
-      </DeferredSection>
-      {type?.capabilities.includes("BOOKABLE") && can({ abilities, permission: "order:read" }) ? (
-        <DeferredSection>
-          <OccupancySection locale={locale} itemId={item.value.id} timeZone={item.value.timeZone} />
-        </DeferredSection>
-      ) : null}
-    </div>
+      <PageSection>
+        <PageContainer width="wide" className="grid grid-cols-1 gap-4 pt-4 pb-0 sm:pt-6 sm:pb-0">
+          <Link
+            href={ROUTES.items}
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeftIcon className="size-4" />
+            {common("back")}
+          </Link>
+          <PageHeader
+            title={item.value.name}
+            leading={<ItemPictureEditable item={item.value} data={data.value} canEdit={canEdit} />}
+            heading={<ItemTitle id={item.value.id} name={item.value.name} canEdit={canEdit} />}
+            actions={<ItemActions item={item.value} abilities={abilities} history={history} />}
+          />
+          <LastEdited entityType="item" entityId={item.value.id} />
+          {item.value.customerId ? <BundleOwner customerId={item.value.customerId} /> : null}
+          <ItemKeyFacts {...shared} />
+          <div className="mt-2">
+            <ItemTabNav itemId={id} tabs={tabs} current={tab} />
+          </div>
+        </PageContainer>
+      </PageSection>
+      <PageSection divided>
+        {/* The tab and the details panel side by side; the panel goes under it on narrow screens. */}
+        <PageContainer
+          width="wide"
+          className="grid grid-cols-1 items-start gap-8 py-6 sm:py-8 lg:grid-cols-[minmax(0,1fr)_20rem]"
+        >
+          <div className="grid min-w-0 grid-cols-1 gap-12">
+            <ItemTabContent locale={locale} {...shared} tab={tab} />
+          </div>
+          <aside className="grid content-start gap-8 rounded-xl border bg-card p-5 [&_dl]:grid-cols-1">
+            <ItemDetailsSection {...shared} />
+            <ItemSections {...shared} show="buffers" />
+          </aside>
+        </PageContainer>
+      </PageSection>
+    </PageBands>
   );
 }

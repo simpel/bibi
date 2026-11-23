@@ -237,6 +237,14 @@
       "editDefaultLength": "Ändra standardlängd",
       "priceLabel": "{unit, select, PER_PERSON {Pris per person} PER_UNIT {Pris per enhet} PER_HOUR {Pris per timme} FLAT {Fast pris} other {Pris}}",
       "capacityValue": "{count} personer"
+    },
+    "tabs": {
+      "label": "Artikelns avsnitt",
+      "layouts": "Möbleringar",
+      "bookings": "Bokningar",
+      "contents": "Innehåll",
+      "resources": "Resurser och personal",
+      "hours": "Arbetstider"
     }
   },
   "itemState": {

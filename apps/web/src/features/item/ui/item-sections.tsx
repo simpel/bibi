@@ -14,6 +14,8 @@ export type ItemSectionsProps = {
   type: EntityTypeDto | undefined;
   data: ItemFormData;
   canEdit: boolean;
+  /** `buffers`: setup and teardown (the side panel); `contents`: parts and customisations. */
+  show: "buffers" | "contents";
 };
 
 type Section = { group: ItemEditGroup; title: string; editLabel: string; body: React.ReactNode };
@@ -35,7 +37,7 @@ function Lines({ lines, empty }: { lines: string[]; empty: string }) {
  * as sections edited from the pencil beside their title. Price, capacity and default length are
  * the stat cards at the top (`ItemStatCards`).
  */
-export async function ItemSections({ item, type, data, canEdit }: ItemSectionsProps) {
+export async function ItemSections({ item, type, data, canEdit, show }: ItemSectionsProps) {
   const [t, page, buffers] = await Promise.all([
     getTranslations("item"),
     getTranslations("item.page"),
@@ -100,12 +102,16 @@ export async function ItemSections({ item, type, data, canEdit }: ItemSectionsPr
         ]
       : []),
   ];
-  return (
-    <>
+  if (show === "buffers") {
+    return (
       <section className="grid grid-cols-1 gap-4">
         <h2 className="text-xl">{buffers("legend")}</h2>
         <FactList facts={bufferFacts} />
       </section>
+    );
+  }
+  return (
+    <>
       {sections.map(({ group, title, editLabel, body }) => (
         <EditableSection
           key={group}

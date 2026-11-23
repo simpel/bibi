@@ -82,7 +82,7 @@
           },
           "itemEdit": {
             "question": "Hur ändrar jag en artikel?",
-            "answer": "Öppna artikeln och håll muspekaren över det du vill ändra: namnet, bilden, en siffra överst som **Pris** eller **Kapacitet**, eller en enskild uppgift som våningen eller ställtiden. Klicka på pennan, ändra och klicka på **Spara**; bara den inställningen sparas.\nFör ett rum har varje möblering en egen penna, och **Redigera planritning** öppnar rummets väggar, dörrar och fönster. Arkivera artikeln från menyn **⋯**."
+            "answer": "Öppna artikeln och håll muspekaren över det du vill ändra: namnet, bilden, en siffra överst som **Pris** eller **Kapacitet**, eller en enskild uppgift som våningen eller ställtiden. Klicka på pennan, ändra och klicka på **Spara**; bara den inställningen sparas.\nFör ett rum har varje möblering en egen penna, och **Redigera planritning** öppnar rummets väggar, dörrar och fönster. Möbleringar, bokningar, innehåll, resurser och arbetstider har varsin flik under siffrorna; **Arkivera artikel** finns uppe till höger (i menyn **⋯** på en smal skärm)."
           },
           "itemOrder": {
             "question": "Kan jag skapa en bokning från en artikel?",

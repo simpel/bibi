@@ -237,6 +237,14 @@
       "editDefaultLength": "Edit default length",
       "priceLabel": "{unit, select, PER_PERSON {Price per person} PER_UNIT {Price per unit} PER_HOUR {Price per hour} other {Price}}",
       "capacityValue": "{count} people"
+    },
+    "tabs": {
+      "label": "Item sections",
+      "layouts": "Layouts",
+      "bookings": "Bookings",
+      "contents": "Contents",
+      "resources": "Resources and staff",
+      "hours": "Working hours"
     }
   },
   "itemState": {

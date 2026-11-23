@@ -82,7 +82,7 @@
           },
           "itemEdit": {
             "question": "How do I change an item?",
-            "answer": "Open the item and hover what you want to change: the name, the picture, a figure at the top such as **Price** or **Capacity**, or a single detail such as the floor or the setup time. Click the pencil, change it and click **Save**; only that setting is saved.\nFor a room, each layout has its own pencil, and **Edit floor plan** opens the room's walls, doors and windows. Archive the item from the **⋯** menu."
+            "answer": "Open the item and hover what you want to change: the name, the picture, a figure at the top such as **Price** or **Capacity**, or a single detail such as the floor or the setup time. Click the pencil, change it and click **Save**; only that setting is saved.\nFor a room, each layout has its own pencil, and **Edit floor plan** opens the room's walls, doors and windows. Layouts, bookings, contents, resources and working hours each have their own tab under the figures; **Archive item** is at the top right (in the **⋯** menu on a narrow screen)."
           },
           "itemOrder": {
             "question": "Can I start an order from an item?",
