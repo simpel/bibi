@@ -82,7 +82,11 @@
           },
           "itemEdit": {
             "question": "Hur ändrar jag en artikel?",
-            "answer": "Öppna artikeln och klicka på pennan vid det du vill ändra: namnet, bilden, en enskild uppgift som beskrivningen eller våningen, eller rubriken på ett avsnitt som **Pris** eller **Bokning och ställtider**. Ändra och klicka på **Spara**; bara den delen sparas.\nFör ett rum har varje möblering en egen penna, pennan vid personbegränsningen ändrar den, och **Redigera planritning** öppnar rummets väggar, dörrar och fönster."
+            "answer": "Öppna artikeln och håll muspekaren över det du vill ändra: namnet, bilden, en siffra överst som **Pris** eller **Kapacitet**, eller en enskild uppgift som våningen eller ställtiden. Klicka på pennan, ändra och klicka på **Spara**; bara den inställningen sparas.\nFör ett rum har varje möblering en egen penna, och **Redigera planritning** öppnar rummets väggar, dörrar och fönster. Arkivera artikeln från menyn **⋯**."
+          },
+          "itemOrder": {
+            "question": "Kan jag skapa en bokning från en artikel?",
+            "answer": "Ja. Öppna artikeln och välj **Skapa bokning**. Den nya bokningen visar bara mallar som innehåller artikeln, och en engångsbokning börjar med den; dag och tider väljer du i steg 2."
           },
           "itemPicture": {
             "question": "Hur ger jag en artikel en ikon eller en bild?",

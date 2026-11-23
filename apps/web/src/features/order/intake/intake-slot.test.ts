@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   type IntakeSlot,
+  itemOrderHref,
   packagesWithItem,
   slotDraftKey,
   slotFromSearch,
@@ -20,6 +21,13 @@ const option = ({ id, itemIds }: { id: string; itemIds: string[] }): PackageOpti
 describe("slotFromSearch", () => {
   it("reads the slot from the query", () => {
     expect(slotFromSearch({ search })).toEqual(slot);
+  });
+
+  it("takes the item alone, with the time still to choose", () => {
+    expect(slotFromSearch({ search: { slot: "room1" } })).toEqual({
+      ...{ itemId: "room1", date: "", from: "", to: "" },
+    });
+    expect(itemOrderHref({ itemId: "room1" })).toMatch(/\?slot=room1$/);
   });
 
   it("ignores a missing, repeated or malformed part", () => {

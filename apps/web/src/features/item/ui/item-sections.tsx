@@ -1,9 +1,9 @@
 import type { EntityTypeDto, ItemDto } from "@bibi/core";
 import { getTranslations } from "next-intl/server";
 import { EditableSection } from "@/components/inline-edit/editable-section";
-import { type Fact, FactList } from "@/components/typed-fields/fact-list";
-import { getNumberFormat } from "@/server/number-format";
+import { FactList } from "@/components/typed-fields/fact-list";
 import { customisationGroupLines } from "./customisation-group-lines";
+import { editableItemFact } from "./editable-item-fact";
 import { hasCapability } from "./has-capability";
 import type { ItemFormData } from "./item-form-data";
 import { ItemInlineEditor } from "./item-inline-editor";
@@ -30,60 +30,42 @@ function Lines({ lines, empty }: { lines: string[]; empty: string }) {
   );
 }
 
-/** The item's buffers: its own minutes, else its type's, said as such. */
-function timingFacts({ item, type, t, page }: TimingInput): Fact[] {
-  const minutes = ({ own, effective }: { own: number | null; effective: number }) =>
-    own === null ? page("fromType", { minutes: effective }) : page("minutes", { minutes: own });
-  return [
-    ...(hasCapability({ type, capability: "BOOKABLE" })
-      ? [
-          {
-            label: t("fields.defaultDurationMinutes"),
-            value:
-              item.defaultDurationMinutes === null
-                ? "–"
-                : page("minutes", { minutes: item.defaultDurationMinutes }),
-          },
-        ]
-      : []),
-    {
-      label: page("setup"),
-      value: minutes({ own: item.setupMinutes, effective: item.effectiveSetupMinutes }),
-    },
-    {
-      label: page("teardown"),
-      value: minutes({ own: item.teardownMinutes, effective: item.effectiveTeardownMinutes }),
-    },
-  ];
-}
-
-type Translator = Awaited<ReturnType<typeof getTranslations<"item">>>;
-type PageTranslator = Awaited<ReturnType<typeof getTranslations<"item.page">>>;
-type TimingInput = {
-  item: ItemDto;
-  type: EntityTypeDto | undefined;
-  t: Translator;
-  page: PageTranslator;
-};
-
 /**
- * The item's capability values and buffers as sections edited in place, each from the pencil
- * beside its title and sending only its own fields (like the order page).
+ * The item's setup and teardown (a pencil per setting), then its parts and customisation groups
+ * as sections edited from the pencil beside their title. Price, capacity and default length are
+ * the stat cards at the top (`ItemStatCards`).
  */
 export async function ItemSections({ item, type, data, canEdit }: ItemSectionsProps) {
-  const [t, page, buffers, { money }] = await Promise.all([
+  const [t, page, buffers] = await Promise.all([
     getTranslations("item"),
     getTranslations("item.page"),
     getTranslations("buffers"),
-    getNumberFormat(),
   ]);
-  const price =
-    item.priceMinor === null || item.priceUnit === null
-      ? page("noPrice")
-      : t("priceValue", {
-          amount: money({ minor: item.priceMinor }),
-          unit: t(`priceUnits.${item.priceUnit}`),
-        });
+  const minutes = ({ own, effective }: { own: number | null; effective: number }) =>
+    own === null ? page("fromType", { minutes: effective }) : page("minutes", { minutes: own });
+  const setup = {
+    label: page("setup"),
+    value: minutes({ own: item.setupMinutes, effective: item.effectiveSetupMinutes }),
+  };
+  const teardown = {
+    label: page("teardown"),
+    value: minutes({ own: item.teardownMinutes, effective: item.effectiveTeardownMinutes }),
+  };
+  const fact = { item, data, canEdit };
+  const bufferFacts = [
+    editableItemFact({
+      ...fact,
+      fact: setup,
+      editLabel: page("editFact", { label: setup.label }),
+      group: "setup",
+    }),
+    editableItemFact({
+      ...fact,
+      fact: teardown,
+      editLabel: page("editFact", { label: teardown.label }),
+      group: "teardown",
+    }),
+  ];
   const parts = item.parts.map(({ itemId, quantity, offsetMinutes, required }) =>
     t("partValue", {
       quantity,
@@ -97,22 +79,6 @@ export async function ItemSections({ item, type, data, canEdit }: ItemSectionsPr
     format: (values) => t("customisationGroupValue", values),
   });
   const sections: Section[] = [
-    ...(hasCapability({ type, capability: "PRICED" })
-      ? [
-          {
-            group: "price" as const,
-            title: t("sections.price"),
-            editLabel: page("editPrice"),
-            body: <p className="text-sm">{price}</p>,
-          },
-        ]
-      : []),
-    {
-      group: "timing",
-      title: hasCapability({ type, capability: "BOOKABLE" }) ? page("timing") : buffers("legend"),
-      editLabel: page("editTiming"),
-      body: <FactList facts={timingFacts({ item, type, t, page })} />,
-    },
     ...(hasCapability({ type, capability: "BUNDLE" })
       ? [
           {
@@ -136,6 +102,10 @@ export async function ItemSections({ item, type, data, canEdit }: ItemSectionsPr
   ];
   return (
     <>
+      <section className="grid grid-cols-1 gap-4">
+        <h2 className="text-xl">{buffers("legend")}</h2>
+        <FactList facts={bufferFacts} />
+      </section>
       {sections.map(({ group, title, editLabel, body }) => (
         <EditableSection
           key={group}

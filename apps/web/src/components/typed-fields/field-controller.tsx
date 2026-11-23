@@ -42,12 +42,14 @@ export function FieldController<V extends WithRawFields, O>({
     <FormController
       control={control}
       name={`fields.${key}` as Path<V>}
-      render={({ field: controlled }) => (
-        <FormItem>
+      render={({ field: controlled }) => {
+        const label = (
           <FormLabel>
             {name}
             {required ? <span className="ml-0.5 text-destructive">*</span> : null}
           </FormLabel>
+        );
+        const input = (
           <FormControl>
             {renderControl({
               kind,
@@ -57,9 +59,24 @@ export function FieldController<V extends WithRawFields, O>({
               onChange: controlled.onChange,
             })}
           </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
+        );
+        // A yes/no field is a switch with its label beside it, like a setting.
+        return kind === "BOOLEAN" ? (
+          <FormItem>
+            <div className="flex items-center gap-3">
+              {input}
+              {label}
+            </div>
+            <FormMessage />
+          </FormItem>
+        ) : (
+          <FormItem>
+            {label}
+            {input}
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 }

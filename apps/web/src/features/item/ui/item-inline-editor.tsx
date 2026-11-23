@@ -3,19 +3,16 @@
 import type { ItemDto } from "@bibi/core";
 import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { BufferFields } from "@/components/form/buffer-fields";
 import { TextField } from "@/components/form/text-field";
 import { TypeFields } from "@/components/typed-fields/type-fields";
-import { BookableSection } from "./bookable-section";
 import { CustomisationGroupsSection } from "./customisation-groups-section";
-import { hasCapability } from "./has-capability";
 import { ItemVenueField } from "./item-core-fields";
 import type { ItemFormData } from "./item-form-data";
 import { ItemPictureField } from "./item-picture-field";
 import type { ItemEditGroup } from "./item-update-input";
 import { MaxPeopleSection } from "./max-people-section";
 import { PartsSection } from "./parts-section";
-import { PriceSection } from "./price-section";
+import { PriceUnitField } from "./price-section";
 import { useItemEdit } from "./use-item-edit";
 
 export type ItemInlineEditorProps = {
@@ -32,30 +29,59 @@ type GroupProps = ItemInlineEditorProps & { form: ReturnType<typeof useItemEdit>
 /** The fields of one group; the section around it already says what they are. */
 function GroupFields({ item, data, group, fieldKey, form }: GroupProps) {
   const t = useTranslations("item.fields");
+  const buffers = useTranslations("buffers");
   const type = data.types.find(({ id }) => id === item.entityTypeId);
   const others = data.parts.filter(({ id }) => id !== item.id);
-  if (group === "picture") return <ItemPictureField form={form} />;
-  if (group === "price") return <PriceSection form={form} />;
-  if (group === "layouts") return <MaxPeopleSection form={form} />;
-  if (group === "parts") return <PartsSection form={form} parts={others} />;
-  if (group === "customisations") return <CustomisationGroupsSection form={form} items={others} />;
-  if (group === "timing") {
-    return (
-      <>
-        {hasCapability({ type, capability: "BOOKABLE" }) ? <BookableSection form={form} /> : null}
-        <BufferFields form={form} />
-      </>
-    );
+  switch (group) {
+    case "picture":
+      return <ItemPictureField form={form} />;
+    case "price":
+      return (
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <TextField form={form} name="price" label={t("price")} type="number" step="any" />
+            <PriceUnitField control={form.control} />
+          </div>
+          <TextField form={form} name="vatRatePercent" label={t("vatRatePercent")} type="number" />
+        </>
+      );
+    case "duration":
+      return (
+        <TextField
+          form={form}
+          name="defaultDurationMinutes"
+          label={t("defaultDurationMinutes")}
+          type="number"
+        />
+      );
+    case "setup":
+      return (
+        <TextField form={form} name="setupMinutes" label={buffers("setupMinutes")} type="number" />
+      );
+    case "teardown":
+      return (
+        <TextField
+          form={form}
+          name="teardownMinutes"
+          label={buffers("teardownMinutes")}
+          type="number"
+        />
+      );
+    case "layouts":
+      return <MaxPeopleSection form={form} />;
+    case "parts":
+      return <PartsSection form={form} parts={others} />;
+    case "customisations":
+      return <CustomisationGroupsSection form={form} items={others} />;
+    case "description":
+      return <TextField form={form} name="description" label={t("description")} multiline />;
+    case "venue":
+      return <ItemVenueField form={form} venues={data.venues} venuesHidden={data.venuesHidden} />;
+    case "field":
+      return type ? (
+        <TypeFields control={form.control} type={type} data={data} only={fieldKey} />
+      ) : null;
   }
-  if (group === "description") {
-    return <TextField form={form} name="description" label={t("description")} multiline />;
-  }
-  if (group === "venue") {
-    return <ItemVenueField form={form} venues={data.venues} venuesHidden={data.venuesHidden} />;
-  }
-  return type ? (
-    <TypeFields control={form.control} type={type} data={data} only={fieldKey} />
-  ) : null;
 }
 
 /** Edits one part of an item in place (the picture's popover, a section), sending only that part. */

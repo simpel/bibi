@@ -1,11 +1,9 @@
 import type { EntityTypeDto, ItemDto } from "@bibi/core";
 import { getTranslations } from "next-intl/server";
-import { EditableFact } from "@/components/inline-edit/editable-fact";
-import { type Fact, FactList } from "@/components/typed-fields/fact-list";
+import { FactList } from "@/components/typed-fields/fact-list";
+import { editableItemFact } from "./editable-item-fact";
 import { itemFacts } from "./item-facts-list";
 import type { ItemFormData } from "./item-form-data";
-import { ItemInlineEditor } from "./item-inline-editor";
-import type { ItemEditGroup } from "./item-update-input";
 
 export type ItemDetailsSectionProps = {
   item: ItemDto;
@@ -13,29 +11,6 @@ export type ItemDetailsSectionProps = {
   data: ItemFormData;
   canEdit: boolean;
 };
-
-type EditableInput = {
-  fact: Fact;
-  editLabel: string;
-  group: ItemEditGroup;
-  fieldKey?: string;
-} & ItemDetailsSectionProps;
-
-/** A fact with its own pencil: a popover with just that field (like the order page's facts). */
-function editable({ fact, editLabel, group, fieldKey, item, data, canEdit }: EditableInput): Fact {
-  return {
-    ...fact,
-    node: (
-      <EditableFact
-        canEdit={canEdit}
-        editLabel={editLabel}
-        editor={<ItemInlineEditor item={item} data={data} group={group} fieldKey={fieldKey} />}
-      >
-        {fact.value}
-      </EditableFact>
-    ),
-  };
-}
 
 /**
  * Description, type, venue and the type's own fields. Each fact but the type (fixed at create)
@@ -55,7 +30,7 @@ export async function ItemDetailsSection(props: ItemDetailsSectionProps) {
   });
   const description = { label: t("fields.description"), value: item.description ?? "–" };
   const facts = [
-    editable({
+    editableItemFact({
       ...props,
       fact: description,
       editLabel: page("editFact", { label: description.label }),
@@ -64,7 +39,7 @@ export async function ItemDetailsSection(props: ItemDetailsSectionProps) {
     ...(typeFact ? [typeFact] : []),
     ...(venueFact
       ? [
-          editable({
+          editableItemFact({
             ...props,
             fact: venueFact,
             editLabel: page("editFact", { label: venueFact.label }),
@@ -73,7 +48,7 @@ export async function ItemDetailsSection(props: ItemDetailsSectionProps) {
         ]
       : []),
     ...own.map((fact, index) =>
-      editable({
+      editableItemFact({
         ...props,
         fact,
         editLabel: page("editFact", { label: fact.label }),

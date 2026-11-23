@@ -23,7 +23,8 @@ type PriceUnitFieldProps = {
   control: UseFormReturn<ItemFormValues, unknown, ItemFormOutput>["control"];
 };
 
-function PriceUnitField({ control }: PriceUnitFieldProps) {
+/** The price unit select (per person, per unit, per hour or flat). */
+export function PriceUnitField({ control }: PriceUnitFieldProps) {
   const t = useTranslations("item");
   return (
     <FormController

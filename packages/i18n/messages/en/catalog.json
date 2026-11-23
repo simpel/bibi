@@ -208,12 +208,10 @@
     },
     "page": {
       "details": "Details",
-      "timing": "Booking and buffers",
       "setup": "Setup before",
       "teardown": "Teardown after",
       "minutes": "{minutes} min",
       "fromType": "{minutes} min (from the type)",
-      "noPrice": "No price set",
       "noParts": "No parts yet",
       "noCustomisations": "No customisation groups yet",
       "editPicture": "Edit picture",
@@ -221,10 +219,18 @@
       "titleLabel": "Name",
       "titleUpdated": "Name saved",
       "editPrice": "Edit price",
-      "editTiming": "Edit booking and buffers",
       "editParts": "Edit parts",
       "editCustomisations": "Edit customisations",
-      "editFact": "Edit {label}"
+      "editFact": "Edit {label}",
+      "createOrder": "Create order",
+      "capacity": "Capacity",
+      "people": "people",
+      "noCapacity": "No people limit",
+      "editCapacity": "Edit capacity",
+      "defaultLength": "Default length",
+      "editDefaultLength": "Edit default length",
+      "vat": "VAT {percent} %",
+      "vatDefault": "The venue's VAT"
     }
   },
   "itemState": {
@@ -827,11 +833,8 @@
       "noLayouts": "No layout drawn yet.",
       "noCapacity": "No capacity yet",
       "capacity": "Capacity {capacity}",
-      "maxPeople": "People limit: {count}",
       "editFloorPlan": "Edit floor plan",
-      "editLayout": "Edit {name}",
-      "editPeopleLimit": "Edit people limit",
-      "noPeopleLimit": "No people limit"
+      "editLayout": "Edit {name}"
     },
     "detailsDialog": {
       "title": "Edit layout",

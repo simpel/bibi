@@ -1,8 +1,12 @@
 import type { ItemDto } from "@bibi/core";
+import { Button } from "@bibi/ui";
+import { PlusIcon } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
-import { HistoryMenu } from "@/features/audit-log/ui/history-sheet";
+import { Link } from "@/lib/navigation";
 import { type CallerAbilities, can } from "@/server/caller-abilities";
-import { ArchiveItemButton } from "./archive-item-button";
+import { itemOrderHref } from "../../order/intake/intake-slot";
+import { ItemMoreMenu } from "./item-more-menu";
 
 export type ItemActionsProps = {
   item: ItemDto;
@@ -12,15 +16,27 @@ export type ItemActionsProps = {
 };
 
 /**
- * Archive and the more menu with history, each by its permission. Everything else on the item
- * page is edited in place, its layouts from their own cards (no Edit or Layouts button here).
+ * The item page's actions: Create order with this item (`order:write`), then the ⋯ menu with
+ * history and Archive. Everything else on the page is edited in place.
  */
-export function ItemActions({ item, abilities, history }: ItemActionsProps) {
-  const canArchive = can({ abilities, permission: "item:delete" });
+export async function ItemActions({ item, abilities, history }: ItemActionsProps) {
+  const t = await getTranslations("item.page");
+  const canOrder = can({ abilities, permission: "order:write" }) && item.status === "ACTIVE";
   return (
     <>
-      {canArchive ? <ArchiveItemButton item={item} /> : null}
-      {history ? <HistoryMenu history={history} /> : null}
+      {canOrder ? (
+        <Button asChild>
+          <Link href={itemOrderHref({ itemId: item.id })}>
+            <PlusIcon />
+            {t("createOrder")}
+          </Link>
+        </Button>
+      ) : null}
+      <ItemMoreMenu
+        item={item}
+        history={history}
+        canArchive={can({ abilities, permission: "item:delete" })}
+      />
     </>
   );
 }

@@ -20,10 +20,10 @@ import { BundleOwner } from "./bundle-owner";
 import { ItemActions } from "./item-actions";
 import { ItemDetailsSection } from "./item-details-section";
 import { ItemHoursSection } from "./item-hours-section";
-import { ItemInlineEditor } from "./item-inline-editor";
 import { ItemPictureEditable } from "./item-picture-editable";
 import { ItemResolutionSection } from "./item-resolution-section";
 import { ItemSections } from "./item-sections";
+import { ItemStatCards } from "./item-stat-cards";
 import { ItemTitle } from "./item-title";
 
 export type ItemDetailProps = { locale: Locale; id: string };
@@ -63,16 +63,12 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
       />
       <LastEdited entityType="item" entityId={item.value.id} />
       {item.value.customerId ? <BundleOwner customerId={item.value.customerId} /> : null}
+      <ItemStatCards item={item.value} type={type} data={data.value} canEdit={canEdit} />
       <ItemDetailsSection item={item.value} type={type} data={data.value} canEdit={canEdit} />
       <ItemSections item={item.value} type={type} data={data.value} canEdit={canEdit} />
       {hasLayouts ? (
         <DeferredSection>
-          <LayoutsSection
-            locale={locale}
-            itemId={item.value.id}
-            canEdit={canEdit}
-            limitEditor={<ItemInlineEditor item={item.value} data={data.value} group="layouts" />}
-          />
+          <LayoutsSection locale={locale} itemId={item.value.id} canEdit={canEdit} />
         </DeferredSection>
       ) : null}
       {type?.capabilities.includes("BUNDLE") ? (

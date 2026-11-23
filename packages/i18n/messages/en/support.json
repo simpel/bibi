@@ -82,7 +82,11 @@
           },
           "itemEdit": {
             "question": "How do I change an item?",
-            "answer": "Open the item and click the pencil next to what you want to change: the name, the picture, a single detail such as the description or the floor, or the title of a section such as **Price** or **Booking and buffers**. Change it and click **Save**; only that part is saved.\nFor a room, each layout has its own pencil, the pencil next to the people limit changes it, and **Edit floor plan** opens the room's walls, doors and windows."
+            "answer": "Open the item and hover what you want to change: the name, the picture, a figure at the top such as **Price** or **Capacity**, or a single detail such as the floor or the setup time. Click the pencil, change it and click **Save**; only that setting is saved.\nFor a room, each layout has its own pencil, and **Edit floor plan** opens the room's walls, doors and windows. Archive the item from the **⋯** menu."
+          },
+          "itemOrder": {
+            "question": "Can I start an order from an item?",
+            "answer": "Yes. Open the item and choose **Create order**. The new order only offers packages that include the item, and a custom booking starts with it; you choose the day and times in step 2."
           },
           "itemPicture": {
             "question": "How do I give an item an icon or a picture?",

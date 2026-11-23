@@ -9,7 +9,9 @@ export type ItemEditGroup =
   | "venue"
   | "field"
   | "price"
-  | "timing"
+  | "duration"
+  | "setup"
+  | "teardown"
   | "layouts"
   | "parts"
   | "customisations";
@@ -21,7 +23,9 @@ const GROUP_KEYS = {
   venue: ["venueId"],
   field: [],
   price: ["priceMinor", "priceUnit", "vatRatePercent"],
-  timing: ["defaultDurationMinutes", "setupMinutes", "teardownMinutes"],
+  duration: ["defaultDurationMinutes"],
+  setup: ["setupMinutes"],
+  teardown: ["teardownMinutes"],
   layouts: ["maxPeople"],
   parts: ["parts"],
   customisations: ["customisationGroups"],

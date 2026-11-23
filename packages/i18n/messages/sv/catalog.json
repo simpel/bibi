@@ -208,12 +208,10 @@
     },
     "page": {
       "details": "Uppgifter",
-      "timing": "Bokning och ställtider",
       "setup": "Ställtid före",
       "teardown": "Nedplock efter",
       "minutes": "{minutes} min",
       "fromType": "{minutes} min (från typen)",
-      "noPrice": "Inget pris satt",
       "noParts": "Inga delar än",
       "noCustomisations": "Inga anpassningsgrupper än",
       "editPicture": "Ändra bild",
@@ -221,10 +219,18 @@
       "titleLabel": "Namn",
       "titleUpdated": "Namnet är sparat",
       "editPrice": "Ändra pris",
-      "editTiming": "Ändra bokning och ställtider",
       "editParts": "Ändra delar",
       "editCustomisations": "Ändra anpassningar",
-      "editFact": "Ändra {label}"
+      "editFact": "Ändra {label}",
+      "createOrder": "Skapa bokning",
+      "capacity": "Kapacitet",
+      "people": "personer",
+      "noCapacity": "Ingen personbegränsning",
+      "editCapacity": "Ändra kapacitet",
+      "defaultLength": "Standardlängd",
+      "editDefaultLength": "Ändra standardlängd",
+      "vat": "Moms {percent} %",
+      "vatDefault": "Anläggningens moms"
     }
   },
   "itemState": {
@@ -827,11 +833,8 @@
       "noLayouts": "Ingen möblering ritad än.",
       "noCapacity": "Ingen kapacitet än",
       "capacity": "Kapacitet {capacity}",
-      "maxPeople": "Personbegränsning: {count}",
       "editFloorPlan": "Redigera planritning",
-      "editLayout": "Redigera {name}",
-      "editPeopleLimit": "Ändra personbegränsning",
-      "noPeopleLimit": "Ingen personbegränsning"
+      "editLayout": "Redigera {name}"
     },
     "detailsDialog": {
       "title": "Redigera möblering",

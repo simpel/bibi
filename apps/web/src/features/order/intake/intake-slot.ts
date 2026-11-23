@@ -7,7 +7,8 @@ import { TimeOfDaySchema, type WhenFormValues } from "./when-form-schema";
 /**
  * A free slot picked on the calendar: the resource (an item), its plain day and wall times in
  * the organization's zone (ADR 0064). The intake starts from it (spec "Starting from the
- * calendar").
+ * calendar"). From an item's page only the item is given: date and times are empty and step 2
+ * asks for them.
  */
 export type IntakeSlot = { itemId: string; date: string; from: string; to: string };
 
@@ -26,8 +27,14 @@ export type SlotFromSearchInput = { search: Record<string, SearchValue> };
 
 const single = ({ value }: { value: SearchValue }) => (typeof value === "string" ? value : "");
 
-/** The slot in `/new/order?slot=<itemId>&date=&from=&to=`, or null when any part is missing. */
+/**
+ * The slot in `/new/order?slot=<itemId>&date=&from=&to=`, or just `?slot=<itemId>` (the item,
+ * time still to choose); null when it is missing or a given part is malformed.
+ */
 export function slotFromSearch({ search }: SlotFromSearchInput): IntakeSlot | null {
+  const itemId = single({ value: search.slot });
+  const timeless = [search.date, search.from, search.to].every((part) => part === undefined);
+  if (itemId && timeless) return { itemId, date: "", from: "", to: "" };
   const parsed = SlotSchema.safeParse({
     slot: single({ value: search.slot }),
     date: single({ value: search.date }),
@@ -37,6 +44,11 @@ export function slotFromSearch({ search }: SlotFromSearchInput): IntakeSlot | nu
   if (!parsed.success) return null;
   const { slot, date, from, to } = parsed.data;
   return { itemId: slot, date, from, to };
+}
+
+/** Create order from an item's page: the intake with only the item (`?slot=<itemId>`). */
+export function itemOrderHref({ itemId }: { itemId: string }): string {
+  return `${ROUTES.orderNew}?${new URLSearchParams({ slot: itemId }).toString()}`;
 }
 
 /** The intake's address for a slot; `slotFromSearch` reads it back. */

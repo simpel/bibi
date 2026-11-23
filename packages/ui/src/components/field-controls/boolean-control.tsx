@@ -1,9 +1,9 @@
-import { Checkbox } from "../checkbox/checkbox";
+import { Switch } from "../switch/switch";
 import type { ControlProps } from "./control-props";
 
 export type BooleanControlProps = ControlProps<boolean>;
 
-/** BOOLEAN field: a checkbox (the label lives in the field's label). */
+/** BOOLEAN field: a switch; the field's label sits beside it (`FieldController`). */
 export function BooleanControl({ value, onChange, ...aria }: BooleanControlProps) {
-  return <Checkbox checked={value} onCheckedChange={(next) => onChange(next === true)} {...aria} />;
+  return <Switch checked={value} onCheckedChange={(next) => onChange(next === true)} {...aria} />;
 }

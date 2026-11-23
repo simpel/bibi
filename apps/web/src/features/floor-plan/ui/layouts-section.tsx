@@ -3,9 +3,7 @@ import type { Locale } from "@bibi/i18n";
 import { Button, FloorDrawing } from "@bibi/ui";
 import { PencilIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import type { ReactNode } from "react";
 import { CornerEditButton } from "@/components/inline-edit/corner-edit-button";
-import { EditableFact } from "@/components/inline-edit/editable-fact";
 import { ErrorState } from "@/components/states/error-state";
 import { Link } from "@/lib/navigation";
 import { handleLoadError } from "@/server/load-error";
@@ -17,10 +15,8 @@ import { CreateLayoutButton } from "./create-layout-button";
 export type LayoutsSectionProps = {
   locale: Locale;
   itemId: string;
-  /** `item:write`: pencils on the layouts and the people limit, Edit floor plan, Create layout. */
+  /** `item:write`: pencils on the layouts, Edit floor plan, Create layout. */
   canEdit: boolean;
-  /** The people limit's own form, opened from the pencil beside it. */
-  limitEditor: ReactNode;
 };
 
 type Room = { widthCm: number; depthCm: number; outline: [number, number][] };
@@ -72,20 +68,15 @@ function LayoutThumbnail({
 
 /**
  * The room's layouts as thumbnails (ADR 0102, 0103): name, capacity and what each suits, with
- * the room's people limit edited in place, a pencil on each layout, a Create layout card last
- * and Edit floor plan.
+ * a pencil on each layout, a Create layout card last and Edit floor plan (the room's people
+ * limit is the Capacity stat card at the top of the item page).
  */
-export async function LayoutsSection({
-  locale,
-  itemId,
-  canEdit,
-  limitEditor,
-}: LayoutsSectionProps) {
+export async function LayoutsSection({ locale, itemId, canEdit }: LayoutsSectionProps) {
   const t = await getTranslations("floorPlan.section");
   const plan = await runOperation({ operation: getFloorPlan, input: { itemId } });
   if (!plan.ok)
     return <ErrorState inline errorKey={handleLoadError({ error: plan.error, locale })} />;
-  const { widthCm, depthCm, outline, maxPeople, layouts } = plan.value;
+  const { widthCm, depthCm, outline, layouts } = plan.value;
   const room = { widthCm, depthCm, outline };
   const fixed = plan.value.elements.map((element) => storedToDrawing({ element }));
   return (
@@ -98,11 +89,6 @@ export async function LayoutsSection({
           </Button>
         ) : null}
       </div>
-      <p className="text-sm text-muted-foreground">
-        <EditableFact canEdit={canEdit} editLabel={t("editPeopleLimit")} editor={limitEditor}>
-          {maxPeople === null ? t("noPeopleLimit") : t("maxPeople", { count: maxPeople })}
-        </EditableFact>
-      </p>
       {layouts.length || canEdit ? (
         <div className="flex flex-wrap gap-3">
           {layouts.map((layout) => (

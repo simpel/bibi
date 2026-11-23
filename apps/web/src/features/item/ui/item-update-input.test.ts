@@ -47,8 +47,10 @@ describe("toUpdateInput", () => {
     expect(cleared).toEqual({ id: "i1", fields: { floor: null } });
   });
 
-  it("leaves out a group's keys the type does not have", () => {
-    const input = toUpdateInput({ item, values, type: undefined, groups: ["timing"] });
-    expect(input).toEqual({ id: "i1", setupMinutes: null, teardownMinutes: 15 });
+  it("sends one setting at a time and leaves out keys the type does not have", () => {
+    const input = toUpdateInput({ item, values, type: undefined, groups: ["teardown"] });
+    expect(input).toEqual({ id: "i1", teardownMinutes: 15 });
+    const duration = toUpdateInput({ item, values, type: undefined, groups: ["duration"] });
+    expect(duration).toEqual({ id: "i1" });
   });
 });
