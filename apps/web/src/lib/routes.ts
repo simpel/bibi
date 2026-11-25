@@ -13,6 +13,8 @@ export const ROUTES = {
   signUp: "/sign-up",
   venues: "/venues",
   profile: "/profile",
+  /** Public help: common questions and staff guides. */
+  support: "/support",
   skills: "/skills",
   skillNew: "/new/skill",
   items: "/items",

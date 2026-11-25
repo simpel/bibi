@@ -161,7 +161,24 @@
     "approvalExpired": "Förslaget har gått ut eller kan inte godkännas. Be assistenten föreslå på nytt.",
     "unavailable": "Funktionen är inte tillgänglig just nu. En administratör behöver konfigurera den.",
     "slugUnavailable": "Den adressen togs precis. Använd förslaget eller välj en annan.",
-    "validationUnmapped": "Kunde inte spara: {message}"
+    "validationUnmapped": "Kunde inte spara: {message}",
+    "page": {
+      "notFound": {
+        "code": "404",
+        "title": "Det här rummet finns inte på planritningen",
+        "description": "Sidan kan ha flyttats, arkiverats eller så har länken ett stavfel. Kontrollera adressen eller gå tillbaka till ditt arbete."
+      },
+      "serverError": {
+        "code": "500",
+        "title": "Något gick fel bakom kulisserna",
+        "description": "Vi kunde inte ladda klart sidan. Försök igen om en stund, och hör av dig om det fortsätter."
+      },
+      "home": "Gå till mitt arbete",
+      "help": "Få hjälp",
+      "retry": "Försök igen",
+      "reference": "Referens: {digest}",
+      "referenceHint": "Ange referensen om du kontaktar supporten."
+    }
   },
   "nav": {
     "myWork": "Mitt arbete",

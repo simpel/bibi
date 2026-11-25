@@ -161,7 +161,24 @@
     "approvalExpired": "The proposal has expired or cannot be approved. Ask the assistant to propose it again.",
     "unavailable": "This feature is not available right now. An administrator needs to configure it.",
     "slugUnavailable": "That address was just taken. Use the suggestion or pick another.",
-    "validationUnmapped": "Could not save: {message}"
+    "validationUnmapped": "Could not save: {message}",
+    "page": {
+      "notFound": {
+        "code": "404",
+        "title": "This room is not on the floor plan",
+        "description": "The page may have moved, been archived, or the link has a typo. Check the address, or head back to your work."
+      },
+      "serverError": {
+        "code": "500",
+        "title": "Something went wrong behind the scenes",
+        "description": "We could not finish loading this page. Try again in a moment, and if it keeps happening, get in touch."
+      },
+      "home": "Go to my work",
+      "help": "Get help",
+      "retry": "Try again",
+      "reference": "Reference: {digest}",
+      "referenceHint": "Mention this reference if you contact support."
+    }
   },
   "nav": {
     "myWork": "My work",
