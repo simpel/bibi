@@ -80,6 +80,7 @@ const VersionQuoteSchema = z.object({
   id: z.string().describe("quote.get"),
   version: z.number().int().describe("The quote's own version number"),
   quoteStatus: QuoteStatusSchema,
+  totalInclVatMinor: z.number().int().describe("The quote's total incl. VAT, minor units"),
 });
 
 export const OrderVersionSchema = z.object({

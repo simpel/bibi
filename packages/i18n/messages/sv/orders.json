@@ -162,7 +162,7 @@
       "startsAt": "Startar",
       "headcount": "Antal gäster",
       "assignee": "Ansvarig",
-      "version": "Version",
+      "quoted": "Offererat",
       "headcountGuaranteed": "Garanterat",
       "headcountEstimated": "Beräknat",
       "headcountWasEstimated": "Garanterat · {count, number} beräknat"
@@ -279,7 +279,7 @@
       "customer": "Kund",
       "tasks": "Uppgifter",
       "runSheets": "Körscheman",
-      "money": "Ekonomi",
+      "money": "Offert & betalning",
       "details": "Detaljer",
       "comments": "Kommentarer",
       "messages": "Meddelanden",

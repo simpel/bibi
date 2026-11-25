@@ -162,7 +162,7 @@
       "startsAt": "Starts",
       "headcount": "Headcount",
       "assignee": "Assigned to",
-      "version": "Version",
+      "quoted": "Quoted",
       "headcountGuaranteed": "Guaranteed",
       "headcountEstimated": "Estimated",
       "headcountWasEstimated": "Guaranteed · {count, number} estimated"
@@ -279,7 +279,7 @@
       "customer": "Customer",
       "tasks": "Tasks",
       "runSheets": "Run sheets",
-      "money": "Money",
+      "money": "Quote & payments",
       "details": "Details",
       "comments": "Comments",
       "messages": "Messages",

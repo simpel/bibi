@@ -38,7 +38,7 @@ export const VERSION_SELECT = {
   restoredFrom: { select: { number: true } },
   quotes: {
     where: { status: "ACTIVE" },
-    select: { id: true, version: true, quoteStatus: true },
+    select: { id: true, version: true, quoteStatus: true, totalInclVatMinor: true },
     orderBy: { version: "asc" },
   },
 } as const;

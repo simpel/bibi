@@ -136,7 +136,7 @@
           },
           "orderTabs": {
             "question": "Var hittar jag offerter, körscheman och kommentarer på en bokning?",
-            "answer": "Bokningens sida har flikar längst ner i sidhuvudet: **Program** för rader och behov, **Kund** för kunden och kontaktpersonen, **Körscheman**, **Ekonomi** för offerter, betalningar och vad som är kvar att betala, **Detaljer** för typ, budget, era egna fält och vem som arbetar med bokningen, **Kommentarer**, **Meddelanden** från kunden och **Aktivitet** för statusändringar och versioner. Klicka på en flik för att byta; adressen i webbläsaren kommer ihåg den, så en länk öppnar samma flik.\nDet som behöver din uppmärksamhet, som en dubbelbokning eller en uppgift till dig, syns överst under rubriken.\nEn liten varningsikon på **Körscheman** betyder att ett körschema inte är skickat än, har ändrats sedan det skickades eller är blockerat. Öppna fliken för att skicka det."
+            "answer": "Bokningens sida har flikar längst ner i sidhuvudet: **Program** för rader och behov, **Kund** för kunden och kontaktpersonen, **Körscheman**, **Offert & betalning** för offerter, betalningar och vad som är kvar att betala, **Detaljer** för typ, budget, era egna fält och vem som arbetar med bokningen, **Kommentarer**, **Meddelanden** från kunden och **Aktivitet** för statusändringar och versioner. Klicka på en flik för att byta; adressen i webbläsaren kommer ihåg den, så en länk öppnar samma flik.\nDet som behöver din uppmärksamhet, som en dubbelbokning eller en uppgift till dig, syns överst under rubriken.\nEn liten varningsikon på **Körscheman** betyder att ett körschema inte är skickat än, har ändrats sedan det skickades eller är blockerat. Öppna fliken för att skicka det."
           },
           "orderVersions": {
             "question": "Hur går jag tillbaka till en tidigare version av en bokning?",
@@ -144,7 +144,7 @@
           },
           "quoteMatches": {
             "question": "Stämmer bokningen fortfarande med offerten jag skickade?",
-            "answer": "Titta på **Version** under bokningens rubrik. Ovanför numret står **Stämmer med offert v2** när inget har ändrats sedan offerten skickades, annars hur många ändringar det finns. Klicka på **Versioner** under **Program** och sedan på **Visa ändringar** på offertens version för att se dem, och återställ den om du vill ha tillbaka bokningen som den var.\nOm kunden väljer en äldre offert efter att du skickat en nyare, öppna den offerten och klicka på **Kunden valde den här versionen**. Bokningen går tillbaka till det den offerten erbjöd och den nyare offerten markeras som avböjd."
+            "answer": "Titta på **Offererat** under bokningens rubrik: där står summan på offerten du senast skickade. Ovanför står **Stämmer med offert v2** när inget har ändrats sedan dess, annars hur många ändringar det finns. Klicka på summan för att öppna offerten. Klicka på **Versioner** under **Program** och sedan på **Visa ändringar** på offertens version för att se dem, och återställ den om du vill ha tillbaka bokningen som den var.\nOm kunden väljer en äldre offert efter att du skickat en nyare, öppna den offerten och klicka på **Kunden valde den här versionen**. Bokningen går tillbaka till det den offerten erbjöd och den nyare offerten markeras som avböjd."
           },
           "createFromBoard": {
             "question": "Kan jag skapa en order direkt från tavlan?",
@@ -422,7 +422,7 @@
           },
           "needsAccounting": {
             "question": "Varför kan jag inte skapa förskott, faktura eller betallänk?",
-            "answer": "Bibi behöver ett kopplat bokföringssystem för att ta betalt, eftersom Fortnox eller Spiris gör varje faktura och förskottsfaktura. Tills ett är kopplat visar orderns flik **Ekonomi** det i stället för knapparna.\nEn administratör kopplar ett under Administration → Integrationer och väljer det för **Faktura** under Administration → Betalningar."
+            "answer": "Bibi behöver ett kopplat bokföringssystem för att ta betalt, eftersom Fortnox eller Spiris gör varje faktura och förskottsfaktura. Tills ett är kopplat visar orderns flik **Offert & betalning** det i stället för knapparna.\nEn administratör kopplar ett under Administration → Integrationer och väljer det för **Faktura** under Administration → Betalningar."
           },
           "unavailable": {
             "question": "Varför står det Inte tillgänglig på en anslutning?",

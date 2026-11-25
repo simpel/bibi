@@ -6,9 +6,9 @@ import { nameOf } from "@/components/form/named-option";
 import { EditableFact } from "@/components/inline-edit/editable-fact";
 import type { Fact } from "@/components/typed-fields/fact-list";
 import { Link } from "@/lib/navigation";
-import { customerRoute } from "@/lib/routes";
+import { customerRoute, orderRoute } from "@/lib/routes";
 import { getDateTimeFormat } from "@/server/date-time-format";
-import { loadVersionFact } from "../../order-version/version-fact";
+import { loadQuoteFact } from "../../order-version/quote-fact";
 import type { OrderNames } from "../load-order-names";
 import { desiredWhen } from "./desired-period";
 import type { OrderFormData } from "./order-form-data";
@@ -62,16 +62,16 @@ type KeyFact = Fact & { truncate?: boolean; preheader?: string; keep?: boolean }
 
 /**
  * The primary facts under the title: the customer (fixed at creation), the dates and the
- * headcount, edited where they are shown, and the order's version (ADR 0116). An editable fact
+ * headcount, edited where they are shown, and the quoted sum, linking to its tab (ADR 0116). An editable fact
  * shows even when empty, so it can be filled in. The contact person is under Details.
  */
 export async function OrderKeyFacts({ order, data, canEdit, formData }: OrderKeyFactsProps) {
-  const [t, edit, common, format, version] = await Promise.all([
+  const [t, edit, common, format, quoted] = await Promise.all([
     getTranslations("order.fields"),
     getTranslations("order.inlineEdit"),
     getTranslations("common"),
     getDateTimeFormat(),
-    loadVersionFact({ orderId: order.id }),
+    loadQuoteFact({ orderId: order.id }),
   ]);
   const hidden = data.customersHidden ? common("hidden") : undefined;
   const { customerId } = order;
@@ -107,7 +107,15 @@ export async function OrderKeyFacts({ order, data, canEdit, formData }: OrderKey
       node: editable({ group: "headcount", node: headcount.value }),
       keep: canEdit,
     },
-    ...(version ? [{ label: t("version"), ...version }] : []),
+    ...(quoted
+      ? [
+          {
+            label: t("quoted"),
+            ...quoted,
+            node: <Link href={`${orderRoute({ id: order.id })}?tab=money`}>{quoted.value}</Link>,
+          },
+        ]
+      : []),
   ];
   const shown = facts
     .filter((fact) => fact.keep || filled({ facts: [fact] }).length > 0)
