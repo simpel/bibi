@@ -19,6 +19,8 @@
     "goToTypes": "Gå till typer",
     "complete": "Markera {name} som klar",
     "reopen": "Markera {name} som inte klar",
+    "markDone": "Markera som klar",
+    "markNotDone": "Markera som inte klar",
     "createOrder": "Skapa bokning",
     "archive": "Arkivera uppgift",
     "archiveConfirm": "{name} försvinner från kalendern, listorna och Mitt arbete.",

@@ -19,6 +19,8 @@
     "goToTypes": "Go to types",
     "complete": "Mark {name} as done",
     "reopen": "Mark {name} as not done",
+    "markDone": "Mark as done",
+    "markNotDone": "Mark as not done",
     "createOrder": "Create order",
     "archive": "Archive task",
     "archiveConfirm": "{name} is removed from the calendar, the lists and My work.",

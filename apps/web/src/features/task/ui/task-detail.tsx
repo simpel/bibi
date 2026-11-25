@@ -16,7 +16,6 @@ import { loadMemberNames } from "../load-member-names";
 import { loadTask } from "../load-task";
 import { taskFormDataPromise } from "../load-task-form-data";
 import { TaskDetailsSection } from "./task-details-section";
-import { TaskDoneToggle } from "./task-done-toggle";
 import { type TaskFactNames, TaskKeyFacts } from "./task-facts";
 import { TaskHeaderActions } from "./task-header-actions";
 
@@ -39,7 +38,7 @@ async function loadFactNames({ task }: { task: TaskDto }): Promise<TaskFactNames
   };
 }
 
-/** `/tasks/{id}`: the task edited in place, done with its checkbox, Create order while unlinked. */
+/** `/tasks/{id}`: the task edited in place, done from the header like Follow, Create order while unlinked. */
 export async function TaskDetail({ locale, id }: TaskDetailProps) {
   const [t, abilities, result] = await Promise.all([
     getTranslations("task"),
@@ -61,15 +60,13 @@ export async function TaskDetail({ locale, id }: TaskDetailProps) {
         <PageHeader
           title={name}
           heading={
-            <h1 className="flex items-center gap-3 text-3xl">
-              <TaskDoneToggle task={{ id, name, done }} canEdit={canEdit} />
-              <span className={cn(done && "text-muted-foreground line-through")}>{name}</span>
-            </h1>
+            <h1 className={cn("text-3xl", done && "text-muted-foreground line-through")}>{name}</h1>
           }
           description={status}
           actions={
             <TaskHeaderActions
-              task={{ id, name }}
+              task={{ id, name, done }}
+              canEdit={canEdit}
               canCreateOrder={!task.orderId && can({ abilities, permission: "order:write" })}
               canArchive={can({ abilities, permission: "task:delete" })}
             />
