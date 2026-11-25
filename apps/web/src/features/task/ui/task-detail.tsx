@@ -78,11 +78,17 @@ export async function TaskDetail({ locale, id }: TaskDetailProps) {
         <TaskKeyFacts task={task} names={names} canEdit={canEdit} formData={formData} />
       </div>
       <DeferredSection>
-        <TaskDetailsSection task={task} canEdit={canEdit} formData={formData} />
+        <TaskDetailsSection
+          task={task}
+          canEdit={canEdit}
+          formData={formData}
+          dangerArea={
+            can({ abilities, permission: "task:delete" }) ? (
+              <TaskDangerArea task={{ id, name }} />
+            ) : null
+          }
+        />
       </DeferredSection>
-      {can({ abilities, permission: "task:delete" }) ? (
-        <TaskDangerArea task={{ id, name }} />
-      ) : null}
     </div>
   );
 }
