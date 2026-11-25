@@ -469,6 +469,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Relations**
 - `1:N` has → Contact
 - `1:N` sends → Order
+- `1:N` has → Task (ADR 0117)
 - `N:0..1` uses → PriceList
 - - `1:N` owns bundles → Item (customer-specific items, "Save as bundle")
 
@@ -524,6 +525,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` has → OrderStatusChange (its status history)
 - `1:N` has → OrderEstimate (its value estimates)
 - `1:N` has → Quote, Line, Requirement, Comment, Run sheet, Payment, Deposit, Invoice
+- `1:N` has linked → Task (ADR 0117)
 - `1:N` InboundEmail is a reply on this (legacy)
 - `1:N` InboundMessage is attached to this (set once)
 - `1:N` is answered for by → Assignment
@@ -674,7 +676,6 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `N:0..1` is an option of → AlternativeGroup
 - `N:0..1` is a part or option of → Line (its parent line)
 - `1:0..1` holds → Occupancy (derived from the state's `hold`)
-- `1:N` requires → Task
 - `1:N` AccessCode opens for this
 
 > Operations (resource `line`): `line.list|get|create|update|archive`, `line.chooseOptions({ lineId, options: [{ itemId, quantity? }] })` (permission `program:write`, plus `item:read` since the options are items; web, GraphQL, REST `POST /lines/{lineId}/options`, MCP) and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followStatus({ lineId })` (clears the override and applies the current status's grid cell). A new line starts in the grid cell of the order's status for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `order.changeStatus` moves the lines that are not overridden to the target status's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A closing status moves every line to its type's released state. Who answers for a line comes from the order's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both with the line's `lineId`, written by trigger, ADR 0053). An overlap with a hard hold, setup time or block is refused (`CONFLICT`, issue `lines.<id>`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change (clearing both times releases it); `archive` releases it; an order that is archived or enters a closing status holds nothing. Every change is audited. Every line read on every surface carries the effective quantity, price, discount and VAT with their sources. A second option of an alternative group going into a hard-hold state (by `line.changeState`, `line.update` or a status move) is `CONFLICT`.
@@ -1274,7 +1275,6 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Relations**
 - `1:N` is assignee of → Assignment
 - `1:N` follows → Assignment (`AssignmentFollower`)
-- `1:N` is responsible for → Task
 - `1:N` saves → UserPreference
 - `1:1` has → UserProfile (optional until the welcome flow)
 - `1:N` works → UserWorkingHours (one per weekday)
@@ -1509,20 +1509,27 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 >
 > Related (ADR 0078): `Member.primary` (owned, Better Auth's table, at most one per user) marks the user's primary organization, where a new session starts; chosen on `/welcome/organizations`.
 
-### Task
+### Task (`Task`)
 
-*Status 2* · Set up room, AV test, cleaning.
+*MVP ([ADR 0117](decisions/0117-tasks.md), accepted, being built)* · Timed work around a customer that is not sold or delivered: a site visit, a tasting, a planning meeting, "final headcount due". It can exist before any order and be linked to one later. Internal prep (setup, teardown) is not a task: it is line buffers and demands (ADR 0059). Spec: `docs/specs/tasks.md`.
 
 **Attributes**
-- linked line
-- type
-- responsible
-- deadline
-- status
+- type (the organization's own, base `TASK`) and custom fields; the type's `taskShape` (`MEETING` | `DEADLINE`)
+- customer and contact (both required; the contact must work at the customer)
+- order (`orderId`, optional, set once, same customer)
+- item (`itemId`, optional, e.g. the room to show; advisory, never holds)
+- starts at (`startsAt`, required: the start of a meeting or the due time of a deadline) and ends at (`endsAt`, required for `MEETING`, null for `DEADLINE`)
+- note (≤ 4000)
+- done at, done by (`doneAt`, `doneById`, owned; open while null)
+- warnings (derived: `ITEM_BUSY` when an occupancy of the item overlaps the meeting) and `overdue` (derived: open and past its due or end time)
 
 **Relations**
-- `N:1` User is responsible for this
-- `N:1` Line requires this
+- `N:1` Customer, Contact
+- `N:0..1` Order is linked to this
+- `N:0..1` Item is shown in this
+- `1:N` is answered for by → Assignment (one assignee plus followers)
+
+> Operations (feature `task`): `task.list|get` (`task:read`), `task.create|update|complete|reopen|linkOrder` (`task:write`), `task.archive` (`task:delete`). `order.create` takes `taskIds` and links them in the same transaction. Pipeline cards and order rows carry the order's next open task; `calendar.range` returns tasks beside bookings; an open task due today or overdue is a `TASK_DUE` need for its assignee.
 
 ### InboundMessage (`InboundMessage`)
 
