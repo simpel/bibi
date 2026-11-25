@@ -40,11 +40,18 @@ export async function TaskDetailsSection({ task, canEdit, formData }: TaskDetail
       ) : null}
       <EditableSection
         title={t("fields.note")}
+        titleHidden
         editLabel={t("inlineEdit.note")}
         canEdit={canEdit}
         editor={<TaskInlineEditor task={task} data={formData} groups={["note"]} />}
       >
-        <p className={task.note ? "whitespace-pre-line text-base" : "text-muted-foreground"}>
+        <p
+          className={
+            task.note
+              ? "whitespace-pre-line font-serif text-2xl leading-snug text-pretty"
+              : "text-muted-foreground"
+          }
+        >
           {task.note ?? t("noNote")}
         </p>
       </EditableSection>

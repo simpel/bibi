@@ -16,6 +16,7 @@ import { loadLinkableOrders } from "../load-linkable-orders";
 import { loadMemberNames } from "../load-member-names";
 import { loadTask } from "../load-task";
 import { taskFormDataPromise } from "../load-task-form-data";
+import { TaskDangerArea } from "./task-danger-area";
 import { TaskDetailsSection } from "./task-details-section";
 import { type TaskFactNames, TaskKeyFacts } from "./task-facts";
 import { TaskHeaderActions } from "./task-header-actions";
@@ -71,7 +72,6 @@ export async function TaskDetail({ locale, id }: TaskDetailProps) {
               canLinkOrder={!task.orderId && canEdit}
               linkableOrders={loadLinkableOrders({ task })}
               canCreateOrder={!task.orderId && can({ abilities, permission: "order:write" })}
-              canArchive={can({ abilities, permission: "task:delete" })}
             />
           }
         />
@@ -80,6 +80,9 @@ export async function TaskDetail({ locale, id }: TaskDetailProps) {
       <DeferredSection>
         <TaskDetailsSection task={task} canEdit={canEdit} formData={formData} />
       </DeferredSection>
+      {can({ abilities, permission: "task:delete" }) ? (
+        <TaskDangerArea task={{ id, name }} />
+      ) : null}
     </div>
   );
 }

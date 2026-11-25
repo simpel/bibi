@@ -30,6 +30,7 @@ export * from "./components/booking-tone/issue-badge";
 export * from "./components/booking-tone/legend-item";
 export { Button, type ButtonProps, buttonVariants } from "./components/button/button";
 export * from "./components/button-group/button-group";
+export * from "./components/danger-zone/danger-zone";
 export * from "./components/calendar/calendar";
 export * from "./components/capability-display/bookable-display";
 export * from "./components/capability-display/bundle-display";

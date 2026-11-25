@@ -7,17 +7,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@bibi/ui";
-import {
-  ArchiveIcon,
-  CheckIcon,
-  EllipsisIcon,
-  ListPlusIcon,
-  PlusIcon,
-  RotateCcwIcon,
-} from "lucide-react";
+import { CheckIcon, EllipsisIcon, ListPlusIcon, PlusIcon, RotateCcwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { NamedOption } from "@/components/form/named-option";
@@ -25,7 +17,6 @@ import { Link, useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import { setTaskDoneAction } from "../actions";
-import { ArchiveTaskDialog } from "./archive-task-dialog";
 import { TaskLinkOrderDialog } from "./task-link-order";
 
 export type TaskHeaderActionsProps = {
@@ -38,20 +29,17 @@ export type TaskHeaderActionsProps = {
   linkableOrders: Promise<readonly NamedOption[]>;
   /** Unlinked and `order:write`: Create order from the task, in the ⋯ menu (spec: tasks, step 4). */
   canCreateOrder: boolean;
-  /** `task:delete`. */
-  canArchive: boolean;
 };
 
 /**
- * Mark as done (with its label, first), then Add to order joined to a ⋯ menu with Create order
- * and Archive task, like the top bar's Create order. A linked task keeps only the ⋯ menu.
+ * Mark as done (with its label, first), then Add to order joined to a ⋯ menu with Create order,
+ * like the top bar's Create order. Archiving lives in the page's danger area.
  */
 export function TaskHeaderActions(props: TaskHeaderActionsProps) {
-  const { task, canEdit, canLinkOrder, linkableOrders, canCreateOrder, canArchive } = props;
+  const { task, canEdit, canLinkOrder, linkableOrders, canCreateOrder } = props;
   const t = useTranslations("task");
   const common = useTranslations("common");
   const router = useRouter();
-  const [archiving, setArchiving] = useState(false);
   const [linking, setLinking] = useState(false);
   const { run, pending } = useToastAction();
   const toggleDone = () =>
@@ -60,7 +48,7 @@ export function TaskHeaderActions(props: TaskHeaderActionsProps) {
       messages: { pending: common("saving"), success: t(task.done ? "reopened" : "completed") },
       onSuccess: () => router.refresh(),
     });
-  const hasMenu = canCreateOrder || canArchive;
+  const hasMenu = canCreateOrder;
   return (
     <div className="flex items-center gap-2">
       {canEdit ? (
@@ -99,13 +87,6 @@ export function TaskHeaderActions(props: TaskHeaderActionsProps) {
                   </Link>
                 </DropdownMenuItem>
               ) : null}
-              {canCreateOrder && canArchive ? <DropdownMenuSeparator /> : null}
-              {canArchive ? (
-                <DropdownMenuItem onSelect={() => setArchiving(true)}>
-                  <ArchiveIcon aria-hidden />
-                  {t("archive")}
-                </DropdownMenuItem>
-              ) : null}
             </DropdownMenuContent>
           </DropdownMenu>
         ) : null}
@@ -117,9 +98,6 @@ export function TaskHeaderActions(props: TaskHeaderActionsProps) {
           open={linking}
           onOpenChange={setLinking}
         />
-      ) : null}
-      {canArchive ? (
-        <ArchiveTaskDialog task={task} open={archiving} onOpenChange={setArchiving} />
       ) : null}
     </div>
   );

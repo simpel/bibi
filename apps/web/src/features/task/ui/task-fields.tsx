@@ -64,9 +64,12 @@ export function TaskWhenFields({ form, data }: FieldsProps) {
     return <DateTimeField form={form} name="startsAt" label={t("dueAt")} required />;
   }
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <DateTimeField form={form} name="startsAt" label={t("startsAt")} required />
-      <DateTimeField form={form} name="endsAt" label={t("endsAt")} required />
+    // Side by side only when the form itself is wide (the create page), stacked in a popover.
+    <div className="@container">
+      <div className="grid gap-4 @xl:grid-cols-2">
+        <DateTimeField form={form} name="startsAt" label={t("startsAt")} required />
+        <DateTimeField form={form} name="endsAt" label={t("endsAt")} required />
+      </div>
     </div>
   );
 }
