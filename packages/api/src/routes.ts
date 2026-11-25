@@ -57,6 +57,7 @@ import { runSheetDefinitionRoutes } from "./features/run-sheet-definition/rest";
 import { settingsRoutes } from "./features/settings/rest";
 import { skillRoutes } from "./features/skill/rest";
 import { statusGridRoutes } from "./features/status-grid/rest";
+import { taskRoutes } from "./features/task/rest";
 import { userPreferenceRoutes } from "./features/user-preference/rest";
 import { userSettingsRoutes } from "./features/user-settings/rest";
 import { venueRoutes } from "./features/venue/rest";
@@ -132,6 +133,7 @@ export function listRestRoutes(): RestRoute[] {
     ...lineAndGroupRoutes,
     ...requirementRoutes,
     ...commentRoutes,
+    ...taskRoutes,
     ...runSheetRoutes,
     ...boardRoutes,
     ...quoteRoutes,

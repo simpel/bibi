@@ -25,11 +25,7 @@ export async function RunSheetDefinitionUpdate({ locale, id }: RunSheetDefinitio
   return (
     <>
       <CrumbName href={`/admin/run-sheets/${id}/update`} name={runSheet.value.name} />
-      <FormPageShell
-        backHref={ROUTES.adminRunSheets}
-        title={t("edit")}
-        description={t("editDescription")}
-      >
+      <FormPageShell title={t("edit")} description={t("editDescription")}>
         <RunSheetDefinitionUpdateForm runSheet={runSheet.value} options={options.value} />
       </FormPageShell>
     </>

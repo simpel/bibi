@@ -14,7 +14,7 @@ const READY = ok({ value: true as const });
 /**
  * The permissions of the parts `order.create` was given, beyond `order:write` (ADR 0081
  * decision 9): `orderTemplate:read` for a template, `inbox:read` for the message it is made from (ADR
- * 0085), `program:write` for lines and their needs, and `item:read` for a line's item, options or add-on items.
+ * 0085), `task:write` for tasks to link (ADR 0117), `program:write` for lines and their needs, and `item:read` for a line's item, options or add-on items.
  * Checked before any lookup, so ids cannot be probed.
  */
 export function checkIntakeAccess({ context, input }: AccessInput): Result<true> {
@@ -24,6 +24,7 @@ export function checkIntakeAccess({ context, input }: AccessInput): Result<true>
   const checks = [
     input.templateId ? need({ permission: "orderTemplate:read", path: "templateId" }) : READY,
     input.inboundMessageId ? need({ permission: "inbox:read", path: "inboundMessageId" }) : READY,
+    input.taskIds?.length ? need({ permission: "task:write", path: "taskIds" }) : READY,
     lines.length > 0 ? need({ permission: "program:write", path: "lines" }) : READY,
     ...lines.flatMap((line, index) => [
       line.itemId ? need({ permission: "item:read", path: `lines.${index}.itemId` }) : READY,

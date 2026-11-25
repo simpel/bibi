@@ -5,7 +5,13 @@ import { NAV_GROUPS, type NavItem } from "./nav-items";
 
 export type CommandEntry = {
   href: string;
-  labelKey: "createOrder" | "createCustomer" | "createRunSheet" | "createVenue" | "createItem";
+  labelKey:
+    | "createOrder"
+    | "createTask"
+    | "createCustomer"
+    | "createRunSheet"
+    | "createVenue"
+    | "createItem";
   icon: LucideIcon;
   /** "Create X" needs its feature's `write` (ADR 0050). */
   permission: Permission;
@@ -20,6 +26,7 @@ export const NAVIGATE_ENTRIES: readonly NavItem[] = [
 
 export const ACTION_ENTRIES: readonly CommandEntry[] = [
   { href: ROUTES.orderNew, labelKey: "createOrder", icon: PlusIcon, permission: "order:write" },
+  { href: ROUTES.taskNew, labelKey: "createTask", icon: PlusIcon, permission: "task:write" },
   {
     href: ROUTES.customerNew,
     labelKey: "createCustomer",

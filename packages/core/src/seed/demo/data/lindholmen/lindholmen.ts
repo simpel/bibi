@@ -20,6 +20,7 @@ import { lindholmenResponsibilities } from "./responsibilities";
 import { lindholmenRooms } from "./rooms";
 import { lindholmenRunSheets } from "./run-sheets";
 import { lindholmenStaff, lindholmenStaffTypes } from "./staff";
+import { lindholmenTasks, lindholmenTaskTypes } from "./tasks";
 import { lindholmenTemplates } from "./templates";
 import { lindholmenTypes } from "./types";
 import { lindholmenYearOrders } from "./year-orders";
@@ -84,7 +85,7 @@ export const lindholmen: DemoOrg = {
   ],
   config: {
     ...lindholmenLists,
-    types: [...lindholmenTypes, ...lindholmenStaffTypes],
+    types: [...lindholmenTypes, ...lindholmenStaffTypes, ...lindholmenTaskTypes],
     venue: {
       name: "Lindholmen Experience Center",
       streetAddress: "Lindholmspiren 1",
@@ -103,6 +104,7 @@ export const lindholmen: DemoOrg = {
   pipeline: lindholmenPipeline,
   templates: lindholmenTemplates,
   orders: [...fixtures, ...densityOrders({ density: lindholmenDensity, reserved })],
+  tasks: lindholmenTasks,
   density: lindholmenDensity,
   finance: {
     orgNumber: "556677-8899",

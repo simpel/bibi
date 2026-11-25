@@ -4,6 +4,7 @@ import { MONEY_FIELD_KEYS, MONEY_OPERATION_KEYS } from "./approval-money-keys";
 import { PEOPLE_FIELD_KEYS, PEOPLE_OPERATION_KEYS } from "./approval-people-keys";
 import { PIPELINE_FIELD_KEYS, PIPELINE_OPERATION_KEYS } from "./approval-pipeline-keys";
 import { SELF_OPERATION_KEYS } from "./approval-self-keys";
+import { TASK_FIELD_KEYS, TASK_OPERATION_KEYS } from "./approval-task-keys";
 
 /** Field names with a localized label in `assistant.approval.fields`. */
 export const FIELD_KEYS = [
@@ -90,6 +91,7 @@ export const FIELD_KEYS = [
   ...PEOPLE_FIELD_KEYS,
   ...PIPELINE_FIELD_KEYS,
   ...MONEY_FIELD_KEYS,
+  ...TASK_FIELD_KEYS,
 ] as const;
 
 /** Operations with a localized label in `assistant.approval.operations` (`.` → `_`). */
@@ -113,6 +115,7 @@ export const OPERATION_KEYS = [
   "line_update",
   "line_archive",
   ...COMMENT_OPERATION_KEYS,
+  ...TASK_OPERATION_KEYS,
   ...INBOX_OPERATION_KEYS,
   ...PEOPLE_OPERATION_KEYS,
   ...PIPELINE_OPERATION_KEYS,

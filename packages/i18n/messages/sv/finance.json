@@ -387,7 +387,8 @@
         "UNREAD_MESSAGES": "Svara på {count, plural, one {# meddelande} other {# meddelanden}}",
         "PAYMENT_OVERDUE": "Följ upp {amount} som är förfallet",
         "NOT_CLOSED": "Stäng bokningen",
-        "QUOTE_WAITING": "Följ upp offerten"
+        "QUOTE_WAITING": "Följ upp offerten",
+        "TASK_DUE": "{type} ska göras"
       },
       "dismiss": {
         "label": "Avfärda",
@@ -406,12 +407,14 @@
         "UNREAD_MESSAGES": "Kunden har skrivit och väntar på svar.",
         "PAYMENT_OVERDUE": "En faktura har passerat förfallodagen och är inte helt betald. Kontakta kunden om betalningen.",
         "NOT_CLOSED": "Allt i bokningen har genomförts. Välj en status som stänger bokningen i statusmenyn uppe till höger.",
-        "QUOTE_WAITING": "Kunden har inte svarat på offerten än. Hör av dig till kunden, eller öppna offerten för att se den."
+        "QUOTE_WAITING": "Kunden har inte svarat på offerten än. Hör av dig till kunden, eller öppna offerten för att se den.",
+        "TASK_DUE": "En uppgift på bokningen ska göras nu. Öppna den och bocka av den när den är klar."
       },
       "open": {
         "runSheet": "Öppna körschema",
         "quote": "Öppna offert",
-        "inbox": "Öppna inkorgen"
+        "inbox": "Öppna inkorgen",
+        "task": "Öppna uppgift"
       }
     }
   },
@@ -459,7 +462,6 @@
     "plural": "Offerter",
     "title": "Offert, version {version}",
     "versionLabel": "Version {version}",
-    "backToOrder": "Tillbaka till bokningen",
     "empty": "Ingen offert ännu.",
     "create": "Skapa offert",
     "edit": "Redigera offert",

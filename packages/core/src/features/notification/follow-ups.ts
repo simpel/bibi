@@ -3,6 +3,7 @@ import type { FollowUpInput } from "../../operations/types";
 import { mainAssigneeId } from "../assignment/load-assignment";
 import { notify } from "./notify";
 import { orderFacts, orderPeople } from "./order-people";
+import { notifyTaskAssignment } from "./task-follow-ups";
 
 type AnyFollowUp = FollowUpInput<unknown, unknown>;
 
@@ -21,6 +22,9 @@ const AssignmentOutput = z.object({
  */
 export async function notifyAssigned({ output, context }: AnyFollowUp) {
   const parsed = AssignmentOutput.safeParse(output);
+  if (parsed.success && parsed.data.subjectType === "TASK") {
+    return notifyTaskAssignment({ output, context, input: undefined });
+  }
   if (!parsed.success || parsed.data.subjectType !== "ORDER") return;
   if (parsed.data.assigneeSource !== "EXPLICIT") return;
   const { subjectId: orderId, assigneeId } = parsed.data;

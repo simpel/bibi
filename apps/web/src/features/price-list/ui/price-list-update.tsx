@@ -20,11 +20,7 @@ export async function PriceListUpdate({ locale, id }: PriceListUpdateProps) {
   return (
     <>
       <CrumbName href={`/admin/price-lists/${id}/update`} name={priceList.value.name} />
-      <FormPageShell
-        backHref={ROUTES.adminPriceLists}
-        title={t("edit")}
-        description={t("editDescription")}
-      >
+      <FormPageShell title={t("edit")} description={t("editDescription")}>
         <PriceListUpdateForm priceList={priceList.value} data={data} />
       </FormPageShell>
     </>

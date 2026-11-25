@@ -15,6 +15,7 @@ export const BASE_FEATURE: Readonly<Record<RecordBase, Feature>> = {
   ORDER_TEMPLATE: "orderTemplate",
   LINE: "program",
   REQUIREMENT: "program",
+  TASK: "task",
 };
 
 type Viewer = Pick<OperationContext, "permissions">;

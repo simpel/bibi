@@ -277,6 +277,7 @@
       "label": "Order sections",
       "program": "Program",
       "customer": "Customer",
+      "tasks": "Tasks",
       "runSheets": "Run sheets",
       "money": "Money",
       "details": "Details",
@@ -639,9 +640,41 @@
     "moreOnPage": "Quotes, payments, run sheets and messages are on the order page, where you can also change the order."
   },
   "orderTemplate": {
+    "createOrder": "Create order",
+    "page": {
+      "titleLabel": "Package name",
+      "editTitle": "Edit name",
+      "titleUpdated": "Name saved",
+      "editPicture": "Edit picture",
+      "editFact": "Edit {label}"
+    },
+    "tabs": {
+      "label": "Package sections",
+      "lines": "Lines",
+      "history": "History"
+    },
+    "lineColumns": {
+      "name": "Name",
+      "item": "Item",
+      "start": "Starts",
+      "length": "Length",
+      "quantity": "Quantity"
+    },
+    "time": {
+      "hours": "{count} h",
+      "minutes": "{count} min",
+      "atStart": "At the start",
+      "after": "{time} after the start"
+    },
+    "headcount": "The headcount",
+    "linesEmpty": "No lines yet. Add the first one.",
+    "editLine": "Edit line",
+    "lineDialogDescription": "What the line is, when it starts and how many.",
+    "removeLineConfirm": "Remove \"{name}\" from the package? Orders already made from it are not changed.",
+    "lineRemoved": "Line removed",
     "singular": "Package",
     "plural": "Packages",
-    "listDescription": "Ready-made orders: staff create an order with its lines in one step.",
+    "listDescription": "Ready-made lines for orders you make often. Pick a template when you create an order and its lines are filled in for you.",
     "create": "Create package",
     "edit": "Edit package",
     "createDescription": "Name it, choose the order type and start status, then add its lines.",
@@ -665,7 +698,7 @@
     "fields": {
       "name": "Name",
       "orderType": "Order type",
-      "status": "Starts in status",
+      "status": "Status for new orders",
       "minGuests": "Fewest guests",
       "maxGuests": "Most guests",
       "lineName": "Name",
@@ -680,7 +713,7 @@
     "columns": {
       "name": "Name",
       "orderType": "Order type",
-      "status": "Starts in",
+      "status": "Status for new orders",
       "guests": "Guests",
       "lines": "Lines"
     }

@@ -2,9 +2,11 @@ import { ChevronRightIcon } from "lucide-react";
 import { cn } from "../../lib/cn";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../collapsible/collapsible";
 import { AvailabilityRow, type AvailabilityRowProps, LABEL_WIDTH } from "./availability-row";
-import type { AssetBooking, CalendarAsset } from "./calendar-types";
+import type { AssetBooking, CalendarAsset, CalendarTaskEntry } from "./calendar-types";
 import { byDate } from "./day-occupancy";
 import type { DayTotal } from "./day-value";
+import { tasksByDate } from "./task-marks";
+import { TasksLane } from "./tasks-lane";
 import { TimelineHeader } from "./timeline-header";
 import type { TimelineFrame } from "./timeline-scale";
 import type { Timeline } from "./use-timeline";
@@ -21,6 +23,8 @@ export type AvailabilityGridProps = Pick<
   totals?: ReadonlyMap<string, DayTotal>;
   /** Shown instead of rows when the filter leaves none. */
   empty?: string;
+  /** Tasks on any loaded day: a lane of their own on top, echoed on their assets' rows. */
+  tasks?: readonly CalendarTaskEntry[];
   className?: string;
 };
 
@@ -38,8 +42,14 @@ function GroupHeading({ group, count }: { group: string; count: number }) {
 
 type AssetGroupsProps = Omit<AvailabilityGridProps, "timeline" | "empty" | "totals" | "className">;
 
+/** Each asset's tasks by day key; none without tasks, so rows draw as before. */
+function assetTasksOf({ tasks, assetId }: { tasks: AssetGroupsProps["tasks"]; assetId: string }) {
+  const own = tasks?.filter((task) => task.assetId === assetId) ?? [];
+  return own.length ? tasksByDate({ tasks: own }) : undefined;
+}
+
 /** The organization's own groups of assets, a row each, in the order they first appear. */
-function AssetGroups({ assets, bookings, frame, ...row }: AssetGroupsProps) {
+function AssetGroups({ assets, bookings, frame, tasks, ...row }: AssetGroupsProps) {
   const groups = [...new Set(assets.map((asset) => asset.group))];
   return groups.map((group) => {
     const members = assets.filter((asset) => asset.group === group);
@@ -56,6 +66,7 @@ function AssetGroups({ assets, bookings, frame, ...row }: AssetGroupsProps) {
                   bookings: bookings.filter((booking) => booking.assetId === asset.id),
                 })}
                 frame={frame}
+                tasks={assetTasksOf({ tasks, assetId: asset.id })}
                 {...row}
               />
             ))}
@@ -77,6 +88,7 @@ export function AvailabilityGrid({
   frame,
   empty,
   totals,
+  tasks,
   className,
   ...row
 }: AvailabilityGridProps) {
@@ -94,7 +106,8 @@ export function AvailabilityGrid({
             {empty}
           </p>
         ) : null}
-        <AssetGroups assets={assets} bookings={bookings} frame={frame} {...row} />
+        {tasks ? <TasksLane tasks={tasks} frame={frame} /> : null}
+        <AssetGroups {...{ assets, bookings, frame, tasks }} {...row} />
       </div>
     </div>
   );

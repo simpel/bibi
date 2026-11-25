@@ -34,6 +34,7 @@ import "../features/pipeline-setup/graphql";
 import "../features/change-set/graphql";
 import "../features/requirement/graphql";
 import "../features/comment/graphql";
+import "../features/task/graphql";
 import "../features/run-sheet/graphql";
 import "../features/pipeline/graphql";
 import "../features/calendar/graphql";

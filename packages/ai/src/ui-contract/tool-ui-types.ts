@@ -33,6 +33,7 @@ import type { RunSheetWire } from "./run-sheet-entries";
 import type { SettingsUiProps } from "./settings-entries";
 import type { SkillUiProps } from "./skill-entries";
 import type { StatusGridCellWire } from "./status-grid-entries";
+import type { TaskWire } from "./task-entries";
 import type {
   AuditLogWire,
   ContactWire,
@@ -89,6 +90,8 @@ export type ToolUiProps = BoardUiProps &
     "requirement-card": { requirement: RequirementWire };
     "comment-list": { items: CommentWire[]; nextCursor: string | null };
     "comment-card": { comment: CommentWire };
+    "task-list": { items: TaskWire[]; nextCursor: string | null };
+    "task-card": { task: TaskWire };
     "pipeline-board": { board: PipelineBoardWire };
     "calendar-range": { range: CalendarRangeWire };
     "hours-card": { hours: HoursWire };

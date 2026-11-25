@@ -62,6 +62,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "AlternativeGroup",
   ...DOMAIN_HISTORY_MODELS,
   "Requirement",
+  "Task",
   "Comment",
   "CommentMention",
   "RunSheet",

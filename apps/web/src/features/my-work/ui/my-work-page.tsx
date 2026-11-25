@@ -15,8 +15,10 @@ import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { filterMyWork, myWorkQualifiers } from "../lib/my-work-query";
 import { myWorkHref } from "../lib/my-work-window";
+import { loadTodayTasks, todayTasksOf } from "../load-today-tasks";
 import { MyWorkLater } from "./my-work-later";
 import { MyWorkSearch } from "./my-work-search";
+import { MyWorkTasks } from "./my-work-tasks";
 import { MyWorkTimeline } from "./my-work-timeline";
 
 export type MyWorkPageProps = {
@@ -37,10 +39,11 @@ export type MyWorkPageProps = {
  */
 export async function MyWorkPage({ locale, from, to, today, q }: MyWorkPageProps) {
   const startPage = from === today;
-  const [t, dates, result] = await Promise.all([
+  const [t, dates, result, tasks] = await Promise.all([
     getTranslations({ locale, namespace: "myWork" }),
     getDateTimeFormat(),
     runOperation({ operation: viewMyWork, input: { from, to } }),
+    startPage ? loadTodayTasks({ today }) : null,
   ]);
   const header = <PageHeader title={t("title")} description={t("description")} />;
   if (!result.ok) {
@@ -59,6 +62,8 @@ export async function MyWorkPage({ locale, from, to, today, q }: MyWorkPageProps
     place: t("search.place"),
   };
   const cards = all ? filterMyWork({ cards: all, q, labels }) : null;
+  const timeZone = result.value.timeZone;
+  const todayTasks = tasks ? todayTasksOf({ loaded: tasks, today, timeZone }) : [];
   return (
     <SimplePage>
       <div data-slot="my-work" className="mx-auto grid w-full max-w-4xl gap-6">
@@ -90,6 +95,16 @@ export async function MyWorkPage({ locale, from, to, today, q }: MyWorkPageProps
             <MyWorkTimeline
               work={{ ...result.value, cards }}
               dates={dates}
+              todayTasks={
+                tasks && todayTasks.length > 0 ? (
+                  <MyWorkTasks
+                    tasks={todayTasks}
+                    customers={tasks.customers}
+                    dates={dates}
+                    canEdit={tasks.canEdit}
+                  />
+                ) : null
+              }
               later={
                 result.value.cards ? (
                   <MyWorkLater next={result.value.next} timeZone={result.value.timeZone} q={q} />

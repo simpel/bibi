@@ -4,6 +4,7 @@ import {
   BuildingIcon,
   CalendarIcon,
   CalendarRangeIcon,
+  CircleCheckIcon,
   ClipboardListIcon,
   ContactIcon,
   CopyPlusIcon,
@@ -28,6 +29,7 @@ export type NavLabelKey =
   | "forecast"
   | "workload"
   | "orders"
+  | "tasks"
   | "runSheets"
   | "inbox"
   | "customers"
@@ -112,6 +114,14 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       icon: CalendarIcon,
       audience: "everyone",
       permission: "order:read",
+    },
+    // Site visits, tastings and deadlines around a customer (ADR 0117).
+    {
+      href: ROUTES.tasks,
+      labelKey: "tasks",
+      icon: CircleCheckIcon,
+      audience: "everyone",
+      permission: "task:read",
     },
     {
       href: ROUTES.runSheets,

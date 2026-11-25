@@ -15,12 +15,13 @@ import { useTaskText } from "./use-task-text";
 type ShownElsewhere = "HARD_CLASH" | "LINE_ISSUE";
 type OrderTask = MyWorkTask & { kind: Exclude<MyWorkTaskKind, ShownElsewhere> };
 
-type OpenKey = "runSheet" | "quote" | "inbox";
+type OpenKey = "runSheet" | "quote" | "inbox" | "task";
 
 /** Where the task is done when that is not this page: the link the alert offers. */
 function openKeyOf({ task }: { task: MyWorkTask }): OpenKey | null {
   if (task.runSheetId) return "runSheet";
   if (task.quoteId) return "quote";
+  if (task.taskId) return "task";
   return task.kind === "UNREAD_MESSAGES" ? "inbox" : null;
 }
 

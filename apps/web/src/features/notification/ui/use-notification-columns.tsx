@@ -5,7 +5,7 @@ import { ActivityTimeCell } from "@/components/activity/activity-time-cell";
 import { ActivityTitleCell } from "@/components/activity/activity-title-cell";
 import { notificationIcon } from "@/components/activity/subject-icons";
 import { Link } from "@/lib/navigation";
-import { orderRoute } from "@/lib/routes";
+import { orderRoute, taskRoute } from "@/lib/routes";
 import { useNotificationText } from "./use-notification-text";
 
 type Column = ColumnDef<NotificationDto>;
@@ -43,23 +43,27 @@ const messageColumn = ({ t, text, onSelect, openingId }: ColumnInput): Column =>
   ),
 });
 
-/** The order at the time, as a link to it. */
+/** The order, else the task (ADR 0117), the notification is about. */
+function subjectHref({ notification }: { notification: NotificationDto }): string | null {
+  if (notification.orderId) return orderRoute({ id: notification.orderId });
+  return notification.taskId ? taskRoute({ id: notification.taskId }) : null;
+}
+
+/** The order (or task) at the time, as a link to it. */
 const orderColumn = ({ t, text }: ColumnInput): Column => ({
   id: "order",
   header: t("columns.order"),
   accessorFn: (notification) => text({ notification }).order,
-  cell: ({ row: { original: notification } }) =>
-    notification.orderId ? (
-      <Link
-        href={orderRoute({ id: notification.orderId })}
-        onClick={(event) => event.stopPropagation()}
-        className="hover:underline"
-      >
-        {text({ notification }).order}
+  cell: ({ row: { original: notification } }) => {
+    const href = subjectHref({ notification });
+    const label = text({ notification }).order;
+    if (!href) return label;
+    return (
+      <Link href={href} onClick={(event) => event.stopPropagation()} className="hover:underline">
+        {label}
       </Link>
-    ) : (
-      text({ notification }).order
-    ),
+    );
+  },
 });
 
 /** When, then mark read or unread and delete. */

@@ -7,6 +7,8 @@ import {
   slotFromSearch,
   slotHref,
   slotWhen,
+  templateFromSearch,
+  templateOrderHref,
 } from "./intake-slot";
 import type { PackageOption } from "./package-groups";
 
@@ -82,5 +84,18 @@ describe("packagesWithItem", () => {
     ];
     const kept = packagesWithItem({ packages, itemId: "room1" });
     expect(kept.map(({ id }) => id)).toEqual(["a", "c"]);
+  });
+});
+
+describe("template intake", () => {
+  it("links to the intake with the template and reads it back", () => {
+    const href = templateOrderHref({ templateId: "tpl1" });
+    expect(href).toContain("template=tpl1");
+    const search = Object.fromEntries(new URLSearchParams(href.split("?")[1]));
+    expect(templateFromSearch({ search })).toBe("tpl1");
+  });
+
+  it("is null without a template", () => {
+    expect(templateFromSearch({ search: {} })).toBeNull();
   });
 });

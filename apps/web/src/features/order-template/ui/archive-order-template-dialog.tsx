@@ -11,6 +11,8 @@ export type ArchiveOrderTemplateDialogProps = {
   template: OrderTemplateDto;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** After archiving; without it the page refreshes (a list row). */
+  onArchived?: () => void;
 };
 
 /** Confirm → server action → one toast; orders already made from the template stay as they are. */
@@ -18,6 +20,7 @@ export function ArchiveOrderTemplateDialog({
   template,
   open,
   onOpenChange,
+  onArchived,
 }: ArchiveOrderTemplateDialogProps) {
   const t = useTranslations("orderTemplate");
   const common = useTranslations("common");
@@ -29,7 +32,8 @@ export function ArchiveOrderTemplateDialog({
       messages: { pending: common("archiving"), success: t("archived") },
       onSuccess: () => {
         onOpenChange(false);
-        router.refresh();
+        if (onArchived) onArchived();
+        else router.refresh();
       },
     });
   return (

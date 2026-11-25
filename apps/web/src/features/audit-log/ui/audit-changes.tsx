@@ -1,29 +1,52 @@
 import { useTranslations } from "next-intl";
-import { type AuditChange, formatAuditValue } from "../audit-diff";
+import { fieldKey } from "@/features/assistant/lib/approval-labels";
+import type { AuditChange } from "../audit-diff";
 
 export type AuditChangesProps = { changes: readonly AuditChange[] };
 
-/** The changed fields of one audit entry: field, old value struck through, new value. */
+/** Fields that only say how the record is wired (ids, status): the sentence already tells. */
+const technical = ({ field }: { field: string }) =>
+  field === "status" || /Ids?$/.test(field) || field === "icon";
+
+const plain = ({ value }: { value: unknown }) =>
+  value === undefined || value === null || value === "" || typeof value !== "object";
+
+/**
+ * The changed details of one history entry in plain words: the detail's name, its new value and,
+ * muted under it, what it was. Ids and wiring are left out, lists and objects just say "changed",
+ * and details without a name are counted at the end.
+ */
 export function AuditChanges({ changes }: AuditChangesProps) {
   const t = useTranslations("auditLog");
-  if (changes.length === 0)
-    return <p className="text-xs text-muted-foreground">{t("noChanges")}</p>;
+  const label = useTranslations("assistant.approval.fields");
+  const text = ({ value }: { value: unknown }) =>
+    value === undefined || value === null || value === "" ? t("emptyValue") : String(value);
+  const shown = changes.filter((change) => !technical(change));
+  const named = shown.filter(({ field }) => fieldKey({ key: field }) !== null);
+  const unnamed = shown.length - named.length;
+  if (named.length === 0 && unnamed === 0) return null;
   return (
-    <dl className="grid grid-cols-[minmax(6rem,auto)_1fr] gap-x-3 gap-y-1 text-xs">
-      {changes.map(({ field, before, after }) => (
-        <div key={field} className="contents">
-          <dt className="font-medium text-muted-foreground">{field}</dt>
-          <dd className="flex flex-wrap items-center gap-1 break-all">
-            {before !== undefined ? (
-              <>
-                <del className="text-muted-foreground">{formatAuditValue({ value: before })}</del>
-                <span aria-hidden>→</span>
-              </>
+    <dl className="grid gap-2 text-sm">
+      {named.map(({ field, before, after }) => {
+        const key = fieldKey({ key: field });
+        const simple = plain({ value: before }) && plain({ value: after });
+        return (
+          <div key={field} className="grid gap-0.5">
+            <dt className="text-xs text-muted-foreground">{key ? label(key) : field}</dt>
+            <dd className="whitespace-pre-line break-words">
+              {simple ? text({ value: after }) : t("changed")}
+            </dd>
+            {simple && before !== undefined ? (
+              <dd className="line-clamp-2 text-xs text-muted-foreground">
+                {t("was", { value: text({ value: before }) })}
+              </dd>
             ) : null}
-            <ins className="no-underline">{formatAuditValue({ value: after })}</ins>
-          </dd>
-        </div>
-      ))}
+          </div>
+        );
+      })}
+      {unnamed > 0 ? (
+        <p className="text-xs text-muted-foreground">{t("otherChanges", { count: unnamed })}</p>
+      ) : null}
     </dl>
   );
 }

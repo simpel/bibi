@@ -6,6 +6,7 @@ import { ChoicesSection } from "./choices-section";
 import { DraftOffer } from "./draft-offer";
 import type { IntakeMessage } from "./intake-message";
 import type { IntakeStep } from "./intake-state";
+import type { IntakeTask } from "./intake-task";
 import { MessageBanner } from "./message-banner";
 import type { MessageDraft } from "./message-draft";
 import { PackageSection } from "./package-section";
@@ -20,6 +21,8 @@ import { WhoSection } from "./who-section";
 export type IntakePageProps = {
   data: IntakeData;
   message: IntakeMessage | null;
+  /** `?fromTask=<id>`: the task the order is created from and linked to (ADR 0117). */
+  task?: IntakeTask | null;
   /** Drafting from a message has a model (ADR 0084): `/new/order/message` opens the dialog. */
   draftEnabled: boolean;
   /** The step the URL names (`/new/order/<step>`); `who` for the bare path and `/message`. */
@@ -31,9 +34,9 @@ export type IntakePageProps = {
  * `/new/order/message` the paste dialog opens over step 1; what it reads prefills the steps
  * (ADR 0084). Opened from an inbox message, the order is attached to it (ADR 0085).
  */
-export function IntakePage({ data, message, draftEnabled, step }: IntakePageProps) {
+export function IntakePage({ data, message, task = null, draftEnabled, step }: IntakePageProps) {
   const paste = usePasteDialog({ enabled: draftEnabled });
-  const flow = useIntakeFlow({ data, message, urlStep: step, pasting: paste.open });
+  const flow = useIntakeFlow({ data, message, task, urlStep: step, pasting: paste.open });
   const { state, dispatch, draft } = flow;
   const summaries = useIntakeSummaries({ state });
   const onRead = ({ draft: read }: { draft: MessageDraft }) => {

@@ -100,6 +100,8 @@ export type CalendarLabels = {
   holds: Record<CalendarHold, string>;
   buffers: string;
   buffersText: string;
+  /** The tasks lane's heading, when the calendar shows tasks. */
+  tasks?: string;
 };
 
 const CalendarLabelsContext = createContext<CalendarLabels | null>(null);

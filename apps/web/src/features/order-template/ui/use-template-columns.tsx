@@ -12,14 +12,9 @@ import type { NamedOption } from "@/components/form/named-option";
 import { nameOf } from "@/components/form/named-option";
 import type { RowAccess } from "@/lib/can";
 import { Link } from "@/lib/navigation";
-import { OrderTemplateRowActions, orderTemplateEditHref } from "./order-template-row-actions";
-
-const guestRange = ({ min, max }: { min: number | null; max: number | null }) => {
-  if (min === null && max === null) return "–";
-  if (min === null) return `≤ ${max}`;
-  if (max === null) return `≥ ${min}`;
-  return min === max ? String(min) : `${min}–${max}`;
-};
+import { guestRange } from "../lib/guest-range";
+import { orderTemplateHref } from "../template-route";
+import { OrderTemplateRowActions } from "./order-template-row-actions";
 
 type Column = ColumnDef<OrderTemplateDto>;
 type StatusOption = NamedOption & { color?: string | undefined };
@@ -30,7 +25,7 @@ export type TemplateColumnsInput = {
   access: RowAccess;
 };
 
-/** Name, order type, start status, guest range and line count; admins also get the row actions. */
+/** Name, order type, start status, guest range and line count; archivers also get the row actions. */
 export function useTemplateColumns({ statuses, types, access }: TemplateColumnsInput): Column[] {
   const t = useTranslations("orderTemplate");
   const common = useTranslations("common");
@@ -42,17 +37,14 @@ export function useTemplateColumns({ statuses, types, access }: TemplateColumnsI
             id: "name",
             header: t("columns.name"),
             accessorFn: (row) => row.name,
-            cell: ({ row }) =>
-              access.canEdit ? (
-                <Link
-                  href={orderTemplateEditHref({ id: row.original.id })}
-                  className="font-medium hover:underline"
-                >
-                  {row.original.name}
-                </Link>
-              ) : (
-                <span className="font-medium">{row.original.name}</span>
-              ),
+            cell: ({ row }) => (
+              <Link
+                href={orderTemplateHref({ id: row.original.id })}
+                className="font-medium hover:underline"
+              >
+                {row.original.name}
+              </Link>
+            ),
           },
         ],
         relations: [
@@ -83,17 +75,14 @@ export function useTemplateColumns({ statuses, types, access }: TemplateColumnsI
             getValue: (row) => row.lines.length,
           }),
         ],
-        actions:
-          access.canEdit || access.canRemove
-            ? [
-                actionsColumn<OrderTemplateDto>({
-                  label: common("actions"),
-                  cell: (template) => (
-                    <OrderTemplateRowActions template={template} access={access} />
-                  ),
-                }),
-              ]
-            : [],
+        actions: access.canRemove
+          ? [
+              actionsColumn<OrderTemplateDto>({
+                label: common("actions"),
+                cell: (template) => <OrderTemplateRowActions template={template} access={access} />,
+              }),
+            ]
+          : [],
       }),
     [t, common, statuses, types, access],
   );

@@ -95,7 +95,9 @@ export function SearchForm({
   // react-hook-form store: the field follows the URL's `q`.
   useEffect(() => form.reset({ q: value ?? "" }), [form, value]);
   return (
-    <search className={cn("flex w-full sm:w-96", className)}>
+    // Focused, the box (and its suggestion list) rises above content that sits at `z-10`,
+    // like the stretched-link layers on cards; the button group alone only reaches z-10.
+    <search className={cn("relative flex w-full focus-within:z-20 sm:w-96", className)}>
       <Form {...form}>
         <form
           className="flex flex-1"

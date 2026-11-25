@@ -39,16 +39,18 @@ const rowsOfSlot = ({ recordId, slot }: { recordId: string; slot: AssignmentDto 
 type Subject = { id: string; subjectType: AssignmentSubjectType; createdBy?: string | null };
 
 /**
- * Who should be related to every order and item (ADR 0113), derived the way `assignment.list`
+ * Who should be related to every order, item and task (ADR 0113, 0117), derived the way `assignment.list`
  * derives slots (ADR 0055): an independent derivation of what `sync_record_relations.sql` writes.
  */
 async function rebuildRelations({ context }: ReconcileContext): Promise<RelationRow[]> {
   const select = { id: true, createdBy: true } as const;
   const orders = await context.db.order.findMany({ where: ALL, select });
   const items = await context.db.item.findMany({ where: ALL, select: { id: true } });
+  const tasks = await context.db.task.findMany({ where: ALL, select });
   const subjects: Subject[] = [
     ...orders.map((order) => ({ ...order, subjectType: "ORDER" as const })),
     ...items.map((item) => ({ ...item, subjectType: "ITEM" as const })),
+    ...tasks.map((task) => ({ ...task, subjectType: "TASK" as const })),
   ];
   const rows: RelationRow[] = [];
   for (const { id: recordId, subjectType, createdBy } of subjects) {

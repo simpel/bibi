@@ -12,9 +12,8 @@ export type EntityTypeCreateProps = {
 /** `/new/type`: the step-by-step create page; the type's fields are added on its page next. */
 export async function EntityTypeCreate({ forItem }: EntityTypeCreateProps) {
   const [t, groups] = await Promise.all([getTranslations("entityType"), loadItemTypeGroups()]);
-  const backHref = forItem ? ROUTES.itemNew : ROUTES.adminTypes;
   return (
-    <FormPageShell backHref={backHref} title={t("create")} description={t("createDescription")}>
+    <FormPageShell title={t("create")} description={t("createDescription")}>
       <EntityTypeWizard groups={groups.ok ? groups.value : []} forItem={forItem} />
     </FormPageShell>
   );

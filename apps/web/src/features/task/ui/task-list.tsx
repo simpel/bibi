@@ -1,0 +1,80 @@
+import { listCustomers, listTasks, type TaskDto } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
+import { Button } from "@bibi/ui";
+import { getTranslations } from "next-intl/server";
+import { nameOf } from "@/components/form/named-option";
+import { EmptyState } from "@/components/states/empty-state";
+import { ErrorState } from "@/components/states/error-state";
+import { PageHeader } from "@/components/states/page-header";
+import { Link } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
+import { getDateTimeFormat } from "@/server/date-time-format";
+import { handleLoadError } from "@/server/load-error";
+import { runOperation } from "@/server/run-operation";
+import { taskTimeLabel, uiTaskShape } from "../lib/task-time-label";
+import { loadMemberNames } from "../load-member-names";
+import type { TaskListRow, TaskState } from "./task-list-row";
+import { TaskTable } from "./task-table";
+
+export type TaskListProps = { locale: Locale };
+
+const LIMIT = 100;
+/** Done tasks stay in the list this long. */
+const DONE_DAYS = 30;
+
+const stateOf = ({ task }: { task: TaskDto }): TaskState =>
+  task.doneAt ? "done" : task.overdue ? "overdue" : "open";
+
+/** Every open task and those done in the last 30 days, one page each. */
+async function loadTasks() {
+  const since = new Date(Date.now() - DONE_DAYS * 24 * 60 * 60 * 1000);
+  const [open, done] = await Promise.all([
+    runOperation({ operation: listTasks, input: { state: "open", limit: LIMIT } }),
+    runOperation({ operation: listTasks, input: { state: "done", from: since, limit: LIMIT } }),
+  ]);
+  if (!open.ok) return open;
+  if (!done.ok) return done;
+  return { ok: true as const, value: [...open.value.items, ...done.value.items] };
+}
+
+/** `/tasks`: site visits, tastings and deadlines around customers (ADR 0117). */
+export async function TaskList({ locale }: TaskListProps) {
+  const [t, abilities, dates, tasks, members, customers] = await Promise.all([
+    getTranslations("task"),
+    getCallerAbilities(),
+    getDateTimeFormat(),
+    loadTasks(),
+    loadMemberNames(),
+    runOperation({ operation: listCustomers, input: { limit: LIMIT } }),
+  ]);
+  if (!tasks.ok) return <ErrorState errorKey={handleLoadError({ error: tasks.error, locale })} />;
+  const customerOptions = customers.ok ? customers.value.items : [];
+  const rows: TaskListRow[] = tasks.value.map((task) => ({
+    id: task.id,
+    typeName: task.type.name,
+    shape: uiTaskShape({ shape: task.shape }),
+    customerName: nameOf({ options: customerOptions, id: task.customerId }),
+    assigneeName: nameOf({ options: members, id: task.assigneeId }),
+    mine: task.assigneeId !== null && task.assigneeId === abilities.userId,
+    state: stateOf({ task }),
+    startsAtMs: task.startsAt.getTime(),
+    timeLabel: taskTimeLabel({ task, dates }),
+  }));
+  const canWrite = can({ abilities, permission: "task:write" });
+  const create = canWrite ? (
+    <Button asChild>
+      <Link href={ROUTES.taskNew}>{t("create")}</Link>
+    </Button>
+  ) : undefined;
+  return (
+    <div className="grid gap-6">
+      <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
+      {rows.length === 0 ? (
+        <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />
+      ) : (
+        <TaskTable rows={rows} canEdit={canWrite} />
+      )}
+    </div>
+  );
+}

@@ -3,6 +3,7 @@ import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { loadBlocks } from "./load-blocks";
+import { loadCalendarTasks } from "./load-tasks";
 import { loadValues } from "./load-values";
 import { resolveRange } from "./resolve-range";
 import { CalendarRangeInputSchema, CalendarRangeSchema } from "./schema";
@@ -21,7 +22,8 @@ export const calendarRange = defineOperation({
     "excl. VAT, note, the line's assignee and allocated staff with program:read; headcount and " +
     "the order's assignee always), so one call answers what the calendar shows. values gives " +
     "each item's day in money excl. VAT: booked (hard holds), prebooked (soft holds) and still " +
-    "open (free time within its hours at its hourly price).",
+    "open (free time within its hours at its hourly price). tasks lists the tasks in the range " +
+    "(site visits, deadlines; ADR 0117) with their item and order ids; empty without task:read.",
   input: CalendarRangeInputSchema,
   output: CalendarRangeSchema,
   permission: "order:read",
@@ -38,9 +40,12 @@ export const calendarRange = defineOperation({
       if (!order) return notFound({ entity: "Order" });
     }
     const { from, to, timeZone } = range.value;
-    const blocks = await loadBlocks({ context, filters: input, from, to });
+    const [blocks, tasks] = await Promise.all([
+      loadBlocks({ context, filters: input, from, to }),
+      loadCalendarTasks({ context, from, to, orderId: input.orderId }),
+    ]);
     const values = await loadValues({ context, input, timeZone, blocks });
-    return ok({ value: { ...range.value, blocks, currency: DEFAULT_CURRENCY, values } });
+    return ok({ value: { ...range.value, blocks, tasks, currency: DEFAULT_CURRENCY, values } });
   },
 });
 

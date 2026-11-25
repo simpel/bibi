@@ -7,11 +7,7 @@ import { OrderStatusPageForm } from "./order-status-page-form";
 export async function OrderStatusCreate() {
   const t = await getTranslations("orderStatus");
   return (
-    <FormPageShell
-      backHref={ROUTES.adminPipeline}
-      title={t("create")}
-      description={t("createDescription")}
-    >
+    <FormPageShell title={t("create")} description={t("createDescription")}>
       <OrderStatusPageForm />
     </FormPageShell>
   );

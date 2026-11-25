@@ -25,11 +25,7 @@ export async function ResponsibilityUpdate({ locale, id }: ResponsibilityUpdateP
   return (
     <>
       <CrumbName href={`/admin/responsibilities/${id}/update`} name={responsibility.value.name} />
-      <FormPageShell
-        backHref={ROUTES.adminResponsibilitiesSection}
-        title={t("edit")}
-        description={t("editDescription")}
-      >
+      <FormPageShell title={t("edit")} description={t("editDescription")}>
         <ResponsibilityUpdateForm responsibility={responsibility.value} options={options.value} />
       </FormPageShell>
     </>

@@ -8,6 +8,7 @@ import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
 import { boardCardPin } from "../lib/board-card-pin";
 import { isTentative } from "../lib/board-card-surface";
 import type { BoardCard } from "../lib/kanban-model";
+import { NextTaskChip } from "./next-task-chip";
 
 export type PipelineCardContentProps = {
   /** `customerName` is null when the caller may not view customers: then none is shown. */
@@ -43,7 +44,7 @@ function useValue({ card }: { card: BoardCard }) {
  * A board card: the same small card as a minimized pinned card (`CompactCardHeader`), with the
  * My work cues (spec: home, Tone): its flags as red and amber icons beside the pin (the words in
  * their tooltip), the pin that puts it in the tray, and the red or amber edge. A click anywhere else opens the order (`KanbanBoard`'s `onOpenCard`).
- * The bottom row never shortens: the value, the status in a column that groups several, how long
+ * The order's next open task follows as an outlined chip (ADR 0117). The bottom row never shortens: the value, the status in a column that groups several, how long
  * a stale deal has sat, and the assignee.
  */
 export function PipelineCardContent({ card }: PipelineCardContentProps) {
@@ -76,6 +77,7 @@ export function PipelineCardContent({ card }: PipelineCardContentProps) {
           </>
         }
       />
+      {card.nextTask ? <NextTaskChip task={card.nextTask} className="flex min-w-0" /> : null}
       {hasFooter ? (
         <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
           {value ? (

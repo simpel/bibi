@@ -87,12 +87,13 @@ export function TemplateLineChoices({ form, data, index }: TemplateLineChoicesPr
         control={form.control}
         name={`lines.${index}.options`}
         render={({ field }) => (
-          <div className="grid gap-4">
+          // FormItem gives FormMessage its field context; a plain div throws at render.
+          <FormItem className="grid gap-4">
             {groups.map((group) => (
               <LineGroup key={group.name} {...{ group, index }} {...field} />
             ))}
             <FormMessage />
-          </div>
+          </FormItem>
         )}
       />
     </div>

@@ -18,11 +18,7 @@ export async function ResponsibilityCreate({ locale }: ResponsibilityCreateProps
   if (!options.ok)
     return <ErrorState errorKey={handleLoadError({ error: options.error, locale })} />;
   return (
-    <FormPageShell
-      backHref={ROUTES.adminResponsibilitiesSection}
-      title={t("create")}
-      description={t("createDescription")}
-    >
+    <FormPageShell title={t("create")} description={t("createDescription")}>
       <ResponsibilityWizard options={options.value} />
     </FormPageShell>
   );

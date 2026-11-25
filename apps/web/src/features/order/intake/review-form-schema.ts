@@ -32,6 +32,7 @@ function createInputOf({
     orderTypeId: values.entityTypeId,
     intakeKey: current.state.intakeKey,
     inboundMessageId: current.state.inboundMessageId,
+    taskId: current.state.fromTask?.id,
     draftedFromMessage: Boolean(current.state.draft),
     userId: current.data.catalog.userId,
   });

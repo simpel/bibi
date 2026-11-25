@@ -67,6 +67,8 @@ import { SearchResultsView } from "./search-results-view";
 import { SkillCardView } from "./skill-card-view";
 import { SkillTableView } from "./skill-table-view";
 import { StatusGridTableView } from "./status-grid-table-view";
+import { TaskCardView } from "./task-card-view";
+import { TaskListView } from "./task-list-view";
 import { VenueCardView } from "./venue-card-view";
 import { VenueTableView } from "./venue-table-view";
 import { VocabularyCardView } from "./vocabulary-card-view";
@@ -110,6 +112,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "requirement-card": RequirementCardView,
   "comment-list": CommentListView,
   "comment-card": CommentCardView,
+  "task-list": TaskListView,
+  "task-card": TaskCardView,
   ...BOARD_COMPONENTS,
   ...ORDER_COMPONENTS,
   "quote-card": QuoteCardView,

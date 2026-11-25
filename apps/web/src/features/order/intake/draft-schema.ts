@@ -124,6 +124,7 @@ export const DraftSchema = z.object({
     review: ReviewSchema.nullable(),
     intakeKey: Id,
     inboundMessageId: Id.nullable().optional(),
+    fromTask: z.object({ id: Id, note: z.string() }).nullable().optional(),
     draft: MessageDraftSchema.nullable().optional(),
   }),
 });

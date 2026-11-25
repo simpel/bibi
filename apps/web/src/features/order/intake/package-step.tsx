@@ -34,6 +34,8 @@ export type PackageStepProps = {
   timeZone: string;
   /** The package a read message suggests (★, preselected; ADR 0084), or null. */
   suggestedId: string | null;
+  /** The package the intake was opened from (a template's page): preselected, no ★. */
+  preselectedId: string | null;
   /** A summary of the pick and its answers. */
   pickSummary: string;
   onPick: (input: { pick: IntakePick; when?: IntakeWhen }) => void;
@@ -73,13 +75,19 @@ function PreviewBody({ when, timeZone, preview, ...props }: BodyProps) {
 export function PackageStep(props: PackageStepProps) {
   const t = useTranslations("orderIntake.package");
   const intake = useTranslations("orderIntake");
-  const { who, when, pick, packages, timeZone, suggestedId } = props;
+  const { who, when, pick, packages, timeZone, suggestedId, preselectedId } = props;
   const { request, cancel, pickPackage, answered } = usePackagePicking(props);
   const preview = usePackagePreview({
     ...{ customerId: who.customerId, period: periodOf({ when, timeZone }), headcount: when.guests },
     packageIds: packages.map(({ id }) => id),
   });
-  useSuggestedPick({ suggestedId, pick, preview, packages, pickPackage });
+  useSuggestedPick({
+    suggestedId: suggestedId ?? preselectedId,
+    pick,
+    preview,
+    packages,
+    pickPackage,
+  });
   const next = usePackageNext({ ...props, preview });
   return (
     <StepSection

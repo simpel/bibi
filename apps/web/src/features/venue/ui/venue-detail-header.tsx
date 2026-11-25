@@ -1,6 +1,5 @@
 import type { VenueDto } from "@bibi/core";
 import { Badge } from "@bibi/ui";
-import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { PageHeader } from "@/components/states/page-header";
@@ -20,13 +19,6 @@ export async function VenueDetailHeader({ venue, access, history }: VenueDetailH
   const common = await getTranslations("common");
   return (
     <div className="grid gap-4">
-      <Link
-        href={ROUTES.venues}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-4" />
-        {common("back")}
-      </Link>
       <PageHeader
         title={venue.name}
         description={venue.description ?? undefined}

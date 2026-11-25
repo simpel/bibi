@@ -179,6 +179,7 @@
     "financials": "Financial Results",
     "workload": "Workload",
     "orders": "Orders",
+    "tasks": "Tasks",
     "inbox": "Inbox",
     "inboxOpen": "{count, plural, one {# open message} other {# open messages}}",
     "myWorkDue": "{count, plural, one {# task due now} other {# tasks due now}}",
@@ -202,6 +203,7 @@
     "newChat": "Create chat",
     "newOrder": "Create order",
     "newOrderOptions": "More ways to create an order",
+    "moreToCreate": "More to create",
     "newOrderFromMessage": "From a message",
     "recent": "Recent",
     "chats": "Chats",
@@ -275,6 +277,7 @@
     "createChat": "Create chat",
     "settings": "Settings",
     "createOrder": "Create order",
+    "createTask": "Create task",
     "createCustomer": "Create customer",
     "createRunSheet": "Create run sheet",
     "prefixes": {
@@ -335,6 +338,10 @@
       "order": {
         "title": "Order",
         "description": "A customer request, from first contact to the finished event."
+      },
+      "task": {
+        "title": "Task",
+        "description": "A site visit, a tasting or a deadline for a customer."
       },
       "customer": {
         "title": "Customer",

@@ -13,10 +13,16 @@ import {
   StatCard,
   StatCards,
 } from "@bibi/ui";
-import { CalendarIcon, ClipboardListIcon, MailIcon, Trash2Icon } from "lucide-react";
+import {
+  CalendarIcon,
+  CircleCheckIcon,
+  ClipboardListIcon,
+  MailIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
-import { listItemRoute, orderRoute, ROUTES } from "@/lib/routes";
+import { listItemRoute, orderRoute, ROUTES, taskRoute } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { useNotificationText } from "./use-notification-text";
 
@@ -73,7 +79,7 @@ function NotificationActions({ notification, onMarkUnread, onDelete }: ActionsPr
   const t = useTranslations("notifications");
   const common = useTranslations("common");
   const { order } = useNotificationText()({ notification });
-  const { orderId, runSheetId, data } = notification;
+  const { orderId, runSheetId, taskId, data } = notification;
   return (
     <SheetFooter>
       {orderId ? (
@@ -81,6 +87,14 @@ function NotificationActions({ notification, onMarkUnread, onDelete }: ActionsPr
           <Link href={orderRoute({ id: orderId })}>
             <CalendarIcon />
             <span className="truncate">{order}</span>
+          </Link>
+        </Button>
+      ) : null}
+      {taskId ? (
+        <Button asChild variant={orderId ? "outline" : "default"}>
+          <Link href={taskRoute({ id: taskId })}>
+            <CircleCheckIcon />
+            <span className="truncate">{data.taskTypeName ?? t("aTask")}</span>
           </Link>
         </Button>
       ) : null}

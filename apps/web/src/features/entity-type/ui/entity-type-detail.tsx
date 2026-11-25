@@ -1,6 +1,5 @@
 import type { Locale } from "@bibi/i18n";
 import { Badge } from "@bibi/ui";
-import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
@@ -20,9 +19,8 @@ export type EntityTypeDetailProps = { locale: Locale; id: string };
 
 /** Type detail page: rename, capabilities (one form, saved together), fields and archive. */
 export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
-  const [t, common, abilities, result, groups] = await Promise.all([
+  const [t, abilities, result, groups] = await Promise.all([
     getTranslations("entityType"),
-    getTranslations("common"),
     getCallerAbilities(),
     loadEntityType({ id }),
     loadItemTypeGroups(),
@@ -37,13 +35,6 @@ export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
       <CrumbName href={`/admin/types/${id}`} name={entityType.name} />
       <PageTour tour="item-type" />
       <div className="grid gap-4">
-        <Link
-          href={ROUTES.adminTypes}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeftIcon className="size-4" />
-          {common("back")}
-        </Link>
         <PageHeader title={entityType.name} actions={archive} />
         <Badge variant="outline" className="w-fit">
           {t(`bases.${entityType.base}`)}

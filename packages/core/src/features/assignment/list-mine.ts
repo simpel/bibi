@@ -39,7 +39,8 @@ async function candidateSlots({ context, userId, kind, subjectType }: MineQuery)
     responsibilityId: r.responsibilityId,
     at: r.createdAt,
   }));
-  if (subjectType === "ITEM") return slots;
+  // Only orders get slots from a responsibility's defaults.
+  if (subjectType && subjectType !== "ORDER") return slots;
   const derived = await derivedSlots({ context, userId, kind });
   const orders = await context.db.order.findMany({
     where: { id: { in: derived.map((slot) => slot.orderId) } },

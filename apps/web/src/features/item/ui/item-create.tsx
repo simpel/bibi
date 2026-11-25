@@ -20,7 +20,7 @@ export async function ItemCreate({ locale, typeId }: ItemCreateProps) {
   const canCreateType = can({ abilities, permission: "configuration:write" });
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   return (
-    <FormPageShell backHref={ROUTES.items} title={t("create")} description={t("createDescription")}>
+    <FormPageShell title={t("create")} description={t("createDescription")}>
       <ItemWizard data={data.value} typeId={typeId} canCreateType={canCreateType} />
     </FormPageShell>
   );

@@ -5,16 +5,21 @@ model NeedsYouDismissal {
   id             String   @id @default(cuid(2))
   organizationId String
   userId         String
-  orderId        String
-  /// The task's key, `<kind>:<orderId>[:<id>]`, stable across reads.
+  /// The order the task is about; null for a `TASK_DUE` task of a task without an order.
+  orderId        String?
+  /// The task (ADR 0117) a `TASK_DUE` task is about; null for every other kind.
+  taskId         String?
+  /// The task's key, `<kind>:<orderId>[:<id>]` (`TASK_DUE:<taskId>`), stable across reads.
   taskKey        String
   /// The task's facts when it was dismissed: its due time and the kind's own facts.
   fingerprint    String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   createdBy      String?
-  order          Order    @relation(fields: [orderId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  order          Order?   @relation(fields: [orderId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  task           Task?    @relation(fields: [taskId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@unique([organizationId, userId, taskKey])
   @@index([orderId, organizationId])
+  @@index([taskId, organizationId])
 }

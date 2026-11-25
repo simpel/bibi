@@ -1,5 +1,4 @@
 import type { Locale } from "@bibi/i18n";
-import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { MarkdownView } from "@/components/markdown-view";
 import { CrumbName } from "@/components/shell/crumb-name";
@@ -36,13 +35,6 @@ export async function SkillDetail({ locale, id }: SkillDetailProps) {
   return (
     <div className="grid gap-6">
       <CrumbName href={skillRoute({ id })} name={skill.name} />
-      <Link
-        href={ROUTES.skills}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-4" />
-        {common("back")}
-      </Link>
       <PageHeader
         title={skill.name}
         description={skill.description}

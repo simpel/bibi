@@ -10,6 +10,7 @@ import {
 } from "@bibi/ui";
 import { BookOpenIcon, LogOutIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { TourReplayMenuItem } from "@/components/tour/tour-replay-menu-item";
 import { authClient } from "@/lib/auth-client";
 import { Link, useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
@@ -53,6 +54,7 @@ export function UserMenu({ user, organizationId }: UserMenuProps) {
             {t("mySkills")}
           </Link>
         </DropdownMenuItem>
+        <TourReplayMenuItem />
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={signOut}>
           <LogOutIcon />

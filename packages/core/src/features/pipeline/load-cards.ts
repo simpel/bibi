@@ -5,6 +5,7 @@ import type { DashboardHorizon } from "../dashboard/horizon";
 import { LATEST_STATUS_CHANGE } from "../order/status-history";
 import { cardCues } from "./card-cues";
 import { cardValues } from "./card-values";
+import { nextTasks } from "./next-tasks";
 import type { PipelineBoardInput, PipelineCard } from "./schema";
 
 /** A card before it is placed in a column of the board. */
@@ -15,7 +16,7 @@ const CARD_LIMIT = 500;
 
 type Db = Pick<OperationContext, "db">;
 export type LoadCardsInput = {
-  context: Pick<OperationContext, "db" | "permissions" | "actor">;
+  context: Pick<OperationContext, "db" | "permissions" | "actor" | "now">;
   input: PipelineBoardInput;
   since: Date;
   /** Which statuses: the board's (`in`) or every other (`notIn`). */
@@ -92,10 +93,11 @@ export async function loadOrderCards({
     take: CARD_LIMIT,
   });
   const ids = rows.map((row) => row.id);
-  const [owners, valuesOf, cues] = await Promise.all([
+  const [owners, valuesOf, cues, tasks] = await Promise.all([
     mainAssignees({ context, ids }),
     cardValues({ context, orderIds: ids }),
     cardCues({ context, orderIds: ids, horizon }),
+    nextTasks({ context, orderIds: ids }),
   ]);
   // Line states belong to the program: counted only for a caller who may view it (ADR 0050).
   const counted = canView({ context, feature: "program" });
@@ -116,6 +118,7 @@ export async function loadOrderCards({
     assigneeId: owners.get(row.id) ?? null,
     following: cues.following.has(row.id),
     flags: cues.flags.get(row.id) ?? [],
+    nextTask: tasks.get(row.id) ?? null,
     ...valuesOf({ orderId: row.id }),
   }));
 }

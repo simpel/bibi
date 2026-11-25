@@ -1,0 +1,98 @@
+{
+  "task": {
+    "name": "Task",
+    "plural": "Tasks",
+    "create": "Create task",
+    "createDescription": "A site visit, a tasting or a deadline for a customer. It shows on the calendar and in My work, but books nothing.",
+    "listDescription": "Site visits, tastings and deadlines around your customers, before or beside an order.",
+    "created": "Task created",
+    "updated": "Task saved",
+    "completed": "Task done",
+    "reopened": "Task opened again",
+    "archived": "Task archived",
+    "linked": "Task added to the order",
+    "empty": "No tasks yet",
+    "emptyDescription": "Create a task for a site visit, a tasting or a deadline.",
+    "noMatches": "No tasks match.",
+    "noTypes": "No task types yet",
+    "noTypesDescription": "Create a task type, such as Site visit, under Types first.",
+    "goToTypes": "Go to types",
+    "complete": "Mark {name} as done",
+    "reopen": "Mark {name} as not done",
+    "createOrder": "Create order",
+    "archive": "Archive task",
+    "archiveConfirm": "{name} is removed from the calendar, the lists and My work.",
+    "details": "Details",
+    "noNote": "No note",
+    "addToOrder": "Add to order",
+    "addToOrderDescription": "Add the task to one of the customer's orders. It can only belong to one order.",
+    "busy": {
+      "title": "{item} is busy",
+      "theItem": "The item",
+      "description": "Another booking or a block holds it {when}. The task is still saved."
+    },
+    "state": {
+      "open": "Open",
+      "done": "Done",
+      "overdue": "Overdue"
+    },
+    "shapes": {
+      "MEETING": "Meeting",
+      "DEADLINE": "Deadline"
+    },
+    "fields": {
+      "type": "Type",
+      "customer": "Customer",
+      "contact": "Contact person",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "dueAt": "Due",
+      "when": "When",
+      "item": "Room or item",
+      "noItem": "None",
+      "assignee": "Assignee",
+      "unassigned": "Unassigned",
+      "note": "Note",
+      "order": "Order",
+      "noOrder": "No order"
+    },
+    "inlineEdit": {
+      "when": "Edit type and time",
+      "contact": "Edit contact person",
+      "assignee": "Edit assignee",
+      "item": "Edit room or item",
+      "note": "Edit note",
+      "details": "Edit details"
+    },
+    "columns": {
+      "task": "Task",
+      "customer": "Customer",
+      "assignee": "Assignee",
+      "state": "State",
+      "when": "When"
+    },
+    "query": {
+      "is": "Is",
+      "assignee": "Assignee",
+      "customer": "Customer",
+      "type": "Type",
+      "me": "me"
+    },
+    "section": {
+      "title": "Tasks",
+      "empty": "No tasks yet.",
+      "orderEmpty": "No tasks on this order yet."
+    },
+    "calendar": {
+      "lane": "Tasks",
+      "legend": "Task",
+      "legendText": "Outlined: a site visit or a deadline, never a booking"
+    },
+    "slot": {
+      "createTask": "Create task"
+    },
+    "myWork": {
+      "title": "Tasks"
+    }
+  }
+}

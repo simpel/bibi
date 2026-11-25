@@ -32,10 +32,13 @@ export const ROUTES = {
   itemStateNew: "/new/item-state",
   orderTemplateNew: "/new/order-template",
   orderNew: "/new/order",
+  /** Create a task (ADR 0117); `?customer=`, `?order=` or a calendar slot prefill it. */
+  taskNew: "/new/task",
   depositNew: "/new/deposit",
   customers: "/customers",
   notifications: "/notifications",
   orders: "/orders",
+  tasks: "/tasks",
   runSheets: "/run-sheets",
   calendar: "/calendar",
   financials: "/data/financials", // one of the dashboards (ADR 0086)
@@ -115,6 +118,35 @@ export function customerRoute({ id }: IdRouteInput): string {
 
 export function orderRoute({ id }: IdRouteInput): string {
   return `${ROUTES.orders}/${encodeURIComponent(id)}`;
+}
+
+/** `/tasks/<id>`: a task's detail page (ADR 0117). */
+export function taskRoute({ id }: IdRouteInput): string {
+  return `${ROUTES.tasks}/${encodeURIComponent(id)}`;
+}
+
+export type TaskNewRouteInput = {
+  customerId?: string | undefined;
+  orderId?: string | undefined;
+  /** A calendar slot: instants as ISO strings and the row's item. */
+  from?: string | undefined;
+  to?: string | undefined;
+  itemId?: string | undefined;
+};
+
+/** `/new/task?customer=&order=&from=&to=&item=`: the create page, prefilled. */
+export function taskNewRoute({ customerId, orderId, from, to, itemId }: TaskNewRouteInput): string {
+  const query = new URLSearchParams();
+  const pairs = [
+    ["customer", customerId],
+    ["order", orderId],
+    ["from", from],
+    ["to", to],
+    ["item", itemId],
+  ] as const;
+  for (const [key, value] of pairs) if (value) query.set(key, value);
+  const search = query.toString();
+  return search ? `${ROUTES.taskNew}?${search}` : ROUTES.taskNew;
 }
 
 export type DepositNewRouteInput = { orderId: string };

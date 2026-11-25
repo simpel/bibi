@@ -10,13 +10,15 @@ export type MyWorkTimelineProps = {
   dates: DateTimeFormat;
   /** Read on as the member scrolls, at the end of Later (the start page only). */
   later?: ReactNode;
+  /** The member's tasks today (ADR 0117), at the top of Today; null or absent when none. */
+  todayTasks?: ReactNode;
 };
 
 /**
  * The start page's timeline in four parts, Today, This week, Next week and Later, each with its
  * days and cards (spec: home). Today always shows; an empty part otherwise does not.
  */
-export function MyWorkTimeline({ work, dates, later }: MyWorkTimelineProps) {
+export function MyWorkTimeline({ work, dates, later, todayTasks }: MyWorkTimelineProps) {
   const t = useTranslations("myWork");
   const { cards, timeZone } = work;
   if (cards === null) return null;
@@ -35,7 +37,8 @@ export function MyWorkTimeline({ work, dates, later }: MyWorkTimelineProps) {
         return (
           <section key={section} className="grid gap-4">
             <h2 className="border-b pb-1.5 font-serif text-xl">{t(`sections.${section}`)}</h2>
-            {section === "today" && list.length === 0 ? (
+            {section === "today" ? todayTasks : null}
+            {section === "today" && list.length === 0 && !todayTasks ? (
               <p className="text-sm text-muted-foreground">{t("emptyToday")}</p>
             ) : null}
             <MyWorkDays

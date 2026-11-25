@@ -25,7 +25,7 @@ import { type UseTimelineInput, useTimeline } from "./use-timeline";
 
 export type AvailabilityCalendarProps = Pick<
   AvailabilityGridProps,
-  "selectedId" | "onAdd" | "onOpen"
+  "selectedId" | "onAdd" | "onOpen" | "tasks"
 > & {
   assets: readonly CalendarAsset[];
   /** Bookings on any loaded day; load more on `onRangeChange`. */

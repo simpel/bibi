@@ -53,7 +53,12 @@ async function recordFirstHistory({ context, orderId, statusId, ...rest }: First
 function ownColumns({ input }: { input: OrderCreateInput }) {
   const { entityTypeId: _type, fields: _fields, assigneeId: _assignee, ...rest } = input;
   const { estimatedValueMinor: _estimate, templateId: _template, lines: _lines, ...own } = rest;
-  const { inboundMessageId: _message, draftedFromMessage: _drafted, ...data } = own;
+  const {
+    inboundMessageId: _message,
+    draftedFromMessage: _drafted,
+    taskIds: _tasks,
+    ...data
+  } = own;
   return data;
 }
 

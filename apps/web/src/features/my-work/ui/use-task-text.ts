@@ -23,6 +23,8 @@ export function useTaskText({ task, numbers }: TaskTextInput): string {
     case "UNCONFIRMED":
     case "UNREAD_MESSAGES":
       return t(task.kind, { count });
+    case "TASK_DUE":
+      return t(task.kind, { type: task.taskTypeName ?? "" });
     case "PAYMENT_OVERDUE":
       return t(task.kind, { amount: numbers.money({ minor: task.amountMinor ?? 0 }) });
     default:

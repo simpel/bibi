@@ -32,6 +32,8 @@ export const NotificationDataSchema = z.object({
   excerpt: z.string().optional().describe("COMMENT_*: the comment's first 140 characters"),
   commentId: z.string().optional().describe("COMMENT_*: the comment (comment.get)"),
   reply: z.boolean().optional().describe("COMMENT_*: the comment answers another one"),
+  taskTypeName: z.string().optional().describe("Task subject: the task's type then"),
+  taskStartsAt: z.string().optional().describe("Task subject: its start or due time, ISO"),
 });
 export type NotificationData = z.infer<typeof NotificationDataSchema>;
 
@@ -43,6 +45,7 @@ export const NotificationSchema = z.object({
   orderId: z.string().nullable(),
   runSheetId: z.string().nullable(),
   paymentId: z.string().nullable(),
+  taskId: z.string().nullable().describe("The task it is about (task.get); null otherwise"),
   data: NotificationDataSchema,
   readAt: z.date().nullable().describe("When the caller read it; null = unread"),
   createdAt: z.date(),

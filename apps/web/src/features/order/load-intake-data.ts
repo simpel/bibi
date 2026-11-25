@@ -36,6 +36,8 @@ export type IntakeData = {
   catalog: IntakeCatalog;
   /** The calendar slot the intake starts from, or null (spec "Starting from the calendar"). */
   slot: IntakeSlot | null;
+  /** `?template=<id>` from a booking template's page: step 3 preselects it, or null. */
+  templateId: string | null;
 };
 
 const typesOf = ({ base }: { base: "CUSTOMER" | "CONTACT" }) => loadEntityTypesOf({ base });
@@ -103,6 +105,7 @@ export async function loadIntakeData(): Promise<Result<IntakeData>> {
       draftKey: draftKey({ organizationId, userId: abilities.userId ?? "" }),
       catalog: catalog.value,
       slot: null,
+      templateId: null,
     },
   };
 }

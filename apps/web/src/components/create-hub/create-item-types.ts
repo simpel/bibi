@@ -5,6 +5,7 @@ export type CreateGroup = "work" | "catalog" | "settings";
 
 export type CreateKey =
   | "order"
+  | "task"
   | "customer"
   | "item"
   | "venue"

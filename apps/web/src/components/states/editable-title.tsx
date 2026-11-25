@@ -115,7 +115,7 @@ export function EditableTitle(props: EditableTitleProps) {
           aria-label={editLabel}
           title={editLabel}
           onClick={() => setDraft(value)}
-          className="size-8 shrink-0 self-center text-muted-foreground opacity-0 transition-opacity focus-visible:opacity-100 group-hover/title:opacity-100"
+          className="size-8 shrink-0 self-center text-muted-foreground opacity-10 transition-opacity focus-visible:opacity-100 group-hover/title:opacity-100"
         >
           <PencilIcon className="size-4" />
         </Button>

@@ -5,6 +5,7 @@ import { cn, type SortingState } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { flagAttention } from "@/features/my-work/lib/flag-level";
+import { NextTaskChip } from "@/features/pipeline/ui/next-task-chip";
 import { useRouter } from "@/lib/navigation";
 import { orderRoute } from "@/lib/routes";
 import { useDataTablePaginationLabels } from "@/lib/use-data-table-pagination-labels";
@@ -20,7 +21,7 @@ export type OrderTableProps = Omit<OrderLookups, "renderActions"> & {
   orders: OrderDto[];
   total: number;
   view: OrderTablePage;
-  /** Card cues by order id (preliminary, flags), the same as on the pipeline. */
+  /** Card cues by order id (preliminary, flags, next task), the same as on the pipeline. */
   cues?: Readonly<Record<string, OrderCue>> | undefined;
 };
 
@@ -62,12 +63,18 @@ export function OrderTable({ orders, total, view, cues = {}, ...lookups }: Order
   const columns = useOrderColumns({
     ...lookups,
     renderActions: (order) => <OrderRowActions order={order} />,
-    renderIssues: (order) => (
-      <OrderCueBadges
-        flags={cues[order.id]?.flags ?? []}
-        tentative={cues[order.id]?.soft ?? false}
-      />
-    ),
+    renderIssues: (order) => {
+      const next = cues[order.id]?.nextTask;
+      return (
+        <>
+          <OrderCueBadges
+            flags={cues[order.id]?.flags ?? []}
+            tentative={cues[order.id]?.soft ?? false}
+          />
+          {next ? <NextTaskChip task={next} className="flex min-w-0" /> : null}
+        </>
+      );
+    },
   });
   const now = Date.now();
   const router = useRouter();

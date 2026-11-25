@@ -90,6 +90,11 @@
         "budgetMinor": "Budget (ören)",
         "estimatedValueMinor": "Uppskattat värde (ören)",
         "orderId": "Bokning (id)",
+        "endsAt": "Slutar",
+        "note": "Anteckning",
+        "taskId": "Uppgift (id)",
+        "taskIds": "Uppgifter att koppla",
+        "taskShape": "Uppgiftsform",
         "inboundMessageId": "Meddelande i inkorgen",
         "parentLineId": "Tillägg till",
         "statusId": "Bokningsstatus (id)",
@@ -120,7 +125,7 @@
         "stateId": "Läge (id)",
         "holdsUntil": "Håll till",
         "expiryStateId": "Utgångsläge (id)",
-        "templateId": "Mall (id)",
+        "templateId": "Bokningsmall (id)",
         "lines": "Rader",
         "startsAt": "Startar",
         "itemTypes": "Artikeltyper",
@@ -244,6 +249,12 @@
         "comment_create": "Lägg till kommentar",
         "comment_update": "Redigera kommentar",
         "comment_archive": "Ta bort kommentar",
+        "task_create": "Skapa uppgift",
+        "task_update": "Redigera uppgift",
+        "task_complete": "Markera uppgiften som klar",
+        "task_reopen": "Öppna uppgiften igen",
+        "task_linkOrder": "Koppla uppgiften till bokningen",
+        "task_archive": "Ta bort uppgift",
         "inboundMessage_attachToOrder": "Koppla meddelande till bokning",
         "line_changeState": "Byt läge på rad",
         "line_expandBundle": "Lägg till paket med delar",
@@ -260,10 +271,10 @@
         "orderVersion_name": "Namnge en version av bokningen",
         "orderVersion_restore": "Återställ en version av bokningen",
         "order_expireHolds": "Släpp förfallna reservationer",
-        "order_createFromTemplate": "Skapa bokning från mall",
-        "orderTemplate_create": "Skapa mall",
-        "orderTemplate_update": "Uppdatera mall",
-        "orderTemplate_archive": "Arkivera mall",
+        "order_createFromTemplate": "Skapa bokning från bokningsmall",
+        "orderTemplate_create": "Skapa bokningsmall",
+        "orderTemplate_update": "Uppdatera bokningsmall",
+        "orderTemplate_archive": "Arkivera bokningsmall",
         "pipelineSetup_activate": "Sätt upp pipelinen",
         "pipelineSetup_createExamples": "Skapa exempelbokningar",
         "deposit_create": "Skapa förskott",
@@ -592,7 +603,8 @@
           "CONTACT": "Kontakt",
           "ORDER": "Bokning",
           "REQUIREMENT": "Behov",
-          "LINE": "Programpunkt"
+          "LINE": "Programpunkt",
+          "TASK": "Uppgift"
         },
         "capability": {
           "PRICED": "Prissatt",
@@ -701,7 +713,8 @@
       "assignment": {
         "subject": {
           "ORDER": "Bokning",
-          "ITEM": "Artikel"
+          "ITEM": "Artikel",
+          "TASK": "Uppgift"
         },
         "main": "Huvudansvarig",
         "responsibility": "Ansvar",
@@ -716,9 +729,9 @@
         }
       },
       "orderTemplate": {
-        "singular": "Mall",
-        "empty": "Inga mallar hittades.",
-        "open": "Öppna mallarna",
+        "singular": "Bokningsmall",
+        "empty": "Inga bokningsmallar hittades.",
+        "open": "Öppna bokningsmallarna",
         "archived": "Arkiverat",
         "lines": "{count, plural, =0 {Inga rader} one {# rad} other {# rader}}",
         "columns": {
@@ -762,6 +775,14 @@
         "onLine": "Gäller en rad",
         "archived": "Borttagen",
         "openOrder": "Öppna ordern"
+      },
+      "task": {
+        "empty": "Inga uppgifter hittades.",
+        "done": "Klar",
+        "open": "Inte klar än",
+        "linked": "Kopplad till en bokning",
+        "itemBusy": "Artikeln är upptagen då",
+        "archived": "Borttagen"
       }
     },
     "questionnaire": {

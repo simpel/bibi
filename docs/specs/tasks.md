@@ -10,14 +10,14 @@ Target behaviour. Why: ADR 0117. Entity: `docs/domain-model.md` (Task).
 5. A rep who held the visit outside Bibi just creates the order. No task is needed.
 
 ## Rules
-- Task types are the organization's own (base `TASK`), each with a shape: `MEETING` needs start and end (end after start); `DEADLINE` has one due time and no end. Changing a type's shape is refused while it has active tasks (`CONFLICT`).
+- Task types are the organization's own (base `TASK`), each with a shape: `MEETING` needs start and end (end after start, also a database CHECK); `DEADLINE` has one due time and no end. Changing a type's shape is refused while it has active tasks (`CONFLICT`).
 - Customer and contact are required; the contact must work at the customer (`VALIDATION`). The customer never changes after create.
-- `task.linkOrder` sets the order once: same customer, active order (`VALIDATION`); a task already linked is `CONFLICT`. `order.create` with `taskIds` links them in its transaction, under the same rules.
+- `task.linkOrder` sets the order once: same customer, an order that is not archived, also one in a closing status (`VALIDATION`); a task already linked is `CONFLICT`. `task.create` with `orderId` and `order.create` with `taskIds` link in the same command, under the same rules.
 - `ITEM_BUSY`: a meeting whose item has a hard hold, buffer or block overlapping its span. A deadline never warns. Soft holds do not count. The task is still saved.
 - `overdue`: open, and past its end (meeting) or due time (deadline).
 - `complete` sets `doneAt` and `doneBy`; `reopen` clears them. Both are audited.
-- Assigning a task notifies the new assignee (`ASSIGNED` with a task subject).
-- Needs you: kind `TASK_DUE` for the assignee, group TODAY when due today and LATE when overdue. It is dismissable like other needs (ADR 0114).
+- The assignee defaults to the creator on create; `task.update` changes it with `assigneeId`. Assigning a task notifies the new assignee (`ASSIGNED` with `taskId`, no order needed, data `taskTypeName` and `taskStartsAt`).
+- Needs you: kind `TASK_DUE` (key `TASK_DUE:<taskId>`) for the assignee, group TODAY when due today and LATE when overdue, with no age limit. It is dismissable like other needs (ADR 0114): `NeedsYouDismissal` stores `taskId`, its `orderId` null for a task without an order.
 
 ## Surfaces
 - Every operation on web, GraphQL, REST and MCP. The assistant proposes; the user approves writes.

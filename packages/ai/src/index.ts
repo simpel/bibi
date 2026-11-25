@@ -97,6 +97,7 @@ export type { ResponsibilityWire } from "./ui-contract/responsibility-entries";
 export type { RunSheetDefinitionWire } from "./ui-contract/run-sheet-definition-entries";
 export type { RunSheetWire } from "./ui-contract/run-sheet-entries";
 export type { StatusGridCellWire } from "./ui-contract/status-grid-entries";
+export type { TaskWire } from "./ui-contract/task-entries";
 export { GENERIC_UI_TOOLS, TOOL_UI_REGISTRY } from "./ui-contract/tool-ui-registry";
 export type {
   ToolUi,

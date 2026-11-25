@@ -15,11 +15,7 @@ export async function CustomerCreate({ locale }: CustomerCreateProps) {
   const data = await loadTypedFormData({ base: "CUSTOMER" });
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   return (
-    <FormPageShell
-      backHref={ROUTES.customers}
-      title={t("create")}
-      description={t("createDescription")}
-    >
+    <FormPageShell title={t("create")} description={t("createDescription")}>
       <CustomerWizard data={data.value} />
     </FormPageShell>
   );

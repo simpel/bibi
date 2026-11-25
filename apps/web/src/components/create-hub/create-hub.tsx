@@ -11,7 +11,7 @@ const GROUPS: CreateGroup[] = ["work", "catalog", "settings"];
 /** `/new`: every thing the caller can create, grouped, one card each. */
 export async function CreateHub() {
   const t = await getTranslations("createHub");
-  const items = creatableItems({ abilities: await getCallerAbilities() });
+  const items = creatableItems({ permissions: (await getCallerAbilities()).permissions });
   return (
     <div className="grid gap-8">
       <PageHeader title={t("title")} description={t("description")} />

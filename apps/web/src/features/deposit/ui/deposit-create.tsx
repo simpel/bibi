@@ -9,11 +9,7 @@ export type DepositCreateProps = { orderId: string };
 export async function DepositCreate({ orderId }: DepositCreateProps) {
   const t = await getTranslations("deposit");
   return (
-    <FormPageShell
-      backHref={orderRoute({ id: orderId })}
-      title={t("create")}
-      description={t("createDescription")}
-    >
+    <FormPageShell title={t("create")} description={t("createDescription")}>
       <DepositForm orderId={orderId} />
     </FormPageShell>
   );

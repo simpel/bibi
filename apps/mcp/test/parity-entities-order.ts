@@ -5,6 +5,7 @@ import { assignment } from "./parity-entities-assignment";
 import { comment } from "./parity-entities-comment";
 import { inboundEntities } from "./parity-entities-inbound";
 import { requirement } from "./parity-entities-requirement";
+import { task } from "./parity-entities-task";
 
 /**
  * An order (ADR 0043) for the customer created earlier. It starts in the entry status, so it comes
@@ -113,6 +114,7 @@ export function orderEntities(): ParityEntity[] {
     ...allocationEntities(),
     requirement(),
     comment(),
+    task(),
     ...sales,
   ];
 }

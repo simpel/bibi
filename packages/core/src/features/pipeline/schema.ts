@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { MyWorkFlagSchema } from "../my-work/schema";
+import { NextTaskSchema } from "./next-task-schema";
 
 export const PipelineStatusSchema = z.object({
   id: z.string().describe("The order status id"),
@@ -47,6 +48,7 @@ export const PipelineCardSchema = z.object({
         "soft hold still to come; needs program:read and item:read), HOLD_EXPIRES, QUOTE_WAITING " +
         "(quote:read) and UNREAD_MESSAGES (inbox:read)",
     ),
+  nextTask: NextTaskSchema,
   heldLines: z
     .number()
     .int()
@@ -132,6 +134,7 @@ export const OrderCueSchema = z.object({
     .describe(
       "As on pipeline.board cards: HARD_CLASH, HOLD_EXPIRES, QUOTE_WAITING, UNREAD_MESSAGES",
     ),
+  nextTask: NextTaskSchema,
 });
 
 export const PipelineCuesSchema = z.object({ cues: z.array(OrderCueSchema) });

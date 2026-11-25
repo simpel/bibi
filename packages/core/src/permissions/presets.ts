@@ -20,6 +20,7 @@ const MANAGER_FEATURES: readonly Feature[] = [
   "order",
   "program",
   "comment",
+  "task",
   "customer",
   "quote",
   "payment",
@@ -49,6 +50,9 @@ const INBOX_WORK = unionPermissions({
 /** Everyone comments on orders and lines (ADR 0115); archiving others' comments is `delete`. */
 const COMMENT_WORK = grantAll({ features: ["comment"], only: "write" });
 
+/** Everyone creates and works tasks (ADR 0117); archiving one is `delete`. */
+const TASK_WORK = grantAll({ features: ["task"], only: "write" });
+
 const member = unionPermissions({
   sets: [
     grantAll({
@@ -57,6 +61,7 @@ const member = unionPermissions({
     }),
     INBOX_WORK,
     COMMENT_WORK,
+    TASK_WORK,
   ],
 });
 

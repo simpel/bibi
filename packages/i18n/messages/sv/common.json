@@ -179,6 +179,7 @@
     "financials": "Ekonomiskt resultat",
     "workload": "Beläggning",
     "orders": "Bokningar",
+    "tasks": "Uppgifter",
     "inbox": "Inkorg",
     "inboxOpen": "{count, plural, one {# öppet meddelande} other {# öppna meddelanden}}",
     "myWorkDue": "{count, plural, one {# uppgift att göra nu} other {# uppgifter att göra nu}}",
@@ -202,6 +203,7 @@
     "newChat": "Skapa chatt",
     "newOrder": "Skapa bokning",
     "newOrderOptions": "Fler sätt att skapa en bokning",
+    "moreToCreate": "Mer att skapa",
     "newOrderFromMessage": "Från ett meddelande",
     "recent": "Senaste",
     "chats": "Chattar",
@@ -216,7 +218,7 @@
     },
     "integrations": "Integrationer",
     "itemStates": "Artikelstatusar",
-    "orderTemplates": "Mallar",
+    "orderTemplates": "Bokningsmallar",
     "apiKeys": "API-nycklar",
     "permissions": "Behörigheter",
     "notifications": "Notiser",
@@ -275,6 +277,7 @@
     "createChat": "Skapa chatt",
     "settings": "Inställningar",
     "createOrder": "Skapa bokning",
+    "createTask": "Skapa uppgift",
     "createCustomer": "Skapa kund",
     "createRunSheet": "Skapa körschema",
     "prefixes": {
@@ -336,6 +339,10 @@
         "title": "Bokning",
         "description": "En kundförfrågan, från första kontakt till genomfört event."
       },
+      "task": {
+        "title": "Uppgift",
+        "description": "Ett platsbesök, en provsmakning eller en deadline för en kund."
+      },
       "customer": {
         "title": "Kund",
         "description": "Ett företag eller en person du bokar åt."
@@ -353,7 +360,7 @@
         "description": "Priser som går före artiklarnas priser."
       },
       "package": {
-        "title": "Mall",
+        "title": "Bokningsmall",
         "description": "Färdiga rader för ett mindre möte, så att bokningen skapas i ett steg."
       },
       "skill": {
@@ -629,7 +636,7 @@
         },
         "types": {
           "label": "Typer",
-          "keywords": "artiklar kunder kontakter fält förmågor rum mall"
+          "keywords": "artiklar kunder kontakter fält förmågor rum mall bokningsmall"
         },
         "groups": {
           "label": "Grupper",

@@ -116,6 +116,8 @@ export {
   StatusChangeTrigger,
   type StatusStateRule,
   type SystemLog,
+  type Task,
+  TaskShape,
   type Venue,
   type Vocabulary,
   type VocabularyValue,

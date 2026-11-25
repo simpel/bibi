@@ -10,10 +10,11 @@ import { CONFIRM_LEAD_HOURS, type MyWorkTask, RUN_SHEET_LEAD_HOURS } from "./tas
 
 type Context = Pick<OperationContext, "db" | "permissions">;
 
-/** A task before its order's facts and group are added; `id` tells two of a kind on one order apart. */
-export type RawTask = Partial<
-  Omit<MyWorkTask, "key" | "group" | "reference" | "title" | "customerName">
-> &
+/**
+ * A task before its order's facts and group are added; `id` tells two of a kind on one order
+ * apart. A `TASK_DUE` brings its own `customerName` (it may have no order).
+ */
+export type RawTask = Partial<Omit<MyWorkTask, "key" | "group" | "reference" | "title">> &
   Pick<MyWorkTask, "kind" | "orderId" | "dueAt"> & { id?: string | undefined };
 
 /** When an order's active timed lines start and end. */

@@ -9,6 +9,7 @@ import { OrderPayments } from "@/features/payment/ui/order-payments";
 import { OrderQuotes } from "@/features/quote/ui/order-quotes";
 import { RequirementSection } from "@/features/requirement/ui/requirement-section";
 import { RunSheetSection } from "@/features/run-sheet/ui/run-sheet-section";
+import { OrderTaskSection } from "@/features/task/ui/order-task-section";
 import { type CallerAbilities, can } from "@/server/caller-abilities";
 import type { OrderTab } from "../order-tabs";
 import {
@@ -108,6 +109,11 @@ export function OrderSections({ tab, ...props }: OrderSectionsProps) {
       {tab === "customer" ? (
         <DeferredSection rows={2}>
           <OrderCustomerSection locale={props.locale} order={props.order} />
+        </DeferredSection>
+      ) : null}
+      {tab === "tasks" ? (
+        <DeferredSection rows={2}>
+          <OrderTaskSection locale={props.locale} order={props.order} />
         </DeferredSection>
       ) : null}
       {tab === "money" ? <MoneyTab {...tabProps} /> : null}

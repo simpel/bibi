@@ -26,6 +26,8 @@ model Notification {
   orderId        String?
   runSheetId     String?
   paymentId       String?
+  /// The task it is about (ADR 0117); a task notification may have no order.
+  taskId          String?
   data            Json             @default("{}")
   readAt          DateTime?
   createdAt       DateTime         @default(now())
@@ -34,6 +36,7 @@ model Notification {
   order          Order?          @relation(fields: [orderId, organizationId], references: [id, organizationId])
   runSheet       RunSheet?       @relation(fields: [runSheetId, organizationId], references: [id, organizationId])
   payment         Payment?         @relation(fields: [paymentId, organizationId], references: [id, organizationId])
+  task            Task?            @relation(fields: [taskId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, recipientUserId, readAt, createdAt])

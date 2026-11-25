@@ -13,6 +13,7 @@ export const MY_WORK_TASK_KINDS = [
   "PAYMENT_OVERDUE",
   "NOT_CLOSED",
   "QUOTE_WAITING",
+  "TASK_DUE",
 ] as const;
 export const MyWorkTaskKindSchema = z.enum(MY_WORK_TASK_KINDS);
 export type MyWorkTaskKind = z.infer<typeof MyWorkTaskKindSchema>;
@@ -41,19 +42,30 @@ const only = ({ kinds }: { kinds: string }) => `${kinds} only; null otherwise`;
  * UNCONFIRMED: soft holds close to the start. HOLD_EXPIRES: holdsUntil within 7 days.
  * UNREAD_MESSAGES: unread customer messages (`count`). PAYMENT_OVERDUE: an invoice with money
  * open past its due date. NOT_CLOSED: every line has ended and the status does not close.
- * QUOTE_WAITING: a sent quote waits on the customer.
+ * QUOTE_WAITING: a sent quote waits on the customer. TASK_DUE: an open task (ADR 0117) assigned
+ * to the member is due today or overdue; it may have no order.
  */
 export const MyWorkTaskSchema = z.object({
-  key: z.string().describe("Stable within a read: `<kind>:<orderId>[:<id>]`"),
+  key: z
+    .string()
+    .describe("Stable within a read: `<kind>:<orderId>[:<id>]`; `TASK_DUE:<taskId>` for a task"),
   kind: MyWorkTaskKindSchema,
   group: MyWorkTaskGroupSchema.describe(
     "BLOCKED, LATE (due before now), TODAY, SOON (through the end of next week) or WAITING",
   ),
   dueAt: z.date().describe("When it is due; the list is sorted by it inside a group"),
-  orderId: z.string().describe("order.get"),
-  reference: z.number().int(),
+  orderId: z.string().nullable().describe("order.get; null only for a TASK_DUE without an order"),
+  reference: z.number().int().nullable().describe("The order's reference; null without an order"),
   title: z.string().nullable().describe("The order's title; null until it has one"),
   customerName: z.string().nullable().describe("Null without customer:read"),
+  taskId: z
+    .string()
+    .nullable()
+    .describe(`task.get; ${only({ kinds: "TASK_DUE" })}`),
+  taskTypeName: z
+    .string()
+    .nullable()
+    .describe(only({ kinds: "TASK_DUE" })),
   runSheetId: z
     .string()
     .nullable()
@@ -113,7 +125,9 @@ export const MyWorkDismissTaskInputSchema = z.object({
     .trim()
     .min(1)
     .max(200)
-    .describe("The task's `key` from myWork.tasks, `<kind>:<orderId>[:<id>]`"),
+    .describe(
+      "The task's `key` from myWork.tasks, `<kind>:<orderId>[:<id>]` or `TASK_DUE:<taskId>`",
+    ),
 });
 export type MyWorkDismissTaskInput = z.infer<typeof MyWorkDismissTaskInputSchema>;
 

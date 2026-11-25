@@ -1,5 +1,4 @@
 import type { Locale } from "@bibi/i18n";
-import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
 import { EmptyState } from "@/components/states/empty-state";
@@ -18,9 +17,8 @@ export type VocabularyDetailProps = { locale: Locale; id: string };
 
 /** List detail page: rename/archive the list and manage its values. */
 export async function VocabularyDetail({ locale, id }: VocabularyDetailProps) {
-  const [t, common, abilities, result] = await Promise.all([
+  const [t, abilities, result] = await Promise.all([
     getTranslations("vocabulary"),
-    getTranslations("common"),
     getCallerAbilities(),
     loadVocabulary({ id }),
   ]);
@@ -40,13 +38,6 @@ export async function VocabularyDetail({ locale, id }: VocabularyDetailProps) {
   return (
     <div className="grid gap-6">
       <CrumbName href={`/admin/lists/${id}`} name={vocabulary.name} />
-      <Link
-        href={ROUTES.adminLists}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-4" />
-        {common("back")}
-      </Link>
       <PageHeader title={vocabulary.name} description={t("value.heading")} actions={actions} />
       {vocabulary.values.length === 0 ? (
         <EmptyState title={t("value.empty")} />

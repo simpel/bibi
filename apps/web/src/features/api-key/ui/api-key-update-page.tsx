@@ -24,11 +24,7 @@ export async function ApiKeyUpdatePage({ locale, id }: ApiKeyUpdatePageProps) {
   const apiKey = keys.value.items.find((candidate) => candidate.id === id);
   if (!apiKey) notFound();
   return (
-    <FormPageShell
-      backHref={ROUTES.adminApiKeysSection}
-      title={t("edit")}
-      description={t("editDescription")}
-    >
+    <FormPageShell title={t("edit")} description={t("editDescription")}>
       <CrumbName href={apiKeyRoute({ id })} name={apiKey.name} />
       <ApiKeyUpdateForm apiKey={apiKey} roles={assignableRoles({ caller: abilities.role })} />
     </FormPageShell>

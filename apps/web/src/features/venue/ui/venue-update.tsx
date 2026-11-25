@@ -18,11 +18,7 @@ export async function VenueUpdate({ locale, id }: VenueUpdateProps) {
   return (
     <>
       <CrumbName href={venueRoute({ id })} name={venue.value.name} />
-      <FormPageShell
-        backHref={venueRoute({ id })}
-        title={t("edit")}
-        description={t("editDescription")}
-      >
+      <FormPageShell title={t("edit")} description={t("editDescription")}>
         <VenueUpdateForm venue={venue.value} />
       </FormPageShell>
     </>

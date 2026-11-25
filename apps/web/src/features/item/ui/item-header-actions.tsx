@@ -2,10 +2,9 @@
 
 import type { ItemDto } from "@bibi/core";
 import { HeaderActions, type TitleRowAction } from "@bibi/ui";
-import { ArchiveIcon, HistoryIcon, PlusIcon } from "lucide-react";
+import { ArchiveIcon, EllipsisIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { type ReactNode, useState } from "react";
-import { HistorySheet } from "@/features/audit-log/ui/history-sheet";
+import { useState } from "react";
 import { useRouter } from "@/lib/navigation";
 import { itemOrderHref } from "../../order/intake/intake-slot";
 import { ArchiveItemDialog } from "./archive-item-dialog";
@@ -16,20 +15,18 @@ export type ItemHeaderActionsProps = {
   canOrder: boolean;
   /** `item:delete`. */
   canArchive: boolean;
-  /** The history list; null without `audit:read`. */
-  history: ReactNode | null;
 };
 
 /**
- * The item page's actions: Create order with this item, View history and Archive item. On a
+ * The item page's actions: Create order with this item, and Archive item in the ⋯
+ * menu (history is the page's last tab). On a
  * narrow page they fold into one menu, so the title keeps its row.
  */
-export function ItemHeaderActions({ item, canOrder, canArchive, history }: ItemHeaderActionsProps) {
+export function ItemHeaderActions({ item, canOrder, canArchive }: ItemHeaderActionsProps) {
   const t = useTranslations("item");
-  const audit = useTranslations("auditLog");
   const common = useTranslations("common");
   const router = useRouter();
-  const [open, setOpen] = useState<"history" | "archive" | null>(null);
+  const [open, setOpen] = useState<"archive" | null>(null);
   const actions: TitleRowAction[] = [
     ...(canOrder
       ? [
@@ -42,25 +39,23 @@ export function ItemHeaderActions({ item, canOrder, canArchive, history }: ItemH
           },
         ]
       : []),
-    ...(history
-      ? [
-          {
-            id: "history",
-            label: audit("viewHistory"),
-            icon: <HistoryIcon aria-hidden />,
-            variant: "outline" as const,
-            onSelect: () => setOpen("history"),
-          },
-        ]
-      : []),
+    // Archiving is rare: it waits in the ⋯ menu and confirms in a dialog.
     ...(canArchive
       ? [
           {
-            id: "archive",
-            label: t("archive"),
-            icon: <ArchiveIcon aria-hidden />,
+            id: "more",
+            label: common("actions"),
+            icon: <EllipsisIcon aria-hidden />,
             variant: "outline" as const,
-            onSelect: () => setOpen("archive"),
+            overflow: true,
+            items: [
+              {
+                id: "archive",
+                label: t("archive"),
+                icon: <ArchiveIcon aria-hidden />,
+                onSelect: () => setOpen("archive"),
+              },
+            ],
           },
         ]
       : []),
@@ -68,13 +63,6 @@ export function ItemHeaderActions({ item, canOrder, canArchive, history }: ItemH
   return (
     <>
       <HeaderActions actions={actions} moreLabel={common("actions")} foldBy="header" />
-      {history ? (
-        <HistorySheet
-          open={open === "history"}
-          onOpenChange={(next) => !next && setOpen(null)}
-          history={history}
-        />
-      ) : null}
       {canArchive ? (
         <ArchiveItemDialog
           item={item}

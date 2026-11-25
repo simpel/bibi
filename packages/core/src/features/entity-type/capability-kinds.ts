@@ -8,6 +8,7 @@ export const ENTITY_BASES = [
   "ORDER",
   "REQUIREMENT",
   "LINE",
+  "TASK",
 ] as const;
 export type EntityBase = (typeof ENTITY_BASES)[number];
 

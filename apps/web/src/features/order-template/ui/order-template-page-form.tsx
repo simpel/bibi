@@ -1,121 +1,43 @@
 "use client";
 
-import type { OrderTemplateCreateInput, OrderTemplateDto } from "@bibi/core/schemas";
-import { Button, Form, VisualTile } from "@bibi/ui";
-import { PlusIcon } from "lucide-react";
+import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { type UseFormReturn, useFieldArray } from "react-hook-form";
-import { ImageUploadField } from "@/components/form/image-upload-field";
-import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
-import { fileUrl } from "@/lib/file-url";
 import type { OrderTemplateFormData } from "./order-template-form-data";
-import { emptyLine, type OrderTemplateFormValues } from "./order-template-form-schema";
-import { TemplateLineFields } from "./template-line-fields";
+import {
+  TemplateGuestFields,
+  TemplateImageField,
+  TemplateStatusField,
+  TemplateTypeField,
+} from "./template-fields";
 import { useOrderTemplateForm } from "./use-order-template-form";
 
-type FormProps = {
-  form: UseFormReturn<OrderTemplateFormValues, unknown, OrderTemplateCreateInput>;
-  data: OrderTemplateFormData;
-};
+export type OrderTemplatePageFormProps = { data: OrderTemplateFormData };
 
-/** The package's own image; without one, the package shows its first item's picture. */
-function ImageField({ form }: Pick<FormProps, "form">) {
-  const t = useTranslations("orderTemplate.fields");
-  const imageKey = form.watch("imageKey");
-  return (
-    <fieldset className="grid gap-2">
-      <legend className="mb-2 text-sm font-medium">{t("image")}</legend>
-      <div className="flex items-start gap-4">
-        <VisualTile size="lg" src={imageKey ? fileUrl({ key: imageKey }) : null} />
-        <ImageUploadField
-          imageKey={imageKey}
-          onChange={(key) => form.setValue("imageKey", key, { shouldDirty: true })}
-          hint={t("imageHint")}
-        />
-      </div>
-    </fieldset>
-  );
-}
-
-/** Name, image, order type, the status orders start in and the guest range. */
-function DetailFields({ form, data }: FormProps) {
-  const t = useTranslations("orderTemplate.fields");
-  return (
-    <>
-      <TextField form={form} name="name" label={t("name")} required />
-      <ImageField form={form} />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <OptionSelectField
-          control={form.control}
-          name="entityTypeId"
-          label={t("orderType")}
-          options={data.orderTypes}
-        />
-        <OptionSelectField
-          control={form.control}
-          name="statusId"
-          label={t("status")}
-          options={data.statuses}
-        />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <TextField form={form} name="minGuests" label={t("minGuests")} type="number" />
-        <TextField form={form} name="maxGuests" label={t("maxGuests")} type="number" />
-      </div>
-    </>
-  );
-}
-
-/** The lines, each removable, and a button that appends an empty one. */
-function LinesEditor({ form, data }: FormProps) {
-  const t = useTranslations("orderTemplate");
-  const lines = useFieldArray({ control: form.control, name: "lines" });
-  return (
-    <>
-      <h2 className="mt-2 text-base font-medium">{t("lines")}</h2>
-      {lines.fields.map((line, index) => (
-        <TemplateLineFields
-          key={line.id}
-          form={form}
-          data={data}
-          index={index}
-          onRemove={() => lines.remove(index)}
-        />
-      ))}
-      <Button
-        type="button"
-        variant="outline"
-        className="justify-self-start"
-        onClick={() => lines.append(emptyLine({ entityTypeId: data.lineTypes[0]?.id ?? "" }))}
-      >
-        <PlusIcon />
-        {t("addLine")}
-      </Button>
-    </>
-  );
-}
-
-export type OrderTemplatePageFormProps = {
-  data: OrderTemplateFormData;
-  template?: OrderTemplateDto | undefined;
-};
-
-/** The predefined order form on its create or update page: details first, then the lines. */
-export function OrderTemplatePageForm({ data, template }: OrderTemplatePageFormProps) {
+/**
+ * The create page's form: name, image, booking type, start status and guests. Lines are added on
+ * the new template's own page, where it opens after saving.
+ */
+export function OrderTemplatePageForm({ data }: OrderTemplatePageFormProps) {
   const common = useTranslations("common");
-  const { form, submit, pending, back } = useOrderTemplateForm({ data, template });
+  const t = useTranslations("orderTemplate");
+  const { form, submit, pending, back } = useOrderTemplateForm({ data });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid max-w-3xl gap-4">
-        <DetailFields form={form} data={data} />
-        <LinesEditor form={form} data={data} />
+        <TextField form={form} name="name" label={t("fields.name")} required />
+        <TemplateImageField form={form} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TemplateTypeField form={form} data={data} />
+          <TemplateStatusField form={form} data={data} />
+        </div>
+        <TemplateGuestFields form={form} />
         <div className="flex gap-2">
           <Button type="button" variant="outline" onClick={back}>
             {common("cancel")}
           </Button>
           <Button type="submit" disabled={pending}>
-            {common("save")}
+            {t("create")}
           </Button>
         </div>
       </form>

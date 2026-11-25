@@ -32,6 +32,15 @@ export const OrderIntakeShape = {
         "attached to the new order in the same step. Needs inbox:read; a message that already " +
         "has an order is refused with CONFLICT",
     ),
+  taskIds: z
+    .array(z.string().min(1))
+    .max(20)
+    .optional()
+    .describe(
+      "Tasks (task.list) to link to the new order in the same step (ADR 0117): each an open " +
+        "or done task of the same customer with no order yet (VALIDATION at taskIds.<i>; " +
+        "already linked is CONFLICT). Needs task:write",
+    ),
   draftedFromMessage: z
     .boolean()
     .optional()

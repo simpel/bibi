@@ -50,7 +50,7 @@ function complete({ state, action }: CompleteInput): IntakeState {
     ? { ...state.review, lines, plannedStart, pickKey, choiceKeys: keys }
     : {
         ...newReview({ lines, plannedStart, pickKey, choiceKeys: keys }),
-        note: state.draft?.note ?? "",
+        note: state.draft?.note ?? state.fromTask?.note ?? "",
       };
   const next = { ...state, review };
   if (isCustom({ state: next })) return { ...next, open: "custom" };

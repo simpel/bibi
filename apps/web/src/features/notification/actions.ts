@@ -21,7 +21,11 @@ import type { NotificationListParams } from "./lib/list-params";
 const FEED_PAGE = 20;
 
 export type NotificationFeedPage = { items: NotificationDto[]; nextCursor: string | null };
-export type NotificationFeedActionInput = { q: string; cursor?: string | null | undefined };
+export type NotificationFeedActionInput = {
+  q: string;
+  kind?: NotificationKind | undefined;
+  cursor?: string | null | undefined;
+};
 
 /**
  * One page of the notification panel: unread ones only, newest first, like an inbox's unread
@@ -30,12 +34,14 @@ export type NotificationFeedActionInput = { q: string; cursor?: string | null | 
  */
 export async function loadNotificationFeedAction({
   q,
+  kind,
   cursor,
 }: NotificationFeedActionInput): Promise<ActionResult<NotificationFeedPage>> {
   const input = {
     limit: FEED_PAGE,
     read: "unread" as const,
     ...(q.trim() ? { q: q.trim() } : {}),
+    ...(kind ? { kind } : {}),
     ...(cursor ? { cursor } : {}),
   };
   const result = await runOperation({ operation: listNotifications, input });

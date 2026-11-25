@@ -139,6 +139,10 @@ export const RELATIONS: RelationMap = {
       "target": "Order",
       "list": true
     },
+    "tasks": {
+      "target": "Task",
+      "list": true
+    },
     "record": {
       "target": "Record",
       "list": false
@@ -183,6 +187,10 @@ export const RELATIONS: RelationMap = {
     },
     "priceLists": {
       "target": "PriceList",
+      "list": true
+    },
+    "tasks": {
+      "target": "Task",
       "list": true
     },
     "record": {
@@ -249,6 +257,10 @@ export const RELATIONS: RelationMap = {
     },
     "requirements": {
       "target": "Requirement",
+      "list": true
+    },
+    "tasks": {
+      "target": "Task",
       "list": true
     },
     "itemStates": {
@@ -557,6 +569,10 @@ export const RELATIONS: RelationMap = {
       "target": "HoursException",
       "list": true
     },
+    "tasks": {
+      "target": "Task",
+      "list": true
+    },
     "record": {
       "target": "Record",
       "list": false
@@ -858,6 +874,10 @@ export const RELATIONS: RelationMap = {
     "order": {
       "target": "Order",
       "list": false
+    },
+    "task": {
+      "target": "Task",
+      "list": false
     }
   },
   "Notification": {
@@ -871,6 +891,10 @@ export const RELATIONS: RelationMap = {
     },
     "payment": {
       "target": "Payment",
+      "list": false
+    },
+    "task": {
+      "target": "Task",
       "list": false
     }
   },
@@ -1039,6 +1063,10 @@ export const RELATIONS: RelationMap = {
     },
     "comments": {
       "target": "Comment",
+      "list": true
+    },
+    "tasks": {
+      "target": "Task",
       "list": true
     },
     "runSheets": {
@@ -1441,6 +1469,10 @@ export const RELATIONS: RelationMap = {
       "target": "Requirement",
       "list": false
     },
+    "task": {
+      "target": "Task",
+      "list": false
+    },
     "links": {
       "target": "RecordLink",
       "list": true
@@ -1709,6 +1741,40 @@ export const RELATIONS: RelationMap = {
     },
     "state": {
       "target": "ItemState",
+      "list": false
+    }
+  },
+  "Task": {
+    "entityType": {
+      "target": "EntityType",
+      "list": false
+    },
+    "customer": {
+      "target": "Customer",
+      "list": false
+    },
+    "contact": {
+      "target": "Contact",
+      "list": false
+    },
+    "order": {
+      "target": "Order",
+      "list": false
+    },
+    "item": {
+      "target": "Item",
+      "list": false
+    },
+    "notifications": {
+      "target": "Notification",
+      "list": true
+    },
+    "needsYouDismissals": {
+      "target": "NeedsYouDismissal",
+      "list": true
+    },
+    "record": {
+      "target": "Record",
       "list": false
     }
   },

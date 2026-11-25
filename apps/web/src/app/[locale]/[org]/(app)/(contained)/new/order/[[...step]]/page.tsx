@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { PermissionGate } from "@/components/states/permission-gate";
 import { isPasteSegments, stepFromSegments } from "@/features/order/intake/intake-path";
-import { slotFromSearch } from "@/features/order/intake/intake-slot";
+import { slotFromSearch, templateFromSearch } from "@/features/order/intake/intake-slot";
 import { OrderIntake } from "@/features/order/ui/order-intake";
 import { ORDER_FROM_MESSAGE_ROUTE } from "@/lib/inbox-routes";
 import { redirect } from "@/lib/navigation";
@@ -22,7 +22,8 @@ export async function generateMetadata({ params }: NewOrderPageProps) {
 
 /**
  * `/new/order[/<step>]`: the one-page order intake (ADR 0081) with its open step in the path,
- * `?fromMessage=<id>` from the inbox, `?slot=<item>&date=&from=&to=` from the calendar.
+ * `?fromMessage=<id>` from the inbox, `?fromTask=<id>` from a task (ADR 0117), `?slot=<item>&date=&from=&to=` from the calendar,
+ * `?template=<id>` from a booking template's page.
  * `/new/order/message` is step 1 with the paste dialog open (ADR 0084); the older
  * `?start=message` redirects there.
  */
@@ -30,7 +31,7 @@ export default async function NewOrderPage({ params, searchParams }: NewOrderPag
   const { org, step: segments, ...rest } = await params;
   const locale = resolveLocale({ value: rest.locale });
   const search = await searchParams;
-  const { fromMessage, start } = search;
+  const { fromMessage, fromTask, start } = search;
   setRequestLocale(locale);
   const step = isPasteSegments({ segments }) ? "who" : stepFromSegments({ segments });
   if (!step) notFound();
@@ -45,7 +46,9 @@ export default async function NewOrderPage({ params, searchParams }: NewOrderPag
         <OrderIntake
           locale={locale}
           fromMessage={messageId}
+          fromTask={typeof fromTask === "string" ? fromTask : undefined}
           slot={slotFromSearch({ search })}
+          templateId={templateFromSearch({ search })}
           step={step}
         />
       </PermissionGate>

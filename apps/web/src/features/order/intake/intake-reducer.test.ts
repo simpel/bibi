@@ -28,6 +28,19 @@ const complete = run({
 });
 
 describe("reduceIntake", () => {
+  it("starts a task's intake at step 2 with its note for step 4 (ADR 0117)", () => {
+    const task = { id: "task1", note: "Atrium, ~80 people", who };
+    const start = initialIntake({ intakeKey: "k1", task });
+    expect(start.open).toBe("when");
+    expect(start.who).toEqual(who);
+    const reviewed = run({
+      from: start,
+      actions: [{ type: "setWhen", when }, { type: "pick", pick: pkg }, done],
+    });
+    expect(reviewed.review?.note).toBe("Atrium, ~80 people");
+    expect(reviewed.fromTask).toEqual({ id: "task1", note: "Atrium, ~80 people" });
+  });
+
   it("opens the steps in order and reaches review", () => {
     const afterWho = run({ actions: [{ type: "setWho", who }] });
     expect(afterWho.open).toBe("when");

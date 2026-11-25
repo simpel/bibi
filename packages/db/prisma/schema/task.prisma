@@ -1,0 +1,55 @@
+/// What a task type's tasks look like (ADR 0117): a `MEETING` has a start and an end, a
+/// `DEADLINE` one due time.
+enum TaskShape {
+  MEETING
+  DEADLINE
+}
+
+/// Task – timed work around a customer that is not sold or delivered (ADR 0117): a site visit, a
+/// tasting, "final headcount due". Its type (base `TASK`) decides its own fields and its shape.
+/// It belongs to a customer and a contact at that customer, may be linked to one order of the
+/// same customer once (`orderId`, owned, set once), and may name an item it only warns about
+/// (`ITEM_BUSY`, derived on read, never a hold). Every other column is owned; one assignee plus
+/// followers come from `Assignment` (ADR 0034). Archiving is the delete.
+model Task {
+  id             String       @id
+  organizationId String
+  entityTypeId   String
+  customerId     String
+  /// A contact person at the customer (core checks it works there).
+  contactId      String
+  /// The order it was linked to, once; null = not linked.
+  orderId        String?
+  /// The item it names, e.g. the room to show; advisory, it never holds the item.
+  itemId         String?
+  /// The start of a meeting, or the due time of a deadline.
+  startsAt       DateTime
+  /// The end of a meeting (after `startsAt`); always null for a deadline.
+  endsAt         DateTime?
+  /// Free text, at most 4000 characters.
+  note           String?
+  /// When it was marked done and by whom; both null while it is open.
+  doneAt         DateTime?
+  doneById       String?
+  /// Values of the type's own fields, keyed by `FieldDefinition.key`.
+  fields         Json         @default("{}")
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  customer       Customer     @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  contact        Contact      @relation(fields: [contactId, organizationId], references: [id, organizationId])
+  order          Order?       @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  item           Item?        @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  notifications  Notification[]
+  needsYouDismissals NeedsYouDismissal[]
+  /// The supertable row this record extends (ADR 0056).
+  record         Record       @relation(fields: [id, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@index([organizationId, customerId])
+  @@index([organizationId, orderId])
+  @@index([organizationId, startsAt])
+  @@index([organizationId, entityTypeId])
+}

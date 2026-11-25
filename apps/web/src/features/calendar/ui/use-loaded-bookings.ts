@@ -1,4 +1,4 @@
-import type { AssetBooking, CalendarDayValue } from "@bibi/ui";
+import type { AssetBooking, CalendarDayValue, CalendarTaskEntry } from "@bibi/ui";
 import { useCallback, useRef, useState } from "react";
 import { loadCalendarBookingsAction } from "../actions";
 
@@ -20,10 +20,16 @@ function missingOf({ wanted, covered }: { wanted: DayRange; covered: DayRange | 
   return missing;
 }
 
-type Loaded = { bookings: AssetBooking[]; values: CalendarDayValue[] };
+type Loaded = { bookings: AssetBooking[]; values: CalendarDayValue[]; tasks?: CalendarTaskEntry[] };
+
+/** `current` and the newly loaded rows, each id once. */
+const merged = <T extends { id: string }>({ current, loaded }: { current: T[]; loaded: T[] }) => {
+  const ids = new Set(current.map((row) => row.id));
+  return [...current, ...loaded.filter((row) => !ids.has(row.id))];
+};
 
 /**
- * The bookings and day values of every day the timeline has loaded: the page's first days, then each new edge
+ * The bookings, tasks and day values of every day the timeline has loaded: the page's first days, then each new edge
  * as it scrolls, once. A failed load leaves its days to the next attempt. The first days stream in
  * after the grid has painted (ADR 0097): `seed` adds them, or marks the load failed with `null`;
  * a caller that already has them passes `initial`.
@@ -31,14 +37,13 @@ type Loaded = { bookings: AssetBooking[]; values: CalendarDayValue[] };
 export function useLoadedBookings({ range, initial }: { range: DayRange; initial?: Loaded }) {
   const [bookings, setBookings] = useState<AssetBooking[]>(initial?.bookings ?? []);
   const [values, setValues] = useState<CalendarDayValue[]>(initial?.values ?? []);
+  const [tasks, setTasks] = useState<CalendarTaskEntry[]>(initial?.tasks ?? []);
   const [failed, setFailed] = useState(false);
   const covered = useRef<DayRange | null>(range);
   const add = useCallback((loaded: Loaded) => {
     setValues((current) => [...current, ...loaded.values]);
-    setBookings((current) => {
-      const ids = new Set(current.map((booking) => booking.id));
-      return [...current, ...loaded.bookings.filter((booking) => !ids.has(booking.id))];
-    });
+    setBookings((current) => merged({ current, loaded: loaded.bookings }));
+    setTasks((current) => merged({ current, loaded: loaded.tasks ?? [] }));
   }, []);
   const seed = useCallback(
     (loaded: Loaded | null) => {
@@ -72,5 +77,5 @@ export function useLoadedBookings({ range, initial }: { range: DayRange; initial
     },
     [add],
   );
-  return { bookings, values, failed, onRangeChange, seed };
+  return { bookings, values, tasks, failed, onRangeChange, seed };
 }

@@ -1300,15 +1300,15 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - recipient (owned): the member it is for; every read and write is filtered on the caller, so another member's notification is `NOT_FOUND`
 - kind (owned): `ASSIGNED`, `RUN_SHEET_SENT`, `ORDER_STATUS_CHANGED`, `PAYMENT_RECEIVED`, `COMMENT_ADDED` and `COMMENT_MENTIONED` (ADR 0115: a mention to the mentioned member; otherwise to the order's assignees, followers and creator and a reply's parent author, never the author; the snapshot holds the line and the first 140 characters, shown with `comment:read`)
 - actor (owned): who caused it; null for the system
-- order, run sheet, payment (owned, foreign keys)
-- data (snapshot, ADR 0051): the order's number and title, the old and new status, the run sheet and version, the amount and currency at the time
+- order, run sheet, payment, task (owned, foreign keys; `orderId` is null for a task without an order, ADR 0117)
+- data (snapshot, ADR 0051): the order's number and title, the old and new status, the run sheet and version, the amount and currency at the time; for a task its type's name and start or due time (`taskTypeName`, `taskStartsAt`, shown with `task:read`)
 - read (`readAt`, owned by the recipient): the lifecycle; rows are never deleted
 
 **Relations**
 - `N:1` is told to → User
-- `N:0..1` is about → Order, Run sheet, Payment
+- `N:0..1` is about → Order, Run sheet, Payment, Task
 
-> Written only by core's `notify`, in the `followUp` of `assignment.assign` (the new assignee), `runSheet.send` (the stored recipients), `order.changeStatus` and `payment.applySignal` when a payment succeeds (everyone on the order: the main assignee and followers and every responsibility's, stored or by default, ADR 0055). It skips the actor, members who turned the kind off, and members who cannot read the order (and the run sheet or payment the snapshot copies). A trigger (`notify_notification.sql`) sends `pg_notify('notification', …)` on insert and on a change of `readAt`; the web app's `/api/notifications/stream` pushes the unread count over Server-Sent Events. Operations (`self:*`): `notification.list` (search on the order, `kind`, `read`, sort, numbered pages), `notification.unreadCount`, `notification.markRead|markUnread|markAllRead`. Web: the bell in the top bar (red dot) opens the notification panel on the right (Needs you on top, then the unread notifications, spec: home), and `/notifications` lists them all.
+> Written only by core's `notify`, in the `followUp` of `assignment.assign` (the new assignee), `task.create` and `task.update` (the task's new assignee), `runSheet.send` (the stored recipients), `order.changeStatus` and `payment.applySignal` when a payment succeeds (everyone on the order: the main assignee and followers and every responsibility's, stored or by default, ADR 0055). It skips the actor, members who turned the kind off, and members who cannot read the order (and the run sheet or payment the snapshot copies). A trigger (`notify_notification.sql`) sends `pg_notify('notification', …)` on insert and on a change of `readAt`; the web app's `/api/notifications/stream` pushes the unread count over Server-Sent Events. Operations (`self:*`): `notification.list` (search on the order, `kind`, `read`, sort, numbered pages), `notification.unreadCount`, `notification.markRead|markUnread|markAllRead`. Web: the bell in the top bar (red dot) opens the notification panel on the right (Needs you on top, then the unread notifications, spec: home), and `/notifications` lists them all.
 
 ### NotificationPreference (`NotificationPreference`)
 
@@ -1320,12 +1320,12 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Attributes**
 - member (owned)
-- task key (owned, `<kind>:<orderId>[:<id>]`, unique per member)
+- task key (owned, `<kind>:<orderId>[:<id>]`, or `TASK_DUE:<taskId>` for a Task, unique per member)
 - fingerprint (owned: the task's due time and the kind's own facts when it was dismissed)
 
 **Relations**
 - `N:1` is dismissed by → User
-- `N:1` is about → Order (deleted with it)
+- `N:0..1` is about → Order or Task (`orderId` null for a task without an order; deleted with either)
 
 > Written only by `myWork.dismissTask` (`self:write`), which derives the caller's tasks again and refuses a key that is not among them (`NOT_FOUND`). Web: the checkmark on a Needs you row in the notification panel, after a confirm dialog.
 
@@ -1511,14 +1511,14 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### Task (`Task`)
 
-*MVP ([ADR 0117](decisions/0117-tasks.md), accepted, being built)* · Timed work around a customer that is not sold or delivered: a site visit, a tasting, a planning meeting, "final headcount due". It can exist before any order and be linked to one later. Internal prep (setup, teardown) is not a task: it is line buffers and demands (ADR 0059). Spec: `docs/specs/tasks.md`.
+*MVP ([ADR 0117](decisions/0117-tasks.md))* · Timed work around a customer that is not sold or delivered: a site visit, a tasting, a planning meeting, "final headcount due". It can exist before any order and be linked to one later. Internal prep (setup, teardown) is not a task: it is line buffers and demands (ADR 0059). Spec: `docs/specs/tasks.md`.
 
 **Attributes**
 - type (the organization's own, base `TASK`) and custom fields; the type's `taskShape` (`MEETING` | `DEADLINE`)
 - customer and contact (both required; the contact must work at the customer)
-- order (`orderId`, optional, set once, same customer)
+- order (`orderId`, optional, set once, same customer; any order that is not archived, also one in a closing status)
 - item (`itemId`, optional, e.g. the room to show; advisory, never holds)
-- starts at (`startsAt`, required: the start of a meeting or the due time of a deadline) and ends at (`endsAt`, required for `MEETING`, null for `DEADLINE`)
+- starts at (`startsAt`, required: the start of a meeting or the due time of a deadline) and ends at (`endsAt`, required for `MEETING`, null for `DEADLINE`; a database CHECK keeps it after `startsAt`)
 - note (≤ 4000)
 - done at, done by (`doneAt`, `doneById`, owned; open while null)
 - warnings (derived: `ITEM_BUSY` when an occupancy of the item overlaps the meeting) and `overdue` (derived: open and past its due or end time)
@@ -1529,7 +1529,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:0..1` Item is shown in this
 - `1:N` is answered for by → Assignment (one assignee plus followers)
 
-> Operations (feature `task`): `task.list|get` (`task:read`), `task.create|update|complete|reopen|linkOrder` (`task:write`), `task.archive` (`task:delete`). `order.create` takes `taskIds` and links them in the same transaction. Pipeline cards and order rows carry the order's next open task; `calendar.range` returns tasks beside bookings; an open task due today or overdue is a `TASK_DUE` need for its assignee.
+> Operations (feature `task`): `task.list|get` (`task:read`), `task.create|update|complete|reopen|linkOrder` (`task:write`), `task.archive` (`task:delete`). `task.create` takes an optional `orderId` and links it in the same command; `task.update` takes `assigneeId` (the new assignee is told, `ASSIGNED` with the task as subject). `order.create` takes `taskIds` and links them in the same transaction. Pipeline cards and order rows carry the order's next open task; `calendar.range` returns tasks beside bookings; an open task of the assignee due today is a `TASK_DUE` need in TODAY, an overdue one in LATE with no age limit (key `TASK_DUE:<taskId>`).
 
 ### InboundMessage (`InboundMessage`)
 

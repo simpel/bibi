@@ -16,9 +16,11 @@ import { useHoursSectionForm } from "@/features/hours/ui/use-hours-section-form"
 import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { saveItemHoursAction } from "../actions";
+import type { HoursKind } from "../item-tabs";
 
 export type ItemHoursPanelProps = {
   itemId: string;
+  kind: HoursKind;
   /** The item's own hours; empty = it follows its venue. */
   own: HoursPattern;
   /** Its venue and the venue's opening hours (null: none set, or the caller may not see venues). */
@@ -30,11 +32,11 @@ const hasHours = ({ hours }: { hours: HoursPattern | null }) =>
   !!hours && (hours.days.length > 0 || hours.exceptions.length > 0);
 
 /**
- * An item's working hours in one place: the week it keeps, always shown, and an Own hours
+ * An item's working (person) or opening hours in one place: the week it keeps, always shown, and an Own hours
  * switch. Off, the week is its venue's and nothing is stored on the item; on, the item keeps its
  * own (starting from the venue's) and a pencil edits them. Hours are advisory (ADR 0064).
  */
-export function ItemHoursPanel({ itemId, own, venue, canEdit }: ItemHoursPanelProps) {
+export function ItemHoursPanel({ itemId, kind, own, venue, canEdit }: ItemHoursPanelProps) {
   const t = useTranslations("item.hours");
   const switchId = useId();
   const router = useRouter();
@@ -57,7 +59,7 @@ export function ItemHoursPanel({ itemId, own, venue, canEdit }: ItemHoursPanelPr
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-3">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-xl">{t("title")}</h2>
+          <h2 className="text-xl">{t("title", { kind })}</h2>
           <div className="flex items-center gap-3">
             {canEdit ? (
               <span className="flex items-center gap-2">
@@ -77,7 +79,7 @@ export function ItemHoursPanel({ itemId, own, venue, canEdit }: ItemHoursPanelPr
                 type="button"
                 variant="ghost"
                 size="icon"
-                aria-label={t("edit")}
+                aria-label={t("edit", { kind })}
                 onClick={() => setEditing(true)}
                 className="text-muted-foreground"
               >

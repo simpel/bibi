@@ -1,6 +1,5 @@
 import type { Locale } from "@bibi/i18n";
 import { Button } from "@bibi/ui";
-import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
 import { DeferredSection } from "@/components/states/deferred-section";
@@ -21,7 +20,6 @@ export type MemberDetailProps = { locale: Locale; id: string };
 export async function MemberDetail({ locale, id }: MemberDetailProps) {
   const t = await getTranslations("member");
   const role = await getTranslations("role");
-  const common = await getTranslations("common");
   const format = await getDateTimeFormat();
   const abilities = await getCallerAbilities();
   const member = await loadMember({ id });
@@ -40,13 +38,6 @@ export async function MemberDetail({ locale, id }: MemberDetailProps) {
   return (
     <div className="grid gap-6">
       <CrumbName href={memberRoute({ id })} name={name} />
-      <Link
-        href={ROUTES.adminMembers}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-4" />
-        {common("back")}
-      </Link>
       <PageHeader title={name} description={t("detailDescription")} actions={permissions} />
       <FactList facts={facts} />
       <DeferredSection>

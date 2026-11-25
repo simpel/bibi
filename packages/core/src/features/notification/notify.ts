@@ -10,7 +10,9 @@ export type NotifyInput = {
   kind: NotificationKind;
   /** Everyone the event concerns; the actor, duplicates and unreachable members are dropped. */
   userIds: readonly (string | null)[];
-  orderId: string;
+  /** The subject: an order, or a task (ADR 0117) that may have no order. */
+  orderId?: string;
+  taskId?: string;
   runSheetId?: string;
   paymentId?: string;
   data: NotificationData;
@@ -26,6 +28,10 @@ const NEEDS: Record<NotificationKind, readonly Permission[]> = {
   COMMENT_MENTIONED: ["order:read", "comment:read"],
 };
 
+/** A task's notification (no order) needs the task instead of the order (ADR 0117). */
+const needsOf = ({ kind, orderId }: { kind: NotificationKind; orderId: string | undefined }) =>
+  orderId ? NEEDS[kind] : (["task:read"] as const);
+
 /** The acting member's name for the snapshot; none for the system or an API key. */
 async function actorName({ context }: { context: OperationContext }) {
   const userId = context.actor.userId;
@@ -40,13 +46,13 @@ async function actorName({ context }: { context: OperationContext }) {
 /**
  * Tells members that something concerns them (ADR 0094). Runs in a command's `followUp`: the
  * rows are written as the system, never for the member who acted, and only for members who may
- * see the order (and the run sheet or payment it names) and want this kind.
+ * see the order (and the run sheet or payment it names), or the task, and want this kind.
  */
 export async function notify({ context, kind, userIds, data, ...subject }: NotifyInput) {
   const actorUserId = context.actor.userId;
   const wanted = [...new Set(userIds.filter((id): id is string => !!id && id !== actorUserId))];
   const recipients = await reachableRecipients({
-    ...{ context, userIds: wanted, kind, needs: NEEDS[kind] },
+    ...{ context, userIds: wanted, kind, needs: needsOf({ kind, orderId: subject.orderId }) },
   });
   if (recipients.length === 0) return;
   const system = createSystemContext({

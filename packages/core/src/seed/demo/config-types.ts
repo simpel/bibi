@@ -6,6 +6,7 @@ import type {
 import type { FieldKind } from "../../features/field-definition/field-kinds";
 import type { PRICE_EFFECTS } from "../../features/item/customisation-group-schema";
 import type { PRICE_UNITS } from "../../features/item/schema";
+import type { TaskShape } from "../../features/task/task-shape";
 import type { HoursPattern } from "../../hours/schema";
 import type { ItemStateTemplateKey } from "../../templates/item-states/item-state-templates";
 import type { VocabularyTemplateKey } from "../../templates/vocabularies/vocabulary-templates";
@@ -38,6 +39,8 @@ export type DemoType = {
   resourceKind?: ResourceKind;
   /** Customer types: BUSINESS (default) or PRIVATE, taken by their customers (ADR 0106). */
   buyerKind?: "BUSINESS" | "PRIVATE";
+  /** Task types (ADR 0117): MEETING (start and end) or DEADLINE (one due time); required. */
+  taskShape?: TaskShape;
 };
 
 /**

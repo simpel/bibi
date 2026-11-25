@@ -100,6 +100,7 @@ export const STORY_LABELS: CalendarLabels = {
   holds: { hard: "hard hold, blocks", soft: "soft hold, may overlap", none: "no hold" },
   buffers: "Setup / teardown",
   buffersText: "space taken, not sold",
+  tasks: "Tasks",
 };
 
 /** What the app passes the calendar, as the stories stand it in. */

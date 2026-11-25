@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { checkMembers } from "../../shared/check-members";
 import { notFound } from "../../shared/errors";
 import { notifyAssigned } from "../notification/follow-ups";
+import { checkReadable } from "../order/order-rules";
 import { checkFollower } from "./check-follower";
 import { checkSlot } from "./check-slot";
 import {
@@ -16,15 +17,20 @@ export const assignAssignment = defineOperation({
   name: "assignment.assign",
   kind: "command",
   description:
-    "Set who answers for an order or an item (ADR 0034): its main assignee, or, " +
+    "Set who answers for an order, an item or a task (ADR 0034): its main assignee, or, " +
     "with `responsibilityId`, the assignee for that responsibility on an order. The assignee " +
     "must be a member (member.list userId). null removes the assignee. Moves that need one " +
-    "check it through the transition's ASSIGNEE gate.",
+    "check it through the transition's ASSIGNEE gate. A task also needs task:write; " +
+    "task.update with assigneeId is the way for members.",
   input: AssignmentAssignInputSchema,
   output: AssignmentSchema,
   permission: "order:write",
   followUp: notifyAssigned,
   handler: async ({ input: { assigneeId, ...slot }, context }) => {
+    if (slot.subjectType === "TASK") {
+      const writable = checkReadable({ context, permission: "task:write", path: "subjectType" });
+      if (!writable.ok) return writable;
+    }
     const valid = await checkSlot({ context, ...slot });
     if (!valid.ok) return valid;
     const member = await checkMembers({ context, userIds: { assigneeId } });

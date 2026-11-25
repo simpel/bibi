@@ -10,7 +10,7 @@ describe("entity type form schema", () => {
   it("keeps capabilities for item types only", () => {
     const item: EntityTypeFormValues = {
       ...{ base: "ITEM", name: " Rum ", capabilities: ["BOOKABLE"], resourceKind: "PERSON" },
-      ...{ groupId: "g1", pluralName: " Rum ", buyerKind: "PRIVATE" },
+      ...{ groupId: "g1", pluralName: " Rum ", buyerKind: "PRIVATE", taskShape: "MEETING" },
       ...{ setupMinutes: "30", teardownMinutes: "" },
     };
     expect(entityTypeFormToInput({ values: item })).toMatchObject({
@@ -31,6 +31,18 @@ describe("entity type form schema", () => {
     expect(entityTypeFormToInput({ values: item }).buyerKind).toBeUndefined();
     expect(input.groupId).toBeUndefined();
     expect(input).not.toHaveProperty("setupMinutes");
+    expect(input.taskShape).toBeUndefined();
+  });
+
+  it("sends the shape for task types only", () => {
+    const task: EntityTypeFormValues = {
+      ...{ base: "TASK", name: "Platsbesök", capabilities: [], resourceKind: "EQUIPMENT" },
+      ...{ groupId: NO_GROUP, pluralName: "", buyerKind: "BUSINESS", taskShape: "DEADLINE" },
+      ...{ setupMinutes: "", teardownMinutes: "" },
+    };
+    const input = entityTypeFormToInput({ values: task });
+    expect(input.taskShape).toBe("DEADLINE");
+    expect(input.buyerKind).toBeUndefined();
   });
 
   it("validates with core's type schema", () => {

@@ -7,6 +7,7 @@ import { BUSY_ASSETS } from "./busy-assets-data";
 import { BUSY_BOOKINGS } from "./busy-bookings-data";
 import { LiveCalendar } from "./live-calendar";
 import { STATES } from "./states-data";
+import { STORY_TASKS } from "./tasks-data";
 
 const meta = {
   title: "Calendar/Availability",
@@ -52,6 +53,22 @@ export const DayValues: Story = { args: { initialLevel: "week", withValues: true
 
 /** Zoomed out to months: each week carries its booked share, its amounts on hover or tap. */
 export const MonthDayValues: Story = { args: { initialLevel: "month", withValues: true } };
+
+/**
+ * Tasks on their own lane above the assets, outlined and never filled; one with a place is
+ * echoed as an outline on that asset's row.
+ */
+export const WithTasks: Story = {
+  args: { assets: ASSETS, template: BOOKINGS, tasks: STORY_TASKS },
+  decorators: [
+    (Story) => (
+      <>
+        <Story />
+        <CalendarLegend states={[]} withBuffers={false} withTasks={{ name: "Task" }} />
+      </>
+    ),
+  ],
+};
 
 /** A month: one cell per asset and day, as tall as it is booked, red on a clash. Click to zoom in. */
 export const Month: Story = { args: { initialLevel: "month" } };

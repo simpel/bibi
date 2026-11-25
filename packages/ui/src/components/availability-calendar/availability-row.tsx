@@ -4,10 +4,11 @@ import { AppLink } from "../app-link/app-link";
 import { ContactName } from "../person-contact/contact-name";
 import { addDays, weekdayOf } from "./calendar-dates";
 import { PersonAvatar } from "./calendar-people";
-import type { AssetBooking, CalendarAsset } from "./calendar-types";
+import type { AssetBooking, CalendarAsset, CalendarTaskEntry } from "./calendar-types";
 import { lanesOf } from "./clashes";
 import { DayCell } from "./day-cell";
 import { DayTrack, type DayTrackProps, LANE_REM } from "./day-track";
+import { AssetTaskMarks } from "./task-marks";
 import type { TimelineFrame } from "./timeline-scale";
 
 /**
@@ -24,6 +25,8 @@ export type AvailabilityRowProps = Pick<DayTrackProps, "selectedId" | "onAdd" | 
   /** This asset's bookings by day key, every loaded day. */
   days: ReadonlyMap<string, readonly AssetBooking[]>;
   frame: TimelineFrame;
+  /** Tasks on this asset by day key: an outline over its bookings. */
+  tasks?: ReadonlyMap<string, readonly CalendarTaskEntry[]>;
 };
 
 const NAME = "line-clamp-2 text-sm leading-tight break-words @2xl:truncate";
@@ -79,7 +82,7 @@ function rowRem({ days, frame }: Pick<AvailabilityRowProps, "days" | "frame">) {
 }
 
 /** Weekends sit on a faint ground in every zoom: the week's shape at a glance. */
-function DayColumn({
+export function DayColumn({
   index,
   frame,
   children,
@@ -101,7 +104,7 @@ function DayColumn({
 }
 
 /** One asset across the loaded days; only the days on screen are drawn. Nights are seams. */
-export function AvailabilityRow({ asset, days, frame, ...props }: AvailabilityRowProps) {
+export function AvailabilityRow({ asset, days, frame, tasks, ...props }: AvailabilityRowProps) {
   return (
     <div className={cn(ROW_GRID, "border-t")}>
       <AssetLabel asset={asset} />
@@ -134,6 +137,9 @@ export function AvailabilityRow({ asset, days, frame, ...props }: AvailabilityRo
                   {...props}
                 />
               )}
+              {tasks?.get(date) && frame.detail !== "cells" ? (
+                <AssetTaskMarks tasks={tasks.get(date) ?? []} window={frame.hours} />
+              ) : null}
             </DayColumn>
           );
         })}

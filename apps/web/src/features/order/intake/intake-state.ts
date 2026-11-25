@@ -52,16 +52,28 @@ export type IntakeState = {
   inboundMessageId?: string | null | undefined;
   /** What the assistant read from a message (the paste dialog), or null: it prefills steps 1–3. */
   draft?: MessageDraft | null | undefined;
+  /** The task it is made from (ADR 0117): linked on Create, its note starts step 4's. */
+  fromTask?: IntakeTaskRef | null | undefined;
 };
 
-export type InitialIntakeInput = { intakeKey: string; inboundMessageId?: string | null };
+/** The task an order is created from: its id and the note the order's starts with. */
+export type IntakeTaskRef = { id: string; note: string };
+
+export type InitialIntakeInput = {
+  intakeKey: string;
+  inboundMessageId?: string | null;
+  /** `?fromTask=<id>`: the customer and contact are step 1's answer, step 2 opens. */
+  task?: (IntakeTaskRef & { who: IntakeWho }) | null;
+};
 
 export const initialIntake = ({
   intakeKey,
   inboundMessageId = null,
+  task = null,
 }: InitialIntakeInput): IntakeState => ({
-  ...{ open: "who", who: null, when: null, pick: null, review: null },
+  ...{ open: task ? "when" : "who", who: task?.who ?? null, when: null, pick: null, review: null },
   ...{ intakeKey, inboundMessageId, draft: null },
+  fromTask: task ? { id: task.id, note: task.note } : null,
 });
 
 /** A change to step 4; `lines` replaces the list, the rest patches the review. */

@@ -7,6 +7,7 @@ import type { DemoConfig } from "./config-types";
 import type { DemoCustomer } from "./customer-types";
 import type { DemoDensity } from "./density-types";
 import type { DemoOrder } from "./order-types";
+import type { DemoTask } from "./task-types";
 import type { DemoOrderTemplate } from "./template-types";
 
 /** One demo staff member with their preset and optional overrides (ADR 0034, 0050). */
@@ -97,6 +98,8 @@ export type DemoOrg = DemoOrgIdentity & {
   templates: readonly DemoOrderTemplate[];
   /** Slice 5: orders with their assignee and followers, the generated ones (#488) last. */
   orders: readonly DemoOrder[];
+  /** ADR 0117: tasks around customers, after the orders; some linked to them. None when left out. */
+  tasks?: readonly DemoTask[];
   /** How the generated orders fill the calendar (#488), for the density check. */
   density?: DemoDensity;
   /** ADR 0077: the org number and revenue accounts per item type (by name). */

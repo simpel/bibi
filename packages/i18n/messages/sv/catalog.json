@@ -187,8 +187,8 @@
       }
     },
     "hours": {
-      "title": "Arbetstider",
-      "edit": "Ändra arbetstider",
+      "title": "{kind, select, PERSON {Arbetstider} other {Öppettider}}",
+      "edit": "{kind, select, PERSON {Ändra arbetstider} other {Ändra öppettider}}",
       "ownHours": "Egna tider",
       "ownNote": "Artikelns egna tider · bokningar utanför dem får en varning",
       "fromVenue": "Från {venue} · bokningar utanför tiderna får en varning",
@@ -229,6 +229,7 @@
       "editParts": "Ändra delar",
       "editCustomisations": "Ändra anpassningar",
       "editFact": "Ändra {label}",
+      "noDescription": "Ingen beskrivning",
       "createOrder": "Skapa bokning",
       "capacity": "Kapacitet",
       "noCapacity": "Ingen personbegränsning",
@@ -242,10 +243,11 @@
       "label": "Artikelns avsnitt",
       "details": "Uppgifter",
       "layouts": "Möbleringar",
-      "bookings": "Bokningar",
+      "occupancy": "Beläggning",
       "contents": "Innehåll",
-      "resources": "Resurser och personal",
-      "hours": "Arbetstider"
+      "resources": "Resurser och bemanning",
+      "hours": "{kind, select, PERSON {Arbetstider} other {Öppettider}}",
+      "history": "Historik"
     }
   },
   "itemState": {
@@ -417,6 +419,7 @@
       "sections": "Avsnitt",
       "resourceKind": "Utrustning eller person",
       "buyerKind": "Företag eller privat",
+      "taskShape": "Form",
       "group": "Grupp",
       "pluralName": "Pluralform",
       "pluralNamePlaceholder": "Konferensrum"
@@ -437,7 +440,8 @@
       "CONTACT": "Kontaktpersoner",
       "ORDER": "Bokningar",
       "REQUIREMENT": "Behov",
-      "LINE": "Programpunkter"
+      "LINE": "Programpunkter",
+      "TASK": "Uppgifter"
     },
     "capabilities": {
       "PRICED": "Prissatt",

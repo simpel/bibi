@@ -92,6 +92,7 @@ async function seedType({
     ...{ setupMinutes: type.setupMinutes ?? null, teardownMinutes: type.teardownMinutes ?? null },
     ...(type.resourceKind ? { resourceKind: type.resourceKind } : {}),
     ...(type.buyerKind ? { buyerKind: type.buyerKind } : {}),
+    ...(type.taskShape ? { taskShape: type.taskShape } : {}),
     ...(type.base === "ITEM" ? { groupId: groups.get(groupOfDemoType({ type })) ?? null } : {}),
   };
   const created = await execute({ operation: createEntityType, input, context });
@@ -136,6 +137,7 @@ export async function seedDemoConfig({
     contactTypes: new Map(),
     orderTypes: new Map(),
     requirementTypes: new Map(),
+    taskTypes: new Map(),
   };
   const groups = await seedItemTypeGroups({ context, types: config.types });
   if (!groups.ok) return groups;
@@ -148,6 +150,7 @@ export async function seedDemoConfig({
       CONTACT: refs.contactTypes,
       ORDER: refs.orderTypes,
       REQUIREMENT: refs.requirementTypes,
+      TASK: refs.taskTypes,
     };
     byBase[type.base as keyof typeof byBase]?.set(type.name, result.value);
   }

@@ -42,6 +42,8 @@
   --success-foreground: oklch(0.985 0.008 85);
   --warning: oklch(0.74 0.13 75);
   --warning-foreground: oklch(0.26 0.05 65);
+  /* Tasks only (spec: tasks, Visual rules): the hairline edge of an unfilled task, never a fill. */
+  --task: oklch(0.5 0.14 285);
 
   /* Provider brand colours (ADR 0090), from the official Stripe and Fortnox assets. */
   --brand-stripe: #533afd;
@@ -101,6 +103,7 @@
   --success-foreground: oklch(0.16 0.025 150);
   --warning: oklch(0.78 0.13 78);
   --warning-foreground: oklch(0.2 0.035 70);
+  --task: oklch(0.74 0.12 285);
 
   /* Stripe allows only blurple, slate or white for its wordmark; white on dark. */
   --brand-stripe-mark: #ffffff;
@@ -150,6 +153,7 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-task: var(--task);
   --color-brand-stripe: var(--brand-stripe);
   --color-brand-stripe-foreground: var(--brand-stripe-foreground);
   --color-brand-stripe-mark: var(--brand-stripe-mark);

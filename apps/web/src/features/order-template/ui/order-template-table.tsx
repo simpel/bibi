@@ -10,7 +10,8 @@ import { useClientTableView } from "@/components/data-table/use-client-table-vie
 import { type NamedOption, nameOf } from "@/components/form/named-option";
 import type { RowAccess } from "@/lib/can";
 import { useRouter } from "@/lib/navigation";
-import { OrderTemplateRowMenu, orderTemplateEditHref } from "./order-template-row-actions";
+import { orderTemplateHref } from "../template-route";
+import { OrderTemplateRowMenu } from "./order-template-row-actions";
 import { useTemplateColumns } from "./use-template-columns";
 
 export type OrderTemplateTableProps = {
@@ -71,12 +72,9 @@ export function OrderTemplateTable({
         columns={columns}
         data={view.rows}
         getRowId={(template) => template.id}
-        {...(access.canEdit
-          ? {
-              onRowClick: (template: OrderTemplateDto) =>
-                router.push(orderTemplateEditHref({ id: template.id })),
-            }
-          : {})}
+        onRowClick={(template: OrderTemplateDto) =>
+          router.push(orderTemplateHref({ id: template.id }))
+        }
         rowMenu={(template) => <OrderTemplateRowMenu template={template} access={access} />}
         emptyText={t("empty")}
         pagination={view.pagination}

@@ -632,6 +632,7 @@
     "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}",
     "panel": {
       "close": "Close notifications",
+      "settings": "Notification settings",
       "search": "Search notifications",
       "noTasks": "Nothing that needs you matches"
     },
@@ -675,6 +676,7 @@
     },
     "messages": {
       "ASSIGNED": "{actor} assigned you to #{reference}",
+      "ASSIGNED_TASK": "{actor} assigned you to {task}",
       "RUN_SHEET_SENT": "{actor} sent you {runSheet} v{version} for #{reference}",
       "ORDER_STATUS_CHANGED": "#{reference} moved from {from} to {to}",
       "PAYMENT_RECEIVED": "{amount} received on #{reference}",
@@ -688,6 +690,7 @@
     },
     "someone": "Someone",
     "aRunSheet": "a run sheet",
+    "aTask": "a task",
     "noStatus": "no status",
     "untitled": "Untitled order",
     "preferences": {
@@ -695,9 +698,9 @@
       "RUN_SHEET_SENT": "When a run sheet is sent to me",
       "ORDER_STATUS_CHANGED": "When an order I answer for or follow changes status",
       "PAYMENT_RECEIVED": "When a payment is received on an order I answer for or follow",
-      "turnedOn": "Notifications turned on",
       "COMMENT_ADDED": "When someone comments on an order I answer for, follow or created",
       "COMMENT_MENTIONED": "When someone mentions me in a comment",
+      "turnedOn": "Notifications turned on",
       "turnedOff": "Notifications turned off"
     },
     "arrivedTitle": "New notification",

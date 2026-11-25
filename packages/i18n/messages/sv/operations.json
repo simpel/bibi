@@ -627,6 +627,7 @@
     "unreadCount": "{count, plural, =0 {Inga olästa notiser} one {# oläst notis} other {# olästa notiser}}",
     "panel": {
       "close": "Stäng notiser",
+      "settings": "Notisinställningar",
       "search": "Sök notiser",
       "noTasks": "Inget som behöver dig matchar"
     },
@@ -670,6 +671,7 @@
     },
     "messages": {
       "ASSIGNED": "{actor} gjorde dig ansvarig för #{reference}",
+      "ASSIGNED_TASK": "{actor} gjorde dig ansvarig för {task}",
       "RUN_SHEET_SENT": "{actor} skickade {runSheet} v{version} för #{reference} till dig",
       "ORDER_STATUS_CHANGED": "#{reference} flyttades från {from} till {to}",
       "PAYMENT_RECEIVED": "{amount} betalt på #{reference}",
@@ -683,6 +685,7 @@
     },
     "someone": "Någon",
     "aRunSheet": "ett körschema",
+    "aTask": "en uppgift",
     "noStatus": "ingen status",
     "untitled": "Bokning utan titel",
     "preferences": {
@@ -690,9 +693,9 @@
       "RUN_SHEET_SENT": "När ett körschema skickas till mig",
       "ORDER_STATUS_CHANGED": "När en bokning jag ansvarar för eller följer byter status",
       "PAYMENT_RECEIVED": "När en betalning kommer in på en bokning jag ansvarar för eller följer",
-      "turnedOn": "Notiser påslagna",
       "COMMENT_ADDED": "När någon kommenterar en order jag ansvarar för, följer eller har skapat",
       "COMMENT_MENTIONED": "När någon nämner mig i en kommentar",
+      "turnedOn": "Notiser påslagna",
       "turnedOff": "Notiser avstängda"
     },
     "arrivedTitle": "Ny notis",

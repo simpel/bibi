@@ -100,7 +100,9 @@ export const viewMyTasks = defineOperation({
     "(not sent or changed since sent; due 24 h before the order's first line), UNCONFIRMED " +
     "(soft holds; due 48 h before the first line), HOLD_EXPIRES (within 7 days), " +
     "UNREAD_MESSAGES, PAYMENT_OVERDUE (an invoice past its due date), NOT_CLOSED (every line " +
-    "ended in the last 30 days, the status does not close) and QUOTE_WAITING. Order-wide tasks " +
+    "ended in the last 30 days, the status does not close), QUOTE_WAITING and TASK_DUE (an open " +
+    "task assigned to the caller, due today or overdue; taskId, maybe no order; task:read). " +
+    "Order-wide tasks " +
     "reach the order's main assignee; run sheet tasks also the owner or follower of its " +
     "responsibility. Tasks are null without order:read.",
   input: MyWorkTasksInputSchema,
@@ -165,6 +167,7 @@ export const dismissMyTask = defineOperation({
         organizationId: context.organizationId,
         userId: user.value,
         orderId: task.orderId,
+        taskId: task.taskId,
         taskKey: key,
         fingerprint,
       },

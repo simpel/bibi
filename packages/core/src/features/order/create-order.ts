@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
 import { attachMessage } from "../inbound-message/attach-message";
+import { linkTasks } from "../task/link-order";
 import { createWithLines } from "./create-with-lines";
 import { checkIntakeAccess, checkTemplate, findIntake } from "./intake-checks";
 import { checkCreateLines } from "./intake-refs";
@@ -33,7 +34,8 @@ function recordDrafted({ context, input, orderId }: DraftedInput) {
  * `order.create` (ADR 0081 decisions 9 and 11): the permissions of the parts given, then the
  * order an earlier call with the same `intakeKey` made (returned as is, nothing recorded), the
  * template and every id the lines reference, and the order with its lines in the entry status,
- * then the inbox message it is made from is attached to it (ADR 0085), all in one transaction.
+ * then the tasks given are linked (ADR 0117) and the inbox message it is made from is attached to
+ * it (ADR 0085), all in one transaction.
  * A template makes the first status change `TEMPLATE`; its own lines and fields are not applied.
  */
 export async function runOrderCreate({
@@ -56,6 +58,13 @@ export async function runOrderCreate({
   const made = await createWithLines({ context, input, lines, trigger, subject: "the order" });
   if (made.ok && input.draftedFromMessage)
     recordDrafted({ context, input, orderId: made.value.id });
+  if (made.ok && input.taskIds?.length) {
+    const linked = await linkTasks({
+      ...{ context, orderId: made.value.id, customerId: input.customerId },
+      ...{ taskIds: input.taskIds, pathOf: (index: number) => `taskIds.${index}` },
+    });
+    if (!linked.ok) return linked;
+  }
   if (!made.ok || !input.inboundMessageId) return made;
   const orderId = made.value.id;
   const id = input.inboundMessageId;

@@ -7,11 +7,7 @@ import { VenueWizard } from "./venue-wizard";
 export async function VenueCreate() {
   const t = await getTranslations("venue");
   return (
-    <FormPageShell
-      backHref={ROUTES.venues}
-      title={t("create")}
-      description={t("createDescription")}
-    >
+    <FormPageShell title={t("create")} description={t("createDescription")}>
       <VenueWizard />
     </FormPageShell>
   );

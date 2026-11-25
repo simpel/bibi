@@ -4,6 +4,7 @@ import {
   ArrowRightLeftIcon,
   AtSignIcon,
   CalendarCheckIcon,
+  CircleCheckIcon,
   ClipboardListIcon,
   HandCoinsIcon,
   HourglassIcon,
@@ -35,6 +36,7 @@ export const SUBJECT_ICONS = {
   close: ArchiveIcon,
   comment: MessageCircleIcon,
   mention: AtSignIcon,
+  task: CircleCheckIcon,
 } satisfies Record<string, LucideIcon>;
 
 export type Subject = keyof typeof SUBJECT_ICONS;
@@ -59,6 +61,7 @@ const TASK_SUBJECTS: Record<MyWorkTaskKind, Subject> = {
   PAYMENT_OVERDUE: "payment",
   NOT_CLOSED: "close",
   QUOTE_WAITING: "quote",
+  TASK_DUE: "task",
 };
 
 /** The icon of a notification kind. */

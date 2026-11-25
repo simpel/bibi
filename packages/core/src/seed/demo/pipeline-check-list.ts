@@ -32,6 +32,7 @@ import { checkDemoProviders } from "./provider-checks";
 import { checkDemoQuoteEvents } from "./quote-event-checks";
 import { checkDemoRunSheets } from "./run-sheet-checks";
 import { checkDemoShowcase } from "./showcase-checks";
+import { checkDemoTasks } from "./task-checks";
 import { checkDemoTemplates } from "./template-checks";
 import type { DemoOrg } from "./types";
 import { checkDemoVersions } from "./version-checks";
@@ -75,4 +76,5 @@ export const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoInbox,
   checkDemoRunSheets,
   checkDemoComments,
+  checkDemoTasks,
 ];

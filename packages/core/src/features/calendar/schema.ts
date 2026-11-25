@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { PlainDateStringSchema } from "../../time/plain-date-schema";
 import { OccupancyTypeSchema } from "../occupancy/schema";
+import { CalendarTaskSchema } from "./task-schema";
 import { CalendarDayValueSchema } from "./value-schema";
 
 /** The longest range one call may cover, in days (ADR 0064 decision 2). */
@@ -124,6 +125,12 @@ export const CalendarRangeSchema = z.object({
   from: z.date().describe("Start of the first day (inclusive)"),
   to: z.date().describe("Start of the day after the last (exclusive)"),
   blocks: z.array(CalendarBlockSchema).describe("Every block overlapping [from, to), by start"),
+  tasks: z
+    .array(CalendarTaskSchema)
+    .describe(
+      "Tasks in [from, to) by start (ADR 0117): meetings overlapping it, deadlines due in it; " +
+        "empty without task:read",
+    ),
   currency: z.string().describe("ISO 4217 code of the day values"),
   values: z
     .array(CalendarDayValueSchema)

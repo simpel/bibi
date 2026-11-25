@@ -1,33 +1,27 @@
-import { Tabs, TabsList, TabsTrigger } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/lib/navigation";
+import { PageTabNav } from "@/components/states/page-tab-nav";
 import { itemRoute } from "@/lib/routes";
-import type { ItemTab } from "../item-tabs";
+import type { HoursKind, ItemTab } from "../item-tabs";
 
-export type ItemTabNavProps = { itemId: string; tabs: readonly ItemTab[]; current: ItemTab };
+export type ItemTabNavProps = {
+  itemId: string;
+  tabs: readonly ItemTab[];
+  current: ItemTab;
+  hoursKind: HoursKind;
+};
 
-/**
- * The item page's tabs as links (`?tab=`) along the bottom of its header, like the order page's:
- * only the open tab's sections load (ADR 0097).
- */
-export async function ItemTabNav({ itemId, tabs, current }: ItemTabNavProps) {
+/** The item page's tabs, like the order page's; the hours tab is named by the item's kind. */
+export async function ItemTabNav({ itemId, tabs, current, hoursKind }: ItemTabNavProps) {
   const t = await getTranslations("item.tabs");
-  const base = itemRoute({ id: itemId });
   return (
-    <Tabs value={current} className="min-w-0">
-      <TabsList
-        variant="line"
-        aria-label={t("label")}
-        className="max-w-full justify-start overflow-x-auto"
-      >
-        {tabs.map((tab) => (
-          <TabsTrigger key={tab} value={tab} variant="line" asChild className="flex-none">
-            <Link href={`${base}?tab=${tab}`} scroll={false}>
-              {t(tab)}
-            </Link>
-          </TabsTrigger>
-        ))}
-      </TabsList>
-    </Tabs>
+    <PageTabNav
+      base={itemRoute({ id: itemId })}
+      label={t("label")}
+      current={current}
+      tabs={tabs.map((tab) => ({
+        id: tab,
+        label: tab === "hours" ? t("hours", { kind: hoursKind }) : t(tab),
+      }))}
+    />
   );
 }

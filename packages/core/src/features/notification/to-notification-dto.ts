@@ -8,12 +8,12 @@ type Viewer = { context: Pick<OperationContext, "permissions"> };
 /**
  * The snapshot's facts the reader may still see (ADR 0071): order facts need `order:read`, the
  * run sheet's `runSheet:read`, the amount `payment:read` and a comment's line and text
- * `comment:read`, checked on every read.
+ * `comment:read`, a task's type and time `task:read`, checked on every read.
  */
 function visibleData({ data, context }: Viewer & { data: NotificationData }): NotificationData {
   const { orderReference, orderTitle, fromStatus, toStatus, runSheetName, runSheetVersion } = data;
   const { amountMinor, currency, overpaid, actorName } = data;
-  const { lineId, lineName, excerpt, commentId, reply } = data;
+  const { lineId, lineName, excerpt, commentId, reply, taskTypeName, taskStartsAt } = data;
   return {
     ...(actorName !== undefined ? { actorName } : {}),
     ...(canView({ context, feature: "order" })
@@ -24,6 +24,7 @@ function visibleData({ data, context }: Viewer & { data: NotificationData }): No
     ...(canView({ context, feature: "comment" })
       ? { lineId, lineName, excerpt, commentId, reply }
       : {}),
+    ...(canView({ context, feature: "task" }) ? { taskTypeName, taskStartsAt } : {}),
   };
 }
 
@@ -43,6 +44,7 @@ export function toNotificationDto({
     kind: row.kind,
     actorUserId: row.actorUserId,
     orderId: row.orderId,
+    taskId: row.taskId,
     runSheetId: row.runSheetId,
     paymentId: row.paymentId,
     data,

@@ -3,7 +3,7 @@ import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 
 /** What can be assigned (ADR 0034): an order or an item (package or catalog item). */
-export const ASSIGNMENT_SUBJECT_TYPES = ["ORDER", "ITEM"] as const;
+export const ASSIGNMENT_SUBJECT_TYPES = ["ORDER", "ITEM", "TASK"] as const;
 export const AssignmentSubjectTypeSchema = z.enum(ASSIGNMENT_SUBJECT_TYPES);
 
 /** `assignment.listMine`: what the member answers for, or what they follow. */
@@ -48,7 +48,7 @@ export const AssignmentSchema = z.object({
 });
 
 const SubjectShape = {
-  subjectType: AssignmentSubjectTypeSchema.describe("What is assigned: ORDER or ITEM"),
+  subjectType: AssignmentSubjectTypeSchema.describe("What is assigned: ORDER, ITEM or TASK"),
   subjectId: z.string().min(1).describe("Id of the order or item"),
 };
 

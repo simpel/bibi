@@ -90,6 +90,11 @@
         "budgetMinor": "Budget (minor units)",
         "estimatedValueMinor": "Estimated value (minor units)",
         "orderId": "Order (id)",
+        "endsAt": "Ends",
+        "note": "Note",
+        "taskId": "Task (id)",
+        "taskIds": "Tasks to link",
+        "taskShape": "Task shape",
         "inboundMessageId": "Inbox message",
         "parentLineId": "Add-on to",
         "statusId": "Status (id)",
@@ -244,6 +249,12 @@
         "comment_create": "Add comment",
         "comment_update": "Edit comment",
         "comment_archive": "Delete comment",
+        "task_create": "Create task",
+        "task_update": "Edit task",
+        "task_complete": "Mark task done",
+        "task_reopen": "Reopen task",
+        "task_linkOrder": "Link task to order",
+        "task_archive": "Delete task",
         "inboundMessage_attachToOrder": "Attach message to order",
         "line_changeState": "Change line state",
         "line_expandBundle": "Add bundle with its parts",
@@ -592,7 +603,8 @@
           "CONTACT": "Contact",
           "ORDER": "Order",
           "REQUIREMENT": "Requirement",
-          "LINE": "Line"
+          "LINE": "Line",
+          "TASK": "Task"
         },
         "capability": {
           "PRICED": "Priced",
@@ -701,7 +713,8 @@
       "assignment": {
         "subject": {
           "ORDER": "Order",
-          "ITEM": "Item"
+          "ITEM": "Item",
+          "TASK": "Task"
         },
         "main": "Main",
         "responsibility": "Responsibility",
@@ -762,6 +775,14 @@
         "onLine": "On one line",
         "archived": "Deleted",
         "openOrder": "Open the order"
+      },
+      "task": {
+        "empty": "No tasks found.",
+        "done": "Done",
+        "open": "Not done yet",
+        "linked": "Linked to an order",
+        "itemBusy": "The item is busy then",
+        "archived": "Deleted"
       }
     },
     "questionnaire": {

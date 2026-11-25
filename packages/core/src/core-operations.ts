@@ -44,6 +44,7 @@ import { runSheetDefinitionOperations } from "./features/run-sheet-definition/op
 import { settingsOperations } from "./features/settings/operations";
 import { skillOperations } from "./features/skill/operations";
 import { statusGridOperations } from "./features/status-grid/operations";
+import { taskOperations } from "./features/task/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
 import { hoursOperations } from "./hours/operations";
@@ -106,6 +107,7 @@ function staticOperations(): AnyOperation[] {
     ...assignmentOperations,
     ...requirementOperations,
     ...commentOperations,
+    ...taskOperations,
     ...runSheetOperations,
     ...pipelineGroupOperations,
     ...quoteOperations,

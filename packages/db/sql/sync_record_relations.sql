@@ -2,8 +2,8 @@
 -- file is the source of the functions and triggers; the latest migration that includes it applies
 -- it verbatim (`packages/db/test/line-holds-sql.test.ts` keeps the two in step).
 --
--- For an order or item record:
--- - CREATOR: the order's `Record.createdBy`, unless SYSTEM.
+-- For an order, item or task record (ADR 0117):
+-- - CREATOR: the order's or task's `Record.createdBy`, unless SYSTEM.
 -- - A slot is the main slot when it has an active stored choice (`Assignment` without a
 --   responsibility), and an active responsibility's slot when the responsibility covers the item
 --   type of one of the order's active lines, or someone made an active choice on it.
@@ -18,7 +18,7 @@
 DROP FUNCTION IF EXISTS record_relation_wanted(text);
 DROP FUNCTION IF EXISTS sync_record_relations(text);
 
--- The rows the records should have. Records that are neither an order nor an item have none.
+-- The rows the records should have. Records that are not an order, item or task have none.
 CREATE OR REPLACE FUNCTION record_relation_wanted(record_ids text[])
 RETURNS TABLE (record_id text, organization_id text, principal_id text,
   relation "RecordRelationKind", responsibility_id text, source "RecordRelationSource")
@@ -26,7 +26,7 @@ LANGUAGE sql STABLE AS $$
   WITH rec AS (
     SELECT r."id", r."organizationId" AS org, r."base", r."createdBy"
       FROM "Record" r
-     WHERE r."id" = ANY(record_ids) AND r."base" IN ('ORDER', 'ITEM')
+     WHERE r."id" = ANY(record_ids) AND r."base" IN ('ORDER', 'ITEM', 'TASK')
   ),
   choices AS (
     SELECT rec."id" AS rec_id, rec.org, a."id", a."responsibilityId" AS rid, a."assigneeId"
@@ -83,7 +83,8 @@ LANGUAGE sql STABLE AS $$
   UNION
   SELECT rec."id", rec.org, rec."createdBy", 'CREATOR', NULL, 'EXPLICIT'
     FROM rec
-   WHERE rec."base" = 'ORDER' AND rec."createdBy" IS NOT NULL AND rec."createdBy" <> 'system'
+   WHERE rec."base" IN ('ORDER', 'TASK') AND rec."createdBy" IS NOT NULL
+     AND rec."createdBy" <> 'system'
 $$;
 
 -- Derives the records' rows once (`record_relation_wanted`) in one statement: archives the rows
@@ -235,7 +236,7 @@ END $$;
 
 DROP TRIGGER IF EXISTS record_relations_record ON "Record";
 CREATE TRIGGER record_relations_record AFTER INSERT ON "Record"
-  FOR EACH ROW WHEN (NEW."base" IN ('ORDER', 'ITEM'))
+  FOR EACH ROW WHEN (NEW."base" IN ('ORDER', 'ITEM', 'TASK'))
   EXECUTE FUNCTION record_relations_on_record();
 
 DROP TRIGGER IF EXISTS record_relations_line_insert ON "Line";

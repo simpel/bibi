@@ -35,6 +35,8 @@ export const FEATURE_SPECS = {
   program: { group: "bookings", actions: all },
   // Comments on orders and lines (ADR 0115): everyone writes; `delete` archives others' comments.
   comment: { group: "bookings", actions: all },
+  // Tasks around a customer (ADR 0117): site visits, tastings, deadlines; `delete` archives.
+  task: { group: "bookings", actions: all },
   customer: { group: "selling", actions: all },
   quote: { group: "selling", actions: all },
   // Refunds give money back (ADR 0100): their own action, managers and admins by preset.

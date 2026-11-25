@@ -1,6 +1,7 @@
 "use client";
 
 import { LegendItem } from "../booking-tone/legend-item";
+import { TASK_EDGE } from "../task-shape/task-shape";
 import { useCalendarLabels } from "./calendar-labels";
 import { bufferStyle, markStyle } from "./calendar-marks";
 import type { CalendarState } from "./calendar-types";
@@ -20,6 +21,8 @@ export type CalendarLegendProps = {
   withBlocked?: CalendarState;
   /** Further entries, after the states; the app supplies the words. */
   notes?: readonly CalendarLegendNote[];
+  /** The tasks entry, when tasks are on screen: an outlined, unfilled swatch. */
+  withTasks?: { name: string; text?: string } | undefined;
 };
 
 const GREY = "var(--muted-foreground)";
@@ -42,6 +45,7 @@ export function CalendarLegend({
   withBuffers = true,
   withBlocked,
   notes = [],
+  withTasks,
 }: CalendarLegendProps) {
   const labels = useCalendarLabels();
   const swatch = "h-3 w-5 rounded-sm border";
@@ -76,6 +80,11 @@ export function CalendarLegend({
           <NoteSwatch kind={note.kind} />
         </LegendItem>
       ))}
+      {withTasks ? (
+        <LegendItem name={withTasks.name} text={withTasks.text}>
+          <span className={`h-3 w-5 rounded-sm ${TASK_EDGE}`} />
+        </LegendItem>
+      ) : null}
     </ul>
   );
 }

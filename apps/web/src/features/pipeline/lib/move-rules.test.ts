@@ -18,6 +18,7 @@ const card = ({ overrides = {} }: { overrides?: Partial<PipelineCard> } = {}): P
   following: false,
   flags: [],
   heldLines: 0,
+  nextTask: null,
   bookedLines: 0,
   estimatedValueMinor: null,
   confirmedValueMinor: null,

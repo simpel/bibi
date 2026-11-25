@@ -1,32 +1,15 @@
 import { resolveLocale } from "@bibi/i18n";
-import { SimplePage } from "@bibi/ui";
-import { setRequestLocale } from "next-intl/server";
-import { PermissionGate } from "@/components/states/permission-gate";
-import { loadOrderTemplate } from "@/features/order-template/load-order-template";
-import { OrderTemplateUpdate } from "@/features/order-template/ui/order-template-update";
-import { entityTitle } from "@/lib/page-metadata";
+import { redirect } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
 
-type UpdateOrderTemplatePageProps = { params: Promise<{ locale: string; id: string }> };
+type PageProps = { params: Promise<{ locale: string; org: string; id: string }> };
 
-export async function generateMetadata({ params }: UpdateOrderTemplatePageProps) {
-  const { id } = await params;
-  const tpl = await loadOrderTemplate({ id });
-  return entityTitle({
-    name: tpl.ok ? tpl.value.name : null,
-    fallback: "Package",
-    prefix: "Edit",
+/** The old edit page: a template is edited in place on its own page now. */
+export default async function OrderTemplateUpdateRedirect({ params }: PageProps) {
+  const { locale, org, id } = await params;
+  redirect({
+    href: `${ROUTES.packages}/${encodeURIComponent(id)}`,
+    locale: resolveLocale({ value: locale }),
+    org,
   });
-}
-
-export default async function UpdateOrderTemplatePage({ params }: UpdateOrderTemplatePageProps) {
-  const { locale: rawLocale, id } = await params;
-  const locale = resolveLocale({ value: rawLocale });
-  setRequestLocale(locale);
-  return (
-    <SimplePage>
-      <PermissionGate permission="orderTemplate:write">
-        <OrderTemplateUpdate locale={locale} id={id} />
-      </PermissionGate>
-    </SimplePage>
-  );
 }

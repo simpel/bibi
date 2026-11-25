@@ -25,11 +25,7 @@ export async function CustomerUpdate({ locale, id }: CustomerUpdateProps) {
   return (
     <>
       <CrumbName href={customerRoute({ id })} name={customer.value.name} />
-      <FormPageShell
-        backHref={customerRoute({ id })}
-        title={t("edit")}
-        description={t("editDescription")}
-      >
+      <FormPageShell title={t("edit")} description={t("editDescription")}>
         <CustomerUpdateForm customer={customer.value} data={data.value} />
       </FormPageShell>
     </>

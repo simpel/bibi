@@ -2,7 +2,13 @@
 
 import { AppError, type CalendarBlockDto, calendarRange, err } from "@bibi/core";
 import { PlainDateStringSchema } from "@bibi/core/schemas";
-import type { AssetBooking, CalendarAsset, CalendarDayValue, CalendarWindow } from "@bibi/ui";
+import type {
+  AssetBooking,
+  CalendarAsset,
+  CalendarDayValue,
+  CalendarTaskEntry,
+  CalendarWindow,
+} from "@bibi/ui";
 import { z } from "zod";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
@@ -49,6 +55,7 @@ export type CalendarDays = {
   assets: CalendarAsset[];
   bookings: AssetBooking[];
   values: CalendarDayValue[];
+  tasks: CalendarTaskEntry[];
   today: string;
   openingHours: CalendarWindow | null;
 };

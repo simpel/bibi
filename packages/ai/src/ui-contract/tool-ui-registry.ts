@@ -39,6 +39,7 @@ import { SELF_GENERIC_UI_TOOLS } from "./self-generic-tools";
 import { SETTINGS_UI_ENTRIES } from "./settings-entries";
 import { SKILL_UI_ENTRIES } from "./skill-entries";
 import { STATUS_GRID_UI_ENTRIES } from "./status-grid-entries";
+import { TASK_UI_ENTRIES } from "./task-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 import { SearchWireSchema, VenueListWireSchema, VenueWireSchema } from "./wire-schemas";
@@ -79,6 +80,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...ASSIGNMENT_UI_ENTRIES,
   ...REQUIREMENT_UI_ENTRIES,
   ...COMMENT_UI_ENTRIES,
+  ...TASK_UI_ENTRIES,
   ...PIPELINE_UI_ENTRIES,
   ...PIPELINE_SETUP_UI_ENTRIES,
   ...QUOTE_UI_ENTRIES,

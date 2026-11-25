@@ -34,7 +34,7 @@
           },
           "needsYou": {
             "question": "What is in Needs you?",
-            "answer": "**Needs you** sits at the top of the notification panel on the right, which you open and close with the bell at the top. It opens by itself when something needs you, and lists what you have to do on your bookings: double bookings to fix, run sheets to send, preliminary bookings to confirm or release, messages to answer, invoices that are overdue and bookings that are over but not closed. Each row has an icon for what it is about, the same as in your notifications, and a red warning triangle when it is late. Clicking the row takes you straight to where you fix it. The same tasks also show at the top of the booking's own page, each with a short note on what to do. Your notifications follow below, and more load as you scroll; the search box at the top searches both lists.\nRows are grouped as **Blocked**, **Late**, **Today**, **Soon** and **Waiting on customer**. A run sheet is due a day before the booking starts, and preliminary bookings two days before. A row disappears by itself once it is done. To hide a row you have dealt with another way, hover it and click the checkmark; it comes back only if something about it changes, and your colleagues still see it. The checkmark on a notification marks it read: it greys out and is gone on the next page, since the panel shows unread notifications only. The red number on **My work** in the menu counts what is blocked, late or due today."
+            "answer": "**Needs you** sits at the top of the notification panel on the right, which you open and close with the bell at the top. It opens by itself when something needs you, and lists what you have to do on your bookings: double bookings to fix, run sheets to send, preliminary bookings to confirm or release, messages to answer, invoices that are overdue and bookings that are over but not closed. Each row has an icon for what it is about, the same as in your notifications, and a red warning triangle when it is late. Clicking the row takes you straight to where you fix it. The same tasks also show at the top of the booking's own page, each with a short note on what to do. Your notifications follow below, and more load as you scroll; the search box at the top searches both lists. To show only one kind of notification, type **type:** and pick it from the list. To choose which kinds you get, click the cogwheel at the top of the panel.\nRows are grouped as **Blocked**, **Late**, **Today**, **Soon** and **Waiting on customer**. A run sheet is due a day before the booking starts, and preliminary bookings two days before. A row disappears by itself once it is done. To hide a row you have dealt with another way, hover it and click the checkmark; it comes back only if something about it changes, and your colleagues still see it. The checkmark on a notification marks it read: it greys out and is gone on the next page, since the panel shows unread notifications only. The red number on **My work** in the menu counts what is blocked, late or due today."
           },
           "commandBar": {
             "question": "How do I quickly find an order or a customer?",
@@ -82,7 +82,7 @@
           },
           "itemEdit": {
             "question": "How do I change an item?",
-            "answer": "Open the item and hover what you want to change: the name, the picture, a figure at the top such as **Price** or **Capacity**, or a single detail such as the floor or the setup time. Click the pencil, change it and click **Save**; only that setting is saved.\nFor a room, each layout has its own pencil, and **Edit floor plan** opens the room's walls, doors and windows. Layouts, bookings, contents, resources and working hours each have their own tab under the figures; **Archive item** is at the top right (in the **⋯** menu on a narrow screen)."
+            "answer": "Open the item and hover what you want to change: the name, the picture, a figure at the top such as **Price** or **Capacity**, or a single detail such as the floor or the setup time. Click the pencil, change it and click **Save**; only that setting is saved.\nFor a room, each layout has its own pencil, and **Edit floor plan** opens the room's walls, doors and windows. Under the figures, layouts, occupancy, contents, resources and staffing, opening hours (working hours for staff) and history each have their own tab when the item has them. **Archive item** is in the **⋯** menu at the top right and always asks first."
           },
           "itemOrder": {
             "question": "Can I start an order from an item?",
@@ -108,7 +108,7 @@
           },
           "packages": {
             "question": "Where do I make a package, and who can?",
-            "answer": "Open **Packages** under Catalog in the left menu and choose **Create package**. Give it a name, the order type and start status, then add its lines.\nManagers and admins can create, edit and archive packages, and everyone can use them when they create an order. An admin can give a member access too, under their permissions."
+            "answer": "Open **Packages** under Catalog in the left menu and choose **Create package**. Give it a name, the order type and start status and choose **Create package**. Its page opens: choose **Add line** for each line, and click a line to edit it. Change the name, picture, guests, type or status with the pencil beside each.\nManagers and admins can create, edit and archive packages, and everyone can use them when they create an order. An admin can give a member access too, under their permissions."
           },
           "packagePicker": {
             "question": "How do I find the package that fits a request best?",
@@ -224,6 +224,24 @@
           }
         }
       },
+      "tasks": {
+        "title": "Tasks",
+        "description": "Site visits, tastings and deadlines around a customer.",
+        "questions": {
+          "bookSiteVisit": {
+            "question": "How do I book a site visit?",
+            "answer": "Click **Create** at the top and pick **Task**, open the customer and click **Create task** under Tasks, or click a free slot on the calendar and choose **Create task**. Pick the type, such as Site visit, the customer, the contact person and the time. You can also pick the room you want to show.\nA task never books the room. If the room is taken at that time, the task's page says so, and the task is still saved."
+          },
+          "orderFromTask": {
+            "question": "How do I create an order from a task?",
+            "answer": "Open the task and click **Create order** at the top. The order form opens with the customer, the contact person and the task's note filled in. When you save the order, the task is linked to it and shows on the order's **Tasks** tab.\nTo add the task to an order that already exists, pick the order under **Add to order** on the task's page."
+          },
+          "whereAreMyTasks": {
+            "question": "Where do I see my tasks?",
+            "answer": "**Tasks** in the sidebar lists every open task and those done in the last 30 days. Type **is:open**, **assignee:me** or **customer:** in the search to filter.\nYour tasks for today show at the top of **Today** in **My work**, and one that is due or late also shows under **Needs you**. Tasks show on the calendar in their own row, outlined so they never look like bookings, and on the customer's page and the order's Tasks tab. Tick the round checkbox when a task is done."
+          }
+        }
+      },
       "layouts": {
         "title": "Rooms and layouts",
         "description": "Draw a room's floor plan and its layouts, with capacity and times.",
@@ -266,7 +284,7 @@
           },
           "history": {
             "question": "Where can I see who changed an item?",
-            "answer": "Open the item and look just under its title: it says when it was last edited and by whom. To see every change, click the three dots at the top right and choose View history.\nA panel opens with who changed what and when. You only see this if you have access to the change history."
+            "answer": "Open the item: at the bottom of **Details** it says when it was last edited and by whom. To see every change, open the **History** tab, the last one on the item page.\nIt shows who changed what and when. You only see this if you have access to the change history."
           }
         }
       },

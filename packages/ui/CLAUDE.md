@@ -41,7 +41,7 @@ Nothing outside `tokens.css` may contain hardcoded colors (hex/rgb/oklch), radii
 
 ## Title rows
 - Title (and description) left, actions right on the title row: `CardHeader` + `CardAction`, actions as `HeaderActions`. Never actions in the card body or footer for the card's own commands.
-- Title and actions stay on one row at every width: when it gets narrow the actions fold first (one action stays a button; several fold into one ⋯ menu, an action with its own choices becomes a submenu). Cards fold at `md`, `PageHeader` by its own width (`HeaderActions foldBy="header"`). A leading element (a record's picture) moves to its own row above the title.
+- Title and actions stay on one row at every width: when it gets narrow the actions fold first (one action stays a button; several fold into one ⋯ menu, an action with its own choices becomes a submenu). Cards fold at `md`, `PageHeader` by its own width (`HeaderActions foldBy="header"`: secondary actions icons only under 64rem, the primary always keeps its label; one menu under 42rem). A leading element (a record's picture) moves to its own row above the title.
 
 ## Commands
 - `pnpm --filter @bibi/ui typecheck` (`build` runs the same typecheck)

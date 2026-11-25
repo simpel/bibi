@@ -2,6 +2,7 @@ import type { OperationContext } from "../../operations/types";
 import { visibleTo } from "../../shared/visible-to";
 import { concernsOf } from "./concerns";
 import { concernedOrderIds } from "./lines";
+import { taskDueTasks } from "./task-due";
 import { lineIssueTasks } from "./task-line-issues";
 import {
   customerTasks,
@@ -54,13 +55,20 @@ function compare({ a, b }: { a: MyWorkTask; b: MyWorkTask }): number {
 const EMPTY = {
   ...{ runSheetId: null, runSheetName: null, lineId: null, lineName: null, issueKind: null },
   ...{ otherReference: null, quoteId: null, invoiceId: null, amountMinor: null, count: null },
+  ...{ taskId: null, taskTypeName: null },
 } as const;
+
+/** `<kind>:<orderId>[:<id>]`; a task's own key does not change when it is linked to an order. */
+const keyOf = ({ task, id }: { task: RawTask; id: string | undefined }) =>
+  task.taskId
+    ? [task.kind, task.taskId].join(":")
+    : [task.kind, task.orderId, ...(id ? [id] : [])].join(":");
 
 type FinishInput = { context: Context; raw: RawTask[]; window: TaskWindow };
 
 /** Adds each task's order, key and group, drops what is due after next week, and sorts. */
 async function finish({ context, raw, window }: FinishInput): Promise<MyWorkTask[]> {
-  const ids = [...new Set(raw.map((task) => task.orderId))];
+  const ids = [...new Set(raw.flatMap((task) => (task.orderId ? [task.orderId] : [])))];
   const orders = await context.db.order.findMany({
     where: { id: { in: ids } },
     select: { id: true, reference: true, title: true, customer: { select: { name: true } } },
@@ -68,16 +76,21 @@ async function finish({ context, raw, window }: FinishInput): Promise<MyWorkTask
   const byId = new Map(orders.map((order) => [order.id, order]));
   return raw
     .flatMap(({ id, ...task }): MyWorkTask[] => {
-      const order = byId.get(task.orderId);
+      const order = task.orderId ? byId.get(task.orderId) : undefined;
       const group = groupOf({ task, window });
-      if (!order || (group === "SOON" && task.dueAt >= window.end)) return [];
-      const customerName = visibleTo({ context, feature: "customer", value: order.customer.name });
+      if ((!order && !task.taskId) || (group === "SOON" && task.dueAt >= window.end)) return [];
+      const customerName =
+        task.customerName !== undefined
+          ? task.customerName
+          : visibleTo({ context, feature: "customer", value: order?.customer.name ?? null });
       return [
         {
           ...EMPTY,
           ...task,
-          key: [task.kind, task.orderId, ...(id ? [id] : [])].join(":"),
-          ...{ group, reference: order.reference, title: order.title, customerName },
+          orderId: order ? task.orderId : null,
+          key: keyOf({ task, id }),
+          ...{ group, reference: order?.reference ?? null, title: order?.title ?? null },
+          customerName,
         },
       ];
     })
@@ -108,7 +121,7 @@ export async function myTasks({ context, userId, window }: MyTasksInput): Promis
     .sort(([, a], [, b]) => a.firstStart.getTime() - b.firstStart.getTime())
     .map(([id]) => id);
   const base = { context, window };
-  const [sheets, unconfirmed, holds, customer, overdue, open, issues] = await Promise.all([
+  const [sheets, unconfirmed, holds, customer, overdue, open, issues, due] = await Promise.all([
     runSheetTasks({ ...base, concerns, spans }),
     unconfirmedTasks({ ...base, spans: ownSpans }),
     holdTasks({ ...base, orderIds: own }),
@@ -116,6 +129,7 @@ export async function myTasks({ context, userId, window }: MyTasksInput): Promis
     overdueTasks({ ...base, orderIds: own }),
     notClosedTasks({ ...base, spans: ownSpans }),
     lineIssueTasks({ ...base, orderIds: coming }),
+    taskDueTasks({ ...base, userId }),
   ]);
   const asked = new Set(unconfirmed.map((task) => task.orderId));
   const raw = [
@@ -126,6 +140,7 @@ export async function myTasks({ context, userId, window }: MyTasksInput): Promis
     ...customer,
     ...overdue,
     ...open,
+    ...due,
   ];
   return finish({ context, raw, window });
 }

@@ -31,7 +31,8 @@ export function toneOf({ group }: { group: MyWorkTaskGroup }) {
  */
 export function NeedsYouRow({ task, numbers, dimmed = false, action }: NeedsYouRowProps) {
   const t = useTranslations("myWork.needsYou");
-  const order = [`#${task.reference}`, task.title, task.customerName].filter(Boolean).join(" · ");
+  const reference = task.reference === null ? null : `#${task.reference}`;
+  const order = [reference, task.title, task.customerName].filter(Boolean).join(" · ");
   return (
     <li data-slot="needs-you-row" data-kind={task.kind}>
       <FeedItem

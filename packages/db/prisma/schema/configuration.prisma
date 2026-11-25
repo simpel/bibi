@@ -9,6 +9,7 @@ enum EntityBase {
   ORDER
   REQUIREMENT
   LINE
+  TASK
 }
 
 /// Generic capabilities an item type switches on (ADR 0021). No domain words.
@@ -54,6 +55,9 @@ model EntityType {
   /// Customer types: business or private (owned); a new customer of the type takes it (ADR
   /// 0106). Null on every other base.
   buyerKind        BuyerKind?
+  /// Task types: a meeting (start and end) or a deadline (one due time), ADR 0117 (owned). Null
+  /// on every other base.
+  taskShape        TaskShape?
   /// Item types: the group the type is browsed under (ADR 0101, owned); null = ungrouped.
   groupId          String?
   status           RecordStatus                @default(ACTIVE)
@@ -69,6 +73,7 @@ model EntityType {
   lines            Line[]
   versionLines        OrderVersionLine[]
   requirements     Requirement[]
+  tasks            Task[]
   itemStates       ItemState[]                 @relation("ItemStateType")
   statusRules      StatusStateRule[]
   orderTemplates  OrderTemplate[]

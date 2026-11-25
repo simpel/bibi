@@ -1,5 +1,4 @@
 import type { Locale } from "@bibi/i18n";
-import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";
 import { PersonName } from "@/components/people/person-name";
@@ -63,13 +62,6 @@ export async function QuoteDetail({ locale, id }: QuoteDetailProps) {
   return (
     <div className="grid gap-6">
       <CrumbName href={quoteRoute({ id })} name={t("title", { version: quote.version })} />
-      <Link
-        href={orderRoute({ id: quote.orderId })}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-4" />
-        {t("backToOrder")}
-      </Link>
       <PageHeader
         title={t("title", { version: quote.version })}
         actions={<QuoteActions quote={quote} can={can} />}

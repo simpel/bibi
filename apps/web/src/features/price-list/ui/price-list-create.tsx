@@ -8,11 +8,7 @@ import { PriceListWizard } from "./price-list-wizard";
 export async function PriceListCreate() {
   const [t, data] = await Promise.all([getTranslations("priceList"), loadPriceListFormData()]);
   return (
-    <FormPageShell
-      backHref={ROUTES.adminPriceLists}
-      title={t("create")}
-      description={t("createDescription")}
-    >
+    <FormPageShell title={t("create")} description={t("createDescription")}>
       <PriceListWizard data={data} />
     </FormPageShell>
   );

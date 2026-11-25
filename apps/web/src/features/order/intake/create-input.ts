@@ -51,6 +51,8 @@ export type ToCreateInputInput = {
   intakeKey: string;
   /** The inbox message the order is made from (ADR 0085). */
   inboundMessageId?: string | null | undefined;
+  /** The task it is created from (ADR 0117): `order.create` links it. */
+  taskId?: string | null | undefined;
   /** Values were read from a message (ADR 0084): the order's audit says so. */
   draftedFromMessage?: boolean;
   /** The assignee when none is chosen: the creating member. */
@@ -69,6 +71,7 @@ export function toCreateInput({
   orderTypeId,
   intakeKey,
   inboundMessageId,
+  taskId,
   draftedFromMessage = false,
   userId,
   planned = null,
@@ -90,6 +93,7 @@ export function toCreateInput({
     lines: review.lines.map((line) => toCreateLine({ line })),
     intakeKey,
     ...(inboundMessageId ? { inboundMessageId } : {}),
+    ...(taskId ? { taskIds: [taskId] } : {}),
     ...(draftedFromMessage ? { draftedFromMessage } : {}),
   };
 }

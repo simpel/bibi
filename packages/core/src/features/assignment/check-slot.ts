@@ -8,6 +8,7 @@ type Db = { context: Pick<OperationContext, "db"> };
 const ENTITY: Record<AssignmentSubjectType, string> = {
   ORDER: "Order",
   ITEM: "Item",
+  TASK: "Task",
 };
 
 /**

@@ -6,6 +6,7 @@ import type { CallerAbilities } from "@/server/caller-abilities";
 export const ORDER_TABS = [
   "program",
   "customer",
+  "tasks",
   "run-sheets",
   "money",
   "details",
@@ -34,6 +35,8 @@ export function availableOrderTabs({ abilities }: AvailableInput): OrderTab[] {
     program: allowed({ permission: "program:read" }),
     // The order's own customer and contact, as names, even without customer:read.
     customer: true,
+    // Site visits, tastings and deadlines linked to the order (ADR 0117).
+    tasks: allowed({ permission: "task:read" }),
     "run-sheets": allowed({ permission: "runSheet:read" }),
     // The estimate history is the order's own, so Money always has something to show.
     money: true,

@@ -20,6 +20,7 @@ export {
   type UseExtraFactsInput,
 } from "./components/availability-calendar/pinned-bookings";
 export type { PinnedBooking } from "./components/availability-calendar/pins-context";
+export { taskPlacement } from "./components/availability-calendar/task-marks";
 export * from "./components/avatar/avatar";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge/badge";
 export * from "./components/bar-charts/bar-charts";
@@ -166,6 +167,10 @@ export * from "./components/step-section/step-section-footer";
 export { Switch, type SwitchProps } from "./components/switch/switch";
 export * from "./components/table/table";
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/tabs/tabs";
+export * from "./components/task-calendar-marker/task-calendar-marker";
+export * from "./components/task-chip/task-chip";
+export * from "./components/task-row/task-row";
+export * from "./components/task-shape/task-shape";
 export { Textarea, type TextareaProps } from "./components/textarea/textarea";
 export * from "./components/time-input/time-input";
 export { Toaster, type ToasterProps, toast } from "./components/toast/toast";

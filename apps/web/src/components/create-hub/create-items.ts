@@ -1,8 +1,10 @@
+import type { PermissionSet } from "@bibi/core";
 import {
   BookOpenIcon,
   BoxIcon,
   BuildingIcon,
   CalendarCheckIcon,
+  CircleCheckIcon,
   CircleDotIcon,
   ClipboardListIcon,
   CopyPlusIcon,
@@ -13,8 +15,8 @@ import {
   UserPlusIcon,
   UsersIcon,
 } from "lucide-react";
+import { canPermission } from "@/lib/can";
 import { ROUTES } from "@/lib/routes";
-import { type CallerAbilities, can } from "@/server/caller-abilities";
 
 import type { CreateItem } from "./create-item-types";
 
@@ -31,6 +33,13 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
     href: ROUTES.orderNew,
     icon: CalendarCheckIcon,
     permission: "order:write",
+  },
+  {
+    key: "task",
+    group: "work",
+    href: ROUTES.taskNew,
+    icon: CircleCheckIcon,
+    permission: "task:write",
   },
   {
     key: "customer",
@@ -112,9 +121,9 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
   },
 ];
 
-export type CreatableInput = { abilities: CallerAbilities };
+export type CreatableInput = { permissions: PermissionSet };
 
-/** What the caller's permissions allow to create. */
-export function creatableItems({ abilities }: CreatableInput): CreateItem[] {
-  return CREATE_ITEMS.filter(({ permission }) => can({ abilities, permission }));
+/** What the caller's permissions allow to create. Pure, so the top bar's menu uses it too. */
+export function creatableItems({ permissions }: CreatableInput): CreateItem[] {
+  return CREATE_ITEMS.filter(({ permission }) => canPermission({ permissions, permission }));
 }

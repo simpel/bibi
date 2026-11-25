@@ -187,8 +187,8 @@
       }
     },
     "hours": {
-      "title": "Working hours",
-      "edit": "Edit working hours",
+      "title": "{kind, select, PERSON {Working hours} other {Opening hours}}",
+      "edit": "{kind, select, PERSON {Edit working hours} other {Edit opening hours}}",
       "ownHours": "Own hours",
       "ownNote": "The item's own hours · bookings outside them get a warning",
       "fromVenue": "From {venue} · bookings outside these hours get a warning",
@@ -229,6 +229,7 @@
       "editParts": "Edit parts",
       "editCustomisations": "Edit customisations",
       "editFact": "Edit {label}",
+      "noDescription": "No description",
       "createOrder": "Create order",
       "capacity": "Capacity",
       "noCapacity": "No people limit",
@@ -242,10 +243,11 @@
       "label": "Item sections",
       "details": "Details",
       "layouts": "Layouts",
-      "bookings": "Bookings",
+      "occupancy": "Occupancy",
       "contents": "Contents",
-      "resources": "Resources and staff",
-      "hours": "Working hours"
+      "resources": "Resources and staffing",
+      "hours": "{kind, select, PERSON {Working hours} other {Opening hours}}",
+      "history": "History"
     }
   },
   "itemState": {
@@ -417,6 +419,7 @@
       "sections": "Sections",
       "resourceKind": "Equipment or person",
       "buyerKind": "Business or private",
+      "taskShape": "Shape",
       "group": "Group",
       "pluralName": "Plural name",
       "pluralNamePlaceholder": "Conference rooms"
@@ -437,7 +440,8 @@
       "CONTACT": "Contacts",
       "ORDER": "Orders",
       "REQUIREMENT": "Requirements",
-      "LINE": "Lines"
+      "LINE": "Lines",
+      "TASK": "Tasks"
     },
     "capabilities": {
       "PRICED": "Priced",

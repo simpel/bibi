@@ -2,6 +2,7 @@ import type { AuditLogDto, DateTimeFormat } from "@bibi/core/schemas";
 import { Badge } from "@bibi/ui";
 import { SparklesIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { RelativeTime } from "@/components/relative-time";
 import { auditDiff } from "../audit-diff";
 import { AuditChanges } from "./audit-changes";
 
@@ -17,35 +18,42 @@ export type AuditEntryProps = {
   dates: DateTimeFormat;
 };
 
-/** One change: when, who (with the assistant marker and approver), the operation and the diff. */
-export function AuditEntry({ entry, dates: format }: AuditEntryProps) {
+/** The verb of an operation name (`item.update` → `update`), for the entry's sentence. */
+const verbOf = ({ operation }: { operation: string }) => operation.split(".").at(-1) ?? "";
+
+/**
+ * One change as a sentence: who did what and when ("Anna Berg edited · 2 hours ago", the exact
+ * time in a tooltip), the assistant marker and approver, then the changed details. A create lists
+ * no details: the record itself shows them.
+ */
+export function AuditEntry({ entry }: AuditEntryProps) {
   const t = useTranslations("auditLog");
-  const when = format.dateTime({ instant: entry.createdAt });
   const who = entry.actorName ?? t(`actor.${entry.actorType}`);
+  const verb = verbOf({ operation: entry.operation });
   return (
-    <article data-slot="audit-entry" className="grid gap-2 py-3 text-sm">
-      <header className="flex flex-wrap items-center gap-2">
-        <span className="font-medium">{who}</span>
+    <article data-slot="audit-entry" className="grid gap-2 py-4">
+      <header className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+        <span>
+          <span className="font-medium">{who}</span> {t("did", { verb })}
+        </span>
         {entry.actorType === "AI" ? (
           <Badge variant="secondary" className="gap-1">
             <SparklesIcon className="size-3" aria-hidden />
             {t("aiProposed")}
           </Badge>
         ) : null}
-        <code className="text-xs text-muted-foreground">{entry.operation}</code>
-        <time
-          className="ml-auto text-xs text-muted-foreground"
-          dateTime={new Date(entry.createdAt).toISOString()}
-        >
-          {when}
-        </time>
+        <span className="ml-auto text-xs text-muted-foreground">
+          <RelativeTime instant={entry.createdAt} />
+        </span>
       </header>
       {entry.actorType === "AI" && entry.approvedBy ? (
         <p className="text-xs text-muted-foreground">
           {t("approvedBy", { name: entry.approvedByName ?? t("unknownActor") })}
         </p>
       ) : null}
-      <AuditChanges changes={auditDiff({ before: entry.before, after: entry.after })} />
+      {verb === "create" ? null : (
+        <AuditChanges changes={auditDiff({ before: entry.before, after: entry.after })} />
+      )}
     </article>
   );
 }

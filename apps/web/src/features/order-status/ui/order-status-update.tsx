@@ -26,11 +26,7 @@ export async function OrderStatusUpdate({ locale, id }: OrderStatusUpdateProps) 
   return (
     <>
       <CrumbName href={`/admin/pipeline/${id}/update`} name={orderStatus.value.name} />
-      <FormPageShell
-        backHref={ROUTES.adminPipeline}
-        title={t("edit")}
-        description={t("editDescription")}
-      >
+      <FormPageShell title={t("edit")} description={t("editDescription")}>
         <OrderStatusPageForm orderStatus={orderStatus.value} />
         {all.ok ? (
           <section className="mt-8 grid max-w-2xl gap-3">

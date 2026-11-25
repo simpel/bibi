@@ -85,7 +85,8 @@ const SELF_SEEDED = ["profile", "workingHours", "userSettings", "notification", 
  * Check 7 (ADR 0025): every write must have an audit row as SYSTEM, except each user's own
  * profile, hours, settings and read notifications (ADR 0061, 0046, 0094), which `self:*`
  * operations save as that user, the demo comments, written by a staff member (ADR 0115), and
- * the creator's claim of their email domain (ADR 0078), which a real signup makes as the creator.
+ * the creator's claim of their email domain (ADR 0078), which a real signup makes as the creator,
+ * and a demo task marked done by its assignee (ADR 0117), so it shows who did it.
  */
 async function auditFailures({ context, org }: CheckDemoOrgInput): Promise<string[]> {
   const notSystem = await context.db.auditLog.count({
@@ -95,6 +96,7 @@ async function auditFailures({ context, org }: CheckDemoOrgInput): Promise<strin
       NOT: [
         { actorType: "USER", entityType: { in: [...SELF_SEEDED] } },
         { actorType: "USER", operation: "organizationProfile.setDomainJoin" },
+        { actorType: "USER", operation: "task.complete" },
       ],
     },
   });

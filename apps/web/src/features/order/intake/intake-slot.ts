@@ -51,6 +51,16 @@ export function itemOrderHref({ itemId }: { itemId: string }): string {
   return `${ROUTES.orderNew}?${new URLSearchParams({ slot: itemId }).toString()}`;
 }
 
+/** Create order from a booking template's page: the intake with it preselected in step 3. */
+export function templateOrderHref({ templateId }: { templateId: string }): string {
+  return `${ROUTES.orderNew}?${new URLSearchParams({ template: templateId }).toString()}`;
+}
+
+/** `?template=<id>` in the intake's address, or null. */
+export function templateFromSearch({ search }: SlotFromSearchInput): string | null {
+  return single({ value: search.template }) || null;
+}
+
 /** The intake's address for a slot; `slotFromSearch` reads it back. */
 export function slotHref({ slot }: { slot: IntakeSlot }): string {
   const query = new URLSearchParams({ ...slot, slot: slot.itemId });

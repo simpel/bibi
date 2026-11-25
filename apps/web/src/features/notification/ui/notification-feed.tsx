@@ -1,3 +1,4 @@
+import type { NotificationKind } from "@bibi/core/schemas";
 import { Button, Spinner } from "@bibi/ui";
 import { CheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -18,6 +19,8 @@ const SEARCH_WAIT_MS = 250;
 export type NotificationFeedProps = {
   /** The panel's search: the order's title or reference. */
   query: string;
+  /** The panel's `kind:` filter, if the search has one. */
+  kind?: NotificationKind | undefined;
   /** The panel's scroller, for the infinite scroll. */
   root: RefObject<HTMLElement | null>;
   onOpen: (input: { notification: NotificationLike }) => void;
@@ -29,15 +32,15 @@ export type NotificationFeedProps = {
  * also read when the panel opens, the search changes or the stream reports a change; later pages
  * as the member scrolls.
  */
-export function NotificationFeed({ query, root, onOpen }: NotificationFeedProps) {
+export function NotificationFeed({ query, kind, root, onOpen }: NotificationFeedProps) {
   const t = useTranslations("notifications");
   const { changed } = useNotificationLive();
   const pathname = usePathname();
   const q = query.trim();
   const first = useLiveQuery({
-    input: { q, changed, pathname },
+    input: { q, kind, changed, pathname },
     load: loadNotificationFeedAction,
-    waitMs: q ? SEARCH_WAIT_MS : 0,
+    waitMs: q || kind ? SEARCH_WAIT_MS : 0,
   });
   return (
     <section data-slot="notification-feed" className="grid gap-2">
@@ -45,9 +48,10 @@ export function NotificationFeed({ query, root, onOpen }: NotificationFeedProps)
       {first.status === "error" ? <InlineLoadError errorKey={first.errorKey} /> : null}
       {first.status === "ready" ? (
         <FeedPages
-          key={`${q}|${changed}|${pathname}`}
+          key={`${q}|${kind ?? ""}|${changed}|${pathname}`}
           first={first.value}
           q={q}
+          kind={kind}
           root={root}
           onOpen={onOpen}
         />
@@ -66,7 +70,7 @@ type FeedPagesProps = Omit<NotificationFeedProps, "query"> & {
 };
 
 /** The first page and the ones read on as the end comes into view, with the caller's marks. */
-function FeedPages({ first, q, root, onOpen }: FeedPagesProps) {
+function FeedPages({ first, q, kind, root, onOpen }: FeedPagesProps) {
   const t = useTranslations("notifications");
   const { mark } = useNotificationLive();
   const markRead = t("markRead");
@@ -83,7 +87,7 @@ function FeedPages({ first, q, root, onOpen }: FeedPagesProps) {
     enabled: cursor !== null && !pending && error === null,
     onEnd: () =>
       startTransition(async () => {
-        const result = await loadNotificationFeedAction({ q, cursor });
+        const result = await loadNotificationFeedAction({ q, kind, cursor });
         if (!result.ok) return setError(errorKeyForCode({ code: result.error.code }));
         setMore((shown) => [...shown, ...result.value.items]);
         setCursor(result.value.nextCursor);
@@ -94,7 +98,7 @@ function FeedPages({ first, q, root, onOpen }: FeedPagesProps) {
   if (rows.length === 0) {
     return (
       <p className="px-3 pb-3 text-sm text-muted-foreground">
-        {q ? t("noMatches") : t("nothingNew")}
+        {q || kind ? t("noMatches") : t("nothingNew")}
       </p>
     );
   }

@@ -3,12 +3,14 @@ import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
 import type { BuyerKindValue } from "../customer/buyer-kind";
 import { insertItemState } from "../item-state/insert-item-state";
+import type { TaskShape } from "../task/task-shape";
 import { checkCapabilities } from "./capabilities";
 import type { EntityBase, ItemCapability, ResourceKind } from "./capability-kinds";
 import { toEntityTypeDto } from "./load-entity-type";
 import type { EntityTypeDto } from "./schema";
 import { checkTypeBuffers } from "./type-buffers";
 import { checkTypeGroup } from "./type-group";
+import { checkNewTaskShape } from "./type-task-shape";
 
 export type InsertEntityTypeInput = {
   context: OperationContext;
@@ -24,6 +26,8 @@ export type InsertEntityTypeInput = {
   resourceKind?: ResourceKind;
   /** Customer types: BUSINESS (default) or PRIVATE (ADR 0106). */
   buyerKind?: BuyerKindValue;
+  /** Task types: MEETING or DEADLINE, required for them (ADR 0117). */
+  taskShape?: TaskShape | undefined;
   /** Item types: the group (ADR 0101); null or omitted = ungrouped. */
   groupId?: string | null | undefined;
 };
@@ -55,6 +59,7 @@ export async function insertEntityType({
   capabilities = [],
   resourceKind,
   buyerKind,
+  taskShape,
   groupId = null,
   ...buffers
 }: InsertEntityTypeInput): Promise<Result<EntityTypeDto>> {
@@ -62,6 +67,8 @@ export async function insertEntityType({
   if (!valid.ok) return valid;
   const buffered = checkTypeBuffers({ base, resourceKind, buyerKind, ...buffers });
   if (!buffered.ok) return buffered;
+  const shaped = checkNewTaskShape({ base, taskShape });
+  if (!shaped.ok) return shaped;
   const grouped = await checkTypeGroup({ context, base, groupId });
   if (!grouped.ok) return grouped;
   if (await context.db.entityType.findFirst({ where: { base, name } })) {
@@ -72,6 +79,7 @@ export async function insertEntityType({
       ...{ base, name, pluralName, capabilities: [...capabilities], ...buffers },
       resourceKind: base === "ITEM" ? (resourceKind ?? "EQUIPMENT") : null,
       buyerKind: base === "CUSTOMER" ? (buyerKind ?? "BUSINESS") : null,
+      taskShape: taskShape ?? null,
       groupId,
       organizationId: context.organizationId,
     },

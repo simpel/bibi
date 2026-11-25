@@ -7,10 +7,11 @@ import { hasCapability } from "./ui/has-capability";
 export const ITEM_TABS = [
   "details",
   "layouts",
-  "bookings",
+  "occupancy",
   "contents",
   "resources",
   "hours",
+  "history",
 ] as const;
 
 export type ItemTab = (typeof ITEM_TABS)[number];
@@ -18,9 +19,11 @@ export type ItemTab = (typeof ITEM_TABS)[number];
 type AvailableInput = { type: EntityTypeDto | undefined; abilities: CallerAbilities };
 
 /**
- * The tabs this item has: by its type's capabilities (Layouts for SETUPS, Bookings for
- * BOOKABLE, Contents for BUNDLE or CUSTOMISATIONS) and the caller's access (Bookings need
- * `order:read`). Details (opened first), resources and working hours are every item's.
+ * The tabs this item has: by its type's capabilities (Layouts for SETUPS, Occupancy for
+ * BOOKABLE, Contents for BUNDLE or CUSTOMISATIONS) and the caller's access (Occupancy needs
+ * `order:read`). Hours are for BOOKABLE
+ * items only (bookings outside them warn). Details (opened first) and resources are every item's;
+ * History, last, needs `audit:read`.
  */
 export function availableItemTabs({ type, abilities }: AvailableInput): ItemTab[] {
   const allowed = ({ permission }: { permission: Permission }) =>
@@ -28,15 +31,23 @@ export function availableItemTabs({ type, abilities }: AvailableInput): ItemTab[
   const shown: Record<ItemTab, boolean> = {
     details: true,
     layouts: hasCapability({ type, capability: "SETUPS" }),
-    bookings:
+    occupancy:
       hasCapability({ type, capability: "BOOKABLE" }) && allowed({ permission: "order:read" }),
     contents:
       hasCapability({ type, capability: "BUNDLE" }) ||
       hasCapability({ type, capability: "CUSTOMISATIONS" }),
     resources: true,
-    hours: true,
+    hours: hasCapability({ type, capability: "BOOKABLE" }),
+    history: allowed({ permission: "audit:read" }),
   };
   return ITEM_TABS.filter((tab) => shown[tab]);
+}
+
+/** Which word the hours tab uses: a person keeps working hours, anything else opening hours. */
+export type HoursKind = "PERSON" | "other";
+
+export function hoursKind({ type }: { type: EntityTypeDto | undefined }): HoursKind {
+  return type?.resourceKind === "PERSON" ? "PERSON" : "other";
 }
 
 export type PickItemTabInput = { value: string | undefined; available: readonly ItemTab[] };

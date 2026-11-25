@@ -50,6 +50,7 @@ import { runSheetDefinitionMcpTools } from "../features/run-sheet-definition/mcp
 import { settingsMcpTools } from "../features/settings/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { statusGridMcpTools } from "../features/status-grid/mcp";
+import { taskMcpTools } from "../features/task/mcp";
 import { userPreferenceMcpTools } from "../features/user-preference/mcp";
 import { userSettingsMcpTools } from "../features/user-settings/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
@@ -123,6 +124,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...lineAndGroupMcpTools,
     ...requirementMcpTools,
     ...commentMcpTools,
+    ...taskMcpTools,
     ...runSheetMcpTools,
     ...boardMcpTools,
     ...quoteMcpTools,

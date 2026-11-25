@@ -78,6 +78,11 @@ describe("toCreateInput", () => {
     expect(input.templateId).toBeUndefined();
     expect(input.assigneeId).toBe("u2");
   });
+
+  it("links the task the order is created from (ADR 0117)", () => {
+    expect(toCreateInput({ ...base, taskId: "t1", userId: "u1" }).taskIds).toEqual(["t1"]);
+    expect(toCreateInput({ ...base, userId: "u1" })).not.toHaveProperty("taskIds");
+  });
 });
 
 describe("toTemplateInput", () => {

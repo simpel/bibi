@@ -7,6 +7,7 @@ import {
   type CalendarDayValue,
   CalendarLabelsProvider,
   type CalendarState,
+  type CalendarTaskEntry,
   type CalendarWindow,
 } from "@bibi/ui";
 import { useLocale, useTranslations } from "next-intl";
@@ -44,9 +45,12 @@ function legendOf({ bookings }: { bookings: readonly AssetBooking[] }) {
   return { states: [...states.values()], blocked };
 }
 
+type CalendarFooterProps = { bookings: AssetBooking[]; failed: boolean; withTasks: boolean };
+
 /** Below the calendar: a failed load, and the legend of what is on screen. */
-function CalendarFooter({ bookings, failed }: { bookings: AssetBooking[]; failed: boolean }) {
+function CalendarFooter({ bookings, failed, withTasks }: CalendarFooterProps) {
   const t = useTranslations("calendar");
+  const tasks = useTranslations("task.calendar");
   const legend = useMemo(() => legendOf({ bookings }), [bookings]);
   return (
     <>
@@ -54,14 +58,32 @@ function CalendarFooter({ bookings, failed }: { bookings: AssetBooking[]; failed
         <p className="shrink-0 px-4 py-2.5 text-sm text-destructive sm:px-6">{t("loadFailed")}</p>
       ) : null}
       {/* The states come with the streamed bookings: show it once, complete, not growing. */}
-      {bookings.length > 0 ? (
-        <AppCalendarLegend states={legend.states} withBlocked={legend.blocked} />
+      {bookings.length > 0 || withTasks ? (
+        <AppCalendarLegend
+          states={legend.states}
+          withBlocked={legend.blocked}
+          withTasks={withTasks ? { name: tasks("legend"), text: tasks("legendText") } : undefined}
+        />
       ) : null}
     </>
   );
 }
 
-type CalendarLoad = { bookings: AssetBooking[]; values: CalendarDayValue[] };
+type CalendarLoad = {
+  bookings: AssetBooking[];
+  values: CalendarDayValue[];
+  tasks: CalendarTaskEntry[];
+};
+
+type OnRowsInput = { tasks: readonly CalendarTaskEntry[]; assets: readonly CalendarAsset[] };
+
+/** A task is echoed on its item's row only when that item is a row of the calendar. */
+const onRows = ({ tasks, assets }: OnRowsInput): CalendarTaskEntry[] => {
+  const rows = new Set(assets.map((asset) => asset.id));
+  return tasks.map(({ assetId, ...task }) =>
+    assetId && rows.has(assetId) ? { ...task, assetId } : task,
+  );
+};
 
 type SeedBookingsProps = {
   load: Promise<CalendarLoad | null>;
@@ -83,17 +105,22 @@ function keepInPath({ from, to }: { from: string; to: string }) {
 }
 
 /**
- * The availability calendar on the page: loads days as it scrolls, opens orders, and a drawn
- * free slot opens a dialog to create an order from it.
+ * The availability calendar on the page: loads days as it scrolls, opens orders, shows tasks
+ * outlined in their own lane (ADR 0117), and a drawn free slot opens a dialog to create an order
+ * or a task from it.
  */
 export function CalendarView(props: CalendarViewProps) {
   const { assets, load, range, today, openingHours } = props;
   const t = useTranslations("calendar");
-  const labels = useCalendarText();
+  const taskText = useTranslations("task.calendar");
+  const text = useCalendarText();
+  const labels = useMemo(() => ({ ...text, tasks: taskText("lane") }), [text, taskText]);
   const locale = useLocale();
   const format = useDateTimeFormat();
   const { prefill } = useAssistant();
-  const { bookings, values, failed, onRangeChange, seed } = useLoadedBookings({ range });
+  const loaded = useLoadedBookings({ range });
+  const { bookings, values, failed, onRangeChange, seed } = loaded;
+  const tasks = useMemo(() => onRows({ tasks: loaded.tasks, assets }), [loaded.tasks, assets]);
   const onShownChange = useCallback(keepInPath, []);
   const [open, setOpen] = useState<AssetBooking | null>(null);
   const [picked, setPicked] = useState<PickedSlot | null>(null);
@@ -110,6 +137,7 @@ export function CalendarView(props: CalendarViewProps) {
       <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-card">
         <AvailabilityCalendar
           {...{ assets, bookings, values, today, locale, labels, onRangeChange, onShownChange }}
+          {...(tasks.length > 0 ? { tasks } : {})}
           layout="page"
           className="flex-1"
           formatDate={format.date}
@@ -121,7 +149,7 @@ export function CalendarView(props: CalendarViewProps) {
         />
         <SlotCreateDialog slot={picked} onClose={() => setPicked(null)} onAsk={ask} />
         <OrderSheet orderId={open?.orderId ?? null} onClose={() => setOpen(null)} />
-        <CalendarFooter bookings={bookings} failed={failed} />
+        <CalendarFooter bookings={bookings} failed={failed} withTasks={tasks.length > 0} />
       </div>
     </CalendarLabelsProvider>
   );

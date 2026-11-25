@@ -7,6 +7,7 @@ const task = ({ overrides }: { overrides: Partial<Task> }) => ({
   reference: 1042,
   title: "Board day",
   customerName: "Acme",
+  taskTypeName: null,
   lineName: null,
   runSheetName: null,
   ...overrides,

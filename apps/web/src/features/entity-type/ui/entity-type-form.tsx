@@ -20,6 +20,7 @@ import {
 } from "./entity-type-form-schema";
 import type { GroupOption } from "./group-select-field";
 import { ItemTypeFields } from "./item-type-fields";
+import { TaskShapeField } from "./task-shape-field";
 
 export type EntityTypeFormProps = {
   /** Present = edit mode (inline on the detail page), absent = create mode (dialog). */
@@ -43,6 +44,7 @@ const save = ({ entityType, values, withGroup }: SaveInput) =>
           ...{ id: entityType.id, name: values.name, pluralName: values.pluralName },
           ...{ capabilities: values.capabilities },
           ...{ resourceKind: values.resourceKind, buyerKind: values.buyerKind },
+          ...{ taskShape: values.taskShape },
           ...{ setupMinutes: values.setupMinutes, teardownMinutes: values.teardownMinutes },
           ...(withGroup ? { groupId: values.groupId } : {}),
         },
@@ -79,6 +81,7 @@ export function EntityTypeForm({ entityType, onDone, groups }: EntityTypeFormPro
           placeholder={t("fields.pluralNamePlaceholder")}
         />
         {form.watch("base") === "CUSTOMER" ? <BuyerKindField control={form.control} /> : null}
+        {form.watch("base") === "TASK" ? <TaskShapeField control={form.control} /> : null}
         {form.watch("base") === "ITEM" ? <ItemTypeFields form={form} groups={groups} /> : null}
         <div className="flex justify-end gap-2">
           {onDone ? (

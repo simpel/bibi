@@ -1,0 +1,98 @@
+{
+  "task": {
+    "name": "Uppgift",
+    "plural": "Uppgifter",
+    "create": "Skapa uppgift",
+    "createDescription": "Ett platsbesök, en provsmakning eller en deadline för en kund. Den syns i kalendern och i Mitt arbete, men bokar ingenting.",
+    "listDescription": "Platsbesök, provsmakningar och deadlines kring era kunder, före eller vid sidan av en bokning.",
+    "created": "Uppgiften skapades",
+    "updated": "Uppgiften sparades",
+    "completed": "Uppgiften är klar",
+    "reopened": "Uppgiften öppnades igen",
+    "archived": "Uppgiften arkiverades",
+    "linked": "Uppgiften lades till i bokningen",
+    "empty": "Inga uppgifter än",
+    "emptyDescription": "Skapa en uppgift för ett platsbesök, en provsmakning eller en deadline.",
+    "noMatches": "Inga uppgifter matchar.",
+    "noTypes": "Inga uppgiftstyper än",
+    "noTypesDescription": "Skapa först en uppgiftstyp, till exempel Platsbesök, under Typer.",
+    "goToTypes": "Gå till typer",
+    "complete": "Markera {name} som klar",
+    "reopen": "Markera {name} som inte klar",
+    "createOrder": "Skapa bokning",
+    "archive": "Arkivera uppgift",
+    "archiveConfirm": "{name} försvinner från kalendern, listorna och Mitt arbete.",
+    "details": "Detaljer",
+    "noNote": "Ingen anteckning",
+    "addToOrder": "Lägg till i bokning",
+    "addToOrderDescription": "Lägg till uppgiften i en av kundens bokningar. Den kan bara höra till en bokning.",
+    "busy": {
+      "title": "{item} är upptagen",
+      "theItem": "Artikeln",
+      "description": "En annan bokning eller en spärr håller den {when}. Uppgiften sparas ändå."
+    },
+    "state": {
+      "open": "Öppen",
+      "done": "Klar",
+      "overdue": "Försenad"
+    },
+    "shapes": {
+      "MEETING": "Möte",
+      "DEADLINE": "Senast"
+    },
+    "fields": {
+      "type": "Typ",
+      "customer": "Kund",
+      "contact": "Kontaktperson",
+      "startsAt": "Börjar",
+      "endsAt": "Slutar",
+      "dueAt": "Senast",
+      "when": "När",
+      "item": "Rum eller artikel",
+      "noItem": "Ingen",
+      "assignee": "Ansvarig",
+      "unassigned": "Ingen ansvarig",
+      "note": "Anteckning",
+      "order": "Bokning",
+      "noOrder": "Ingen bokning"
+    },
+    "inlineEdit": {
+      "when": "Ändra typ och tid",
+      "contact": "Ändra kontaktperson",
+      "assignee": "Ändra ansvarig",
+      "item": "Ändra rum eller artikel",
+      "note": "Ändra anteckning",
+      "details": "Ändra detaljer"
+    },
+    "columns": {
+      "task": "Uppgift",
+      "customer": "Kund",
+      "assignee": "Ansvarig",
+      "state": "Läge",
+      "when": "När"
+    },
+    "query": {
+      "is": "Är",
+      "assignee": "Ansvarig",
+      "customer": "Kund",
+      "type": "Typ",
+      "me": "jag"
+    },
+    "section": {
+      "title": "Uppgifter",
+      "empty": "Inga uppgifter än.",
+      "orderEmpty": "Inga uppgifter på den här bokningen än."
+    },
+    "calendar": {
+      "lane": "Uppgifter",
+      "legend": "Uppgift",
+      "legendText": "Inramad: ett platsbesök eller en deadline, aldrig en bokning"
+    },
+    "slot": {
+      "createTask": "Skapa uppgift"
+    },
+    "myWork": {
+      "title": "Uppgifter"
+    }
+  }
+}

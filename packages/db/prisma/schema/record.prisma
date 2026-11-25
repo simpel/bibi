@@ -8,11 +8,12 @@ enum RecordBase {
   ORDER_TEMPLATE
   LINE
   REQUIREMENT
+  TASK
 }
 
 /// Record – the supertable of every entity with an org-defined type and fields (ADR 0056,
-/// class-table inheritance). `Item`, `Customer`, `Contact`, `Order`, `OrderTemplate`, `Line` and
-/// `Requirement` share its primary key (composite with `organizationId`). Core writes both rows
+/// class-table inheritance). `Item`, `Customer`, `Contact`, `Order`, `OrderTemplate`, `Line`,
+/// `Requirement` and `Task` share its primary key (composite with `organizationId`). Core writes both rows
 /// in one transaction (`packages/core/src/records/`). Field rules ("in use", "linked from") are
 /// one indexed query on `fields` here instead of a scan of seven tables.
 model Record {
@@ -35,6 +36,7 @@ model Record {
   orderTemplate OrderTemplate?
   line           Line?
   requirement    Requirement?
+  task           Task?
   /// This record's `LINK` field values (ADR 0056).
   links          RecordLink[]    @relation("RecordLinkSource")
   /// `LINK` values of other records that point to this one.

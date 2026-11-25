@@ -158,7 +158,7 @@
       "newStatus": "Ny bokningsstatus",
       "statusReason": "Anledning",
       "holdsUntil": "Håll till",
-      "template": "Mall",
+      "template": "Bokningsmall",
       "startsAt": "Startar",
       "headcount": "Antal gäster",
       "assignee": "Ansvarig",
@@ -277,6 +277,7 @@
       "label": "Beställningens delar",
       "program": "Program",
       "customer": "Kund",
+      "tasks": "Uppgifter",
       "runSheets": "Körscheman",
       "money": "Ekonomi",
       "details": "Detaljer",
@@ -290,7 +291,7 @@
   },
   "orderIntake": {
     "title": "Skapa bokning",
-    "description": "Vem som frågar, när och hur många, sedan en mall eller en engångsbokning. Inget sparas förrän du skapar.",
+    "description": "Vem som frågar, när och hur många, sedan en bokningsmall eller en engångsbokning. Inget sparas förrän du skapar.",
     "fromMessage": "Från meddelandet från {sender}",
     "change": "Ändra",
     "back": "Tillbaka",
@@ -333,35 +334,35 @@
       "summary": "{lines, plural, one {# rad} other {# rader}} · {open, plural, =0 {allt valt} one {# val öppet} other {# val öppna}}"
     },
     "package": {
-      "title": "Mall",
+      "title": "Bokningsmall",
       "range": {
         "both": "{min}–{max} gäster",
         "min": "Från {min} gäster",
         "max": "Upp till {max} gäster",
         "any": "Valfritt antal gäster"
       },
-      "none": "Inga mallar ännu",
-      "noneDescription": "Gör en egen bokning, eller skapa en mall att återanvända.",
-      "noneForSlot": "Ingen mall bokar den här resursen",
+      "none": "Inga bokningsmallar ännu",
+      "noneDescription": "Gör en egen bokning, eller skapa en bokningsmall att återanvända.",
+      "noneForSlot": "Ingen bokningsmall bokar den här resursen",
       "noneForSlotDescription": "Gör en egen bokning: den börjar med resursen du valde i kalendern.",
-      "createPackage": "Skapa mall",
+      "createPackage": "Skapa bokningsmall",
       "picked": "Valt: {summary}",
       "custom": {
         "button": "Egen bokning",
         "hint": "Sätt ihop bokningen rad för rad."
       },
-      "listLabel": "Mallar",
-      "pick": "Välj mall",
+      "listLabel": "Bokningsmallar",
+      "pick": "Välj bokningsmall",
       "pickAndAdjust": "Välj och justera",
       "pickedShort": "Vald",
       "changes": "{count, plural, =0 {Passar som efterfrågat} one {# ändring} other {# ändringar}}",
       "lead": {
-        "nothingFits": "Ingen mall passar {guests} gäster, {period} som efterfrågat. Närmast först:",
-        "someFit": "{count, plural, one {# mall passar} other {# mallar passar}} {guests} gäster, {period}. Närmast först:"
+        "nothingFits": "Ingen bokningsmall passar {guests} gäster, {period} som efterfrågat. Närmast först:",
+        "someFit": "{count, plural, one {# bokningsmall passar} other {# bokningsmallar passar}} {guests} gäster, {period}. Närmast först:"
       },
       "compare": {
         "asked": "Efterfrågat",
-        "package": "Mallen",
+        "package": "Bokningsmallen",
         "guests": "Gäster",
         "time": "Tid",
         "rooms": "Lokaler och resurser",
@@ -377,15 +378,15 @@
     },
     "questions": {
       "progress": "Fråga {number} av {total}",
-      "cancel": "Avbryt, välj en annan mall",
+      "cancel": "Avbryt, välj en annan bokningsmall",
       "guests": {
-        "title": "{headcount} gäster ligger utanför mallens antal gäster.",
+        "title": "{headcount} gäster ligger utanför bokningsmallens antal gäster.",
         "lower": "Sänk bokningen till {guests} gäster",
         "raise": "Höj bokningen till {guests} gäster",
         "keep": "Behåll {headcount} gäster (rader över kapacitet flaggas)"
       },
       "end": {
-        "title": "Mallen pågår till {end}, efter önskat slut {requestedEnd}.",
+        "title": "Bokningsmallen pågår till {end}, efter önskat slut {requestedEnd}.",
         "extend": "Förläng bokningen till {end}",
         "keep": "Behåll {requestedEnd} och korta raderna i granskningen"
       },
@@ -404,7 +405,7 @@
       "poolShort": "{line}: {needed} behövs, bara {free} kvar den dagen.",
       "guessed": "Mejlet säger inte {field}. Assistenten gissade {value}.",
       "typeField": "{type}-bokningar behöver {field}.",
-      "packageName": "Den nya mallen behöver ett namn.",
+      "packageName": "Den nya bokningsmallen behöver ett namn.",
       "answers": {
         "moveLines": "Flytta alla rader med tid {delta}",
         "keepTimes": "Behåll radernas tider",
@@ -418,7 +419,7 @@
         "lowerToFree": "Sänk till {free}",
         "fill": "Fyll i",
         "otherType": "Använd en annan bokningstyp",
-        "dontSave": "Spara inte som mall",
+        "dontSave": "Spara inte som bokningsmall",
         "keepGuess": "Behåll {value}",
         "changeGuess": "Ändra"
       },
@@ -449,8 +450,8 @@
       "orderType": "Bokningstyp",
       "addLine": "+ Lägg till rad",
       "note": "Anteckningar om bokningen",
-      "saveAsPackage": "Spara även raderna som en mall",
-      "packageName": "Mallens namn"
+      "saveAsPackage": "Spara även raderna som en bokningsmall",
+      "packageName": "Bokningsmallens namn"
     },
     "lines": {
       "line": "Rad",
@@ -562,8 +563,8 @@
       "conflict": "Inte skapat än. Sedan du började har en annan bokning tagit en resurs.",
       "conflictNamed": "Inte skapat än. Sedan du började har {order} bokat {resource} {period}.",
       "conflictHint": "Raderna och kalendern är uppdaterade. Kontrollera dem och skapa igen.",
-      "savingPackage": "Sparar mallen…",
-      "packageSaved": "Mallen har sparats.",
+      "savingPackage": "Sparar bokningsmallen…",
+      "packageSaved": "Bokningsmallen har sparats.",
       "checking": "Kontrollerar tillgänglighet…",
       "fixIssues": "Åtgärda det som listas ovan först",
       "fixFields": "Rätta de markerade fälten först",
@@ -599,7 +600,7 @@
         "end": "sluttiden",
         "guests": "antalet gäster",
         "wish": "önskemålet",
-        "package": "mallen",
+        "package": "bokningsmallen",
         "need": "ett behov",
         "notes": "anteckningarna"
       },
@@ -613,7 +614,7 @@
         "end": "Till",
         "guests": "Gäster",
         "wish": "Önskemål",
-        "package": "Mall",
+        "package": "Bokningsmall",
         "need": "Behov",
         "notes": "Anteckningar"
       }
@@ -639,19 +640,51 @@
     "moreOnPage": "Offerter, betalningar, körscheman och meddelanden finns på bokningens sida, där du också kan ändra bokningen."
   },
   "orderTemplate": {
-    "singular": "Mall",
-    "plural": "Mallar",
-    "listDescription": "Färdiga bokningar: personalen skapar en bokning med sina rader i ett steg.",
-    "create": "Skapa mall",
-    "edit": "Redigera mall",
+    "createOrder": "Skapa bokning",
+    "page": {
+      "titleLabel": "Bokningsmallens namn",
+      "editTitle": "Ändra namn",
+      "titleUpdated": "Namnet har sparats",
+      "editPicture": "Ändra bild",
+      "editFact": "Ändra {label}"
+    },
+    "tabs": {
+      "label": "Bokningsmallens avsnitt",
+      "lines": "Rader",
+      "history": "Historik"
+    },
+    "lineColumns": {
+      "name": "Namn",
+      "item": "Artikel",
+      "start": "Börjar",
+      "length": "Längd",
+      "quantity": "Antal"
+    },
+    "time": {
+      "hours": "{count} h",
+      "minutes": "{count} min",
+      "atStart": "Vid start",
+      "after": "{time} efter start"
+    },
+    "headcount": "Gästantalet",
+    "linesEmpty": "Inga rader än. Lägg till den första.",
+    "editLine": "Redigera rad",
+    "lineDialogDescription": "Vad raden är, när den börjar och hur många.",
+    "removeLineConfirm": "Ta bort ”{name}” från bokningsmallen? Bokningar som redan skapats från den ändras inte.",
+    "lineRemoved": "Raden har tagits bort",
+    "singular": "Bokningsmall",
+    "plural": "Bokningsmallar",
+    "listDescription": "Färdiga rader för bokningar ni gör ofta. Välj en bokningsmall när du skapar en bokning, så fylls raderna i direkt.",
+    "create": "Skapa bokningsmall",
+    "edit": "Redigera bokningsmall",
     "createDescription": "Ge det ett namn, välj bokningstyp och startstatus och lägg sedan till raderna.",
-    "editDescription": "Ändra mallen. Bokningar som redan skapats från den ändras inte.",
+    "editDescription": "Ändra bokningsmallen. Bokningar som redan skapats från den ändras inte.",
     "archive": "Arkivera",
     "archiveConfirm": "Arkivera \"{name}\"? Bokningar som redan skapats från det ändras inte.",
-    "archived": "Mall arkiverad",
-    "created": "Mall skapad",
-    "updated": "Mall sparad",
-    "empty": "Inga mallar hittades.",
+    "archived": "Bokningsmall arkiverad",
+    "created": "Bokningsmall skapad",
+    "updated": "Bokningsmall sparad",
+    "empty": "Inga bokningsmallar hittades.",
     "emptyDescription": "Skapa ett så att personalen kan göra små bokningar i ett steg.",
     "saving": "Sparar…",
     "lines": "Rader",
@@ -665,7 +698,7 @@
     "fields": {
       "name": "Namn",
       "orderType": "Bokningstyp",
-      "status": "Startar i bokningsstatus",
+      "status": "Status för nya bokningar",
       "minGuests": "Minsta antal gäster",
       "maxGuests": "Största antal gäster",
       "lineName": "Namn",
@@ -675,12 +708,12 @@
       "duration": "Längd (minuter)",
       "quantity": "Antal (tomt: antalet gäster)",
       "image": "Bild",
-      "imageHint": "Utan bild visar mallen sin första artikels bild eller ikon."
+      "imageHint": "Utan bild visar bokningsmallen sin första artikels bild eller ikon."
     },
     "columns": {
       "name": "Namn",
       "orderType": "Bokningstyp",
-      "status": "Startar i",
+      "status": "Status för nya bokningar",
       "guests": "Gäster",
       "lines": "Rader"
     }

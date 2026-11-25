@@ -20,7 +20,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 4. Lindholmen's kitchen order for order L3 is **not** blocked: the nut allergy has an alternative in the customisation group.
 5. Orders F2 and F3 hold the same room and time with soft holds. Both lines are `Prebooked`, F2 was held before F3 (its newest `LineStateChange` is older; no queue).
 6. Order F6's `holdsUntil` has passed and its line is still `Prebooked` until `order.expireHolds` runs.
-7. Every write has a row in `AuditLog` with actor `SYSTEM`, except each user's own profile, working hours and settings, saved as that user (ADR 0061, 0046).
+7. Every write has a row in `AuditLog` with actor `SYSTEM`, except each user's own profile, working hours and settings, saved as that user (ADR 0061, 0046), and the done demo task, marked done by its assignee (ADR 0117).
 8. Lindholmen's status grid drives status moves: moving L11 to Confirmed books its room line and skips its overridden lunch line, and moving L12 to Confirmed is refused because L4 has a hard hold on the same room, and nothing changes.
 9. Every projection matches what is rebuilt from owned data (ADR 0051): `reconcile-checks.ts` registers a `rebuild` query and a `compare` function per projection (`reconcile.ts`), and `checks.ts` runs them all and fails with the first differing rows. Today: line holds in `Occupancy` (`HOLD`, `SETUP` and `TEARDOWN` with `lineId`, written only by the database trigger `sync_line_occupancy`, ADR 0053, 0059) against the lines that have not ended (same item, kind and period; a soft or hard hold also its setup and teardown buffers of the same kind, and each allocated unit for its demand's windows with the line's kind and the allocation's id, ADR 0059), the `Record` supertable rows against the seven tables that extend them (same base, type, status and fields, ADR 0056), and every order's `statusId` and every line's `stateId` against its newest `OrderStatusChange` and `LineStateChange` (`history-reconcile.ts`, ADR 0054; an order without history, or a line with a state but no history, differs). Vitest calls the same `reconcileProjections`.
 10. Lindholmen's alternative groups (ADR 0052, `alternative-checks.ts`): L13's "Workshop room" (Hönö or Styrsö) is open after its quote was sent, and both options are soft holds; L14's "Planning room" was chosen when its quote was accepted (`quote.accept` with `chosenLineIds`), so Planning in Hönö is the group's `chosenLineId` and still holds (Booked by the grid), and Planning in Styrsö is `Released` and holds nothing. `checkDemoHolds` expects the Styrsö option released too.
@@ -52,7 +52,8 @@ The checks that run today:
 - **Dashboard (ADR 0079, 0080, 0086):** `checkDemoDashboard` (`dashboard-checks.ts`, see Dashboard data): the Workload tab's status cards and their trends, what needs attention, scheduled orders, utilisation and booked-ahead value of `dashboard.summary`, and won and lost orders and the money trends of `finance.overview` over the last six months.
 - **Comments (ADR 0115):** `seed-comments.ts`: the first seeded staff member comments on the first order with a line that goes on a run sheet, once on the whole order and once on that line, and a second member replies to the order comment mentioning its author (a `COMMENT_MENTIONED` notification), before the run sheets are generated. `checkDemoComments` (`comment-checks.ts`) asserts the line comment is on the order's current run sheet.
 - **Order versions (ADR 0116):** `checkDemoVersions` (`version-checks.ts`): every order's newest version holds the order as it is now (versions are captured by the same operations that seed the lines), every sent quote points at a version of its own order, and L4, changed after its quote (`changeAfterQuote`), no longer equals that quote's version; no data of its own.
-- **Needs you (ADR 0110, spec: home):** `checkDemoNeedsYou` (`needs-you-checks.ts`): read as each member, `myWork.tasks` shows at least two kinds of task in an organization with orders, from the orders' assignees, run sheets, holds, quotes, messages and invoices already seeded; no data of its own.
+- **Needs you (ADR 0110, spec: home):** `checkDemoNeedsYou` (`needs-you-checks.ts`): read as each member, `myWork.tasks` shows at least two kinds of task in an organization with orders, from the orders' assignees, run sheets, holds, quotes, messages, invoices and tasks already seeded; no data of its own.
+- **Tasks (ADR 0117):** `checkDemoTasks` (`task-checks.ts`), see Tasks under Lindholmen. The `records` and `record-relations` reconciliations cover tasks too.
 - **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.
 - **Permission overrides (ADR 0050):** `checkDemoPermissions` (`permission-checks.ts`) asserts that every documented override is stored for its member (via `permission.get`). Lindholmen has two: Maria Holm (`manager`) has `payment:read` denied, so she handles bookings but does not see money; Peter Sjoberg (`member`) has `item:write` and `item:write` allowed, so he reads everything and also keeps the catalogue up to date. Seeded with `permission.update` in `seed-roles.ts` from the `overrides` of the user in `data/lindholmen/lindholmen.ts`.
 - **Part 2 (configuration):**
@@ -157,6 +158,7 @@ Setup and teardown minutes are the type's defaults (ADR 0059); an item or a line
 | Contact | Contact person (Role: choice Orderer, Invoice recipient, Organizer) |
 | Order | Conference (Purpose, Host: link to a Contact person) · Event (Dresscode: choice Dresscode, Speaker/entertainment) · Tour (School class yes/no) |
 | Requirement | Requirement (field Severity: choice Severity). One type for every list: the dialog picks the list, then its value, so a type per list would only repeat it |
+| Task | Site visit (plural Site visits, shape `MEETING`) · Final headcount due (plural Final headcounts due, shape `DEADLINE`), ADR 0117 |
 
 ### Order statuses (ADR 0043)
 | Status | Flags |
@@ -353,6 +355,18 @@ The main assignee (A) and followers (F) are given by first name (ADR 0034): the 
 
 **Note on L3:** the nut allergy hits Chocolate fondant, which has the alternatives Cloudberry parfait and Lemon sorbet. The result is "may contain" and no blocking (check 4). The replacement is made on the order's copy of the package, so the catalog package is not changed (snapshot, ADR 0021). L3 thus also shows that a package can be adapted for a single occasion.
 
+## Tasks (ADR 0117)
+
+Created after the orders and their comments with `task.create` as SYSTEM (`seed-tasks.ts`, data in `data/lindholmen/tasks.ts`), each with the customer's first contact and an explicit assignee, who is told (`ASSIGNED` with the task as subject). Times are local in the organization's zone. Vingaleden has no task types and no tasks.
+
+| Type | Customer | When | Item | Order | Assignee | State |
+|---|---|---|---|---|---|---|
+| Site visit | Kvarnby Design | next Thursday after D (D+1 to D+7) 14–15 | Vinga (auditorium) | – | Erik | open: a prospect before any order |
+| Site visit | Västra Sjukvårdsregionen | D−14 10–11 | Vinga (auditorium) | L3 | Johan | done D−14 11:00, marked done by Johan himself (`task.complete` as him) |
+| Final headcount due | Göta Advokatbyrå | D−1 12:00 | – | L4 | Anna | open and overdue: Anna's `TASK_DUE` need in LATE |
+
+`checkDemoTasks` (`task-checks.ts`): the organization has exactly the data files' tasks in order, each task with an `order` is linked, the done one has its assignee as `doneById`, and each open task past its end or due time is its assignee's `TASK_DUE:<taskId>` need in LATE (`myWork.tasks` read as that member).
+
 ## Busy calendar (generated, #488)
 
 So the calendar's week and month views look like a real season, both organizations get deterministic generated orders from D−7 to D+30 (`density-orders.ts`, data in `data/<org>/density.ts`), seeded after the fixtures. No random numbers: a fixed spread per day offset decides how many blocks a day gets, which assets and which times, so every run of the same day gives the same orders. Each block is on its own asset, and an asset a fixture uses on a day (its lines, its predefined order's lines or its bundle's parts, `used-asset-days.ts`) is left alone that day, so no generated line can collide with another line.
@@ -539,6 +553,6 @@ The migration `rename_capabilities_bundle_customisations` renames `behaviours` t
   - The names are resolved to ids and field keys at run time (`demo-refs.ts`).
 - `seed-templates.ts` creates the predefined orders from `data/<org>/templates.ts` through `orderTemplate.create` (items, layouts by name, order type and start status by name), after the pipeline and before the orders. An order with `template` in `orders.ts` is created through `order.createFromTemplate` (`seed-order-from-template.ts`) and is not moved afterwards.
 - `reconcile.ts` (the harness) and `reconcile-checks.ts` (the registered projection checks, with `record-reconciliation.ts` and `history-reconcile.ts`) run from `checks.ts`.
-- Every record is created through core operations, which write its `Record` row first (`createRecord`, ADR 0056); `reset.ts` deletes the status and line-state history (ADR 0054) before the lines and orders, and the `RecordLink` rows first and the `Record` rows after the seven tables that extend them.
+- Every record is created through core operations, which write its `Record` row first (`createRecord`, ADR 0056); `reset.ts` deletes the status and line-state history (ADR 0054) before the lines and orders, and the `RecordLink` rows first and the `Record` rows after the eight tables that extend them (tasks go before the orders and items they point at).
 - `checks.ts`, `template-checks.ts`, `config-checks.ts`, `order-checks.ts`, `assignment-checks.ts`, `hold-checks.ts`, `pipeline-checks.ts`, `board-checks.ts`, `fact-guard-checks.ts` and `grid-checks.ts` contain the checks above.
 - The seed is extended at the same pace as the parts in ADR 0025. A part that lacks operations is skipped with a clear log, so the demo can always be run.

@@ -1,6 +1,4 @@
 import type { OrderTemplateCreateInput } from "@bibi/core/schemas";
-import { Button } from "@bibi/ui";
-import { Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { OptionSelectField } from "@/components/form/option-select-field";
@@ -70,27 +68,17 @@ function LineWhenFields({ form, index }: Omit<LineFieldsProps, "data">) {
   );
 }
 
-export type TemplateLineFieldsProps = LineFieldsProps & { onRemove: () => void };
+export type TemplateLineFieldsProps = LineFieldsProps;
 
-/** One line of a predefined order. */
-export function TemplateLineFields({ form, data, index, onRemove }: TemplateLineFieldsProps) {
+/** One line of a template, as the line dialog shows it: what, when and how many, then choices. */
+export function TemplateLineFields({ form, data, index }: TemplateLineFieldsProps) {
   const t = useTranslations("orderTemplate");
   return (
-    <fieldset className="grid gap-4 rounded-lg border p-4">
-      <legend className="px-1 text-sm font-medium">{t("lineNumber", { number: index + 1 })}</legend>
+    <fieldset className="grid gap-4">
+      <legend className="sr-only">{t("lineNumber", { number: index + 1 })}</legend>
       <LineWhatFields form={form} data={data} index={index} />
       <LineWhenFields form={form} index={index} />
       <TemplateLineChoices form={form} data={data} index={index} />
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="justify-self-start"
-        onClick={onRemove}
-      >
-        <Trash2Icon />
-        {t("removeLine")}
-      </Button>
     </fieldset>
   );
 }

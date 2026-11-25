@@ -2,47 +2,27 @@
 
 import type { OrderTemplateDto } from "@bibi/core/schemas";
 import { ContextMenuItem, DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
-import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
-import { Link, useRouter } from "@/lib/navigation";
-import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
+import { Link } from "@/lib/navigation";
+import { orderTemplateHref } from "../template-route";
 import { ArchiveOrderTemplateDialog } from "./archive-order-template-dialog";
-
-/** The update page of one row. */
-export const orderTemplateEditHref = ({ id }: { id: string }) =>
-  updateRoute({ detail: listItemRoute({ list: ROUTES.packages, id }) });
 
 export type OrderTemplateRowActionsProps = { template: OrderTemplateDto; access: RowAccess };
 
-/** Edit (page) and archive for one predefined order. */
+/** Archive one booking template from its row; it is edited on its own page. */
 export function OrderTemplateRowActions({ template, access }: OrderTemplateRowActionsProps) {
   const t = useTranslations("orderTemplate");
   const common = useTranslations("common");
   const [archiving, setArchiving] = useState(false);
-  const router = useRouter();
+  if (!access.canRemove) return null;
   return (
     <>
-      <DataTableRowActions
-        label={common("actions")}
-        primary={
-          access.canEdit
-            ? [
-                {
-                  label: t("edit"),
-                  icon: PencilIcon,
-                  onClick: () => router.push(orderTemplateEditHref({ id: template.id })),
-                },
-              ]
-            : []
-        }
-      >
-        {access.canRemove ? (
-          <DropdownMenuItem destructive onSelect={() => setArchiving(true)}>
-            {t("archive")}
-          </DropdownMenuItem>
-        ) : null}
+      <DataTableRowActions label={common("actions")} primary={[]}>
+        <DropdownMenuItem destructive onSelect={() => setArchiving(true)}>
+          {t("archive")}
+        </DropdownMenuItem>
       </DataTableRowActions>
       <ArchiveOrderTemplateDialog
         template={template}
@@ -55,13 +35,26 @@ export function OrderTemplateRowActions({ template, access }: OrderTemplateRowAc
 
 export type OrderTemplateRowMenuProps = { template: OrderTemplateDto; access: RowAccess };
 
-/** Right-click menu for a row: the edit page. */
+/** Right-click menu for a row: open the template, and archive it like the row's ⋯ menu. */
 export function OrderTemplateRowMenu({ template, access }: OrderTemplateRowMenuProps) {
   const t = useTranslations("orderTemplate");
-  if (!access.canEdit) return null;
+  const common = useTranslations("common");
+  const [archiving, setArchiving] = useState(false);
   return (
-    <ContextMenuItem asChild>
-      <Link href={orderTemplateEditHref({ id: template.id })}>{t("edit")}</Link>
-    </ContextMenuItem>
+    <>
+      <ContextMenuItem asChild>
+        <Link href={orderTemplateHref({ id: template.id })}>{common("open")}</Link>
+      </ContextMenuItem>
+      {access.canRemove ? (
+        <ContextMenuItem destructive onSelect={() => setArchiving(true)}>
+          {t("archive")}
+        </ContextMenuItem>
+      ) : null}
+      <ArchiveOrderTemplateDialog
+        template={template}
+        open={archiving}
+        onOpenChange={setArchiving}
+      />
+    </>
   );
 }

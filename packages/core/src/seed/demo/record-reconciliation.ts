@@ -17,7 +17,7 @@ type Row = { id: string; entityTypeId: string; status: string; fields: unknown }
 const mirror = ({ base, rows }: { base: RecordBase; rows: Row[] }): MirrorRow[] =>
   rows.map((row) => ({ ...row, base, fields: JSON.stringify(row.fields) }));
 
-/** What the `Record` supertable should hold (ADR 0056): one row per row of the seven tables. */
+/** What the `Record` supertable should hold (ADR 0056): one row per row of the eight tables. */
 async function rebuildRecords({ context: { db } }: ReconcileContext): Promise<MirrorRow[]> {
   const query = { where: ALL, select: COLUMNS };
   return [
@@ -28,6 +28,7 @@ async function rebuildRecords({ context: { db } }: ReconcileContext): Promise<Mi
     ...mirror({ base: "ORDER_TEMPLATE", rows: await db.orderTemplate.findMany(query) }),
     ...mirror({ base: "LINE", rows: await db.line.findMany(query) }),
     ...mirror({ base: "REQUIREMENT", rows: await db.requirement.findMany(query) }),
+    ...mirror({ base: "TASK", rows: await db.task.findMany(query) }),
   ];
 }
 

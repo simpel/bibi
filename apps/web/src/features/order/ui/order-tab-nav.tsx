@@ -17,6 +17,7 @@ const TOUR: Partial<Record<OrderTab, string>> = {
 const LABEL = {
   program: "program",
   customer: "customer",
+  tasks: "tasks",
   "run-sheets": "runSheets",
   money: "money",
   details: "details",

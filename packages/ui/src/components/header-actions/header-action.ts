@@ -13,6 +13,8 @@ export type HeaderAction = {
   variant?: "default" | "outline";
   onSelect?: () => void;
   items?: HeaderAction[];
+  /** The ⋯ overflow menu: always an icon-only menu, even with a single choice. */
+  overflow?: boolean;
 };
 
 /** A top-level action: its icon is required, so every button and menu item has one. */
@@ -26,7 +28,7 @@ export type CollapseInput = { action: HeaderAction };
  */
 export function collapseSingleChoice({ action }: CollapseInput): HeaderAction {
   const [only, ...rest] = action.items ?? [];
-  if (!only || rest.length > 0) return action;
+  if (action.overflow || !only || rest.length > 0) return action;
   return collapseSingleChoice({
     action: { ...action, onSelect: only.onSelect, items: only.items },
   });

@@ -26,6 +26,7 @@ export function PackageSection({ data, state, dispatch, summaries }: StepsProps)
       {...{ packages: data.packages, canCreatePackage: data.canCreatePackage }}
       back={<StepBack step="package" state={state} dispatch={dispatch} />}
       suggestedId={state.draft?.templateId ?? null}
+      preselectedId={data.templateId}
       pickSummary={summaries.pick}
       onPick={(input) => dispatch({ type: "pick", ...input })}
       onUnpick={() => dispatch({ type: "unpick" })}

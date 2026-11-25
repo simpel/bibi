@@ -65,6 +65,7 @@ model Order {
   estimates           OrderEstimate[]
   requirements        Requirement[]
   comments            Comment[]
+  tasks               Task[]
   runSheets              RunSheet[]
   notifications       Notification[]
   needsYouDismissals  NeedsYouDismissal[]

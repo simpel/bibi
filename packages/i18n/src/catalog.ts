@@ -9,6 +9,7 @@ import onboardingEn from "../messages/en/onboarding.json";
 import operationsEn from "../messages/en/operations.json";
 import ordersEn from "../messages/en/orders.json";
 import supportEn from "../messages/en/support.json";
+import tasksEn from "../messages/en/tasks.json";
 import adminSv from "../messages/sv/admin.json";
 import assistantSv from "../messages/sv/assistant.json";
 import authSv from "../messages/sv/auth.json";
@@ -20,6 +21,7 @@ import onboardingSv from "../messages/sv/onboarding.json";
 import operationsSv from "../messages/sv/operations.json";
 import ordersSv from "../messages/sv/orders.json";
 import supportSv from "../messages/sv/support.json";
+import tasksSv from "../messages/sv/tasks.json";
 import type { MessageTree } from "./check-messages";
 import type { Locale } from "./routing";
 
@@ -29,6 +31,7 @@ export const SV_BUNDLES: Record<string, MessageTree> = {
   onboarding: onboardingSv,
   catalog: catalogSv,
   orders: ordersSv,
+  tasks: tasksSv,
   operations: operationsSv,
   finance: financeSv,
   assistant: assistantSv,
@@ -43,6 +46,7 @@ export const EN_BUNDLES: Record<string, MessageTree> = {
   onboarding: onboardingEn,
   catalog: catalogEn,
   orders: ordersEn,
+  tasks: tasksEn,
   operations: operationsEn,
   finance: financeEn,
   assistant: assistantEn,
@@ -58,6 +62,7 @@ export const svMessages = {
   ...onboardingSv,
   ...catalogSv,
   ...ordersSv,
+  ...tasksSv,
   ...operationsSv,
   ...financeSv,
   ...assistantSv,
@@ -73,6 +78,7 @@ export const enMessages = {
   ...onboardingEn,
   ...catalogEn,
   ...ordersEn,
+  ...tasksEn,
   ...operationsEn,
   ...financeEn,
   ...assistantEn,

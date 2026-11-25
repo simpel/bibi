@@ -98,6 +98,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "LineAllocation",
   "AlternativeGroup",
   "Requirement",
+  "Task",
   "Comment",
   "RunSheet",
   "RunSheetRecipient",
@@ -147,4 +148,5 @@ export const APP_ID_MODELS = new Set<string>([
   "OrderTemplate",
   "Line",
   "Requirement",
+  "Task",
 ]);
