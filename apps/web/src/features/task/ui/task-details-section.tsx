@@ -3,12 +3,12 @@ import { Alert, AlertDescription, AlertTitle } from "@bibi/ui";
 import { TriangleAlertIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { EditableSection } from "@/components/inline-edit/editable-section";
-import { Link } from "@/lib/navigation";
 import { itemRoute } from "@/lib/routes";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { runOperation } from "@/server/run-operation";
 import type { TaskFormData } from "./task-form-data";
 import { TaskInlineEditor } from "./task-inline-editor";
+import { TaskRelatedList } from "./task-related-list";
 
 export type TaskDetailsSectionProps = {
   task: TaskDto;
@@ -16,7 +16,7 @@ export type TaskDetailsSectionProps = {
   formData: Promise<TaskFormData | null>;
 };
 
-/** The note up front, then the item the task names with its busy warning. */
+/** The note up front and big, the rooms and items it is about in a side column. */
 export async function TaskDetailsSection({ task, canEdit, formData }: TaskDetailsSectionProps) {
   const [t, dates, item] = await Promise.all([
     getTranslations("task"),
@@ -38,37 +38,35 @@ export async function TaskDetailsSection({ task, canEdit, formData }: TaskDetail
           </AlertDescription>
         </Alert>
       ) : null}
-      <EditableSection
-        title={t("fields.note")}
-        titleHidden
-        editLabel={t("inlineEdit.note")}
-        canEdit={canEdit}
-        editor={<TaskInlineEditor task={task} data={formData} groups={["note"]} />}
-      >
-        <p
-          className={
-            task.note
-              ? "whitespace-pre-line font-serif text-2xl leading-snug text-pretty"
-              : "text-muted-foreground"
-          }
+      <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_16rem]">
+        <EditableSection
+          title={t("fields.note")}
+          titleHidden
+          editLabel={t("inlineEdit.note")}
+          canEdit={canEdit}
+          editor={<TaskInlineEditor task={task} data={formData} groups={["note"]} />}
         >
-          {task.note ?? t("noNote")}
-        </p>
-      </EditableSection>
-      <EditableSection
-        title={t("fields.item")}
-        editLabel={t("inlineEdit.item")}
-        canEdit={canEdit}
-        editor={<TaskInlineEditor task={task} data={formData} groups={["item"]} />}
-      >
-        <p className="text-sm">
-          {task.itemId && itemName ? (
-            <Link href={itemRoute({ id: task.itemId })}>{itemName}</Link>
-          ) : (
-            t("fields.noItem")
-          )}
-        </p>
-      </EditableSection>
+          <p
+            className={
+              task.note
+                ? "whitespace-pre-line text-2xl leading-snug text-pretty"
+                : "text-muted-foreground"
+            }
+          >
+            {task.note ?? t("noNote")}
+          </p>
+        </EditableSection>
+        <TaskRelatedList
+          taskId={task.id}
+          items={
+            task.itemId && itemName
+              ? [{ id: task.itemId, name: itemName, href: itemRoute({ id: task.itemId }) }]
+              : []
+          }
+          canEdit={canEdit}
+          editor={<TaskInlineEditor task={task} data={formData} groups={["item"]} />}
+        />
+      </div>
     </div>
   );
 }
