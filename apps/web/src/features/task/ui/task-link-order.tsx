@@ -2,22 +2,26 @@
 
 import {
   Button,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
 } from "@bibi/ui";
+import { CheckIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Suspense, use, useState } from "react";
 import type { NamedOption } from "@/components/form/named-option";
-import { useRouter } from "@/lib/navigation";
+import { Link, useRouter } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import { linkTaskOrderAction } from "../actions";
 
@@ -29,7 +33,10 @@ export type TaskLinkOrderDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-/** The header's Add to order: picks one of the customer's orders, once (`task.linkOrder`). */
+/**
+ * The header's Add to order: type to find one of the customer's orders, then add the task to it,
+ * once (`task.linkOrder`). Nothing found offers Create order from the task instead.
+ */
 export function TaskLinkOrderDialog({ open, onOpenChange, ...props }: TaskLinkOrderDialogProps) {
   const t = useTranslations("task");
   return (
@@ -67,24 +74,38 @@ function LinkOrderForm({ taskId, orders: ordersPromise, onDone }: LinkOrderFormP
         router.refresh();
       },
     });
+  const createHref = `${ROUTES.orderNew}?fromTask=${encodeURIComponent(taskId)}`;
   return (
     <div className="grid gap-4">
-      {orders.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("noOrdersToAdd")}</p>
-      ) : (
-        <Select value={orderId} onValueChange={setOrderId}>
-          <SelectTrigger aria-label={t("fields.order")}>
-            <SelectValue placeholder={common("select")} />
-          </SelectTrigger>
-          <SelectContent>
+      <Command className="rounded-md border">
+        <CommandInput placeholder={t("findOrder")} autoFocus />
+        <CommandList className="max-h-64">
+          <CommandEmpty className="grid justify-items-start gap-2 px-3 py-3 text-sm">
+            <span className="text-muted-foreground">{t("noOrderFound")}</span>
+            <Button asChild size="sm" variant="outline">
+              <Link href={createHref}>
+                <PlusIcon aria-hidden />
+                {t("createOrder")}
+              </Link>
+            </Button>
+          </CommandEmpty>
+          <CommandGroup>
             {orders.map((order) => (
-              <SelectItem key={order.id} value={order.id}>
+              <CommandItem
+                key={order.id}
+                value={`${order.name} ${order.id}`}
+                onSelect={() => setOrderId(order.id)}
+              >
+                <CheckIcon
+                  aria-hidden
+                  className={cn(order.id === orderId ? "opacity-100" : "opacity-0")}
+                />
                 {order.name}
-              </SelectItem>
+              </CommandItem>
             ))}
-          </SelectContent>
-        </Select>
-      )}
+          </CommandGroup>
+        </CommandList>
+      </Command>
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onDone}>
           {common("cancel")}

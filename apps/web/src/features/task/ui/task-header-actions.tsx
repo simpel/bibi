@@ -1,6 +1,15 @@
 "use client";
 
-import { HeaderActions, type TitleRowAction } from "@bibi/ui";
+import {
+  Button,
+  ButtonGroup,
+  ButtonGroupSeparator,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@bibi/ui";
 import {
   ArchiveIcon,
   CheckIcon,
@@ -12,7 +21,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { NamedOption } from "@/components/form/named-option";
-import { useRouter } from "@/lib/navigation";
+import { Link, useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import { setTaskDoneAction } from "../actions";
@@ -34,93 +43,73 @@ export type TaskHeaderActionsProps = {
 };
 
 /**
- * While the task has no order: Add to order first, Create order in the ⋯ menu. Then Mark as
- * done (or not done) like Follow, and Archive task in the ⋯ menu.
+ * Mark as done (with its label, first), then Add to order joined to a ⋯ menu with Create order
+ * and Archive task, like the top bar's Create order. A linked task keeps only the ⋯ menu.
  */
-export function TaskHeaderActions({
-  task,
-  canEdit,
-  canLinkOrder,
-  linkableOrders,
-  canCreateOrder,
-  canArchive,
-}: TaskHeaderActionsProps) {
+export function TaskHeaderActions(props: TaskHeaderActionsProps) {
+  const { task, canEdit, canLinkOrder, linkableOrders, canCreateOrder, canArchive } = props;
   const t = useTranslations("task");
   const common = useTranslations("common");
   const router = useRouter();
   const [archiving, setArchiving] = useState(false);
   const [linking, setLinking] = useState(false);
-  const { run } = useToastAction();
+  const { run, pending } = useToastAction();
   const toggleDone = () =>
     run({
       action: () => setTaskDoneAction({ id: task.id, done: !task.done }),
       messages: { pending: common("saving"), success: t(task.done ? "reopened" : "completed") },
       onSuccess: () => router.refresh(),
     });
-  const createOrder = () =>
-    router.push(`${ROUTES.orderNew}?fromTask=${encodeURIComponent(task.id)}`);
-  const more: TitleRowAction["items"] = [
-    ...(canCreateOrder
-      ? [
-          {
-            id: "order",
-            label: t("createOrder"),
-            icon: <PlusIcon aria-hidden />,
-            onSelect: createOrder,
-          },
-        ]
-      : []),
-    ...(canArchive
-      ? [
-          {
-            id: "archive",
-            label: t("archive"),
-            icon: <ArchiveIcon aria-hidden />,
-            onSelect: () => setArchiving(true),
-          },
-        ]
-      : []),
-  ];
-  const actions: TitleRowAction[] = [
-    ...(canLinkOrder
-      ? [
-          {
-            id: "link",
-            label: t("addToOrder"),
-            icon: <ListPlusIcon aria-hidden />,
-            variant: "default" as const,
-            onSelect: () => setLinking(true),
-          },
-        ]
-      : []),
-    ...(canEdit
-      ? [
-          {
-            id: "done",
-            label: t(task.done ? "markNotDone" : "markDone"),
-            icon: task.done ? <RotateCcwIcon aria-hidden /> : <CheckIcon aria-hidden />,
-            variant: "outline" as const,
-            onSelect: toggleDone,
-          },
-        ]
-      : []),
-    ...(more.length > 0
-      ? [
-          {
-            id: "more",
-            label: common("actions"),
-            icon: <EllipsisIcon aria-hidden />,
-            variant: "outline" as const,
-            overflow: true,
-            items: more,
-          },
-        ]
-      : []),
-  ];
-  if (actions.length === 0) return null;
+  const hasMenu = canCreateOrder || canArchive;
   return (
-    <>
-      <HeaderActions actions={actions} moreLabel={common("actions")} foldBy="header" />
+    <div className="flex items-center gap-2">
+      {canEdit ? (
+        <Button variant="outline" onClick={toggleDone} pending={pending} aria-pressed={task.done}>
+          {task.done ? <RotateCcwIcon aria-hidden /> : <CheckIcon aria-hidden />}
+          {t(task.done ? "markNotDone" : "markDone")}
+        </Button>
+      ) : null}
+      <ButtonGroup>
+        {canLinkOrder ? (
+          <Button onClick={() => setLinking(true)}>
+            <ListPlusIcon aria-hidden />
+            {t("addToOrder")}
+          </Button>
+        ) : null}
+        {canLinkOrder && hasMenu ? (
+          <ButtonGroupSeparator className="bg-primary-foreground/40" />
+        ) : null}
+        {hasMenu ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant={canLinkOrder ? "default" : "outline"}
+                size="icon"
+                aria-label={common("actions")}
+              >
+                <EllipsisIcon />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {canCreateOrder ? (
+                <DropdownMenuItem asChild>
+                  <Link href={`${ROUTES.orderNew}?fromTask=${encodeURIComponent(task.id)}`}>
+                    <PlusIcon aria-hidden />
+                    {t("createOrder")}
+                  </Link>
+                </DropdownMenuItem>
+              ) : null}
+              {canCreateOrder && canArchive ? <DropdownMenuSeparator /> : null}
+              {canArchive ? (
+                <DropdownMenuItem onSelect={() => setArchiving(true)}>
+                  <ArchiveIcon aria-hidden />
+                  {t("archive")}
+                </DropdownMenuItem>
+              ) : null}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
+      </ButtonGroup>
       {canLinkOrder ? (
         <TaskLinkOrderDialog
           taskId={task.id}
@@ -132,6 +121,6 @@ export function TaskHeaderActions({
       {canArchive ? (
         <ArchiveTaskDialog task={task} open={archiving} onOpenChange={setArchiving} />
       ) : null}
-    </>
+    </div>
   );
 }
