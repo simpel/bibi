@@ -1,0 +1,11 @@
+{
+  "fatal": {
+    "code": "500",
+    "title": "Bibi kunde inte starta",
+    "description": "Något gick fel innan sidan hann laddas. Ladda om sidan, och hör av dig om det fortsätter.",
+    "reload": "Ladda om sidan",
+    "help": "Få hjälp",
+    "reference": "Referens: {digest}",
+    "referenceHint": "Ange referensen om du kontaktar supporten."
+  }
+}

@@ -2,7 +2,7 @@
 
 // Default export is only allowed for Next files, config and stories.
 const DEFAULT_EXPORT_ALLOWED =
-  /(^|\/)(page|layout|route|loading|error|not-found|robots|sitemap|manifest)\.tsx?$|\.config\.tsx?$|\.stories\.tsx$|(^|\/)\.storybook\//;
+  /(^|\/)(page|layout|route|loading|error|global-error|not-found|robots|sitemap|manifest)\.tsx?$|\.config\.tsx?$|\.stories\.tsx$|(^|\/)\.storybook\//;
 // The package index, plus core's client-safe schema barrel (`@bibi/core/schemas`).
 const PACKAGE_INDEX = /^packages\/[^/]+\/src\/(index|schemas)\.tsx?$/;
 const DEFAULT_EXPORT = /^\s*export\s+default\b/m;

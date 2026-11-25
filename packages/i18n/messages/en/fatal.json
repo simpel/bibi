@@ -1,0 +1,11 @@
+{
+  "fatal": {
+    "code": "500",
+    "title": "Bibi could not start",
+    "description": "Something went wrong before the page could load. Reload the page, and if it keeps happening, get in touch.",
+    "reload": "Reload page",
+    "help": "Get help",
+    "reference": "Reference: {digest}",
+    "referenceHint": "Mention this reference if you contact support."
+  }
+}

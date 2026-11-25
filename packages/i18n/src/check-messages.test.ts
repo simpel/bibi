@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { EN_BUNDLES, enMessages, pickMessages, SV_BUNDLES, svMessages } from "./catalog";
 import { diffMessageKeys, flattenKeys, hasKeyParity } from "./check-messages";
+import { FATAL_MESSAGES } from "./fatal";
 
 const REQUIRED_NAMESPACES = [
   "common",
@@ -35,6 +36,13 @@ describe("message catalogues", () => {
       extraInOther: [],
     });
     expect(hasKeyParity({ base: svMessages, other: enMessages })).toBe(true);
+  });
+
+  it("the fatal bundle, kept out of the catalog, has identical keys in sv and en", () => {
+    expect(diffMessageKeys({ base: FATAL_MESSAGES.sv, other: FATAL_MESSAGES.en })).toEqual({
+      missingInOther: [],
+      extraInOther: [],
+    });
   });
 
   it("each domain bundle has identical keys in sv and en", () => {
