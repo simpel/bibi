@@ -2,6 +2,8 @@ import type { OrderVersionDto } from "@bibi/core/schemas";
 
 /** Quote states that mean the version went to the customer. */
 const SENT = new Set(["SENT", "ACCEPTED", "SUPERSEDED", "DECLINED", "EXPIRED"]);
+/** Quote states of the version that counts now (one at most per order). */
+const LIVE = new Set(["SENT", "ACCEPTED"]);
 
 export type SentVersion = {
   version: OrderVersionDto;
@@ -10,14 +12,11 @@ export type SentVersion = {
   totalInclVatMinor: number;
 };
 
-/** The newest version sent as a quote, with that quote's number, status and total; null if none. */
-export function latestSentVersion({
-  versions,
-}: {
-  versions: readonly OrderVersionDto[];
-}): SentVersion | null {
+type Pick = { versions: readonly OrderVersionDto[]; states: ReadonlySet<string> };
+
+function find({ versions, states }: Pick): SentVersion | null {
   for (const version of versions) {
-    const sent = [...version.quotes].reverse().find((quote) => SENT.has(quote.quoteStatus));
+    const sent = [...version.quotes].reverse().find((quote) => states.has(quote.quoteStatus));
     if (sent) {
       return {
         version,
@@ -28,4 +27,17 @@ export function latestSentVersion({
     }
   }
   return null;
+}
+
+/**
+ * The quote that counts, with its order version, number, status and total: the one out with the
+ * customer or accepted (an older version set as current again included), else the newest one
+ * sent. Null if none was sent.
+ */
+export function latestSentVersion({
+  versions,
+}: {
+  versions: readonly OrderVersionDto[];
+}): SentVersion | null {
+  return find({ versions, states: LIVE }) ?? find({ versions, states: SENT });
 }

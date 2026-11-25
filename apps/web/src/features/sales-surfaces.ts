@@ -59,6 +59,7 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "quote.accept", route: "/quotes/[id]" },
   { operation: "quote.decline", route: "/quotes/[id]" },
   { operation: "quote.expire", route: "/quotes/[id]" },
+  { operation: "quote.reopen", route: "/quotes/[id]" },
   // Assignments (ADR 0034): shown and changed on the order page; the list filters
   // by "Assigned to me" and "Following".
   { operation: "assignment.list", route: "/orders/[id]" },

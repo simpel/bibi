@@ -105,6 +105,7 @@ export * from "./features/price-list/operations";
 export * from "./features/price-list/write-operations";
 export * from "./features/quote/lifecycle-operations";
 export * from "./features/quote/operations";
+export * from "./features/quote/reopen-operation";
 export * from "./features/quote/send-operation";
 export * from "./features/quote/transitions";
 export * from "./features/quote/version-operation";

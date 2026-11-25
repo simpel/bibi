@@ -48,7 +48,9 @@ describe("order versions (ADR 0116)", () => {
     const [now, sent] = await versionsOf({ context, orderId: order.id });
     expect(v1.versionId).toBe(sent?.id);
     expect(sent).toMatchObject({ isCurrent: false, changeCount: 2, lineCount: 1 });
-    expect(sent?.quotes).toEqual([{ id: v1.id, version: 1, quoteStatus: "SENT" }]);
+    expect(sent?.quotes).toEqual([
+      { id: v1.id, version: 1, quoteStatus: "SENT", totalInclVatMinor: v1.totalInclVatMinor },
+    ]);
     expect(now).toMatchObject({ isCurrent: true, changeCount: 0, lineCount: 2 });
     expect(now?.number).toBe((sent?.number ?? 0) + 1);
   });

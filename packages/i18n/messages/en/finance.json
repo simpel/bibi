@@ -479,6 +479,8 @@
     "expired": "The quote has expired.",
     "revise": "Create new version",
     "revised": "A new version has been created.",
+    "reopen": "Set as current",
+    "reopened": "This version is now the current quote.",
     "restoreToOrder": "Restore to the order",
     "restoreTitle": "Restore quote v{version} to the order",
     "confirm": {
@@ -486,7 +488,8 @@
       "accept": "Record that the customer accepted version {version}? The order moves on if the pipeline has a status for it.",
       "decline": "Record that the customer declined version {version}?",
       "expire": "Expire version {version}? The customer can no longer accept it.",
-      "choose": "Record that the customer chose version {version}? The order is restored to what this quote offered and the newer quote is marked declined."
+      "choose": "Record that the customer chose version {version}? The order is restored to what this quote offered and the newer quote is marked declined.",
+      "reopen": "Set version {version} as the current quote? The order goes back to what this quote offered, and the newer sent version is marked as replaced. Nothing is accepted yet."
     },
     "statuses": {
       "DRAFT": "Draft",
@@ -537,6 +540,39 @@
       "title": "The order differs from accepted version {version}",
       "badge": "Changed since accepted",
       "description": "The order's lines have changed since the customer accepted. The accepted quote is unchanged; these are the differences."
+    },
+    "otherVersions": "Other versions",
+    "stats": {
+      "current": "The current version",
+      "notCurrent": "Current is version {version}",
+      "exclVat": "{amount} excl. VAT"
+    },
+    "nextStep": {
+      "titles": {
+        "DRAFT": "Not sent yet",
+        "SENT": "Waiting for the customer",
+        "SUPERSEDED": "Replaced by a newer version",
+        "ACCEPTED": "Accepted",
+        "DECLINED": "Declined",
+        "EXPIRED": "Expired"
+      },
+      "details": {
+        "DRAFT": "Valid until {validUntil} once sent.",
+        "SENT": "Sent {sent}, valid until {validUntil}.",
+        "SUPERSEDED": "The customer can still choose it until {validUntil}.",
+        "lapsed": "It is no longer valid.",
+        "ACCEPTED": "Accepted {date}.",
+        "DECLINED": "Marked as declined {date}.",
+        "EXPIRED": "Expired {date}."
+      },
+      "questions": {
+        "DRAFT": "Ready to send it to the customer?",
+        "SENT": "What did the customer say?",
+        "SUPERSEDED": "Does the customer want this version instead?"
+      },
+      "openCurrent": "Open version {version}",
+      "accepted": "Accepted",
+      "declined": "Declined"
     }
   },
   "payment": {

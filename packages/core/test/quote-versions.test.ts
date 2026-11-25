@@ -4,6 +4,8 @@ import {
   declineQuote,
   execute,
   getQuote,
+  listOrderVersions,
+  reopenQuote,
   reviseQuote,
   sendQuote,
   updateLine,
@@ -56,5 +58,36 @@ describe("quote.revise (ADR 0022)", () => {
       result: await execute({ operation: getQuote, input: { id: v2.id }, context }),
     });
     expect(emptied.removedLines.map((line) => line.name)).toEqual(["Lunch"]);
+  });
+});
+
+describe("quote.reopen (ADR 0116)", () => {
+  it("sets a superseded quote as current again, restoring the order without accepting", async () => {
+    const { context, order, quote, lineId } = await draft();
+    const get = async ({ id }: { id: string }) =>
+      unwrap({ result: await execute({ operation: getQuote, input: { id }, context }) });
+    unwrap({ result: await execute({ operation: sendQuote, input: { id: quote.id }, context }) });
+    const sentAgain = await execute({ operation: reopenQuote, input: { id: quote.id }, context });
+    expect(errorCode({ result: sentAgain })).toBe("CONFLICT");
+    const v2 = unwrap({
+      result: await execute({ operation: reviseQuote, input: { id: quote.id }, context }),
+    });
+    const input = { id: lineId, quantity: 25 };
+    unwrap({ result: await execute({ operation: updateLine, input, context }) });
+    unwrap({ result: await execute({ operation: sendQuote, input: { id: v2.id }, context }) });
+    const reopened = unwrap({
+      result: await execute({ operation: reopenQuote, input: { id: quote.id }, context }),
+    });
+    expect(reopened.quoteStatus).toBe("SENT");
+    expect((await get({ id: v2.id })).quoteStatus).toBe("SUPERSEDED");
+    const versions = unwrap({
+      result: await execute({
+        operation: listOrderVersions,
+        input: { orderId: order.id },
+        context,
+      }),
+    }).items;
+    const v1Version = versions.find(({ id }) => id === reopened.versionId);
+    expect(v1Version?.isCurrent).toBe(true);
   });
 });

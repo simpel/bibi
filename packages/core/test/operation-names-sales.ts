@@ -36,6 +36,7 @@ export const SALES_NAMES = [
   "quote.create",
   "quote.decline",
   "quote.expire",
+  "quote.reopen",
   "quote.get",
   "quote.list",
   "quote.revise",

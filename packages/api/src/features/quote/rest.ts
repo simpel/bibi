@@ -10,4 +10,5 @@ export const quoteRoutes = [
   restRoute({ operation: "quote.accept", method: "POST", path: "/quotes/{id}/accept" }),
   restRoute({ operation: "quote.decline", method: "POST", path: "/quotes/{id}/decline" }),
   restRoute({ operation: "quote.expire", method: "POST", path: "/quotes/{id}/expire" }),
+  restRoute({ operation: "quote.reopen", method: "POST", path: "/quotes/{id}/reopen" }),
 ];

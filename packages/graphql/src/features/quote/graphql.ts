@@ -12,6 +12,7 @@ import {
   type QuoteLineDto,
   QuoteLineSchema,
   QuoteSchema,
+  reopenQuote,
   reviseQuote,
   sendQuote,
   updateQuote,
@@ -81,6 +82,7 @@ for (const operation of [
   acceptQuote,
   declineQuote,
   expireQuote,
+  reopenQuote,
 ]) {
   mutationFromOperation({ operation, type: QuoteRef });
 }

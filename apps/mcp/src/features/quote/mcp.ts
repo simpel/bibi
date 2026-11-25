@@ -34,6 +34,11 @@ export const quoteMcpTools = [
     summary: ({ input }) => `Record that quote ${text({ value: input.id })} was declined`,
   }),
   mcpTool({
+    operation: "quote.reopen",
+    summary: ({ input }) =>
+      `Set quote ${text({ value: input.id })} as the current version again, restoring the order to it`,
+  }),
+  mcpTool({
     operation: "quote.expire",
     summary: ({ input }) => `Expire quote ${text({ value: input.id })}`,
   }),

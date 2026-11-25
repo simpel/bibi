@@ -12,7 +12,7 @@ import { loadQuote } from "./to-quote-dto";
 type Input = { context: OperationContext; quote: QuoteDto };
 
 /** The order back to the version the quote was sent as, unless it already is (ADR 0116). */
-async function restoreQuoteVersion({ context, quote }: Input): Promise<Result<true>> {
+export async function restoreQuoteVersion({ context, quote }: Input): Promise<Result<true>> {
   if (!quote.versionId) return ok({ value: true });
   const row = await loadVersion({ context, id: quote.versionId });
   const now = await loadOrderContent({ context, orderId: quote.orderId });

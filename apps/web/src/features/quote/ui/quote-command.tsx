@@ -11,6 +11,7 @@ import {
   acceptQuoteAction,
   declineQuoteAction,
   expireQuoteAction,
+  reopenQuoteAction,
   reviseQuoteAction,
   sendQuoteAction,
 } from "../actions";
@@ -24,6 +25,8 @@ export const QUOTE_COMMANDS = {
   decline: { action: declineQuoteAction, done: "declined", confirm: "confirm.decline" },
   expire: { action: expireQuoteAction, done: "expired", confirm: "confirm.expire" },
   revise: { action: reviseQuoteAction, done: "revised", confirm: null },
+  /** A replaced version becomes the current one again, nothing accepted (ADR 0116). */
+  reopen: { action: reopenQuoteAction, done: "reopened", confirm: "confirm.reopen" },
 } as const satisfies Record<
   string,
   {
@@ -39,8 +42,11 @@ export type QuoteCommandName = keyof typeof QUOTE_COMMANDS;
 export type QuoteCommandProps = {
   quote: QuoteDto;
   command: QuoteCommandName;
-  icon: ReactNode;
-  variant?: "default" | "outline";
+  icon?: ReactNode;
+  /** The button's text; defaults to the command's own label. */
+  label?: string;
+  /** `link` for a rare command, shown as a quiet text link. */
+  variant?: "default" | "outline" | "link";
 };
 
 type UseQuoteCommandInput = { quote: QuoteDto; command: QuoteCommandName; onDone: () => void };
@@ -65,8 +71,17 @@ function useQuoteCommand({ quote, command, onDone }: UseQuoteCommandInput) {
   return { execute, pending };
 }
 
+/** A rare command reads as text in a row of quiet links. */
+export const QUIET_LINK = "h-auto p-0 text-muted-foreground hover:text-foreground";
+
 /** One command button; status moves ask for confirmation first (CLAUDE.md "Forms"). */
-export function QuoteCommand({ quote, command, icon, variant = "outline" }: QuoteCommandProps) {
+export function QuoteCommand({
+  quote,
+  command,
+  icon,
+  label,
+  variant = "outline",
+}: QuoteCommandProps) {
   const t = useTranslations("quote");
   const [open, setOpen] = useState(false);
   const { execute, pending } = useQuoteCommand({ quote, command, onDone: () => setOpen(false) });
@@ -77,9 +92,10 @@ export function QuoteCommand({ quote, command, icon, variant = "outline" }: Quot
         variant={variant}
         disabled={pending}
         onClick={confirm ? () => setOpen(true) : execute}
+        className={variant === "link" ? QUIET_LINK : undefined}
       >
         {icon}
-        {t(command)}
+        {label ?? t(command)}
       </Button>
       {confirm ? (
         <ConfirmDialog

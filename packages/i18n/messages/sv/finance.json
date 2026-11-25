@@ -479,6 +479,8 @@
     "expired": "Offerten har gått ut.",
     "revise": "Skapa ny version",
     "revised": "En ny version har skapats.",
+    "reopen": "Gör till aktuell",
+    "reopened": "Den här versionen är nu den aktuella offerten.",
     "restoreToOrder": "Återställ bokningen",
     "restoreTitle": "Återställ bokningen till offert v{version}",
     "confirm": {
@@ -486,7 +488,8 @@
       "accept": "Registrera att kunden godkände version {version}? Bokningen flyttas om pipelinen har en bokningsstatus för det.",
       "decline": "Registrera att kunden avböjde version {version}?",
       "expire": "Låta version {version} gå ut? Kunden kan inte längre acceptera den.",
-      "choose": "Registrera att kunden valde version {version}? Bokningen återställs till det offerten erbjöd och den nyare offerten markeras som avböjd."
+      "choose": "Registrera att kunden valde version {version}? Bokningen återställs till det offerten erbjöd och den nyare offerten markeras som avböjd.",
+      "reopen": "Göra version {version} till den aktuella offerten? Bokningen går tillbaka till det offerten erbjöd och den nyare skickade versionen markeras som ersatt. Inget godkänns än."
     },
     "statuses": {
       "DRAFT": "Utkast",
@@ -537,6 +540,39 @@
       "title": "Bokningen skiljer sig från accepterad version {version}",
       "badge": "Ändrat sedan accepterad",
       "description": "Bokningens rader har ändrats sedan kunden accepterade. Den accepterade offerten är oförändrad; här är skillnaderna."
+    },
+    "otherVersions": "Andra versioner",
+    "stats": {
+      "current": "Den aktuella versionen",
+      "notCurrent": "Aktuell är version {version}",
+      "exclVat": "{amount} exkl. moms"
+    },
+    "nextStep": {
+      "titles": {
+        "DRAFT": "Inte skickad än",
+        "SENT": "Väntar på kunden",
+        "SUPERSEDED": "Ersatt av en nyare version",
+        "ACCEPTED": "Godkänd",
+        "DECLINED": "Avböjd",
+        "EXPIRED": "Har gått ut"
+      },
+      "details": {
+        "DRAFT": "Giltig till {validUntil} när den skickats.",
+        "SENT": "Skickad {sent}, giltig till {validUntil}.",
+        "SUPERSEDED": "Kunden kan fortfarande välja den till {validUntil}.",
+        "lapsed": "Den är inte längre giltig.",
+        "ACCEPTED": "Godkänd {date}.",
+        "DECLINED": "Markerad som avböjd {date}.",
+        "EXPIRED": "Gick ut {date}."
+      },
+      "questions": {
+        "DRAFT": "Redo att skicka den till kunden?",
+        "SENT": "Vad sa kunden?",
+        "SUPERSEDED": "Vill kunden ha den här versionen i stället?"
+      },
+      "openCurrent": "Öppna version {version}",
+      "accepted": "Godkänd",
+      "declined": "Avböjd"
     }
   },
   "payment": {

@@ -11,10 +11,9 @@ import { moveOnQuoteEvent } from "./move-on-event";
 import { moveQuote } from "./move-quote";
 import { loadOpenOrder } from "./quote-rules";
 import { type QuoteDto, QuoteIdInputSchema, QuoteSchema } from "./schema";
+import { supersedeOthers } from "./supersede";
 import { loadQuote } from "./to-quote-dto";
 import { checkQuoteTransition } from "./transitions";
-
-type Context = Pick<OperationContext, "db" | "permissions" | "recordChange">;
 
 type SendableInput = { quote: QuoteDto; lines: readonly DerivedLine[] };
 
@@ -25,23 +24,6 @@ function checkSendable({ quote, lines }: SendableInput): Result<true> {
   if (!quote.validUntil || quote.validUntil <= new Date()) {
     const message = "A quote needs a validity date in the future to be sent";
     return invalid({ message, issues: [{ path: "validUntil", message }] });
-  }
-  return ok({ value: true });
-}
-
-type SupersedeInput = { context: Context; quote: QuoteDto };
-
-/** The older SENT versions of the quote are superseded (ADR 0116): still acceptable. */
-async function supersede({ context, quote }: SupersedeInput): Promise<Result<true>> {
-  const older = await context.db.quote.findMany({
-    where: { orderId: quote.orderId, quoteStatus: "SENT", id: { not: quote.id } },
-    select: { id: true },
-  });
-  for (const { id } of older) {
-    const before = await loadQuote({ context, id });
-    if (!before) continue;
-    const moved = await moveQuote({ context, before, to: "SUPERSEDED" });
-    if (!moved.ok) return moved;
   }
   return ok({ value: true });
 }
@@ -73,7 +55,7 @@ export const sendQuote = defineOperation({
     if (!sendable.ok) return sendable;
     const order = await loadOpenOrder({ context, orderId });
     if (!order.ok) return order;
-    const superseded = await supersede({ context, quote: before });
+    const superseded = await supersedeOthers({ context, quote: before });
     if (!superseded.ok) return superseded;
     const frozen = await freezeLines({ context, quoteId: id, lines: lines.map((d) => d.line) });
     if (!frozen.ok) return frozen;

@@ -24,6 +24,7 @@ describe("cross-organization isolation: quotes", () => {
       ["quote_accept", { id }],
       ["quote_decline", { id }],
       ["quote_expire", { id }],
+      ["quote_reopen", { id }],
       ["quote_create", { orderId: secret.orderId }],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");

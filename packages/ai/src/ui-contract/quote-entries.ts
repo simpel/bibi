@@ -40,4 +40,5 @@ export const QUOTE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   quote_accept: quoteCard,
   quote_decline: quoteCard,
   quote_expire: quoteCard,
+  quote_reopen: quoteCard,
 };

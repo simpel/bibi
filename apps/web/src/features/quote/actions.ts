@@ -9,6 +9,7 @@ import {
   type QuoteDto,
   type QuoteIdInput,
   type QuoteUpdateInput,
+  reopenQuote,
   reviseQuote,
   sendQuote,
   updateQuote,
@@ -51,4 +52,8 @@ export async function declineQuoteAction({ id }: QuoteIdInput): Promise<ActionRe
 
 export async function expireQuoteAction({ id }: QuoteIdInput): Promise<ActionResult<QuoteDto>> {
   return toActionResult({ result: await runOperation({ operation: expireQuote, input: { id } }) });
+}
+
+export async function reopenQuoteAction({ id }: QuoteIdInput): Promise<ActionResult<QuoteDto>> {
+  return toActionResult({ result: await runOperation({ operation: reopenQuote, input: { id } }) });
 }

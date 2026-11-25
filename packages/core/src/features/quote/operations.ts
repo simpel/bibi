@@ -4,6 +4,7 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { acceptQuote, declineQuote, expireQuote } from "./lifecycle-operations";
+import { reopenQuote } from "./reopen-operation";
 import {
   QuoteIdInputSchema,
   QuoteListInputSchema,
@@ -64,4 +65,5 @@ export const quoteOperations = [
   acceptQuote,
   declineQuote,
   expireQuote,
+  reopenQuote,
 ];

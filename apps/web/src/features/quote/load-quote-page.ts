@@ -11,8 +11,7 @@ import { cache } from "react";
 import type { PersonOption } from "@/components/people/person-name";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { runOperation } from "@/server/run-operation";
-import { quoteAbilities } from "./ui/quote-abilities";
-import type { QuoteAbilities } from "./ui/quote-actions";
+import { type QuoteAbilities, quoteAbilities } from "./ui/quote-abilities";
 
 export type QuotePageData = {
   quote: QuoteDto;
@@ -58,8 +57,8 @@ const loadQuotePageCached = cache(async (id: string): Promise<Result<QuotePageDa
         quote,
         latestVersion,
         canEdit: can({ abilities, permission: "quote:write" }),
-        canSend: can({ abilities, permission: "quote:write" }),
         canRestore: can({ abilities, permission: "program:write" }),
+        now: new Date(),
       }),
     },
   };
