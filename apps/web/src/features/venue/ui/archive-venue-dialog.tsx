@@ -12,17 +12,13 @@ export type ArchiveVenueDialogProps = {
   venue: VenueDto;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Detail page leaves the archived venue; the list just refreshes. */
-  redirectToList?: boolean;
 };
 
-/** Reference for actions without fields: confirm → server action → one toast (CLAUDE.md). */
-export function ArchiveVenueDialog({
-  venue,
-  open,
-  onOpenChange,
-  redirectToList = false,
-}: ArchiveVenueDialogProps) {
+/**
+ * Reference for actions without fields: confirm → server action → one toast (CLAUDE.md). It opens
+ * from the venue's danger area, and the page is gone afterwards: back to the list.
+ */
+export function ArchiveVenueDialog({ venue, open, onOpenChange }: ArchiveVenueDialogProps) {
   const t = useTranslations("venue");
   const common = useTranslations("common");
   const router = useRouter();
@@ -33,8 +29,7 @@ export function ArchiveVenueDialog({
       messages: { pending: common("archiving"), success: t("archived") },
       onSuccess: () => {
         onOpenChange(false);
-        if (redirectToList) router.push(ROUTES.venues);
-        else router.refresh();
+        router.push(ROUTES.venues);
       },
     });
   return (

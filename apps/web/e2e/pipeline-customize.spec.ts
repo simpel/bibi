@@ -71,7 +71,8 @@ test("an admin customizes the board: columns, statuses and the unphased column",
     landed: chip({ scope: unphased, name: "Reserv" }),
   });
 
-  // The new status takes orders at once (movement is free, ADR 0076); archive it with a target.
+  // The new status takes orders at once (movement is free, ADR 0076); archive it with a target
+  // from its own page's danger area, opened from the chip's Edit link.
   const statuses = await api({ page, method: "get", path: "/order-statuses" });
   const items = statuses.items as { id: string; name: string }[];
   const visit = items.find((status) => status.name === "Platsbesök");
@@ -83,12 +84,17 @@ test("an admin customizes the board: columns, statuses and the unphased column",
   });
   await page.reload();
   await page.getByRole("button", { name: "Åtgärder för Platsbesök" }).click();
-  await page.getByRole("menuitem", { name: "Arkivera bokningsstatus" }).click();
+  await page.getByRole("menuitem", { name: "Redigera bokningsstatus" }).click();
+  await expect(page).toHaveURL(/\/admin\/pipeline\/[^/]+\/update/);
+  await page.getByRole("button", { name: "Arkivera bokningsstatus" }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("combobox").click();
   await page.getByRole("option", { name: "Completed" }).click();
   await dialog.getByRole("button", { name: "Arkivera bokningsstatus" }).click();
   await expect(page.getByText("Bokningsstatusen har arkiverats.").first()).toBeVisible();
+  await expect(page).toHaveURL(/\/admin\/pipeline$/);
+  await gotoApp({ page, path: "/pipeline?mode=customize" });
+  await expect(columnBack({ page, name: "Completed" })).toBeVisible();
   await expect(
     page.locator('[data-slot="kanban-status-chip"]', { hasText: "Platsbesök" }),
   ).toHaveCount(0);

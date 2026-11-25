@@ -2,6 +2,7 @@ import type { ResponsibilityDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useRouter } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import { archiveResponsibilityAction } from "../actions";
 
@@ -11,6 +12,7 @@ export type ArchiveResponsibilityDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
+/** Archive confirmation on the responsibility's page; it is gone afterwards: back to the list. */
 export function ArchiveResponsibilityDialog({
   responsibility,
   open,
@@ -25,7 +27,7 @@ export function ArchiveResponsibilityDialog({
       messages: { pending: t("archiving"), success: t("archived") },
       onSuccess: () => {
         onOpenChange(false);
-        router.refresh();
+        router.replace(ROUTES.adminResponsibilitiesSection);
       },
     });
   return (

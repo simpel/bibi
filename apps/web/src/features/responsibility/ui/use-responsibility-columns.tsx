@@ -81,15 +81,14 @@ export function useResponsibilityColumns({
             ids: (r) => r.defaultFollowerIds,
           }),
         ],
-        actions:
-          access.canEdit || access.canRemove
-            ? [
-                actionsColumn<ResponsibilityDto>({
-                  label: common("actions"),
-                  cell: (r) => <ResponsibilityRowActions responsibility={r} access={access} />,
-                }),
-              ]
-            : [],
+        actions: access.canEdit
+          ? [
+              actionsColumn<ResponsibilityDto>({
+                label: common("actions"),
+                cell: (r) => <ResponsibilityRowActions responsibility={r} access={access} />,
+              }),
+            ]
+          : [],
       }),
     [t, common, options, access],
   );

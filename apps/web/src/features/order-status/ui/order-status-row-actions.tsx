@@ -1,14 +1,12 @@
 "use client";
 
 import type { OrderStatusDto } from "@bibi/core/schemas";
-import { ContextMenuItem, DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { ContextMenuItem, DataTableRowActions } from "@bibi/ui";
 import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
 import { Link, useRouter } from "@/lib/navigation";
 import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
-import { ArchiveOrderStatusDialog } from "./archive-order-status-dialog";
 import { MoveItems } from "./move-items";
 
 export type OrderStatusRowActionsProps = {
@@ -22,9 +20,13 @@ export type OrderStatusRowActionsProps = {
 export const orderStatusEditHref = ({ id }: { id: string }) =>
   updateRoute({ detail: listItemRoute({ list: ROUTES.adminPipeline, id }) });
 
-type MenuProps = OrderStatusRowActionsProps & { onArchive: () => void };
-
-function StatusMenu({ orderStatus, index, statuses, access, onArchive }: MenuProps) {
+/** Edit (page) / move for one status; archived on its page, flow in its own editor (ADR 0076). */
+export function OrderStatusRowActions({
+  orderStatus,
+  index,
+  statuses,
+  access,
+}: OrderStatusRowActionsProps) {
   const t = useTranslations("orderStatus");
   const common = useTranslations("common");
   const router = useRouter();
@@ -39,29 +41,7 @@ function StatusMenu({ orderStatus, index, statuses, access, onArchive }: MenuPro
       }
     >
       {access.canEdit ? <MoveItems statuses={statuses} index={index} /> : null}
-      {access.canRemove ? (
-        <DropdownMenuItem destructive onSelect={onArchive}>
-          {t("archive")}
-        </DropdownMenuItem>
-      ) : null}
     </DataTableRowActions>
-  );
-}
-
-/** Edit (page) / move / archive for one status; the flow has its own editor (ADR 0076). */
-export function OrderStatusRowActions(props: OrderStatusRowActionsProps) {
-  const { orderStatus, statuses } = props;
-  const [archiveOpen, setArchiveOpen] = useState(false);
-  return (
-    <>
-      <StatusMenu {...props} onArchive={() => setArchiveOpen(true)} />
-      <ArchiveOrderStatusDialog
-        orderStatus={orderStatus}
-        statuses={statuses}
-        open={archiveOpen}
-        onOpenChange={setArchiveOpen}
-      />
-    </>
   );
 }
 

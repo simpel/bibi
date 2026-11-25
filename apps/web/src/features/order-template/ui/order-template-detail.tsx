@@ -13,6 +13,7 @@ import { loadOrderTemplate } from "../load-order-template";
 import { loadOrderTemplateData } from "../load-order-template-data";
 import { orderTemplateHref } from "../template-route";
 import { availableTemplateTabs, pickTemplateTab } from "../template-tabs";
+import { OrderTemplateDangerArea } from "./order-template-danger-area";
 import { TemplateHeaderActions } from "./template-header-actions";
 import { TemplateKeyFacts } from "./template-key-facts";
 import { TemplateLinesSection } from "./template-lines-section";
@@ -31,8 +32,9 @@ export type OrderTemplateDetailProps = {
  * facts, tabs) and the open tab under it. Everything is edited in place; lines in a dialog.
  */
 export async function OrderTemplateDetail({ locale, id, tab: tabParam }: OrderTemplateDetailProps) {
-  const [t, abilities, template, data] = await Promise.all([
+  const [t, common, abilities, template, data] = await Promise.all([
     getTranslations("orderTemplate"),
+    getTranslations("common"),
     getCallerAbilities(),
     loadOrderTemplate({ id }),
     loadOrderTemplateData(),
@@ -41,7 +43,6 @@ export async function OrderTemplateDetail({ locale, id, tab: tabParam }: OrderTe
   if (failed) return <ErrorState errorKey={handleLoadError({ error: failed.error, locale })} />;
   if (!template.ok || !data.ok) return null;
   const canEdit = can({ abilities, permission: "orderTemplate:write" });
-  const canArchive = can({ abilities, permission: "orderTemplate:delete" });
   const canOrder = can({ abilities, permission: "order:write" });
   const tabs = availableTemplateTabs({ abilities });
   const tab = pickTemplateTab({ value: tabParam, available: tabs });
@@ -55,13 +56,7 @@ export async function OrderTemplateDetail({ locale, id, tab: tabParam }: OrderTe
             title={template.value.name}
             leading={<TemplatePictureEditable {...shared} />}
             heading={<TemplateTitle id={id} name={template.value.name} canEdit={canEdit} />}
-            actions={
-              <TemplateHeaderActions
-                template={template.value}
-                canOrder={canOrder}
-                canArchive={canArchive}
-              />
-            }
+            actions={<TemplateHeaderActions template={template.value} canOrder={canOrder} />}
           />
           <TemplateKeyFacts {...shared} />
           <div className="mt-2">
@@ -69,23 +64,26 @@ export async function OrderTemplateDetail({ locale, id, tab: tabParam }: OrderTe
               base={orderTemplateHref({ id })}
               label={t("tabs.label")}
               current={tab}
-              tabs={tabs.map((tabId) => ({ id: tabId, label: t(`tabs.${tabId}`) }))}
+              tabs={tabs.map((tabId) => ({
+                id: tabId,
+                label: tabId === "danger" ? common("dangerArea") : t(`tabs.${tabId}`),
+              }))}
             />
           </div>
         </PageContainer>
       </PageSection>
       <PageSection divided>
         <PageContainer width="wide" className="grid grid-cols-1 gap-12 py-6 sm:py-8">
-          {tab === "lines" ? (
-            <TemplateLinesSection {...shared} />
-          ) : (
+          {tab === "lines" ? <TemplateLinesSection {...shared} /> : null}
+          {tab === "history" ? (
             <section className="grid grid-cols-1 gap-4">
               <h2 className="text-xl">{t("tabs.history")}</h2>
               <DeferredSection>
                 <EntityHistory locale={locale} entityType="orderTemplate" entityId={id} />
               </DeferredSection>
             </section>
-          )}
+          ) : null}
+          {tab === "danger" ? <OrderTemplateDangerArea template={template.value} /> : null}
         </PageContainer>
       </PageSection>
     </PageBands>

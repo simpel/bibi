@@ -4,8 +4,6 @@ import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { PageHeader } from "@/components/states/page-header";
 import type { RowAccess } from "@/lib/can";
-import { Link } from "@/lib/navigation";
-import { ROUTES } from "@/lib/routes";
 import { VenueRowActions } from "./venue-row-actions";
 
 export type VenueDetailHeaderProps = {
@@ -23,8 +21,8 @@ export async function VenueDetailHeader({ venue, access, history }: VenueDetailH
         title={venue.name}
         description={venue.description ?? undefined}
         actions={
-          access.canEdit || access.canRemove || history ? (
-            <VenueRowActions venue={venue} redirectToList access={access} history={history} />
+          access.canEdit || history ? (
+            <VenueRowActions venue={venue} access={access} history={history} />
           ) : undefined
         }
       />

@@ -8,6 +8,7 @@ import { loadVenue } from "@/features/venue/load-venue";
 import { venueRoute } from "@/lib/routes";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
+import { VenueDangerArea } from "./venue-danger-area";
 import { VenueDetailHeader } from "./venue-detail-header";
 import { VenueFacts } from "./venue-facts";
 import { VenueHoursSection } from "./venue-hours-section";
@@ -17,7 +18,7 @@ export type VenueDetailProps = {
   id: string;
 };
 
-/** Venue detail page body: facts, edit/archive, the venue's items. */
+/** Venue detail page body: facts, edit, the venue's items and the danger area. */
 export async function VenueDetail({ locale, id }: VenueDetailProps) {
   const [result, abilities] = await Promise.all([loadVenue({ id }), getCallerAbilities()]);
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
@@ -39,6 +40,7 @@ export async function VenueDetail({ locale, id }: VenueDetailProps) {
           <VenueItemsSection locale={locale} venueId={venue.id} />
         ) : null}
       </div>
+      {can({ abilities, permission: "venue:delete" }) ? <VenueDangerArea venue={venue} /> : null}
     </div>
   );
 }

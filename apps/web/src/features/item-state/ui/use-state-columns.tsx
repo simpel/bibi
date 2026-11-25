@@ -68,22 +68,21 @@ export function useStateColumns({ access }: StateColumnsInput): Column[] {
             accessorFn: (row) => row.targets.join(", ") || t("noTransitions"),
           },
         ],
-        actions:
-          access.canEdit || access.canRemove
-            ? [
-                actionsColumn<TypedStateRow>({
-                  label: common("actions"),
-                  cell: ({ state, index, siblings }) => (
-                    <ItemStateRowActions
-                      state={state}
-                      index={index}
-                      states={siblings}
-                      access={access}
-                    />
-                  ),
-                }),
-              ]
-            : [],
+        actions: access.canEdit
+          ? [
+              actionsColumn<TypedStateRow>({
+                label: common("actions"),
+                cell: ({ state, index, siblings }) => (
+                  <ItemStateRowActions
+                    state={state}
+                    index={index}
+                    states={siblings}
+                    access={access}
+                  />
+                ),
+              }),
+            ]
+          : [],
       }),
     [t, common, access],
   );

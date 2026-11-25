@@ -2,6 +2,7 @@ import type { RunSheetDefinitionDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useRouter } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import { archiveRunSheetDefinitionAction } from "../actions";
 
@@ -11,6 +12,7 @@ export type ArchiveRunSheetDefinitionDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
+/** Archive confirmation on the run sheet's page, which is gone afterwards: back to the list. */
 export function ArchiveRunSheetDefinitionDialog({
   runSheet,
   open,
@@ -25,7 +27,7 @@ export function ArchiveRunSheetDefinitionDialog({
       messages: { pending: t("archiving"), success: t("archived") },
       onSuccess: () => {
         onOpenChange(false);
-        router.refresh();
+        router.replace(ROUTES.adminRunSheets);
       },
     });
   return (

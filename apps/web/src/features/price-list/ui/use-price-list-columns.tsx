@@ -48,17 +48,16 @@ export function usePriceListColumns({ data, access }: UsePriceListColumnsInput):
           cell: (list) => <PriceListValidity {...list} />,
         }),
       ],
-      actions:
-        access.canEdit || access.canRemove
-          ? [
-              actionsColumn<PriceListDto>({
-                label: common("actions"),
-                cell: (priceList) => (
-                  <PriceListRowActions priceList={priceList} data={data} access={access} />
-                ),
-              }),
-            ]
-          : [],
+      actions: access.canEdit
+        ? [
+            actionsColumn<PriceListDto>({
+              label: common("actions"),
+              cell: (priceList) => (
+                <PriceListRowActions priceList={priceList} data={data} access={access} />
+              ),
+            }),
+          ]
+        : [],
     });
   }, [t, pricing, common, data, access]);
 }

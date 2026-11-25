@@ -41,7 +41,7 @@ export function customizeSlots({
     renderChipMenu: ({ status, phaseId }) => {
       const orderStatus = statuses.find((candidate) => candidate.id === status.id);
       return orderStatus ? (
-        <StatusChipMenu {...{ orderStatus, phaseId, phases, statuses, access, onMove }} />
+        <StatusChipMenu {...{ orderStatus, phaseId, phases, access, onMove }} />
       ) : null;
     },
     renderAddColumn: ({ position }) => (

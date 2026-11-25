@@ -5,19 +5,21 @@ import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
 import { FormPageShell } from "@/components/wizard/form-page-shell";
 import { loadOrderStatus } from "@/features/order-status/load-order-status";
-import { ROUTES } from "@/lib/routes";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { OrderStatusDangerArea } from "./order-status-danger-area";
 import { OrderStatusPageForm } from "./order-status-page-form";
 import { StatusFlowCard } from "./status-flow-card";
 
 export type OrderStatusUpdateProps = { locale: Locale; id: string };
 
-/** `/admin/pipeline/[id]/update`: edit a status on a page of its own. */
+/** `/admin/pipeline/[id]/update`: edit a status on a page of its own, the danger area last. */
 export async function OrderStatusUpdate({ locale, id }: OrderStatusUpdateProps) {
-  const [t, flow, orderStatus, all] = await Promise.all([
+  const [t, flow, abilities, orderStatus, all] = await Promise.all([
     getTranslations("orderStatus"),
     getTranslations("orderStatus.flow"),
+    getCallerAbilities(),
     loadOrderStatus({ id }),
     runOperation({ operation: listOrderStatuses, input: { limit: 100 } }),
   ]);
@@ -36,6 +38,9 @@ export async function OrderStatusUpdate({ locale, id }: OrderStatusUpdateProps) 
           </section>
         ) : null}
       </FormPageShell>
+      {all.ok && can({ abilities, permission: "pipeline:delete" }) ? (
+        <OrderStatusDangerArea orderStatus={orderStatus.value} statuses={all.value.items} />
+      ) : null}
     </>
   );
 }

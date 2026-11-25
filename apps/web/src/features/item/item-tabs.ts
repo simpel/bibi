@@ -12,6 +12,7 @@ export const ITEM_TABS = [
   "resources",
   "hours",
   "history",
+  "danger",
 ] as const;
 
 export type ItemTab = (typeof ITEM_TABS)[number];
@@ -23,7 +24,7 @@ type AvailableInput = { type: EntityTypeDto | undefined; abilities: CallerAbilit
  * BOOKABLE, Contents for BUNDLE or CUSTOMISATIONS) and the caller's access (Occupancy needs
  * `order:read`). Hours are for BOOKABLE
  * items only (bookings outside them warn). Details (opened first) and resources are every item's;
- * History, last, needs `audit:read`.
+ * History needs `audit:read`; the danger area, last, needs `item:delete` (spec: danger-area).
  */
 export function availableItemTabs({ type, abilities }: AvailableInput): ItemTab[] {
   const allowed = ({ permission }: { permission: Permission }) =>
@@ -39,6 +40,7 @@ export function availableItemTabs({ type, abilities }: AvailableInput): ItemTab[
     resources: true,
     hours: hasCapability({ type, capability: "BOOKABLE" }),
     history: allowed({ permission: "audit:read" }),
+    danger: allowed({ permission: "item:delete" }),
   };
   return ITEM_TABS.filter((tab) => shown[tab]);
 }

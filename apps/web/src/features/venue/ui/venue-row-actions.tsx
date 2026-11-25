@@ -9,27 +9,19 @@ import { HistorySheet } from "@/features/audit-log/ui/history-sheet";
 import type { RowAccess } from "@/lib/can";
 import { Link, useRouter } from "@/lib/navigation";
 import { updateRoute, venueRoute } from "@/lib/routes";
-import { ArchiveVenueDialog } from "./archive-venue-dialog";
 
 export type VenueRowActionsProps = {
   venue: VenueDto;
-  redirectToList?: boolean;
   access: RowAccess;
   /** The history list; when set the menu gets "View history" (detail page, with `audit:read`). */
   history?: ReactNode | null;
 };
 
-/** Edit / archive menu for one venue; used in list rows and on the detail page. */
-export function VenueRowActions({
-  venue,
-  redirectToList = false,
-  access,
-  history,
-}: VenueRowActionsProps) {
+/** Edit (or Open) for one venue, in list rows and on the detail page (archive: danger area). */
+export function VenueRowActions({ venue, access, history }: VenueRowActionsProps) {
   const audit = useTranslations("auditLog");
   const t = useTranslations("venue");
   const common = useTranslations("common");
-  const [archiving, setArchiving] = useState(false);
   const [viewingHistory, setViewingHistory] = useState(false);
   const router = useRouter();
   const detail = venueRoute({ id: venue.id });
@@ -44,21 +36,10 @@ export function VenueRowActions({
             {audit("viewHistory")}
           </DropdownMenuItem>
         ) : null}
-        {access.canRemove ? (
-          <DropdownMenuItem destructive onSelect={() => setArchiving(true)}>
-            {t("archive")}
-          </DropdownMenuItem>
-        ) : null}
       </DataTableRowActions>
       {history ? (
         <HistorySheet open={viewingHistory} onOpenChange={setViewingHistory} history={history} />
       ) : null}
-      <ArchiveVenueDialog
-        venue={venue}
-        open={archiving}
-        onOpenChange={setArchiving}
-        redirectToList={redirectToList}
-      />
     </>
   );
 }

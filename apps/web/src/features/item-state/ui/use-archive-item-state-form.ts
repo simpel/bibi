@@ -7,6 +7,7 @@ import { useArchivePreview } from "@/components/archive-preview/use-archive-prev
 import { NONE } from "@/components/form/option-select-field";
 import { formSchema } from "@/lib/form-schema";
 import { useRouter } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { archiveItemStateAction, previewArchiveItemStateAction } from "../actions";
@@ -27,7 +28,10 @@ const schemaFor = ({ id }: { id: string }) =>
 
 export type UseArchiveItemStateFormInput = { id: string; onDone: () => void };
 
-/** The archive form, its submit flow and the dry-run preview of the chosen target. */
+/**
+ * The archive form, its submit flow and the dry-run preview of the chosen target. It opens from
+ * the state's page, which is gone afterwards: back to the list.
+ */
 export function useArchiveItemStateForm({ id, onDone }: UseArchiveItemStateFormInput) {
   const t = useTranslations("itemState");
   const router = useRouter();
@@ -40,8 +44,8 @@ export function useArchiveItemStateForm({ id, onDone }: UseArchiveItemStateFormI
     action: ({ values }) => archiveItemStateAction({ input: values }),
     messages: { pending: t("archiving"), success: t("archived") },
     onSuccess: () => {
-      router.refresh();
       onDone();
+      router.replace(ROUTES.adminItemStatesSection);
     },
   });
   const targetStateId = useWatch({ control: form.control, name: "targetStateId" });

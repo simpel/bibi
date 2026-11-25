@@ -10,13 +10,17 @@ export type ArchiveVocabularyDialogProps = {
   vocabulary: VocabularyDto;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** On the detail page the list is gone after archiving: go back to the lists. */
-  redirectToList?: boolean;
 };
 
-/** Archive confirmation; a list still used by a field fails with the conflict toast. */
-export function ArchiveVocabularyDialog(props: ArchiveVocabularyDialogProps) {
-  const { vocabulary, open, onOpenChange, redirectToList = false } = props;
+/**
+ * Archive confirmation on the list's page, which is gone afterwards: back to the lists. A list
+ * still used by a field fails with the conflict toast.
+ */
+export function ArchiveVocabularyDialog({
+  vocabulary,
+  open,
+  onOpenChange,
+}: ArchiveVocabularyDialogProps) {
   const t = useTranslations("vocabulary");
   const router = useRouter();
   const { pending, run } = useToastAction();
@@ -26,8 +30,7 @@ export function ArchiveVocabularyDialog(props: ArchiveVocabularyDialogProps) {
       messages: { pending: t("archiving"), success: t("archived") },
       onSuccess: () => {
         onOpenChange(false);
-        if (redirectToList) router.replace(ROUTES.adminLists);
-        else router.refresh();
+        router.replace(ROUTES.adminLists);
       },
     });
   return (

@@ -6,23 +6,22 @@ import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { loadSkill } from "@/features/skill/load-skill";
 import { canPermission } from "@/lib/can";
-import { Link } from "@/lib/navigation";
-import { ROUTES, skillRoute } from "@/lib/routes";
+import { skillRoute } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { skillAbilities } from "../skill-abilities";
 import { SkillActions } from "./skill-actions";
+import { SkillDangerArea } from "./skill-danger-area";
 import { SkillMeta } from "./skill-meta";
 import { SkillResources } from "./skill-resources";
 import { SkillTools } from "./skill-tools";
 
 export type SkillDetailProps = { locale: Locale; id: string };
 
-/** Skill page: description, rendered instructions, allowed tools, resources, version, actions. */
+/** Skill page: description, instructions, allowed tools, resources, version, danger area. */
 export async function SkillDetail({ locale, id }: SkillDetailProps) {
-  const [t, common, result, abilities] = await Promise.all([
+  const [t, result, abilities] = await Promise.all([
     getTranslations("skills"),
-    getTranslations("common"),
     loadSkill({ id }),
     getCallerAbilities(),
   ]);
@@ -47,6 +46,7 @@ export async function SkillDetail({ locale, id }: SkillDetailProps) {
       </section>
       <SkillTools tools={skill.allowedTools} />
       <SkillResources resources={skill.resources} />
+      {can.archive ? <SkillDangerArea skill={{ id: skill.id, name: skill.name }} /> : null}
     </div>
   );
 }

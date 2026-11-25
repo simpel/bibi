@@ -49,9 +49,11 @@ test("sign up, create org, venue, type and item, search, switch locale, archive"
   await expect(page).toHaveURL(/\/en\/[^/]+\/venues/);
   await expect(page.getByRole("link", { name: "Create venue" }).first()).toBeVisible();
 
-  await page.getByRole("button", { name: "Actions" }).click();
-  await page.getByRole("menuitem", { name: "Archive venue" }).click();
+  // A venue is archived only in the danger area at the bottom of its page.
+  await page.getByRole("link", { name: VENUE }).click();
+  await page.getByRole("button", { name: "Archive venue" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Archive venue" }).click();
+  await expect(page).toHaveURL(/\/en\/[^/]+\/venues$/);
   await expect(page.getByText("No venues yet.")).toBeVisible();
 });
 

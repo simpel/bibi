@@ -74,22 +74,21 @@ export function useStatusColumns({ statuses, access }: StatusColumnsInput): Colu
             accessorFn: (row) => movesText({ row, t }),
           },
         ],
-        actions:
-          access.canEdit || access.canRemove
-            ? [
-                actionsColumn<StatusRow>({
-                  label: common("actions"),
-                  cell: ({ orderStatus, index }) => (
-                    <OrderStatusRowActions
-                      orderStatus={orderStatus}
-                      index={index}
-                      statuses={statuses}
-                      access={access}
-                    />
-                  ),
-                }),
-              ]
-            : [],
+        actions: access.canEdit
+          ? [
+              actionsColumn<StatusRow>({
+                label: common("actions"),
+                cell: ({ orderStatus, index }) => (
+                  <OrderStatusRowActions
+                    orderStatus={orderStatus}
+                    index={index}
+                    statuses={statuses}
+                    access={access}
+                  />
+                ),
+              }),
+            ]
+          : [],
       }),
     [t, common, statuses, access],
   );

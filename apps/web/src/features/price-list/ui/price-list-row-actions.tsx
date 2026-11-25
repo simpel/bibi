@@ -8,7 +8,6 @@ import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
 import { useRouter } from "@/lib/navigation";
 import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
-import { ArchivePriceListDialog } from "./archive-price-list-dialog";
 import type { PriceListFormData } from "./load-price-list-form-data";
 import { PriceListItemsDialog } from "./price-list-items-dialog";
 
@@ -18,7 +17,7 @@ export type PriceListRowActionsProps = {
   access: RowAccess;
 };
 
-type Open = "items" | "archive";
+type Open = "items";
 
 type MenuProps = {
   priceList: PriceListDto;
@@ -48,16 +47,11 @@ function ActionsMenu({ priceList, access, itemsHidden, onOpen }: MenuProps) {
           {t("items.edit")}
         </DropdownMenuItem>
       ) : null}
-      {access.canRemove ? (
-        <DropdownMenuItem destructive onSelect={() => onOpen({ dialog: "archive" })}>
-          {t("archive")}
-        </DropdownMenuItem>
-      ) : null}
     </DataTableRowActions>
   );
 }
 
-/** Edit / item prices / archive menu for one price list. */
+/** Edit / item prices menu for one price list; it is archived on its own page. */
 export function PriceListRowActions({ priceList, data, access }: PriceListRowActionsProps) {
   const [dialog, setDialog] = useState<Open | null>(null);
   const props = ({ key }: { key: Open }) => ({
@@ -73,7 +67,6 @@ export function PriceListRowActions({ priceList, data, access }: PriceListRowAct
         onOpen={({ dialog: key }) => setDialog(key)}
       />
       <PriceListItemsDialog priceList={priceList} items={data.items} {...props({ key: "items" })} />
-      <ArchivePriceListDialog priceList={priceList} {...props({ key: "archive" })} />
     </>
   );
 }

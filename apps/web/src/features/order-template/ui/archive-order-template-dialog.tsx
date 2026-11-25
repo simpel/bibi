@@ -4,6 +4,7 @@ import type { OrderTemplateDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useRouter } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import { archiveOrderTemplateAction } from "../actions";
 
@@ -11,16 +12,16 @@ export type ArchiveOrderTemplateDialogProps = {
   template: OrderTemplateDto;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** After archiving; without it the page refreshes (a list row). */
-  onArchived?: () => void;
 };
 
-/** Confirm → server action → one toast; orders already made from the template stay as they are. */
+/**
+ * Confirm → server action → one toast; orders already made from the template stay as they are.
+ * It opens from the package's page, which is gone afterwards: back to the list.
+ */
 export function ArchiveOrderTemplateDialog({
   template,
   open,
   onOpenChange,
-  onArchived,
 }: ArchiveOrderTemplateDialogProps) {
   const t = useTranslations("orderTemplate");
   const common = useTranslations("common");
@@ -32,8 +33,7 @@ export function ArchiveOrderTemplateDialog({
       messages: { pending: common("archiving"), success: t("archived") },
       onSuccess: () => {
         onOpenChange(false);
-        if (onArchived) onArchived();
-        else router.refresh();
+        router.push(ROUTES.packages);
       },
     });
   return (

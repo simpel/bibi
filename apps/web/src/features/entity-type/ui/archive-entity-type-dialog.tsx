@@ -10,13 +10,17 @@ export type ArchiveEntityTypeDialogProps = {
   entityType: EntityTypeDto;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** On the detail page the type is gone after archiving: go back to the list. */
-  redirectToList?: boolean;
 };
 
-/** Archive confirmation; a type that is still in use fails with the conflict toast. */
-export function ArchiveEntityTypeDialog(props: ArchiveEntityTypeDialogProps) {
-  const { entityType, open, onOpenChange, redirectToList = false } = props;
+/**
+ * Archive confirmation on the type's page, which is gone afterwards: back to the list. A type
+ * that is still in use fails with the conflict toast.
+ */
+export function ArchiveEntityTypeDialog({
+  entityType,
+  open,
+  onOpenChange,
+}: ArchiveEntityTypeDialogProps) {
   const t = useTranslations("entityType");
   const router = useRouter();
   const { pending, run } = useToastAction();
@@ -26,8 +30,7 @@ export function ArchiveEntityTypeDialog(props: ArchiveEntityTypeDialogProps) {
       messages: { pending: t("archiving"), success: t("archived") },
       onSuccess: () => {
         onOpenChange(false);
-        if (redirectToList) router.replace(ROUTES.adminTypes);
-        else router.refresh();
+        router.replace(ROUTES.adminTypes);
       },
     });
   return (

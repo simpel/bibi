@@ -66,17 +66,16 @@ export function useRunSheetDefinitionColumns({
               names({ ids: runSheet.vocabularyIds, options: options.lists }),
           },
         ],
-        actions:
-          access.canEdit || access.canRemove
-            ? [
-                actionsColumn<RunSheetDefinitionDto>({
-                  label: common("actions"),
-                  cell: (runSheet) => (
-                    <RunSheetDefinitionRowActions runSheet={runSheet} access={access} />
-                  ),
-                }),
-              ]
-            : [],
+        actions: access.canEdit
+          ? [
+              actionsColumn<RunSheetDefinitionDto>({
+                label: common("actions"),
+                cell: (runSheet) => (
+                  <RunSheetDefinitionRowActions runSheet={runSheet} access={access} />
+                ),
+              }),
+            ]
+          : [],
       }),
     [t, common, options, access],
   );

@@ -46,7 +46,11 @@
           },
           "exampleOrders": {
             "question": "What are the example orders on my board?",
-            "answer": "When you finish setting up Bibi, we add three example orders so your board isn't empty: a meeting, a conference and a dinner. They all belong to the customer Example Company Ltd and use the types you chose.\nClick around in them, edit them and move them as you like.\nWhen you're done, open Example Company Ltd under Customers, archive the contact person Anna Example, then archive the customer with Also archive all orders for this customer ticked."
+            "answer": "When you finish setting up Bibi, we add three example orders so your board isn't empty: a meeting, a conference and a dinner. They all belong to the customer Example Company Ltd and use the types you chose.\nClick around in them, edit them and move them as you like.\nWhen you're done, open Example Company Ltd under Customers, archive the contact person Anna Example, then choose **Archive customer** in **Danger area** at the bottom of the page with Also archive all orders for this customer ticked."
+          },
+          "archiveRecords": {
+            "question": "How do I archive a customer, an item or a venue?",
+            "answer": "Open its page and scroll to **Danger area** at the bottom. On an item or a package it is the page's last tab instead. Choose the archive button there and confirm.\nThis works the same for types, lists, statuses, run sheets, responsibilities, price lists and skills. You only see the danger area if you may archive that kind of record."
           },
           "itemGroups": {
             "question": "How do I sort my items into groups like Spaces and Food?",
@@ -82,7 +86,7 @@
           },
           "itemEdit": {
             "question": "How do I change an item?",
-            "answer": "Open the item and hover what you want to change: the name, the picture, a figure at the top such as **Price** or **Capacity**, or a single detail such as the floor or the setup time. Click the pencil, change it and click **Save**; only that setting is saved.\nFor a room, each layout has its own pencil, and **Edit floor plan** opens the room's walls, doors and windows. Under the figures, layouts, occupancy, contents, resources and staffing, opening hours (working hours for staff) and history each have their own tab when the item has them. **Archive item** is in the **⋯** menu at the top right and always asks first."
+            "answer": "Open the item and hover what you want to change: the name, the picture, a figure at the top such as **Price** or **Capacity**, or a single detail such as the floor or the setup time. Click the pencil, change it and click **Save**; only that setting is saved.\nFor a room, each layout has its own pencil, and **Edit floor plan** opens the room's walls, doors and windows. Under the figures, layouts, occupancy, contents, resources and staffing, opening hours (working hours for staff) and history each have their own tab when the item has them. To archive the item, open its last tab, **Danger area**, and choose **Archive item**; it always asks first."
           },
           "itemOrder": {
             "question": "Can I start an order from an item?",

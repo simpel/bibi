@@ -2,6 +2,7 @@ import type { PriceListDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useRouter } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import { archivePriceListAction } from "../actions";
 
@@ -11,6 +12,7 @@ export type ArchivePriceListDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
+/** Archive confirmation on the price list's page, which is gone afterwards: back to the list. */
 export function ArchivePriceListDialog({
   priceList,
   open,
@@ -26,7 +28,7 @@ export function ArchivePriceListDialog({
       messages: { pending: common("archiving"), success: t("archived") },
       onSuccess: () => {
         onOpenChange(false);
-        router.refresh();
+        router.replace(ROUTES.adminPriceLists);
       },
     });
   return (

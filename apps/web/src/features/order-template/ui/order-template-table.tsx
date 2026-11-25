@@ -8,7 +8,6 @@ import { TableFilterBar } from "@/components/data-table/table-filter-bar";
 import type { TableQualifier } from "@/components/data-table/table-filter-query";
 import { useClientTableView } from "@/components/data-table/use-client-table-view";
 import { type NamedOption, nameOf } from "@/components/form/named-option";
-import type { RowAccess } from "@/lib/can";
 import { useRouter } from "@/lib/navigation";
 import { orderTemplateHref } from "../template-route";
 import { OrderTemplateRowMenu } from "./order-template-row-actions";
@@ -18,7 +17,6 @@ export type OrderTemplateTableProps = {
   templates: OrderTemplateDto[];
   statuses: (NamedOption & { color?: string | undefined })[];
   types: NamedOption[];
-  access: RowAccess;
 };
 
 function useTemplateQualifiers({
@@ -47,16 +45,11 @@ function useTemplateQualifiers({
   );
 }
 
-/** The organization's predefined orders; admins get row actions. */
-export function OrderTemplateTable({
-  templates,
-  statuses,
-  types,
-  access,
-}: OrderTemplateTableProps) {
+/** The organization's predefined orders, each opened on its own page. */
+export function OrderTemplateTable({ templates, statuses, types }: OrderTemplateTableProps) {
   const t = useTranslations("orderTemplate");
   const router = useRouter();
-  const columns = useTemplateColumns({ statuses, types, access });
+  const columns = useTemplateColumns({ statuses, types });
   const qualifiers = useTemplateQualifiers({ statuses, types });
   const view = useClientTableView({
     rows: templates,
@@ -75,7 +68,7 @@ export function OrderTemplateTable({
         onRowClick={(template: OrderTemplateDto) =>
           router.push(orderTemplateHref({ id: template.id }))
         }
-        rowMenu={(template) => <OrderTemplateRowMenu template={template} access={access} />}
+        rowMenu={(template) => <OrderTemplateRowMenu template={template} />}
         emptyText={t("empty")}
         pagination={view.pagination}
       />

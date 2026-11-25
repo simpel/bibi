@@ -4,17 +4,19 @@ import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
 import { FormPageShell } from "@/components/wizard/form-page-shell";
 import { loadResponsibility } from "@/features/responsibility/load-responsibility";
-import { ROUTES } from "@/lib/routes";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { loadResponsibilityOptions } from "../load-responsibility-options";
+import { ResponsibilityDangerArea } from "./responsibility-danger-area";
 import { ResponsibilityUpdateForm } from "./responsibility-update-form";
 
 export type ResponsibilityUpdateProps = { locale: Locale; id: string };
 
-/** `/admin/responsibilities/[id]/update`: edit on a page of its own. */
+/** `/admin/responsibilities/[id]/update`: edit on a page of its own, the danger area last. */
 export async function ResponsibilityUpdate({ locale, id }: ResponsibilityUpdateProps) {
-  const t = await getTranslations("responsibility");
-  const [responsibility, options] = await Promise.all([
+  const [t, abilities, responsibility, options] = await Promise.all([
+    getTranslations("responsibility"),
+    getCallerAbilities(),
     loadResponsibility({ id }),
     loadResponsibilityOptions(),
   ]);
@@ -28,6 +30,9 @@ export async function ResponsibilityUpdate({ locale, id }: ResponsibilityUpdateP
       <FormPageShell title={t("edit")} description={t("editDescription")}>
         <ResponsibilityUpdateForm responsibility={responsibility.value} options={options.value} />
       </FormPageShell>
+      {can({ abilities, permission: "responsibility:delete" }) ? (
+        <ResponsibilityDangerArea responsibility={responsibility.value} />
+      ) : null}
     </>
   );
 }

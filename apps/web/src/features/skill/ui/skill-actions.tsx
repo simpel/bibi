@@ -1,12 +1,9 @@
 "use client";
 
-import { Button } from "@bibi/ui";
-import { ArchiveIcon, SendIcon, Share2Icon } from "lucide-react";
+import { SendIcon, Share2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { publishSkillAction, shareSkillAction } from "../actions";
 import type { SkillAbilities } from "../skill-abilities";
-import { ArchiveSkillDialog } from "./archive-skill-dialog";
 import { EditSkillLink } from "./edit-skill-link";
 import { ExportSkillButton } from "./export-skill-button";
 import { SkillActionButton } from "./skill-action-button";
@@ -16,10 +13,12 @@ export type SkillActionsProps = {
   can: SkillAbilities;
 };
 
-/** Detail-page actions; only what the user may do is shown (the operations enforce it too). */
+/**
+ * Detail-page actions; only what the user may do is shown (the operations enforce it too).
+ * Archiving is in the page's danger area.
+ */
 export function SkillActions({ skill, can }: SkillActionsProps) {
   const t = useTranslations("skills");
-  const [archiving, setArchiving] = useState(false);
   return (
     <>
       {can.edit ? <EditSkillLink id={skill.id} /> : null}
@@ -41,13 +40,6 @@ export function SkillActions({ skill, can }: SkillActionsProps) {
         />
       ) : null}
       <ExportSkillButton id={skill.id} />
-      {can.archive ? (
-        <Button variant="outline" onClick={() => setArchiving(true)}>
-          <ArchiveIcon />
-          {t("archive")}
-        </Button>
-      ) : null}
-      <ArchiveSkillDialog skill={skill} open={archiving} onOpenChange={setArchiving} />
     </>
   );
 }

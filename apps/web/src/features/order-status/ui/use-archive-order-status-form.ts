@@ -7,6 +7,7 @@ import { useArchivePreview } from "@/components/archive-preview/use-archive-prev
 import { NONE } from "@/components/form/option-select-field";
 import { formSchema } from "@/lib/form-schema";
 import { useRouter } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { archiveOrderStatusAction, previewArchiveOrderStatusAction } from "../actions";
@@ -33,7 +34,10 @@ const useArchiveForm = ({ id }: { id: string }) =>
 
 export type UseArchiveOrderStatusFormInput = { id: string; onDone: () => void };
 
-/** The archive form, its submit flow and the dry-run preview of the chosen target. */
+/**
+ * The archive form, its submit flow and the dry-run preview of the chosen target. It opens from
+ * the status's page, which is gone afterwards: back to the list.
+ */
 export function useArchiveOrderStatusForm({ id, onDone }: UseArchiveOrderStatusFormInput) {
   const t = useTranslations("orderStatus");
   const router = useRouter();
@@ -43,8 +47,8 @@ export function useArchiveOrderStatusForm({ id, onDone }: UseArchiveOrderStatusF
     action: ({ values }) => archiveOrderStatusAction({ input: values }),
     messages: { pending: t("archiving"), success: t("archived") },
     onSuccess: () => {
-      router.refresh();
       onDone();
+      router.replace(ROUTES.adminPipeline);
     },
   });
   const [targetStatusId, reason] = useWatch({

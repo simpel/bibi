@@ -5,17 +5,16 @@ import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { loadVocabulary } from "@/features/vocabulary/load-vocabulary";
-import { Link } from "@/lib/navigation";
-import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { AddValueButton } from "./add-value-button";
 import { ValueTable } from "./value-table";
+import { VocabularyDangerArea } from "./vocabulary-danger-area";
 import { VocabularyRowActions } from "./vocabulary-row-actions";
 
 export type VocabularyDetailProps = { locale: Locale; id: string };
 
-/** List detail page: rename/archive the list and manage its values. */
+/** List detail page: rename the list, manage its values, and its danger area last. */
 export async function VocabularyDetail({ locale, id }: VocabularyDetailProps) {
   const [t, abilities, result] = await Promise.all([
     getTranslations("vocabulary"),
@@ -27,9 +26,7 @@ export async function VocabularyDetail({ locale, id }: VocabularyDetailProps) {
   const vocabulary = result.value;
   const actions = (
     <>
-      {access.canEdit || access.canRemove ? (
-        <VocabularyRowActions vocabulary={vocabulary} redirectToList access={access} />
-      ) : null}
+      {access.canEdit ? <VocabularyRowActions vocabulary={vocabulary} access={access} /> : null}
       {can({ abilities, permission: "configuration:write" }) ? (
         <AddValueButton vocabularyId={vocabulary.id} />
       ) : null}
@@ -44,6 +41,7 @@ export async function VocabularyDetail({ locale, id }: VocabularyDetailProps) {
       ) : (
         <ValueTable vocabulary={vocabulary} access={access} />
       )}
+      {access.canRemove ? <VocabularyDangerArea vocabulary={vocabulary} /> : null}
     </div>
   );
 }

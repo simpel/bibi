@@ -9,6 +9,7 @@ import { DemandsSection } from "../../item-demand/ui/demands-section";
 import { OccupancySection } from "../../occupancy/ui/occupancy-section";
 import { hoursKind, type ItemTab } from "../item-tabs";
 import { hasCapability } from "./has-capability";
+import { ItemDangerArea } from "./item-danger-area";
 import { ItemDetailsSection } from "./item-details-section";
 import type { ItemFormData } from "./item-form-data";
 import { ItemHoursSection } from "./item-hours-section";
@@ -98,5 +99,7 @@ export async function ItemTabContent({
           </DeferredSection>
         </section>
       );
+    case "danger":
+      return <ItemDangerArea item={item} />;
   }
 }

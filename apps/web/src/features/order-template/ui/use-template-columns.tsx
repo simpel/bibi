@@ -10,7 +10,6 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { NamedOption } from "@/components/form/named-option";
 import { nameOf } from "@/components/form/named-option";
-import type { RowAccess } from "@/lib/can";
 import { Link } from "@/lib/navigation";
 import { guestRange } from "../lib/guest-range";
 import { orderTemplateHref } from "../template-route";
@@ -22,11 +21,10 @@ type StatusOption = NamedOption & { color?: string | undefined };
 export type TemplateColumnsInput = {
   statuses: readonly StatusOption[];
   types: readonly NamedOption[];
-  access: RowAccess;
 };
 
-/** Name, order type, start status, guest range and line count; archivers also get the row actions. */
-export function useTemplateColumns({ statuses, types, access }: TemplateColumnsInput): Column[] {
+/** Name, order type, start status, guest range, line count and the row action (Open). */
+export function useTemplateColumns({ statuses, types }: TemplateColumnsInput): Column[] {
   const t = useTranslations("orderTemplate");
   const common = useTranslations("common");
   return useMemo<Column[]>(
@@ -75,15 +73,13 @@ export function useTemplateColumns({ statuses, types, access }: TemplateColumnsI
             getValue: (row) => row.lines.length,
           }),
         ],
-        actions: access.canRemove
-          ? [
-              actionsColumn<OrderTemplateDto>({
-                label: common("actions"),
-                cell: (template) => <OrderTemplateRowActions template={template} access={access} />,
-              }),
-            ]
-          : [],
+        actions: [
+          actionsColumn<OrderTemplateDto>({
+            label: common("actions"),
+            cell: (template) => <OrderTemplateRowActions template={template} />,
+          }),
+        ],
       }),
-    [t, common, statuses, types, access],
+    [t, common, statuses, types],
   );
 }

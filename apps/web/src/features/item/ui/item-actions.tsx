@@ -7,13 +7,12 @@ export type ItemActionsProps = {
   abilities: CallerAbilities;
 };
 
-/** The item page's header actions, each by its permission (`ItemHeaderActions`). */
+/** The item page's header action by its permission (`ItemHeaderActions`). */
 export function ItemActions({ item, abilities }: ItemActionsProps) {
   return (
     <ItemHeaderActions
       item={item}
       canOrder={can({ abilities, permission: "order:write" }) && item.status === "ACTIVE"}
-      canArchive={can({ abilities, permission: "item:delete" })}
     />
   );
 }

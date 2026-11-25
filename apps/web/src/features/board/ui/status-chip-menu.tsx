@@ -8,8 +8,6 @@ import {
   type KanbanPhaseData,
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { ArchiveOrderStatusDialog } from "@/features/order-status/ui/archive-order-status-dialog";
 import { EditOrderStatusItem } from "@/features/order-status/ui/edit-order-status-item";
 import type { BoardAccess } from "@/features/pipeline/load-pipeline-data";
 
@@ -18,7 +16,6 @@ export type StatusChipMenuProps = {
   /** The column the chip is in; null = the tray. */
   phaseId: string | null;
   phases: readonly KanbanPhaseData[];
-  statuses: readonly OrderStatusDto[];
   access: BoardAccess;
   onMove: (input: { statusId: string; toPhaseId: string | null }) => void;
 };
@@ -51,33 +48,17 @@ function MoveToMenu({ orderStatus, phaseId, phases, onMove }: MoveToProps) {
 }
 
 /**
- * A chip's menu. "Move to" is the view's (anyone who may edit it, ADR 0111); editing and archiving a status change
- * the flow for everyone and show only with `pipeline:write` / `pipeline:delete` (ADR 0076).
+ * A chip's menu. "Move to" is the view's (anyone who may edit it, ADR 0111); editing a status
+ * changes the flow for everyone and shows only with `pipeline:write` (ADR 0076). A status is
+ * archived on its own page (its danger area), never here.
  */
 export function StatusChipMenu(props: StatusChipMenuProps) {
-  const { orderStatus, statuses, access } = props;
-  const t = useTranslations("orderStatus");
+  const { orderStatus, access } = props;
   const phase = useTranslations("boardPhase");
-  const [archiveOpen, setArchiveOpen] = useState(false);
   return (
-    <>
-      <DataTableRowActions compact label={phase("statusActions", { name: orderStatus.name })}>
-        {access.configure ? <EditOrderStatusItem id={orderStatus.id} /> : null}
-        <MoveToMenu {...props} />
-        {access.configure && access.removeStatus ? (
-          <DropdownMenuItem destructive onSelect={() => setArchiveOpen(true)}>
-            {t("archive")}
-          </DropdownMenuItem>
-        ) : null}
-      </DataTableRowActions>
-      {archiveOpen ? (
-        <ArchiveOrderStatusDialog
-          orderStatus={orderStatus}
-          statuses={statuses}
-          open
-          onOpenChange={(open) => !open && setArchiveOpen(false)}
-        />
-      ) : null}
-    </>
+    <DataTableRowActions compact label={phase("statusActions", { name: orderStatus.name })}>
+      {access.configure ? <EditOrderStatusItem id={orderStatus.id} /> : null}
+      <MoveToMenu {...props} />
+    </DataTableRowActions>
   );
 }

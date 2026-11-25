@@ -1,46 +1,28 @@
 "use client";
 
 import type { EntityTypeDto } from "@bibi/core";
-import { ContextMenuItem, DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
+import { ContextMenuItem, DataTableRowActions } from "@bibi/ui";
 import { ExternalLinkIcon, PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
 import { entityTypeRoute } from "@/lib/configuration-routes";
 import { Link, useRouter } from "@/lib/navigation";
-import { ArchiveEntityTypeDialog } from "./archive-entity-type-dialog";
 
 export type EntityTypeRowActionsProps = {
   entityType: EntityTypeDto;
   access: RowAccess;
 };
 
-/** Edit / archive menu for one entity type row. */
+/** Edit (or Open) for one entity type row; it is archived on its own page. */
 export function EntityTypeRowActions({ entityType, access }: EntityTypeRowActionsProps) {
   const t = useTranslations("entityType");
   const common = useTranslations("common");
-  const [archiving, setArchiving] = useState(false);
   const router = useRouter();
   const detail = entityTypeRoute({ id: entityType.id });
   const primary = access.canEdit
     ? [{ label: t("edit"), icon: PencilIcon, onClick: () => router.push(detail) }]
     : [{ label: common("open"), icon: ExternalLinkIcon, onClick: () => router.push(detail) }];
-  return (
-    <>
-      <DataTableRowActions label={common("actions")} primary={primary}>
-        {access.canRemove ? (
-          <DropdownMenuItem destructive onSelect={() => setArchiving(true)}>
-            {t("archive")}
-          </DropdownMenuItem>
-        ) : null}
-      </DataTableRowActions>
-      <ArchiveEntityTypeDialog
-        entityType={entityType}
-        open={archiving}
-        onOpenChange={setArchiving}
-      />
-    </>
-  );
+  return <DataTableRowActions label={common("actions")} primary={primary} />;
 }
 
 /** Right-click context menu for an entity type row. */

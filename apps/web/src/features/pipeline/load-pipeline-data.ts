@@ -19,15 +19,14 @@ import { runOperation } from "@/server/run-operation";
  * What the caller may do with the board shown (ADR 0076, 0111): `write` edits its name and
  * columns (everyone who sees a view; the default view needs `board:write`), `remove` removes a
  * column (the same), `manage` changes its sharing and archives it (its owner or `board:delete`,
- * never the default view); `configure` and `removeStatus` change the flow for everyone
- * (`pipeline:write`, `pipeline:delete`).
+ * never the default view); `configure` changes the flow for everyone (`pipeline:write`); a
+ * status is archived only on its own page.
  */
 export type BoardAccess = {
   write: boolean;
   remove: boolean;
   manage: boolean;
   configure: boolean;
-  removeStatus: boolean;
 };
 
 /** A member a view can be shared with. */
@@ -122,7 +121,6 @@ export async function loadPipelineData({
     remove: edit,
     manage,
     configure: can({ abilities, permission: "pipeline:write" }),
-    removeStatus: can({ abilities, permission: "pipeline:delete" }),
   };
   const value = { board: board.value, boards: boards.value.items, statuses: statuses.value.items };
   return {

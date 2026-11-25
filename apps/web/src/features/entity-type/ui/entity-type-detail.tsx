@@ -8,16 +8,14 @@ import { PageTour } from "@/components/tour/page-tour";
 import { loadEntityType } from "@/features/entity-type/load-entity-type";
 import { FieldSection } from "@/features/field-definition/ui/field-section";
 import { loadItemTypeGroups } from "@/features/item-type-group/load-item-type-groups";
-import { Link } from "@/lib/navigation";
-import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
-import { ArchiveEntityTypeButton } from "./archive-entity-type-button";
+import { EntityTypeDangerArea } from "./entity-type-danger-area";
 import { EntityTypeForm } from "./entity-type-form";
 
 export type EntityTypeDetailProps = { locale: Locale; id: string };
 
-/** Type detail page: rename, capabilities (one form, saved together), fields and archive. */
+/** Type detail page: rename, capabilities (one form, saved together), fields, danger area. */
 export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
   const [t, abilities, result, groups] = await Promise.all([
     getTranslations("entityType"),
@@ -27,15 +25,12 @@ export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
   ]);
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const entityType = result.value;
-  const archive = can({ abilities, permission: "configuration:delete" }) ? (
-    <ArchiveEntityTypeButton entityType={entityType} redirectToList />
-  ) : undefined;
   return (
     <div className="grid gap-6">
       <CrumbName href={`/admin/types/${id}`} name={entityType.name} />
       <PageTour tour="item-type" />
       <div className="grid gap-4">
-        <PageHeader title={entityType.name} actions={archive} />
+        <PageHeader title={entityType.name} />
         <Badge variant="outline" className="w-fit">
           {t(`bases.${entityType.base}`)}
         </Badge>
@@ -47,6 +42,9 @@ export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
         </section>
       ) : null}
       <FieldSection entityType={entityType} />
+      {can({ abilities, permission: "configuration:delete" }) ? (
+        <EntityTypeDangerArea entityType={entityType} />
+      ) : null}
     </div>
   );
 }

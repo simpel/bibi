@@ -3,9 +3,14 @@ import type { OrderVersionDto } from "@bibi/core/schemas";
 /** Quote states that mean the version went to the customer. */
 const SENT = new Set(["SENT", "ACCEPTED", "SUPERSEDED", "DECLINED", "EXPIRED"]);
 
-export type SentVersion = { version: OrderVersionDto; quoteVersion: number; status: string };
+export type SentVersion = {
+  version: OrderVersionDto;
+  quoteVersion: number;
+  status: string;
+  totalInclVatMinor: number;
+};
 
-/** The newest version sent as a quote, with that quote's number and status; null if none. */
+/** The newest version sent as a quote, with that quote's number, status and total; null if none. */
 export function latestSentVersion({
   versions,
 }: {
@@ -13,7 +18,14 @@ export function latestSentVersion({
 }): SentVersion | null {
   for (const version of versions) {
     const sent = [...version.quotes].reverse().find((quote) => SENT.has(quote.quoteStatus));
-    if (sent) return { version, quoteVersion: sent.version, status: sent.quoteStatus };
+    if (sent) {
+      return {
+        version,
+        quoteVersion: sent.version,
+        status: sent.quoteStatus,
+        totalInclVatMinor: sent.totalInclVatMinor,
+      };
+    }
   }
   return null;
 }

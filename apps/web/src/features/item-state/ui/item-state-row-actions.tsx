@@ -7,7 +7,6 @@ import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
 import { Link } from "@/lib/navigation";
 import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
-import { ArchiveItemStateDialog } from "./archive-item-state-dialog";
 import { ItemStateTransitionsDialog } from "./item-state-transitions-dialog";
 import { EditStateItem, MoveStateItems } from "./state-menu-items";
 
@@ -23,45 +22,32 @@ export type ItemStateRowActionsProps = {
   access: RowAccess;
 };
 
-type Dialog = "transitions" | "archive";
-
-/** Edit (page) / transitions / move / archive for one state. */
+/** Edit (page) / transitions / move for one state; it is archived on its own page. */
 export function ItemStateRowActions({ state, index, states, access }: ItemStateRowActionsProps) {
   const t = useTranslations("itemState");
   const common = useTranslations("common");
-  const [dialog, setDialog] = useState<Dialog | null>(null);
+  const [editingTransitions, setEditingTransitions] = useState(false);
   return (
     <>
       <DataTableRowActions label={common("actions")}>
         {access.canEdit ? (
           <>
             <EditStateItem id={state.id} />
-            <DropdownMenuItem onSelect={() => setDialog("transitions")}>
+            <DropdownMenuItem onSelect={() => setEditingTransitions(true)}>
               {t("editTransitions")}
             </DropdownMenuItem>
             <MoveStateItems states={states} index={index} />
           </>
         ) : null}
-        {access.canRemove ? (
-          <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
-            {t("archive")}
-          </DropdownMenuItem>
-        ) : null}
       </DataTableRowActions>
-      {dialog === "transitions" ? (
+      {editingTransitions ? (
         <ItemStateTransitionsDialog
           state={state}
           states={states}
           open
-          onOpenChange={(open) => !open && setDialog(null)}
+          onOpenChange={setEditingTransitions}
         />
       ) : null}
-      <ArchiveItemStateDialog
-        state={state}
-        states={states}
-        open={dialog === "archive"}
-        onOpenChange={(open) => !open && setDialog(null)}
-      />
     </>
   );
 }

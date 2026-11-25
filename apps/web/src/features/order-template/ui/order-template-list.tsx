@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
-import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadOrderTemplateData } from "../load-order-template-data";
@@ -51,7 +51,6 @@ export async function OrderTemplateList({ locale }: OrderTemplateListProps) {
           templates={items}
           statuses={data.value.statuses}
           types={data.value.orderTypes}
-          access={rowAccess({ abilities, feature: "orderTemplate" })}
         />
       )}
     </div>

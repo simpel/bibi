@@ -103,8 +103,12 @@ test("an admin edits statuses and the grid on step pages", async ({ page }) => {
     ),
   ).toBeVisible();
 
-  await rowAction({ page, row: "Spare", item: "Arkivera bokningsstatus" });
+  // A status is archived only in the danger area at the bottom of its own page.
+  await editStatus({ page, row: "Spare" });
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/admin\/pipeline\/[^/]+\/update$/);
+  await page.getByRole("button", { name: "Arkivera bokningsstatus" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Arkivera bokningsstatus" }).click();
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/admin\/pipeline$/);
   await expect(page.getByRole("cell", { name: "Spare" })).toHaveCount(0);
 });
 
@@ -142,7 +146,11 @@ test("an admin edits item states on step pages", async ({ page }) => {
   await page.getByRole("dialog").getByRole("button", { name: "Stäng" }).click();
   await expect(page.getByRole("row", { name: /^Tentative/ })).toContainText("Active");
 
-  await rowAction({ page, row: "Tentative", item: "Arkivera status" });
+  // A state is archived only in the danger area at the bottom of its own page.
+  await rowAction({ page, row: "Tentative", item: "Redigera status" });
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/admin\/item-states\/[^/]+\/update$/);
+  await page.getByRole("button", { name: "Arkivera status" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Arkivera status" }).click();
+  await expect(page).toHaveURL(ITEM_STATES);
   await expect(page.getByRole("cell", { name: "Tentative" })).toHaveCount(0);
 });

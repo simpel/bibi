@@ -12,7 +12,12 @@ export type ItemTabNavProps = {
 
 /** The item page's tabs, like the order page's; the hours tab is named by the item's kind. */
 export async function ItemTabNav({ itemId, tabs, current, hoursKind }: ItemTabNavProps) {
-  const t = await getTranslations("item.tabs");
+  const [t, common] = await Promise.all([getTranslations("item.tabs"), getTranslations("common")]);
+  const tabLabel = ({ tab }: { tab: ItemTab }) => {
+    if (tab === "hours") return t("hours", { kind: hoursKind });
+    if (tab === "danger") return common("dangerArea");
+    return t(tab);
+  };
   return (
     <PageTabNav
       base={itemRoute({ id: itemId })}
@@ -20,7 +25,7 @@ export async function ItemTabNav({ itemId, tabs, current, hoursKind }: ItemTabNa
       current={current}
       tabs={tabs.map((tab) => ({
         id: tab,
-        label: tab === "hours" ? t("hours", { kind: hoursKind }) : t(tab),
+        label: tabLabel({ tab }),
       }))}
     />
   );
