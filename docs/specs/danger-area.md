@@ -1,6 +1,6 @@
 # Danger area
 
-Target behaviour. Delete and retention wait for ADR 0118 (Proposed); archive is built.
+Target behaviour. Archive is built; delete, restore and retention follow ADR 0118 (accepted, being built).
 
 ## Rule
 - Every record with its own page has one danger area: the last section of the page, or the last tab when the page has tabs. It is the only place to archive or delete that record: no Archive or Delete in header actions, ⋯ menus, row actions or context menus of its list.

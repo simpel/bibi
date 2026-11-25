@@ -1,7 +1,7 @@
 # 0118 – Deleting archived records, by hand and after a retention period
 
 - **Date:** 2026-11-25
-- **Status:** Proposed
+- **Status:** Accepted (the user, 2026-11-25)
 - **Related:** 0006, 0032, 0051, 0054, 0056, 0106, 0113
 
 ## Context
