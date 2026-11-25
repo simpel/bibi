@@ -1,8 +1,9 @@
 import { cva, type VariantProps } from "class-variance-authority";
+import { CheckIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "../../lib/cn";
 import { AppLink } from "../app-link/app-link";
-import { Checkbox } from "../checkbox/checkbox";
+import { Button } from "../button/button";
 import {
   TASK_EDGE,
   TASK_ICONS,
@@ -37,7 +38,11 @@ export type TaskCheckboxProps = {
   className?: string;
 };
 
-/** The task's round checkbox: unfilled like the task itself, a muted tick once done. */
+/**
+ * The task's done toggle: a ghost icon button with a check, like the checkmark on a Needs you
+ * row. Open: a faint check that firms up on hover; done: the check in the task colour. The
+ * label says what a click does now and is the button's tooltip.
+ */
 export function TaskCheckbox({
   checked,
   onCheckedChange,
@@ -46,16 +51,22 @@ export function TaskCheckbox({
   className,
 }: TaskCheckboxProps) {
   return (
-    <Checkbox
-      checked={checked}
-      onCheckedChange={(value) => onCheckedChange?.(value === true)}
-      disabled={disabled}
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
       aria-label={label}
+      aria-pressed={checked}
+      disabled={disabled}
+      onClick={() => onCheckedChange?.(!checked)}
       className={cn(
-        "relative z-10 mt-0.5 rounded-full border-task bg-transparent shadow-none data-[state=checked]:border-muted-foreground data-[state=checked]:bg-transparent data-[state=checked]:text-muted-foreground",
+        "relative z-10 -my-1 size-7",
+        checked ? "text-task" : "text-muted-foreground/50 hover:text-foreground",
         className,
       )}
-    />
+    >
+      <CheckIcon />
+    </Button>
   );
 }
 
