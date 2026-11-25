@@ -28,6 +28,7 @@
     "noNote": "No note",
     "addToOrder": "Add to order",
     "addToOrderDescription": "Add the task to one of the customer's orders. It can only belong to one order.",
+    "noOrdersToAdd": "The customer has no orders to add it to yet. Create one from the ⋯ menu.",
     "busy": {
       "title": "{item} is busy",
       "theItem": "The item",

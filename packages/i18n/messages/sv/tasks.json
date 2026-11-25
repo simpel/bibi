@@ -28,6 +28,7 @@
     "noNote": "Ingen anteckning",
     "addToOrder": "Lägg till i bokning",
     "addToOrderDescription": "Lägg till uppgiften i en av kundens bokningar. Den kan bara höra till en bokning.",
+    "noOrdersToAdd": "Kunden har inga bokningar att lägga till den i än. Skapa en från ⋯-menyn.",
     "busy": {
       "title": "{item} är upptagen",
       "theItem": "Artikeln",

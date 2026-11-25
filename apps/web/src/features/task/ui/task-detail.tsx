@@ -12,6 +12,7 @@ import { taskRoute } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { loadLinkableOrders } from "../load-linkable-orders";
 import { loadMemberNames } from "../load-member-names";
 import { loadTask } from "../load-task";
 import { taskFormDataPromise } from "../load-task-form-data";
@@ -67,6 +68,8 @@ export async function TaskDetail({ locale, id }: TaskDetailProps) {
             <TaskHeaderActions
               task={{ id, name, done }}
               canEdit={canEdit}
+              canLinkOrder={!task.orderId && canEdit}
+              linkableOrders={loadLinkableOrders({ task })}
               canCreateOrder={!task.orderId && can({ abilities, permission: "order:write" })}
               canArchive={can({ abilities, permission: "task:delete" })}
             />
