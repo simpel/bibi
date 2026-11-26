@@ -816,6 +816,48 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > ★ Active rows of all types except soft ones (soft holds and their buffers) may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`. `HOLD`, `SETUP` and `TEARDOWN` are written only by database triggers (ADR 0053), in the same transaction as the change to the line, its state, setup, item, item type, order or status: a line holds while it and its order are active, the order's status is not closing, it is timed, its item's type is `BOOKABLE` and its state holds and is not released. A hold of either kind gets a `SETUP` right before and a `TEARDOWN` right after, of its own kind, when their effective minutes are above zero (ADR 0059): setup is the line's, else the item's, else the type's `setupMinutes`, or the setup's changeover time (`changeoverMinutes`) when that is larger; teardown is the line's, else the item's, else the type's `teardownMinutes`. A held line also holds the unit of each active, filled `LineAllocation` of an active demand whose unit's type is `BOOKABLE`, for the demand's non-empty windows, with the line's kind; the unit's own buffers do not apply. Filling, changing or removing an allocation re-derives its line; changing a demand's windows or archiving it re-derives its lines. Changing a state's `hold`/`released`, a setup's changeover time, an item's or a type's buffer minutes, a type's capabilities or a status's `closes` re-derives only lines that have not ended (the past calendar is frozen); an overlap refuses the change with `CONFLICT` and one issue per line (`lines.<id>`). Application code never writes line holds (a test enforces it).
 
+## Reservations (ADR 0119)
+
+*Target* · Table booking for dining rooms: guests book on the organization's booking page or through the public API; staff on Reservations. Spec: [table-reservations](specs/table-reservations.md).
+
+### DiningService (`DiningService`)
+A sitting: when a dining room takes table bookings, with which layout and at what pace (UI "Sitting").
+- room item (`roomItemId`, an item with `SETUPS`), layout (`layoutId`, a dining layout of that room)
+- name (unique among the room's active sittings), weekdays (0 = Monday), first and last booking minute, closing minute
+- season (`validFrom`, `validUntil`: plain-date keys, nullable)
+- slot interval minutes (default 15), `turnTimes` (ordered `{ upToParty, minutes }` rows), `maxCoversPerSlot` (nullable = no pace limit)
+- online rules: `minHoursAhead`, `maxDaysAhead`, `changeCutoffMinutes`, `maxOnlineParty`
+- deposit: `depositFromParty` and `depositPerCoverMinor` (both nullable = none)
+- status
+All owned. `diningService.list|get|create|update|archive` (`diningSetup:*`).
+
+### DiningServiceException (`DiningServiceException`)
+One date's change to a sitting: closed, or other hours, layout or pace. One per sitting and date (plain-date key, read in the room's zone). Owned. `diningServiceException.list|set|delete`.
+
+### TableCombination (`TableCombination`) and members
+Tables of one dining layout booked together for one party; also how a splittable table is modelled (its pieces plus their combination). Owned: layout, name, `minCovers`, `maxCovers` (nullable = sum of seats), `bookable` (online), status; members are `FloorElement` FKs (`TableCombinationMember`, at least two). Replaced as a set by `tableCombination.save`.
+
+### Reservation (`Reservation`)
+One party at one or more tables for a time range. Not an order (ADR 0119); a deposit creates a private order behind it (`orderId`).
+- room item, sitting (`serviceId`, nullable when staff book outside one), `startsAt`, `endsAt`, `partySize`
+- status (`PENDING_PAYMENT`, `BOOKED`, `SEATED`, `COMPLETED`, `CANCELLED`, `NO_SHOW`; fixed, not the organization's statuses), `source` (`STAFF`, `WEB`, `API`), `cancelledBy`, `cancelledAt`, `seatedAt`
+- booker: `bookerName`, `bookerPhone`, `bookerEmail`, `note` (personal data; erased 90 days after `endsAt`, `erasedAt` set)
+- optional `customerId`, `contactId` (staff link a regular or a company), optional `orderId` (deposit)
+- `publicToken` (32 random bytes, the manage link; never in the DTO)
+- requirement counts in `ReservationRequirement` (list value + count, ADR 0021)
+All owned. Operations: `reservation.*` (`reservation:read|write|delete`); public ones are `systemOnly` (spec).
+
+### TableHold (`TableHold`) ★
+One table held for `[startsAt, endsAt)`: for a reservation (`RESERVATION`, `reservationId` set) or a staff block (`BLOCK`: nobody books; `ONLINE_ONLY`: guests do not). Owned; `note` on blocks. ★ Active holds on one table may not overlap: an exclusion constraint (`btree_gist`) like `Occupancy`; core maps a violation to `CONFLICT`. Released holds are `ARCHIVED`. A whole-room block is a manual `Occupancy` on the room.
+
+### BookingPage (`BookingPage`)
+The organization's public booking page, lightly white-labelled. One per organization. Owned: `slug` (unique), logo and cover (`File` FKs), `accentColor` (contrast ≥ 4.5:1 on white), intro and policy per locale (`sv`, `en`), contact phone and email, `embedOrigins` (https origins; plain strings, ADR 0056 allows values that are not ids), `published`. `bookingPage.get|update` (`diningSetup:*`).
+
+### Changes on existing entities
+- `SetupLayout.diningEnabled` (owned): its seated pieces are tables.
+- `FloorElement.tableLabel`, `minCovers`, `maxCovers`, `onlineBookable` (owned, through `layout.save`; element ids are stable across saves).
+- `Item.bookingOpenThrough` (owned, plain-date key, nullable): the last date guests can book in this dining room.
+
 ## Items
 
 ### Item (`Item`)

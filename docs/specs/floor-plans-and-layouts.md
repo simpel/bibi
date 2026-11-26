@@ -57,4 +57,4 @@ These are fire-safety limits and refuse a save; every other drawing check is a w
 ## Later slices (not in this spec's scope)
 - A booking's own variant of a layout (a snapshot on the line, ADR 0052).
 - Kinds linked to an equipment pool and a check of free furniture over time (ADR 0059).
-- Elements as bookable items (tables for restaurants, table combinations).
+- Elements as bookable items (tables for restaurants, table combinations): ADR 0119, `docs/specs/table-reservations.md`.
