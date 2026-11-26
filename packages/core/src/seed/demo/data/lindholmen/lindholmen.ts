@@ -10,6 +10,13 @@ import { lindholmenClosedOrders } from "./closed-orders";
 import { lindholmenLists } from "./config";
 import { lindholmenCustomers } from "./customers";
 import { lindholmenDensity } from "./density";
+import {
+  kajenFloorPlan,
+  kajenRoom,
+  lindholmenDining,
+  terrassenFloorPlan,
+  terrassenRoom,
+} from "./dining";
 import { lindholmenDishes } from "./dishes";
 import { lindholmenDrinks } from "./drinks";
 import { lindholmenFloorPlans } from "./floor-plans";
@@ -36,6 +43,8 @@ const fixtures = [
 // Parts come after the items they contain.
 const items = [
   ...lindholmenRooms,
+  kajenRoom,
+  terrassenRoom,
   ...lindholmenDishes,
   ...lindholmenDrinks,
   ...lindholmenMeals,
@@ -94,7 +103,8 @@ export const lindholmen: DemoOrg = {
     },
     venueHours: lindholmenHours,
     items,
-    floorPlans: lindholmenFloorPlans,
+    floorPlans: [...lindholmenFloorPlans, kajenFloorPlan, terrassenFloorPlan],
+    dining: lindholmenDining,
     checks: { listSizes: { Allergens: 14 } },
   },
   responsibilities: lindholmenResponsibilities,

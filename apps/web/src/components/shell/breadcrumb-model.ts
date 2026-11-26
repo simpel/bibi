@@ -53,6 +53,8 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   layouts: "layouts",
   "floor-plan": "floorPlan",
   "run-sheets": "runSheets",
+  "table-booking": "tableBooking",
+  reservations: "reservations",
   "price-lists": "priceLists",
   responsibilities: "responsibilities",
   integrations: "integrations",
@@ -142,7 +144,9 @@ export function buildCrumbs({ pathname }: BuildCrumbsInput): Crumb[] {
   }
   const tabAt = all.findIndex((segment) => TAB_SEGMENTS.has(segment));
   const untabbed = tabAt >= 0 ? all.slice(0, tabAt + 1) : all;
-  const segments = PERIOD_PAGES.has(untabbed[0] ?? "") ? untabbed.slice(0, 1) : untabbed;
+  // The day view puts its date (and floor tab) in the path: one crumb, like the calendar.
+  const dayView = untabbed[0] === "reservations" && untabbed[1] === "day";
+  const segments = PERIOD_PAGES.has(untabbed[0] ?? "") || dayView ? untabbed.slice(0, 1) : untabbed;
   if (segments[0] === "quotes") {
     return [
       { href: "/orders", labelKey: "orders" },

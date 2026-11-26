@@ -113,7 +113,10 @@ async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> 
     {
       what: "layouts",
       actual: await db.setupLayout.count(),
-      expected: sum({ values: layouts }) + drawnOnly,
+      expected:
+        sum({ values: layouts }) +
+        drawnOnly +
+        sum({ values: (config.dining ?? []).map((room) => room.copies.length) }),
     },
   ];
 }

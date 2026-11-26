@@ -1,7 +1,19 @@
 import { createId } from "@paralleldrive/cuid2";
 import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
-import type { BillingGateway, BillingSubscription, CreateBillingCheckoutInput } from "./gateway";
+import type {
+  BillingGateway,
+  BillingSubscription,
+  CreateBillingCheckoutInput,
+  PlanPrices,
+} from "./gateway";
+import { BILLING_PLAN } from "./plan";
+
+const price = ({ amountMinor, interval }: { amountMinor: number; interval: "MONTH" | "YEAR" }) => ({
+  amountMinor,
+  currency: BILLING_PLAN.currency,
+  interval,
+});
 
 export type MemoryBillingGateway = BillingGateway & {
   checkouts: CreateBillingCheckoutInput[];
@@ -9,6 +21,8 @@ export type MemoryBillingGateway = BillingGateway & {
   /** What Stripe would hold; tests put a subscription here to mimic a finished checkout. */
   subscriptions: Map<string, BillingSubscription>;
   configured: boolean;
+  /** What Stripe's prices hold; null mimics billing that is not configured. */
+  prices: PlanPrices | null;
 };
 
 /** An in-memory billing gateway for tests and the demo seed (no network). */
@@ -18,6 +32,11 @@ export function createMemoryBillingGateway(): MemoryBillingGateway {
     seats: [],
     subscriptions: new Map(),
     configured: true,
+    prices: {
+      baseMonthly: price({ amountMinor: BILLING_PLAN.baseMonthlyMinor, interval: "MONTH" }),
+      baseYearly: price({ amountMinor: BILLING_PLAN.baseYearlyMinor, interval: "YEAR" }),
+      seat: price({ amountMinor: BILLING_PLAN.seatMonthlyMinor, interval: "MONTH" }),
+    },
     isConfigured: async () => gateway.configured,
     createCustomer: async () => ok({ value: { customerId: `cus_memory_${createId()}` } }),
     createCheckout: async (input) => {
@@ -42,6 +61,7 @@ export function createMemoryBillingGateway(): MemoryBillingGateway {
       if (found) gateway.subscriptions.set(subscriptionId, { ...found, seatQuantity: quantity });
       return ok({ value: true });
     },
+    getPrices: async () => ok({ value: gateway.prices }),
   };
   return gateway;
 }

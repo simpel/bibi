@@ -21,6 +21,7 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   // Table booking (ADR 0119).
   reservation: "reservation",
   tableHold: "reservation",
+  tableBlock: "reservation",
   diningRoom: "diningSetup",
   diningService: "diningSetup",
   diningServiceException: "diningSetup",

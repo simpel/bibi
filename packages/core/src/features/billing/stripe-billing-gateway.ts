@@ -7,6 +7,7 @@ import { withBillingKeys } from "./billing-keys";
 import { checkoutParams } from "./checkout-params";
 import type { BillingGateway, CreateBillingCheckoutInput } from "./gateway";
 import { billingStripeRequest } from "./stripe-billing-request";
+import { readPlanPrices } from "./stripe-plan-prices";
 import { findCustomerSubscription, readSubscription, writeSeats } from "./stripe-subscription";
 
 /** One customer per organization; changed details within Stripe's 24 h make a new key. */
@@ -81,4 +82,9 @@ export const stripeBillingGateway: BillingGateway = {
     withBillingKeys({ run: (keys) => findCustomerSubscription({ keys, customerId }) }),
   setSeats: ({ subscriptionId, quantity }) =>
     withBillingKeys({ run: (keys) => writeSeats({ keys, subscriptionId, quantity }) }),
+  getPrices: async () => {
+    const keys = await loadBillingKeys();
+    if (!keys.ok || !keys.value) return keys.ok ? ok({ value: null }) : keys;
+    return readPlanPrices({ keys: keys.value });
+  },
 };

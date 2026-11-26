@@ -1,6 +1,8 @@
 import { getEnv } from "@bibi/config";
+import { setReservationMailer } from "@bibi/core";
 import { createSystemLogSink, getDb } from "@bibi/db";
 import { getLogger, initLogger, installProcessHandlers } from "@bibi/logger";
+import { sendReservationMail } from "@bibi/mail";
 import { createBoss } from "./create-boss";
 import { JOBS } from "./jobs";
 import { startProviderStreams } from "./provider-streams";
@@ -10,6 +12,8 @@ import { registerJobs } from "./register-jobs";
 const logSink = createSystemLogSink({ retentionDays: getEnv().SYSTEM_LOG_RETENTION_DAYS });
 initLogger({ service: "worker", sinks: [logSink] });
 installProcessHandlers({ exitOnUncaught: true });
+// Reservation reminders and system cancellations mail guests through this port (ADR 0119).
+setReservationMailer({ mailer: sendReservationMail });
 
 async function main(): Promise<void> {
   const boss = createBoss();

@@ -12,6 +12,7 @@ const SQL_FILES = [
   "notify_notification.sql",
   "notify_inbox.sql",
   "sync_record_relations.sql",
+  "room_reservations_guard.sql",
 ] as const;
 
 /** The latest migration that applies one trigger SQL file. */

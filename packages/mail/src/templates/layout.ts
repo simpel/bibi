@@ -11,8 +11,28 @@ export function escapeHtml({ value }: { value: string }): string {
     .replace(/'/g, "&#039;");
 }
 
+/** Optional white-label for guest-facing mail: the venue's logo and an already contrast-checked accent. */
+export type EmailBranding = {
+  name?: string;
+  logoUrl?: string | null;
+  accentColor?: string | null;
+  poweredBy?: string;
+};
+
+const DEFAULT_ACCENT = "#1a4e30";
+
+/** Returns the accent when it is a plain `#rrggbb`, else the Bibi default (never injects CSS). */
+export function resolveAccent({ accentColor }: { accentColor?: string | null }): string {
+  return accentColor && /^#[0-9a-fA-F]{6}$/.test(accentColor) ? accentColor : DEFAULT_ACCENT;
+}
+
+function resolveLogoUrl({ logoUrl }: { logoUrl?: string | null }): string | undefined {
+  return logoUrl && /^https?:\/\//i.test(logoUrl) ? logoUrl : undefined;
+}
+
 export type EmailLayoutInput = {
   contentHtml: string;
+  branding?: EmailBranding;
   locale?: Locale;
   preheader?: string;
 };
@@ -29,13 +49,17 @@ export type EmailLayoutInput = {
  */
 export function renderEmailLayout({
   contentHtml,
+  branding,
   locale = "sv",
   preheader,
 }: EmailLayoutInput): string {
   const env = getEnv();
   const webUrl = env.WEB_ORIGIN.replace(/\/+$/, "");
-  const logoUrl = `${webUrl}/wordmark.png`;
+  const brandLogo = resolveLogoUrl({ logoUrl: branding?.logoUrl });
+  const logoUrl = brandLogo ?? `${webUrl}/wordmark.png`;
+  const logoAlt = brandLogo ? (branding?.name ?? "") : "Bibi";
   const homeUrl = `${webUrl}/${locale}`;
+  const accent = resolveAccent({ accentColor: branding?.accentColor });
   const catalog = getCatalog({ locale }) as unknown as {
     email?: { common?: Record<string, string> };
   };
@@ -87,7 +111,7 @@ export function renderEmailLayout({
       display: block;
     }
     a {
-      color: #1a4e30;
+      color: ${accent};
       text-decoration: underline;
     }
   </style>
@@ -98,7 +122,7 @@ export function renderEmailLayout({
       ? `<div style="display: none; max-height: 0px; overflow: hidden; mso-hide: all;">${escapeHtml({ value: preheader })}</div>`
       : ""
   }
-  <table role="presentation" width="100%" bgcolor="#fdfcfa" border="0" cellspacing="0" cellpadding="0" style="background-color: #fdfcfa;">
+  <table role="presentation" width="100%" bgcolor="#fdfcfa" border="0" cellspacing="0" cellpadding="0" style="background-color: #fdfcfa;${branding ? ` border-top: 4px solid ${accent};` : ""}">
     <tr>
       <td align="center" style="padding: 40px 20px 48px 20px;">
         <!--[if (gte mso 9)|(IE)]>
@@ -111,7 +135,7 @@ export function renderEmailLayout({
           <tr>
             <td align="left" style="padding-bottom: 36px;">
               <a href="${homeUrl}" target="_blank" style="display: inline-block; text-decoration: none;">
-                <img src="${logoUrl}" alt="Bibi" width="72" height="48" border="0" style="width: 72px; max-width: 72px; height: 48px; display: block; border: 0;" />
+                <img src="${escapeHtml({ value: logoUrl })}" alt="${escapeHtml({ value: logoAlt })}" ${brandLogo ? 'height="48"' : 'width="72" height="48"'} border="0" style="${brandLogo ? "max-width: 200px; max-height: 48px; width: auto;" : "width: 72px; max-width: 72px;"} height: 48px; display: block; border: 0;" />
               </a>
             </td>
           </tr>
@@ -125,7 +149,7 @@ export function renderEmailLayout({
           <tr>
             <td align="left" style="border-top: 1px solid #e5e3de; padding-top: 24px; color: #5f564e; font-size: 13px; line-height: 20px;">
               <p style="margin: 0; color: #5f564e; font-size: 12px; line-height: 18px;">
-                ${escapeHtml({ value: automatedNotice })}
+                ${escapeHtml({ value: automatedNotice })}${branding?.poweredBy ? ` ${escapeHtml({ value: branding.poweredBy })}` : ""}
               </p>
             </td>
           </tr>
@@ -145,15 +169,18 @@ export function renderEmailLayout({
 export type RenderButtonInput = {
   href: string;
   label: string;
+  accentColor?: string | null;
 };
 
 /** Primary action button matching Bibi design tokens (Nordic Spruce #1a4e30, linen ivory text). */
-export function renderButton({ href, label }: RenderButtonInput): string {
+export function renderButton({ href, label, accentColor }: RenderButtonInput): string {
+  const accent = resolveAccent({ accentColor });
+  const textColor = accent === DEFAULT_ACCENT ? "#fdfaf4" : "#ffffff";
   return `
 <table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin: 28px 0 24px 0;">
   <tr>
-    <td align="center" bgcolor="#1a4e30" style="border-radius: 6px; background-color: #1a4e30; padding: 12px 28px;">
-      <a href="${escapeHtml({ value: href })}" target="_blank" style="display: inline-block; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 500; color: #fdfaf4; text-decoration: none; border-radius: 6px; letter-spacing: 0.01em;">
+    <td align="center" bgcolor="${accent}" style="border-radius: 6px; background-color: ${accent}; padding: 12px 28px;">
+      <a href="${escapeHtml({ value: href })}" target="_blank" style="display: inline-block; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 500; color: ${textColor}; text-decoration: none; border-radius: 6px; letter-spacing: 0.01em;">
         ${escapeHtml({ value: label })}
       </a>
     </td>

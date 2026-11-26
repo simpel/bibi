@@ -114,6 +114,19 @@ const recordRoots = ({ db, where }: ScopeInput) => [
   db.record.deleteMany({ where }),
 ];
 
+/** Table booking (ADR 0119): first, since reservations point at orders, customers, rooms and layouts. */
+const diningRows = ({ db, where }: ScopeInput) => [
+  db.tableHold.deleteMany({ where }),
+  db.reservationRequirement.deleteMany({ where }),
+  db.reservation.deleteMany({ where }),
+  db.diningServiceException.deleteMany({ where }),
+  db.diningService.deleteMany({ where }),
+  db.tableCombinationMember.deleteMany({ where }),
+  db.tableCombination.deleteMany({ where }),
+  db.diningRoom.deleteMany({ where }),
+  db.bookingPage.deleteMany({ where }),
+];
+
 /**
  * Deletes organizations and everything they own, in one transaction. Business rows have no FK
  * to `organization` and are deleted explicitly, children first; Better Auth rows (members,
@@ -130,6 +143,7 @@ export async function deleteOrganizations({
     db.embedding.deleteMany({ where }),
     db.message.deleteMany({ where }),
     db.conversation.deleteMany({ where }),
+    ...diningRows({ db, where }),
     ...orderChildren({ db, where }),
     ...itemStates({ db, where }),
     ...configLinks({ db, where }),

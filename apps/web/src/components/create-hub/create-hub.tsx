@@ -1,6 +1,7 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/states/page-header";
+import { loadHasDiningRooms } from "@/features/reservation/load-has-dining-rooms";
 import { Link } from "@/lib/navigation";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import type { CreateGroup } from "./create-item-types";
@@ -11,7 +12,11 @@ const GROUPS: CreateGroup[] = ["work", "catalog", "settings"];
 /** `/new`: every thing the caller can create, grouped, one card each. */
 export async function CreateHub() {
   const t = await getTranslations("createHub");
-  const items = creatableItems({ permissions: (await getCallerAbilities()).permissions });
+  const [abilities, hasDiningRooms] = await Promise.all([
+    getCallerAbilities(),
+    loadHasDiningRooms(),
+  ]);
+  const items = creatableItems({ permissions: abilities.permissions, hasDiningRooms });
   return (
     <div className="grid gap-8">
       <PageHeader title={t("title")} description={t("description")} />

@@ -988,5 +988,161 @@
       "matches": "Stämmer med offert v{version}",
       "changed": "{count, plural, one {# ändring} other {# ändringar}} sedan offert v{version}"
     }
+  },
+  "reservation": {
+    "title": "Bordsbokningar",
+    "room": "Rum",
+    "noRooms": "Inget rum tar bordsbokningar än",
+    "noRoomsDescription": "En administratör ställer in ett rum under Administration, Bordsbokning.",
+    "empty": "Inga bokningar den här dagen",
+    "anonymous": "Raderad",
+    "day": {
+      "previous": "Föregående dag",
+      "next": "Nästa dag",
+      "today": "Idag"
+    },
+    "totals": {
+      "reservations": "{count, plural, one {# bokning} other {# bokningar}}",
+      "covers": "{count, plural, one {# gäst} other {# gäster}}"
+    },
+    "columns": {
+      "time": "Tid",
+      "party": "Personer",
+      "name": "Namn",
+      "tables": "Bord",
+      "needs": "Behov",
+      "source": "Källa",
+      "state": "Status"
+    },
+    "source": {
+      "STAFF": "Personal",
+      "WEB": "Bokningssida",
+      "API": "API"
+    },
+    "state": {
+      "PENDING_PAYMENT": "Väntar på betalning",
+      "BOOKED": "Bokad",
+      "SEATED": "Vid bordet",
+      "COMPLETED": "Avslutad",
+      "CANCELLED": "Avbokad",
+      "NO_SHOW": "Uteblev"
+    },
+    "actions": {
+      "seat": "Sätt vid bord",
+      "unseat": "Ångra sittning",
+      "complete": "Avsluta",
+      "markNoShow": "Markera som uteblivit",
+      "cancel": "Avboka"
+    },
+    "toast": {
+      "seat": "Sällskapet sattes vid bordet",
+      "unseat": "Sittningen ångrades",
+      "complete": "Bokningen avslutades",
+      "markNoShow": "Markerad som uteblivit",
+      "cancel": "Bokningen avbokades"
+    },
+    "cancel": {
+      "title": "Avboka bokningen för {name}?",
+      "description": "Borden släpps och bokaren får ett mejl om det finns en adress.",
+      "confirm": "Avboka",
+      "action": "Avboka"
+    },
+    "create": {
+      "title": "Skapa bokning",
+      "description": "Välj dag och antal personer och sedan en ledig tid. Tider utanför en sittning eller över takten sparas med en varning.",
+      "date": "Datum",
+      "party": "Personer",
+      "time": "Tid",
+      "tables": "Bord",
+      "tablesHint": "Lämna tomt så väljer Bibi det minsta lediga bordet som passar.",
+      "name": "Namn",
+      "phone": "Telefon",
+      "email": "Mejl",
+      "note": "Anteckning",
+      "submit": "Skapa bokning",
+      "created": "Bokningen skapades",
+      "pickParty": "Ange datum och antal personer för att se tiderna.",
+      "loading": "Letar efter lediga tider…",
+      "noSlots": "Inga sittningar den dagen."
+    },
+    "needs": {
+      "title": "Behov",
+      "value": "Listvärde",
+      "quantity": "Hur många",
+      "remove": "Ta bort behov",
+      "add": "Lägg till behov"
+    },
+    "warning": {
+      "OUTSIDE_SITTING": "Utanför en sittning",
+      "OVER_PACE": "Över takten",
+      "ROOM_SOFT_HELD": "Rummet är reserverat för en order",
+      "OUTSIDE_ONLINE_WINDOW": "Utanför onlinefönstret"
+    },
+    "block": {
+      "title": "Spärra bord",
+      "description": "Håll bord tillbaka under en period, till exempel för en trasig värmare eller gäster utan bokning.",
+      "tables": "Bord",
+      "kind": "Hur",
+      "kinds": {
+        "BLOCK": "Spärra",
+        "ONLINE_ONLY": "Spara för gäster utan bokning"
+      },
+      "startDay": "Från dag",
+      "startTime": "Från tid",
+      "endDay": "Till dag",
+      "endTime": "Till tid",
+      "note": "Anteckning",
+      "submit": "Spärra bord",
+      "created": "Borden spärrades",
+      "released": "Spärren släpptes",
+      "release": "Släpp spärr",
+      "releaseTitle": "Släpp spärren på bord {label}?",
+      "releaseDescription": "Bordet kan bokas igen under perioden.",
+      "listTitle": "Bord som hålls tillbaka",
+      "table": "Bord {label}"
+    },
+    "floor": {
+      "title": "Salongen i {name}",
+      "table": "Bord {label}",
+      "time": "Tid",
+      "legend": {
+        "booked": "Blå kant: bokat",
+        "seated": "Gul kant: vid bordet",
+        "blocked": "Streckat: spärrat",
+        "onlineOnly": "Prickad kant: sparat för gäster utan bokning"
+      },
+      "noLayout": "Ingen planlösning att rita",
+      "noLayoutDescription": "Skapa en sittning för rummet så ser du salongen här.",
+      "walkIn": "Utan bokning"
+    },
+    "detail": {
+      "when": "När och var",
+      "editWhen": "Redigera tid och bord",
+      "date": "Datum",
+      "time": "Tid",
+      "party": "Personer",
+      "guests": "{count, plural, one {# gäst} other {# gäster}}",
+      "tables": "Bord",
+      "tablesHint": "Låt borden vara som de är så behåller Bibi dem när de fortfarande passar.",
+      "duration": "Minuter vid bordet",
+      "booker": "Bokare",
+      "editBooker": "Redigera bokare",
+      "name": "Namn",
+      "phone": "Telefon",
+      "email": "Mejl",
+      "note": "Anteckning",
+      "source": "Källa",
+      "editNeeds": "Redigera behov",
+      "noNeeds": "Inga behov noterade.",
+      "saved": "Bokningen sparades"
+    },
+    "popover": {
+      "open": "Öppna",
+      "free": "Bord {label} är ledigt {time}.",
+      "party": "Personer",
+      "fewer": "Färre personer",
+      "more": "Fler personer",
+      "seatHere": "Sätt gäster här"
+    }
   }
 }

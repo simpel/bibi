@@ -12,6 +12,7 @@ import { loadBillingGate } from "@/features/billing/load-billing-gate";
 import { AppPinnedBookings } from "@/features/calendar/ui/app-pinned-bookings";
 import { loadNeedsYou } from "@/features/my-work/load-needs-you";
 import { loadLiveCounts } from "@/features/notification/load-live-counts";
+import { loadHasDiningRooms } from "@/features/reservation/load-has-dining-rooms";
 import { loadUserPreferences } from "@/features/user-preference/load";
 import { welcomePath } from "@/features/welcome/lib/welcome-step";
 import { mustWelcomeFirst } from "@/features/welcome/load-welcome-gate";
@@ -49,14 +50,21 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
     inboxOpen: null,
     myWorkDue: null,
   }));
-  const [platformAdmin, abilities, preferences, helpPreferences, canDraftFromMessage] =
-    await Promise.all([
-      isPlatformAdmin({ userId: id }),
-      getCallerAbilities(),
-      loadUserPreferences({ prefix: TABLE_COLUMNS_PREFIX }),
-      loadUserPreferences({ prefix: HELP_DISMISSED_PREFIX }),
-      hasDraftModel(),
-    ]);
+  const [
+    platformAdmin,
+    abilities,
+    preferences,
+    helpPreferences,
+    canDraftFromMessage,
+    hasDiningRooms,
+  ] = await Promise.all([
+    isPlatformAdmin({ userId: id }),
+    getCallerAbilities(),
+    loadUserPreferences({ prefix: TABLE_COLUMNS_PREFIX }),
+    loadUserPreferences({ prefix: HELP_DISMISSED_PREFIX }),
+    hasDraftModel(),
+    loadHasDiningRooms(),
+  ]);
   return (
     <NextIntlClientProvider messages={pickSurfaceMessages({ locale, namespaces: APP_NAMESPACES })}>
       <TablePreferencesProvider preferences={preferences}>
@@ -70,6 +78,7 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
             access={{
               canConfigure: canOpenAdmin({ permissions: abilities.permissions }),
               canDraftFromMessage,
+              hasDiningRooms,
               platformAdmin,
               permissions: abilities.permissions,
             }}

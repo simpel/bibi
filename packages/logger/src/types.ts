@@ -12,6 +12,7 @@ export const SURFACES = [
   "cli",
   "system",
   "webhook",
+  "publicApi",
 ] as const;
 
 export type Surface = (typeof SURFACES)[number];

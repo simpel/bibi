@@ -55,12 +55,14 @@ import { priceListRoutes } from "./features/price-list/rest";
 import { profileRoutes } from "./features/profile/rest";
 import { quoteRoutes } from "./features/quote/rest";
 import { requirementRoutes } from "./features/requirement/rest";
+import { reservationRoutes } from "./features/reservation/rest";
 import { responsibilityRoutes } from "./features/responsibility/rest";
 import { runSheetRoutes } from "./features/run-sheet/rest";
 import { runSheetDefinitionRoutes } from "./features/run-sheet-definition/rest";
 import { settingsRoutes } from "./features/settings/rest";
 import { skillRoutes } from "./features/skill/rest";
 import { statusGridRoutes } from "./features/status-grid/rest";
+import { tableBlockRoutes } from "./features/table-block/rest";
 import { tableCombinationRoutes } from "./features/table-combination/rest";
 import { taskRoutes } from "./features/task/rest";
 import { userPreferenceRoutes } from "./features/user-preference/rest";
@@ -123,6 +125,8 @@ export function listRestRoutes(): RestRoute[] {
     ...floorPlanRoutes,
     ...diningRoomRoutes,
     ...diningServiceRoutes,
+    ...reservationRoutes,
+    ...tableBlockRoutes,
     ...tableCombinationRoutes,
     ...bookingPageRoutes,
     ...responsibilityRoutes,

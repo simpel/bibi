@@ -2,8 +2,10 @@ import { BOOKING_SURFACES } from "./booking-surfaces";
 import { LIFECYCLE_SURFACES } from "./lifecycle-surfaces";
 import { MONEY_SURFACES } from "./money-surfaces";
 import { PIPELINE_SURFACES } from "./pipeline-surfaces";
+import { RESERVATION_SURFACES } from "./reservation-surfaces";
 import { SALES_SURFACES } from "./sales-surfaces";
 import { SETTINGS_SURFACES } from "./settings-surfaces";
+import { TABLE_BOOKING_SURFACES } from "./table-booking-surfaces";
 import { WELCOME_SURFACES } from "./welcome-surfaces";
 
 /**
@@ -117,6 +119,8 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "runSheet.unfulfill", route: "/run-sheets/[id]" },
   ...BOOKING_SURFACES,
   ...SALES_SURFACES,
+  ...TABLE_BOOKING_SURFACES,
+  ...RESERVATION_SURFACES,
   ...MONEY_SURFACES,
   ...SETTINGS_SURFACES,
   ...WELCOME_SURFACES,

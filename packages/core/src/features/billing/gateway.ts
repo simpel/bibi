@@ -31,6 +31,11 @@ export type BillingSubscription = {
 
 export type SetSeatsInput = { subscriptionId: string; quantity: number };
 
+/** One of the plan's Stripe prices, as stored there: minor units excluding VAT, lower-case currency. */
+export type PlanPrice = { amountMinor: number; currency: string; interval: BillingInterval };
+
+export type PlanPrices = { baseMonthly: PlanPrice; baseYearly: PlanPrice; seat: PlanPrice };
+
 export type BillingCustomerRef = { customerId: string };
 export type BillingRedirectRef = { url: string };
 
@@ -46,4 +51,6 @@ export type BillingGateway = {
   findSubscription(input: { customerId: string }): Promise<Result<BillingSubscription | null>>;
   /** Sets the seat item's quantity (adds or removes the item), prorated. */
   setSeats(input: SetSeatsInput): Promise<Result<true>>;
+  /** The configured prices as Stripe holds them, or null while billing is not configured. */
+  getPrices(): Promise<Result<PlanPrices | null>>;
 };

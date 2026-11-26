@@ -6,6 +6,8 @@ import "../features/vocabulary/graphql";
 import "../features/floor-plan/graphql";
 import "../features/dining-room/graphql";
 import "../features/dining-service/graphql";
+import "../features/reservation/graphql";
+import "../features/table-block/graphql";
 import "../features/table-combination/graphql";
 import "../features/booking-page/graphql";
 import "../features/responsibility/graphql";

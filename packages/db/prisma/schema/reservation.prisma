@@ -188,6 +188,8 @@ model Reservation {
   bookerPhone      String?
   bookerEmail      String?
   note             String?
+  /// The guest's language for mails (`sv`, `en`); null = the organization's default.
+  locale           String?
   /// Staff's link to a regular or a company.
   customerId       String?
   contactId        String?
@@ -202,6 +204,8 @@ model Reservation {
   cancelledAt      DateTime?
   cancelledBy      ReservationCanceller?
   cancelReason     String?
+  /// Set when the day-before reminder went out (ADR 0119), so it goes once.
+  reminderSentAt   DateTime?
   erasedAt         DateTime?
   status           RecordStatus             @default(ACTIVE)
   createdAt        DateTime                 @default(now())

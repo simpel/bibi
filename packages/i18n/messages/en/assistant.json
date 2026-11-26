@@ -201,7 +201,14 @@
         "intro": "Introduction",
         "policy": "Booking policy",
         "embedOrigins": "Allowed embed origins",
-        "published": "Published"
+        "published": "Published",
+        "partySize": "People",
+        "durationMinutes": "Minutes at the table",
+        "tableIds": "Tables",
+        "bookerName": "Booker",
+        "bookerPhone": "Booker phone",
+        "bookerEmail": "Booker email",
+        "requirements": "Needs"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -386,7 +393,16 @@
         "diningServiceException_set": "Save sitting exception",
         "diningServiceException_delete": "Delete sitting exception",
         "tableCombination_save": "Save table combinations",
-        "bookingPage_update": "Edit booking page"
+        "bookingPage_update": "Edit booking page",
+        "reservation_create": "Create reservation",
+        "reservation_update": "Edit reservation",
+        "reservation_cancel": "Cancel reservation",
+        "reservation_seat": "Seat party",
+        "reservation_unseat": "Undo seating",
+        "reservation_complete": "Complete reservation",
+        "reservation_markNoShow": "Mark as no-show",
+        "tableBlock_create": "Block tables",
+        "tableBlock_delete": "Release table block"
       },
       "setup": {
         "title": "Create my first version",
@@ -853,6 +869,38 @@
         "linked": "Linked to an order",
         "noDueTime": "No due time",
         "archived": "Deleted"
+      },
+      "reservation": {
+        "empty": "No reservations found.",
+        "reservations": "{count, plural, one {# reservation} other {# reservations}}",
+        "covers": "{count, plural, one {# cover} other {# covers}}",
+        "guests": "{count, plural, one {# guest} other {# guests}}",
+        "table": "Table",
+        "noTable": "No table",
+        "anonymous": "Erased",
+        "unavailable": "Not available",
+        "noSittings": "No sittings that day.",
+        "alreadyComing": "{count} already coming",
+        "noBlocks": "No held-back tables.",
+        "kind": {
+          "BLOCK": "Blocked",
+          "ONLINE_ONLY": "Kept for walk-ins"
+        },
+        "state": {
+          "PENDING_PAYMENT": "Awaiting payment",
+          "BOOKED": "Booked",
+          "SEATED": "Seated",
+          "COMPLETED": "Completed",
+          "CANCELLED": "Cancelled",
+          "NO_SHOW": "No-show"
+        },
+        "warning": {
+          "OUTSIDE_SITTING": "Outside a sitting",
+          "OVER_PACE": "Over the pace limit",
+          "ROOM_SOFT_HELD": "Room is held for an order",
+          "OUTSIDE_ONLINE_WINDOW": "Outside the online window"
+        },
+        "needs": "Needs {count}"
       }
     },
     "questionnaire": {

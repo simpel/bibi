@@ -19,7 +19,7 @@ export async function loadCombinations({
 }: Ctx & { layoutId: string }): Promise<TableCombinationDto[]> {
   const rows = await context.db.tableCombination.findMany({
     where: { layoutId },
-    include: { members: { select: { elementId: true } } },
+    include: { members: { select: { elementId: true }, orderBy: { elementId: "asc" } } },
     orderBy: { name: "asc" },
   });
   return rows.map((row) => ({

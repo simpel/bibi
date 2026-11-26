@@ -48,6 +48,7 @@ Prisma 7 (the `prisma-client` generator, driver adapter `@prisma/adapter-pg`) ag
 - `notify_inbox.sql`: a push signal like the one above (ADR 0085, 0094). On `InboundMessage` insert and update of `orderId`, `readAt` or `status` it calls `pg_notify('inbox', {organizationId})`; the same stream pushes the open count for the sidebar's inbox badge. It writes nothing.
 
 ## Table holds (ADR 0119)
+- `room_reservations_guard.sql`: a BEFORE trigger on `Occupancy` refuses an active hold that is not SOFT (line or task HARD hold, buffer, manual block) on a dining room while an active table reservation there overlaps it, raising `room_reservations_conflict` (mapped to `CONFLICT`). It takes the same advisory lock as core's table bookings (`$advisoryLock`, key `<organization>:room:<item>`). Writes nothing.
 - `TableHold` rows hold one table (`FloorElement`) for `[startsAt, endsAt)`, for a reservation or as a staff block; the exclusion constraint `TableHold_no_overlap` (migration `table_reservations`) refuses two active holds on one table, mapped to `CONFLICT` in core. Not a projection: core's reservation and block operations own them. A table deleted by a layout save takes its holds (`ON DELETE CASCADE`); core refuses that while one is upcoming.
 
 ## Deleting (ADR 0118)

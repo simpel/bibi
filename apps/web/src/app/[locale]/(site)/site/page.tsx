@@ -3,6 +3,7 @@ import { resolveLocale } from "@bibi/i18n";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SitePage } from "@/features/site/ui/site-page";
+import { getSitePlanText } from "@/features/site/ui/site-plan-text";
 
 type SiteRouteProps = { params: Promise<{ locale: string }> };
 
@@ -13,8 +14,9 @@ export async function generateMetadata({ params }: SiteRouteProps): Promise<Meta
   const locale = resolveLocale({ value: (await params).locale });
   const t = await getTranslations({ locale, namespace: "site" });
   const common = await getTranslations({ locale, namespace: "common" });
+  const { amount, trialDays } = await getSitePlanText();
   const title = t("metaTitle");
-  const description = t("metaDescription");
+  const description = t("metaDescription", { amount, trialDays });
   return {
     title,
     description,

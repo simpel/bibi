@@ -1,9 +1,10 @@
 import { createAppExtract } from "@bibi/ai/extract";
 import { resolveExecuteContext } from "@bibi/auth";
 import { getEnv } from "@bibi/config";
-import { setExtract, setFileStore } from "@bibi/core";
+import { setExtract, setFileStore, setReservationMailer } from "@bibi/core";
 import { createSystemLogSink } from "@bibi/db";
 import { getLogger, initLogger, installProcessHandlers } from "@bibi/logger";
+import { sendReservationMail } from "@bibi/mail";
 import { getStorage } from "@bibi/storage";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { embed } from "./embed";
@@ -19,6 +20,7 @@ installProcessHandlers({ exitOnUncaught: true });
 // `orderDraft.fromMessage` reads text through this port (ADR 0084).
 setExtract({ extract: createAppExtract() });
 setFileStore({ store: getStorage() });
+setReservationMailer({ mailer: sendReservationMail });
 
 async function main(): Promise<void> {
   const apiKey = getEnv().BIBI_API_KEY;

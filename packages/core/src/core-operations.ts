@@ -42,12 +42,14 @@ import { pipelineSetupOperations } from "./features/pipeline-setup/operations";
 import { priceListOperations } from "./features/price-list/operations";
 import { quoteOperations } from "./features/quote/operations";
 import { requirementOperations } from "./features/requirement/operations";
+import { reservationOperations } from "./features/reservation/operations";
 import { responsibilityOperations } from "./features/responsibility/operations";
 import { runSheetOperations } from "./features/run-sheet/operations";
 import { runSheetDefinitionOperations } from "./features/run-sheet-definition/operations";
 import { settingsOperations } from "./features/settings/operations";
 import { skillOperations } from "./features/skill/operations";
 import { statusGridOperations } from "./features/status-grid/operations";
+import { tableBlockOperations } from "./features/table-block/operations";
 import { tableCombinationOperations } from "./features/table-combination/operations";
 import { taskOperations } from "./features/task/operations";
 import { venueOperations } from "./features/venue/operations";
@@ -118,6 +120,8 @@ function staticOperations(): AnyOperation[] {
     ...diningServiceOperations,
     ...tableCombinationOperations,
     ...bookingPageOperations,
+    ...reservationOperations,
+    ...tableBlockOperations,
     ...runSheetOperations,
     ...pipelineGroupOperations,
     ...quoteOperations,

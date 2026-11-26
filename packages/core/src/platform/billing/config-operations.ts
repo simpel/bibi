@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { openSecret } from "../../crypto/secret-box";
 import { ok } from "../../errors/result";
+import { clearPlanPricesCache } from "../../features/billing/plan-prices";
 import { definePlatformOperation } from "../define-platform-operation";
 import type { PlatformHandlerContext } from "../types";
 import { loadConfigRow, saveConfig, sealUpdate, toBillingConfigDto } from "./config-store";
@@ -43,6 +44,8 @@ export const updateBillingConfig = definePlatformOperation({
     const provisioned = await provisionStored({ context });
     if (!provisioned.ok) return provisioned;
     const change = await saveConfig({ db: context.db, data: provisioned.value, updatedBy });
+    // New keys or price ids: the public start page reads its prices again at once.
+    clearPlanPricesCache();
     const prior = before ? toBillingConfigDto({ row: before }) : null;
     context.recordChange({ entityId: "default", before: prior, after: change.after });
     return ok({ value: change.after });

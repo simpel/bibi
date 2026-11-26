@@ -57,6 +57,9 @@ import { QuoteCardView } from "./quote-card-view";
 import { QuoteTableView } from "./quote-table-view";
 import { RequirementCardView } from "./requirement-card-view";
 import { RequirementTableView } from "./requirement-table-view";
+import { ReservationAvailabilityView } from "./reservation-availability-view";
+import { ReservationCardView } from "./reservation-card-view";
+import { ReservationDayListView } from "./reservation-day-list-view";
 import { ResponsibilityCardView } from "./responsibility-card-view";
 import { ResponsibilityTableView } from "./responsibility-table-view";
 import { RunSheetCardView } from "./run-sheet-card-view";
@@ -67,6 +70,7 @@ import { SearchResultsView } from "./search-results-view";
 import { SkillCardView } from "./skill-card-view";
 import { SkillTableView } from "./skill-table-view";
 import { StatusGridTableView } from "./status-grid-table-view";
+import { TableBlockListView } from "./table-block-list-view";
 import { TaskCardView } from "./task-card-view";
 import { TaskListView } from "./task-list-view";
 import { VenueCardView } from "./venue-card-view";
@@ -114,6 +118,10 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "comment-card": CommentCardView,
   "task-list": TaskListView,
   "task-card": TaskCardView,
+  "reservation-card": ReservationCardView,
+  "reservation-day-list": ReservationDayListView,
+  "reservation-availability": ReservationAvailabilityView,
+  "table-block-list": TableBlockListView,
   ...BOARD_COMPONENTS,
   ...ORDER_COMPONENTS,
   "quote-card": QuoteCardView,

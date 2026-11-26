@@ -456,6 +456,9 @@ importers:
       '@bibi/logger':
         specifier: workspace:*
         version: link:../../packages/logger
+      '@bibi/mail':
+        specifier: workspace:*
+        version: link:../../packages/mail
       '@paralleldrive/cuid2':
         specifier: 3.3.0
         version: 3.3.0

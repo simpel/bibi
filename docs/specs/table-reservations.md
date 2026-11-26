@@ -33,7 +33,7 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
   - some online-bookable table or bookable combination fits the party and is free for the whole turn time.
 - An exception may change one date's hours, layout or `maxCoversPerSlot`, or close the sitting. One exception per sitting and date.
 - Turn time comes from the sitting's `turnTimes` (ordered rows of `{ upToParty, minutes }`; the last row covers larger parties).
-- Staff (`reservation:write`) may book outside every rule except a table clash: they get warnings (`OUTSIDE_SITTING`, `OVER_PACE`, `ROOM_HELD`, `PAST_OPEN_THROUGH`) and the reservation is saved.
+- Staff (`reservation:write`) may book outside every rule except a table clash or a hard hold on the room: they get warnings (`OUTSIDE_SITTING`, `OVER_PACE`, `ROOM_SOFT_HELD`) and the reservation is saved. The booking window and `openUntil` bind only guests (`OUTSIDE_ONLINE_WINDOW` in availability).
 - Times are instants; dates and minutes are read in the room's effective zone (`effectiveTimeZone`).
 
 ### Tables and combinations
@@ -50,8 +50,8 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 - Cancelling, a no-show or erasure releases the holds (status `ARCHIVED`); completing keeps them.
 
 ### Room and tables
-- A HARD `Occupancy` (an order line, setup/teardown buffer or manual block) on the room hides overlapping slots online and warns staff (`ROOM_HELD`). SOFT holds only warn staff.
-- An order line on a dining room that overlaps active reservations is refused (`CONFLICT`, `RESERVATIONS_IN_ROOM` with count and people), in create, update and planning. Both paths take `pg_advisory_xact_lock` on the room.
+- A HARD `Occupancy` (an order line's or a task's hard hold, a buffer or a manual block) on the room hides overlapping slots and refuses table bookings for everyone (`CONFLICT`). SOFT holds only warn (`ROOM_SOFT_HELD`).
+- A hard hold on a dining room (order line, task booking, manual block) that overlaps active table reservations is refused by the database trigger `room_reservations_guard` (`CONFLICT`: move or cancel them first), on every path that writes holds. Both paths take the same advisory lock on the room.
 
 ### Reservation lifecycle
 - The lifecycle is `state`; `status` archives the row as everywhere.
@@ -64,7 +64,7 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 ### Booker and kitchen
 - One booker: `bookerName` (required), `bookerPhone` (required online), `bookerEmail` (required online), `note`. Optional `customerId`/`contactId` link a regular or a company (staff only).
 - Dietary needs: `ReservationRequirement` counts against the organization's requirement lists (ADR 0021), shown online from the lists marked for guests.
-- 90 days after `endsAt` a nightly job erases name, phone, email and note (`erasedAt` set); counts, times and tables remain for statistics.
+- 90 days after `endsAt` the nightly worker job `reservation.eraseBookers` (system only) erases name, phone, email and note (`erasedAt` set); counts, times and tables remain for statistics.
 
 ### Booking page
 - One `BookingPage` per organization: `slug` (unique, lowercase), logo and cover (storage keys), `accentColor` (refused when contrast against white is under 4.5:1), intro and policy keyed by locale, contact phone and email, `embedOrigins` (https origins), `published`.
@@ -72,10 +72,12 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 - Fixed for everyone: layout, fonts, "Powered by Bibi".
 
 ## Operations
-- Staff, every surface (parity): `reservation.list({ roomItemId?, from, to })`, `get`, `create`, `update`, `cancel`, `seat`, `unseat`, `complete`, `markNoShow`, `availability({ roomItemId, date, partySize })` (`reservation:read|write`); `tableBlock.list|create|delete` (`reservation:write`); `diningRoom.list|get|set`, `diningService.list|get|create|update|archive`, `diningServiceException.list|set|delete`, `tableCombination.list|save`, `bookingPage.get|update` (`diningSetup:read|write`). Table fields (`label`, `minCovers`, `maxCovers`, `onlineBookable`) go through `layout.save`.
+- Staff, every surface (parity): `reservation.list({ roomItemId?, from, to })`, `get`, `create`, `update`, `cancel`, `seat`, `unseat`, `complete`, `markNoShow`, `availability({ roomItemId, date, partySize })` (`reservation:read|write`); `tableBlock.list|create|delete` (`reservation:read|write`); `diningRoom.list|get|set`, `diningService.list|get|create|update|archive`, `diningServiceException.list|set|delete`, `tableCombination.list|save`, `bookingPage.get|update` (`diningSetup:read|write`). Table fields (`label`, `minCovers`, `maxCovers`, `onlineBookable`) go through `layout.save`.
 - Permissions: `reservation` (bookings group; every member writes, managers and admins archive) and `diningSetup` (setup group; managers and admins).
 - Public, `systemOnly`, outside the registry: `reservation.publicRooms({ slug })`, `publicAvailability`, `publicCreate`, `publicGet({ token })`, `publicChange`, `publicCancel`.
-- Public API `/api/public/v1`: `GET rooms`, `GET availability`, `POST reservations` with a publishable key (`bib_pub_…`, header `X-Bibi-Key`); `GET|PATCH|DELETE reservations/{token}` with the guest token.
+- Public API `/api/public/v1`, keyed by the published page's slug: `GET pages/{slug}`, `GET pages/{slug}/rooms/{room}/availability`, `POST pages/{slug}/rooms/{room}/reservations`; `GET|PATCH reservations/{token}` and `POST reservations/{token}/cancel` with the guest's token. Per-IP rate limit, open CORS, no cookies.
+- Guest operations in core: `bookingPage.publicGet`, `reservation.publicAvailability|publicCreate|publicGet|publicChange|publicCancel` (system only), run through `runGuest` after `organizationOfPage` / `organizationOfToken` pinned the organization.
+- Mails go through core's `ReservationMailer` port (apps inject `@bibi/mail`'s `sendReservationMail`) after the commit: confirmation, changed and cancelled from the commands, and a reminder 23–25 hours before from the hourly `reservation.sendReminders` job (once, `reminderSentAt`).
 
 ## Assistant and MCP
 - Every staff operation is an MCP tool on the organization's MCP server (`/mcp`), so the in-app assistant and an organization's own MCP clients (Claude, partner agents, OAuth) can work with reservations as the signed-in member, with that member's permissions. Writes need approval (ADR 0007); each has an approval label ("Book table 3 for 2, Fri 19:30, Anna Lind").

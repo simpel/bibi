@@ -8,6 +8,8 @@ import type { PermissionSet } from "@bibi/core";
 export type ShellAccess = {
   canConfigure: boolean;
   canDraftFromMessage: boolean;
+  /** The organization has a room set up for table booking (ADR 0119): Reservations shows. */
+  hasDiningRooms: boolean;
   platformAdmin: boolean;
   permissions: PermissionSet;
 };

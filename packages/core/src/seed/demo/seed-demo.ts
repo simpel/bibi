@@ -12,6 +12,7 @@ import { runPlatformSeed } from "./run-platform-seed";
 import { seedAcrossOrganizations } from "./seed-across-organizations";
 import { seedBlankOrg } from "./seed-blank-org";
 import { seedDemoConfig } from "./seed-config";
+import { seedDemoDining } from "./seed-dining";
 import { seedDemoFloorPlans } from "./seed-floor-plans";
 import { seedDemoItems } from "./seed-items";
 import { seedNotificationReads } from "./seed-notification-reads";
@@ -81,6 +82,11 @@ async function seedSlices({
     catalog: items.value,
   });
   if (!floorPlans.ok) return floorPlans;
+  const dining = await seedDemoDining({
+    ...{ context, org, config: org.config, refs: refs.value },
+    catalog: items.value,
+  });
+  if (!dining.ok) return dining;
   const staff = await seedDemoStaff({ context, org, members, items: items.value.items });
   if (!staff.ok) return staff;
   ranParts.add(3);

@@ -1,4 +1,4 @@
-/** Table booking setup (ADR 0119). */
+/** Table booking setup and reservations (ADR 0119). */
 export const DINING_SETUP_NAMES = [
   "bookingPage.get",
   "bookingPage.update",
@@ -15,4 +15,17 @@ export const DINING_SETUP_NAMES = [
   "diningServiceException.set",
   "tableCombination.list",
   "tableCombination.save",
+  "reservation.availability",
+  "reservation.cancel",
+  "reservation.complete",
+  "reservation.create",
+  "reservation.get",
+  "reservation.list",
+  "reservation.markNoShow",
+  "reservation.seat",
+  "reservation.unseat",
+  "reservation.update",
+  "tableBlock.create",
+  "tableBlock.delete",
+  "tableBlock.list",
 ];

@@ -65,6 +65,14 @@ function extend({ organizationId, actorId, db }: Required<ScopedDbInput>) {
         revokeOauthGrant({ ...input, db, organizationId }),
       // The global `User` row is refused above; the actor may read only their own.
       $callerUser: () => readCallerUser({ db, actorId }),
+      // A transaction-scoped advisory lock on `<organization>:<key>` (ADR 0119: one room's table
+      // and whole-room bookings are serialised). Released at commit or rollback; outside a
+      // transaction it is released at once. Runs on the client it is called on.
+      $advisoryLock(input: { key: string }) {
+        const client = Prisma.getExtensionContext(this) as unknown as Pick<Db, "$executeRaw">;
+        const key = `${organizationId}:${input.key}`;
+        return client.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${key}, 0))`;
+      },
     },
   });
 }

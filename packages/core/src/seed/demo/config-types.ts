@@ -121,6 +121,14 @@ export type DemoFloorPiece = {
   seatsBottom?: number;
   /** A door or window that is an emergency exit (ADR 0103). */
   emergencyExit?: boolean;
+  /** Own size and chairs around a round piece; left out = the kind's. */
+  seats?: number;
+  widthCm?: number;
+  depthCm?: number;
+  /** A table's party range and whether guests get it online (ADR 0119). */
+  minCovers?: number;
+  maxCovers?: number;
+  onlineBookable?: boolean;
 };
 
 /** A drawn layout (ADR 0102, 0103), by name: the item's layout of that name, or a new one.
@@ -140,6 +148,72 @@ export type DemoFloorPlan = {
   outline?: readonly (readonly [number, number])[];
   fixed: readonly DemoFloorPiece[];
   layouts: readonly DemoLayout[];
+};
+
+/** A sitting (ADR 0119) by names: the layout, weekdays (0 = Monday) and `HH:MM` starts. */
+export type DemoDiningService = {
+  name: string;
+  layout: string;
+  weekdays: readonly number[];
+  first: string;
+  last: string;
+  maxCoversPerSlot: number;
+  turnTimes: readonly { upToParty: number; minutes: number }[];
+  depositFromParty?: number;
+  depositPerCoverMinor?: number;
+  /** A date of the seed year (`month`, `day`) that closes the sitting or changes its starts. */
+  exceptions?: readonly {
+    month: number;
+    day: number;
+    closed?: boolean;
+    first?: string;
+    last?: string;
+    note?: string;
+  }[];
+};
+
+/** A restaurant room set up for table booking (ADR 0119, `docs/demo-seed.md`). */
+export type DemoDining = {
+  /** The room item; its drawn floor plan holds `tableLayout`. */
+  item: string;
+  slug: string;
+  /** Bookings open this many days after the seed's today, to the end of that local day. */
+  openDays: number;
+  tableLayout: string;
+  /** Layouts copied from `tableLayout` with `layout.create` (`copyFromId`). */
+  copies: readonly string[];
+  /** Combinations of `tableLayout` by table labels. */
+  combinations: readonly {
+    name: string;
+    tables: readonly string[];
+    minCovers: number;
+    maxCovers: number;
+    onlineBookable: boolean;
+  }[];
+  services: readonly DemoDiningService[];
+  /** The seeded staff reservations: times and weekdays (0 = Monday) per meal, over the next days. */
+  reservations: {
+    lunchTimes: readonly string[];
+    dinnerTimes: readonly string[];
+    lunchWeekdays: readonly number[];
+    dinnerWeekdays: readonly number[];
+    days: number;
+    /** A seated, a completed, a cancelled and a no-show reservation. */
+    outcomes: boolean;
+    /** Tables kept online-only tonight (17:00-23:00). */
+    blockTables?: readonly string[];
+  };
+  /** Guests the seeded reservations rotate through, and list values for need counts. */
+  guests: readonly { name: string; phone: string }[];
+  needs: readonly { list: string; value: string }[];
+  /** The organization's one booking page (its address is the organization's slug); set on one room. */
+  page?: {
+    accentColor: string;
+    intro: { sv: string; en: string };
+    policy: { sv: string; en: string };
+    contactPhone: string;
+    contactEmail: string;
+  };
 };
 
 /** Slice 2 of ADR 0025: what the organization configures (`docs/demo-seed.md`). */
@@ -163,6 +237,8 @@ export type DemoConfig = {
   items: readonly DemoItem[];
   /** Drawn rooms (ADR 0099), seeded after the items with the starter furniture library. */
   floorPlans?: readonly DemoFloorPlan[];
+  /** A restaurant room open for table booking (ADR 0119), seeded after the floor plans. */
+  dining?: readonly DemoDining[];
   /** Org-specific checks (`docs/demo-seed.md`, Checks), e.g. check 2. */
   checks: { absentLists?: readonly string[]; listSizes?: Readonly<Record<string, number>> };
 };

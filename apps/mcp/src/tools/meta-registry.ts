@@ -48,12 +48,14 @@ import { priceListMcpTools } from "../features/price-list/mcp";
 import { profileMcpTools } from "../features/profile/mcp";
 import { quoteMcpTools } from "../features/quote/mcp";
 import { requirementMcpTools } from "../features/requirement/mcp";
+import { reservationMcpTools } from "../features/reservation/mcp";
 import { responsibilityMcpTools } from "../features/responsibility/mcp";
 import { runSheetMcpTools } from "../features/run-sheet/mcp";
 import { runSheetDefinitionMcpTools } from "../features/run-sheet-definition/mcp";
 import { settingsMcpTools } from "../features/settings/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { statusGridMcpTools } from "../features/status-grid/mcp";
+import { tableBlockMcpTools } from "../features/table-block/mcp";
 import { tableCombinationMcpTools } from "../features/table-combination/mcp";
 import { taskMcpTools } from "../features/task/mcp";
 import { userPreferenceMcpTools } from "../features/user-preference/mcp";
@@ -114,6 +116,8 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...floorPlanMcpTools,
     ...diningRoomMcpTools,
     ...diningServiceMcpTools,
+    ...reservationMcpTools,
+    ...tableBlockMcpTools,
     ...tableCombinationMcpTools,
     ...bookingPageMcpTools,
     ...responsibilityMcpTools,

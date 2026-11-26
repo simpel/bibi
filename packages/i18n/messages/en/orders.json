@@ -988,5 +988,161 @@
       "matches": "Matches quote v{version}",
       "changed": "{count, plural, one {# change} other {# changes}} since quote v{version}"
     }
+  },
+  "reservation": {
+    "title": "Reservations",
+    "room": "Room",
+    "noRooms": "No room takes table bookings yet",
+    "noRoomsDescription": "An administrator sets a room up under Administration, Table booking.",
+    "empty": "No reservations this day",
+    "anonymous": "Erased",
+    "day": {
+      "previous": "Previous day",
+      "next": "Next day",
+      "today": "Today"
+    },
+    "totals": {
+      "reservations": "{count, plural, one {# reservation} other {# reservations}}",
+      "covers": "{count, plural, one {# cover} other {# covers}}"
+    },
+    "columns": {
+      "time": "Time",
+      "party": "People",
+      "name": "Name",
+      "tables": "Tables",
+      "needs": "Needs",
+      "source": "Source",
+      "state": "State"
+    },
+    "source": {
+      "STAFF": "Staff",
+      "WEB": "Booking page",
+      "API": "API"
+    },
+    "state": {
+      "PENDING_PAYMENT": "Awaiting payment",
+      "BOOKED": "Booked",
+      "SEATED": "Seated",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "NO_SHOW": "No-show"
+    },
+    "actions": {
+      "seat": "Seat party",
+      "unseat": "Undo seating",
+      "complete": "Complete",
+      "markNoShow": "Mark as no-show",
+      "cancel": "Cancel reservation"
+    },
+    "toast": {
+      "seat": "Party seated",
+      "unseat": "Seating undone",
+      "complete": "Reservation completed",
+      "markNoShow": "Marked as no-show",
+      "cancel": "Reservation cancelled"
+    },
+    "cancel": {
+      "title": "Cancel the reservation for {name}?",
+      "description": "The tables are released and the booker is told by email if there is an address.",
+      "confirm": "Cancel reservation",
+      "action": "Cancel reservation"
+    },
+    "create": {
+      "title": "Create reservation",
+      "description": "Pick a day and party size, then a time that is free. Times outside a sitting or over the pace are saved with a warning.",
+      "date": "Date",
+      "party": "People",
+      "time": "Time",
+      "tables": "Tables",
+      "tablesHint": "Leave empty and Bibi picks the smallest free table that fits.",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "note": "Note",
+      "submit": "Create reservation",
+      "created": "Reservation created",
+      "pickParty": "Enter a date and the number of people to see the times.",
+      "loading": "Looking for free times…",
+      "noSlots": "No sittings that day."
+    },
+    "needs": {
+      "title": "Needs",
+      "value": "List value",
+      "quantity": "How many",
+      "remove": "Remove need",
+      "add": "Add need"
+    },
+    "warning": {
+      "OUTSIDE_SITTING": "Outside a sitting",
+      "OVER_PACE": "Over the pace limit",
+      "ROOM_SOFT_HELD": "Room is held for an order",
+      "OUTSIDE_ONLINE_WINDOW": "Outside the online window"
+    },
+    "block": {
+      "title": "Block tables",
+      "description": "Hold tables back for a period, for example for a broken heater or walk-in guests.",
+      "tables": "Tables",
+      "kind": "How",
+      "kinds": {
+        "BLOCK": "Block",
+        "ONLINE_ONLY": "Keep for walk-ins"
+      },
+      "startDay": "From day",
+      "startTime": "From time",
+      "endDay": "To day",
+      "endTime": "To time",
+      "note": "Note",
+      "submit": "Block tables",
+      "created": "Tables blocked",
+      "released": "Block released",
+      "release": "Release block",
+      "releaseTitle": "Release the block on table {label}?",
+      "releaseDescription": "The table can be booked again for that period.",
+      "listTitle": "Held-back tables",
+      "table": "Table {label}"
+    },
+    "floor": {
+      "title": "Floor of {name}",
+      "table": "Table {label}",
+      "time": "Time",
+      "legend": {
+        "booked": "Blue outline: booked",
+        "seated": "Yellow outline: seated",
+        "blocked": "Hatched: blocked",
+        "onlineOnly": "Dashed: kept for walk-ins"
+      },
+      "noLayout": "No layout to draw",
+      "noLayoutDescription": "Create a sitting for this room to see its floor here.",
+      "walkIn": "Walk-in"
+    },
+    "detail": {
+      "when": "When and where",
+      "editWhen": "Edit time and tables",
+      "date": "Date",
+      "time": "Time",
+      "party": "People",
+      "guests": "{count, plural, one {# guest} other {# guests}}",
+      "tables": "Tables",
+      "tablesHint": "Leave the tables as they are and Bibi keeps them when they still fit.",
+      "duration": "Minutes at the table",
+      "booker": "Booker",
+      "editBooker": "Edit booker",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "note": "Note",
+      "source": "Source",
+      "editNeeds": "Edit needs",
+      "noNeeds": "No needs recorded.",
+      "saved": "Reservation saved"
+    },
+    "popover": {
+      "open": "Open",
+      "free": "Table {label} is free at {time}.",
+      "party": "People",
+      "fewer": "Fewer people",
+      "more": "More people",
+      "seatHere": "Seat guests here"
+    }
   }
 }

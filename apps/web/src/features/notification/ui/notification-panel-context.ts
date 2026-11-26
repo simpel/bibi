@@ -3,6 +3,8 @@ import type { MyWorkTaskWireish } from "@/features/my-work/ui/my-work-wireish";
 
 export type NotificationPanel = {
   open: boolean;
+  /** Something needs the member that they have not seen in the panel: the bell pulses. */
+  urgent: boolean;
   setOpen: (open: boolean) => void;
   /**
    * Needs you for the panel's top section: `undefined` while the shell's first read is under way,
@@ -17,6 +19,7 @@ export type NotificationPanel = {
 
 export const NotificationPanelContext = createContext<NotificationPanel>({
   open: false,
+  urgent: false,
   setOpen: () => {},
   tasks: undefined,
   dimmed: new Set(),

@@ -27,6 +27,12 @@ import type { PriceListWire } from "./price-list-entries";
 import type { QuoteWire } from "./quote-entries";
 import type { DepositWire, InvoiceWire } from "./receivable-entries";
 import type { RequirementWire } from "./requirement-entries";
+import type {
+  AvailabilitySlotWire,
+  ReservationTotalsWire,
+  ReservationWire,
+  TableBlockWire,
+} from "./reservation-entries";
 import type { ResponsibilityWire } from "./responsibility-entries";
 import type { RunSheetDefinitionWire } from "./run-sheet-definition-entries";
 import type { RunSheetWire } from "./run-sheet-entries";
@@ -92,6 +98,10 @@ export type ToolUiProps = BoardUiProps &
     "comment-card": { comment: CommentWire };
     "task-list": { items: TaskWire[]; nextCursor: string | null };
     "task-card": { task: TaskWire };
+    "reservation-card": { reservation: ReservationWire };
+    "reservation-day-list": { items: ReservationWire[]; totals: ReservationTotalsWire };
+    "reservation-availability": { timeZone: string; slots: AvailabilitySlotWire[] };
+    "table-block-list": { items: TableBlockWire[] };
     "pipeline-board": { board: PipelineBoardWire };
     "calendar-range": { range: CalendarRangeWire };
     "hours-card": { hours: HoursWire };

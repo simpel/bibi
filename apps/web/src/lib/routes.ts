@@ -47,6 +47,8 @@ export const ROUTES = {
   workload: "/data/workload",
   forecast: "/data/forecast",
   quotes: "/quotes",
+  /** Table reservations: the day view and one reservation (ADR 0119). */
+  reservations: "/reservations",
   /** The welcome flow (ADR 0061); under an organization it is `/:org/welcome`. */
   welcome: "/welcome",
   /** The administration area (ADR 0036): its own sidebar, opens on a start page listing every page the caller may see. */
@@ -61,6 +63,7 @@ export const ROUTES = {
   adminPipeline: "/admin/pipeline",
   adminItemStates: "/admin/item-states",
   adminRunSheets: "/admin/run-sheets",
+  adminTableBooking: "/admin/table-booking",
   adminResponsibilities: "/admin/responsibilities",
   adminPayments: "/admin/payments",
   adminAccounting: "/admin/accounting",

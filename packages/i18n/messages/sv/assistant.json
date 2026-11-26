@@ -201,7 +201,14 @@
         "intro": "Introduktion",
         "policy": "Bokningsvillkor",
         "embedOrigins": "Tillåtna ursprung för inbäddning",
-        "published": "Publicerad"
+        "published": "Publicerad",
+        "partySize": "Antal personer",
+        "durationMinutes": "Minuter vid bordet",
+        "tableIds": "Bord",
+        "bookerName": "Bokare",
+        "bookerPhone": "Bokarens telefon",
+        "bookerEmail": "Bokarens mejl",
+        "requirements": "Behov"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -386,7 +393,16 @@
         "diningServiceException_set": "Spara undantag för sittning",
         "diningServiceException_delete": "Ta bort undantag för sittning",
         "tableCombination_save": "Spara bordskombinationer",
-        "bookingPage_update": "Redigera bokningssida"
+        "bookingPage_update": "Redigera bokningssida",
+        "reservation_create": "Skapa bordsbokning",
+        "reservation_update": "Redigera bordsbokning",
+        "reservation_cancel": "Avboka bordsbokning",
+        "reservation_seat": "Sätt gäster vid bord",
+        "reservation_unseat": "Ångra sittning",
+        "reservation_complete": "Slutför bordsbokning",
+        "reservation_markNoShow": "Markera som uteblivit",
+        "tableBlock_create": "Spärra bord",
+        "tableBlock_delete": "Släpp bordsspärr"
       },
       "setup": {
         "title": "Skapa min första version",
@@ -853,6 +869,38 @@
         "linked": "Kopplad till en bokning",
         "noDueTime": "Ingen tid",
         "archived": "Borttagen"
+      },
+      "reservation": {
+        "empty": "Inga bokningar hittades.",
+        "reservations": "{count, plural, one {# bokning} other {# bokningar}}",
+        "covers": "{count, plural, one {# kuvert} other {# kuvert}}",
+        "guests": "{count, plural, one {# gäst} other {# gäster}}",
+        "table": "Bord",
+        "noTable": "Inget bord",
+        "anonymous": "Raderad",
+        "unavailable": "Inte tillgänglig",
+        "noSittings": "Inga sittningar den dagen.",
+        "alreadyComing": "{count} redan på väg",
+        "noBlocks": "Inga spärrade bord.",
+        "kind": {
+          "BLOCK": "Spärrat",
+          "ONLINE_ONLY": "Sparat för drop-in"
+        },
+        "state": {
+          "PENDING_PAYMENT": "Väntar på betalning",
+          "BOOKED": "Bokad",
+          "SEATED": "Placerad",
+          "COMPLETED": "Genomförd",
+          "CANCELLED": "Avbokad",
+          "NO_SHOW": "Uteblev"
+        },
+        "warning": {
+          "OUTSIDE_SITTING": "Utanför en sittning",
+          "OVER_PACE": "Över tempogränsen",
+          "ROOM_SOFT_HELD": "Rummet är reserverat för en order",
+          "OUTSIDE_ONLINE_WINDOW": "Utanför bokningsfönstret online"
+        },
+        "needs": "Behov {count}"
       }
     },
     "questionnaire": {

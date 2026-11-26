@@ -7,7 +7,9 @@ import {
   registerOperations,
   setExtract,
   setFileStore,
+  setReservationMailer,
 } from "@bibi/core";
+import { sendReservationMail } from "@bibi/mail";
 import { getStorage } from "@bibi/storage";
 import { embed } from "./embed";
 
@@ -24,6 +26,8 @@ const holder = globalThis as typeof globalThis & {
 export function ensureOperations(): readonly AnyOperation[] {
   // Core reaches file storage through this port (ADR 0063): `file.upload`, `file.get`.
   setFileStore({ store: getStorage() });
+  // Guests get their table booking mails through this port (ADR 0119).
+  setReservationMailer({ mailer: sendReservationMail });
   // `orderDraft.fromMessage` reads text through this port (ADR 0084).
   // Built once per process; the setters stay per call because each bundle may hold its own core.
   holder.__bibiWebExtract ??= createAppExtract();

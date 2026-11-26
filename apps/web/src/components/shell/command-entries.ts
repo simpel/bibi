@@ -20,7 +20,7 @@ export type CommandEntry = {
 /** The sidebar's pages, most used first; the administration area is the Settings group's. */
 export const NAVIGATE_ENTRIES: readonly NavItem[] = [
   ...NAV_GROUPS.primary,
-  ...NAV_GROUPS.work,
+  ...NAV_GROUPS.work.filter((item) => !item.requires),
   ...NAV_GROUPS.catalog,
 ];
 

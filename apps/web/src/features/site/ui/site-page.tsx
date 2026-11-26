@@ -1,17 +1,24 @@
 import { PageContainer } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/navigation";
+import { SiteAssistant } from "./site-assistant";
 import { SiteAudience } from "./site-audience";
+import { SiteBookingPage } from "./site-booking-page";
 import { SiteCta } from "./site-cta";
-import { SiteFeatures } from "./site-features";
 import { SiteHeader } from "./site-header";
 import { SiteHero } from "./site-hero";
-import { SiteIntegrations } from "./site-integrations";
-import { SiteSteps } from "./site-steps";
+import { SiteJobs } from "./site-jobs";
+import { SiteMoney } from "./site-money";
+import { SitePrice } from "./site-price";
+import { SiteShared } from "./site-shared";
 
 type SitePageProps = { locale: string; appUrl: string };
 
-/** The public front page, for everyone. It reads the session only to pick the buttons. */
+/**
+ * The public front page, for everyone. It reads the session only to pick the buttons.
+ * Story: one system (hero) → three jobs → the guests' booking page → what the jobs share →
+ * the assistant → money → price → start.
+ */
 export async function SitePage({ locale, appUrl }: SitePageProps) {
   const t = await getTranslations("site");
   return (
@@ -20,9 +27,12 @@ export async function SitePage({ locale, appUrl }: SitePageProps) {
       <main>
         <SiteHero locale={locale} appUrl={appUrl} />
         <SiteAudience />
-        <SiteSteps />
-        <SiteFeatures />
-        <SiteIntegrations />
+        <SiteJobs />
+        <SiteBookingPage />
+        <SiteShared />
+        <SiteAssistant />
+        <SiteMoney />
+        <SitePrice locale={locale} appUrl={appUrl} />
         <SiteCta locale={locale} appUrl={appUrl} />
       </main>
       <footer className="border-t py-6 text-sm text-muted-foreground">

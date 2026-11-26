@@ -34,7 +34,7 @@
           },
           "needsYou": {
             "question": "Vad står under Behöver dig?",
-            "answer": "**Behöver dig** ligger överst i notispanelen till höger, som du öppnar och stänger med klockan längst upp. Den öppnas av sig själv när något behöver dig och listar det du behöver göra med dina bokningar: dubbelbokningar att lösa, körscheman att skicka, preliminärbokningar att bekräfta eller släppa, meddelanden att svara på, fakturor som har förfallit och bokningar som är över men inte stängda. Varje rad har en ikon för vad den gäller, samma som i dina notiser, och en röd varningstriangel när den är försenad. Klickar du på raden kommer du direkt dit du löser det. Samma uppgifter visas också överst på bokningens egen sida, var och en med en kort förklaring av vad du ska göra. Dina notiser kommer under, och fler läses in när du scrollar; sökrutan överst söker i båda listorna. För att bara visa en sorts notiser skriver du **typ:** och väljer i listan. Vilka sorters notiser du får väljer du med kugghjulet högst upp i panelen.\nRaderna är grupperade i **Blockerat**, **Försenat**, **I dag**, **Snart** och **Väntar på kunden**. Ett körschema ska skickas senast en dag innan bokningen börjar, och preliminärbokningar bekräftas senast två dagar innan. En rad försvinner av sig själv när den är klar. Vill du dölja en rad som du har löst på annat sätt håller du muspekaren över den och klickar på bocken; den kommer bara tillbaka om något i den ändras, och dina kollegor ser den fortfarande. Bocken på en notis markerar den som läst: den blir grå och är borta på nästa sida, eftersom panelen bara visar olästa notiser. Den röda siffran vid **Mitt arbete** i menyn räknar det som är blockerat, försenat eller ska göras i dag."
+            "answer": "**Behöver dig** ligger överst i notispanelen till höger, som du öppnar och stänger med klockan längst upp. Panelen öppnas aldrig av sig själv: en pulserande röd prick på klockan visar när något behöver dig, och du klickar på klockan för att se det. Den listar det du behöver göra med dina bokningar: dubbelbokningar att lösa, körscheman att skicka, preliminärbokningar att bekräfta eller släppa, meddelanden att svara på, fakturor som har förfallit och bokningar som är över men inte stängda. Varje rad har en ikon för vad den gäller, samma som i dina notiser, och en röd varningstriangel när den är försenad. Klickar du på raden kommer du direkt dit du löser det. Samma uppgifter visas också överst på bokningens egen sida, var och en med en kort förklaring av vad du ska göra. Dina notiser kommer under, och fler läses in när du scrollar; sökrutan överst söker i båda listorna. För att bara visa en sorts notiser skriver du **typ:** och väljer i listan. Vilka sorters notiser du får väljer du med kugghjulet högst upp i panelen.\nRaderna är grupperade i **Blockerat**, **Försenat**, **I dag**, **Snart** och **Väntar på kunden**. Ett körschema ska skickas senast en dag innan bokningen börjar, och preliminärbokningar bekräftas senast två dagar innan. En rad försvinner av sig själv när den är klar. Vill du dölja en rad som du har löst på annat sätt håller du muspekaren över den och klickar på bocken; den kommer bara tillbaka om något i den ändras, och dina kollegor ser den fortfarande. Bocken på en notis markerar den som läst: den blir grå och är borta på nästa sida, eftersom panelen bara visar olästa notiser. Den röda siffran vid **Mitt arbete** i menyn räknar det som är blockerat, försenat eller ska göras i dag."
           },
           "commandBar": {
             "question": "Hur hittar jag snabbt en bokning eller en kund?",
@@ -443,6 +443,28 @@
           "accounts": {
             "question": "Vilket konto bokförs mina fakturor på, och hur ändrar jag det?",
             "answer": "Under **Administration → Bokföring** väljer ni vilka konton fakturorna bokförs på. **Intäkter per artikeltyp** ger varje typ ett eget konto; typer utan eget konto använder standardkontot för försäljning.\nPrecis en rad är standard och har märket **Standard**. För att byta öppnar du menyn **…** på en annan rad och väljer **Gör till standard**. För att gå tillbaka till grundkontot väljer du **Gör till standard** på raden **Försäljning (grundkonto)** under Konton. Klicka på ett namn för att ändra dess konto.\nNär ni har anslutit ert bokföringssystem listar dess kort under **Integrationer** de konton som saknas."
+          }
+        }
+      },
+      "tableBooking": {
+        "title": "Bordsbokning",
+        "description": "Låt gäster boka bord i din restaurang.",
+        "questions": {
+          "setUp": {
+            "question": "Hur ställer jag in bordsbokning?",
+            "answer": "Öppna **Administration** och välj **Bordsbokning**. Under **Matsalsrum** klickar du på **Skapa matsalsrum**, väljer rummet och ger det ett adressord.\nÖppna rummet för att skapa dess **Sittningar** (till exempel Lunch och Middag), numrera borden och slå ihop bord till **Kombinationer**. Med **Öppna bokningar till** säger du hur långt fram gäster kan boka, och med **Undantag** stänger du ett datum.\nTillbaka på **Bordsbokning** fyller du i **Bokningssida** med logotyp, färg och texter och slår sedan på **Publicerad**."
+          },
+          "phoneBooking": {
+            "question": "Hur tar jag en telefonbokning?",
+            "answer": "Öppna **Bordsbokningar**, välj rum och dag och klicka på **Skapa bokning**. Skriv datum och antal personer och klicka sedan på en ledig tid.\nFyll i bokarens namn, telefon och eventuella behov och klicka på **Skapa bokning**. Bibi väljer ett bord och varnar dig om tiden ligger utanför en sittning."
+          },
+          "seatParty": {
+            "question": "Hur sätter jag ett sällskap som har kommit vid bord?",
+            "answer": "Öppna **Bordsbokningar**. Salongen ligger till vänster och dagens bokningar till höger, med en gemensam tidsväljare. Klicka på en bokning i listan för att lysa upp dess bord, eller på ett bord i salongen för att se vem som har det.\nKlicka på **Sätt vid bord** på bokningen och på **Avsluta** när de går. För gäster utan bokning klickar du på ett ledigt bord, väljer hur många de är och klickar på **Sätt gäster här**."
+          },
+          "blockTables": {
+            "question": "Hur spärrar jag bord, till exempel för gäster utan bokning?",
+            "answer": "Öppna **Bordsbokningar** och klicka på **Spärra bord**. Välj borden, perioden och om du vill **Spärra** dem eller **Spara för gäster utan bokning**, vilket bara hindrar gäster från att boka dem online.\nSpärrade bord visas streckade i salongen och listas under dagens bokningar. Klicka på **Släpp spärr** för att öppna dem igen."
           }
         }
       }

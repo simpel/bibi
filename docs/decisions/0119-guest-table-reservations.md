@@ -14,7 +14,7 @@
 ## Decision
 1. **Guests use Bibi directly for table booking.**
    - Each dining room has a public booking page and a manage link. The link carries an unguessable token, as on `Payment`. With it, a guest books, changes and cancels within the venue's rules.
-   - Partner sites use a public API with a publishable key per organization. The key allows checking availability and creating bookings only.
+   - Partner sites use a public API keyed by the published page's slug (as built, 2026-11-26: the slug is public anyway, so a separate publishable key adds nothing). It allows reading the page, checking availability and creating bookings; changes and cancels need the guest's token.
 2. **The booking page is lightly white-labelled per organization.**
    - The organization sets a `BookingPage`: a slug, logo, cover image (via storage, ADR 0063), one accent colour (refused when it lacks contrast), intro and policy texts in sv and en, and contact details.
    - It can be embedded in an iframe from domains the organization lists.

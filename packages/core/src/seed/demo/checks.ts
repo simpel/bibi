@@ -3,6 +3,7 @@ import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { checkDemoConfig } from "./config-checks";
 import { checkDemoCustomisations } from "./customisation-checks";
+import { checkDemoDining } from "./dining-checks";
 import { checkDemoDomainJoin } from "./domain-join-checks";
 import { checkDemoFloorPlans } from "./floor-plan-checks";
 import { checkDemoHours } from "./hours-checks";
@@ -59,6 +60,7 @@ export async function checkDemoOrg({
   failures.push(...(await checkDemoConfig({ context, org, skipPipeline })));
   failures.push(...(await checkDemoPools({ context, org })));
   failures.push(...(await checkDemoFloorPlans({ context, org })));
+  failures.push(...(await checkDemoDining({ context, org })));
   failures.push(...(await checkDemoMemberProfiles({ context, org })));
   failures.push(...(await checkDemoCustomisations({ context, org })));
   failures.push(...(await checkDemoResponsibilities({ context, org })));

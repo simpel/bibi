@@ -34,7 +34,7 @@
           },
           "needsYou": {
             "question": "What is in Needs you?",
-            "answer": "**Needs you** sits at the top of the notification panel on the right, which you open and close with the bell at the top. It opens by itself when something needs you, and lists what you have to do on your bookings: double bookings to fix, run sheets to send, preliminary bookings to confirm or release, messages to answer, invoices that are overdue and bookings that are over but not closed. Each row has an icon for what it is about, the same as in your notifications, and a red warning triangle when it is late. Clicking the row takes you straight to where you fix it. The same tasks also show at the top of the booking's own page, each with a short note on what to do. Your notifications follow below, and more load as you scroll; the search box at the top searches both lists. To show only one kind of notification, type **type:** and pick it from the list. To choose which kinds you get, click the cogwheel at the top of the panel.\nRows are grouped as **Blocked**, **Late**, **Today**, **Soon** and **Waiting on customer**. A run sheet is due a day before the booking starts, and preliminary bookings two days before. A row disappears by itself once it is done. To hide a row you have dealt with another way, hover it and click the checkmark; it comes back only if something about it changes, and your colleagues still see it. The checkmark on a notification marks it read: it greys out and is gone on the next page, since the panel shows unread notifications only. The red number on **My work** in the menu counts what is blocked, late or due today."
+            "answer": "**Needs you** sits at the top of the notification panel on the right, which you open and close with the bell at the top. The panel never opens by itself: a pulsing red dot on the bell tells you when something needs you, and you click the bell to see it. It lists what you have to do on your bookings: double bookings to fix, run sheets to send, preliminary bookings to confirm or release, messages to answer, invoices that are overdue and bookings that are over but not closed. Each row has an icon for what it is about, the same as in your notifications, and a red warning triangle when it is late. Clicking the row takes you straight to where you fix it. The same tasks also show at the top of the booking's own page, each with a short note on what to do. Your notifications follow below, and more load as you scroll; the search box at the top searches both lists. To show only one kind of notification, type **type:** and pick it from the list. To choose which kinds you get, click the cogwheel at the top of the panel.\nRows are grouped as **Blocked**, **Late**, **Today**, **Soon** and **Waiting on customer**. A run sheet is due a day before the booking starts, and preliminary bookings two days before. A row disappears by itself once it is done. To hide a row you have dealt with another way, hover it and click the checkmark; it comes back only if something about it changes, and your colleagues still see it. The checkmark on a notification marks it read: it greys out and is gone on the next page, since the panel shows unread notifications only. The red number on **My work** in the menu counts what is blocked, late or due today."
           },
           "commandBar": {
             "question": "How do I quickly find an order or a customer?",
@@ -443,6 +443,28 @@
           "accounts": {
             "question": "Which account do my invoices book to, and how do I change it?",
             "answer": "Under **Administration → Accounting** you choose the accounts your invoices book to. **Revenue per item type** gives each type its own account; types without one use the default revenue account.\nExactly one row is the default and shows a **Default** badge. To switch, open the **…** menu on another row and choose **Set as default**. To go back to the base account, choose **Set as default** on the **Revenue (base account)** row under Accounts. Click a name to change its account.\nAfter connecting your accounting system, its card under **Integrations** lists any account it is missing."
+          }
+        }
+      },
+      "tableBooking": {
+        "title": "Table booking",
+        "description": "Let guests book a table in your restaurant.",
+        "questions": {
+          "setUp": {
+            "question": "How do I set up table booking?",
+            "answer": "Open **Administration** and choose **Table booking**. Under **Dining rooms**, click **Create dining room**, pick the room and give it an address word.\nOpen the room to create its **Sittings** (for example Lunch and Dinner), number its tables and join tables into **Combinations**. Use **Open bookings until** to say how far ahead guests can book, and **Exceptions** to close a date.\nBack on **Table booking**, fill in the **Booking page** with logo, colour and texts, then switch on **Published**."
+          },
+          "phoneBooking": {
+            "question": "How do I take a phone booking?",
+            "answer": "Open **Reservations**, pick the room and the day, and click **Create reservation**. Type the date and the number of people, then click a free time.\nFill in the booker's name, phone and any needs, then click **Create reservation**. Bibi picks a table and warns you if the time is outside a sitting."
+          },
+          "seatParty": {
+            "question": "How do I seat a party that has arrived?",
+            "answer": "Open **Reservations**. The floor is on the left and the day's bookings on the right, with one time selector for both. Click a booking in the list to light its tables, or click a table on the floor to see who has it.\nClick **Seat party** on the booking, and **Complete** when they leave. For guests without a booking, click a free table, choose how many they are and click **Seat guests here**."
+          },
+          "blockTables": {
+            "question": "How do I block tables, for example for walk-ins?",
+            "answer": "Open **Reservations** and click **Block tables**. Pick the tables, the period and whether to **Block** them or **Keep for walk-ins**, which only stops guests from booking them online.\nBlocked tables show hatched on the floor and are listed under the day's bookings. Click **Release block** to open them again."
           }
         }
       }

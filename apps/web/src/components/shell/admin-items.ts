@@ -13,6 +13,7 @@ import {
   ShapesIcon,
   TagIcon,
   UsersIcon,
+  UtensilsIcon,
 } from "lucide-react";
 import { canPermission } from "@/lib/can";
 import { ROUTES } from "@/lib/routes";
@@ -29,6 +30,7 @@ export type AdminKey =
   | "priceLists"
   | "orderFlow"
   | "runSheets"
+  | "tableBooking"
   | "payments"
   | "accounting"
   | "integrations";
@@ -123,6 +125,12 @@ export const ADMIN_GROUPS: readonly AdminGroup[] = [
         icon: ClipboardListIcon,
         href: ROUTES.adminRunSheets,
         ids: ["runSheets", "responsibilities"],
+      }),
+      page({
+        key: "tableBooking",
+        icon: UtensilsIcon,
+        href: ROUTES.adminTableBooking,
+        ids: ["diningRooms", "bookingPage"],
       }),
     ],
   },

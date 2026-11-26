@@ -6,6 +6,7 @@ export type CreateGroup = "work" | "catalog" | "settings";
 export type CreateKey =
   | "order"
   | "task"
+  | "reservation"
   | "customer"
   | "item"
   | "venue"
@@ -26,4 +27,6 @@ export type CreateItem = {
   icon: LucideIcon;
   /** The permission that allows creating it (ADR 0050). */
   permission: Permission;
+  /** Shown only when the organization has a dining room (table reservations, ADR 0119). */
+  requires?: "diningRoom";
 };

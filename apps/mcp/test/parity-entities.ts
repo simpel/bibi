@@ -13,6 +13,7 @@ import { itemStateEntities } from "./parity-entities-item-state";
 import { orderEntities } from "./parity-entities-order";
 import { moneyEntities } from "./parity-entities-payment";
 import { alternativeGroupEntity, orderVersionEntity, quoteEntity } from "./parity-entities-quote";
+import { reservationEntities } from "./parity-entities-reservation";
 import { runSheet } from "./parity-entities-run-sheet";
 import { selfEntities } from "./parity-entities-user-settings";
 import { welcomeEntities } from "./parity-entities-welcome";
@@ -112,6 +113,7 @@ export const ENTITIES: ParityEntity[] = [
   ...configurationEntities(),
   ...floorPlanEntities(),
   ...diningEntities(),
+  ...reservationEntities(),
   ...customerEntities(),
   ...boardEntities(),
   ...orderEntities(),

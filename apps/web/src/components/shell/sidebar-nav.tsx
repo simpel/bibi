@@ -26,6 +26,7 @@ type IsVisibleInput = { item: NavItem; access: ShellAccess };
 
 function isVisible({ item, access }: IsVisibleInput): boolean {
   if (!VISIBLE[item.audience](access)) return false;
+  if (item.requires === "diningRoom" && !access.hasDiningRooms) return false;
   return (
     !item.permission ||
     canPermission({ permissions: access.permissions, permission: item.permission })

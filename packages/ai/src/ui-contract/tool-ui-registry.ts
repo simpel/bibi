@@ -34,6 +34,7 @@ import { QUOTE_UI_ENTRIES } from "./quote-entries";
 import { READ_GENERIC_UI_TOOLS } from "./read-generic-tools";
 import { RECEIVABLE_UI_ENTRIES } from "./receivable-entries";
 import { REQUIREMENT_UI_ENTRIES } from "./requirement-entries";
+import { RESERVATION_UI_ENTRIES } from "./reservation-entries";
 import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
 import { RUN_SHEET_DEFINITION_UI_ENTRIES } from "./run-sheet-definition-entries";
 import { RUN_SHEET_UI_ENTRIES } from "./run-sheet-entries";
@@ -84,6 +85,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...REQUIREMENT_UI_ENTRIES,
   ...COMMENT_UI_ENTRIES,
   ...TASK_UI_ENTRIES,
+  ...RESERVATION_UI_ENTRIES,
   ...PIPELINE_UI_ENTRIES,
   ...PIPELINE_SETUP_UI_ENTRIES,
   ...QUOTE_UI_ENTRIES,

@@ -14,6 +14,7 @@ import {
   UserCheckIcon,
   UserPlusIcon,
   UsersIcon,
+  UtensilsIcon,
 } from "lucide-react";
 import { canPermission } from "@/lib/can";
 import { ROUTES } from "@/lib/routes";
@@ -40,6 +41,15 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
     href: ROUTES.taskNew,
     icon: CircleCheckIcon,
     permission: "task:write",
+  },
+  {
+    key: "reservation",
+    group: "work",
+    // The day view opens its create sheet (ADR 0119).
+    href: `${ROUTES.reservations}?create=1`,
+    icon: UtensilsIcon,
+    permission: "reservation:write",
+    requires: "diningRoom",
   },
   {
     key: "customer",
@@ -121,9 +131,19 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
   },
 ];
 
-export type CreatableInput = { permissions: PermissionSet };
+export type CreatableInput = {
+  permissions: PermissionSet;
+  /** The organization has a dining room: table reservations can be created. */
+  hasDiningRooms?: boolean;
+};
 
 /** What the caller's permissions allow to create. Pure, so the top bar's menu uses it too. */
-export function creatableItems({ permissions }: CreatableInput): CreateItem[] {
-  return CREATE_ITEMS.filter(({ permission }) => canPermission({ permissions, permission }));
+export function creatableItems({
+  permissions,
+  hasDiningRooms = false,
+}: CreatableInput): CreateItem[] {
+  return CREATE_ITEMS.filter(
+    ({ permission, requires }) =>
+      canPermission({ permissions, permission }) && (requires !== "diningRoom" || hasDiningRooms),
+  );
 }

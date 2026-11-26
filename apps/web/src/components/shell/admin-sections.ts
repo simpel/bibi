@@ -22,6 +22,8 @@ export type AdminSectionId =
   | "itemStates"
   | "runSheets"
   | "responsibilities"
+  | "diningRooms"
+  | "bookingPage"
   | "paymentMethods"
   | "deposit"
   | "accounts"
@@ -56,6 +58,8 @@ export const ADMIN_SECTIONS: Record<AdminSectionId, { anchor: string; permission
   itemStates: { anchor: "item-states", permission: "pipeline:read" },
   runSheets: { anchor: "run-sheets", permission: "template:read" },
   responsibilities: { anchor: "responsibilities", permission: "responsibility:read" },
+  diningRooms: { anchor: "dining-rooms", permission: "diningSetup:read" },
+  bookingPage: { anchor: "booking-page", permission: "diningSetup:read" },
   paymentMethods: { anchor: "payment-methods", permission: "paymentAccount:read" },
   deposit: { anchor: "deposit", permission: "paymentAccount:read" },
   accounts: { anchor: "accounts", permission: "finance:read" },

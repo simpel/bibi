@@ -27,8 +27,8 @@ const loadTasks = async ({ pathname }: { pathname: string }) => {
 };
 
 /**
- * The notification panel's state (spec: home): open on a wide screen while something needs the
- * member, until they close it with the bell; the bell toggles it. Needs you comes from the shell's
+ * The notification panel's state (spec: home): closed until the member clicks the bell, which
+ * toggles it. It never opens by itself: something that needs the member makes the bell pulse. Needs you comes from the shell's
  * first read and is read again while the panel is open, when they navigate, open it again or a
  * notification arrives. A task the member dismisses stays greyed out until the next page (ADR
  * 0114). A fresh read also moves the My work badge.
@@ -37,6 +37,8 @@ export function NotificationPanelProvider({ needsYou, children }: NotificationPa
   const [seeded, setSeeded] = useState<Tasks | undefined>(undefined);
   const [choice, setChoice] = useState<boolean | null>(null);
   const [opens, setOpens] = useState(0);
+  // How many Needs you tasks the member had in front of them when they last opened the panel.
+  const [seen, setSeen] = useState(0);
   const [dismissed, setDismissed] = useState<ReadonlyMap<string, string>>(new Map());
   const wide = useWideScreen();
   const pathname = usePathname();
@@ -48,7 +50,7 @@ export function NotificationPanelProvider({ needsYou, children }: NotificationPa
     if (!wide && choice) setChoice(false);
   }
   const { changed, setMyWorkDue } = useNotificationLive();
-  const open = choice ?? (wide && (seeded?.length ?? 0) > 0);
+  const open = choice === true;
   const stale = opens > 0 || changed > 0 || pathname !== firstPath;
   const live = useLiveQuery({
     input: open && stale ? { pathname, changed, opens } : null,
@@ -59,23 +61,36 @@ export function NotificationPanelProvider({ needsYou, children }: NotificationPa
   useEffect(() => {
     if (live.status === "ready") setMyWorkDue(countDue({ tasks: live.value.tasks }));
   }, [live, setMyWorkDue]);
-  const setOpen = useCallback((next: boolean) => {
-    setChoice(next);
-    if (next) setOpens((count) => count + 1);
-  }, []);
+  const shown = useMemo(
+    () =>
+      visibleTasks({
+        tasks: fresh ? fresh.tasks : seeded,
+        readFor: fresh?.pathname ?? null,
+        dismissed,
+        pathname,
+      }),
+    [fresh, seeded, dismissed, pathname],
+  );
+  const count = shown.tasks?.length ?? 0;
+  const urgent = !open && count > seen;
+  const setOpen = useCallback(
+    (next: boolean) => {
+      setChoice(next);
+      if (next) {
+        setOpens((opened) => opened + 1);
+        setSeen(count);
+      }
+    },
+    [count],
+  );
   const markDismissed = useCallback(
     ({ key }: { key: string }) => setDismissed((map) => new Map(map).set(key, pathname)),
     [pathname],
   );
-  const value = useMemo(() => {
-    const shown = visibleTasks({
-      tasks: fresh ? fresh.tasks : seeded,
-      readFor: fresh?.pathname ?? null,
-      dismissed,
-      pathname,
-    });
-    return { open, setOpen, ...shown, markDismissed };
-  }, [open, setOpen, fresh, seeded, dismissed, pathname, markDismissed]);
+  const value = useMemo(
+    () => ({ open, urgent, setOpen, ...shown, markDismissed }),
+    [open, urgent, setOpen, shown, markDismissed],
+  );
   return (
     <NotificationPanelContext value={value}>
       <Suspense fallback={null}>

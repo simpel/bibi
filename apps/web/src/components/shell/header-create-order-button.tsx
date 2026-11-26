@@ -28,7 +28,7 @@ export type HeaderCreateOrderButtonProps = { access: ShellAccess };
 const GROUPS: CreateGroup[] = ["work", "catalog", "settings"];
 
 /** What staff create every day, in this order, on the menu's top level; the rest is under Show more. */
-const MAIN_KEYS: readonly string[] = ["customer", "runSheet", "task", "package"];
+const MAIN_KEYS: readonly string[] = ["customer", "runSheet", "task", "reservation", "package"];
 
 /**
  * The top bar's primary action: Create order (ADR 0081), joined to a ⋯ menu with everything
@@ -39,7 +39,9 @@ export function HeaderCreateOrderButton({ access }: HeaderCreateOrderButtonProps
   const t = useTranslations("nav");
   const { permissions } = access;
   const canOrder = canPermission({ permissions, permission: "order:write" });
-  const others = creatableItems({ permissions }).filter(({ key }) => key !== "order");
+  const others = creatableItems({ permissions, hasDiningRooms: access.hasDiningRooms }).filter(
+    ({ key }) => key !== "order",
+  );
   if (!canOrder && others.length === 0) return null;
   return (
     <ButtonGroup>

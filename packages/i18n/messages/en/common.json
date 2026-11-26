@@ -204,6 +204,8 @@
     "lists": "Lists",
     "responsibilities": "Responsibilities",
     "runSheets": "Run sheets",
+    "reservations": "Reservations",
+    "tableBooking": "Table booking",
     "calendar": "Calendar",
     "forecast": "Forecast",
     "financials": "Financial Results",
@@ -374,6 +376,10 @@
         "title": "Task",
         "description": "A site visit, a tasting or a deadline for a customer."
       },
+      "reservation": {
+        "title": "Reservation",
+        "description": "A table for a party in a dining room, e.g. a phone booking."
+      },
       "customer": {
         "title": "Customer",
         "description": "A company or person you book for."
@@ -477,14 +483,28 @@
     "logOut": "Log out"
   },
   "site": {
-    "heading": "Every meeting, meal and event. One order.",
-    "lead": "Bibi is the booking system for venues without a hotel system. Create an order in one step, let the customer pay through a link, and send the kitchen a run sheet that is always up to date.",
+    "brand": "Bibi",
+    "metaTitle": "Bibi – booking for meetings, food and the restaurant",
+    "metaDescription": "One system for meetings and conferences, food and drink, and the restaurant's table bookings. For experience centres, museums, conference estates, manor houses and restaurants with private rooms. {amount} a month excl. VAT, {trialDays} days free.",
+    "login": "Log in",
     "signUp": "Start free trial",
-    "seeHow": "See how it works",
+    "toApp": "To the app",
+    "footer": "© Bibi",
+    "supportLink": "Support",
+    "developersLink": "Developers",
     "nav": {
-      "features": "Features",
-      "how": "How it works",
-      "integrations": "Integrations"
+      "label": "Sections",
+      "jobs": "What it does",
+      "restaurant": "Table booking",
+      "money": "Payments",
+      "price": "Price"
+    },
+    "hero": {
+      "eyebrow": "The booking system for venues without a hotel system",
+      "heading": "Meetings, food and the restaurant's tables. One system.",
+      "lead": "The conference in the Salon, lunch for the kitchen and tonight's table bookings share the same rooms, floor plans and lists. Book the whole room and its tables close, and the other way round. The money goes to your Fortnox or Visma.",
+      "seePrice": "See the price",
+      "trialNote": "{trialDays} days free, then {amount} a month excl. VAT. No sales call."
     },
     "audience": {
       "label": "Built for venues without a hotel system",
@@ -496,68 +516,146 @@
         "restaurant": "Restaurants with private rooms"
       }
     },
-    "steps": {
-      "eyebrow": "How it works",
-      "title": "From first request to finished event in three steps",
-      "create": {
-        "title": "Create the order",
-        "body": "Staff add rooms, food and activities in one step. No quote for smaller meetings."
+    "jobs": {
+      "eyebrow": "Three jobs, one system",
+      "title": "The meeting, the food and the evening in the restaurant",
+      "lead": "Often the conference runs in one system, the kitchen on paper and table booking in a third. In Bibi it is the same rooms, the same lists and the same team.",
+      "chapter": "{number} · {name}",
+      "meetings": {
+        "eyebrow": "Meetings and conferences",
+        "title": "Create the order in one step",
+        "body": "Add the room, food and activities at once, with no quote for smaller meetings. The order moves through your own statuses, the room is held soft or hard, and the customer pays by card, Swish or invoice through a link."
       },
-      "pay": {
-        "title": "The customer pays",
-        "body": "A link for card payment, or an invoice. The customer never needs to use the app."
+      "food": {
+        "eyebrow": "Food and drink",
+        "title": "A run sheet the kitchen can trust",
+        "body": "Needs are counted and matched to the dishes. The run sheet goes to whoever is responsible, such as the head chef, and every change makes a new version. Export it as pdf, csv or json when someone outside the system needs it."
       },
-      "serve": {
-        "title": "The kitchen knows",
-        "body": "Requirements are counted, run sheets reach the person responsible, and every change makes a new version."
+      "restaurant": {
+        "eyebrow": "The restaurant",
+        "title": "Run the evening on the floor plan",
+        "body": "Guests book their own tables, and staff see the whole room: who is arriving, who is seated and which tables are blocked. You set the sittings, which dates are open and which tables are kept for walk-ins. Tables join up for larger parties."
       }
     },
-    "features": {
-      "eyebrow": "Features",
-      "title": "Everything a venue needs, nothing it does not",
-      "orders": {
-        "eyebrow": "Predefined orders",
-        "title": "Create an order in one step",
-        "body": "Pick a predefined order for a smaller meeting and Bibi fills in the rooms, food and activities. No quote, no back and forth. The customer pays by card or on invoice through a link."
+    "bookingPage": {
+      "eyebrow": "The booking page",
+      "title": "Guests book on your own page",
+      "lead": "Each dining room gets a public booking page with your logo, your colour and your texts. The guest picks party size, day and time and gets a confirmation with a link to change or cancel.",
+      "points": {
+        "manage": {
+          "title": "Change and cancel on their own",
+          "body": "With the link in the email the guest moves the booking or cancels it, up to the cut-off you set."
+        },
+        "needs": {
+          "title": "Needs as counts",
+          "body": "The guest notes, say, one gluten free, from the lists you show to guests. No record of who eats what."
+        },
+        "mail": {
+          "title": "Emails with your logo",
+          "body": "Confirmation, change, cancellation and a reminder the day before."
+        },
+        "embed": {
+          "title": "On your own website",
+          "body": "Embed the booking page on your website, or let a partner site book through the API."
+        },
+        "deposit": {
+          "title": "Deposits for larger parties",
+          "body": "Ask for a deposit from a party size you choose. The guest pays on the same payment page as your conference customers."
+        }
+      }
+    },
+    "shared": {
+      "eyebrow": "One foundation",
+      "title": "The same rooms, lists and money under everything",
+      "lead": "So nobody copies anything between systems, and nobody books the same room twice.",
+      "lists": {
+        "title": "Your own lists, counted",
+        "body": "You decide the lists: diets, allergens, accessibility or something entirely your own. The EU's 14 allergens come as a template. Needs are counted on orders and table bookings and reach the kitchen. No personal data about guests."
       },
-      "needs": {
-        "eyebrow": "Requirements as counts",
-        "title": "Allergens counted, guests never tracked",
-        "body": "Count requirements against your own lists, such as the 14 EU allergens. Bibi matches them to items and compiles them for the kitchen. No personal data about guests."
+      "blocking": {
+        "title": "The room and its tables block each other",
+        "body": "If someone tries to book the whole dining room on an evening with table bookings, Bibi says no. When the room is booked, its tables close to guests."
       },
-      "runSheets": {
-        "eyebrow": "Run sheets",
-        "title": "Run sheets that reach the right person",
-        "body": "Versioned run sheets, such as the kitchen order, go to the person responsible. Export them as pdf, csv or json when you need to hand over outside the system."
-      },
-      "holds": {
-        "eyebrow": "Holds and statuses",
-        "title": "Know what is held, and until when",
-        "body": "Soft holds carry a held-since date and an expiry. Hard holds block the room. Every order moves through the statuses you define."
+      "floorPlans": {
+        "title": "One floor plan, many layouts",
+        "body": "Draw the room once. The same floor plan carries the conference's banquet layout and the restaurant's tables, combinations and tables that split."
       },
       "setup": {
-        "eyebrow": "Your own setup",
-        "title": "Bibi adapts to your venue",
-        "body": "You decide the types, fields, lists, statuses and responsibilities. Access follows three roles that you fine-tune per person."
-      },
-      "assistant": {
-        "eyebrow": "Assistant",
-        "title": "Ask. Review. Approve.",
-        "body": "The assistant works inside Bibi as you. It proposes a change, and nothing happens until you confirm. Every change is logged."
+        "title": "Your setup, not ours",
+        "body": "You set the types, fields, lists, statuses and responsibilities. Access follows three roles that you fine-tune per person."
       }
     },
-    "integrations": {
-      "eyebrow": "Integrations",
-      "title": "Fits the tools you already use",
+    "assistant": {
+      "eyebrow": "The assistant",
+      "title": "Ask how the evening looks",
+      "lead": "Ask how many covers there are tonight and which allergies the kitchen should know about, or have it book a table. The assistant works in Bibi as you, with your permissions, and nothing changes until you approve.",
+      "mcp": "The same tools are an MCP server, so you can work in Bibi from your own Claude or other AI clients."
+    },
+    "money": {
+      "eyebrow": "Payments and accounting",
+      "title": "The money lands in your books",
+      "lead": "Connect your own accounts. Fortnox or Visma raises and books every invoice and deposit, and card and Swish payments taken in Bibi are booked there.",
+      "fortnox": "Invoices, deposits and bookkeeping",
+      "visma": "Invoices, deposits and bookkeeping",
+      "swish": "Swish Handel in payment links",
       "stripe": "Card payments",
-      "fortnox": "Accounting",
-      "visma": "Accounting"
+      "note": "One accounting system at a time. Bibi numbers nothing: every document shows your accounting system's number."
+    },
+    "price": {
+      "eyebrow": "Price",
+      "title": "One price, out in the open",
+      "lead": "No sales call and no quote. Get started, try it for {trialDays} days and pay when you want to continue.",
+      "amount": "{amount}",
+      "unit": "a month, excl. VAT",
+      "facts": {
+        "trial": "{trialDays} days free",
+        "seats": "{seats} seats included",
+        "extraSeats": "More seats at {seatAmount} a month each",
+        "yearly": "{discount} % off when you pay yearly",
+        "scope": "Meetings, food and drink and the restaurant in one subscription"
+      }
     },
     "cta": {
-      "title": "Run your venue from one place",
-      "body": "Set up your venue in minutes, then invite your team."
+      "title": "Bring the whole house into one system",
+      "body": "Start a 14-day trial, add your rooms and invite your team."
     },
     "mockup": {
+      "day": {
+        "title": "Friday 4 December",
+        "floor": "Kajen, dinner 19:30",
+        "meetings": {
+          "lane": "Meetings",
+          "title": "Kickoff, Northwind",
+          "meta": "The Salon 09:00–16:00 · 24 guests",
+          "status": "Confirmed"
+        },
+        "food": {
+          "lane": "Food and drink",
+          "title": "Lunch, fish soup",
+          "meta": "12:00 · 24 portions · 3 gluten free",
+          "status": "Version 3"
+        },
+        "restaurant": {
+          "lane": "The restaurant",
+          "title": "Dinner at Kajen",
+          "meta": "17:00–22:00 · 38 guests booked",
+          "status": "Open"
+        }
+      },
+      "floor": {
+        "title": "Kajen, dinner",
+        "table": "Table {label}",
+        "covers": "38 guests",
+        "next": "Arriving next",
+        "arrival1": "19:30 · Lind, 2 · table 3",
+        "arrival2": "19:45 · Berg, 7 · tables 7 + 8",
+        "arrival3": "20:00 · Ek, 4 · table 1",
+        "legend": {
+          "booked": "Booked",
+          "held": "Kept for walk-ins",
+          "free": "Free"
+        }
+      },
       "order": {
         "title": "Kickoff, Northwind",
         "status": "Confirmed",
@@ -567,16 +665,8 @@
         "guests": "24 guests",
         "total": "Total",
         "amount": "31 200 kr",
-        "payment": "Payment link",
+        "payment": "Payment link, Swish or card",
         "paid": "Paid"
-      },
-      "needs": {
-        "title": "Requirements for Friday",
-        "gluten": "Gluten",
-        "lactose": "Lactose",
-        "nuts": "Nuts",
-        "vegan": "Vegan",
-        "matched": "Matched to the lunch menu"
       },
       "runSheet": {
         "title": "Kitchen order",
@@ -586,46 +676,56 @@
         "line2": "3 gluten free, 2 lactose free",
         "line3": "Dessert at 13:30"
       },
-      "holds": {
-        "title": "Lines on this order",
-        "room": "The Salon",
-        "lunch": "Lunch",
-        "tour": "Tour",
-        "hard": "Hard hold",
-        "soft": "Soft hold, until 14 Nov",
-        "none": "Not held"
+      "needs": {
+        "title": "Needs for Friday",
+        "lists": {
+          "diet": "List: Diet",
+          "allergens": "List: Allergens"
+        },
+        "vegan": "Vegan",
+        "vegetarian": "Vegetarian",
+        "gluten": "Gluten",
+        "nuts": "Nuts",
+        "matched": "Matched to the lunch and dinner menus"
       },
-      "setup": {
-        "types": "Types",
-        "type1": "Room",
-        "type2": "Dish",
-        "type3": "Activity",
-        "roles": "Roles",
-        "role1": "Member",
-        "role2": "Manager",
-        "role3": "Admin",
-        "statuses": "Statuses",
-        "status1": "Inquiry",
-        "status2": "Held",
-        "status3": "Confirmed"
+      "conflict": {
+        "title": "Create order",
+        "line": "Kajen, whole room",
+        "meta": "Banquet 80 · Fri 4 Dec 18:00–23:00",
+        "error": "The room cannot be booked",
+        "errorBody": "There are 12 table bookings with 38 guests that evening.",
+        "reverse": "And the other way round: when the room is booked, its tables close on the booking page."
+      },
+      "bookingPage": {
+        "address": "Book a table · Kajen",
+        "logo": "K",
+        "venue": "Kajen",
+        "heading": "Book a table",
+        "party": "Guests",
+        "date": "Date",
+        "dateValue": "Friday 4 December",
+        "time": "Time",
+        "slot1": "19:00",
+        "slot2": "19:30",
+        "slot3": "20:00",
+        "slot4": "20:30",
+        "needs": "Special needs",
+        "need": "Gluten free",
+        "needCount": "1",
+        "submit": "Book table",
+        "powered": "Powered by Bibi"
       },
       "assistant": {
-        "user": "Create a lunch for 24 on Friday in the Salon",
-        "reply": "I can create this order. Review it before I do.",
-        "card": "Create order",
-        "detail": "Lunch, 24 guests, Friday, the Salon",
+        "title": "The assistant",
+        "question": "How many covers tonight, and any allergies?",
+        "answer": "Dinner at Kajen has 38 guests. The kitchen needs to know about 3 gluten free and 1 nut allergy.",
+        "request": "Book Anna Lind, 2 people, 19:30.",
+        "card": "Book table",
+        "detail": "Table 3 for 2, Fri 19:30, Anna Lind",
         "approve": "Approve",
         "decline": "Decline"
       }
-    },
-    "brand": "Bibi",
-    "metaTitle": "Bibi – the app for your organisation's daily operation",
-    "metaDescription": "Bibi is an app that helps organisations handle their daily operation: bookings, rooms, food and drink, activities and payments in one place.",
-    "login": "Log in",
-    "toApp": "To the app",
-    "footer": "© Bibi",
-    "supportLink": "Support",
-    "developersLink": "Developers"
+    }
   },
   "adminArea": {
     "overview": {
@@ -708,6 +808,14 @@
         "responsibilities": {
           "label": "Responsibilities",
           "keywords": "head of kitchen recipient responsible"
+        },
+        "diningRooms": {
+          "label": "Dining rooms",
+          "keywords": "restaurant table booking room sittings tables slug"
+        },
+        "bookingPage": {
+          "label": "Booking page",
+          "keywords": "restaurant table booking page logo cover colour publish embed"
         },
         "ledger": {
           "label": "Invoicing and bookkeeping",

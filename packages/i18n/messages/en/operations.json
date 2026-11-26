@@ -632,6 +632,7 @@
     "showPanel": "Show notifications",
     "hidePanel": "Hide notifications",
     "unreadCount": "{count, plural, =0 {No unread notifications} one {# unread notification} other {# unread notifications}}",
+    "urgent": "Something needs you",
     "panel": {
       "close": "Close notifications",
       "settings": "Notification settings",

@@ -33,6 +33,12 @@ type SeedElement = {
   seatsTop: number | null;
   seatsBottom: number | null;
   emergencyExit: boolean;
+  seats?: number;
+  widthCm?: number;
+  depthCm?: number;
+  minCovers?: number;
+  maxCovers?: number;
+  onlineBookable?: boolean;
 };
 
 function toElements({ pieces, kinds }: PiecesInput): Result<SeedElement[]> {
@@ -49,6 +55,12 @@ function toElements({ pieces, kinds }: PiecesInput): Result<SeedElement[]> {
       seatsTop: piece.seatsTop ?? null,
       seatsBottom: piece.seatsBottom ?? null,
       emergencyExit: piece.emergencyExit ?? false,
+      ...(piece.seats === undefined ? {} : { seats: piece.seats }),
+      ...(piece.widthCm === undefined ? {} : { widthCm: piece.widthCm }),
+      ...(piece.depthCm === undefined ? {} : { depthCm: piece.depthCm }),
+      ...(piece.minCovers === undefined ? {} : { minCovers: piece.minCovers }),
+      ...(piece.maxCovers === undefined ? {} : { maxCovers: piece.maxCovers }),
+      ...(piece.onlineBookable === undefined ? {} : { onlineBookable: piece.onlineBookable }),
     });
   }
   return ok({ value: elements });

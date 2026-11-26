@@ -49,10 +49,12 @@ export {
 } from "./schema";
 export { type SendMailInput, sendMail } from "./send-mail";
 export { type SendOrderMailInput, sendOrderMail } from "./send-order-mail";
+export { type SendReservationMailInput, sendReservationMail } from "./send-reservation-mail";
 export { type CreateSmtpProviderInput, createSmtpProvider } from "./smtp/create-smtp-provider";
 export * from "./templates/invitation";
 export * from "./templates/layout";
 export * from "./templates/magic-link";
 export * from "./templates/reminder";
+export * from "./templates/reservation";
 export * from "./templates/seat-request";
 export * from "./templates/types";

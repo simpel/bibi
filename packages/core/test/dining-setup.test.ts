@@ -164,7 +164,8 @@ describe("table booking setup (ADR 0119)", () => {
       maxCovers: 8,
     };
     const first = unwrap({ result: await save({ combinations: [long] }) });
-    expect(first.items).toMatchObject([{ name: "Long table", elementIds: [seven.id, eight.id] }]);
+    expect(first.items).toMatchObject([{ name: "Long table" }]);
+    expect([...(first.items[0]?.elementIds ?? [])].sort()).toEqual([seven.id, eight.id].sort());
     const id = first.items[0]?.id;
     const renamed = unwrap({
       result: await save({

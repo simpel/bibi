@@ -62,6 +62,15 @@ const HISTORY_STALE: Mapped = {
   message: "Changed by someone else in the meantime: reload and try again",
 };
 
+/**
+ * A hard hold on a dining room over its table reservations (ADR 0119,
+ * `room_reservations_guard.sql`): move or cancel the reservations first.
+ */
+const ROOM_RESERVATIONS: Mapped = {
+  code: "CONFLICT",
+  message: "The room has table reservations at that time: move or cancel them first",
+};
+
 function fromPrisma({ error }: { error: KnownError }): Mapped | undefined {
   const known = PRISMA_CODES[error.code];
   if (known) return known;
@@ -70,6 +79,7 @@ function fromPrisma({ error }: { error: KnownError }): Mapped | undefined {
   const line = lineConflict({ cause });
   if (line) return line;
   if (cause.message === "history_stale") return HISTORY_STALE;
+  if (cause.message === "room_reservations_conflict") return ROOM_RESERVATIONS;
   return typeof cause.code === "string" ? POSTGRES_CODES[cause.code] : undefined;
 }
 

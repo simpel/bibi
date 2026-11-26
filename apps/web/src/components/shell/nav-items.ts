@@ -15,6 +15,7 @@ import {
   type LucideIcon,
   MessageSquareIcon,
   ShieldCheckIcon,
+  UtensilsCrossedIcon,
 } from "lucide-react";
 import { INBOX_ROUTE } from "@/lib/inbox-routes";
 import { ROUTES } from "@/lib/routes";
@@ -31,6 +32,7 @@ export type NavLabelKey =
   | "orders"
   | "tasks"
   | "runSheets"
+  | "reservations"
   | "inbox"
   | "customers"
   | "items"
@@ -55,6 +57,8 @@ export type NavItem = {
   permission?: Permission;
   /** Sub-pages; the entry's own `href` is the first of them (the section's default). */
   children?: readonly NavChild[];
+  /** Shown only when the organization has what the entry needs: a dining room (ADR 0119). */
+  requires?: "diningRoom";
   /** A live count shown as a badge (ADR 0094). */
   badge?: NavBadgeKind;
 };
@@ -122,6 +126,15 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       icon: CircleCheckIcon,
       audience: "everyone",
       permission: "task:read",
+    },
+    // Table bookings of the day (ADR 0119); only for organizations with a dining room.
+    {
+      href: ROUTES.reservations,
+      labelKey: "reservations",
+      icon: UtensilsCrossedIcon,
+      audience: "everyone",
+      permission: "reservation:read",
+      requires: "diningRoom",
     },
     {
       href: ROUTES.runSheets,
