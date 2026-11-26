@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
+import { nowOf } from "../../time/now";
 import { archiveGroupsOfOrder } from "../alternative-group/archive-groups";
 import { archiveLinesOfOrder } from "../line/release-for-order";
 import { archiveRequirements } from "../requirement/archive-requirements";
@@ -19,13 +20,15 @@ export async function archiveOrder({
   context,
   order,
 }: ArchiveOrderInput): Promise<Result<OrderDto>> {
+  // Taken before the lines: `order.restore` brings back what was archived from here on.
+  const archivedAt = nowOf({ context });
   const program = await archiveLinesOfOrder({ context, orderId: order.id });
   if (!program.ok) return program;
   await archiveGroupsOfOrder({ context, orderId: order.id });
   await archiveRequirements({ context, orderId: order.id });
   const row = await context.db.order.update({
     where: { id: order.id },
-    data: { status: "ARCHIVED" },
+    data: { status: "ARCHIVED", archivedAt },
     include: ORDER_INCLUDE,
   });
   await archiveRecords({ context, ids: [order.id] });

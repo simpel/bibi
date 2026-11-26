@@ -33,7 +33,7 @@ The parity core: every capability is defined **once** as an operation and then e
 
 ## Feature folders (`src/features/<entity>/`)
 - Fixed filenames: `schema.ts`, `operations.ts`, `embeddable.ts`. Adapters (`graphql.ts`, `rest.ts`, `mcp.ts`, `ui/`) are added by their surface. New entity: `pnpm gen entity`.
-- Archiving = soft delete (`status: ARCHIVED`), never hard delete.
+- Archiving = soft delete (`status: ARCHIVED`, `archivedAt` set). Only an archived record with its own page is hard deleted, through `<entity>.delete` (built with `defineDeleteOperation` from its `deletion-kind.ts`) or the retention job (`purgeExpiredArchives`); `<entity>.restore` brings one back. Each kind lists its archived rows (`archived`), read by the Archive page (`archive.list`) and the retention job. Rules per relation: "Deleting" in `packages/db/CLAUDE.md`. Why: ADR 0118.
 - Pagination: `shared/page-input.ts`.
 
 ## Permissions (ADR 0034, 0050)

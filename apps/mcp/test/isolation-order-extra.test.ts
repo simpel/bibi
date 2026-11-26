@@ -100,6 +100,8 @@ describe("cross-organization isolation: order statuses and audit log", () => {
     for (const [name, args] of [
       ["orderStatus_update", { id, name: "Hijacked" }],
       ["orderStatus_archive", { id }],
+      ["orderStatus_restore", { id }],
+      ["orderStatus_delete", { id }],
       ["orderStatus_archivePreview", { id }],
       ["orderStatus_get", { id }],
       ["orderStatus_setTransitions", { id, allowedNext: "ANY" }],

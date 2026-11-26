@@ -4,6 +4,7 @@ import type { Permission } from "../../operations/permission";
 import { hasPermission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
+import { nowOf } from "../../time/now";
 import { checkItemsUnused } from "../item/archive-guard";
 import { toItemDtos } from "../item/to-item-dto";
 import { archiveOrder } from "../order/archive-order";
@@ -71,7 +72,7 @@ export async function archiveCustomerBundles({
   for (const dto of before) {
     const row = await context.db.item.update({
       where: { id: dto.id },
-      data: { status: "ARCHIVED" },
+      data: { status: "ARCHIVED", archivedAt: nowOf({ context }) },
     });
     await archiveRecords({ context, ids: [dto.id] });
     const [after] = await toItemDtos({ context, rows: [row] });

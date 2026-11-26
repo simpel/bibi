@@ -27,4 +27,15 @@ export const priceListMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Archive price list ${text({ value: input.id })}`,
   }),
+  mcpTool({
+    operation: "priceList.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore price list ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "priceList.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete price list ${text({ value: input.id })} permanently`,
+  }),
 ];

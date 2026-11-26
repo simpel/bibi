@@ -41,4 +41,15 @@ export const taskMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Delete task ${text({ value: input.id })}`,
   }),
+  mcpTool({
+    operation: "task.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore task ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "task.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete task ${text({ value: input.id })} permanently`,
+  }),
 ];

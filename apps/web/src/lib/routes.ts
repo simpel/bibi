@@ -52,6 +52,7 @@ export const ROUTES = {
   /** The administration area (ADR 0036): its own sidebar, opens on a start page listing every page the caller may see. */
   admin: "/admin",
   adminGeneral: "/admin/general",
+  adminArchive: "/admin/archive",
   adminMembers: "/admin/members",
   adminBilling: "/admin/billing",
   adminTypes: "/admin/types",

@@ -1,5 +1,6 @@
 import { alternativeGroupRoutes } from "./features/alternative-group/rest";
 import { apiKeyRoutes } from "./features/api-key/rest";
+import { archiveRoutes } from "./features/archive/rest";
 import { assignmentRoutes } from "./features/assignment/rest";
 import { auditLogRoutes } from "./features/audit-log/rest";
 import { billingRoutes } from "./features/billing/rest";
@@ -73,6 +74,7 @@ const boardRoutes = [
   ...settingsRoutes,
   ...dashboardRoutes,
   ...myWorkRoutes,
+  ...archiveRoutes,
   ...orderVersionRoutes,
   ...financeRoutes,
   ...boardCrudRoutes,

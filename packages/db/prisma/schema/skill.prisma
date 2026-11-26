@@ -28,6 +28,9 @@ model Skill {
   resources      Json        @default("[]")
   version        Int         @default(1)
   status         SkillStatus @default(DRAFT)
+  /// Owned (ADR 0118): when it was archived; null while active. Set by its archive, cleared by
+  /// its restore; the retention job deletes it after the organization's `archiveRetentionDays`.
+  archivedAt     DateTime?
   source         String?
   contentHash    String?
   createdAt      DateTime    @default(now())

@@ -5,16 +5,19 @@ import {
   CustomerFindSimilarOutputSchema,
   CustomerSchema,
   createCustomer,
+  deleteCustomer,
   findSimilarCustomers,
   getCustomer,
   type ItemDto,
   listCustomers,
   listItems,
+  restoreCustomer,
   type SimilarCustomer,
   SimilarCustomerSchema,
   updateCustomer,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -61,6 +64,8 @@ fieldFromOperation({
 mutationFromOperation({ operation: createCustomer, type: CustomerRef });
 mutationFromOperation({ operation: updateCustomer, type: CustomerRef });
 mutationFromOperation({ operation: archiveCustomer, type: CustomerRef });
+mutationFromOperation({ operation: restoreCustomer, type: CustomerRef });
+mutationFromOperation({ operation: deleteCustomer, type: DeletedRecordRef });
 
 builder.objectField(CustomerRef, "entityType", (t) =>
   t.field({

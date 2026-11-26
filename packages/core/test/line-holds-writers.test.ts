@@ -5,11 +5,13 @@ import { describe, expect, it } from "vitest";
 const SRC = join(import.meta.dirname, "../src");
 
 /**
- * The only core files that may write `Occupancy` (ADR 0053): the manual-block operations, and
- * the organization delete behind the demo reset and `cleanup:test-orgs`.
+ * The only core files that may write `Occupancy` (ADR 0053): the manual-block operations, the
+ * delete of an archived item with its manual blocks (ADR 0118), and the organization delete behind
+ * the demo reset and `cleanup:test-orgs`.
  */
 const ALLOWED = new Set([
   "features/occupancy/write-operations.ts",
+  "features/item/deletion-kind.ts",
   "seed/demo/delete-organizations.ts",
 ]);
 

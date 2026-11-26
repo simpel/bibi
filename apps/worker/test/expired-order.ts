@@ -29,7 +29,7 @@ async function run<T = { id: string }>({ context, operation, input }: RunInput):
 }
 
 /** A fresh organization provisioned like a real signup, with an admin context. */
-async function provisionedOrg() {
+export async function provisionedOrg() {
   const organizationId = `org_${createId()}`;
   const data = { id: organizationId, name: organizationId, slug: organizationId };
   await getDb().organization.create({ data: { ...data, createdAt: new Date() } });

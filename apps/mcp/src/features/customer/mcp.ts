@@ -33,4 +33,15 @@ export const customerMcpTools = [
     summary: archiveCustomerSummary,
     bind: bindArchiveCustomer,
   }),
+  mcpTool({
+    operation: "customer.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore customer ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "customer.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete customer ${text({ value: input.id })} permanently`,
+  }),
 ];

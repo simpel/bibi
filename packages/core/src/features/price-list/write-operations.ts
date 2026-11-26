@@ -1,6 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
+import { nowOf } from "../../time/now";
 import { checkItems, checkPricing, checkTerms, definedOnly } from "./price-list-rules";
 import {
   PriceListCreateInputSchema,
@@ -109,7 +110,7 @@ export const archivePriceList = defineOperation({
     if (!before) return notFound({ entity: "Price list" });
     const row = await context.db.priceList.update({
       where: { id },
-      data: { status: "ARCHIVED" },
+      data: { status: "ARCHIVED", archivedAt: nowOf({ context }) },
       include: PRICE_LIST_INCLUDE,
     });
     const priceList = toPriceListDto({ row });

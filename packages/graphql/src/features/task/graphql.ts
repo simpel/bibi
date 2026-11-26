@@ -2,10 +2,12 @@ import {
   archiveTask,
   completeTask,
   createTask,
+  deleteTask,
   getTask,
   linkTaskOrder,
   listTasks,
   reopenTask,
+  restoreTask,
   type TaskDto,
   type TaskListInput,
   TaskSchema,
@@ -13,6 +15,7 @@ import {
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
 import type { GraphqlContext } from "../../schema/context";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -38,6 +41,8 @@ mutationFromOperation({ operation: completeTask, type: TaskRef });
 mutationFromOperation({ operation: reopenTask, type: TaskRef });
 mutationFromOperation({ operation: linkTaskOrder, type: TaskRef });
 mutationFromOperation({ operation: archiveTask, type: TaskRef });
+mutationFromOperation({ operation: restoreTask, type: TaskRef });
+mutationFromOperation({ operation: deleteTask, type: DeletedRecordRef });
 
 type ListByInput = Pick<TaskListInput, "customerId" | "orderId"> & {
   limit: number | null | undefined;

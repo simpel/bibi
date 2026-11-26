@@ -29,4 +29,14 @@ export const orderStatusRoutes = [
     method: "POST",
     path: `${BASE}/import-template`,
   }),
+  restRoute({
+    operation: "orderStatus.restore",
+    method: "POST",
+    path: `${BASE}/{id}/restore`,
+  }),
+  restRoute({
+    operation: "orderStatus.delete",
+    method: "DELETE",
+    path: `${BASE}/{id}/permanent`,
+  }),
 ];

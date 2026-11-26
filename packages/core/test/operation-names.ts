@@ -1,5 +1,6 @@
 import { ASSIGNMENT_NAMES, BOARD_NAMES, ITEM_TYPE_GROUP_NAMES } from "./operation-names-assignment";
 import { EXTRA_NAMES } from "./operation-names-integration";
+import { LIFECYCLE_NAMES } from "./operation-names-lifecycle";
 import { ORDER_NAMES } from "./operation-names-order";
 
 const NAMES = [
@@ -173,4 +174,5 @@ export const OPERATION_NAMES: readonly string[] = [
   ...ASSIGNMENT_NAMES,
   ...BOARD_NAMES,
   ...ITEM_TYPE_GROUP_NAMES,
+  ...LIFECYCLE_NAMES,
 ].sort((a, b) => a.localeCompare(b));

@@ -50,6 +50,10 @@ describe("cross-organization isolation: price lists", () => {
       args: { id: list.data.id },
     });
     expect(archive.data.code).toBe("NOT_FOUND");
+    for (const name of ["priceList_restore", "priceList_delete"]) {
+      const result = await call({ client: b, name, args: { id: list.data.id } });
+      expect(result.data.code, name).toBe("NOT_FOUND");
+    }
     const graph = await call({
       client: b,
       name: "graphql_query",

@@ -25,4 +25,15 @@ export const entityTypeMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Archive type ${text({ value: input.id })}`,
   }),
+  mcpTool({
+    operation: "entityType.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore type ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "entityType.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete type ${text({ value: input.id })} permanently`,
+  }),
 ];

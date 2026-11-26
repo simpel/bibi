@@ -49,8 +49,8 @@
             "answer": "When you finish setting up Bibi, we add three example orders so your board isn't empty: a meeting, a conference and a dinner. They all belong to the customer Example Company Ltd and use the types you chose.\nClick around in them, edit them and move them as you like.\nWhen you're done, open Example Company Ltd under Customers, archive the contact person Anna Example, then choose **Archive customer** in **Danger area** at the bottom of the page with Also archive all orders for this customer ticked."
           },
           "archiveRecords": {
-            "question": "How do I archive a customer, an item or a venue?",
-            "answer": "Open its page and scroll to **Danger area** at the bottom. On an item or a package it is the page's last tab instead. Choose the archive button there and confirm.\nThis works the same for types, lists, statuses, run sheets, responsibilities, price lists and skills. You only see the danger area if you may archive that kind of record."
+            "question": "How do I archive, restore or delete a customer, an item or a venue?",
+            "answer": "Open the record's page and scroll to **Danger area** at the bottom. On an item, a package or an order it is the page's last tab instead. Choose the archive button there and confirm.\nArchived records are found under **Administration, Archive**. There, **Restore** puts a record back, and **Delete permanently** removes it for good once you type its name. A record that another record still uses can't be deleted.\nArchived records are deleted automatically after 90 days, or the number of days an administrator sets under **Administration, General**. Invoices, payments and other money records are never deleted."
           },
           "itemGroups": {
             "question": "How do I sort my items into groups like Spaces and Food?",

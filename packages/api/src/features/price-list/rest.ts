@@ -7,4 +7,14 @@ export const priceListRoutes = [
   restRoute({ operation: "priceList.update", method: "PATCH", path: "/price-lists/{id}" }),
   restRoute({ operation: "priceList.setItems", method: "PUT", path: "/price-lists/{id}/items" }),
   restRoute({ operation: "priceList.archive", method: "DELETE", path: "/price-lists/{id}" }),
+  restRoute({
+    operation: "priceList.restore",
+    method: "POST",
+    path: "/price-lists/{id}/restore",
+  }),
+  restRoute({
+    operation: "priceList.delete",
+    method: "DELETE",
+    path: "/price-lists/{id}/permanent",
+  }),
 ];

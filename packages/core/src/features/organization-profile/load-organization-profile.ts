@@ -1,5 +1,6 @@
 import type { OperationContext } from "../../operations/types";
 import { FALLBACK_TIME_ZONE } from "../../time/time-zone";
+import { DEFAULT_ARCHIVE_RETENTION_DAYS } from "./retention";
 import type { OrganizationProfileDto } from "./schema";
 
 export const ORGANIZATION_PROFILE_SELECT = {
@@ -17,6 +18,7 @@ export const ORGANIZATION_PROFILE_SELECT = {
   timeZone: true,
   emailDomain: true,
   domainJoin: true,
+  archiveRetentionDays: true,
 } as const;
 
 /** What `organizationProfile.get` returns before the row exists (a query never creates it). */
@@ -35,6 +37,7 @@ export const EMPTY_ORGANIZATION_PROFILE: OrganizationProfileDto = {
   timeZone: FALLBACK_TIME_ZONE,
   emailDomain: null,
   domainJoin: true,
+  archiveRetentionDays: DEFAULT_ARCHIVE_RETENTION_DAYS,
 };
 
 export type LoadOrganizationProfileInput = { context: Pick<OperationContext, "db"> };

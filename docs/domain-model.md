@@ -1532,8 +1532,11 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - timeZone (owned, IANA name, required; existing rows backfilled `Europe/Stockholm`; ADR 0064): the zone of order-level times and the default of every venue, read only through `effectiveTimeZone`. Editable in `/admin/general`.
 - emailDomain (owned, lowercase, optional; [ADR 0078](decisions/0078-domain-join.md)): the work email domain whose verified users are offered to join as members. Never typed in: taken from the creator's verified email at creation, and from the admin who turns domain join on (their own domain replaces the stored one). Public mail providers never count.
 - domainJoin (owned, default on; ADR 0078): the admin's switch. It takes effect only while emailDomain is set.
+- archiveRetentionDays (owned, 1 to 180, default 90; [ADR 0118](decisions/0118-deleting-archived-records.md)): how long an archived record with its own page is kept before the nightly job deletes it. Admins only: `organizationProfile.get|update` (`configuration:write` to change).
 
 > **Target (ADR 0064):** the zone is chosen when the organization is created (`/welcome/new`).
+
+> **Deleting (ADR 0118):** every record with its own page (task, customer, item, venue, package, price list, type, list, responsibility, run sheet template, skill, status, item type group, order) has `archivedAt` (owned: set by its archive, cleared by `<entity>.restore`) and `<entity>.delete`, which deletes only an archived record and is refused (`CONFLICT`) while another record still refers to it. Archived records are listed, restored and deleted on one Archive page (`archive.list`). Money records and orders with money or sent quotes are never deleted. Rules per relation: `packages/db/CLAUDE.md`.
 
 > Operations: `organizationProfile.get` and `organizationProfile.update` (setup feature), `organizationProfile.setSetupStatus` (`pipeline:write`), `organizationProfile.setDomainJoin` (`member:write`, admins only). While the status is `PENDING`, `/:org/welcome` sends members who can do the setup through it and everyone else to a waiting page.
 

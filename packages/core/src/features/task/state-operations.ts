@@ -90,7 +90,7 @@ export const archiveTask = defineOperation({
     if (!before) return notFound({ entity: "Task" });
     const row = await context.db.task.update({
       where: { id },
-      data: { status: "ARCHIVED" },
+      data: { status: "ARCHIVED", archivedAt: nowOf({ context }) },
       include: TASK_INCLUDE,
     });
     await archiveRecords({ context, ids: [id] });

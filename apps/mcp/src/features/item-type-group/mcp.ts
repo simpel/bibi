@@ -25,4 +25,15 @@ export const itemTypeGroupMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Archive item type group ${text({ value: input.id })}`,
   }),
+  mcpTool({
+    operation: "itemTypeGroup.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore item type group ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "itemTypeGroup.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete item type group ${text({ value: input.id })} permanently`,
+  }),
 ];

@@ -33,4 +33,5 @@ export const ORDER_TEMPLATE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = 
   orderTemplate_create: templateCard,
   orderTemplate_update: templateCard,
   orderTemplate_archive: templateCard,
+  orderTemplate_restore: templateCard,
 };

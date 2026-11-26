@@ -14,6 +14,8 @@ describe("cross-organization isolation: predefined orders", () => {
       ["orderTemplate_get", { id: secret.id }],
       ["orderTemplate_update", { id: secret.id, name: "Hijacked" }],
       ["orderTemplate_archive", { id: secret.id }],
+      ["orderTemplate_restore", { id: secret.id }],
+      ["orderTemplate_delete", { id: secret.id }],
       [
         "order_createFromTemplate",
         {

@@ -55,6 +55,8 @@ describe("cross-organization isolation: run sheets and run sheet definitions", (
       ["runSheet_generate", { orderId: mine.order.id, runSheetDefinitionId: definition.id }],
       ["runSheetDefinition_update", { id: definition.id, name: "Hacked" }],
       ["runSheetDefinition_archive", { id: definition.id }],
+      ["runSheetDefinition_restore", { id: definition.id }],
+      ["runSheetDefinition_delete", { id: definition.id }],
     ] as const;
     for (const [name, args] of cases) {
       const result = await call({ client: b, name, args });

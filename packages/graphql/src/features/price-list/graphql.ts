@@ -1,16 +1,19 @@
 import {
   archivePriceList,
   createPriceList,
+  deletePriceList,
   getItem,
   getPriceList,
   listPriceLists,
   type PriceListDto,
   PriceListItemSchema,
   PriceListSchema,
+  restorePriceList,
   setPriceListItems,
   updatePriceList,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -42,6 +45,8 @@ mutationFromOperation({ operation: createPriceList, type: PriceListRef });
 mutationFromOperation({ operation: updatePriceList, type: PriceListRef });
 mutationFromOperation({ operation: setPriceListItems, type: PriceListRef });
 mutationFromOperation({ operation: archivePriceList, type: PriceListRef });
+mutationFromOperation({ operation: restorePriceList, type: PriceListRef });
+mutationFromOperation({ operation: deletePriceList, type: DeletedRecordRef });
 
 builder.objectField(PriceListRef, "items", (t) =>
   t.field({

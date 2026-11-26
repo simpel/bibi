@@ -21,4 +21,15 @@ export const runSheetDefinitionMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Archive run sheet ${text({ value: input.id })}`,
   }),
+  mcpTool({
+    operation: "runSheetDefinition.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore run sheet ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "runSheetDefinition.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete run sheet ${text({ value: input.id })} permanently`,
+  }),
 ];

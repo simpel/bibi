@@ -31,6 +31,9 @@ model OrganizationProfile {
   emailDomain    String?
   /// Owned (ADR 0078): domain join on or off, set by an admin. On by default.
   domainJoin     Boolean      @default(true)
+  /// Owned (ADR 0118): days an archived record is kept before the retention job deletes it, set
+  /// by an admin. 1 to 180 (CHECK in the migration), 90 by default.
+  archiveRetentionDays Int    @default(90)
   status         RecordStatus @default(ACTIVE)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt

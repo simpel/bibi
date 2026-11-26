@@ -18,6 +18,8 @@ describe("cross-organization isolation: vocabularies", () => {
     const cases = [
       ["vocabulary_update", { id: vocab.data.id, name: "Hacked" }],
       ["vocabulary_archive", { id: vocab.data.id }],
+      ["vocabulary_restore", { id: vocab.data.id }],
+      ["vocabulary_delete", { id: vocab.data.id }],
       ["vocabulary_addValue", { vocabularyId: vocab.data.id, name: "Injected" }],
       ["vocabulary_updateValue", { id: valueId, name: "Hacked" }],
     ] as const;

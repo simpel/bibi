@@ -1,13 +1,16 @@
 import {
   archiveEntityType,
   createEntityType,
+  deleteEntityType,
   type EntityTypeDto,
   EntityTypeSchema,
   getEntityType,
   listEntityTypes,
+  restoreEntityType,
   updateEntityType,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -34,3 +37,5 @@ fieldFromOperation({ operation: getEntityType, type: EntityTypeRef, name: "entit
 mutationFromOperation({ operation: createEntityType, type: EntityTypeRef });
 mutationFromOperation({ operation: updateEntityType, type: EntityTypeRef });
 mutationFromOperation({ operation: archiveEntityType, type: EntityTypeRef });
+mutationFromOperation({ operation: restoreEntityType, type: EntityTypeRef });
+mutationFromOperation({ operation: deleteEntityType, type: DeletedRecordRef });

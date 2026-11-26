@@ -31,6 +31,8 @@ describe("cross-organization isolation: responsibilities", () => {
       ["responsibility_get", { id }],
       ["responsibility_update", { id, name: "Hacked" }],
       ["responsibility_archive", { id }],
+      ["responsibility_restore", { id }],
+      ["responsibility_delete", { id }],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");
     }

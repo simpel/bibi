@@ -1,0 +1,79 @@
+import { allBlockers, archivedParent } from "../../archive/blockers";
+import {
+  archivedRows,
+  archivedWhere,
+  EITHER_STATUS,
+  type LifecycleKind,
+  lifecycleRow,
+  REACTIVATE,
+} from "../../archive/lifecycle-kind";
+import { hardDelete } from "../../archive/record-rows";
+
+/**
+ * Tasks (ADR 0117, 0118): nothing else refers to a task, so an archived one is always deleted,
+ * with its notifications and dismissals (cascade). Restored only while its customer and contact
+ * are active.
+ */
+export const taskKind: LifecycleKind = {
+  entityType: "task",
+  label: "Task",
+  record: true,
+  find: async ({ context, id }) =>
+    lifecycleRow({
+      row: await context.db.task.findFirst({ where: { id, status: EITHER_STATUS } }),
+    }),
+  restoreBlockers: async ({ context, id }) => {
+    const task = await context.db.task.findFirst({
+      where: { id, status: "ARCHIVED" },
+      select: {
+        customer: { select: { status: true } },
+        contact: { select: { status: true } },
+      },
+    });
+    return allBlockers({
+      checks: [
+        archivedParent({
+          status: task?.customer.status,
+          feature: "customer",
+          path: "customerId",
+          what: "customer",
+        }),
+        archivedParent({
+          status: task?.contact.status,
+          feature: "customer",
+          path: "contactId",
+          what: "contact",
+        }),
+      ],
+    });
+  },
+  reactivate: async ({ context, id }) => {
+    await context.db.task.update({ where: { id, status: "ARCHIVED" }, data: REACTIVATE });
+  },
+  deleteBlockers: async () => [],
+  remove: async ({ context, id }) => {
+    await context.db.notification.deleteMany({ where: { taskId: id } });
+    await hardDelete({ context }).task.delete({ where: { id } });
+  },
+  archived: ({ context, before }) =>
+    archivedRows({
+      rows: context.db.task
+        .findMany({
+          where: archivedWhere({ before }),
+          select: {
+            id: true,
+            archivedAt: true,
+            entityType: { select: { name: true } },
+            customer: { select: { name: true } },
+          },
+          orderBy: { archivedAt: "asc" },
+        })
+        .then((rows) =>
+          rows.map(({ id, archivedAt, entityType, customer }) => ({
+            id,
+            archivedAt,
+            name: `${entityType.name} · ${customer.name}`,
+          })),
+        ),
+    }),
+};

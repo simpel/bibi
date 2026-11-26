@@ -1,5 +1,6 @@
 import type { Permission, PermissionSet } from "@bibi/core";
 import {
+  ArchiveIcon,
   Building2Icon,
   ClipboardListIcon,
   CreditCardIcon,
@@ -20,6 +21,7 @@ import { ADMIN_SECTIONS, type AdminSectionId } from "./admin-sections";
 /** Labels (`nav.*`) of the administration pages. */
 export type AdminKey =
   | "general"
+  | "archive"
   | "members"
   | "planBilling"
   | "types"
@@ -67,7 +69,13 @@ export const ADMIN_GROUPS: readonly AdminGroup[] = [
         key: "general",
         icon: Building2Icon,
         href: ROUTES.adminGeneral,
-        ids: ["timeZone", "domainJoin", "inboxAddress"],
+        ids: ["timeZone", "domainJoin", "archiveRetention", "inboxAddress"],
+      }),
+      page({
+        key: "archive",
+        icon: ArchiveIcon,
+        href: ROUTES.adminArchive,
+        ids: ["archivedRecords"],
       }),
       page({
         key: "members",

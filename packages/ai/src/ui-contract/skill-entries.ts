@@ -32,6 +32,7 @@ export const SKILL_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   skill_update: skillCard,
   skill_publish: skillCard,
   skill_archive: skillCard,
+  skill_restore: skillCard,
   skill_share: skillCard,
   skill_import: skillCard,
   load_skill: skillCard,

@@ -4,9 +4,11 @@
  * without pulling the server into the browser bundle. Add each new feature's `schema.ts` here.
  */
 
+export * from "./archive/schema";
 export * from "./change-preview/schema";
 export * from "./features/alternative-group/schema";
 export * from "./features/api-key/schema";
+export * from "./features/archive/schema";
 export * from "./features/assignment/schema";
 export * from "./features/audit-log/schema";
 export * from "./features/billing/schema";

@@ -21,4 +21,15 @@ export const responsibilityMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Archive responsibility ${text({ value: input.id })}`,
   }),
+  mcpTool({
+    operation: "responsibility.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore responsibility ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "responsibility.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete responsibility ${text({ value: input.id })} permanently`,
+  }),
 ];

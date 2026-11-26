@@ -1,5 +1,6 @@
 import { COMMENT_OPERATION_KEYS } from "./approval-comment-keys";
 import { INBOX_OPERATION_KEYS } from "./approval-inbox-keys";
+import { LIFECYCLE_OPERATION_KEYS } from "./approval-lifecycle-keys";
 import { MONEY_FIELD_KEYS, MONEY_OPERATION_KEYS } from "./approval-money-keys";
 import { PEOPLE_FIELD_KEYS, PEOPLE_OPERATION_KEYS } from "./approval-people-keys";
 import { PIPELINE_FIELD_KEYS, PIPELINE_OPERATION_KEYS } from "./approval-pipeline-keys";
@@ -88,6 +89,7 @@ export const FIELD_KEYS = [
   "parentLineId",
   "statusId",
   "reason",
+  "archiveRetentionDays",
   ...PEOPLE_FIELD_KEYS,
   ...PIPELINE_FIELD_KEYS,
   ...MONEY_FIELD_KEYS,
@@ -114,6 +116,7 @@ export const OPERATION_KEYS = [
   "line_create",
   "line_update",
   "line_archive",
+  ...LIFECYCLE_OPERATION_KEYS,
   ...COMMENT_OPERATION_KEYS,
   ...TASK_OPERATION_KEYS,
   ...INBOX_OPERATION_KEYS,

@@ -20,7 +20,15 @@ async function setup() {
   return { a, b, personal: await createSkill({ client: a, scope: "PERSONAL" }) };
 }
 
-const SKILL_TOOLS = ["skill_get", "skill_export", "skill_publish", "skill_archive", "skill_share"];
+const SKILL_TOOLS = [
+  "skill_get",
+  "skill_export",
+  "skill_publish",
+  "skill_archive",
+  "skill_restore",
+  "skill_delete",
+  "skill_share",
+];
 
 describe("cross-organization isolation: skills", () => {
   it("refuses every skill operation on another organization's skills", async () => {

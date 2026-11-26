@@ -12,6 +12,7 @@ import { RunSheetSection } from "@/features/run-sheet/ui/run-sheet-section";
 import { OrderTaskSection } from "@/features/task/ui/order-task-section";
 import { type CallerAbilities, can } from "@/server/caller-abilities";
 import type { OrderTab } from "../order-tabs";
+import { OrderDangerArea } from "./order-danger-area";
 import {
   OrderAssignmentSection,
   OrderCustomerSection,
@@ -142,6 +143,7 @@ export function OrderSections({ tab, ...props }: OrderSectionsProps) {
         </DeferredSection>
       ) : null}
       {tab === "activity" ? <ActivityTab {...tabProps} /> : null}
+      {tab === "danger" ? <OrderDangerArea order={props.order} /> : null}
     </div>
   );
 }

@@ -11,6 +11,17 @@ export const SetupStatusSchema = z
   .enum(SETUP_STATUSES)
   .describe("PENDING until an admin activates (COMPLETED) or skips (SKIPPED) the first setup");
 
+/** Days an archived record is kept before it is deleted (ADR 0118): 1 to 180, 90 by default. */
+export const ArchiveRetentionDaysSchema = z
+  .number()
+  .int()
+  .min(1)
+  .max(180)
+  .describe(
+    "Days an archived record is kept before it is deleted for good (1 to 180). Money records " +
+      "and orders with money are never deleted (ADR 0118)",
+  );
+
 /** The organization's own facts (ADR 0061): setup status, legal and contact data, address. */
 export const OrganizationProfileSchema = z.object({
   id: z.string().nullable().describe("null until the profile row exists"),
@@ -34,6 +45,7 @@ export const OrganizationProfileSchema = z.object({
   domainJoin: z
     .boolean()
     .describe("Domain join on: takes effect only while emailDomain is set (ADR 0078)"),
+  archiveRetentionDays: ArchiveRetentionDaysSchema,
 });
 
 export const OrganizationProfileGetInputSchema = z.object({});
@@ -54,6 +66,7 @@ export const OrganizationProfileUpdateFieldsSchema = z.object({
   timeZone: TimeZoneSchema.optional().describe(
     "IANA zone, e.g. Europe/Stockholm: changes how times display and are entered, never a stored time",
   ),
+  archiveRetentionDays: ArchiveRetentionDaysSchema.optional(),
 });
 
 /** The postal code must match the country's format (`shared/postal-code.ts`). */

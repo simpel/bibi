@@ -4,7 +4,9 @@ import type { Permission } from "@bibi/core";
 export type AdminSectionId =
   | "timeZone"
   | "domainJoin"
+  | "archiveRetention"
   | "inboxAddress"
+  | "archivedRecords"
   | "members"
   | "invitations"
   | "plan"
@@ -35,7 +37,10 @@ export type AdminSectionId =
 export const ADMIN_SECTIONS: Record<AdminSectionId, { anchor: string; permission: Permission }> = {
   timeZone: { anchor: "time-zone", permission: "configuration:read" },
   domainJoin: { anchor: "domain-join", permission: "configuration:read" },
+  archiveRetention: { anchor: "archive-retention", permission: "configuration:read" },
   inboxAddress: { anchor: "inbox-address", permission: "configuration:read" },
+  // The rows are gated per kind in core (ADR 0118).
+  archivedRecords: { anchor: "archived", permission: "self:read" },
   members: { anchor: "members", permission: "member:read" },
   invitations: { anchor: "invitations", permission: "member:write" },
   plan: { anchor: "plan", permission: "billing:read" },

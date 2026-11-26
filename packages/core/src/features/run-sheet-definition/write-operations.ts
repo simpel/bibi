@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
+import { nowOf } from "../../time/now";
 import { regenerateForDefinition } from "../run-sheet/regenerate";
 import { checkRunSheetContents } from "./check-contents";
 import { findRunSheetDefinition, replaceRunSheetLinks } from "./run-sheet-definition-rows";
@@ -115,7 +116,7 @@ export const archiveRunSheetDefinition = defineOperation({
     if (!before) return notFound({ entity: "RunSheet" });
     const row = await context.db.runSheetDefinition.update({
       where: { id },
-      data: { status: "ARCHIVED" },
+      data: { status: "ARCHIVED", archivedAt: nowOf({ context }) },
     });
     const after = RunSheetDefinitionSchema.parse({ ...before, ...row });
     context.recordChange({ entityId: id, before, after });

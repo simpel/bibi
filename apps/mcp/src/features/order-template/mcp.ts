@@ -21,4 +21,15 @@ export const orderTemplateMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Archive predefined order ${text({ value: input.id })}`,
   }),
+  mcpTool({
+    operation: "orderTemplate.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore predefined order ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "orderTemplate.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete predefined order ${text({ value: input.id })} permanently`,
+  }),
 ];

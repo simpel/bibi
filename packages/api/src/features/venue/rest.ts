@@ -10,4 +10,14 @@ export const venueRoutes = [
   // Several venues at once (ADR 0097): `?venueIds=a&venueIds=b`.
   restRoute({ operation: "venue.hoursList", method: "GET", path: "/venue-hours" }),
   restRoute({ operation: "venueHours.set", method: "PUT", path: "/venues/{venueId}/hours" }),
+  restRoute({
+    operation: "venue.restore",
+    method: "POST",
+    path: "/venues/{id}/restore",
+  }),
+  restRoute({
+    operation: "venue.delete",
+    method: "DELETE",
+    path: "/venues/{id}/permanent",
+  }),
 ];

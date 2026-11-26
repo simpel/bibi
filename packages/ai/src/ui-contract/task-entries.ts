@@ -40,4 +40,5 @@ export const TASK_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   task_reopen: taskCard,
   task_linkOrder: taskCard,
   task_archive: taskCard,
+  task_restore: taskCard,
 };

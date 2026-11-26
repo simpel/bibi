@@ -2,6 +2,7 @@ import type { SkillStatus } from "@bibi/db";
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { HandlerInput } from "../../operations/types";
+import { nowOf } from "../../time/now";
 import { checkCanManageSkill, findVisibleSkill } from "./access";
 import { skillEmbeddable } from "./embeddable";
 import { skillNotFound } from "./not-found";
@@ -15,7 +16,10 @@ async function setStatus({ input: { id }, context, status }: SetStatusInput) {
   if (!before) return skillNotFound();
   const allowed = checkCanManageSkill({ context, skill: before });
   if (!allowed.ok) return allowed;
-  const skill = await context.db.skill.update({ where: { id }, data: { status } });
+  const skill = await context.db.skill.update({
+    where: { id },
+    data: { status, archivedAt: status === "ARCHIVED" ? nowOf({ context }) : null },
+  });
   const dto = toSkillDto({ skill });
   context.recordChange({ entityId: id, before: toSkillDto({ skill: before }), after: dto });
   return ok({ value: dto });

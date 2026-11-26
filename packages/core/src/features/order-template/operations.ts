@@ -4,6 +4,7 @@ import { archiveRecords } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { nowOf } from "../../time/now";
 import { checkImageKey } from "../file/image-key";
 import { checkTemplate } from "./check-template";
 import { loadOrderTemplate, toOrderTemplateDto, WITH_LINES } from "./load-order-template";
@@ -137,7 +138,10 @@ export const archiveOrderTemplate = defineOperation({
   handler: async ({ input: { id }, context }) => {
     const before = await loadOrderTemplate({ context, id });
     if (!before) return notFound({ entity: "Order template" });
-    await context.db.orderTemplate.update({ where: { id }, data: { status: "ARCHIVED" } });
+    await context.db.orderTemplate.update({
+      where: { id },
+      data: { status: "ARCHIVED", archivedAt: nowOf({ context }) },
+    });
     await archiveRecords({ context, ids: [id] });
     const after = { ...before, status: "ARCHIVED" as const };
     context.recordChange({ entityId: id, before, after });

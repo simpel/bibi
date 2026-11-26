@@ -11,6 +11,7 @@ import { INBOUND_EMAIL_UI_ENTRIES } from "./inbound-email-entries";
 import { INBOUND_MESSAGE_UI_ENTRIES } from "./inbound-message-entries";
 import { ITEM_RESOLUTION_UI_ENTRIES } from "./item-resolution-entries";
 import { ITEM_STATE_UI_ENTRIES } from "./item-state-entries";
+import { LIFECYCLE_GENERIC_UI_TOOLS } from "./lifecycle-generic-tools";
 import { LINE_UI_ENTRIES } from "./line-entries";
 import { MEMBER_PROFILE_UI_ENTRIES } from "./member-profile-entries";
 import { NOTIFICATION_UI_ENTRIES } from "./notification-entries";
@@ -65,6 +66,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   venue_create: venueCard,
   venue_update: venueCard,
   venue_archive: venueCard,
+  venue_restore: venueCard,
   ...CONFIGURATION_UI_ENTRIES,
   ...ITEM_RESOLUTION_UI_ENTRIES,
   ...CUSTOMER_UI_ENTRIES,
@@ -130,11 +132,12 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   apiKey_get: "credentials are managed on /admin/api-keys, not in chat",
   apiKey_update: "credentials are managed on /admin/api-keys, not in chat",
   ...Object.fromEntries(
-    ["list", "get", "create", "update", "reorder", "archive"].map((verb) => [
+    ["list", "get", "create", "update", "reorder", "archive", "restore"].map((verb) => [
       `itemTypeGroup_${verb}`,
       "item type groups are set up in the administration area (ADR 0101); shown as JSON in chat",
     ]),
   ),
+  ...LIFECYCLE_GENERIC_UI_TOOLS,
   ...SELF_GENERIC_UI_TOOLS,
   ...ALLOCATION_GENERIC_UI_TOOLS,
   ...FLOOR_PLAN_GENERIC_UI_TOOLS,

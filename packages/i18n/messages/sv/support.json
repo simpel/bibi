@@ -49,8 +49,8 @@
             "answer": "När du har satt upp Bibi lägger vi in tre exempelbokningar så att tavlan inte är tom: ett möte, en konferens och en middag. Alla hör till kunden Exempelkund AB och använder de typer du valde.\nKlicka runt i dem, ändra och flytta dem som du vill.\nNär du är klar öppnar du Exempelkund AB under Kunder, arkiverar kontaktpersonen Anna Exempel och väljer sedan **Arkivera kund** under **Riskzon** längst ner på sidan med Arkivera även kundens alla bokningar ikryssat."
           },
           "archiveRecords": {
-            "question": "Hur arkiverar jag en kund, en artikel eller en anläggning?",
-            "answer": "Öppna sidan och scrolla ner till **Riskzon** längst ner. För en artikel eller en bokningsmall är det i stället sidans sista flik. Välj arkiveringsknappen där och bekräfta.\nDet fungerar likadant för typer, listor, bokningsstatusar, körscheman, ansvar, prislistor och färdigheter. Du ser bara riskzonen om du får arkivera den sortens poster."
+            "question": "Hur arkiverar, återställer eller raderar jag en kund, en artikel eller en anläggning?",
+            "answer": "Öppna postens sida och scrolla ner till **Riskzon** längst ner. För en artikel, en bokningsmall eller en bokning är det i stället sidans sista flik. Välj arkiveringsknappen där och bekräfta.\nArkiverade poster hittar du under **Administration, Arkiv**. Där sätter **Återställ** tillbaka en post, och **Radera permanent** tar bort den för gott när du skriver dess namn. En post som en annan post fortfarande använder kan inte raderas.\nArkiverade poster raderas automatiskt efter 90 dagar, eller så många dagar som en administratör anger under **Administration, Allmänt**. Fakturor, betalningar och andra pengaposter raderas aldrig."
           },
           "itemGroups": {
             "question": "Hur sorterar jag mina artiklar i grupper som Lokaler och Mat?",

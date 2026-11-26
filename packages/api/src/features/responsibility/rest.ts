@@ -14,4 +14,14 @@ export const responsibilityRoutes = [
     method: "DELETE",
     path: "/responsibilities/{id}",
   }),
+  restRoute({
+    operation: "responsibility.restore",
+    method: "POST",
+    path: "/responsibilities/{id}/restore",
+  }),
+  restRoute({
+    operation: "responsibility.delete",
+    method: "DELETE",
+    path: "/responsibilities/{id}/permanent",
+  }),
 ];

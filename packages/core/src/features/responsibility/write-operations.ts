@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
+import { nowOf } from "../../time/now";
 import { checkNotOnRunSheets } from "../run-sheet-definition/usage";
 import { checkResponsibilityContents } from "./check-contents";
 import { insertResponsibility } from "./insert-responsibility";
@@ -94,7 +95,7 @@ export const archiveResponsibility = defineOperation({
     if (!unused.ok) return unused;
     const row = await context.db.responsibility.update({
       where: { id },
-      data: { status: "ARCHIVED" },
+      data: { status: "ARCHIVED", archivedAt: nowOf({ context }) },
     });
     const after = ResponsibilitySchema.parse({ ...before, ...row });
     context.recordChange({ entityId: id, before, after });

@@ -1,6 +1,7 @@
 import {
   archiveVenue,
   createVenue,
+  deleteVenue,
   getItemHours,
   getVenue,
   getVenueHours,
@@ -11,6 +12,7 @@ import {
   HoursExceptionSchema,
   listVenueHours,
   listVenues,
+  restoreVenue,
   setItemHours,
   setVenueHours,
   updateVenue,
@@ -19,6 +21,7 @@ import {
   VenueSchema,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -36,6 +39,8 @@ fieldFromOperation({ operation: getVenue, type: VenueRef, name: "venue" });
 mutationFromOperation({ operation: createVenue, type: VenueRef });
 mutationFromOperation({ operation: updateVenue, type: VenueRef });
 mutationFromOperation({ operation: archiveVenue, type: VenueRef });
+mutationFromOperation({ operation: restoreVenue, type: VenueRef });
+mutationFromOperation({ operation: deleteVenue, type: DeletedRecordRef });
 
 // The shared hours pattern (ADR 0064) is one type for venues and items, so both live here.
 const HoursDayRef = objectFromSchema<HoursDay>({

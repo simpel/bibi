@@ -33,4 +33,5 @@ export const RUN_SHEET_DEFINITION_UI_ENTRIES: Readonly<Record<string, ToolUiEntr
   runSheetDefinition_create: runSheetCard,
   runSheetDefinition_update: runSheetCard,
   runSheetDefinition_archive: runSheetCard,
+  runSheetDefinition_restore: runSheetCard,
 };

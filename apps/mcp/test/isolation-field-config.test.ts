@@ -22,6 +22,8 @@ describe("cross-organization isolation: entity types and field definitions", () 
     const cases = [
       ["entityType_update", { id: typeId, name: "Hacked" }],
       ["entityType_archive", { id: typeId }],
+      ["entityType_restore", { id: typeId }],
+      ["entityType_delete", { id: typeId }],
       ["fieldDefinition_get", { id: fieldId }],
       ["fieldDefinition_update", { id: fieldId, name: "Hacked" }],
       ["fieldDefinition_archive", { id: fieldId }],

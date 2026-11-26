@@ -35,6 +35,7 @@ export const CUSTOMER_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   customer_create: customerCard,
   customer_update: customerCard,
   customer_archive: customerCard,
+  customer_restore: customerCard,
   contact_list: contactTable,
   contact_get: contactCard,
   contact_create: contactCard,

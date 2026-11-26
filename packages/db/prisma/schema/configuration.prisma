@@ -61,6 +61,9 @@ model EntityType {
   /// Item types: the group the type is browsed under (ADR 0101, owned); null = ungrouped.
   groupId          String?
   status           RecordStatus                @default(ACTIVE)
+  /// Owned (ADR 0118): when it was archived; null while active. Set by its archive, cleared by
+  /// its restore; the retention job deletes it after the organization's `archiveRetentionDays`.
+  archivedAt       DateTime?
   createdAt        DateTime                    @default(now())
   updatedAt        DateTime                    @updatedAt
   createdBy        String?
@@ -130,6 +133,9 @@ model Vocabulary {
   organizationId   String
   name             String
   status           RecordStatus                @default(ACTIVE)
+  /// Owned (ADR 0118): when it was archived; null while active. Set by its archive, cleared by
+  /// its restore; the retention job deletes it after the organization's `archiveRetentionDays`.
+  archivedAt       DateTime?
   createdAt        DateTime                    @default(now())
   updatedAt        DateTime                    @updatedAt
   createdBy        String?

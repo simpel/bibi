@@ -16,13 +16,13 @@ import type { VersionLine } from "./schema";
 
 type Context = OperationContext;
 
-type ReviveInput = { context: Context; orderId: string; lineId: string };
+export type ReviveInput = { context: Context; orderId: string; lineId: string };
 
 /**
  * Brings an archived line of the order back with its id (ADR 0116), in the state the status grid
  * gives a new line; its content is set right after, like any line's.
  */
-async function reviveLine({ context, orderId, lineId }: ReviveInput): Promise<Result<true>> {
+export async function reviveLine({ context, orderId, lineId }: ReviveInput): Promise<Result<true>> {
   const row = await context.db.line.findFirst({
     where: { id: lineId, orderId, status: "ARCHIVED" },
     select: { id: true, itemId: true, stateId: true },

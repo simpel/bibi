@@ -4,6 +4,7 @@ import type { HandlerInput, OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { nowOf } from "../../time/now";
 import type {
   ItemTypeGroupDto,
   ItemTypeGroupIdInputSchema,
@@ -110,7 +111,7 @@ export const archiveItemTypeGroupHandler = async ({
   }
   const after = await context.db.itemTypeGroup.update({
     where: { id },
-    data: { status: "ARCHIVED" },
+    data: { status: "ARCHIVED", archivedAt: nowOf({ context }) },
   });
   context.recordChange({ entityId: id, before, after });
   return ok({ value: after });

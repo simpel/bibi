@@ -40,4 +40,15 @@ export const vocabularyMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Archive list value ${text({ value: input.id })}`,
   }),
+  mcpTool({
+    operation: "vocabulary.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore list ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "vocabulary.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete list ${text({ value: input.id })} permanently`,
+  }),
 ];

@@ -41,4 +41,15 @@ export const skillMcpTools = [
       return `Import skill "${name.trim()}" as ${text({ value: input.scope ?? "PERSONAL" }).toLowerCase()} draft`;
     },
   }),
+  mcpTool({
+    operation: "skill.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore skill ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "skill.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete skill ${text({ value: input.id })} permanently`,
+  }),
 ];

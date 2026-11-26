@@ -8,4 +8,14 @@ export const orderTemplateRoutes = [
   restRoute({ operation: "orderTemplate.create", method: "POST", path: BASE }),
   restRoute({ operation: "orderTemplate.update", method: "PATCH", path: `${BASE}/{id}` }),
   restRoute({ operation: "orderTemplate.archive", method: "DELETE", path: `${BASE}/{id}` }),
+  restRoute({
+    operation: "orderTemplate.restore",
+    method: "POST",
+    path: `${BASE}/{id}/restore`,
+  }),
+  restRoute({
+    operation: "orderTemplate.delete",
+    method: "DELETE",
+    path: `${BASE}/{id}/permanent`,
+  }),
 ];

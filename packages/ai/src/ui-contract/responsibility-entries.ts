@@ -33,4 +33,5 @@ export const RESPONSIBILITY_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = 
   responsibility_create: responsibilityCard,
   responsibility_update: responsibilityCard,
   responsibility_archive: responsibilityCard,
+  responsibility_restore: responsibilityCard,
 };

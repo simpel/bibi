@@ -4,6 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
 import { conflict, notFound } from "../../shared/errors";
 import { inUseConflict } from "../../shared/in-use";
+import { nowOf } from "../../time/now";
 import { checkNotLinked } from "../field-definition/link-usage";
 import { archiveCustomerBundles, archiveCustomerOrders } from "./archive-cascades";
 import { customerEmbeddable } from "./embeddable";
@@ -106,7 +107,7 @@ export const archiveCustomer = defineOperation({
     if (!cascaded.ok) return cascaded;
     const row = await context.db.customer.update({
       where: { id },
-      data: { status: "ARCHIVED" },
+      data: { status: "ARCHIVED", archivedAt: nowOf({ context }) },
       include: CUSTOMER_INCLUDE,
     });
     await archiveRecords({ context, ids: [id] });

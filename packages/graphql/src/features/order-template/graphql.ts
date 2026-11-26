@@ -1,12 +1,15 @@
 import {
   archiveOrderTemplate,
   createOrderTemplate,
+  deleteOrderTemplate,
   getOrderTemplate,
   listOrderTemplates,
   type OrderTemplateDto,
   OrderTemplateSchema,
+  restoreOrderTemplate,
   updateOrderTemplate,
 } from "@bibi/core";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -34,3 +37,5 @@ fieldFromOperation({
 mutationFromOperation({ operation: createOrderTemplate, type: OrderTemplateRef });
 mutationFromOperation({ operation: updateOrderTemplate, type: OrderTemplateRef });
 mutationFromOperation({ operation: archiveOrderTemplate, type: OrderTemplateRef });
+mutationFromOperation({ operation: restoreOrderTemplate, type: OrderTemplateRef });
+mutationFromOperation({ operation: deleteOrderTemplate, type: DeletedRecordRef });

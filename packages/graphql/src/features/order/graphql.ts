@@ -1,7 +1,9 @@
 import {
+  archiveOrderOperation,
   changeOrderStatus,
   createOrder,
   createOrderFromTemplate,
+  deleteOrder,
   exportOrder,
   getOrder,
   listOrders,
@@ -17,10 +19,12 @@ import {
   OrderViewSchema,
   orderEstimateHistory,
   orderStatusHistory,
+  restoreOrder,
   updateOrder,
   viewOrder,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -84,6 +88,9 @@ mutationFromOperation({ operation: createOrder, type: OrderRef });
 mutationFromOperation({ operation: createOrderFromTemplate, type: OrderRef });
 mutationFromOperation({ operation: updateOrder, type: OrderRef });
 mutationFromOperation({ operation: changeOrderStatus, type: OrderRef });
+mutationFromOperation({ operation: archiveOrderOperation, type: OrderRef });
+mutationFromOperation({ operation: restoreOrder, type: OrderRef });
+mutationFromOperation({ operation: deleteOrder, type: DeletedRecordRef });
 
 builder.objectField(OrderRef, "entityType", (t) =>
   t.field({

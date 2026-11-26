@@ -6,12 +6,13 @@ import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { ArchiveRetentionForm } from "./archive-retention-form";
 import { DomainJoinForm } from "./domain-join-form";
 import { TimeZoneForm } from "./time-zone-form";
 
 export type OrganizationSettingsProps = { locale: Locale; show: ReadonlySet<AdminSectionId> };
 
-/** `/admin/general`: the organization's time zone (ADR 0064) and domain join (ADR 0078). */
+/** `/admin/general`: the organization's time zone (ADR 0064), domain join (ADR 0078) and archive retention (ADR 0118). */
 export async function OrganizationSettings({ locale, show }: OrganizationSettingsProps) {
   const [abilities, profile] = await Promise.all([
     getCallerAbilities(),
@@ -27,6 +28,9 @@ export async function OrganizationSettings({ locale, show }: OrganizationSetting
       <>
         {show.has("timeZone") ? <AdminSection section="timeZone">{error}</AdminSection> : null}
         {show.has("domainJoin") ? <AdminSection section="domainJoin">{error}</AdminSection> : null}
+        {show.has("archiveRetention") ? (
+          <AdminSection section="archiveRetention">{error}</AdminSection>
+        ) : null}
       </>
     );
   }
@@ -41,6 +45,9 @@ export async function OrganizationSettings({ locale, show }: OrganizationSetting
           enabled={profile.value.domainJoin}
           canEdit={canManageMembers}
         />
+      ) : null}
+      {show.has("archiveRetention") ? (
+        <ArchiveRetentionForm days={profile.value.archiveRetentionDays} canEdit={canEdit} />
       ) : null}
     </>
   );

@@ -129,6 +129,18 @@
       "description": "It is added to the list {list} and can be picked everywhere the list is used.",
       "name": "Name",
       "created": "Value created"
+    },
+    "lifecycle": {
+      "restore": "Restore",
+      "restoreDescription": "Restoring {name} puts it back among your active records.",
+      "restoring": "Restoring…",
+      "restored": "Restored.",
+      "delete": "Delete permanently",
+      "deleteDescription": "An archived record can be deleted for good. This cannot be undone, and it is also deleted automatically when your archive period ends.",
+      "deleteConfirm": "Do you want to delete {name} permanently? This cannot be undone.",
+      "typeName": "Type {name} to confirm",
+      "deleting": "Deleting…",
+      "deleted": "Deleted."
     }
   },
   "errors": {
@@ -256,7 +268,8 @@
       "money": "Money & connections"
     },
     "layouts": "Layouts",
-    "floorPlan": "Floor plan"
+    "floorPlan": "Floor plan",
+    "archive": "Archive"
   },
   "shell": {
     "mainNavigation": "Main navigation",
@@ -632,6 +645,10 @@
           "label": "Join by email domain",
           "keywords": "domain email colleagues join automatically"
         },
+        "archiveRetention": {
+          "label": "Archive period",
+          "keywords": "archive retention days delete permanently keep archived records"
+        },
         "members": {
           "label": "Members",
           "keywords": "people users roles invite permissions"
@@ -719,6 +736,10 @@
         "paymentMethods": {
           "label": "Payment methods",
           "keywords": "card swish invoice payment service stripe fortnox visma"
+        },
+        "archivedRecords": {
+          "label": "Archived records",
+          "keywords": "archive archived restore delete permanently recover deleted records trash"
         }
       }
     }
@@ -910,5 +931,34 @@
         "body": "The columns are phases and the chips in a column are the statuses it shows. Drag chips and columns to move them. A status that is in no column is not shown on the board."
       }
     }
+  },
+  "archive": {
+    "description": "Archived records are deleted permanently after {days} days.",
+    "retentionLink": "Change the archive period",
+    "kinds": {
+      "task": "Task",
+      "customer": "Customer",
+      "item": "Item",
+      "venue": "Venue",
+      "order": "Order",
+      "orderTemplate": "Package",
+      "priceList": "Price list",
+      "entityType": "Type",
+      "vocabulary": "List",
+      "responsibility": "Responsibility",
+      "runSheetDefinition": "Run sheet",
+      "skill": "Skill",
+      "orderStatus": "Status",
+      "itemTypeGroup": "Group"
+    },
+    "columns": {
+      "name": "Name",
+      "kind": "Kind",
+      "archivedAt": "Archived",
+      "deletesOn": "Deleted on"
+    },
+    "empty": "Nothing is archived.",
+    "truncated": "Showing the newest {count} archived records. Search to narrow the list.",
+    "filterKind": "Kind"
   }
 }

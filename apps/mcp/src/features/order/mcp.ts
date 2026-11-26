@@ -43,4 +43,21 @@ export const orderMcpTools = [
         value: input.statusId,
       })}${input.reason === undefined ? "" : ` (reason: ${text({ value: input.reason })})`}`,
   }),
+  mcpTool({
+    operation: "order.archive",
+    destructive: true,
+    idempotent: true,
+    summary: ({ input }) => `Archive order ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "order.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore order ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "order.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete order ${text({ value: input.id })} permanently`,
+  }),
 ];

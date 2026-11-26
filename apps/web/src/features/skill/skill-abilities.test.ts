@@ -3,7 +3,7 @@ import { skillAbilities } from "./skill-abilities";
 
 describe("skillAbilities", () => {
   it("makes system skills read-only", () => {
-    const none = { edit: false, publish: false, archive: false, share: false };
+    const none = { edit: false, publish: false, archive: false, restore: false, share: false };
     expect(
       skillAbilities({ skill: { scope: "SYSTEM", status: "PUBLISHED" }, admin: true }),
     ).toEqual(none);
@@ -15,6 +15,7 @@ describe("skillAbilities", () => {
       edit: true,
       publish: true,
       archive: true,
+      restore: false,
       share: false,
     });
     expect(skillAbilities({ skill, admin: true }).share).toBe(true);

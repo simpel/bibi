@@ -13,6 +13,7 @@ export const ORDER_TABS = [
   "comments",
   "messages",
   "activity",
+  "danger",
 ] as const;
 
 export type OrderTab = (typeof ORDER_TABS)[number];
@@ -47,6 +48,8 @@ export function availableOrderTabs({ abilities }: AvailableInput): OrderTab[] {
     messages: true,
     // The status history is the order's own.
     activity: true,
+    // The danger area, last (spec: danger-area).
+    danger: allowed({ permission: "order:delete" }),
   };
   return ORDER_TABS.filter((tab) => shown[tab]);
 }

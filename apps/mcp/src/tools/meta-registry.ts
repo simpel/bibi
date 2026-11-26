@@ -1,5 +1,6 @@
 import { alternativeGroupMcpTools } from "../features/alternative-group/mcp";
 import { apiKeyMcpTools } from "../features/api-key/mcp";
+import { archiveMcpTools } from "../features/archive/mcp";
 import { assignmentMcpTools } from "../features/assignment/mcp";
 import { auditLogMcpTools } from "../features/audit-log/mcp";
 import { boardCrudMcpTools, boardPhaseMcpTools } from "../features/board/mcp";
@@ -77,6 +78,7 @@ const boardMcpTools = [
   ...settingsMcpTools,
   ...dashboardMcpTools,
   ...myWorkMcpTools,
+  ...archiveMcpTools,
   ...orderVersionMcpTools,
   ...financeMcpTools,
   ...boardCrudMcpTools,

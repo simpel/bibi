@@ -1,13 +1,16 @@
 import {
   archiveItemTypeGroup,
   createItemTypeGroup,
+  deleteItemTypeGroup,
   getItemTypeGroup,
   type ItemTypeGroupDto,
   ItemTypeGroupSchema,
   listItemTypeGroups,
   reorderItemTypeGroups,
+  restoreItemTypeGroup,
   updateItemTypeGroup,
 } from "@bibi/core";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -31,4 +34,6 @@ fieldFromOperation({ operation: getItemTypeGroup, type: ItemTypeGroupRef, name: 
 mutationFromOperation({ operation: createItemTypeGroup, type: ItemTypeGroupRef });
 mutationFromOperation({ operation: updateItemTypeGroup, type: ItemTypeGroupRef });
 mutationFromOperation({ operation: archiveItemTypeGroup, type: ItemTypeGroupRef });
+mutationFromOperation({ operation: restoreItemTypeGroup, type: ItemTypeGroupRef });
+mutationFromOperation({ operation: deleteItemTypeGroup, type: DeletedRecordRef });
 mutationFromOperation({ operation: reorderItemTypeGroups, type: ItemTypeGroupPageRef });

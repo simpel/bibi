@@ -1,3 +1,4 @@
+import { lifecycleOperations } from "./archive/lifecycle-operations";
 import { AppError } from "./errors/app-error";
 import { alternativeGroupOperations } from "./features/alternative-group/operations";
 import { apiKeyOperations } from "./features/api-key/operations";
@@ -122,6 +123,7 @@ function staticOperations(): AnyOperation[] {
     ...oauthGrantOperations,
     ...selfOperations,
     ...organizationProfileOperations,
+    ...lifecycleOperations,
   ];
 }
 

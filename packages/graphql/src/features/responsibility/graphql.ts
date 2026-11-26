@@ -1,12 +1,15 @@
 import {
   archiveResponsibility,
   createResponsibility,
+  deleteResponsibility,
   getResponsibility,
   listResponsibilities,
   type ResponsibilityDto,
   ResponsibilitySchema,
+  restoreResponsibility,
   updateResponsibility,
 } from "@bibi/core";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -34,3 +37,5 @@ fieldFromOperation({
 mutationFromOperation({ operation: createResponsibility, type: ResponsibilityRef });
 mutationFromOperation({ operation: updateResponsibility, type: ResponsibilityRef });
 mutationFromOperation({ operation: archiveResponsibility, type: ResponsibilityRef });
+mutationFromOperation({ operation: restoreResponsibility, type: ResponsibilityRef });
+mutationFromOperation({ operation: deleteResponsibility, type: DeletedRecordRef });

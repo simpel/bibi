@@ -35,4 +35,19 @@ export const orderRoutes = [
     path: "/orders/{orderId}/estimate-history",
   }),
   restRoute({ operation: "order.expireHolds", method: "POST", path: "/orders/expire-holds" }),
+  restRoute({
+    operation: "order.archive",
+    method: "DELETE",
+    path: "/orders/{id}",
+  }),
+  restRoute({
+    operation: "order.restore",
+    method: "POST",
+    path: "/orders/{id}/restore",
+  }),
+  restRoute({
+    operation: "order.delete",
+    method: "DELETE",
+    path: "/orders/{id}/permanent",
+  }),
 ];

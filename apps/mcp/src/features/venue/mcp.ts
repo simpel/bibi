@@ -28,4 +28,15 @@ export const venueMcpTools = [
     idempotent: true,
     summary: ({ input }) => hoursSummary({ input, owner: "venue" }),
   }),
+  mcpTool({
+    operation: "venue.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore venue ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "venue.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete venue ${text({ value: input.id })} permanently`,
+  }),
 ];

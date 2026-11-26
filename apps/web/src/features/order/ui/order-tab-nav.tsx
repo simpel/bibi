@@ -24,6 +24,7 @@ const LABEL = {
   comments: "comments",
   messages: "messages",
   activity: "activity",
+  danger: "danger",
 } as const satisfies Record<OrderTab, string>;
 
 /** A small icon after a tab's label that something there needs a look, and what, in words. */

@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { conflict, notFound } from "../../shared/errors";
 import { getVocabularyTemplate } from "../../templates/vocabularies/vocabulary-templates";
+import { nowOf } from "../../time/now";
 import { checkNotOnRunSheets } from "../run-sheet-definition/usage";
 import { insertVocabulary } from "./insert-vocabulary";
 import { findVocabularyByName, toVocabularyDto } from "./load-vocabulary";
@@ -71,7 +72,10 @@ export const archiveVocabulary = defineOperation({
       what,
     });
     if (!onRunSheets.ok) return onRunSheets;
-    const row = await context.db.vocabulary.update({ where: { id }, data: { status: "ARCHIVED" } });
+    const row = await context.db.vocabulary.update({
+      where: { id },
+      data: { status: "ARCHIVED", archivedAt: nowOf({ context }) },
+    });
     const vocabulary = await toVocabularyDto({ context, row });
     context.recordChange({ entityId: id, before, after: vocabulary });
     return ok({ value: vocabulary });

@@ -2,6 +2,7 @@ import { APPEND_ONLY_MODELS, TRIGGER_ONLY_MODELS } from "./append-only-models";
 import { applyRecordScope } from "./apply-record-scope";
 import { applyUserScope } from "./apply-user-scope";
 import { CREATED_BY_MODELS } from "./conventions";
+import { readHardDelete } from "./hard-delete-intent";
 import { ORG_SCOPED_MODELS, USER_SCOPED_MODELS } from "./models";
 import { assertNoNestedWrites } from "./nested-writes";
 import {
@@ -12,6 +13,7 @@ import {
 } from "./operation-kinds";
 import { ScopeViolationError } from "./scope-violation";
 import { scopeWhere } from "./scope-where";
+import { SOFT_DELETE_MODELS } from "./soft-delete-models";
 
 type Args = Record<string, unknown>;
 
@@ -56,12 +58,14 @@ export function applyScope({
   organizationId,
   actorId,
 }: ApplyScopeInput): Args {
+  // A hard delete of a soft-deleted model must be declared (ADR 0118): archiving is its delete.
+  const declared = readHardDelete({ args: (args as Args | undefined) ?? {} });
+  if (DELETE_OPERATIONS.has(operation) && SOFT_DELETE_MODELS.has(model) && !declared.declared) {
+    const reason = "soft-deleted model: archive it (hard deletes go through core's archive/)";
+    throw new ScopeViolationError({ model, operation, reason });
+  }
   // Record access first (ADR 0113): it reads and strips the declared intent.
-  const input: Args = applyRecordScope({
-    model,
-    operation,
-    args: (args as Args | undefined) ?? {},
-  });
+  const input: Args = applyRecordScope({ model, operation, args: declared.args });
   if (USER_SCOPED_MODELS.has(model)) {
     return applyUserScope({ model, operation, args: input, actorId });
   }

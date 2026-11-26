@@ -1,11 +1,13 @@
 import {
   archiveSkill,
   createSkill,
+  deleteSkill,
   exportSkill,
   getSkill,
   importSkill,
   listSkills,
   publishSkill,
+  restoreSkill,
   type SkillDto,
   SkillExportOutputSchema,
   SkillSchema,
@@ -13,6 +15,7 @@ import {
   updateSkill,
 } from "@bibi/core";
 import type { z } from "zod";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -38,5 +41,7 @@ mutationFromOperation({ operation: createSkill, type: SkillRef });
 mutationFromOperation({ operation: updateSkill, type: SkillRef });
 mutationFromOperation({ operation: publishSkill, type: SkillRef });
 mutationFromOperation({ operation: archiveSkill, type: SkillRef });
+mutationFromOperation({ operation: restoreSkill, type: SkillRef });
+mutationFromOperation({ operation: deleteSkill, type: DeletedRecordRef });
 mutationFromOperation({ operation: shareSkill, type: SkillRef });
 mutationFromOperation({ operation: importSkill, type: SkillRef });

@@ -39,6 +39,8 @@ describe("cross-organization isolation for customers", () => {
       ["customer_get", { id: customerId }],
       ["customer_update", { id: customerId, name: "Hijacked" }],
       ["customer_archive", { id: customerId }],
+      ["customer_restore", { id: customerId }],
+      ["customer_delete", { id: customerId }],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");
     }

@@ -1,3 +1,4 @@
+import { withHardDelete } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { createItem, createVenue, execute, getVenue, listVenues, updateVenue } from "../src/index";
 import { testContext, unwrap } from "./helpers";
@@ -52,7 +53,9 @@ describe("organization scoping", () => {
       data: { name: "x" },
     });
     expect(updated.count).toBe(0);
-    const deleted = await orgA.db.venue.deleteMany({ where: { id: created.id } });
+    const deleted = await withHardDelete({ client: orgA.db }).venue.deleteMany({
+      where: { id: created.id },
+    });
     expect(deleted.count).toBe(0);
   });
 

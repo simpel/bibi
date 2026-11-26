@@ -40,6 +40,7 @@ export const ORDER_STATUS_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   orderStatus_create: statusCard,
   orderStatus_update: statusCard,
   orderStatus_archive: statusCard,
+  orderStatus_restore: statusCard,
   orderStatus_archivePreview: archivePreviewEntry,
   orderStatus_reorder: statusTable,
   orderStatus_setTransitions: statusCard,

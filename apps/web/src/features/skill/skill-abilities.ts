@@ -1,6 +1,12 @@
 import type { SkillDto } from "@bibi/core";
 
-export type SkillAbilities = { edit: boolean; publish: boolean; archive: boolean; share: boolean };
+export type SkillAbilities = {
+  edit: boolean;
+  publish: boolean;
+  archive: boolean;
+  restore: boolean;
+  share: boolean;
+};
 
 export type SkillAbilitiesInput = {
   skill: Pick<SkillDto, "scope" | "status">;
@@ -20,6 +26,7 @@ export function skillAbilities({ skill, admin }: SkillAbilitiesInput): SkillAbil
     edit: manage && active,
     publish: manage && skill.status === "DRAFT",
     archive: manage && active,
+    restore: manage && !active,
     share: skill.scope === "PERSONAL" && admin && active,
   };
 }

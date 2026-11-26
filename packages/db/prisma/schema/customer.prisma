@@ -37,6 +37,9 @@ model Customer {
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
   fields               Json         @default("{}")
   status               RecordStatus @default(ACTIVE)
+  /// Owned (ADR 0118): when it was archived; null while active. Set by its archive, cleared by
+  /// its restore; the retention job deletes it after the organization's `archiveRetentionDays`.
+  archivedAt           DateTime?
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
   createdBy            String?

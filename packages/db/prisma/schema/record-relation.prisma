@@ -33,7 +33,7 @@ model RecordRelation {
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
   record           Record               @relation(fields: [recordId, organizationId], references: [id, organizationId], onDelete: Cascade)
-  responsibility   Responsibility?      @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
+  responsibility   Responsibility?      @relation(fields: [responsibilityId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@unique([id, organizationId])
   // A main-slot row (no responsibility) is kept unique by a partial index in the migration.

@@ -2,9 +2,12 @@ import type { EntityType } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { EntityTypeDto } from "./schema";
 
+/** The type row; `archivedAt` (ADR 0118) is not part of the DTO. */
+type EntityTypeRow = Omit<EntityType, "archivedAt">;
+
 type Db = Pick<OperationContext, "db">;
 
-export type ToEntityTypeDtosInput = { context: Db; rows: readonly EntityType[] };
+export type ToEntityTypeDtosInput = { context: Db; rows: readonly EntityTypeRow[] };
 
 /** Attaches each type's active fields, in order. One query for all types. */
 export async function toEntityTypeDtos({
@@ -21,7 +24,7 @@ export async function toEntityTypeDtos({
   }));
 }
 
-export type ToEntityTypeDtoInput = { context: Db; row: EntityType };
+export type ToEntityTypeDtoInput = { context: Db; row: EntityTypeRow };
 
 export async function toEntityTypeDto({
   context,

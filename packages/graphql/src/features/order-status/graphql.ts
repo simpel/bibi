@@ -1,6 +1,7 @@
 import {
   archiveOrderStatus,
   createOrderStatus,
+  deleteOrderStatus,
   getOrderStatus,
   importOrderStatusTemplate,
   listOrderStatuses,
@@ -9,12 +10,14 @@ import {
   OrderStatusSchema,
   previewArchiveOrderStatus,
   reorderOrderStatuses,
+  restoreOrderStatus,
   setOrderStatusGates,
   setOrderStatusTransitions,
   updateOrderStatus,
 } from "@bibi/core";
 import { ArchivePreviewRef } from "../../schema/archive-preview";
 import { builder } from "../../schema/builder";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -53,6 +56,8 @@ fieldFromOperation({ operation: getOrderStatus, type: OrderStatusRef, name: "ord
 mutationFromOperation({ operation: createOrderStatus, type: OrderStatusRef });
 mutationFromOperation({ operation: updateOrderStatus, type: OrderStatusRef });
 mutationFromOperation({ operation: archiveOrderStatus, type: OrderStatusRef });
+mutationFromOperation({ operation: restoreOrderStatus, type: OrderStatusRef });
+mutationFromOperation({ operation: deleteOrderStatus, type: DeletedRecordRef });
 fieldFromOperation({
   operation: previewArchiveOrderStatus,
   type: ArchivePreviewRef,

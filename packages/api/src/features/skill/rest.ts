@@ -15,4 +15,14 @@ export const skillRoutes = [
   }),
   restRoute({ operation: "skill.share", method: "POST", path: "/skills/{id}/share" }),
   restRoute({ operation: "skill.export", method: "GET", path: "/skills/{id}/export" }),
+  restRoute({
+    operation: "skill.restore",
+    method: "POST",
+    path: "/skills/{id}/restore",
+  }),
+  restRoute({
+    operation: "skill.delete",
+    method: "DELETE",
+    path: "/skills/{id}/permanent",
+  }),
 ];

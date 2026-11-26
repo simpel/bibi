@@ -46,7 +46,9 @@ export async function SkillDetail({ locale, id }: SkillDetailProps) {
       </section>
       <SkillTools tools={skill.allowedTools} />
       <SkillResources resources={skill.resources} />
-      {can.archive ? <SkillDangerArea skill={{ id: skill.id, name: skill.name }} /> : null}
+      {can.archive || can.restore ? (
+        <SkillDangerArea skill={{ id: skill.id, name: skill.name, status: skill.status }} />
+      ) : null}
     </div>
   );
 }

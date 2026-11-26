@@ -10,6 +10,10 @@ describe("cross-organization isolation: venue archive", () => {
 
     const archived = await call({ client: b, name: "venue_archive", args: { id } });
     expect(archived.data.code).toBe("NOT_FOUND");
+    for (const name of ["venue_restore", "venue_delete"]) {
+      const result = await call({ client: b, name, args: { id } });
+      expect(result.data.code, name).toBe("NOT_FOUND");
+    }
 
     const own = await call({ client: a, name: "venue_get", args: { id } });
     expect(own.data.status).toBe("ACTIVE");

@@ -1,6 +1,7 @@
 import {
   archiveItem,
   createItem,
+  deleteItem,
   getItem,
   ItemCustomisationGroupSchema,
   type ItemDto,
@@ -11,11 +12,13 @@ import {
   ItemSummaryOutputSchema,
   ItemSummaryTypeSchema,
   listItems,
+  restoreItem,
   saveItemAsBundle,
   summarizeItems,
   updateItem,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -120,6 +123,8 @@ fieldFromOperation({ operation: summarizeItems, type: ItemSummaryRef, name: "ite
 mutationFromOperation({ operation: createItem, type: ItemRef });
 mutationFromOperation({ operation: updateItem, type: ItemRef });
 mutationFromOperation({ operation: archiveItem, type: ItemRef });
+mutationFromOperation({ operation: restoreItem, type: ItemRef });
+mutationFromOperation({ operation: deleteItem, type: DeletedRecordRef });
 mutationFromOperation({ operation: saveItemAsBundle, type: ItemRef });
 
 // Graph edges. Reads go through core operations or the per-request loaders (org-scoped).

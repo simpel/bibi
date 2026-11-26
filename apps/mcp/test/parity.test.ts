@@ -92,6 +92,8 @@ const VIEWS = new Set([
   "changeSet",
   "settings",
   "myWork",
+  // The Archive page (ADR 0118): archived records of other kinds, each read through its own kind.
+  "archive",
 ]);
 
 function coreEntityTypes(): string[] {

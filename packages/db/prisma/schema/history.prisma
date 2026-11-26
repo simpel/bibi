@@ -45,7 +45,7 @@ model OrderStatusChange {
   changedAt      DateTime            @default(now())
   /// User who made the change; null for the system.
   changedBy      String?
-  order         Order              @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  order         Order              @relation(fields: [orderId, organizationId], references: [id, organizationId], onDelete: Cascade)
   fromStatus     OrderStatus?       @relation("StatusChangeFrom", fields: [fromStatusId, organizationId], references: [id, organizationId])
   toStatus       OrderStatus        @relation("StatusChangeTo", fields: [toStatusId, organizationId], references: [id, organizationId])
 
@@ -71,7 +71,7 @@ model LineStateChange {
   changedAt      DateTime           @default(now())
   /// User who made the change; null for the system.
   changedBy      String?
-  line           Line               @relation(fields: [lineId, organizationId], references: [id, organizationId])
+  line           Line               @relation(fields: [lineId, organizationId], references: [id, organizationId], onDelete: Cascade)
   fromState      ItemState?         @relation("StateChangeFrom", fields: [fromStateId, organizationId], references: [id, organizationId])
   toState        ItemState?         @relation("StateChangeTo", fields: [toStateId, organizationId], references: [id, organizationId])
 
@@ -94,7 +94,7 @@ model OrderEstimate {
   changedAt      DateTime @default(now())
   /// User who made the change; null for the system.
   changedBy      String?
-  order         Order   @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  order         Order   @relation(fields: [orderId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@unique([seq])
   @@index([organizationId, orderId, seq])

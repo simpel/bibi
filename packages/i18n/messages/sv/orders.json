@@ -283,11 +283,15 @@
       "details": "Detaljer",
       "comments": "Kommentarer",
       "messages": "Meddelanden",
-      "activity": "Aktivitet"
+      "activity": "Aktivitet",
+      "danger": "Riskzon"
     },
     "tabMarks": {
       "runSheets": "Ett körschema är inte skickat eller är inaktuellt"
-    }
+    },
+    "archive": "Arkivera bokning",
+    "archiveConfirm": "Vill du arkivera bokningen {name}? Raderna och kraven arkiveras med den, och den kan återställas.",
+    "archived": "Bokningen har arkiverats."
   },
   "orderIntake": {
     "title": "Skapa bokning",

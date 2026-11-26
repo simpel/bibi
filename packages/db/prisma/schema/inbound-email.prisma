@@ -18,7 +18,7 @@ model InboundEmail {
   receivedAt      DateTime
   createdAt       DateTime @default(now())
   createdBy       String?
-  order          Order   @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  order          Order   @relation(fields: [orderId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@unique([id, organizationId])
   @@unique([organizationId, providerEmailId])

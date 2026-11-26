@@ -78,6 +78,8 @@ export const ORDER_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   order_createFromTemplate: orderCard,
   order_update: orderCard,
   order_changeStatus: orderCard,
+  order_archive: orderCard,
+  order_restore: orderCard,
   order_statusHistory: uiEntry({
     component: "order-status-history",
     schema: OrderStatusHistoryWireSchema,

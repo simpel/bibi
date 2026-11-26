@@ -129,6 +129,18 @@
       "description": "Det läggs till i listan {list} och kan väljas överallt där listan används.",
       "name": "Namn",
       "created": "Värdet skapades"
+    },
+    "lifecycle": {
+      "restore": "Återställ",
+      "restoreDescription": "När du återställer {name} hamnar den bland dina aktiva poster igen.",
+      "restoring": "Återställer…",
+      "restored": "Återställd.",
+      "delete": "Radera permanent",
+      "deleteDescription": "En arkiverad post kan raderas för gott. Det går inte att ångra, och den raderas också automatiskt när din arkivperiod är slut.",
+      "deleteConfirm": "Vill du radera {name} permanent? Det går inte att ångra.",
+      "typeName": "Skriv {name} för att bekräfta",
+      "deleting": "Raderar…",
+      "deleted": "Raderad."
     }
   },
   "errors": {
@@ -256,7 +268,8 @@
       "money": "Pengar och kopplingar"
     },
     "layouts": "Möbleringar",
-    "floorPlan": "Planritning"
+    "floorPlan": "Planritning",
+    "archive": "Arkiv"
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",
@@ -632,6 +645,10 @@
           "label": "Gå med via e-postdomän",
           "keywords": "domän e-post kollegor gå med automatiskt"
         },
+        "archiveRetention": {
+          "label": "Arkivperiod",
+          "keywords": "arkiv arkivera spara dagar radera permanent behålla arkiverade poster"
+        },
         "members": {
           "label": "Medlemmar",
           "keywords": "personer användare roller bjud in behörigheter"
@@ -719,6 +736,10 @@
         "paymentMethods": {
           "label": "Betalsätt",
           "keywords": "kort swish faktura betaltjänst stripe fortnox visma"
+        },
+        "archivedRecords": {
+          "label": "Arkiverade poster",
+          "keywords": "arkiv arkiverade återställ radera permanent ta bort poster papperskorg"
         }
       }
     }
@@ -910,5 +931,34 @@
         "body": "Kolumnerna är faser och brickorna i en kolumn är de statusar den visar. Dra brickor och kolumner för att flytta dem. En status som inte finns i någon kolumn visas inte på tavlan."
       }
     }
+  },
+  "archive": {
+    "description": "Arkiverade poster raderas permanent efter {days} dagar.",
+    "retentionLink": "Ändra arkivperioden",
+    "kinds": {
+      "task": "Uppgift",
+      "customer": "Kund",
+      "item": "Artikel",
+      "venue": "Anläggning",
+      "order": "Bokning",
+      "orderTemplate": "Bokningsmall",
+      "priceList": "Prislista",
+      "entityType": "Typ",
+      "vocabulary": "Lista",
+      "responsibility": "Ansvar",
+      "runSheetDefinition": "Körschema",
+      "skill": "Färdighet",
+      "orderStatus": "Bokningsstatus",
+      "itemTypeGroup": "Grupp"
+    },
+    "columns": {
+      "name": "Namn",
+      "kind": "Typ av post",
+      "archivedAt": "Arkiverad",
+      "deletesOn": "Raderas"
+    },
+    "empty": "Inget är arkiverat.",
+    "truncated": "Visar de {count} senast arkiverade posterna. Sök för att begränsa listan.",
+    "filterKind": "Typ av post"
   }
 }

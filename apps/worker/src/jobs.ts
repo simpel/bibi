@@ -3,6 +3,7 @@ import { expireOrderHoldsJob } from "./jobs/expire-order-holds";
 import { paymentRefundRetryJob } from "./jobs/payment-refund-retry";
 import { providerPollJob } from "./jobs/provider-poll";
 import { pseudonymiseAuditLogJob } from "./jobs/pseudonymise-audit-log";
+import { purgeArchivesJob } from "./jobs/purge-archives";
 import { refreshIntegrationsJob } from "./jobs/refresh-integrations";
 
 /** Every job the worker runs. Add new jobs here. */
@@ -12,4 +13,5 @@ export const JOBS: readonly JobDefinition[] = [
   refreshIntegrationsJob,
   providerPollJob,
   paymentRefundRetryJob,
+  purgeArchivesJob,
 ];

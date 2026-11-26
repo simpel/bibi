@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { usageConflict } from "../../records/blocking-issues";
 import { conflict, notFound } from "../../shared/errors";
+import { nowOf } from "../../time/now";
 import { recordsOfType } from "../field-definition/field-usage";
 import { checkNotOnRunSheets } from "../run-sheet-definition/usage";
 import { checkCapabilities, checkCapabilitiesRemovable } from "./capabilities";
@@ -120,7 +121,10 @@ export const archiveEntityType = defineOperation({
       what,
     });
     if (!onRunSheets.ok) return onRunSheets;
-    const row = await context.db.entityType.update({ where: { id }, data: { status: "ARCHIVED" } });
+    const row = await context.db.entityType.update({
+      where: { id },
+      data: { status: "ARCHIVED", archivedAt: nowOf({ context }) },
+    });
     const type = await toEntityTypeDto({ context, row });
     context.recordChange({ entityId: id, before, after: type });
     return ok({ value: type });

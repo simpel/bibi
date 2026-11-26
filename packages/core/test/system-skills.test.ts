@@ -1,4 +1,4 @@
-import { getDb } from "@bibi/db";
+import { getDb, withHardDelete } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 import { execute, getSkill, listSkills, publishSkill, updateSkill } from "../src/index";
@@ -118,7 +118,9 @@ describe("SYSTEM skills", () => {
       data: { name: "Hacked" },
     });
     expect(updated.count).toBe(0);
-    const deleted = await db.skill.deleteMany({ where: { scope: "SYSTEM" } });
+    const deleted = await withHardDelete({ client: db }).skill.deleteMany({
+      where: { scope: "SYSTEM" },
+    });
     expect(deleted.count).toBe(0);
     await expect(
       db.skill.update({ where: { id: systemRows[0]?.id ?? "" }, data: { name: "Hacked" } }),

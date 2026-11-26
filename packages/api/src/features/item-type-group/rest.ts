@@ -9,4 +9,14 @@ export const itemTypeGroupRoutes = [
   restRoute({ operation: "itemTypeGroup.update", method: "PATCH", path: `${BASE}/{id}` }),
   restRoute({ operation: "itemTypeGroup.archive", method: "DELETE", path: `${BASE}/{id}` }),
   restRoute({ operation: "itemTypeGroup.reorder", method: "PUT", path: `${BASE}/order` }),
+  restRoute({
+    operation: "itemTypeGroup.restore",
+    method: "POST",
+    path: `${BASE}/{id}/restore`,
+  }),
+  restRoute({
+    operation: "itemTypeGroup.delete",
+    method: "DELETE",
+    path: `${BASE}/{id}/permanent`,
+  }),
 ];

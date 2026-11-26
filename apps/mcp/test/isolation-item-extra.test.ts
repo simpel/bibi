@@ -17,7 +17,7 @@ describe("cross-organization isolation: item archive, resolve and bundles", () =
     });
     expect(secret.isError, JSON.stringify(secret.data)).toBe(false);
     const id = secret.data.id;
-    for (const name of ["item_archive", "item_resolve"]) {
+    for (const name of ["item_archive", "item_restore", "item_delete", "item_resolve"]) {
       const result = await call({ client: b, name, args: { id } });
       expect(result.data.code, name).toBe("NOT_FOUND");
     }

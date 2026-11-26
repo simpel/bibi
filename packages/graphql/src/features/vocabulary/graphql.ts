@@ -3,9 +3,11 @@ import {
   archiveVocabulary,
   archiveVocabularyValue,
   createVocabulary,
+  deleteVocabulary,
   getVocabulary,
   importVocabularyTemplate,
   listVocabularies,
+  restoreVocabulary,
   updateVocabulary,
   updateVocabularyValue,
   type VocabularyDto,
@@ -14,6 +16,7 @@ import {
   VocabularyValueSchema,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -45,6 +48,8 @@ fieldFromOperation({ operation: getVocabulary, type: VocabularyRef, name: "vocab
 mutationFromOperation({ operation: createVocabulary, type: VocabularyRef });
 mutationFromOperation({ operation: updateVocabulary, type: VocabularyRef });
 mutationFromOperation({ operation: archiveVocabulary, type: VocabularyRef });
+mutationFromOperation({ operation: restoreVocabulary, type: VocabularyRef });
+mutationFromOperation({ operation: deleteVocabulary, type: DeletedRecordRef });
 mutationFromOperation({ operation: importVocabularyTemplate, type: VocabularyRef });
 mutationFromOperation({ operation: addVocabularyValue, type: VocabularyRef });
 mutationFromOperation({ operation: updateVocabularyValue, type: VocabularyRef });

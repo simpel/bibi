@@ -3,6 +3,7 @@ import type { AppErrorIssue } from "../../errors/app-error";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
+import { nowOf } from "../../time/now";
 import { unplaceStatus } from "../board/status-placement";
 import { moveOrder } from "../order/move-order";
 import { ORDER_INCLUDE, toOrderDto } from "../order/to-order-dto";
@@ -106,7 +107,7 @@ export async function archiveStatus({ context, input }: ArchiveStatusInput) {
   await clearStatusCells({ context, statusId: id });
   await unplaceStatus({ context, statusId: id });
   // An archived status gives up its quote event (ADR 0043): another status can take it.
-  const data = { status: "ARCHIVED", event: null } as const;
+  const data = { status: "ARCHIVED", event: null, archivedAt: nowOf({ context }) } as const;
   const row = await context.db.orderStatus.update({ where: { id }, data });
   const after = { ...before, ...row, transitionsTo: [], transitionGates: [], gatesInto: [] };
   context.recordChange({ entityId: id, before, after });

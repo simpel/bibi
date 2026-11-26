@@ -6,4 +6,14 @@ export const entityTypeRoutes = [
   restRoute({ operation: "entityType.create", method: "POST", path: "/entity-types" }),
   restRoute({ operation: "entityType.update", method: "PATCH", path: "/entity-types/{id}" }),
   restRoute({ operation: "entityType.archive", method: "DELETE", path: "/entity-types/{id}" }),
+  restRoute({
+    operation: "entityType.restore",
+    method: "POST",
+    path: "/entity-types/{id}/restore",
+  }),
+  restRoute({
+    operation: "entityType.delete",
+    method: "DELETE",
+    path: "/entity-types/{id}/permanent",
+  }),
 ];

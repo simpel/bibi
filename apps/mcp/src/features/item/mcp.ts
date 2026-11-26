@@ -36,4 +36,15 @@ export const itemMcpTools = [
     idempotent: true,
     summary: ({ input }) => hoursSummary({ input, owner: "item" }),
   }),
+  mcpTool({
+    operation: "item.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore item ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "item.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete item ${text({ value: input.id })} permanently`,
+  }),
 ];

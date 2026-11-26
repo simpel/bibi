@@ -22,6 +22,8 @@ describe("cross-organization isolation: item type groups", () => {
       ["itemTypeGroup_get", { id: group.data.id }],
       ["itemTypeGroup_update", { id: group.data.id, name: "Hacked" }],
       ["itemTypeGroup_archive", { id: group.data.id }],
+      ["itemTypeGroup_restore", { id: group.data.id }],
+      ["itemTypeGroup_delete", { id: group.data.id }],
     ] as const;
     for (const [name, args] of refused) {
       const result = await call({ client: b, name, args });

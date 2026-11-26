@@ -36,4 +36,5 @@ export const PRICE_LIST_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   priceList_update: priceListCard,
   priceList_setItems: priceListCard,
   priceList_archive: priceListCard,
+  priceList_restore: priceListCard,
 };

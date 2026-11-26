@@ -47,6 +47,8 @@ describe("cross-organization isolation: tasks (ADR 0117)", () => {
       ["task_complete", { id }],
       ["task_reopen", { id }],
       ["task_archive", { id }],
+      ["task_restore", { id }],
+      ["task_delete", { id }],
       ["task_linkOrder", { taskId: id, orderId: ownOrder.id }],
     ] as const) {
       expect((await call({ client: b, name, args: input })).data.code, name).toBe("NOT_FOUND");

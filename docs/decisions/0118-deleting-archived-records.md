@@ -3,6 +3,7 @@
 - **Date:** 2026-11-25
 - **Status:** Accepted (the user, 2026-11-25)
 - **Related:** 0006, 0032, 0051, 0054, 0056, 0106, 0113
+- **Amended:** 2026-11-26 (the user): archived records are restored and deleted on one Archive page, see decision 1.
 
 ## Context
 - ADR 0006 made archiving the only delete: nothing an organization creates is ever destroyed. Venues now want archived things gone: a task, a customer or an item they will never use again should not linger in the database or in exports.
@@ -10,7 +11,7 @@
 - Swedish bookkeeping law requires accounting records to be kept for seven years. Bibi does not number or issue them (ADR 0106), but it stores money records (payments, refunds, invoices and credit notes as mirrored, deposits, accepted quotes and order versions) and the audit log (ADR 0032).
 
 ## Decision
-1. A record is deleted only after it is archived. In the danger area, an archived record offers **Delete permanently** (a new `<entity>.delete` operation, `<feature>:delete`, confirmed by typing its name). An active record offers only **Archive**.
+1. A record is deleted only after it is archived. Archived records are listed on one **Archive** page (Administration → Archive, `archive.list`: every kind the caller may restore and delete, newest first, with the date it will be deleted), which offers **Restore** and **Delete permanently**; record pages stay closed to archived records. **Delete permanently** (a new `<entity>.delete` operation, `<feature>:delete`, confirmed by typing its name). An active record offers only **Archive**.
 2. An organization sets how many days an archived record is kept before it is deleted: default 90, at least 1, at most 180 (`OrganizationProfile.archiveRetentionDays`, admin only). A worker job deletes archived records whose `archivedAt` is older than that, as SYSTEM, every night.
 3. Deleting removes the record's row, its `Record` row and its dependent rows that have no meaning alone (links, follower and relation rows, embeddings). It is refused with `CONFLICT` while another active record refers to it (an item used on a line, a customer with orders); the job skips such records and tries again the next night.
 4. Never deleted, by hand or by the job: money records (payment, refund, invoice, credit note, deposit, accepted quote, order version), an order with any of them, and `AuditLog`. They stay archived. Their personal data follows ADR 0032.

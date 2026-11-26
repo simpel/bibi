@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { archiveRecords } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
+import { nowOf } from "../../time/now";
 import { checkNotLinked } from "../field-definition/link-usage";
 import { checkItemsUnused } from "./archive-guard";
 import { itemEmbeddable } from "./embeddable";
@@ -27,7 +28,10 @@ export const archiveItem = defineOperation({
     if (!linked.ok) return linked;
     const unused = await checkItemsUnused({ context, items: [before] });
     if (!unused.ok) return unused;
-    const row = await context.db.item.update({ where: { id }, data: { status: "ARCHIVED" } });
+    const row = await context.db.item.update({
+      where: { id },
+      data: { status: "ARCHIVED", archivedAt: nowOf({ context }) },
+    });
     await archiveRecords({ context, ids: [id] });
     const [item] = await toItemDtos({ context, rows: [row] });
     if (!item) return notFound({ entity: "Item" });

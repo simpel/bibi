@@ -1,3 +1,4 @@
+import { withHardDelete } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import {
   acceptQuote,
@@ -89,7 +90,9 @@ describe("quote events move the order (ADR 0043)", () => {
     await configure({ context });
     const input = { id: quote.id };
     unwrap({ result: await execute({ operation: sendQuote, input, context }) });
-    const nobody = await context.db.assignment.deleteMany({ where: { recordId: order.id } });
+    const nobody = await withHardDelete({ client: context.db }).assignment.deleteMany({
+      where: { recordId: order.id },
+    });
     expect(nobody.count).toBeGreaterThan(0);
     const result = await execute({ operation: acceptQuote, input, context });
     expect(errorCode({ result })).toBe("CONFLICT");

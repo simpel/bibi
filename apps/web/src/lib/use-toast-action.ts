@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
-import type { ActionResult } from "./action-result";
+import type { ActionError, ActionResult } from "./action-result";
 import { actionWithToast } from "./action-with-toast";
 import type { ToastMessages } from "./submit-with-toast";
 
@@ -10,6 +10,8 @@ export type RunToastActionInput<R> = {
   onSuccess?: (input: { value: R }) => void;
   /** After the error toast, e.g. to put an auto-saved field back. */
   onError?: () => void;
+  /** The error toast's text instead of the code's, e.g. a delete refused because of a referrer. */
+  errorMessage?: (input: { error: ActionError }) => string | null;
 };
 
 /**
@@ -19,10 +21,16 @@ export type RunToastActionInput<R> = {
 export function useToastAction() {
   const t = useTranslations("errors");
   const [pending, startTransition] = useTransition();
-  const run = <R>({ action, messages, onSuccess, onError }: RunToastActionInput<R>) => {
+  const run = <R>({
+    action,
+    messages,
+    onSuccess,
+    onError,
+    errorMessage,
+  }: RunToastActionInput<R>) => {
     startTransition(async () => {
       const translate = ({ key }: { key: Parameters<typeof t>[0] }) => t(key);
-      const result = await actionWithToast({ action, messages, translate });
+      const result = await actionWithToast({ action, messages, translate, errorMessage });
       if (result.ok) onSuccess?.({ value: result.value });
       else onError?.();
     });

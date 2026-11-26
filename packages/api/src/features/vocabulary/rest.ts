@@ -26,4 +26,14 @@ export const vocabularyRoutes = [
     method: "DELETE",
     path: "/vocabulary-values/{id}",
   }),
+  restRoute({
+    operation: "vocabulary.restore",
+    method: "POST",
+    path: "/vocabularies/{id}/restore",
+  }),
+  restRoute({
+    operation: "vocabulary.delete",
+    method: "DELETE",
+    path: "/vocabularies/{id}/permanent",
+  }),
 ];

@@ -23,6 +23,9 @@ describe("cross-organization isolation for orders", () => {
       ["order_statusHistory", { orderId: id }],
       ["order_estimateHistory", { orderId: id }],
       ["order_update", { id, estimatedHeadcount: 99 }],
+      ["order_archive", { id }],
+      ["order_restore", { id }],
+      ["order_delete", { id }],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");
     }

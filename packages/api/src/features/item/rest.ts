@@ -32,4 +32,14 @@ export const itemRoutes = [
   }),
   restRoute({ operation: "itemHours.get", method: "GET", path: "/items/{itemId}/hours" }),
   restRoute({ operation: "itemHours.set", method: "PUT", path: "/items/{itemId}/hours" }),
+  restRoute({
+    operation: "item.restore",
+    method: "POST",
+    path: "/items/{id}/restore",
+  }),
+  restRoute({
+    operation: "item.delete",
+    method: "DELETE",
+    path: "/items/{id}/permanent",
+  }),
 ];

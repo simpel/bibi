@@ -16,6 +16,9 @@ model OrderTemplate {
   /// Key in `@bibi/storage` (ADR 0063) of the package's image (owned); null = its first item's.
   imageKey         String?
   status           RecordStatus         @default(ACTIVE)
+  /// Owned (ADR 0118): when it was archived; null while active. Set by its archive, cleared by
+  /// its restore; the retention job deletes it after the organization's `archiveRetentionDays`.
+  archivedAt       DateTime?
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
   createdBy        String?

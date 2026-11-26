@@ -26,4 +26,14 @@ export const runSheetDefinitionRoutes = [
     method: "DELETE",
     path: "/run-sheet-definitions/{id}",
   }),
+  restRoute({
+    operation: "runSheetDefinition.restore",
+    method: "POST",
+    path: "/run-sheet-definitions/{id}/restore",
+  }),
+  restRoute({
+    operation: "runSheetDefinition.delete",
+    method: "DELETE",
+    path: "/run-sheet-definitions/{id}/permanent",
+  }),
 ];

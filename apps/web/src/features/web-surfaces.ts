@@ -1,4 +1,5 @@
 import { BOOKING_SURFACES } from "./booking-surfaces";
+import { LIFECYCLE_SURFACES } from "./lifecycle-surfaces";
 import { MONEY_SURFACES } from "./money-surfaces";
 import { PIPELINE_SURFACES } from "./pipeline-surfaces";
 import { SALES_SURFACES } from "./sales-surfaces";
@@ -25,6 +26,7 @@ export type WebSurface = {
 const PANEL = { route: "/assistant" } as const;
 export const WEB_SURFACES: readonly WebSurface[] = [
   ...PIPELINE_SURFACES,
+  ...LIFECYCLE_SURFACES,
   // The start page: the caller's own work (ADR 0110).
   { operation: "myWork.view", route: "/" },
   {

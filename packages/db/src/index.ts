@@ -131,6 +131,11 @@ export type {
   RecordMatches,
   RecordRef,
 } from "./records/types";
+export {
+  type HardDeleteClient,
+  type WithHardDeleteInput,
+  withHardDelete,
+} from "./scoped/hard-delete-intent";
 export { ORG_SCOPED_MODELS, UNSCOPED_MODELS, USER_SCOPED_MODELS } from "./scoped/models";
 export { PLATFORM_SCOPE } from "./scoped/platform-scope";
 export {

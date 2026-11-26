@@ -294,6 +294,12 @@
       "turnedOn": "Kollegor med er e-postdomän erbjuds nu att gå med när de loggar in.",
       "turnedOff": "Kollegor behöver nu en inbjudan för att ansluta."
     },
+    "archiveRetention": {
+      "label": "Spara arkiverade poster i (dagar)",
+      "hint": "Arkiverade poster raderas för gott efter så här många dagar, mellan 1 och 180. Pengaposter som fakturor och betalningar raderas aldrig.",
+      "saved": "Arkivperioden har sparats.",
+      "readOnly": "Du kan se den här inställningen men inte ändra den."
+    },
     "readOnly": "Du kan se de här inställningarna men inte ändra dem."
   },
   "hours": {

@@ -283,11 +283,15 @@
       "details": "Details",
       "comments": "Comments",
       "messages": "Messages",
-      "activity": "Activity"
+      "activity": "Activity",
+      "danger": "Danger area"
     },
     "tabMarks": {
       "runSheets": "A run sheet is not sent or is out of date"
-    }
+    },
+    "archive": "Archive order",
+    "archiveConfirm": "Do you want to archive the order {name}? Its lines and requirements are archived with it, and it can be restored.",
+    "archived": "The order has been archived."
   },
   "orderIntake": {
     "title": "Create order",

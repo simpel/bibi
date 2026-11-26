@@ -53,4 +53,15 @@ export const orderStatusMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Import order status template ${text({ value: input.template })}`,
   }),
+  mcpTool({
+    operation: "orderStatus.restore",
+    destructive: false,
+    idempotent: true,
+    summary: ({ input }) => `Restore order status ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "orderStatus.delete",
+    destructive: true,
+    summary: ({ input }) => `Delete order status ${text({ value: input.id })} permanently`,
+  }),
 ];

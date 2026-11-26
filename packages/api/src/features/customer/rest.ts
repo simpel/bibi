@@ -13,4 +13,14 @@ export const customerRoutes = [
   restRoute({ operation: "customer.create", method: "POST", path: "/customers" }),
   restRoute({ operation: "customer.update", method: "PATCH", path: "/customers/{id}" }),
   restRoute({ operation: "customer.archive", method: "DELETE", path: "/customers/{id}" }),
+  restRoute({
+    operation: "customer.restore",
+    method: "POST",
+    path: "/customers/{id}/restore",
+  }),
+  restRoute({
+    operation: "customer.delete",
+    method: "DELETE",
+    path: "/customers/{id}/permanent",
+  }),
 ];

@@ -1,12 +1,15 @@
 import {
   archiveRunSheetDefinition,
   createRunSheetDefinition,
+  deleteRunSheetDefinition,
   getRunSheetDefinition,
   listRunSheetDefinitions,
   type RunSheetDefinitionDto,
   RunSheetDefinitionSchema,
+  restoreRunSheetDefinition,
   updateRunSheetDefinition,
 } from "@bibi/core";
+import { DeletedRecordRef } from "../../schema/deleted-record";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
@@ -37,3 +40,5 @@ fieldFromOperation({
 mutationFromOperation({ operation: createRunSheetDefinition, type: RunSheetDefinitionRef });
 mutationFromOperation({ operation: updateRunSheetDefinition, type: RunSheetDefinitionRef });
 mutationFromOperation({ operation: archiveRunSheetDefinition, type: RunSheetDefinitionRef });
+mutationFromOperation({ operation: restoreRunSheetDefinition, type: RunSheetDefinitionRef });
+mutationFromOperation({ operation: deleteRunSheetDefinition, type: DeletedRecordRef });

@@ -4,8 +4,8 @@
  */
 /**
  * The actions (ADR 0050): `read` sees the feature, `write` creates and changes it (including
- * sending, exporting and moving an order's status), `delete` archives it. Bibi never hard-deletes;
- * `delete` is the archive action. `submit` (ADR 0085, `inbox` only) hands a message in from
+ * sending, exporting and moving an order's status), `delete` archives it, restores it and deletes
+ * an archived record for good (ADR 0118). `submit` (ADR 0085, `inbox` only) hands a message in from
  * outside without seeing the feature, so unlike `write` and `delete` it does not imply `read`.
  * `refund` (ADR 0100, `payment` only) gives money back to a customer; it implies `read`.
  */

@@ -294,6 +294,12 @@
       "turnedOn": "Colleagues with your email domain are now offered to join when they sign in.",
       "turnedOff": "Colleagues now need an invitation to join."
     },
+    "archiveRetention": {
+      "label": "Keep archived records for (days)",
+      "hint": "Archived records are deleted for good after this many days, between 1 and 180. Money records such as invoices and payments are never deleted.",
+      "saved": "The archive period has been saved.",
+      "readOnly": "You can view this setting but not change it."
+    },
     "readOnly": "You can view these settings but not change them."
   },
   "hours": {

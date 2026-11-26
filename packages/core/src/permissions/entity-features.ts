@@ -77,6 +77,8 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   notification: "self",
   notificationPreference: "self",
   myWork: "self",
+  // The Archive page (ADR 0118): a view whose rows are gated per kind by its `delete`.
+  archive: "self",
   userSettings: "self",
   profile: "self",
   workingHours: "self",
