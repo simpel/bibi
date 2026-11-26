@@ -1,0 +1,293 @@
+/// Where a reservation stands (ADR 0119): a fixed lifecycle, not the organization's order
+/// statuses, so the public API and guest emails keep one meaning.
+enum ReservationState {
+  PENDING_PAYMENT
+  BOOKED
+  SEATED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+/// Who made a reservation: staff in the app, a guest on the booking page, or a partner site.
+enum ReservationSource {
+  STAFF
+  WEB
+  API
+}
+
+/// Who cancelled: the guest from the manage link, staff, or the system (a deposit not paid).
+enum ReservationCanceller {
+  GUEST
+  STAFF
+  SYSTEM
+}
+
+/// What holds a table: a reservation, or a staff block (nobody books) or online-only block
+/// (guests do not, staff may).
+enum TableHoldKind {
+  RESERVATION
+  BLOCK
+  ONLINE_ONLY
+}
+
+/// The booking settings of one dining room (ADR 0119): its address on the booking page and the
+/// last moment guests may book. Owned. One per room item.
+model DiningRoom {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  itemId         String
+  /// The room's part of the public address `/book/<page slug>/<slug>`; unique in the organization.
+  slug           String
+  /// Owned instant: guests may book a time that starts before it (the end of the last open day
+  /// in the room's zone, chosen as a date at the edge, ADR 0064); null = only the sittings'
+  /// `maxDaysAhead` limits.
+  openUntil      DateTime?
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  item           Item         @relation(fields: [itemId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([itemId, organizationId])
+  @@unique([organizationId, slug])
+}
+
+/// Sitting (ADR 0119): when a dining room takes table bookings, with which layout and at what
+/// pace. A weekly pattern of wall-clock minutes in the room's zone with dated exceptions
+/// (`DiningServiceException`), the hours shape ADR 0064 point 9 allows. All columns owned.
+model DiningService {
+  id                   String                   @id @default(cuid(2))
+  organizationId       String
+  roomItemId           String
+  /// The layout whose seated pieces are the tables; one of the room's layouts.
+  layoutId             String
+  name                 String
+  /// Open weekdays, 0 = Monday … 6 = Sunday (`weekdayOf` in core `time`).
+  weekdays             Int[]
+  /// First and last start a guest can book, minutes after local midnight.
+  firstStartMinute     Int
+  lastStartMinute      Int
+  /// Owned instants bounding the season; null = open-ended.
+  validFrom            DateTime?
+  validUntil           DateTime?
+  /// Minutes between bookable start times.
+  slotMinutes          Int                      @default(15)
+  /// Ordered `{ upToParty, minutes }` rows: how long a party keeps its table; the last row
+  /// covers larger parties. Values, not ids (ADR 0056).
+  turnTimes            Json
+  /// The most new guests starting in one slot (kitchen pace); null = no limit.
+  maxCoversPerSlot     Int?
+  minMinutesAhead      Int                      @default(120)
+  maxDaysAhead         Int                      @default(60)
+  /// Guests change or cancel up to this many minutes before the start.
+  changeCutoffMinutes  Int                      @default(180)
+  /// The largest party guests may book online.
+  maxOnlineParty       Int                      @default(8)
+  /// Deposit rule (phase H): from this party size, this much per cover; both null = none.
+  depositFromParty     Int?
+  depositPerCoverMinor Int?
+  status               RecordStatus             @default(ACTIVE)
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  createdBy            String?
+  room                 Item                     @relation(fields: [roomItemId, organizationId], references: [id, organizationId])
+  layout               SetupLayout              @relation(fields: [layoutId, organizationId], references: [id, organizationId])
+  exceptions           DiningServiceException[]
+  reservations         Reservation[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, roomItemId, status])
+}
+
+/// One date's change to a sitting (ADR 0119): closed, or other start times, layout or pace.
+/// `date` is a plain-date key read in the room's zone, like `HoursException.date` (ADR 0064
+/// point 9). One per sitting and date; deleted, not archived.
+model DiningServiceException {
+  id               String        @id @default(cuid(2))
+  organizationId   String
+  serviceId        String
+  date             DateTime      @db.Date
+  closed           Boolean       @default(false)
+  firstStartMinute Int?
+  lastStartMinute  Int?
+  layoutId         String?
+  maxCoversPerSlot Int?
+  note             String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  createdBy        String?
+  service          DiningService @relation(fields: [serviceId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  layout           SetupLayout?  @relation(fields: [layoutId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([serviceId, date])
+  @@index([organizationId, serviceId])
+}
+
+/// Tables of one layout booked together for one party (ADR 0119); also how a splittable table is
+/// drawn: its pieces plus their combination. Owned. Members are `TableCombinationMember` rows.
+model TableCombination {
+  id             String                   @id @default(cuid(2))
+  organizationId String
+  layoutId       String
+  name           String
+  /// Null = 1.
+  minCovers      Int?
+  /// Null = the members' seats together.
+  maxCovers      Int?
+  /// Guests may get it online.
+  onlineBookable Boolean                  @default(true)
+  status         RecordStatus             @default(ACTIVE)
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  createdBy      String?
+  layout         SetupLayout              @relation(fields: [layoutId, organizationId], references: [id, organizationId])
+  members        TableCombinationMember[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, layoutId, status])
+}
+
+/// One table of a combination: a join row, replaced as a set by `tableCombination.save`; goes
+/// with the table when a layout save deletes it.
+model TableCombinationMember {
+  id             String           @id @default(cuid(2))
+  organizationId String
+  combinationId  String
+  elementId      String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  createdBy      String?
+  combination    TableCombination @relation(fields: [combinationId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  element        FloorElement     @relation(fields: [elementId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@unique([id, organizationId])
+  @@unique([combinationId, elementId])
+  @@index([organizationId, elementId])
+}
+
+/// A party at one or more tables for a time range (ADR 0119). Not an order: a deposit creates a
+/// private order behind it (`orderId`). Owned, except that `erasedAt` marks the erasure job's
+/// work: it empties the booker fields 90 days after `endsAt` (ADR 0032). `state` is the fixed
+/// lifecycle; `status` archives as everywhere.
+model Reservation {
+  id               String                   @id @default(cuid(2))
+  organizationId   String
+  roomItemId       String
+  /// The sitting it was booked in; null when staff booked outside one.
+  serviceId        String?
+  startsAt         DateTime
+  endsAt           DateTime
+  partySize        Int
+  state            ReservationState         @default(BOOKED)
+  source           ReservationSource
+  /// The one booker (the buyer, ADR 0119): personal data, null after erasure.
+  bookerName       String?
+  bookerPhone      String?
+  bookerEmail      String?
+  note             String?
+  /// Staff's link to a regular or a company.
+  customerId       String?
+  contactId        String?
+  /// The private order behind a deposit.
+  orderId          String?
+  /// Unguessable token in the manage link `/book/manage/<token>`. Never in the DTO.
+  publicToken      String                   @unique
+  /// Until when a PENDING_PAYMENT reservation holds its tables.
+  paymentExpiresAt DateTime?
+  seatedAt         DateTime?
+  completedAt      DateTime?
+  cancelledAt      DateTime?
+  cancelledBy      ReservationCanceller?
+  cancelReason     String?
+  erasedAt         DateTime?
+  status           RecordStatus             @default(ACTIVE)
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  createdBy        String?
+  room             Item                     @relation(fields: [roomItemId, organizationId], references: [id, organizationId])
+  service          DiningService?           @relation(fields: [serviceId, organizationId], references: [id, organizationId])
+  customer         Customer?                @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  contact          Contact?                 @relation(fields: [contactId, organizationId], references: [id, organizationId])
+  order            Order?                   @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  tables           TableHold[]
+  requirements     ReservationRequirement[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, roomItemId, startsAt])
+  @@index([organizationId, state])
+  @@index([organizationId, customerId])
+}
+
+/// How many of the party need a value of the organization's own lists (ADR 0021): counts, never a
+/// person. Replaced as a set with the reservation.
+model ReservationRequirement {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  reservationId     String
+  vocabularyValueId String
+  quantity          Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?
+  reservation       Reservation     @relation(fields: [reservationId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  vocabularyValue   VocabularyValue @relation(fields: [vocabularyValueId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([reservationId, vocabularyValueId])
+  @@index([organizationId, vocabularyValueId])
+}
+
+/// One table held for `[startsAt, endsAt)` (ADR 0119): for a reservation, or a staff block.
+/// Owned. Active holds on one table never overlap (exclusion constraint in the migration, like
+/// `Occupancy`); released holds are ARCHIVED. A CHECK keeps `reservationId` set exactly for
+/// `RESERVATION`. Deleting a table deletes its holds; core refuses it while one is upcoming.
+model TableHold {
+  id             String        @id @default(cuid(2))
+  organizationId String
+  elementId      String
+  kind           TableHoldKind
+  reservationId  String?
+  startsAt       DateTime
+  endsAt         DateTime
+  note           String?
+  status         RecordStatus  @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  createdBy      String?
+  element        FloorElement  @relation(fields: [elementId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  reservation    Reservation?  @relation(fields: [reservationId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@unique([id, organizationId])
+  @@index([organizationId, elementId, startsAt])
+  @@index([organizationId, reservationId])
+}
+
+/// The organization's public booking page (ADR 0119), lightly white-labelled. One per
+/// organization; all columns owned. Texts are keyed by locale (`{ "sv": …, "en": … }`).
+model BookingPage {
+  id             String       @id @default(cuid(2))
+  organizationId String       @unique
+  /// The first part of the public address `/book/<slug>/<room>`; unique across organizations.
+  slug           String       @unique
+  /// Storage keys (ADR 0063), like `avatarKey`.
+  logoKey        String?
+  coverKey       String?
+  /// `#rrggbb`, refused under 4.5:1 contrast on white.
+  accentColor    String?
+  intro          Json         @default("{}")
+  policy         Json         @default("{}")
+  contactPhone   String?
+  contactEmail   String?
+  /// Https origins allowed to embed the page (`frame-ancestors`); values, not ids (ADR 0056).
+  embedOrigins   String[]
+  published      Boolean      @default(false)
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+
+  @@unique([id, organizationId])
+}

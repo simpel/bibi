@@ -54,6 +54,9 @@ async function removeOwnRows({ context, id }: KindInput) {
   await hard.occupancy.deleteMany({ where: own });
   await db.hoursException.deleteMany({ where: own });
   await db.hoursDay.deleteMany({ where: own });
+  await hard.diningRoom.deleteMany({ where: own });
+  // Table combinations of its layouts (members cascade); table holds go with the tables.
+  await hard.tableCombination.deleteMany({ where: { layout: own, status: EITHER_STATUS } });
   await db.floorElement.deleteMany({
     where: { OR: [{ floorPlan: own }, { setupLayout: own }] },
   });

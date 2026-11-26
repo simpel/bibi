@@ -51,6 +51,7 @@ model Customer {
   /// Customer prices (ADR 0023).
   priceLists           PriceList[]
   tasks                Task[]
+  reservations         Reservation[]
   /// The supertable row this record extends (ADR 0056).
   record               Record       @relation(fields: [id, organizationId], references: [id, organizationId])
 
@@ -82,6 +83,7 @@ model Contact {
   customer       Customer     @relation(fields: [customerId, organizationId], references: [id, organizationId])
   orders        Order[]
   tasks          Task[]
+  reservations   Reservation[]
   /// The supertable row this record extends (ADR 0056).
   record         Record       @relation(fields: [id, organizationId], references: [id, organizationId])
 

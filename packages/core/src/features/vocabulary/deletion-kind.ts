@@ -11,7 +11,7 @@ import {
 } from "../../archive/lifecycle-kind";
 import { hardDelete } from "../../archive/record-rows";
 
-/** Fields, requirements and demand tags that use the list or its values, archived or not. */
+/** Fields, requirements, reservation needs and demand tags that use the list or its values. */
 const deleteBlockers = ({ context, id }: KindInput) => {
   const value = { vocabularyId: id };
   return allBlockers({
@@ -27,6 +27,10 @@ const deleteBlockers = ({ context, id }: KindInput) => {
           where: { vocabularyValue: value, status: EITHER_STATUS },
         }),
         ...{ feature: "program", path: "requirements", what: "requirements" },
+      }),
+      countBlocker({
+        count: context.db.reservationRequirement.count({ where: { vocabularyValue: value } }),
+        ...{ feature: "reservation", path: "reservations", what: "reservation needs" },
       }),
       countBlocker({
         count: context.db.itemDemandTag.count({ where: { value } }),

@@ -822,13 +822,16 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *Target* · Table booking for dining rooms: guests book on the organization's booking page or through the public API; staff on Reservations. Spec: [table-reservations](specs/table-reservations.md).
 
+### DiningRoom (`DiningRoom`)
+A room set up for table booking. Owned: item (one per room), `slug` (unique in the organization, the room's part of `/book/<page>/<room>`), `openUntil` (an instant: guests may book times that start before it; null = the sittings' `maxDaysAhead` only), status. `diningRoom.list|get|set` (`diningSetup:*`).
+
 ### DiningService (`DiningService`)
 A sitting: when a dining room takes table bookings, with which layout and at what pace (UI "Sitting").
 - room item (`roomItemId`, an item with `SETUPS`), layout (`layoutId`, a dining layout of that room)
 - name (unique among the room's active sittings), weekdays (0 = Monday), first and last booking minute, closing minute
-- season (`validFrom`, `validUntil`: plain-date keys, nullable)
+- season (`validFrom`, `validUntil`: instants, nullable)
 - slot interval minutes (default 15), `turnTimes` (ordered `{ upToParty, minutes }` rows), `maxCoversPerSlot` (nullable = no pace limit)
-- online rules: `minHoursAhead`, `maxDaysAhead`, `changeCutoffMinutes`, `maxOnlineParty`
+- online rules: `minMinutesAhead`, `maxDaysAhead`, `changeCutoffMinutes`, `maxOnlineParty`
 - deposit: `depositFromParty` and `depositPerCoverMinor` (both nullable = none)
 - status
 All owned. `diningService.list|get|create|update|archive` (`diningSetup:*`).
@@ -837,12 +840,12 @@ All owned. `diningService.list|get|create|update|archive` (`diningSetup:*`).
 One date's change to a sitting: closed, or other hours, layout or pace. One per sitting and date (plain-date key, read in the room's zone). Owned. `diningServiceException.list|set|delete`.
 
 ### TableCombination (`TableCombination`) and members
-Tables of one dining layout booked together for one party; also how a splittable table is modelled (its pieces plus their combination). Owned: layout, name, `minCovers`, `maxCovers` (nullable = sum of seats), `bookable` (online), status; members are `FloorElement` FKs (`TableCombinationMember`, at least two). Replaced as a set by `tableCombination.save`.
+Tables of one dining layout booked together for one party; also how a splittable table is modelled (its pieces plus their combination). Owned: layout, name, `minCovers`, `maxCovers` (nullable = sum of seats), `onlineBookable`, status; members are `FloorElement` FKs (`TableCombinationMember`, at least two). Replaced as a set by `tableCombination.save`.
 
 ### Reservation (`Reservation`)
 One party at one or more tables for a time range. Not an order (ADR 0119); a deposit creates a private order behind it (`orderId`).
 - room item, sitting (`serviceId`, nullable when staff book outside one), `startsAt`, `endsAt`, `partySize`
-- status (`PENDING_PAYMENT`, `BOOKED`, `SEATED`, `COMPLETED`, `CANCELLED`, `NO_SHOW`; fixed, not the organization's statuses), `source` (`STAFF`, `WEB`, `API`), `cancelledBy`, `cancelledAt`, `seatedAt`
+- state (`PENDING_PAYMENT`, `BOOKED`, `SEATED`, `COMPLETED`, `CANCELLED`, `NO_SHOW`; fixed, not the organization's statuses); `status` archives, `source` (`STAFF`, `WEB`, `API`), `cancelledBy`, `cancelledAt`, `seatedAt`
 - booker: `bookerName`, `bookerPhone`, `bookerEmail`, `note` (personal data; erased 90 days after `endsAt`, `erasedAt` set)
 - optional `customerId`, `contactId` (staff link a regular or a company), optional `orderId` (deposit)
 - `publicToken` (32 random bytes, the manage link; never in the DTO)
@@ -853,12 +856,11 @@ All owned. Operations: `reservation.*` (`reservation:read|write|delete`); public
 One table held for `[startsAt, endsAt)`: for a reservation (`RESERVATION`, `reservationId` set) or a staff block (`BLOCK`: nobody books; `ONLINE_ONLY`: guests do not). Owned; `note` on blocks. ★ Active holds on one table may not overlap: an exclusion constraint (`btree_gist`) like `Occupancy`; core maps a violation to `CONFLICT`. Released holds are `ARCHIVED`. A whole-room block is a manual `Occupancy` on the room.
 
 ### BookingPage (`BookingPage`)
-The organization's public booking page, lightly white-labelled. One per organization. Owned: `slug` (unique), logo and cover (`File` FKs), `accentColor` (contrast ≥ 4.5:1 on white), intro and policy per locale (`sv`, `en`), contact phone and email, `embedOrigins` (https origins; plain strings, ADR 0056 allows values that are not ids), `published`. `bookingPage.get|update` (`diningSetup:*`).
+The organization's public booking page, lightly white-labelled. One per organization. Owned: `slug` (unique), `logoKey` and `coverKey` (storage keys, ADR 0063), `accentColor` (contrast ≥ 4.5:1 on white), intro and policy per locale (`sv`, `en`), contact phone and email, `embedOrigins` (https origins; plain strings, ADR 0056 allows values that are not ids), `published`. `bookingPage.get|update` (`diningSetup:*`).
 
 ### Changes on existing entities
-- `SetupLayout.diningEnabled` (owned): its seated pieces are tables.
-- `FloorElement.tableLabel`, `minCovers`, `maxCovers`, `onlineBookable` (owned, through `layout.save`; element ids are stable across saves).
-- `Item.bookingOpenThrough` (owned, plain-date key, nullable): the last date guests can book in this dining room.
+- A layout's seated pieces are tables once a sitting uses it; `FloorElement.label` is the table number.
+- `FloorElement.minCovers`, `maxCovers`, `onlineBookable` (owned, through `layout.save`; element ids are stable across saves).
 
 ## Items
 

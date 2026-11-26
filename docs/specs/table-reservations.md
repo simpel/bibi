@@ -3,8 +3,8 @@
 Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations). Click prototype: https://claude.ai/artifact/Pj5v22ngjq9kbuRX6DJCMv
 
 ## Words
-- **Dining room**: a room item (`SETUPS`) with at least one dining layout. UI: the item's name ("Kajen").
-- **Dining layout**: a `SetupLayout` with `diningEnabled`. Its seated pieces (`ROUND`, `RECT`, not fixed) are its **tables**.
+- **Dining room** (`DiningRoom`): a room item (`SETUPS`) set up for table booking: its slug in the booking page address and the moment bookings are open until. UI: the item's name ("Kajen").
+- **Tables**: the seated pieces (`ROUND`, `RECT`, not fixed) of a layout a sitting uses; a piece's `label` is its table number.
 - **Sitting** (`DiningService`, UI "Sitting", sv "Sittning"): when a dining room takes bookings, with which layout and at what pace ("Lunch", "Dinner").
 - **Combination** (`TableCombination`, sv "Kombination"): tables booked together for one party.
 - **Reservation** (sv "Bordsbokning"): one party at one or more tables for a time range.
@@ -12,7 +12,7 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 - **Booking page** (`BookingPage`, sv "Bokningssida"): the organization's public page for guests.
 
 ## Scenario
-1. The admin marks the "Dinner" layout of Kajen for dining, labels its 14 tables, joins 7 + 8 as "Long table" (6–8 people) and keeps 11 and 12 for walk-ins.
+1. The admin sets Kajen up for table booking, numbers the 14 tables of its "Dinner" layout, joins 7 + 8 as "Long table" (6–8 people) and keeps 11 and 12 for walk-ins.
 2. They create the sittings Lunch (Mon–Fri 11:30–14:00, layout Lunch) and Dinner (Tue–Sat 17:00–22:00, layout Dinner, 24 new guests per 15 minutes) and open bookings through 22 December.
 3. They set up the booking page (logo, cover, accent colour, texts), publish it and paste the embed code on the venue's website.
 4. A guest picks 2 people, Friday 4 December, 19:30, enters name, phone and email and one gluten-free, and books. Bibi assigns table 3 and emails a confirmation with a manage link.
@@ -23,10 +23,10 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 ## Rules
 ### Opening bookable time
 - A slot is offered online only when all hold:
-  - inside a sitting on that weekday, within its season (`validFrom`/`validUntil`, inclusive local dates), and between its first and last booking time;
+  - inside a sitting on that weekday, within its season (`validFrom`/`validUntil`, instants set from local dates at the edge), and between its first and last booking time;
   - not on a closed `DiningServiceException` for that sitting and date, nor on a venue or room `HoursException` closed all day;
-  - on or before the room's `bookingOpenThrough` (null = only the sitting's `maxDaysAhead` limits);
-  - at least `minHoursAhead` from now and at most `maxDaysAhead` days ahead;
+  - before the dining room's `openUntil` (an instant: the end of the last open day in the room's zone; null = only the sitting's `maxDaysAhead` limits);
+  - at least `minMinutesAhead` from now and at most `maxDaysAhead` days ahead;
   - the party size is at most `maxOnlineParty`;
   - the covers starting in that slot plus the party stay within `maxCoversPerSlot` (null = no pace limit);
   - no HARD hold or manual block on the room overlaps `[start, start + turn time)`;
@@ -38,7 +38,7 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 
 ### Tables and combinations
 - A table fits a party when `minCovers ≤ party ≤ maxCovers` (`maxCovers` null = its seat count, `minCovers` null = 1).
-- A combination is two or more tables of the same layout, with its own `minCovers`/`maxCovers` (default: 1 and the sum of seats) and `bookable` (online). A table may be in several combinations.
+- A combination is two or more tables of the same layout, with its own `minCovers`/`maxCovers` (default: 1 and the sum of seats) and `onlineBookable`. A table may be in several combinations.
 - Assignment: the smallest fitting free single table first (fewest wasted seats, then lowest label), then the smallest fitting free combination. Staff can choose any free tables.
 - `onlineBookable` false on a table: guests never get it, alone or in a combination; staff can.
 - Element ids survive `layout.save`. Deleting a table from a layout is refused (`CONFLICT`) while it has upcoming active holds; past holds keep pointing at it.
@@ -54,6 +54,7 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 - An order line on a dining room that overlaps active reservations is refused (`CONFLICT`, `RESERVATIONS_IN_ROOM` with count and people), in create, update and planning. Both paths take `pg_advisory_xact_lock` on the room.
 
 ### Reservation lifecycle
+- The lifecycle is `state`; `status` archives the row as everywhere.
 - `PENDING_PAYMENT` → `BOOKED` (deposit paid) or released after 15 minutes (`CANCELLED`, reason `PAYMENT_TIMEOUT`).
 - `BOOKED` → `SEATED` → `COMPLETED`; `BOOKED` → `NO_SHOW`; `BOOKED`/`PENDING_PAYMENT` → `CANCELLED`. `SEATED` may go back to `BOOKED` (undo) the same day.
 - `source`: `STAFF`, `WEB` or `API`. `cancelledBy`: `GUEST` or `STAFF`.
@@ -66,12 +67,13 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 - 90 days after `endsAt` a nightly job erases name, phone, email and note (`erasedAt` set); counts, times and tables remain for statistics.
 
 ### Booking page
-- One `BookingPage` per organization: `slug` (unique, lowercase), logo, cover, `accentColor` (refused when contrast against white is under 4.5:1), intro and policy per locale, contact phone and email, `embedOrigins` (https origins), `published`.
-- Public URL `/book/<slug>/<room-slug>`; a room appears when it has an active sitting. The manage page is `/book/manage/<token>`.
+- One `BookingPage` per organization: `slug` (unique, lowercase), logo and cover (storage keys), `accentColor` (refused when contrast against white is under 4.5:1), intro and policy keyed by locale, contact phone and email, `embedOrigins` (https origins), `published`.
+- Public URL `/book/<slug>/<room-slug>` (the dining room's slug); a room appears when it has an active sitting. The manage page is `/book/manage/<token>`.
 - Fixed for everyone: layout, fonts, "Powered by Bibi".
 
 ## Operations
-- Staff, every surface (parity): `reservation.list({ roomItemId?, from, to })`, `get`, `create`, `update`, `cancel`, `seat`, `unseat`, `complete`, `markNoShow`, `availability({ roomItemId, date, partySize })` (`reservation:read|write`); `tableBlock.list|create|delete` (`reservation:write`); `diningService.list|get|create|update|archive`, `diningServiceException.list|set|delete`, `tableCombination.list|save`, `bookingPage.get|update` (`diningSetup:read|write`). Table fields go through `layout.save`; `bookingOpenThrough` through `item.update`.
+- Staff, every surface (parity): `reservation.list({ roomItemId?, from, to })`, `get`, `create`, `update`, `cancel`, `seat`, `unseat`, `complete`, `markNoShow`, `availability({ roomItemId, date, partySize })` (`reservation:read|write`); `tableBlock.list|create|delete` (`reservation:write`); `diningRoom.list|get|set`, `diningService.list|get|create|update|archive`, `diningServiceException.list|set|delete`, `tableCombination.list|save`, `bookingPage.get|update` (`diningSetup:read|write`). Table fields (`label`, `minCovers`, `maxCovers`, `onlineBookable`) go through `layout.save`.
+- Permissions: `reservation` (bookings group; every member writes, managers and admins archive) and `diningSetup` (setup group; managers and admins).
 - Public, `systemOnly`, outside the registry: `reservation.publicRooms({ slug })`, `publicAvailability`, `publicCreate`, `publicGet({ token })`, `publicChange`, `publicCancel`.
 - Public API `/api/public/v1`: `GET rooms`, `GET availability`, `POST reservations` with a publishable key (`bib_pub_…`, header `X-Bibi-Key`); `GET|PATCH|DELETE reservations/{token}` with the guest token.
 

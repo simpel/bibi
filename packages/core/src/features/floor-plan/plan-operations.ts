@@ -132,7 +132,12 @@ export const saveFloorPlan = defineOperation({
           data: { ...data, itemId, organizationId: context.organizationId },
         });
     const placed = snapOpenings({ elements, kinds: kinds.value, outline: shape.outline });
-    await replaceElements({ context, parent: { floorPlanId: plan.id }, elements: placed });
+    const saved = await replaceElements({
+      context,
+      parent: { floorPlanId: plan.id },
+      elements: placed,
+    });
+    if (!saved.ok) return saved;
     const after = await readPlan({ context, itemId });
     const exits = checkExitsClear({
       fixed: after.elements,

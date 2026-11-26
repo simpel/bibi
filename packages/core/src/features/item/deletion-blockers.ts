@@ -3,7 +3,8 @@ import { EITHER_STATUS, type KindInput } from "../../archive/lifecycle-kind";
 
 /**
  * What still refers to an item (ADR 0118), archived or not: lines and their snapshots (quotes,
- * order versions), allocations of it as a unit, packages, tasks, and other items that use it as a
+ * order versions), allocations of it as a unit, packages, tasks, table reservations and sittings,
+ * and other items that use it as a
  * part, an option or a demand target. Its own parts, options and demands go with it.
  */
 export function itemDeleteBlockers({ context, id }: KindInput) {
@@ -37,6 +38,14 @@ export function itemDeleteBlockers({ context, id }: KindInput) {
       countBlocker({
         count: db.taskItem.count({ where: { itemId: id } }),
         ...{ feature: "task", path: "tasks", what: "tasks" },
+      }),
+      countBlocker({
+        count: db.reservation.count({ where: { roomItemId: id, status: EITHER_STATUS } }),
+        ...{ feature: "reservation", path: "reservations", what: "table reservations" },
+      }),
+      countBlocker({
+        count: db.diningService.count({ where: { roomItemId: id, status: EITHER_STATUS } }),
+        ...{ feature: "diningSetup", path: "sittings", what: "sittings" },
       }),
       countBlocker({
         count: Promise.all([

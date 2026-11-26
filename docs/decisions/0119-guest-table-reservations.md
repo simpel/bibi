@@ -26,11 +26,11 @@
      - the slot interval and turn times by party size,
      - a covers limit per slot,
      - the booking window, the change cutoff, the largest online party, and deposit rules.
-   - The room's `bookingOpenThrough` date releases dates to guests. Nothing after it is bookable online.
+   - The dining room's `openUntil` releases dates to guests. Nothing after it is bookable online.
    - A dated `DiningServiceException` closes a service or overrides its hours, layout or covers for one day. Venue and item `HoursException` closed days apply too.
    - Online availability treats hours and services as strict. Staff may book outside them with a warning, as ADR 0064 rule 11 allows.
 5. **Tables are elements of a dining layout.**
-   - A layout marked for dining makes its seated elements tables. Each table has a label, cover limits and an `onlineBookable` flag.
+   - The seated elements of a layout a sitting uses are its tables. Each table has a label, cover limits and an `onlineBookable` flag.
    - Element ids become stable across `layout.save`: it upserts them instead of replacing them.
    - A `TableCombination` joins tables for a larger party. A table that can be split is drawn as its pieces plus their combination.
 6. **Bookings and blocks share one table-hold row.**
@@ -66,11 +66,11 @@
 
 ## Consequences
 - The root `CLAUDE.md` product line "Guests and customers never use the app" changes to allow table booking.
-- **New models:** `BookingPage`, `DiningService`, `DiningServiceException`, `Reservation`, `TableHold`, and `TableCombination` with its members.
-- **Changed models:**
-  - `SetupLayout` gains a dining flag.
-  - `FloorElement` gains a table label, cover limits and `onlineBookable`.
-  - The room item gains `bookingOpenThrough`.
+- **New models:** `BookingPage`, `DiningRoom`, `DiningService`, `DiningServiceException`, `Reservation` with `ReservationRequirement`, `TableHold`, and `TableCombination` with its members.
+- **Changed models** (as built, 2026-11-26):
+  - A layout's seated pieces become tables once a sitting uses it; no dining flag.
+  - `FloorElement` gains cover limits and `onlineBookable`; its existing `label` is the table number.
+  - A `DiningRoom` row per room holds its slug and `openUntil` (an instant, ADR 0064), instead of a column on the item.
 - Bibi sends mail to customers for the first time: confirmation, change, cancel and a reminder. The mail uses the booking page's logo and accent colour.
 - The parity test gets a public exemption list. `packages/api` gets a public router, publishable keys and an IP rate limit.
 - **Open for the accountant:** whether a kept no-show deposit is revenue or a fee (`docs/specs/payments.md`).

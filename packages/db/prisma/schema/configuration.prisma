@@ -159,6 +159,7 @@ model VocabularyValue {
   requirements   Requirement[]
   /// Demands whose pool units must carry this value (ADR 0059).
   demandTags     ItemDemandTag[]
+  reservationRequirements ReservationRequirement[]
 
   @@unique([id, organizationId])
   @@index([organizationId, vocabularyId, status])

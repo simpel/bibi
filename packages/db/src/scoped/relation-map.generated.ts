@@ -143,6 +143,10 @@ export const RELATIONS: RelationMap = {
       "target": "Task",
       "list": true
     },
+    "reservations": {
+      "target": "Reservation",
+      "list": true
+    },
     "record": {
       "target": "Record",
       "list": false
@@ -193,6 +197,10 @@ export const RELATIONS: RelationMap = {
       "target": "Task",
       "list": true
     },
+    "reservations": {
+      "target": "Reservation",
+      "list": true
+    },
     "record": {
       "target": "Record",
       "list": false
@@ -214,6 +222,40 @@ export const RELATIONS: RelationMap = {
     "deductions": {
       "target": "InvoiceDeposit",
       "list": true
+    }
+  },
+  "DiningRoom": {
+    "item": {
+      "target": "Item",
+      "list": false
+    }
+  },
+  "DiningService": {
+    "room": {
+      "target": "Item",
+      "list": false
+    },
+    "layout": {
+      "target": "SetupLayout",
+      "list": false
+    },
+    "exceptions": {
+      "target": "DiningServiceException",
+      "list": true
+    },
+    "reservations": {
+      "target": "Reservation",
+      "list": true
+    }
+  },
+  "DiningServiceException": {
+    "service": {
+      "target": "DiningService",
+      "list": false
+    },
+    "layout": {
+      "target": "SetupLayout",
+      "list": false
     }
   },
   "Embedding": {
@@ -350,6 +392,14 @@ export const RELATIONS: RelationMap = {
     "kind": {
       "target": "FloorElementKind",
       "list": false
+    },
+    "combinations": {
+      "target": "TableCombinationMember",
+      "list": true
+    },
+    "tableHolds": {
+      "target": "TableHold",
+      "list": true
     }
   },
   "FloorElementKind": {
@@ -531,6 +581,18 @@ export const RELATIONS: RelationMap = {
     },
     "occupancies": {
       "target": "Occupancy",
+      "list": true
+    },
+    "diningRoom": {
+      "target": "DiningRoom",
+      "list": false
+    },
+    "diningServices": {
+      "target": "DiningService",
+      "list": true
+    },
+    "reservations": {
+      "target": "Reservation",
       "list": true
     },
     "lines": {
@@ -1073,6 +1135,10 @@ export const RELATIONS: RelationMap = {
       "target": "Task",
       "list": true
     },
+    "reservations": {
+      "target": "Reservation",
+      "list": true
+    },
     "runSheets": {
       "target": "RunSheet",
       "list": true
@@ -1544,6 +1610,46 @@ export const RELATIONS: RelationMap = {
       "list": false
     }
   },
+  "Reservation": {
+    "room": {
+      "target": "Item",
+      "list": false
+    },
+    "service": {
+      "target": "DiningService",
+      "list": false
+    },
+    "customer": {
+      "target": "Customer",
+      "list": false
+    },
+    "contact": {
+      "target": "Contact",
+      "list": false
+    },
+    "order": {
+      "target": "Order",
+      "list": false
+    },
+    "tables": {
+      "target": "TableHold",
+      "list": true
+    },
+    "requirements": {
+      "target": "ReservationRequirement",
+      "list": true
+    }
+  },
+  "ReservationRequirement": {
+    "reservation": {
+      "target": "Reservation",
+      "list": false
+    },
+    "vocabularyValue": {
+      "target": "VocabularyValue",
+      "list": false
+    }
+  },
   "Responsibility": {
     "entityTypes": {
       "target": "ResponsibilityEntityType",
@@ -1732,6 +1838,18 @@ export const RELATIONS: RelationMap = {
     "templateLines": {
       "target": "OrderTemplateLine",
       "list": true
+    },
+    "diningServices": {
+      "target": "DiningService",
+      "list": true
+    },
+    "diningServiceExceptions": {
+      "target": "DiningServiceException",
+      "list": true
+    },
+    "tableCombinations": {
+      "target": "TableCombination",
+      "list": true
     }
   },
   "StatusStateRule": {
@@ -1745,6 +1863,36 @@ export const RELATIONS: RelationMap = {
     },
     "state": {
       "target": "ItemState",
+      "list": false
+    }
+  },
+  "TableCombination": {
+    "layout": {
+      "target": "SetupLayout",
+      "list": false
+    },
+    "members": {
+      "target": "TableCombinationMember",
+      "list": true
+    }
+  },
+  "TableCombinationMember": {
+    "combination": {
+      "target": "TableCombination",
+      "list": false
+    },
+    "element": {
+      "target": "FloorElement",
+      "list": false
+    }
+  },
+  "TableHold": {
+    "element": {
+      "target": "FloorElement",
+      "list": false
+    },
+    "reservation": {
+      "target": "Reservation",
       "list": false
     }
   },
@@ -1869,6 +2017,10 @@ export const RELATIONS: RelationMap = {
     },
     "demandTags": {
       "target": "ItemDemandTag",
+      "list": true
+    },
+    "reservationRequirements": {
+      "target": "ReservationRequirement",
       "list": true
     }
   }

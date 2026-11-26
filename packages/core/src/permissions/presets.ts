@@ -21,6 +21,9 @@ const MANAGER_FEATURES: readonly Feature[] = [
   "program",
   "comment",
   "task",
+  // Table reservations and the dining setup (ADR 0119): a restaurant manager opens dates.
+  "reservation",
+  "diningSetup",
   "customer",
   "quote",
   "payment",
@@ -53,6 +56,9 @@ const COMMENT_WORK = grantAll({ features: ["comment"], only: "write" });
 /** Everyone creates and works tasks (ADR 0117); archiving one is `delete`. */
 const TASK_WORK = grantAll({ features: ["task"], only: "write" });
 
+/** Floor staff take phone bookings, seat parties and block tables (ADR 0119). */
+const RESERVATION_WORK = grantAll({ features: ["reservation"], only: "write" });
+
 const member = unionPermissions({
   sets: [
     grantAll({
@@ -62,6 +68,7 @@ const member = unionPermissions({
     INBOX_WORK,
     COMMENT_WORK,
     TASK_WORK,
+    RESERVATION_WORK,
   ],
 });
 

@@ -2,7 +2,7 @@
  * Org-scoped models that are neither soft-deleted nor append-only, so hard deletion is permitted:
  * replacement sets owned by a parent and audited on it (ItemSetup, FloorElement, ItemPart, ItemCustomisationGroup,
  * ItemCustomisationOption, ItemDemandTag, BoardPhaseStatus, BoardShare (ADR 0111), HoursDay, HoursException, MemberProfileItem, OrderStatusTransition, OrderStatusGate, ItemStateTransition, OrderTemplateLine,
- * OrderTemplateLineOption, PriceListItem, TaskItem (ADR 0120), RevenueAccount (ADR 0077), OrderLine, OrderVersionLine (ADR 0116), InvoiceDeposit (ADR 0090), the id lists of responsibilities and run sheet
+ * OrderTemplateLineOption, PriceListItem, TaskItem (ADR 0120), DiningServiceException, TableCombinationMember and ReservationRequirement (ADR 0119), RevenueAccount (ADR 0077), OrderLine, OrderVersionLine (ADR 0116), InvoiceDeposit (ADR 0090), the id lists of responsibilities and run sheet
  * definitions and
  * RecordLink, ADR 0056), status grid cells (StatusStateRule, audited on itself), the derived
  * search index (Embedding), Better Auth membership rows (Member; Invitation has its own
@@ -29,6 +29,9 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "OrderTemplateLineOption",
   "PriceListItem",
   "TaskItem",
+  "DiningServiceException",
+  "TableCombinationMember",
+  "ReservationRequirement",
   "OrderLine",
   "OrderVersionLine",
   "InvoiceDeposit",

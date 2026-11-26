@@ -40,6 +40,10 @@ const deleteBlockers = ({ context, id }: KindInput) => {
         count: db.task.count({ where: { ...where, status: EITHER_STATUS } }),
         ...{ feature: "task", path: "tasks", what: "tasks" },
       }),
+      countBlocker({
+        count: db.reservation.count({ where: { ...where, status: EITHER_STATUS } }),
+        ...{ feature: "reservation", path: "reservations", what: "table reservations" },
+      }),
     ],
   });
 };

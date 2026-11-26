@@ -37,6 +37,8 @@ export const FEATURE_SPECS = {
   comment: { group: "bookings", actions: all },
   // Tasks around a customer (ADR 0117): site visits, tastings, deadlines; `delete` archives.
   task: { group: "bookings", actions: all },
+  // Table reservations and blocks (ADR 0119); `delete` archives a reservation.
+  reservation: { group: "bookings", actions: all },
   customer: { group: "selling", actions: all },
   quote: { group: "selling", actions: all },
   // Refunds give money back (ADR 0100): their own action, managers and admins by preset.
@@ -53,6 +55,8 @@ export const FEATURE_SPECS = {
   board: { group: "setup", actions: all },
   template: { group: "setup", actions: all },
   responsibility: { group: "setup", actions: all },
+  // Table booking setup (ADR 0119): dining rooms, sittings and exceptions, combinations, the booking page.
+  diningSetup: { group: "setup", actions: all },
   member: { group: "organization", actions: all },
   apiKey: { group: "organization", actions: all },
   paymentAccount: { group: "organization", actions: noDelete },

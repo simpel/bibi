@@ -16,7 +16,7 @@ const anyStatus = ({ customerId }: { customerId: string }) => ({
   status: EITHER_STATUS,
 });
 
-/** Its orders, tasks, own bundles and price lists, archived or not: they go first. */
+/** Its orders, tasks, table reservations, own bundles and price lists, archived or not. */
 const deleteBlockers = ({ context, id }: KindInput) => {
   const where = anyStatus({ customerId: id });
   return allBlockers({
@@ -32,6 +32,12 @@ const deleteBlockers = ({ context, id }: KindInput) => {
         feature: "task",
         path: "tasks",
         what: "tasks",
+      }),
+      countBlocker({
+        count: context.db.reservation.count({ where }),
+        feature: "reservation",
+        path: "reservations",
+        what: "table reservations",
       }),
       countBlocker({
         count: context.db.item.count({ where }),

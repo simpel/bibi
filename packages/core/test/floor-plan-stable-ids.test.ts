@@ -1,3 +1,4 @@
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import {
   createItem,
@@ -8,7 +9,7 @@ import {
   listFloorElementKinds,
   saveLayout,
 } from "../src/index";
-import { testContext, unwrap } from "./helpers";
+import { errorCode, testContext, unwrap } from "./helpers";
 import { createRoomType } from "./item-helpers";
 
 type Ctx = { context: ExecuteContext };
@@ -124,5 +125,66 @@ describe("layout pieces keep their ids across saves (ADR 0119)", () => {
       elements: [{ id: stranger.id, kindId: b.roundId, xCm: 200, yCm: 200 }],
     });
     expect(otherLayout.elements[0]?.id).toBe(stranger.id);
+  });
+
+  it("refuses to remove a table with an upcoming hold and archives a broken combination", async () => {
+    const context = testContext();
+    const { layout, roundId } = await roomWithLayout({ context });
+    const saved = await save({
+      ...{ context, id: layout.id, version: 1 },
+      elements: [
+        { kindId: roundId, xCm: 200, yCm: 200, label: "1" },
+        { kindId: roundId, xCm: 500, yCm: 200, label: "2" },
+        { kindId: roundId, xCm: 800, yCm: 200, label: "3" },
+      ],
+    });
+    const [one, two, three] = saved.elements;
+    if (!one || !two || !three) throw new Error("pieces missing");
+    const { organizationId } = context;
+    const db = getDb();
+    const hour = 3_600_000;
+    const hold = ({ elementId, from }: { elementId: string; from: number }) =>
+      db.tableHold.create({
+        data: {
+          ...{ organizationId, elementId, kind: "BLOCK" as const },
+          startsAt: new Date(Date.now() + from),
+          endsAt: new Date(Date.now() + from + hour),
+        },
+      });
+    await hold({ elementId: one.id, from: 24 * hour });
+    await hold({ elementId: two.id, from: -48 * hour });
+    const combination = await db.tableCombination.create({
+      data: { organizationId, layoutId: layout.id, name: "Long table" },
+    });
+    await db.tableCombinationMember.createMany({
+      data: [two.id, three.id].map((elementId) => ({
+        ...{ organizationId, combinationId: combination.id, elementId },
+      })),
+    });
+    const keep = ({ piece }: { piece: typeof one }) => ({
+      id: piece.id,
+      kindId: roundId,
+      xCm: piece.xCm,
+      yCm: piece.yCm,
+    });
+
+    const refused = await execute({
+      operation: saveLayout,
+      input: {
+        id: layout.id,
+        expectedVersion: 2,
+        elements: [keep({ piece: two }), keep({ piece: three })],
+      },
+      context,
+    });
+    expect(errorCode({ result: refused })).toBe("CONFLICT");
+
+    // Table 2 only has a past hold: it goes, and the long table is left with one table.
+    await save({
+      ...{ context, id: layout.id, version: 2 },
+      elements: [keep({ piece: one }), keep({ piece: three })],
+    });
+    const after = await db.tableCombination.findUnique({ where: { id: combination.id } });
+    expect(after?.status).toBe("ARCHIVED");
   });
 });

@@ -68,6 +68,10 @@ model Item {
   allocations            LineAllocation[]           @relation("LineAllocationUnit")
   /// BOOKABLE: the periods the item is held (ADR 0022).
   occupancies            Occupancy[]
+  /// Table booking (ADR 0119): the room's booking settings, sittings and reservations.
+  diningRoom             DiningRoom?
+  diningServices         DiningService[]
+  reservations           Reservation[]
   /// BOOKABLE: the lines held in this item.
   lines                  Line[]
   /// Lines of predefined orders that use this item.

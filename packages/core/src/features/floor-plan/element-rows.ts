@@ -5,6 +5,7 @@ import { invalid } from "../../shared/errors";
 import type { PlacedElement } from "./footprint";
 import type { FloorElementDto, FloorElementInput } from "./schema";
 import { effectiveElement, isOpening } from "./seats";
+import { checkTablesFree, pruneCombinations } from "./table-guard";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -135,10 +136,15 @@ const elementData = ({ element, position }: { element: FloorElementInput; positi
 /**
  * Saves the parent's elements as a set (ADR 0119): a piece that names one of the parent's saved
  * ids keeps it (so a table keeps its bookings), the rest are created, and saved pieces left out
- * are deleted. An id of another parent, or one named twice, counts as a new piece. Join-like rows
- * without history; the parent carries the audit.
+ * are deleted, unless one is a table with an upcoming hold (CONFLICT). An id of another parent, or
+ * one named twice, counts as a new piece. Join-like rows without history; the parent carries the
+ * audit.
  */
-export async function replaceElements({ context, parent, elements }: ReplaceElementsInput) {
+export async function replaceElements({
+  context,
+  parent,
+  elements,
+}: ReplaceElementsInput): Promise<Result<true>> {
   const saved = await context.db.floorElement.findMany({ where: parent, select: { id: true } });
   const free = new Set(saved.map((row) => row.id));
   const kept: { id: string; position: number; element: FloorElementInput }[] = [];
@@ -147,8 +153,11 @@ export async function replaceElements({ context, parent, elements }: ReplaceElem
     if (element.id && free.delete(element.id)) kept.push({ id: element.id, position, element });
     else created.push({ position, element });
   });
-  if (free.size > 0) {
-    await context.db.floorElement.deleteMany({ where: { ...parent, id: { in: [...free] } } });
+  const removed = [...free];
+  const tables = await checkTablesFree({ context, ids: removed });
+  if (!tables.ok) return tables;
+  if (removed.length > 0) {
+    await context.db.floorElement.deleteMany({ where: { ...parent, id: { in: removed } } });
   }
   for (const { id, position, element } of kept) {
     await context.db.floorElement.updateMany({
@@ -165,4 +174,8 @@ export async function replaceElements({ context, parent, elements }: ReplaceElem
       })),
     });
   }
+  if ("setupLayoutId" in parent && removed.length > 0) {
+    await pruneCombinations({ context, layoutId: parent.setupLayoutId });
+  }
+  return ok({ value: true });
 }

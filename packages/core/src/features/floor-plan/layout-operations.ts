@@ -72,7 +72,12 @@ export const createLayout = defineOperation({
     if (source) {
       const pieces = await loadElements({ context, parent: { setupLayoutId: source.id } });
       const elements = pieces.map((element) => toInput({ element }));
-      await replaceElements({ context, parent: { setupLayoutId: layout.id }, elements });
+      const copied = await replaceElements({
+        context,
+        parent: { setupLayoutId: layout.id },
+        elements,
+      });
+      if (!copied.ok) return copied;
     }
     const after = await readChecked({ context, id: layout.id });
     if (after.ok) context.recordChange({ entityId: layout.id, after: after.value });
@@ -118,7 +123,8 @@ export const saveLayout = defineOperation({
       data: { ...changed, version: before.value.version + 1 },
     });
     if (moved.count === 0) return raceLost();
-    await replaceElements({ context, parent: { setupLayoutId: id }, elements });
+    const saved = await replaceElements({ context, parent: { setupLayoutId: id }, elements });
+    if (!saved.ok) return saved;
     const after = await readChecked({ context, id });
     if (after.ok) context.recordChange({ entityId: id, before: before.value, after: after.value });
     return after;

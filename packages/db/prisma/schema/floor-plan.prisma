@@ -99,13 +99,17 @@ model SetupLayout {
   lines          Line[]
   versionLines    OrderVersionLine[]
   templateLines  OrderTemplateLine[]
+  /// Table booking (ADR 0119): sittings using it, dated overrides and its table combinations.
+  diningServices          DiningService[]
+  diningServiceExceptions DiningServiceException[]
+  tableCombinations       TableCombination[]
 
   @@unique([id, organizationId])
   @@index([organizationId, itemId])
 }
 
 /// Floor element – one piece placed in a floor plan (fixed) or in a setup layout (ADR 0099).
-/// Replaced as a set by `floorPlan.save` and `setupLayout.save`, audited on its parent. Exactly
+/// Saved as a set by `floorPlan.save` and `layout.save`, keeping the ids sent (ADR 0119), audited on its parent. Exactly
 /// one parent (CHECK in the migration). Position is the centre in centimetres; size and seats are
 /// owned overrides, null = the kind's.
 model FloorElement {
@@ -130,6 +134,11 @@ model FloorElement {
   /// DOOR, WINDOW in a floor plan: an emergency exit whose no-block zone every layout keeps clear
   /// (ADR 0103, a hard limit).
   emergencyExit  Boolean          @default(false)
+  /// A seated piece of a layout a sitting uses is a table (ADR 0119): its party limits
+  /// (null = 1 and its seats) and whether guests may get it online. `label` is its number.
+  minCovers      Int?
+  maxCovers      Int?
+  onlineBookable Boolean          @default(true)
   label          String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
@@ -137,7 +146,10 @@ model FloorElement {
   floorPlan      FloorPlan?       @relation(fields: [floorPlanId, organizationId], references: [id, organizationId])
   setupLayout    SetupLayout?     @relation(fields: [setupLayoutId, organizationId], references: [id, organizationId])
   kind           FloorElementKind @relation(fields: [kindId, organizationId], references: [id, organizationId])
+  combinations   TableCombinationMember[]
+  tableHolds     TableHold[]
 
+  @@unique([id, organizationId])
   @@index([organizationId, floorPlanId])
   @@index([organizationId, setupLayoutId])
   @@index([organizationId, kindId])
