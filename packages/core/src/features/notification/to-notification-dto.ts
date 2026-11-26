@@ -13,7 +13,7 @@ type Viewer = { context: Pick<OperationContext, "permissions"> };
 function visibleData({ data, context }: Viewer & { data: NotificationData }): NotificationData {
   const { orderReference, orderTitle, fromStatus, toStatus, runSheetName, runSheetVersion } = data;
   const { amountMinor, currency, overpaid, actorName } = data;
-  const { lineId, lineName, excerpt, commentId, reply, taskTypeName, taskStartsAt } = data;
+  const { lineId, lineName, excerpt, commentId, reply, taskTypeName, taskDueAt } = data;
   return {
     ...(actorName !== undefined ? { actorName } : {}),
     ...(canView({ context, feature: "order" })
@@ -24,7 +24,7 @@ function visibleData({ data, context }: Viewer & { data: NotificationData }): No
     ...(canView({ context, feature: "comment" })
       ? { lineId, lineName, excerpt, commentId, reply }
       : {}),
-    ...(canView({ context, feature: "task" }) ? { taskTypeName, taskStartsAt } : {}),
+    ...(canView({ context, feature: "task" }) ? { taskTypeName, taskDueAt } : {}),
   };
 }
 

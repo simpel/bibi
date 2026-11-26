@@ -9,7 +9,7 @@ const dates = createDateTimeFormat({
   formats: { dateFormat: null, clockFormat: null },
 });
 const base = {
-  itemId: null,
+  itemIds: [],
   orderId: null,
   customerId: "c1",
   done: false,
@@ -17,17 +17,15 @@ const base = {
 };
 
 describe("toCalendarTasks", () => {
-  it("draws a meeting in the zone's wall time on its item's row", () => {
+  it("draws a task as a point at its due time in the zone's wall time", () => {
     const [entry] = toCalendarTasks({
       tasks: [
         {
           ...base,
           id: "t1",
           typeName: "Site visit",
-          shape: "MEETING",
-          startsAt: new Date("2026-12-03T13:00:00Z"),
-          endsAt: new Date("2026-12-03T14:00:00Z"),
-          itemId: "room",
+          dueAt: new Date("2026-12-03T13:00:00Z"),
+          itemIds: ["room", "hall"],
         },
       ],
       timeZone,
@@ -35,43 +33,31 @@ describe("toCalendarTasks", () => {
       taskHref: ({ id }) => `/tasks/${id}`,
     });
     expect(entry).toMatchObject({
-      shape: "meeting",
       date: "2026-12-03",
       start: "14:00",
-      end: "15:00",
       label: "Site visit",
-      assetId: "room",
+      assetIds: ["room", "hall"],
       href: "/tasks/t1",
     });
+    expect(entry).not.toHaveProperty("end");
   });
 
-  it("draws a deadline as a point and a meeting over midnight to the day's end", () => {
-    const [deadline, late] = toCalendarTasks({
+  it("puts a task due after local midnight on the next day and names no room without one", () => {
+    const [late] = toCalendarTasks({
       tasks: [
         {
           ...base,
           id: "d",
           typeName: "Headcount",
-          shape: "DEADLINE",
-          startsAt: new Date("2026-12-03T11:00:00Z"),
-          endsAt: null,
-        },
-        {
-          ...base,
-          id: "m",
-          typeName: "Tasting",
-          shape: "MEETING",
-          startsAt: new Date("2026-12-03T21:00:00Z"),
-          endsAt: new Date("2026-12-04T01:00:00Z"),
+          dueAt: new Date("2026-12-03T23:30:00Z"),
+          done: true,
         },
       ],
       timeZone,
       dates,
       taskHref: ({ id }) => id,
     });
-    expect(deadline).toMatchObject({ shape: "deadline", start: "12:00" });
-    expect(deadline?.end).toBeUndefined();
-    expect(deadline?.assetId).toBeUndefined();
-    expect(late).toMatchObject({ start: "22:00", end: "24:00" });
+    expect(late).toMatchObject({ date: "2026-12-04", start: "00:30", done: true });
+    expect(late?.assetIds).toBeUndefined();
   });
 });

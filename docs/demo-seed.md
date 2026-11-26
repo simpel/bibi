@@ -53,7 +53,7 @@ The checks that run today:
 - **Comments (ADR 0115):** `seed-comments.ts`: the first seeded staff member comments on the first order with a line that goes on a run sheet, once on the whole order and once on that line, and a second member replies to the order comment mentioning its author (a `COMMENT_MENTIONED` notification), before the run sheets are generated. `checkDemoComments` (`comment-checks.ts`) asserts the line comment is on the order's current run sheet.
 - **Order versions (ADR 0116):** `checkDemoVersions` (`version-checks.ts`): every order's newest version holds the order as it is now (versions are captured by the same operations that seed the lines), every sent quote points at a version of its own order, and L4, changed after its quote (`changeAfterQuote`), no longer equals that quote's version; no data of its own.
 - **Needs you (ADR 0110, spec: home):** `checkDemoNeedsYou` (`needs-you-checks.ts`): read as each member, `myWork.tasks` shows at least two kinds of task in an organization with orders, from the orders' assignees, run sheets, holds, quotes, messages, invoices and tasks already seeded; no data of its own.
-- **Tasks (ADR 0117):** `checkDemoTasks` (`task-checks.ts`), see Tasks under Lindholmen. The `records` and `record-relations` reconciliations cover tasks too.
+- **Tasks (ADR 0117, 0120):** `checkDemoTasks` (`task-checks.ts`), see Tasks under Lindholmen. The `records` and `record-relations` reconciliations cover tasks too, and `task-holds` their room holds.
 - **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.
 - **Permission overrides (ADR 0050):** `checkDemoPermissions` (`permission-checks.ts`) asserts that every documented override is stored for its member (via `permission.get`). Lindholmen has two: Maria Holm (`manager`) has `payment:read` denied, so she handles bookings but does not see money; Peter Sjoberg (`member`) has `item:write` and `item:write` allowed, so he reads everything and also keeps the catalogue up to date. Seeded with `permission.update` in `seed-roles.ts` from the `overrides` of the user in `data/lindholmen/lindholmen.ts`.
 - **Part 2 (configuration):**
@@ -355,17 +355,20 @@ The main assignee (A) and followers (F) are given by first name (ADR 0034): the 
 
 **Note on L3:** the nut allergy hits Chocolate fondant, which has the alternatives Cloudberry parfait and Lemon sorbet. The result is "may contain" and no blocking (check 4). The replacement is made on the order's copy of the package, so the catalog package is not changed (snapshot, ADR 0021). L3 thus also shows that a package can be adapted for a single occasion.
 
-## Tasks (ADR 0117)
+## Tasks (ADR 0117, 0120)
 
-Created after the orders and their comments with `task.create` as SYSTEM (`seed-tasks.ts`, data in `data/lindholmen/tasks.ts`), each with the customer's first contact and an explicit assignee, who is told (`ASSIGNED` with the task as subject). Times are local in the organization's zone. Vingaleden has no task types and no tasks.
+Created after the orders and their comments with `task.create` as SYSTEM (`seed-tasks.ts`, data in `data/lindholmen/tasks.ts`), a task with a customer with its first contact, each with an explicit assignee, who is told (`ASSIGNED` with the task as subject). Times are local in the organization's zone. Lindholmen's task types are Site visit, Final headcount due and To-do (no shapes, ADR 0120). The prebook and book lie beyond the busy calendar (D+30), on days no fixture uses their rooms. Vingaleden has no task types and no tasks.
 
-| Type | Customer | When | Item | Order | Assignee | State |
+| Type | Customer | Due | Rooms | Order | Assignee | State |
 |---|---|---|---|---|---|---|
-| Site visit | Kvarnby Design | next Thursday after D (D+1 to D+7) 14–15 | Vinga (auditorium) | – | Erik | open: a prospect before any order |
-| Site visit | Västra Sjukvårdsregionen | D−14 10–11 | Vinga (auditorium) | L3 | Johan | done D−14 11:00, marked done by Johan himself (`task.complete` as him) |
+| Site visit | Kvarnby Design | next Thursday after D (D+1 to D+7) 14:00 | Vinga (auditorium), related | – | Erik | open: a prospect before any order |
+| Site visit | Västra Sjukvårdsregionen | D−14 10:00 | Vinga (auditorium), related | L3 | Johan | done D−14 10:00, marked done by Johan himself (`task.complete` as him) |
 | Final headcount due | Göta Advokatbyrå | D−1 12:00 | – | L4 | Anna | open and overdue: Anna's `TASK_DUE` need in LATE |
+| Site visit | Hisingen Energi | D+3 10:00 | Öckerö, prebooked D+35 08–17 (soft hold) | – | Erik | open |
+| Site visit | Älvstrand Tech | D+5 13:00 | Knippla (workshop), booked D+38 09–16 (hard hold) | – | Johan | open |
+| To-do | – | – | – | – | Anna | open, no customer and no due time |
 
-`checkDemoTasks` (`task-checks.ts`): the organization has exactly the data files' tasks in order, each task with an `order` is linked, the done one has its assignee as `doneById`, and each open task past its end or due time is its assignee's `TASK_DUE:<taskId>` need in LATE (`myWork.tasks` read as that member).
+`checkDemoTasks` (`task-checks.ts`): the organization has exactly the data files' tasks in order, each task with an `order` is linked, the done one has its assignee as `doneById`, each open task past its due time is its assignee's `TASK_DUE:<taskId>` need in LATE (`myWork.tasks` read as that member), and there is one active `SOFT` task hold per prebooked room and one `HARD` per booked room of the open tasks. The `task-holds` reconciliation compares every task hold with the tasks' rooms.
 
 ## Busy calendar (generated, #488)
 

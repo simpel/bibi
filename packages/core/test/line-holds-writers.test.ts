@@ -6,11 +6,13 @@ const SRC = join(import.meta.dirname, "../src");
 
 /**
  * The only core files that may write `Occupancy` (ADR 0053): the manual-block operations, the
- * delete of an archived item with its manual blocks (ADR 0118), and the organization delete behind
- * the demo reset and `cleanup:test-orgs`.
+ * one writer of task holds (`syncTaskHolds`, ADR 0120), the delete of an archived item with its
+ * manual blocks (ADR 0118), and the organization delete behind the demo reset and
+ * `cleanup:test-orgs`.
  */
 const ALLOWED = new Set([
   "features/occupancy/write-operations.ts",
+  "features/task/sync-task-holds.ts",
   "features/item/deletion-kind.ts",
   "seed/demo/delete-organizations.ts",
 ]);
@@ -25,7 +27,7 @@ const filesUnder = ({ dir }: { dir: string }): string[] =>
   });
 
 describe("line holds have one writer (ADR 0053)", () => {
-  it("core writes occupancy only in the manual-block operations", () => {
+  it("core writes occupancy only in the manual-block operations and syncTaskHolds", () => {
     const writers = filesUnder({ dir: SRC })
       .filter((path) => path.endsWith(".ts"))
       .filter((path) => WRITE.test(readFileSync(path, "utf8")))

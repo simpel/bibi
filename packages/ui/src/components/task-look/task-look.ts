@@ -1,14 +1,8 @@
 import { cva } from "class-variance-authority";
-import { CalendarClockIcon, FlagIcon, type LucideIcon } from "lucide-react";
+import { ClipboardCheckIcon } from "lucide-react";
 
-/** A task is a meeting (it takes time) or a deadline (a point in time). Spec: tasks. */
-export type TaskShape = "meeting" | "deadline";
-
-/** The fixed icon of each shape, the same wherever a task shows. */
-export const TASK_ICONS: Record<TaskShape, LucideIcon> = {
-  meeting: CalendarClockIcon,
-  deadline: FlagIcon,
-};
+/** The one icon of a task, the same wherever a task shows. A task has no shape (ADR 0120). */
+export const TASK_ICON = ClipboardCheckIcon;
 
 /**
  * A task's surface: never filled, a solid hairline in the task colour. Dashed is taken: it means

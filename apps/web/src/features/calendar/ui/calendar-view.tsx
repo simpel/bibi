@@ -14,6 +14,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Suspense, use, useCallback, useEffect, useMemo, useState } from "react";
 import { useAssistant } from "@/features/assistant/state/assistant-context";
 import { OrderSheet } from "@/features/order/sheet/ui/order-sheet";
+import { useRouter } from "@/lib/navigation";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { AppCalendarLegend } from "./app-calendar-legend";
 import { type PickedSlot, SlotCreateDialog } from "./slot-create-dialog";
@@ -34,11 +35,12 @@ export type CalendarViewProps = {
   openingHours?: CalendarWindow | undefined;
 };
 
-/** The states on screen once each, for the legend; manual blocks get their own entry. */
+/** The states on screen once each, for the legend; manual blocks get their own entry. A task's hold is shown by the task entry. */
 function legendOf({ bookings }: { bookings: readonly AssetBooking[] }) {
   const states = new Map<string, CalendarState>();
   let blocked: CalendarState | undefined;
   for (const booking of bookings) {
+    if (booking.taskId) continue;
     if (!booking.order) blocked = booking.state;
     else states.set(`${booking.state.name}:${booking.state.color}`, booking.state);
   }
@@ -77,12 +79,13 @@ type CalendarLoad = {
 
 type OnRowsInput = { tasks: readonly CalendarTaskEntry[]; assets: readonly CalendarAsset[] };
 
-/** A task is echoed on its item's row only when that item is a row of the calendar. */
+/** A task is echoed on a room's row only when that room is a row of the calendar. */
 const onRows = ({ tasks, assets }: OnRowsInput): CalendarTaskEntry[] => {
   const rows = new Set(assets.map((asset) => asset.id));
-  return tasks.map(({ assetId, ...task }) =>
-    assetId && rows.has(assetId) ? { ...task, assetId } : task,
-  );
+  return tasks.map(({ assetIds, ...task }) => {
+    const shown = assetIds?.filter((id) => rows.has(id)) ?? [];
+    return shown.length > 0 ? { ...task, assetIds: shown } : task;
+  });
 };
 
 type SeedBookingsProps = {
@@ -118,6 +121,7 @@ export function CalendarView(props: CalendarViewProps) {
   const locale = useLocale();
   const format = useDateTimeFormat();
   const { prefill } = useAssistant();
+  const router = useRouter();
   const loaded = useLoadedBookings({ range });
   const { bookings, values, failed, onRangeChange, seed } = loaded;
   const tasks = useMemo(() => onRows({ tasks: loaded.tasks, assets }), [loaded.tasks, assets]);
@@ -144,12 +148,19 @@ export function CalendarView(props: CalendarViewProps) {
           initialRange={range}
           {...(openingHours ? { openingHours } : {})}
           selectedId={open?.id}
-          onOpen={setOpen}
+          // A task's room hold opens its task page; an order's line opens the order beside the calendar.
+          onOpen={(booking) =>
+            booking.taskId && booking.href ? router.push(booking.href) : setOpen(booking)
+          }
           onAdd={setPicked}
         />
         <SlotCreateDialog slot={picked} onClose={() => setPicked(null)} onAsk={ask} />
         <OrderSheet orderId={open?.orderId ?? null} onClose={() => setOpen(null)} />
-        <CalendarFooter bookings={bookings} failed={failed} withTasks={tasks.length > 0} />
+        <CalendarFooter
+          bookings={bookings}
+          failed={failed}
+          withTasks={tasks.length > 0 || bookings.some((booking) => booking.taskId)}
+        />
       </div>
     </CalendarLabelsProvider>
   );

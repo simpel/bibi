@@ -94,7 +94,8 @@
         "note": "Note",
         "taskId": "Task (id)",
         "taskIds": "Tasks to link",
-        "taskShape": "Task shape",
+        "dueAt": "Due",
+        "items": "Rooms",
         "inboundMessageId": "Inbox message",
         "parentLineId": "Add-on to",
         "statusId": "Status (id)",
@@ -811,7 +812,7 @@
         "done": "Done",
         "open": "Not done yet",
         "linked": "Linked to an order",
-        "itemBusy": "The item is busy then",
+        "noDueTime": "No due time",
         "archived": "Deleted"
       }
     },

@@ -9,4 +9,4 @@ export const TASK_OPERATION_KEYS = [
 ] as const;
 
 /** Task input fields with a localized label in `assistant.approval.fields`. */
-export const TASK_FIELD_KEYS = ["endsAt", "note", "taskId", "taskIds", "taskShape"] as const;
+export const TASK_FIELD_KEYS = ["dueAt", "endsAt", "items", "note", "taskId", "taskIds"] as const;

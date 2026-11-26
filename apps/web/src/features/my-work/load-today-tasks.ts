@@ -39,10 +39,11 @@ type Loaded = NonNullable<Awaited<ReturnType<typeof loadTodayTasks>>>;
 
 export type TodayTasksOfInput = { loaded: Loaded; today: string; timeZone: string };
 
-/** The tasks that start (or are due) on `today` in the timeline's zone. */
+/** The tasks due on `today` in the timeline's zone; one without a due time is never on the timeline. */
 export function todayTasksOf({ loaded, today, timeZone }: TodayTasksOfInput): Loaded["tasks"] {
   return loaded.tasks.filter(
     (task) =>
-      toIsoDate({ date: toZonedParts({ instant: task.startsAt, timeZone }).date }) === today,
+      task.dueAt !== null &&
+      toIsoDate({ date: toZonedParts({ instant: task.dueAt, timeZone }).date }) === today,
   );
 }

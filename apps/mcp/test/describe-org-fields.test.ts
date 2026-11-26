@@ -34,7 +34,6 @@ const type = ({ ...over }: Partial<EntityTypeDto>): EntityTypeDto => ({
   teardownMinutes: null,
   resourceKind: "EQUIPMENT",
   buyerKind: null,
-  taskShape: null,
   fields: [],
   status: "ACTIVE",
   createdAt: now,

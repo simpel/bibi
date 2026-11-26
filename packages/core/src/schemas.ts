@@ -128,7 +128,7 @@ export * from "./features/settings/schema";
 export * from "./features/skill/schema";
 export * from "./features/status-grid/schema";
 export * from "./features/task/schema";
-export * from "./features/task/task-shape";
+export * from "./features/task/task-item-schema";
 export * from "./features/user-preference/schema";
 export * from "./features/user-settings/schema";
 export * from "./features/venue/schema";

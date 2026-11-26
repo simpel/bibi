@@ -123,6 +123,7 @@ function Bookings({ bookings, window, lane, selectedId, onOpen, withHours, asset
         bookingClassName="inset-y-0"
         bufferClassName="inset-y-2"
         selected={booking.id === selectedId}
+        task={Boolean(booking.taskId)}
         card={<BookingCard booking={booking} bookings={bookings} onOpen={onOpen} asset={asset} />}
         // A clash card holds several bookings: a plain frame, its red header says the clash.
         cardSurface={clashesWith({ line: booking, lines: bookings }).length ? {} : undefined}

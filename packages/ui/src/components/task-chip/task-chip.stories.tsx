@@ -4,8 +4,7 @@ import { TaskChip } from "./task-chip";
 const meta = {
   title: "Components/TaskChip",
   component: TaskChip,
-  args: { shape: "meeting", timeLabel: "Thu 14:00", title: "Site visit" },
-  argTypes: { shape: { control: "inline-radio", options: ["meeting", "deadline"] } },
+  args: { timeLabel: "Thu 14:00", title: "Site visit" },
   decorators: [
     (Story) => (
       <div className="max-w-xs font-sans">
@@ -19,13 +18,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Open: Story = {};
-export const Meeting: Story = {};
-export const Deadline: Story = {
-  args: { shape: "deadline", timeLabel: "Fri 12:00", title: "Send final headcount" },
-};
 /** Overdue: the time in red text, the chip stays unfilled. */
 export const Overdue: Story = {
-  args: { shape: "deadline", timeLabel: "Mon 09:00", title: "Confirm menu", overdue: true },
+  args: { timeLabel: "Mon 09:00", title: "Confirm menu", overdue: true },
 };
 export const Done: Story = { args: { done: true } };
 export const Linked: Story = { args: { href: "#" } };

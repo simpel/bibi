@@ -4,17 +4,13 @@ import { percentIn, toMinutes } from "./calendar-time";
 import type { CalendarTaskEntry, CalendarWindow } from "./calendar-types";
 import { LANE_REM } from "./day-track";
 
-/** Room a point takes on its lane, so its flag and words do not run into the next task. */
+/** Room a point takes on its lane, so its icon and words do not run into the next task. */
 const POINT_MINUTES = 60;
 
-export const isPoint = ({ task }: { task: CalendarTaskEntry }) =>
-  task.shape === "deadline" || !task.end;
-
-/** Where a task's marker sits on a day's track, kept inside the day. */
+/** Where a task's marker sits on a day's track: a point at its due time. */
 function extentOf({ task }: { task: CalendarTaskEntry }) {
   const from = toMinutes({ time: task.start });
-  if (isPoint({ task })) return { from, to: from + POINT_MINUTES };
-  return { from, to: Math.max(from + 15, toMinutes({ time: task.end ?? task.start })) };
+  return { from, to: from + POINT_MINUTES };
 }
 
 export type TaskPlacementInput = { task: CalendarTaskEntry; window: CalendarWindow };
@@ -63,8 +59,6 @@ export function DayTasks({
   return tasks.map((task) => (
     <TaskCalendarMarker
       key={task.id}
-      shape={task.shape}
-      variant={isPoint({ task }) ? "point" : "span"}
       label={task.label}
       timeLabel={task.timeLabel}
       done={task.done}
@@ -80,7 +74,7 @@ export function DayTasks({
   ));
 }
 
-/** A task's echo on its asset's row: only the outline, over the bookings, never in the way. */
+/** A task's echo on its room's row: only the outline, over the bookings, never in the way. */
 export function AssetTaskMarks({
   tasks,
   window,
@@ -92,16 +86,10 @@ export function AssetTaskMarks({
     <TaskCalendarMarker
       key={task.id}
       bare
-      shape={task.shape}
-      variant={isPoint({ task }) ? "point" : "span"}
       label={task.label}
       timeLabel={task.timeLabel}
       className="absolute inset-y-1 z-20"
-      style={
-        isPoint({ task })
-          ? { left: taskPlacement({ task, window }).left, width: 0 }
-          : taskPlacement({ task, window })
-      }
+      style={{ left: taskPlacement({ task, window }).left, width: 0 }}
     />
   ));
 }

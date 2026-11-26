@@ -18,7 +18,7 @@ Order (moves through the organization's statuses) → Lines with states (prebook
 |---|---|---|
 | Owned | The fact itself, in one place | `Line` price overrides, `OrderStatusChange`, `OrderEstimate`, manual `Occupancy` blocks, explicit `Assignment` |
 | Derived | Computed on read, never stored | a draft quote, balances, which responsibilities apply, effective price and VAT |
-| Projection | Stored for a constraint or index, written only by the database | line holds and allocation holds in `Occupancy` (ADR 0053, 0059), `Order.statusId` and `Line.stateId` (ADR 0054) |
+| Projection | Stored for a constraint or index, written only by the database or one named function | line holds and allocation holds in `Occupancy` (ADR 0053, 0059), task room holds in `Occupancy` (`syncTaskHolds`, ADR 0120), `Order.statusId` and `Line.stateId` (ADR 0054) |
 | Snapshot | Frozen copy at a moment that matters | sent quote lines, invoices, sent run sheets and their recipients |
 
 **Ownership line.** Once the order for an entity lands, its section gets one line right under the heading, in this format (a projection names its reconciliation check in `packages/core/src/seed/demo/reconcile-checks.ts`):
@@ -799,7 +799,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > **Done (ADR 0059):** allocation holds: each filled `LineAllocation` of a held line holds its unit for the demand's windows (setup as `SETUP`, booking as `HOLD`, teardown as `TEARDOWN`) with the line's kind and `allocationId`, projected by the same trigger.
 
-> **Ownership (ADR 0053, 0059):** manual blocks (`MAINTENANCE`, `INTERNAL`) are owned; line holds and their buffers (`HOLD`, `SETUP`, `TEARDOWN`) are a projection with `lineId` (FK), written only by the triggers in `packages/db/sql/sync_line_occupancy.sql` (check `line-holds`).
+> **Ownership (ADR 0053, 0059, 0120):** manual blocks (`MAINTENANCE`, `INTERNAL`) are owned; line holds and their buffers (`HOLD`, `SETUP`, `TEARDOWN`) are a projection with `lineId` (FK), written only by the triggers in `packages/db/sql/sync_line_occupancy.sql` (check `line-holds`); a task room's hold (`HOLD` with `taskItemId`, no buffers) is a projection written only by core's `syncTaskHolds` (check `task-holds`).
 
 **Attributes**
 - item (with the `BOOKABLE` capability)
@@ -807,11 +807,13 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - type (`HOLD`, `SETUP`, `TEARDOWN`, `MAINTENANCE`, `INTERNAL`); a line's rows have a kind, `SOFT` or `HARD`, derived from the line's state (ADR 0044); manual blocks have none
 - line (`lineId`: the line whose hold or buffer this is; null for manual blocks; one row per line, item and type: the line's own item, and each allocated unit, since a unit fills at most one slot per line)
 - allocation (`allocationId`: set on an allocated unit's rows; projection)
+- task room (`taskItemId`: set on a task room's hold, ADR 0120: `SOFT` for a prebook, `HARD` for a book, for the room's own window; one row per task room; never together with `lineId`)
 - note
 - status (active / archived = released; released rows no longer block)
 
 **Relations**
 - `1:1` Line reserves this
+- `N:0..1` TaskItem holds this (ADR 0120)
 - `N:1` Item has this
 
 > ★ Active rows of all types except soft ones (soft holds and their buffers) may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`. `HOLD`, `SETUP` and `TEARDOWN` are written only by database triggers (ADR 0053), in the same transaction as the change to the line, its state, setup, item, item type, order or status: a line holds while it and its order are active, the order's status is not closing, it is timed, its item's type is `BOOKABLE` and its state holds and is not released. A hold of either kind gets a `SETUP` right before and a `TEARDOWN` right after, of its own kind, when their effective minutes are above zero (ADR 0059): setup is the line's, else the item's, else the type's `setupMinutes`, or the setup's changeover time (`changeoverMinutes`) when that is larger; teardown is the line's, else the item's, else the type's `teardownMinutes`. A held line also holds the unit of each active, filled `LineAllocation` of an active demand whose unit's type is `BOOKABLE`, for the demand's non-empty windows, with the line's kind; the unit's own buffers do not apply. Filling, changing or removing an allocation re-derives its line; changing a demand's windows or archiving it re-derives its lines. Changing a state's `hold`/`released`, a setup's changeover time, an item's or a type's buffer minutes, a type's capabilities or a status's `closes` re-derives only lines that have not ended (the past calendar is frozen); an overlap refuses the change with `CONFLICT` and one issue per line (`lines.<id>`). Application code never writes line holds (a test enforces it).
@@ -1343,7 +1345,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - kind (owned): `ASSIGNED`, `RUN_SHEET_SENT`, `ORDER_STATUS_CHANGED`, `PAYMENT_RECEIVED`, `COMMENT_ADDED` and `COMMENT_MENTIONED` (ADR 0115: a mention to the mentioned member; otherwise to the order's assignees, followers and creator and a reply's parent author, never the author; the snapshot holds the line and the first 140 characters, shown with `comment:read`)
 - actor (owned): who caused it; null for the system
 - order, run sheet, payment, task (owned, foreign keys; `orderId` is null for a task without an order, ADR 0117)
-- data (snapshot, ADR 0051): the order's number and title, the old and new status, the run sheet and version, the amount and currency at the time; for a task its type's name and start or due time (`taskTypeName`, `taskStartsAt`, shown with `task:read`)
+- data (snapshot, ADR 0051): the order's number and title, the old and new status, the run sheet and version, the amount and currency at the time; for a task its type's name and due time (`taskTypeName`, `taskDueAt`, null without a due time, shown with `task:read`)
 - read (`readAt`, owned by the recipient): the lifecycle; rows are never deleted
 
 **Relations**
@@ -1556,25 +1558,40 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### Task (`Task`)
 
-*MVP ([ADR 0117](decisions/0117-tasks.md))* · Timed work around a customer that is not sold or delivered: a site visit, a tasting, a planning meeting, "final headcount due". It can exist before any order and be linked to one later. Internal prep (setup, teardown) is not a task: it is line buffers and demands (ADR 0059). Spec: `docs/specs/tasks.md`.
+*MVP ([ADR 0117](decisions/0117-tasks.md), [ADR 0120](decisions/0120-optional-tasks-and-task-holds.md))* · Work that is not sold or delivered: a site visit, a tasting, "final headcount due", a note to self. It can exist before any order and be linked to one later, and can set rooms aside without an order. Internal prep (setup, teardown) is not a task: it is line buffers and demands (ADR 0059). Spec: `docs/specs/tasks.md`.
 
 **Attributes**
-- type (the organization's own, base `TASK`) and custom fields; the type's `taskShape` (`MEETING` | `DEADLINE`)
-- customer and contact (both required; the contact must work at the customer)
-- order (`orderId`, optional, set once, same customer; any order that is not archived, also one in a closing status)
-- item (`itemId`, optional, e.g. the room to show; advisory, never holds)
-- starts at (`startsAt`, required: the start of a meeting or the due time of a deadline) and ends at (`endsAt`, required for `MEETING`, null for `DEADLINE`; a database CHECK keeps it after `startsAt`)
+- type (the organization's own, base `TASK`, the only required attribute) and custom fields
+- customer and contact (optional; a contact needs a customer and must work at it)
+- order (`orderId`, optional, needs a customer: an order of the same customer that is not archived, also one in a closing status)
+- due at (`dueAt`, optional: one instant, never a span; without it the task is not on the calendar or in Needs you, is never overdue and sorts last)
+- rooms (`TaskItem` rows, below)
 - note (≤ 4000)
 - done at, done by (`doneAt`, `doneById`, owned; open while null)
-- warnings (derived: `ITEM_BUSY` when an occupancy of the item overlaps the meeting) and `overdue` (derived: open and past its due or end time)
+- `overdue` (derived: open and due before now)
 
 **Relations**
-- `N:1` Customer, Contact
+- `N:0..1` Customer, Contact
 - `N:0..1` Order is linked to this
-- `N:0..1` Item is shown in this
+- `1:N` concerns → TaskItem
 - `1:N` is answered for by → Assignment (one assignee plus followers)
 
-> Operations (feature `task`): `task.list|get` (`task:read`), `task.create|update|complete|reopen|linkOrder` (`task:write`), `task.archive` (`task:delete`). `task.create` takes an optional `orderId` and links it in the same command; `task.update` takes `assigneeId` (the new assignee is told, `ASSIGNED` with the task as subject). `order.create` takes `taskIds` and links them in the same transaction. Pipeline cards and order rows carry the order's next open task; `calendar.range` returns tasks beside bookings; an open task of the assignee due today is a `TASK_DUE` need in TODAY, an overdue one in LATE with no age limit (key `TASK_DUE:<taskId>`).
+> Operations (feature `task`): `task.list|get` (`task:read`), `task.create|update|complete|reopen|linkOrder` (`task:write`), `task.archive|restore|delete` (`task:delete`). `task.create` takes an optional `orderId` and links it in the same command; `task.update` clears customer, contact, order and due time with `null` (a cleared customer needs contact and order cleared too), replaces the rooms as a set with `items`, and takes `assigneeId` (the new assignee is told, `ASSIGNED` with the task as subject). `order.create` takes `taskIds` and links them in the same transaction; each room a task prebooks or books becomes a line of the order in the same hold (unless an input line already takes it) and the task lets go of it (ADR 0120). Pipeline cards and order rows carry the order's next open task with a due time; `calendar.range` returns tasks due in the range beside bookings, and a task's room hold as a block with `taskId`; an open task of the assignee due today is a `TASK_DUE` need in TODAY, an overdue one in LATE with no age limit (key `TASK_DUE:<taskId>`).
+
+#### TaskItem (`TaskItem`)
+
+*MVP ([ADR 0120](decisions/0120-optional-tasks-and-task-holds.md))* · A room a task concerns. Owned, one per task and item.
+
+**Attributes**
+- item (an item of a `BOOKABLE` type; no quantity)
+- hold (`RELATED`: named only; `PREBOOK`: a soft hold; `BOOK`: a hard hold)
+- starts at, ends at (`startsAt`, `endsAt`: the hold's own window, required for `PREBOOK` and `BOOK`, unrelated to the task's due time; null for `RELATED`; a database CHECK)
+
+**Relations**
+- `N:1` Task (deleted with it), Item (refuses the item's delete)
+- `1:0..1` holds → Occupancy (a projection while the task is active and open)
+
+> Marking the task done releases its holds for good: each `PREBOOK` and `BOOK` becomes `RELATED` without a window, so reopening holds nothing. Archiving releases them until a restore. Create order from a task turns each held room into a line of the order in the same hold and makes it related.
 
 ### InboundMessage (`InboundMessage`)
 

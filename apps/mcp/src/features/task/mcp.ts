@@ -11,9 +11,9 @@ export const taskMcpTools = [
   mcpTool({
     operation: "task.create",
     summary: ({ input }) =>
-      `Create a task for customer ${text({ value: input.customerId })} at ${text({
-        value: input.startsAt,
-      })}${input.orderId ? `, linked to order ${text({ value: input.orderId })}` : ""}`,
+      `Create a task${input.customerId ? ` for customer ${text({ value: input.customerId })}` : ""}${
+        input.dueAt ? `, due ${text({ value: input.dueAt })}` : ""
+      }${input.orderId ? `, linked to order ${text({ value: input.orderId })}` : ""}`,
   }),
   mcpTool({
     operation: "task.update",

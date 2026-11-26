@@ -27,7 +27,7 @@ const instant = ({ value }: { value: string | undefined }) => {
   return date && !Number.isNaN(date.getTime()) ? date : undefined;
 };
 
-/** An order's task takes its customer and contact; a calendar slot its times and row. */
+/** An order's task takes its customer and contact; a calendar slot its start and room. */
 async function prefillOf({ query }: { query: TaskCreateQuery }): Promise<TaskPrefill> {
   const order = query.order ? await loadOrder({ id: query.order }) : null;
   const linked = order?.ok ? order.value : null;
@@ -36,12 +36,11 @@ async function prefillOf({ query }: { query: TaskCreateQuery }): Promise<TaskPre
     contactId: linked?.contactId ?? undefined,
     orderId: linked?.id,
     itemId: query.item,
-    startsAt: instant({ value: query.from }),
-    endsAt: instant({ value: query.to }),
+    dueAt: instant({ value: query.from }),
   };
 }
 
-/** `/new/task`: a site visit, a tasting or a deadline around a customer (ADR 0117). */
+/** `/new/task`: only the type is required; the rest is optional (ADR 0117, 0120). */
 export async function TaskCreate({ locale, query }: TaskCreateProps) {
   const [t, data, prefill] = await Promise.all([
     getTranslations("task"),

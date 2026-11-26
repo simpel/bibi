@@ -5,16 +5,18 @@ import { loadTaskPage } from "./list-tasks";
 import { TaskIdInputSchema, TaskListInputSchema, TaskListOutputSchema, TaskSchema } from "./schema";
 import { archiveTask, completeTask, linkTaskOrder, reopenTask } from "./state-operations";
 import { loadTask } from "./to-task-dto";
-import { createTask, updateTask } from "./write-operations";
+import { updateTask } from "./update-operation";
+import { createTask } from "./write-operations";
 
 export const listTasks = defineOperation({
   name: "task.list",
   kind: "query",
   description:
-    "List tasks around customers (ADR 0117): site visits, tastings, deadlines; by start. Filter " +
-    "by customer, linked order, assignee, state (open, done, overdue) and a window: `from` keeps " +
-    "tasks that end (or are due) at or after it, `to` those that start before it. Each task has " +
-    "`overdue` and `warnings` (ITEM_BUSY when a meeting's item is busy). `page` returns `total`.",
+    "List tasks (ADR 0117, 0120): site visits, tastings, deadlines, notes to self; by due time, " +
+    "tasks without one last. Filter by customer, linked order, assignee, state (open, done, " +
+    "overdue) and a window on the due time (`from` inclusive, `to` exclusive; tasks without a " +
+    "due time only appear without a window). Each task has `overdue` and its rooms (`items`). " +
+    "`page` returns `total`.",
   input: TaskListInputSchema,
   output: TaskListOutputSchema,
   permission: "task:read",
@@ -24,7 +26,7 @@ export const listTasks = defineOperation({
 export const getTask = defineOperation({
   name: "task.get",
   kind: "query",
-  description: "Get one task by id, with its type, assignee, field values and warnings.",
+  description: "Get one task by id, with its type, assignee, rooms and field values.",
   input: TaskIdInputSchema,
   output: TaskSchema,
   permission: "task:read",

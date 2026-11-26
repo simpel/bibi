@@ -32,8 +32,7 @@ export function TaskRows({ tasks, canEdit, size }: TaskRowsProps) {
       {tasks.map((task) => (
         <li key={task.id}>
           <TaskRow
-            shape={task.shape}
-            timeLabel={task.timeLabel}
+            timeLabel={task.timeLabel ?? t("fields.noDueTime")}
             title={task.title}
             meta={task.meta}
             checked={task.done}

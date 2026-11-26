@@ -82,7 +82,7 @@ model Item {
   hoursDays              HoursDay[]
   hoursExceptions        HoursException[]
   /// Tasks that name the item (ADR 0117); advisory, never a hold.
-  tasks                  Task[]
+  taskItems              TaskItem[]
   /// The supertable row this record extends (ADR 0056).
   record                 Record                     @relation(fields: [id, organizationId], references: [id, organizationId])
 

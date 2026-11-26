@@ -230,19 +230,31 @@
       },
       "tasks": {
         "title": "Tasks",
-        "description": "Site visits, tastings and deadlines around a customer.",
+        "description": "Site visits, tastings, deadlines and notes to yourself, with or without a customer.",
         "questions": {
           "bookSiteVisit": {
-            "question": "How do I book a site visit?",
-            "answer": "Click **Create** at the top and pick **Task**, open the customer and click **Create task** under Tasks, or click a free slot on the calendar and choose **Create task**. Pick the type, such as Site visit, the customer, the contact person and the time. You can also pick the room you want to show.\nA task never books the room. If the room is taken at that time, the task's page says so, and the task is still saved."
+            "question": "How do I create a task, such as a site visit?",
+            "answer": "Click **Create** at the top and pick **Task**, open the customer and click **Create task** under Tasks, or click a free slot on the calendar and choose **Create task**. Pick the type, such as Site visit, and click **Create task**.\nOnly the type is required. You can also fill in the customer, the contact person, a due time, who does it, a note and the rooms the task is about."
+          },
+          "optionalFields": {
+            "question": "Do I have to pick a customer or a time?",
+            "answer": "No. A quick note to yourself, such as \"order name badges\", needs only its type. A task without a customer has no contact person or order either, since those belong to a customer. A task has at most one time, its due time. Without one, the task is not on the calendar or under **Needs you**, it is never late, and it comes last in lists.\nOn the task's page, click the pencil next to **Due**, **Customer**, **Contact person** or **Assignee** to add, change or clear it."
+          },
+          "taskRooms": {
+            "question": "What do Book, Prebook and Related mean on a task?",
+            "answer": "Under **Rooms** on the task's page you list the rooms the task is about. Click **Add room**, pick the room and choose how the task uses it.\n**Related** only names the room, with no period; nothing is held. **Prebook** sets the room aside for a period you pick, and other bookings can still overlap it. **Book** blocks the room for that period, and if another booking already holds it you can't save.\nThe period is its own, so a visit due Thursday at 14:00 can hold the Atrium from Wednesday morning to Thursday evening. Only rooms that can be booked are offered. Click the pencil next to a room to change how it is used or its period, or the cross to remove it."
+          },
+          "doneReleasesRooms": {
+            "question": "What happens to the rooms when I mark a task done?",
+            "answer": "The rooms are let go. A booked or prebooked room becomes **Related**, with no period, and is free for others again. If you open the task again, the rooms are not held again; add **Book** or **Prebook** on the room once more.\nA done task can't be edited until you open it again. Archiving a task also lets its rooms go, and restoring it holds them again, if they are still free."
           },
           "orderFromTask": {
             "question": "How do I create an order from a task?",
-            "answer": "Open the task and click **Create order** at the top. The order form opens with the customer, the contact person and the task's note filled in. When you save the order, the task is linked to it and shows on the order's **Tasks** tab.\nTo add the task to an order that already exists, pick the order under **Add to order** on the task's page."
+            "answer": "Open the task and click **Create order** at the top. The order form opens with the customer, the contact person and the task's note filled in. When you save the order, the task is linked to it and shows on the order's **Tasks** tab.\nThe rooms the task prebooks or books carry over: the form lists them, and each becomes a line of the order for the same period, prebooked or booked as on the task. You don't need to add them yourself. The task lets go of them in the same step, so a room is never held twice.\nTo add the task to an order that already exists, pick the order under **Add to order** on the task's page. This needs a customer on the task. Later, click the pencil next to **Order** to move it to another of the customer's orders or remove it. The pencil next to **Customer** changes or clears the customer; the task then leaves its order."
           },
           "whereAreMyTasks": {
             "question": "Where do I see my tasks?",
-            "answer": "**Tasks** in the sidebar lists every open task and those done in the last 30 days. Type **is:open**, **assignee:me** or **customer:** in the search to filter.\nYour tasks for today show at the top of **Today** in **My work**, and one that is due or late also shows under **Needs you**. Tasks show on the calendar in their own row, outlined so they never look like bookings, and on the customer's page and the order's Tasks tab. Tick the round checkbox when a task is done."
+            "answer": "**Tasks** in the sidebar lists every open task and those done in the last 30 days. Type **is:open**, **assignee:me** or **customer:** in the search to filter.\nYour tasks for today show at the top of **Today** in **My work**, and one that is due or late also shows under **Needs you**. Tasks with a due time show on the calendar in their own row, outlined so they never look like bookings; a room a task holds shows as a block on that room's row. Tasks also show on the customer's page and the order's Tasks tab. Tick the round checkbox when a task is done."
           }
         }
       },

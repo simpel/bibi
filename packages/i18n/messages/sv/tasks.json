@@ -3,8 +3,8 @@
     "name": "Uppgift",
     "plural": "Uppgifter",
     "create": "Skapa uppgift",
-    "createDescription": "Ett platsbesök, en provsmakning eller en deadline för en kund. Den syns i kalendern och i Mitt arbete, men bokar ingenting.",
-    "listDescription": "Platsbesök, provsmakningar och deadlines kring era kunder, före eller vid sidan av en bokning.",
+    "createDescription": "Ett platsbesök, en provsmakning, en deadline eller en anteckning till dig själv. Bara typen krävs. En uppgift kan nämna rum och lägga dem åt sidan, men är aldrig en bokning.",
+    "listDescription": "Platsbesök, provsmakningar, deadlines och anteckningar, med eller utan kund och tid, före eller vid sidan av en bokning.",
     "created": "Uppgiften skapades",
     "updated": "Uppgiften sparades",
     "completed": "Uppgiften är klar",
@@ -12,7 +12,7 @@
     "archived": "Uppgiften arkiverades",
     "linked": "Uppgiften lades till i bokningen",
     "empty": "Inga uppgifter än",
-    "emptyDescription": "Skapa en uppgift för ett platsbesök, en provsmakning eller en deadline.",
+    "emptyDescription": "Skapa en uppgift för ett platsbesök, en provsmakning, en deadline eller en anteckning till dig själv.",
     "noMatches": "Inga uppgifter matchar.",
     "noTypes": "Inga uppgiftstyper än",
     "noTypesDescription": "Skapa först en uppgiftstyp, till exempel Platsbesök, under Typer.",
@@ -26,49 +26,38 @@
     "archiveConfirm": "{name} försvinner från kalendern, listorna och Mitt arbete.",
     "details": "Detaljer",
     "noNote": "Ingen anteckning",
-    "related": "Relaterat",
-    "relatedEmpty": "Inget relaterat än.",
-    "addRelated": "Lägg till",
-    "removeRelated": "Ta bort {name}",
     "addToOrder": "Lägg till i bokning",
-    "addToOrderDescription": "Lägg till uppgiften i en av kundens bokningar. Den kan bara höra till en bokning.",
+    "addToOrderDescription": "Lägg till uppgiften i en av kundens bokningar. Den kan höra till en bokning åt gången.",
+    "editOrder": "Ändra bokning",
+    "editOrderDescription": "Flytta uppgiften till en annan av kundens bokningar, eller ta bort den från sin bokning.",
+    "removeFromOrder": "Ta bort från bokning",
+    "customerUnlinksOrder": "Med en annan kund, eller ingen, lämnar uppgiften sin bokning.",
     "findOrder": "Sök en bokning…",
     "noOrderFound": "Ingen bokning hittades.",
-    "busy": {
-      "title": "{item} är upptagen",
-      "theItem": "Artikeln",
-      "description": "En annan bokning eller en spärr håller den {when}. Uppgiften sparas ändå."
-    },
     "state": {
       "open": "Öppen",
       "done": "Klar",
       "overdue": "Försenad"
     },
-    "shapes": {
-      "MEETING": "Möte",
-      "DEADLINE": "Senast"
-    },
     "fields": {
       "type": "Typ",
       "customer": "Kund",
       "contact": "Kontaktperson",
-      "startsAt": "Börjar",
-      "endsAt": "Slutar",
       "dueAt": "Senast",
-      "when": "När",
-      "item": "Rum eller artikel",
-      "noItem": "Ingen",
       "assignee": "Ansvarig",
       "unassigned": "Ingen ansvarig",
       "note": "Anteckning",
       "order": "Bokning",
-      "noOrder": "Ingen bokning"
+      "noOrder": "Ingen bokning",
+      "noDueTime": "Ingen tid",
+      "noCustomer": "Ingen kund",
+      "noContact": "Ingen kontaktperson"
     },
     "inlineEdit": {
-      "when": "Ändra typ och tid",
+      "due": "Ändra typ och tid",
+      "customer": "Ändra kund",
       "contact": "Ändra kontaktperson",
       "assignee": "Ändra ansvarig",
-      "item": "Ändra rum eller artikel",
       "note": "Ändra anteckning",
       "details": "Ändra detaljer"
     },
@@ -77,7 +66,7 @@
       "customer": "Kund",
       "assignee": "Ansvarig",
       "state": "Läge",
-      "when": "När"
+      "due": "Senast"
     },
     "query": {
       "is": "Är",
@@ -94,13 +83,45 @@
     "calendar": {
       "lane": "Uppgifter",
       "legend": "Uppgift",
-      "legendText": "Inramad: ett platsbesök eller en deadline, aldrig en bokning"
+      "legendText": "Inramad: en uppgift eller ett rum den håller, aldrig en bokning"
     },
     "slot": {
       "createTask": "Skapa uppgift"
     },
     "myWork": {
       "title": "Uppgifter"
+    },
+    "rooms": {
+      "title": "Rum",
+      "empty": "Inga rum än.",
+      "group": {
+        "BOOK": "Boka",
+        "PREBOOK": "Förboka",
+        "RELATED": "Relaterat"
+      },
+      "hold": {
+        "BOOK": "Boka",
+        "PREBOOK": "Förboka",
+        "RELATED": "Relaterat"
+      },
+      "holdHint": {
+        "BOOK": "Spärrar rummet under perioden. Ingen annan kan boka det.",
+        "PREBOOK": "Lägger rummet åt sidan under perioden. Andra kan fortfarande boka det.",
+        "RELATED": "Nämner bara rummet. Inget hålls."
+      },
+      "item": "Rum",
+      "mode": "Använd som",
+      "from": "Från",
+      "to": "Till",
+      "add": "Lägg till rum",
+      "edit": "Ändra {name}",
+      "editTitle": "Ändra {name}",
+      "removeRoom": "Ta bort {name}",
+      "remove": "Ta bort rum",
+      "dialogDescription": "Välj hur uppgiften använder rummet. Ett bokat eller förbokat rum har en egen period som inte behöver vara samma som tiden uppgiften ska vara klar. När uppgiften markeras som klar släpps rummet.",
+      "createHint": "Nämn rummen uppgiften gäller, eller lägg dem åt sidan medan du väntar på svar.",
+      "rowInvalid": "Rummet kan inte sparas för den perioden. Kontrollera perioden; ett bokat rum kan redan vara upptaget.",
+      "unknown": "Okänt rum"
     }
   }
 }

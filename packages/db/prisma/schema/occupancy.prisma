@@ -31,6 +31,9 @@ model Occupancy {
   /// Set on the holds of an allocated unit (ADR 0059): the allocation they come from, on its
   /// line (`lineId`). Written only by the trigger.
   allocationId   String?
+  /// The task room whose hold this is (ADR 0120); null for a line hold or a manual block. Written
+  /// only by core's `syncTaskHolds`.
+  taskItemId     String?
   note           String?
   status         RecordStatus    @default(ACTIVE)
   createdAt      DateTime        @default(now())
@@ -39,12 +42,15 @@ model Occupancy {
   item           Item            @relation(fields: [itemId, organizationId], references: [id, organizationId])
   line           Line?           @relation(fields: [lineId, organizationId], references: [id, organizationId], onDelete: Cascade)
   allocation     LineAllocation? @relation(fields: [allocationId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  taskItem       TaskItem?       @relation(fields: [taskItemId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@unique([id, organizationId])
   /// One row per line, held item and window (ADR 0059); the trigger upserts on it. The item is in
   /// the key so a line also holds the units allocated to it (a unit fills at most one slot per
   /// line, so `allocationId` follows from the key).
   @@unique([lineId, itemId, type])
+  /// One row per task room (ADR 0120); `syncTaskHolds` upserts on it.
+  @@unique([taskItemId, type])
   @@index([organizationId, allocationId])
   @@index([organizationId, itemId, startsAt])
   /// The calendar's range read (`calendar.range`): `endsAt > from` skips the organization's past.

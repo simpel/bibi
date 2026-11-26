@@ -12,10 +12,9 @@ import { createTaskAction } from "../actions";
 import {
   TaskAssigneeField,
   TaskCustomerFields,
-  TaskItemField,
+  TaskDueField,
   TaskNoteField,
   TaskTypeField,
-  TaskWhenFields,
 } from "./task-fields";
 import type { TaskFormData } from "./task-form-data";
 import {
@@ -25,10 +24,11 @@ import {
   taskFormDefaults,
   taskFormSchema,
 } from "./task-form-schema";
+import { TaskRoomsField } from "./task-rooms-field";
 
 export type TaskFormProps = { data: TaskFormData; prefill: TaskPrefill };
 
-/** `/new/task`: type, customer and contact, when, the item to show, assignee and a note. */
+/** `/new/task`: only the type is required; customer, due time, assignee, note and rooms are optional. */
 export function TaskForm({ data, prefill }: TaskFormProps) {
   const t = useTranslations("task");
   const common = useTranslations("common");
@@ -48,10 +48,10 @@ export function TaskForm({ data, prefill }: TaskFormProps) {
       <form onSubmit={submit} noValidate className="grid max-w-2xl gap-4">
         <TaskTypeField form={form} data={data} />
         <TaskCustomerFields form={form} data={data} withCustomer={!prefill.orderId} />
-        <TaskWhenFields form={form} data={data} />
-        <TaskItemField form={form} data={data} />
+        <TaskDueField form={form} />
         <TaskAssigneeField form={form} data={data} />
         <TaskNoteField form={form} />
+        <TaskRoomsField form={form} data={data} />
         <div className="flex justify-end">
           <Button type="submit" disabled={pending}>
             {t("create")}

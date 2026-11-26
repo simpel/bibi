@@ -11,7 +11,6 @@ import { BaseSelectField } from "./base-select-field";
 import { BuyerKindField } from "./buyer-kind-field";
 import type { GroupOption } from "./group-select-field";
 import { ItemTypeFields } from "./item-type-fields";
-import { TaskShapeField } from "./task-shape-field";
 import { useEntityTypeWizard } from "./use-entity-type-wizard";
 
 export type EntityTypeWizardProps = {
@@ -45,7 +44,6 @@ export function EntityTypeWizard({ groups, forItem }: EntityTypeWizardProps) {
               placeholder={t("fields.pluralNamePlaceholder")}
             />
             {form.watch("base") === "CUSTOMER" ? <BuyerKindField control={form.control} /> : null}
-            {form.watch("base") === "TASK" ? <TaskShapeField control={form.control} /> : null}
           </>
         ) : (
           <ItemTypeFields form={form} groups={groups} />

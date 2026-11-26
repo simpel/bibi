@@ -99,6 +99,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "AlternativeGroup",
   "Requirement",
   "Task",
+  "TaskItem",
   "Comment",
   "RunSheet",
   "RunSheetRecipient",

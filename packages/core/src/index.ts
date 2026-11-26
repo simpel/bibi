@@ -146,6 +146,7 @@ export * from "./features/status-grid/operations";
 export * from "./features/task/deletion-operations";
 export * from "./features/task/operations";
 export * from "./features/task/state-operations";
+export * from "./features/task/update-operation";
 export * from "./features/task/write-operations";
 export * from "./features/venue/deletion-operations";
 export * from "./features/venue/hours-operations";

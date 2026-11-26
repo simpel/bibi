@@ -12,7 +12,8 @@ const orderChildren = ({ db, where }: ScopeInput) => [
   // Notifications point at orders, run sheets and payments (ADR 0094).
   db.notification.deleteMany({ where }),
   db.notificationPreference.deleteMany({ where }),
-  // Tasks point at orders, items, customers and contacts (ADR 0117); their dismissals cascade.
+  // Tasks point at orders, customers and contacts (ADR 0117); their dismissals, rooms (items)
+  // and room holds cascade (ADR 0120).
   db.task.deleteMany({ where }),
   db.inboundEmail.deleteMany({ where }),
   // Messages point at their endpoint and order; endpoints at a type and a package (ADR 0085).

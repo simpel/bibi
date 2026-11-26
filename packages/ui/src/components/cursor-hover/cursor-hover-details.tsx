@@ -92,7 +92,7 @@ function deriveSubtitle({
   labels: CalendarLabels | null;
 }): string | undefined {
   if (booking) {
-    if (!booking.order) {
+    if (!booking.order && !booking.taskId) {
       return labels ? `${labels.blocked}, ${labels.notSold}` : "Blocked, not sold";
     }
     // Detailed cards show the guests as a stat, so not twice.

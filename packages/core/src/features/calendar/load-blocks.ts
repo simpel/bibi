@@ -26,10 +26,13 @@ const BLOCK_SELECT = {
       state: { select: { name: true, color: true, expires: true } },
     },
   },
+  taskItem: {
+    select: { taskId: true, task: { select: { entityType: { select: { name: true } } } } },
+  },
 } satisfies Prisma.OccupancySelect;
 
 type BlockRow = Prisma.OccupancyGetPayload<{ select: typeof BLOCK_SELECT }>;
-type Visible = { program: boolean; pipeline: boolean; order: boolean };
+type Visible = { program: boolean; pipeline: boolean; order: boolean; task: boolean };
 type Filters = Omit<CalendarRangeInput, "from" | "to">;
 type BareBlock = Omit<CalendarBlockDto, "details">;
 
@@ -45,7 +48,8 @@ function lineWhere({ orderId, stateId, statusId }: Filters): Prisma.LineWhereInp
 
 /**
  * One occupancy as a block (ADR 0053): a line's hold and its buffers carry the line's order and
- * state; held since and expiry belong to the soft hold itself, not its buffers.
+ * state; held since and expiry belong to the soft hold itself, not its buffers. A task's room hold
+ * (ADR 0120) carries its task and the task type's name.
  */
 function toBlock({ row, visible }: { row: BlockRow; visible: Visible }): BareBlock {
   const { line } = row;
@@ -53,6 +57,7 @@ function toBlock({ row, visible }: { row: BlockRow; visible: Visible }): BareBlo
   const softHold = soft && row.type === "HOLD";
   const state = visible.pipeline ? line?.state : undefined;
   const heldAt = line ? (line.stateChanges[0]?.changedAt ?? line.createdAt) : null;
+  const task = visible.task ? row.taskItem : null;
   return {
     id: row.id,
     itemId: row.itemId,
@@ -60,10 +65,17 @@ function toBlock({ row, visible }: { row: BlockRow; visible: Visible }): BareBlo
     startsAt: row.startsAt,
     endsAt: row.endsAt,
     lineId: line?.id ?? null,
+    taskId: task?.taskId ?? null,
     orderId: line?.orderId ?? null,
     reference: line?.order.reference ?? null,
     orderTitle: visible.order ? (line?.order.title ?? null) : null,
-    title: line ? (visible.program ? line.name : null) : row.note,
+    title: line
+      ? visible.program
+        ? line.name
+        : null
+      : row.taskItem
+        ? (task?.task.entityType.name ?? null)
+        : row.note,
     soft,
     allocated: row.allocationId !== null,
     heldAt: softHold && visible.program ? heldAt : null,
@@ -108,6 +120,7 @@ export async function loadBlocks({
     program: canView({ context, feature: "program" }),
     pipeline: canView({ context, feature: "pipeline" }),
     order: canView({ context, feature: "order" }),
+    task: canView({ context, feature: "task" }),
   };
   const blocks = rows.map((row) => toBlock({ row, visible }));
   const detailsOf = await loadDetails({ context, blocks });

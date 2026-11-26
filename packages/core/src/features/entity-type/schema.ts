@@ -4,7 +4,6 @@ import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { BuyerKindSchema } from "../customer/buyer-kind";
 import { FieldDefinitionSchema } from "../field-definition/schema";
-import { TaskShapeSchema } from "../task/task-shape";
 import {
   EntityBaseSchema,
   ItemCapabilitiesSchema,
@@ -28,8 +27,6 @@ export const EntityTypeSchema = z.object({
   resourceKind: ResourceKindSchema.nullable(),
   /** Customer types: BUSINESS or PRIVATE, taken by a new customer (ADR 0106); null otherwise. */
   buyerKind: BuyerKindSchema.nullable(),
-  /** Task types: MEETING or DEADLINE (ADR 0117); null otherwise. */
-  taskShape: TaskShapeSchema.nullable(),
   /** Item types: the group the type is browsed under (ADR 0101); null = ungrouped. */
   groupId: z.string().nullable(),
   /** Active fields of the type, in display order. */
@@ -70,11 +67,6 @@ const TypeBuyerKindSchema = BuyerKindSchema.describe(
   "Customer types only: BUSINESS (default) or PRIVATE; a new customer of the type takes it",
 );
 
-const TypeTaskShapeSchema = TaskShapeSchema.describe(
-  "Task types only (required for them): MEETING (start and end) or DEADLINE (one due time). " +
-    "Changing it while the type has active tasks is CONFLICT",
-);
-
 /** Item types only: the default buffers of the type's items (ADR 0059). */
 const TypeBufferInputShape = bufferMinutesInputShape({ inherits: "none (item types only)" });
 
@@ -88,7 +80,6 @@ export const EntityTypeCreateInputSchema = z.object({
     "Item types only: EQUIPMENT (default) or PERSON (ADR 0059)",
   ),
   buyerKind: TypeBuyerKindSchema.optional(),
-  taskShape: TypeTaskShapeSchema.optional(),
   groupId: GroupIdSchema,
 });
 
@@ -111,7 +102,6 @@ export const EntityTypeUpdateInputSchema = z.object({
   ...TypeBufferInputShape,
   resourceKind: ResourceKindSchema.optional(),
   buyerKind: TypeBuyerKindSchema.optional(),
-  taskShape: TypeTaskShapeSchema.optional(),
   groupId: GroupIdSchema,
 });
 

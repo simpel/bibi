@@ -2,26 +2,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import type { CSSProperties } from "react";
 import { cn } from "../../lib/cn";
 import { AppLink } from "../app-link/app-link";
-import {
-  TASK_EDGE,
-  TASK_ICONS,
-  type TaskShape,
-  taskTimeVariants,
-  taskTitleVariants,
-} from "../task-shape/task-shape";
+import { TASK_ICON, taskTimeVariants, taskTitleVariants } from "../task-look/task-look";
 
 /**
- * A span covers a meeting's time; a point is a deadline's moment: a hairline tick at its left
- * edge with the flag beside it. Neither is ever filled, unlike a booking beside it.
+ * A task is a point at its due time (ADR 0120): a hairline tick in the task colour at its left
+ * edge with the icon beside it. Never filled, unlike a booking beside it.
  */
 export const taskCalendarMarkerVariants = cva(
-  "@container flex min-w-0 items-center overflow-hidden text-xs outline-none",
+  "@container flex min-w-0 items-center gap-1 overflow-hidden border-0 border-l border-solid border-task pr-1 pl-1 text-xs outline-none",
   {
     variants: {
-      variant: {
-        span: cn(TASK_EDGE, "gap-1 rounded-md px-1.5"),
-        point: "gap-1 border-0 border-l border-solid border-task pr-1 pl-1",
-      },
       /** Only the outline, no words: a task's echo on an asset's row, behind nothing. */
       bare: { true: "pointer-events-none", false: "" },
       done: { true: "opacity-60", false: "" },
@@ -30,15 +20,14 @@ export const taskCalendarMarkerVariants = cva(
         false: "",
       },
     },
-    defaultVariants: { variant: "span", bare: false, done: false, linked: false },
+    defaultVariants: { bare: false, done: false, linked: false },
   },
 );
 
 export type TaskCalendarMarkerProps = Pick<
   VariantProps<typeof taskCalendarMarkerVariants>,
-  "variant" | "bare"
+  "bare"
 > & {
-  shape: TaskShape;
   /** The task's title. */
   label: string;
   /** Already formatted: "14:00". */
@@ -54,36 +43,22 @@ export type TaskCalendarMarkerProps = Pick<
   style?: CSSProperties;
 };
 
-/** The default: a meeting covers its time, a deadline is a point. */
-export const markerVariantOf = ({ shape }: { shape: TaskShape }) =>
-  shape === "meeting" ? ("span" as const) : ("point" as const);
-
 /** A task on the calendar, outlined and unfilled; the caller places it on its track. */
 export function TaskCalendarMarker({
-  shape,
   label,
   timeLabel,
   done = false,
   overdue = false,
   href,
   onClick,
-  variant,
   bare = false,
   className,
   style,
 }: TaskCalendarMarkerProps) {
-  const Icon = TASK_ICONS[shape];
+  const Icon = TASK_ICON;
   const name = `${timeLabel} · ${label}`;
   const linked = !bare && Boolean(href || onClick);
-  const classes = cn(
-    taskCalendarMarkerVariants({
-      variant: variant ?? markerVariantOf({ shape }),
-      bare,
-      done,
-      linked,
-    }),
-    className,
-  );
+  const classes = cn(taskCalendarMarkerVariants({ bare, done, linked }), className);
   const body = bare ? null : (
     <>
       <Icon aria-hidden className="size-3 shrink-0 text-task @max-[1.25rem]:hidden" />

@@ -39,7 +39,12 @@ export const OrderIntakeShape = {
     .describe(
       "Tasks (task.list) to link to the new order in the same step (ADR 0117): each an open " +
         "or done task of the same customer with no order yet (VALIDATION at taskIds.<i>; " +
-        "already linked is CONFLICT). Needs task:write",
+        "already linked is CONFLICT). Each room a task prebooks or books carries over (ADR " +
+        "0120): it is released from the task and becomes a line for that item with the room's " +
+        "window, in the item type's first soft-hold (prebook) or hard-hold (book) state, set " +
+        "by hand so status moves keep it; a room one of `lines` already takes is not added " +
+        "again. An item type without such a state is VALIDATION at taskIds.<i>. Needs " +
+        "task:write, and program:write when rooms carry over",
     ),
   draftedFromMessage: z
     .boolean()

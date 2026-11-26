@@ -60,6 +60,22 @@ export function markStyle({
   };
 }
 
+/**
+ * A task's room hold (ADR 0120): the hold kind's pattern in the task colour, so it is never taken
+ * for an order's line. Both kinds keep the task's solid hairline edge (dashed is taken by order
+ * holds): a prebook (soft) is hatched and may overlap, a book (hard) is a plain tint that blocks.
+ */
+export function taskHoldStyle({ state }: { state: CalendarState }): CSSProperties {
+  const base: CSSProperties = {
+    borderColor: "var(--task)",
+    borderStyle: "solid",
+    color: "var(--foreground)",
+  };
+  if (state.hold === "soft")
+    return { ...base, backgroundImage: softHatch({ color: "var(--task)" }) };
+  return { ...base, backgroundColor: mix({ color: "var(--task)", percent: 24 }) };
+}
+
 /** Setup and teardown (ADR 0059): the line's hue, faint, thinner and dotted. Internal only. */
 export function bufferStyle({ state }: { state: CalendarState }): CSSProperties {
   return {

@@ -12,6 +12,7 @@ import type { MessageDraft } from "./message-draft";
 import { PackageSection } from "./package-section";
 import { PasteDialog } from "./paste-dialog";
 import { ReviewStep } from "./review-step";
+import { TaskRoomsNote } from "./task-rooms-note";
 import { useIntakeFlow } from "./use-intake-flow";
 import { useIntakeSummaries } from "./use-intake-summaries";
 import { usePasteDialog } from "./use-paste-dialog";
@@ -48,6 +49,7 @@ export function IntakePage({ data, message, task = null, draftEnabled, step }: I
   return (
     <div className="grid gap-3">
       <MessageBanner message={message} read={state.draft?.read ?? null} />
+      {task ? <TaskRoomsNote rooms={task.rooms} /> : null}
       {draft.offer ? (
         <DraftOffer
           draft={draft.offer}

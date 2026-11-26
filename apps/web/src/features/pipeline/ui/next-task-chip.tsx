@@ -1,18 +1,15 @@
 import type { NextTask } from "@bibi/core/schemas";
 import { TaskChip } from "@bibi/ui";
-import { taskTimeLabel, uiTaskShape } from "@/features/task/lib/task-time-label";
+import { taskTimeLabel } from "@/features/task/lib/task-time-label";
 import { taskRoute } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
-type Wireish = Omit<NonNullable<NextTask>, "startsAt" | "endsAt"> & {
-  startsAt: Date | string;
-  endsAt: Date | string | null;
-};
+type Wireish = Omit<NonNullable<NextTask>, "dueAt"> & { dueAt: Date | string };
 
 export type NextTaskChipProps = { task: Wireish; className?: string };
 
 /**
- * An order's next open task (ADR 0117) as an outlined chip that opens the task. A click on it
+ * An order's next open task (ADR 0117, 0120: it has a due time) as an outlined chip that opens the task. A click on it
  * stays on the chip, so it never also opens the order card or row it sits in.
  */
 export function NextTaskChip({ task, className }: NextTaskChipProps) {
@@ -23,7 +20,6 @@ export function NextTaskChip({ task, className }: NextTaskChipProps) {
     <span className={className} onClick={(event) => event.stopPropagation()}>
       <TaskChip
         size="sm"
-        shape={uiTaskShape({ shape: task.shape })}
         timeLabel={taskTimeLabel({ task, dates })}
         title={task.typeName}
         overdue={task.overdue}

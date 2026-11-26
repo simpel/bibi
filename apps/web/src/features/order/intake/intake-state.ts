@@ -63,7 +63,7 @@ export type InitialIntakeInput = {
   intakeKey: string;
   inboundMessageId?: string | null;
   /** `?fromTask=<id>`: the customer and contact are step 1's answer, step 2 opens. */
-  task?: (IntakeTaskRef & { who: IntakeWho }) | null;
+  task?: (IntakeTaskRef & { who: IntakeWho | null }) | null;
 };
 
 export const initialIntake = ({
@@ -71,7 +71,13 @@ export const initialIntake = ({
   inboundMessageId = null,
   task = null,
 }: InitialIntakeInput): IntakeState => ({
-  ...{ open: task ? "when" : "who", who: task?.who ?? null, when: null, pick: null, review: null },
+  ...{
+    open: task?.who ? "when" : "who",
+    who: task?.who ?? null,
+    when: null,
+    pick: null,
+    review: null,
+  },
   ...{ intakeKey, inboundMessageId, draft: null },
   fromTask: task ? { id: task.id, note: task.note } : null,
 });

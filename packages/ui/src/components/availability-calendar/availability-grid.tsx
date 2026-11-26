@@ -44,7 +44,7 @@ type AssetGroupsProps = Omit<AvailabilityGridProps, "timeline" | "empty" | "tota
 
 /** Each asset's tasks by day key; none without tasks, so rows draw as before. */
 function assetTasksOf({ tasks, assetId }: { tasks: AssetGroupsProps["tasks"]; assetId: string }) {
-  const own = tasks?.filter((task) => task.assetId === assetId) ?? [];
+  const own = tasks?.filter((task) => task.assetIds?.includes(assetId)) ?? [];
   return own.length ? tasksByDate({ tasks: own }) : undefined;
 }
 

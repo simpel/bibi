@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { DateTimeField } from "@/components/date-picker/date-time-field";
-import { OptionSelectField } from "@/components/form/option-select-field";
+import { NONE, OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
 import type { TaskFormData } from "./task-form-data";
 import type { TaskFormOutput, TaskFormValues } from "./task-form-schema";
@@ -10,7 +10,7 @@ export type TaskFieldsForm = UseFormReturn<TaskFormValues, unknown, TaskFormOutp
 
 type FieldsProps = { form: TaskFieldsForm; data: TaskFormData };
 
-/** The task type; its shape decides the time fields. */
+/** The task type, the one required field. */
 export function TaskTypeField({ form, data }: FieldsProps) {
   const t = useTranslations("task.fields");
   return (
@@ -23,7 +23,7 @@ export function TaskTypeField({ form, data }: FieldsProps) {
   );
 }
 
-/** The customer (only on create: it never changes) and a contact person who works there. */
+/** The customer (optional; not in the contact-only editor) and a contact person who works there. */
 export function TaskCustomerFields({
   form,
   data,
@@ -40,52 +40,34 @@ export function TaskCustomerFields({
           name="customerId"
           label={t("customer")}
           options={data.customers}
+          noneLabel={t("noCustomer")}
           hidden={data.customersHidden}
-          onChange={() => form.setValue("contactId", "")}
+          onChange={(next) => {
+            const own = data.contacts.filter((contact) => contact.customerId === next);
+            form.setValue("contactId", own.length === 1 ? (own[0]?.id ?? NONE) : NONE);
+            // An order belongs to its customer: another customer, or none, starts unlinked.
+            form.setValue("orderId", NONE);
+          }}
         />
       ) : null}
-      <OptionSelectField
-        control={form.control}
-        name="contactId"
-        label={t("contact")}
-        options={contacts}
-        hidden={data.customersHidden}
-      />
+      {customerId !== NONE ? (
+        <OptionSelectField
+          control={form.control}
+          name="contactId"
+          label={t("contact")}
+          options={contacts}
+          noneLabel={t("noContact")}
+          hidden={data.customersHidden}
+        />
+      ) : null}
     </>
   );
 }
 
-/** A meeting's start and end, or a deadline's one due time. */
-export function TaskWhenFields({ form, data }: FieldsProps) {
+/** The one due time: optional, never a span (ADR 0120). The date button clears it. */
+export function TaskDueField({ form }: Pick<FieldsProps, "form">) {
   const t = useTranslations("task.fields");
-  const typeId = form.watch("entityTypeId");
-  const shape = data.types.find((type) => type.id === typeId)?.shape ?? "MEETING";
-  if (shape === "DEADLINE") {
-    return <DateTimeField form={form} name="startsAt" label={t("dueAt")} required />;
-  }
-  return (
-    // Side by side only when the form itself is wide (the create page), stacked in a popover.
-    <div className="@container">
-      <div className="grid gap-4 @xl:grid-cols-2">
-        <DateTimeField form={form} name="startsAt" label={t("startsAt")} required />
-        <DateTimeField form={form} name="endsAt" label={t("endsAt")} required />
-      </div>
-    </div>
-  );
-}
-
-/** The item it names (e.g. the room to show); it only warns when busy. */
-export function TaskItemField({ form, data }: FieldsProps) {
-  const t = useTranslations("task.fields");
-  return (
-    <OptionSelectField
-      control={form.control}
-      name="itemId"
-      label={t("item")}
-      options={data.items}
-      noneLabel={t("noItem")}
-    />
-  );
+  return <DateTimeField form={form} name="dueAt" label={t("dueAt")} />;
 }
 
 /** Who does it; the caller by default. */

@@ -36,10 +36,20 @@ export type ToAssetBookingsInput = {
   via: ContactVia;
   /** Where a booking opens: its order. */
   orderHref: (input: { orderId: string }) => string;
+  /** A task's room hold (ADR 0120): its prebook (soft) and book (hard) states, in the app's words. */
+  taskStates: { soft: CalendarState; hard: CalendarState };
+  /** Where a task hold opens: its task. */
+  taskHref: (input: { taskId: string }) => string;
 };
 
 /** The block's state: the line's own colour, a soft or hard hold (ADR 0044). */
-function stateOf({ block, blocked, unnamed }: { block: CalendarBlockDto } & ToStateInput) {
+function stateOf({
+  block,
+  blocked,
+  unnamed,
+  taskStates,
+}: { block: CalendarBlockDto } & ToStateInput) {
+  if (block.taskId) return block.soft ? taskStates.soft : taskStates.hard;
   if (!block.lineId) return blocked;
   if (!block.stateColor) return { ...unnamed, hold: block.soft ? "soft" : "hard" } as const;
   return {
@@ -50,7 +60,7 @@ function stateOf({ block, blocked, unnamed }: { block: CalendarBlockDto } & ToSt
   } satisfies CalendarState;
 }
 
-type ToStateInput = Pick<ToAssetBookingsInput, "blocked" | "unnamed">;
+type ToStateInput = Pick<ToAssetBookingsInput, "blocked" | "unnamed" | "taskStates">;
 
 /**
  * `calendar.range` blocks as the availability calendar's bookings: holds and manual blocks, each
@@ -60,6 +70,7 @@ export function toAssetBookings({
   blocks,
   timeZone,
   orderHref,
+  taskHref,
   via,
   ...states
 }: ToAssetBookingsInput) {
@@ -71,13 +82,17 @@ export function toAssetBookings({
     const reference = block.reference === null ? null : `#${block.reference}`;
     // The order goes by its title; an untitled one by its reference.
     const order = block.orderTitle ?? reference;
-    const href = block.orderId ? orderHref({ orderId: block.orderId }) : undefined;
+    const href = block.taskId
+      ? taskHref({ taskId: block.taskId })
+      : block.orderId
+        ? orderHref({ orderId: block.orderId })
+        : undefined;
     const details = block.details ? bookingDetailsOf({ details: block.details, via }) : {};
     return daySegments({ ...block, timeZone }).map((segment) => ({
       id: `${block.id}:${segment.date}`,
       assetId: block.itemId,
       date: segment.date,
-      name: block.title ?? order ?? "",
+      name: block.title ?? order ?? (block.taskId ? state.name : ""),
       type: "",
       place: null,
       start: segment.start,
@@ -93,6 +108,7 @@ export function toAssetBookings({
       ...(href ? { href } : {}),
       ...(block.lineId ? { lineId: block.lineId } : {}),
       ...(block.orderId ? { orderId: block.orderId } : {}),
+      ...(block.taskId ? { taskId: block.taskId } : {}),
     }));
   });
 }

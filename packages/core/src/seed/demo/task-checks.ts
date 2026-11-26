@@ -33,15 +33,16 @@ async function overdueFailures({ context, org, task, assigneeId }: OverdueInput)
 }
 
 /**
- * ADR 0117 (`docs/demo-seed.md`, Tasks): the organization has the data files' tasks, a task with
- * an order is linked to it, a done one was marked done by its assignee, and an open deadline past
- * its due time is its assignee's `TASK_DUE` need in LATE.
+ * ADR 0117, 0120 (`docs/demo-seed.md`, Tasks): the organization has the data files' tasks, a
+ * task with an order is linked to it, a done one was marked done by its assignee, an open task
+ * past its due time is its assignee's `TASK_DUE` need in LATE, and each prebooked or booked room
+ * of an open task has its active hold (soft or hard).
  */
 export async function checkDemoTasks({ context, org }: CheckDemoTasksInput): Promise<string[]> {
   const tasks = org.tasks ?? [];
   const rows = await context.db.task.findMany({
     orderBy: { createdAt: "asc" },
-    select: { id: true, orderId: true, doneById: true, endsAt: true, startsAt: true },
+    select: { id: true, orderId: true, doneById: true, dueAt: true },
   });
   if (rows.length !== tasks.length)
     return [`${org.slug}: ${rows.length} tasks, expected ${tasks.length}`];
@@ -59,9 +60,29 @@ export async function checkDemoTasks({ context, org }: CheckDemoTasksInput): Pro
     const done = task.doneDay !== undefined;
     if (done && row.doneById !== assignee.userId)
       failures.push(`${org.slug}: task ${index + 1} was not done by ${task.assignee}`);
-    if (done || (row.endsAt ?? row.startsAt) >= now) continue;
+    if (done || !row.dueAt || row.dueAt >= now) continue;
     const assigneeId = assignee.userId;
     failures.push(...(await overdueFailures({ context, org, task: row, assigneeId })));
+  }
+  return [...failures, ...(await holdFailures({ context, org }))];
+}
+
+/** One active `SOFT` hold per prebooked room and one `HARD` per booked room (ADR 0120). */
+async function holdFailures({ context, org }: CheckDemoTasksInput) {
+  const rooms = (org.tasks ?? []).flatMap((task) =>
+    task.doneDay === undefined ? (task.items ?? []) : [],
+  );
+  const failures: string[] = [];
+  for (const [hold, kind] of [
+    ["PREBOOK", "SOFT"],
+    ["BOOK", "HARD"],
+  ] as const) {
+    const wanted = rooms.filter((room) => room.hold === hold).length;
+    const held = await context.db.occupancy.count({
+      where: { taskItemId: { not: null }, type: "HOLD", holdKind: kind },
+    });
+    if (held !== wanted)
+      failures.push(`${org.slug}: ${held} ${kind} task holds, expected ${wanted}`);
   }
   return failures;
 }

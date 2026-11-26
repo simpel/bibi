@@ -28,8 +28,9 @@ export const TaskRef = objectFromSchema<TaskDto>({
   schema: TaskSchema,
   omit: ["organizationId"],
   description:
-    "Task – a site visit, tasting or deadline around a customer, before or beside an order " +
-    "(ADR 0117). `type` is { id, name }; `warnings` are advisory (ITEM_BUSY).",
+    "Task – a site visit, tasting or deadline, optionally around a customer, before or beside " +
+    "an order (ADR 0117, 0120). `type` is { id, name }; `dueAt` is its one due time (null = " +
+    "none); `items` are the rooms it relates to, prebooks (soft) or books (hard).",
 });
 const TaskPageRef = pageType({ name: "TaskPage", item: TaskRef, withTotal: true });
 
@@ -59,7 +60,7 @@ async function listBy({ limit, ctx, ...where }: ListByInput & { ctx: GraphqlCont
 builder.objectField(CustomerRef, "tasks", (t) =>
   t.field({
     type: [TaskRef],
-    description: "The customer's tasks, by start.",
+    description: "The customer's tasks, by due time.",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
     resolve: (customer, { limit }, ctx) => listBy({ customerId: customer.id, limit, ctx }),
   }),
@@ -68,7 +69,7 @@ builder.objectField(CustomerRef, "tasks", (t) =>
 builder.objectField(OrderRef, "tasks", (t) =>
   t.field({
     type: [TaskRef],
-    description: "Tasks linked to the order, by start.",
+    description: "Tasks linked to the order, by due time.",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
     resolve: (order, { limit }, ctx) => listBy({ orderId: order.id, limit, ctx }),
   }),

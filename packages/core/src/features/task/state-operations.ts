@@ -6,24 +6,32 @@ import { notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
 import { linkTasks, loadLinkableOrder } from "./link-order";
 import { TaskIdInputSchema, TaskLinkOrderInputSchema, TaskSchema } from "./schema";
+import { syncTaskHolds } from "./sync-task-holds";
+import { relateTaskItems } from "./task-items";
 import { checkTaskAccess } from "./task-rules";
 import { loadTask, TASK_INCLUDE, toTaskDtos } from "./to-task-dto";
 
 type SetDoneInput = { context: OperationContext; id: string; done: boolean };
 
-/** Marks the task done (stamps when and by whom) or open again, and records the change. */
+/**
+ * Marks the task done (stamps when and by whom) or open again, and records the change. Done
+ * releases its holds for good (ADR 0120): its prebooked and booked rooms become related, so
+ * reopening it brings no hold back.
+ */
 async function setDone({ context, id, done }: SetDoneInput) {
   const before = await loadTask({ context, id });
   if (!before) return notFound({ entity: "Task" });
   if ((before.doneAt !== null) === done) return ok({ value: before });
-  const row = await context.db.task.update({
+  await context.db.task.update({
     where: { id },
     data: done
       ? { doneAt: nowOf({ context }), doneById: context.actor.userId }
       : { doneAt: null, doneById: null },
-    include: TASK_INCLUDE,
   });
-  const [task] = await toTaskDtos({ context, rows: [row] });
+  if (done) await relateTaskItems({ context, taskId: id });
+  const held = await syncTaskHolds({ context, taskId: id });
+  if (!held.ok) return held;
+  const task = await loadTask({ context, id });
   if (!task) return notFound({ entity: "Task" });
   context.recordChange({ entityId: id, before, after: task });
   return ok({ value: task });
@@ -33,7 +41,9 @@ export const completeTask = defineOperation({
   name: "task.complete",
   kind: "command",
   description:
-    "Mark a task done: sets doneAt and doneById. A task already done is returned unchanged.",
+    "Mark a task done: sets doneAt and doneById and releases its rooms' holds for good (ADR " +
+    "0120: each prebook or book becomes related; reopening does not hold them again). A task " +
+    "already done is returned unchanged.",
   input: TaskIdInputSchema,
   output: TaskSchema,
   permission: "task:write",
@@ -43,7 +53,9 @@ export const completeTask = defineOperation({
 export const reopenTask = defineOperation({
   name: "task.reopen",
   kind: "command",
-  description: "Open a done task again: clears doneAt and doneById. An open task is unchanged.",
+  description:
+    "Open a done task again: clears doneAt and doneById; its rooms stay related, so set a " +
+    "prebook or book again with task.update. An open task is unchanged.",
   input: TaskIdInputSchema,
   output: TaskSchema,
   permission: "task:write",
@@ -81,7 +93,8 @@ export const archiveTask = defineOperation({
   name: "task.archive",
   kind: "command",
   description:
-    "Delete (archive) a task: it leaves lists, the calendar, pipeline cards and Needs you.",
+    "Delete (archive) a task: it leaves lists, the calendar, pipeline cards and Needs you, and " +
+    "its rooms' holds are released until it is restored.",
   input: TaskIdInputSchema,
   output: TaskSchema,
   permission: "task:delete",
@@ -94,6 +107,8 @@ export const archiveTask = defineOperation({
       include: TASK_INCLUDE,
     });
     await archiveRecords({ context, ids: [id] });
+    const held = await syncTaskHolds({ context, taskId: id });
+    if (!held.ok) return held;
     const [task] = await toTaskDtos({ context, rows: [row] });
     if (!task) return notFound({ entity: "Task" });
     context.recordChange({ entityId: id, before, after: task });

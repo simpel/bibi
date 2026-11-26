@@ -2,13 +2,14 @@ import type { TaskDto, TaskUpdateInput } from "@bibi/core";
 import type { TaskFormOutput } from "./task-form-schema";
 
 /** The parts of a task edited in place, each by the page element that shows it. */
-export type TaskEditGroup = "when" | "contact" | "assignee" | "item" | "note";
+export type TaskEditGroup = "due" | "customer" | "contact" | "assignee" | "note";
 
 const GROUP_KEYS = {
-  when: ["entityTypeId", "startsAt", "endsAt"],
+  due: ["entityTypeId", "dueAt"],
+  // A new customer (or none) takes its own contact and leaves the old customer's order.
+  customer: ["customerId", "contactId", "orderId"],
   contact: ["contactId"],
   assignee: ["assigneeId"],
-  item: ["itemId"],
   note: ["note"],
 } as const satisfies Record<
   TaskEditGroup,

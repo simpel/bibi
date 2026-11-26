@@ -19,7 +19,6 @@ import {
 } from "./schema";
 import { checkTypeBuffers } from "./type-buffers";
 import { checkTypeGroup } from "./type-group";
-import { checkShapeChange } from "./type-task-shape";
 
 type NameTakenInput = {
   context: Pick<OperationContext, "db">;
@@ -41,7 +40,7 @@ export const createEntityType = defineOperation({
   kind: "command",
   description:
     "Create one of the organization's own types, e.g. an item type Konferensrum with " +
-    "BOOKABLE + SETUPS + PRICED, or a task type Site visit with taskShape MEETING. Names are " +
+    "BOOKABLE + SETUPS + PRICED, or a task type Site visit. Names are " +
     "unique per base entity. Add fields afterwards with fieldDefinition.create.",
   input: EntityTypeCreateInputSchema,
   output: EntityTypeSchema,
@@ -57,8 +56,7 @@ export const updateEntityType = defineOperation({
     "an expiring state fall when the order's holdsUntil passes) or its default setup and " +
     "teardown minutes (held around bookings; a hard hold that would then collide is CONFLICT) " +
     "or its group (groupId, ADR 0101; null leaves it ungrouped), or whether a customer type " +
-    "is business or private (buyerKind; existing customers keep their own), or a task type's " +
-    "shape (taskShape; CONFLICT while it has active tasks). " +
+    "is business or private (buyerKind; existing customers keep their own). " +
     "Switching a capability off while items of the " +
     "type have data for it (e.g. prices for PRICED) is refused with CONFLICT.",
   input: EntityTypeUpdateInputSchema,
@@ -72,8 +70,6 @@ export const updateEntityType = defineOperation({
     if (!valid.ok) return valid;
     const buffered = checkTypeBuffers({ base: before.base, ...data });
     if (!buffered.ok) return buffered;
-    const shaped = await checkShapeChange({ context, type: before, taskShape: data.taskShape });
-    if (!shaped.ok) return shaped;
     const removed = before.capabilities.filter((capability) => !capabilities.includes(capability));
     const removable = await checkCapabilitiesRemovable({ context, entityTypeId: id, removed });
     if (!removable.ok) return removable;

@@ -419,7 +419,6 @@
       "sections": "Avsnitt",
       "resourceKind": "Utrustning eller person",
       "buyerKind": "Företag eller privat",
-      "taskShape": "Form",
       "group": "Grupp",
       "pluralName": "Pluralform",
       "pluralNamePlaceholder": "Konferensrum"

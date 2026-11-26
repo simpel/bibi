@@ -231,6 +231,8 @@
     "blocked": "Blocked",
     "notSold": "not sold",
     "booked": "Booked",
+    "taskPrebook": "Prebooked on a task",
+    "taskBook": "Booked on a task",
     "guests": "{count, plural, one {# guest} other {# guests}}",
     "exclVat": "{amount} excl. VAT",
     "value": {

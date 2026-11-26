@@ -35,7 +35,7 @@ export function itemDeleteBlockers({ context, id }: KindInput) {
         ...{ feature: "orderTemplate", path: "packages", what: "package lines" },
       }),
       countBlocker({
-        count: db.task.count({ where: { itemId: id, status: EITHER_STATUS } }),
+        count: db.taskItem.count({ where: { itemId: id } }),
         ...{ feature: "task", path: "tasks", what: "tasks" },
       }),
       countBlocker({

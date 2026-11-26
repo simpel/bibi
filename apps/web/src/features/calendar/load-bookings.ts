@@ -101,6 +101,16 @@ export async function loadBookings({ range }: { range: DayRange }): Promise<Resu
     },
     via: { LINE: t("viaLine"), ORDER: t("viaOrder") },
     orderHref: ({ orderId }) => orderRoute({ id: orderId }),
+    taskStates: {
+      soft: {
+        name: t("taskPrebook"),
+        color: "var(--task)",
+        ink: "var(--foreground)",
+        hold: "soft",
+      },
+      hard: { name: t("taskBook"), color: "var(--task)", ink: "var(--foreground)", hold: "hard" },
+    },
+    taskHref: ({ taskId }) => taskRoute({ id: taskId }),
   });
   const tasks = toCalendarTasks({
     tasks: blocks.value.tasks,

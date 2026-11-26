@@ -3,8 +3,8 @@
     "name": "Task",
     "plural": "Tasks",
     "create": "Create task",
-    "createDescription": "A site visit, a tasting or a deadline for a customer. It shows on the calendar and in My work, but books nothing.",
-    "listDescription": "Site visits, tastings and deadlines around your customers, before or beside an order.",
+    "createDescription": "A site visit, a tasting, a deadline or a note to yourself. Only the type is required. A task can name rooms and set them aside, but it is never an order.",
+    "listDescription": "Site visits, tastings, deadlines and notes, with or without a customer and a time, before or beside an order.",
     "created": "Task created",
     "updated": "Task saved",
     "completed": "Task done",
@@ -12,7 +12,7 @@
     "archived": "Task archived",
     "linked": "Task added to the order",
     "empty": "No tasks yet",
-    "emptyDescription": "Create a task for a site visit, a tasting or a deadline.",
+    "emptyDescription": "Create a task for a site visit, a tasting, a deadline or a note to yourself.",
     "noMatches": "No tasks match.",
     "noTypes": "No task types yet",
     "noTypesDescription": "Create a task type, such as Site visit, under Types first.",
@@ -26,49 +26,38 @@
     "archiveConfirm": "{name} is removed from the calendar, the lists and My work.",
     "details": "Details",
     "noNote": "No note",
-    "related": "Related",
-    "relatedEmpty": "Nothing related yet.",
-    "addRelated": "Add",
-    "removeRelated": "Remove {name}",
     "addToOrder": "Add to order",
-    "addToOrderDescription": "Add the task to one of the customer's orders. It can only belong to one order.",
+    "addToOrderDescription": "Add the task to one of the customer's orders. It can belong to one order at a time.",
+    "editOrder": "Edit order",
+    "editOrderDescription": "Move the task to another of the customer's orders, or remove it from its order.",
+    "removeFromOrder": "Remove from order",
+    "customerUnlinksOrder": "With another customer, or none, the task leaves its order.",
     "findOrder": "Find an order…",
     "noOrderFound": "No order found.",
-    "busy": {
-      "title": "{item} is busy",
-      "theItem": "The item",
-      "description": "Another booking or a block holds it {when}. The task is still saved."
-    },
     "state": {
       "open": "Open",
       "done": "Done",
       "overdue": "Overdue"
     },
-    "shapes": {
-      "MEETING": "Meeting",
-      "DEADLINE": "Deadline"
-    },
     "fields": {
       "type": "Type",
       "customer": "Customer",
       "contact": "Contact person",
-      "startsAt": "Starts",
-      "endsAt": "Ends",
       "dueAt": "Due",
-      "when": "When",
-      "item": "Room or item",
-      "noItem": "None",
       "assignee": "Assignee",
       "unassigned": "Unassigned",
       "note": "Note",
       "order": "Order",
-      "noOrder": "No order"
+      "noOrder": "No order",
+      "noDueTime": "No due time",
+      "noCustomer": "No customer",
+      "noContact": "No contact person"
     },
     "inlineEdit": {
-      "when": "Edit type and time",
+      "due": "Edit type and due time",
+      "customer": "Edit customer",
       "contact": "Edit contact person",
       "assignee": "Edit assignee",
-      "item": "Edit room or item",
       "note": "Edit note",
       "details": "Edit details"
     },
@@ -77,7 +66,7 @@
       "customer": "Customer",
       "assignee": "Assignee",
       "state": "State",
-      "when": "When"
+      "due": "Due"
     },
     "query": {
       "is": "Is",
@@ -94,13 +83,45 @@
     "calendar": {
       "lane": "Tasks",
       "legend": "Task",
-      "legendText": "Outlined: a site visit or a deadline, never a booking"
+      "legendText": "Outlined: a task or a room it holds, never a booking"
     },
     "slot": {
       "createTask": "Create task"
     },
     "myWork": {
       "title": "Tasks"
+    },
+    "rooms": {
+      "title": "Rooms",
+      "empty": "No rooms yet.",
+      "group": {
+        "BOOK": "Book",
+        "PREBOOK": "Prebook",
+        "RELATED": "Related"
+      },
+      "hold": {
+        "BOOK": "Book",
+        "PREBOOK": "Prebook",
+        "RELATED": "Related"
+      },
+      "holdHint": {
+        "BOOK": "Blocks the room for this period. Nobody else can book it.",
+        "PREBOOK": "Sets the room aside for this period. It can still be booked by others.",
+        "RELATED": "Only names the room. Nothing is held."
+      },
+      "item": "Room",
+      "mode": "Use as",
+      "from": "From",
+      "to": "To",
+      "add": "Add room",
+      "edit": "Edit {name}",
+      "editTitle": "Edit {name}",
+      "removeRoom": "Remove {name}",
+      "remove": "Remove room",
+      "dialogDescription": "Choose how the task uses the room. A booked or prebooked room has its own period, which does not have to match the due time. Marking the task done releases it.",
+      "createHint": "Name the rooms the task is about, or set them aside while you wait for an answer.",
+      "rowInvalid": "This room can't be saved for that period. Check the period; a booked room may already be taken.",
+      "unknown": "Unknown room"
     }
   }
 }

@@ -5,9 +5,11 @@ import { recordReconciliation } from "./record-reconciliation";
 import { recordRelationsReconciliation } from "./record-relations-reconcile";
 import { paymentRefundReconciliation } from "./refund-reconcile";
 import { runSheetCurrentReconciliation } from "./run-sheet-current-reconcile";
+import { taskHoldsReconciliation } from "./task-holds-reconcile";
 
 export const RECONCILIATIONS = [
   lineHoldsReconciliation,
+  taskHoldsReconciliation,
   recordReconciliation,
   recordRelationsReconciliation,
   orderStatusReconciliation,

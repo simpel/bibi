@@ -2,13 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
 import { AppLink } from "../app-link/app-link";
-import {
-  TASK_EDGE,
-  TASK_ICONS,
-  type TaskShape,
-  taskTimeVariants,
-  taskTitleVariants,
-} from "../task-shape/task-shape";
+import { TASK_EDGE, TASK_ICON, taskTimeVariants, taskTitleVariants } from "../task-look/task-look";
 
 export const taskChipVariants = cva(
   cn(
@@ -30,7 +24,6 @@ export const taskChipVariants = cva(
 
 export type TaskChipProps = Omit<ComponentProps<"span">, "title"> &
   Pick<VariantProps<typeof taskChipVariants>, "size"> & {
-    shape: TaskShape;
     /** Already formatted: "Thu 14:00". */
     timeLabel: string;
     title: string;
@@ -42,11 +35,10 @@ export type TaskChipProps = Omit<ComponentProps<"span">, "title"> &
   };
 
 /**
- * An order card's next step in one line: the shape's icon, the time, the title. Outlined in the
+ * An order card's next step in one line: the task icon, the due time, the title. Outlined in the
  * task colour, never filled, so it never reads as part of the order's own colour.
  */
 export function TaskChip({
-  shape,
   timeLabel,
   title,
   overdue = false,
@@ -56,7 +48,7 @@ export function TaskChip({
   className,
   ...props
 }: TaskChipProps) {
-  const Icon = TASK_ICONS[shape];
+  const Icon = TASK_ICON;
   const body = (
     <>
       <Icon aria-hidden />

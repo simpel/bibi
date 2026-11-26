@@ -11,29 +11,36 @@ import type { TaskFormData } from "./ui/task-form-data";
 const LIMIT = 100;
 
 /**
- * Task types, customers, contacts, members and items (one page each), once per request. Without
- * `customer:read` the customers are hidden, not an error; members and items are optional.
+ * Task types, customers, contacts, members and bookable items (one page each), once per
+ * request. Without `customer:read` the customers are hidden, not an error; members and items
+ * are optional.
  */
 export const loadTaskFormData = cache(async (): Promise<Result<TaskFormData>> => {
-  const [types, customers, contacts, members, items, abilities, timeZone] = await Promise.all([
-    loadEntityTypesOf({ base: "TASK" }),
-    runOperation({ operation: listCustomers, input: { limit: LIMIT } }),
-    runOperation({ operation: listContacts, input: { limit: LIMIT } }),
-    runOperation({ operation: listMembers, input: { limit: LIMIT } }),
-    loadPickerItems(),
-    getCallerAbilities(),
-    loadOrganizationTimeZone(),
-  ]);
+  const [types, itemTypes, customers, contacts, members, items, abilities, timeZone] =
+    await Promise.all([
+      loadEntityTypesOf({ base: "TASK" }),
+      loadEntityTypesOf({ base: "ITEM" }),
+      runOperation({ operation: listCustomers, input: { limit: LIMIT } }),
+      runOperation({ operation: listContacts, input: { limit: LIMIT } }),
+      runOperation({ operation: listMembers, input: { limit: LIMIT } }),
+      loadPickerItems(),
+      getCallerAbilities(),
+      loadOrganizationTimeZone(),
+    ]);
   if (!types.ok) return types;
+  const bookableTypes = new Set(
+    (itemTypes.ok ? itemTypes.value.items : [])
+      .filter((type) => type.capabilities.includes("BOOKABLE"))
+      .map(({ id }) => id),
+  );
+  const isBookable = ({ entityTypeId }: { entityTypeId: string }) =>
+    bookableTypes.has(entityTypeId);
   if (!customers.ok && customers.error.code !== "FORBIDDEN") return customers;
   const contactRows = contacts.ok ? contacts.value.items : [];
   return {
     ok: true,
     value: {
-      types: types.value.items.map(({ id, name, taskShape }) => ({
-        ...{ id, name },
-        shape: taskShape ?? "MEETING",
-      })),
+      types: types.value.items.map(({ id, name }) => ({ id, name })),
       customers: customers.ok ? customers.value.items.map(({ id, name }) => ({ id, name })) : [],
       customersHidden: !customers.ok,
       contacts: contactRows.map(({ id, name, customerId, email, phone }) => ({
@@ -42,9 +49,9 @@ export const loadTaskFormData = cache(async (): Promise<Result<TaskFormData>> =>
       members: members.ok
         ? members.value.items.map(({ userId, name, email }) => ({ id: userId, name, email }))
         : [],
-      // Items at a venue (rooms, areas): what a site visit may show.
+      // Only items that can be booked can be held or named by a task (ADR 0120).
       items: items.ok
-        ? items.value.items.filter((item) => item.venueId).map(({ id, name }) => ({ id, name }))
+        ? items.value.items.filter(isBookable).map(({ id, name }) => ({ id, name }))
         : [],
       meId: abilities.userId,
       timeZone,

@@ -5,7 +5,6 @@ import {
   EntityTypeCreateInputSchema,
   type ItemCapability,
   type ResourceKind,
-  type TaskShape,
 } from "@bibi/core/schemas";
 import type { z } from "zod";
 import {
@@ -17,7 +16,7 @@ import { formSchema } from "@/lib/form-schema";
 
 /**
  * Raw values of the type form. Capabilities, buffers and resource kind only apply to ITEM types,
- * business or private only to CUSTOMER types, the shape only to TASK types.
+ * business or private only to CUSTOMER types.
  */
 export type EntityTypeFormValues = BufferFormValues & {
   base: EntityBase;
@@ -29,8 +28,6 @@ export type EntityTypeFormValues = BufferFormValues & {
   resourceKind: ResourceKind;
   /** Customer types: business or private (ADR 0106). */
   buyerKind: BuyerKindValue;
-  /** Task types: meeting or deadline (ADR 0117). */
-  taskShape: TaskShape;
   /** Item types: the group id, or `NO_GROUP` for none (a Select item cannot be empty). */
   groupId: string;
 };
@@ -53,7 +50,6 @@ export function entityTypeFormToInput({ values }: EntityTypeFormInput) {
     capabilities: item ? values.capabilities : undefined,
     resourceKind: item ? values.resourceKind : undefined,
     buyerKind: values.base === "CUSTOMER" ? values.buyerKind : undefined,
-    taskShape: values.base === "TASK" ? values.taskShape : undefined,
     groupId: item ? (values.groupId === NO_GROUP ? null : values.groupId) : undefined,
     ...(item ? bufferFormToInput({ values }) : {}),
   };
@@ -76,7 +72,6 @@ export function entityTypeFormDefaults({
     capabilities: entityType?.capabilities ?? [],
     resourceKind: entityType?.resourceKind ?? "EQUIPMENT",
     buyerKind: entityType?.buyerKind ?? "BUSINESS",
-    taskShape: entityType?.taskShape ?? "MEETING",
     groupId: entityType?.groupId ?? NO_GROUP,
     ...bufferFormDefaults({ stored: entityType }),
   };

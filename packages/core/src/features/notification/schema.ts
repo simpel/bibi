@@ -33,7 +33,11 @@ export const NotificationDataSchema = z.object({
   commentId: z.string().optional().describe("COMMENT_*: the comment (comment.get)"),
   reply: z.boolean().optional().describe("COMMENT_*: the comment answers another one"),
   taskTypeName: z.string().optional().describe("Task subject: the task's type then"),
-  taskStartsAt: z.string().optional().describe("Task subject: its start or due time, ISO"),
+  taskDueAt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Task subject: its due time then, ISO; null = no due time"),
 });
 export type NotificationData = z.infer<typeof NotificationDataSchema>;
 

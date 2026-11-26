@@ -16,10 +16,9 @@ import { type TaskEditGroup, toTaskUpdate } from "./task-edit-groups";
 import {
   TaskAssigneeField,
   TaskCustomerFields,
-  TaskItemField,
+  TaskDueField,
   TaskNoteField,
   TaskTypeField,
-  TaskWhenFields,
 } from "./task-fields";
 import type { TaskFormData } from "./task-form-data";
 import {
@@ -61,13 +60,15 @@ function Editor({ task, data, groups }: EditorProps) {
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
-        {shows.has("when") ? <TaskTypeField form={form} data={data} /> : null}
-        {shows.has("when") ? <TaskWhenFields form={form} data={data} /> : null}
-        {shows.has("contact") ? (
-          <TaskCustomerFields form={form} data={data} withCustomer={false} />
+        {shows.has("due") ? <TaskTypeField form={form} data={data} /> : null}
+        {shows.has("due") ? <TaskDueField form={form} /> : null}
+        {shows.has("customer") || shows.has("contact") ? (
+          <TaskCustomerFields form={form} data={data} withCustomer={shows.has("customer")} />
+        ) : null}
+        {shows.has("customer") && task.orderId ? (
+          <p className="text-sm text-muted-foreground">{t("customerUnlinksOrder")}</p>
         ) : null}
         {shows.has("assignee") ? <TaskAssigneeField form={form} data={data} /> : null}
-        {shows.has("item") ? <TaskItemField form={form} data={data} /> : null}
         {shows.has("note") ? <TaskNoteField form={form} /> : null}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline" onClick={close} disabled={pending}>

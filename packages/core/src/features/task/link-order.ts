@@ -15,7 +15,7 @@ export type LinkTasksInput = {
   pathOf: (index: number) => string;
 };
 
-type Found = { id: string; customerId: string; orderId: string | null };
+type Found = { id: string; customerId: string | null; orderId: string | null };
 
 function issuesOf({ input, found }: { input: LinkTasksInput; found: Map<string, Found> }) {
   const invalidIssues: AppErrorIssue[] = [];
@@ -24,6 +24,7 @@ function issuesOf({ input, found }: { input: LinkTasksInput; found: Map<string, 
     const path = input.pathOf(index);
     const task = found.get(id);
     if (!task) invalidIssues.push({ path, message: "Unknown task" });
+    else if (!task.customerId) invalidIssues.push({ path, message: "The task has no customer" });
     else if (task.customerId !== input.customerId)
       invalidIssues.push({ path, message: "The task is for another customer" });
     else if (task.orderId) linked.push({ path, message: "The task is already linked to an order" });

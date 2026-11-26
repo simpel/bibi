@@ -89,6 +89,13 @@ export const CalendarBlockSchema = z.object({
     .string()
     .nullable()
     .describe("The line the hold or buffer belongs to; null for a manual block"),
+  taskId: z
+    .string()
+    .nullable()
+    .describe(
+      "The task whose room hold this is (ADR 0120: a prebook is soft, a book hard); null for a " +
+        "line's hold or a manual block, and without task:read",
+    ),
   orderId: z.string().nullable().describe("The line's order; null for a manual block"),
   reference: z.number().int().nullable().describe("The order's reference number"),
   orderTitle: z
@@ -100,7 +107,10 @@ export const CalendarBlockSchema = z.object({
   title: z
     .string()
     .nullable()
-    .describe("The line's name (null without program:read), or the note of a manual block"),
+    .describe(
+      "The line's name (null without program:read), the task type's name for a task hold " +
+        "(null without task:read), or the note of a manual block",
+    ),
   soft: z.boolean().describe("A soft hold (ADR 0044): may overlap other soft holds"),
   allocated: z
     .boolean()
@@ -128,8 +138,8 @@ export const CalendarRangeSchema = z.object({
   tasks: z
     .array(CalendarTaskSchema)
     .describe(
-      "Tasks in [from, to) by start (ADR 0117): meetings overlapping it, deadlines due in it; " +
-        "empty without task:read",
+      "Tasks due in [from, to), by due time (ADR 0117, 0120); tasks without a due time are " +
+        "not on the calendar; empty without task:read",
     ),
   currency: z.string().describe("ISO 4217 code of the day values"),
   values: z

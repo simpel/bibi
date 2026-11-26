@@ -7,7 +7,7 @@ import { BUSY_ASSETS } from "./busy-assets-data";
 import { BUSY_BOOKINGS } from "./busy-bookings-data";
 import { LiveCalendar } from "./live-calendar";
 import { STATES } from "./states-data";
-import { STORY_TASKS } from "./tasks-data";
+import { STORY_TASK_HOLDS, STORY_TASKS } from "./tasks-data";
 
 const meta = {
   title: "Calendar/Availability",
@@ -55,11 +55,15 @@ export const DayValues: Story = { args: { initialLevel: "week", withValues: true
 export const MonthDayValues: Story = { args: { initialLevel: "month", withValues: true } };
 
 /**
- * Tasks on their own lane above the assets, outlined and never filled; one with a place is
- * echoed as an outline on that asset's row.
+ * Tasks as points on their own lane above the assets, outlined and never filled; one that
+ * names a room is echoed on that room's row, and a room it holds is a block in the task colour.
  */
 export const WithTasks: Story = {
-  args: { assets: ASSETS, template: BOOKINGS, tasks: STORY_TASKS },
+  args: {
+    assets: ASSETS,
+    template: [...BOOKINGS, ...STORY_TASK_HOLDS],
+    tasks: STORY_TASKS,
+  },
   decorators: [
     (Story) => (
       <>

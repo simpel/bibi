@@ -1,4 +1,4 @@
-import { CalendarBlockSchema, CalendarRangeSchema } from "@bibi/core/schemas";
+import { CalendarBlockSchema, CalendarRangeSchema, CalendarTaskSchema } from "@bibi/core/schemas";
 import { z } from "zod";
 import { HOURS_UI_ENTRIES } from "./hours-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
@@ -16,6 +16,7 @@ export const CalendarRangeWireSchema = CalendarRangeSchema.extend({
       expiresAt: z.string().nullable(),
     }),
   ),
+  tasks: z.array(CalendarTaskSchema.extend({ dueAt: z.string() })),
 });
 
 export type CalendarRangeWire = z.infer<typeof CalendarRangeWireSchema>;

@@ -1,31 +1,28 @@
-/// What a task type's tasks look like (ADR 0117): a `MEETING` has a start and an end, a
-/// `DEADLINE` one due time.
-enum TaskShape {
-  MEETING
-  DEADLINE
+/// How a room on a task is used (ADR 0120): `RELATED` only names it, `PREBOOK` sets it aside as a
+/// soft hold, `BOOK` blocks it as a hard hold.
+enum TaskItemHold {
+  RELATED
+  PREBOOK
+  BOOK
 }
 
-/// Task – timed work around a customer that is not sold or delivered (ADR 0117): a site visit, a
-/// tasting, "final headcount due". Its type (base `TASK`) decides its own fields and its shape.
-/// It belongs to a customer and a contact at that customer, may be linked to one order of the
-/// same customer once (`orderId`, owned, set once), and may name an item it only warns about
-/// (`ITEM_BUSY`, derived on read, never a hold). Every other column is owned; one assignee plus
-/// followers come from `Assignment` (ADR 0034). Archiving is the delete.
+/// Task – work around a customer or on its own that is not sold or delivered (ADR 0117, 0120): a
+/// site visit, a tasting, "final headcount due". Its type (base `TASK`) decides its own fields.
+/// Only the type is required: the customer and a contact at it, one due time, an order of the
+/// customer (`orderId`, owned) and rooms (`TaskItem`) are optional. Every column is owned; one
+/// assignee plus followers come from `Assignment` (ADR 0034). Archiving is the delete.
 model Task {
   id             String       @id
   organizationId String
   entityTypeId   String
-  customerId     String
-  /// A contact person at the customer (core checks it works there).
-  contactId      String
-  /// The order it was linked to, once; null = not linked.
+  /// Optional (ADR 0120). Null = no customer; then there is no contact and no order either.
+  customerId     String?
+  /// A contact person at the customer (core checks it works there); needs a customer.
+  contactId      String?
+  /// The order of the customer it is linked to; null = not linked.
   orderId        String?
-  /// The item it names, e.g. the room to show; advisory, it never holds the item.
-  itemId         String?
-  /// The start of a meeting, or the due time of a deadline.
-  startsAt       DateTime
-  /// The end of a meeting (after `startsAt`); always null for a deadline.
-  endsAt         DateTime?
+  /// When it is due: one instant, never a span; null = no due time (ADR 0120).
+  dueAt          DateTime?
   /// Free text, at most 4000 characters.
   note           String?
   /// When it was marked done and by whom; both null while it is open.
@@ -41,10 +38,10 @@ model Task {
   updatedAt      DateTime     @updatedAt
   createdBy      String?
   entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  customer       Customer     @relation(fields: [customerId, organizationId], references: [id, organizationId])
-  contact        Contact      @relation(fields: [contactId, organizationId], references: [id, organizationId])
+  customer       Customer?    @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  contact        Contact?     @relation(fields: [contactId, organizationId], references: [id, organizationId])
   order          Order?       @relation(fields: [orderId, organizationId], references: [id, organizationId])
-  item           Item?        @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  items          TaskItem[]
   notifications  Notification[]
   needsYouDismissals NeedsYouDismissal[]
   /// The supertable row this record extends (ADR 0056).
@@ -53,6 +50,31 @@ model Task {
   @@unique([id, organizationId])
   @@index([organizationId, customerId])
   @@index([organizationId, orderId])
-  @@index([organizationId, startsAt])
+  @@index([organizationId, dueAt])
   @@index([organizationId, entityTypeId])
+}
+
+/// A room a task concerns (ADR 0120): named only (`RELATED`), or held for its own window as a
+/// prebook (soft) or book (hard). Owned. A held room has a `startsAt` before `endsAt` of its own,
+/// unrelated to the task's due time; a related one has neither (check constraint). Its hold is the
+/// `Occupancy` row with `taskItemId`, a projection written only by core's `syncTaskHolds` and
+/// checked by the `task-holds` reconciliation: active while the task is open and not archived.
+model TaskItem {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  taskId         String
+  itemId         String
+  hold           TaskItemHold @default(RELATED)
+  startsAt       DateTime?
+  endsAt         DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  task           Task         @relation(fields: [taskId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  item           Item         @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  occupancies    Occupancy[]
+
+  @@unique([id, organizationId])
+  @@unique([taskId, itemId])
+  @@index([organizationId, itemId])
 }

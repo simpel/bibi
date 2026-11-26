@@ -43,7 +43,7 @@ async function blockedPeriod({ context, line }: Db & { line: TimedLine & { itemI
 
 type TimedLine = LineRecord & { startsAt: Date; endsAt: Date };
 
-type Holder = { lineId: string | null };
+type Holder = { lineId: string | null; taskItemId: string | null };
 
 /** Order reference per line id, for the lines among the holders (one query). */
 async function orderRefs({ context, holders }: Db & { holders: readonly Holder[] }) {
@@ -95,7 +95,12 @@ export async function holdCollisions({
   const path = `lines.${line.id}`;
   return holders.map((holder) => {
     const ref = holder.lineId ? refs.get(holder.lineId) : undefined;
-    const by = ref === undefined ? `blocked (${holder.type})` : `booked by order #${ref}`;
+    const by =
+      ref !== undefined
+        ? `booked by order #${ref}`
+        : holder.taskItemId
+          ? "booked by a task"
+          : `blocked (${holder.type})`;
     const message = `"${line.name}": ${item.name} is ${by} on ${day({ at: holder.startsAt })}`;
     return { path, message };
   });

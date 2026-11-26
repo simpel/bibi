@@ -1,35 +1,46 @@
-import type { Task } from "@bibi/db";
+import type { Prisma, Task, TaskItem } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../records/record-links";
 import { nowOf } from "../../time/now";
-import { itemBusyWarnings } from "./item-busy";
 import type { TaskDto } from "./schema";
 
 type Context = Pick<OperationContext, "db" | "permissions" | "now">;
 
-/** Prisma `include` for every task read (`toTaskDtos`): its type and its `LINK` values. */
+/** The order a task's rooms are listed in, everywhere (DTO, issue paths of holds). */
+export const TASK_ITEM_ORDER: Prisma.TaskItemOrderByWithRelationInput[] = [
+  { createdAt: "asc" },
+  { id: "asc" },
+];
+
+const TASK_ITEM_SELECT = {
+  id: true,
+  itemId: true,
+  hold: true,
+  startsAt: true,
+  endsAt: true,
+} as const;
+
+/** Prisma `include` for every task read (`toTaskDtos`): its type, rooms and `LINK` values. */
 export const TASK_INCLUDE = {
   ...WITH_RECORD_LINKS,
-  entityType: { select: { id: true, name: true, taskShape: true } },
+  entityType: { select: { id: true, name: true } },
+  items: { select: TASK_ITEM_SELECT, orderBy: TASK_ITEM_ORDER },
 } as const;
 
 export type TaskRow = Task &
   WithRecordLinks & {
-    entityType: { id: string; name: string; taskShape: "MEETING" | "DEADLINE" | null };
+    entityType: { id: string; name: string };
+    items: Pick<TaskItem, "id" | "itemId" | "hold" | "startsAt" | "endsAt">[];
   };
 
-/** When an open task is due: a meeting's end, a deadline's due time (ADR 0117). */
-export const dueAtOf = ({ task }: { task: { startsAt: Date; endsAt: Date | null } }) =>
-  task.endsAt ?? task.startsAt;
-
-/** Open and past its end or due time. */
+/** Open with a due time before `now` (ADR 0120): a task without a due time is never overdue. */
 export const isOverdue = ({
   task,
   now,
 }: {
-  task: { doneAt: Date | null; startsAt: Date; endsAt: Date | null };
+  task: { doneAt: Date | null; dueAt: Date | null };
   now: Date;
-}) => task.doneAt === null && dueAtOf({ task }) < now;
+}) => task.doneAt === null && task.dueAt !== null && task.dueAt < now;
 
 /** The main assignee of each task (ADR 0034): its stored choice without a responsibility. */
 async function assigneesOf({ context, ids }: { context: Context; ids: string[] }) {
@@ -41,7 +52,7 @@ async function assigneesOf({ context, ids }: { context: Context; ids: string[] }
   return new Map(rows.map((row) => [row.recordId, row.assigneeId]));
 }
 
-/** Tasks as the API returns them: assignee, `overdue` and warnings derived in two queries. */
+/** Tasks as the API returns them: assignee and `overdue` derived, in one more query. */
 export async function toTaskDtos({
   context,
   rows,
@@ -49,20 +60,14 @@ export async function toTaskDtos({
   context: Context;
   rows: readonly TaskRow[];
 }): Promise<TaskDto[]> {
-  const ids = rows.map((row) => row.id);
-  const [assignees, warnings] = await Promise.all([
-    assigneesOf({ context, ids }),
-    itemBusyWarnings({ context, tasks: rows }),
-  ]);
+  const assignees = await assigneesOf({ context, ids: rows.map((row) => row.id) });
   const now = nowOf({ context });
   return rows.map(({ record: _record, entityType, entityTypeId: _type, ...row }) => ({
     ...row,
     type: { id: entityType.id, name: entityType.name },
-    shape: entityType.taskShape ?? (row.endsAt ? "MEETING" : "DEADLINE"),
     fields: recordFields({ row: { fields: row.fields, record: _record } }),
     assigneeId: assignees.get(row.id) ?? null,
     overdue: isOverdue({ task: row, now }),
-    warnings: warnings.get(row.id) ?? [],
   }));
 }
 

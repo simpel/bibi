@@ -4,13 +4,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { cn } from "../../lib/cn";
 import { AppLink } from "../app-link/app-link";
 import { Button } from "../button/button";
-import {
-  TASK_EDGE,
-  TASK_ICONS,
-  type TaskShape,
-  taskTimeVariants,
-  taskTitleVariants,
-} from "../task-shape/task-shape";
+import { TASK_EDGE, TASK_ICON, taskTimeVariants, taskTitleVariants } from "../task-look/task-look";
 
 export const taskRowVariants = cva(
   cn(
@@ -72,8 +66,7 @@ export function TaskCheckbox({
 
 export type TaskRowProps = Omit<ComponentProps<"div">, "title"> &
   Pick<VariantProps<typeof taskRowVariants>, "size"> & {
-    shape: TaskShape;
-    /** Already formatted on the server, time first: "Thu 14:00". */
+    /** Already formatted on the server, time first: "Thu 14:00", or a word for no time. */
     timeLabel: string;
     title: ReactNode;
     /** One muted line under it, e.g. "Volvo Cars · Sara". */
@@ -95,10 +88,9 @@ export type TaskRowProps = Omit<ComponentProps<"div">, "title"> &
 
 /**
  * One task in a list (tasks, an order's or customer's tasks, My work): round checkbox, the
- * shape's icon, the time first, then the title. No fill: a hairline in the task colour.
+ * task icon, the time first, then the title. No fill: a hairline in the task colour.
  */
 export function TaskRow({
-  shape,
   timeLabel,
   title,
   meta,
@@ -114,7 +106,7 @@ export function TaskRow({
   className,
   ...props
 }: TaskRowProps) {
-  const Icon = TASK_ICONS[shape];
+  const Icon = TASK_ICON;
   const heading = (
     <span className="flex min-w-0 items-baseline gap-1.5">
       <span className={taskTimeVariants({ overdue, done: checked })}>{timeLabel}</span>

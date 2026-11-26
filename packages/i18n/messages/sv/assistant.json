@@ -94,7 +94,8 @@
         "note": "Anteckning",
         "taskId": "Uppgift (id)",
         "taskIds": "Uppgifter att koppla",
-        "taskShape": "Uppgiftsform",
+        "dueAt": "Senast",
+        "items": "Rum",
         "inboundMessageId": "Meddelande i inkorgen",
         "parentLineId": "Tillägg till",
         "statusId": "Bokningsstatus (id)",
@@ -811,7 +812,7 @@
         "done": "Klar",
         "open": "Inte klar än",
         "linked": "Kopplad till en bokning",
-        "itemBusy": "Artikeln är upptagen då",
+        "noDueTime": "Ingen tid",
         "archived": "Borttagen"
       }
     },

@@ -15,19 +15,13 @@ import { Link, useRouter } from "@/lib/navigation";
 import { taskRoute } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import { setTaskDoneAction } from "../actions";
-import type { TaskListRow, TaskState } from "./task-list-row";
+import { TASK_STATE_COLORS, type TaskListRow, type TaskState } from "./task-list-row";
 
 export type TaskTableProps = { rows: TaskListRow[]; canEdit: boolean };
 
-const STATE_COLORS: Record<TaskState, string> = {
-  open: "var(--task)",
-  overdue: "var(--destructive)",
-  done: "var(--muted-foreground)",
-};
-
 const distinct = ({ values }: { values: string[] }) => [...new Set(values)];
 
-/** `/tasks`' table: done checkbox and type, customer, assignee, state and when. */
+/** `/tasks`' table: done checkbox and type, customer, assignee, state and due time. */
 export function TaskTable({ rows, canEdit }: TaskTableProps) {
   const t = useTranslations("task");
   const common = useTranslations("common");
@@ -80,17 +74,25 @@ export function TaskTable({ rows, canEdit }: TaskTableProps) {
         header: t("columns.state"),
         getStatus: (row) => ({
           label: state({ value: row.state }),
-          color: STATE_COLORS[row.state],
+          color: TASK_STATE_COLORS[row.state],
         }),
       }),
     ],
     dates: [
       dateColumn<TaskListRow>({
-        id: "when",
-        header: t("columns.when"),
-        getSortValue: (row) => row.startsAtMs,
+        id: "due",
+        header: t("columns.due"),
+        getSortValue: (row) => row.dueAtMs,
         cell: (row) => (
-          <span className={row.state === "overdue" ? "text-destructive" : undefined}>
+          <span
+            className={
+              row.state === "overdue"
+                ? "text-destructive"
+                : row.hasDueTime
+                  ? undefined
+                  : "text-muted-foreground"
+            }
+          >
             {row.timeLabel}
           </span>
         ),

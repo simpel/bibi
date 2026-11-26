@@ -230,19 +230,31 @@
       },
       "tasks": {
         "title": "Uppgifter",
-        "description": "Platsbesök, provsmakningar och deadlines kring en kund.",
+        "description": "Platsbesök, provsmakningar, deadlines och anteckningar till dig själv, med eller utan kund.",
         "questions": {
           "bookSiteVisit": {
-            "question": "Hur bokar jag ett platsbesök?",
-            "answer": "Klicka på **Skapa** högst upp och välj **Uppgift**, öppna kunden och klicka på **Skapa uppgift** under Uppgifter, eller klicka på en ledig tid i kalendern och välj **Skapa uppgift**. Välj typ, till exempel Platsbesök, kund, kontaktperson och tid. Du kan också välja rummet du vill visa.\nEn uppgift bokar aldrig rummet. Är rummet upptaget vid den tiden säger uppgiftens sida det, och uppgiften sparas ändå."
+            "question": "Hur skapar jag en uppgift, till exempel ett platsbesök?",
+            "answer": "Klicka på **Skapa** högst upp och välj **Uppgift**, öppna kunden och klicka på **Skapa uppgift** under Uppgifter, eller klicka på en ledig tid i kalendern och välj **Skapa uppgift**. Välj typ, till exempel Platsbesök, och klicka på **Skapa uppgift**.\nBara typen krävs. Du kan också fylla i kund, kontaktperson, en tid den ska vara klar, vem som gör den, en anteckning och de rum uppgiften gäller."
+          },
+          "optionalFields": {
+            "question": "Måste jag välja kund eller tid?",
+            "answer": "Nej. En snabb anteckning till dig själv, som \"beställ namnbrickor\", behöver bara sin typ. En uppgift utan kund har varken kontaktperson eller bokning, eftersom de hör till en kund. En uppgift har högst en tid, den tid den ska vara klar. Utan tid syns uppgiften inte i kalendern eller under **Behöver dig**, den blir aldrig försenad och hamnar sist i listor.\nPå uppgiftens sida klickar du på pennan vid **Senast**, **Kund**, **Kontaktperson** eller **Ansvarig** för att lägga till, ändra eller ta bort den."
+          },
+          "taskRooms": {
+            "question": "Vad betyder Boka, Förboka och Relaterat på en uppgift?",
+            "answer": "Under **Rum** på uppgiftens sida listar du rummen uppgiften gäller. Klicka på **Lägg till rum**, välj rummet och hur uppgiften använder det.\n**Relaterat** nämner bara rummet, utan period; inget hålls. **Förboka** lägger rummet åt sidan under en period du väljer, och andra bokningar kan fortfarande överlappa. **Boka** spärrar rummet under perioden, och om en annan bokning redan håller det går det inte att spara.\nPerioden är egen, så ett besök som ska vara klart torsdag klockan 14.00 kan hålla Atriumet från onsdag morgon till torsdag kväll. Bara rum som går att boka erbjuds. Klicka på pennan vid ett rum för att ändra hur det används eller dess period, eller på krysset för att ta bort det."
+          },
+          "doneReleasesRooms": {
+            "question": "Vad händer med rummen när jag markerar en uppgift som klar?",
+            "answer": "Rummen släpps. Ett bokat eller förbokat rum blir **Relaterat**, utan period, och är ledigt för andra igen. Öppnar du uppgiften igen hålls rummen inte på nytt; välj **Boka** eller **Förboka** på rummet igen.\nEn klar uppgift går inte att ändra förrän du öppnar den igen. Arkiverar du en uppgift släpps också rummen, och återställer du den hålls de igen, om de fortfarande är lediga."
           },
           "orderFromTask": {
             "question": "Hur skapar jag en bokning från en uppgift?",
-            "answer": "Öppna uppgiften och klicka på **Skapa bokning** högst upp. Bokningsformuläret öppnas med kund, kontaktperson och uppgiftens anteckning ifyllda. När du sparar bokningen kopplas uppgiften till den och syns under bokningens flik **Uppgifter**.\nVill du lägga uppgiften i en bokning som redan finns väljer du bokningen under **Lägg till i bokning** på uppgiftens sida."
+            "answer": "Öppna uppgiften och klicka på **Skapa bokning** högst upp. Bokningsformuläret öppnas med kund, kontaktperson och uppgiftens anteckning ifyllda. När du sparar bokningen kopplas uppgiften till den och syns under bokningens flik **Uppgifter**.\nRummen som uppgiften preliminärbokar eller bokar följer med: formuläret listar dem, och vart och ett blir en rad i bokningen för samma period, preliminärbokat eller bokat som på uppgiften. Du behöver inte lägga till dem själv. Uppgiften släpper dem i samma steg, så ett rum hålls aldrig två gånger.\nVill du lägga uppgiften i en bokning som redan finns väljer du bokningen under **Lägg till i bokning** på uppgiftens sida. Det kräver en kund på uppgiften. Senare kan du klicka på pennan vid **Bokning** för att flytta uppgiften till en annan av kundens bokningar eller ta bort den. Pennan vid **Kund** byter eller tar bort kunden; uppgiften lämnar då sin bokning."
           },
           "whereAreMyTasks": {
             "question": "Var ser jag mina uppgifter?",
-            "answer": "**Uppgifter** i sidomenyn visar alla öppna uppgifter och de som blev klara de senaste 30 dagarna. Skriv **är:öppen**, **ansvarig:jag** eller **kund:** i sökrutan för att filtrera.\nDina uppgifter för i dag syns överst under **I dag** i **Mitt arbete**, och en som ska göras eller är försenad syns också under **Behöver dig**. I kalendern har uppgifter en egen rad och är bara inramade, så att de aldrig ser ut som bokningar. De syns även på kundens sida och under bokningens flik Uppgifter. Bocka i den runda rutan när en uppgift är klar."
+            "answer": "**Uppgifter** i sidomenyn visar alla öppna uppgifter och de som blev klara de senaste 30 dagarna. Skriv **är:öppen**, **ansvarig:jag** eller **kund:** i sökrutan för att filtrera.\nDina uppgifter för i dag syns överst under **I dag** i **Mitt arbete**, och en som ska göras eller är försenad syns också under **Behöver dig**. Uppgifter med en tid syns i kalendern på en egen rad och är bara inramade, så att de aldrig ser ut som bokningar; ett rum som en uppgift håller syns som ett block på rummets rad. De syns även på kundens sida och under bokningens flik Uppgifter. Bocka i den runda rutan när en uppgift är klar."
           }
         }
       },

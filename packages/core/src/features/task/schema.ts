@@ -2,41 +2,32 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
-import { TaskShapeSchema } from "./task-shape";
+import { TaskItemSchema, TaskItemsInputSchema } from "./task-item-schema";
 
-/** Something about a task worth knowing that never blocks it (ADR 0117), derived on read. */
-export const TaskWarningSchema = z.object({
-  kind: z
-    .enum(["ITEM_BUSY"])
-    .describe(
-      "ITEM_BUSY: a meeting's item has a hard hold, buffer or block overlapping the meeting",
-    ),
-  itemId: z.string().describe("The busy item (item.get)"),
-  startsAt: z.date().describe("Start of the first overlapping occupancy"),
-  endsAt: z.date().describe("End of the first overlapping occupancy"),
-});
-
-/** A task around a customer: a site visit, a tasting, a deadline (ADR 0117). */
+/** A task (ADR 0117, 0120): a site visit, a tasting, a deadline or a note to self. */
 export const TaskSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   type: z.object({ id: z.string(), name: z.string() }).describe("The task type (base TASK)"),
-  shape: TaskShapeSchema,
-  customerId: z.string().describe("customer.get"),
-  contactId: z.string().describe("contact.get; a contact person at the customer"),
+  customerId: z.string().nullable().describe("customer.get; null = no customer"),
+  contactId: z
+    .string()
+    .nullable()
+    .describe("contact.get; a contact person at the customer; null = none"),
   orderId: z.string().nullable().describe("The linked order (order.get); null = not linked"),
-  itemId: z.string().nullable().describe("The item it names (item.get), e.g. the room to show"),
-  startsAt: z.date().describe("A meeting's start, or a deadline's due time"),
-  endsAt: z.date().nullable().describe("A meeting's end; always null for a deadline"),
+  dueAt: z
+    .date()
+    .nullable()
+    .describe("When it is due: one instant; null = no due time (not on the calendar)"),
+  items: z
+    .array(TaskItemSchema)
+    .describe("The rooms it concerns (ADR 0120): related, prebooked (soft) or booked (hard)"),
   note: z.string().nullable(),
   fields: FieldValuesSchema,
   doneAt: z.date().nullable().describe("When it was marked done; null = open"),
   doneById: z.string().nullable().describe("User id of who marked it done"),
   assigneeId: z.string().nullable().describe("User id of the assignee; null = unassigned"),
-  overdue: z.boolean().describe("Open and past its end (meeting) or due time (deadline)"),
-  warnings: z
-    .array(TaskWarningSchema)
-    .describe("Advisory, never blocking; ITEM_BUSY needs item:read"),
+  overdue: z.boolean().describe("Open with a due time in the past"),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -51,33 +42,27 @@ const NoteSchema = z
   .optional()
   .describe("Free text, at most 4000 characters; null clears it");
 
-const TimesShape = {
-  startsAt: z.coerce.date().describe("A meeting's start, or a deadline's due time"),
-  endsAt: z.coerce
-    .date()
-    .nullable()
-    .optional()
-    .describe("A meeting's end (required for MEETING, after startsAt); omit or null for DEADLINE"),
-};
-
-const ItemIdSchema = z
-  .string()
-  .min(1)
-  .nullable()
-  .optional()
-  .describe("An item it names (item.list), e.g. the room to show; it only warns when busy");
+const DueAtSchema = z.coerce
+  .date()
+  .describe("When it is due: one instant, never a span (ADR 0120)");
 
 export const TaskCreateInputSchema = z.object({
   entityTypeId: z.string().min(1).describe("The task type (entityType.list base TASK)"),
-  customerId: z.string().min(1).describe("The customer (customer.list)"),
-  contactId: z.string().min(1).describe("A contact person at the customer (contact.list)"),
+  customerId: z.string().min(1).optional().describe("The customer (customer.list); optional"),
+  contactId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("A contact person at the customer (contact.list); needs customerId"),
   orderId: z
     .string()
     .min(1)
     .optional()
-    .describe("Link an active order of the same customer (order.list) right away"),
-  itemId: ItemIdSchema,
-  ...TimesShape,
+    .describe(
+      "Link an active order of the same customer (order.list) right away; needs customerId",
+    ),
+  dueAt: DueAtSchema.optional(),
+  items: TaskItemsInputSchema.optional(),
   note: NoteSchema,
   assigneeId: z
     .string()
@@ -87,18 +72,36 @@ export const TaskCreateInputSchema = z.object({
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
 });
 
-/** The customer and the linked order never change here (`task.linkOrder` sets the order). */
+/** Everything but the type may be cleared (ADR 0117 amended, 0120); the order stays at the customer. */
 export const TaskUpdateInputSchema = z.object({
   id: z.string().min(1),
-  entityTypeId: z
+  entityTypeId: z.string().min(1).optional().describe("Another task type"),
+  customerId: z
     .string()
     .min(1)
+    .nullable()
     .optional()
-    .describe("Another task type; its shape must fit the times"),
-  contactId: z.string().min(1).optional().describe("Another contact person at the customer"),
-  itemId: ItemIdSchema,
-  startsAt: TimesShape.startsAt.optional(),
-  endsAt: TimesShape.endsAt,
+    .describe(
+      "Another customer: pass contactId (at it) and orderId null (or one of its orders). null " +
+        "clears the customer; then contactId and orderId must be null too (or already empty)",
+    ),
+  contactId: z
+    .string()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe("Another contact person at the customer; null clears it"),
+  orderId: z
+    .string()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe("Another active order of the task's customer (order.list); null unlinks"),
+  dueAt: DueAtSchema.nullable().optional().describe("A new due time; null clears it"),
+  items: TaskItemsInputSchema.optional().describe(
+    "Replaces the task's rooms as a set (omitted = unchanged, [] = none). A prebook or book " +
+      "holds its window while the task is open; a book that collides is CONFLICT at items.<i>",
+  ),
   note: NoteSchema,
   assigneeId: z
     .string()
@@ -127,12 +130,15 @@ export const TaskListInputSchema = z.object({
   state: z
     .enum(TASK_STATES)
     .optional()
-    .describe("open: not done; done; overdue: open and past its end or due time"),
+    .describe("open: not done; done; overdue: open with a due time in the past"),
   from: z.coerce
     .date()
     .optional()
-    .describe("Only tasks that end (or are due) at or after this instant"),
-  to: z.coerce.date().optional().describe("Only tasks that start before this instant"),
+    .describe("Only tasks due at or after this instant (tasks without a due time drop out)"),
+  to: z.coerce
+    .date()
+    .optional()
+    .describe("Only tasks due before this instant (tasks without a due time drop out)"),
   page: z
     .number()
     .int()
@@ -150,7 +156,6 @@ export const TaskListOutputSchema = z.object({
 });
 
 export type TaskDto = z.infer<typeof TaskSchema>;
-export type TaskWarning = z.infer<typeof TaskWarningSchema>;
 export type TaskCreateInput = z.infer<typeof TaskCreateInputSchema>;
 export type TaskUpdateInput = z.infer<typeof TaskUpdateInputSchema>;
 export type TaskLinkOrderInput = z.infer<typeof TaskLinkOrderInputSchema>;

@@ -7,7 +7,8 @@ import { HoldKindSchema } from "../item-state/hold-kind";
  * Why a bookable item is occupied (ADR 0022, 0044, 0059). `HOLD` comes from a line's state, and
  * `SETUP` and `TEARDOWN` are its buffers right before and after; every row except a `SOFT` one is
  * collision-free. These three are a projection of the line, written only by database triggers
- * (ADR 0053).
+ * (ADR 0053); a `HOLD` with `taskItemId` is a task's room hold, written only by `syncTaskHolds`
+ * (ADR 0120).
  */
 export const OCCUPANCY_TYPES = ["HOLD", "SETUP", "TEARDOWN", "MAINTENANCE", "INTERNAL"] as const;
 export const OccupancyTypeSchema = z.enum(OCCUPANCY_TYPES);
@@ -28,6 +29,8 @@ export const OccupancySchema = z.object({
   endsAt: z.date(),
   /** The line whose hold (or buffer) this is; null for a manual block (ADR 0053). */
   lineId: z.string().nullable(),
+  /** The task room whose hold this is (ADR 0120); null for a line's row or a manual block. */
+  taskItemId: z.string().nullable(),
   note: z.string().nullable(),
   status: RecordStatusSchema,
   createdAt: z.date(),

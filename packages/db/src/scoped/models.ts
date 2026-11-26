@@ -63,6 +63,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   ...DOMAIN_HISTORY_MODELS,
   "Requirement",
   "Task",
+  "TaskItem",
   "Comment",
   "CommentMention",
   "RunSheet",

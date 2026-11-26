@@ -2,57 +2,82 @@ import { describe, expect, it } from "vitest";
 import {
   archiveTask,
   completeTask,
-  createOccupancy,
+  createTask,
   execute,
   getTask,
   linkTaskOrder,
   listTasks,
   reopenTask,
-  updateEntityType,
+  type TaskUpdateInput,
   updateTask,
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { createTestOrder } from "./order-helpers";
 import { addTask, inHours, taskSetup } from "./task-helpers";
 
-describe("tasks around a customer (ADR 0117)", () => {
-  it("creates a meeting assigned to the caller and checks the type's shape", async () => {
+describe("tasks (ADR 0117, 0120)", () => {
+  it("creates a task assigned to the caller, and one with only its type", async () => {
     const setup = await taskSetup();
     const { context } = setup;
     const task = unwrap({ result: await addTask({ context, setup, note: "Show Atrium" }) });
     expect(task).toMatchObject({
       type: { id: setup.meeting.id, name: "Site visit" },
-      shape: "MEETING",
       orderId: null,
+      items: [],
       doneAt: null,
       overdue: false,
-      warnings: [],
       assigneeId: context.actor.userId,
       note: "Show Atrium",
     });
-    const noEnd = await addTask({ context, setup, endsAt: null });
-    expect(errorCode({ result: noEnd })).toBe("VALIDATION");
-    const backwards = await addTask({ context, setup, endsAt: inHours({ hours: 23 }) });
-    expect(errorCode({ result: backwards })).toBe("VALIDATION");
-    const deadline = { entityTypeId: setup.deadline.id };
-    const withEnd = await addTask({ context, setup, ...deadline });
-    expect(errorCode({ result: withEnd })).toBe("VALIDATION");
-    const due = unwrap({ result: await addTask({ context, setup, ...deadline, endsAt: null }) });
-    expect(due).toMatchObject({ shape: "DEADLINE", endsAt: null });
-    const switched = await execute({
-      operation: updateTask,
-      input: { id: task.id, entityTypeId: setup.deadline.id },
-      context,
-    });
-    expect(errorCode({ result: switched })).toBe("VALIDATION");
-    const moved = unwrap({
+    const bare = unwrap({
       result: await execute({
-        operation: updateTask,
-        input: { id: task.id, entityTypeId: setup.deadline.id, endsAt: null },
+        operation: createTask,
+        input: { entityTypeId: setup.deadline.id },
         context,
       }),
     });
-    expect(moved).toMatchObject({ shape: "DEADLINE", endsAt: null });
+    expect(bare).toMatchObject({
+      customerId: null,
+      contactId: null,
+      orderId: null,
+      dueAt: null,
+      overdue: false,
+    });
+    const switched = await execute({
+      operation: updateTask,
+      input: { id: task.id, entityTypeId: setup.deadline.id, dueAt: null },
+      context,
+    });
+    expect(unwrap({ result: switched })).toMatchObject({
+      type: { id: setup.deadline.id },
+      dueAt: null,
+    });
+  });
+
+  it("needs a customer for a contact or an order, and clears them together", async () => {
+    const setup = await taskSetup();
+    const { context } = setup;
+    const create = ({ input }: { input: Record<string, unknown> }) =>
+      execute({
+        operation: createTask,
+        input: { entityTypeId: setup.meeting.id, ...input },
+        context,
+      });
+    const contactOnly = await create({ input: { contactId: setup.contact.id } });
+    expect(contactOnly).toMatchObject({ ok: false, error: { issues: [{ path: "contactId" }] } });
+    const customerOnly = unwrap({
+      result: await create({ input: { customerId: setup.customer.id } }),
+    });
+    expect(customerOnly).toMatchObject({ customerId: setup.customer.id, contactId: null });
+    const task = unwrap({ result: await addTask({ context, setup }) });
+    const update = ({ ...input }: Omit<TaskUpdateInput, "id">) =>
+      execute({ operation: updateTask, input: { id: task.id, ...input }, context });
+    const keptContact = await update({ customerId: null });
+    expect(keptContact).toMatchObject({ ok: false, error: { issues: [{ path: "contactId" }] } });
+    const cleared = unwrap({ result: await update({ customerId: null, contactId: null }) });
+    expect([cleared.customerId, cleared.contactId]).toEqual([null, null]);
+    const again = { customerId: setup.customer.id, contactId: setup.contact.id };
+    expect(unwrap({ result: await update(again) }).customerId).toBe(setup.customer.id);
   });
 
   it("refuses a contact at another customer and a type of another base", async () => {
@@ -66,21 +91,6 @@ describe("tasks around a customer (ADR 0117)", () => {
     const update = { id: task.id, contactId: setup.otherContact.id };
     const changed = await execute({ operation: updateTask, input: update, context });
     expect(errorCode({ result: changed })).toBe("VALIDATION");
-  });
-
-  it("refuses a shape change while the type has active tasks", async () => {
-    const setup = await taskSetup();
-    const { context } = setup;
-    const input = { id: setup.meeting.id, taskShape: "DEADLINE" as const };
-    unwrap({ result: await addTask({ context, setup }) });
-    const refused = await execute({ operation: updateEntityType, input, context });
-    expect(errorCode({ result: refused })).toBe("CONFLICT");
-    const shapeless = await execute({
-      operation: updateEntityType,
-      input: { id: setup.type.id, taskShape: "MEETING" },
-      context,
-    });
-    expect(errorCode({ result: shapeless })).toBe("VALIDATION");
   });
 
   it("links an order once, of the same customer", async () => {
@@ -104,6 +114,35 @@ describe("tasks around a customer (ADR 0117)", () => {
       result: await execute({ operation: listTasks, input: { orderId: order.id }, context }),
     });
     expect(listed.items.map((item) => item.id)).toEqual([task.id]);
+  });
+
+  it("changes and unlinks the order, and moves the task to another customer", async () => {
+    const setup = await taskSetup();
+    const { context } = setup;
+    const make = ({ customerId, contactId }: { customerId: string; contactId: string }) =>
+      createTestOrder({ ...{ context, entityTypeId: setup.type.id, customerId }, contactId });
+    const first = await make({ customerId: setup.customer.id, contactId: setup.contact.id });
+    const second = await make({ customerId: setup.customer.id, contactId: setup.contact.id });
+    const foreign = await make({ customerId: setup.other.id, contactId: setup.otherContact.id });
+    const task = unwrap({ result: await addTask({ context, setup, orderId: first.id }) });
+    const update = ({ ...input }: Omit<TaskUpdateInput, "id">) =>
+      execute({ operation: updateTask, input: { id: task.id, ...input }, context });
+    expect(unwrap({ result: await update({ orderId: second.id }) }).orderId).toBe(second.id);
+    expect(errorCode({ result: await update({ orderId: foreign.id }) })).toBe("VALIDATION");
+    expect(unwrap({ result: await update({ orderId: null }) }).orderId).toBeNull();
+    unwrap({ result: await update({ orderId: first.id }) });
+    // The order must follow the customer: moving alone is refused, with the order unlinked it works.
+    const moveOnly = { customerId: setup.other.id, contactId: setup.otherContact.id };
+    expect(errorCode({ result: await update(moveOnly) })).toBe("VALIDATION");
+    const moved = unwrap({ result: await update({ ...moveOnly, orderId: null }) });
+    expect([moved.customerId, moved.contactId, moved.orderId]).toEqual([
+      setup.other.id,
+      setup.otherContact.id,
+      null,
+    ]);
+    expect(errorCode({ result: await update({ customerId: setup.customer.id }) })).toBe(
+      "VALIDATION",
+    );
   });
 
   it("links tasks given to order.create in the same step", async () => {
@@ -137,7 +176,7 @@ describe("tasks around a customer (ADR 0117)", () => {
   it("completes and reopens, and an open past task is overdue", async () => {
     const setup = await taskSetup();
     const { context } = setup;
-    const past = { startsAt: inHours({ hours: -3 }), endsAt: inHours({ hours: -2 }) };
+    const past = { dueAt: inHours({ hours: -2 }) };
     const task = unwrap({ result: await addTask({ context, setup, ...past }) });
     expect(task.overdue).toBe(true);
     const input = { id: task.id };
@@ -148,46 +187,30 @@ describe("tasks around a customer (ADR 0117)", () => {
     expect(open).toMatchObject({ doneAt: null, doneById: null, overdue: true });
   });
 
-  it("warns when a meeting's item is busy, never for a deadline or outside the span", async () => {
-    const setup = await taskSetup();
-    const { context, room } = setup;
-    const block = {
-      ...{ itemId: room.id, type: "MAINTENANCE" as const },
-      ...{ startsAt: inHours({ hours: 24 }), endsAt: inHours({ hours: 26 }) },
-    };
-    unwrap({ result: await execute({ operation: createOccupancy, input: block, context }) });
-    const busy = unwrap({ result: await addTask({ context, setup, itemId: room.id }) });
-    expect(busy.warnings).toMatchObject([{ kind: "ITEM_BUSY", itemId: room.id }]);
-    const later = { startsAt: inHours({ hours: 30 }), endsAt: inHours({ hours: 31 }) };
-    const free = unwrap({ result: await addTask({ context, setup, itemId: room.id, ...later }) });
-    expect(free.warnings).toEqual([]);
-    const deadline = unwrap({
-      result: await addTask({
-        ...{ context, setup, itemId: room.id, endsAt: null },
-        entityTypeId: setup.deadline.id,
-      }),
-    });
-    expect(deadline.warnings).toEqual([]);
-  });
-
   it("lists by filter and state, and archiving hides a task", async () => {
     const setup = await taskSetup();
     const { context, anna } = setup;
-    const past = { startsAt: inHours({ hours: -3 }), endsAt: inHours({ hours: -2 }) };
+    const past = { dueAt: inHours({ hours: -2 }) };
     const late = unwrap({ result: await addTask({ context, setup, ...past }) });
     const soon = unwrap({ result: await addTask({ context, setup, assigneeId: anna }) });
+    const undated = unwrap({ result: await addTask({ context, setup, dueAt: undefined }) });
     const list = async ({ input }: { input: Record<string, unknown> }) =>
       unwrap({
         result: await execute({ operation: listTasks, input: { page: 1, ...input }, context }),
       });
-    expect((await list({ input: {} })).items.map((t) => t.id)).toEqual([late.id, soon.id]);
+    // By due time, a task without one last; it never appears in a window.
+    expect((await list({ input: {} })).items.map((t) => t.id)).toEqual([
+      late.id,
+      soon.id,
+      undated.id,
+    ]);
     expect((await list({ input: { state: "overdue" } })).items.map((t) => t.id)).toEqual([late.id]);
     expect((await list({ input: { assigneeId: anna } })).items.map((t) => t.id)).toEqual([soon.id]);
     expect((await list({ input: { from: inHours({ hours: 0 }) } })).total).toBe(1);
     expect((await list({ input: { customerId: setup.other.id } })).total).toBe(0);
     const input = { id: soon.id };
     unwrap({ result: await execute({ operation: archiveTask, input, context }) });
-    expect((await list({ input: {} })).items.map((t) => t.id)).toEqual([late.id]);
+    expect((await list({ input: {} })).items.map((t) => t.id)).toEqual([late.id, undated.id]);
     const gone = await execute({ operation: getTask, input, context });
     expect(errorCode({ result: gone })).toBe("NOT_FOUND");
   });

@@ -20,7 +20,7 @@ async function tellAssignee({ context, taskId, assigneeId }: TellInput) {
     }),
     context.db.task.findFirst({
       where: { id: taskId },
-      select: { startsAt: true, entityType: { select: { name: true } } },
+      select: { dueAt: true, entityType: { select: { name: true } } },
     }),
   ]);
   if (!assignment || !task) return;
@@ -33,7 +33,10 @@ async function tellAssignee({ context, taskId, assigneeId }: TellInput) {
     },
   });
   if (told > 0) return;
-  const data = { taskTypeName: task.entityType.name, taskStartsAt: task.startsAt.toISOString() };
+  const data = {
+    taskTypeName: task.entityType.name,
+    taskDueAt: task.dueAt?.toISOString() ?? null,
+  };
   await notify({ context, kind: "ASSIGNED", userIds: [assigneeId], taskId, data });
 }
 

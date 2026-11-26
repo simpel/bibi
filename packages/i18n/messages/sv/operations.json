@@ -231,6 +231,8 @@
     "blocked": "Spärrad",
     "notSold": "inte såld",
     "booked": "Bokad",
+    "taskPrebook": "Förbokad på en uppgift",
+    "taskBook": "Bokad på en uppgift",
     "guests": "{count, plural, one {# gäst} other {# gäster}}",
     "exclVat": "{amount} exkl. moms",
     "value": {

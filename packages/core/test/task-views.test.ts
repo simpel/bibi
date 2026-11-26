@@ -53,10 +53,12 @@ describe("tasks on other screens (ADR 0117)", () => {
   it("asks the assignee about a task overdue or due today, dismissable", async () => {
     const setup = await taskSetup();
     const { context, anna } = setup;
-    const past = { startsAt: inHours({ hours: -3 }), endsAt: inHours({ hours: -2 }) };
+    const past = { dueAt: inHours({ hours: -2 }) };
     const late = unwrap({ result: await addTask({ context, setup, assigneeId: anna, ...past }) });
-    const later = { startsAt: inHours({ hours: 72 }), endsAt: inHours({ hours: 73 }) };
+    const later = { dueAt: inHours({ hours: 72 }) };
     unwrap({ result: await addTask({ context, setup, assigneeId: anna, ...later }) });
+    // Without a due time a task never asks.
+    unwrap({ result: await addTask({ context, setup, assigneeId: anna, dueAt: undefined }) });
     const member = asMember({ context, userId: anna });
     const needs = async () =>
       unwrap({ result: await execute({ operation: viewMyTasks, input: {}, context: member }) })
@@ -82,12 +84,14 @@ describe("tasks on other screens (ADR 0117)", () => {
     });
     const linked = { orderId: order.id };
     const first = unwrap({ result: await addTask({ context, setup, ...linked }) });
-    const later = { startsAt: inHours({ hours: 30 }), endsAt: inHours({ hours: 31 }) };
+    const later = { dueAt: inHours({ hours: 30 }) };
     unwrap({ result: await addTask({ context, setup, ...linked, ...later }) });
+    // A task without a due time is neither next nor on the calendar.
+    unwrap({ result: await addTask({ context, setup, ...linked, dueAt: undefined }) });
     const input = { orderIds: [order.id] };
     const { cues } = unwrap({ result: await execute({ operation: pipelineCues, input, context }) });
     expect(cues[0]?.nextTask).toMatchObject({
-      ...{ id: first.id, typeName: "Site visit", shape: "MEETING", overdue: false },
+      ...{ id: first.id, typeName: "Site visit", dueAt: first.dueAt, overdue: false },
     });
     const span = { from: day({ days: -1 }), to: day({ days: 3 }) };
     const calendar = unwrap({

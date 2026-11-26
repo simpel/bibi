@@ -9,10 +9,10 @@ import { TASK_INCLUDE, toTaskDtos } from "./to-task-dto";
 
 type Context = Pick<OperationContext, "db" | "permissions" | "now">;
 
-/** Open and due (end, else start) before `now`. */
+/** Open and due before `now`; a task without a due time is never overdue (ADR 0120). */
 const overdueWhere = ({ now }: { now: Date }): Prisma.TaskWhereInput => ({
   doneAt: null,
-  OR: [{ endsAt: { lt: now } }, { endsAt: null, startsAt: { lt: now } }],
+  dueAt: { lt: now },
 });
 
 const STATE_WHERE = {
@@ -24,7 +24,7 @@ const STATE_WHERE = {
   (i: { now: Date }) => Prisma.TaskWhereInput
 >;
 
-/** The filters of `task.list`; `from`/`to` keep tasks whose span (or due time) meets the window. */
+/** The filters of `task.list`; `from`/`to` keep tasks due in the window (none without a due time). */
 function taskWhere({ input, now }: { input: TaskListInput; now: Date }): Prisma.TaskWhereInput {
   const { customerId, orderId, state, from, to } = input;
   return {
@@ -32,8 +32,8 @@ function taskWhere({ input, now }: { input: TaskListInput; now: Date }): Prisma.
       customerId ? { customerId } : {},
       orderId ? { orderId } : {},
       state ? STATE_WHERE[state]({ now }) : {},
-      to ? { startsAt: { lt: to } } : {},
-      from ? { OR: [{ endsAt: { gte: from } }, { endsAt: null, startsAt: { gte: from } }] } : {},
+      to ? { dueAt: { lt: to } } : {},
+      from ? { dueAt: { gte: from } } : {},
     ],
   };
 }
@@ -44,14 +44,14 @@ function pagingArgs({ input }: { input: TaskListInput }) {
   return page ? { take: limit + 1, skip: (page - 1) * limit } : pageArgs({ limit, cursor });
 }
 
-/** One page of `task.list`, by start; with `page` it also counts the matches (`total`). */
+/** One page of `task.list`, by due time (none last); with `page` it also counts the matches (`total`). */
 export async function loadTaskPage({ context, input }: { context: Context; input: TaskListInput }) {
   const ids = await subjectIdFilter({ context, subjectType: "TASK", assigneeId: input.assigneeId });
   const where = { AND: [taskWhere({ input, now: nowOf({ context }) }), ids] };
   const [rows, total] = await Promise.all([
     context.db.task.findMany({
       where,
-      orderBy: [{ startsAt: "asc" }, { id: "asc" }],
+      orderBy: [{ dueAt: { sort: "asc", nulls: "last" } }, { id: "asc" }],
       ...pagingArgs({ input }),
       include: TASK_INCLUDE,
     }),

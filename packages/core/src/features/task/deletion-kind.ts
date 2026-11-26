@@ -8,11 +8,13 @@ import {
   REACTIVATE,
 } from "../../archive/lifecycle-kind";
 import { hardDelete } from "../../archive/record-rows";
+import { syncTaskHolds } from "./sync-task-holds";
 
 /**
  * Tasks (ADR 0117, 0118): nothing else refers to a task, so an archived one is always deleted,
- * with its notifications and dismissals (cascade). Restored only while its customer and contact
- * are active.
+ * with its notifications, dismissals and rooms with their holds (cascade). Restored only while
+ * its customer and contact (when it has them) are active; a restore holds its rooms again
+ * (ADR 0120), and a book that now collides refuses it.
  */
 export const taskKind: LifecycleKind = {
   entityType: "task",
@@ -33,13 +35,13 @@ export const taskKind: LifecycleKind = {
     return allBlockers({
       checks: [
         archivedParent({
-          status: task?.customer.status,
+          status: task?.customer?.status,
           feature: "customer",
           path: "customerId",
           what: "customer",
         }),
         archivedParent({
-          status: task?.contact.status,
+          status: task?.contact?.status,
           feature: "customer",
           path: "contactId",
           what: "contact",
@@ -50,6 +52,7 @@ export const taskKind: LifecycleKind = {
   reactivate: async ({ context, id }) => {
     await context.db.task.update({ where: { id, status: "ARCHIVED" }, data: REACTIVATE });
   },
+  afterRestore: ({ context, id }) => syncTaskHolds({ context, taskId: id }),
   deleteBlockers: async () => [],
   remove: async ({ context, id }) => {
     await context.db.notification.deleteMany({ where: { taskId: id } });
@@ -72,7 +75,7 @@ export const taskKind: LifecycleKind = {
           rows.map(({ id, archivedAt, entityType, customer }) => ({
             id,
             archivedAt,
-            name: `${entityType.name} · ${customer.name}`,
+            name: customer ? `${entityType.name} · ${customer.name}` : entityType.name,
           })),
         ),
     }),

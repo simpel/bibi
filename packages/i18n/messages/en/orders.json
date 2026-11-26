@@ -632,6 +632,11 @@
       "title": "Build the booking",
       "summary": "{lines, plural, one {# line} other {# lines}}",
       "addLineFirst": "Add a line to continue"
+    },
+    "taskRooms": {
+      "title": "The task's rooms carry over as lines",
+      "room": "{name}: {hold, select, BOOK {booked} other {prebooked}} {period}",
+      "hiddenRoom": "A room you cannot see"
     }
   },
   "orderSheet": {

@@ -7,14 +7,12 @@ const meta = {
   title: "Components/TaskRow",
   component: TaskRow,
   args: {
-    shape: "meeting",
     timeLabel: "Thu 14:00",
     title: "Site visit",
     meta: "Volvo Cars · Sara",
     checkboxLabel: "Mark Site visit as done",
     onCheckedChange: fn(),
   },
-  argTypes: { shape: { control: "inline-radio", options: ["meeting", "deadline"] } },
   decorators: [
     (Story) => (
       <div className="max-w-md font-sans">
@@ -29,25 +27,23 @@ type Story = StoryObj<typeof meta>;
 
 /** Open: no fill, a hairline in the task colour, the time first. */
 export const Open: Story = {};
-export const Meeting: Story = {};
-export const Deadline: Story = {
-  args: { shape: "deadline", timeLabel: "Fri 12:00", title: "Send final headcount" },
-};
+/** A task without a due time leads with a word instead of a time. */
+export const NoTime: Story = { args: { timeLabel: "No time", title: "Order name badges" } };
 /** Done: checked, struck through and muted. */
 export const Done: Story = { args: { checked: true } };
 /** Overdue: the time in red text, never a red fill. */
 export const Overdue: Story = {
-  args: { shape: "deadline", timeLabel: "Mon 09:00", title: "Confirm menu", overdue: true },
+  args: { timeLabel: "Mon 09:00", title: "Confirm menu", overdue: true },
 };
 /** The whole row opens the task; the checkbox stays its own target. */
 export const Linked: Story = { args: { href: "#" } };
 export const Compact: Story = { args: { size: "compact", meta: undefined } };
 
 const LIST: readonly Omit<TaskRowProps, "checkboxLabel">[] = [
-  { shape: "deadline", timeLabel: "Mon 09:00", title: "Confirm menu", overdue: true },
-  { shape: "meeting", timeLabel: "Thu 14:00", title: "Site visit", meta: "Volvo Cars · Sara" },
-  { shape: "deadline", timeLabel: "Fri 12:00", title: "Send final headcount", meta: "Mona" },
-  { shape: "meeting", timeLabel: "Tue 10:00", title: "Kick-off call", checked: true },
+  { timeLabel: "Mon 09:00", title: "Confirm menu", overdue: true },
+  { timeLabel: "Thu 14:00", title: "Site visit", meta: "Volvo Cars · Sara" },
+  { timeLabel: "Fri 12:00", title: "Send final headcount", meta: "Mona" },
+  { timeLabel: "Tue 10:00", title: "Kick-off call", checked: true },
 ];
 
 /** A list as on /tasks: toggle the checkboxes. */

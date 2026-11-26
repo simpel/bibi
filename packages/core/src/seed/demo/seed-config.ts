@@ -92,7 +92,6 @@ async function seedType({
     ...{ setupMinutes: type.setupMinutes ?? null, teardownMinutes: type.teardownMinutes ?? null },
     ...(type.resourceKind ? { resourceKind: type.resourceKind } : {}),
     ...(type.buyerKind ? { buyerKind: type.buyerKind } : {}),
-    ...(type.taskShape ? { taskShape: type.taskShape } : {}),
     ...(type.base === "ITEM" ? { groupId: groups.get(groupOfDemoType({ type })) ?? null } : {}),
   };
   const created = await execute({ operation: createEntityType, input, context });

@@ -2,6 +2,7 @@
 
 - **Date:** 2026-11-25
 - **Status:** Accepted (the user, 2026-11-25)
+- **Amended:** 2026-11-26 (the user): customer and order are editable; see Decision 2.
 - **Related:** 0003, 0021, 0034, 0043, 0050, 0056, 0059, 0081, 0094, 0110, 0113, 0114
 
 ## Context
@@ -12,7 +13,7 @@
 
 ## Decision
 1. A `Task` is a `Record` with a new base `TASK` (ADR 0056): the organization creates its own task types with custom fields, and nothing is built in. A task type has a shape: `MEETING` (start and end) or `DEADLINE` (one due time).
-2. A task belongs to a customer and a contact at that customer (both required, as on an order, ADR 0081). It may be linked to an order of the same customer, once; "Create order" from a task creates the order and links the task in one command. A task never turns into an order and an order never needs a task.
+2. A task belongs to a customer and a contact at that customer (both required, as on an order, ADR 0081). It may be linked to an order of the same customer; the first link is `task.linkOrder`, and `task.update` later moves it to another order of that customer or unlinks it, and may move the task to another customer (the order must then belong to it). "Create order" from a task creates the order and links the task in one command. A task never turns into an order and an order never needs a task.
 3. A task may name an item (e.g. the room to show). It only warns when the item is busy (`ITEM_BUSY`, derived); it never holds or blocks.
 4. A task has one assignee plus followers through `Assignment` (ADR 0034), a note, and is open or done (`doneAt`, `doneBy`). Archiving is the delete.
 5. Access: a new feature `task` (group bookings, read, write, delete; ADR 0050); members read and write, managers and admins have all. A linked task is seen by whoever sees its order (ADR 0113); an unlinked task is related through its own creator, assignee and followers.

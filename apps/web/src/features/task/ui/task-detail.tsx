@@ -1,6 +1,6 @@
 import { getContact, type TaskDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { cn } from "@bibi/ui";
+import { cn, StatusBadge } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
 import { DeferredSection } from "@/components/states/deferred-section";
@@ -20,21 +20,22 @@ import { TaskDangerArea } from "./task-danger-area";
 import { TaskDetailsSection } from "./task-details-section";
 import { type TaskFactNames, TaskKeyFacts } from "./task-facts";
 import { TaskHeaderActions } from "./task-header-actions";
+import { TASK_STATE_COLORS, type TaskState } from "./task-list-row";
 
 export type TaskDetailProps = { locale: Locale; id: string };
 
 /** The task's own names by id: customer, contact, linked order and assignee (ADR 0097). */
 async function loadFactNames({ task }: { task: TaskDto }): Promise<TaskFactNames> {
   const [customer, contact, order, members] = await Promise.all([
-    loadCustomer({ id: task.customerId }),
-    runOperation({ operation: getContact, input: { id: task.contactId } }),
+    task.customerId ? loadCustomer({ id: task.customerId }) : null,
+    task.contactId ? runOperation({ operation: getContact, input: { id: task.contactId } }) : null,
     task.orderId ? loadOrder({ id: task.orderId }) : null,
     loadMemberNames(),
   ]);
   const linked = order?.ok ? order.value : null;
   return {
-    customer: customer.ok ? customer.value.name : null,
-    contact: contact.ok ? contact.value.name : null,
+    customer: customer?.ok ? customer.value.name : null,
+    contact: contact?.ok ? contact.value.name : null,
     assignee: members.find((member) => member.id === task.assigneeId)?.name ?? null,
     order: linked ? `#${linked.reference} ${linked.title ?? ""}`.trim() : null,
   };
@@ -52,36 +53,48 @@ export async function TaskDetail({ locale, id }: TaskDetailProps) {
   const names = await loadFactNames({ task });
   const canEdit = can({ abilities, permission: "task:write" });
   const done = task.doneAt !== null;
+  // A done task is locked: reopen it to edit.
+  const canChange = canEdit && !done;
   const name = task.type.name;
   const formData = taskFormDataPromise();
-  const status = done ? t("state.done") : task.overdue ? t("state.overdue") : undefined;
+  // An order is offered only with a customer (ADR 0120).
+  const linkableOrders = canChange && task.customerId ? loadLinkableOrders({ task }) : null;
+  const state: TaskState = done ? "done" : task.overdue ? "overdue" : "open";
   return (
     <div className="grid gap-6">
       <CrumbName href={taskRoute({ id })} name={name} />
-      <div className="grid gap-4">
-        <PageHeader
-          title={name}
-          heading={
+      <PageHeader
+        title={name}
+        heading={
+          <div className="grid justify-items-start gap-2">
             <h1 className={cn("text-3xl", done && "text-muted-foreground line-through")}>{name}</h1>
-          }
-          description={status}
-          actions={
-            <TaskHeaderActions
-              task={{ id, name, done }}
-              canEdit={canEdit}
-              canLinkOrder={!task.orderId && canEdit}
-              linkableOrders={loadLinkableOrders({ task })}
-              canCreateOrder={!task.orderId && can({ abilities, permission: "order:write" })}
-            />
-          }
-        />
-        <TaskKeyFacts task={task} names={names} canEdit={canEdit} formData={formData} />
-      </div>
+            <StatusBadge label={t(`state.${state}`)} color={TASK_STATE_COLORS[state]} />
+          </div>
+        }
+        actions={
+          <TaskHeaderActions
+            task={{ id, name, done }}
+            canEdit={canEdit}
+            canLinkOrder={!task.orderId && canChange && task.customerId !== null}
+            linkableOrders={linkableOrders ?? Promise.resolve([])}
+            canCreateOrder={!task.orderId && can({ abilities, permission: "order:write" })}
+          />
+        }
+      />
       <DeferredSection>
         <TaskDetailsSection
           task={task}
-          canEdit={canEdit}
+          canEdit={canChange}
           formData={formData}
+          facts={
+            <TaskKeyFacts
+              task={task}
+              names={names}
+              canEdit={canChange}
+              formData={formData}
+              linkableOrders={linkableOrders}
+            />
+          }
           dangerArea={
             can({ abilities, permission: "task:delete" }) ? (
               <TaskDangerArea task={{ id, name }} />

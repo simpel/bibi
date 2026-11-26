@@ -37,8 +37,11 @@ const DATA_COUNTS: Record<ItemCapability, (input: CountInput) => Promise<number>
         ],
       },
     }),
-  BOOKABLE: ({ context, entityTypeId }) =>
-    context.db.item.count({ where: { entityTypeId, defaultDurationMinutes: { not: null } } }),
+  // A task's room is an item of a BOOKABLE type (ADR 0120).
+  BOOKABLE: async ({ context, entityTypeId }) =>
+    (await context.db.item.count({
+      where: { entityTypeId, defaultDurationMinutes: { not: null } },
+    })) + (await context.db.taskItem.count({ where: { item: { entityTypeId } } })),
   SETUPS: ({ context, entityTypeId }) =>
     context.db.setupLayout.count({ where: { item: { entityTypeId, status: "ACTIVE" } } }),
   BUNDLE: ({ context, entityTypeId }) =>

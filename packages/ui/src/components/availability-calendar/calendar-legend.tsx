@@ -1,7 +1,7 @@
 "use client";
 
 import { LegendItem } from "../booking-tone/legend-item";
-import { TASK_EDGE } from "../task-shape/task-shape";
+import { TASK_EDGE } from "../task-look/task-look";
 import { useCalendarLabels } from "./calendar-labels";
 import { bufferStyle, markStyle } from "./calendar-marks";
 import type { CalendarState } from "./calendar-types";

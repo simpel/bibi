@@ -34,8 +34,8 @@ async function demandUse({ context, ids, what }: DemandUseInput): Promise<Result
 }
 
 /**
- * CONFLICT while an active line, an active manual block (maintenance or internal occupancy) or a
- * predefined order line uses one of the items (#213, #224), or it is allocated or demanded
+ * CONFLICT while an active line, an active manual block (maintenance or internal occupancy), an
+ * open task's hold (ADR 0120) or a predefined order line uses one of the items (#213, #224), or it is allocated or demanded
  * (ADR 0059). Line holds follow their lines by
  * trigger, so only manual blocks are checked on their own. The one guard for `item.archive` and
  * the `customer.archive` bundle cascade.
@@ -49,10 +49,17 @@ export async function checkItemsUnused({ context, items }: ItemsInUseInput): Pro
     const message = `${what} is used by ${scheduled} active lines`;
     return inUseConflict({ context, feature: "program", message });
   }
-  const blocks = await context.db.occupancy.count({ where: { ...where, lineId: null } });
+  const blocks = await context.db.occupancy.count({
+    where: { ...where, lineId: null, taskItemId: null },
+  });
   if (blocks > 0) {
     const message = `${what} has ${blocks} active occupancy blocks`;
     return inUseConflict({ context, feature: "order", message });
+  }
+  const held = await context.db.occupancy.count({ where: { ...where, taskItemId: { not: null } } });
+  if (held > 0) {
+    const message = `${what} is held by ${held} open tasks`;
+    return inUseConflict({ context, feature: "task", message });
   }
   const demanded = await demandUse({ context, ids, what });
   if (!demanded.ok) return demanded;

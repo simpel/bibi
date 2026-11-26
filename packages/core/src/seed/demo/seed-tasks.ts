@@ -50,13 +50,42 @@ async function orderIdOf({ context, org, ref, customerId }: OrderOfInput) {
   return row ? ok({ value: row.id }) : missing({ what: `order ${ref}` });
 }
 
-type PartyOfInput = TaskInput & { customerId: string; firstContactId: string };
+type Party = { customerId?: string; contactId?: string; orderId?: string };
 
-/** The named contact at the customer, else its first one. */
-async function contactIdOf({ context, task, customerId, firstContactId }: PartyOfInput) {
-  if (!task.contact) return ok({ value: firstContactId });
-  const row = await context.db.contact.findFirst({ where: { customerId, name: task.contact } });
-  return row ? ok({ value: row.id }) : missing({ what: `contact ${task.contact}` });
+/** The task's customer, the named contact at it (else its first one) and its order, if any. */
+async function partyOf({ ...input }: TaskInput): Promise<Result<Party>> {
+  const { context, task } = input;
+  if (!task.customer) return ok({ value: {} });
+  const party = await loadParty({ context, customer: task.customer });
+  if (!party.ok) return party;
+  const { customerId } = party.value;
+  const contact = task.contact
+    ? await context.db.contact.findFirst({ where: { customerId, name: task.contact } })
+    : { id: party.value.contactId };
+  if (!contact) return missing({ what: `contact ${task.contact}` });
+  const order = task.order ? await orderIdOf({ ...input, ref: task.order, customerId }) : null;
+  if (order && !order.ok) return order;
+  const orderId = order?.ok ? { orderId: order.value } : {};
+  return ok({ value: { customerId, contactId: contact.id, ...orderId } });
+}
+
+type Clock = (input: { value: string; day: number }) => Date;
+
+/** The task's rooms by name, each held for its own window (ADR 0120). */
+async function itemsOf({ context, task, time }: TaskInput & { time: Clock }) {
+  const items = [];
+  for (const room of task.items ?? []) {
+    const row = await context.db.item.findFirst({ where: { name: room.item } });
+    if (!row) return missing({ what: `item ${room.item}` });
+    const held = room.hold !== "RELATED" && room.from && room.to;
+    const day = room.day ?? 0;
+    items.push({
+      ...{ itemId: row.id, hold: room.hold },
+      ...(held ? { startsAt: time({ value: room.from ?? "", day }) } : {}),
+      ...(held ? { endsAt: time({ value: room.to ?? "", day }) } : {}),
+    });
+  }
+  return ok({ value: items });
 }
 
 type DoneInput = { context: ExecuteContext; taskId: string; userId: string; at: Date };
@@ -81,27 +110,19 @@ async function seedTask({ ...input }: TaskInput): Promise<Result<string>> {
   if (!type) return missing({ what: `task type ${task.type}` });
   const assigneeId = userIds.get(task.assignee);
   if (!assigneeId) return missing({ what: `user ${task.assignee}` });
-  const party = await loadParty({ context, customer: task.customer });
+  const party = await partyOf(input);
   if (!party.ok) return party;
-  const { customerId, contactId: firstContactId } = party.value;
-  const contact = await contactIdOf({ ...input, customerId, firstContactId });
-  if (!contact.ok) return contact;
-  const order = task.order ? await orderIdOf({ ...input, ref: task.order, customerId }) : null;
-  if (order && !order.ok) return order;
-  const item = task.item ? await context.db.item.findFirst({ where: { name: task.item } }) : null;
-  if (task.item && !item) return missing({ what: `item ${task.item}` });
   const timeZone = demoTimeZones({ org: input.org }).order;
-  const time = ({ value, day }: { value: string; day: number }) =>
-    at({ now, day, time: value, timeZone });
+  const time: Clock = ({ value, day }) => at({ now, day, time: value, timeZone });
+  const items = await itemsOf({ ...input, time });
+  if (!items.ok) return items;
   const day = demoTaskDay({ task, now, timeZone });
   const created = await execute({
     operation: createTask,
     input: {
-      ...{ entityTypeId: type.id, customerId, contactId: contact.value, assigneeId },
-      ...(order?.ok ? { orderId: order.value } : {}),
-      ...(item ? { itemId: item.id } : {}),
-      startsAt: time({ value: task.from, day }),
-      ...(task.to ? { endsAt: time({ value: task.to, day }) } : {}),
+      ...{ entityTypeId: type.id, assigneeId, ...party.value },
+      ...(items.value.length > 0 ? { items: items.value } : {}),
+      ...(task.due ? { dueAt: time({ value: task.due, day }) } : {}),
       ...(task.note ? { note: task.note } : {}),
     },
     context,
@@ -109,7 +130,7 @@ async function seedTask({ ...input }: TaskInput): Promise<Result<string>> {
   if (!created.ok) return created;
   const taskId = created.value.id;
   if (task.doneDay === undefined) return ok({ value: taskId });
-  const doneAt = time({ value: task.to ?? task.from, day: task.doneDay });
+  const doneAt = time({ value: task.due ?? "12:00", day: task.doneDay });
   const done = await markDone({ context, taskId, userId: assigneeId, at: doneAt });
   return done.ok ? ok({ value: taskId }) : done;
 }

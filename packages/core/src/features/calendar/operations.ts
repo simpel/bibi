@@ -22,8 +22,9 @@ export const calendarRange = defineOperation({
     "excl. VAT, note, the line's assignee and allocated staff with program:read; headcount and " +
     "the order's assignee always), so one call answers what the calendar shows. values gives " +
     "each item's day in money excl. VAT: booked (hard holds), prebooked (soft holds) and still " +
-    "open (free time within its hours at its hourly price). tasks lists the tasks in the range " +
-    "(site visits, deadlines; ADR 0117) with their item and order ids; empty without task:read.",
+    "open (free time within its hours at its hourly price). A room a task holds (ADR 0120) is a " +
+    "HOLD block with taskId. tasks lists the tasks due in the range (ADR 0117, 0120) with their " +
+    "room and order ids; empty without task:read.",
   input: CalendarRangeInputSchema,
   output: CalendarRangeSchema,
   permission: "order:read",

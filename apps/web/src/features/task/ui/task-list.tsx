@@ -12,7 +12,7 @@ import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { taskTimeLabel, uiTaskShape } from "../lib/task-time-label";
+import { taskTimeLabel } from "../lib/task-time-label";
 import { loadMemberNames } from "../load-member-names";
 import type { TaskListRow, TaskState } from "./task-list-row";
 import { TaskTable } from "./task-table";
@@ -38,7 +38,7 @@ async function loadTasks() {
   return { ok: true as const, value: [...open.value.items, ...done.value.items] };
 }
 
-/** `/tasks`: site visits, tastings and deadlines around customers (ADR 0117). */
+/** `/tasks`: site visits, tastings and notes, with or without a customer and a time (ADR 0117, 0120). */
 export async function TaskList({ locale }: TaskListProps) {
   const [t, abilities, dates, tasks, members, customers] = await Promise.all([
     getTranslations("task"),
@@ -53,13 +53,15 @@ export async function TaskList({ locale }: TaskListProps) {
   const rows: TaskListRow[] = tasks.value.map((task) => ({
     id: task.id,
     typeName: task.type.name,
-    shape: uiTaskShape({ shape: task.shape }),
     customerName: nameOf({ options: customerOptions, id: task.customerId }),
     assigneeName: nameOf({ options: members, id: task.assigneeId }),
     mine: task.assigneeId !== null && task.assigneeId === abilities.userId,
     state: stateOf({ task }),
-    startsAtMs: task.startsAt.getTime(),
-    timeLabel: taskTimeLabel({ task, dates }),
+    dueAtMs: task.dueAt?.getTime() ?? Number.MAX_SAFE_INTEGER,
+    timeLabel: task.dueAt
+      ? taskTimeLabel({ task: { dueAt: task.dueAt }, dates })
+      : t("fields.noDueTime"),
+    hasDueTime: task.dueAt !== null,
   }));
   const canWrite = can({ abilities, permission: "task:write" });
   const create = canWrite ? (

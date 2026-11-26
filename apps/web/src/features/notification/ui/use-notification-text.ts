@@ -42,7 +42,7 @@ export function useNotificationText() {
           : numbers.money({ minor: data.amountMinor, currency: data.currency ?? null }),
     });
     if (notification.taskId && !notification.orderId) {
-      const at = data.taskStartsAt ? dates.dateTime({ instant: data.taskStartsAt }) : null;
+      const at = data.taskDueAt ? dates.dateTime({ instant: data.taskDueAt }) : null;
       return { message, order: [task, at].filter(Boolean).join(" · ") };
     }
     const order = `#${reference} ${data.orderTitle || t("untitled")}`;

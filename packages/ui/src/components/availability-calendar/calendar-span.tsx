@@ -2,7 +2,7 @@ import type { CSSProperties, KeyboardEvent, MouseEvent, ReactNode } from "react"
 import { cn } from "../../lib/cn";
 import type { CardSurface } from "../booking-tone/booking-tone";
 import { CalendarHoverCard } from "./calendar-hover-card";
-import { bufferStyle, markStyle } from "./calendar-marks";
+import { bufferStyle, markStyle, taskHoldStyle } from "./calendar-marks";
 import { percentIn, toMinutes } from "./calendar-time";
 import type { CalendarAudience, CalendarLine, CalendarWindow } from "./calendar-types";
 
@@ -61,6 +61,8 @@ export type CalendarSpanProps = {
   card?: ReactNode;
   /** The hover card's surface instead of the line's, e.g. plain around a clash of several. */
   cardSurface?: CardSurface | undefined;
+  /** A task's room hold (ADR 0120): drawn in the task colour, not the state's. */
+  task?: boolean;
   /** The line open beside the calendar: an ink ring. Nothing else is ever faded. */
   selected?: boolean;
   /** Opens the line's order. Mouse click or Enter; a touch tap shows the hover card first. */
@@ -109,7 +111,9 @@ export function CalendarSpan({ line, audience, window, axis, ...props }: Calenda
               style={{
                 ...style,
                 ...(booking
-                  ? markStyle({ state: line.state, audience })
+                  ? props.task
+                    ? taskHoldStyle({ state: line.state })
+                    : markStyle({ state: line.state, audience })
                   : bufferStyle({ state: line.state })),
               }}
               {...(booking ? selectHandlers({ onSelect: props.onSelect }) : {})}

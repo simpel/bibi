@@ -10,6 +10,10 @@ const BLOCKED: CalendarState = {
   hold: "hard",
 };
 const UNNAMED: CalendarState = { ...BLOCKED, name: "Booked", color: "var(--primary)" };
+const TASK_STATES = {
+  soft: { ...BLOCKED, name: "Prebooked on a task", color: "var(--task)", hold: "soft" },
+  hard: { ...BLOCKED, name: "Booked on a task", color: "var(--task)" },
+} satisfies { soft: CalendarState; hard: CalendarState };
 
 const block = ({ over = {} }: { over?: Partial<CalendarBlockDto> }): CalendarBlockDto => ({
   id: "o1",
@@ -18,6 +22,7 @@ const block = ({ over = {} }: { over?: Partial<CalendarBlockDto> }): CalendarBlo
   startsAt: new Date("2026-11-01T09:00:00Z"),
   endsAt: new Date("2026-11-01T11:00:00Z"),
   lineId: "l1",
+  taskId: null,
   orderId: "t1",
   reference: 12,
   orderTitle: null,
@@ -42,6 +47,8 @@ const map = ({ blocks }: { blocks: CalendarBlockDto[] }) =>
     unnamed: UNNAMED,
     via: { LINE: "Line assignee", ORDER: "Order assignee" },
     orderHref: ({ orderId }) => `/orders/${orderId}`,
+    taskStates: TASK_STATES,
+    taskHref: ({ taskId }) => `/tasks/${taskId}`,
   });
 
 const SETUP = {
@@ -87,6 +94,28 @@ describe("toAssetBookings", () => {
   it("draws a manual block grey and unsold", () => {
     const over = { type: "MAINTENANCE" as const, lineId: null, orderId: null, reference: null };
     expect(map({ blocks: [block({ over })] })[0]).toMatchObject({ order: null, state: BLOCKED });
+  });
+
+  it("draws a task's room hold in the task's states and links to the task", () => {
+    const over = {
+      lineId: null,
+      orderId: null,
+      reference: null,
+      taskId: "task1",
+      title: "Site visit",
+    };
+    const prebook = map({
+      blocks: [block({ over: { ...over, soft: true, stateColor: null } })],
+    })[0];
+    const book = map({ blocks: [block({ over })] })[0];
+    expect(prebook).toMatchObject({
+      name: "Site visit",
+      taskId: "task1",
+      href: "/tasks/task1",
+      state: { name: "Prebooked on a task", hold: "soft" },
+    });
+    expect(book).toMatchObject({ state: { name: "Booked on a task", hold: "hard" } });
+    expect(book).not.toHaveProperty("orderId");
   });
 
   it("carries the details the caller may see, and leaves hidden ones off", () => {

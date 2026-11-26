@@ -569,8 +569,8 @@ export const RELATIONS: RelationMap = {
       "target": "HoursException",
       "list": true
     },
-    "tasks": {
-      "target": "Task",
+    "taskItems": {
+      "target": "TaskItem",
       "list": true
     },
     "record": {
@@ -993,6 +993,10 @@ export const RELATIONS: RelationMap = {
     },
     "allocation": {
       "target": "LineAllocation",
+      "list": false
+    },
+    "taskItem": {
+      "target": "TaskItem",
       "list": false
     }
   },
@@ -1761,9 +1765,9 @@ export const RELATIONS: RelationMap = {
       "target": "Order",
       "list": false
     },
-    "item": {
-      "target": "Item",
-      "list": false
+    "items": {
+      "target": "TaskItem",
+      "list": true
     },
     "notifications": {
       "target": "Notification",
@@ -1776,6 +1780,20 @@ export const RELATIONS: RelationMap = {
     "record": {
       "target": "Record",
       "list": false
+    }
+  },
+  "TaskItem": {
+    "task": {
+      "target": "Task",
+      "list": false
+    },
+    "item": {
+      "target": "Item",
+      "list": false
+    },
+    "occupancies": {
+      "target": "Occupancy",
+      "list": true
     }
   },
   "User": {

@@ -1,5 +1,4 @@
 import type { CardIssue } from "../booking-tone/booking-tone";
-import type { TaskShape } from "../task-shape/task-shape";
 /**
  * Who reads the calendar. Internal = venue staff (holds, states, buffers, staffing). External =
  * the customer (only what they bought, at the times they were sold).
@@ -112,6 +111,8 @@ export type AssetBooking = CalendarLine & {
   /** The line and order behind it, to load the order's other lines; none for a manual block. */
   lineId?: string;
   orderId?: string;
+  /** Set when the hold is a task's room hold (ADR 0120): drawn in the task colour, opens the task. */
+  taskId?: string;
   /** The day it is on, "YYYY-MM-DD" in the venue's zone (ADR 0064: a code-level key only). */
   date: string;
   order: string | null;
@@ -148,28 +149,24 @@ export type FormatDate = (input: {
 }) => string;
 
 /**
- * A task on the calendar (spec: tasks): outlined, never filled, on its own lane above the assets
- * and echoed on its asset's row. Times are already in the venue's zone, like a booking's.
+ * A task on the calendar (spec: tasks, ADR 0120): a point at its due time, outlined and never
+ * filled, on its own lane above the assets and echoed on the rows of the rooms it names. Times
+ * are already in the venue's zone, like a booking's.
  */
 export type CalendarTaskEntry = {
   id: string;
-  /** A meeting covers `start`–`end`; a deadline is a point at `start`. */
-  shape: TaskShape;
   /** The day it is on, "YYYY-MM-DD" in the venue's zone (ADR 0064: a code-level key only). */
   date: string;
-  /** Local wall-clock times, "HH:mm". A meeting without `end` shows as a point. */
+  /** Local wall-clock time of the due time, "HH:mm". */
   start: string;
-  end?: string | undefined;
   /** The task's title. */
   label: string;
   /** Already formatted on the server, e.g. "14:00". */
   timeLabel: string;
   done?: boolean | undefined;
   overdue?: boolean | undefined;
-  /** The line or item it is about. */
-  itemId?: string | undefined;
-  /** The asset it takes place on: also drawn, outlined, on that asset's row. */
-  assetId?: string | undefined;
+  /** The rooms it names: also drawn, outlined, on those rows. */
+  assetIds?: readonly string[] | undefined;
   /** Where a click goes; or `onClick` for the app to open it its own way. */
   href?: string | undefined;
   onClick?: (() => void) | undefined;

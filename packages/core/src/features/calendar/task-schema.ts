@@ -1,18 +1,21 @@
 import { z } from "zod";
-import { TaskShapeSchema } from "../task/task-shape";
 
-/** A task on the calendar (ADR 0117): drawn as an outline in its own lane, never a block. */
+/**
+ * A task on the calendar (ADR 0117, 0120): a point at its due time, drawn as an outline in its own
+ * lane, never a block. Only tasks with a due time are on the calendar; a room it holds shows as
+ * a block of its own (`blocks[].taskId`).
+ */
 export const CalendarTaskSchema = z.object({
   id: z.string().describe("task.get"),
   typeName: z.string(),
-  shape: TaskShapeSchema,
-  startsAt: z.date().describe("A meeting's start, or a deadline's due time"),
-  endsAt: z.date().nullable().describe("A meeting's end; null for a deadline"),
-  itemId: z.string().nullable().describe("The item it names, e.g. the room to show"),
+  dueAt: z.date().describe("When it is due"),
+  itemIds: z
+    .array(z.string())
+    .describe("The rooms it concerns (item.get), related or held, in the task's order"),
   orderId: z.string().nullable().describe("The linked order; null when not linked"),
-  customerId: z.string(),
+  customerId: z.string().nullable().describe("The customer; null when it has none"),
   done: z.boolean(),
-  overdue: z.boolean().describe("Open and past its end or due time"),
+  overdue: z.boolean().describe("Open and past its due time"),
 });
 
 export type CalendarTask = z.infer<typeof CalendarTaskSchema>;

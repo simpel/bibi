@@ -1,14 +1,15 @@
-import { TaskSchema, TaskWarningSchema } from "@bibi/core/schemas";
+import { TaskItemSchema, TaskSchema } from "@bibi/core/schemas";
 import { z } from "zod";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 
 /** JSON form of a task as tool results carry it (dates = ISO strings). */
 export const TaskWireSchema = TaskSchema.extend({
-  startsAt: z.string(),
-  endsAt: z.string().nullable(),
+  dueAt: z.string().nullable(),
+  items: z.array(
+    TaskItemSchema.extend({ startsAt: z.string().nullable(), endsAt: z.string().nullable() }),
+  ),
   doneAt: z.string().nullable(),
-  warnings: z.array(TaskWarningSchema.extend({ startsAt: z.string(), endsAt: z.string() })),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

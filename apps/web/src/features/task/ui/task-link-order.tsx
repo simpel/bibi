@@ -23,10 +23,12 @@ import type { NamedOption } from "@/components/form/named-option";
 import { Link, useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
-import { linkTaskOrderAction } from "../actions";
+import { linkTaskOrderAction, updateTaskAction } from "../actions";
 
 export type TaskLinkOrderDialogProps = {
   taskId: string;
+  /** The order it is in now: the dialog then edits it (move or remove) instead of adding. */
+  currentOrderId?: string | null;
   /** The customer's orders it may join; read on the server, unwrapped when the dialog opens. */
   orders: Promise<readonly NamedOption[]>;
   open: boolean;
@@ -43,8 +45,10 @@ export function TaskLinkOrderDialog({ open, onOpenChange, ...props }: TaskLinkOr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{t("addToOrder")}</DialogTitle>
-          <DialogDescription>{t("addToOrderDescription")}</DialogDescription>
+          <DialogTitle>{t(props.currentOrderId ? "editOrder" : "addToOrder")}</DialogTitle>
+          <DialogDescription>
+            {t(props.currentOrderId ? "editOrderDescription" : "addToOrderDescription")}
+          </DialogDescription>
         </DialogHeader>
         <Suspense fallback={null}>
           <LinkOrderForm {...props} onDone={() => onOpenChange(false)} />
@@ -58,17 +62,26 @@ type LinkOrderFormProps = Omit<TaskLinkOrderDialogProps, "open" | "onOpenChange"
   onDone: () => void;
 };
 
-function LinkOrderForm({ taskId, orders: ordersPromise, onDone }: LinkOrderFormProps) {
+function LinkOrderForm({
+  taskId,
+  currentOrderId = null,
+  orders: ordersPromise,
+  onDone,
+}: LinkOrderFormProps) {
   const t = useTranslations("task");
   const common = useTranslations("common");
   const router = useRouter();
   const orders = use(ordersPromise);
-  const [orderId, setOrderId] = useState("");
+  const [orderId, setOrderId] = useState(currentOrderId ?? "");
   const { run, pending } = useToastAction();
-  const link = () =>
+  const save = ({ next }: { next: string | null }) =>
     run({
-      action: () => linkTaskOrderAction({ input: { taskId, orderId } }),
-      messages: { pending: common("saving"), success: t("linked") },
+      // The first link is `task.linkOrder`; moving or removing it is `task.update`.
+      action: () =>
+        currentOrderId || next === null
+          ? updateTaskAction({ input: { id: taskId, orderId: next } })
+          : linkTaskOrderAction({ input: { taskId, orderId: next } }),
+      messages: { pending: common("saving"), success: currentOrderId ? t("updated") : t("linked") },
       onSuccess: () => {
         onDone();
         router.refresh();
@@ -110,8 +123,22 @@ function LinkOrderForm({ taskId, orders: ordersPromise, onDone }: LinkOrderFormP
         <Button type="button" variant="outline" onClick={onDone}>
           {common("cancel")}
         </Button>
-        <Button type="button" disabled={!orderId || pending} onClick={link}>
-          {t("addToOrder")}
+        {currentOrderId ? (
+          <Button
+            type="button"
+            variant="outline"
+            disabled={pending}
+            onClick={() => save({ next: null })}
+          >
+            {t("removeFromOrder")}
+          </Button>
+        ) : null}
+        <Button
+          type="button"
+          disabled={!orderId || orderId === currentOrderId || pending}
+          onClick={() => save({ next: orderId })}
+        >
+          {common("save")}
         </Button>
       </DialogFooter>
     </div>

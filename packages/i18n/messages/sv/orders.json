@@ -632,6 +632,11 @@
       "title": "Bygg bokningen",
       "summary": "{lines, plural, one {# rad} other {# rader}}",
       "addLineFirst": "Lägg till en rad för att fortsätta"
+    },
+    "taskRooms": {
+      "title": "Uppgiftens rum följer med som rader",
+      "room": "{name}: {hold, select, BOOK {bokat} other {preliminärbokat}} {period}",
+      "hiddenRoom": "Ett rum du inte kan se"
     }
   },
   "orderSheet": {
