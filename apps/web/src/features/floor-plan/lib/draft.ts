@@ -10,8 +10,8 @@ import {
   snapToWall,
 } from "@bibi/core/schemas";
 
-/** A piece while it is edited: the save input plus a key that is stable within the editor. */
-export type DraftElement = Required<Omit<FloorElementInput, "label" | "emergencyExit">> & {
+/** A piece while it is edited: the save input plus a key (a saved piece's id, or `draft-n`). */
+export type DraftElement = Required<Omit<FloorElementInput, "id" | "label" | "emergencyExit">> & {
   key: string;
   label: string | null;
   /** A door or window marked as an emergency exit (floor plan only). */
@@ -50,11 +50,14 @@ export function toDraft({ element }: { element: FloorElementDto }): DraftElement
   };
 }
 
-/** A draft as the save input. */
+/** A draft as the save input: a saved piece sends its id, so it keeps it (ADR 0119). */
 export function toInput({ element }: { element: DraftElement }): FloorElementInput {
-  const { key: _key, ...input } = element;
-  return input;
+  const { key, ...input } = element;
+  return isDraftKey({ key }) ? input : { ...input, id: key };
 }
+
+/** Whether a key belongs to a piece created in this editor (not saved yet). */
+export const isDraftKey = ({ key }: { key: string }) => key.startsWith("draft-");
 
 export type EffectiveInput = { element: DraftElement; kinds: KindMap };
 

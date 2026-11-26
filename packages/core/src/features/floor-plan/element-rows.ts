@@ -113,28 +113,56 @@ export type ReplaceElementsInput = {
   elements: readonly FloorElementInput[];
 };
 
-/** Replaces the parent's elements. Join-like rows without history; the parent carries the audit. */
+/** The stored columns of one input piece at `position`. */
+const elementData = ({ element, position }: { element: FloorElementInput; position: number }) => ({
+  position,
+  kindId: element.kindId,
+  xCm: element.xCm,
+  yCm: element.yCm,
+  rotationDeg: element.rotationDeg ?? 0,
+  widthCm: element.widthCm ?? null,
+  depthCm: element.depthCm ?? null,
+  seats: element.seats ?? null,
+  seatsTop: element.seatsTop ?? null,
+  seatsRight: element.seatsRight ?? null,
+  seatsBottom: element.seatsBottom ?? null,
+  seatsLeft: element.seatsLeft ?? null,
+  swingDeg: element.swingDeg ?? null,
+  emergencyExit: element.emergencyExit ?? false,
+  label: element.label || null,
+});
+
+/**
+ * Saves the parent's elements as a set (ADR 0119): a piece that names one of the parent's saved
+ * ids keeps it (so a table keeps its bookings), the rest are created, and saved pieces left out
+ * are deleted. An id of another parent, or one named twice, counts as a new piece. Join-like rows
+ * without history; the parent carries the audit.
+ */
 export async function replaceElements({ context, parent, elements }: ReplaceElementsInput) {
-  await context.db.floorElement.deleteMany({ where: parent });
-  await context.db.floorElement.createMany({
-    data: elements.map((element, position) => ({
-      ...parent,
-      organizationId: context.organizationId,
-      position,
-      kindId: element.kindId,
-      xCm: element.xCm,
-      yCm: element.yCm,
-      rotationDeg: element.rotationDeg ?? 0,
-      widthCm: element.widthCm ?? null,
-      depthCm: element.depthCm ?? null,
-      seats: element.seats ?? null,
-      seatsTop: element.seatsTop ?? null,
-      seatsRight: element.seatsRight ?? null,
-      seatsBottom: element.seatsBottom ?? null,
-      seatsLeft: element.seatsLeft ?? null,
-      swingDeg: element.swingDeg ?? null,
-      emergencyExit: element.emergencyExit ?? false,
-      label: element.label || null,
-    })),
+  const saved = await context.db.floorElement.findMany({ where: parent, select: { id: true } });
+  const free = new Set(saved.map((row) => row.id));
+  const kept: { id: string; position: number; element: FloorElementInput }[] = [];
+  const created: { position: number; element: FloorElementInput }[] = [];
+  elements.forEach((element, position) => {
+    if (element.id && free.delete(element.id)) kept.push({ id: element.id, position, element });
+    else created.push({ position, element });
   });
+  if (free.size > 0) {
+    await context.db.floorElement.deleteMany({ where: { ...parent, id: { in: [...free] } } });
+  }
+  for (const { id, position, element } of kept) {
+    await context.db.floorElement.updateMany({
+      where: { ...parent, id },
+      data: elementData({ element, position }),
+    });
+  }
+  if (created.length > 0) {
+    await context.db.floorElement.createMany({
+      data: created.map(({ element, position }) => ({
+        ...parent,
+        organizationId: context.organizationId,
+        ...elementData({ element, position }),
+      })),
+    });
+  }
 }

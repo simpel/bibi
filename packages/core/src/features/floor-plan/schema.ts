@@ -100,6 +100,13 @@ const nullableCm = cm.nullable().optional();
 const nullableCount = count.nullable().optional();
 
 export const FloorElementInputSchema = z.object({
+  id: z
+    .string()
+    .min(1)
+    .optional()
+    .describe(
+      "A saved piece's id, to keep it (tables keep their bookings, ADR 0119); omitted or unknown = a new piece",
+    ),
   kindId: z.string().min(1),
   xCm: z.number().int().min(-1000).max(20_000).describe("Centre, from the plan's left edge"),
   yCm: z.number().int().min(-1000).max(20_000).describe("Centre, from the plan's top edge"),
