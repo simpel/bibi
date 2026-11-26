@@ -12,6 +12,8 @@ const ALLOWED: ReadonlyArray<readonly [QuoteStatus, QuoteStatus]> = [
   ["SUPERSEDED", "ACCEPTED"],
   ["SUPERSEDED", "DECLINED"],
   ["SUPERSEDED", "EXPIRED"],
+  // `quote.reopen`: a still valid replaced version becomes current again.
+  ["SUPERSEDED", "SENT"],
 ];
 
 const isAllowed = ({ from, to }: { from: QuoteStatus; to: QuoteStatus }) =>
