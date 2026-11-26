@@ -4,7 +4,8 @@ import { createRestClient } from "./parity-rest";
 
 const ELEMENT = `{ id kindId xCm yCm rotationDeg widthCm depthCm seats seatsTop seatsRight seatsBottom
   seatsLeft label shape fixed keepClearCm effectiveWidthCm effectiveDepthCm effectiveAround
-  effectiveSides { top right bottom left } effectiveSwingDeg swingDeg emergencyExit seatCount }`;
+  effectiveSides { top right bottom left } effectiveSwingDeg swingDeg emergencyExit seatCount
+  minCovers maxCovers onlineBookable }`;
 const LAYOUT_SUMMARY = `{ id itemId name description version seatCount capacity effectiveCapacity
   capacitySource setupMinutes teardownMinutes elements ${ELEMENT} }`;
 const PLAN_SHAPE = "widthCm depthCm outline minAisleCm";

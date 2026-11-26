@@ -11,12 +11,17 @@ import {
 } from "@bibi/core/schemas";
 
 /** A piece while it is edited: the save input plus a key (a saved piece's id, or `draft-n`). */
-export type DraftElement = Required<Omit<FloorElementInput, "id" | "label" | "emergencyExit">> & {
-  key: string;
-  label: string | null;
-  /** A door or window marked as an emergency exit (floor plan only). */
-  emergencyExit?: boolean;
-};
+type TableFields = "minCovers" | "maxCovers" | "onlineBookable";
+
+export type DraftElement = Required<
+  Omit<FloorElementInput, "id" | "label" | "emergencyExit" | TableFields>
+> &
+  Pick<FloorElementInput, TableFields> & {
+    key: string;
+    label: string | null;
+    /** A door or window marked as an emergency exit (floor plan only). */
+    emergencyExit?: boolean;
+  };
 
 export type KindMap = ReadonlyMap<string, FloorElementKindDto>;
 
@@ -47,6 +52,10 @@ export function toDraft({ element }: { element: FloorElementDto }): DraftElement
     ...{ key: id, kindId, xCm, yCm, rotationDeg, label, widthCm, depthCm },
     ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft, swingDeg },
     emergencyExit: element.emergencyExit,
+    // Table fields ride along so a save from the editor keeps them (ADR 0119).
+    minCovers: element.minCovers,
+    maxCovers: element.maxCovers,
+    onlineBookable: element.onlineBookable,
   };
 }
 

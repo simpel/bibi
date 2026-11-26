@@ -4,6 +4,7 @@ import { archiveMcpTools } from "../features/archive/mcp";
 import { assignmentMcpTools } from "../features/assignment/mcp";
 import { auditLogMcpTools } from "../features/audit-log/mcp";
 import { boardCrudMcpTools, boardPhaseMcpTools } from "../features/board/mcp";
+import { bookingPageMcpTools } from "../features/booking-page/mcp";
 import { calendarMcpTools } from "../features/calendar/mcp";
 import { changeSetMcpTools } from "../features/change-set/mcp";
 import { commentMcpTools } from "../features/comment/mcp";
@@ -12,6 +13,8 @@ import { contactMcpTools } from "../features/contact/mcp";
 import { conversationMcpTools } from "../features/conversation/mcp";
 import { customerMcpTools } from "../features/customer/mcp";
 import { dashboardMcpTools } from "../features/dashboard/mcp";
+import { diningRoomMcpTools } from "../features/dining-room/mcp";
+import { diningServiceMcpTools } from "../features/dining-service/mcp";
 import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
 import { fileMcpTools } from "../features/file/mcp";
@@ -51,6 +54,7 @@ import { runSheetDefinitionMcpTools } from "../features/run-sheet-definition/mcp
 import { settingsMcpTools } from "../features/settings/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { statusGridMcpTools } from "../features/status-grid/mcp";
+import { tableCombinationMcpTools } from "../features/table-combination/mcp";
 import { taskMcpTools } from "../features/task/mcp";
 import { userPreferenceMcpTools } from "../features/user-preference/mcp";
 import { userSettingsMcpTools } from "../features/user-settings/mcp";
@@ -108,6 +112,10 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...fieldDefinitionMcpTools,
     ...vocabularyMcpTools,
     ...floorPlanMcpTools,
+    ...diningRoomMcpTools,
+    ...diningServiceMcpTools,
+    ...tableCombinationMcpTools,
+    ...bookingPageMcpTools,
     ...responsibilityMcpTools,
     ...runSheetDefinitionMcpTools,
     ...configurationMcpTools,

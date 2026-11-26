@@ -16,12 +16,14 @@ export type ElementRow = FloorElement & { kind: FloorElementKind };
 export function toElementDto({ row }: { row: ElementRow }): FloorElementDto {
   const effective = effectiveElement({ element: row, kind: row.kind });
   const { id, kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label } = row;
+  const { minCovers, maxCovers, onlineBookable } = row;
   const { seats, seatsTop, seatsRight, seatsBottom, seatsLeft, swingDeg } = row;
   // Only a door or window can be an exit.
   const emergencyExit = row.emergencyExit && isOpening(effective);
   return {
     ...{ id, kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label },
     ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft, swingDeg, emergencyExit },
+    ...{ minCovers, maxCovers, onlineBookable },
     shape: effective.shape,
     fixed: effective.fixed,
     keepClearCm: effective.keepClearCm,
@@ -56,9 +58,19 @@ export const toPlaced = ({ element }: { element: FloorElementDto }): PlacedEleme
 export const toInput = ({ element }: { element: FloorElementDto }): FloorElementInput => {
   const { kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label, swingDeg } = element;
   const { seats, seatsTop, seatsRight, seatsBottom, seatsLeft, emergencyExit } = element;
+  const { minCovers, maxCovers, onlineBookable } = element;
   return {
     ...{ kindId, xCm, yCm, rotationDeg, widthCm, depthCm, label, swingDeg, emergencyExit },
-    ...{ seats, seatsTop, seatsRight, seatsBottom, seatsLeft },
+    ...{
+      seats,
+      seatsTop,
+      seatsRight,
+      seatsBottom,
+      seatsLeft,
+      minCovers,
+      maxCovers,
+      onlineBookable,
+    },
   };
 };
 
@@ -131,6 +143,10 @@ const elementData = ({ element, position }: { element: FloorElementInput; positi
   swingDeg: element.swingDeg ?? null,
   emergencyExit: element.emergencyExit ?? false,
   label: element.label || null,
+  // Table fields (ADR 0119): omitted keeps the stored value; a new piece gets the defaults.
+  ...(element.minCovers === undefined ? {} : { minCovers: element.minCovers }),
+  ...(element.maxCovers === undefined ? {} : { maxCovers: element.maxCovers }),
+  ...(element.onlineBookable === undefined ? {} : { onlineBookable: element.onlineBookable }),
 });
 
 /**

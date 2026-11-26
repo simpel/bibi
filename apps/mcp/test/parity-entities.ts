@@ -6,6 +6,7 @@ import { billingEntity } from "./parity-entities-billing";
 import { boardEntities } from "./parity-entities-board";
 import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
+import { diningEntities } from "./parity-entities-dining";
 import { floorPlanEntities } from "./parity-entities-floor-plan";
 import { integrationEntities } from "./parity-entities-integration";
 import { itemStateEntities } from "./parity-entities-item-state";
@@ -110,6 +111,7 @@ export const ENTITIES: ParityEntity[] = [
   }),
   ...configurationEntities(),
   ...floorPlanEntities(),
+  ...diningEntities(),
   ...customerEntities(),
   ...boardEntities(),
   ...orderEntities(),

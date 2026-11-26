@@ -5,6 +5,7 @@ import { assignmentRoutes } from "./features/assignment/rest";
 import { auditLogRoutes } from "./features/audit-log/rest";
 import { billingRoutes } from "./features/billing/rest";
 import { boardRoutes as boardCrudRoutes, boardPhaseRoutes } from "./features/board/rest";
+import { bookingPageRoutes } from "./features/booking-page/rest";
 import { calendarRoutes } from "./features/calendar/rest";
 import { changeSetRoutes } from "./features/change-set/rest";
 import { commentRoutes } from "./features/comment/rest";
@@ -15,6 +16,8 @@ import { creditNoteRoutes } from "./features/credit-note/rest";
 import { customerRoutes } from "./features/customer/rest";
 import { dashboardRoutes } from "./features/dashboard/rest";
 import { depositRoutes } from "./features/deposit/rest";
+import { diningRoomRoutes } from "./features/dining-room/rest";
+import { diningServiceRoutes } from "./features/dining-service/rest";
 import { entityTypeRoutes } from "./features/entity-type/rest";
 import { fieldDefinitionRoutes } from "./features/field-definition/rest";
 import { fileRoutes } from "./features/file/rest";
@@ -58,6 +61,7 @@ import { runSheetDefinitionRoutes } from "./features/run-sheet-definition/rest";
 import { settingsRoutes } from "./features/settings/rest";
 import { skillRoutes } from "./features/skill/rest";
 import { statusGridRoutes } from "./features/status-grid/rest";
+import { tableCombinationRoutes } from "./features/table-combination/rest";
 import { taskRoutes } from "./features/task/rest";
 import { userPreferenceRoutes } from "./features/user-preference/rest";
 import { userSettingsRoutes } from "./features/user-settings/rest";
@@ -117,6 +121,10 @@ export function listRestRoutes(): RestRoute[] {
     ...fieldDefinitionRoutes,
     ...vocabularyRoutes,
     ...floorPlanRoutes,
+    ...diningRoomRoutes,
+    ...diningServiceRoutes,
+    ...tableCombinationRoutes,
+    ...bookingPageRoutes,
     ...responsibilityRoutes,
     ...assignmentRoutes,
     ...runSheetDefinitionRoutes,

@@ -126,6 +126,26 @@ export const FloorElementInputSchema = z.object({
       "DOOR, WINDOW in a floor plan: an emergency exit; every layout must keep the area in front of it clear",
     ),
   label: z.string().trim().max(40).nullable().optional().describe("e.g. a table number"),
+  minCovers: z
+    .number()
+    .int()
+    .min(1)
+    .max(100)
+    .nullable()
+    .optional()
+    .describe("A table's fewest people (ADR 0119); null = 1"),
+  maxCovers: z
+    .number()
+    .int()
+    .min(1)
+    .max(100)
+    .nullable()
+    .optional()
+    .describe("A table's most people (ADR 0119); null = its seats"),
+  onlineBookable: z
+    .boolean()
+    .optional()
+    .describe("Guests may get this table on the booking page (ADR 0119); default true"),
 });
 
 const SeatSidesSchema = z.object({

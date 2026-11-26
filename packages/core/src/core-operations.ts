@@ -4,6 +4,7 @@ import { alternativeGroupOperations } from "./features/alternative-group/operati
 import { apiKeyOperations } from "./features/api-key/operations";
 import { assignmentOperations } from "./features/assignment/operations";
 import { auditLogOperations } from "./features/audit-log/operations";
+import { bookingPageOperations } from "./features/booking-page/operations";
 import { calendarOperations } from "./features/calendar/operations";
 import { changeSetOperations } from "./features/change-set/operations";
 import { commentOperations } from "./features/comment/operations";
@@ -12,6 +13,8 @@ import { contactOperations } from "./features/contact/operations";
 import { conversationOperations } from "./features/conversation/operations";
 import { customerOperations } from "./features/customer/operations";
 import { dashboardOperations } from "./features/dashboard/operations";
+import { diningRoomOperations } from "./features/dining-room/operations";
+import { diningServiceOperations } from "./features/dining-service/operations";
 import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
 import { floorPlanOperations } from "./features/floor-plan/operations";
@@ -45,6 +48,7 @@ import { runSheetDefinitionOperations } from "./features/run-sheet-definition/op
 import { settingsOperations } from "./features/settings/operations";
 import { skillOperations } from "./features/skill/operations";
 import { statusGridOperations } from "./features/status-grid/operations";
+import { tableCombinationOperations } from "./features/table-combination/operations";
 import { taskOperations } from "./features/task/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
@@ -109,6 +113,11 @@ function staticOperations(): AnyOperation[] {
     ...requirementOperations,
     ...commentOperations,
     ...taskOperations,
+    // Table booking setup (ADR 0119).
+    ...diningRoomOperations,
+    ...diningServiceOperations,
+    ...tableCombinationOperations,
+    ...bookingPageOperations,
     ...runSheetOperations,
     ...pipelineGroupOperations,
     ...quoteOperations,

@@ -29,6 +29,81 @@ export const UI_EXEMPT: readonly UiExempt[] = [
       "The furniture library is imported and used on the layouts page (ADR 0099); its own admin section to edit kinds follows. Until then the API, MCP and the assistant edit it.",
   },
   {
+    operation: "diningRoom.list",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "diningRoom.get",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "diningRoom.set",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "diningService.list",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "diningService.get",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "diningService.create",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "diningService.update",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "diningService.archive",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "diningServiceException.list",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "diningServiceException.set",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "diningServiceException.delete",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "tableCombination.list",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "tableCombination.save",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "bookingPage.get",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
+    operation: "bookingPage.update",
+    reason:
+      "Table booking settings UI comes in slice F of ADR 0119 (spec: docs/specs/table-reservations.md).",
+  },
+  {
     operation: "settings.view",
     reason:
       "The assistant's read of single settings (one card each); the administration pages read each owner's settings.",

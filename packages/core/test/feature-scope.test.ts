@@ -61,6 +61,8 @@ const OUTPUT_EXCEPTIONS: Readonly<Record<string, string>> = {
   "venue:contactPhone": "the venue's own contact details, not a customer contact",
   "organizationProfile:contactEmail": "the organization's own contact details (ADR 0061)",
   "organizationProfile:contactPhone": "the organization's own contact details (ADR 0061)",
+  "bookingPage:contactEmail": "the restaurant's own contact details on its booking page (ADR 0119)",
+  "bookingPage:contactPhone": "the restaurant's own contact details on its booking page (ADR 0119)",
   "runSheet:itemName": "run sheet rows are a snapshot copied with item:read at generate time",
   "runSheet:programItemName":
     "run sheet rows are a snapshot copied with program:read at generate time",

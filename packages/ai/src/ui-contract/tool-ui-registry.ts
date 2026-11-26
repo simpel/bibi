@@ -6,6 +6,7 @@ import { BILLING_GENERIC_UI_TOOLS, BILLING_UI_ENTRIES } from "./billing-entries"
 import { COMMENT_UI_ENTRIES } from "./comment-entries";
 import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import { CUSTOMER_UI_ENTRIES } from "./customer-entries";
+import { DINING_GENERIC_UI_TOOLS } from "./dining-generic-tools";
 import { FLOOR_PLAN_GENERIC_UI_TOOLS } from "./floor-plan-generic-tools";
 import { INBOUND_EMAIL_UI_ENTRIES } from "./inbound-email-entries";
 import { INBOUND_MESSAGE_UI_ENTRIES } from "./inbound-message-entries";
@@ -141,6 +142,7 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   ...SELF_GENERIC_UI_TOOLS,
   ...ALLOCATION_GENERIC_UI_TOOLS,
   ...FLOOR_PLAN_GENERIC_UI_TOOLS,
+  ...DINING_GENERIC_UI_TOOLS,
   ...READ_GENERIC_UI_TOOLS,
   ...BILLING_GENERIC_UI_TOOLS,
   ...PIPELINE_SETUP_GENERIC_UI_TOOLS,

@@ -1,4 +1,5 @@
 import { COMMENT_OPERATION_KEYS } from "./approval-comment-keys";
+import { DINING_FIELD_KEYS, DINING_OPERATION_KEYS } from "./approval-dining-keys";
 import { INBOX_OPERATION_KEYS } from "./approval-inbox-keys";
 import { LIFECYCLE_OPERATION_KEYS } from "./approval-lifecycle-keys";
 import { MONEY_FIELD_KEYS, MONEY_OPERATION_KEYS } from "./approval-money-keys";
@@ -94,6 +95,7 @@ export const FIELD_KEYS = [
   ...PIPELINE_FIELD_KEYS,
   ...MONEY_FIELD_KEYS,
   ...TASK_FIELD_KEYS,
+  ...DINING_FIELD_KEYS,
 ] as const;
 
 /** Operations with a localized label in `assistant.approval.operations` (`.` → `_`). */
@@ -119,6 +121,7 @@ export const OPERATION_KEYS = [
   ...LIFECYCLE_OPERATION_KEYS,
   ...COMMENT_OPERATION_KEYS,
   ...TASK_OPERATION_KEYS,
+  ...DINING_OPERATION_KEYS,
   ...INBOX_OPERATION_KEYS,
   ...PEOPLE_OPERATION_KEYS,
   ...PIPELINE_OPERATION_KEYS,

@@ -1,10 +1,12 @@
 import { ASSIGNMENT_NAMES, BOARD_NAMES, ITEM_TYPE_GROUP_NAMES } from "./operation-names-assignment";
+import { DINING_SETUP_NAMES } from "./operation-names-dining";
 import { EXTRA_NAMES } from "./operation-names-integration";
 import { LIFECYCLE_NAMES } from "./operation-names-lifecycle";
 import { ORDER_NAMES } from "./operation-names-order";
 
 const NAMES = [
   ...ORDER_NAMES,
+  ...DINING_SETUP_NAMES,
   "orderStatus.archive",
   "orderStatus.archivePreview",
   "orderStatus.create",
