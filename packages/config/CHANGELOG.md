@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/config-v1.0.0...@bibi/config-v1.1.0) (2026-11-27)
+
+
+### Features
+
+* guests book, change and cancel tables on the restaurant's own page, and staff switch table booking on from the room ([c64a86c](https://github.com/simpel/bibi/commit/c64a86c7f840e75c0e86665368346456ccdbf6d8))
+
 ## [1.0.0](https://github.com/simpel/bibi/compare/@bibi/config-v0.4.0...@bibi/config-v1.0.0) (2026-11-15)
 
 

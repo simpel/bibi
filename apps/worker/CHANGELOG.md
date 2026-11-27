@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.1.0](https://github.com/simpel/bibi/compare/@bibi/worker-v2.0.0...@bibi/worker-v2.1.0) (2026-11-27)
+
+
+### Features
+
+* archived records are restored, deleted for good and purged after a retention period ([e8fa178](https://github.com/simpel/bibi/commit/e8fa178ee30efb0ee1f235a070b8c0e7fcb30a26))
+* board cues, hours check, help hints and follow controls ([dec5f73](https://github.com/simpel/bibi/commit/dec5f733332cdff5918d02193312a3dd20440065))
+* restaurants take table reservations from staff, the assistant and guests, and the start page tells that story ([4314d17](https://github.com/simpel/bibi/commit/4314d175751b1fd30d2492ca73c609aaeeda9a84))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/auth bumped to 1.1.0
+    * @bibi/config bumped to 1.1.0
+    * @bibi/core bumped to 6.0.0
+    * @bibi/db bumped to 4.0.0
+    * @bibi/logger bumped to 0.2.0
+    * @bibi/mail bumped to 1.1.0
+
 ## [2.0.0](https://github.com/simpel/bibi/compare/@bibi/worker-v1.0.1...@bibi/worker-v2.0.0) (2026-11-15)
 
 

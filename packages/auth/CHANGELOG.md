@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/auth-v1.0.0...@bibi/auth-v1.1.0) (2026-11-27)
+
+
+### Features
+
+* board cues, hours check, help hints and follow controls ([dec5f73](https://github.com/simpel/bibi/commit/dec5f733332cdff5918d02193312a3dd20440065))
+* guests book, change and cancel tables on the restaurant's own page, and staff switch table booking on from the room ([c64a86c](https://github.com/simpel/bibi/commit/c64a86c7f840e75c0e86665368346456ccdbf6d8))
+* members can be limited to related records; auth and notifications resolve access in one place ([034f590](https://github.com/simpel/bibi/commit/034f59060b53fe13fb799e8d3e6ac73d22c022a0))
+* the demo seed adds Kvarnby Manor, an organization with no setup yet ([999fb67](https://github.com/simpel/bibi/commit/999fb677779b722b188cf383859bb74a7d124b32))
+
+
+### Bug Fixes
+
+* pnpm dev serves https when WEB_ORIGIN is https, and a refused assistant client is a server error ([a6090a8](https://github.com/simpel/bibi/commit/a6090a859bfc67fd89f368d45dae150ffb4ef2d4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 1.1.0
+    * @bibi/core bumped to 6.0.0
+    * @bibi/db bumped to 4.0.0
+    * @bibi/i18n bumped to 5.0.0
+    * @bibi/logger bumped to 0.2.0
+    * @bibi/mail bumped to 1.1.0
+
 ## [1.0.0](https://github.com/simpel/bibi/compare/@bibi/auth-v0.6.4...@bibi/auth-v1.0.0) (2026-11-15)
 
 

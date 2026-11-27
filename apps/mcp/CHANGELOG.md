@@ -1,5 +1,57 @@
 # Changelog
 
+## [6.0.0](https://github.com/simpel/bibi/compare/@bibi/mcp-v5.0.0...@bibi/mcp-v6.0.0) (2026-11-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* GraphQL, REST, MCP and the assistant follow the account mappings
+
+### Features
+
+* a task needs only its type, has one due time and can prebook or book rooms ([c2e99cf](https://github.com/simpel/bibi/commit/c2e99cf8e49b8e56d093a0d3ddc36be10e69dc22))
+* admins edit the inbox address and get forwarding steps ([e06d0c7](https://github.com/simpel/bibi/commit/e06d0c7c58ebb29cb4a1989c20e3e350a9959e64))
+* archived records are restored, deleted for good and purged after a retention period ([e8fa178](https://github.com/simpel/bibi/commit/e8fa178ee30efb0ee1f235a070b8c0e7fcb30a26))
+* board cues, hours check, help hints and follow controls ([dec5f73](https://github.com/simpel/bibi/commit/dec5f733332cdff5918d02193312a3dd20440065))
+* comments on orders and lines, shown on run sheets ([17ade2e](https://github.com/simpel/bibi/commit/17ade2eee0544984a4a4c92c92bbdb90b743e994))
+* customer types carry business or private, and private customers get an optional personal identity number ([2da90a7](https://github.com/simpel/bibi/commit/2da90a7dc966bd86542206a3fc6746bee93b5f5a))
+* dining rooms, sittings, exceptions, table combinations and the booking page can be set up on every surface ([575068e](https://github.com/simpel/bibi/commit/575068e132e3822e798643539024d4357523037e))
+* edit values on the assistant's confirmation card ([dbdaeca](https://github.com/simpel/bibi/commit/dbdaecacf4dac8f5c8c2bcbb8bc2902240e77252))
+* GraphQL, REST, MCP and the assistant follow the account mappings ([bd31204](https://github.com/simpel/bibi/commit/bd31204ea7cd08c5e59e165d2aeeb396f2ede3b8))
+* guests book, change and cancel tables on the restaurant's own page, and staff switch table booking on from the room ([c64a86c](https://github.com/simpel/bibi/commit/c64a86c7f840e75c0e86665368346456ccdbf6d8))
+* My work is a timeline of order cards with a shared card tone ([d21c3e6](https://github.com/simpel/bibi/commit/d21c3e646d27b1c5b01f25088b2b46b6d304a7c0))
+* My work is a timeline of order cards with a shared card tone ([1a8dcaa](https://github.com/simpel/bibi/commit/1a8dcaa62758b0fb411a8a6eb87b5d1872b50d5d))
+* My work opens with Needs you, the tasks the member must act on ([0741372](https://github.com/simpel/bibi/commit/074137279bafff113c6fa31a34687150f4c65f40))
+* notifications open in a panel on the right, with Needs you on top and dismissable ([597ea74](https://github.com/simpel/bibi/commit/597ea740e59b98200ff8e7471c164a9ed08a2236))
+* order versions, restore and the superseded quote ([be41d10](https://github.com/simpel/bibi/commit/be41d106acf7e29722e76bcb17f6184ae11cb40c))
+* pipeline views are personal and shared with members or the organization ([58b0836](https://github.com/simpel/bibi/commit/58b083669fff4453d519e06424ab2f38d010b6c5))
+* restaurants take table reservations from staff, the assistant and guests, and the start page tells that story ([4314d17](https://github.com/simpel/bibi/commit/4314d175751b1fd30d2492ca73c609aaeeda9a84))
+* tasks around a customer, before or beside an order (ADR 0117) ([0ebbfdc](https://github.com/simpel/bibi/commit/0ebbfdc0ab36b63d5817e0de780bf50f7d45dda3))
+* the quote shows where it stands in a next-step card, and a replaced version can be set as current ([6f09500](https://github.com/simpel/bibi/commit/6f095001e6c8207852f1fcc4e41cc154130b732c))
+
+
+### Bug Fixes
+
+* board views expose viewerCan; the web reads it instead of re-implementing edit and manage ([17fc91e](https://github.com/simpel/bibi/commit/17fc91e8c28f4e7b11edbbbc459d5da65c6b5168))
+* removing a member leaves no assignments, follows or views behind ([d645625](https://github.com/simpel/bibi/commit/d645625957235b6e7317698d2b2563c4de77df24))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 6.0.0
+    * @bibi/auth bumped to 1.1.0
+    * @bibi/config bumped to 1.1.0
+    * @bibi/core bumped to 6.0.0
+    * @bibi/db bumped to 4.0.0
+    * @bibi/graphql bumped to 4.0.0
+    * @bibi/logger bumped to 0.2.0
+    * @bibi/mail bumped to 1.1.0
+    * @bibi/storage bumped to 0.2.9
+  * devDependencies
+    * @bibi/api bumped to 4.0.0
+
 ## [5.0.0](https://github.com/simpel/bibi/compare/@bibi/mcp-v4.0.0...@bibi/mcp-v5.0.0) (2026-11-15)
 
 

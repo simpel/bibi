@@ -1,5 +1,60 @@
 # Changelog
 
+## [3.0.0](https://github.com/simpel/bibi/compare/@bibi/ui-v2.1.1...@bibi/ui-v3.0.0) (2026-11-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* an order's customer is fixed at creation, and the order page is regrouped
+
+### Features
+
+* a choice field from a list offers Create value, which adds it to the list and selects it ([0792faa](https://github.com/simpel/bibi/commit/0792faad0244e2d51bb5461985b6a8a13b77c3d5))
+* a danger area at the bottom of the task page is the only place to archive it, and the note leads the page ([48ce7da](https://github.com/simpel/bibi/commit/48ce7da15d97939685904edda9fc1a0b79f96883))
+* a line's missing time and open choice show in amber stripes and are filled in Edit line ([3b3b94c](https://github.com/simpel/bibi/commit/3b3b94c10efb00ec647b43020fd37215d1a59f59))
+* a mapping canvas draws a line from each purpose to an account ([88295e7](https://github.com/simpel/bibi/commit/88295e7c39dc181bf376f42d33d49c94e89b5858))
+* a pending button shows a spinner in place of its icon ([3029fbe](https://github.com/simpel/bibi/commit/3029fbe70648f8a0d1948cb1f6e51993d3a6b148))
+* a task needs only its type, has one due time and can prebook or book rooms ([c2e99cf](https://github.com/simpel/bibi/commit/c2e99cf8e49b8e56d093a0d3ddc36be10e69dc22))
+* an order's customer is fixed at creation, and the order page is regrouped ([ccb1583](https://github.com/simpel/bibi/commit/ccb1583991892dc81cec61139a5a494ff81d60b8))
+* board cues, hours check, help hints and follow controls ([dec5f73](https://github.com/simpel/bibi/commit/dec5f733332cdff5918d02193312a3dd20440065))
+* calendar cards turn red when a hard hold blocks them, and hover cards fit the screen ([8b54d09](https://github.com/simpel/bibi/commit/8b54d0989475c2136cbe057f39e6a37ce2d2325e))
+* card issues are error and warning badges in words, state is the first stat ([1540c50](https://github.com/simpel/bibi/commit/1540c50bfae425bd022d7feff4eabce2ad7ea45f))
+* cards show issues as an error icon or a warning triangle, not a striped outline ([3ec59a9](https://github.com/simpel/bibi/commit/3ec59a980801c0b7df237ba40ec39b87254b5650))
+* cards wash their header in the status colour, show the order number as a stat and stripe the outline when there is an issue ([9bb8080](https://github.com/simpel/bibi/commit/9bb80808915a990944c3f13d0b01612badb20d57))
+* comment icons, unread dots, replies and mentions ([816137d](https://github.com/simpel/bibi/commit/816137db95fd648425dad04e46d5b466a745f89f))
+* every icon button has a tooltip saying what a click does ([7852d2b](https://github.com/simpel/bibi/commit/7852d2bd787292240183201526b9a51ccf59aea5))
+* items get a Lucide icon or an image, and the package step compares each package with the request ([9b86f64](https://github.com/simpel/bibi/commit/9b86f643a9485528f910815951b2f30fcc215c4c))
+* My work has a search box, and card headers edge in their status colour ([0019ce4](https://github.com/simpel/bibi/commit/0019ce41c39d2face9332f44a15cbc5f359080d3))
+* My work in Today, This week, Next week and Later, reading on as you scroll ([25c8641](https://github.com/simpel/bibi/commit/25c86415a0eb1fe6dedf127ebb8930619dc200e4))
+* My work is a timeline of order cards with a shared card tone ([d21c3e6](https://github.com/simpel/bibi/commit/d21c3e646d27b1c5b01f25088b2b46b6d304a7c0))
+* My work is a timeline of order cards with a shared card tone ([1a8dcaa](https://github.com/simpel/bibi/commit/1a8dcaa62758b0fb411a8a6eb87b5d1872b50d5d))
+* My work, pinned and hover cards are one card with a tinted header, pin and expand ([9032c08](https://github.com/simpel/bibi/commit/9032c08af6b6056f069f9229379a20823ae6a328))
+* notifications open in a panel on the right, with Needs you on top and dismissable ([597ea74](https://github.com/simpel/bibi/commit/597ea740e59b98200ff8e7471c164a9ed08a2236))
+* restaurants take table reservations from staff, the assistant and guests, and the start page tells that story ([4314d17](https://github.com/simpel/bibi/commit/4314d175751b1fd30d2492ca73c609aaeeda9a84))
+* tasks around a customer, before or beside an order (ADR 0117) ([0ebbfdc](https://github.com/simpel/bibi/commit/0ebbfdc0ab36b63d5817e0de780bf50f7d45dda3))
+* the item page leads with editable stat cards and Create order, and edits one setting at a time ([87e220a](https://github.com/simpel/bibi/commit/87e220a5f32147d83fda525c9e82ecd45375f3db))
+* the sidebar collapses to icons with tooltips and a red dot on Inbox ([4df3a79](https://github.com/simpel/bibi/commit/4df3a7911287f1d0148706f67ec6a9ac53d03580))
+
+
+### Bug Fixes
+
+* a narrow header folds its actions into the menu first, so the title keeps its row ([045567e](https://github.com/simpel/bibi/commit/045567e387a2bb54d38f43ee8bc5dcd4aa770196))
+* card headers are a solid wash, so no edge shows through around them ([8d863ef](https://github.com/simpel/bibi/commit/8d863ef8c5945fd55db234aa122db51b3ce5af27))
+* card headers end at the card's edge in their own wash, with no stronger edge ([33a1f4e](https://github.com/simpel/bibi/commit/33a1f4e82c6fbc37e8b5f148ff9e176ec8822903))
+* on a narrow page or card the actions sit on their own row above the title, everywhere ([36d826f](https://github.com/simpel/bibi/commit/36d826fb98baa878c6b85c1be8e28c03eddeece3))
+* search inputs' clear button is a muted cross from the theme, not Chrome's blue ([eb7c45b](https://github.com/simpel/bibi/commit/eb7c45bdee7a2ac9af0ef51fc8d440404d8d0bc4))
+* sort the @bibi/ui exports ([2defbf8](https://github.com/simpel/bibi/commit/2defbf8fe6a8b47c6057fb0a6b744cb46a133365))
+* the order header's comment button is an icon button with a red dot ([34a5782](https://github.com/simpel/bibi/commit/34a5782bd4acada677063e9a92dfa63c3db22441))
+* the select matches shadcn's, so icons in its items and trigger are sized and muted ([0da7c10](https://github.com/simpel/bibi/commit/0da7c102b23077d4abc9c5b8c581a0e38d1abe83))
+* the task done toggle is a check button, like the Needs you checkmark ([49c75c7](https://github.com/simpel/bibi/commit/49c75c7ab2192f9261adfec7d66d3ab5d4977c50))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @bibi/config bumped to 1.1.0
+
 ## [2.1.1](https://github.com/simpel/bibi/compare/@bibi/ui-v2.1.0...@bibi/ui-v2.1.1) (2026-11-15)
 
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/simpel/bibi/compare/@bibi/logger-v0.1.4...@bibi/logger-v0.2.0) (2026-11-27)
+
+
+### Features
+
+* restaurants take table reservations from staff, the assistant and guests, and the start page tells that story ([4314d17](https://github.com/simpel/bibi/commit/4314d175751b1fd30d2492ca73c609aaeeda9a84))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 1.1.0
+
 ## [0.1.4](https://github.com/simpel/bibi/compare/@bibi/logger-v0.1.3...@bibi/logger-v0.1.4) (2026-11-15)
 
 

@@ -1,5 +1,76 @@
 # Changelog
 
+## [6.0.0](https://github.com/simpel/bibi/compare/@bibi/core-v5.0.0...@bibi/core-v6.0.0) (2026-11-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* invoices and deposits book to the mapped accounts of the connected ledger
+* an order's customer is fixed at creation, and the order page is regrouped
+
+### Features
+
+* a closed order is read-only ([d55f67a](https://github.com/simpel/bibi/commit/d55f67a76bdfc57bb7a72c2ca2fae4430724c620))
+* a database projection records who is related to each order and item ([f82f058](https://github.com/simpel/bibi/commit/f82f058a057e113840b6009dd7dc34281742cdaf))
+* a task needs only its type, has one due time and can prebook or book rooms ([c2e99cf](https://github.com/simpel/bibi/commit/c2e99cf8e49b8e56d093a0d3ddc36be10e69dc22))
+* admins edit the inbox address and get forwarding steps ([e06d0c7](https://github.com/simpel/bibi/commit/e06d0c7c58ebb29cb4a1989c20e3e350a9959e64))
+* an item's occupancy has Upcoming and Past tabs, upcoming first ([5cc582f](https://github.com/simpel/bibi/commit/5cc582fc63d0a10f2dab7e7273d5275b3fe19cdd))
+* an order's customer is fixed at creation, and the order page is regrouped ([ccb1583](https://github.com/simpel/bibi/commit/ccb1583991892dc81cec61139a5a494ff81d60b8))
+* archived records are restored, deleted for good and purged after a retention period ([e8fa178](https://github.com/simpel/bibi/commit/e8fa178ee30efb0ee1f235a070b8c0e7fcb30a26))
+* board cues, hours check, help hints and follow controls ([dec5f73](https://github.com/simpel/bibi/commit/dec5f733332cdff5918d02193312a3dd20440065))
+* comment icons, unread dots, replies and mentions ([816137d](https://github.com/simpel/bibi/commit/816137db95fd648425dad04e46d5b466a745f89f))
+* comments on orders and lines, shown on run sheets ([17ade2e](https://github.com/simpel/bibi/commit/17ade2eee0544984a4a4c92c92bbdb90b743e994))
+* customer types carry business or private, and private customers get an optional personal identity number ([2da90a7](https://github.com/simpel/bibi/commit/2da90a7dc966bd86542206a3fc6746bee93b5f5a))
+* demo items get their own icons by name, else their type's ([bb9af08](https://github.com/simpel/bibi/commit/bb9af080d2558d554e579d49d48754239295beba))
+* dining rooms, sittings, exceptions, table combinations and the booking page can be set up on every surface ([575068e](https://github.com/simpel/bibi/commit/575068e132e3822e798643539024d4357523037e))
+* guests book, change and cancel tables on the restaurant's own page, and staff switch table booking on from the room ([c64a86c](https://github.com/simpel/bibi/commit/c64a86c7f840e75c0e86665368346456ccdbf6d8))
+* guests count kitchen needs on the booking page against the lists the restaurant picks ([ae868ef](https://github.com/simpel/bibi/commit/ae868eff593fde5335c564de01f09bfdb884c22e))
+* invoices and deposits book to the mapped accounts of the connected ledger ([106b078](https://github.com/simpel/bibi/commit/106b0785cd9b1a96695598be4095f33b6c300a5d))
+* items get a Lucide icon or an image, and the package step compares each package with the request ([9b86f64](https://github.com/simpel/bibi/commit/9b86f643a9485528f910815951b2f30fcc215c4c))
+* layout pieces keep their ids when a layout or floor plan is saved ([85f82e9](https://github.com/simpel/bibi/commit/85f82e9adfb3e2fd6ed1919a6dc7ce27bff2502a))
+* members can be limited to related records; auth and notifications resolve access in one place ([034f590](https://github.com/simpel/bibi/commit/034f59060b53fe13fb799e8d3e6ac73d22c022a0))
+* My work in Today, This week, Next week and Later, reading on as you scroll ([25c8641](https://github.com/simpel/bibi/commit/25c86415a0eb1fe6dedf127ebb8930619dc200e4))
+* My work is a timeline of order cards with a shared card tone ([d21c3e6](https://github.com/simpel/bibi/commit/d21c3e646d27b1c5b01f25088b2b46b6d304a7c0))
+* My work is a timeline of order cards with a shared card tone ([1a8dcaa](https://github.com/simpel/bibi/commit/1a8dcaa62758b0fb411a8a6eb87b5d1872b50d5d))
+* My work opens with Needs you, the tasks the member must act on ([0741372](https://github.com/simpel/bibi/commit/074137279bafff113c6fa31a34687150f4c65f40))
+* notifications open in a panel on the right, with Needs you on top and dismissable ([597ea74](https://github.com/simpel/bibi/commit/597ea740e59b98200ff8e7471c164a9ed08a2236))
+* order versions, restore and the superseded quote ([be41d10](https://github.com/simpel/bibi/commit/be41d106acf7e29722e76bcb17f6184ae11cb40c))
+* packages get their own permission and leave the administration area ([eaf769d](https://github.com/simpel/bibi/commit/eaf769d70d2635634b3a75a6e218205e25b8e5fb))
+* pipeline views are personal and shared with members or the organization ([58b0836](https://github.com/simpel/bibi/commit/58b083669fff4453d519e06424ab2f38d010b6c5))
+* restaurants take table reservations from staff, the assistant and guests, and the start page tells that story ([4314d17](https://github.com/simpel/bibi/commit/4314d175751b1fd30d2492ca73c609aaeeda9a84))
+* Saved views above Orders, Run sheets and My work ([21ea9de](https://github.com/simpel/bibi/commit/21ea9dee7b5759b8942e52d9b11bd7756f0cef7f))
+* tasks around a customer, before or beside an order (ADR 0117) ([0ebbfdc](https://github.com/simpel/bibi/commit/0ebbfdc0ab36b63d5817e0de780bf50f7d45dda3))
+* the database holds dining rooms, sittings, table combinations, reservations and table holds ([3191e2b](https://github.com/simpel/bibi/commit/3191e2b6c95f81600847d8a9670a489e4029cd85))
+* the demo seed adds Kvarnby Manor, an organization with no setup yet ([999fb67](https://github.com/simpel/bibi/commit/999fb677779b722b188cf383859bb74a7d124b32))
+* the order's key facts show the quoted sum, linking to the renamed Quote & payments tab ([71956be](https://github.com/simpel/bibi/commit/71956be641d2c33f9f9665f87f29c86899041611))
+* the quote shows where it stands in a next-step card, and a replaced version can be set as current ([6f09500](https://github.com/simpel/bibi/commit/6f095001e6c8207852f1fcc4e41cc154130b732c))
+* the sidebar counts down the free trial and leads admins to pick a plan ([5b9ffdb](https://github.com/simpel/bibi/commit/5b9ffdb3daedac34a2e11e2c0577f97738b651d7))
+* the welcome flow skips working hours; members set them on their profile ([055c2a0](https://github.com/simpel/bibi/commit/055c2a035d8c5832f08f3b4feb1b4c53ecebcbf9))
+
+
+### Bug Fixes
+
+* authorization errors follow one convention ([f465b3a](https://github.com/simpel/bibi/commit/f465b3aecd39afd26fc1ab247d49c2c7320847c3))
+* board views expose viewerCan; the web reads it instead of re-implementing edit and manage ([17fc91e](https://github.com/simpel/bibi/commit/17fc91e8c28f4e7b11edbbbc459d5da65c6b5168))
+* operations declare their real gate; GraphQL edges use core's permission check ([ff5c164](https://github.com/simpel/bibi/commit/ff5c1649aca03acc7a761c41819179369efce89e))
+* provider sweep tests read only their own organization ([fe6044e](https://github.com/simpel/bibi/commit/fe6044ea215699dcf67e6275ff07d62dea719f85))
+* removing a member leaves no assignments, follows or views behind ([d645625](https://github.com/simpel/bibi/commit/d645625957235b6e7317698d2b2563c4de77df24))
+* requirements are called Requirements everywhere in English ([2e8661d](https://github.com/simpel/bibi/commit/2e8661d2748b73d0fc0630ccf42e69c74e1833e6))
+* setting the language works before a profile exists ([79ddb8b](https://github.com/simpel/bibi/commit/79ddb8b37bccbe626cfdb0e3b8d5aa9b060106ac))
+* the demo seed writes estimates before it closes an order ([5520ac1](https://github.com/simpel/bibi/commit/5520ac14dee3c93c89bfffaa0bdc87dcfae85353))
+* the pay page keeps offering its methods after a payment attempt lapsed ([0a1bd00](https://github.com/simpel/bibi/commit/0a1bd0025a0038c94187e00f77ba4669df324820))
+* the quote transition test allows reopening a replaced version ([d50d0bc](https://github.com/simpel/bibi/commit/d50d0bc40228f71d5660fa4626bfeaaa0c1786f6))
+* the requirement dialog picks a list, then its value, and says when setup is missing ([75f5feb](https://github.com/simpel/bibi/commit/75f5febc6f8881bf31e2b114ae125bf83006de00))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 1.1.0
+    * @bibi/db bumped to 4.0.0
+    * @bibi/logger bumped to 0.2.0
+
 ## [5.0.0](https://github.com/simpel/bibi/compare/@bibi/core-v4.0.0...@bibi/core-v5.0.0) (2026-11-15)
 
 

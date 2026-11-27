@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.1.0](https://github.com/simpel/bibi/compare/@bibi/mail-v1.0.0...@bibi/mail-v1.1.0) (2026-11-27)
+
+
+### Features
+
+* board cues, hours check, help hints and follow controls ([dec5f73](https://github.com/simpel/bibi/commit/dec5f733332cdff5918d02193312a3dd20440065))
+* restaurants take table reservations from staff, the assistant and guests, and the start page tells that story ([4314d17](https://github.com/simpel/bibi/commit/4314d175751b1fd30d2492ca73c609aaeeda9a84))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 1.1.0
+    * @bibi/core bumped to 6.0.0
+    * @bibi/i18n bumped to 5.0.0
+    * @bibi/logger bumped to 0.2.0
+
 ## [1.0.0](https://github.com/simpel/bibi/compare/@bibi/mail-v0.5.4...@bibi/mail-v1.0.0) (2026-11-15)
 
 
