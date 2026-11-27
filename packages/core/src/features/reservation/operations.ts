@@ -1,3 +1,4 @@
+import { viewReservationDay } from "./day-view-operation";
 import { getReservation, listReservations, reservationAvailability } from "./read-operations";
 import { reservationStateOperations } from "./state-operations";
 import { createReservation, updateReservation } from "./write-operations";
@@ -7,6 +8,7 @@ export const reservationOperations = [
   listReservations,
   getReservation,
   reservationAvailability,
+  viewReservationDay,
   createReservation,
   updateReservation,
   ...reservationStateOperations,

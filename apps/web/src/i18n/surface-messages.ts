@@ -54,6 +54,14 @@ export const MOTHERSHIP_NAMESPACES = [
   "shell",
 ] as const satisfies readonly MessageNamespace[];
 
+/** Namespaces required by client components under `(public)/book`: the guest booking pages. */
+export const BOOKING_NAMESPACES = [
+  ...ROOT_NAMESPACES,
+  "guestBooking",
+  "phone",
+  "country",
+] as const satisfies readonly MessageNamespace[];
+
 /** Namespaces belonging exclusively to non-`(app)` surfaces that are never shipped to `(app)` clients. */
 export const NON_APP_NAMESPACES = [
   "admin",
@@ -61,6 +69,7 @@ export const NON_APP_NAMESPACES = [
   "welcome",
   "site",
   "support",
+  "guestBooking",
 ] as const satisfies readonly MessageNamespace[];
 
 const nonAppSet = new Set<string>(NON_APP_NAMESPACES);

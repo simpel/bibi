@@ -19,6 +19,7 @@ export const DINING_SETUP_NAMES = [
   "reservation.cancel",
   "reservation.complete",
   "reservation.create",
+  "reservation.dayView",
   "reservation.get",
   "reservation.list",
   "reservation.markNoShow",

@@ -11,6 +11,8 @@ export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
   "docs",
   "mothership",
   "pay",
+  // The guest booking pages (ADR 0119).
+  "book",
   "site",
   "support",
   "developers",

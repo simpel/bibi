@@ -2,6 +2,7 @@ import { getEnv } from "@bibi/config";
 import { routing } from "@bibi/i18n/routing";
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
+import { bookingFrameHeader } from "./features/guest-booking/server/frame-header";
 import { setCurrentPathHeader } from "./server/current-path-header";
 import { resolveHostAction } from "./server/host-routing";
 import { syncActiveOrganization } from "./server/sync-active-organization";
@@ -34,6 +35,9 @@ function createProxy({ intl }: CreateProxyInput) {
     setCurrentPathHeader({ request });
     const response = intl(request);
     await syncActiveOrganization({ request, response });
+    // Guest booking pages may be framed by the organization's own sites (ADR 0119).
+    const frame = await bookingFrameHeader({ pathname: request.nextUrl.pathname });
+    if (frame) response.headers.set("content-security-policy", frame);
     return response;
   };
 }
@@ -45,7 +49,8 @@ function createProxy({ intl }: CreateProxyInput) {
 export const proxy = createProxy({ intl: createMiddleware(routing) });
 
 export const config = {
-  // Everything except API routes, MCP (`/mcp`, `/health`, ADR 0104), Next internals and files with an
+  // Everything except API routes, MCP (`/mcp`, `/health`, ADR 0104), a booking page's images
+  // (`/book/<slug>/logo|cover`, linked from mails, ADR 0119), Next internals and files with an
   // extension (incl. .well-known).
-  matcher: ["/((?!api|_next|_vercel|mcp$|health$|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|_vercel|mcp$|health$|book/[^/]+/(?:logo|cover)$|.*\\..*).*)"],
 };

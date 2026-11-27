@@ -920,6 +920,20 @@
         "openUntil": "Öppet till"
       }
     },
+    "itemSection": {
+      "title": "Bordsbokning",
+      "explanation": "Låt gäster boka bord i det här rummet. Därefter väljer du sittningar, bord och hur långt fram gäster kan boka.",
+      "enable": "Ta emot bordsbokningar i det här rummet",
+      "dialogDescription": "Välj ordet som avslutar rummets adress på din bokningssida.",
+      "slug": "Adressord",
+      "enabled": "Bordsbokning är på för det här rummet",
+      "address": "Adress",
+      "openUntil": "Öppet till",
+      "noLimit": "Ingen gräns",
+      "sittings": "Sittningar",
+      "settings": "Bokningsinställningar",
+      "reservations": "Reservationer"
+    },
     "room": {
       "description": "Inställningar för bordsbokning. Gästerna bokar på /{address} på bokningssidan."
     },

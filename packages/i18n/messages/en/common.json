@@ -546,10 +546,6 @@
           "title": "Change and cancel on their own",
           "body": "With the link in the email the guest moves the booking or cancels it, up to the cut-off you set."
         },
-        "needs": {
-          "title": "Needs as counts",
-          "body": "The guest notes, say, one gluten free, from the lists you show to guests. No record of who eats what."
-        },
         "mail": {
           "title": "Emails with your logo",
           "body": "Confirmation, change, cancellation and a reminder the day before."
@@ -557,10 +553,6 @@
         "embed": {
           "title": "On your own website",
           "body": "Embed the booking page on your website, or let a partner site book through the API."
-        },
-        "deposit": {
-          "title": "Deposits for larger parties",
-          "body": "Ask for a deposit from a party size you choose. The guest pays on the same payment page as your conference customers."
         }
       }
     },

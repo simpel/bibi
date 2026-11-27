@@ -3,9 +3,8 @@ import { floorSitting, slotTimes } from "./floor-data";
 
 const lunch = {
   id: "l",
-  name: "Lunch",
   layoutId: "a",
-  weekdays: [0, 1, 2, 3, 4],
+  closed: false,
   first: 690,
   last: 810,
   slot: 60,
@@ -13,17 +12,16 @@ const lunch = {
 const dinner = {
   ...lunch,
   id: "d",
-  name: "Dinner",
-  weekdays: [1, 2, 3, 4, 5],
+  closed: false,
   first: 1020,
   last: 1080,
 };
 
 describe("floor data", () => {
-  it("picks the sitting that runs that weekday", () => {
-    // 2026-12-05 is a Saturday: only dinner runs.
-    expect(floorSitting({ sittings: [lunch, dinner], date: "2026-12-05" })?.id).toBe("d");
-    expect(floorSitting({ sittings: [lunch, dinner], date: "2026-12-07" })?.id).toBe("l");
+  it("picks the first sitting open that day, else the first", () => {
+    expect(floorSitting({ sittings: [{ ...lunch, closed: true }, dinner] })?.id).toBe("d");
+    expect(floorSitting({ sittings: [lunch, dinner] })?.id).toBe("l");
+    expect(floorSitting({ sittings: [{ ...lunch, closed: true }] })?.id).toBe("l");
   });
   it("lists the slots of a sitting in the room's zone", () => {
     const times = slotTimes({ sitting: lunch, date: "2026-12-07", timeZone: "Europe/Stockholm" });

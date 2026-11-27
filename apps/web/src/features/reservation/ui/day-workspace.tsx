@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslations } from "next-intl";
 import { useMemo, useRef, useState } from "react";
 import type { NeedOption, ReservationInitial } from "../lib/create-form";
-import type { FloorBlock, FloorTable } from "../lib/floor-model";
+import type { FloorBlock } from "../lib/floor-model";
 import { tableStatus } from "../lib/floor-model";
 import type { ReservationRow } from "../lib/reservation-row";
 import type { TableChoice } from "../lib/table-choice";

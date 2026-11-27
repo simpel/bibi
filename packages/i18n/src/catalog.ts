@@ -1,6 +1,7 @@
 import adminEn from "../messages/en/admin.json";
 import assistantEn from "../messages/en/assistant.json";
 import authEn from "../messages/en/auth.json";
+import bookingEn from "../messages/en/booking.json";
 import catalogEn from "../messages/en/catalog.json";
 import commonEn from "../messages/en/common.json";
 import docsEn from "../messages/en/docs.json";
@@ -13,6 +14,7 @@ import tasksEn from "../messages/en/tasks.json";
 import adminSv from "../messages/sv/admin.json";
 import assistantSv from "../messages/sv/assistant.json";
 import authSv from "../messages/sv/auth.json";
+import bookingSv from "../messages/sv/booking.json";
 import catalogSv from "../messages/sv/catalog.json";
 import commonSv from "../messages/sv/common.json";
 import docsSv from "../messages/sv/docs.json";
@@ -38,6 +40,7 @@ export const SV_BUNDLES: Record<string, MessageTree> = {
   admin: adminSv,
   docs: docsSv,
   support: supportSv,
+  booking: bookingSv,
 };
 
 export const EN_BUNDLES: Record<string, MessageTree> = {
@@ -53,6 +56,7 @@ export const EN_BUNDLES: Record<string, MessageTree> = {
   admin: adminEn,
   docs: docsEn,
   support: supportEn,
+  booking: bookingEn,
 };
 
 /** Full Swedish message catalog (`sv` is the source of truth for message types). */
@@ -69,6 +73,7 @@ export const svMessages = {
   ...adminSv,
   ...docsSv,
   ...supportSv,
+  ...bookingSv,
 };
 
 /** Full English message catalog (`en` must match `sv` key-for-key). */
@@ -85,6 +90,7 @@ export const enMessages = {
   ...adminEn,
   ...docsEn,
   ...supportEn,
+  ...bookingEn,
 };
 
 export type Messages = typeof svMessages;

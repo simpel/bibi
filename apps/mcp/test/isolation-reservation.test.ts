@@ -49,6 +49,16 @@ describe("cross-organization isolation: table reservations (ADR 0119)", () => {
     const reservations = await call({ client: b, name: "reservation_list", args: RANGE });
     expect(reservations.data.items).toEqual([]);
     expect(reservations.data.totals.reservations).toBe(0);
+    const view = await call({
+      client: b,
+      name: "reservation_dayView",
+      args: { roomItemId, date: "2037-11-03" },
+    });
+    expect(view.data.reservations.items).toEqual([]);
+    expect(view.data.blocks).toEqual([]);
+    expect(view.data.rooms.map((room: { itemId: string }) => room.itemId)).not.toContain(
+      roomItemId,
+    );
     const blocks = await call({ client: b, name: "tableBlock_list", args: RANGE });
     expect(blocks.data.items).toEqual([]);
 

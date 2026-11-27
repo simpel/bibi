@@ -920,6 +920,20 @@
         "openUntil": "Open until"
       }
     },
+    "itemSection": {
+      "title": "Table booking",
+      "explanation": "Let guests book tables in this room. You choose its sittings, tables and how far ahead guests can book next.",
+      "enable": "Take table bookings in this room",
+      "dialogDescription": "Pick the word that ends the room's address on your booking page.",
+      "slug": "Address word",
+      "enabled": "Table booking is on for this room",
+      "address": "Address",
+      "openUntil": "Open until",
+      "noLimit": "No limit",
+      "sittings": "Sittings",
+      "settings": "Booking settings",
+      "reservations": "Reservations"
+    },
     "room": {
       "description": "Table booking settings. Guests book at /{address} on the booking page."
     },

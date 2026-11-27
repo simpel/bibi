@@ -133,6 +133,7 @@ export * from "./features/quote/write-operations";
 export * from "./features/requirement/effective";
 export * from "./features/requirement/operations";
 export * from "./features/requirement/write-operations";
+export * from "./features/reservation/day-view-operation";
 export * from "./features/reservation/erase-operation";
 export * from "./features/reservation/mail-port";
 export * from "./features/reservation/operations";

@@ -86,6 +86,12 @@ VISMA_API_BASE_URL=https://eaccountingapi.vismaonline.com
 # Unset: Swish is not offered.
 SWISH_API_BASE_URL=https://mss.cpc.getswish.net/swish-cpcapi
 
+# --- Guest booking captcha (Cloudflare Turnstile, ADR 0119) ---
+# Site key and secret together; the origin is required with them. Unset: guests book without a captcha.
+TURNSTILE_SITE_KEY=
+TURNSTILE_SECRET_KEY=
+TURNSTILE_ORIGIN=https://challenges.cloudflare.com
+
 # --- Logging (ADR 0014, 0031) ---
 # trace|debug|info|warn|error|fatal|silent (default info, silent in tests); json|pretty.
 # LOG_LEVEL=info

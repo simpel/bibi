@@ -5,6 +5,7 @@ const ONE = "/reservations/[id]";
 
 /** Table reservations and blocks (ADR 0119): the staff day view and the reservation page. */
 export const RESERVATION_SURFACES: readonly WebSurface[] = [
+  { operation: "reservation.dayView", route: DAY },
   { operation: "reservation.list", route: DAY },
   { operation: "reservation.get", route: ONE },
   { operation: "reservation.availability", route: DAY },

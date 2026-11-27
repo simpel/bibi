@@ -234,7 +234,7 @@
         "questions": {
           "bookSiteVisit": {
             "question": "Hur skapar jag en uppgift, till exempel ett platsbesök?",
-            "answer": "Klicka på **Skapa** högst upp och välj **Uppgift**, öppna kunden och klicka på **Skapa uppgift** under Uppgifter, eller klicka på en ledig tid i kalendern och välj **Skapa uppgift**. Välj typ, till exempel Platsbesök, och klicka på **Skapa uppgift**.\nBara typen krävs. Du kan också fylla i kund, kontaktperson, en tid den ska vara klar, vem som gör den, en anteckning och de rum uppgiften gäller."
+            "answer": "Klicka på **Skapa** högst upp och välj **Uppgift**, öppna kunden och klicka på **Skapa uppgift** under Uppgifter, eller klicka på en ledig tid i kalendern och välj **Skapa uppgift**. Välj typ, till exempel Platsbesök, och klicka på **Skapa uppgift**. Finns ingen typ än? Klicka på **Skapa typ** under typväljaren, ge den ett namn så väljs den åt dig (kräver behörighet att ändra konfigurationen).\nBara typen krävs. Du kan också fylla i kund, kontaktperson, en tid den ska vara klar, vem som gör den, en anteckning och de rum uppgiften gäller."
           },
           "optionalFields": {
             "question": "Måste jag välja kund eller tid?",
@@ -452,7 +452,7 @@
         "questions": {
           "setUp": {
             "question": "Hur ställer jag in bordsbokning?",
-            "answer": "Öppna **Administration** och välj **Bordsbokning**. Under **Matsalsrum** klickar du på **Skapa matsalsrum**, väljer rummet och ger det ett adressord.\nÖppna rummet för att skapa dess **Sittningar** (till exempel Lunch och Middag), numrera borden och slå ihop bord till **Kombinationer**. Med **Öppna bokningar till** säger du hur långt fram gäster kan boka, och med **Undantag** stänger du ett datum.\nTillbaka på **Bordsbokning** fyller du i **Bokningssida** med logotyp, färg och texter och slår sedan på **Publicerad**."
+            "answer": "Öppna rummet under **Artiklar**, gå till fliken **Möbleringar** och klicka på **Ta emot bordsbokningar i det här rummet**. Ge det ett adressord. (Du kan också göra det under **Administration**, **Bordsbokning**, **Matsalsrum**.)\nÖppna **Bokningsinställningar** för att skapa dess **Sittningar** (till exempel Lunch och Middag), numrera borden och slå ihop bord till **Kombinationer**. Med **Öppna bokningar till** säger du hur långt fram gäster kan boka, och med **Undantag** stänger du ett datum.\nTillbaka på **Bordsbokning** fyller du i **Bokningssida** med logotyp, färg och texter och slår sedan på **Publicerad**."
           },
           "phoneBooking": {
             "question": "Hur tar jag en telefonbokning?",

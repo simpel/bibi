@@ -93,4 +93,4 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 - Email: confirmation, change, cancellation and a reminder 24 hours before, all with the manage link and the booking page's logo and accent.
 
 ## Not in this version
-Waitlist, SMS, custom domains or CSS, OAuth for partners, per-table pricing, recurring blocks.
+Deposits (ADR 0119 decision 10 deferred: large parties call; `PENDING_PAYMENT` and the sitting's deposit columns stay unused), needs counts on the guest form (which lists guests see is not set yet), waitlist, SMS, custom domains or CSS, OAuth for partners, per-table pricing, recurring blocks.

@@ -1,0 +1,95 @@
+{
+  "guestBooking": {
+    "meta": {
+      "title": "Boka bord hos {organization}",
+      "manageTitle": "Din bokning hos {organization}"
+    },
+    "poweredBy": "Drivs av",
+    "logoAlt": "{organization}s logotyp",
+    "rooms": {
+      "title": "Boka bord",
+      "description": "Välj var du vill sitta.",
+      "empty": "Det går inte att boka online just nu.",
+      "upTo": "Upp till {count, plural, one {# gäst} other {# gäster}} online"
+    },
+    "contact": {
+      "call": "Ring {phone}",
+      "email": "Mejla {email}"
+    },
+    "party": {
+      "label": "Antal gäster",
+      "option": "{count, plural, one {# gäst} other {# gäster}}",
+      "more": "Fler",
+      "large": "Är ni {count} eller fler? Ring oss så hittar vi ett bord.",
+      "largeNoPhone": "Är ni {count} eller fler? Kontakta oss så hittar vi ett bord."
+    },
+    "date": {
+      "label": "Datum"
+    },
+    "times": {
+      "label": "Tid",
+      "loading": "Letar lediga bord…",
+      "empty": "Inga lediga bord för {count, plural, one {# gäst} other {# gäster}} den dagen. Prova en annan dag."
+    },
+    "summary": "{date} kl. {time}, {party}",
+    "details": {
+      "title": "Dina uppgifter",
+      "back": "Välj en annan tid",
+      "name": "Namn",
+      "phone": "Telefon",
+      "email": "E-post",
+      "emailHint": "Hit skickar vi bekräftelsen och länken till din bokning.",
+      "note": "Meddelande till restaurangen (valfritt)",
+      "policyTitle": "Bokningsvillkor",
+      "policyAccept": "Jag godkänner bokningsvillkoren",
+      "policyRequired": "Godkänn bokningsvillkoren för att boka.",
+      "captcha": "Säkerhetskontroll",
+      "submit": "Boka bord",
+      "pending": "Bokar ditt bord…",
+      "success": "Ditt bord är bokat"
+    },
+    "errors": {
+      "taken": "Någon hann boka den tiden. Välj en annan tid.",
+      "captcha": "Säkerhetskontrollen gick inte igenom. Försök igen.",
+      "late": "Det är för sent att ändra bokningen online. Kontakta restaurangen.",
+      "notFound": "Vi hittar inte den här bokningen."
+    },
+    "manage": {
+      "booked": "Ditt bord är bokat",
+      "bookedThanks": "Tack, {name}! Ditt bord är bokat.",
+      "sent": "Vi har skickat en bekräftelse till {email}. Spara den: via länken kan du ändra eller avboka.",
+      "pending": "Väntar på betalning",
+      "pendingDescription": "Bordet hålls medan handpenningen betalas. Använd betallänken vi mejlade dig.",
+      "cancelled": "Din bokning är avbokad",
+      "cancelledDescription": "Bordet är släppt. Du är välkommen att boka igen.",
+      "past": "Din bokning",
+      "pastDescription": "Den här bokningen har passerat.",
+      "bookAgain": "Boka igen",
+      "where": "Var",
+      "when": "När",
+      "party": "Antal gäster",
+      "name": "Namn",
+      "phone": "Telefon",
+      "email": "E-post",
+      "note": "Meddelande",
+      "changeUntil": "Du kan ändra eller avboka fram till {when}.",
+      "tooLate": "Det är för sent att ändra bokningen online. Kontakta oss så hjälper vi dig.",
+      "changeTime": "Ändra tid eller antal",
+      "changeTitle": "Välj en ny tid",
+      "keepTime": "Behåll nuvarande tid",
+      "changePending": "Ändrar din bokning…",
+      "changed": "Din bokning är ändrad",
+      "editDetails": "Ändra uppgifter",
+      "detailsPending": "Sparar…",
+      "detailsSaved": "Dina uppgifter är sparade",
+      "save": "Spara",
+      "cancelEdit": "Avbryt",
+      "cancelBooking": "Avboka",
+      "cancelTitle": "Vill du avboka?",
+      "cancelDescription": "Ditt bord för {party} den {when} släpps.",
+      "cancelConfirm": "Ja, avboka",
+      "cancelPending": "Avbokar…",
+      "cancelDone": "Din bokning är avbokad"
+    }
+  }
+}

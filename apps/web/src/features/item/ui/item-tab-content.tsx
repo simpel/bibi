@@ -7,6 +7,7 @@ import { LastEdited } from "@/features/audit-log/ui/last-edited";
 import { LayoutsSection } from "../../floor-plan/ui/layouts-section";
 import { DemandsSection } from "../../item-demand/ui/demands-section";
 import { OccupancySection } from "../../occupancy/ui/occupancy-section";
+import { ItemTableBookingSection } from "../../table-booking/ui/item-table-booking-section";
 import { hoursKind, type ItemTab } from "../item-tabs";
 import { hasCapability } from "./has-capability";
 import { ItemDangerArea } from "./item-danger-area";
@@ -52,9 +53,14 @@ export async function ItemTabContent({
       );
     case "layouts":
       return (
-        <DeferredSection>
-          <LayoutsSection locale={locale} itemId={item.id} canEdit={canEdit} />
-        </DeferredSection>
+        <>
+          <DeferredSection>
+            <LayoutsSection locale={locale} itemId={item.id} canEdit={canEdit} />
+          </DeferredSection>
+          <DeferredSection>
+            <ItemTableBookingSection itemId={item.id} name={item.name} timeZone={item.timeZone} />
+          </DeferredSection>
+        </>
       );
     case "occupancy":
       return (

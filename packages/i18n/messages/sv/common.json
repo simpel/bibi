@@ -546,10 +546,6 @@
           "title": "Ändra och avboka själv",
           "body": "Med länken i mejlet flyttar gästen sin bokning eller avbokar, fram till den gräns ni har satt."
         },
-        "needs": {
-          "title": "Behov som antal",
-          "body": "Gästen anger till exempel en glutenfri, från de listor ni visar för gäster. Ingen lista över vem som äter vad."
-        },
         "mail": {
           "title": "Mejl med er logga",
           "body": "Bekräftelse, ändring, avbokning och en påminnelse dagen före."
@@ -557,10 +553,6 @@
         "embed": {
           "title": "På er egen webbplats",
           "body": "Bädda in bokningssidan på er webbplats, eller låt en partnersajt boka via API:et."
-        },
-        "deposit": {
-          "title": "Förskott för större sällskap",
-          "body": "Kräv förskott från en viss storlek på sällskapet. Gästen betalar på samma betalsida som era konferenskunder."
         }
       }
     },

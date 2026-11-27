@@ -93,6 +93,21 @@ describe("parseEnv storage", () => {
     expect(env.SWISH_API_BASE_URL).toBeUndefined();
   });
 
+  it("leaves Turnstile off when unset and wants its keys together with the origin", () => {
+    expect(
+      parseEnv({ source: { ...base, TURNSTILE_SITE_KEY: "" } }).TURNSTILE_SITE_KEY,
+    ).toBeUndefined();
+    expect(() => parseEnv({ source: { ...base, TURNSTILE_SITE_KEY: "site" } })).toThrow(
+      /TURNSTILE_SECRET_KEY/,
+    );
+    const keys = { TURNSTILE_SITE_KEY: "site", TURNSTILE_SECRET_KEY: "secret" };
+    expect(() => parseEnv({ source: { ...base, ...keys } })).toThrow(/TURNSTILE_ORIGIN/);
+    const origin = { TURNSTILE_ORIGIN: "https://challenges.cloudflare.com" };
+    expect(parseEnv({ source: { ...base, ...keys, ...origin } }).TURNSTILE_SECRET_KEY).toBe(
+      "secret",
+    );
+  });
+
   it("rejects an origin with a path or trailing slash", () => {
     for (const value of ["https://mcp.heybibi.se/mcp", "https://app.heybibi.se/"]) {
       expect(() => parseEnv({ source: { ...base, MCP_ORIGIN: value } })).toThrow();

@@ -1,18 +1,38 @@
-import { type LayoutDto, parseIsoDate, weekdayOf } from "@bibi/core/schemas";
+import type { DaySittingSchema, LayoutDto } from "@bibi/core/schemas";
+import type { z } from "zod";
 import { storedToDrawing } from "@/features/floor-plan/lib/to-drawing";
 import { minuteToTime } from "../../table-booking/lib/clock";
 import { atTime } from "../../table-booking/lib/edge-time";
-import type { RoomTables } from "../load-reservation-data";
 import type { FloorPlanData } from "../ui/floor-plan-panel";
 
 const SEATED = new Set(["ROUND", "RECT"]);
 
-export type FloorSittingInput = { sittings: RoomTables["sittings"]; date: string };
+type DaySitting = z.infer<typeof DaySittingSchema>;
 
-/** The sitting the floor shows: one that runs that weekday, else the first. */
-export function floorSitting({ sittings, date }: FloorSittingInput) {
-  const weekday = weekdayOf({ date: parseIsoDate({ value: date }) });
-  return sittings.find((sitting) => sitting.weekdays.includes(weekday)) ?? sittings[0] ?? null;
+export type FloorSitting = {
+  id: string;
+  layoutId: string;
+  first: number;
+  last: number;
+  slot: number;
+  closed: boolean;
+};
+
+/** A sitting of the day view in the floor's shape. */
+export function toFloorSitting({ sitting }: { sitting: DaySitting }): FloorSitting {
+  return {
+    id: sitting.id,
+    layoutId: sitting.layoutId,
+    first: sitting.firstStartMinute,
+    last: sitting.lastStartMinute,
+    slot: sitting.slotMinutes,
+    closed: sitting.closed,
+  };
+}
+
+/** The sitting the floor shows: the first one open that day, else the first. */
+export function floorSitting({ sittings }: { sittings: readonly FloorSitting[] }) {
+  return sittings.find((sitting) => !sitting.closed) ?? sittings[0] ?? null;
 }
 
 export type FloorPlanInput = { layout: LayoutDto; tableName: (label: string) => string };

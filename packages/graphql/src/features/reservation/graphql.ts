@@ -4,9 +4,11 @@ import {
   cancelReservation,
   completeReservation,
   createReservation,
+  DaySittingSchema,
   getReservation,
   listReservations,
   markReservationNoShow,
+  type ReservationDayView,
   type ReservationDto,
   ReservationRequirementSchema,
   ReservationSchema,
@@ -15,11 +17,14 @@ import {
   seatReservation,
   unseatReservation,
   updateReservation,
+  viewReservationDay,
 } from "@bibi/core";
 import type { z } from "zod";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
+import { LayoutRef } from "../floor-plan/graphql";
+import { TableBlockRef } from "../table-block/graphql";
 
 type Requirement = z.infer<typeof ReservationRequirementSchema>;
 type Table = z.infer<typeof ReservationTableSchema>;
@@ -97,3 +102,57 @@ mutationFromOperation({ operation: seatReservation, type: ReservationRef });
 mutationFromOperation({ operation: unseatReservation, type: ReservationRef });
 mutationFromOperation({ operation: completeReservation, type: ReservationRef });
 mutationFromOperation({ operation: markReservationNoShow, type: ReservationRef });
+
+type DaySitting = z.infer<typeof DaySittingSchema>;
+
+const DaySittingRef = objectFromSchema<DaySitting>({
+  name: "ReservationDaySitting",
+  schema: DaySittingSchema,
+  description: "A sitting as it runs that day, the day's exception applied.",
+});
+
+const DayRoomRef = builder
+  .objectRef<ReservationDayView["rooms"][number]>("ReservationDayRoom")
+  .implement({
+    description: "A dining room to pick on the Reservations screen.",
+    fields: (t) => ({
+      itemId: t.exposeString("itemId"),
+      name: t.exposeString("name", { nullable: true, description: "Null without item:read." }),
+      slug: t.exposeString("slug"),
+      timeZone: t.exposeString("timeZone"),
+    }),
+  });
+
+const DaySpanRef = builder
+  .objectRef<NonNullable<ReservationDayView["room"]>>("ReservationDaySpan")
+  .implement({
+    description: "The room shown and the day's span.",
+    fields: (t) => ({
+      itemId: t.exposeString("itemId"),
+      timeZone: t.exposeString("timeZone"),
+      from: t.field({ type: "DateTime", resolve: (span) => span.from }),
+      to: t.field({ type: "DateTime", resolve: (span) => span.to }),
+    }),
+  });
+
+const NeedOptionRef = builder
+  .objectRef<ReservationDayView["needOptions"][number]>("ReservationNeedOption")
+  .implement({
+    description: 'A list value a need can be counted against, as "List: Value".',
+    fields: (t) => ({ id: t.exposeString("id"), name: t.exposeString("name") }),
+  });
+
+const DayViewRef = builder.objectRef<ReservationDayView>("ReservationDay").implement({
+  description: "The Reservations screen for one room and local date in one read.",
+  fields: (t) => ({
+    rooms: t.field({ type: [DayRoomRef], resolve: (view) => view.rooms }),
+    room: t.field({ type: DaySpanRef, nullable: true, resolve: (view) => view.room }),
+    sittings: t.field({ type: [DaySittingRef], resolve: (view) => view.sittings }),
+    layouts: t.field({ type: [LayoutRef], resolve: (view) => view.layouts }),
+    reservations: t.field({ type: ReservationListRef, resolve: (view) => view.reservations }),
+    blocks: t.field({ type: [TableBlockRef], resolve: (view) => view.blocks }),
+    needOptions: t.field({ type: [NeedOptionRef], resolve: (view) => view.needOptions }),
+  }),
+});
+
+fieldFromOperation({ operation: viewReservationDay, type: DayViewRef, name: "reservationDay" });

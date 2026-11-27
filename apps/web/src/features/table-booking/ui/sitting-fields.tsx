@@ -49,13 +49,6 @@ export function SittingFields({ form, layouts }: SittingFieldsProps) {
           label={t("changeCutoffMinutes")}
           type="number"
         />
-        <TextField
-          form={form}
-          name="depositFromParty"
-          label={t("depositFromParty")}
-          type="number"
-        />
-        <TextField form={form} name="depositPerCover" label={t("depositPerCover")} type="number" />
       </div>
     </div>
   );

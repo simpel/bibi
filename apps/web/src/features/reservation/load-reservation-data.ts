@@ -5,17 +5,13 @@ import {
   type LayoutDto,
   listDiningRooms,
   listItems,
-  listReservations,
-  listTableBlocks,
   listVocabularies,
   type Result,
 } from "@bibi/core";
-import { addDays, parseIsoDate, toIsoDate } from "@bibi/core/schemas";
 import { cache } from "react";
 import { loadSittings } from "@/features/table-booking/load-room-settings";
 import { listAll } from "@/server/list-all";
 import { runOperation } from "@/server/run-operation";
-import { atTime } from "../table-booking/lib/edge-time";
 import type { NeedOption } from "./lib/create-form";
 
 export type DiningRoomOption = { itemId: string; name: string; slug: string; timeZone: string };
@@ -52,29 +48,6 @@ export const loadNeedOptions = cache(async (): Promise<Result<NeedOption[]>> => 
     );
   return { ok: true, value: options };
 });
-
-export type DayRangeInput = { date: string; timeZone: string };
-
-/** The instants a local day starts and ends at in a zone: `[from, to)`. */
-export function dayRange({ date, timeZone }: DayRangeInput) {
-  const next = toIsoDate({ date: addDays({ date: parseIsoDate({ value: date }), days: 1 }) });
-  return {
-    from: atTime({ day: date, time: "00:00", timeZone }),
-    to: atTime({ day: next, time: "00:00", timeZone }),
-  };
-}
-
-export type LoadDayInput = { roomItemId: string; date: string; timeZone: string };
-
-/** One day's reservations and table blocks of a room. */
-export async function loadDay({ roomItemId, date, timeZone }: LoadDayInput) {
-  const { from, to } = dayRange({ date, timeZone });
-  const [reservations, blocks] = await Promise.all([
-    runOperation({ operation: listReservations, input: { roomItemId, from, to } }),
-    runOperation({ operation: listTableBlocks, input: { from, to } }),
-  ]);
-  return { reservations, blocks, from, to };
-}
 
 export type RoomTables = {
   sittings: {

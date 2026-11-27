@@ -18,6 +18,7 @@ const PROVIDER_HOSTS = {
   STRIPE_SECRET_KEY: ["STRIPE_API_BASE_URL"],
   FORTNOX_CLIENT_ID: ["FORTNOX_AUTH_BASE_URL", "FORTNOX_API_BASE_URL"],
   VISMA_CLIENT_ID: ["VISMA_IDENTITY_BASE_URL", "VISMA_API_BASE_URL"],
+  TURNSTILE_SECRET_KEY: ["TURNSTILE_ORIGIN"],
 } as const;
 
 const envSchema = z
@@ -99,6 +100,14 @@ const envSchema = z
      * `https://cpc.getswish.net/swish-cpcapi`. Unset: Swish is not configured.
      */
     SWISH_API_BASE_URL: z.string().url().optional(),
+    /**
+     * Cloudflare Turnstile on the guest booking page (ADR 0119): the widget's site key and the
+     * server's secret, set together. Unset: the page books without a captcha (dev, tests, e2e).
+     */
+    TURNSTILE_SITE_KEY: z.string().min(1).optional(),
+    TURNSTILE_SECRET_KEY: z.string().min(1).optional(),
+    /** Turnstile's host (`https://challenges.cloudflare.com`); script and siteverify paths are built from it. */
+    TURNSTILE_ORIGIN: origin.optional(),
     /** Base64 32-byte key sealing integration tokens at rest (ADR 0087). Unset: no integration can connect. */
     INTEGRATION_SECRET_KEY: z
       .string()
@@ -162,6 +171,10 @@ const envSchema = z
   .refine((env) => Boolean(env.VISMA_CLIENT_ID) === Boolean(env.VISMA_CLIENT_SECRET), {
     message: "VISMA_CLIENT_ID and VISMA_CLIENT_SECRET must be set together",
     path: ["VISMA_CLIENT_SECRET"],
+  })
+  .refine((env) => Boolean(env.TURNSTILE_SITE_KEY) === Boolean(env.TURNSTILE_SECRET_KEY), {
+    message: "TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY must be set together",
+    path: ["TURNSTILE_SECRET_KEY"],
   })
   .superRefine((env, ctx) => {
     for (const [credential, hosts] of Object.entries(PROVIDER_HOSTS)) {

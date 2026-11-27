@@ -2,6 +2,7 @@ import { restRoute } from "../../rest-route";
 
 export const reservationRoutes = [
   restRoute({ operation: "reservation.list", method: "GET", path: "/reservations" }),
+  restRoute({ operation: "reservation.dayView", method: "GET", path: "/reservations/day-view" }),
   restRoute({ operation: "reservation.get", method: "GET", path: "/reservations/{id}" }),
   restRoute({
     operation: "reservation.availability",

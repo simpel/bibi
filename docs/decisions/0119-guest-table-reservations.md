@@ -51,7 +51,7 @@
    - They are exempt from parity (ADR 0003), as platform operations are (ADR 0015).
    - An IP rate limit guards the page and the API, and the page also has a captcha.
    - The staff operations, including services, exceptions, blocks and booking-page settings, keep full parity.
-10. **A deposit goes through a private order.**
+10. **A deposit goes through a private order.** *Deferred (the user, 2026-11-27): not built in the first release; large parties call the restaurant (`maxOnlineParty`). The sitting's deposit columns stay unused until then.*
     - When a party size triggers the venue's deposit rule, the reservation creates a private order with a deposit, and the guest pays on the existing payment page.
     - Accounting, refunds and VAT on advance payments follow ADR 0093, 0106 and 0108.
     - A booking waiting for payment holds its tables for 15 minutes.

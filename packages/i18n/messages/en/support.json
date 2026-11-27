@@ -234,7 +234,7 @@
         "questions": {
           "bookSiteVisit": {
             "question": "How do I create a task, such as a site visit?",
-            "answer": "Click **Create** at the top and pick **Task**, open the customer and click **Create task** under Tasks, or click a free slot on the calendar and choose **Create task**. Pick the type, such as Site visit, and click **Create task**.\nOnly the type is required. You can also fill in the customer, the contact person, a due time, who does it, a note and the rooms the task is about."
+            "answer": "Click **Create** at the top and pick **Task**, open the customer and click **Create task** under Tasks, or click a free slot on the calendar and choose **Create task**. Pick the type, such as Site visit, and click **Create task**. No type yet? Click **Create type** under the type picker, give it a name and it is selected for you (needs permission to edit configuration).\nOnly the type is required. You can also fill in the customer, the contact person, a due time, who does it, a note and the rooms the task is about."
           },
           "optionalFields": {
             "question": "Do I have to pick a customer or a time?",
@@ -452,7 +452,7 @@
         "questions": {
           "setUp": {
             "question": "How do I set up table booking?",
-            "answer": "Open **Administration** and choose **Table booking**. Under **Dining rooms**, click **Create dining room**, pick the room and give it an address word.\nOpen the room to create its **Sittings** (for example Lunch and Dinner), number its tables and join tables into **Combinations**. Use **Open bookings until** to say how far ahead guests can book, and **Exceptions** to close a date.\nBack on **Table booking**, fill in the **Booking page** with logo, colour and texts, then switch on **Published**."
+            "answer": "Open the room under **Items**, go to its **Layouts** tab and click **Take table bookings in this room**. Give it an address word. (You can also do this under **Administration**, **Table booking**, **Dining rooms**.)\nOpen **Booking settings** to create its **Sittings** (for example Lunch and Dinner), number its tables and join tables into **Combinations**. Use **Open bookings until** to say how far ahead guests can book, and **Exceptions** to close a date.\nBack on **Table booking**, fill in the **Booking page** with logo, colour and texts, then switch on **Published**."
           },
           "phoneBooking": {
             "question": "How do I take a phone booking?",

@@ -33,6 +33,12 @@ export const PublicAvailabilityInputSchema = z.object({
   roomSlug: z.string().min(1).max(60),
   date: PlainDateStringSchema,
   partySize: z.number().int().min(1).max(100),
+  token: z
+    .string()
+    .min(1)
+    .max(100)
+    .optional()
+    .describe("A guest moving their own booking: it does not count against the times"),
 });
 
 export const PublicAvailabilityOutputSchema = z.object({

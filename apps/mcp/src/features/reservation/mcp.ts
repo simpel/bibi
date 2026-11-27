@@ -7,6 +7,7 @@ import {
 
 export const reservationMcpTools = [
   mcpTool({ operation: "reservation.list" }),
+  mcpTool({ operation: "reservation.dayView" }),
   mcpTool({ operation: "reservation.get" }),
   mcpTool({ operation: "reservation.availability" }),
   mcpTool({ operation: "reservation.create", summary: createReservationSummary }),

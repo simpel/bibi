@@ -123,6 +123,7 @@ export * from "./features/profile/working-hours-schema";
 export * from "./features/quote/order-line-schema";
 export * from "./features/quote/schema";
 export * from "./features/requirement/schema";
+export * from "./features/reservation/day-view-schema";
 export * from "./features/reservation/public-schema";
 export * from "./features/reservation/schema";
 export * from "./features/responsibility/schema";

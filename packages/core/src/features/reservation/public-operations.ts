@@ -45,9 +45,11 @@ export const publicAvailability = defineOperation({
     const date = parseIsoDate({ value: input.date });
     const day = await loadRoomDay({ context, roomItemId: room.itemId, date });
     if (!day.ok) return notFound({ entity: "Dining room" });
+    const own = input.token ? await publicView({ context, token: input.token }) : null;
     const slots = await evaluateDay({
       ...{ context, day: day.value, date, partySize: input.partySize, online: true },
       now: nowOf({ context }),
+      ...(own ? { except: own.id } : {}),
     });
     const open = slots.filter((slot) => slot.available);
     return ok({
@@ -88,6 +90,8 @@ async function onlineSlot({
 }
 
 const TAKEN = "That time is no longer available: pick another";
+/** Issue paths that tell guests' refusals apart (ADR 0119): a taken time or a passed cutoff. */
+const TAKEN_ISSUES = [{ path: "startsAt", message: TAKEN }];
 
 export const publicCreateReservation = defineOperation({
   name: "reservation.publicCreate",
@@ -110,7 +114,7 @@ export const publicCreateReservation = defineOperation({
     await lockRoom({ context, roomItemId: room.itemId });
     const { startsAt, partySize } = input;
     const slot = await onlineSlot({ context, roomItemId: room.itemId, startsAt, partySize });
-    if (!slot?.tableIds) return conflict({ message: TAKEN });
+    if (!slot?.tableIds) return conflict({ message: TAKEN, issues: TAKEN_ISSUES });
     const token = newPublicToken();
     const row = await context.db.reservation.create({
       data: {
@@ -171,6 +175,7 @@ export const publicGetReservation = defineOperation({
 });
 
 const LATE = "It is too late to change this booking online: please call the restaurant";
+const LATE_ISSUES = [{ path: "changeUntil", message: LATE }];
 
 export const publicChangeReservation = defineOperation({
   name: "reservation.publicChange",
@@ -188,7 +193,7 @@ export const publicChangeReservation = defineOperation({
   handler: async ({ input, context }) => {
     const found = await publicView({ context, token: input.token });
     if (!found) return notFound({ entity: "Reservation" });
-    if (!found.view.canChange) return conflict({ message: LATE });
+    if (!found.view.canChange) return conflict({ message: LATE, issues: LATE_ISSUES });
     const { id, roomItemId, view } = found;
     const startsAt = input.startsAt ?? view.startsAt;
     const partySize = input.partySize ?? view.partySize;
@@ -199,7 +204,7 @@ export const publicChangeReservation = defineOperation({
     if (moved) {
       await lockRoom({ context, roomItemId });
       const slot = await onlineSlot({ context, roomItemId, startsAt, partySize, except: id });
-      if (!slot?.tableIds) return conflict({ message: TAKEN });
+      if (!slot?.tableIds) return conflict({ message: TAKEN, issues: TAKEN_ISSUES });
       await releaseHolds({ context, reservationId: id });
       Object.assign(data, { startsAt, endsAt: slot.endsAt, partySize, serviceId: slot.serviceId });
       await context.db.reservation.update({ where: { id }, data });
@@ -240,7 +245,7 @@ export const publicCancelReservation = defineOperation({
   handler: async ({ input, context }) => {
     const found = await publicView({ context, token: input.token });
     if (!found) return notFound({ entity: "Reservation" });
-    if (!found.view.canChange) return conflict({ message: LATE });
+    if (!found.view.canChange) return conflict({ message: LATE, issues: LATE_ISSUES });
     await context.db.reservation.update({
       where: { id: found.id },
       data: {

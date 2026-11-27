@@ -24,6 +24,9 @@ export const ReservationListWireSchema = z.object({
   items: z.array(ReservationWireSchema),
   totals: ReservationTotalsSchema,
 });
+export const ReservationDayViewWireSchema = z.object({
+  reservations: ReservationListWireSchema,
+});
 export const ReservationAvailabilityWireSchema = z.object({
   timeZone: z.string(),
   slots: z.array(AvailabilitySlotSchema.extend({ startsAt: z.string(), endsAt: z.string() })),
@@ -70,6 +73,11 @@ const tableBlockOne = uiEntry({
 /** Tool → component for table reservations and table blocks (ADR 0119). */
 export const RESERVATION_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   reservation_list: reservationDayList,
+  reservation_dayView: uiEntry({
+    component: "reservation-day-list",
+    schema: ReservationDayViewWireSchema,
+    toProps: ({ value }) => value.reservations,
+  }),
   reservation_get: reservationCard,
   reservation_availability: availabilityGrid,
   reservation_create: reservationCard,

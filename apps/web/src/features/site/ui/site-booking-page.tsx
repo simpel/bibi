@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { BookingPageMockup } from "./mockups/booking-page-mockup";
 import { SiteSectionHeading } from "./site-section-heading";
 
-const POINTS = ["manage", "needs", "mail", "embed", "deposit"] as const;
+const POINTS = ["manage", "mail", "embed"] as const;
 
 /** The guest-facing part: the venue's own booking page, and what guests can do there. */
 export async function SiteBookingPage() {

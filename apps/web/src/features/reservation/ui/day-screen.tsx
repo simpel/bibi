@@ -1,3 +1,4 @@
+import { viewReservationDay } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/states/empty-state";
@@ -5,18 +6,13 @@ import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
+import { runOperation } from "@/server/run-operation";
 import { dayOf } from "../../table-booking/lib/edge-time";
 import { tablesOf } from "../../table-booking/lib/layout-tables";
-import { floorPlanData, floorSitting, slotTimes } from "../lib/floor-data";
+import { floorPlanData, floorSitting, slotTimes, toFloorSitting } from "../lib/floor-data";
 import type { FloorBlock } from "../lib/floor-model";
 import { needsLabel, type ReservationRow } from "../lib/reservation-row";
 import type { TableChoice } from "../lib/table-choice";
-import {
-  loadDay,
-  loadDiningRoomOptions,
-  loadNeedOptions,
-  loadRoomTables,
-} from "../load-reservation-data";
 import { BlockTablesButton } from "./block-tables-dialog";
 import { CreateReservationButton } from "./create-reservation-button";
 import { DayToolbar } from "./day-toolbar";
@@ -37,28 +33,23 @@ export type DayScreenProps = {
  * the day is in the path.
  */
 export async function DayScreen({ locale, date, room, createOpen = false }: DayScreenProps) {
-  const [t, abilities, rooms] = await Promise.all([
+  const [t, abilities, view, format] = await Promise.all([
     getTranslations("reservation"),
     getCallerAbilities(),
-    loadDiningRoomOptions(),
-  ]);
-  if (!rooms.ok) return <ErrorState errorKey={handleLoadError({ error: rooms.error, locale })} />;
-  const selected = rooms.value.find((one) => one.itemId === room) ?? rooms.value[0];
-  if (!selected) return <EmptyState title={t("noRooms")} description={t("noRoomsDescription")} />;
-  const { itemId: roomItemId, timeZone } = selected;
-  const [day, setup, needs, format] = await Promise.all([
-    loadDay({ roomItemId, date, timeZone }),
-    loadRoomTables({ roomItemId }),
-    loadNeedOptions(),
+    runOperation({ operation: viewReservationDay, input: { roomItemId: room, date } }),
     getDateTimeFormat(),
   ]);
-  const failed = [day.reservations, day.blocks, setup, needs].find((result) => !result.ok);
-  if (failed && !failed.ok)
-    return <ErrorState errorKey={handleLoadError({ error: failed.error, locale })} />;
-  if (!day.reservations.ok || !day.blocks.ok || !setup.ok || !needs.ok) return null;
+  if (!view.ok) return <ErrorState errorKey={handleLoadError({ error: view.error, locale })} />;
+  const { room: span, needOptions } = view.value;
+  const selected = view.value.rooms.find((one) => one.itemId === span?.itemId);
+  if (!span || !selected)
+    return <EmptyState title={t("noRooms")} description={t("noRoomsDescription")} />;
+  const { itemId: roomItemId, timeZone } = span;
+  const rooms = view.value.rooms.map((one) => ({ ...one, name: one.name ?? one.slug }));
+  const roomName = selected.name ?? selected.slug;
   const canWrite = can({ abilities, permission: "reservation:write" });
-  const names = new Map(needs.value.map((need) => [need.id, need.name]));
-  const rows: ReservationRow[] = day.reservations.value.items.map((item) => ({
+  const names = new Map(needOptions.map((need) => [need.id, need.name]));
+  const rows: ReservationRow[] = view.value.reservations.items.map((item) => ({
     id: item.id,
     time: format.time({ instant: item.startsAt, timeZone }),
     startsAtMs: item.startsAt.getTime(),
@@ -73,14 +64,14 @@ export async function DayScreen({ locale, date, room, createOpen = false }: DayS
     state: item.state,
     stateLabel: t(`state.${item.state}`),
   }));
-  const layoutTables = setup.value.layouts.map((layout) => ({
+  const layoutTables = view.value.layouts.map((layout) => ({
     layoutId: layout.id,
     tables: tablesOf({ layout }).map(
       (table): TableChoice => ({ id: table.id, label: table.label, seats: table.seats }),
     ),
   }));
   const tablesByService = Object.fromEntries(
-    setup.value.sittings.map((sitting) => [
+    view.value.sittings.map((sitting) => [
       sitting.id,
       layoutTables.find((one) => one.layoutId === sitting.layoutId)?.tables ?? [],
     ]),
@@ -91,7 +82,7 @@ export async function DayScreen({ locale, date, room, createOpen = false }: DayS
     ).values(),
   ];
   const labelOf = new Map(allTables.map((table) => [table.id, table.label]));
-  const blocks: FloorBlock[] = day.blocks.value.items
+  const blocks: FloorBlock[] = view.value.blocks
     .filter((block) => labelOf.has(block.elementId))
     .map((block) => ({
       id: block.id,
@@ -104,7 +95,7 @@ export async function DayScreen({ locale, date, room, createOpen = false }: DayS
       note: block.note,
     }));
   const today = dayOf({ instant: new Date(), timeZone });
-  const { totals } = day.reservations.value;
+  const { totals } = view.value.reservations;
   const needsSummary = needsLabel({ needs: totals.needs, names });
   const actions = canWrite ? (
     <>
@@ -113,13 +104,15 @@ export async function DayScreen({ locale, date, room, createOpen = false }: DayS
         roomItemId={roomItemId}
         date={date}
         tablesByService={tablesByService}
-        needOptions={needs.value}
+        needOptions={needOptions}
         defaultOpen={createOpen}
       />
     </>
   ) : undefined;
-  const sitting = floorSitting({ sittings: setup.value.sittings, date });
-  const layout = setup.value.layouts.find((one) => one.id === sitting?.layoutId);
+  const sitting = floorSitting({
+    sittings: view.value.sittings.map((one) => toFloorSitting({ sitting: one })),
+  });
+  const layout = view.value.layouts.find((one) => one.id === sitting?.layoutId);
   const times = sitting ? slotTimes({ sitting, date, timeZone }) : [];
   const firstBooked = rows.find((row) => row.state !== "NO_SHOW")?.startsAtMs ?? 0;
   const initialMs = (times.find((time) => time.ms >= firstBooked) ?? times[0])?.ms ?? 0;
@@ -131,7 +124,7 @@ export async function DayScreen({ locale, date, room, createOpen = false }: DayS
     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3 sm:p-4 lg:overflow-hidden">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <h1 className="text-xl">{t("title")}</h1>
-        <DayToolbar rooms={rooms.value} roomItemId={roomItemId} date={date} today={today} />
+        <DayToolbar rooms={rooms} roomItemId={roomItemId} date={date} today={today} />
         <p className="flex flex-wrap gap-x-3 text-sm">
           <span className="font-medium">
             {t("totals.reservations", { count: totals.reservations })}
@@ -145,7 +138,7 @@ export async function DayScreen({ locale, date, room, createOpen = false }: DayS
         key={`${roomItemId}-${date}`}
         roomItemId={roomItemId}
         date={date}
-        title={t("floor.title", { name: layout?.name ?? selected.name })}
+        title={t("floor.title", { name: layout?.name ?? roomName })}
         plan={plan}
         times={times}
         initialMs={initialMs}
@@ -153,7 +146,7 @@ export async function DayScreen({ locale, date, room, createOpen = false }: DayS
         blocks={blocks}
         canWrite={canWrite}
         tablesByService={tablesByService}
-        needOptions={needs.value}
+        needOptions={needOptions}
       />
     </div>
   );

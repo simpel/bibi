@@ -1,0 +1,95 @@
+{
+  "guestBooking": {
+    "meta": {
+      "title": "Book a table at {organization}",
+      "manageTitle": "Your booking at {organization}"
+    },
+    "poweredBy": "Powered by",
+    "logoAlt": "{organization} logo",
+    "rooms": {
+      "title": "Book a table",
+      "description": "Choose where you would like to sit.",
+      "empty": "Online booking is not open right now.",
+      "upTo": "Up to {count, plural, one {# guest} other {# guests}} online"
+    },
+    "contact": {
+      "call": "Call {phone}",
+      "email": "Email {email}"
+    },
+    "party": {
+      "label": "Guests",
+      "option": "{count, plural, one {# guest} other {# guests}}",
+      "more": "More",
+      "large": "For {count} or more guests, call us and we will find a table.",
+      "largeNoPhone": "For {count} or more guests, contact us and we will find a table."
+    },
+    "date": {
+      "label": "Date"
+    },
+    "times": {
+      "label": "Time",
+      "loading": "Finding free tables…",
+      "empty": "No tables are free for {count, plural, one {# guest} other {# guests}} that day. Try another day."
+    },
+    "summary": "{date} at {time}, {party}",
+    "details": {
+      "title": "Your details",
+      "back": "Pick another time",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "emailHint": "We send the confirmation and your booking link here.",
+      "note": "Message to the restaurant (optional)",
+      "policyTitle": "Booking terms",
+      "policyAccept": "I accept the booking terms",
+      "policyRequired": "Accept the booking terms to book.",
+      "captcha": "Security check",
+      "submit": "Book table",
+      "pending": "Booking your table…",
+      "success": "Your table is booked"
+    },
+    "errors": {
+      "taken": "Someone just booked that time. Pick another time.",
+      "captcha": "The security check failed. Try again.",
+      "late": "It is too late to change this booking online. Contact the restaurant.",
+      "notFound": "We could not find this booking."
+    },
+    "manage": {
+      "booked": "Your table is booked",
+      "bookedThanks": "Thanks, {name}! Your table is booked.",
+      "sent": "We sent a confirmation to {email}. Keep it: its link lets you change or cancel.",
+      "pending": "Waiting for payment",
+      "pendingDescription": "Your table is held while the deposit is paid. Follow the payment link we emailed you.",
+      "cancelled": "Your booking is cancelled",
+      "cancelledDescription": "Your table has been released. You are welcome to book again.",
+      "past": "Your booking",
+      "pastDescription": "This booking has passed.",
+      "bookAgain": "Book again",
+      "where": "Where",
+      "when": "When",
+      "party": "Guests",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "note": "Message",
+      "changeUntil": "You can change or cancel until {when}.",
+      "tooLate": "It is too late to change this booking online. Contact us and we will help.",
+      "changeTime": "Edit time or guests",
+      "changeTitle": "Pick a new time",
+      "keepTime": "Keep the current time",
+      "changePending": "Changing your booking…",
+      "changed": "Your booking is changed",
+      "editDetails": "Edit details",
+      "detailsPending": "Saving…",
+      "detailsSaved": "Your details are saved",
+      "save": "Save",
+      "cancelEdit": "Cancel",
+      "cancelBooking": "Cancel booking",
+      "cancelTitle": "Cancel your booking?",
+      "cancelDescription": "Your table for {party} on {when} will be released.",
+      "cancelConfirm": "Yes, cancel booking",
+      "cancelPending": "Cancelling…",
+      "cancelDone": "Your booking is cancelled"
+    }
+  }
+}
