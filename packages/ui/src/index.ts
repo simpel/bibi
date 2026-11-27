@@ -109,6 +109,7 @@ export { Label, type LabelProps } from "./components/label/label";
 export * from "./components/live-border/live-border";
 export * from "./components/loading/loading";
 export * from "./components/missing/missing";
+export * from "./components/mapping-canvas/mapping-canvas";
 export * from "./components/money-totals/money-total-figure";
 export * from "./components/money-totals/money-totals";
 export * from "./components/money-totals/money-totals-variants";
