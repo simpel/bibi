@@ -21,11 +21,12 @@ The eAccounting API is not in the Visma Developer Portal (`oauth.developers.vism
 Docs: `https://developer.vismaonline.com/docs/authentication`.
 
 ## Account check
-One accounting system at a time (ADR 0108). When Spiris connects, and on **Check accounts** on its card (`integration.checkSetup`), Bibi reads `/articleaccountcodings` and stores what is missing on the connection: at each VAT rate of the organization's items a coding that books to revenue and one that books to the advances account, and for each mapped revenue account a coding that books to it (without one, its rows use the default coding). Reading only; nothing is created.
+One accounting system at a time (ADR 0108). When Spiris connects, and on **Refresh accounts from Spiris** on its settings page (`integration.syncAccounts`, ADR 0123), Bibi reads `/articleaccountcodings` (all pages, `$page` and `$pagesize`, verified in the sandbox 2026-11-27) and stores the snapshot on the connection: one entry per coding family (the coding name without its VAT part, e.g. "Tjänster") with the VAT rates it has a coding for and the sales accounts under it. Purposes are mapped to families on that page; at invoice time the coding at the row's VAT rate is used. Problems are derived on read (a family with no coding at a VAT rate in use, no coding for Deposits). `/accounts` needs scope `ea:accounting_readonly` and is not used. Codings cannot be created through the API: the venue creates them in Spiris. Reading only; nothing is created.
 
 ## Before going live (check in the sandbox)
 - Required fields for customers (Bibi sends `-` as invoice city and postal code) and customer invoices.
-- That `/articleaccountcodings` reports `VatRatePercent` as a fraction (0.25) that it names a coding's sales accounts in `DomesticSalesSubjectToVatAccountNumber` and `DomesticSalesVatExemptAccountNumber`, that a venue can create a coding that books to 2420, and that an invoice row on `BIBI-ADV25` books to 2420 with output VAT.
+- [x] `/articleaccountcodings` reports `VatRatePercent` as a fraction (0.25) and names a coding's sales accounts in `DomesticSalesSubjectToVatAccountNumber` and `DomesticSalesVatExemptAccountNumber`, with a `Name` (sandbox read 2026-11-27).
+- That a venue can create a coding that books to 2420 (codings cannot be created through the API), and that an invoice row on `BIBI-ADV25` books to 2420 with output VAT.
 - Whether a credit invoice lowers the original's `RemainingAmount`: Bibi assumes it does and subtracts its issued credit notes; if it does not, a credited invoice would show less paid than it is.
 - Sending the invoice by email (`SentType`), not done yet: staff send it from Visma.
 - PKCE (`code_challenge`, S256): checked in the sandbox (2026-11-13), the identity server accepts it.

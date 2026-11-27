@@ -131,8 +131,8 @@ erDiagram
   ProviderConnection ||--o{ Payment : "took"
   ProviderConnection ||--o{ Invoice : "raised"
   ProviderConnection ||--o{ Deposit : "raised"
-  EntityType |o--o| RevenueAccount : "maps revenue via"
-  Item |o--o| RevenueAccount : "maps revenue via"
+  ProviderConnection ||--o{ AccountMapping : "maps purposes with"
+  EntityType |o--o{ AccountMapping : "has revenue account via"
   Order }o--|| OrderStatus : "is in"
   OrderStatus ||--o{ OrderStatusTransition : "from"
   OrderStatus ||--o{ OrderStatusTransition : "to"
@@ -1243,37 +1243,20 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > Written by `payment.refund` and by `payment.applySignal` (SYSTEM) for a refund the provider reports on its own. The reconciliation check `payment refunds` verifies that a payment is `REFUNDED` exactly when its succeeded refunds cover its amount and never exceed it.
 
-### AccountingSettings (`AccountingSettings`)
+### AccountMapping (`AccountMapping`)
 
-*MVP* · The organization's accounts ([ADR 0077](decisions/0077-financials-and-sie-export.md)): the accounts invoice and prepayment rows post to in Fortnox or Visma ([ADR 0106](decisions/0106-invoices-are-issued-by-the-accounting-system.md)); the SIE export's other accounts are gone. One row per organization, created by the first save; until then the BAS defaults apply.
+*MVP* · What Bibi books to in the connected accounting system ([ADR 0123](decisions/0123-purposes-map-to-accounting-system-accounts.md)): a purpose mapped to one of the system's own accounts. Purposes are Deposits (`ADVANCES`), Default revenue (`REVENUE_DEFAULT`) and one per item type (`ENTITY_TYPE`); an item type with no mapping uses Default revenue, and several purposes may map to one account. Deposits and Default revenue must be mapped before an invoice or deposit is sent.
 
-> **Ownership:** owned every account number; nothing derived.
-
-**Attributes**
-- customer advances (2420), where deposits post until invoiced, and default revenue (3001)
-
-**Relations**
-- `1:1` Organization has one (`organizationId`, unique)
-- falls back to → RevenueAccount, which names an account per item type or item
-
-> Operations (`finance:read` to read, `finance:write` to change): `accountingSettings.get` (the BAS defaults until saved) and `accountingSettings.update` (omitted fields keep their value; `revenueAccounts`, when given, replaces every mapping). Web: Settings, Accounting.
-
-### RevenueAccount (`RevenueAccount`)
-
-*MVP* · The revenue account of one item type or one item. An item's row wins over its type's, which wins over the default revenue account: the account of the row marked default, else `AccountingSettings.revenueAccount` ([ADR 0109](decisions/0109-one-default-revenue-row.md)). No row means inherit: nothing is copied ([ADR 0051](decisions/0051-single-source-of-truth.md)).
-
-> **Ownership:** owned `account` and `isDefault`. The inheritance is derived on read.
+> **Ownership:** owned `providerAccount`; nothing derived. Belongs to the ledger connection, so a ledger switch starts unmapped. `AccountingSettings` and `RevenueAccount` remain only as legacy tables until dropped.
 
 **Attributes**
-- account number
-- item type or item: exactly one of them (check constraint)
-- default: at most one row per organization is the default revenue account (partial unique index)
+- purpose; `providerAccount`, the provider's own reference (Fortnox: account number; Spiris: coding family)
 
 **Relations**
-- `N:0..1` EntityType maps revenue through this
-- `N:0..1` Item maps revenue through this
+- `N:1` ProviderConnection (unique per connection and purpose)
+- `N:0..1` EntityType, for `ENTITY_TYPE`
 
-> Built as its own table; ADR 0077 first named columns on item type and item (see its addendum). Replaced as a set by `accountingSettings.update`.
+> Operations: `accountMapping.list` (`finance:read`), `accountMapping.set` (`finance:write`, null removes), `integration.syncAccounts` and `integration.accounts` for the provider's account snapshot. Web: the connected accounting system's settings page.
 
 ### Financials overview (`finance.overview`)
 
