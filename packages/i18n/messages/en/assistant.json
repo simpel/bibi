@@ -1111,7 +1111,9 @@
         "DISCONNECTED": "{name} is disconnected. Connect again to use it.",
         "UNAVAILABLE": "{name} is connected, but this server is not set up for {name} yet, so nothing can go through it."
       },
-      "disconnectLedgerConfirm": "Bibi forgets the connection to {name} and stops using it. Invoices already raised in {name} stay there, and Bibi no longer reads their payments from it. You can connect {name} again later, or another accounting system."
+      "disconnectLedgerConfirm": "Bibi forgets the connection to {name} and stops using it. Invoices already raised in {name} stay there, and Bibi no longer reads their payments from it. You can connect {name} again later, or another accounting system.",
+      "settings": "Settings",
+      "attention": "{count, plural, one {# account needs attention} other {# accounts need attention}}"
     },
     "setup": {
       "heading": "Accounts",
@@ -1185,6 +1187,34 @@
         "swishNumber": "Swish number",
         "certificate": "Certificate (.p12)",
         "passphrase": "Certificate passphrase"
+      }
+    },
+    "detail": {
+      "accountsTitle": "Accounts",
+      "accountsDescription": "The accounts Bibi books invoices and deposits to in {name}, and whether each one works there.",
+      "disconnectTitle": "Disconnect"
+    },
+    "accounts": {
+      "editInBibi": "Edit accounts in Bibi",
+      "checked": "Checked {date}. Changed something in {name}? Check again to read it afresh.",
+      "never": "Not checked against {name} yet.",
+      "alsoNeeded": "Also needed in {name}",
+      "empty": "No accounts.",
+      "columns": {
+        "purpose": "Used for",
+        "account": "Account",
+        "inSystem": "In {name}"
+      },
+      "purpose": {
+        "advances": "Deposits (customer advances)",
+        "revenue": "Revenue, default",
+        "revenueType": "Revenue: {type}"
+      },
+      "checkNow": "Check against {name}",
+      "check": {
+        "ok": "Works",
+        "attention": "Needs attention",
+        "notChecked": "Not checked"
       }
     }
   }

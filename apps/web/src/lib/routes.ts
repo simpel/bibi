@@ -189,6 +189,13 @@ export function apiKeyRoute({ id }: SubjectRouteInput): string {
   return `${ROUTES.adminApiKeys}/${encodeURIComponent(id)}`;
 }
 
+export type IntegrationRouteInput = { provider: string };
+
+/** `/admin/integrations/<provider>`: the settings page of one connected service. */
+export function integrationRoute({ provider }: IntegrationRouteInput): string {
+  return `${ROUTES.adminIntegrations}/${encodeURIComponent(provider.toLowerCase())}`;
+}
+
 /** `/admin/members/<id>/permissions`: a member's permission grid (ADR 0050). */
 export function memberPermissionsRoute({ id }: SubjectRouteInput): string {
   return `${memberRoute({ id })}/permissions`;

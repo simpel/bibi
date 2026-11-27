@@ -13,13 +13,19 @@ import { disconnectIntegrationAction } from "../actions";
 export type DisconnectProviderButtonProps = {
   connection: Pick<IntegrationConnectionDto, "provider" | "connectKind" | "capabilities">;
   name: string;
+  /** In the danger area it is the quiet red outline every row there uses. */
+  inDangerArea?: boolean;
 };
 
 /**
  * Disconnects a provider after a confirmation (CLAUDE.md "Forms"). A payout account keeps its
  * account at the provider and connects again to the same one (ADR 0090).
  */
-export function DisconnectProviderButton({ connection, name }: DisconnectProviderButtonProps) {
+export function DisconnectProviderButton({
+  connection,
+  name,
+  inDangerArea = false,
+}: DisconnectProviderButtonProps) {
   const t = useTranslations("integration.card");
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -46,7 +52,11 @@ export function DisconnectProviderButton({ connection, name }: DisconnectProvide
         });
   return (
     <>
-      <Button variant="destructive" onClick={() => setOpen(true)}>
+      <Button
+        variant={inDangerArea ? "outline" : "destructive"}
+        className={inDangerArea ? "text-destructive" : undefined}
+        onClick={() => setOpen(true)}
+      >
         {t("disconnect")}
       </Button>
       <ConfirmDialog

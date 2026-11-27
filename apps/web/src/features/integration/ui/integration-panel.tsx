@@ -5,7 +5,6 @@ import { getTranslations } from "next-intl/server";
 import { AdminSection } from "@/components/admin/admin-section";
 import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
-import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import type { IntegrationOutcome } from "./integration-notice";
@@ -24,12 +23,11 @@ export type IntegrationPanelProps = { locale: Locale; returned: ProviderOutcome 
  * `paymentAccount:write`, every other connection with `integration:write`.
  */
 export async function IntegrationPanel({ locale, returned }: IntegrationPanelProps) {
-  const [t, providers, abilities, list, dates] = await Promise.all([
+  const [t, providers, abilities, list] = await Promise.all([
     getTranslations("integration"),
     getTranslations("providers"),
     getCallerAbilities(),
     runOperation({ operation: listIntegrations, input: {} }),
-    getDateTimeFormat(),
   ]);
   if (!list.ok) {
     return (
@@ -47,10 +45,6 @@ export async function IntegrationPanel({ locale, returned }: IntegrationPanelPro
       key={connection.provider}
       connection={connection}
       canEdit={connection.connectKind === "HOSTED_ONBOARDING" ? canEdit.hosted : canEdit.other}
-      connectedOn={connection.connectedAt ? dates.date({ instant: connection.connectedAt }) : null}
-      checkedOn={
-        connection.setupCheckedAt ? dates.date({ instant: connection.setupCheckedAt }) : null
-      }
       outcome={returned?.provider === connection.provider ? returned.outcome : null}
     />
   );

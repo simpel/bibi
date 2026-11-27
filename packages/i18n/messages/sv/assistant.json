@@ -1111,7 +1111,9 @@
         "DISCONNECTED": "{name} är frånkopplad. Anslut igen för att använda den.",
         "UNAVAILABLE": "{name} är ansluten, men den här servern är inte inställd för {name} ännu, så inget kan gå via den."
       },
-      "disconnectLedgerConfirm": "Bibi glömmer anslutningen till {name} och slutar använda den. Fakturor som redan skapats i {name} ligger kvar där, och Bibi läser inte längre in betalningar på dem. Ni kan ansluta {name} igen senare, eller ett annat bokföringssystem."
+      "disconnectLedgerConfirm": "Bibi glömmer anslutningen till {name} och slutar använda den. Fakturor som redan skapats i {name} ligger kvar där, och Bibi läser inte längre in betalningar på dem. Ni kan ansluta {name} igen senare, eller ett annat bokföringssystem.",
+      "settings": "Inställningar",
+      "attention": "{count, plural, one {# konto behöver åtgärdas} other {# konton behöver åtgärdas}}"
     },
     "setup": {
       "heading": "Konton",
@@ -1185,6 +1187,34 @@
         "swishNumber": "Swish-nummer",
         "certificate": "Certifikat (.p12)",
         "passphrase": "Lösenord till certifikatet"
+      }
+    },
+    "detail": {
+      "accountsTitle": "Konton",
+      "accountsDescription": "Kontona som Bibi bokför fakturor och förskott på i {name}, och om vart och ett fungerar där.",
+      "disconnectTitle": "Koppla från"
+    },
+    "accounts": {
+      "editInBibi": "Ändra konton i Bibi",
+      "checked": "Kontrollerat {date}. Har ni ändrat något i {name}? Kontrollera igen för att läsa in det på nytt.",
+      "never": "Inte kontrollerat mot {name} än.",
+      "alsoNeeded": "Behövs också i {name}",
+      "empty": "Inga konton.",
+      "columns": {
+        "purpose": "Används till",
+        "account": "Konto",
+        "inSystem": "I {name}"
+      },
+      "purpose": {
+        "advances": "Förskott (kundförskott)",
+        "revenue": "Intäkt, standard",
+        "revenueType": "Intäkt: {type}"
+      },
+      "checkNow": "Kontrollera mot {name}",
+      "check": {
+        "ok": "Fungerar",
+        "attention": "Behöver åtgärdas",
+        "notChecked": "Inte kontrollerad"
       }
     }
   }

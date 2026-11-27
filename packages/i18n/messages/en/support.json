@@ -410,7 +410,7 @@
           },
           "otherAccounting": {
             "question": "We use another accounting system. What do we do?",
-            "answer": "Bibi works with Fortnox and Spiris, which make your invoices and keep the books. Connect one of them under Administration → Integrations.\nYou use one accounting system at a time. To switch, disconnect the first one; invoices already made there stay there. After connecting, Bibi checks that the accounts it books to exist in your system and lists anything missing on its card.\nOther accounting systems are not supported yet. Tell us which one you use and we will look into it."
+            "answer": "Bibi works with Fortnox and Spiris, which make your invoices and keep the books. Connect one of them under Administration → Integrations.\nYou use one accounting system at a time. To switch, disconnect the first one; invoices already made there stay there. After connecting, Bibi checks that the accounts it books to exist in your system and lists anything missing on its page: open **Settings** on the connected system. Added the missing account or coding there? Choose **Check against** to read it again. To change which accounts Bibi books to, choose **Edit accounts in Bibi**.\nOther accounting systems are not supported yet. Tell us which one you use and we will look into it."
           },
           "paymentMethods": {
             "question": "Can I choose which service takes card, Swish and invoice payments?",
