@@ -55,6 +55,7 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "Apikey",
   "OauthGrantRevocation",
   "RevenueAccount",
+  "AccountMapping",
   "ResponsibilityEntityType",
   "ResponsibilityDefaultFollower",
   "CommentMention",

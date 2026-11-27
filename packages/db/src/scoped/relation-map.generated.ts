@@ -8,6 +8,16 @@ export const RELATIONS: RelationMap = {
       "list": false
     }
   },
+  "AccountMapping": {
+    "connection": {
+      "target": "ProviderConnection",
+      "list": false
+    },
+    "entityType": {
+      "target": "EntityType",
+      "list": false
+    }
+  },
   "AlternativeGroup": {
     "order": {
       "target": "Order",
@@ -372,6 +382,10 @@ export const RELATIONS: RelationMap = {
     "expiryState": {
       "target": "ItemState",
       "list": false
+    },
+    "accountMappings": {
+      "target": "AccountMapping",
+      "list": true
     }
   },
   "FieldDefinition": {
@@ -1477,6 +1491,10 @@ export const RELATIONS: RelationMap = {
   "ProviderConnection": {
     "payments": {
       "target": "Payment",
+      "list": true
+    },
+    "accountMappings": {
+      "target": "AccountMapping",
       "list": true
     },
     "attempts": {

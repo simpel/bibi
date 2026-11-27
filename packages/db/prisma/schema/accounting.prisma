@@ -1,22 +1,25 @@
-/// The organization's accounts that rows raised in the accounting system post to (ADR 0077, 0106):
+/// LEGACY (ADR 0123): replaced by `AccountMapping`; read only by the migration that copied it and
+/// dropped in a later release (expand/contract, ADR 0013). The organization's accounts that rows
+/// raised in the accounting system post to (ADR 0077, 0106):
 /// the customer advances account and the default revenue account. One row per organization, created by
 /// the first `accountingSettings.update`; until then reads return the BAS defaults below. Owned.
 /// `status` is the soft-delete flag (ADR 0006); the row is never archived.
 model AccountingSettings {
-  id                   String       @id @default(cuid(2))
-  organizationId       String       @unique
+  id              String       @id @default(cuid(2))
+  organizationId  String       @unique
   /// Customer advances: paid deposits until invoiced.
-  advancesAccount      String       @default("2420")
+  advancesAccount String       @default("2420")
   /// Revenue when neither the item nor its type names an account (`RevenueAccount`).
-  revenueAccount       String       @default("3001")
-  status               RecordStatus @default(ACTIVE)
-  createdAt            DateTime     @default(now())
-  updatedAt            DateTime     @updatedAt
-  createdBy            String?
+  revenueAccount  String       @default("3001")
+  status          RecordStatus @default(ACTIVE)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  createdBy       String?
 
   @@unique([id, organizationId])
 }
 
+/// LEGACY (ADR 0123, dropped in a later release): replaced by `AccountMapping`.
 /// RevenueAccount – the revenue account of one item type or one item (ADR 0077): exactly one of
 /// `entityTypeId` and `itemId` (check constraint). An item's row wins over its type's, which wins
 /// over `AccountingSettings.revenueAccount` (null = inherit, ADR 0051: no row, no copy). Owned by
@@ -39,4 +42,36 @@ model RevenueAccount {
 
   @@unique([organizationId, entityTypeId])
   @@unique([organizationId, itemId])
+}
+
+/// What a mapping is for (ADR 0123). `ENTITY_TYPE` rows name an item type.
+enum AccountPurpose {
+  ADVANCES
+  REVENUE_DEFAULT
+  ENTITY_TYPE
+}
+
+/// AccountMapping – one purpose of the organization mapped to an account of the connected ledger
+/// (ADR 0123, replaces `AccountingSettings` and `RevenueAccount`). Owned by the finance feature,
+/// written only by `accountMapping.set` and audited there. `providerAccount` is the provider's own
+/// reference, opaque to core: Fortnox an account number, Spiris a coding family ("Tjänster") or a
+/// number copied from the old settings. Belongs to the connection, so a ledger switch starts
+/// unmapped (ADR 0108). Several purposes may name the same account. `entityTypeId` is set exactly
+/// for `ENTITY_TYPE` (check constraint), and the partial unique index `AccountMapping_one_purpose`
+/// keeps one row per connection and fixed purpose (Prisma cannot express it).
+model AccountMapping {
+  id              String             @id @default(cuid(2))
+  organizationId  String
+  connectionId    String
+  purpose         AccountPurpose
+  entityTypeId    String?
+  providerAccount String
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  createdBy       String?
+  connection      ProviderConnection @relation(fields: [connectionId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  entityType      EntityType?        @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+
+  @@unique([connectionId, purpose, entityTypeId])
+  @@index([organizationId])
 }

@@ -62,8 +62,14 @@ model ProviderConnection {
   externalCompanyName String?
   externalOrgNumber   String?
   externalTenantId    String?
+  /// LEGACY (ADR 0123): setup problems are derived on read now; dropped in a later release.
   setupCheckedAt      DateTime?
   setupIssues         Json?
+  /// The accounting system's accounts as last read (ADR 0123): `ProviderAccount[]`, a snapshot
+  /// replaced whole by `integration.syncAccounts`; null before the first read.
+  chart               Json?
+  chartSyncedAt       DateTime?
+  accountMappings     AccountMapping[]
   disconnectedAt      DateTime?
   connectedAt         DateTime?
   connectedBy         String?

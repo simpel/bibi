@@ -86,6 +86,7 @@ model EntityType {
   demands          ItemDemand[]
   boards           Board[]
   revenueAccounts  RevenueAccount[]
+  accountMappings  AccountMapping[]
   group            ItemTypeGroup?              @relation(fields: [groupId, organizationId], references: [id, organizationId])
   expiryState      ItemState?                  @relation("ExpiryState", fields: [expiryStateId, organizationId], references: [id, organizationId])
 
