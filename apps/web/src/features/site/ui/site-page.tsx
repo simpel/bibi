@@ -1,23 +1,18 @@
 import { PageContainer } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/navigation";
-import { SiteAssistant } from "./site-assistant";
-import { SiteAudience } from "./site-audience";
-import { SiteBookingPage } from "./site-booking-page";
 import { SiteCta } from "./site-cta";
+import { SiteFeatures } from "./site-features";
 import { SiteHeader } from "./site-header";
 import { SiteHero } from "./site-hero";
-import { SiteJobs } from "./site-jobs";
-import { SiteMoney } from "./site-money";
 import { SitePrice } from "./site-price";
-import { SiteShared } from "./site-shared";
 
 type SitePageProps = { locale: string; appUrl: string };
 
 /**
  * The public front page, for everyone. It reads the session only to pick the buttons.
- * Story: one system (hero) → three jobs → the guests' booking page → what the jobs share →
- * the assistant → money → price → start.
+ * Story: one system (hero) → four messages (meetings, the restaurant, own lists, the assistant)
+ * → price → start.
  */
 export async function SitePage({ locale, appUrl }: SitePageProps) {
   const t = await getTranslations("site");
@@ -26,12 +21,7 @@ export async function SitePage({ locale, appUrl }: SitePageProps) {
       <SiteHeader locale={locale} appUrl={appUrl} />
       <main>
         <SiteHero locale={locale} appUrl={appUrl} />
-        <SiteAudience />
-        <SiteJobs />
-        <SiteBookingPage />
-        <SiteShared />
-        <SiteAssistant />
-        <SiteMoney />
+        <SiteFeatures />
         <SitePrice locale={locale} appUrl={appUrl} />
         <SiteCta locale={locale} appUrl={appUrl} />
       </main>

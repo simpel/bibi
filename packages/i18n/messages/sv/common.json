@@ -485,7 +485,7 @@
   "site": {
     "brand": "Bibi",
     "metaTitle": "Bibi – bokningssystemet för möten, mat och restaurang",
-    "metaDescription": "Ett system för möten och konferenser, mat och dryck och restaurangens bordsbokningar. För upplevelsecenter, museer, konferensgårdar, herrgårdar och restauranger med privata rum. {amount} i månaden exkl. moms, {trialDays} dagar gratis.",
+    "metaDescription": "Ett system för möten, mat och dryck och restaurangens bordsbokningar. {amount} i månaden exkl. moms, {trialDays} dagar gratis.",
     "login": "Logga in",
     "signUp": "Testa gratis",
     "toApp": "Till appen",
@@ -494,122 +494,56 @@
     "developersLink": "Utvecklare",
     "nav": {
       "label": "Avsnitt",
-      "jobs": "Vad Bibi gör",
-      "restaurant": "Bordsbokning",
-      "money": "Betalning",
+      "meetings": "Möten",
+      "restaurant": "Restaurang",
+      "assistant": "Assistent",
       "price": "Pris"
     },
     "hero": {
-      "eyebrow": "Bokningssystemet för verksamheter utan hotellsystem",
+      "eyebrow": "För verksamheter utan hotellsystem",
       "heading": "Möten, mat och restaurangens bord. I ett system.",
-      "lead": "Konferensen i Salongen, lunchen till köket och kvällens bordsbokningar delar samma lokaler, planritningar och listor. Bokas hela rummet stängs borden, och tvärtom. Pengarna går till er Fortnox eller Visma.",
+      "lead": "Konferensen, köket och kvällens bordsbokningar delar lokaler och listor, och pengarna går till er Fortnox eller Visma.",
       "seePrice": "Se priset",
       "trialNote": "{trialDays} dagar gratis, sedan {amount} i månaden exkl. moms. Inget säljsamtal."
     },
-    "audience": {
-      "label": "Byggt för verksamheter utan hotellsystem",
-      "items": {
-        "experience": "Upplevelsecenter",
-        "museum": "Museer",
-        "estate": "Konferensgårdar",
-        "manor": "Herrgårdar",
-        "restaurant": "Restauranger med privata rum"
-      }
-    },
-    "jobs": {
-      "eyebrow": "Tre jobb, ett system",
-      "title": "Mötet, maten och kvällen i restaurangen",
-      "lead": "Ofta körs konferensen i ett system, köket på papper och bordsbokningen i ett tredje. I Bibi är det samma lokaler, samma listor och samma team.",
-      "chapter": "{number} · {name}",
+    "features": {
       "meetings": {
         "eyebrow": "Möten och konferens",
-        "title": "Skapa bokningen i ett steg",
-        "body": "Lägg till lokal, mat och aktiviteter på en gång, utan offert för mindre möten. Bokningen går genom era egna statusar, rummet hålls mjukt eller hårt, och kunden betalar med kort, Swish eller faktura via en länk."
-      },
-      "food": {
-        "eyebrow": "Mat och dryck",
-        "title": "Ett körschema som köket kan lita på",
-        "body": "Behoven räknas och matchas mot rätterna. Körschemat skickas till den som ansvarar, till exempel kökschefen, och varje ändring blir en ny version. Exportera som pdf, csv eller json när någon utanför systemet ska ha det."
+        "title": "Hela mötet i en bokning",
+        "body": "Lägg in lokal, lunch och aktivitet i ett steg, och kunden betalar via en länk eller faktura."
       },
       "restaurant": {
         "eyebrow": "Restaurangen",
-        "title": "Kör kvällen på planritningen",
-        "body": "Gästerna bokar bord själva, och personalen ser hela rummet: vem som kommer, vem som sitter och vilka bord som är spärrade. Ni bestämmer sittningarna, vilka datum som är öppna och vilka bord som hålls för drop-in. Bord slås ihop för större sällskap."
-      }
-    },
-    "bookingPage": {
-      "eyebrow": "Bokningssidan",
-      "title": "Gästerna bokar på er egen sida",
-      "lead": "Varje matsal får en publik bokningssida med er logga, er färg och era texter. Gästen väljer antal, dag och tid och får en bekräftelse med en länk för att ändra eller avboka.",
-      "points": {
-        "manage": {
-          "title": "Ändra och avboka själv",
-          "body": "Med länken i mejlet flyttar gästen sin bokning eller avbokar, fram till den gräns ni har satt."
-        },
-        "mail": {
-          "title": "Mejl med er logga",
-          "body": "Bekräftelse, ändring, avbokning och en påminnelse dagen före."
-        },
-        "embed": {
-          "title": "På er egen webbplats",
-          "body": "Bädda in bokningssidan på er webbplats, eller låt en partnersajt boka via API:et."
-        }
-      }
-    },
-    "shared": {
-      "eyebrow": "En gemensam grund",
-      "title": "Samma lokaler, listor och pengar under allt",
-      "lead": "Därför behöver ingen föra över något mellan systemen, och ingen bokar samma rum två gånger.",
+        "title": "Gästerna bokar bord på er sida",
+        "body": "Bokningarna hamnar på planritningen, och gästen ändrar eller avbokar själv via länken i mejlet."
+      },
       "lists": {
-        "title": "Era egna listor, räknade",
-        "body": "Ni bestämmer listorna: kost, allergener, tillgänglighet eller något helt eget. EU:s 14 allergener finns som mall. Behoven räknas som antal på bokningar och bordsbokningar och når köket. Inga personuppgifter om gäster."
+        "eyebrow": "Era listor",
+        "title": "Era egna listor, räknade åt köket",
+        "body": "Kost, allergener eller något helt eget räknas som antal och hamnar i körschemat, utan personuppgifter om gästerna."
       },
-      "blocking": {
-        "title": "Rummet och borden spärrar varandra",
-        "body": "Försöker någon boka hela matsalen en kväll med bordsbokningar säger Bibi nej. Är rummet bokat stängs borden för gästerna."
-      },
-      "floorPlans": {
-        "title": "En planritning, många uppställningar",
-        "body": "Rita rummet en gång. Samma planritning bär konferensens bankettuppställning och restaurangens bord, kombinationer och bord som går att dela."
-      },
-      "setup": {
-        "title": "Ert upplägg, inte vårt",
-        "body": "Ni sätter typer, fält, listor, statusar och ansvar. Behörigheter följer tre roller som ni finjusterar per person."
+      "assistant": {
+        "eyebrow": "Assistenten",
+        "title": "Fråga hur kvällen ser ut",
+        "body": "Assistenten svarar och föreslår bokningar med dina behörigheter, och ingenting ändras förrän du godkänner."
       }
-    },
-    "assistant": {
-      "eyebrow": "Assistenten",
-      "title": "Fråga hur kvällen ser ut",
-      "lead": "Fråga hur många kuvert det är ikväll och vilka allergier köket ska känna till, eller be den boka ett bord. Assistenten arbetar i Bibi som du, med dina behörigheter, och ingenting ändras förrän du har godkänt.",
-      "mcp": "Samma verktyg finns som en MCP-server, så ni kan arbeta i Bibi från er egen Claude eller andra AI-klienter."
-    },
-    "money": {
-      "eyebrow": "Betalning och bokföring",
-      "title": "Pengarna hamnar i er bokföring",
-      "lead": "Koppla era egna konton. Fortnox eller Visma skapar och bokför varje faktura och förskott, och kort- och Swishbetalningar som tas i Bibi bokförs där.",
-      "fortnox": "Fakturor, förskott och bokföring",
-      "visma": "Fakturor, förskott och bokföring",
-      "swish": "Swish Handel i betallänkar",
-      "stripe": "Kortbetalningar",
-      "note": "Ett bokföringssystem åt gången. Bibi numrerar ingenting: varje dokument visar bokföringssystemets nummer."
     },
     "price": {
       "eyebrow": "Pris",
       "title": "Ett pris, öppet för alla",
-      "lead": "Inget säljsamtal och ingen offert. Kom igång, testa i {trialDays} dagar och betala när ni vill fortsätta.",
+      "lead": "Inget säljsamtal och ingen offert. Betala när ni vill fortsätta.",
       "amount": "{amount}",
       "unit": "i månaden, exkl. moms",
       "facts": {
         "trial": "{trialDays} dagar gratis",
         "seats": "{seats} platser ingår",
         "extraSeats": "Fler platser för {seatAmount} i månaden styck",
-        "yearly": "{discount} % rabatt vid årsbetalning",
-        "scope": "Möten, mat och dryck och restaurang i samma abonnemang"
+        "yearly": "{discount} % rabatt vid årsbetalning"
       }
     },
     "cta": {
       "title": "Samla hela huset i ett system",
-      "body": "Starta en provperiod på 14 dagar, lägg in era lokaler och bjud in teamet."
+      "body": "Starta en provperiod på {trialDays} dagar och bjud in teamet."
     },
     "mockup": {
       "day": {
@@ -637,11 +571,6 @@
       "floor": {
         "title": "Kajen, middag",
         "table": "Bord {label}",
-        "covers": "38 gäster",
-        "next": "Kommer härnäst",
-        "arrival1": "19:30 · Lind, 2 · bord 3",
-        "arrival2": "19:45 · Berg, 7 · bord 7 + 8",
-        "arrival3": "20:00 · Ek, 4 · bord 1",
         "legend": {
           "booked": "Bokat",
           "held": "Hålls för drop-in",
@@ -660,14 +589,6 @@
         "payment": "Betallänk, Swish eller kort",
         "paid": "Betald"
       },
-      "runSheet": {
-        "title": "Köksorder",
-        "version": "Version 3",
-        "sentTo": "Skickad till Kökschef",
-        "line1": "12:00 Fisksoppa, 24 portioner",
-        "line2": "3 glutenfria, 2 laktosfria",
-        "line3": "Dessert 13:30"
-      },
       "needs": {
         "title": "Behov fredag",
         "lists": {
@@ -679,14 +600,6 @@
         "gluten": "Gluten",
         "nuts": "Nötter",
         "matched": "Matchat mot lunchen och middagens meny"
-      },
-      "conflict": {
-        "title": "Skapa bokning",
-        "line": "Kajen, hela rummet",
-        "meta": "Bankett 80 · fre 4 dec 18:00–23:00",
-        "error": "Rummet går inte att boka",
-        "errorBody": "Det finns 12 bordsbokningar med 38 gäster den kvällen.",
-        "reverse": "Och tvärtom: när rummet är bokat stängs borden på bokningssidan."
       },
       "bookingPage": {
         "address": "Boka bord · Kajen",

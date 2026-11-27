@@ -5,7 +5,7 @@ import { SiteActions } from "./site-actions";
 import { getSitePlanText } from "./site-plan-text";
 import { SiteSectionHeading } from "./site-section-heading";
 
-const FACTS = ["trial", "seats", "extraSeats", "yearly", "scope"] as const;
+const FACTS = ["trial", "seats", "extraSeats", "yearly"] as const;
 
 export type SitePriceProps = { locale: string; appUrl: string };
 
@@ -25,7 +25,7 @@ export async function SitePrice({ locale, appUrl }: SitePriceProps) {
           id="price-title"
           eyebrow={t("eyebrow")}
           title={t("title")}
-          lead={t("lead", values)}
+          lead={t("lead")}
         />
         <div className="grid gap-6 rounded-2xl border bg-card p-6 shadow-lg sm:p-10">
           <p className="grid gap-1">

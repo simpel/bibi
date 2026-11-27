@@ -5,9 +5,9 @@ import { SiteActions } from "./site-actions";
 export type SiteHeaderProps = { locale: string; appUrl: string };
 
 const LINKS = [
-  { id: "jobs", label: "jobs" },
-  { id: "booking-page", label: "restaurant" },
-  { id: "money", label: "money" },
+  { id: "meetings", label: "meetings" },
+  { id: "restaurant", label: "restaurant" },
+  { id: "assistant", label: "assistant" },
   { id: "price", label: "price" },
 ] as const;
 
