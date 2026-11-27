@@ -9,10 +9,15 @@ export const integrationRoutes = [
     successStatus: 200,
   }),
   restRoute({
-    operation: "integration.checkSetup",
+    operation: "integration.syncAccounts",
     method: "POST",
-    path: "/integrations/{provider}/check-setup",
+    path: "/integrations/{provider}/sync-accounts",
     successStatus: 200,
+  }),
+  restRoute({
+    operation: "integration.accounts",
+    method: "GET",
+    path: "/integrations/{provider}/accounts",
   }),
   restRoute({
     operation: "integration.disconnect",

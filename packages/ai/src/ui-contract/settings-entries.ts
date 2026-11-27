@@ -1,5 +1,4 @@
 import {
-  AccountingSettingsSchema,
   PaymentSettingsSchema,
   type SettingKey,
   SettingsOrganizationSchema,
@@ -22,7 +21,6 @@ export type SettingsUiProps = { "setting-cards": { view: SettingsViewWire } };
 const EMPTY: Omit<SettingsViewWire, "keys"> = {
   organization: null,
   payment: null,
-  accounting: null,
   seats: null,
 };
 
@@ -40,11 +38,6 @@ const paymentSettings = uiEntry({
   component: "setting-cards",
   schema: PaymentSettingsSchema,
   toProps: ({ value }) => view({ keys: ["paymentMethods", "deposit"], payment: value }),
-});
-const accountingSettings = uiEntry({
-  component: "setting-cards",
-  schema: AccountingSettingsSchema,
-  toProps: ({ value }) => view({ keys: ["accounts"], accounting: value }),
 });
 const domainJoin = uiEntry({
   component: "setting-cards",
@@ -75,7 +68,5 @@ export const SETTINGS_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   organizationProfile_setDomainJoin: domainJoin,
   paymentSettings_get: paymentSettings,
   paymentSettings_update: paymentSettings,
-  accountingSettings_get: accountingSettings,
-  accountingSettings_update: accountingSettings,
   billing_update: seats,
 };

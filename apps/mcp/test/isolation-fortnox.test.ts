@@ -59,22 +59,41 @@ describe("cross-organization isolation: Fortnox connection", () => {
     }
   });
 
-  it("checks the setup only of a connection the caller's organization has (ADR 0108)", async () => {
+  it("syncs the accounts only of a connection the caller's organization has (ADR 0108)", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
     await call({ client: a, name: "integration_connect", args: { provider: "FORTNOX" } });
-    // A's connection is only PENDING and B has none: neither can be checked, and B's call
+    // A's connection is only PENDING and B has none: neither can be synced, and B's call
     // never reaches A's row.
     for (const client of [a, b]) {
       const checked = await call({
         client,
-        name: "integration_checkSetup",
+        name: "integration_syncAccounts",
         args: { provider: "FORTNOX" },
       });
       expect(checked.isError, JSON.stringify(checked.data)).toBe(true);
     }
     const aList = await call({ client: a, name: "integration_list" });
     expect(fortnoxOf({ list: aList.data })?.status).toBe("PENDING");
+  });
+
+  it("reads the accounts only of a connection the caller's organization has (ADR 0123)", async () => {
+    const a = await connect({ context: testContext() });
+    const b = await connect({ context: testContext() });
+    await call({ client: a, name: "integration_connect", args: { provider: "FORTNOX" } });
+    // A's PENDING connection has no snapshot yet; B has no connection, so B reads nothing of A's.
+    const own = await call({
+      client: a,
+      name: "integration_accounts",
+      args: { provider: "FORTNOX" },
+    });
+    expect(own.data).toMatchObject({ provider: "FORTNOX", syncedAt: null, accounts: [] });
+    const other = await call({
+      client: b,
+      name: "integration_accounts",
+      args: { provider: "FORTNOX" },
+    });
+    expect(other.isError, JSON.stringify(other.data)).toBe(true);
   });
 
   it("disconnect in one organization leaves the other's connection alone", async () => {

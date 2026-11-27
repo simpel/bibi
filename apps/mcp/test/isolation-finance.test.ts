@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
+import { connectLedger } from "./ledger";
 import { seedQuoteBasis } from "./seed-quote-basis";
 import { thisMonth } from "./this-month";
 
@@ -31,24 +32,39 @@ describe("cross-organization isolation: financials", () => {
     }
   });
 
-  it("refuses another organization's item types and items as revenue account targets", async () => {
-    const a = await connect({ context: testContext() });
-    const b = await connect({ context: testContext() });
-    const secret = await seedQuoteBasis({ client: a });
-    const mapped = [{ entityTypeId: null, itemId: secret.itemId, account: "3041" }];
+  it("keeps one organization's account mappings out of another's list and refuses its item types", async () => {
+    const contextA = testContext();
+    const contextB = testContext();
+    const a = await connect({ context: contextA });
+    const b = await connect({ context: contextB });
+    const secret = await call({
+      client: a,
+      name: "entityType_create",
+      args: { base: "ITEM", name: "Secret rooms", capabilities: ["PRICED"] },
+    });
+    await connectLedger({ context: contextA });
+    await connectLedger({ context: contextB });
     const own = await call({
       client: a,
-      name: "accountingSettings_update",
-      args: { revenueAccounts: mapped },
+      name: "accountMapping_set",
+      args: { purpose: "REVENUE_DEFAULT", providerAccount: "3002" },
     });
     expect(own.isError, JSON.stringify(own.data)).toBe(false);
+    expect(own.data.mappings).toContainEqual(expect.objectContaining({ providerAccount: "3002" }));
+
     const stolen = await call({
       client: b,
-      name: "accountingSettings_update",
-      args: { revenueAccounts: mapped },
+      name: "accountMapping_set",
+      args: { purpose: "ENTITY_TYPE", entityTypeId: secret.data.id, providerAccount: "3041" },
     });
     expect(stolen.data.code).toBe("VALIDATION");
-    const read = await call({ client: b, name: "accountingSettings_get", args: {} });
-    expect(read.data).toMatchObject({ id: null, revenueAccount: "3001", revenueAccounts: [] });
+    const read = await call({ client: b, name: "accountMapping_list", args: {} });
+    expect(read.isError, JSON.stringify(read.data)).toBe(false);
+    expect(read.data.mappings).not.toContainEqual(
+      expect.objectContaining({ providerAccount: "3002" }),
+    );
+    expect(read.data.mappings).not.toContainEqual(
+      expect.objectContaining({ entityTypeId: secret.data.id }),
+    );
   });
 });

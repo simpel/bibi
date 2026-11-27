@@ -20,7 +20,7 @@ const payment = {
   invoiceProvider: null,
   paymentOperator: "STRIPE",
 };
-const empty = { organization: null, payment: null, accounting: null, seats: null };
+const empty = { organization: null, payment: null, seats: null };
 
 describe("setting cards", () => {
   it("shows exactly the settings the view was asked for, one card each", () => {

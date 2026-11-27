@@ -1,6 +1,6 @@
 import {
-  type AccountingSettingsDto,
-  AccountingSettingsSchema,
+  type AccountMappingListDto,
+  AccountMappingListSchema,
   type FinanceAging,
   FinanceAgingSchema,
   type FinanceMonth,
@@ -8,15 +8,13 @@ import {
   type FinanceOverviewDto,
   type FinanceTrends,
   financeOverview,
-  getAccountingSettings,
+  listAccountMappings,
   type OutcomeMonth,
   OutcomeMonthSchema,
   OverdueInvoiceSchema,
-  type RevenueAccountDto,
-  RevenueAccountSchema,
   type RevenueByType,
   RevenueByTypeSchema,
-  updateAccountingSettings,
+  setAccountMapping,
   type VatByRate,
   VatByRateSchema,
 } from "@bibi/core";
@@ -102,30 +100,16 @@ fieldFromOperation({
   name: "financeOverview",
 });
 
-const RevenueAccountRef = objectFromSchema<RevenueAccountDto>({
-  name: "RevenueAccount",
-  schema: RevenueAccountSchema,
-  description: "The revenue account of one item type or one item (ADR 0077).",
+const AccountMappingListRef = objectFromSchema<AccountMappingListDto>({
+  name: "AccountMappingList",
+  schema: AccountMappingListSchema,
+  description:
+    "The purposes mapped to the connected accounting system's accounts (ADR 0123): deposits, default revenue and one per item type.",
 });
-
-const AccountingSettingsRef = objectFromSchema<AccountingSettingsDto>({
-  name: "AccountingSettings",
-  schema: AccountingSettingsSchema,
-  omit: ["revenueAccounts"],
-  description: "The accounts the SIE export posts to (ADR 0077); BAS defaults until saved.",
-});
-
-builder.objectField(AccountingSettingsRef, "revenueAccounts", (t) =>
-  t.field({
-    type: [RevenueAccountRef],
-    description: AccountingSettingsSchema.shape.revenueAccounts.description,
-    resolve: (settings) => settings.revenueAccounts,
-  }),
-);
 
 fieldFromOperation({
-  operation: getAccountingSettings,
-  type: AccountingSettingsRef,
-  name: "accountingSettings",
+  operation: listAccountMappings,
+  type: AccountMappingListRef,
+  name: "accountMapping",
 });
-mutationFromOperation({ operation: updateAccountingSettings, type: AccountingSettingsRef });
+mutationFromOperation({ operation: setAccountMapping, type: AccountMappingListRef });

@@ -125,13 +125,14 @@ describe("entity read parity: core -> GraphQL, REST, MCP return equal data", () 
     for (const entity of ENTITIES) {
       const created = await entity.create({ mcp, made, context });
       // Singletons without an id (a file's key, a user's working days, a notification kind's
-      // preference) are told apart by those.
+      // preference, the connected ledger's mappings) are told apart by those.
       const identity =
         created?.id ??
         created?.subjectId ??
         created?.key ??
         created?.days ??
         created?.kind ??
+        created?.provider ??
         created?.slug;
       expect(identity, `${entity.name}: create via MCP`).toBeTruthy();
       made[entity.name] = created;

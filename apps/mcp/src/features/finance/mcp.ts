@@ -2,10 +2,10 @@ import { mcpTool } from "../../tools/meta";
 
 export const financeMcpTools = [
   mcpTool({ operation: "finance.overview" }),
-  mcpTool({ operation: "accountingSettings.get" }),
+  mcpTool({ operation: "accountMapping.list" }),
   mcpTool({
-    operation: "accountingSettings.update",
+    operation: "accountMapping.set",
     idempotent: true,
-    summary: () => "Change the accounts invoice rows post to",
+    summary: () => "Change the accounts the organization's purposes book to",
   }),
 ];

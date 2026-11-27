@@ -99,27 +99,29 @@ export function paymentEntity(): ParityEntity {
   };
 }
 
-/** The accounts (ADR 0077), with one item type mapped to its own account. */
-export const accountingSettingsEntity: ParityEntity = {
-  name: "accountingSettings",
-  create: async ({ mcp }) => {
+/** The connected ledger's mappings (ADR 0123): Deposits changed and one item type added, each to an account. */
+export const accountMappingEntity: ParityEntity = {
+  name: "accountMapping",
+  create: async ({ mcp, context }) => {
+    await connectLedger({ context });
     const type = await tool({
       mcp,
       name: "entityType_create",
       args: { base: "ITEM", name: "Parity rooms", capabilities: ["PRICED"] },
     });
-    const revenueAccounts = [{ entityTypeId: type.id, itemId: null, account: "3041" }];
-    const args = { revenueAccount: "3002", advancesAccount: "2421", revenueAccounts };
-    return tool({ mcp, name: "accountingSettings_update", args });
+    const mappings = [
+      { purpose: "ADVANCES", entityTypeId: null, providerAccount: "2420" },
+      { purpose: "ENTITY_TYPE", entityTypeId: type.id, providerAccount: "3041" },
+    ];
+    let list: unknown = null;
+    for (const args of mappings) list = await tool({ mcp, name: "accountMapping_set", args });
+    return list;
   },
-  viaMcp: ({ mcp }) => tool({ mcp, name: "accountingSettings_get", args: {} }),
-  viaRest: ({ context }) => createRestClient({ context }).get({ path: "/accounting-settings" }),
+  viaMcp: ({ mcp }) => tool({ mcp, name: "accountMapping_list", args: {} }),
+  viaRest: ({ context }) => createRestClient({ context }).get({ path: "/account-mappings" }),
   viaGraph: async ({ context, keys }) => {
-    const fields = keys.map((key) =>
-      key === "revenueAccounts" ? "revenueAccounts { entityTypeId itemId account isDefault }" : key,
-    );
-    const query = `query { accountingSettings { ${fields.join(" ")} } }`;
-    return (await gqlQuery({ context, query, variables: {} })).accountingSettings;
+    const query = `query { accountMapping { ${keys.join(" ")} } }`;
+    return (await gqlQuery({ context, query, variables: {} })).accountMapping;
   },
 };
 
@@ -149,6 +151,6 @@ export const moneyEntities = (): ParityEntity[] => [
   depositEntity(),
   invoiceEntity(),
   paymentEntity(),
-  accountingSettingsEntity,
+  accountMappingEntity,
   creditNoteEntity(),
 ];

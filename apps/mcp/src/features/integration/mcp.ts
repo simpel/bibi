@@ -8,11 +8,11 @@ export const integrationMcpTools = [
     summary: ({ input }) => `Connect the organization to ${text({ value: input.provider })}`,
   }),
   mcpTool({
-    operation: "integration.checkSetup",
+    operation: "integration.syncAccounts",
     idempotent: true,
-    summary: ({ input }) =>
-      `Check the accounts Bibi books to in ${text({ value: input.provider })}`,
+    summary: ({ input }) => `Read the accounts in ${text({ value: input.provider })}`,
   }),
+  mcpTool({ operation: "integration.accounts" }),
   mcpTool({
     operation: "integration.disconnect",
     destructive: true,

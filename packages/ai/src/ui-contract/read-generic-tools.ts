@@ -4,6 +4,12 @@
  * registry fits its file.
  */
 export const READ_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
+  accountMapping_list:
+    "purposes mapped to the connected ledger's accounts; the provider's settings page edits them (ADR 0123); JSON in chat",
+  accountMapping_set:
+    "the mapping list after one change; the provider's settings page shows it (ADR 0123); JSON in chat",
+  integration_accounts:
+    "the accounts read from the connected ledger; the provider's settings page lists them (ADR 0123); JSON in chat",
   item_freeUnits:
     "a list of unit names with the prepick; shown as JSON until the allocation UI (#384)",
   item_summary:

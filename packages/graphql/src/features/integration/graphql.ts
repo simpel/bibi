@@ -1,12 +1,15 @@
 import {
-  checkIntegrationSetup,
   connectIntegration,
   disconnectIntegration,
+  type IntegrationAccountsDto,
+  IntegrationAccountsSchema,
   type IntegrationConnectionDto,
   IntegrationConnectionSchema,
   type IntegrationConnectOutput,
   IntegrationConnectOutputSchema,
+  listIntegrationAccounts,
   listIntegrations,
+  syncIntegrationAccounts,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
@@ -34,7 +37,18 @@ const IntegrationListRef = builder
     }),
   });
 
+const IntegrationAccountsRef = objectFromSchema<IntegrationAccountsDto>({
+  name: "IntegrationAccounts",
+  schema: IntegrationAccountsSchema,
+  description: "The accounts read from the connected accounting system, as of the last sync.",
+});
+
+fieldFromOperation({
+  operation: listIntegrationAccounts,
+  type: IntegrationAccountsRef,
+  name: "integrationAccounts",
+});
 fieldFromOperation({ operation: listIntegrations, type: IntegrationListRef, name: "integrations" });
 mutationFromOperation({ operation: connectIntegration, type: IntegrationConnectStartRef });
-mutationFromOperation({ operation: checkIntegrationSetup, type: IntegrationConnectionRef });
+mutationFromOperation({ operation: syncIntegrationAccounts, type: IntegrationConnectionRef });
 mutationFromOperation({ operation: disconnectIntegration, type: IntegrationConnectionRef });
