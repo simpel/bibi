@@ -465,6 +465,10 @@
           "blockTables": {
             "question": "Hur spärrar jag bord, till exempel för gäster utan bokning?",
             "answer": "Öppna **Bordsbokningar** och klicka på **Spärra bord**. Välj borden, perioden och om du vill **Spärra** dem eller **Spara för gäster utan bokning**, vilket bara hindrar gäster från att boka dem online.\nSpärrade bord visas streckade i salongen och listas under dagens bokningar. Klicka på **Släpp spärr** för att öppna dem igen."
+          },
+          "guestNeeds": {
+            "question": "Hur berättar gästerna om allergier eller andra behov?",
+            "answer": "Under **Administration**, **Bordsbokning**, **Bokningssida** bockar du för de listor gästerna får använda under **Listor gästerna kan ange**, till exempel era allergener, och klickar på **Spara**.\nGästerna ser då **Något köket behöver veta?** när de bokar och anger hur många i sällskapet som behöver varje värde, aldrig vilka. Antalen syns på bokningen precis som de du själv fyller i."
           }
         }
       }

@@ -465,6 +465,10 @@
           "blockTables": {
             "question": "How do I block tables, for example for walk-ins?",
             "answer": "Open **Reservations** and click **Block tables**. Pick the tables, the period and whether to **Block** them or **Keep for walk-ins**, which only stops guests from booking them online.\nBlocked tables show hatched on the floor and are listed under the day's bookings. Click **Release block** to open them again."
+          },
+          "guestNeeds": {
+            "question": "How do guests tell us about allergies or other needs?",
+            "answer": "Under **Administration**, **Table booking**, **Booking page**, tick the lists guests may use under **Lists guests can count**, for example your allergens, and click **Save**.\nGuests then see **Anything the kitchen should know?** when they book and note how many in the party need each value, never who. The counts show on the reservation like the ones you enter yourself."
           }
         }
       }
