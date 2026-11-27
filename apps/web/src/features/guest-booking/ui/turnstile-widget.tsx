@@ -18,6 +18,8 @@ declare global {
 export type TurnstileWidgetProps = {
   siteKey: string;
   scriptUrl: string;
+  /** The form's Turnstile action, checked again by the server. */
+  action: string;
   label: string;
   onToken: (input: { token: string }) => void;
   /** A new value renders a fresh widget, e.g. after a failed submit used up the token. */
@@ -35,10 +37,10 @@ export function TurnstileWidget({ scriptUrl, label, resetKey, ...widget }: Turns
   );
 }
 
-type TurnstileSlotProps = Pick<TurnstileWidgetProps, "siteKey" | "onToken">;
+type TurnstileSlotProps = Pick<TurnstileWidgetProps, "siteKey" | "action" | "onToken">;
 
 /** One rendered widget; a new `key` replaces it with a fresh one. */
-function TurnstileSlot({ siteKey, onToken }: TurnstileSlotProps) {
+function TurnstileSlot({ siteKey, action, onToken }: TurnstileSlotProps) {
   const locale = useLocale();
   const element = useRef<HTMLDivElement>(null);
   const latest = useRef(onToken);
@@ -50,6 +52,7 @@ function TurnstileSlot({ siteKey, onToken }: TurnstileSlotProps) {
     const send = ({ token }: { token: string }) => latest.current({ token });
     const id = api.render(element.current, {
       sitekey: siteKey,
+      action,
       language: locale,
       theme: "auto",
       size: "flexible",
@@ -58,6 +61,6 @@ function TurnstileSlot({ siteKey, onToken }: TurnstileSlotProps) {
       "error-callback": () => send({ token: "" }),
     });
     return () => api.remove(id);
-  }, [siteKey, locale]);
+  }, [siteKey, action, locale]);
   return <div ref={element} />;
 }

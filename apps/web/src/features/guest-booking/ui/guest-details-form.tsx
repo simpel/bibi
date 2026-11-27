@@ -17,7 +17,7 @@ import { BookerFields } from "./booker-fields";
 import { GuestTextBlock } from "./guest-text-block";
 import { TurnstileWidget } from "./turnstile-widget";
 
-export type CaptchaProps = { siteKey: string; scriptUrl: string } | null;
+export type CaptchaProps = { siteKey: string; scriptUrl: string; action: string } | null;
 
 export type GuestDetailsFormProps = {
   slug: string;
