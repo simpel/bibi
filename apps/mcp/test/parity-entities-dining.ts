@@ -143,7 +143,7 @@ const tableCombination: ParityEntity = {
 };
 
 const BOOKING_PAGE =
-  "slug logoKey coverKey accentColor intro { sv en } policy { sv en } contactPhone contactEmail embedOrigins published";
+  "slug logoKey coverKey accentColor intro { sv en } policy { sv en } contactPhone contactEmail embedOrigins guestListIds published";
 
 /** The booking page has no id of its own: its slug tells it apart. */
 const bookingPage: ParityEntity = {
