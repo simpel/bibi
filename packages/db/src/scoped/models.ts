@@ -73,6 +73,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "ReservationRequirement",
   "TableHold",
   "BookingPage",
+  "BookingPageList",
   "Comment",
   "CommentMention",
   "RunSheet",

@@ -63,7 +63,7 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 
 ### Booker and kitchen
 - One booker: `bookerName` (required), `bookerPhone` (required online), `bookerEmail` (required online), `note`. Optional `customerId`/`contactId` link a regular or a company (staff only).
-- Dietary needs: `ReservationRequirement` counts against the organization's requirement lists (ADR 0021), shown online from the lists marked for guests.
+- Dietary needs: `ReservationRequirement` counts against the organization's lists (ADR 0021). Online, guests count only the values of the lists the booking page offers (`BookingPage` guest lists, `BookingPageList` join rows, chosen under Administration → Table booking → Booking page); any other value is `VALIDATION`.
 - 90 days after `endsAt` the nightly worker job `reservation.eraseBookers` (system only) erases name, phone, email and note (`erasedAt` set); counts, times and tables remain for statistics.
 
 ### Booking page
@@ -93,4 +93,4 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 - Email: confirmation, change, cancellation and a reminder 24 hours before, all with the manage link and the booking page's logo and accent.
 
 ## Not in this version
-Deposits (ADR 0119 decision 10 deferred: large parties call; `PENDING_PAYMENT` and the sitting's deposit columns stay unused), needs counts on the guest form (which lists guests see is not set yet), waitlist, SMS, custom domains or CSS, OAuth for partners, per-table pricing, recurring blocks.
+Deposits (ADR 0119 decision 10 deferred: large parties call; `PENDING_PAYMENT` and the sitting's deposit columns stay unused) waitlist, SMS, custom domains or CSS, OAuth for partners, per-table pricing, recurring blocks.

@@ -4,6 +4,7 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 import { checkImageKey } from "../file/image-key";
+import { checkReadable } from "../order/order-rules";
 import { contrastOnWhite, MIN_ACCENT_CONTRAST } from "./contrast";
 import {
   type BookingPageDto,
@@ -29,9 +30,17 @@ const EMPTY: BookingPageDto = {
   contactEmail: null,
   embedOrigins: [],
   published: false,
+  guestListIds: [],
 };
 
-export const toPageDto = ({ row }: { row: BookingPage | null }): BookingPageDto =>
+/** Reads the page with its guest lists in order. */
+export const PAGE_INCLUDE = {
+  guestLists: { select: { vocabularyId: true }, orderBy: { position: "asc" } },
+} as const;
+
+type PageRow = BookingPage & { guestLists?: { vocabularyId: string }[] };
+
+export const toPageDto = ({ row }: { row: PageRow | null }): BookingPageDto =>
   row
     ? {
         slug: row.slug,
@@ -44,6 +53,7 @@ export const toPageDto = ({ row }: { row: BookingPage | null }): BookingPageDto 
         contactEmail: row.contactEmail,
         embedOrigins: row.embedOrigins,
         published: row.published,
+        guestListIds: (row.guestLists ?? []).map((list) => list.vocabularyId),
       }
     : EMPTY;
 
@@ -74,6 +84,44 @@ function checkPage({ context, input, current, slug }: CheckInput): Result<true> 
   return ok({ value: true });
 }
 
+type ListsInput = {
+  context: Pick<OperationContext, "db" | "permissions">;
+  ids: string[] | undefined;
+};
+
+/** Guest lists are the organization's active lists, and the caller may read lists. */
+async function checkGuestLists({ context, ids }: ListsInput): Promise<Result<true>> {
+  if (!ids || ids.length === 0) return ok({ value: true });
+  const readable = checkReadable({
+    context,
+    permission: "configuration:read",
+    path: "guestListIds",
+  });
+  if (!readable.ok) return readable;
+  const found = await context.db.vocabulary.count({ where: { id: { in: ids } } });
+  if (found === ids.length) return ok({ value: true });
+  const message = "Unknown list";
+  return invalid({ message, issues: [{ path: "guestListIds", message }] });
+}
+
+type ReplaceListsInput = {
+  context: Pick<OperationContext, "db" | "organizationId">;
+  bookingPageId: string;
+  ids: string[];
+};
+
+/** Replaces the page's guest lists, in the given order. */
+async function replaceGuestLists({ context, bookingPageId, ids }: ReplaceListsInput) {
+  await context.db.bookingPageList.deleteMany({ where: { bookingPageId } });
+  if (ids.length === 0) return;
+  await context.db.bookingPageList.createMany({
+    data: ids.map((vocabularyId, position) => ({
+      ...{ bookingPageId, vocabularyId, position },
+      organizationId: context.organizationId,
+    })),
+  });
+}
+
 export const getBookingPage = defineOperation({
   name: "bookingPage.get",
   kind: "query",
@@ -84,7 +132,9 @@ export const getBookingPage = defineOperation({
   output: BookingPageSchema,
   permission: "diningSetup:read",
   handler: async ({ context }) =>
-    ok({ value: toPageDto({ row: await context.db.bookingPage.findFirst({}) }) }),
+    ok({
+      value: toPageDto({ row: await context.db.bookingPage.findFirst({ include: PAGE_INCLUDE }) }),
+    }),
 });
 
 export const updateBookingPage = defineOperation({
@@ -93,24 +143,34 @@ export const updateBookingPage = defineOperation({
   description:
     "Edit the booking page: address (slug, unique across Bibi, required on the first save; a slug in use is CONFLICT), logo and cover (keys from " +
     "file.upload), accent colour (refused under 4.5:1 contrast on white), texts, contact " +
-    "details, embed origins and published. Omitted fields are unchanged.",
+    "details, embed origins, published and guestListIds (the lists whose values guests count, e.g. " +
+    "Allergens). Omitted fields are unchanged.",
   input: BookingPageUpdateInputSchema,
   output: BookingPageSchema,
   permission: "diningSetup:write",
   handler: async ({ input, context }) => {
-    const row = await context.db.bookingPage.findFirst({});
+    const row = await context.db.bookingPage.findFirst({ include: PAGE_INCLUDE });
     const before = toPageDto({ row });
     const slug = input.slug ?? before.slug;
     const checked = checkPage({ context, input, current: before, slug });
     if (!checked.ok) return checked;
-    const data = Object.fromEntries(Object.entries(input).filter(([, v]) => v !== undefined));
+    const { guestListIds, ...fields } = input;
+    const lists = await checkGuestLists({ context, ids: guestListIds });
+    if (!lists.ok) return lists;
+    const data = Object.fromEntries(Object.entries(fields).filter(([, v]) => v !== undefined));
     // A slug another organization uses fails the unique index: CONFLICT.
     const saved = row
       ? await context.db.bookingPage.update({ where: { id: row.id }, data })
       : await context.db.bookingPage.create({
           data: { ...data, slug: input.slug ?? "", organizationId: context.organizationId },
         });
-    const after = toPageDto({ row: saved });
+    if (guestListIds)
+      await replaceGuestLists({ context, bookingPageId: saved.id, ids: guestListIds });
+    const reread = await context.db.bookingPage.findFirst({
+      where: { id: saved.id },
+      include: PAGE_INCLUDE,
+    });
+    const after = toPageDto({ row: reread });
     context.recordChange({ entityId: saved.id, before, after });
     return ok({ value: after });
   },

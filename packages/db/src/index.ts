@@ -30,6 +30,7 @@ export {
   type BoardPhase,
   type BoardPhaseStatus,
   type BookingPage,
+  type BookingPageList,
   BuyerKind,
   type Comment,
   type CommentMention,

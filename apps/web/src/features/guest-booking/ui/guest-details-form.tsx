@@ -15,6 +15,7 @@ import type { SlotChoice } from "../lib/group-slots";
 import { type GuestErrorKey, guestErrorKey } from "../lib/guest-error";
 import { BookerFields } from "./booker-fields";
 import { GuestTextBlock } from "./guest-text-block";
+import { type NeedLists, NeedsSection } from "./needs-section";
 import { TurnstileWidget } from "./turnstile-widget";
 
 export type CaptchaProps = { siteKey: string; scriptUrl: string; action: string } | null;
@@ -27,6 +28,8 @@ export type GuestDetailsFormProps = {
   /** The page's booking terms in the visitor's language; null = no checkbox. */
   policy: string | null;
   captcha: CaptchaProps;
+  /** Lists whose values guests count; empty = no section. */
+  needLists: NeedLists;
   /** A time that was just taken: back to the times, refreshed. */
   onTaken: () => void;
 };
@@ -64,6 +67,7 @@ export function GuestDetailsForm(props: GuestDetailsFormProps) {
   const locale = useLocale() === "en" ? "en" : "sv";
   const router = useRouter();
   const { run, pending } = useToastAction();
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [captchaToken, setCaptchaToken] = useState("");
   const [captchaRound, setCaptchaRound] = useState(0);
   const failed = useRef<GuestErrorKey | null>(null);
@@ -82,6 +86,9 @@ export function GuestDetailsForm(props: GuestDetailsFormProps) {
           ...{ slug: props.slug, roomSlug: props.roomSlug, startsAt: props.slot.startsAt },
           ...{ partySize: props.party, ...booker, note: note || null, locale },
           captcha: captchaToken,
+          requirements: Object.entries(counts)
+            .filter(([, quantity]) => quantity > 0)
+            .map(([vocabularyValueId, quantity]) => ({ vocabularyValueId, quantity })),
         }),
       messages: { pending: t("details.pending"), success: t("details.success") },
       errorMessage: ({ error }) => {
@@ -107,6 +114,14 @@ export function GuestDetailsForm(props: GuestDetailsFormProps) {
             ...{ emailHint: t("details.emailHint"), note: t("details.note") },
           }}
         />
+        {props.needLists.length > 0 ? (
+          <NeedsSection
+            lists={props.needLists}
+            party={props.party}
+            counts={counts}
+            onChange={({ id, count }) => setCounts((current) => ({ ...current, [id]: count }))}
+          />
+        ) : null}
         {props.policy ? (
           <div className="flex flex-col gap-2 rounded-lg bg-muted px-3 py-3">
             <h3 className="text-sm font-medium">{t("details.policyTitle")}</h3>

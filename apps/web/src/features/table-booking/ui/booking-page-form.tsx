@@ -17,10 +17,15 @@ import {
   bookingPageFormSchema,
 } from "./booking-page-form-schema";
 
-export type BookingPageFormProps = { page: BookingPageDto; canEdit: boolean };
+export type BookingPageFormProps = {
+  page: BookingPageDto;
+  canEdit: boolean;
+  /** The organization's active lists guests may count. */
+  lists: { id: string; name: string }[];
+};
 
 /** The booking page's address, pictures, colour, texts and contact: saved together with Save. */
-export function BookingPageForm({ page, canEdit }: BookingPageFormProps) {
+export function BookingPageForm({ page, canEdit, lists }: BookingPageFormProps) {
   const t = useTranslations("tableBooking.page");
   const common = useTranslations("common");
   const errors = useTranslations("errors");
@@ -42,7 +47,7 @@ export function BookingPageForm({ page, canEdit }: BookingPageFormProps) {
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid max-w-2xl gap-6">
         <fieldset disabled={!canEdit} className="grid gap-6">
-          <BookingPageFields form={form} />
+          <BookingPageFields form={form} lists={lists} />
         </fieldset>
         {canEdit ? (
           <div>

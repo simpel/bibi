@@ -18,6 +18,8 @@ export type BookingPageFormValues = {
   contactEmail: string;
   /** One https origin per line. */
   embedOrigins: string;
+  /** Ids of the lists guests count, in order. */
+  guestListIds: string[];
 };
 
 const lines = ({ value }: { value: string }) =>
@@ -38,6 +40,7 @@ export function bookingPageToInput({ values }: { values: BookingPageFormValues }
     contactPhone: blankToNull({ value: values.contactPhone }),
     contactEmail: blankToNull({ value: values.contactEmail }),
     embedOrigins: lines({ value: values.embedOrigins }),
+    guestListIds: values.guestListIds,
   };
 }
 
@@ -62,5 +65,6 @@ export function bookingPageDefaults({ page }: { page: BookingPageDto }): Booking
     contactPhone: page.contactPhone ?? "",
     contactEmail: page.contactEmail ?? "",
     embedOrigins: page.embedOrigins.join("\n"),
+    guestListIds: page.guestListIds,
   };
 }

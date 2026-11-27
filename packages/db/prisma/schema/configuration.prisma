@@ -140,6 +140,8 @@ model Vocabulary {
   fields           FieldDefinition[]
   runSheetDefinitions RunSheetDefinitionVocabulary[]
 
+  /// Booking pages that show this list to guests (ADR 0119).
+  bookingPageLists BookingPageList[]
   @@unique([id, organizationId])
   @@index([organizationId, status])
 }

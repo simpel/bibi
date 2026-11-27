@@ -1,4 +1,4 @@
-import { getBookingPage } from "@bibi/core";
+import { getBookingPage, listVocabularies } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { AdminSection } from "@/components/admin/admin-section";
@@ -13,11 +13,17 @@ export type BookingPageSectionProps = { locale: Locale };
 
 /** The organization's public booking page: its address, look, texts and whether it is live. */
 export async function BookingPageSection({ locale }: BookingPageSectionProps) {
-  const [t, abilities, page] = await Promise.all([
+  const [t, abilities, page, lists] = await Promise.all([
     getTranslations("tableBooking.page"),
     getCallerAbilities(),
     runOperation({ operation: getBookingPage, input: {} }),
+    runOperation({ operation: listVocabularies, input: { limit: 100 } }),
   ]);
+  const listChoices = lists.ok
+    ? lists.value.items
+        .filter((list) => list.status === "ACTIVE")
+        .map(({ id, name }) => ({ id, name }))
+    : [];
   const canEdit = can({ abilities, permission: "diningSetup:write" });
   if (!page.ok) {
     return (
@@ -38,7 +44,7 @@ export async function BookingPageSection({ locale }: BookingPageSectionProps) {
         />
       }
     >
-      <BookingPageForm page={page.value} canEdit={canEdit} />
+      <BookingPageForm page={page.value} canEdit={canEdit} lists={listChoices} />
     </AdminSection>
   );
 }

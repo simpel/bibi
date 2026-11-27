@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   ColorSwatch,
   FormControl,
   FormController,
@@ -7,6 +8,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Label,
   VisualTile,
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
@@ -82,8 +84,52 @@ function ImageField({ form, name }: { form: Form; name: "logoKey" | "coverKey" }
   );
 }
 
+type ListsFieldProps = { form: Form; lists: { id: string; name: string }[] };
+
+/** Which of the organization's lists guests count when booking; saved with the form. */
+function GuestListsField({ form, lists }: ListsFieldProps) {
+  const t = useTranslations("tableBooking.page");
+  return (
+    <FormController
+      control={form.control}
+      name="guestListIds"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t("guestLists")}</FormLabel>
+          {lists.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t("guestListsNone")}</p>
+          ) : (
+            <div className="grid gap-2">
+              {lists.map(({ id, name }) => (
+                <div key={id} className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    id={`guest-list-${id}`}
+                    checked={field.value.includes(id)}
+                    onCheckedChange={(checked) =>
+                      field.onChange(
+                        checked === true
+                          ? [...field.value, id]
+                          : field.value.filter((value) => value !== id),
+                      )
+                    }
+                  />
+                  <Label htmlFor={`guest-list-${id}`} className="font-normal">
+                    {name}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          )}
+          <FormDescription>{t("guestListsHint")}</FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
 /** The fields of the booking page form, in reading order. */
-export function BookingPageFields({ form }: { form: Form }) {
+export function BookingPageFields({ form, lists }: ListsFieldProps) {
   const t = useTranslations("tableBooking.page");
   return (
     <>
@@ -110,6 +156,7 @@ export function BookingPageFields({ form }: { form: Form }) {
         placeholder="https://example.com"
       />
       <p className="-mt-4 text-xs text-muted-foreground">{t("embedOriginsHint")}</p>
+      <GuestListsField form={form} lists={lists} />
     </>
   );
 }

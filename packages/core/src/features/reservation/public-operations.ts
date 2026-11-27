@@ -1,11 +1,12 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import { conflict, notFound } from "../../shared/errors";
+import { conflict, invalid, notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
 import { parseIsoDate } from "../../time/plain-date";
 import { toZonedParts } from "../../time/zoned-time";
 import { newPublicToken } from "../payment/public-token";
 import { evaluateDay } from "./evaluate";
+import { guestValueIds } from "./guest-lists";
 import { releaseHolds, writeHolds } from "./holds";
 import { mailGuest } from "./mail-message";
 import { publicRoom } from "./public-room";
@@ -111,6 +112,12 @@ export const publicCreateReservation = defineOperation({
     if (!room) return notFound({ entity: "Dining room" });
     const refs = await checkReferences({ context, requirements: input.requirements });
     if (!refs.ok) return refs;
+    // Guests count only values of the lists the booking page shows them.
+    const allowed = await guestValueIds({ context });
+    if ((input.requirements ?? []).some((need) => !allowed.has(need.vocabularyValueId))) {
+      const message = "That need is not offered on the booking page";
+      return invalid({ message, issues: [{ path: "requirements", message }] });
+    }
     await lockRoom({ context, roomItemId: room.itemId });
     const { startsAt, partySize } = input;
     const slot = await onlineSlot({ context, roomItemId: room.itemId, startsAt, partySize });

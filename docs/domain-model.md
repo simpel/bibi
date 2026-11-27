@@ -856,7 +856,7 @@ All owned. Operations: `reservation.*` (`reservation:read|write|delete`); public
 One table held for `[startsAt, endsAt)`: for a reservation (`RESERVATION`, `reservationId` set) or a staff block (`BLOCK`: nobody books; `ONLINE_ONLY`: guests do not). Owned; `note` on blocks. ★ Active holds on one table may not overlap: an exclusion constraint (`btree_gist`) like `Occupancy`; core maps a violation to `CONFLICT`. Released holds are `ARCHIVED`. A whole-room block is a manual `Occupancy` on the room.
 
 ### BookingPage (`BookingPage`)
-The organization's public booking page, lightly white-labelled. One per organization. Owned: `slug` (unique), `logoKey` and `coverKey` (storage keys, ADR 0063), `accentColor` (contrast ≥ 4.5:1 on white), intro and policy per locale (`sv`, `en`), contact phone and email, `embedOrigins` (https origins; plain strings, ADR 0056 allows values that are not ids), `published`. `bookingPage.get|update` (`diningSetup:*`).
+The organization's public booking page, lightly white-labelled. One per organization. Owned: `slug` (unique), `logoKey` and `coverKey` (storage keys, ADR 0063), `accentColor` (contrast ≥ 4.5:1 on white), intro and policy per locale (`sv`, `en`), contact phone and email, `embedOrigins` (https origins; plain strings, ADR 0056 allows values that are not ids), `published`, and its guest lists (`BookingPageList` join rows: the lists whose values guests count, in order). `bookingPage.get|update` (`diningSetup:*`).
 
 ### Changes on existing entities
 - A layout's seated pieces are tables once a sitting uses it; `FloorElement.label` is the table number.

@@ -2,7 +2,8 @@ import { getDb } from "@bibi/db";
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
-import { toPageDto } from "../booking-page/operations";
+import { PAGE_INCLUDE, toPageDto } from "../booking-page/operations";
+import { loadGuestLists } from "./guest-lists";
 import { PublicBookingPageSchema, PublicPageInputSchema } from "./public-schema";
 
 /**
@@ -19,7 +20,10 @@ export const publicBookingPage = defineOperation({
   systemOnly: true,
   approval: false,
   handler: async ({ context }) => {
-    const row = await context.db.bookingPage.findFirst({ where: { published: true } });
+    const row = await context.db.bookingPage.findFirst({
+      where: { published: true },
+      include: PAGE_INCLUDE,
+    });
     if (!row) return notFound({ entity: "Booking page" });
     const page = toPageDto({ row });
     const [organization, rooms, sittings] = await Promise.all([
@@ -32,6 +36,7 @@ export const publicBookingPage = defineOperation({
       }),
       context.db.diningService.findMany({ select: { roomItemId: true, maxOnlineParty: true } }),
     ]);
+    const needLists = await loadGuestLists({ context, ids: page.guestListIds });
     const largest = new Map<string, number>();
     for (const s of sittings)
       largest.set(s.roomItemId, Math.max(largest.get(s.roomItemId) ?? 0, s.maxOnlineParty));
@@ -47,6 +52,7 @@ export const publicBookingPage = defineOperation({
           contactEmail: page.contactEmail,
           embedOrigins: page.embedOrigins,
         },
+        needLists,
         rooms: rooms
           .filter((room) => largest.has(room.itemId))
           .map((room) => ({

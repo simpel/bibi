@@ -20,6 +20,9 @@ export const BookingPageSchema = z.object({
   contactEmail: z.string().nullable(),
   embedOrigins: z.array(z.string()).describe("Https origins allowed to embed the page"),
   published: z.boolean().describe("Guests see the page only when published"),
+  guestListIds: z
+    .array(z.string())
+    .describe("The organization's lists (vocabulary.get) whose values guests count when booking"),
 });
 
 export const BookingPageGetInputSchema = z.object({});
@@ -61,6 +64,11 @@ export const BookingPageUpdateInputSchema = z
     contactEmail: z.string().trim().email().max(200).nullable(),
     embedOrigins: z.array(Origin).max(10),
     published: z.boolean(),
+    guestListIds: z
+      .array(z.string().min(1))
+      .max(10)
+      .refine((ids) => new Set(ids).size === ids.length, { message: "A list twice" })
+      .describe("Lists guests count needs against, in this order, e.g. Allergens; [] = none"),
   })
   .partial()
   .describe("Omitted fields are unchanged");

@@ -48,6 +48,7 @@ export default async function BookRoomPage({ params, searchParams }: BookRoomPag
           contactPhone={page.contactPhone}
           policy={pickText({ texts: page.policy, locale })}
           captcha={captchaConfig()}
+          needLists={page.needLists}
         />
       </div>
     </BookingShell>

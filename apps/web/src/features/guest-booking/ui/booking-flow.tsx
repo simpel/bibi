@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useRouter } from "@/lib/navigation";
 import type { SlotChoice } from "../lib/group-slots";
 import { type CaptchaProps, GuestDetailsForm } from "./guest-details-form";
+import type { NeedLists } from "./needs-section";
 import { SlotPicker, type SlotPickerProps } from "./slot-picker";
 
 export type BookingFlowProps = Omit<SlotPickerProps, "onPick" | "selected"> & {
@@ -16,6 +17,7 @@ export type BookingFlowProps = Omit<SlotPickerProps, "onPick" | "selected"> & {
   dayLabel: string;
   policy: string | null;
   captcha: CaptchaProps;
+  needLists: NeedLists;
 };
 
 /**
@@ -55,6 +57,7 @@ export function BookingFlow(props: BookingFlowProps) {
         slot={slot}
         policy={props.policy}
         captcha={props.captcha}
+        needLists={props.needLists}
         onTaken={() => {
           setSlot(null);
           router.refresh();

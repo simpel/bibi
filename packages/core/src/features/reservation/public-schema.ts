@@ -17,6 +17,14 @@ export const PublicBookingPageSchema = z.object({
   contactPhone: z.string().nullable(),
   contactEmail: z.string().nullable(),
   embedOrigins: z.array(z.string()),
+  needLists: z
+    .array(
+      z.object({
+        name: z.string(),
+        values: z.array(z.object({ id: z.string(), name: z.string() })),
+      }),
+    )
+    .describe("Lists whose values guests may count when booking, e.g. Allergens"),
   rooms: z.array(
     z.object({
       slug: z.string(),

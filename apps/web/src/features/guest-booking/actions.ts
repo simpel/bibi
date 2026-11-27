@@ -21,6 +21,8 @@ export type CreateGuestReservationInput = {
   bookerPhone: string;
   bookerEmail: string;
   note?: string | null;
+  /** Counts per list value; only values above 0. */
+  requirements?: { vocabularyValueId: string; quantity: number }[];
   locale: "sv" | "en";
   /** The Turnstile widget's token; ignored when no captcha is configured. */
   captcha?: string;

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ok } from "../src/errors/result";
 import {
   createTableBlock,
+  createVocabulary,
   execute,
   organizationOfPage,
   organizationOfToken,
@@ -200,5 +201,43 @@ describe("guests book their own table (ADR 0119)", () => {
       input: { slug: "x" },
     });
     expect(errorCode({ result: result as never })).toBe("NOT_FOUND");
+  });
+
+  it("lets guests count needs only against the page's lists", async () => {
+    const { context, slug } = await publishedRoom();
+    const list = ({ name }: { name: string }) =>
+      execute({
+        operation: createVocabulary,
+        input: { name, values: ["Gluten", "Milk"] },
+        context,
+      });
+    const allergens = unwrap({ result: await list({ name: "Allergens" }) });
+    const internal = unwrap({ result: await list({ name: "Internal" }) });
+    unwrap({
+      result: await execute({
+        operation: updateBookingPage,
+        input: { guestListIds: [allergens.id] },
+        context,
+      }),
+    });
+    const organizationId = await organizationOfPage({ slug });
+    const page = unwrap({
+      result: await runGuest({ organizationId, operation: publicBookingPage, input: { slug } }),
+    }) as { needLists: { name: string; values: { id: string }[] }[] };
+    expect(page.needLists.map((one) => one.name)).toEqual(["Allergens"]);
+    const { date } = aheadDate({});
+    const book = ({ valueId }: { valueId: string }) =>
+      runGuest({
+        organizationId,
+        operation: publicCreateReservation,
+        input: {
+          ...{ slug, roomSlug: "kajen", startsAt: at({ date, hour: 19 }), partySize: 2, ...guest },
+          requirements: [{ vocabularyValueId: valueId, quantity: 1 }],
+        },
+      });
+    const outside = internal.values[0]?.id ?? "";
+    expect(errorCode({ result: (await book({ valueId: outside })) as never })).toBe("VALIDATION");
+    const gluten = allergens.values[0]?.id ?? "";
+    unwrap({ result: (await book({ valueId: gluten })) as never });
   });
 });

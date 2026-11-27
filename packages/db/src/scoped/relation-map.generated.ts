@@ -98,6 +98,22 @@ export const RELATIONS: RelationMap = {
       "list": false
     }
   },
+  "BookingPage": {
+    "guestLists": {
+      "target": "BookingPageList",
+      "list": true
+    }
+  },
+  "BookingPageList": {
+    "bookingPage": {
+      "target": "BookingPage",
+      "list": false
+    },
+    "vocabulary": {
+      "target": "Vocabulary",
+      "list": false
+    }
+  },
   "Comment": {
     "order": {
       "target": "Order",
@@ -2012,6 +2028,10 @@ export const RELATIONS: RelationMap = {
       "list": false
     },
     "requirements": {
+    },
+    "bookingPageLists": {
+      "target": "BookingPageList",
+      "list": true
       "target": "Requirement",
       "list": true
     },

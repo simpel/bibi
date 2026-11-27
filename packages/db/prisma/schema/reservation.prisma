@@ -292,6 +292,26 @@ model BookingPage {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   createdBy      String?
+  guestLists     BookingPageList[]
 
   @@unique([id, organizationId])
+}
+
+/// One of the organization's lists whose values guests count on the booking page (ADR 0119), e.g.
+/// Allergens: a join row, replaced as a set by `bookingPage.update`.
+model BookingPageList {
+  id             String      @id @default(cuid(2))
+  organizationId String
+  bookingPageId  String
+  vocabularyId   String
+  position       Int         @default(0)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  createdBy      String?
+  bookingPage    BookingPage @relation(fields: [bookingPageId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  vocabulary     Vocabulary  @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([bookingPageId, vocabularyId])
+  @@index([organizationId, vocabularyId])
 }

@@ -109,6 +109,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "ReservationRequirement",
   "TableHold",
   "BookingPage",
+  "BookingPageList",
   "Comment",
   "RunSheet",
   "RunSheetRecipient",
