@@ -39,11 +39,11 @@ export const getPublicPaymentOperation = defineOperation({
     });
     if (!order || !organization) return notFound({ entity: "Payment" });
     const document = await publicDocument({ context, payment: row });
-    const expired = Boolean(
-      payment.status === "PENDING" && payment.expiresAt && payment.expiresAt <= new Date(),
-    );
+    // A payment has no expiry of its own: an attempt that lapsed (Swish in minutes, a card
+    // checkout in a day) only ends that attempt, and the next click starts a fresh one.
+    const staleLink = Boolean(payment.expiresAt && payment.expiresAt <= new Date());
     const routes = await routedMethods({ context });
-    const open = payment.status === "PENDING" && !expired;
+    const open = payment.status === "PENDING";
     const methods = open && routes.ok ? routes.value.map((route) => route.method) : [];
     return ok({
       value: {
@@ -51,10 +51,10 @@ export const getPublicPaymentOperation = defineOperation({
         orderReference: order.reference,
         method: payment.method,
         methods,
-        status: expired ? "EXPIRED" : payment.status,
+        status: payment.status,
         amountMinor: payment.amountMinor,
         currency: payment.currency,
-        paymentUrl: payment.status === "PENDING" && !expired ? payment.paymentUrl : null,
+        paymentUrl: open && !staleLink ? payment.paymentUrl : null,
         expiresAt: payment.expiresAt,
         paidAt: payment.paidAt,
         ...document,

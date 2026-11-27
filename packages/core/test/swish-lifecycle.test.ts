@@ -3,6 +3,7 @@ import {
   createPayment,
   type ExecuteContext,
   execute,
+  getPublicPayment,
   receiveProviderWebhook,
   refundPayment,
   startPublicAttempt,
@@ -69,6 +70,28 @@ async function paidWithSwish(): Promise<PaidSetup> {
 }
 
 describe("Swish through the core operations (ADR 0100)", () => {
+  it("lets the customer start again after a Swish request lapsed", async () => {
+    const { context, depositId } = await paymentSetup();
+    const stub = stubSwish();
+    await connectSwish({ context, stub });
+    const input = { depositId, amountMinor: 100_000 };
+    const payment = unwrap({ result: await execute({ operation: createPayment, input, context }) });
+    const { publicToken: token } = await context.db.payment.findUniqueOrThrow({
+      where: { id: payment.id },
+    });
+    stub.route = () => ({ status: 201, headers: { paymentrequesttoken: "qr-token" } });
+    const first = unwrap({ result: await startPublicAttempt({ token, method: "SWISH" }) });
+    await context.db.paymentAttempt.update({
+      where: { id: first.id },
+      data: { expiresAt: new Date(Date.now() - 1000) },
+    });
+    const view = unwrap({ result: await getPublicPayment({ token }) });
+    expect(view.status).toBe("PENDING");
+    expect(view.methods).toContain("SWISH");
+    const second = unwrap({ result: await startPublicAttempt({ token, method: "SWISH" }) });
+    expect(second.id).not.toBe(first.id);
+  });
+
   it("settles a payment from a callback only after reading it again from Swish", async () => {
     const { context, stub, paymentId, number, requestId } = await paidWithSwish();
     expect(stub.calls.at(-1)).toMatchObject({

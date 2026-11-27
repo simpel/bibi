@@ -151,7 +151,7 @@ export const PublicPaymentSchema = z.object({
   methods: z
     .array(PaymentMethodSchema)
     .describe("The methods the customer can pay with now (routed, ADR 0100); [] once settled"),
-  /** `EXPIRED` is derived: still `PENDING` but past `expiresAt`. */
+  /** `EXPIRED` is no longer produced: a lapsed attempt leaves the payment `PENDING`. */
   status: z.enum([...PaymentStatusSchema.options, "EXPIRED"]),
   amountMinor: z.number().int(),
   currency: z.string(),

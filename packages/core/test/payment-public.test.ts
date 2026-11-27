@@ -74,7 +74,7 @@ describe("public payment page lookup", () => {
     expect(malformed).toMatchObject({ ok: false, error: { code: "NOT_FOUND" } });
   });
 
-  it("shows an unpaid payment past its checkout expiry as EXPIRED without a pay link", async () => {
+  it("keeps an unpaid payment PENDING with its methods after the attempt lapsed, without the stale link", async () => {
     const { context, depositId } = await paymentSetup();
     const { payment, token } = await newPayment({ context, depositId });
     await getDb().paymentAttempt.updateMany({
@@ -82,7 +82,8 @@ describe("public payment page lookup", () => {
       data: { expiresAt: new Date(Date.now() - 1000) },
     });
     const view = unwrap({ result: await getPublicPayment({ token }) });
-    expect(view).toMatchObject({ status: "EXPIRED", paymentUrl: null });
+    expect(view).toMatchObject({ status: "PENDING", paymentUrl: null });
+    expect(view.methods).toContain("CARD");
   });
 
   it("shows a paid payment as SUCCEEDED without a pay link", async () => {
