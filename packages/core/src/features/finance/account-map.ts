@@ -1,4 +1,4 @@
-import { type AccountingSettingsDto, effectiveRevenueAccount } from "./settings-schema";
+import type { LedgerMappings } from "./load-mappings";
 
 /** An order line as a provider row reads it: its item (and type) and its frozen VAT rows. */
 export type SoldLine = {
@@ -9,21 +9,17 @@ export type SoldLine = {
 
 export type RevenueAccountOf = (input: { line: SoldLine }) => string;
 
-/** The revenue account of a line: the item's, else its type's, else the default (ADR 0109). */
+/**
+ * The account reference of a line (ADR 0123): its item type's mapping, else the default revenue
+ * mapping. Callers have checked that the default exists (`requireMappings`).
+ */
 export function revenueAccountResolver({
-  settings,
+  mappings,
+  defaultRevenue,
 }: {
-  settings: AccountingSettingsDto;
+  mappings: LedgerMappings;
+  defaultRevenue: string;
 }): RevenueAccountOf {
-  const byItem = new Map<string, string>();
-  const byType = new Map<string, string>();
-  for (const row of settings.revenueAccounts) {
-    if (row.itemId) byItem.set(row.itemId, row.account);
-    if (row.entityTypeId) byType.set(row.entityTypeId, row.account);
-  }
-  const fallback = effectiveRevenueAccount({ settings });
   return ({ line }) =>
-    (line.itemId ? byItem.get(line.itemId) : undefined) ??
-    (line.item ? byType.get(line.item.entityTypeId) : undefined) ??
-    fallback;
+    (line.item ? mappings.byType.get(line.item.entityTypeId) : undefined) ?? defaultRevenue;
 }

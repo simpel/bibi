@@ -91,7 +91,8 @@ const INBOX_NAMES = [
 
 /** Connections to outside accounting systems (ADR 0087); callback and refresh are unregistered. */
 const CONNECTION_NAMES = [
-  "integration.checkSetup",
+  "integration.syncAccounts",
+  "integration.accounts",
   "integration.connect",
   "integration.disconnect",
   "integration.list",

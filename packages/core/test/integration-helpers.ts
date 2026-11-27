@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { getEnv } from "@bibi/config";
 import { afterEach, beforeEach } from "vitest";
 import {
+  BAS_ACCOUNTS,
   connectIntegration,
   createMemoryProvider,
   type ExecuteContext,
@@ -32,6 +33,8 @@ export function installFakeFortnox(): FakeFortnox {
     ledger: true,
     // Like the real adapter, it books card and Swish payments taken in Bibi (ADR 0106).
     registerPayment: true,
+    // A BAS chart: a connection maps Deposits and Default revenue to it (ADR 0123).
+    accounts: BAS_ACCOUNTS,
   });
   fake.adapter.isConfigured = isConfigured;
   // Fortnox's own consent page and callback, so the authorize URL can be checked.

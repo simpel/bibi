@@ -147,8 +147,8 @@ export function memoryInvoicing({ state, registerPayment }: MemoryInvoicingInput
     },
     listPayments: async ({ providerReference }) =>
       ok({ value: [...state.payments, ...(state.paidOn.get(providerReference) ?? [])] }),
-    checkSetup: async () =>
-      call({ state, name: "checkSetup", entry: "checkSetup", value: [...state.setupIssues] }),
+    listAccounts: async () =>
+      call({ state, name: "listAccounts", entry: "listAccounts", value: [...state.accounts] }),
   };
   if (registerPayment) {
     port.registerPayment = async ({ providerReference, payment }) => {

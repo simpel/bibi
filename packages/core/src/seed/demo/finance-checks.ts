@@ -24,7 +24,7 @@ export async function checkDemoFinance({ context, org }: CheckDemoFinanceInput) 
   if (paid.length !== wantedPaid)
     failures.push(`${org.slug}: ${paid.length} invoices paid, expected ${wantedPaid}`);
   if (!org.finance) return failures;
-  const mapped = await context.db.revenueAccount.count();
+  const mapped = await context.db.accountMapping.count({ where: { purpose: "ENTITY_TYPE" } });
   if (mapped !== org.finance.revenueAccounts.length) {
     failures.push(
       `${org.slug}: ${mapped} revenue accounts, expected ${org.finance.revenueAccounts.length}`,

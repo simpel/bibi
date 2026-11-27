@@ -19,6 +19,7 @@ const orderChildren = ({ db, where }: ScopeInput) => [
   // Messages point at their endpoint and order; endpoints at a type and a package (ADR 0085).
   db.inboundMessage.deleteMany({ where }),
   db.inboundEndpoint.deleteMany({ where }),
+  db.accountMapping.deleteMany({ where }),
   db.revenueAccount.deleteMany({ where }),
   db.accountingSettings.deleteMany({ where }),
   db.paymentSettings.deleteMany({ where }),

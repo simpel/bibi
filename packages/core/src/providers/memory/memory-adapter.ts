@@ -1,6 +1,6 @@
 import type { ConnectKind, HostedOnboardingPort, OauthConnectPort } from "../connect-types";
 import type { PaymentMethodKey, ProviderKey } from "../provider-keys";
-import type { ProviderAdapter, SignalsPort } from "../types";
+import type { ProviderAccount, ProviderAdapter, SignalsPort } from "../types";
 import { memoryOauth, memoryOnboarding } from "./memory-connect";
 import { memoryCollect, memoryInvoicing } from "./memory-ports";
 import { type MemoryState, newMemoryState } from "./memory-state";
@@ -18,6 +18,8 @@ export type CreateMemoryProviderInput = {
   /** The invoicing port can book a payment another provider took. */
   registerPayment?: boolean;
   ledger?: boolean;
+  /** What `listAccounts` returns (ADR 0123); none by default. */
+  accounts?: readonly ProviderAccount[];
   signals?: SignalsPort;
 };
 
@@ -40,9 +42,11 @@ export function createMemoryProvider({
   invoicing = false,
   registerPayment = false,
   ledger = false,
+  accounts = [],
   signals,
 }: CreateMemoryProviderInput): MemoryProvider {
   const state = newMemoryState();
+  state.accounts = [...accounts];
   const onboarding = memoryOnboarding({ state });
   const oauth = memoryOauth({ state });
   const fake = state as MemoryProvider;

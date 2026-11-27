@@ -36,6 +36,7 @@ async function removeStates({ context, id }: KindInput) {
 async function removeOwnRows({ context, id }: KindInput) {
   const { db } = context;
   await db.revenueAccount.deleteMany({ where: { entityTypeId: id } });
+  await db.accountMapping.deleteMany({ where: { entityTypeId: id } });
   await db.responsibilityEntityType.deleteMany({ where: { entityTypeId: id } });
   await db.runSheetDefinitionEntityType.deleteMany({ where: { entityTypeId: id } });
   await db.runSheetDefinitionField.deleteMany({ where: { field: { entityTypeId: id } } });

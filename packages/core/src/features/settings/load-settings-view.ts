@@ -3,7 +3,6 @@ import type { Feature } from "../../permissions/features";
 import { canView } from "../../shared/can-view";
 import { visibleTo } from "../../shared/visible-to";
 import { loadBillingDto } from "../billing/to-billing-dto";
-import { loadAccountingSettings } from "../finance/load-settings";
 import {
   EMPTY_ORGANIZATION_PROFILE,
   loadOrganizationProfile,
@@ -20,7 +19,6 @@ const GROUP_OF: Record<
   domainJoin: { group: "organization", feature: "configuration" },
   paymentMethods: { group: "payment", feature: "paymentAccount" },
   deposit: { group: "payment", feature: "paymentAccount" },
-  accounts: { group: "accounting", feature: "finance" },
   seats: { group: "seats", feature: "billing" },
 };
 
@@ -40,10 +38,9 @@ export async function loadSettingsView({
     canView({ context, feature: GROUP_OF[key].feature }),
   );
   const wants = new Set(readable.map((key) => GROUP_OF[key].group));
-  const [profile, payment, accounting, billing] = await Promise.all([
+  const [profile, payment, billing] = await Promise.all([
     wants.has("organization") ? loadOrganizationProfile({ context }) : null,
     wants.has("payment") ? loadPaymentSettings({ context }) : null,
-    wants.has("accounting") ? loadAccountingSettings({ context }) : null,
     wants.has("seats") ? loadBillingDto({ context }) : null,
   ]);
   const { timeZone, emailDomain, domainJoin } = profile ?? EMPTY_ORGANIZATION_PROFILE;
@@ -59,7 +56,6 @@ export async function loadSettingsView({
     keys: readable,
     organization: wants.has("organization") ? { timeZone, emailDomain, domainJoin } : null,
     payment: visibleTo({ context, feature: "paymentAccount", value: payment }),
-    accounting: visibleTo({ context, feature: "finance", value: accounting }),
     seats: visibleTo({ context, feature: "billing", value: seats }),
   };
 }

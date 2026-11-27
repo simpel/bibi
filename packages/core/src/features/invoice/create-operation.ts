@@ -2,8 +2,8 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
+import { requireMappings } from "../finance/require-mappings";
 import { DEFAULT_INVOICE_DAYS } from "../payment/request-charge";
-import { requireLedger } from "../payment/require-ledger";
 import { checkLinesReadable } from "../quote/check-lines-readable";
 import { checkPricedLines } from "../quote/check-priced-lines";
 import { deriveOrderLines } from "../quote/derive-lines";
@@ -66,7 +66,7 @@ export const createInvoice = defineOperation({
     if (!readable.ok) return readable;
     const dueDate = await checkInvoiceable({ context, input });
     if (!dueDate.ok) return dueDate;
-    const ledger = await requireLedger({ context });
+    const ledger = await requireMappings({ context });
     if (!ledger.ok) return ledger;
     const buyerReference = await invoiceBuyerReference({ context, orderId: input.orderId });
     if (!buyerReference.ok) return buyerReference;

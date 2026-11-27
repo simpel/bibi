@@ -9,8 +9,11 @@ export type ProviderInvoiceRow = {
   /** 0–100. */
   discountPercent: number;
   vatPercent: number;
-  /** Revenue account, or the customer advances account for a deducted deposit. */
-  accountNumber: number;
+  /**
+   * The provider account reference (ADR 0123): the revenue mapping, or the advances mapping for a
+   * deducted deposit. Fortnox: an account number; Spiris: a coding family or a number.
+   */
+  account: string;
   /**
    * On the customer advances account (ADR 0093, 0106): a prepayment invoice's rows and a deducted
    * deposit. Visma codes a row by its article, so these need an article coded to that account.
@@ -22,7 +25,7 @@ const units = ({ minor }: { minor: number }) => minor / 100;
 
 /** A line with one VAT rate keeps its quantity, price and discount; a bundle splits per rate. */
 function lineRows({ line }: { line: InvoiceSnapshotLine }): ProviderInvoiceRow[] {
-  const account = Number(line.revenueAccount);
+  const account = line.revenueAccount;
   if (line.vatRows.length <= 1) {
     return [
       {
@@ -31,7 +34,7 @@ function lineRows({ line }: { line: InvoiceSnapshotLine }): ProviderInvoiceRow[]
         price: units({ minor: line.unitPriceMinor }),
         discountPercent: line.discountPercent,
         vatPercent: line.vatRatePercent,
-        accountNumber: account,
+        account,
         advance: false,
       },
     ];
@@ -42,12 +45,12 @@ function lineRows({ line }: { line: InvoiceSnapshotLine }): ProviderInvoiceRow[]
     price: units({ minor: row.totalExclVatMinor }),
     discountPercent: 0,
     vatPercent: row.vatRatePercent,
-    accountNumber: account,
+    account,
     advance: false,
   }));
 }
 
-type DeductionInput = { deduction: InvoiceSnapshotDeduction; account: number };
+type DeductionInput = { deduction: InvoiceSnapshotDeduction; account: string };
 
 /**
  * A deducted deposit as rows of quantity −1 on the customer advances account (ADR 0093, 0106):
@@ -58,7 +61,7 @@ type DeductionInput = { deduction: InvoiceSnapshotDeduction; account: number };
 function deductionRows({ deduction, account }: DeductionInput): ProviderInvoiceRow[] {
   const { description } = deduction;
   const parts = vatParts({ vatRows: deduction.vatRows });
-  const row = { quantity: -1, discountPercent: 0, accountNumber: account, advance: true };
+  const row = { quantity: -1, discountPercent: 0, account, advance: true };
   if (parts.length === 0) {
     return [{ ...row, description, price: units({ minor: deduction.amountMinor }), vatPercent: 0 }];
   }
@@ -76,10 +79,10 @@ function deductionRows({ deduction, account }: DeductionInput): ProviderInvoiceR
  * lines are on the advances account too, so they are advance rows. Fortnox and Visma.
  */
 export function invoiceRows({ invoice }: { invoice: InvoiceSnapshot }): ProviderInvoiceRow[] {
-  const account = Number(invoice.advancesAccount);
+  const account = invoice.advancesAccount;
   const sold = invoice.lines
     .flatMap((line) => lineRows({ line }))
-    .map((row) => ({ ...row, advance: row.accountNumber === account }));
+    .map((row) => ({ ...row, advance: row.account === account }));
   const paid = invoice.deductions.flatMap((deduction) => deductionRows({ deduction, account }));
   return [...sold, ...paid];
 }

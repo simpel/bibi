@@ -1,14 +1,12 @@
 import type { ProviderConnection } from "@bibi/db";
-import { z } from "zod";
 import { PAYMENT_METHODS, type ProviderKey } from "../../providers/provider-keys";
 import { findProvider, takesMethod } from "../../providers/registry";
 import type { ProviderAdapter } from "../../providers/types";
 import { connectFieldsOf } from "./connect-fields";
-import {
-  type IntegrationCapabilities,
-  type IntegrationConnectionDto,
-  type IntegrationStatus,
-  SetupIssueSchema,
+import type {
+  IntegrationCapabilities,
+  IntegrationConnectionDto,
+  IntegrationStatus,
 } from "./schema";
 
 export type ToIntegrationDtoInput = {
@@ -32,18 +30,15 @@ function capabilitiesOf({ adapter }: { adapter: ProviderAdapter | null }): Integ
   return { methods, invoicing: Boolean(adapter.invoicing), ledger: adapter.ledger };
 }
 
-const SetupIssuesSchema = z.array(SetupIssueSchema);
-
-/** The last setup check, only while the connection works; stored JSON that no longer parses reads as none. */
-function setupOf({ row, status }: { row: ProviderConnection; status: IntegrationStatus }) {
-  const issues = SetupIssuesSchema.safeParse(row.setupIssues);
-  if (status !== "CONNECTED" || !row.setupCheckedAt || !issues.success) {
-    return { setupCheckedAt: null, setupIssues: [] };
-  }
-  return { setupCheckedAt: row.setupCheckedAt, setupIssues: issues.data };
+/** When the accounts were last read, only while the connection works. */
+function syncedOf({ row, status }: { row: ProviderConnection; status: IntegrationStatus }) {
+  return status === "CONNECTED" ? row.chartSyncedAt : null;
 }
 
-/** No row means the provider was never connected. Sealed secrets and OAuth state stay out. */
+/**
+ * No row means the provider was never connected. Sealed secrets and OAuth state stay out.
+ * `setupIssues` is derived from the mappings by `loadIntegrationDto`; here it is empty.
+ */
 export function toIntegrationDto({
   row,
   organizationId,
@@ -67,7 +62,7 @@ export function toIntegrationDto({
       organizationNumber: null,
       connectedAt: null,
       updatedAt: null,
-      setupCheckedAt: null,
+      accountsSyncedAt: null,
       setupIssues: [],
     };
   }
@@ -80,6 +75,7 @@ export function toIntegrationDto({
     organizationNumber: row.externalOrgNumber,
     connectedAt: row.connectedAt,
     updatedAt: row.updatedAt,
-    ...setupOf({ row, status }),
+    accountsSyncedAt: syncedOf({ row, status }),
+    setupIssues: [],
   };
 }

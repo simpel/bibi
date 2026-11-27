@@ -6,10 +6,11 @@ import type { ExternalInput } from "../../operations/types";
 import { toTokenData } from "../../providers/oauth/token-data";
 import { oauthPortOf } from "../../providers/registry";
 import { nowOf } from "../../time/now";
+import { loadIntegrationDto } from "./integration-dto";
 import { checkOneLedger, moveInvoiceRoute } from "./one-ledger";
 import { findPendingAuthorization, staleAuthorization } from "./pending-authorization";
 import type { IntegrationCompleteConnectInput, IntegrationConnectionDto } from "./schema";
-import { runSetupCheck } from "./setup-check";
+import { runSyncAccounts } from "./sync-accounts";
 import { toIntegrationDto } from "./to-integration-dto";
 
 type CompleteInput = ExternalInput<IntegrationCompleteConnectInput, IntegrationConnectionDto>;
@@ -92,14 +93,14 @@ export async function completeAfterCommit({
   const { organizationId } = context;
   const { provider } = input;
   await moveInvoiceRoute({ context, provider });
-  // The first check of the accounts (ADR 0108); a provider that cannot be read now still connects.
-  const checked = await runSetupCheck({ context, row: connected });
-  if (!checked.ok) {
-    getLogger().warn({ event: "integration.setupCheckFailed", provider, err: checked.error });
+  // The first read of the accounts (ADR 0123); a provider that cannot be read now still connects.
+  const synced = await runSyncAccounts({ context, row: connected });
+  if (!synced.ok) {
+    getLogger().warn({ event: "integration.syncAccountsFailed", provider, err: synced.error });
   }
-  const after = toIntegrationDto({
-    row: checked.ok ? checked.value : connected,
-    organizationId,
+  const after = await loadIntegrationDto({
+    context,
+    row: synced.ok ? synced.value : connected,
     provider,
   });
   context.recordChange({

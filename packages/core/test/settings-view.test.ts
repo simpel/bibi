@@ -23,20 +23,19 @@ describe("settings view (ADR 0071)", () => {
     expect(asked.keys).toEqual(["deposit", "timeZone"]);
     expect(asked.payment).toMatchObject({ depositPercent: 30 });
     expect(asked.organization?.timeZone).toEqual(expect.any(String));
-    expect(asked).toMatchObject({ accounting: null, seats: null });
+    expect(asked).toMatchObject({ seats: null });
   });
 
   it("gives every setting an admin may read when none are asked", async () => {
     const all = await view({ context: testContext() });
-    expect(all.keys).toHaveLength(6);
-    expect(all.accounting?.advancesAccount).toEqual(expect.any(String));
+    expect(all.keys).toHaveLength(5);
     expect(all.seats?.included).toEqual(expect.any(Number));
   });
 
   it("leaves out settings whose feature the caller cannot read", async () => {
     const member = testContext({ role: "member" });
-    const asked = await view({ context: member, keys: ["timeZone", "accounts", "seats"] });
+    const asked = await view({ context: member, keys: ["timeZone", "seats"] });
     expect(asked.keys).toEqual(["timeZone"]);
-    expect(asked).toMatchObject({ accounting: null, seats: null });
+    expect(asked).toMatchObject({ seats: null });
   });
 });

@@ -1,8 +1,8 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { listProviders } from "../../providers/registry";
+import { loadIntegrationDto } from "./integration-dto";
 import { IntegrationListInputSchema, IntegrationListOutputSchema } from "./schema";
-import { toIntegrationDto } from "./to-integration-dto";
 
 export const listIntegrations = defineOperation({
   name: "integration.list",
@@ -18,14 +18,15 @@ export const listIntegrations = defineOperation({
   entityType: "integrationConnection",
   handler: async ({ context }) => {
     const rows = await context.db.providerConnection.findMany({});
-    const { organizationId } = context;
     const providers = listProviders().map((adapter) => adapter.key);
-    const items = providers.map((provider) =>
-      toIntegrationDto({
-        row: rows.find((row) => row.provider === provider) ?? null,
-        organizationId,
-        provider,
-      }),
+    const items = await Promise.all(
+      providers.map((provider) =>
+        loadIntegrationDto({
+          context,
+          row: rows.find((row) => row.provider === provider) ?? null,
+          provider,
+        }),
+      ),
     );
     return ok({ value: { items } });
   },

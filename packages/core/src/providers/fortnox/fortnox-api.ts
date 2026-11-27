@@ -30,7 +30,7 @@ const toRow = ({ row }: { row: FortnoxInvoiceRow }) => ({
   Discount: row.discountPercent,
   DiscountType: "PERCENT",
   VAT: row.vatPercent,
-  AccountNumber: row.accountNumber,
+  AccountNumber: Number(row.account),
 });
 
 type ListedPayment = z.infer<typeof PaymentsSchema>["InvoicePayments"][number];

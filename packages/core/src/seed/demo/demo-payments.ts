@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { getEnv } from "@bibi/config";
 import { z } from "zod";
 import { ok, type Result } from "../../errors/result";
+import { BAS_ACCOUNTS } from "../../providers/memory/bas-accounts";
 import { createMemoryProvider, type MemoryProvider } from "../../providers/memory/memory-adapter";
 import type { ProviderKey } from "../../providers/provider-keys";
 import { providersWith, setProviderAdapter } from "../../providers/registry";
@@ -77,6 +78,8 @@ function installFakes(): Installed {
       ledger: true,
       // Both book card and Swish payments taken in Bibi (ADR 0100, 0106).
       registerPayment: true,
+      // A BAS chart: a new connection maps Deposits and Default revenue to it (ADR 0123).
+      accounts: BAS_ACCOUNTS,
     });
     install({ key, fake: ledger });
     installed.push(key);

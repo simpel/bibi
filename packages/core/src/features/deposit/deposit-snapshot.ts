@@ -6,7 +6,7 @@ import type { InvoiceSnapshot, InvoiceSnapshotLine } from "../../providers/types
 import { loadZoneOfVenue } from "../../shared/time-zones";
 import { toIsoDate } from "../../time/plain-date";
 import { toZonedParts } from "../../time/zoned-time";
-import { loadAccountingSettings } from "../finance/load-settings";
+import { requireConnectionMappings } from "../finance/require-mappings";
 import { invoiceBuyerReference } from "../invoice/buyer-reference";
 import type { ProviderCallContext } from "../invoice/invoice-provider";
 import { buyerOf, ORDER_FOR_PROVIDER } from "../invoice/invoice-snapshot";
@@ -73,11 +73,16 @@ export async function toDepositSnapshot({
   context,
   deposit,
 }: ToDepositSnapshotInput): Promise<Result<InvoiceSnapshot>> {
-  const [settings, zoneOf, buyerReference] = await Promise.all([
-    loadAccountingSettings({ context }),
+  const [required, zoneOf, buyerReference] = await Promise.all([
+    requireConnectionMappings({
+      context,
+      connectionId: deposit.connectionId ?? "",
+      provider: deposit.provider ?? "the accounting system",
+    }),
     loadZoneOfVenue({ context }),
     invoiceBuyerReference({ context, orderId: deposit.orderId }),
   ]);
+  if (!required.ok) return required;
   if (!buyerReference.ok) return buyerReference;
   const timeZone = zoneOf({ venue: null });
   return ok({
@@ -88,9 +93,9 @@ export async function toDepositSnapshot({
       reference: `Order #${deposit.order.reference}, deposit`,
       buyerReference: buyerReference.value,
       customer: buyerOf({ order: deposit.order }),
-      lines: prepaymentLines({ deposit, account: settings.advancesAccount }),
+      lines: prepaymentLines({ deposit, account: required.value.advances }),
       deductions: [],
-      advancesAccount: settings.advancesAccount,
+      advancesAccount: required.value.advances,
     },
   });
 }

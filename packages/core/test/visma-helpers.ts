@@ -75,16 +75,22 @@ export function vismaCompany({ stub, advances = true }: { stub: VismaStub; advan
       return { json: { Name: "Venue AB", CorporateIdentityNumber: "556677-8899" } };
     if (path === "/termsofpayments") return { json: { Data: [{ Id: "t30", NumberOfDays: 30 }] } };
     if (path === "/units") return { json: { Data: [{ Id: "unit-st" }] } };
-    if (path === "/articleaccountcodings") {
+    if (path.startsWith("/articleaccountcodings")) {
       const coding = ({ rate, account }: { rate: number; account: number }) => ({
         Id: `coding-${rate}-${account}`,
+        Name: `${account === 2420 ? "Förskott" : "Tjänster"} ${rate}% moms`,
         VatRatePercent: rate / 100,
         IsActive: true,
         DomesticSalesSubjectToVatAccountNumber: account,
       });
       const advance = advances ? [25, 12].map((rate) => coding({ rate, account: 2420 })) : [];
       const sales = [25, 12, 6].map((rate) => coding({ rate, account: 3001 }));
-      return { json: { Data: [...advance, ...sales] } };
+      return {
+        json: {
+          Data: [...advance, ...sales],
+          Meta: { CurrentPage: 1, PageSize: 100, TotalNumberOfPages: 1 },
+        },
+      };
     }
     if (call.method === "GET" && path.includes("$filter")) return { json: { Data: [] } };
     if (call.method === "POST") {

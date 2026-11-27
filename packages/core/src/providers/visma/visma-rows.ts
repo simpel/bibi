@@ -40,8 +40,8 @@ export async function toVismaRows({
   const articles = new Map<string, string>();
   const out: VismaRow[] = [];
   for (const row of rows) {
-    const kind: RowKind = { advance: row.advance, account: row.accountNumber };
-    const key = `${row.advance ? "adv" : "vat"}:${row.vatPercent}:${row.accountNumber}`;
+    const kind: RowKind = { advance: row.advance, account: row.account };
+    const key = `${row.advance ? "adv" : "vat"}:${row.vatPercent}:${row.account}`;
     let article = articles.get(key);
     if (!article) {
       const found = await articleFor({

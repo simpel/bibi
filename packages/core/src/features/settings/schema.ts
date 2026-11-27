@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { BillingSeatsSchema } from "../billing/schema";
-import { AccountingSettingsSchema } from "../finance/settings-schema";
 import { OrganizationProfileSchema } from "../organization-profile/schema";
 import { PaymentSettingsSchema } from "../payment-account/settings-schema";
 
@@ -13,7 +12,6 @@ export const SETTING_KEYS = [
   "domainJoin",
   "paymentMethods",
   "deposit",
-  "accounts",
   "seats",
 ] as const;
 
@@ -22,8 +20,7 @@ export const SettingKeySchema = z
   .describe(
     "timeZone: the organization's time zone. domainJoin: colleagues at the email domain join " +
       "by themselves. paymentMethods: which connected provider takes each payment method " +
-      "(card, Swish, invoice). deposit: the deposit rule. accounts: the advances and revenue " +
-      "accounts rows raised in the accounting system post to. seats: how seats are added and " +
+      "(card, Swish, invoice). deposit: the deposit rule. seats: how seats are added and " +
       "how many extra seats are paid for",
   );
 
@@ -60,9 +57,6 @@ export const SettingsViewSchema = z.object({
   ),
   payment: PaymentSettingsSchema.nullable().describe(
     "paymentMethods and deposit; null when not asked or without paymentAccount:read",
-  ),
-  accounting: AccountingSettingsSchema.nullable().describe(
-    "accounts; null when not asked or without finance:read",
   ),
   seats: SettingsSeatsSchema.nullable().describe(
     "seats; null when not asked or without billing:read",

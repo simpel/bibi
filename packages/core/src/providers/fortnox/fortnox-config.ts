@@ -12,8 +12,8 @@ export const fortnoxTokenUrl = () => authUrl({ path: "token" });
 export const fortnoxRevokeUrl = () => authUrl({ path: "revoke" });
 export const fortnoxApiUrl = () => `${trim({ url: getEnv().FORTNOX_API_BASE_URL ?? "" })}/3`;
 
-/** The company lookup and invoicing (ADR 0087, 0090); a scope change needs a reconnect. */
-export const FORTNOX_SCOPE = "companyinformation invoice customer payment";
+/** The company lookup, invoicing and the chart of accounts (ADR 0087, 0090, 0123); a scope change needs a reconnect. */
+export const FORTNOX_SCOPE = "companyinformation invoice customer payment bookkeeping";
 
 /** Fortnox refresh tokens live 45 days from issue and rotate on every refresh. */
 export const FORTNOX_REFRESH_TTL_MS = 45 * 24 * 60 * 60 * 1000;

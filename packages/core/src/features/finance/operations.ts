@@ -9,10 +9,10 @@ import { monthly, revenueByType, vatByRate } from "./aggregate";
 import { aging } from "./aging";
 import { financeTrends } from "./finance-trends";
 import { loadCashInPeriod, loadInvoicedInPeriod, loadOpenInvoices } from "./load-facts";
+import { listAccountMappings, setAccountMapping } from "./mapping-operations";
 import { outcomes } from "./outcomes";
 import { resolvePeriod } from "./period";
 import { FinanceOverviewInputSchema, FinanceOverviewSchema } from "./schema";
-import { getAccountingSettings, updateAccountingSettings } from "./settings-operations";
 
 const sum = ({ values }: { values: readonly number[] }) => values.reduce((a, b) => a + b, 0);
 
@@ -95,6 +95,6 @@ export const financeOverview = defineOperation({
  * The financials and the accounts provider rows post to (ADR 0077). The SIE export is gone: the
  * accounting system keeps the books (ADR 0106).
  */
-export const financeOperations = [financeOverview, getAccountingSettings, updateAccountingSettings];
+export const financeOperations = [financeOverview, listAccountMappings, setAccountMapping];
 
-export { getAccountingSettings, updateAccountingSettings };
+export { listAccountMappings, setAccountMapping };

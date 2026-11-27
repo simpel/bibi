@@ -70,9 +70,9 @@ export const disconnectIntegration = defineOperation({
         oauthStateHash: null,
         codeVerifierSealed: null,
         oauthStartedAt: null,
-        // What the last check found is about the connection that ends here (ADR 0108).
-        setupCheckedAt: null,
-        setupIssues: Prisma.DbNull,
+        // The accounts read are about the connection that ends here (ADR 0108, 0123).
+        chart: Prisma.DbNull,
+        chartSyncedAt: null,
       },
     });
     const after = toIntegrationDto({ row, organizationId, provider });

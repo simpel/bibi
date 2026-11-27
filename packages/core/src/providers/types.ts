@@ -97,7 +97,7 @@ export type CollectPort = {
   refundStatus?(input: RefundStatusInput): Promise<Result<RefundState>>;
 };
 
-/** One frozen invoice line with the revenue account the export posts it to (ADR 0077). */
+/** One frozen invoice line with the provider account reference it is booked to (ADR 0123). */
 export type InvoiceSnapshotLine = {
   name: string;
   quantity: number;
@@ -184,23 +184,29 @@ export type CreditStatusInput = AttemptRefInput & {
   known: readonly string[];
 };
 
-/** The accounts and VAT rates Bibi books with, which a ledger provider must be set up for. */
-export type SetupNeeds = {
-  advancesAccount: string;
-  /** The default revenue account and every mapped one, once each. */
-  revenueAccounts: readonly string[];
-  /** The VAT rates of the organization's items, once each. */
-  vatRates: readonly number[];
-};
-
-/** One thing a setup check found missing at the provider (ADR 0108). */
+/** One thing wrong between a mapping and the provider's accounts (ADR 0123), derived on read. */
 export type SetupIssue = {
   code: SetupIssueCode;
+  /** The mapped reference the problem is about; null when it is about a VAT rate. */
   account: string | null;
   vatPercent: number | null;
 };
 
-export type CheckSetupInput = { auth: ProviderAuth; needs: SetupNeeds };
+/**
+ * One account of the accounting system as Bibi can map to it (ADR 0123). `account` is the
+ * reference stored on a mapping: Fortnox the account number, Spiris a coding family. `accounts`
+ * (Spiris) lists the sales accounts under a family, so a mapping migrated from a number finds it.
+ */
+export type ProviderAccount = {
+  account: string;
+  name: string;
+  active: boolean;
+  /** Spiris: the VAT rates (whole percent) the family has a coding for; [] for Fortnox. */
+  vatRates: number[];
+  accounts: string[];
+};
+
+export type ListAccountsInput = { auth: ProviderAuth };
 
 /** Raising invoices in the provider (ADR 0100). Every call runs after the commit (ADR 0058). */
 export type InvoicingPort = {
@@ -217,10 +223,10 @@ export type InvoicingPort = {
   /** Books a payment another provider took (card, Swish) on the provider's invoice. */
   registerPayment?(input: RegisterPaymentInput): Promise<Result<ProviderReference>>;
   /**
-   * Reads whether the provider is set up for the accounts Bibi books to (ADR 0108). Reading
-   * only: nothing is created. Without it the provider has nothing to check.
+   * Reads the accounts Bibi can map to (ADR 0123). Reading only: nothing is created. Without it
+   * the provider has nothing to map.
    */
-  checkSetup?(input: CheckSetupInput): Promise<Result<SetupIssue[]>>;
+  listAccounts?(input: ListAccountsInput): Promise<Result<ProviderAccount[]>>;
 };
 
 /** A verified inbound delivery: its event id and what it means for Bibi. */

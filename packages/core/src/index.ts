@@ -209,6 +209,7 @@ export * from "./providers/fortnox/stream/tenants";
 export * from "./providers/memory/e2e-providers";
 export * from "./providers/memory/memory-adapter";
 export { getAccessToken } from "./providers/oauth/access-token";
+export * from "./providers/memory/bas-accounts";
 export { PAYMENT_METHODS, PROVIDER_KEYS } from "./providers/provider-keys";
 export * from "./providers/receive-webhook";
 export * from "./providers/registry";

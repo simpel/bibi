@@ -1,5 +1,5 @@
 import { ok, type Result } from "../../errors/result";
-import { updateAccountingSettings } from "../../features/finance/settings-operations";
+import { setAccountMapping } from "../../features/finance/mapping-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { missing } from "./seed-fields";
@@ -8,8 +8,8 @@ import type { DemoOrg } from "./types";
 export type SeedDemoFinanceInput = { context: ExecuteContext; org: DemoOrg };
 
 /**
- * ADR 0077: the organization's revenue accounts per item type (BAS defaults otherwise), which the
- * accounting system's invoice rows post to (ADR 0106).
+ * ADR 0123: the item types' own revenue accounts, mapped on the connected accounting system (a
+ * new connection already maps Deposits and Default revenue to the BAS accounts).
  */
 export async function seedDemoFinance({
   context,
@@ -20,13 +20,16 @@ export async function seedDemoFinance({
     where: { base: "ITEM" },
     select: { id: true, name: true },
   });
-  const revenueAccounts = [];
   for (const { type, account } of org.finance.revenueAccounts) {
     const found = types.find((row) => row.name === type);
     if (!found) return missing({ what: `item type ${type}` });
-    revenueAccounts.push({ entityTypeId: found.id, itemId: null, account });
+    const input = {
+      purpose: "ENTITY_TYPE" as const,
+      entityTypeId: found.id,
+      providerAccount: account,
+    };
+    const saved = await execute({ operation: setAccountMapping, input, context });
+    if (!saved.ok) return saved;
   }
-  const input = { revenueAccounts };
-  const saved = await execute({ operation: updateAccountingSettings, input, context });
-  return saved.ok ? ok({ value: true }) : saved;
+  return ok({ value: true });
 }

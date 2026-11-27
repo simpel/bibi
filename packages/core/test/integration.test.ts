@@ -62,7 +62,7 @@ describe("integration.connect", () => {
     expect(started.authorizeUrl).toMatch(/^https:\/\/apps\.fortnox\.se\/oauth-v1\/auth\?/);
     expect(Object.fromEntries(params)).toMatchObject({
       client_id: "client-id",
-      scope: "companyinformation invoice customer payment",
+      scope: "companyinformation invoice customer payment bookkeeping",
       access_type: "offline",
       response_type: "code",
       account_type: "service",

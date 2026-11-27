@@ -8,18 +8,19 @@ import { depositOperations } from "./features/deposit/operations";
 import {
   financeOperations,
   financeOverview,
-  getAccountingSettings,
-  updateAccountingSettings,
+  listAccountMappings,
+  setAccountMapping,
 } from "./features/finance/operations";
 import { applyIntegrationSignal } from "./features/integration/apply-signal-operation";
 import {
-  checkIntegrationSetup,
   completeIntegrationConnect,
   connectIntegration,
   disconnectIntegration,
   integrationOperations,
+  listIntegrationAccounts,
   listIntegrations,
   refreshExpiringIntegrations,
+  syncIntegrationAccounts,
 } from "./features/integration/operations";
 import { applyInvoiceSignal } from "./features/invoice/apply-signal-operation";
 import {
@@ -62,27 +63,28 @@ export const moneyOperations = [
 export {
   applyIntegrationSignal,
   applyInvoiceSignal,
-  checkIntegrationSetup,
   completeIntegrationConnect,
   connectIntegration,
   createInvoice,
   creditInvoice,
   disconnectIntegration,
   financeOverview,
-  getAccountingSettings,
   getCreditNote,
   getInvoice,
   invoiceOperations,
+  listAccountMappings,
   listCreditNotes,
+  listIntegrationAccounts,
   listIntegrations,
   listInvoices,
   refreshExpiringIntegrations,
   retryCredits,
   retryRefunds,
   sendInvoice,
+  setAccountMapping,
   startPaymentAttempt,
   startPublicAttempt,
+  syncIntegrationAccounts,
   syncInvoice,
-  updateAccountingSettings,
   voidInvoice,
 };

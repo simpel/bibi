@@ -42,19 +42,30 @@ export const IntegrationCapabilitiesSchema = z.object({
   ledger: z.boolean().describe("It keeps the books for what it invoices (ADR 0106)"),
 });
 
-/** One thing the last setup check found at the accounting system (ADR 0108). */
+/** One thing wrong between Bibi's mappings and the accounting system's accounts (ADR 0123). */
 export const SetupIssueSchema = z.object({
   code: z
     .enum(SETUP_ISSUE_CODES)
     .describe(
-      "ACCOUNT_MISSING: an account Bibi books to is not in the system's chart (or inactive). " +
-        "ADVANCES_CODING_MISSING: no account coding at `vatPercent` books to the advances " +
-        "account `account`, so deposits there fail. REVENUE_CODING_MISSING: no revenue coding at " +
-        "`vatPercent`, so invoices at that rate fail. ACCOUNT_NOT_CODED: no coding books to the " +
-        "mapped revenue account `account`, so its rows use the system's default coding.",
+      "ACCOUNT_MISSING: a mapped account is not in the system's account list (or inactive), so " +
+        "invoices that use it fail. ADVANCES_CODING_MISSING: the account mapped for Deposits has " +
+        "no account coding at `vatPercent`, so deposits at that rate fail. REVENUE_CODING_MISSING: " +
+        "the mapped revenue account has no coding at `vatPercent`, so invoices at that rate fail. " +
+        "ACCOUNTS_UNAVAILABLE: the system's accounts could not be read (reconnect it).",
     ),
-  account: z.string().nullable(),
+  account: z.string().nullable().describe("The mapped reference the problem is about"),
   vatPercent: z.number().nullable(),
+});
+
+/** One account of the accounting system Bibi can map to (ADR 0123). */
+export const ProviderAccountSchema = z.object({
+  account: z.string().describe("The reference to store on a mapping (Fortnox: the account number)"),
+  name: z.string(),
+  active: z.boolean(),
+  vatRates: z
+    .array(z.number())
+    .describe("Spiris: the VAT rates (whole percent) a coding family exists for; else []"),
+  accounts: z.array(z.string()).describe("Spiris: the sales accounts under a coding family"),
 });
 
 /** One provider's connection for the organization (ADR 0087). Tokens never appear here. */
@@ -77,16 +88,18 @@ export const IntegrationConnectionSchema = z.object({
   organizationNumber: z.string().nullable(),
   connectedAt: z.date().nullable(),
   updatedAt: z.date().nullable(),
-  setupCheckedAt: z
+  accountsSyncedAt: z
     .date()
     .nullable()
     .describe(
-      "When integration.checkSetup last read the provider's accounts; null before the first " +
-        "check, while not CONNECTED and for a provider with nothing to check.",
+      "When integration.syncAccounts last read the accounting system's accounts; null before " +
+        "the first read, while not CONNECTED and for a provider with nothing to map.",
     ),
   setupIssues: z
     .array(SetupIssueSchema)
-    .describe("What the last check found missing; [] when it found nothing or never ran."),
+    .describe(
+      "What is wrong between the mappings and the system's accounts, derived now; [] when fine.",
+    ),
 });
 
 export const IntegrationListInputSchema = z.object({});
@@ -119,7 +132,20 @@ export const IntegrationConnectOutputSchema = IntegrationConnectionSchema.extend
 
 export const IntegrationDisconnectInputSchema = z.object({ provider: IntegrationProviderSchema });
 
-export const IntegrationCheckSetupInputSchema = z.object({ provider: IntegrationProviderSchema });
+export const IntegrationSyncAccountsInputSchema = z.object({ provider: IntegrationProviderSchema });
+
+export const IntegrationAccountsInputSchema = z.object({ provider: IntegrationProviderSchema });
+
+export const IntegrationAccountsSchema = z.object({
+  provider: IntegrationProviderSchema,
+  syncedAt: z.date().nullable().describe("Null before the first read"),
+  readable: z
+    .boolean()
+    .describe(
+      "False when the system refused the account list (a Fortnox token without the bookkeeping scope: reconnect)",
+    ),
+  accounts: z.array(ProviderAccountSchema),
+});
 
 export const IntegrationCompleteConnectInputSchema = z.object({
   provider: IntegrationProviderSchema,
@@ -144,7 +170,10 @@ export type IntegrationConnectionDto = z.infer<typeof IntegrationConnectionSchem
 export type IntegrationConnectInput = z.infer<typeof IntegrationConnectInputSchema>;
 export type IntegrationConnectOutput = z.infer<typeof IntegrationConnectOutputSchema>;
 export type IntegrationDisconnectInput = z.infer<typeof IntegrationDisconnectInputSchema>;
-export type IntegrationCheckSetupInput = z.infer<typeof IntegrationCheckSetupInputSchema>;
+export type IntegrationSyncAccountsInput = z.infer<typeof IntegrationSyncAccountsInputSchema>;
+export type IntegrationAccountsInput = z.infer<typeof IntegrationAccountsInputSchema>;
+export type IntegrationAccountsDto = z.infer<typeof IntegrationAccountsSchema>;
+export type ProviderAccountDto = z.infer<typeof ProviderAccountSchema>;
 export type IntegrationCompleteConnectInput = z.infer<typeof IntegrationCompleteConnectInputSchema>;
 export type IntegrationRefreshExpiringOutput = z.infer<
   typeof IntegrationRefreshExpiringOutputSchema

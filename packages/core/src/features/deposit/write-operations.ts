@@ -3,10 +3,10 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
+import { requireMappings } from "../finance/require-mappings";
 import { moveReceivable } from "../payment/move-receivable";
 import { loadChargeableOrder } from "../payment/payment-preconditions";
 import { receivableMoveDates } from "../payment/receivable-lifecycle";
-import { requireLedger } from "../payment/require-ledger";
 import type { ReceivableStatus } from "../payment/settlement-schema";
 import { creditDepositAtProvider, issueDepositInProvider, ledgerRouteOf } from "./deposit-provider";
 import { depositVatRows } from "./deposit-vat";
@@ -33,7 +33,7 @@ export const createDeposit = defineOperation({
   handler: async ({ input, context }) => {
     const order = await loadChargeableOrder({ context, orderId: input.orderId });
     if (!order.ok) return order;
-    const ledger = await requireLedger({ context });
+    const ledger = await requireMappings({ context });
     if (!ledger.ok) return ledger;
     const { orderId, amountMinor } = input;
     const row = await context.db.deposit.create({

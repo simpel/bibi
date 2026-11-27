@@ -7,7 +7,10 @@ type Authed = { accessToken: string };
 
 /** A paged eAccounting list: `{ Meta, Data: [...] }`. */
 export const paged = <T extends z.ZodType>({ item }: { item: T }) =>
-  z.object({ Data: z.array(item).default([]) });
+  z.object({
+    Data: z.array(item).default([]),
+    Meta: z.object({ TotalNumberOfPages: z.number().optional() }).optional(),
+  });
 
 const IdSchema = z.object({ Id: z.string().min(1) });
 

@@ -1,17 +1,19 @@
-import { checkIntegrationSetup } from "./check-setup-operation";
+import { listIntegrationAccounts } from "./accounts-operation";
 import { completeIntegrationConnect } from "./complete-connect-operation";
 import { connectIntegration } from "./connect-operation";
 import { disconnectIntegration } from "./disconnect-operation";
 import { listIntegrations } from "./read-operations";
 import { refreshExpiringIntegrations } from "./refresh-expiring-operation";
+import { syncIntegrationAccounts } from "./sync-accounts-operation";
 
 export {
-  checkIntegrationSetup,
   completeIntegrationConnect,
   connectIntegration,
   disconnectIntegration,
+  listIntegrationAccounts,
   listIntegrations,
   refreshExpiringIntegrations,
+  syncIntegrationAccounts,
 };
 
 /**
@@ -22,5 +24,6 @@ export const integrationOperations = [
   listIntegrations,
   connectIntegration,
   disconnectIntegration,
-  checkIntegrationSetup,
+  syncIntegrationAccounts,
+  listIntegrationAccounts,
 ];

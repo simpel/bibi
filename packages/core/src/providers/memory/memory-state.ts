@@ -1,5 +1,10 @@
 import type { ExternalCompany, HostedAccountStatus } from "../connect-types";
-import type { InvoiceSnapshot, ProviderPayment, SetupIssue, StartAttemptInput } from "../types";
+import type {
+  InvoiceSnapshot,
+  ProviderAccount,
+  ProviderPayment,
+  StartAttemptInput,
+} from "../types";
 
 /** An attempt the fake was asked for: a card checkout or an invoice, as Stripe would make it. */
 export type RecordedCharge = Omit<StartAttemptInput, "auth"> & {
@@ -40,8 +45,8 @@ export type MemoryState = {
   /** When set, the next port call of that name is refused definitely (CONFLICT). */
   refusing: Set<string>;
   configured: boolean;
-  /** What `checkSetup` finds missing at the provider (ADR 0108); none by default. */
-  setupIssues: SetupIssue[];
+  /** What `listAccounts` returns (ADR 0123): the fake ledger's accounts; none by default. */
+  accounts: ProviderAccount[];
 };
 
 export const newMemoryState = (): MemoryState => ({
@@ -61,5 +66,5 @@ export const newMemoryState = (): MemoryState => ({
   failing: new Set(),
   refusing: new Set(),
   configured: true,
-  setupIssues: [],
+  accounts: [],
 });

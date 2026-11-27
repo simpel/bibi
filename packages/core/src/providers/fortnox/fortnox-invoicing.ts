@@ -1,10 +1,10 @@
 import { ok, type Result } from "../../errors/result";
 import type { InvoicingPort, ProviderAuth } from "../types";
+import { listFortnoxAccounts } from "./fortnox-accounts";
 import { fortnoxApi } from "./fortnox-api";
 import { fortnoxNotConnected } from "./fortnox-config";
 import { registerFortnoxPayment } from "./fortnox-register-payment";
 import { fortnoxRows } from "./fortnox-rows";
-import { checkFortnoxSetup } from "./fortnox-setup";
 
 type Authed = { auth: ProviderAuth };
 
@@ -19,10 +19,10 @@ function tokenOf({ auth }: Authed): Result<string> {
  * it; registers card and Swish payments on it; cancels or credits it.
  */
 export const fortnoxInvoicing: InvoicingPort = {
-  async checkSetup({ auth, needs }) {
+  async listAccounts({ auth }) {
     const accessToken = tokenOf({ auth });
     if (!accessToken.ok) return accessToken;
-    return checkFortnoxSetup({ accessToken: accessToken.value, needs });
+    return listFortnoxAccounts({ accessToken: accessToken.value });
   },
   async issue({ auth, invoice }) {
     const accessToken = tokenOf({ auth });

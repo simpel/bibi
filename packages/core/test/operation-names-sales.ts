@@ -81,6 +81,6 @@ export const MONEY_NAMES = [
   "myWork.tasks",
   "myWork.dismissTask",
   "finance.overview",
-  "accountingSettings.get",
-  "accountingSettings.update",
+  "accountMapping.list",
+  "accountMapping.set",
 ];

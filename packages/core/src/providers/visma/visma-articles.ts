@@ -8,10 +8,11 @@ type Authed = { accessToken: string };
 
 const accountNumber = z.coerce.number().nullish();
 
-/** An account coding: its VAT rate (0.25) and the sales accounts it posts to. */
+/** An account coding: its name, VAT rate (0.25) and the sales accounts it posts to. */
 const CodingsSchema = paged({
   item: z.object({
     Id: z.string(),
+    Name: z.string().nullish(),
     VatRatePercent: z.coerce.number().nullish(),
     IsActive: z.boolean().nullish(),
     DomesticSalesSubjectToVatAccountNumber: accountNumber,
@@ -23,16 +24,33 @@ export type Coding = z.infer<typeof CodingsSchema>["Data"][number];
 const UnitsSchema = paged({ item: z.object({ Id: z.string() }) });
 
 /**
- * What a row is booked as (ADR 0106, 0108): revenue on the row's `account`, or a customer
- * advance on `account` (a prepayment invoice's rows and a deducted deposit, ADR 0093).
+ * What a row is booked as (ADR 0106, 0123): revenue on the row's `account` reference, or a
+ * customer advance on it (a prepayment invoice's rows and a deducted deposit, ADR 0093). The
+ * reference is a coding family ("Tjänster") or, for mappings migrated from numbers, a sales
+ * account number.
  */
-export type RowKind = { advance: boolean; account: number };
+export type RowKind = { advance: boolean; account: string };
 
 /** The company's codings, read when an article must be created (and only then, once per call). */
 export type LoadCodings = () => Promise<Result<readonly Coding[]>>;
 
 type ArticleInput = Authed & { vatPercent: number; kind: RowKind; codings: LoadCodings };
 type CodingInput = { vatPercent: number; kind: RowKind; codings: readonly Coding[] };
+
+/** A coding's family: its name without the VAT part, "Tjänster 25% moms" → "Tjänster" (ADR 0123). */
+export const codingFamily = ({ coding }: { coding: Coding }) => {
+  const name = (coding.Name ?? "").trim();
+  return name.replace(/\s*\d+(?:[.,]\d+)?\s*%.*$/u, "").trim() || name;
+};
+
+/** A reference that is an account number (migrated mappings), not a family name. */
+export const isAccountNumber = ({ ref }: { ref: string }) => /^\d{3,6}$/.test(ref);
+
+/** Whether the coding is the one a reference names: its sales account, or its family. */
+function codingMatches({ coding, ref }: { coding: Coding; ref: string }) {
+  if (isAccountNumber({ ref })) return salesAccountOf({ coding }) === Number(ref);
+  return codingFamily({ coding }).toLowerCase() === ref.toLowerCase();
+}
 
 export const salesAccountOf = ({ coding }: { coding: Coding }) =>
   (coding.VatRatePercent ?? 0) === 0
@@ -47,21 +65,33 @@ export const onBalanceSheet = ({ account }: { account: number | null | undefined
 export const codingRate = ({ coding }: { coding: Coding }) =>
   Math.round((coding.VatRatePercent ?? -1) * 100);
 
-/** The company's active account codings, read once per call. // Verify against Visma sandbox */
+/** Codings per page; the API answers `Meta.TotalNumberOfPages` (sandbox 2026-11-27). */
+const CODINGS_PAGE_SIZE = 100;
+const MAX_CODING_PAGES = 20;
+
+/** The company's active account codings, every page, read once per call. */
 export async function listCodings({ accessToken }: Authed): Promise<Result<Coding[]>> {
-  const found = await vismaCall({ path: "/articleaccountcodings", accessToken });
-  if (!found.ok) return found;
-  const parsed = CodingsSchema.safeParse(found.value.json);
-  if (found.value.status !== 200 || !parsed.success) {
-    return vismaRefused({ what: "the account codings", response: found.value });
+  const all: Coding[] = [];
+  for (let page = 1; page <= MAX_CODING_PAGES; page += 1) {
+    const path = `/articleaccountcodings?$page=${page}&$pagesize=${CODINGS_PAGE_SIZE}`;
+    const found = await vismaCall({ path, accessToken });
+    if (!found.ok) return found;
+    const parsed = CodingsSchema.safeParse(found.value.json);
+    if (found.value.status !== 200 || !parsed.success) {
+      return vismaRefused({ what: "the account codings", response: found.value });
+    }
+    all.push(...parsed.data.Data);
+    if (page >= (parsed.data.Meta?.TotalNumberOfPages ?? 1)) break;
   }
-  return ok({ value: parsed.data.Data.filter((coding) => coding.IsActive !== false) });
+  return ok({ value: all.filter((coding) => coding.IsActive !== false) });
 }
 
-const advanceMissing = ({ vatPercent, account }: { vatPercent: number; account: number }) =>
-  `Visma has no ${vatPercent} % VAT account coding that books sales to ${account}. Create one ` +
-  `in Visma (Settings → Account codings) so prepayments and their deductions land on customer ` +
-  "advances, then send again.";
+const advanceMissing = ({ vatPercent, account }: { vatPercent: number; account: string }) =>
+  (isAccountNumber({ ref: account })
+    ? `Visma has no ${vatPercent} % VAT account coding that books sales to ${account}.`
+    : `Visma has no ${vatPercent} % VAT account coding for "${account}".`) +
+  " Create one in Visma (Settings → Account codings) so prepayments and their deductions land " +
+  "on customer advances, then send again.";
 
 type Chosen = { id: string; exact: boolean };
 
@@ -74,8 +104,8 @@ type Chosen = { id: string; exact: boolean };
  */
 function codingFor({ vatPercent, kind, codings }: CodingInput): Result<Chosen> {
   const atRate = codings.filter((coding) => codingRate({ coding }) === vatPercent);
-  const books = ({ account }: { account: number }) =>
-    atRate.find((coding) => salesAccountOf({ coding }) === account);
+  const books = ({ account }: { account: string }) =>
+    atRate.find((coding) => codingMatches({ coding, ref: account }));
   if (kind.advance) {
     const match = books({ account: kind.account });
     return match
@@ -100,14 +130,33 @@ async function unitId({ accessToken }: Authed): Promise<Result<string>> {
   return id ? ok({ value: id }) : vismaRefused({ what: "the units", response: found.value });
 }
 
-/** `BIBI-ADV25` for advances, `BIBI-VAT25-3010` on the row's own account, `BIBI-VAT25` on the default. */
+/** A family reference as article-number text: no diacritics or punctuation, `Tjänster` → `Tjanster`. */
+const slugOf = ({ ref }: { ref: string }) =>
+  ref
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^A-Za-z0-9]/g, "")
+    .slice(0, 16);
+
+/**
+ * `BIBI-ADV25` for advances on a numeric reference, `BIBI-ADV25-Tjanster` on a family;
+ * `BIBI-VAT25-3010` on the row's own account, `BIBI-VAT25-Tjanster` on its family, `BIBI-VAT25`
+ * on the default.
+ */
 function numberOf({
   vatPercent,
   kind,
   exact,
 }: Pick<ArticleInput, "vatPercent" | "kind"> & { exact: boolean }) {
-  if (kind.advance) return `BIBI-ADV${vatPercent}`;
-  return exact ? `BIBI-VAT${vatPercent}-${kind.account}` : `BIBI-VAT${vatPercent}`;
+  const tail = isAccountNumber({ ref: kind.account })
+    ? kind.account
+    : slugOf({ ref: kind.account });
+  if (kind.advance) {
+    return isAccountNumber({ ref: kind.account })
+      ? `BIBI-ADV${vatPercent}`
+      : `BIBI-ADV${vatPercent}-${tail}`;
+  }
+  return exact ? `BIBI-VAT${vatPercent}-${tail}` : `BIBI-VAT${vatPercent}`;
 }
 
 async function findArticle({ accessToken, number }: Authed & { number: string }) {

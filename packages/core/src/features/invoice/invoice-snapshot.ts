@@ -1,10 +1,11 @@
+import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import type { InvoiceSnapshot } from "../../providers/types";
 import { loadZoneOfVenue } from "../../shared/time-zones";
 import { toIsoDate } from "../../time/plain-date";
 import { toZonedParts } from "../../time/zoned-time";
 import { revenueAccountResolver } from "../finance/account-map";
-import { loadAccountingSettings } from "../finance/load-settings";
+import { requireConnectionMappings } from "../finance/require-mappings";
 import { asVatRows } from "../quote/order-line-schema";
 
 const day = ({ instant, timeZone }: { instant: Date; timeZone: string }) =>
@@ -72,44 +73,55 @@ export type ToSnapshotInput = { context: OperationContext; invoice: LoadedInvoic
 
 /**
  * The frozen invoice as a provider raises it (ADR 0052, 0100): the lines that count with the
- * revenue account they post to (ADR 0077), the deducted deposits on the customer
- * advances account, and the dates in the organization's zone.
+ * account reference they are booked to (the item type's mapping, else Default revenue, ADR 0123),
+ * the deducted deposits on the Deposits mapping, and the dates in the organization's zone.
+ * CONFLICT when the connection has no Deposits or Default revenue mapping.
  */
 export async function toInvoiceSnapshot({
   context,
   invoice,
-}: ToSnapshotInput): Promise<InvoiceSnapshot> {
-  const [settings, zoneOf] = await Promise.all([
-    loadAccountingSettings({ context }),
+}: ToSnapshotInput): Promise<Result<InvoiceSnapshot>> {
+  const [required, zoneOf] = await Promise.all([
+    requireConnectionMappings({
+      context,
+      connectionId: invoice.connectionId ?? "",
+      provider: invoice.provider ?? "the accounting system",
+    }),
     loadZoneOfVenue({ context }),
   ]);
+  if (!required.ok) return required;
   const timeZone = zoneOf({ venue: null });
-  const accountOf = revenueAccountResolver({ settings });
+  const accountOf = revenueAccountResolver({
+    mappings: required.value.all,
+    defaultRevenue: required.value.defaultRevenue,
+  });
   const { reference } = invoice.order;
   const customer = buyerOf({ order: invoice.order });
-  return {
-    invoiceDate: day({ instant: invoice.sentAt ?? new Date(), timeZone }),
-    dueDate: invoice.dueDate ? day({ instant: invoice.dueDate, timeZone }) : null,
-    currency: invoice.currency,
-    reference: `Order #${reference}`,
-    buyerReference: invoice.buyerReference,
-    customer,
-    lines: invoice.lines
-      .filter((line) => line.inTotal)
-      .map((line) => ({
-        name: line.name,
-        quantity: Number(line.quantity),
-        unitPriceMinor: line.unitPriceMinor,
-        discountPercent: line.discountPercent.toNumber(),
-        vatRatePercent: line.vatRatePercent,
-        vatRows: asVatRows({ value: line.vatRows }),
-        revenueAccount: accountOf({ line }),
+  return ok({
+    value: {
+      invoiceDate: day({ instant: invoice.sentAt ?? new Date(), timeZone }),
+      dueDate: invoice.dueDate ? day({ instant: invoice.dueDate, timeZone }) : null,
+      currency: invoice.currency,
+      reference: `Order #${reference}`,
+      buyerReference: invoice.buyerReference,
+      customer,
+      lines: invoice.lines
+        .filter((line) => line.inTotal)
+        .map((line) => ({
+          name: line.name,
+          quantity: Number(line.quantity),
+          unitPriceMinor: line.unitPriceMinor,
+          discountPercent: line.discountPercent.toNumber(),
+          vatRatePercent: line.vatRatePercent,
+          vatRows: asVatRows({ value: line.vatRows }),
+          revenueAccount: accountOf({ line }),
+        })),
+      deductions: invoice.deductions.map(({ amountMinor, deposit }) => ({
+        description: deposit.description,
+        amountMinor,
+        vatRows: deposit.vatRows,
       })),
-    deductions: invoice.deductions.map(({ amountMinor, deposit }) => ({
-      description: deposit.description,
-      amountMinor,
-      vatRows: deposit.vatRows,
-    })),
-    advancesAccount: settings.advancesAccount,
-  };
+      advancesAccount: required.value.advances,
+    },
+  });
 }
