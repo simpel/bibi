@@ -410,7 +410,7 @@
           },
           "otherAccounting": {
             "question": "Vi använder ett annat bokföringssystem. Hur gör vi?",
-            "answer": "Bibi fungerar med Fortnox och Spiris, som gör era fakturor och sköter bokföringen. Koppla ett av dem under Administration → Integrationer.\nNi använder ett bokföringssystem i taget. För att byta kopplar ni från det första; fakturor som redan skapats där ligger kvar. När ni har anslutit kontrollerar Bibi att kontona den bokför på finns i ert system och listar det som saknas på dess sida: öppna **Inställningar** på det anslutna systemet. Har ni lagt till kontot eller konteringen som saknades? Välj **Kontrollera mot** för att läsa in det på nytt. För att ändra vilka konton Bibi bokför på väljer ni **Ändra konton i Bibi**.\nAndra bokföringssystem stöds inte än. Berätta vilket ni använder så tittar vi på det."
+            "answer": "Bibi fungerar med Fortnox och Spiris, som gör era fakturor och sköter bokföringen. Koppla ett av dem under Administration → Integrationer.\nNi använder ett bokföringssystem i taget. För att byta kopplar ni från det första; fakturor som redan skapats där ligger kvar. När ni har anslutit öppnar ni **Inställningar** på det anslutna systemet och drar en linje från varje användningsområde till det konto det ska bokföras på. **Förskott** och **Standardintäkt** måste vara kopplade; andra artikeltyper använder standardintäkten. Har ni lagt till ett konto i bokföringssystemet? Välj **Uppdatera konton från** för att läsa in det på nytt.\nAndra bokföringssystem stöds inte än. Berätta vilket ni använder så tittar vi på det."
           },
           "paymentMethods": {
             "question": "Kan jag välja vilken tjänst som tar emot kort-, Swish- och fakturabetalningar?",
@@ -442,7 +442,7 @@
           },
           "accounts": {
             "question": "Vilket konto bokförs mina fakturor på, och hur ändrar jag det?",
-            "answer": "Under **Administration → Bokföring** väljer ni vilka konton fakturorna bokförs på. **Intäkter per artikeltyp** ger varje typ ett eget konto; typer utan eget konto använder standardkontot för försäljning.\nPrecis en rad är standard och har märket **Standard**. För att byta öppnar du menyn **…** på en annan rad och väljer **Gör till standard**. För att gå tillbaka till grundkontot väljer du **Gör till standard** på raden **Försäljning (grundkonto)** under Konton. Klicka på ett namn för att ändra dess konto.\nNär ni har anslutit ert bokföringssystem listar dess kort under **Integrationer** de konton som saknas."
+            "answer": "Öppna **Inställningar** på ert anslutna bokföringssystem under Administration → Integrationer. Där drar ni en linje från varje användningsområde (**Förskott**, **Standardintäkt** och en rad per artikeltyp) till det konto det ska bokföras på. Flera områden kan använda samma konto.\n**Förskott** och **Standardintäkt** måste vara kopplade innan ni kan skicka fakturor och förskott. Artikeltyper utan eget konto använder standardintäkten.\nHar ni lagt till eller ändrat ett konto i bokföringssystemet? Välj **Uppdatera konton från** så läser Bibi in dem på nytt. Om något behöver åtgärdas står det under kopplingarna."
           }
         }
       },

@@ -159,15 +159,12 @@
         "phaseId": "Kolumn",
         "statusIds": "Bokningsstatusar",
         "assigneeId": "Ansvarig",
-        "advancesAccount": "Konto för förskott från kunder",
-        "revenueAccount": "Standardkonto för intäkter",
         "depositPercent": "Förskott (procent)",
         "depositMinimumMinor": "Lägsta belopp för förskott (ören)",
         "autoAssignSeats": "Lägg till platser automatiskt",
         "extraSeats": "Extra platser",
         "invoiceProvider": "Fakturaleverantör",
         "paymentOperator": "Betaloperatör",
-        "revenueAccounts": "Intäktskonton per artikeltyp eller artikel",
         "timeZone": "Tidszon",
         "domainJoin": "Gå med via e-postdomän",
         "archiveRetentionDays": "Arkivperiod (dagar)",
@@ -1116,20 +1113,11 @@
       "attention": "{count, plural, one {# konto behöver åtgärdas} other {# konton behöver åtgärdas}}"
     },
     "setup": {
-      "heading": "Konton",
-      "never": "Bibi har inte kontrollerat kontona i {name} än.",
-      "ok": "Alla konton som Bibi bokför på finns i {name}.",
-      "check": "Kontrollera konton",
-      "recheck": "Kontrollera igen",
-      "checking": "Kontrollerar kontona i {name}…",
-      "checkedToast": "Kontona i {name} har kontrollerats.",
-      "checked": "Kontrollerat {date}",
-      "changeInBibi": "Ändra kontona i Bibi",
       "issues": {
-        "ACCOUNT_MISSING": "Konto {account} finns inte i kontoplanen i {name}, eller är inaktivt. Fakturor som använder det misslyckas. Lägg till det i {name} eller välj ett annat konto i Bibi.",
-        "ADVANCES_CODING_MISSING": "{name} saknar en kontering vid {vat} % moms som bokför på kundförskottskontot {account}. Förskott med den momssatsen misslyckas. Lägg till en i {name}.",
-        "REVENUE_CODING_MISSING": "{name} saknar en intäktskontering vid {vat} % moms. Fakturor med den momssatsen misslyckas. Lägg till en i {name}.",
-        "ACCOUNT_NOT_CODED": "Ingen kontering i {name} bokför på konto {account}, så de raderna bokförs på standardkonteringen i {name}. Lägg till en kontering för kontot i {name} om ni vill att de bokförs där."
+        "ACCOUNT_MISSING": "Kontot {account} finns inte i {name}, eller är inaktivt. Fakturor och förskott som använder det misslyckas. Lägg till det i {name} eller koppla om till ett annat konto här.",
+        "ADVANCES_CODING_MISSING": "{name} saknar en kontering för förskott vid {vat} % moms. Förskott med den momssatsen misslyckas. Skapa en kontering i {name} som bokför på kundförskott (2420) och uppdatera sedan kontona här.",
+        "REVENUE_CODING_MISSING": "{name} saknar en kontering för {account} vid {vat} % moms. Fakturor med den momssatsen misslyckas. Skapa den i {name} och uppdatera sedan kontona här.",
+        "ACCOUNTS_UNAVAILABLE": "Bibi kan inte läsa kontona i {name}. Koppla från {name} och anslut igen, så får Bibi behörighet att läsa dem."
       }
     },
     "guide": {
@@ -1191,30 +1179,34 @@
     },
     "detail": {
       "accountsTitle": "Konton",
-      "accountsDescription": "Kontona som Bibi bokför fakturor och förskott på i {name}, och om vart och ett fungerar där.",
+      "accountsDescription": "Dra en linje från varje användningsområde till det konto i {name} som det ska bokföras på.",
       "disconnectTitle": "Koppla från"
     },
     "accounts": {
-      "editInBibi": "Ändra konton i Bibi",
-      "checked": "Kontrollerat {date}. Har ni ändrat något i {name}? Kontrollera igen för att läsa in det på nytt.",
-      "never": "Inte kontrollerat mot {name} än.",
-      "alsoNeeded": "Behövs också i {name}",
-      "empty": "Inga konton.",
-      "columns": {
-        "purpose": "Används till",
-        "account": "Konto",
-        "inSystem": "I {name}"
+      "refresh": "Uppdatera konton från {name}",
+      "refreshing": "Läser in kontona i {name}…",
+      "refreshed": "Kontona från {name} är uppdaterade.",
+      "syncedOn": "Konton inlästa {date}. Har ni ändrat något i {name}? Uppdatera för att läsa in det på nytt.",
+      "never": "Bibi har inte läst in kontona i {name} än.",
+      "saved": "Kontot är kopplat.",
+      "needsAttention": "Behöver åtgärdas",
+      "canvas": {
+        "purposes": "Bibi bokför",
+        "accounts": "Konton i {name}",
+        "required": "Krävs",
+        "inactive": "Inaktivt",
+        "addAccount": "Lägg till konto",
+        "searchAccounts": "Sök konto",
+        "noAccountFound": "Inget konto hittades",
+        "chooseAccount": "Välj konto",
+        "removeLine": "Ta bort koppling",
+        "unmapped": "Inte kopplat"
       },
       "purpose": {
-        "advances": "Förskott (kundförskott)",
-        "revenue": "Intäkt, standard",
+        "advances": "Förskott",
+        "revenueDefault": "Standardintäkt",
+        "revenueDefaultHint": "Används av artikeltyper utan eget konto",
         "revenueType": "Intäkt: {type}"
-      },
-      "checkNow": "Kontrollera mot {name}",
-      "check": {
-        "ok": "Fungerar",
-        "attention": "Behöver åtgärdas",
-        "notChecked": "Inte kontrollerad"
       }
     }
   }

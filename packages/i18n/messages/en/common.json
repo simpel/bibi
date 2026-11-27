@@ -222,7 +222,6 @@
     "members": "Members",
     "orderStatuses": "Statuses",
     "payments": "Payments",
-    "accounting": "Accounting",
     "organization": "Organization",
     "priceLists": "Price lists",
     "assistant": "Assistant",
@@ -733,14 +732,6 @@
         "deposit": {
           "label": "Deposits",
           "keywords": "advance percent minimum amount"
-        },
-        "accounts": {
-          "label": "Accounts",
-          "keywords": "chart of accounts bas vat revenue"
-        },
-        "revenueAccounts": {
-          "label": "Revenue per item type",
-          "keywords": "revenue account item type"
         },
         "apiKeys": {
           "label": "API keys",

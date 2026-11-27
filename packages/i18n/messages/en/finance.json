@@ -124,32 +124,6 @@
     "monthLabel": "{month, select, 1 {jan} 2 {feb} 3 {mar} 4 {apr} 5 {may} 6 {jun} 7 {jul} 8 {aug} 9 {sep} 10 {oct} 11 {nov} 12 {dec} other {}} {year}",
     "accountingSettings": "Accounting settings",
     "openFinancials": "Open financials",
-    "accounting": {
-      "title": "Accounting",
-      "description": "The accounts invoice rows in Fortnox or Spiris post to. Every account has a BAS default.",
-      "saved": "The accounting settings have been saved.",
-      "default": "Default {account}",
-      "isDefault": "Default",
-      "setDefault": "Set as default",
-      "defaultSaved": "The default revenue account is now {account}.",
-      "usesDefault": "Empty uses the default revenue account ({account})",
-      "revenueByTypeHint": "Revenue account per item type. Types without one use the default revenue account. To change the default, choose Set as default on a row.",
-      "empty": "No accounts.",
-      "emptyRevenue": "No item types have their own account. They use the default revenue account.",
-      "add": "Add account",
-      "edit": "Edit account",
-      "editDescription": "Change the account number. The BAS default applies as a hint.",
-      "pickType": "Item type",
-      "columns": {
-        "name": "Name",
-        "account": "Account"
-      },
-      "readOnly": "You can view these settings but not change them.",
-      "fields": {
-        "advancesAccount": "Customer advances",
-        "revenueAccount": "Revenue (base account)"
-      }
-    },
     "kpi": {
       "invoiced": "Invoiced",
       "received": "Received",

@@ -410,7 +410,7 @@
           },
           "otherAccounting": {
             "question": "We use another accounting system. What do we do?",
-            "answer": "Bibi works with Fortnox and Spiris, which make your invoices and keep the books. Connect one of them under Administration → Integrations.\nYou use one accounting system at a time. To switch, disconnect the first one; invoices already made there stay there. After connecting, Bibi checks that the accounts it books to exist in your system and lists anything missing on its page: open **Settings** on the connected system. Added the missing account or coding there? Choose **Check against** to read it again. To change which accounts Bibi books to, choose **Edit accounts in Bibi**.\nOther accounting systems are not supported yet. Tell us which one you use and we will look into it."
+            "answer": "Bibi works with Fortnox and Spiris, which make your invoices and keep the books. Connect one of them under Administration → Integrations.\nYou use one accounting system at a time. To switch, disconnect the first one; invoices already made there stay there. After connecting, open **Settings** on the connected system and drag a line from each purpose to the account it should be booked to. **Deposits** and **Default revenue** must be mapped; other item types use Default revenue. Added an account in your accounting system? Choose **Refresh accounts from** to read it again.\nOther accounting systems are not supported yet. Tell us which one you use and we will look into it."
           },
           "paymentMethods": {
             "question": "Can I choose which service takes card, Swish and invoice payments?",
@@ -442,7 +442,7 @@
           },
           "accounts": {
             "question": "Which account do my invoices book to, and how do I change it?",
-            "answer": "Under **Administration → Accounting** you choose the accounts your invoices book to. **Revenue per item type** gives each type its own account; types without one use the default revenue account.\nExactly one row is the default and shows a **Default** badge. To switch, open the **…** menu on another row and choose **Set as default**. To go back to the base account, choose **Set as default** on the **Revenue (base account)** row under Accounts. Click a name to change its account.\nAfter connecting your accounting system, its card under **Integrations** lists any account it is missing."
+            "answer": "Open **Settings** on your connected accounting system under Administration → Integrations. There you drag a line from each purpose (**Deposits**, **Default revenue** and one row per item type) to the account it should be booked to. Several purposes can use the same account.\n**Deposits** and **Default revenue** must be mapped before you can send invoices and deposits. Item types without their own account use Default revenue.\nAdded or changed an account in your accounting system? Choose **Refresh accounts from** and Bibi reads them again. Anything that needs fixing is listed under the mapping."
           }
         }
       },

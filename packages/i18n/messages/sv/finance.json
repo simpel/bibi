@@ -124,32 +124,6 @@
     "monthLabel": "{month, select, 1 {jan} 2 {feb} 3 {mar} 4 {apr} 5 {maj} 6 {jun} 7 {jul} 8 {aug} 9 {sep} 10 {okt} 11 {nov} 12 {dec} other {}} {year}",
     "accountingSettings": "Bokföringsinställningar",
     "openFinancials": "Öppna ekonomi",
-    "accounting": {
-      "title": "Bokföring",
-      "description": "Konton som fakturaraderna i Fortnox eller Spiris bokförs mot. Alla konton har ett standardvärde enligt BAS.",
-      "saved": "Bokföringsinställningarna har sparats.",
-      "default": "Standard {account}",
-      "isDefault": "Standard",
-      "setDefault": "Gör till standard",
-      "defaultSaved": "Standardkontot för försäljning är nu {account}.",
-      "usesDefault": "Tomt använder standardkontot för försäljning ({account})",
-      "revenueByTypeHint": "Intäktskonto per artikeltyp. Typer utan eget konto använder standardkontot för försäljning. För att byta standard väljer du Gör till standard på en rad.",
-      "empty": "Inga konton.",
-      "emptyRevenue": "Inga artikeltyper har något eget konto. De använder standardkontot för försäljning.",
-      "add": "Lägg till konto",
-      "edit": "Redigera konto",
-      "editDescription": "Ändra kontonumret. Standardvärdet enligt BAS visas som ledtext.",
-      "pickType": "Artikeltyp",
-      "columns": {
-        "name": "Namn",
-        "account": "Konto"
-      },
-      "readOnly": "Du kan se de här inställningarna men inte ändra dem.",
-      "fields": {
-        "advancesAccount": "Förskott från kunder",
-        "revenueAccount": "Försäljning (grundkonto)"
-      }
-    },
     "kpi": {
       "invoiced": "Fakturerat",
       "received": "Inbetalt",

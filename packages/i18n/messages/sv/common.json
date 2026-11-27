@@ -221,7 +221,6 @@
     "commandBar": "Sök eller fråga assistenten",
     "members": "Medlemmar",
     "payments": "Betalningar",
-    "accounting": "Bokföring",
     "organization": "Organisation",
     "orderStatuses": "Bokningsstatusar",
     "priceLists": "Prislistor",
@@ -733,14 +732,6 @@
         "deposit": {
           "label": "Förskott",
           "keywords": "förskott procent minimibelopp"
-        },
-        "accounts": {
-          "label": "Konton",
-          "keywords": "kontoplan bas moms intäkt"
-        },
-        "revenueAccounts": {
-          "label": "Intäktskonto per artikeltyp",
-          "keywords": "intäkt konto artikeltyp"
         },
         "apiKeys": {
           "label": "API-nycklar",
