@@ -375,6 +375,10 @@ export const RELATIONS: RelationMap = {
       "target": "RevenueAccount",
       "list": true
     },
+    "accountMappings": {
+      "target": "AccountMapping",
+      "list": true
+    },
     "group": {
       "target": "ItemTypeGroup",
       "list": false
@@ -382,10 +386,6 @@ export const RELATIONS: RelationMap = {
     "expiryState": {
       "target": "ItemState",
       "list": false
-    },
-    "accountMappings": {
-      "target": "AccountMapping",
-      "list": true
     }
   },
   "FieldDefinition": {
