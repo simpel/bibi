@@ -9,7 +9,6 @@ import {
   type LucideIcon,
   PlugIcon,
   ReceiptIcon,
-  ReceiptTextIcon,
   ShapesIcon,
   TagIcon,
   UsersIcon,
@@ -32,7 +31,6 @@ export type AdminKey =
   | "runSheets"
   | "tableBooking"
   | "payments"
-  | "accounting"
   | "integrations";
 
 export type AdminGroupId = "organization" | "catalog" | "orders" | "money";
@@ -142,12 +140,6 @@ export const ADMIN_GROUPS: readonly AdminGroup[] = [
         icon: CreditCardIcon,
         href: ROUTES.adminPayments,
         ids: ["paymentMethods", "deposit"],
-      }),
-      page({
-        key: "accounting",
-        icon: ReceiptTextIcon,
-        href: ROUTES.adminAccounting,
-        ids: ["accounts", "revenueAccounts"],
       }),
       page({
         key: "integrations",

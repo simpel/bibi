@@ -27,13 +27,13 @@ const entries: SearchableEntry[] = [
     overrides: { id: "timeZone", label: "Tidszon", keywords: "klocka", anchor: "time-zone" },
   }),
   entry({ overrides: { id: "ledger", label: "Stripe", keywords: "kort betalning" } }),
-  entry({ overrides: { id: "accounts", label: "Konton", keywords: "moms bas" } }),
+  entry({ overrides: { id: "deposit", label: "Förskott", keywords: "moms procent" } }),
 ];
 
 describe("searchAdmin", () => {
   it("matches labels, keywords and pages, ignoring case and diacritics", () => {
     expect(searchAdmin({ entries, query: "TIDSZON" }).map((e) => e.id)).toEqual(["timeZone"]);
-    expect(searchAdmin({ entries, query: "moms" }).map((e) => e.id)).toEqual(["accounts"]);
+    expect(searchAdmin({ entries, query: "moms" }).map((e) => e.id)).toEqual(["deposit"]);
     expect(searchAdmin({ entries, query: "general" })).toHaveLength(3);
   });
 

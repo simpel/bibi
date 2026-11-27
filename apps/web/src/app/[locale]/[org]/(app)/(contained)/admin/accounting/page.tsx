@@ -1,24 +1,30 @@
+import { listIntegrations } from "@bibi/core";
 import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
-import { AdminSections } from "@/components/admin/admin-sections";
-import { loadAdminPage } from "@/components/admin/load-admin-page";
-import { AccountingSettings } from "@/features/finance/ui/accounting-settings";
-import { pageTitle } from "@/lib/page-metadata";
+import { redirect } from "@/lib/navigation";
+import { integrationRoute, ROUTES } from "@/lib/routes";
+import { runOperation } from "@/server/run-operation";
 
-type PageProps = { params: Promise<{ locale: string }> };
+type PageProps = { params: Promise<{ locale: string; org: string }> };
 
-export async function generateMetadata({ params }: PageProps) {
-  const { locale } = await params;
-  return pageTitle({ locale, namespace: "nav", key: "accounting" });
-}
-
+/**
+ * Accounts are mapped on the connected accounting system's own settings page (ADR 0123): this old
+ * address goes there, or to the integrations list when none is connected.
+ */
 export default async function AccountingPage({ params }: PageProps) {
-  const locale = resolveLocale({ value: (await params).locale });
+  const { locale: rawLocale, org } = await params;
+  const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
-  const { title, show } = await loadAdminPage({ key: "accounting" });
-  return (
-    <AdminSections title={title}>
-      <AccountingSettings locale={locale} show={show} />
-    </AdminSections>
-  );
+  const list = await runOperation({ operation: listIntegrations, input: {} });
+  const ledger = list.ok
+    ? list.value.items.find(
+        (item) =>
+          item.capabilities.ledger && (item.status === "CONNECTED" || item.status === "EXPIRED"),
+      )
+    : undefined;
+  redirect({
+    href: ledger ? integrationRoute({ provider: ledger.provider }) : ROUTES.adminIntegrations,
+    locale,
+    org,
+  });
 }

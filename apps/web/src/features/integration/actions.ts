@@ -1,13 +1,16 @@
 "use server";
 
 import {
-  checkIntegrationSetup,
+  type AccountMappingListDto,
+  type AccountMappingSetInput,
   connectIntegration,
   disconnectIntegration,
   type IntegrationConnectInput,
   type IntegrationConnectionDto,
   type IntegrationConnectOutput,
   type IntegrationProvider,
+  setAccountMapping,
+  syncIntegrationAccounts,
 } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
@@ -22,15 +25,24 @@ export async function connectIntegrationAction({
   return toActionResult({ result: await runOperation({ operation: connectIntegration, input }) });
 }
 
-export type CheckIntegrationSetupActionInput = { provider: IntegrationProvider };
+export type SyncIntegrationAccountsActionInput = { provider: IntegrationProvider };
 
-/** Reads the accounting system again and stores what it finds (ADR 0108). */
-export async function checkIntegrationSetupAction({
+/** Reads the accounting system's accounts again (ADR 0123). */
+export async function syncIntegrationAccountsAction({
   provider,
-}: CheckIntegrationSetupActionInput): Promise<ActionResult<IntegrationConnectionDto>> {
+}: SyncIntegrationAccountsActionInput): Promise<ActionResult<IntegrationConnectionDto>> {
   return toActionResult({
-    result: await runOperation({ operation: checkIntegrationSetup, input: { provider } }),
+    result: await runOperation({ operation: syncIntegrationAccounts, input: { provider } }),
   });
+}
+
+export type SetAccountMappingActionInput = { input: AccountMappingSetInput };
+
+/** Maps one purpose to an account of the connected accounting system, or removes it (ADR 0123). */
+export async function setAccountMappingAction({
+  input,
+}: SetAccountMappingActionInput): Promise<ActionResult<AccountMappingListDto>> {
+  return toActionResult({ result: await runOperation({ operation: setAccountMapping, input }) });
 }
 
 export type DisconnectIntegrationActionInput = { provider: IntegrationProvider };

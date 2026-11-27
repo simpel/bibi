@@ -3,7 +3,7 @@ import { getEnv } from "@bibi/config";
 import { completeIntegrationConnect, type ProviderKey } from "@bibi/core";
 import { DEFAULT_LOCALE, type Locale, resolveLocale } from "@bibi/i18n";
 import { withRequestLogging } from "@bibi/logger";
-import { ROUTES } from "@/lib/routes";
+import { integrationRoute, ROUTES } from "@/lib/routes";
 import { providerKeyOf } from "./provider-key";
 import { runOperation } from "./run-operation";
 import { getSessionState } from "./session";
@@ -54,6 +54,11 @@ const handleCallback = async ({ request, provider }: CallbackInput): Promise<Res
   const outcome: IntegrationOutcome | "unauthenticated" =
     params.has("error") || !code || !state ? "denied" : await complete({ provider, code, state });
   if (outcome === "unauthenticated") return redirectTo({ request, path: ROUTES.login });
+  // A new connection opens its own settings page; anything else is explained on the list.
+  if (outcome === "connected") {
+    const settings = `/${session.organizationSlug}${integrationRoute({ provider })}`;
+    return redirectTo({ request, path: settings });
+  }
   const query = new URLSearchParams({ provider, outcome });
   return redirectTo({ request, path: `${integrations}?${query}` });
 };
@@ -62,8 +67,9 @@ export type ProviderCallbackInput = { request: Request; segment: string };
 
 /**
  * `GET /api/providers/<provider>/callback` (ADR 0087, 0100): an OAuth provider sends the admin
- * back here with `code` and `state`. Never logs either; the redirect to the integrations page
- * carries only `?provider=<KEY>&outcome=<outcome>`. An unknown provider lands there without one.
+ * back here with `code` and `state`. Never logs either. A successful connect redirects to that
+ * provider's settings page; any other outcome goes to the integrations list with only
+ * `?provider=<KEY>&outcome=<outcome>`. An unknown provider lands there without one.
  */
 export function providerCallbackResponse({ request, segment }: ProviderCallbackInput) {
   const provider = providerKeyOf({ segment });

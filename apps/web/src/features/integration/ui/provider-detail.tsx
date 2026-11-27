@@ -20,10 +20,10 @@ import { ProviderDangerArea } from "./provider-danger-area";
 export type ProviderDetailProps = { locale: Locale; org: string; provider: IntegrationProvider };
 
 /**
- * `/admin/integrations/<provider>` (ADR 0100, 0108): what a connected service is, which company
- * it is connected to, for an accounting system the accounts Bibi books to next to what the
- * system has, and last the way to disconnect. A service that is not connected has no page of
- * its own: it goes back to the list, where it is connected.
+ * `/admin/integrations/<provider>` (ADR 0100, 0123): what a connected service is, which company
+ * it is connected to, for an accounting system what Bibi books to in its accounts, and last the
+ * way to disconnect. A service that is not connected has no page of its own: it goes back to the
+ * list, where it is connected.
  */
 export async function ProviderDetail({ locale, org, provider }: ProviderDetailProps) {
   const [t, card, providers, abilities, list, dates] = await Promise.all([
@@ -60,9 +60,6 @@ export async function ProviderDetail({ locale, org, provider }: ProviderDetailPr
       value: connection.connectedAt ? dates.date({ instant: connection.connectedAt }) : null,
     },
   ].filter((fact) => fact.value);
-  const checkedOn = connection.setupCheckedAt
-    ? dates.date({ instant: connection.setupCheckedAt })
-    : null;
   return (
     <PageBands>
       <h1 className="sr-only">{name}</h1>
@@ -101,12 +98,7 @@ export async function ProviderDetail({ locale, org, provider }: ProviderDetailPr
           title={t("accountsTitle")}
           description={t("accountsDescription", { name })}
         >
-          <ProviderAccounts
-            connection={connection}
-            name={name}
-            checkedOn={checkedOn}
-            canEdit={canEdit}
-          />
+          <ProviderAccounts locale={locale} connection={connection} name={name} canEdit={canEdit} />
         </AdminBand>
       ) : null}
       {canEdit ? (

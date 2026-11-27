@@ -1,7 +1,6 @@
 /**
- * Approval label keys of payments, the receivables they settle (ADR 0057) and the accounting
- * settings (ADR 0077), kept apart so
- * `approval-labels.ts` stays within the size limit.
+ * Approval label keys of payments, the receivables they settle (ADR 0057) and the account
+ * mappings (ADR 0123), kept apart so `approval-labels.ts` stays within the size limit.
  */
 export const MONEY_FIELD_KEYS = [
   "amountMinor",
@@ -10,9 +9,8 @@ export const MONEY_FIELD_KEYS = [
   "quoteId",
   "depositId",
   "invoiceId",
-  "advancesAccount",
-  "revenueAccount",
-  "revenueAccounts",
+  "providerAccount",
+  "purpose",
   "estimatedValueMinor",
   "depositPercent",
   "depositMinimumMinor",
@@ -37,7 +35,7 @@ export const MONEY_OPERATION_KEYS = [
   "payment_refund",
   "payment_cancel",
   "payment_recordManual",
-  "accountingSettings_update",
+  "accountMapping_set",
   "paymentSettings_update",
   "billing_update",
   "billing_approveSeat",

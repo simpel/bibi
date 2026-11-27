@@ -65,7 +65,6 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   permissions: "permissions",
   payments: "payments",
   billing: "billing",
-  accounting: "accounting",
   "item-states": "itemStates",
   packages: "orderTemplates",
   notifications: "notifications",
