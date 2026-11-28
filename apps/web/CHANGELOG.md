@@ -1,5 +1,40 @@
 # Changelog
 
+## [6.1.0](https://github.com/simpel/bibi/compare/@bibi/web-v6.0.0...@bibi/web-v6.1.0) (2026-11-28)
+
+
+### Features
+
+* data tables load rows in batches, check fields take a help line and page states centre in the content area ([91f079a](https://github.com/simpel/bibi/commit/91f079ad47ebe020749e2b1d43c010df8f21b1fc))
+* table booking gets open-from and days-ahead limits, a calendar operation and a pause for online booking ([21a3cbc](https://github.com/simpel/bibi/commit/21a3cbcffd51e23273acb45a4719e3c5f48c46b5))
+* tasks sit on the pipeline board and move between statuses ([061014d](https://github.com/simpel/bibi/commit/061014dffb0a3393fd3c313b1e6e4eed6ff5d803))
+* texts, docs and exports for tasks on the pipeline and table booking ([361382c](https://github.com/simpel/bibi/commit/361382cfb2f7b18138e856f8b14ecf7c36b39d78))
+
+
+### Bug Fixes
+
+* e2e specs follow the UI as it is now (breadcrumbs, 404 page, card, tabs) and the payment fixture sends providerAccount ([e18c921](https://github.com/simpel/bibi/commit/e18c92196d678d2ab981a727c1ca16825947770a))
+* e2e users dismiss the page tours and the specs follow the confirmed card and package picking ([cd1af11](https://github.com/simpel/bibi/commit/cd1af116332211472ca7f960ca73f82829d7ab4a))
+* the e2e picks a package with its own button and finds the chat list where it is now ([4ebd187](https://github.com/simpel/bibi/commit/4ebd1873c614b7579a7d70c24557687d671025c7))
+* the Fortnox accounts test sets its own API URL and the payment e2e maps deposits and revenue ([bf0ca86](https://github.com/simpel/bibi/commit/bf0ca86272afee6c67f936fdc28f432e88f42930))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/ai bumped to 6.1.0
+    * @bibi/api bumped to 4.1.0
+    * @bibi/auth bumped to 1.1.1
+    * @bibi/core bumped to 6.1.0
+    * @bibi/db bumped to 4.1.0
+    * @bibi/graphql bumped to 4.1.0
+    * @bibi/i18n bumped to 5.1.0
+    * @bibi/mail bumped to 1.1.1
+    * @bibi/mcp bumped to 6.1.0
+    * @bibi/storage bumped to 0.2.10
+    * @bibi/ui bumped to 3.1.0
+
 ## [6.0.0](https://github.com/simpel/bibi/compare/@bibi/web-v5.0.0...@bibi/web-v6.0.0) (2026-11-27)
 
 

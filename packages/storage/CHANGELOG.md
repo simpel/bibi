@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.10](https://github.com/simpel/bibi/compare/@bibi/storage-v0.2.9...@bibi/storage-v0.2.10) (2026-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 6.1.0
+
 ## [0.2.9](https://github.com/simpel/bibi/compare/@bibi/storage-v0.2.8...@bibi/storage-v0.2.9) (2026-11-27)
 
 

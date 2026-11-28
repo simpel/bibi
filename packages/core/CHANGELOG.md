@@ -1,5 +1,26 @@
 # Changelog
 
+## [6.1.0](https://github.com/simpel/bibi/compare/@bibi/core-v6.0.0...@bibi/core-v6.1.0) (2026-11-28)
+
+
+### Features
+
+* table booking gets open-from and days-ahead limits, a calendar operation and a pause for online booking ([21a3cbc](https://github.com/simpel/bibi/commit/21a3cbcffd51e23273acb45a4719e3c5f48c46b5))
+* tasks sit on the pipeline board and move between statuses ([061014d](https://github.com/simpel/bibi/commit/061014dffb0a3393fd3c313b1e6e4eed6ff5d803))
+* texts, docs and exports for tasks on the pipeline and table booking ([361382c](https://github.com/simpel/bibi/commit/361382cfb2f7b18138e856f8b14ecf7c36b39d78))
+
+
+### Bug Fixes
+
+* the Fortnox accounts test sets its own API URL and the payment e2e maps deposits and revenue ([bf0ca86](https://github.com/simpel/bibi/commit/bf0ca86272afee6c67f936fdc28f432e88f42930))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/db bumped to 4.1.0
+
 ## [6.0.0](https://github.com/simpel/bibi/compare/@bibi/core-v5.0.0...@bibi/core-v6.0.0) (2026-11-27)
 
 
