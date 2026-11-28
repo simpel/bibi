@@ -44,7 +44,7 @@ test("a proposed venue needs approval: nothing is created until the user approve
   await gotoApp({ page, path: "/assistant" });
   const panel = page.locator(PANEL);
   await page
-    .getByRole("navigation", { name: "Assistent" })
+    .getByRole("complementary", { name: "Chattar" })
     .getByRole("button", { name: "Skapa chatt" })
     .click();
   await expect(card).toHaveCount(0);
@@ -52,7 +52,7 @@ test("a proposed venue needs approval: nothing is created until the user approve
   await page.locator(HISTORY_ROW).first().getByRole("button").first().click();
   const restored = panel.locator('[data-slot="approval-card"]');
   await expect(restored).toHaveAttribute("data-state", "approved");
-  await expect(restored.locator('[data-slot="venue-card"]').getByText("Test Hall")).toBeVisible();
+  await expect(restored.getByText("Test Hall är skapad")).toBeVisible();
 });
 
 test("rejecting a proposal creates nothing and locks the card", async ({ page }) => {
