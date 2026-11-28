@@ -55,7 +55,6 @@ export function OrderTemplateTable({ templates, statuses, types }: OrderTemplate
     rows: templates,
     qualifiers,
     getSearchText: (template) => template.name,
-    totalLabel: (count) => `${count}`,
   });
   return (
     <div className="grid gap-4">

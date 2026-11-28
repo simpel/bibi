@@ -36,7 +36,6 @@ export function ValueTable({ vocabulary, access }: ValueTableProps) {
     rows: vocabulary.values,
     qualifiers,
     getSearchText: (v) => v.name,
-    totalLabel: (count) => `${count}`,
   });
 
   return (

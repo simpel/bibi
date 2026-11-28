@@ -59,7 +59,6 @@ function useInboxView({ rows }: { rows: InboxRow[] }) {
     qualifiers,
     getSearchText: (row) =>
       `${row.subject ?? ""} ${row.sender ?? ""} ${t(`channels.${row.channel}`)}`,
-    totalLabel: (count) => `${count}`,
   });
   const pills: QuickFilterPill[] = [
     { key: "all", label: common("readFilter.all"), query: undefined },

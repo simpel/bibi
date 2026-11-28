@@ -23,7 +23,7 @@ export function StatusPage({ code, title, description, actions, footnote }: Stat
     <main className="relative flex min-h-dvh flex-col overflow-hidden bg-background">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-2/3 bg-radial-[ellipse_at_top] from-accent to-transparent"
+        className="pointer-events-none absolute inset-0 bg-radial-[ellipse_at_top] from-accent to-transparent"
       />
       <header className="relative px-6 py-5">
         <Link href={ROUTES.app} className="inline-flex rounded-md focus-visible:outline-2">

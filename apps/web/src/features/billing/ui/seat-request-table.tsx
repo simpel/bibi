@@ -61,7 +61,6 @@ export function SeatRequestTable({ requests, seatPrice, canEdit }: SeatRequestTa
     rows: requests,
     qualifiers,
     getSearchText: (r) => `${r.email} ${r.role ? roles(r.role) : ""}`,
-    totalLabel: (count) => `${count}`,
   });
   const columns = useSeatRequestColumns({
     ...(canEdit

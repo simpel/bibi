@@ -26,7 +26,6 @@ export function OrderStatusTable({ statuses, access }: OrderStatusTableProps) {
     rows,
     qualifiers,
     getSearchText: (row) => row.orderStatus.name,
-    totalLabel: (count) => `${count}`,
   });
   return (
     <div className="grid gap-4">

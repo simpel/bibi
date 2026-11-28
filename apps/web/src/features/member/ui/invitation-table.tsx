@@ -62,7 +62,6 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
     rows: invitations,
     qualifiers,
     getSearchText: (i) => `${i.email} ${i.role ? roles(i.role) : ""}`,
-    totalLabel: (count) => `${count}`,
     scope: "invitations",
   });
   const columns = useInvitationColumns<InvitationDto>({

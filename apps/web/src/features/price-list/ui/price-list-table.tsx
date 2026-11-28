@@ -33,7 +33,6 @@ export function PriceListTable({ priceLists, data, access }: PriceListTableProps
     rows: priceLists,
     qualifiers,
     getSearchText: (list) => list.name,
-    totalLabel: (count) => `${count}`,
   });
   return (
     <div className="grid gap-4">

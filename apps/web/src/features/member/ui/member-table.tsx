@@ -62,7 +62,6 @@ export function MemberTable({ members, roles, caller, access }: MemberTableProps
     rows: members,
     qualifiers,
     getSearchText: (m) => `${m.name} ${m.email} ${m.role ? roleLabel(m.role) : ""}`,
-    totalLabel: (count) => `${count}`,
   });
   const columns = useMemberColumns<MemberDto>({
     linkNames: true,

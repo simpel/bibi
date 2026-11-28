@@ -77,6 +77,12 @@ export function TaskTable({ rows, canEdit }: TaskTableProps) {
           color: TASK_STATE_COLORS[row.state],
         }),
       }),
+      statusColumn<TaskListRow>({
+        id: "pipelineStatus",
+        header: t("columns.status"),
+        getStatus: (row) =>
+          row.status ? { label: row.status.name, color: row.status.color } : null,
+      }),
     ],
     dates: [
       dateColumn<TaskListRow>({
@@ -124,6 +130,12 @@ export function TaskTable({ rows, canEdit }: TaskTableProps) {
       label: t("query.customer"),
       pick: (row) => row.customerName,
       options: distinct({ values: rows.map((row) => row.customerName) }),
+    },
+    {
+      key: "status",
+      label: t("query.status"),
+      pick: (row) => row.status?.name ?? [],
+      options: distinct({ values: rows.flatMap((row) => (row.status ? [row.status.name] : [])) }),
     },
     {
       key: "type",

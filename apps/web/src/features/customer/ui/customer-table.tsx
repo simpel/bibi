@@ -64,7 +64,6 @@ export function CustomerTable({ customers, types, canEdit = false }: CustomerTab
     rows: customers,
     qualifiers,
     getSearchText: (c) => `${c.name} ${c.invoiceCity ?? ""} ${c.email ?? ""}`,
-    totalLabel: (count) => `${count}`,
   });
   const pills: QuickFilterPill[] = [
     { key: "all", label: common("readFilter.all"), query: undefined },

@@ -71,7 +71,6 @@ export function EntityTypeTable({
     rows: types,
     qualifiers,
     getSearchText: (type) => `${type.name} ${t(`bases.${type.base}`)}`,
-    totalLabel: (count) => `${count}`,
   });
   const columns = useEntityTypeColumns({
     groups,

@@ -66,7 +66,6 @@ export function ResponsibilityTable({
     rows: responsibilities,
     qualifiers,
     getSearchText: (responsibility) => responsibility.name,
-    totalLabel: (count) => `${count}`,
   });
   return (
     <div className="grid gap-4">

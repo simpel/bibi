@@ -27,7 +27,7 @@ export function ClientDataTable<TRow, TValue = unknown>({
   qualifiers = [],
   pills,
   getSearchText,
-  totalLabel = (count) => `${count}`,
+  totalLabel,
   toolbarChildren,
   ...tableProps
 }: ClientDataTableProps<TRow, TValue>) {

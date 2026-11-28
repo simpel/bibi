@@ -53,7 +53,7 @@ export function AppShell({
                 />
                 <SidebarInset className="min-w-0">
                   <TopBar access={access} />
-                  <main className="min-w-0 flex-1">{children}</main>
+                  <main className="relative min-w-0 flex-1">{children}</main>
                 </SidebarInset>
                 <NotificationPanel />
               </SidebarProvider>

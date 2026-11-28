@@ -36,7 +36,6 @@ export function VocabularyTable({ vocabularies, access }: VocabularyTableProps) 
     rows: vocabularies,
     qualifiers,
     getSearchText: (v) => `${v.name} ${v.values.map((val) => val.name).join(" ")}`,
-    totalLabel: (count) => `${count}`,
   });
   return (
     <div className="grid gap-4">

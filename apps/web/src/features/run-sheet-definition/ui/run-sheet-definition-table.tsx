@@ -70,7 +70,6 @@ export function RunSheetDefinitionTable({
     rows: runSheets,
     qualifiers,
     getSearchText: (runSheet) => runSheet.name,
-    totalLabel: (count) => `${count}`,
   });
   return (
     <div className="grid gap-4">

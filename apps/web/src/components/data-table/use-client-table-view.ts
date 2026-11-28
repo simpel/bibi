@@ -18,7 +18,7 @@ export type UseClientTableViewInput<TRow> = {
   rows: readonly TRow[];
   qualifiers: readonly TableQualifier<TRow>[];
   getSearchText: (row: TRow) => string;
-  totalLabel: (count: number) => string;
+  totalLabel?: ((count: number) => string) | undefined;
   /** A second table on the page: its own URL keys (`<scope>.q`, `<scope>.page`). */
   scope?: string;
 };

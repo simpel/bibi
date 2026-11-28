@@ -27,7 +27,6 @@ export function StatusFlowTable({ statuses }: StatusFlowTableProps) {
     rows,
     qualifiers,
     getSearchText: (row) => row.orderStatus.name,
-    totalLabel: (count) => `${count}`,
     scope: "flow",
   });
   return (

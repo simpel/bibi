@@ -27,7 +27,6 @@ export function ItemStateTable({ entries, access }: ItemStateTableProps) {
     rows,
     qualifiers,
     getSearchText: (row) => `${row.state.name} ${row.typeName}`,
-    totalLabel: (count) => `${count}`,
   });
   return (
     <div className="grid gap-4">

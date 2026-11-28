@@ -60,7 +60,6 @@ export function ApiKeyTable({ apiKeys, canManage }: ApiKeyTableProps) {
     qualifiers,
     getSearchText: (k) =>
       `${k.name} ${k.start ?? ""} ${roles(parseFixedRole({ role: k.role }) ?? "unknown")} ${k.createdByName ?? ""}`,
-    totalLabel: (count) => `${count}`,
   });
   const columns = useApiKeyColumns({ canManage });
   return (

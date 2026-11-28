@@ -68,7 +68,6 @@ export function ItemTable({
     rows: items,
     qualifiers,
     getSearchText: (item) => `${item.name} ${item.description ?? ""}`,
-    totalLabel: (count) => `${count}`,
   });
   const columns = useItemColumns({
     types,
