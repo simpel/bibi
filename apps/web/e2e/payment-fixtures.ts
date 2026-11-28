@@ -39,6 +39,18 @@ export async function connectProviders({ page }: PageInput): Promise<string> {
     path: "/integrations/VISMA/connect",
     data: { credentials: ledger },
   });
+  // Deposits and invoices book to mapped accounts (ADR 0123); the fake ledger accepts any reference.
+  for (const [purpose, ref] of [
+    ["ADVANCES", "2420"],
+    ["REVENUE_DEFAULT", "3001"],
+  ] as const) {
+    await call({
+      page,
+      method: "put",
+      path: "/account-mappings",
+      data: { purpose, entityTypeId: null, account: ref },
+    });
+  }
   return String(account.stripeAccountId);
 }
 

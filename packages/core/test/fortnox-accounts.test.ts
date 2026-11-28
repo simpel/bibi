@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fortnoxInvoicing } from "../src/providers/fortnox/fortnox-invoicing";
 import { errorCode, unwrap } from "./helpers";
+import { useFortnoxEnv } from "./integration-helpers";
 
 const auth = { externalAccountId: null, accessToken: "access-1" };
 
@@ -34,6 +35,9 @@ afterEach(() => {
 });
 
 describe("Fortnox accounts (ADR 0123)", () => {
+  // The client builds its URLs from FORTNOX_API_BASE_URL; set it here, not from the local .env.
+  useFortnoxEnv();
+
   it("reads every page of the chart", async () => {
     const asked = stubPages({
       pages: [
