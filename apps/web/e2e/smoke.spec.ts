@@ -36,7 +36,11 @@ test("sign up, create org, venue, type and item, search, switch locale, archive"
   await page.getByRole("link", { name: VENUE }).click();
   await expect(page.getByRole("link", { name: item })).toBeVisible();
 
-  await page.getByRole("link", { name: "Tillbaka" }).click();
+  // The breadcrumb leads back to the list (there is no separate Back link).
+  await page
+    .getByRole("navigation", { name: "Brödsmula" })
+    .getByRole("link", { name: "Anläggningar" })
+    .click();
   // The list's search filters the table through the URL (`?q=`).
   await page.getByRole("combobox", { name: "Sök" }).fill("Solvik");
   await page.keyboard.press("Enter");

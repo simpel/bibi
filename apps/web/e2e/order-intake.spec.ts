@@ -26,7 +26,7 @@ test("flow A: a package for a seeded customer, review and Create", async ({ page
   await pickCustomer({ page, search: "Kvarnby", name: CUSTOMER });
   await fillWhen({ page, from: "10:00", to: "14:00", guests: 12 });
   const packageCard = page.getByRole("button", { name: new RegExp(PACKAGE) });
-  await expect(packageCard.getByText("✓ Available")).toBeVisible();
+  await expect(packageCard.getByText("Fits as asked")).toBeVisible();
   await pickPackage({ page, name: PACKAGE });
 
   await expect(page.getByRole("heading", { name: "Review the booking" })).toBeVisible();
@@ -58,9 +58,6 @@ test("flow B: a custom booking for a new customer that looks like an existing on
   // New customer from the title row: the name is checked for duplicates when it creates.
   await startNewCustomer({ page });
   await page.getByLabel(/^Customer name/).fill("KVARNBY DESIGN");
-  // Business or private is chosen on purpose (ADR 0106).
-  await page.getByRole("combobox", { name: "Business or private" }).click();
-  await page.getByRole("option", { name: "Business" }).click();
   await page.getByLabel(/^Contact name/).fill("Per Lind");
   await page.getByLabel(/^Contact email/).fill("per.lind@kvarnby-design.test");
   // The title row's Create customer stays beside the form; the form's own button creates.
@@ -125,6 +122,7 @@ test("flow C: from an inbox message, read by the assistant, checked and created"
   await page.getByRole("button", { name: /^Keep / }).click();
   await createOrder({ page });
 
-  await expect(page.getByRole("heading", { name: "Messages" })).toBeVisible();
+  // The order page lists the message it came from on its Messages tab.
+  await page.getByRole("tab", { name: "Messages" }).click();
   await expect(page.getByText(subject).first()).toBeVisible();
 });

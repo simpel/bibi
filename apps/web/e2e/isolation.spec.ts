@@ -29,7 +29,7 @@ test("cross-organization isolation: cannot access another org's venue from URL",
   // Try to access the venue from org A - should be not found
   await gotoApp({ page, path: `/venues/${venueId}` });
   // Should show the 404 not found page
-  await expect(page.getByText("Vi hittade inte det du letade efter.")).toBeVisible();
+  await expect(page.getByText("Det här rummet finns inte på planritningen")).toBeVisible();
 });
 
 test("the user menu shows the current organization and lists it to switch", async ({ page }) => {

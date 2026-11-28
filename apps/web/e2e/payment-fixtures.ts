@@ -48,7 +48,7 @@ export async function connectProviders({ page }: PageInput): Promise<string> {
       page,
       method: "put",
       path: "/account-mappings",
-      data: { purpose, entityTypeId: null, account: ref },
+      data: { purpose, entityTypeId: null, providerAccount: ref },
     });
   }
   return String(account.stripeAccountId);

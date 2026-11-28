@@ -41,7 +41,10 @@ test("create a personal skill, export it and import it back", async ({ page }) =
   expect(markdown).toContain("name: round-trip");
   expect(markdown).toContain('title: "Round trip"');
 
-  await page.getByRole("link", { name: "Tillbaka" }).click();
+  await page
+    .getByRole("navigation", { name: "Brödsmula" })
+    .getByRole("link", { name: "Färdigheter" })
+    .click();
   await page.getByRole("button", { name: "Importera" }).click();
   const copy = markdown
     .replace("name: round-trip", "name: round-trip-copy")
@@ -83,7 +86,10 @@ test("edit, publish, filter and archive a skill; English strings", async ({ page
   // expire. Sonner pauses expiry while the pointer is over them, so move the pointer away first.
   await page.mouse.move(0, 0);
   await expect(page.locator("[data-sonner-toast]")).toHaveCount(0, { timeout: 15_000 });
-  await page.getByRole("link", { name: "Back" }).click();
+  await page
+    .getByRole("navigation", { name: "Breadcrumb" })
+    .getByRole("link", { name: "Skills" })
+    .click();
   await page.getByRole("searchbox", { name: "Search query" }).fill("Greeting");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page).toHaveURL(/q=Greeting/);

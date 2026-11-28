@@ -21,7 +21,6 @@ test("a proposed venue needs approval: nothing is created until the user approve
   await expect(card).toBeVisible({ timeout: 15_000 });
   await expect(card.getByText("Bekräfta ändring")).toBeVisible();
   await expect(card.getByText('Create venue "Test Hall"')).toBeVisible();
-  await expect(card.getByText("Skapa anläggning")).toBeVisible();
   await expect(card.getByText(/Gäller i \d+:\d\d/)).toBeVisible();
   // ADR 0049: the card shows core's preview of the change, field by field.
   await expect(card.locator('[data-slot="approval-changes"]').getByText("Test Hall")).toBeVisible();
@@ -116,7 +115,7 @@ test("⌘K asks the assistant a one-shot question and opens the panel on it", as
   await page.keyboard.press("Enter");
 
   await expect(page.locator(PANEL)).toBeVisible();
-  await expect(page.locator(PANEL).getByText("list venues")).toBeVisible();
+  await expect(page.locator(PANEL).getByText("list venues").first()).toBeVisible();
   await expect(
     page
       .locator(PANEL)

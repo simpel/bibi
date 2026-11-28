@@ -21,7 +21,7 @@ test("a guest books a table, changes the time from the mailed link and cancels",
 
   await page.goto(`/en/book/${slug}/kajen?party=2&date=${day}`);
   await page.getByRole("button", { name: "18:00" }).click();
-  await page.getByLabel("Name", { exact: true }).fill("Anna Lind");
+  await page.getByLabel(/^Name/).fill("Anna Lind");
   await page.getByLabel("Phone").fill("070-123 45 67");
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "More: Gluten" }).click();
