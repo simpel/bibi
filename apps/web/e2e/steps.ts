@@ -1,4 +1,5 @@
 import { expect, type Page } from "@playwright/test";
+import { TOURS } from "../src/components/tour/tour-defs";
 import { gotoApp } from "./goto-app";
 import { openMagicLink } from "./mailbox";
 import { completeProfile, nameOrganization } from "./welcome-steps";
@@ -127,6 +128,20 @@ export const PANEL = '[data-slot="assistant-home"]';
 export async function signUpWithOrganization({ page, name }: PageInput & { name: string }) {
   await signUp({ page, credentials: uniqueCredentials() });
   await createOrganization({ page, name });
+  await dismissTours({ page });
+}
+
+/**
+ * Page tours start by themselves the first time a user opens a page and dim it, which blocks
+ * clicks; closing one stores `help.dismissed.<hint>`, so the tests store all of them up front.
+ */
+export async function dismissTours({ page }: PageInput) {
+  for (const { hint } of Object.values(TOURS)) {
+    const response = await page.request.put(`/api/v1/user-preferences/help.dismissed.${hint}`, {
+      data: { value: true },
+    });
+    expect(response.ok(), `dismiss ${hint}: ${response.status()}`).toBe(true);
+  }
 }
 
 /** Opens the assistant on `/assistant` (ADR 0110). */

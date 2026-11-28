@@ -64,7 +64,7 @@ export async function fillWhen({
 /** Step 3: a package card by name, then on to review. */
 export async function pickPackage({ page, name }: PageInput & { name: string }) {
   await page.getByRole("button", { name: new RegExp(name) }).click();
-  await expect(page.getByText(/^Picked:/)).toBeVisible();
+  await expect(page.getByRole("button", { name: new RegExp(name), pressed: true })).toBeVisible();
   await page.getByRole("button", { name: "Next", exact: true }).click();
 }
 

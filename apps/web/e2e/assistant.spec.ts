@@ -28,8 +28,8 @@ test("a proposed venue needs approval: nothing is created until the user approve
 
   await card.getByRole("button", { name: "Bekräfta" }).click();
   await expect(card).toHaveAttribute("data-state", "approved");
-  await expect(card.getByText("Bekräftad")).toBeVisible();
-  await expect(card.locator('[data-slot="venue-card"]').getByText("Test Hall")).toBeVisible();
+  // A confirmed proposal says it is done (ADR 0049 follow-up), with a way on to the new record.
+  await expect(card.getByText("Test Hall är skapad")).toBeVisible();
   await expect(card.getByRole("button", { name: "Bekräfta" })).toHaveCount(0);
   expect(await listVenueNames({ page })).toEqual(["Test Hall"]);
 

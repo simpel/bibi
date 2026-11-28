@@ -115,7 +115,9 @@ test("flow C: from an inbox message, read by the assistant, checked and created"
   await page.getByRole("button", { name: "Next", exact: true }).click();
   await expectStep({ page, step: "package" });
   await expect(page.getByText("★ Suggested from the email")).toBeVisible();
-  await expect(page.getByText(/^Picked:/)).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: new RegExp(PACKAGE), pressed: true }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Next", exact: true }).click();
   await expect(page.getByText(/The email doesn't say the end time/)).toBeVisible();
   await expect(page.getByRole("button", { name: /^Answer 1 question first$/ })).toBeDisabled();
