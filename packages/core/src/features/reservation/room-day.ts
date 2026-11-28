@@ -22,6 +22,8 @@ export type Sitting = SittingRule &
 export type RoomDay = {
   roomItemId: string;
   timeZone: string;
+  openDaysAhead: number | null;
+  openFrom: Date | null;
   openUntil: Date | null;
   sittings: readonly Sitting[];
   overrides: ReadonlyMap<string, DayOverride>;
@@ -52,6 +54,8 @@ export async function loadRoom({ context, roomItemId }: Ctx & { roomItemId: stri
     value: {
       venueId: item.venueId,
       timeZone: zoneOf({ venue: item.venue }),
+      openDaysAhead: item.diningRoom?.openDaysAhead ?? null,
+      openFrom: item.diningRoom?.openFrom ?? null,
       openUntil: item.diningRoom?.openUntil ?? null,
       sittings,
     },
@@ -68,7 +72,7 @@ export async function loadRoomDay({
 }: LoadRoomDayInput): Promise<Result<RoomDay>> {
   const room = await loadRoom({ context, roomItemId });
   if (!room.ok) return room;
-  const { venueId, timeZone, openUntil, sittings } = room.value;
+  const { venueId, timeZone, openDaysAhead, openFrom, openUntil, sittings } = room.value;
   const day = toDateColumn({ date: toIsoDate({ date }) });
   const [exceptions, closures] = await Promise.all([
     context.db.diningServiceException.findMany({
@@ -84,6 +88,9 @@ export async function loadRoomDay({
   ]);
   const overrides = new Map(exceptions.map((row) => [row.serviceId, row]));
   return ok({
-    value: { roomItemId, timeZone, openUntil, sittings, overrides, closed: closures > 0 },
+    value: {
+      ...{ roomItemId, timeZone, openDaysAhead, openFrom, openUntil, sittings, overrides },
+      closed: closures > 0,
+    },
   });
 }

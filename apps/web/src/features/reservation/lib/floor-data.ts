@@ -70,3 +70,24 @@ export function slotTimes({ sitting, date, timeZone }: SlotTimesInput) {
   }
   return times;
 }
+
+export type DayTime = { ms: number; label: string; layoutId: string };
+
+export type DayTimesInput = {
+  sittings: readonly FloorSitting[];
+  date: string;
+  timeZone: string;
+};
+
+/** Every start of the day, lunch and dinner alike: the open sittings' slots in time order. */
+export function dayTimes({ sittings, date, timeZone }: DayTimesInput): DayTime[] {
+  const open = sittings.filter((sitting) => !sitting.closed);
+  const used = open.length > 0 ? open : sittings.slice(0, 1);
+  const byMs = new Map<number, DayTime>();
+  for (const sitting of used) {
+    for (const time of slotTimes({ sitting, date, timeZone })) {
+      if (!byMs.has(time.ms)) byMs.set(time.ms, { ...time, layoutId: sitting.layoutId });
+    }
+  }
+  return [...byMs.values()].sort((a, b) => a.ms - b.ms);
+}

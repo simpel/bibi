@@ -26,7 +26,7 @@ export function CreateReservationButton({
   const [open, setOpen] = useState(defaultOpen);
   return (
     <>
-      <Button onClick={() => setOpen(true)}>
+      <Button className="h-12 px-5 text-base" onClick={() => setOpen(true)}>
         <PlusIcon />
         {t("create.title")}
       </Button>

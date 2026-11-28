@@ -26,7 +26,12 @@ export type BookingShellProps = {
 const BRANDED =
   "[--primary:var(--brand)] [--primary-foreground:white] [--ring:var(--brand)] dark:[--ring:var(--brand)]";
 
-/** A guest page's frame: the venue's cover, logo and name on top, contact and "Powered by Bibi" below. */
+// A guest page carries the venue's look, not Bibi's: plain white, light always, plain sans-serif
+// headings. The venue's accent is the only colour.
+const PLAIN =
+  "[color-scheme:light] [--background:white] [--foreground:oklch(0.2_0_0)] [--card:white] [--popover:white] [--muted:oklch(0.97_0_0)] [--muted-foreground:oklch(0.45_0_0)] [--accent:oklch(0.97_0_0)] [--accent-foreground:oklch(0.2_0_0)] [--border:oklch(0.91_0_0)] [--input:oklch(0.87_0_0)] [&_h1]:font-sans [&_h2]:font-sans [&_h3]:font-sans";
+
+/** A guest page's frame: the venue's cover, logo and name on plain white, contact and "Powered by Bibi" below. */
 export async function BookingShell({ page, title, children }: BookingShellProps) {
   const t = await getTranslations("guestBooking");
   const accent = page?.accentColor ?? null;
@@ -35,19 +40,26 @@ export async function BookingShell({ page, title, children }: BookingShellProps)
   const image = ({ kind }: { kind: "logo" | "cover" }) =>
     `/book/${encodeURIComponent(page?.slug ?? "")}/${kind}`;
   return (
-    <div style={style} className={accent ? `w-full max-w-lg ${BRANDED}` : "w-full max-w-lg"}>
-      <article className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm">
+    <div
+      style={style}
+      className={`fixed inset-0 overflow-y-auto bg-white text-foreground ${PLAIN} ${accent ? BRANDED : ""}`}
+    >
+      <div className="mx-auto flex min-h-full w-full max-w-lg flex-col px-5 py-8 sm:py-12">
         {page?.hasCover ? (
           // biome-ignore lint/performance/noImgElement: the venue's upload, streamed by the booking route
-          <img src={image({ kind: "cover" })} alt="" className="aspect-[5/2] w-full object-cover" />
+          <img
+            src={image({ kind: "cover" })}
+            alt=""
+            className="mb-6 aspect-[5/2] w-full rounded-lg object-cover"
+          />
         ) : null}
-        <header className="flex items-center gap-3 px-5 pt-6 sm:px-8 sm:pt-8">
+        <header className="flex items-center gap-3">
           {page?.hasLogo ? (
             // biome-ignore lint/performance/noImgElement: the venue's upload, streamed by the booking route
             <img
               src={image({ kind: "logo" })}
               alt={t("logoAlt", { organization: page.organizationName })}
-              className="size-12 shrink-0 rounded-lg border bg-background object-contain p-1"
+              className="size-14 shrink-0 object-contain"
             />
           ) : null}
           <div className="min-w-0">
@@ -57,20 +69,20 @@ export async function BookingShell({ page, title, children }: BookingShellProps)
             <h1 className="text-xl font-semibold tracking-tight text-balance">{title}</h1>
           </div>
         </header>
-        <div className="px-5 pt-5 pb-6 sm:px-8 sm:pb-8">{children}</div>
-      </article>
-      <footer className="mt-4 flex flex-col items-center gap-3 px-2 text-sm text-muted-foreground">
-        <ContactLinks page={page} />
-        <a
-          href={PUBLIC_ORIGIN ?? WEB_ORIGIN}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-sm text-xs outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          {t("poweredBy")}
-          <Wordmark size={16} className="text-current" />
-        </a>
-      </footer>
+        <div className="pt-6">{children}</div>
+        <footer className="mt-auto flex flex-col items-center gap-3 pt-12 text-sm text-muted-foreground">
+          <ContactLinks page={page} />
+          <a
+            href={PUBLIC_ORIGIN ?? WEB_ORIGIN}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-sm text-xs outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {t("poweredBy")}
+            <Wordmark size={16} className="text-current" />
+          </a>
+        </footer>
+      </div>
     </div>
   );
 }

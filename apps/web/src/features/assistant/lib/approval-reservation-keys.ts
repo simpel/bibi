@@ -7,6 +7,7 @@ export const RESERVATION_OPERATION_KEYS = [
   "reservation_unseat",
   "reservation_complete",
   "reservation_markNoShow",
+  "reservation_revertNoShow",
   "tableBlock_create",
   "tableBlock_delete",
 ] as const;

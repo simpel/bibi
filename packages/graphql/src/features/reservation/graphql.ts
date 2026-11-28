@@ -1,6 +1,8 @@
 import {
   type AvailabilitySlot,
   AvailabilitySlotSchema,
+  type CalendarDay,
+  CalendarDaySchema,
   cancelReservation,
   completeReservation,
   createReservation,
@@ -14,6 +16,8 @@ import {
   ReservationSchema,
   ReservationTableSchema,
   reservationAvailability,
+  reservationCalendar,
+  revertReservationNoShow,
   seatReservation,
   unseatReservation,
   updateReservation,
@@ -31,6 +35,7 @@ type Table = z.infer<typeof ReservationTableSchema>;
 type Totals = { reservations: number; covers: number; needs: Requirement[] };
 type ReservationList = { items: ReservationDto[]; totals: Totals };
 type Availability = { timeZone: string; slots: AvailabilitySlot[] };
+type ReservationCalendar = { timeZone: string; days: CalendarDay[] };
 
 const RequirementRef = objectFromSchema<Requirement>({
   name: "ReservationRequirement",
@@ -88,6 +93,25 @@ const AvailabilityRef = builder.objectRef<Availability>("ReservationAvailability
   }),
 });
 
+const CalendarDayRef = objectFromSchema<CalendarDay>({
+  name: "ReservationCalendarDay",
+  schema: CalendarDaySchema,
+  description: "What a guest would meet in a dining room on one date.",
+});
+
+const CalendarRef = builder.objectRef<ReservationCalendar>("ReservationCalendar").implement({
+  description: "A month in a dining room as a guest meets it.",
+  fields: (t) => ({
+    timeZone: t.exposeString("timeZone"),
+    days: t.field({ type: [CalendarDayRef], resolve: (calendar) => calendar.days }),
+  }),
+});
+
+fieldFromOperation({
+  operation: reservationCalendar,
+  type: CalendarRef,
+  name: "reservationCalendar",
+});
 fieldFromOperation({ operation: listReservations, type: ReservationListRef, name: "reservations" });
 fieldFromOperation({ operation: getReservation, type: ReservationRef, name: "reservation" });
 fieldFromOperation({
@@ -102,6 +126,7 @@ mutationFromOperation({ operation: seatReservation, type: ReservationRef });
 mutationFromOperation({ operation: unseatReservation, type: ReservationRef });
 mutationFromOperation({ operation: completeReservation, type: ReservationRef });
 mutationFromOperation({ operation: markReservationNoShow, type: ReservationRef });
+mutationFromOperation({ operation: revertReservationNoShow, type: ReservationRef });
 
 type DaySitting = z.infer<typeof DaySittingSchema>;
 

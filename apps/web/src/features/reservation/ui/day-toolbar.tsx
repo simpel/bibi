@@ -28,7 +28,7 @@ export function DayToolbar({ rooms, roomItemId, date, today }: DayToolbarProps) 
     <div className="flex flex-wrap items-center gap-3">
       {rooms.length > 1 ? (
         <Select value={roomItemId} onValueChange={(room) => go({ to: date, room })}>
-          <SelectTrigger className="w-48" aria-label={t("room")}>
+          <SelectTrigger className="h-12 w-56 text-base" aria-label={t("room")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -44,21 +44,30 @@ export function DayToolbar({ rooms, roomItemId, date, today }: DayToolbarProps) 
         <Button
           variant="outline"
           size="icon"
+          className="size-12"
           aria-label={t("day.previous")}
           onClick={() => go({ to: shift({ date, days: -1 }) })}
         >
-          <ChevronLeftIcon />
+          <ChevronLeftIcon className="size-5" />
         </Button>
-        <PlainDateButton value={date} onChange={(to) => to && go({ to })} />
+        <div className="[&_button]:h-12 [&_button]:text-base">
+          <PlainDateButton value={date} onChange={(to) => to && go({ to })} />
+        </div>
         <Button
           variant="outline"
           size="icon"
+          className="size-12"
           aria-label={t("day.next")}
           onClick={() => go({ to: shift({ date, days: 1 }) })}
         >
-          <ChevronRightIcon />
+          <ChevronRightIcon className="size-5" />
         </Button>
-        <Button variant="ghost" disabled={date === today} onClick={() => go({ to: today })}>
+        <Button
+          variant="ghost"
+          className="h-12 text-base"
+          disabled={date === today}
+          onClick={() => go({ to: today })}
+        >
           {t("day.today")}
         </Button>
       </div>

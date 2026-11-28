@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@bibi/ui";
+import { Button, cn } from "@bibi/ui";
 import { TriangleAlertIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { LiveQueryState } from "@/lib/live-query-state";
@@ -36,9 +36,9 @@ export function CreateReservationSlots({ state, chosen, onChoose }: CreateReserv
   return (
     <div className="grid gap-3">
       {[...groups].map(([name, slots]) => (
-        <section key={name} className="grid gap-1.5">
-          <h4 className="text-sm font-medium">{name}</h4>
-          <ul className="flex flex-wrap gap-1.5">
+        <section key={name} className="grid gap-2">
+          <h4 className="text-base font-medium">{name}</h4>
+          <ul className="grid grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] gap-2">
             {slots.map((slot) => {
               const iso = new Date(slot.startsAt).toISOString();
               return (
@@ -48,14 +48,17 @@ export function CreateReservationSlots({ state, chosen, onChoose }: CreateReserv
                     size="sm"
                     variant={chosen === iso ? "default" : "outline"}
                     aria-pressed={chosen === iso}
-                    className={slot.available ? undefined : "text-muted-foreground line-through"}
+                    className={cn(
+                      "h-12 w-full px-2 text-base",
+                      !slot.available && "text-muted-foreground line-through",
+                    )}
                     onClick={() => onChoose(slot)}
                   >
                     {dates.time({ instant: slot.startsAt, timeZone: value.timeZone })}
                     {slot.warnings.length > 0 ? (
                       <TriangleAlertIcon
                         aria-label={slot.warnings.map((warning) => warnings(warning)).join(" · ")}
-                        className="text-warning-foreground"
+                        className="size-5 text-warning-foreground"
                       />
                     ) : null}
                   </Button>

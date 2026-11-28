@@ -5,6 +5,7 @@ import { nowOf } from "../../time/now";
 import { parseIsoDate } from "../../time/plain-date";
 import { toZonedParts } from "../../time/zoned-time";
 import { newPublicToken } from "../payment/public-token";
+import { monthDays } from "./calendar-operation";
 import { evaluateDay } from "./evaluate";
 import { guestValueIds } from "./guest-lists";
 import { releaseHolds, writeHolds } from "./holds";
@@ -13,6 +14,8 @@ import { publicRoom } from "./public-room";
 import {
   PublicAvailabilityInputSchema,
   PublicAvailabilityOutputSchema,
+  PublicCalendarInputSchema,
+  PublicCalendarOutputSchema,
   PublicCancelInputSchema,
   PublicChangeInputSchema,
   PublicCreateInputSchema,
@@ -57,6 +60,33 @@ export const publicAvailability = defineOperation({
       value: {
         timeZone: day.value.timeZone,
         slots: open.map(({ startsAt, endsAt, serviceName }) => ({ startsAt, endsAt, serviceName })),
+      },
+    });
+  },
+});
+
+export const publicCalendar = defineOperation({
+  name: "reservation.publicCalendar",
+  kind: "query",
+  description: "Which dates of a month a guest can book for a party in a published dining room.",
+  input: PublicCalendarInputSchema,
+  output: PublicCalendarOutputSchema,
+  permission: "reservation:read",
+  ...PUBLIC,
+  handler: async ({ input, context }) => {
+    const room = await publicRoom({ context, roomSlug: input.roomSlug });
+    if (!room) return notFound({ entity: "Dining room" });
+    const own = input.token ? await publicView({ context, token: input.token }) : null;
+    const month = await monthDays({
+      ...{ context, roomItemId: room.itemId, month: input.month },
+      partySize: input.partySize,
+      ...(own ? { except: own.id } : {}),
+    });
+    if (!month.ok) return notFound({ entity: "Dining room" });
+    return ok({
+      value: {
+        timeZone: month.value.timeZone,
+        days: month.value.days.map((day) => ({ date: day.date, open: day.status === "OPEN" })),
       },
     });
   },

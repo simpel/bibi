@@ -2,7 +2,12 @@ import { expect, type Page } from "@playwright/test";
 
 type Json = Record<string, unknown> & { id: string; items: Json[] };
 
-type RestInput = { page: Page; method: "get" | "post" | "patch"; path: string; data?: object };
+type RestInput = {
+  page: Page;
+  method: "get" | "post" | "patch" | "put";
+  path: string;
+  data?: object;
+};
 
 /** A REST call as the signed-in user (session cookie); the JSON back. */
 export async function call({ page, method, path, data }: RestInput): Promise<Json> {

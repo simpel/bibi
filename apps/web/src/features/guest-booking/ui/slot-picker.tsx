@@ -3,8 +3,11 @@
 import { Button, Calendar, calendarLocales, cn } from "@bibi/ui";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { lastValue } from "@/lib/live-query-state";
 import { dateOfDay, dayOfDate } from "@/lib/time/period-dates";
+import { useLiveQuery } from "@/lib/use-live-query";
 import { useQueryNavigation } from "@/lib/use-query-navigation";
+import { guestMonthAction } from "../actions";
 import type { SlotChoice, SlotGroup } from "../lib/group-slots";
 
 export type SlotPickerProps = {
@@ -20,6 +23,8 @@ export type SlotPickerProps = {
   /** The time currently chosen (the reservation's own time on the manage page). */
   selected?: string | undefined;
   onPick: (input: { slot: SlotChoice }) => void;
+  /** Which room to ask about dates fully booked; without it the calendar dims nothing. */
+  calendar?: { slug: string; roomSlug: string; token?: string } | undefined;
 };
 
 const CHIP = "h-11 min-w-11 px-3 tabular-nums";
@@ -44,6 +49,8 @@ export function SlotPicker(props: SlotPickerProps) {
         <DayCalendar
           day={props.day}
           today={props.today}
+          party={props.party}
+          calendar={props.calendar}
           onChange={({ day }) => navigate({ patch: { date: day } })}
         />
       </section>
@@ -128,21 +135,35 @@ function PartyChips({ party, maxParty, contactPhone, onChange }: PartyChipsProps
 type DayCalendarProps = {
   day: string;
   today: string;
+  party: number;
+  calendar: SlotPickerProps["calendar"];
   onChange: (input: { day: string }) => void;
 };
 
-/** One month at a time, past days disabled, in the visitor's language. */
-function DayCalendar({ day, today, onChange }: DayCalendarProps) {
+/** One month at a time, past days disabled and dates nobody can book dimmed, in the visitor's language. */
+function DayCalendar({ day, today, party, calendar, onChange }: DayCalendarProps) {
   const locale = useLocale();
   const first = dateOfDay({ day: today });
+  const [month, setMonth] = useState(day.slice(0, 7));
+  const state = useLiveQuery({
+    input: calendar ? { ...calendar, month, partySize: party } : null,
+    load: guestMonthAction,
+  });
+  const dimmed = (lastValue({ state })?.days ?? [])
+    .filter((one) => !one.open && one.date >= today)
+    .map((one) => dateOfDay({ day: one.date }))
+    .filter((date): date is Date => date !== undefined);
   return (
     <Calendar
       mode="single"
       required
       selected={dateOfDay({ day })}
       defaultMonth={dateOfDay({ day })}
+      onMonthChange={(next) => setMonth(dayOfDate({ date: next }).slice(0, 7))}
       startMonth={first}
       disabled={first ? { before: first } : undefined}
+      modifiers={{ unavailable: dimmed }}
+      modifiersClassNames={{ unavailable: "opacity-40 line-through" }}
       onSelect={(date) => {
         if (date && dayOfDate({ date }) !== day) onChange({ day: dayOfDate({ date }) });
       }}

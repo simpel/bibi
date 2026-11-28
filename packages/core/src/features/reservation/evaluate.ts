@@ -83,8 +83,13 @@ export async function evaluateDay({
     const max = candidate.maxCoversPerSlot;
     if (max !== null && coversInSlot + partySize > max) warnings.push("OVER_PACE");
     if (touches({ spans: holds.soft, startsAt, endsAt })) warnings.push("ROOM_SOFT_HELD");
-    const window = { startsAt, now, rule: sitting, openUntil: day.openUntil, partySize };
-    if (!inOnlineWindow(window)) warnings.push("OUTSIDE_ONLINE_WINDOW");
+    const window = {
+      ...{ startsAt, now, rule: sitting, partySize },
+      ...{ openFrom: day.openFrom, openUntil: day.openUntil },
+      openDaysAhead: day.openDaysAhead,
+    };
+    // Guest rules only: staff on the floor are not bound by the online window.
+    if (online && !inOnlineWindow(window)) warnings.push("OUTSIDE_ONLINE_WINDOW");
     const roomHeld = touches({ spans: holds.hard, startsAt, endsAt });
     const layout = layouts.get(candidate.layoutId);
     const tableIds =

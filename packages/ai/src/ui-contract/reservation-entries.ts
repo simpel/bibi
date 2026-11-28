@@ -87,6 +87,7 @@ export const RESERVATION_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   reservation_unseat: reservationCard,
   reservation_complete: reservationCard,
   reservation_markNoShow: reservationCard,
+  reservation_revertNoShow: reservationCard,
   tableBlock_list: tableBlockList,
   tableBlock_create: tableBlockList,
   tableBlock_delete: tableBlockOne,

@@ -12,6 +12,7 @@ import { handleLoadError } from "@/server/load-error";
 import { dayOf } from "../lib/edge-time";
 import { tableBookingRoomRoute } from "../lib/routes";
 import { loadDiningRoom } from "../load-room-settings";
+import { BlocksSection } from "./blocks-section";
 import { ExceptionsSection } from "./exceptions-section";
 import { OpenUntilControl } from "./open-until-control";
 import { SittingsSection } from "./sittings-section";
@@ -34,6 +35,7 @@ export async function RoomSettings({ locale, itemId }: RoomSettingsProps) {
   if (!room.ok) return <ErrorState errorKey={handleLoadError({ error: room.error, locale })} />;
   const timeZone = item.value.timeZone;
   const day = dayOf({ instant: room.value.openUntil, timeZone });
+  const fromDay = dayOf({ instant: room.value.openFrom, timeZone });
   const today = dayOf({ instant: new Date(), timeZone });
   return (
     <PageBands>
@@ -52,6 +54,8 @@ export async function RoomSettings({ locale, itemId }: RoomSettingsProps) {
         <OpenUntilControl
           itemId={itemId}
           slug={room.value.slug}
+          fromDay={fromDay}
+          daysAhead={room.value.openDaysAhead}
           day={day}
           today={today}
           canEdit={can({ abilities, permission: "diningSetup:write" })}
@@ -62,6 +66,9 @@ export async function RoomSettings({ locale, itemId }: RoomSettingsProps) {
       </DeferredSection>
       <DeferredSection>
         <ExceptionsSection locale={locale} item={item.value} />
+      </DeferredSection>
+      <DeferredSection>
+        <BlocksSection locale={locale} item={item.value} />
       </DeferredSection>
       <DeferredSection>
         <TablesSection locale={locale} item={item.value} />

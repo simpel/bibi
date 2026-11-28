@@ -21,14 +21,14 @@ export type ReservationRow = {
 /** What staff may do next from a state (ADR 0119: lifecycle). */
 export const NEXT_ACTIONS: Record<
   ReservationState,
-  readonly ("seat" | "unseat" | "complete" | "markNoShow" | "cancel")[]
+  readonly ("seat" | "unseat" | "complete" | "markNoShow" | "revertNoShow" | "cancel")[]
 > = {
   PENDING_PAYMENT: ["cancel"],
   BOOKED: ["seat", "markNoShow", "cancel"],
   SEATED: ["unseat", "complete"],
   COMPLETED: [],
   CANCELLED: [],
-  NO_SHOW: [],
+  NO_SHOW: ["revertNoShow"],
 };
 
 export type StaffAction = (typeof NEXT_ACTIONS)[ReservationState][number];

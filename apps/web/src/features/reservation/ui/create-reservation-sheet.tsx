@@ -17,7 +17,9 @@ import {
   toast,
 } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { DateField } from "@/components/date-picker/date-field";
 import { TextField } from "@/components/form/text-field";
@@ -37,6 +39,7 @@ import {
 import type { TableChoice } from "../lib/table-choice";
 import { CreateReservationSlots, type SlotChoice } from "./create-reservation-slots";
 import { NeedsEditor } from "./needs-editor";
+import { PartyStepper } from "./party-stepper";
 import { TableChips } from "./table-chips";
 
 export type CreateReservationSheetProps = {
@@ -66,6 +69,7 @@ function CreateReservationForm({
   const common = useTranslations("common");
   const errors = useTranslations("errors");
   const router = useRouter();
+  const [more, setMore] = useState(false);
   const form = useForm<ReservationFormValues, unknown, ReservationFormOutput>({
     mode: "onBlur",
     resolver: zodResolver(reservationFormSchema, {
@@ -104,10 +108,16 @@ function CreateReservationForm({
   });
   return (
     <Form {...form}>
-      <form onSubmit={submit} noValidate className="grid gap-5 px-4 pb-4">
+      <form
+        onSubmit={submit}
+        noValidate
+        className="grid gap-6 [&_input]:h-12 [&_input]:text-base [&_textarea]:text-base"
+      >
         <div className="grid gap-4 sm:grid-cols-2">
-          <DateField form={form} name="date" label={t("date")} required />
-          <TextField form={form} name="partySize" label={t("party")} type="number" required />
+          <div className="[&_button]:h-12 [&_button]:text-base">
+            <DateField form={form} name="date" label={t("date")} required />
+          </div>
+          <PartyStepper form={form} name="partySize" label={t("party")} />
         </div>
         <FormController
           control={form.control}
@@ -138,21 +148,38 @@ function CreateReservationForm({
           />
         ) : null}
         <TextField form={form} name="bookerName" label={t("name")} required />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <TextField form={form} name="bookerPhone" label={t("phone")} type="tel" />
-          <TextField form={form} name="bookerEmail" label={t("email")} type="email" />
-        </div>
-        <TextField form={form} name="note" label={t("note")} multiline rows={2} />
-        <NeedsEditor
-          options={needOptions}
-          value={form.watch("requirements")}
-          onChange={(rows) => form.setValue("requirements", rows, { shouldDirty: true })}
-        />
-        <SheetFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+        <TextField form={form} name="bookerPhone" label={t("phone")} type="tel" />
+        {more ? (
+          <>
+            <TextField form={form} name="bookerEmail" label={t("email")} type="email" />
+            <TextField form={form} name="note" label={t("note")} multiline rows={2} />
+            <NeedsEditor
+              options={needOptions}
+              value={form.watch("requirements")}
+              onChange={(rows) => form.setValue("requirements", rows, { shouldDirty: true })}
+            />
+          </>
+        ) : (
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 text-base"
+            onClick={() => setMore(true)}
+          >
+            <ChevronDownIcon />
+            {t("moreDetails")}
+          </Button>
+        )}
+        <SheetFooter className="sticky -bottom-6 z-10 -mx-6 -mb-6 border-t bg-popover px-6 pb-6 pt-3">
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 text-base"
+            onClick={() => onOpenChange(false)}
+          >
             {common("cancel")}
           </Button>
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" className="h-12 text-base" disabled={pending}>
             {t("submit")}
           </Button>
         </SheetFooter>

@@ -10,6 +10,7 @@ export const reservationMcpTools = [
   mcpTool({ operation: "reservation.dayView" }),
   mcpTool({ operation: "reservation.get" }),
   mcpTool({ operation: "reservation.availability" }),
+  mcpTool({ operation: "reservation.calendar" }),
   mcpTool({ operation: "reservation.create", summary: createReservationSummary }),
   mcpTool({
     operation: "reservation.update",
@@ -42,5 +43,10 @@ export const reservationMcpTools = [
     destructive: true,
     idempotent: true,
     summary: reservationVerbSummary({ verb: "Mark as no-show:" }),
+  }),
+  mcpTool({
+    operation: "reservation.revertNoShow",
+    idempotent: true,
+    summary: reservationVerbSummary({ verb: "Undo no-show:" }),
   }),
 ];

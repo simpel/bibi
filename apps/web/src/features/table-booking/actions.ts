@@ -41,6 +41,10 @@ export async function updateBookingPageAction({
 export type SetDiningRoomActionInput = {
   itemId: string;
   slug: string;
+  /** A rolling window in days from now; null = each sitting's own; undefined = unchanged. */
+  openDaysAhead?: number | null | undefined;
+  /** The first open local day (`YYYY-MM-DD`); null = no start date; undefined = unchanged. */
+  openFromDay?: string | null | undefined;
   /** The last open local day (`YYYY-MM-DD`); null = no limit; undefined = unchanged. */
   openUntilDay?: string | null | undefined;
 };
@@ -54,15 +58,33 @@ async function zoneOf({ itemId }: { itemId: string }) {
 export async function setDiningRoomAction({
   itemId,
   slug,
+  openDaysAhead,
+  openFromDay,
   openUntilDay,
 }: SetDiningRoomActionInput): Promise<ActionResult<DiningRoomDto>> {
+  let openFrom: Date | null | undefined;
   let openUntil: Date | null | undefined;
-  if (typeof openUntilDay === "string") {
+  if (typeof openFromDay === "string" || typeof openUntilDay === "string") {
     const zone = await zoneOf({ itemId });
     if (!zone.ok) return toActionResult({ result: zone });
-    openUntil = endOfDay({ day: openUntilDay, timeZone: zone.value });
-  } else openUntil = openUntilDay;
-  const input = { itemId, slug, ...(openUntil === undefined ? {} : { openUntil }) };
+    openFrom =
+      typeof openFromDay === "string"
+        ? startOfDay({ day: openFromDay, timeZone: zone.value })
+        : openFromDay;
+    openUntil =
+      typeof openUntilDay === "string"
+        ? endOfDay({ day: openUntilDay, timeZone: zone.value })
+        : openUntilDay;
+  } else {
+    openFrom = openFromDay;
+    openUntil = openUntilDay;
+  }
+  const input = {
+    ...{ itemId, slug },
+    ...(openDaysAhead === undefined ? {} : { openDaysAhead }),
+    ...(openFrom === undefined ? {} : { openFrom }),
+    ...(openUntil === undefined ? {} : { openUntil }),
+  };
   return toActionResult({ result: await runOperation({ operation: setDiningRoom, input }) });
 }
 
@@ -93,6 +115,19 @@ export async function saveSittingAction({
         input: { roomItemId, ...rest, ...season },
       });
   return toActionResult({ result });
+}
+
+/** Which layout a sitting uses; nothing else about it changes. */
+export async function setSittingLayoutAction({
+  id,
+  layoutId,
+}: {
+  id: string;
+  layoutId: string;
+}): Promise<ActionResult<DiningServiceDto>> {
+  return toActionResult({
+    result: await runOperation({ operation: updateDiningService, input: { id, layoutId } }),
+  });
 }
 
 export async function archiveSittingAction({

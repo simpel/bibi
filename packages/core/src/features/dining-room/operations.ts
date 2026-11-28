@@ -1,7 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
-import { conflict, notFound } from "../../shared/errors";
+import { conflict, invalid, notFound } from "../../shared/errors";
 import { checkRoomItem } from "./room-check";
 import {
   type DiningRoomDto,
@@ -12,16 +12,28 @@ import {
   DiningRoomSetInputSchema,
 } from "./schema";
 
-type Row = { id: string; itemId: string; slug: string; openUntil: Date | null };
+type Row = {
+  id: string;
+  itemId: string;
+  slug: string;
+  openDaysAhead: number | null;
+  openFrom: Date | null;
+  openUntil: Date | null;
+};
 
 const toDto = ({ row }: { row: Row }): DiningRoomDto => ({
   id: row.id,
   itemId: row.itemId,
   slug: row.slug,
+  openDaysAhead: row.openDaysAhead,
+  openFrom: row.openFrom,
   openUntil: row.openUntil,
 });
 
-const SELECT = { id: true, itemId: true, slug: true, openUntil: true } as const;
+const SELECT = {
+  ...{ id: true, itemId: true, slug: true },
+  ...{ openDaysAhead: true, openFrom: true, openUntil: true },
+} as const;
 
 type FindInput = { context: Pick<OperationContext, "db">; itemId: string };
 
@@ -64,13 +76,13 @@ export const setDiningRoom = defineOperation({
   kind: "command",
   description:
     "Set a room (an item with setups) up for table booking, or change its booking page slug and " +
-    "the instant bookings are open until, e.g. to release more dates to guests. A slug another " +
+    "the period bookings are open for (openFrom, openUntil, or a rolling openDaysAhead), e.g. to release more dates to guests. A slug another " +
     "room uses is CONFLICT.",
   input: DiningRoomSetInputSchema,
   output: DiningRoomSchema,
   permission: "diningSetup:write",
   handler: async ({ input, context }) => {
-    const { itemId, slug, openUntil } = input;
+    const { itemId, slug, openDaysAhead, openFrom, openUntil } = input;
     const room = await checkRoomItem({ context, itemId });
     if (!room.ok) return room;
     const taken = await context.db.diningRoom.findFirst({
@@ -79,7 +91,18 @@ export const setDiningRoom = defineOperation({
     });
     if (taken) return conflict({ message: `Another dining room uses the address "${slug}"` });
     const before = await findDiningRoom({ context, itemId });
-    const data = { slug, ...(openUntil === undefined ? {} : { openUntil }) };
+    const from = openFrom === undefined ? (before?.openFrom ?? null) : openFrom;
+    const until = openUntil === undefined ? (before?.openUntil ?? null) : openUntil;
+    if (from && until && from >= until) {
+      const message = "Bookings must open before they close";
+      return invalid({ message, issues: [{ path: "openFrom", message }] });
+    }
+    const data = {
+      slug,
+      ...(openDaysAhead === undefined ? {} : { openDaysAhead }),
+      ...(openFrom === undefined ? {} : { openFrom }),
+      ...(openUntil === undefined ? {} : { openUntil }),
+    };
     if (before) await context.db.diningRoom.updateMany({ where: { itemId }, data });
     else
       await context.db.diningRoom.create({

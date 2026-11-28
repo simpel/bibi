@@ -95,17 +95,30 @@ export type InWindowInput = {
   startsAt: Date;
   now: Date;
   rule: WindowRule;
+  /** Not before this instant; none = no start date. */
+  openFrom?: Date | null;
+  /** The room's rolling window in days, replacing the sitting's `maxDaysAhead`; none = the sitting's. */
+  openDaysAhead?: number | null;
   openUntil: Date | null;
   partySize: number;
 };
 
 /** Whether a guest may book this start online: far enough ahead, not too far, released, small enough. */
-export function inOnlineWindow({ startsAt, now, rule, openUntil, partySize }: InWindowInput) {
+export function inOnlineWindow({
+  startsAt,
+  now,
+  rule,
+  openFrom = null,
+  openDaysAhead = null,
+  openUntil,
+  partySize,
+}: InWindowInput) {
   const ahead = startsAt.getTime() - now.getTime();
   return (
     partySize <= rule.maxOnlineParty &&
     ahead >= rule.minMinutesAhead * MINUTE_MS &&
-    ahead <= rule.maxDaysAhead * DAY_MS &&
+    ahead <= (openDaysAhead ?? rule.maxDaysAhead) * DAY_MS &&
+    (openFrom === null || startsAt >= openFrom) &&
     (openUntil === null || startsAt < openUntil)
   );
 }

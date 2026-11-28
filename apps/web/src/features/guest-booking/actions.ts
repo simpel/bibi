@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  publicCalendar,
   publicCancelReservation,
   publicChangeReservation,
   publicCreateReservation,
@@ -75,6 +76,31 @@ export async function changeGuestReservationAction({
     input: { token, ...change },
   });
   return done({ result });
+}
+
+export type GuestMonthInput = {
+  slug: string;
+  roomSlug: string;
+  /** `YYYY-MM` in the room's zone. */
+  month: string;
+  partySize: number;
+  /** A guest moving their own booking: it does not count against the dates. */
+  token?: string;
+};
+
+/** The booking page's calendar: which dates of a month a party can book, never why. */
+export async function guestMonthAction({
+  token,
+  ...input
+}: GuestMonthInput): Promise<ActionResult<{ days: { date: string; open: boolean }[] }>> {
+  const result = await runGuestOperation({
+    pin: token ? { token } : { slug: input.slug },
+    operation: publicCalendar,
+    input: { ...input, ...(token ? { token } : {}) },
+  });
+  return toActionResult({
+    result: result.ok ? { ok: true, value: { days: result.value.days } } : result,
+  });
 }
 
 /** The manage page: the guest cancels before the change cutoff. */

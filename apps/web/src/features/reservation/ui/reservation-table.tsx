@@ -3,13 +3,17 @@
 import {
   actionsColumn,
   type ColumnDef,
+  cn,
   createTableColumns,
+  Input,
   numberColumn,
   StatusBadge,
 } from "@bibi/ui";
+import { SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
-import { ClientDataTable } from "@/components/data-table/client-data-table";
+import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
+import { useInfiniteRows } from "@/components/data-table/use-infinite-rows";
 import { Link } from "@/lib/navigation";
 import type { ReservationRow } from "../lib/reservation-row";
 import { reservationRoute } from "../lib/routes";
@@ -28,6 +32,7 @@ export type ReservationTableProps = {
 export function ReservationTable({ rows, canWrite, selectedId, onSelect }: ReservationTableProps) {
   const t = useTranslations("reservation");
   const common = useTranslations("common");
+  const [query, setQuery] = useState("");
   const [cancelling, setCancelling] = useState<ReservationRow | null>(null);
   const columns = useMemo<ColumnDef<ReservationRow>[]>(
     () =>
@@ -69,31 +74,60 @@ export function ReservationTable({ rows, canWrite, selectedId, onSelect }: Reser
           }),
         ],
         actions: [
-          actionsColumn<ReservationRow>({
-            label: common("actions"),
-            cell: (row) => (
-              <ReservationRowActions row={row} canWrite={canWrite} onCancel={setCancelling} />
-            ),
-          }),
+          {
+            ...actionsColumn<ReservationRow>({
+              label: common("actions"),
+              cell: (row) => (
+                <ReservationRowActions row={row} canWrite={canWrite} onCancel={setCancelling} />
+              ),
+            }),
+            size: 176,
+          },
         ],
       }),
     [t, common, canWrite],
   );
+  // Live: every keystroke filters the day's reservations, no submit and no round trip.
+  const filtered = useMemo(() => {
+    const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return rows;
+    return rows.filter((row) => {
+      const text =
+        `${row.time} ${row.name} ${row.tables} ${row.needs} ${row.stateLabel}`.toLowerCase();
+      return words.every((word) => text.includes(word));
+    });
+  }, [rows, query]);
+  const infinite = useInfiniteRows({ rows: filtered });
   return (
     <>
-      <ClientDataTable
+      <div className="relative pb-2 pl-4 pr-16 pt-[7px]">
+        <SearchIcon
+          aria-hidden
+          className="pointer-events-none absolute left-7 top-[31px] size-5 -translate-y-1/2 text-muted-foreground"
+        />
+        <Input
+          type="search"
+          value={query}
+          placeholder={common("search")}
+          aria-label={common("search")}
+          className="h-12 pl-10 text-base"
+          onChange={(event) => setQuery(event.target.value)}
+        />
+      </div>
+      <PersistedDataTable
         tableId="reservation.day"
         columns={columns}
-        data={rows}
+        data={[...infinite.rows]}
+        flush
         getRowId={(row) => row.id}
-        getSearchText={(row) => `${row.name} ${row.tables} ${row.needs}`}
         onRowClick={onSelect}
-        rowClassName={(row) => (row.id === selectedId ? "bg-accent" : undefined)}
+        rowClassName={(row) => cn("h-16 text-base", row.id === selectedId && "bg-accent")}
         rowMenu={(row) => (
           <ReservationRowMenu row={row} canWrite={canWrite} onCancel={setCancelling} />
         )}
         emptyText={t("empty")}
       />
+      {infinite.more ? <div ref={infinite.end} className="h-px" /> : null}
       <CancelReservationDialog
         id={cancelling?.id ?? ""}
         name={cancelling?.name ?? ""}

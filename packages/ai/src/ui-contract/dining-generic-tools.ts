@@ -11,6 +11,7 @@ export const DINING_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = Object.
     "diningRoom_list",
     "diningRoom_get",
     "diningRoom_set",
+    "reservation_calendar",
     "diningService_list",
     "diningService_get",
     "diningService_create",

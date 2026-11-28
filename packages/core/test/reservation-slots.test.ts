@@ -92,6 +92,35 @@ describe("bookable starts of a sitting (ADR 0119)", () => {
         extra: { openUntil: at({ iso: "2026-12-08T00:00:00.000Z" }) },
       }),
     ).toBe(false);
+    // A rolling window for the room replaces the sitting's own limit.
+    expect(
+      window({
+        startsAt: at({ iso: "2027-01-20T16:00:00.000Z" }),
+        extra: { openDaysAhead: 90 },
+      }),
+    ).toBe(true);
+    expect(
+      window({
+        startsAt: at({ iso: "2026-12-20T16:00:00.000Z" }),
+        extra: { openDaysAhead: 7 },
+      }),
+    ).toBe(false);
+    // Not yet open: before the first open day.
+    expect(
+      window({
+        startsAt: at({ iso: "2026-12-06T16:00:00.000Z" }),
+        extra: { openFrom: at({ iso: "2026-12-08T00:00:00.000Z" }) },
+      }),
+    ).toBe(false);
+    expect(
+      window({
+        startsAt: at({ iso: "2026-12-10T16:00:00.000Z" }),
+        extra: {
+          openFrom: at({ iso: "2026-12-08T00:00:00.000Z" }),
+          openUntil: at({ iso: "2026-12-15T00:00:00.000Z" }),
+        },
+      }),
+    ).toBe(true);
   });
 });
 

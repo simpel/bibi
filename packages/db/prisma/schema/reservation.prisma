@@ -43,6 +43,12 @@ model DiningRoom {
   /// in the room's zone, chosen as a date at the edge, ADR 0064); null = only the sittings'
   /// `maxDaysAhead` limits.
   openUntil      DateTime?
+  /// Owned instant: guests may book a time that starts at or after it (the start of the first open
+  /// day in the room's zone, ADR 0064); null = no start date.
+  openFrom       DateTime?
+  /// Owned: a rolling window for the whole room, in days from now; replaces the sittings'
+  /// `maxDaysAhead` when set, null = each sitting's own limit.
+  openDaysAhead  Int?
   status         RecordStatus @default(ACTIVE)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
@@ -272,25 +278,25 @@ model TableHold {
 /// The organization's public booking page (ADR 0119), lightly white-labelled. One per
 /// organization; all columns owned. Texts are keyed by locale (`{ "sv": …, "en": … }`).
 model BookingPage {
-  id             String       @id @default(cuid(2))
-  organizationId String       @unique
+  id             String            @id @default(cuid(2))
+  organizationId String            @unique
   /// The first part of the public address `/book/<slug>/<room>`; unique across organizations.
-  slug           String       @unique
+  slug           String            @unique
   /// Storage keys (ADR 0063), like `avatarKey`.
   logoKey        String?
   coverKey       String?
   /// `#rrggbb`, refused under 4.5:1 contrast on white.
   accentColor    String?
-  intro          Json         @default("{}")
-  policy         Json         @default("{}")
+  intro          Json              @default("{}")
+  policy         Json              @default("{}")
   contactPhone   String?
   contactEmail   String?
   /// Https origins allowed to embed the page (`frame-ancestors`); values, not ids (ADR 0056).
   embedOrigins   String[]
-  published      Boolean      @default(false)
-  status         RecordStatus @default(ACTIVE)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  published      Boolean           @default(false)
+  status         RecordStatus      @default(ACTIVE)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   createdBy      String?
   guestLists     BookingPageList[]
 

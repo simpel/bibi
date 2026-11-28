@@ -9,14 +9,15 @@ import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { dayOf } from "../../table-booking/lib/edge-time";
 import { tablesOf } from "../../table-booking/lib/layout-tables";
-import { floorPlanData, floorSitting, slotTimes, toFloorSitting } from "../lib/floor-data";
+import { dayTimes, floorPlanData, toFloorSitting } from "../lib/floor-data";
 import type { FloorBlock } from "../lib/floor-model";
 import { needsLabel, type ReservationRow } from "../lib/reservation-row";
 import type { TableChoice } from "../lib/table-choice";
-import { BlockTablesButton } from "./block-tables-dialog";
+import { AdminMenu } from "./admin-menu";
 import { CreateReservationButton } from "./create-reservation-button";
 import { DayToolbar } from "./day-toolbar";
 import { DayWorkspace } from "./day-workspace";
+import { FullscreenButton, FullscreenFrame } from "./fullscreen-frame";
 
 export type DayScreenProps = {
   locale: Locale;
@@ -48,6 +49,7 @@ export async function DayScreen({ locale, date, room, createOpen = false }: DayS
   const rooms = view.value.rooms.map((one) => ({ ...one, name: one.name ?? one.slug }));
   const roomName = selected.name ?? selected.slug;
   const canWrite = can({ abilities, permission: "reservation:write" });
+  const canSetUp = can({ abilities, permission: "diningSetup:read" });
   const names = new Map(needOptions.map((need) => [need.id, need.name]));
   const rows: ReservationRow[] = view.value.reservations.items.map((item) => ({
     id: item.id,
@@ -97,33 +99,39 @@ export async function DayScreen({ locale, date, room, createOpen = false }: DayS
   const today = dayOf({ instant: new Date(), timeZone });
   const { totals } = view.value.reservations;
   const needsSummary = needsLabel({ needs: totals.needs, names });
-  const actions = canWrite ? (
+  const actions = (
     <>
-      <BlockTablesButton roomItemId={roomItemId} date={date} tables={allTables} />
-      <CreateReservationButton
-        roomItemId={roomItemId}
-        date={date}
-        tablesByService={tablesByService}
-        needOptions={needOptions}
-        defaultOpen={createOpen}
-      />
+      {canWrite ? (
+        <CreateReservationButton
+          roomItemId={roomItemId}
+          date={date}
+          tablesByService={tablesByService}
+          needOptions={needOptions}
+          defaultOpen={createOpen}
+        />
+      ) : null}
+      {canSetUp ? <AdminMenu roomItemId={roomItemId} /> : null}
+      <FullscreenButton />
     </>
-  ) : undefined;
-  const sitting = floorSitting({
+  );
+  const times = dayTimes({
     sittings: view.value.sittings.map((one) => toFloorSitting({ sitting: one })),
+    date,
+    timeZone,
   });
-  const layout = view.value.layouts.find((one) => one.id === sitting?.layoutId);
-  const times = sitting ? slotTimes({ sitting, date, timeZone }) : [];
   const firstBooked = rows.find((row) => row.state !== "NO_SHOW")?.startsAtMs ?? 0;
   const initialMs = (times.find((time) => time.ms >= firstBooked) ?? times[0])?.ms ?? 0;
-  const plan =
-    layout && sitting
-      ? floorPlanData({ layout, tableName: (label) => t("floor.table", { label }) })
-      : null;
+  const plans = Object.fromEntries(
+    [...new Set(times.map((time) => time.layoutId))].flatMap((layoutId) => {
+      const layout = view.value.layouts.find((one) => one.id === layoutId);
+      if (!layout) return [];
+      const data = floorPlanData({ layout, tableName: (label) => t("floor.table", { label }) });
+      return [[layoutId, { data, title: t("floor.title", { name: layout.name ?? roomName }) }]];
+    }),
+  );
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3 sm:p-4 lg:overflow-hidden">
+    <FullscreenFrame className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3 sm:p-4 lg:overflow-hidden">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <h1 className="text-xl">{t("title")}</h1>
         <DayToolbar rooms={rooms} roomItemId={roomItemId} date={date} today={today} />
         <p className="flex flex-wrap gap-x-3 text-sm">
           <span className="font-medium">
@@ -132,22 +140,22 @@ export async function DayScreen({ locale, date, room, createOpen = false }: DayS
           <span className="font-medium">{t("totals.covers", { count: totals.covers })}</span>
           {needsSummary ? <span className="text-muted-foreground">{needsSummary}</span> : null}
         </p>
-        {actions ? <div className="ml-auto flex items-center gap-2">{actions}</div> : null}
+        <div className="ml-auto flex items-center gap-2">{actions}</div>
       </div>
       <DayWorkspace
         key={`${roomItemId}-${date}`}
         roomItemId={roomItemId}
         date={date}
-        title={t("floor.title", { name: layout?.name ?? roomName })}
-        plan={plan}
+        plans={plans}
         times={times}
         initialMs={initialMs}
         rows={rows}
         blocks={blocks}
         canWrite={canWrite}
         tablesByService={tablesByService}
+        allTables={allTables}
         needOptions={needOptions}
       />
-    </div>
+    </FullscreenFrame>
   );
 }

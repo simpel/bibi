@@ -3,8 +3,9 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import { nowOf } from "../../time/now";
-import { releaseHolds } from "./holds";
+import { releaseHolds, writeHolds } from "./holds";
 import { mailGuest } from "./mail-message";
+import { planBooking } from "./plan-booking";
 import {
   ReservationCancelInputSchema,
   type ReservationDto,
@@ -13,6 +14,7 @@ import {
   type ReservationState,
 } from "./schema";
 import { loadReservation } from "./to-dto";
+import { lockRoom } from "./write-operations";
 
 type MoveInput = {
   context: OperationContext;
@@ -126,10 +128,57 @@ export const markReservationNoShow = defineOperation({
     }),
 });
 
+const MINUTE_MS = 60_000;
+
+export const revertReservationNoShow = defineOperation({
+  name: "reservation.revertNoShow",
+  kind: "command",
+  description:
+    "Undo a no-show: the guests came after all. The party is booked again with the tables it " +
+    "had, else other free ones for the same time (CONFLICT when none is free).",
+  input: ReservationIdInputSchema,
+  output: ReservationSchema,
+  permission: "reservation:write",
+  handler: async ({ input, context }) => {
+    const before = await loadReservation({ context, id: input.id });
+    if (!before) return notFound({ entity: "Reservation" });
+    if (before.state !== "NO_SHOW")
+      return conflict({
+        message: `A ${before.state.toLowerCase()} reservation is not a no-show`,
+      });
+    await lockRoom({ context, roomItemId: before.roomItemId });
+    const base = {
+      ...{ context, roomItemId: before.roomItemId, startsAt: before.startsAt },
+      ...{ partySize: before.partySize, except: before.id },
+      durationMinutes: (before.endsAt.getTime() - before.startsAt.getTime()) / MINUTE_MS,
+    };
+    const kept = await planBooking({
+      ...base,
+      tableIds: before.tables.map((table) => table.elementId),
+    });
+    const plan = kept.ok ? kept : await planBooking(base);
+    if (!plan.ok) return plan;
+    const { endsAt, tableIds } = plan.value;
+    await context.db.reservation.update({
+      where: { id: before.id },
+      data: { state: "BOOKED", endsAt },
+    });
+    await writeHolds({
+      ...{ context, reservationId: before.id, elementIds: tableIds },
+      ...{ startsAt: before.startsAt, endsAt },
+    });
+    const after = await loadReservation({ context, id: before.id });
+    if (!after) return notFound({ entity: "Reservation" });
+    context.recordChange({ entityId: before.id, before, after });
+    return ok({ value: after });
+  },
+});
+
 export const reservationStateOperations = [
   cancelReservation,
   seatReservation,
   unseatReservation,
   completeReservation,
   markReservationNoShow,
+  revertReservationNoShow,
 ];

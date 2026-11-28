@@ -50,10 +50,10 @@ function Frame<V extends FieldValues, O>({ form, submit, pending, children }: Fr
       <form onSubmit={submit} noValidate className="grid max-w-xl gap-4">
         {children}
         <div className="flex gap-2">
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" className="h-12 text-base" disabled={pending}>
             {common("save")}
           </Button>
-          <Button type="button" variant="outline" onClick={close}>
+          <Button type="button" variant="outline" className="h-12 text-base" onClick={close}>
             {common("cancel")}
           </Button>
         </div>

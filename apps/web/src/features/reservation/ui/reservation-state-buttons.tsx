@@ -21,6 +21,7 @@ export function ReservationStateButtons({ id, state }: ReservationStateButtonsPr
         <Button
           key={action}
           variant={index === 0 ? "default" : "outline"}
+          className="h-12 px-5 text-base"
           disabled={pending}
           onClick={() => change({ id, action })}
         >

@@ -29,7 +29,9 @@ describe("cross-organization isolation: table reservations (ADR 0119)", () => {
       ["reservation_unseat", { id }],
       ["reservation_complete", { id }],
       ["reservation_markNoShow", { id }],
+      ["reservation_revertNoShow", { id }],
       ["reservation_availability", { roomItemId, date: "2037-11-03", partySize: 2 }],
+      ["reservation_calendar", { roomItemId, month: "2037-11", partySize: 2 }],
       [
         "reservation_create",
         { roomItemId, startsAt: STARTS, partySize: 2, bookerName: "Intruder" },

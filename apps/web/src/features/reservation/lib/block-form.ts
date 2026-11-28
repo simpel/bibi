@@ -43,11 +43,17 @@ export function blockToInput({ values }: { values: BlockFormValues }) {
 export const blockFormSchema = formSchema({ schema, toInput: blockToInput });
 export type BlockFormOutput = z.output<typeof blockFormSchema>;
 
-export const blockDefaults = ({ day }: { day: string }): BlockFormValues => ({
-  elementIds: [],
+export type BlockDefaultsInput = { day: string; tableId?: string; startTime?: string };
+
+export const blockDefaults = ({
+  day,
+  tableId,
+  startTime,
+}: BlockDefaultsInput): BlockFormValues => ({
+  elementIds: tableId ? [tableId] : [],
   kind: "BLOCK",
   startDay: day,
-  startTime: "17:00",
+  startTime: startTime ?? "17:00",
   endDay: day,
   endTime: "23:00",
   note: "",

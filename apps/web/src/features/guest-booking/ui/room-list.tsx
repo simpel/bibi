@@ -21,14 +21,9 @@ export async function RoomList({ page }: RoomListProps) {
           <li key={room.slug}>
             <Link
               href={`/book/${page.slug}/${room.slug}`}
-              className="flex min-h-14 items-center gap-3 rounded-xl border bg-background px-4 py-3 outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex min-h-14 items-center gap-3 rounded-lg border bg-background px-4 py-3 outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <span className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate font-medium">{room.name}</span>
-                <span className="text-sm text-muted-foreground">
-                  {t("upTo", { count: room.maxOnlineParty })}
-                </span>
-              </span>
+              <span className="min-w-0 flex-1 truncate text-base font-medium">{room.name}</span>
               <ChevronRightIcon aria-hidden className="size-5 text-muted-foreground" />
             </Link>
           </li>

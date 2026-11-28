@@ -21,9 +21,7 @@ import {
   SelectValue,
 } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LockIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { DateField } from "@/components/date-picker/date-field";
 import { TextField } from "@/components/form/text-field";
@@ -41,19 +39,25 @@ import {
 import type { TableChoice } from "../lib/table-choice";
 import { TableChips } from "./table-chips";
 
-export type BlockTablesButtonProps = {
+export type BlockTablesDialogProps = {
   roomItemId: string;
   date: string;
   /** Every seated table of the layouts the room's sittings use. */
   tables: readonly TableChoice[];
+  /** The table picked on the floor: blocked first, more can be added. */
+  tableId: string | null;
+  /** The time chosen on the floor, `19:00`: the block starts then. */
+  startTime: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 };
 
-function BlockForm({
-  roomItemId,
-  date,
-  tables,
-  onDone,
-}: BlockTablesButtonProps & { onDone: () => void }) {
+type BlockFormProps = Pick<
+  BlockTablesDialogProps,
+  "roomItemId" | "date" | "tables" | "tableId" | "startTime"
+> & { onDone: () => void };
+
+function BlockForm({ roomItemId, date, tables, tableId, startTime, onDone }: BlockFormProps) {
   const t = useTranslations("reservation.block");
   const common = useTranslations("common");
   const errors = useTranslations("errors");
@@ -62,7 +66,11 @@ function BlockForm({
     resolver: zodResolver(blockFormSchema, {
       error: zodMessageMap({ translate: (key) => errors(key) }),
     }),
-    defaultValues: blockDefaults({ day: date }),
+    defaultValues: blockDefaults({
+      day: date,
+      ...(tableId ? { tableId } : {}),
+      ...(/^\d{1,2}:\d{2}$/.test(startTime) ? { startTime } : {}),
+    }),
   });
   const { submit, pending } = useFormAction({
     form,
@@ -119,10 +127,10 @@ function BlockForm({
         </div>
         <TextField form={form} name="note" label={t("note")} />
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onDone}>
+          <Button type="button" variant="outline" className="h-12 text-base" onClick={onDone}>
             {common("cancel")}
           </Button>
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" className="h-12 text-base" disabled={pending}>
             {t("submit")}
           </Button>
         </DialogFooter>
@@ -132,24 +140,17 @@ function BlockForm({
 }
 
 /** Block tables: hold tables back from guests (or from everyone) for a period. */
-export function BlockTablesButton(props: BlockTablesButtonProps) {
+export function BlockTablesDialog({ open, onOpenChange, ...props }: BlockTablesDialogProps) {
   const t = useTranslations("reservation.block");
-  const [open, setOpen] = useState(false);
   return (
-    <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        <LockIcon />
-        {t("title")}
-      </Button>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("title")}</DialogTitle>
-            <DialogDescription>{t("description")}</DialogDescription>
-          </DialogHeader>
-          {open ? <BlockForm {...props} onDone={() => setOpen(false)} /> : null}
-        </DialogContent>
-      </Dialog>
-    </>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
+        </DialogHeader>
+        {open ? <BlockForm {...props} onDone={() => onOpenChange(false)} /> : null}
+      </DialogContent>
+    </Dialog>
   );
 }

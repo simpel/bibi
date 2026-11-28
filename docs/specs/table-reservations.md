@@ -25,8 +25,8 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 - A slot is offered online only when all hold:
   - inside a sitting on that weekday, within its season (`validFrom`/`validUntil`, instants set from local dates at the edge), and between its first and last booking time;
   - not on a closed `DiningServiceException` for that sitting and date, nor on a venue or room `HoursException` closed all day;
-  - before the dining room's `openUntil` (an instant: the end of the last open day in the room's zone; null = only the sitting's `maxDaysAhead` limits);
-  - at least `minMinutesAhead` from now and at most `maxDaysAhead` days ahead;
+  - at or after the dining room's `openFrom` (an instant: the start of the first open day in the room's zone; null = no start date) and before its `openUntil` (an instant: the end of the last open day in the room's zone; null = only the sitting's `maxDaysAhead` limits);
+  - at least `minMinutesAhead` from now and at most the room's `openDaysAhead` days ahead, else the sitting's `maxDaysAhead`;
   - the party size is at most `maxOnlineParty`;
   - the covers starting in that slot plus the party stay within `maxCoversPerSlot` (null = no pace limit);
   - no HARD hold or manual block on the room overlaps `[start, start + turn time)`;
@@ -72,7 +72,7 @@ Target behaviour. Why: ADR 0119. Entities: `docs/domain-model.md` (Reservations)
 - Fixed for everyone: layout, fonts, "Powered by Bibi".
 
 ## Operations
-- Staff, every surface (parity): `reservation.list({ roomItemId?, from, to })`, `get`, `create`, `update`, `cancel`, `seat`, `unseat`, `complete`, `markNoShow`, `availability({ roomItemId, date, partySize })` (`reservation:read|write`); `tableBlock.list|create|delete` (`reservation:read|write`); `diningRoom.list|get|set`, `diningService.list|get|create|update|archive`, `diningServiceException.list|set|delete`, `tableCombination.list|save`, `bookingPage.get|update` (`diningSetup:read|write`). Table fields (`label`, `minCovers`, `maxCovers`, `onlineBookable`) go through `layout.save`.
+- Staff, every surface (parity): `reservation.list({ roomItemId?, from, to })`, `get`, `create`, `update`, `cancel`, `seat`, `unseat`, `complete`, `markNoShow`, `revertNoShow`, `availability({ roomItemId, date, partySize })` (`reservation:read|write`); `tableBlock.list|create|delete` (`reservation:read|write`); `diningRoom.list|get|set`, `diningService.list|get|create|update|archive`, `diningServiceException.list|set|delete`, `tableCombination.list|save`, `bookingPage.get|update` (`diningSetup:read|write`). Table fields (`label`, `minCovers`, `maxCovers`, `onlineBookable`) go through `layout.save`.
 - Permissions: `reservation` (bookings group; every member writes, managers and admins archive) and `diningSetup` (setup group; managers and admins).
 - Public, `systemOnly`, outside the registry: `reservation.publicRooms({ slug })`, `publicAvailability`, `publicCreate`, `publicGet({ token })`, `publicChange`, `publicCancel`.
 - Public API `/api/public/v1`, keyed by the published page's slug: `GET pages/{slug}`, `GET pages/{slug}/rooms/{room}/availability`, `POST pages/{slug}/rooms/{room}/reservations`; `GET|PATCH reservations/{token}` and `POST reservations/{token}/cancel` with the guest's token. Per-IP rate limit, open CORS, no cookies.

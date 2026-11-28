@@ -9,12 +9,15 @@ import {
   getItem,
   markReservationNoShow,
   reservationAvailability,
+  reservationCalendar,
+  revertReservationNoShow,
   seatReservation,
   unseatReservation,
   updateReservation,
 } from "@bibi/core";
 import type {
   ReservationAvailabilityOutputSchema,
+  ReservationCalendarOutputSchema,
   ReservationCreateInput,
   ReservationDto,
   ReservationUpdateInput,
@@ -31,16 +34,34 @@ import type { BlockActionInput } from "./lib/block-form";
 export type ReservationWithWarnings = z.infer<typeof ReservationWithWarningsSchema>;
 export type AvailabilityOutput = z.infer<typeof ReservationAvailabilityOutputSchema>;
 
-export type StateAction = "seat" | "unseat" | "complete" | "markNoShow";
+export type GuestCalendarActionInput = { roomItemId: string; month: string; partySize: number };
+export type GuestCalendarOutput = z.infer<typeof ReservationCalendarOutputSchema>;
+
+/** A month as a guest meets it (the guest rules applied), for the room's setup page. */
+export async function guestCalendarAction({
+  roomItemId,
+  month,
+  partySize,
+}: GuestCalendarActionInput): Promise<ActionResult<GuestCalendarOutput>> {
+  return toActionResult({
+    result: await runOperation({
+      operation: reservationCalendar,
+      input: { roomItemId, month, partySize },
+    }),
+  });
+}
+
+export type StateAction = "seat" | "unseat" | "complete" | "markNoShow" | "revertNoShow";
 
 const STATE_OPERATIONS = {
   seat: seatReservation,
   unseat: unseatReservation,
   complete: completeReservation,
   markNoShow: markReservationNoShow,
+  revertNoShow: revertReservationNoShow,
 } as const;
 
-/** Seat, undo seating, complete or mark as no-show. */
+/** Seat, undo seating, complete, mark as no-show or undo a no-show. */
 export async function reservationStateAction({
   id,
   action,

@@ -28,7 +28,15 @@ export function BookingFlow(props: BookingFlowProps) {
   const t = useTranslations("guestBooking");
   const router = useRouter();
   const [slot, setSlot] = useState<SlotChoice | null>(null);
-  if (!slot) return <SlotPicker {...props} onPick={({ slot: picked }) => setSlot(picked)} />;
+  if (!slot) {
+    return (
+      <SlotPicker
+        {...props}
+        calendar={{ slug: props.slug, roomSlug: props.roomSlug }}
+        onPick={({ slot: picked }) => setSlot(picked)}
+      />
+    );
+  }
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-1 rounded-xl border bg-muted/50 px-4 py-3">

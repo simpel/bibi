@@ -12,6 +12,8 @@ export const DINING_OPERATION_KEYS = [
 
 /** Table booking input fields with a localized label in `assistant.approval.fields`. */
 export const DINING_FIELD_KEYS = [
+  "openDaysAhead",
+  "openFrom",
   "openUntil",
   "roomItemId",
   "weekdays",

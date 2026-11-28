@@ -12,6 +12,8 @@ import {
   listReservations,
   markReservationNoShow,
   reservationAvailability,
+  reservationCalendar,
+  revertReservationNoShow,
   seatReservation,
   updateReservation,
 } from "../src/index";
@@ -163,6 +165,62 @@ describe("table reservations (ADR 0119)", () => {
     });
     unwrap({ result: await move({ operation: markReservationNoShow, id: three.id }) });
     unwrap({ result: await execute({ operation: createReservation, input: other, context }) });
+  });
+
+  it("shows a month as a guest meets it, matching the online availability", async () => {
+    const context = testContext();
+    const { item } = await diningRoomReady({ context });
+    const { iso } = aheadDate({});
+    const month = iso.slice(0, 7);
+    const calendar = unwrap({
+      result: await execute({
+        operation: reservationCalendar,
+        input: { roomItemId: item.id, month, partySize: 2 },
+        context,
+      }),
+    });
+    expect(calendar.days.length).toBeGreaterThanOrEqual(28);
+    expect(calendar.days.every((day) => day.date.startsWith(month))).toBe(true);
+    const day = calendar.days.find((one) => one.date === iso);
+    const online = unwrap({
+      result: await execute({
+        operation: reservationAvailability,
+        input: { roomItemId: item.id, date: iso, partySize: 2, online: true },
+        context,
+      }),
+    });
+    expect(day?.total).toBe(online.slots.length);
+    expect(day?.starts).toBe(online.slots.filter((slot) => slot.available).length);
+  });
+
+  it("undoes a no-show when the guests come late: booked again, tables held again", async () => {
+    const context = testContext();
+    const { item, table } = await diningRoomReady({ context });
+    const startsAt = at({ date: aheadDate({}).date, hour: 18 });
+    const input = {
+      roomItemId: item.id,
+      startsAt,
+      partySize: 2,
+      tableIds: [table({ label: "1" })],
+      ...booker,
+    };
+    const one = unwrap({
+      result: await execute({ operation: createReservation, input, context }),
+    });
+    const revert = () =>
+      execute({ operation: revertReservationNoShow, input: { id: one.id }, context });
+    // Only a no-show can be undone.
+    expect(errorCode({ result: await revert() })).toBe("CONFLICT");
+    unwrap({
+      result: await execute({ operation: markReservationNoShow, input: { id: one.id }, context }),
+    });
+    const back = unwrap({ result: await revert() });
+    expect(back.state).toBe("BOOKED");
+    expect(back.tables.map((t) => t.label)).toEqual(["1"]);
+    // The table is theirs again.
+    expect(
+      errorCode({ result: await execute({ operation: createReservation, input, context }) }),
+    ).toBe("CONFLICT");
   });
 
   it("honours blocks: online-only tables stay with staff, blocked ones with nobody", async () => {

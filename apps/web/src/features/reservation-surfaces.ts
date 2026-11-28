@@ -16,6 +16,7 @@ export const RESERVATION_SURFACES: readonly WebSurface[] = [
   { operation: "reservation.unseat", route: ONE },
   { operation: "reservation.complete", route: ONE },
   { operation: "reservation.markNoShow", route: ONE },
+  { operation: "reservation.revertNoShow", route: ONE },
   { operation: "tableBlock.list", route: DAY },
   { operation: "tableBlock.create", route: DAY },
   { operation: "tableBlock.delete", route: DAY },

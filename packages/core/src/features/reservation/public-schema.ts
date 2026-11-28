@@ -49,6 +49,20 @@ export const PublicAvailabilityInputSchema = z.object({
     .describe("A guest moving their own booking: it does not count against the times"),
 });
 
+export const PublicCalendarInputSchema = z.object({
+  slug: z.string().min(1).max(60),
+  roomSlug: z.string().min(1).max(60),
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+  partySize: z.number().int().min(1).max(100),
+  token: z.string().min(1).max(100).optional(),
+});
+
+/** Per date only whether a guest can book at all, never why (a venue's reasons stay private). */
+export const PublicCalendarOutputSchema = z.object({
+  timeZone: z.string(),
+  days: z.array(z.object({ date: PlainDateStringSchema, open: z.boolean() })),
+});
+
 export const PublicAvailabilityOutputSchema = z.object({
   timeZone: z.string(),
   slots: z.array(z.object({ startsAt: z.date(), endsAt: z.date(), serviceName: z.string() })),

@@ -49,6 +49,8 @@ export default defineConfig({
       command: "pnpm start",
       url: `${WEB_ORIGIN}/sv/login`,
       reuseExistingServer: true,
+      // The readiness check must accept a local https dev server's mkcert certificate too.
+      ignoreHTTPSErrors: true,
       timeout: 120_000,
       env: {
         ...process.env,

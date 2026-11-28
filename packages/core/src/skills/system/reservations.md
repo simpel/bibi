@@ -1,7 +1,7 @@
 ---
 name: reservations
 description: "Answer and act on table reservations: covers and needs for a day, free times for a party, create, change, seat, cancel, and hold back tables. Use when the user asks about bookings in a dining room, e.g. 'how many covers tonight', 'any allergies this evening', 'book a table for 4 on Friday at 19:00', 'block table 5 for lunch'."
-allowed-tools: reservation_list reservation_get reservation_availability reservation_create reservation_update reservation_cancel reservation_seat reservation_unseat reservation_complete reservation_markNoShow tableBlock_list tableBlock_create tableBlock_delete diningRoom_list diningService_list customer_list
+allowed-tools: reservation_list reservation_get reservation_availability reservation_calendar reservation_create reservation_update reservation_cancel reservation_seat reservation_unseat reservation_complete reservation_markNoShow reservation_revertNoShow tableBlock_list tableBlock_create tableBlock_delete diningRoom_list diningService_list customer_list
 metadata:
   title: "Reservations"
 ---
@@ -41,7 +41,8 @@ Goal: answer questions about a dining room's reservations and, when asked, propo
 3. Propose `reservation_create` with the confirmed values. It needs the user's approval; do not
    claim the booking exists until it is approved.
 4. Changes (`reservation_update`) and state steps (`reservation_seat`, `reservation_unseat`,
-   `reservation_complete`, `reservation_markNoShow`, `reservation_cancel`) are proposals too.
+   `reservation_complete`, `reservation_markNoShow`, `reservation_revertNoShow` when a guest
+   marked as no-show comes late, `reservation_cancel`) are proposals too.
    Name the reservation (time, name, party) when you propose them.
 
 ## Warnings and refusals

@@ -8,6 +8,7 @@ import {
   organizationOfToken,
   publicAvailability,
   publicBookingPage,
+  publicCalendar,
   publicCancelReservation,
   publicChangeReservation,
   publicCreateReservation,
@@ -77,6 +78,16 @@ describe("guests book their own table (ADR 0119)", () => {
       }),
     }) as { slots: { startsAt: Date }[] };
     expect(free.slots.length).toBeGreaterThan(0);
+
+    // The calendar marks the same date open and says only open or not, never why.
+    const month = unwrap({
+      result: await guestRun({
+        operation: publicCalendar,
+        input: { slug, roomSlug: "kajen", month: iso.slice(0, 7), partySize: 2 },
+      }),
+    }) as { days: { date: string; open: boolean }[] };
+    expect(month.days.find((day) => day.date === iso)).toEqual({ date: iso, open: true });
+    expect(Object.keys(month.days[0] ?? {}).sort()).toEqual(["date", "open"]);
 
     const booked = unwrap({
       result: await guestRun({

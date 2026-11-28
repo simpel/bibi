@@ -50,6 +50,11 @@ export async function ManageReservation({
           <ChangeTime
             {...change}
             token={token}
+            calendar={
+              reservation.pageSlug && reservation.roomSlug
+                ? { slug: reservation.pageSlug, roomSlug: reservation.roomSlug, token }
+                : undefined
+            }
             contactPhone={page?.contactPhone ?? null}
             selected={startsAt.toISOString()}
           />
