@@ -1,5 +1,48 @@
 # Changelog
 
+## [4.0.0](https://github.com/simpel/bibi/compare/@bibi/db-v3.1.0...@bibi/db-v4.0.0) (2026-11-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* purposes are mapped to the accounting system's accounts in AccountMapping
+
+### Features
+
+* a database projection records who is related to each order and item ([f82f058](https://github.com/simpel/bibi/commit/f82f058a057e113840b6009dd7dc34281742cdaf))
+* a task needs only its type, has one due time and can prebook or book rooms ([c2e99cf](https://github.com/simpel/bibi/commit/c2e99cf8e49b8e56d093a0d3ddc36be10e69dc22))
+* admins edit the inbox address and get forwarding steps ([e06d0c7](https://github.com/simpel/bibi/commit/e06d0c7c58ebb29cb4a1989c20e3e350a9959e64))
+* archived records are restored, deleted for good and purged after a retention period ([e8fa178](https://github.com/simpel/bibi/commit/e8fa178ee30efb0ee1f235a070b8c0e7fcb30a26))
+* comment icons, unread dots, replies and mentions ([816137d](https://github.com/simpel/bibi/commit/816137db95fd648425dad04e46d5b466a745f89f))
+* comments on orders and lines, shown on run sheets ([17ade2e](https://github.com/simpel/bibi/commit/17ade2eee0544984a4a4c92c92bbdb90b743e994))
+* customer types carry business or private, and private customers get an optional personal identity number ([2da90a7](https://github.com/simpel/bibi/commit/2da90a7dc966bd86542206a3fc6746bee93b5f5a))
+* dining rooms, sittings, exceptions, table combinations and the booking page can be set up on every surface ([575068e](https://github.com/simpel/bibi/commit/575068e132e3822e798643539024d4357523037e))
+* guests count kitchen needs on the booking page against the lists the restaurant picks ([ae868ef](https://github.com/simpel/bibi/commit/ae868eff593fde5335c564de01f09bfdb884c22e))
+* items get a Lucide icon or an image, and the package step compares each package with the request ([9b86f64](https://github.com/simpel/bibi/commit/9b86f643a9485528f910815951b2f30fcc215c4c))
+* members can be limited to related records; auth and notifications resolve access in one place ([034f590](https://github.com/simpel/bibi/commit/034f59060b53fe13fb799e8d3e6ac73d22c022a0))
+* notifications open in a panel on the right, with Needs you on top and dismissable ([597ea74](https://github.com/simpel/bibi/commit/597ea740e59b98200ff8e7471c164a9ed08a2236))
+* order versions, restore and the superseded quote ([be41d10](https://github.com/simpel/bibi/commit/be41d106acf7e29722e76bcb17f6184ae11cb40c))
+* packages get their own permission and leave the administration area ([eaf769d](https://github.com/simpel/bibi/commit/eaf769d70d2635634b3a75a6e218205e25b8e5fb))
+* pipeline views are personal and shared with members or the organization ([58b0836](https://github.com/simpel/bibi/commit/58b083669fff4453d519e06424ab2f38d010b6c5))
+* purposes are mapped to the accounting system's accounts in AccountMapping ([f20a0ed](https://github.com/simpel/bibi/commit/f20a0edb79ae99ae46f38bfd16aabe01ee4c0a46))
+* restaurants take table reservations from staff, the assistant and guests, and the start page tells that story ([4314d17](https://github.com/simpel/bibi/commit/4314d175751b1fd30d2492ca73c609aaeeda9a84))
+* tasks around a customer, before or beside an order (ADR 0117) ([0ebbfdc](https://github.com/simpel/bibi/commit/0ebbfdc0ab36b63d5817e0de780bf50f7d45dda3))
+* the database holds dining rooms, sittings, table combinations, reservations and table holds ([3191e2b](https://github.com/simpel/bibi/commit/3191e2b6c95f81600847d8a9670a489e4029cd85))
+* the scoped client enforces declared record intent ([5975e2d](https://github.com/simpel/bibi/commit/5975e2db025bbef995dd9dc6d21168e7573ee38d))
+
+
+### Bug Fixes
+
+* setting the language works before a profile exists ([79ddb8b](https://github.com/simpel/bibi/commit/79ddb8b37bccbe626cfdb0e3b8d5aa9b060106ac))
+* the relation map lists AccountMapping where the schema does ([6a09267](https://github.com/simpel/bibi/commit/6a09267e9043c8053e21f03ee7b80375ef958159))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/config bumped to 1.1.0
+
 ## [3.1.0](https://github.com/simpel/bibi/compare/@bibi/db-v3.0.0...@bibi/db-v3.1.0) (2026-11-15)
 
 
