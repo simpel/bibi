@@ -1489,12 +1489,12 @@ export const RELATIONS: RelationMap = {
     }
   },
   "ProviderConnection": {
-    "payments": {
-      "target": "Payment",
-      "list": true
-    },
     "accountMappings": {
       "target": "AccountMapping",
+      "list": true
+    },
+    "payments": {
+      "target": "Payment",
       "list": true
     },
     "attempts": {
@@ -2038,6 +2038,10 @@ export const RELATIONS: RelationMap = {
     "runSheetDefinitions": {
       "target": "RunSheetDefinitionVocabulary",
       "list": true
+    },
+    "bookingPageLists": {
+      "target": "BookingPageList",
+      "list": true
     }
   },
   "VocabularyValue": {
@@ -2046,10 +2050,6 @@ export const RELATIONS: RelationMap = {
       "list": false
     },
     "requirements": {
-    },
-    "bookingPageLists": {
-      "target": "BookingPageList",
-      "list": true
       "target": "Requirement",
       "list": true
     },
