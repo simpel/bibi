@@ -1,7 +1,10 @@
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 import { type SeededOrder, seedOrder } from "./seed-order";
+
+const ids = ({ rows }: { rows: { id: string }[] }) => rows.map((row) => row.id);
 
 const DUE = { dueAt: "2037-11-02T13:00:00.000Z" };
 const WINDOW = { startsAt: "2037-11-02T13:00:00.000Z", endsAt: "2037-11-02T14:00:00.000Z" };
@@ -146,5 +149,86 @@ describe("cross-organization isolation: tasks (ADR 0117, 0120)", () => {
     expect(
       ownHolds.data.blocks.some((block: { taskId: string | null }) => block.taskId === id),
     ).toBe(true);
+  });
+});
+
+describe("cross-organization isolation: tasks on the pipeline (ADR 0121)", () => {
+  type StatusInput = { client: Client; name: string; entry: boolean };
+
+  async function seedStatus({ client, name, entry }: StatusInput) {
+    const made = await call({
+      client,
+      name: "orderStatus_create",
+      args: { name, color: "#22c55e" },
+    });
+    expect(made.isError, JSON.stringify(made.data)).toBe(false);
+    const args = { id: made.data.id, entry, tasks: true };
+    const flagged = await call({ client, name: "orderStatus_update", args });
+    expect(flagged.isError, JSON.stringify(flagged.data)).toBe(false);
+    return made.data.id as string;
+  }
+
+  it("moves only within one organization and keeps task cards apart", async () => {
+    const organizationId = `org_${createId()}`;
+    const a = await connect({ context: testContext({ organizationId }) });
+    const b = await connect({ context: testContext() });
+    await seedStatus({ client: a, name: "Secret lane", entry: true });
+    const secretOrder = await seedOrder({ client: a });
+    const secretRoom = await seedRoom({ client: a });
+    const secret = await seedTask({ client: a, order: secretOrder, itemId: secretRoom });
+    const second = await seedStatus({ client: a, name: "Second lane", entry: false });
+    await seedStatus({ client: b, name: "Own lane", entry: true });
+    const ownStatus = await seedStatus({ client: b, name: "Own other lane", entry: false });
+    const ownOrder = await seedOrder({ client: b });
+    const mine = await seedTask({
+      client: b,
+      order: ownOrder,
+      itemId: await seedRoom({ client: b }),
+    });
+
+    const hijack = await call({
+      client: b,
+      name: "task_move",
+      args: { id: secret.id, statusId: ownStatus },
+    });
+    expect(hijack.data.code).toBe("NOT_FOUND");
+    const foreign = await call({
+      client: b,
+      name: "task_move",
+      args: { id: mine.id, statusId: second },
+    });
+    expect(foreign.data.code).toBe("VALIDATION");
+    const read = await connect({
+      context: testContext({ organizationId, permissions: { task: ["read"] } }),
+    });
+    const denied = await call({
+      client: read,
+      name: "task_move",
+      args: { id: secret.id, statusId: second },
+    });
+    expect(denied.data.code).toBe("FORBIDDEN");
+    const before = (await call({ client: a, name: "task_get", args: { id: secret.id } })).data;
+    expect(before.statusId).not.toBeNull();
+    expect(before.statusId).not.toBe(second);
+
+    const boardB = await call({ client: b, name: "pipeline_board" });
+    expect(ids({ rows: boardB.data.taskCards })).toEqual([mine.id]);
+    const boardA = await call({ client: a, name: "pipeline_board" });
+    expect(ids({ rows: boardA.data.taskCards })).toEqual([secret.id]);
+
+    const blind = await connect({
+      context: testContext({
+        organizationId,
+        permissions: { pipeline: ["read"], board: ["read"], order: ["read"] },
+      }),
+    });
+    const hidden = await call({ client: blind, name: "pipeline_board" });
+    expect(hidden.isError, JSON.stringify(hidden.data)).toBe(false);
+    expect(hidden.data.taskCards).toEqual([]);
+
+    const args = { id: secret.id, statusId: second };
+    const moved = await call({ client: a, name: "task_move", args });
+    expect(moved.isError, JSON.stringify(moved.data)).toBe(false);
+    expect(moved.data.statusId).toBe(second);
   });
 });

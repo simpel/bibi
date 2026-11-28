@@ -3,13 +3,27 @@ import type { OperationContext } from "../../operations/types";
 import { conflict, invalid } from "../../shared/errors";
 import type { OrderStatusDto, OrderStatusFlags, StatusEvent } from "./schema";
 
-export type CheckFlagsInput = { flags: Partial<OrderStatusFlags> };
+export type CheckFlagsInput = {
+  flags: Partial<OrderStatusFlags>;
+  /** The flags the caller sets in this change; names the field a refusal points at. */
+  given?: Partial<OrderStatusFlags>;
+};
 
-/** Flags that contradict each other: an order could never leave an entry status that is closing. */
-export function checkFlagCombination({ flags }: CheckFlagsInput): Result<true> {
-  if (!(flags.entry && flags.closes)) return ok({ value: true });
-  const message = "A status cannot be both the entry status and closing";
-  return invalid({ message, issues: [{ path: "closes", message }] });
+/**
+ * Flags that contradict each other: an order could never leave an entry status that is closing,
+ * and a closing status holds no tasks (ADR 0121).
+ */
+export function checkFlagCombination({ flags, given = flags }: CheckFlagsInput): Result<true> {
+  if (flags.entry && flags.closes) {
+    const message = "A status cannot be both the entry status and closing";
+    return invalid({ message, issues: [{ path: "closes", message }] });
+  }
+  if (flags.tasks && flags.closes) {
+    const message = "A closing status cannot hold tasks";
+    const path = given.closes && !given.tasks ? "closes" : "tasks";
+    return invalid({ message, issues: [{ path, message }] });
+  }
+  return ok({ value: true });
 }
 
 export type MinimumInput = {

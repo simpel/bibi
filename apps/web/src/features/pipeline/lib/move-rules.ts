@@ -1,4 +1,5 @@
-import type { PipelineCard, PipelineStatus } from "@bibi/core";
+import type { PipelineCard, PipelineStatus, PipelineTaskCard } from "@bibi/core";
+import type { TransitionGate } from "@bibi/core/schemas";
 
 export type MoveRuleInput = {
   card: PipelineCard;
@@ -36,4 +37,42 @@ export type DropTargetsInput = {
  */
 export function dropTargets({ card, from, statuses, transitions }: DropTargetsInput) {
   return statuses.filter((to) => canMoveCard({ card, from, to, transitions }));
+}
+
+/** What a drop moves: an order (`order.changeStatus`) or a task (`task.move`, ADR 0121). */
+export type MoveSubject =
+  | { kind: "order"; card: PipelineCard }
+  | { kind: "task"; card: PipelineTaskCard };
+
+export type TaskDropTargetsInput = {
+  card: Pick<PipelineTaskCard, "statusId" | "allowedStatusIds">;
+  /** The statuses of the column the card is dropped on. */
+  statuses: readonly PipelineStatus[];
+};
+
+/**
+ * The statuses of the drop column a task card may move to (ADR 0121): those the server lists in
+ * `allowedStatusIds` (it computes them with the rule `task.move` checks), never its own status.
+ * One moves at once, several open the picker, none refuses the drop.
+ */
+export function taskDropTargets({ card, statuses }: TaskDropTargetsInput) {
+  return statuses.filter((to) => to.id !== card.statusId && card.allowedStatusIds.includes(to.id));
+}
+
+export type PickGatesInput = {
+  subject: MoveSubject;
+  /** Status id → target id → the gates of that move; gate-free moves are absent. */
+  moveGates: Readonly<Record<string, Readonly<Record<string, readonly TransitionGate[]>>>>;
+};
+
+/**
+ * The requirements the picker lists per target. A task meets only the assignee gate: the others
+ * read order data (a reason, a quote) and are skipped for it (ADR 0121).
+ */
+export function pickGates({ subject, moveGates }: PickGatesInput) {
+  const gates = moveGates[subject.card.statusId] ?? {};
+  if (subject.kind === "order") return gates;
+  return Object.fromEntries(
+    Object.entries(gates).map(([id, list]) => [id, list.filter((gate) => gate === "ASSIGNEE")]),
+  );
 }

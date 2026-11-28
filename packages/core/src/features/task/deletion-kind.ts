@@ -9,6 +9,7 @@ import {
 } from "../../archive/lifecycle-kind";
 import { hardDelete } from "../../archive/record-rows";
 import { syncTaskHolds } from "./sync-task-holds";
+import { settleTaskStatus } from "./task-status";
 
 /**
  * Tasks (ADR 0117, 0118): nothing else refers to a task, so an archived one is always deleted,
@@ -52,7 +53,11 @@ export const taskKind: LifecycleKind = {
   reactivate: async ({ context, id }) => {
     await context.db.task.update({ where: { id, status: "ARCHIVED" }, data: REACTIVATE });
   },
-  afterRestore: ({ context, id }) => syncTaskHolds({ context, taskId: id }),
+  afterRestore: async ({ context, id }) => {
+    // Back on the board in its status, or the default one (ADR 0121).
+    await settleTaskStatus({ context, taskId: id });
+    return syncTaskHolds({ context, taskId: id });
+  },
   deleteBlockers: async () => [],
   remove: async ({ context, id }) => {
     await context.db.notification.deleteMany({ where: { taskId: id } });

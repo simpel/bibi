@@ -8,6 +8,7 @@ import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { loadCustomer } from "@/features/customer/load-customer";
 import { loadOrder } from "@/features/order/load-order";
+import { loadOrderStatuses } from "@/features/order/load-order-names";
 import { taskRoute } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
@@ -21,6 +22,7 @@ import { TaskDetailsSection } from "./task-details-section";
 import { type TaskFactNames, TaskKeyFacts } from "./task-facts";
 import { TaskHeaderActions } from "./task-header-actions";
 import { TASK_STATE_COLORS, type TaskState } from "./task-list-row";
+import { TaskStatusMenu } from "./task-status-menu";
 
 export type TaskDetailProps = { locale: Locale; id: string };
 
@@ -43,10 +45,11 @@ async function loadFactNames({ task }: { task: TaskDto }): Promise<TaskFactNames
 
 /** `/tasks/{id}`: the task edited in place, done from the header like Follow, Create order while unlinked. */
 export async function TaskDetail({ locale, id }: TaskDetailProps) {
-  const [t, abilities, result] = await Promise.all([
+  const [t, abilities, result, statuses] = await Promise.all([
     getTranslations("task"),
     getCallerAbilities(),
     loadTask({ id }),
+    loadOrderStatuses(),
   ]);
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const task = result.value;
@@ -60,6 +63,8 @@ export async function TaskDetail({ locale, id }: TaskDetailProps) {
   // An order is offered only with a customer (ADR 0120).
   const linkableOrders = canChange && task.customerId ? loadLinkableOrders({ task }) : null;
   const state: TaskState = done ? "done" : task.overdue ? "overdue" : "open";
+  // A task without an order sits in a pipeline status (ADR 0121); one with an order follows it.
+  const statusId = task.orderId ? null : task.statusId;
   return (
     <div className="grid gap-6">
       <CrumbName href={taskRoute({ id })} name={name} />
@@ -72,13 +77,22 @@ export async function TaskDetail({ locale, id }: TaskDetailProps) {
           </div>
         }
         actions={
-          <TaskHeaderActions
-            task={{ id, name, done }}
-            canEdit={canEdit}
-            canLinkOrder={!task.orderId && canChange && task.customerId !== null}
-            linkableOrders={linkableOrders ?? Promise.resolve([])}
-            canCreateOrder={!task.orderId && can({ abilities, permission: "order:write" })}
-          />
+          <>
+            {statusId && statuses.ok ? (
+              <TaskStatusMenu
+                task={{ id, statusId }}
+                statuses={statuses.value}
+                canEdit={canChange}
+              />
+            ) : null}
+            <TaskHeaderActions
+              task={{ id, name, done }}
+              canEdit={canEdit}
+              canLinkOrder={!task.orderId && canChange && task.customerId !== null}
+              linkableOrders={linkableOrders ?? Promise.resolve([])}
+              canCreateOrder={!task.orderId && can({ abilities, permission: "order:write" })}
+            />
+          </>
         }
       />
       <DeferredSection>

@@ -10,8 +10,13 @@ import {
   REACTIVATE,
 } from "../../archive/lifecycle-kind";
 import { hardDelete } from "../../archive/record-rows";
+import { ok } from "../../errors/result";
+import { moveTasksToDefault } from "../task/task-status";
 
-/** Orders in it or that passed through it, and packages that start in it, archived or not. */
+/**
+ * Orders in it or that passed through it, tasks in it (ADR 0121; its archive moved them out, so
+ * only a race leaves one) and packages that start in it, archived or not.
+ */
 const deleteBlockers = ({ context, id }: KindInput) =>
   allBlockers({
     checks: [
@@ -26,6 +31,10 @@ const deleteBlockers = ({ context, id }: KindInput) =>
         ...{ feature: "order", path: "statusHistory", what: "status changes of orders" },
       }),
       countBlocker({
+        count: context.db.task.count({ where: { statusId: id, status: EITHER_STATUS } }),
+        ...{ feature: "task", path: "tasks", what: "tasks" },
+      }),
+      countBlocker({
         count: context.db.orderTemplate.count({ where: { statusId: id, status: EITHER_STATUS } }),
         ...{ feature: "orderTemplate", path: "packages", what: "packages" },
       }),
@@ -34,8 +43,9 @@ const deleteBlockers = ({ context, id }: KindInput) =>
 
 /**
  * Statuses (ADR 0043, 0118): deleted with their transitions, gates, grid cells and board places
- * once no order is or was in them and no package starts in them. Restored on no board, like a
- * new status.
+ * once no order or task is or was in them and no package starts in them. Restored on no board,
+ * like a new status; a restored status that holds tasks gives the tasks without a status one
+ * (ADR 0121: they had none when no other status held tasks).
  */
 export const orderStatusKind: LifecycleKind = {
   entityType: "orderStatus",
@@ -47,6 +57,11 @@ export const orderStatusKind: LifecycleKind = {
     }),
   reactivate: async ({ context, id }) => {
     await context.db.orderStatus.update({ where: { id, status: "ARCHIVED" }, data: REACTIVATE });
+  },
+  afterRestore: async ({ context, id }) => {
+    const row = await context.db.orderStatus.findFirst({ where: { id }, select: { tasks: true } });
+    if (row?.tasks) await moveTasksToDefault({ context, from: null });
+    return ok({ value: true });
   },
   deleteBlockers,
   remove: async ({ context, id }) => {

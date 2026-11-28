@@ -56,6 +56,10 @@ export const PipelineStatusDraftSchema = z.object({
     .optional()
     .describe("Gates on every move into this status (ADR 0067), e.g. REASON for Lost"),
   invoiceable: z.boolean().optional().describe("Invoices can be created in this status"),
+  tasks: z
+    .boolean()
+    .optional()
+    .describe("Tasks can be here (ADR 0121): tasks without an order sit in it; never closing"),
   event: OrderStatusSchema.shape.event.optional(),
 });
 

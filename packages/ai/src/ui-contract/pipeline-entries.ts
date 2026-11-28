@@ -1,4 +1,8 @@
-import { PipelineBoardSchema, PipelineCardSchema } from "@bibi/core/schemas";
+import {
+  PipelineBoardSchema,
+  PipelineCardSchema,
+  PipelineTaskCardSchema,
+} from "@bibi/core/schemas";
 import { z } from "zod";
 import { BOARD_UI_ENTRIES } from "./board-entries";
 import { CALENDAR_UI_ENTRIES } from "./calendar-entries";
@@ -14,6 +18,7 @@ export const PipelineBoardWireSchema = PipelineBoardSchema.extend({
       statusChangedAt: z.string(),
     }),
   ),
+  taskCards: z.array(PipelineTaskCardSchema.extend({ dueAt: z.string().nullable() })),
 });
 
 export type PipelineBoardWire = z.infer<typeof PipelineBoardWireSchema>;

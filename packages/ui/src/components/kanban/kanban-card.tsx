@@ -2,6 +2,8 @@ import { useDraggable } from "@dnd-kit/core";
 import type { KeyboardEvent, ReactNode } from "react";
 import { cn } from "../../lib/cn";
 import { type CardSurface, cardSurfaceProps } from "../booking-tone/booking-tone";
+import { kanbanCardVariants } from "./kanban-card-variants";
+import type { KanbanCardKind } from "./kanban-types";
 
 export type KanbanCardProps = {
   id: string;
@@ -10,13 +12,15 @@ export type KanbanCardProps = {
   onOpen?: (() => void) | undefined;
   /** Soft, following and done, the same cues as the timeline cards and its attention bar (`cardSurfaceProps`). */
   surface?: CardSurface | undefined;
+  /** The card's look; default an order card. */
+  kind?: KanbanCardKind | undefined;
 };
 
 /**
  * A draggable card. The whole card is the handle: focus it and press space to lift it. With
  * `onOpen`, a click or Enter opens it.
  */
-export function KanbanCard({ id, children, onOpen, surface }: KanbanCardProps) {
+export function KanbanCard({ id, children, onOpen, surface, kind }: KanbanCardProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id });
   const keyDown = ({ event }: { event: KeyboardEvent<HTMLDivElement> }) => {
     // A key on a button inside the card (e.g. pin) is the button's, not the card's.
@@ -36,7 +40,7 @@ export function KanbanCard({ id, children, onOpen, surface }: KanbanCardProps) {
       data-dragging={isDragging || undefined}
       className={cn(
         onOpen ? "cursor-pointer" : "cursor-grab",
-        "min-w-0 rounded-xl border bg-card p-3 text-card-foreground shadow-sm outline-none",
+        kanbanCardVariants({ kind }),
         "focus-visible:ring-2 focus-visible:ring-ring",
         surface && cardSurfaceProps({ surface }).className,
         isDragging && "opacity-40",

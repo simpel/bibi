@@ -13,6 +13,8 @@ import {
 import { useFormatter, useTranslations } from "next-intl";
 
 export type StatusPick = {
+  /** What is moved: the picker words the description for it. */
+  kind: "order" | "task";
   /** The column the card was dropped on. */
   column: { title: string };
   /** The statuses of that column the card may move to. */
@@ -48,7 +50,9 @@ export function MoveStatusPickerDialog({ pick, onPick, onCancel }: MoveStatusPic
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{t("title", { column: pick?.column.title ?? "" })}</DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
+          <DialogDescription>
+            {pick?.kind === "task" ? t("taskDescription") : t("description")}
+          </DialogDescription>
         </DialogHeader>
         <ul className="grid gap-2">
           {(pick?.targets ?? []).map((status) => (

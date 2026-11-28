@@ -33,7 +33,7 @@ function issuesOf({ input, found }: { input: LinkTasksInput; found: Map<string, 
 }
 
 /**
- * Links tasks to an order once (ADR 0117): each must be an active task of the order's customer
+ * Links tasks to an order once (ADR 0117) and takes them off the board (ADR 0121): each must be an active task of the order's customer
  * (`VALIDATION`) that has no order yet (`CONFLICT`). The write is guarded on `orderId: null`, so
  * a concurrent link that won makes this one `CONFLICT` too. Audited per task.
  */
@@ -52,17 +52,22 @@ export async function linkTasks({ ...input }: LinkTasksInput): Promise<Result<tr
     });
   if (linked.length > 0) return conflict({ message: "Already linked to an order", issues: linked });
   const unique = [...new Set(taskIds)];
+  const statuses = await context.db.task.findMany({
+    where: { id: { in: unique } },
+    select: { id: true, statusId: true },
+  });
+  // A linked task follows its order and leaves the board (ADR 0121): it has no status.
   const { count } = await context.db.task.updateMany({
     where: { id: { in: unique }, orderId: null },
-    data: { orderId },
+    data: { orderId, statusId: null },
   });
   if (count !== unique.length) return conflict({ message: "A task was linked meanwhile" });
-  for (const id of unique) {
+  for (const { id, statusId } of statuses) {
     context.recordChange({
       entityType: "task",
       entityId: id,
-      before: { orderId: null },
-      after: { orderId },
+      before: { orderId: null, statusId },
+      after: { orderId, statusId: null },
     });
   }
   return ok({ value: true });

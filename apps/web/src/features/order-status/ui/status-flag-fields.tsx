@@ -9,13 +9,24 @@ export type StatusFlagFieldsProps = {
   form: UseFormReturn<OrderStatusFormValues, unknown, OrderStatusEdit>;
 };
 
-/** One checkbox per status flag and the quote event select (ADR 0043), each a plain choice. */
+/**
+ * One checkbox per status flag and the quote event select (ADR 0043), each a plain choice. A
+ * status never both holds tasks and closes the order (ADR 0121): each switch waits for the other.
+ */
 export function StatusFlagFields({ form }: StatusFlagFieldsProps) {
   const t = useTranslations("orderStatus.flags");
+  const [closes, tasks] = form.watch(["closes", "tasks"]);
   return (
     <fieldset className="grid gap-2">
       {STATUS_FLAGS.map((flag) => (
-        <CheckField key={flag} form={form} name={flag} label={t(flag)} />
+        <CheckField
+          key={flag}
+          form={form}
+          name={flag}
+          label={t(flag)}
+          description={flag === "tasks" ? t("tasksHelp") : undefined}
+          disabled={(flag === "closes" && tasks) || (flag === "tasks" && closes)}
+        />
       ))}
       <OptionSelectField
         control={form.control}

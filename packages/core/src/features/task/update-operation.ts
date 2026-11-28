@@ -12,6 +12,7 @@ import { type TaskDto, TaskSchema, type TaskUpdateInput, TaskUpdateInputSchema }
 import { syncTaskHolds } from "./sync-task-holds";
 import { checkTaskItems, inputPath, writeTaskItems } from "./task-items";
 import { checkParty, checkTaskAccess, checkTaskOrder, loadTaskType } from "./task-rules";
+import { settleTaskStatus } from "./task-status";
 import { loadTask } from "./to-task-dto";
 
 /** A given value replaces the stored one, `undefined` keeps it (null clears it). */
@@ -62,7 +63,9 @@ export const updateTask = defineOperation({
     "assigneeId changes the assignee, who is told. customerId moves the task to another " +
     "customer: pass a contactId at it (or null) and orderId null (or an order of it), since " +
     "contact and order belong to the customer; customerId null clears the customer, so " +
-    "contactId and orderId must be null too. items replaces the rooms as a set; a BOOK that " +
+    "contactId and orderId must be null too. Linking an order takes the task off the board; " +
+    "unlinking puts it in the entry status if that holds tasks, else the first that does " +
+    "(ADR 0121). items replaces the rooms as a set; a BOOK that " +
     "collides is CONFLICT at items.<i>.",
   input: TaskUpdateInputSchema,
   output: TaskSchema,
@@ -87,18 +90,22 @@ export const updateTask = defineOperation({
     if (assigneeId !== undefined && assigneeId !== before.assigneeId) {
       await saveAssignee({ context, subjectType: "TASK", subjectId: id, assigneeId });
     }
+    const orderId = pick({ given: data.orderId, kept: before.orderId });
     await context.db.task.update({
       where: { id },
       data: {
         entityTypeId,
         customerId: pick({ given: data.customerId, kept: before.customerId }),
         contactId: pick({ given: data.contactId, kept: before.contactId }),
-        orderId: pick({ given: data.orderId, kept: before.orderId }),
+        orderId,
         dueAt: pick({ given: data.dueAt, kept: before.dueAt }),
         ...(data.note === undefined ? {} : { note: data.note }),
         ...(fields.value ? { fields: fields.value.json } : {}),
       },
     });
+    // Linked, it follows its order; unlinked, it is back on the board (ADR 0121).
+    if (Boolean(orderId) !== Boolean(before.orderId))
+      await settleTaskStatus({ context, taskId: id });
     if (items) {
       await writeTaskItems({ context, taskId: id, items });
       const held = await syncTaskHolds({ context, taskId: id, pathOf: inputPath({ items }) });

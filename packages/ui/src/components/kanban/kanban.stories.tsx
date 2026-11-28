@@ -2,9 +2,10 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { NumberFlow } from "../hero-number/hero-number";
 import { KanbanBoard } from "./kanban-board";
+import { KanbanTaskCardContent } from "./kanban-task-card";
 import type { KanbanCardData, KanbanLabels } from "./kanban-types";
 
-type StoryCard = KanbanCardData & { subtitle: string; value: number };
+type StoryCard = KanbanCardData & { subtitle: string; value: number; due?: string };
 
 const labels: KanbanLabels = {
   dragInstructions: "Press space to lift the card, arrow keys to move it, space to drop.",
@@ -46,6 +47,16 @@ const initial: StoryCard[] = [
     subtitle: "Lindholmen",
     value: 32_750,
   },
+  {
+    id: "task-1",
+    kind: "task",
+    columnId: "new",
+    title: "Site visit",
+    subtitle: "Nordkust AB",
+    value: 0,
+    due: "Thu 14:00",
+  },
+  { id: "task-2", kind: "task", columnId: "new", title: "Call back", subtitle: "", value: 0 },
 ];
 
 function Demo() {
@@ -71,12 +82,22 @@ function Demo() {
             suffix=" kr"
           />
         )}
-        renderCard={(card) => (
-          <div className="grid gap-0.5">
-            <span className="text-sm font-medium">{card.title}</span>
-            <span className="text-xs text-muted-foreground">{card.subtitle}</span>
-          </div>
-        )}
+        renderCard={(card) =>
+          card.kind === "task" ? (
+            <KanbanTaskCardContent
+              typeName={card.title}
+              customerName={card.subtitle || null}
+              timeLabel={card.due ?? "No due time"}
+              overdue={card.id === "task-2"}
+              assigneeName="Sara Berg"
+            />
+          ) : (
+            <div className="grid gap-0.5">
+              <span className="text-sm font-medium">{card.title}</span>
+              <span className="text-xs text-muted-foreground">{card.subtitle}</span>
+            </div>
+          )
+        }
       />
     </div>
   );
@@ -94,6 +115,7 @@ type Story = StoryObj<typeof meta>;
 /**
  * Completed refuses drops: it stays un-highlighted while a card is dragged. Won has two zones
  * (Confirmed, Final count locked): dragging a card over it shows one target per zone. Each lane's
- * count and total value animate as a card moves.
+ * count and total value animate as a card moves. A task card is outlined in the task colour and
+ * dragged like an order card.
  */
 export const Default: Story = {};

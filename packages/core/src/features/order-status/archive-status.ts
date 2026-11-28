@@ -8,6 +8,7 @@ import { unplaceStatus } from "../board/status-placement";
 import { moveOrder } from "../order/move-order";
 import { ORDER_INCLUDE, toOrderDto } from "../order/to-order-dto";
 import { clearStatusCells } from "../status-grid/cell-lifecycle";
+import { moveTasksToDefault } from "../task/task-status";
 import { checkMinimumConfiguration, serializeStatusChanges } from "./flag-rules";
 import { loadAllOrderStatuses, loadOrderStatus, toOrderStatusDto } from "./load-order-status";
 import type { OrderStatusArchiveInput } from "./schema";
@@ -86,7 +87,8 @@ async function detachIncoming({ context, id }: DetachInput) {
 export type ArchiveStatusInput = { context: OperationContext; input: OrderStatusArchiveInput };
 
 /**
- * The whole archive (ADR 0043): checks, order moves, transitions and grid cells. Shared by
+ * The whole archive (ADR 0043): checks, order moves, transitions, grid cells and its tasks, which
+ * move to the entry-or-first status that holds tasks (ADR 0121). Shared by
  * `orderStatus.archive` and its dry run `orderStatus.archivePreview`.
  */
 export async function archiveStatus({ context, input }: ArchiveStatusInput) {
@@ -109,6 +111,8 @@ export async function archiveStatus({ context, input }: ArchiveStatusInput) {
   // An archived status gives up its quote event (ADR 0043): another status can take it.
   const data = { status: "ARCHIVED", event: null, archivedAt: nowOf({ context }) } as const;
   const row = await context.db.orderStatus.update({ where: { id }, data });
+  // After the status is archived, so the default it moves its tasks to is another (ADR 0121).
+  await moveTasksToDefault({ context, from: id });
   const after = { ...before, ...row, transitionsTo: [], transitionGates: [], gatesInto: [] };
   context.recordChange({ entityId: id, before, after });
   return ok({ value: after });

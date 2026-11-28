@@ -26,11 +26,12 @@ const STATE_WHERE = {
 
 /** The filters of `task.list`; `from`/`to` keep tasks due in the window (none without a due time). */
 function taskWhere({ input, now }: { input: TaskListInput; now: Date }): Prisma.TaskWhereInput {
-  const { customerId, orderId, state, from, to } = input;
+  const { customerId, orderId, statusId, state, from, to } = input;
   return {
     AND: [
       customerId ? { customerId } : {},
       orderId ? { orderId } : {},
+      statusId ? { statusId } : {},
       state ? STATE_WHERE[state]({ now }) : {},
       to ? { dueAt: { lt: to } } : {},
       from ? { dueAt: { gte: from } } : {},

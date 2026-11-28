@@ -1,7 +1,7 @@
 import "server-only";
 import { listContacts, listCustomers, listMembers, type Result } from "@bibi/core";
 import { cache } from "react";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { loadEntityTypesOf } from "@/server/load-entity-types";
 import { loadPickerItems } from "@/server/load-items-for-pickers";
 import { runOperation } from "@/server/run-operation";
@@ -41,6 +41,7 @@ export const loadTaskFormData = cache(async (): Promise<Result<TaskFormData>> =>
     ok: true,
     value: {
       types: types.value.items.map(({ id, name }) => ({ id, name })),
+      canCreateType: can({ abilities, permission: "configuration:write" }),
       customers: customers.ok ? customers.value.items.map(({ id, name }) => ({ id, name })) : [],
       customersHidden: !customers.ok,
       contacts: contactRows.map(({ id, name, customerId, email, phone }) => ({

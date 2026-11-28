@@ -1,9 +1,11 @@
 "use client";
 
 import { closestCorners, DndContext, DragOverlay } from "@dnd-kit/core";
+import { cn } from "../../lib/cn";
 import type { CardSurface } from "../booking-tone/booking-tone";
 import { buildKanbanAnnouncements } from "./kanban-announcements";
 import { KanbanCard } from "./kanban-card";
+import { kanbanCardVariants } from "./kanban-card-variants";
 import { KanbanColumn } from "./kanban-column";
 import type {
   KanbanCanDrop,
@@ -33,8 +35,11 @@ export type KanbanBoardProps<TCard extends KanbanCardData> = {
   renderFooter?: KanbanRenderSummary<TCard>;
   /** A click anywhere on a card (or Enter on it) opens it, e.g. in a sheet beside the board. */
   onOpenCard?: ((input: { card: TCard }) => void) | undefined;
-  /** A card's surface cues (soft, following, done), as on the timeline cards. */
-  cardSurface?: ((input: { card: TCard }) => CardSurface) | undefined;
+  /**
+   * A card's surface cues (soft, following, done), as on the timeline cards. A task card has none
+   * (return undefined): its edge is the task's own.
+   */
+  cardSurface?: ((input: { card: TCard }) => CardSurface | undefined) | undefined;
 };
 
 const ALWAYS: KanbanCanDrop = () => true;
@@ -48,7 +53,7 @@ type KanbanLaneProps<TCard extends KanbanCardData> = {
   renderSummary?: KanbanRenderSummary<TCard> | undefined;
   renderFooter?: KanbanRenderSummary<TCard> | undefined;
   onOpenCard?: ((input: { card: TCard }) => void) | undefined;
-  cardSurface?: ((input: { card: TCard }) => CardSurface) | undefined;
+  cardSurface?: ((input: { card: TCard }) => CardSurface | undefined) | undefined;
 };
 
 function KanbanLane<TCard extends KanbanCardData>(props: KanbanLaneProps<TCard>) {
@@ -70,6 +75,7 @@ function KanbanLane<TCard extends KanbanCardData>(props: KanbanLaneProps<TCard>)
           id={card.id}
           onOpen={onOpenCard ? () => onOpenCard({ card }) : undefined}
           surface={cardSurface?.({ card })}
+          kind={card.kind}
         >
           {renderCard(card)}
         </KanbanCard>
@@ -91,7 +97,9 @@ function KanbanOverlay<TCard extends KanbanCardData>({
   return (
     <DragOverlay>
       {active ? (
-        <div className="rounded-xl border bg-card p-3 shadow-lg">{renderCard(active)}</div>
+        <div className={cn(kanbanCardVariants({ kind: active.kind }), "shadow-lg")}>
+          {renderCard(active)}
+        </div>
       ) : null}
     </DragOverlay>
   );

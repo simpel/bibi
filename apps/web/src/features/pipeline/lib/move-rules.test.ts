@@ -1,8 +1,9 @@
-import type { PipelineCard, PipelineStatus } from "@bibi/core";
+import type { PipelineCard, PipelineStatus, PipelineTaskCard } from "@bibi/core";
 import { describe, expect, it } from "vitest";
-import { canMoveCard, dropTargets } from "./move-rules";
+import { canMoveCard, dropTargets, pickGates, taskDropTargets } from "./move-rules";
 
 const card = ({ overrides = {} }: { overrides?: Partial<PipelineCard> } = {}): PipelineCard => ({
+  kind: "order",
   id: "t1",
   columnId: "open",
   statusId: "lead",
@@ -35,6 +36,7 @@ const status = ({
   color: "#f59e0b",
   closed: false,
   entry: false,
+  tasks: false,
   ...overrides,
 });
 
@@ -106,5 +108,56 @@ describe("pipeline move rules (ADR 0041, 0043, 0067)", () => {
     expect(
       dropTargets({ card: done, from: completed, statuses: won.statuses, transitions }),
     ).toEqual([]);
+  });
+});
+
+const taskCard = ({
+  overrides = {},
+}: {
+  overrides?: Partial<PipelineTaskCard>;
+} = {}): PipelineTaskCard => ({
+  kind: "task",
+  id: "k1",
+  columnId: "open",
+  statusId: "lead",
+  typeName: "Site visit",
+  customerId: null,
+  dueAt: null,
+  overdue: false,
+  assigneeId: null,
+  allowedStatusIds: ["confirmed", "locked"],
+  ...overrides,
+});
+
+describe("task card drops (ADR 0121)", () => {
+  it("offers the statuses of the column the server lists for the task", () => {
+    expect(taskDropTargets({ card: taskCard(), statuses: won.statuses })).toEqual([
+      confirmed,
+      locked,
+    ]);
+    const one = taskCard({ overrides: { allowedStatusIds: ["locked"] } });
+    expect(taskDropTargets({ card: one, statuses: won.statuses })).toEqual([locked]);
+  });
+
+  it("refuses a column with no allowed status", () => {
+    expect(taskDropTargets({ card: taskCard(), statuses: closedColumn.statuses })).toEqual([]);
+    expect(taskDropTargets({ card: taskCard(), statuses: [] })).toEqual([]);
+  });
+
+  it("never offers the task's own status", () => {
+    const own = taskCard({ overrides: { statusId: "confirmed" } });
+    expect(taskDropTargets({ card: own, statuses: won.statuses })).toEqual([locked]);
+  });
+
+  it("lists only the assignee gate for a task, every gate for an order", () => {
+    const moveGates = { lead: { confirmed: ["REASON", "ASSIGNEE"], locked: ["REASON"] } } as const;
+    const task = { kind: "task", card: taskCard() } as const;
+    expect(pickGates({ subject: task, moveGates })).toEqual({
+      confirmed: ["ASSIGNEE"],
+      locked: [],
+    });
+    const order = { kind: "order", card: card() } as const;
+    expect(pickGates({ subject: order, moveGates })).toEqual(moveGates.lead);
+    expect(pickGates({ subject: order, moveGates: {} })).toEqual({});
   });
 });

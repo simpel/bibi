@@ -5,7 +5,7 @@ import { ORDER_STATUS_TEMPLATE_KEYS } from "../../templates/order-statuses/order
 import { StatusGatesSchema, TransitionGatesSchema } from "./gate-schema";
 
 /** The generic status flags (ADR 0043); move rules are gates on transitions (ADR 0067). */
-export const STATUS_FLAGS = ["entry", "closes", "invoiceable"] as const;
+export const STATUS_FLAGS = ["entry", "closes", "invoiceable", "tasks"] as const;
 export type StatusFlag = (typeof STATUS_FLAGS)[number];
 
 /** The quote events that can move an order into a status (ADR 0043). */
@@ -24,6 +24,12 @@ const FlagShape = {
     .describe("New orders start here; the first active entry status is the default"),
   closes: z.boolean().describe("No move leaves this status; entering it releases every line"),
   invoiceable: z.boolean().describe("Invoices can be created in this status"),
+  tasks: z
+    .boolean()
+    .describe(
+      "Tasks can be here (ADR 0121): a task without an order sits in and moves among these " +
+        "statuses only; never a closing one. Orders are not affected",
+    ),
 };
 
 export const OrderStatusSchema = z.object({
@@ -66,10 +72,11 @@ export const ColorSchema = z
 
 const OptionalFlags = z.object({ ...FlagShape, event: EventSchema }).partial().shape;
 
-/** A new status is a name and a colour; its flags are set with `orderStatus.update`. */
+/** A new status is a name and a colour; its other flags are set with `orderStatus.update`. */
 export const OrderStatusCreateInputSchema = z.object({
   name: NameSchema,
   color: ColorSchema,
+  tasks: FlagShape.tasks.optional().describe("Tasks can be here (ADR 0121); default false"),
   phaseId: z
     .string()
     .min(1)

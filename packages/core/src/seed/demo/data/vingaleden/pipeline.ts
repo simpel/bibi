@@ -2,8 +2,8 @@ import type { OrderStatusTemplate } from "../../../../templates/order-statuses/o
 import type { DemoGridCell, DemoPipeline } from "../../types";
 
 const statuses: OrderStatusTemplate["statuses"] = [
-  { name: "Request", color: "#f59e0b", entry: true },
-  { name: "Weather hold", color: "#0ea5e9" },
+  { name: "Request", color: "#f59e0b", entry: true, tasks: true },
+  { name: "Weather hold", color: "#0ea5e9", tasks: true },
   { name: "Confirmed", color: "#16a34a", gatesIn: ["ASSIGNEE"] },
   { name: "Weather OK", color: "#0d9488", gatesIn: ["ASSIGNEE"] },
   { name: "Completed", color: "#2563eb", closes: true, invoiceable: true },

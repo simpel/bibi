@@ -31,6 +31,12 @@ export const taskMcpTools = [
     summary: ({ input }) => `Open task ${text({ value: input.id })} again`,
   }),
   mcpTool({
+    operation: "task.move",
+    idempotent: true,
+    summary: ({ input }) =>
+      `Move task ${text({ value: input.id })} to status ${text({ value: input.statusId })}`,
+  }),
+  mcpTool({
     operation: "task.linkOrder",
     summary: ({ input }) =>
       `Link task ${text({ value: input.taskId })} to order ${text({ value: input.orderId })}`,

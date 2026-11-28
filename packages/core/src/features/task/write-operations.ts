@@ -12,6 +12,7 @@ import { TaskCreateInputSchema, TaskSchema } from "./schema";
 import { syncTaskHolds } from "./sync-task-holds";
 import { checkTaskItems, inputPath, writeTaskItems } from "./task-items";
 import { checkParty, checkTaskAccess, loadTaskType } from "./task-rules";
+import { defaultTaskStatusId } from "./task-status";
 import { loadTask } from "./to-task-dto";
 
 export const createTask = defineOperation({
@@ -23,7 +24,9 @@ export const createTask = defineOperation({
     "customerId, a contactId at it (needs the customer) and orderId (an active order of the " +
     "same customer) are optional; dueAt is one optional due time. items lists rooms: RELATED " +
     "only names one, PREBOOK holds it soft and BOOK hard for its own startsAt-endsAt while the " +
-    "task is open (a BOOK that collides is CONFLICT at items.<i>). The assignee defaults to " +
+    "task is open (a BOOK that collides is CONFLICT at items.<i>). Without an order it starts " +
+    "in the pipeline's entry status if that holds tasks, else the first that does (ADR 0121; " +
+    "none when no status holds tasks). The assignee defaults to " +
     "the caller and is told. Needs customer:read, item:read and order:read for what is given.",
   input: TaskCreateInputSchema,
   output: TaskSchema,
@@ -48,6 +51,8 @@ export const createTask = defineOperation({
     if (order && !order.ok) return order;
     const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
     if (!checked.ok) return checked;
+    // Without an order it starts in the default status (ADR 0121); linking clears it anyway.
+    const statusId = order ? null : await defaultTaskStatusId({ context });
     const row = await createRecord({
       context,
       base: "TASK",
@@ -57,7 +62,7 @@ export const createTask = defineOperation({
       insert: ({ id }) =>
         context.db.task.create({
           data: {
-            ...{ id, entityTypeId, customerId, contactId, dueAt: input.dueAt ?? null },
+            ...{ id, entityTypeId, customerId, contactId, dueAt: input.dueAt ?? null, statusId },
             note: input.note ?? null,
             fields: toJson({ value: checked.value.fields }) ?? {},
             organizationId: context.organizationId,

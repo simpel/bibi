@@ -16,6 +16,8 @@ export type TaskListRow = {
   /** Assigned to the caller: `assignee:me` matches. */
   mine: boolean;
   state: TaskState;
+  /** Its pipeline status while it has no order (ADR 0121); null with an order or none. */
+  status: { name: string; color: string } | null;
   /** For sorting: the due time in ms; a task without one sorts last. */
   dueAtMs: number;
   /** The due time as text, or "No due time". */

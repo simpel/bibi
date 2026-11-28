@@ -2,6 +2,7 @@ import type { OrderStatus } from "@bibi/db";
 import type { BoardDto } from "../board/schema";
 import type { LoadedCard } from "./load-cards";
 import type { PipelineBoard, PipelineColumn } from "./schema";
+import type { LoadedTaskCard } from "./task-cards";
 
 /** The board without `unmappedCount`, which the operation counts in the database. */
 export type BoardLayout = Omit<PipelineBoard, "unmappedCount" | "currency">;
@@ -10,6 +11,7 @@ export type BoardColumnsInput = {
   board: BoardDto;
   statuses: readonly OrderStatus[];
   cards: readonly LoadedCard[];
+  taskCards: readonly LoadedTaskCard[];
 };
 
 const toStatus = ({ row }: { row: OrderStatus }) => ({
@@ -18,13 +20,19 @@ const toStatus = ({ row }: { row: OrderStatus }) => ({
   color: row.color,
   closed: row.closes,
   entry: row.entry,
+  tasks: row.tasks,
 });
 
 /**
- * The board's phases as columns, each with its statuses as drop zones, and each card placed in
- * the phase of its status (the cards are already limited to the board's statuses).
+ * The board's phases as columns, each with its statuses as drop zones, and each order and task
+ * card placed in the phase of its status (the cards are already limited to the board's statuses).
  */
-export function boardColumns({ board, statuses, cards }: BoardColumnsInput): BoardLayout {
+export function boardColumns({
+  board,
+  statuses,
+  cards,
+  taskCards,
+}: BoardColumnsInput): BoardLayout {
   const byId = new Map(statuses.map((row) => [row.id, row]));
   const phaseOf = new Map<string, string>();
   const columns: PipelineColumn[] = board.phases.map((phase) => {
@@ -37,9 +45,13 @@ export function boardColumns({ board, statuses, cards }: BoardColumnsInput): Boa
       statuses: rows.map((row) => toStatus({ row })),
     };
   });
-  const placed = cards.flatMap((card) => {
-    const columnId = phaseOf.get(card.statusId);
-    return columnId ? [{ ...card, columnId }] : [];
-  });
-  return { boardId: board.id, boardName: board.name, columns, cards: placed };
+  const place = <Card extends { statusId: string }>({ list }: { list: readonly Card[] }) =>
+    list.flatMap((card) => {
+      const columnId = phaseOf.get(card.statusId);
+      return columnId ? [{ ...card, columnId }] : [];
+    });
+  return {
+    ...{ boardId: board.id, boardName: board.name, columns },
+    ...{ cards: place({ list: cards }), taskCards: place({ list: taskCards }) },
+  };
 }

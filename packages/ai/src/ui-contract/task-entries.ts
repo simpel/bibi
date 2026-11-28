@@ -39,6 +39,7 @@ export const TASK_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   task_update: taskCard,
   task_complete: taskCard,
   task_reopen: taskCard,
+  task_move: taskCard,
   task_linkOrder: taskCard,
   task_archive: taskCard,
   task_restore: taskCard,

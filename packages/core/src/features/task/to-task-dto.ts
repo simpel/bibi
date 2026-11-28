@@ -2,6 +2,7 @@ import type { Prisma, Task, TaskItem } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../records/record-links";
 import { nowOf } from "../../time/now";
+import { mainAssigneesOf } from "../assignment/load-assignment";
 import type { TaskDto } from "./schema";
 
 type Context = Pick<OperationContext, "db" | "permissions" | "now">;
@@ -42,16 +43,6 @@ export const isOverdue = ({
   now: Date;
 }) => task.doneAt === null && task.dueAt !== null && task.dueAt < now;
 
-/** The main assignee of each task (ADR 0034): its stored choice without a responsibility. */
-async function assigneesOf({ context, ids }: { context: Context; ids: string[] }) {
-  if (ids.length === 0) return new Map<string, string | null>();
-  const rows = await context.db.assignment.findMany({
-    where: { recordId: { in: ids }, responsibilityId: null },
-    select: { recordId: true, assigneeId: true },
-  });
-  return new Map(rows.map((row) => [row.recordId, row.assigneeId]));
-}
-
 /** Tasks as the API returns them: assignee and `overdue` derived, in one more query. */
 export async function toTaskDtos({
   context,
@@ -60,7 +51,7 @@ export async function toTaskDtos({
   context: Context;
   rows: readonly TaskRow[];
 }): Promise<TaskDto[]> {
-  const assignees = await assigneesOf({ context, ids: rows.map((row) => row.id) });
+  const assignees = await mainAssigneesOf({ context, ids: rows.map((row) => row.id) });
   const now = nowOf({ context });
   return rows.map(({ record: _record, entityType, entityTypeId: _type, ...row }) => ({
     ...row,

@@ -10,6 +10,7 @@ export const lindholmenTaskTypes: readonly DemoType[] = [
 
 /**
  * Lindholmen's tasks (`docs/demo-seed.md`, Tasks): a site visit next Thursday before any order,
+ * moved on the pipeline to Site visit (ADR 0121),
  * a site visit held and done before L3 was booked, L4's final headcount, overdue for Anna, two
  * site visits that set a room aside (a prebook) and block one (a book) beyond the busy calendar,
  * and a to-do with no customer and no due time.
@@ -18,7 +19,7 @@ export const lindholmenTasks: readonly DemoTask[] = [
   {
     ...{ type: "Site visit", customer: "Kvarnby Design AB" },
     items: [{ item: "Vinga (auditorium)", hold: "RELATED" }],
-    ...{ weekday: 3, due: "14:00", assignee: "Erik Lund" },
+    ...{ weekday: 3, due: "14:00", assignee: "Erik Lund", status: "Site visit" },
     note: "Product launch in March, about 80 people. Wants to see the auditorium.",
   },
   {

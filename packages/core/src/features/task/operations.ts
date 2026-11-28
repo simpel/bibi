@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { loadTaskPage } from "./list-tasks";
+import { moveTask } from "./move-operation";
 import { TaskIdInputSchema, TaskListInputSchema, TaskListOutputSchema, TaskSchema } from "./schema";
 import { archiveTask, completeTask, linkTaskOrder, reopenTask } from "./state-operations";
 import { loadTask } from "./to-task-dto";
@@ -13,7 +14,8 @@ export const listTasks = defineOperation({
   kind: "query",
   description:
     "List tasks (ADR 0117, 0120): site visits, tastings, deadlines, notes to self; by due time, " +
-    "tasks without one last. Filter by customer, linked order, assignee, state (open, done, " +
+    "tasks without one last. Filter by customer, linked order, assignee, pipeline status " +
+    "(ADR 0121), state (open, done, " +
     "overdue) and a window on the due time (`from` inclusive, `to` exclusive; tasks without a " +
     "due time only appear without a window). Each task has `overdue` and its rooms (`items`). " +
     "`page` returns `total`.",
@@ -44,5 +46,6 @@ export const taskOperations = [
   completeTask,
   reopenTask,
   linkTaskOrder,
+  moveTask,
   archiveTask,
 ];

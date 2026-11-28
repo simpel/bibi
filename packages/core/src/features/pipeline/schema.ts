@@ -8,6 +8,7 @@ export const PipelineStatusSchema = z.object({
   color: z.string().describe("The status colour"),
   closed: z.boolean().describe("A closing status"),
   entry: z.boolean().describe("New orders start in this status"),
+  tasks: z.boolean().describe("Tasks can be here (ADR 0121): a drop zone for task cards, too"),
 });
 
 export const PipelineColumnSchema = z.object({
@@ -20,6 +21,7 @@ export const PipelineColumnSchema = z.object({
 });
 
 export const PipelineCardSchema = z.object({
+  kind: z.enum(["order"]).describe("An order card (task cards are in `taskCards`)"),
   id: z.string().describe("Order id"),
   columnId: z.string().describe("The board phase (column) the order shows in"),
   statusId: z.string().describe("The order's status id"),
@@ -77,16 +79,42 @@ export const PipelineCardSchema = z.object({
     ),
 });
 
+/** A task without an order on the board (ADR 0121), in the phase of its status. */
+export const PipelineTaskCardSchema = z.object({
+  kind: z.enum(["task"]).describe("A task card"),
+  id: z.string().describe("Task id (task.get)"),
+  columnId: z.string().describe("The board phase (column) the task shows in"),
+  statusId: z.string().describe("The task's status id"),
+  typeName: z.string().describe("The task type's name"),
+  customerId: z
+    .string()
+    .nullable()
+    .describe("The task's customer id (customer.get or customer.list); null = no customer"),
+  dueAt: z.date().nullable().describe("When it is due; null = no due time"),
+  overdue: z.boolean().describe("Past its due time"),
+  assigneeId: z.string().nullable().describe("Main assignee (user id)"),
+  allowedStatusIds: z
+    .array(z.string())
+    .describe(
+      "The statuses it may move to now with task.move: they hold tasks, the move rule allows " +
+        "the move and no gate a task meets blocks it. A drop on a column offers those of its " +
+        "statuses that are listed here; none = the drop is refused",
+    ),
+});
+
 export const PipelineBoardInputSchema = z.object({
   boardId: z.string().optional().describe("The board to show (board.list); default: the first"),
   assigneeId: z
     .string()
     .optional()
-    .describe("Only orders this user is assigned to; replaces the board's own filter"),
+    .describe("Only orders and tasks this user is assigned to; replaces the board's own filter"),
   entityTypeId: z
     .string()
     .optional()
-    .describe("Only orders of this type; replaces the board's own filter"),
+    .describe(
+      "Only orders of this type, and no tasks (a task has no order type); replaces the " +
+        "board's own filter",
+    ),
   closedWithinDays: z
     .number()
     .int()
@@ -101,16 +129,27 @@ export const PipelineBoardSchema = z.object({
   boardName: z.string().nullable(),
   columns: z.array(PipelineColumnSchema),
   cards: z.array(PipelineCardSchema),
+  taskCards: z
+    .array(PipelineTaskCardSchema)
+    .describe(
+      "Open tasks without an order in a status of the board (ADR 0121), by due time (none " +
+        "last); shown after the orders of their phase. Empty without task:read or with an " +
+        "order type filter",
+    ),
   currency: z.string().describe("ISO 4217 code of the cards' values"),
   unmappedCount: z
     .number()
     .int()
-    .describe("Matching orders whose status is in no phase of this board, so not shown"),
+    .describe(
+      "Matching orders whose status is in no phase of this board, so not shown; tasks are " +
+        "not counted",
+    ),
 });
 
 export type PipelineStatus = z.infer<typeof PipelineStatusSchema>;
 export type PipelineColumn = z.infer<typeof PipelineColumnSchema>;
 export type PipelineCard = z.infer<typeof PipelineCardSchema>;
+export type PipelineTaskCard = z.infer<typeof PipelineTaskCardSchema>;
 export type PipelineBoard = z.infer<typeof PipelineBoardSchema>;
 export type PipelineBoardInput = z.infer<typeof PipelineBoardInputSchema>;
 

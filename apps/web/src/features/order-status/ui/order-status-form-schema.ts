@@ -10,6 +10,8 @@ export type OrderStatusFormValues = {
   entry: boolean;
   closes: boolean;
   invoiceable: boolean;
+  /** Tasks without an order can sit in this status (ADR 0121). */
+  tasks: boolean;
   /** The quote event that enters the status, or `NONE`. */
   event: StatusEvent | typeof NONE;
 };
@@ -41,6 +43,7 @@ export function orderStatusFormDefaults({
     entry: orderStatus.entry,
     closes: orderStatus.closes,
     invoiceable: orderStatus.invoiceable,
+    tasks: orderStatus.tasks,
     event: orderStatus.event ?? NONE,
   };
 }

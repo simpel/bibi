@@ -1,18 +1,19 @@
-import type { PipelineCard, PipelineStatus } from "@bibi/core";
+import type { PipelineStatus } from "@bibi/core";
 import type { TransitionGate } from "@bibi/core/schemas";
 import { toast } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { ActionError } from "@/lib/action-result";
+import { type MoveSubject, pickGates } from "../lib/move-rules";
 import { MoveBlockersDialog } from "./move-blockers-dialog";
 import { MoveReasonDialog } from "./move-reason-dialog";
 import { MoveStatusPickerDialog, type StatusPick } from "./move-status-picker-dialog";
 import { useRunMove } from "./use-run-move";
 
-export type MoveCardInput = { card: PipelineCard; to: PipelineStatus };
+export type MoveCardInput = { subject: MoveSubject; to: PipelineStatus };
 
 export type DropCardInput = {
-  card: PipelineCard;
+  subject: MoveSubject;
   /** The column dropped on and the statuses of it the card may move to. */
   column: { title: string };
   targets: readonly PipelineStatus[];
@@ -24,9 +25,9 @@ export type UseMoveCardInput = {
 };
 
 type Pending =
-  | { kind: "pick"; card: PipelineCard; pick: StatusPick }
-  | { kind: "reason"; card: PipelineCard; to: PipelineStatus }
-  | { kind: "blockers"; card: PipelineCard; to: PipelineStatus; error: ActionError };
+  | { kind: "pick"; subject: MoveSubject; pick: StatusPick }
+  | { kind: "reason"; subject: MoveSubject; to: PipelineStatus }
+  | { kind: "blockers"; subject: MoveSubject; to: PipelineStatus; error: ActionError };
 
 type MoveDialogsProps = {
   pending: Pending | null;
@@ -59,9 +60,10 @@ function MoveDialogs({ pending, onClose, onPick, onReason }: MoveDialogsProps) {
 }
 
 /**
- * Runs `order.changeStatus` behind a drop (ADR 0076). One allowed status moves at once, several
- * open a picker, none refuses. A move with a REASON gate asks for the reason first; a refused move
- * opens a dialog that lists every blocker instead of dropping the card.
+ * Runs `order.changeStatus` (or `task.move` for a task card, ADR 0121) behind a drop (ADR 0076).
+ * One allowed status moves at once, several open a picker, none refuses. An order move with a
+ * REASON gate asks for the reason first; a refused move opens a dialog that lists every blocker
+ * instead of dropping the card.
  */
 export function useMoveCard({ moveGates }: UseMoveCardInput) {
   const t = useTranslations("pipeline");
@@ -70,25 +72,27 @@ export function useMoveCard({ moveGates }: UseMoveCardInput) {
     onRefused: (refused) => setPending({ kind: "blockers", ...refused }),
     onMoved: () => setPending(null),
   });
-  const move = ({ card, to }: MoveCardInput) => {
-    if (moveGates[card.statusId]?.[to.id]?.includes("REASON")) {
-      setPending({ kind: "reason", card, to });
-    } else void run({ card, to });
+  const move = ({ subject, to }: MoveCardInput) => {
+    const asksReason =
+      subject.kind === "order" && moveGates[subject.card.statusId]?.[to.id]?.includes("REASON");
+    if (asksReason) setPending({ kind: "reason", subject, to });
+    else void run({ subject, to });
   };
-  const drop = ({ card, column, targets }: DropCardInput) => {
+  const drop = ({ subject, column, targets }: DropCardInput) => {
     const [only] = targets;
-    if (!only) return void toast.error(t("noMoves", { column: column.title }));
-    if (targets.length === 1) return move({ card, to: only });
-    const gates = moveGates[card.statusId] ?? {};
-    setPending({ kind: "pick", card, pick: { column, targets, gates } });
+    const refusal = subject.kind === "task" ? "noTaskMoves" : "noMoves";
+    if (!only) return void toast.error(t(refusal, { column: column.title }));
+    if (targets.length === 1) return move({ subject, to: only });
+    const gates = pickGates({ subject, moveGates });
+    setPending({ kind: "pick", subject, pick: { kind: subject.kind, column, targets, gates } });
   };
   const dialog = (
     <MoveDialogs
       pending={pending}
       onClose={() => setPending(null)}
-      onPick={(to) => pending && move({ card: pending.card, to })}
+      onPick={(to) => pending && move({ subject: pending.subject, to })}
       onReason={(reason) =>
-        pending?.kind === "reason" && void run({ card: pending.card, to: pending.to, reason })
+        pending?.kind === "reason" && void run({ subject: pending.subject, to: pending.to, reason })
       }
     />
   );

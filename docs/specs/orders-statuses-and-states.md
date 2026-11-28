@@ -9,13 +9,14 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 - Inbound address: `order-<id>@<MAIL_INBOUND_DOMAIN>` (ADR 0012).
 
 ## Statuses are organization data
-- `OrderStatus`: name, color, position and flags. The organization adds, renames, reorders and removes statuses freely; none are fixed in code. A new status (`orderStatus.create`) is only a name and a colour, placed last with every flag off; its flags are set with `orderStatus.update`.
+- `OrderStatus`: name, color, position and flags. The organization adds, renames, reorders and removes statuses freely; none are fixed in code. A new status (`orderStatus.create`) is a name, a colour and optionally `tasks`, placed last with every other flag off; its flags are set with `orderStatus.update`.
 
 | Flag | The system does |
 |---|---|
 | `entry` | New orders start here. Exactly one active status is the default entry. |
 | `closes` | No move leaves it. Entering it releases every line. |
 | `invoiceable` | Invoices can be created in this status. |
+| `tasks` | Tasks can be here (ADR 0121): a task without an order sits in and moves among these statuses only (spec: tasks). Never a closing status. Orders are not affected. |
 | `event` | Entered by a quote event (`QUOTE_SENT` or `QUOTE_ACCEPTED`) instead of by hand. At most one active status per event. |
 
 - Minimum configuration, refused with `CONFLICT` on every change: one `entry` status and one `closes` status.

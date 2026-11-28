@@ -5,6 +5,7 @@ import { NONE, OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
 import type { TaskFormData } from "./task-form-data";
 import type { TaskFormOutput, TaskFormValues } from "./task-form-schema";
+import { TaskTypeCreate } from "./task-type-create";
 
 export type TaskFieldsForm = UseFormReturn<TaskFormValues, unknown, TaskFormOutput>;
 
@@ -14,12 +15,17 @@ type FieldsProps = { form: TaskFieldsForm; data: TaskFormData };
 export function TaskTypeField({ form, data }: FieldsProps) {
   const t = useTranslations("task.fields");
   return (
-    <OptionSelectField
-      control={form.control}
-      name="entityTypeId"
-      label={t("type")}
-      options={data.types}
-    />
+    <div className="grid gap-1">
+      <OptionSelectField
+        control={form.control}
+        name="entityTypeId"
+        label={t("type")}
+        options={data.types}
+      />
+      {data.canCreateType ? (
+        <TaskTypeCreate onCreated={({ id }) => form.setValue("entityTypeId", id)} />
+      ) : null}
+    </div>
   );
 }
 

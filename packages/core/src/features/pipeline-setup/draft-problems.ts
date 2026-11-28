@@ -48,6 +48,10 @@ export function statusProblems({ statuses }: { statuses: readonly PipelineStatus
     const message = "A status cannot be both the entry status and closing";
     found.push(problem({ code: "INVALID_STATUS_FLAGS", message, orderStatus: row.name }));
   }
+  for (const row of statuses.filter((candidate) => candidate.tasks && candidate.closes)) {
+    const message = "A closing status cannot hold tasks";
+    found.push(problem({ code: "INVALID_STATUS_FLAGS", message, orderStatus: row.name }));
+  }
   return found;
 }
 

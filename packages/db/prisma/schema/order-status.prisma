@@ -22,34 +22,38 @@ enum StatusEvent {
 /// Trigger (ADR 0053): changing `closes` re-derives the holds of the lines that have not ended
 /// on orders in the status (`sync_line_occupancy.sql`).
 model OrderStatus {
-  id              String                   @id @default(cuid(2))
+  id              String                  @id @default(cuid(2))
   organizationId  String
   name            String
   color           String
-  position        Int                      @default(0)
+  position        Int                     @default(0)
   /// New orders start here.
-  entry           Boolean                  @default(false)
+  entry           Boolean                 @default(false)
   /// No move leaves this status; entering it releases every line.
-  closes          Boolean                  @default(false)
+  closes          Boolean                 @default(false)
   /// Invoices can be created in this status.
-  invoiceable     Boolean                  @default(false)
+  invoiceable     Boolean                 @default(false)
   /// Free movement by default (ADR 0076): false = a order may move from here to any status.
   /// True = only to the statuses in `transitionsFrom`.
-  restrictsNext   Boolean                  @default(false)
+  restrictsNext   Boolean                 @default(false)
   /// Entered by this quote event instead of by hand; at most one active status per event.
   event           StatusEvent?
-  status          RecordStatus             @default(ACTIVE)
+  /// Owned (ADR 0121): "Tasks can be here". Only a flagged status holds a task without an
+  /// order; never a closing one. Orders are not affected.
+  tasks           Boolean                 @default(false)
+  status          RecordStatus            @default(ACTIVE)
   /// Owned (ADR 0118): when it was archived; null while active. Set by its archive, cleared by
   /// its restore; the retention job deletes it after the organization's `archiveRetentionDays`.
   archivedAt      DateTime?
-  createdAt       DateTime                 @default(now())
-  updatedAt       DateTime                 @updatedAt
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
   createdBy       String?
   transitionsFrom OrderStatusTransition[] @relation("TransitionFrom")
   transitionsTo   OrderStatusTransition[] @relation("TransitionTo")
   gatesInto       OrderStatusGate[]       @relation("GateTo")
   gatesFrom       OrderStatusGate[]       @relation("GateFrom")
-  orders         Order[]
+  orders          Order[]
+  tasksHere       Task[]
   stateRules      StatusStateRule[]
   templates       OrderTemplate[]
   changesFrom     OrderStatusChange[]     @relation("StatusChangeFrom")
@@ -64,12 +68,12 @@ model OrderStatus {
 /// while the `from` status `restrictsNext` (ADR 0076); replaced as a set per `from` status by
 /// `orderStatus.setTransitions`, and empty while the status is free.
 model OrderStatusTransition {
-  id             String       @id @default(cuid(2))
+  id             String      @id @default(cuid(2))
   organizationId String
   fromStatusId   String
   toStatusId     String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
   createdBy      String?
   fromStatus     OrderStatus @relation("TransitionFrom", fields: [fromStatusId, organizationId], references: [id, organizationId])
   toStatus       OrderStatus @relation("TransitionTo", fields: [toStatusId, organizationId], references: [id, organizationId])
@@ -91,8 +95,8 @@ model OrderStatusGate {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   createdBy      String?
-  toStatus       OrderStatus   @relation("GateTo", fields: [toStatusId, organizationId], references: [id, organizationId], onDelete: Cascade)
-  fromStatus     OrderStatus?  @relation("GateFrom", fields: [fromStatusId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  toStatus       OrderStatus    @relation("GateTo", fields: [toStatusId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  fromStatus     OrderStatus?   @relation("GateFrom", fields: [fromStatusId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   // Unique on (toStatusId, fromStatusId, key), NULLS NOT DISTINCT: added in the migration, which Prisma cannot express.
   @@index([organizationId, toStatusId])

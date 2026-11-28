@@ -1,18 +1,9 @@
 "use client";
 
 import type { OrderDto, OrderStatusDto } from "@bibi/core";
-import {
-  Button,
-  ColorSwatch,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@bibi/ui";
-import { ChevronDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { StatusDropdown } from "@/components/status-dropdown";
 import { ChangeStatusDialog } from "./change-status-dialog";
 import { OrderStatusLabel } from "./order-status-label";
 
@@ -41,23 +32,13 @@ export function OrderStatusMenu({ order, statuses }: OrderStatusMenuProps) {
     return <OrderStatusLabel statuses={statuses} id={order.statusId} badge />;
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" aria-label={t("changeStatus")} data-tour="order.status">
-            {label}
-            <ChevronDownIcon />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuLabel>{t("changeStatus")}</DropdownMenuLabel>
-          {targets.map((status) => (
-            <DropdownMenuItem key={status.id} onSelect={() => setTarget(status.id)}>
-              <ColorSwatch color={status.color} />
-              {status.name}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <StatusDropdown
+        current={label}
+        label={t("changeStatus")}
+        targets={targets}
+        onSelect={({ id }) => setTarget(id)}
+        tour="order.status"
+      />
       <ChangeStatusDialog
         order={order}
         targets={targets.map(({ id, name }) => ({ id, name }))}

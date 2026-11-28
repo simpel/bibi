@@ -1,12 +1,8 @@
 import type { Locale } from "@bibi/i18n";
-import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
-import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { FormPageShell } from "@/components/wizard/form-page-shell";
 import { loadOrder } from "@/features/order/load-order";
-import { Link } from "@/lib/navigation";
-import { ROUTES } from "@/lib/routes";
 import { handleLoadError } from "@/server/load-error";
 import { loadTaskFormData } from "../load-task-form-data";
 import { TaskForm } from "./task-form";
@@ -50,19 +46,7 @@ export async function TaskCreate({ locale, query }: TaskCreateProps) {
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   return (
     <FormPageShell title={t("create")} description={t("createDescription")}>
-      {data.value.types.length === 0 ? (
-        <EmptyState
-          title={t("noTypes")}
-          description={t("noTypesDescription")}
-          action={
-            <Button asChild variant="outline">
-              <Link href={ROUTES.adminTypes}>{t("goToTypes")}</Link>
-            </Button>
-          }
-        />
-      ) : (
-        <TaskForm data={data.value} prefill={prefill} />
-      )}
+      <TaskForm data={data.value} prefill={prefill} />
     </FormPageShell>
   );
 }

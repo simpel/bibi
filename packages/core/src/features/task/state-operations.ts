@@ -9,6 +9,7 @@ import { TaskIdInputSchema, TaskLinkOrderInputSchema, TaskSchema } from "./schem
 import { syncTaskHolds } from "./sync-task-holds";
 import { relateTaskItems } from "./task-items";
 import { checkTaskAccess } from "./task-rules";
+import { settleTaskStatus } from "./task-status";
 import { loadTask, TASK_INCLUDE, toTaskDtos } from "./to-task-dto";
 
 type SetDoneInput = { context: OperationContext; id: string; done: boolean };
@@ -29,6 +30,8 @@ async function setDone({ context, id, done }: SetDoneInput) {
       : { doneAt: null, doneById: null },
   });
   if (done) await relateTaskItems({ context, taskId: id });
+  // Done keeps its status; reopened, it is back where it was if that still holds tasks (ADR 0121).
+  else await settleTaskStatus({ context, taskId: id });
   const held = await syncTaskHolds({ context, taskId: id });
   if (!held.ok) return held;
   const task = await loadTask({ context, id });
@@ -42,8 +45,8 @@ export const completeTask = defineOperation({
   kind: "command",
   description:
     "Mark a task done: sets doneAt and doneById and releases its rooms' holds for good (ADR " +
-    "0120: each prebook or book becomes related; reopening does not hold them again). A task " +
-    "already done is returned unchanged.",
+    "0120: each prebook or book becomes related; reopening does not hold them again) and takes " +
+    "it off the board (ADR 0121). A task already done is returned unchanged.",
   input: TaskIdInputSchema,
   output: TaskSchema,
   permission: "task:write",
@@ -55,7 +58,9 @@ export const reopenTask = defineOperation({
   kind: "command",
   description:
     "Open a done task again: clears doneAt and doneById; its rooms stay related, so set a " +
-    "prebook or book again with task.update. An open task is unchanged.",
+    "prebook or book again with task.update. Without an order it is back on the board in its " +
+    "status, or the default one if that no longer holds tasks (ADR 0121). An open task is " +
+    "unchanged.",
   input: TaskIdInputSchema,
   output: TaskSchema,
   permission: "task:write",

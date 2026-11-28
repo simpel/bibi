@@ -31,6 +31,11 @@ export type DemoTask = {
   /** The main assignee (ADR 0034), by user name, who is told. */
   assignee: string;
   note?: string;
+  /**
+   * The pipeline status (ADR 0121) of a task without an order, by name, moved there with
+   * `task.move`; left out = the status it starts in.
+   */
+  status?: string;
   /** Marked done by the assignee (`task.complete`) on this day offset, at the due time. */
   doneDay?: number;
 };

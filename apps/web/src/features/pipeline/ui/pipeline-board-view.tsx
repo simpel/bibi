@@ -5,11 +5,21 @@ import type { TransitionGate } from "@bibi/core/schemas";
 import { KanbanBoard } from "@bibi/ui";
 import { useState } from "react";
 import { OrderSheet } from "@/features/order/sheet/ui/order-sheet";
+import { useRouter } from "@/lib/navigation";
+import { taskRoute } from "@/lib/routes";
 import { boardCardSurface } from "../lib/board-card-surface";
-import { findDrop, kanbanCards, kanbanColumns } from "../lib/kanban-model";
+import {
+  type BoardItem,
+  findDrop,
+  kanbanCards,
+  kanbanColumns,
+  kanbanTaskCards,
+  orderItems,
+} from "../lib/kanban-model";
 import { CreateOrderFooter } from "./create-order-footer";
 import { PhaseValue } from "./phase-value";
 import { PipelineCardContent } from "./pipeline-card";
+import { PipelineTaskCardContent } from "./pipeline-task-card";
 import { useMoveCard } from "./use-move-card";
 import { usePipelineLabels } from "./use-pipeline-labels";
 
@@ -24,16 +34,20 @@ export type PipelineBoardViewProps = {
 };
 
 /**
- * The kanban board of orders by phase (ADR 0067, 0076). A drop on a phase runs
- * `order.changeStatus`: straight into its only allowed status, or after the picker when it
- * holds several. A card's title opens the order's sheet beside the board.
+ * The kanban board of orders by phase (ADR 0067, 0076), with the open tasks without an order
+ * after the orders of their phase (ADR 0121). A drop on a phase runs `order.changeStatus` (a task
+ * card: `task.move`): straight into its only allowed status, or after the picker when it holds
+ * several. An order card opens the order's sheet beside the board, a task card its page.
  */
 export function PipelineBoardView(props: PipelineBoardViewProps) {
   const { board, transitions, moveGates, customerNames, memberNames } = props;
   const labels = usePipelineLabels();
   const { drop, dialog } = useMoveCard({ moveGates });
   const [openId, setOpenId] = useState<string | null>(null);
+  const router = useRouter();
   const now = new Date();
+  const names = { board, customerNames, memberNames };
+  const items: BoardItem[] = [...kanbanCards(names), ...kanbanTaskCards(names)];
   const entryColumnIds = new Set(
     board.columns.filter((c) => c.statuses.some((s) => s.entry)).map((c) => c.id),
   );
@@ -41,13 +55,23 @@ export function PipelineBoardView(props: PipelineBoardViewProps) {
     <>
       <KanbanBoard
         columns={kanbanColumns({ board })}
-        cards={kanbanCards({ board, customerNames, memberNames })}
+        cards={items}
         labels={labels}
-        renderCard={(card) => <PipelineCardContent card={card} />}
-        onOpenCard={({ card }) => setOpenId(card.id)}
-        cardSurface={({ card }) => boardCardSurface({ card, now })}
+        renderCard={(card) =>
+          card.kind === "order" ? (
+            <PipelineCardContent card={card} />
+          ) : (
+            <PipelineTaskCardContent card={card} />
+          )
+        }
+        onOpenCard={({ card }) =>
+          card.kind === "order" ? setOpenId(card.id) : router.push(taskRoute({ id: card.id }))
+        }
+        cardSurface={({ card }) =>
+          card.kind === "order" ? boardCardSurface({ card, now }) : undefined
+        }
         renderSummary={({ cards }) => (
-          <PhaseValue cards={cards} currency={board.currency} size="sm" />
+          <PhaseValue cards={orderItems({ items: cards })} currency={board.currency} size="sm" />
         )}
         renderFooter={({ column }) =>
           entryColumnIds.has(column.id) ? <CreateOrderFooter /> : null
@@ -60,7 +84,7 @@ export function PipelineBoardView(props: PipelineBoardViewProps) {
         }}
         onMove={(move) => {
           const found = findDrop({ board, move, transitions });
-          if (found) drop({ card: found.card, column: found.column, targets: found.targets });
+          if (found) drop({ subject: found.subject, column: found.column, targets: found.targets });
         }}
       />
       {dialog}

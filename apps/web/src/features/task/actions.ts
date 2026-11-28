@@ -3,12 +3,16 @@
 import {
   archiveTask,
   completeTask,
+  createEntityType,
   createTask,
+  type EntityTypeDto,
   linkTaskOrder,
+  moveTask,
   reopenTask,
   type TaskCreateInput,
   type TaskDto,
   type TaskLinkOrderInput,
+  type TaskMoveInput,
   type TaskUpdateInput,
   updateTask,
 } from "@bibi/core";
@@ -20,12 +24,23 @@ export type CreateTaskActionInput = { input: TaskCreateInput };
 export type UpdateTaskActionInput = { input: TaskUpdateInput };
 export type TaskIdActionInput = { id: string };
 export type SetTaskDoneActionInput = { id: string; done: boolean };
+export type CreateTaskTypeActionInput = { name: string };
 export type LinkTaskOrderActionInput = { input: TaskLinkOrderInput };
+export type MoveTaskActionInput = { input: TaskMoveInput };
 
 export async function createTaskAction({
   input,
 }: CreateTaskActionInput): Promise<ActionResult<TaskDto>> {
   return toActionResult({ result: await runOperation({ operation: createTask, input }) });
+}
+
+/** Create type from the task form: a task type with just a name (`entityType.create`, base TASK). */
+export async function createTaskTypeAction({
+  name,
+}: CreateTaskTypeActionInput): Promise<ActionResult<EntityTypeDto>> {
+  return toActionResult({
+    result: await runOperation({ operation: createEntityType, input: { base: "TASK", name } }),
+  });
 }
 
 export async function updateTaskAction({
@@ -51,4 +66,11 @@ export async function linkTaskOrderAction({
 
 export async function archiveTaskAction({ id }: TaskIdActionInput): Promise<ActionResult<TaskDto>> {
   return toActionResult({ result: await runOperation({ operation: archiveTask, input: { id } }) });
+}
+
+/** A task card dropped on a pipeline column (`task.move`, ADR 0121). */
+export async function moveTaskAction({
+  input,
+}: MoveTaskActionInput): Promise<ActionResult<TaskDto>> {
+  return toActionResult({ result: await runOperation({ operation: moveTask, input }) });
 }

@@ -1,4 +1,5 @@
 import { ok, type Result } from "../../errors/result";
+import { moveTask } from "../../features/task/move-operation";
 import { completeTask } from "../../features/task/state-operations";
 import { createTask } from "../../features/task/write-operations";
 import { createExecuteContext, type ExecuteContext } from "../../operations/context";
@@ -104,6 +105,18 @@ async function markDone({ context, taskId, userId, at: doneAt }: DoneInput) {
   return execute({ operation: completeTask, input, context: { ...own, now: () => doneAt } });
 }
 
+type MoveInput = { context: ExecuteContext; taskId: string; status: string | undefined };
+
+/** Moves a task without an order to its named status on the pipeline (ADR 0121). */
+async function moveToStatus({ context, taskId, status }: MoveInput): Promise<Result<true>> {
+  if (!status) return ok({ value: true });
+  const row = await context.db.orderStatus.findFirst({ where: { name: status } });
+  if (!row) return missing({ what: `status ${status}` });
+  const input = { id: taskId, statusId: row.id };
+  const moved = await execute({ operation: moveTask, input, context });
+  return moved.ok ? ok({ value: true }) : moved;
+}
+
 async function seedTask({ ...input }: TaskInput): Promise<Result<string>> {
   const { context, refs, userIds, task, now } = input;
   const type = refs.taskTypes.get(task.type);
@@ -129,6 +142,8 @@ async function seedTask({ ...input }: TaskInput): Promise<Result<string>> {
   });
   if (!created.ok) return created;
   const taskId = created.value.id;
+  const moved = await moveToStatus({ context, taskId, status: task.status });
+  if (!moved.ok) return moved;
   if (task.doneDay === undefined) return ok({ value: taskId });
   const doneAt = time({ value: task.due ?? "12:00", day: task.doneDay });
   const done = await markDone({ context, taskId, userId: assigneeId, at: doneAt });

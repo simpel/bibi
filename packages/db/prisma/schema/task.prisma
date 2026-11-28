@@ -10,48 +10,55 @@ enum TaskItemHold {
 /// site visit, a tasting, "final headcount due". Its type (base `TASK`) decides its own fields.
 /// Only the type is required: the customer and a contact at it, one due time, an order of the
 /// customer (`orderId`, owned) and rooms (`TaskItem`) are optional. Every column is owned; one
-/// assignee plus followers come from `Assignment` (ADR 0034). Archiving is the delete.
+/// assignee plus followers come from `Assignment` (ADR 0034). Archiving is the delete. A task
+/// without an order sits in a pipeline status (`statusId`, ADR 0121) and is moved like an order.
 model Task {
-  id             String       @id
-  organizationId String
-  entityTypeId   String
+  id                 String              @id
+  organizationId     String
+  entityTypeId       String
   /// Optional (ADR 0120). Null = no customer; then there is no contact and no order either.
-  customerId     String?
+  customerId         String?
   /// A contact person at the customer (core checks it works there); needs a customer.
-  contactId      String?
+  contactId          String?
   /// The order of the customer it is linked to; null = not linked.
-  orderId        String?
+  orderId            String?
   /// When it is due: one instant, never a span; null = no due time (ADR 0120).
-  dueAt          DateTime?
+  dueAt              DateTime?
   /// Free text, at most 4000 characters.
-  note           String?
+  note               String?
+  /// Owned (ADR 0121): its pipeline status while it has no order, one that allows tasks
+  /// (`OrderStatus.tasks`); null while linked to an order or when no status allows tasks. Kept
+  /// when it is done, so reopening puts it back. Checked by the `task-status` reconciliation.
+  statusId           String?
   /// When it was marked done and by whom; both null while it is open.
-  doneAt         DateTime?
-  doneById       String?
+  doneAt             DateTime?
+  doneById           String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
-  fields         Json         @default("{}")
-  status         RecordStatus @default(ACTIVE)
+  fields             Json                @default("{}")
+  status             RecordStatus        @default(ACTIVE)
   /// Owned (ADR 0118): when it was archived; null while active. Set by its archive, cleared by
   /// its restore; the retention job deletes it after the organization's `archiveRetentionDays`.
-  archivedAt     DateTime?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  createdBy      String?
-  entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  customer       Customer?    @relation(fields: [customerId, organizationId], references: [id, organizationId])
-  contact        Contact?     @relation(fields: [contactId, organizationId], references: [id, organizationId])
-  order          Order?       @relation(fields: [orderId, organizationId], references: [id, organizationId])
-  items          TaskItem[]
-  notifications  Notification[]
+  archivedAt         DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  createdBy          String?
+  entityType         EntityType          @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  customer           Customer?           @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  contact            Contact?            @relation(fields: [contactId, organizationId], references: [id, organizationId])
+  order              Order?              @relation(fields: [orderId, organizationId], references: [id, organizationId])
+  orderStatus        OrderStatus?        @relation(fields: [statusId, organizationId], references: [id, organizationId])
+  items              TaskItem[]
+  notifications      Notification[]
   needsYouDismissals NeedsYouDismissal[]
   /// The supertable row this record extends (ADR 0056).
-  record         Record       @relation(fields: [id, organizationId], references: [id, organizationId])
+  record             Record              @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, customerId])
   @@index([organizationId, orderId])
   @@index([organizationId, dueAt])
   @@index([organizationId, entityTypeId])
+  @@index([organizationId, statusId])
 }
 
 /// A room a task concerns (ADR 0120): named only (`RELATED`), or held for its own window as a

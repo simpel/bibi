@@ -1,8 +1,8 @@
 import type { OrderStatusTemplate } from "./order-status-template";
 
 const statuses: OrderStatusTemplate["statuses"] = [
-  { name: "New", color: "#f59e0b", entry: true },
-  { name: "Site visit", color: "#d97706" },
+  { name: "New", color: "#f59e0b", entry: true, tasks: true },
+  { name: "Site visit", color: "#d97706", tasks: true },
   { name: "Quote sent", color: "#7c3aed", event: "QUOTE_SENT" },
   { name: "Confirmed", color: "#16a34a", event: "QUOTE_ACCEPTED", gatesIn: ["ASSIGNEE"] },
   {

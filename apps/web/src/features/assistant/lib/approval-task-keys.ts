@@ -3,6 +3,7 @@ export const TASK_OPERATION_KEYS = [
   "task_create",
   "task_update",
   "task_complete",
+  "task_move",
   "task_reopen",
   "task_linkOrder",
   "task_archive",

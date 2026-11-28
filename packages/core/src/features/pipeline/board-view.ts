@@ -7,15 +7,19 @@ import { resolveHorizon } from "../dashboard/horizon";
 import { boardColumns } from "./board-columns";
 import { countOrders, loadOrderCards } from "./load-cards";
 import type { PipelineBoardInput } from "./schema";
+import { loadTaskCards } from "./task-cards";
 
 const DAY_MS = 86_400_000;
 
 const EMPTY = {
-  ...{ boardId: null, boardName: null, columns: [], cards: [] },
+  ...{ boardId: null, boardName: null, columns: [], cards: [], taskCards: [] },
   ...{ currency: DEFAULT_CURRENCY, unmappedCount: 0 },
 };
 
-/** `pipeline.board`: the board's phases as columns and its orders as cards (ADR 0067). */
+/**
+ * `pipeline.board`: the board's phases as columns, its orders as cards (ADR 0067) and its open
+ * tasks without an order as task cards (ADR 0121).
+ */
 export async function pipelineBoardHandler({ input, context }: HandlerInput<PipelineBoardInput>) {
   const board = input.boardId
     ? await loadBoard({ context, id: input.boardId })
@@ -34,8 +38,11 @@ export async function pipelineBoardHandler({ input, context }: HandlerInput<Pipe
   ]);
   const mapped = board.phases.flatMap((phase) => phase.statusIds);
   const load = { context, input: filter, since };
-  const cards = await loadOrderCards({ ...load, horizon, statusIds: { in: mapped } });
-  const unmappedCount = await countOrders({ ...load, statusIds: { notIn: mapped } });
-  const layout = boardColumns({ board, statuses, cards });
+  const [cards, taskCards, unmappedCount] = await Promise.all([
+    loadOrderCards({ ...load, horizon, statusIds: { in: mapped } }),
+    loadTaskCards({ context, input: filter, statusIds: mapped, statuses }),
+    countOrders({ ...load, statusIds: { notIn: mapped } }),
+  ]);
+  const layout = boardColumns({ board, statuses, cards, taskCards });
   return ok({ value: { ...layout, currency: DEFAULT_CURRENCY, unmappedCount } });
 }

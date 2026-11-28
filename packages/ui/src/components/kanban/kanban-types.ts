@@ -19,8 +19,13 @@ export type KanbanColumnData = {
   zones?: readonly KanbanZoneData[];
 };
 
+/** A card's look: an order (filled) or a task (outlined in the task colour, ADR 0121). */
+export type KanbanCardKind = "order" | "task";
+
 export type KanbanCardData = {
   id: string;
+  /** The card's look; default an order card. */
+  kind?: KanbanCardKind;
   columnId: string;
   /** The zone the card sits in, when its column has zones. */
   zoneId?: string;

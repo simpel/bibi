@@ -8,6 +8,8 @@ import type { ContactOption } from "@/features/order/ui/order-form-data";
  */
 export type TaskFormData = {
   types: NamedOption[];
+  /** `configuration:write`: the form offers Create type beside the type picker. */
+  canCreateType: boolean;
   customers: NamedOption[];
   contacts: ContactOption[];
   /** The caller may not view customers: show them as hidden and disable the pickers. */

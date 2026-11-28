@@ -20,6 +20,7 @@ export const taskRoutes = [
   restRoute({ operation: "task.archive", method: "DELETE", path: "/tasks/{id}" }),
   restRoute({ operation: "task.complete", method: "POST", path: "/tasks/{id}/complete" }),
   restRoute({ operation: "task.reopen", method: "POST", path: "/tasks/{id}/reopen" }),
+  restRoute({ operation: "task.move", method: "POST", path: "/tasks/{id}/move" }),
   restRoute({ operation: "task.linkOrder", method: "POST", path: "/tasks/{taskId}/order" }),
   restRoute({
     operation: "task.restore",

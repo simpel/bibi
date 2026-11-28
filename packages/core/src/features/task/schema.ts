@@ -15,6 +15,13 @@ export const TaskSchema = z.object({
     .nullable()
     .describe("contact.get; a contact person at the customer; null = none"),
   orderId: z.string().nullable().describe("The linked order (order.get); null = not linked"),
+  statusId: z
+    .string()
+    .nullable()
+    .describe(
+      "Its pipeline status while it has no order (orderStatus.list, ADR 0121): on the board " +
+        "while open; null when linked to an order or no status holds tasks. Moved with task.move",
+    ),
   dueAt: z
     .date()
     .nullable()
@@ -121,12 +128,27 @@ export const TaskLinkOrderInputSchema = z.object({
   orderId: z.string().min(1).describe("An active order of the task's customer (order.list)"),
 });
 
+export const TaskMoveInputSchema = z.object({
+  id: z.string().min(1).describe("A task without an order that is not done"),
+  statusId: z
+    .string()
+    .min(1)
+    .describe("The status to move it to: one that holds tasks (orderStatus.list `tasks`)"),
+});
+
 export const TASK_STATES = ["open", "done", "overdue"] as const;
 
 export const TaskListInputSchema = z.object({
   customerId: z.string().min(1).optional().describe("Only tasks of this customer"),
   orderId: z.string().min(1).optional().describe("Only tasks linked to this order"),
   assigneeId: z.string().min(1).optional().describe("Only tasks assigned to this user"),
+  statusId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe(
+      "Only tasks in this pipeline status (orderStatus.list); tasks with an order have none",
+    ),
   state: z
     .enum(TASK_STATES)
     .optional()
@@ -159,4 +181,5 @@ export type TaskDto = z.infer<typeof TaskSchema>;
 export type TaskCreateInput = z.infer<typeof TaskCreateInputSchema>;
 export type TaskUpdateInput = z.infer<typeof TaskUpdateInputSchema>;
 export type TaskLinkOrderInput = z.infer<typeof TaskLinkOrderInputSchema>;
+export type TaskMoveInput = z.infer<typeof TaskMoveInputSchema>;
 export type TaskListInput = z.infer<typeof TaskListInputSchema>;

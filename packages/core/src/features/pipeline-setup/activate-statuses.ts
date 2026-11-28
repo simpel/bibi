@@ -14,6 +14,7 @@ const flagsOf = ({ orderStatus }: { orderStatus: PipelineStatusDraft }) => ({
   entry: orderStatus.entry ?? false,
   closes: orderStatus.closes ?? false,
   invoiceable: orderStatus.invoiceable ?? false,
+  tasks: orderStatus.tasks ?? false,
   event: orderStatus.event ?? null,
 });
 

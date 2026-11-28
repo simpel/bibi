@@ -17,7 +17,8 @@ export const archiveOrderStatus = defineOperation({
   description:
     "Archive an order status (statuses are never deleted). A status that holds orders needs " +
     "`targetStatusId`: its orders move there through the normal move checks (transition and " +
-    "flags), all or none. Its transitions are removed. The last entry or closing status cannot " +
+    "flags), all or none. Its tasks move to the entry status if it holds tasks, else the " +
+    "first that does (ADR 0121). Its transitions are removed. The last entry or closing status cannot " +
     "be archived (CONFLICT), nor a status predefined orders start in. Its status grid cells are cleared.",
   input: OrderStatusArchiveInputSchema,
   output: OrderStatusSchema,

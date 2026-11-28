@@ -1,5 +1,6 @@
 import type { OperationContext } from "../../operations/types";
 import { canView } from "../../shared/can-view";
+import { mainAssigneesOf } from "../assignment/load-assignment";
 import { subjectIdFilter } from "../assignment/subject-filter";
 import type { DashboardHorizon } from "../dashboard/horizon";
 import { LATEST_STATUS_CHANGE } from "../order/status-history";
@@ -12,7 +13,7 @@ import type { PipelineBoardInput, PipelineCard } from "./schema";
 export type LoadedCard = Omit<PipelineCard, "columnId">;
 
 /** Upper bound of cards, so one board response stays small. */
-const CARD_LIMIT = 500;
+export const CARD_LIMIT = 500;
 
 type Db = Pick<OperationContext, "db">;
 export type LoadCardsInput = {
@@ -22,14 +23,6 @@ export type LoadCardsInput = {
   /** Which statuses: the board's (`in`) or every other (`notIn`). */
   statusIds: { in: string[] } | { notIn: string[] };
 };
-
-async function mainAssignees({ context, ids }: { context: Db; ids: string[] }) {
-  const rows = await context.db.assignment.findMany({
-    where: { recordId: { in: ids }, responsibilityId: null },
-    select: { recordId: true, assigneeId: true },
-  });
-  return new Map(rows.map((row) => [row.recordId, row.assigneeId]));
-}
 
 type Counts = { heldLines: number; bookedLines: number };
 
@@ -94,7 +87,7 @@ export async function loadOrderCards({
   });
   const ids = rows.map((row) => row.id);
   const [owners, valuesOf, cues, tasks] = await Promise.all([
-    mainAssignees({ context, ids }),
+    mainAssigneesOf({ context, ids }),
     cardValues({ context, orderIds: ids }),
     cardCues({ context, orderIds: ids, horizon }),
     nextTasks({ context, orderIds: ids }),
@@ -105,6 +98,7 @@ export async function loadOrderCards({
   const none = counted ? { heldLines: 0, bookedLines: 0 } : { heldLines: null, bookedLines: null };
   return rows.map((row) => ({
     ...(lines?.get(row.id) ?? none),
+    kind: "order" as const,
     id: row.id,
     statusId: row.statusId,
     reference: row.reference,

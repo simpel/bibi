@@ -96,3 +96,16 @@ export async function mainAssigneeId({
   });
   return row?.assigneeId ?? null;
 }
+
+/** The main assignee of each subject in one query (by record id); absent = nobody assigned. */
+export async function mainAssigneesOf({
+  context,
+  ids,
+}: Db & { ids: readonly string[] }): Promise<Map<string, string | null>> {
+  if (ids.length === 0) return new Map();
+  const rows = await context.db.assignment.findMany({
+    where: { recordId: { in: [...ids] }, responsibilityId: null },
+    select: { recordId: true, assigneeId: true },
+  });
+  return new Map(rows.map((row) => [row.recordId, row.assigneeId]));
+}

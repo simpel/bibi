@@ -7,6 +7,7 @@ export const PIPELINE_FIELD_KEYS = [
   "entry",
   "closes",
   "invoiceable",
+  "tasks",
   "event",
   "targetStatusId",
   "toStatusIds",

@@ -14,6 +14,12 @@ export const TransitionGateSchema = z
 export type TransitionGate = z.infer<typeof TransitionGateSchema>;
 
 /**
+ * The gates that read something a task has (ADR 0121): its main assignee. The others read order
+ * data (a reason kept in the status history, a quote) and are skipped for a task, never failed.
+ */
+export const TASK_GATES: readonly TransitionGate[] = ["ASSIGNEE"];
+
+/**
  * The gates on moves into one status from one source (ADR 0076): a status id, or null for a move
  * from any status. The gates of a move are those from any status plus those of its source.
  */

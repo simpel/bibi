@@ -68,6 +68,7 @@ export function statusesFromTemplate({ template }: { template: PipelineTemplateK
       closes: status.closes ?? false,
       gatesIn: [...(status.gatesIn ?? [])],
       invoiceable: status.invoiceable ?? false,
+      tasks: status.tasks ?? false,
       event: status.event ?? null,
     }),
   );

@@ -114,10 +114,13 @@ describe("order statuses (ADR 0043)", () => {
     unwrap({ result: await unset({ id: lost.id }) });
     expect(errorCode({ result: await unset({ id: completed.id }) })).toBe("CONFLICT");
     const confirmed = await statusByName({ context, name: "Confirmed" });
+    // Confirmed holds tasks (ADR 0121): it closes only once it stops holding them.
+    const holding = await update({ input: { id: confirmed.id, closes: true } });
+    expect(holding.ok ? null : holding.error.issues[0]?.path).toBe("closes");
     const closes = unwrap({
       result: await execute({
         operation: updateOrderStatus,
-        input: { id: confirmed.id, closes: true },
+        input: { id: confirmed.id, closes: true, tasks: false },
         context,
       }),
     });

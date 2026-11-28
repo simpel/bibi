@@ -6,6 +6,7 @@ import {
   getTask,
   linkTaskOrder,
   listTasks,
+  moveTask,
   reopenTask,
   restoreTask,
   type TaskDto,
@@ -40,6 +41,7 @@ mutationFromOperation({ operation: createTask, type: TaskRef });
 mutationFromOperation({ operation: updateTask, type: TaskRef });
 mutationFromOperation({ operation: completeTask, type: TaskRef });
 mutationFromOperation({ operation: reopenTask, type: TaskRef });
+mutationFromOperation({ operation: moveTask, type: TaskRef });
 mutationFromOperation({ operation: linkTaskOrder, type: TaskRef });
 mutationFromOperation({ operation: archiveTask, type: TaskRef });
 mutationFromOperation({ operation: restoreTask, type: TaskRef });

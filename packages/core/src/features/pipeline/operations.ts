@@ -38,7 +38,10 @@ export const pipelineBoard = defineOperation({
     "phase are only counted (`unmappedCount`). The board's filter applies; `assigneeId` and " +
     "`entityTypeId` replace it. Orders in closing statuses appear only for " +
     "`closedWithinDays` days. A card names its customer by id only (customer.get or " +
-    "customer.list resolve it); its held and booked line counts are null without program:read.",
+    "customer.list resolve it); its held and booked line counts are null without program:read. " +
+    "Open tasks without an order in the board's statuses are `taskCards` (ADR 0121; needs " +
+    "task:read), each with the statuses it may move to now (`allowedStatusIds`, task.move); " +
+    "a status with `tasks` holds them. An order type filter hides tasks.",
   input: PipelineBoardInputSchema,
   output: PipelineBoardSchema,
   permission: "order:read",

@@ -3,11 +3,24 @@ import { createExecuteContext, type ExecuteContext } from "../../operations/cont
 import { execute } from "../../operations/execute";
 import { PRESET_PERMISSIONS } from "../../permissions/presets";
 import { ALL_RECORDS } from "../../permissions/record-scope";
+import type { DemoTask } from "./task-types";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoTasksInput = { context: ExecuteContext; org: DemoOrg };
 
 type TaskRow = { id: string; orderId: string | null };
+
+type StatusInput = { org: DemoOrg; index: number; task: DemoTask; statusName: string | null };
+
+/** A task without an order sits in its named status, else the entry status (ADR 0121). */
+function statusFailures({ org, index, task, statusName }: StatusInput): string[] {
+  if (task.order && statusName) return [`${org.slug}: task ${index + 1} has an order and a status`];
+  if (task.order || task.doneDay !== undefined) return [];
+  const wanted = task.status ?? org.pipeline.statuses.statuses.find((row) => row.entry)?.name;
+  return statusName === (wanted ?? null)
+    ? []
+    : [`${org.slug}: task ${index + 1} is in ${statusName ?? "no status"}, expected ${wanted}`];
+}
 
 /** Read as `userId` (manager preset): the keys and groups of their Needs you. */
 async function needsOf({ context, userId }: { context: ExecuteContext; userId: string }) {
@@ -34,7 +47,8 @@ async function overdueFailures({ context, org, task, assigneeId }: OverdueInput)
 
 /**
  * ADR 0117, 0120 (`docs/demo-seed.md`, Tasks): the organization has the data files' tasks, a
- * task with an order is linked to it, a done one was marked done by its assignee, an open task
+ * task with an order is linked to it and has no status while one without sits in its status
+ * (ADR 0121), a done one was marked done by its assignee, an open task
  * past its due time is its assignee's `TASK_DUE` need in LATE, and each prebooked or booked room
  * of an open task has its active hold (soft or hard).
  */
@@ -42,7 +56,10 @@ export async function checkDemoTasks({ context, org }: CheckDemoTasksInput): Pro
   const tasks = org.tasks ?? [];
   const rows = await context.db.task.findMany({
     orderBy: { createdAt: "asc" },
-    select: { id: true, orderId: true, doneById: true, dueAt: true },
+    select: {
+      ...{ id: true, orderId: true, doneById: true, dueAt: true },
+      orderStatus: { select: { name: true } },
+    },
   });
   if (rows.length !== tasks.length)
     return [`${org.slug}: ${rows.length} tasks, expected ${tasks.length}`];
@@ -57,6 +74,8 @@ export async function checkDemoTasks({ context, org }: CheckDemoTasksInput): Pro
     if (!row || !assignee) return [`${org.slug}: task ${index + 1} not found`];
     if (Boolean(task.order) !== Boolean(row.orderId))
       failures.push(`${org.slug}: task ${index + 1} order link differs`);
+    const statusName = row.orderStatus?.name ?? null;
+    failures.push(...statusFailures({ org, index, task, statusName }));
     const done = task.doneDay !== undefined;
     if (done && row.doneById !== assignee.userId)
       failures.push(`${org.slug}: task ${index + 1} was not done by ${task.assignee}`);

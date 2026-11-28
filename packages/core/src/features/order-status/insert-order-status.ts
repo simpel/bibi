@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
 import { type PlaceNewStatusInput, placeNewStatus } from "../board/status-placement";
+import { moveTasksToDefault } from "../task/task-status";
 import { checkFlagCombination, handOverEntry, handOverEvent } from "./flag-rules";
 import { loadOrderStatus } from "./load-order-status";
 import type {
@@ -56,6 +57,8 @@ export async function insertOrderStatus({
   });
   const placed = await placeNewStatus({ context, status: row, phaseId, ownPhase });
   if (!placed.ok) return placed;
+  // Tasks that had no status (no status held tasks) get one now (ADR 0121).
+  if (row.tasks) await moveTasksToDefault({ context, from: null });
   const orderStatus = await loadOrderStatus({ context, id: row.id });
   if (!orderStatus) return conflict({ message: "The new order status could not be read back" });
   context.recordChange({ entityId: row.id, after: orderStatus });
