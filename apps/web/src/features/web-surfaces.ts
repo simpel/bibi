@@ -84,6 +84,8 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "task.complete", route: "/tasks/[id]" },
   { operation: "task.reopen", route: "/tasks/[id]" },
   { operation: "task.linkOrder", route: "/tasks/[id]" },
+  // Task cards on the pipeline board are dragged between columns (ADR 0121).
+  { operation: "task.move", route: "/pipeline" },
   { operation: "task.archive", route: "/tasks/[id]" },
   { operation: "order.list", route: "/orders" },
   { operation: "order.create", route: "/new/order" },

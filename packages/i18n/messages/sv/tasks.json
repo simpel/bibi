@@ -8,15 +8,19 @@
     "created": "Uppgiften skapades",
     "updated": "Uppgiften sparades",
     "completed": "Uppgiften är klar",
+    "moved": "Uppgiften flyttades",
+    "changeStatus": "Byt status",
     "reopened": "Uppgiften öppnades igen",
     "archived": "Uppgiften arkiverades",
     "linked": "Uppgiften lades till i bokningen",
     "empty": "Inga uppgifter än",
     "emptyDescription": "Skapa en uppgift för ett platsbesök, en provsmakning, en deadline eller en anteckning till dig själv.",
     "noMatches": "Inga uppgifter matchar.",
-    "noTypes": "Inga uppgiftstyper än",
-    "noTypesDescription": "Skapa först en uppgiftstyp, till exempel Platsbesök, under Typer.",
-    "goToTypes": "Gå till typer",
+    "createType": "Skapa typ",
+    "createTypeDescription": "En uppgiftstyp är vad du kallar en sorts uppgift, som Platsbesök eller Slutligt antal. Egna fält lägger du till senare under Typer.",
+    "typeName": "Namn",
+    "typeNamePlaceholder": "Platsbesök",
+    "typeCreated": "Uppgiftstypen skapades",
     "complete": "Markera {name} som klar",
     "reopen": "Markera {name} som inte klar",
     "markDone": "Markera som klar",
@@ -66,6 +70,7 @@
       "customer": "Kund",
       "assignee": "Ansvarig",
       "state": "Läge",
+      "status": "Status",
       "due": "Senast"
     },
     "query": {
@@ -73,6 +78,7 @@
       "assignee": "Ansvarig",
       "customer": "Kund",
       "type": "Typ",
+      "status": "Status",
       "me": "jag"
     },
     "section": {

@@ -994,6 +994,16 @@
     "room": "Rum",
     "noRooms": "Inget rum tar bordsbokningar än",
     "noRoomsDescription": "En administratör ställer in ett rum under Administration, Bordsbokning.",
+    "adminMenu": {
+      "label": "Inställningar",
+      "setup": "Rumsinställningar: sittningar och tider",
+      "blocks": "Spärrade bord",
+      "tables": "Bord och kombinationer",
+      "bookingPage": "Bokningssida",
+      "preview": "Förhandsgranska bokningssidan"
+    },
+    "enterFullscreen": "Helskärm",
+    "exitFullscreen": "Lämna helskärm",
     "empty": "Inga bokningar den här dagen",
     "anonymous": "Raderad",
     "day": {
@@ -1032,6 +1042,7 @@
       "unseat": "Ångra sittning",
       "complete": "Avsluta",
       "markNoShow": "Markera som uteblivit",
+      "revertNoShow": "Ångra uteblivit",
       "cancel": "Avboka"
     },
     "toast": {
@@ -1039,6 +1050,7 @@
       "unseat": "Sittningen ångrades",
       "complete": "Bokningen avslutades",
       "markNoShow": "Markerad som uteblivit",
+      "revertNoShow": "Bokad igen",
       "cancel": "Bokningen avbokades"
     },
     "cancel": {
@@ -1055,6 +1067,10 @@
       "time": "Tid",
       "tables": "Bord",
       "tablesHint": "Lämna tomt så väljer Bibi det minsta lediga bordet som passar.",
+      "tableSeats": "{count, plural, one {# plats} other {# platser}}",
+      "fewer": "Färre personer",
+      "more": "Fler personer",
+      "moreDetails": "Fler uppgifter",
       "name": "Namn",
       "phone": "Telefon",
       "email": "Mejl",
@@ -1102,15 +1118,16 @@
       "table": "Bord {label}"
     },
     "floor": {
+      "load": "{taken} av {seats} platser upptagna",
+      "resizeList": "Ändra bredd på bokningar",
+      "zoomIn": "Zooma in",
+      "zoomOut": "Zooma ut",
+      "zoomReset": "Återställ zoom",
       "title": "Salongen i {name}",
       "table": "Bord {label}",
       "time": "Tid",
-      "legend": {
-        "booked": "Blå kant: bokat",
-        "seated": "Gul kant: vid bordet",
-        "blocked": "Streckat: spärrat",
-        "onlineOnly": "Prickad kant: sparat för gäster utan bokning"
-      },
+      "hideList": "Dölj bokningar",
+      "showList": "Visa bokningar",
       "noLayout": "Ingen planlösning att rita",
       "noLayoutDescription": "Skapa en sittning för rummet så ser du salongen här.",
       "walkIn": "Utan bokning"
@@ -1137,12 +1154,15 @@
       "saved": "Bokningen sparades"
     },
     "popover": {
+      "close": "Stäng",
+      "table": "Bord {label}",
       "open": "Öppna",
-      "free": "Bord {label} är ledigt {time}.",
+      "free": "Ledigt kl. {time}",
       "party": "Personer",
       "fewer": "Färre personer",
       "more": "Fler personer",
-      "seatHere": "Sätt gäster här"
+      "seatHere": "Sätt gäster här",
+      "block": "Spärra bord"
     }
   }
 }

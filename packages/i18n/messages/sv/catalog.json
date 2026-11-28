@@ -940,14 +940,33 @@
     "room": {
       "description": "Inställningar för bordsbokning. Gästerna bokar på /{address} på bokningssidan."
     },
+    "preview": {
+      "title": "Förhandsgranska bokningssidan",
+      "description": "Klicka dig igenom bokningssidan precis som en gäst: din logotyp, dina färger, texter och varje steg.",
+      "navLabel": "Förhandsgranska",
+      "start": "Startsida",
+      "phone": "Mobil",
+      "desktop": "Dator",
+      "reload": "Börja om",
+      "openNew": "Öppna i ny flik",
+      "liveNote": "Det här är din riktiga bokningssida. En bokning som görs här är en riktig reservation: avboka den från bekräftelselänken eller under Bordsbokningar.",
+      "notLive": "Publicera bokningssidan för att förhandsgranska den",
+      "notLiveDescription": "Gäster och den här förhandsgranskningen ser sidan först när den är publicerad och har en adress. Ställ in och publicera den först.",
+      "goToPage": "Öppna inställningar för bokningssidan",
+      "frameTitle": "Din bokningssida"
+    },
     "openUntil": {
-      "title": "Öppna bokningar till",
-      "description": "Gästerna kan boka tider till och med den här dagen.",
-      "label": "Sista dag gäster kan boka",
+      "title": "Öppet för bokning",
+      "description": "Gäster kan boka tider från första dagen till och med sista dagen, eller inom ett rullande fönster av dagar framåt.",
       "plusMonth": "+1 månad",
       "saved": "Bokningsdatumet sparades",
-      "hint": "Dagen slutar vid midnatt i rummets tidszon.",
-      "noLimitHint": "Inget datum satt: sittningarnas egna gränser avgör hur långt fram gästerna kan boka."
+      "hint": "Första dagen börjar och sista dagen slutar vid midnatt i rummets tidszon.",
+      "noLimitHint": "Ingen sista dag satt. Det rullande fönstret eller sittningarnas egna gränser avgör hur långt i förväg gäster kan boka. Rensa ett datum med dess kryss.",
+      "fromLabel": "Första dag gäster kan boka",
+      "toLabel": "Sista dag gäster kan boka",
+      "aheadLabel": "Eller ett rullande fönster: öppet så här många dagar framåt",
+      "aheadPlaceholder": "t.ex. 90",
+      "aheadHint": "Gäster kan boka från idag upp till så här många dagar framåt, varje dag. Det ersätter varje sittnings egen gräns. Lämna tomt för att använda sittningarnas gränser."
     },
     "sittings": {
       "title": "Sittningar",
@@ -992,6 +1011,17 @@
       "depositFromParty": "Deposition från sällskapsstorlek",
       "depositPerCover": "Deposition per person"
     },
+    "blocks": {
+      "create": "Skapa spärr",
+      "title": "Spärrade bord",
+      "description": "Bord som hålls undan från bokning, nu eller i förväg: spärrade för alla, eller sparade för gäster utan bokning och telefonbokningar.",
+      "empty": "Inga spärrade bord framöver",
+      "emptyDescription": "Spärra bord för att hålla dem undan en period, till exempel en privat tillställning eller gäster utan bokning på fredagskvällar.",
+      "table": "Bord",
+      "kind": "Typ",
+      "note": "Anteckning",
+      "period": "När"
+    },
     "exceptions": {
       "title": "Undantag",
       "description": "Ett datum då en sittning är stängd eller går annorlunda, till exempel en helgdag eller ett privat evenemang.",
@@ -1020,6 +1050,12 @@
       "paceSummary": "{count} per tid"
     },
     "tables": {
+      "layout": "Layout",
+      "editLayout": "Redigera salongslayout",
+      "layoutSaved": "Layout ändrad",
+      "tapTable": "Tryck på ett bord i salongen för att ställa in dess nummer, hur många personer det tar och om gäster kan boka det online. Bord som gäster inte kan boka är tonade.",
+      "tableTitle": "Bord {label}",
+      "seatsLine": "{count, plural, one {# plats} other {# platser}} i salongsritningen",
       "title": "Bord",
       "description": "För varje planlösning en sittning använder: borden gäster kan få, och bord som bokas ihop.",
       "none": "Planlösningen har inga bord än. Rita runda eller rektangulära bord i planlösningen.",

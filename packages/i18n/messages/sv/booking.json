@@ -9,8 +9,7 @@
     "rooms": {
       "title": "Boka bord",
       "description": "Välj var du vill sitta.",
-      "empty": "Det går inte att boka online just nu.",
-      "upTo": "Upp till {count, plural, one {# gäst} other {# gäster}} online"
+      "empty": "Det går inte att boka online just nu."
     },
     "contact": {
       "call": "Ring {phone}",

@@ -9,12 +9,15 @@
     },
     "clash": "Tidskrock",
     "noDate": "Inget datum",
+    "noDueTime": "Ingen tid",
     "quantity": "{count, plural, one {# person} other {# personer}}",
     "moved": "Flyttad till {column}.",
     "noMoves": "Det här bokningen kan inte flyttas till {column}.",
+    "noTaskMoves": "Uppgiften kan inte flyttas till {column}.",
     "picker": {
       "title": "Flytta till {column}",
       "description": "Välj vilken bokningsstatus i kolumnen bokningen ska flyttas till.",
+      "taskDescription": "Välj vilken status i kolumnen uppgiften ska flyttas till.",
       "needs": "Kräver {list}",
       "noRequirements": "Inga krav",
       "gate": {
@@ -189,6 +192,8 @@
       "entry": "Nya bokningar startar här",
       "closes": "Avslutar bokningen",
       "invoiceable": "Kan faktureras",
+      "tasks": "Uppgifter kan finnas här",
+      "tasksHelp": "Uppgifter utan bokning kan ligga i den här statusen och flyttas på tavlan som bokningar. Finns inte för en status som avslutar bokningen.",
       "event": "Nås genom en offerthändelse",
       "noEvent": "Ingen händelse (flyttas för hand)",
       "events": {

@@ -1243,6 +1243,10 @@ export const RELATIONS: RelationMap = {
       "target": "Order",
       "list": true
     },
+    "tasksHere": {
+      "target": "Task",
+      "list": true
+    },
     "stateRules": {
       "target": "StatusStateRule",
       "list": true
@@ -1945,6 +1949,10 @@ export const RELATIONS: RelationMap = {
     },
     "order": {
       "target": "Order",
+      "list": false
+    },
+    "orderStatus": {
+      "target": "OrderStatus",
       "list": false
     },
     "items": {

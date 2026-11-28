@@ -319,19 +319,20 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 **Attributes**
 - name (unique among the organization's active statuses), color, order (`position`)
-- flags: `entry` (new orders start here, exactly one default), `closes` (nothing leaves it; all lines are released on entry), `invoiceable` (only after the last line has ended), `event` (`QUOTE_SENT` / `QUOTE_ACCEPTED`, at most one status per event; such a status is entered by the quote event, not by hand)
+- flags: `entry` (new orders start here, exactly one default), `closes` (nothing leaves it; all lines are released on entry), `invoiceable` (only after the last line has ended), `tasks` ("Tasks can be here", default false: only a flagged status holds a task without an order, never a closing one; orders are not affected, [ADR 0121](decisions/0121-tasks-on-the-pipeline.md)), `event` (`QUOTE_SENT` / `QUOTE_ACCEPTED`, at most one status per event; such a status is entered by the quote event, not by hand)
 - `restrictsNext` (default false): false means an order may move from this status to any status (except out of a `closes` status, and into a status with an `event`); true means only to the rows of `OrderStatusTransition` (from → to). A free status keeps no transition rows ([ADR 0076](decisions/0076-free-status-movement-and-admin-only-flow.md))
 - gates into this status (`OrderStatusGate`: `REASON`, `ASSIGNEE`, `ACCEPTED_QUOTE`, each from a specific status or from any status; a gate guards a fact, the record owns it, [ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md), [ADR 0067](decisions/0067-order-statuses-boards-and-gates.md))
 - archived (a status that holds orders is archived only with a chosen target status)
 
 **Relations**
 - `1:N` Order is in this
+- `1:N` Task without an order is in this (only while `tasks`)
 - `1:N` is from/to in → OrderStatusChange
 - `1:N` is from/to in → Transition (`OrderStatusTransition`, from → to; only while `restrictsNext`)
 - `1:N` is the target of → Gate (`OrderStatusGate`, optional source status)
 - `1:N` sets states in → StatusStateRule
 
-> Minimum configuration, checked on every change (`CONFLICT`): one `entry` and one `closes` status. Movement is free by default. Reports group by flag, never by status name.
+> Minimum configuration, checked on every change (`CONFLICT`): one `entry` and one `closes` status. Movement is free by default. Reports group by flag, never by status name. A status is shared by orders and tasks (ADR 0121): clearing `tasks` or archiving a status moves its tasks to the entry status if it holds tasks, else the first that does (none when no status does); a status that starts to hold tasks gives the open tasks without a status one. `tasks` together with `closes` is `VALIDATION`.
 
 > Operations (`pipeline:write|delete` to change, `pipeline:read` to read; `pipeline:write` is the admin-only flow, boards use `board:*`): `orderStatus.list|get|create|update|archive|reorder|setTransitions|setGates|importTemplate`. `setTransitions({ id, allowedNext: "ANY" | "ONLY_THESE", toStatusIds })` sets `restrictsNext` and the targets; `setGates({ id, gates })` replaces all gates into the status. `list|get` return `restrictsNext`, `transitionsTo` (effective targets), `transitionGates` (effective per target) and `gatesInto` (raw, by source). Settings page `/admin/pipeline`; first-time setup is the assistant onboarding at `/onboarding` ([ADR 0045](decisions/0045-soft-landing-onboarding.md), building on [ADR 0044](decisions/0044-line-states-and-the-status-grid.md)).
 
@@ -823,7 +824,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 *Target* · Table booking for dining rooms: guests book on the organization's booking page or through the public API; staff on Reservations. Spec: [table-reservations](specs/table-reservations.md).
 
 ### DiningRoom (`DiningRoom`)
-A room set up for table booking. Owned: item (one per room), `slug` (unique in the organization, the room's part of `/book/<page>/<room>`), `openUntil` (an instant: guests may book times that start before it; null = the sittings' `maxDaysAhead` only), status. `diningRoom.list|get|set` (`diningSetup:*`).
+A room set up for table booking. Owned: item (one per room), `slug` (unique in the organization, the room's part of `/book/<page>/<room>`), `openDaysAhead` (a rolling window in days for the whole room, replacing the sittings' `maxDaysAhead`; null = each sitting's own), `openFrom` (an instant: guests may book times that start at or after it; null = no start date), `openUntil` (an instant: guests may book times that start before it; null = the sittings' `maxDaysAhead` only), status. `diningRoom.list|get|set` (`diningSetup:*`).
 
 ### DiningService (`DiningService`)
 A sitting: when a dining room takes table bookings, with which layout and at what pace (UI "Sitting").
@@ -1552,16 +1553,18 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - due at (`dueAt`, optional: one instant, never a span; without it the task is not on the calendar or in Needs you, is never overdue and sorts last)
 - rooms (`TaskItem` rows, below)
 - note (≤ 4000)
+- status (`statusId`, owned, [ADR 0121](decisions/0121-tasks-on-the-pipeline.md)): its pipeline status while it has no order, one that holds tasks (`OrderStatus.tasks`). A new task takes the entry status if it holds tasks, else the first that does by position; null while linked to an order, or when no status holds tasks. Linking clears it, unlinking sets the default again; done keeps it, and reopening or restoring puts the task back there, or in the default when that status no longer holds tasks. Checked by the `task-status` reconciliation
 - done at, done by (`doneAt`, `doneById`, owned; open while null)
 - `overdue` (derived: open and due before now)
 
 **Relations**
 - `N:0..1` Customer, Contact
 - `N:0..1` Order is linked to this
+- `N:0..1` is in → OrderStatus (while it has no order)
 - `1:N` concerns → TaskItem
 - `1:N` is answered for by → Assignment (one assignee plus followers)
 
-> Operations (feature `task`): `task.list|get` (`task:read`), `task.create|update|complete|reopen|linkOrder` (`task:write`), `task.archive|restore|delete` (`task:delete`). `task.create` takes an optional `orderId` and links it in the same command; `task.update` clears customer, contact, order and due time with `null` (a cleared customer needs contact and order cleared too), replaces the rooms as a set with `items`, and takes `assigneeId` (the new assignee is told, `ASSIGNED` with the task as subject). `order.create` takes `taskIds` and links them in the same transaction; each room a task prebooks or books becomes a line of the order in the same hold (unless an input line already takes it) and the task lets go of it (ADR 0120). Pipeline cards and order rows carry the order's next open task with a due time; `calendar.range` returns tasks due in the range beside bookings, and a task's room hold as a block with `taskId`; an open task of the assignee due today is a `TASK_DUE` need in TODAY, an overdue one in LATE with no age limit (key `TASK_DUE:<taskId>`).
+> Operations (feature `task`): `task.list|get` (`task:read`), `task.create|update|complete|reopen|linkOrder|move` (`task:write`), `task.archive|restore|delete` (`task:delete`). `task.create` takes an optional `orderId` and links it in the same command; `task.update` clears customer, contact, order and due time with `null` (a cleared customer needs contact and order cleared too), replaces the rooms as a set with `items`, and takes `assigneeId` (the new assignee is told, `ASSIGNED` with the task as subject). `order.create` takes `taskIds` and links them in the same transaction; each room a task prebooks or books becomes a line of the order in the same hold (unless an input line already takes it) and the task lets go of it (ADR 0120). `task.move({ id, statusId })` moves a task without an order like an order (ADR 0121): only to a status that holds tasks (`VALIDATION` at `statusId`), with the same Allowed next and the gates a task can meet (`ASSIGNEE`; `REASON` and `ACCEPTED_QUOTE` are skipped); a linked or done task is `CONFLICT`. `task.list` filters by `statusId`. `pipeline.board` shows open tasks without an order in the board's statuses as `taskCards` in the phase of their status, after its orders, each with the statuses it may move to (`allowedStatusIds`). Pipeline cards and order rows carry the order's next open task with a due time; `calendar.range` returns tasks due in the range beside bookings, and a task's room hold as a block with `taskId`; an open task of the assignee due today is a `TASK_DUE` need in TODAY, an overdue one in LATE with no age limit (key `TASK_DUE:<taskId>`).
 
 #### TaskItem (`TaskItem`)
 

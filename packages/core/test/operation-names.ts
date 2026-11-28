@@ -151,6 +151,7 @@ const NAMES = [
   "task.get",
   "task.linkOrder",
   "task.list",
+  "task.move",
   "task.reopen",
   "task.update",
   "venue.archive",

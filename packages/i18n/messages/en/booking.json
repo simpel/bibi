@@ -9,8 +9,7 @@
     "rooms": {
       "title": "Book a table",
       "description": "Choose where you would like to sit.",
-      "empty": "Online booking is not open right now.",
-      "upTo": "Up to {count, plural, one {# guest} other {# guests}} online"
+      "empty": "Online booking is not open right now."
     },
     "contact": {
       "call": "Call {phone}",

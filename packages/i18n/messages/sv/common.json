@@ -35,7 +35,8 @@
       "firstPage": "Första sidan",
       "previousPage": "Föregående sida",
       "nextPage": "Nästa sida",
-      "lastPage": "Sista sidan"
+      "lastPage": "Sista sidan",
+      "total": "{count, plural, one {# rad} other {# rader}}"
     },
     "yes": "Ja",
     "no": "Nej",

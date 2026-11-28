@@ -4,6 +4,11 @@ export type UiExempt = { operation: string; reason: string };
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
   {
+    operation: "reservation.calendar",
+    reason:
+      "Which dates a guest could book is asked through the API, MCP and the assistant; staff click through the live booking page in its preview (ADR 0119).",
+  },
+  {
     operation: "runSheet.generate",
     reason:
       "Versions are made automatically when an order or its lines change (ADR 0092); the API, MCP and the assistant can still force one.",

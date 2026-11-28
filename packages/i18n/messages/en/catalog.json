@@ -940,14 +940,33 @@
     "room": {
       "description": "Table booking settings. Guests book at /{address} on the booking page."
     },
+    "preview": {
+      "title": "Booking page preview",
+      "description": "Click through your booking page exactly as a guest does: your logo, colours, texts and every step.",
+      "navLabel": "Preview",
+      "start": "Start page",
+      "phone": "Phone",
+      "desktop": "Desktop",
+      "reload": "Start over",
+      "openNew": "Open in a new tab",
+      "liveNote": "This is your live booking page. A booking made here is a real reservation: cancel it from its confirmation link or under Reservations.",
+      "notLive": "Publish the booking page to preview it",
+      "notLiveDescription": "Guests and this preview see the page only once it is published, with an address. Set it up and publish it first.",
+      "goToPage": "Open booking page settings",
+      "frameTitle": "Your booking page"
+    },
     "openUntil": {
-      "title": "Open bookings until",
-      "description": "Guests can book times up to and including this day.",
-      "label": "Last day guests can book",
+      "title": "Open for booking",
+      "description": "Guests can book times from the first day up to and including the last day, or on a rolling window of days ahead.",
       "plusMonth": "+1 month",
       "saved": "Booking date saved",
-      "hint": "The day ends at midnight in the room's time zone.",
-      "noLimitHint": "No date set: the sittings' own limits decide how far ahead guests can book."
+      "hint": "The first day starts and the last day ends at midnight in the room's time zone.",
+      "noLimitHint": "No last day set. The rolling window or the sittings' own limits decide how far ahead guests can book. Clear a date with its cross.",
+      "fromLabel": "First day guests can book",
+      "toLabel": "Last day guests can book",
+      "aheadLabel": "Or a rolling window: open this many days ahead",
+      "aheadPlaceholder": "e.g. 90",
+      "aheadHint": "Guests can book from today up to this many days ahead, every day. It replaces each sitting's own limit. Leave empty to use the sittings' limits."
     },
     "sittings": {
       "title": "Sittings",
@@ -992,6 +1011,17 @@
       "depositFromParty": "Deposit from party size",
       "depositPerCover": "Deposit per person"
     },
+    "blocks": {
+      "create": "Create block",
+      "title": "Held-back tables",
+      "description": "Tables kept from booking, now or ahead of time: blocked for everyone, or kept for walk-ins and phone bookings.",
+      "empty": "No held-back tables coming up",
+      "emptyDescription": "Block tables to hold them back for a period, for example a private event or walk-ins on Friday evenings.",
+      "table": "Table",
+      "kind": "Kind",
+      "note": "Note",
+      "period": "When"
+    },
     "exceptions": {
       "title": "Exceptions",
       "description": "A date a sitting is closed or runs differently, such as a holiday or a private event.",
@@ -1020,6 +1050,12 @@
       "paceSummary": "{count} per slot"
     },
     "tables": {
+      "layout": "Layout",
+      "editLayout": "Edit floor layout",
+      "layoutSaved": "Layout changed",
+      "tapTable": "Tap a table on the floor to set its number, how many people it takes and whether guests can book it online. Tables guests cannot book are drawn faded.",
+      "tableTitle": "Table {label}",
+      "seatsLine": "{count, plural, one {# seat} other {# seats}} on the floor plan",
       "title": "Tables",
       "description": "For each layout a sitting uses: the tables guests can get, and tables booked together.",
       "none": "This layout has no tables yet. Draw round or rectangular tables in the layout.",

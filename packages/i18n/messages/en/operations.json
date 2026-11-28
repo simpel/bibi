@@ -9,12 +9,15 @@
     },
     "clash": "Time clash",
     "noDate": "No date",
+    "noDueTime": "No due time",
     "quantity": "{count, plural, one {# person} other {# people}}",
     "moved": "Moved to {column}.",
     "noMoves": "This order cannot move to {column}.",
+    "noTaskMoves": "This task cannot move to {column}.",
     "picker": {
       "title": "Move to {column}",
       "description": "Pick the status in this column to move the order to.",
+      "taskDescription": "Pick the status in this column to move the task to.",
       "needs": "Needs {list}",
       "noRequirements": "No requirements",
       "gate": {
@@ -189,6 +192,8 @@
       "entry": "New orders start here",
       "closes": "Ends the order",
       "invoiceable": "Can be invoiced",
+      "tasks": "Tasks can be here",
+      "tasksHelp": "Tasks without an order can sit in this status and are moved on the board like orders. Not available on a status that ends the order.",
       "event": "Entered by a quote event",
       "noEvent": "No event (entered by hand)",
       "events": {

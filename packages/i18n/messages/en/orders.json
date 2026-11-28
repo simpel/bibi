@@ -994,6 +994,16 @@
     "room": "Room",
     "noRooms": "No room takes table bookings yet",
     "noRoomsDescription": "An administrator sets a room up under Administration, Table booking.",
+    "adminMenu": {
+      "label": "Set up",
+      "setup": "Room setup: sittings and hours",
+      "blocks": "Held-back tables",
+      "tables": "Tables and combinations",
+      "bookingPage": "Booking page",
+      "preview": "Preview booking page"
+    },
+    "enterFullscreen": "Enter fullscreen",
+    "exitFullscreen": "Exit fullscreen",
     "empty": "No reservations this day",
     "anonymous": "Erased",
     "day": {
@@ -1032,6 +1042,7 @@
       "unseat": "Undo seating",
       "complete": "Complete",
       "markNoShow": "Mark as no-show",
+      "revertNoShow": "Undo no-show",
       "cancel": "Cancel reservation"
     },
     "toast": {
@@ -1039,6 +1050,7 @@
       "unseat": "Seating undone",
       "complete": "Reservation completed",
       "markNoShow": "Marked as no-show",
+      "revertNoShow": "Booked again",
       "cancel": "Reservation cancelled"
     },
     "cancel": {
@@ -1055,6 +1067,10 @@
       "time": "Time",
       "tables": "Tables",
       "tablesHint": "Leave empty and Bibi picks the smallest free table that fits.",
+      "tableSeats": "{count, plural, one {# seat} other {# seats}}",
+      "fewer": "Fewer people",
+      "more": "More people",
+      "moreDetails": "More details",
       "name": "Name",
       "phone": "Phone",
       "email": "Email",
@@ -1102,15 +1118,16 @@
       "table": "Table {label}"
     },
     "floor": {
+      "load": "{taken} of {seats} seats taken",
+      "resizeList": "Resize reservations",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "zoomReset": "Reset zoom",
       "title": "Floor of {name}",
       "table": "Table {label}",
       "time": "Time",
-      "legend": {
-        "booked": "Blue outline: booked",
-        "seated": "Yellow outline: seated",
-        "blocked": "Hatched: blocked",
-        "onlineOnly": "Dashed: kept for walk-ins"
-      },
+      "hideList": "Hide reservations",
+      "showList": "Show reservations",
       "noLayout": "No layout to draw",
       "noLayoutDescription": "Create a sitting for this room to see its floor here.",
       "walkIn": "Walk-in"
@@ -1137,12 +1154,15 @@
       "saved": "Reservation saved"
     },
     "popover": {
+      "close": "Close",
+      "table": "Table {label}",
       "open": "Open",
-      "free": "Table {label} is free at {time}.",
+      "free": "Free at {time}",
       "party": "People",
       "fewer": "Fewer people",
       "more": "More people",
-      "seatHere": "Seat guests here"
+      "seatHere": "Seat guests here",
+      "block": "Block table"
     }
   }
 }

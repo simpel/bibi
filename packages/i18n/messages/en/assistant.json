@@ -105,6 +105,7 @@
         "closes": "Ends the order",
         "gates": "Gates on the moves",
         "invoiceable": "Can be invoiced",
+        "tasks": "Tasks can be here",
         "event": "Quote event",
         "targetStatusId": "Move orders to (status id)",
         "toStatusIds": "May move to (status ids)",
@@ -168,6 +169,8 @@
         "timeZone": "Time zone",
         "domainJoin": "Join by email domain",
         "archiveRetentionDays": "Archive period (days)",
+        "openDaysAhead": "Open for booking (days ahead)",
+        "openFrom": "Open for booking from",
         "openUntil": "Open for booking until",
         "roomItemId": "Dining room (id)",
         "weekdays": "Weekdays",
@@ -205,7 +208,9 @@
         "bookerName": "Booker",
         "bookerPhone": "Booker phone",
         "bookerEmail": "Booker email",
-        "requirements": "Needs"
+        "requirements": "Needs",
+        "providerAccount": "Account in the accounting system",
+        "purpose": "Used for"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -289,6 +294,7 @@
         "task_create": "Create task",
         "task_update": "Edit task",
         "task_complete": "Mark task done",
+        "task_move": "Change task status",
         "task_reopen": "Reopen task",
         "task_linkOrder": "Link task to order",
         "task_archive": "Delete task",
@@ -397,8 +403,10 @@
         "reservation_unseat": "Undo seating",
         "reservation_complete": "Complete reservation",
         "reservation_markNoShow": "Mark as no-show",
+        "reservation_revertNoShow": "Undo no-show",
         "tableBlock_create": "Block tables",
-        "tableBlock_delete": "Release table block"
+        "tableBlock_delete": "Release table block",
+        "accountMapping_set": "Edit account mapping"
       },
       "setup": {
         "title": "Create my first version",
@@ -591,6 +599,8 @@
       "pipeline": {
         "title": "Pipeline",
         "empty": "No orders yet.",
+        "tasks": "Tasks",
+        "noDueTime": "No due time",
         "open": "Open the pipeline"
       },
       "quote": {

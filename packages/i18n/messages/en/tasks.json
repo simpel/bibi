@@ -9,14 +9,18 @@
     "updated": "Task saved",
     "completed": "Task done",
     "reopened": "Task opened again",
+    "moved": "Task moved",
+    "changeStatus": "Change status",
     "archived": "Task archived",
     "linked": "Task added to the order",
     "empty": "No tasks yet",
     "emptyDescription": "Create a task for a site visit, a tasting, a deadline or a note to yourself.",
     "noMatches": "No tasks match.",
-    "noTypes": "No task types yet",
-    "noTypesDescription": "Create a task type, such as Site visit, under Types first.",
-    "goToTypes": "Go to types",
+    "createType": "Create type",
+    "createTypeDescription": "A task type is what you call a kind of task, like Site visit or Headcount due. You can add its own fields later under Types.",
+    "typeName": "Name",
+    "typeNamePlaceholder": "Site visit",
+    "typeCreated": "Task type created",
     "complete": "Mark {name} as done",
     "reopen": "Mark {name} as not done",
     "markDone": "Mark as done",
@@ -66,6 +70,7 @@
       "customer": "Customer",
       "assignee": "Assignee",
       "state": "State",
+      "status": "Status",
       "due": "Due"
     },
     "query": {
@@ -73,6 +78,7 @@
       "assignee": "Assignee",
       "customer": "Customer",
       "type": "Type",
+      "status": "Status",
       "me": "me"
     },
     "section": {

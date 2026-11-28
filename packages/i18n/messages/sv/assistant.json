@@ -105,6 +105,7 @@
         "closes": "Avslutar bokningen",
         "gates": "Villkor för flytten",
         "invoiceable": "Kan faktureras",
+        "tasks": "Uppgifter kan finnas här",
         "event": "Offerthändelse",
         "targetStatusId": "Flytta bokningar till (bokningsstatus-id)",
         "toStatusIds": "Får gå till (bokningsstatus-id:n)",
@@ -168,6 +169,8 @@
         "timeZone": "Tidszon",
         "domainJoin": "Gå med via e-postdomän",
         "archiveRetentionDays": "Arkivperiod (dagar)",
+        "openDaysAhead": "Öppet för bokning (dagar framåt)",
+        "openFrom": "Öppet för bokning från",
         "openUntil": "Öppen för bokning till",
         "roomItemId": "Matsal (id)",
         "weekdays": "Veckodagar",
@@ -205,7 +208,9 @@
         "bookerName": "Bokare",
         "bookerPhone": "Bokarens telefon",
         "bookerEmail": "Bokarens mejl",
-        "requirements": "Behov"
+        "requirements": "Behov",
+        "providerAccount": "Konto i bokföringssystemet",
+        "purpose": "Används till"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -289,6 +294,7 @@
         "task_create": "Skapa uppgift",
         "task_update": "Redigera uppgift",
         "task_complete": "Markera uppgiften som klar",
+        "task_move": "Byt status på uppgift",
         "task_reopen": "Öppna uppgiften igen",
         "task_linkOrder": "Koppla uppgiften till bokningen",
         "task_archive": "Ta bort uppgift",
@@ -340,7 +346,6 @@
         "boardPhase_archive": "Ta bort kolumn från tavla",
         "boardPhase_reorder": "Ändra ordning på kolumner",
         "boardPhase_moveStatus": "Flytta bokningsstatus mellan kolumner",
-        "accountingSettings_update": "Ändra bokföringsinställningar",
         "paymentSettings_update": "Ändra betalningsinställningar",
         "billing_update": "Ändra platsinställningar",
         "billing_approveSeat": "Godkänn en plats",
@@ -398,8 +403,10 @@
         "reservation_unseat": "Ångra sittning",
         "reservation_complete": "Slutför bordsbokning",
         "reservation_markNoShow": "Markera som uteblivit",
+        "reservation_revertNoShow": "Ångra uteblivet",
         "tableBlock_create": "Spärra bord",
-        "tableBlock_delete": "Släpp bordsspärr"
+        "tableBlock_delete": "Släpp bordsspärr",
+        "accountMapping_set": "Redigera kontokoppling"
       },
       "setup": {
         "title": "Skapa min första version",
@@ -592,6 +599,8 @@
       "pipeline": {
         "title": "Pipeline",
         "empty": "Inga bokningar än.",
+        "tasks": "Uppgifter",
+        "noDueTime": "Ingen tid",
         "open": "Öppna pipelinen"
       },
       "quote": {

@@ -64,6 +64,7 @@ export const ROUTES = {
   adminItemStates: "/admin/item-states",
   adminRunSheets: "/admin/run-sheets",
   adminTableBooking: "/admin/table-booking",
+  adminTableBookingPreview: "/admin/table-booking/preview",
   adminResponsibilities: "/admin/responsibilities",
   adminPayments: "/admin/payments",
   adminAccounting: "/admin/accounting",
