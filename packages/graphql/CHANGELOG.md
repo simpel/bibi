@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.1.0](https://github.com/simpel/bibi/compare/@bibi/graphql-v4.0.0...@bibi/graphql-v4.1.0) (2026-11-28)
+
+
+### Features
+
+* table booking gets open-from and days-ahead limits, a calendar operation and a pause for online booking ([21a3cbc](https://github.com/simpel/bibi/commit/21a3cbcffd51e23273acb45a4719e3c5f48c46b5))
+* tasks sit on the pipeline board and move between statuses ([061014d](https://github.com/simpel/bibi/commit/061014dffb0a3393fd3c313b1e6e4eed6ff5d803))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @bibi/core bumped to 6.1.0
+    * @bibi/db bumped to 4.1.0
+
 ## [4.0.0](https://github.com/simpel/bibi/compare/@bibi/graphql-v3.1.0...@bibi/graphql-v4.0.0) (2026-11-27)
 
 

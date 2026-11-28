@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.0](https://github.com/simpel/bibi/compare/@bibi/ui-v3.0.0...@bibi/ui-v3.1.0) (2026-11-28)
+
+
+### Features
+
+* tasks sit on the pipeline board and move between statuses ([061014d](https://github.com/simpel/bibi/commit/061014dffb0a3393fd3c313b1e6e4eed6ff5d803))
+* texts, docs and exports for tasks on the pipeline and table booking ([361382c](https://github.com/simpel/bibi/commit/361382cfb2f7b18138e856f8b14ecf7c36b39d78))
+
 ## [3.0.0](https://github.com/simpel/bibi/compare/@bibi/ui-v2.1.1...@bibi/ui-v3.0.0) (2026-11-27)
 
 

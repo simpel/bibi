@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.0](https://github.com/simpel/bibi/compare/@bibi/i18n-v5.0.0...@bibi/i18n-v5.1.0) (2026-11-28)
+
+
+### Features
+
+* texts, docs and exports for tasks on the pipeline and table booking ([361382c](https://github.com/simpel/bibi/commit/361382cfb2f7b18138e856f8b14ecf7c36b39d78))
+
 ## [5.0.0](https://github.com/simpel/bibi/compare/@bibi/i18n-v4.1.0...@bibi/i18n-v5.0.0) (2026-11-27)
 
 
